@@ -6,3 +6,9 @@ The [bioconda](https://anaconda.org/bioconda) channel is a [Conda](http://anacon
 This repository hosts the recipes for the [Conda](http://anaconda.org) packages of the [bioconda](https://anaconda.org/bioconda) channel. 
 
 The [bioconda](https://anaconda.org/bioconda) channel is intended as a community effort. Hence, everybody is invited to contribute recipes and join the team at https://anaconda.org/bioconda.
+
+
+Developers
+----------
+
+[Johannes Köster](https://github.com/johanneskoester)
