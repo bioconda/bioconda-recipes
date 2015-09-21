@@ -2,30 +2,35 @@
 
 mkdir -p $PREFIX/bin
 
-if [ $PY3K -eq 1 ]
+binaries="\
+bam2fastx \
+bam_merge \
+bed_to_juncs \
+contig_to_chr_coords \
+fix_map_ordering \
+gtf_juncs \
+gtf_to_fasta \
+juncs_db
+long_spanning_reads \
+map2gtf \
+prep_reads \
+sam_juncs \
+segment_juncs \
+sra_to_solid \
+tophat \
+tophat2 \
+tophat-fusion-post \
+tophat_reports \
+"
+directories="sortedcontainers intervaltree"
+pythonfiles="tophat bed_to_juncs contig_to_chr_coords sra_to_solid tophat-fusion-post"
+
+PY3_BUILD="${PY_VER%.*}"
+
+if [ $PY3_BUILD -eq 3 ]
 then
-    2to3 --write tophat bed_to_juncs contig_to_chr_coords sra_to_solid tophat-fusion-post
+    for i in $pythonfiles; do 2to3 --write $i; done
 fi
 
-cp bam2fastx $PREFIX/bin
-cp bam_merge $PREFIX/bin
-cp bed_to_juncs $PREFIX/bin
-cp contig_to_chr_coords $PREFIX/bin
-cp fix_map_ordering $PREFIX/bin
-cp gtf_juncs $PREFIX/bin
-cp gtf_to_fasta $PREFIX/bin
-cp -r intervaltree $PREFIX/bin
-cp juncs_db $PREFIX/bin
-cp long_spanning_reads $PREFIX/bin
-cp map2gtf $PREFIX/bin
-cp prep_reads $PREFIX/bin
-cp sam_juncs $PREFIX/bin
-cp samtools_0.1.18 $PREFIX/bin
-cp segment_juncs $PREFIX/bin
-cp -r sortedcontainers $PREFIX/bin
-cp sra_to_solid $PREFIX/bin
-cp tophat $PREFIX/bin
-cp tophat2 $PREFIX/bin
-cp tophat-fusion-post $PREFIX/bin
-cp tophat_reports $PREFIX/bin
-
+for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
+for d in $directories; do cp -r $d $PREFIX/bin; done
