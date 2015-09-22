@@ -15,6 +15,7 @@ long_spanning_reads \
 map2gtf \
 prep_reads \
 sam_juncs \
+samtools_0.1.18 \
 segment_juncs \
 sra_to_solid \
 tophat \
