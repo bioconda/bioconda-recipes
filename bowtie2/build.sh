@@ -13,7 +13,7 @@ bowtie2-inspect \
 bowtie2-inspect-l \
 bowtie2-inspect-s \
 "
-directories="scripts example doc"
+directories="scripts"
 pythonfiles="bowtie2-build bowtie2-inspect"
 
 PY3_BUILD="${PY_VER%.*}"
