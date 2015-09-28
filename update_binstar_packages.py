@@ -15,9 +15,15 @@ import yaml
 CONFIG = {
     "remote_user": "bioconda",
     "remote_repo": "bioconda",
-    #"targets": ["linux-64", "linux-32", "osx-64"],
-    "targets": ["linux-64", "osx-64"],
     "numpy": "19"}
+
+# Add targets depending on detected current OS
+if sys.platform == "darwin":
+    CONFIG['targets'] = ['osx-64']
+elif sys.platform in ['linux', 'linux2']:
+    CONFIG['targets'] = ['linux-64']
+else:
+    raise ValueError("%s not in [linux, linux2, darwin]: can't determine OS" % sys.platform)
 
 CUSTOM_TARGETS = {
     "hap.py": ["linux-64"]}
