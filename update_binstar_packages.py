@@ -6,6 +6,7 @@ import os
 import re
 import subprocess
 import sys
+import argparse
 
 import toolz as tz
 import yaml
@@ -21,7 +22,7 @@ CONFIG = {
 CUSTOM_TARGETS = {
     "hap.py": ["linux-64"]}
 
-def main(pkgs):
+def main(pkgs, force_build=True):
     config = CONFIG
     subprocess.check_call(["conda", "config", "--add", "channels", config["remote_repo"]])
     if not pkgs:
@@ -31,7 +32,8 @@ def main(pkgs):
         if os.path.exists(meta_file):
             version, build = _meta_to_version(meta_file)
             needs_build = _needs_upload(name, version, build, config)
-            if needs_build:
+            print("Need to build these packages: {0}".format(needs_build))
+            if needs_build or force_build:
                 _build_and_upload(name, needs_build, config, _should_convert(os.path.join(name, "build.sh")))
 
 def _build_and_upload(name, platforms, config, do_convert):
@@ -111,4 +113,8 @@ def _should_convert(build_file):
     return False
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    ap = argparse.ArgumentParser()
+    ap.add_argument('packages', nargs="+", help="Package to build")
+    ap.add_argument('--force-build', action='store_true', help='Force local build even though the latest version already exists on binstar')
+    args = ap.parse_args()
+    main(args.packages, force_build=args.force_build)
