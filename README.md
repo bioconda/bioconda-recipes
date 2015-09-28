@@ -28,6 +28,15 @@ To run the Docker script you need to have two files in your `recipes` directory:
 and password. The build scripts will authenticate with these, but will require a
 manual okay. This is the only non-automated step in the build and upload process.
 
+In some cases, building the docker container can take more time than building
+the conda package. If so, you can build a container locally and use that for
+building instead of the centos:centos5 container. Use the
+`update_binstar_packages_docker_prebuilt.sh` script when using this strategy:
+
+    (cd docker && docker build -t bioconda-builder .)
+    docker run --net=host --rm=true -i -t -v `pwd`:/tmp/conda-recipes bioconda-builder /bin/bash /tmp/conda-recipes/update_binstar_packages_docker.sh your_package
+
+
 ## OSX
 
 For packages that build on OSX, run:
