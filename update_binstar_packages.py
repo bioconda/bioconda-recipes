@@ -56,7 +56,7 @@ def _build_and_upload(name, platforms, config, do_convert):
         else:
             plat_fname = None
 
-        if if plat_fname and os.path.exists(plat_fname):
+        if plat_fname and os.path.exists(plat_fname):
             subprocess.check_call(["anaconda", "upload", "-u", config["remote_user"], plat_fname])
         else:
             if not out.find("WARNING") >= 0 and not out.find("has C extensions, skipping") >= 0:
