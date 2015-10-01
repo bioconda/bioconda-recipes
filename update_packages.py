@@ -17,19 +17,22 @@ CONFIG = {
     "remote_repo": "bioconda",
     "numpy": "19"}
 
-# Add targets depending on detected current OS
-if sys.platform == "darwin":
-    CONFIG['targets'] = ['osx-64']
-elif sys.platform in ['linux', 'linux2']:
-    CONFIG['targets'] = ['linux-64']
-else:
-    raise ValueError("%s not in [linux, linux2, darwin]: can't determine OS" % sys.platform)
-
 CUSTOM_TARGETS = {
     "hap.py": ["linux-64"]}
 
-def main(pkgs, force_build=True):
+def main(pkgs, force_build=False, multi_platform=False):
     config = CONFIG
+    # Add targets depending on detected current OS
+    if sys.platform == "darwin":
+        config['targets'] = ['osx-64']
+    elif sys.platform in ['linux', 'linux2']:
+        if multi_platform:
+            config["targets"] = ["linux-64", "osx-64"]
+        else:
+            config['targets'] = ['linux-64']
+    else:
+        raise ValueError("%s not in [linux, linux2, darwin]: can't determine OS" % sys.platform)
+
     subprocess.check_call(["conda", "config", "--add", "channels", config["remote_repo"]])
     if not pkgs:
         pkgs = sorted([x for x in os.listdir(os.getcwd()) if os.path.isdir(x)])
@@ -122,5 +125,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument('packages', nargs="+", help="Package to build")
     ap.add_argument('--force-build', action='store_true', help='Force local build even though the latest version already exists on binstar')
+    ap.add_argument('--multi-platform', action='store_true', help='Try and build for multiple platforms, for python-only packages')
     args = ap.parse_args()
-    main(args.packages, force_build=args.force_build)
+    main(args.packages, force_build=args.force_build, multi_platform=args.multi_platform)
