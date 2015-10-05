@@ -4,12 +4,14 @@
 The [bioconda channel](https://anaconda.org/bioconda) is a Conda channel providing bioinformatics related packages.
 This repository hosts the corresponding recipes.
 
+## Installing packages
+
 Please visit https://bioconda.github.io for details.
 
-# Building packages
+## Building packages
 
-Building and uploading packages requires user permissions to the bioconda
-organization on http://anaconda.org. Please post in the
+Building packages is only required if you want to contribute new software to Bioconda.
+If you would like to join the Bioconda team, please post in the
 [team thread on GitHub](https://github.com/bioconda/recipes/issues/1) to ask for
 permission.
 
