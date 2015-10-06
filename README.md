@@ -4,14 +4,14 @@
 The [bioconda channel](https://anaconda.org/bioconda) is a Conda channel providing bioinformatics related packages.
 This repository hosts the corresponding recipes.
 
-## Using Bioconda and installing packages
+## User guide
 
 Please visit https://bioconda.github.io for details.
 
-## Building packages
+## Developer guide
 
-Building packages is only required if you want to contribute new software to Bioconda.
-If you would like to join the Bioconda team, please post in the
+If you want to contribute new packages to Bioconda, you are invited to join the Bioconda team.
+Please post in the
 [team thread on GitHub](https://github.com/bioconda/recipes/issues/1) to ask for
 permission.
 
@@ -19,7 +19,6 @@ We build Linux packages inside a CentOS 5 docker container to maintain
 compatibility across multiple systems. The steps below describe how to
 contribute a new package. It is assumed you have
 [docker](https://www.docker.com/) and [git](https://git-scm.com/) installed.
-
 
 Download the container from docker hub:
 
