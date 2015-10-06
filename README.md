@@ -17,14 +17,18 @@ permission.
 
 We build Linux packages inside a CentOS 5 docker container to maintain
 compatibility across multiple systems. The steps below describe how to
-contribute a new package. It is assumed you have docker and git installed.
+contribute a new package. It is assumed you have
+[docker](https://www.docker.com/) and [git](https://git-scm.com/) installed.
+
 
 Download the container from docker hub:
 
     docker pull bioconda/bioconda-builder
 
-Create a recipe (`your_package` in this example) in the `recipes` directory.
-When the recipe is ready, you can test it in the docker container with:
+Fork this repository or create a new branch to work in. Within the new branch,
+[create a recipe](http://conda.pydata.org/docs/building/build.html)
+(`your_package` in this example) in the `recipes` directory.  When the recipe
+is ready, you can test it in the docker container with:
 
     docker run -t -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder /bin/build-packages.sh your_package
 
@@ -56,12 +60,12 @@ If your new recipe has dependencies that will also be included in the
 `bioconda` channel, the the following workflow is recommended. Assume recipe
 B depends on recipe A. Then:
 
-    - submit a PR for recipe A
-    - wait for PR tests to pass
-    - once they pass, merge the PR into master
-    - wait for master branch tests to pass, which will then upload A to the
-      bioconda channel
-    - submit another PR for recipe B. The built recipe A will be available for
+- submit a PR for recipe A
+- wait for PR tests to pass
+- once they pass, merge the PR into master
+- wait for master branch tests to pass, which will then upload A to the
+  bioconda channel
+- submit another PR for recipe B. The built recipe A will be available for
       it to use as a dependency.
 
 ##Other notes
