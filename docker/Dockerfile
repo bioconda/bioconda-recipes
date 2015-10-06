@@ -6,4 +6,6 @@ RUN yum install -y devtoolset-2-gcc devtoolset-2-binutils devtoolset-2-gcc-c++
 RUN mkdir -p /tmp/conda-build
 RUN wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh && bash Miniconda-latest-Linux-x86_64.sh -b -p /tmp/conda-build/anaconda
 ENV PATH=/tmp/conda-build/anaconda/bin:$PATH
+RUN mkdir -p /tmp/conda-build/anaconda/conda-bld/linux-64 # workaround for bug in current conda
 RUN conda install -y conda conda-build anaconda-client pyyaml toolz jinja2
+ADD build-packages.sh /bin/build-packages.sh
