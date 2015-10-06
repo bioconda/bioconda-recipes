@@ -15,27 +15,62 @@ If you would like to join the Bioconda team, please post in the
 [team thread on GitHub](https://github.com/bioconda/recipes/issues/1) to ask for
 permission.
 
-### Linux
-
 We build Linux packages inside a CentOS 5 docker container to maintain
-compatibility across multiple systems. To build for a specific package run:
+compatibility across multiple systems. The steps below describe how to
+contribute a new package. It is assumed you have docker and git installed.
 
-    docker run --net=host --rm=true -i -t -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder /bin/bash /tmp/conda-recipes/update_packages_docker.sh your_package
+Download the container from docker hub:
 
-Leave off `your_package` to check all of the packages and do builds only if the
-latest is not present in the `bioconda` channel. You can also specify multiple
-packages and force package building or build for multiple platforms. Run
-`update_packages.py --help` for command line options.
+    docker pull bioconda/bioconda-builder
 
-To run the Docker script you need to have two files in your `recipes` directory:
-`anaconda-user.txt` and `anaconda-pass.txt` that contain your anaconda.org user
-and password. The build scripts will authenticate with these, but will require a
-manual okay. This is the only non-automated step in the build and upload process.
+Create a recipe (`your_package` in this example) in the `recipes` directory.
+When the recipe is ready, you can test it in the docker container with:
+
+    docker run -t -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder /bin/build-packages.sh your_package
+
+To optionally build for a specific Python version, provide the `CONDA_PY`
+environmental variable. For example, to build specifically for Python 3.4:
+
+    docker run -e CONDA_PY=34 -t -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder /bin/build-packages.sh your_package
+
+To optionally build all packages (if they don't already exist), leave off the
+package name:
+
+    docker run -t -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder /bin/build-packages.sh
+
+Once these local tests pass, submit a [pull
+request](https://help.github.com/articles/using-pull-requests) to this
+repository. The [travis-ci](https://travis-ci.org) continuous
+integration service will automatically test the pull request.
+
+When the PR tests pass, the PR can be merged into the master branch.
+
+Travis-CI will again run tests. However, when testing the master branch, new,
+successfully-built packages will be uploaded to the `bioconda` conda channel.
+Once these tests pass, your new package can now be installed from anywhere
+using:
+
+    conda install -c bioconda your_package
+
+If your new recipe has dependencies that will also be included in the
+`bioconda` channel, the the following workflow is recommended. Assume recipe
+B depends on recipe A. Then:
+
+    - submit a PR for recipe A
+    - wait for PR tests to pass
+    - once they pass, merge the PR into master
+    - wait for master branch tests to pass, which will then upload A to the
+      bioconda channel
+    - submit another PR for recipe B. The built recipe A will be available for
+      it to use as a dependency.
+
+##Other notes
 
 We use a pre-built CentOS 5 package with compilers installed as part of the
 standard build. To build this yourself and push a new container to
 [Docker Hub](https://hub.docker.com/r/bioconda), you can do:
 
+    docker login
     cd docker && docker build -t bicoonda/bioconda-builder .
     docker push bioconda/bioconda-builder
 
