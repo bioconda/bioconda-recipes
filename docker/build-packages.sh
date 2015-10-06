@@ -13,7 +13,7 @@ done
 anaconda -t $ANACONDA_TOKEN upload /tmp/conda-build/anaconda/conda-bld/linux-64/*.tar.bz2
 
 # check for build or test errors and return proper exit code
-if [ -n $errors ]
+if [[ -n $errors ]]
 then
     echo FAILED BUILDS:
     echo -e $errors
