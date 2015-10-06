@@ -3,7 +3,7 @@
 # count errors
 errors=""
 
-if [ -z $1 ]
+if [ -z $2 ]
 then
     pattern="*"
 else
@@ -11,7 +11,7 @@ else
 fi
 
 # iterate over all recipes
-for p in /tmp/conda-recipes/recipes/$pattern
+for p in $1/recipes/$pattern
 do
     # build package
     conda build --no-anaconda-upload --skip-existing $p || errors+=$p"\n"
