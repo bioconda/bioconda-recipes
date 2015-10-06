@@ -1,17 +1,23 @@
 #!/bin/bash
 
 # count errors
-errors=0
+errors=""
 
 # iterate over all recipes
 for p in /tmp/conda-recipes/recipes/*
 do
     # build package
-    conda build --no-anaconda-upload --skip-existing $p || errors=$((errors + 1))
+    conda build --no-anaconda-upload --skip-existing $p || errors+=$p"\n"
 done
 # upload all successfully built packages
 anaconda -t $ANACONDA_TOKEN upload /tmp/conda-build/anaconda/conda-bld/linux-64/*.tar.bz2
 
 # check for build or test errors and return proper exit code
-[ $errors -eq 0 ]
-exit $?
+if [ -n $errors ]
+then
+    echo FAILED BUILDS:
+    echo -e $errors
+    exit 1
+else
+    exit 0
+fi
