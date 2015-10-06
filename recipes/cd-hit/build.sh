@@ -10,7 +10,7 @@ else
   OPENMP_SUPPORTED=no
 fi
 
-make -j -- openmp=$OPENMP_SUPPORTED
+make openmp=$OPENMP_SUPPORTED
 
 mkdir -p $PREFIX/bin
 make install PREFIX=$PREFIX/bin

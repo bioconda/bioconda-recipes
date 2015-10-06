@@ -1,3 +1,3 @@
 #!/bin/bash
 
-make -j install prefix=$PREFIX
+make install prefix=$PREFIX
