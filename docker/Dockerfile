@@ -8,4 +8,5 @@ RUN wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh && 
 ENV PATH=/tmp/conda-build/anaconda/bin:$PATH
 RUN mkdir -p /tmp/conda-build/anaconda/conda-bld/linux-64 # workaround for bug in current conda
 RUN conda install -y conda conda-build anaconda-client pyyaml toolz jinja2
+RUN conda config --add channels bioconda
 ADD build-packages.sh /bin/build-packages.sh
