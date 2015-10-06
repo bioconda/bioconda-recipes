@@ -20,13 +20,15 @@ compatibility across multiple systems. The steps below describe how to
 contribute a new package. It is assumed you have
 [docker](https://www.docker.com/) and [git](https://git-scm.com/) installed.
 
-Download the container from docker hub:
-
-    docker pull bioconda/bioconda-builder
+### Step 1: create a new recipe
 
 Fork this repository or create a new branch to work in. Within the new branch,
 [create a recipe](http://conda.pydata.org/docs/building/build.html)
-(`your_package` in this example) in the `recipes` directory.  When the recipe
+(`your_package` in this example) in the `recipes` directory.
+
+### Step 2: test the recipe
+
+When the recipe
 is ready, you can test it in the docker container with:
 
     docker run -t -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder /bin/build-packages.sh your_package
@@ -40,6 +42,8 @@ To optionally build all packages (if they don't already exist), leave off the
 package name:
 
     docker run -t -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder /bin/build-packages.sh
+
+### Step 3: submit a pull request
 
 Once these local tests pass, submit a [pull
 request](https://help.github.com/articles/using-pull-requests) to this
@@ -55,7 +59,9 @@ using:
 
     conda install -c bioconda your_package
 
-If your new recipe has dependencies that will also be included in the
+### Handling recipes with new dependencies
+
+If your new recipe has dependencies that shall also be included in the
 `bioconda` channel, the the following workflow is recommended. Assume recipe
 B depends on recipe A. Then:
 
