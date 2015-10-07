@@ -11,4 +11,4 @@ RUN conda install -y conda conda-build anaconda-client pyyaml toolz jinja2 nose
 RUN conda config --add channels bioconda
 COPY build-packages.py /bin/build-packages.py
 ENTRYPOINT ["build-packages.py"]
-CMD ["--help"]
+CMD []

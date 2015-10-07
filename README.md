@@ -29,14 +29,18 @@ Fork this repository or create a new branch to work in. Within the new branch,
 ### Step 2: test the recipe
 
 When the recipe
-is ready, you can test it in the docker container with:
+is ready first test it with your local conda installation via
 
-    docker run -t -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder /bin/build-packages.sh your_package
+    conda build recipes/your_package
+
+Then, you can test it in the docker container with:
+
+    docker run -t -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder /tmp/conda-recipes --packages your_package
 
 To optionally build for a specific Python version, provide the `CONDA_PY`
 environmental variable. For example, to build specifically for Python 3.4:
 
-    docker run -e CONDA_PY=34 -t -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder /bin/build-packages.sh your_package
+    docker run -e CONDA_PY=34 -t -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder /tmp/conda-recipes --packages your_package
 
 To optionally build all packages (if they don't already exist), leave off the
 package name:

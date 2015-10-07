@@ -46,7 +46,8 @@ def test_recipes():
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description="Build bioconda packages")
-    p.add_argument("repository",
+    p.add_argument("--repository",
+                   default="/bioconda-recipes",
                    help="Path to checkout of bioconda recipes repository.")
     p.add_argument("--packages",
                    nargs="+",

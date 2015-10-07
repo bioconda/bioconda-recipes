@@ -3,7 +3,7 @@
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
     # run CentOS5 based docker container
-    docker run -e TRAVIS_BRANCH -e TRAVIS_PULL_REQUEST -e ANACONDA_TOKEN -e CONDA_PY -e CONDA_NPY -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder /tmp/conda-recipes
+    docker run -e TRAVIS_BRANCH -e TRAVIS_PULL_REQUEST -e ANACONDA_TOKEN -e CONDA_PY -e CONDA_NPY -v `pwd`:/bioconda-recipes bioconda/bioconda-builder
     exit $?
 else
     # install conda
@@ -17,6 +17,6 @@ else
     conda config --add channels bioconda
 
     # build packages
-    scripts/build-packages.py .
+    scripts/build-packages.py --repository .
     exit $?
 fi
