@@ -35,17 +35,17 @@ is ready first test it with your local conda installation via
 
 Then, you can test it in the docker container with:
 
-    docker run -t -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder /tmp/conda-recipes --packages your_package
+    docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
 
 To optionally build for a specific Python version, provide the `CONDA_PY`
 environmental variable. For example, to build specifically for Python 3.4:
 
-    docker run -e CONDA_PY=34 -t -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder /tmp/conda-recipes --packages your_package
+    docker run -e CONDA_PY=34 -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
 
-To optionally build all packages (if they don't already exist), leave off the
+To optionally build and test all packages (if they don't already exist), leave off the
 package name:
 
-    docker run -t -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder /bin/build-packages.sh
+    docker run -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder
 
 ### Step 3: submit a pull request
 
@@ -77,27 +77,10 @@ B depends on recipe A. Then:
 - submit another PR for recipe B. The built recipe A will be available for
       it to use as a dependency.
 
-##Other notes
+###Other notes
 
-We use a pre-built CentOS 5 package with compilers installed as part of the
-standard build. To build this yourself and push a new container to
-[Docker Hub](https://hub.docker.com/r/bioconda), you can do:
+We use a pre-built CentOS 5 image with compilers installed as part of the
+standard build. To build this yourself, you can do:
 
     docker login
-    cd docker && docker build -t bicoonda/bioconda-builder .
-    docker push bioconda/bioconda-builder
-
-If you'd like to bootstrap from a bare CentOS and install all
-the packages yourself for testing or development, use the fullbuild script:
-
-    docker run --net=host --rm=true -i -t -v `pwd`:/tmp/conda-recipes centos:centos5 /bin/bash /tmp/conda-recipes/update_packages_docker_fullbuild.sh your_package
-
-### OSX
-
-For packages that build on OSX, run:
-
-    python update_packages.py your_package
-
-or leave off `your_package` to try and build all out of date packages. Packages
-that fail to build on OSX should get added to `CUSTOM_TARGETS` in
-`update_binstar_packages.py` to define the platforms they build on.
+    cd scripts && docker build -t bicoonda/bioconda-builder .
