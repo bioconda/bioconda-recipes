@@ -21,7 +21,7 @@ def build_recipe(recipe):
 def test_recipes():
     if args.packages:
         recipes = [os.path.join(args.repository, "recipes", package)
-                   for package in packages]
+                   for package in args.packages]
     else:
         recipes = list(glob.glob(os.path.join(args.repository, "recipes", "*")))
 
