@@ -6,6 +6,6 @@ if [ `uname` == Darwin ]; then
 else
 ./configure --prefix=$PREFIX | tee configure.log 2>&1
 fi
-make -j install | tee make.log 2>&1
+make install | tee make.log 2>&1
 
 # vim: set ai et nu:
