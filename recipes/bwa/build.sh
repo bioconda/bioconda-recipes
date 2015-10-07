@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make -j
+make
 
 mkdir -p $PREFIX/bin
 cp bwa $PREFIX/bin

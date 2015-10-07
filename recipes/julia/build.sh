@@ -1,3 +1,3 @@
 #!/bin/sh
-make -j --
+make
 env PREFIX=$PREFIX prefix=$PREFIX make install
