@@ -3,30 +3,27 @@
 import os
 import glob
 import subprocess as sp
+import argparse
+import sys
 
 import nose
 
 
 def build_recipe(recipe):
-    assert sp.call(["conda", "build", "--no-anaconda-upload",
-                    "--skip-existing", recipe]) == 0
+    try:
+        sp.check_output(["conda", "build", "--no-anaconda-upload",
+                    "--skip-existing", recipe], stderr=sp.STDOUT)
+    except sp.CalledProcessError as e:
+        print(e.output)
+        assert False
 
 
 def test_recipes():
-    p = argparse.ArgumentParser(description="Build bioconda packages")
-    p.add_argument("repository",
-                   help="Path to checkout of bioconda recipes repository.")
-    p.add_argument("--packages",
-                   nargs="+",
-                   help="A specific package to build.")
-
-    args = p.parse_args()
-
     packages = []
 
     if args.packages:
         packages = args.packages
-    elif os.environ("TRAVIS_OS_NAME") == "osx":
+    elif os.environ.get("TRAVIS_OS_NAME") == "osx":
         packages = open(os.path.join(args.repository,
                                      "osx-whitelist.txt")).readlines()
 
@@ -47,4 +44,14 @@ def test_recipes():
 
 
 if __name__ == "__main__":
-    nose.run(defaultTest=__name__)
+    p = argparse.ArgumentParser(description="Build bioconda packages")
+    p.add_argument("repository",
+                   help="Path to checkout of bioconda recipes repository.")
+    p.add_argument("--packages",
+                   nargs="+",
+                   help="A specific package to build.")
+
+    global args
+    args = p.parse_args()
+
+    nose.run(argv=sys.argv[:1], defaultTest="__main__")
