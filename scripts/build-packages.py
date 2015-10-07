@@ -36,11 +36,11 @@ def test_recipes():
     for recipe in recipes:
         yield build_recipe, recipe
 
-    if os.environ("TRAVIS_BRANCH") == "master" and os.environ(
+    if os.environ.get("TRAVIS_BRANCH") == "master" and os.environ.get(
         "TRAVIS_PULL_REQUEST") == "false":
-        sp.call(["anaconda", "-t", os.environ("ANACONDA_TOKEN"), "upload",
+        sp.call(["anaconda", "-t", os.environ.get("ANACONDA_TOKEN"), "upload",
                  "/tmp/conda-build/anaconda/conda-bld/{}-64/*.tar.bz2".format(
-                     os.environ("TRAVIS_OS_NAME"))])
+                     os.environ.get("TRAVIS_OS_NAME"))])
 
 
 if __name__ == "__main__":
