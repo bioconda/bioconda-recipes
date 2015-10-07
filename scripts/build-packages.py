@@ -12,7 +12,7 @@ import nose
 def build_recipe(recipe):
     try:
         sp.check_output(["conda", "build", "--no-anaconda-upload",
-                    "--skip-existing", recipe], stderr=sp.STDOUT)
+                         "--skip-existing", recipe], stderr=sp.STDOUT)
     except sp.CalledProcessError as e:
         print(e.output)
         assert False
@@ -31,16 +31,17 @@ def test_recipes():
         recipes = [os.path.join(args.repository, "recipes", package)
                    for package in packages]
     else:
-        recipes = glob.glob(os.path.join(args.repository, "recipes", "*"))
+        recipes = list(glob.glob(os.path.join(args.repository, "recipes", "*")))
 
     for recipe in recipes:
         yield build_recipe, recipe
 
     if os.environ.get("TRAVIS_BRANCH") == "master" and os.environ.get(
         "TRAVIS_PULL_REQUEST") == "false":
-        sp.call(["anaconda", "-t", os.environ.get("ANACONDA_TOKEN"), "upload",
-                 "/tmp/conda-build/anaconda/conda-bld/{}-64/*.tar.bz2".format(
-                     os.environ.get("TRAVIS_OS_NAME"))])
+        for recipe in recipes:
+            package = sp.check_output(["conda", "build", "--output", recipe])
+            if os.path.exists(package):
+                sp.check_call(["anaconda", "-t", os.environ.get("ANACONDA_TOKEN"), "upload", package])
 
 
 if __name__ == "__main__":
