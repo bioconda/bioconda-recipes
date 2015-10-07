@@ -24,8 +24,8 @@ def test_recipes():
     if args.packages:
         packages = args.packages
     elif os.environ.get("TRAVIS_OS_NAME") == "osx":
-        packages = open(os.path.join(args.repository,
-                                     "osx-whitelist.txt")).readlines()
+        packages = [l.strip() for l in open(os.path.join(args.repository,
+                                            "osx-whitelist.txt"))]
 
     if packages:
         recipes = [os.path.join(args.repository, "recipes", package)
