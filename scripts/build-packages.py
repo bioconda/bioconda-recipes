@@ -19,15 +19,7 @@ def build_recipe(recipe):
 
 
 def test_recipes():
-    packages = []
-
     if args.packages:
-        packages = args.packages
-    elif os.environ.get("TRAVIS_OS_NAME") == "osx":
-        packages = [l.strip() for l in open(os.path.join(args.repository,
-                                            "osx-whitelist.txt"))]
-
-    if packages:
         recipes = [os.path.join(args.repository, "recipes", package)
                    for package in packages]
     else:
