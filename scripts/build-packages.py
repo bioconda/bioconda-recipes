@@ -10,12 +10,9 @@ import nose
 
 
 def build_recipe(recipe):
-    cmds = ["conda", "build", "--no-anaconda-upload",
-                         "--skip-existing", recipe]
-    if os.path.basename(recipe).startswith(('r-', 'bioconductor-')):
-        cmds.extend(['--channel', 'r'])
     try:
-        sp.check_output(cmds, stderr=sp.STDOUT)
+        sp.check_output(["conda", "build", "--no-anaconda-upload",
+                         "--skip-existing", recipe], stderr=sp.STDOUT)
     except sp.CalledProcessError as e:
         print(e.output)
         assert False
@@ -34,7 +31,7 @@ def test_recipes():
     if os.environ.get("TRAVIS_BRANCH") == "master" and os.environ.get(
         "TRAVIS_PULL_REQUEST") == "false":
         for recipe in recipes:
-            package = sp.check_output(["conda", "build", "--output", recipe])
+            package = sp.check_output(["conda", "build", "--output", recipe]).strip()
             if os.path.exists(package):
                 sp.check_call(["anaconda", "-t", os.environ.get("ANACONDA_TOKEN"), "upload", package])
 
