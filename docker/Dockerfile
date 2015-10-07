@@ -9,4 +9,4 @@ ENV PATH=/tmp/conda-build/anaconda/bin:$PATH
 RUN mkdir -p /tmp/conda-build/anaconda/conda-bld/linux-64 # workaround for bug in current conda
 RUN conda install -y conda conda-build anaconda-client pyyaml toolz jinja2
 RUN conda config --add channels bioconda
-ADD ../scripts/build-packages.sh /bin/build-packages.sh
+ADD ../scripts/build-packages.py /bin/build-packages.py

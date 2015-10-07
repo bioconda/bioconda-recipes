@@ -7,7 +7,7 @@ if [ -z $2 ]
 then
     pattern="*"
 else
-    pattern=$1
+    pattern=$2
 fi
 
 # iterate over all recipes
