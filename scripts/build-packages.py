@@ -54,4 +54,4 @@ if __name__ == "__main__":
     global args
     args = p.parse_args()
 
-    nose.run(argv=sys.argv[:1], defaultTest="__main__")
+    nose.main(argv=sys.argv[:1], defaultTest="__main__")
