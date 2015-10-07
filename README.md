@@ -63,6 +63,11 @@ using:
 
     conda install -c bioconda your_package
 
+### Building packages for Mac OSX
+
+If you want your package to be built for Mac OSX as well, you have to add it to
+the ``osx-whitelist.txt`` file in the root of this repository.
+
 ### Handling recipes with new dependencies
 
 If your new recipe has dependencies that shall also be included in the
