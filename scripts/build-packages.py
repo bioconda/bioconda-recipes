@@ -10,9 +10,12 @@ import nose
 
 
 def build_recipe(recipe):
+    cmds = ["conda", "build", "--no-anaconda-upload",
+                         "--skip-existing", recipe]
+    if os.path.basename(recipe).startswith(('r-', 'bioconductor-')):
+        cmds.extend(['--channel', 'r'])
     try:
-        sp.check_output(["conda", "build", "--no-anaconda-upload",
-                         "--skip-existing", recipe], stderr=sp.STDOUT)
+        sp.check_output(cmds, stderr=sp.STDOUT)
     except sp.CalledProcessError as e:
         print(e.output)
         assert False
