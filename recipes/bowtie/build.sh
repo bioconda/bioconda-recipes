@@ -13,7 +13,6 @@ bowtie-inspect \
 bowtie-inspect-l \
 bowtie-inspect-s \
 "
-directories="scripts"
 pythonfiles="bowtie-build bowtie-inspect"
 
 PY3_BUILD="${PY_VER%.*}"
@@ -24,4 +23,3 @@ then
 fi
 
 for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
-for d in $directories; do cp -r $d $PREFIX/bin; done
