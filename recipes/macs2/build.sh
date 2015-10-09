@@ -1,5 +1,4 @@
 #!/bin/bash
-pushd $SRC_DIR
 
 # From setup.py: User must check GCC, if >= 4.6, use -Ofast, otherwise -O3.
 GCCVERSION=$( gcc -dumpversion )
