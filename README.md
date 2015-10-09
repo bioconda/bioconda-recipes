@@ -91,3 +91,30 @@ standard build. To build this yourself, you can do:
 
     docker login
     cd scripts && docker build -t bicoonda/bioconda-builder .
+
+###Building Bioconductor packages
+A helper script is provided for generating a skeleton recipe for Bioconductor
+packages. The `scripts/bioconductor-scraper.py` script accepts the name of a Bioconductor
+package (e.g., "Biobase"). This script:
+
+- parses the Bioconductor web page for the tarball
+- downloads the tarball to a temp file and extracts the `DESCRIPTION` file
+- parses the DESCRIPTION file to identify dependencies
+- converts dependencies to package names more friendly to `conda`,
+  specifically prefixing `bioconductor-` or `r-` as needed and using lowercase
+  package names
+- writes a `meta.yaml` and `build.sh` file to `recipes/<new package name>`.
+
+That is, 
+
+```bash
+ scripts/bioconductor-scraper.py Biobase
+```
+
+results in the files:
+
+```
+recipes/bioconductor-biobase/meta.yaml
+recipes/bioconductor-biobase/build.sh
+
+```
