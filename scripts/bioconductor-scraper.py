@@ -21,6 +21,15 @@ logger = logging.getLogger()
 
 base_url = 'http://bioconductor.org/packages/release/bioc/html'
 
+# Packages that might be specified in the DESCRIPTION of a package as
+# dependencies, but since they're built-in we don't need to specify them in
+# the meta.yaml.
+BASE_R_PACKAGES = [
+    'methods',
+    'utils',
+    'stats4'
+]
+
 class BioCProjectPage(object):
     def __init__(self, package):
         """
@@ -34,6 +43,7 @@ class BioCProjectPage(object):
         self.package = package
         self._md5 = None
         self._cached_tarball = None
+        self._dependencies = None
         self.url = os.path.join(base_url, package + '.html')
         self.soup = bs4.BeautifulSoup(
             request.urlopen(self.url),
@@ -172,6 +182,9 @@ class BioCProjectPage(object):
 
     @property
     def dependencies(self):
+        if self._dependencies:
+            return self._dependencies
+
         results = []
 
         # Some packages specify a minimum R version, which we'll need to keep
@@ -206,10 +219,9 @@ class BioCProjectPage(object):
             except urllib.error.HTTPError:
                 prefix = 'r-'
 
-            # These seem to be built-in R packages so we don't need to
-            # explicitly depend on them. May need to add others here as they're
-            # discovered . . .
-            if name in ['methods', 'utils']:
+            # DESCRIPTION notes base R packages, but we don't need to specify
+            # them in the dependencies.
+            if name in BASE_R_PACKAGES:
                 continue
 
             # add padding to version string
@@ -226,7 +238,8 @@ class BioCProjectPage(object):
         # Add R itself if no specific version was specified
         if not specific_r_version:
             results.append('r')
-        return results
+        self._dependencies = results
+        return self._dependencies
 
     @property
     def md5(self):
@@ -251,6 +264,7 @@ class BioCProjectPage(object):
         We use pyaml (rather than yaml) because it has better handling of
         OrderedDicts.
         """
+        DEPENDENCIES = sorted(self.dependencies)
         d = OrderedDict((
             (
                 'package', OrderedDict((
@@ -273,8 +287,12 @@ class BioCProjectPage(object):
             ),
             (
                 'requirements', OrderedDict((
-                    ('build', sorted(self.dependencies)),
-                    ('run', sorted(self.dependencies)),
+                    # If you don't make copies, pyaml sees these as the same
+                    # object and tries to make a shortcut, causing an error in
+                    # decoding unicode. Possible pyaml bug? Anyway, this fixes
+                    # it.
+                    ('build', DEPENDENCIES[:]),
+                    ('run', DEPENDENCIES[:]),
                 )),
             ),
             (
@@ -292,7 +310,6 @@ class BioCProjectPage(object):
                 )),
             ),
         ))
-
         return pyaml.dumps(d).decode('utf-8')
 
 
