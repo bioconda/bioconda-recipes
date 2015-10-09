@@ -13,6 +13,10 @@ import urllib
 from urllib import request
 from urllib import parse
 from collections import OrderedDict
+import logging
+
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s]: %(message)s')
+logger = logging.getLogger()
 
 base_url = 'http://bioconductor.org/packages/release/bioc/html'
 
@@ -174,6 +178,7 @@ class BioCProjectPage(object):
             # Try finding the dependency on the bioconductor site; if it can't
             # be found then we assume it's in CRAN.
             try:
+                logger.info('   checking dependency: name="{0}" version="{1}"'.format(name, version))
                 BioCProjectPage(name)
                 prefix = 'bioconductor-'
             except urllib.error.HTTPError:
