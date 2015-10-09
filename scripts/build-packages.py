@@ -8,7 +8,6 @@ import sys
 
 import nose
 
-
 PYTHON_VERSIONS = ["27", "34"]
 
 
@@ -47,8 +46,13 @@ def test_recipes():
                                               recipe]).strip())
             for package in packages:
                 if os.path.exists(package):
-                    sp.check_call(["anaconda", "-t", os.environ.get(
-                        "ANACONDA_TOKEN"), "upload", package])
+                    try:
+                        sp.check_call(["anaconda", "-t",
+                                       os.environ.get("ANACONDA_TOKEN"),
+                                       "upload", package])
+                    except sp.CalledProcessError:
+                        # ignore error assuming that it is caused by existing package
+                        pass
 
 
 if __name__ == "__main__":
