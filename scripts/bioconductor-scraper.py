@@ -27,7 +27,9 @@ base_url = 'http://bioconductor.org/packages/release/bioc/html'
 BASE_R_PACKAGES = [
     'methods',
     'utils',
-    'stats4'
+    'stats4',
+    'stats',
+    'graphics',
 ]
 
 class BioCProjectPage(object):
