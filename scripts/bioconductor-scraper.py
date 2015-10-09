@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import shutil
 import tempfile
 import configparser
 from textwrap import dedent
@@ -19,7 +20,6 @@ logging.basicConfig(level=logging.INFO, format='[%(asctime)s]: %(message)s')
 logger = logging.getLogger()
 
 base_url = 'http://bioconductor.org/packages/release/bioc/html'
-
 
 class BioCProjectPage(object):
     def __init__(self, package):
@@ -74,17 +74,26 @@ class BioCProjectPage(object):
     @property
     def cached_tarball(self):
         """
-        Downloads the tarball to a temporary file if one hasn't already been
-        downloaded.
+        Downloads the tarball to the `cached_bioconductor_tarballs` dir if one
+        hasn't already been downloaded for this package.
 
         This is because we need the whole tarball to get the DESCRIPTION file
         and to generate an md5 hash, so we might as well save it somewhere.
         """
         if self._cached_tarball:
             return self._cached_tarball
-        fn = tempfile.NamedTemporaryFile(delete=False).name
-        with open(fn, 'wb') as fout:
+        cache_dir = 'cached_bioconductor_tarballs'
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+        fn = os.path.join(cache_dir, self.tarball_basename)
+        if os.path.exists(fn):
+            self._cached_tarball = fn
+            return fn
+        tmp = tempfile.NamedTemporaryFile(delete=False).name
+        with open(tmp, 'wb') as fout:
+            logger.info('Downloading {0} to {1}'.format(self.tarball_url, fn))
             fout.write(request.urlopen(self.tarball_url).read())
+        shutil.move(tmp, fn)
         self._cached_tarball = fn
         return fn
 
