@@ -159,7 +159,7 @@ class BioCProjectPage(object):
         """
         results = []
         for item in items:
-            toks = item.split(' (')
+            toks = [i.strip() for i in item.split('(')]
             if len(toks) == 1:
                 results.append((toks[0], ""))
             elif len(toks) == 2:
@@ -178,12 +178,25 @@ class BioCProjectPage(object):
         # track of
         specific_r_version = False
 
-        for name, version in list(
+        # Sometimes a version is specified only in the `depends` and not in the
+        # `imports`. We keep the most specific version of each.
+        version_specs = list(
             set(
                 self._parse_dependencies(self.imports) +
                 self._parse_dependencies(self.depends)
             )
-        ):
+        )
+
+        versions = {}
+        for name, version in version_specs:
+            if name in versions:
+                if not versions[name] and version:
+                    versions[name] = version
+            else:
+                versions[name] = version
+
+
+        for name, version in sorted(versions.items()):
             # Try finding the dependency on the bioconductor site; if it can't
             # be found then we assume it's in CRAN.
             try:
