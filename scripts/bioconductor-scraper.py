@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import shutil
 import tempfile
 import configparser
 from textwrap import dedent
@@ -13,9 +14,21 @@ import urllib
 from urllib import request
 from urllib import parse
 from collections import OrderedDict
+import logging
+
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s]: %(message)s')
+logger = logging.getLogger()
 
 base_url = 'http://bioconductor.org/packages/release/bioc/html'
 
+# Packages that might be specified in the DESCRIPTION of a package as
+# dependencies, but since they're built-in we don't need to specify them in
+# the meta.yaml.
+BASE_R_PACKAGES = [
+    'methods',
+    'utils',
+    'stats4'
+]
 
 class BioCProjectPage(object):
     def __init__(self, package):
@@ -30,6 +43,7 @@ class BioCProjectPage(object):
         self.package = package
         self._md5 = None
         self._cached_tarball = None
+        self._dependencies = None
         self.url = os.path.join(base_url, package + '.html')
         self.soup = bs4.BeautifulSoup(
             request.urlopen(self.url),
@@ -70,17 +84,26 @@ class BioCProjectPage(object):
     @property
     def cached_tarball(self):
         """
-        Downloads the tarball to a temporary file if one hasn't already been
-        downloaded.
+        Downloads the tarball to the `cached_bioconductor_tarballs` dir if one
+        hasn't already been downloaded for this package.
 
         This is because we need the whole tarball to get the DESCRIPTION file
         and to generate an md5 hash, so we might as well save it somewhere.
         """
         if self._cached_tarball:
             return self._cached_tarball
-        fn = tempfile.NamedTemporaryFile(delete=False).name
-        with open(fn, 'wb') as fout:
+        cache_dir = 'cached_bioconductor_tarballs'
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+        fn = os.path.join(cache_dir, self.tarball_basename)
+        if os.path.exists(fn):
+            self._cached_tarball = fn
+            return fn
+        tmp = tempfile.NamedTemporaryFile(delete=False).name
+        with open(tmp, 'wb') as fout:
+            logger.info('Downloading {0} to {1}'.format(self.tarball_url, fn))
             fout.write(request.urlopen(self.tarball_url).read())
+        shutil.move(tmp, fn)
         self._cached_tarball = fn
         return fn
 
@@ -146,7 +169,7 @@ class BioCProjectPage(object):
         """
         results = []
         for item in items:
-            toks = item.split(' (')
+            toks = [i.strip() for i in item.split('(')]
             if len(toks) == 1:
                 results.append((toks[0], ""))
             elif len(toks) == 2:
@@ -159,30 +182,46 @@ class BioCProjectPage(object):
 
     @property
     def dependencies(self):
+        if self._dependencies:
+            return self._dependencies
+
         results = []
 
         # Some packages specify a minimum R version, which we'll need to keep
         # track of
         specific_r_version = False
 
-        for name, version in list(
+        # Sometimes a version is specified only in the `depends` and not in the
+        # `imports`. We keep the most specific version of each.
+        version_specs = list(
             set(
                 self._parse_dependencies(self.imports) +
                 self._parse_dependencies(self.depends)
             )
-        ):
+        )
+
+        versions = {}
+        for name, version in version_specs:
+            if name in versions:
+                if not versions[name] and version:
+                    versions[name] = version
+            else:
+                versions[name] = version
+
+
+        for name, version in sorted(versions.items()):
             # Try finding the dependency on the bioconductor site; if it can't
             # be found then we assume it's in CRAN.
             try:
+                logger.info('   checking dependency: name="{0}" version="{1}"'.format(name, version))
                 BioCProjectPage(name)
                 prefix = 'bioconductor-'
             except urllib.error.HTTPError:
                 prefix = 'r-'
 
-            # These seem to be built-in R packages so we don't need to
-            # explicitly depend on them. May need to add others here as they're
-            # discovered . . .
-            if name in ['methods', 'utils']:
+            # DESCRIPTION notes base R packages, but we don't need to specify
+            # them in the dependencies.
+            if name in BASE_R_PACKAGES:
                 continue
 
             # add padding to version string
@@ -199,7 +238,8 @@ class BioCProjectPage(object):
         # Add R itself if no specific version was specified
         if not specific_r_version:
             results.append('r')
-        return results
+        self._dependencies = results
+        return self._dependencies
 
     @property
     def md5(self):
@@ -224,6 +264,7 @@ class BioCProjectPage(object):
         We use pyaml (rather than yaml) because it has better handling of
         OrderedDicts.
         """
+        DEPENDENCIES = sorted(self.dependencies)
         d = OrderedDict((
             (
                 'package', OrderedDict((
@@ -246,8 +287,12 @@ class BioCProjectPage(object):
             ),
             (
                 'requirements', OrderedDict((
-                    ('build', sorted(self.dependencies)),
-                    ('run', sorted(self.dependencies)),
+                    # If you don't make copies, pyaml sees these as the same
+                    # object and tries to make a shortcut, causing an error in
+                    # decoding unicode. Possible pyaml bug? Anyway, this fixes
+                    # it.
+                    ('build', DEPENDENCIES[:]),
+                    ('run', DEPENDENCIES[:]),
                 )),
             ),
             (
@@ -265,7 +310,6 @@ class BioCProjectPage(object):
                 )),
             ),
         ))
-
         return pyaml.dumps(d).decode('utf-8')
 
 
