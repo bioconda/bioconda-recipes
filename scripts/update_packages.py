@@ -2,6 +2,7 @@
 """Update conda packages on anaconda.org with latest versions for multiple platforms.
 
 """
+from __future__ import print_function
 import os
 import re
 import subprocess
@@ -10,7 +11,6 @@ import argparse
 
 import toolz as tz
 import yaml
-
 
 CONFIG = {
     "remote_user": "bioconda",
@@ -35,15 +35,16 @@ def main(pkgs, force_build=False, multi_platform=False):
 
     subprocess.check_call(["conda", "config", "--add", "channels", config["remote_repo"]])
     if not pkgs:
-        pkgs = sorted([x for x in os.listdir(os.getcwd()) if os.path.isdir(x)])
+        pkgs = sorted([x for x in os.listdir("recipes") if os.path.isdir("recipes/%s" % x)])
     for name in pkgs:
-        meta_file = os.path.join(name, "meta.yaml")
+        meta_file = os.path.join("recipes", name, "meta.yaml")
         if os.path.exists(meta_file):
             version, build = _meta_to_version(meta_file)
             needs_build = _needs_upload(name, version, build, config)
             print("Need to build these packages: {0}".format(needs_build))
             if needs_build or force_build:
-                _build_and_upload(name, needs_build, config, _should_convert(os.path.join(name, "build.sh")))
+                _build_and_upload("recipes/%s" % name,
+                                  needs_build, config, _should_convert(os.path.join(name, "build.sh")))
 
 def _build_and_upload(name, platforms, config, do_convert):
     """Build package for the latest versions and upload on all platforms.
@@ -73,7 +74,7 @@ def _build_and_upload(name, platforms, config, do_convert):
             if not out.find("WARNING") >= 0 and not out.find("has C extensions, skipping") >= 0:
                 raise IOError("Failed to create file for %s on %s" % (name, platform))
             else:
-                print "Unable to prepare %s for %s because it contains compiled code" % (name, platform)
+                print("Unable to prepare %s for %s because it contains compiled code" % (name, platform))
 
 def _needs_upload(name, version, build, config):
     """Check if we need to upload libraries for the current package and version.
@@ -81,7 +82,8 @@ def _needs_upload(name, version, build, config):
     pat_np = re.compile("%s-(?P<version>[\d\.a-zA-Z]+)-np(?P<numpy>\d+)py\d+-?(?P<build>\d+).tar.*" % name)
     pat = re.compile("%s-(?P<version>[\d\.a-zA-Z]+).*-?(?P<build>\d+).tar.*" % name)
     try:
-        info = subprocess.check_output(["anaconda", "show", "%s/%s/%s" % (config["remote_user"], name, version)])
+        info = subprocess.check_output(["anaconda", "show", "%s/%s/%s" % (config["remote_user"], name, version)],
+                                       universal_newlines=True)
     # no version found
     except subprocess.CalledProcessError:
         info = ""
