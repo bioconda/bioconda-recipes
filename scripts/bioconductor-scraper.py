@@ -219,12 +219,14 @@ class BioCProjectPage(object):
             # Try finding the dependency on the bioconductor site; if it can't
             # be found then we assume it's in CRAN.
             try:
-                logger.info('   checking dependency: name="{0}" version="{1}"'.format(name, version))
                 BioCProjectPage(name)
                 prefix = 'bioconductor-'
             except urllib.error.HTTPError:
                 prefix = 'r-'
 
+            logger.info('{0:>12} dependency: name="{1}" version="{2}"'.format(
+                {'r-': 'R', 'bioconductor-': 'BioConductor'}[prefix],
+                name, version))
             # DESCRIPTION notes base R packages, but we don't need to specify
             # them in the dependencies.
             if name in BASE_R_PACKAGES:
