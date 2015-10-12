@@ -29,3 +29,4 @@ outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 cp -r * $outdir
 ln -s $outdir/scalpel-discovery $PREFIX/bin
+ln -s $outdir/scalpel-export $PREFIX/bin

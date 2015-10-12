@@ -17,10 +17,10 @@ def build_recipe(recipe):
         for py in PYTHON_VERSIONS:
             os.environ["CONDA_PY"] = py
             sp.check_output(["conda", "build", "--no-anaconda-upload",
-                             "--skip-existing", recipe],
+                             "--skip-existing", "--quiet", recipe],
                             stderr=sp.STDOUT)
     except sp.CalledProcessError as e:
-        print(e.output)
+        print(e.output.decode())
         assert False
 
 
