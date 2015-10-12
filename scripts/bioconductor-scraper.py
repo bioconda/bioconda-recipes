@@ -24,13 +24,17 @@ base_url = 'http://bioconductor.org/packages/release/bioc/html'
 # Packages that might be specified in the DESCRIPTION of a package as
 # dependencies, but since they're built-in we don't need to specify them in
 # the meta.yaml.
-BASE_R_PACKAGES = [
-    'methods',
-    'utils',
-    'stats4',
-    'stats',
-    'graphics',
-]
+#
+# Note: this list is from:
+#
+#   conda create -n rtest -c r r
+#   R -e "rownames(installed.packages())"
+BASE_R_PACKAGES = ["base", "boot", "class", "cluster", "codetools", "compiler",
+                   "datasets", "foreign", "graphics", "grDevices", "grid",
+                   "KernSmooth", "lattice", "MASS", "Matrix", "methods",
+                   "mgcv", "nlme", "nnet", "parallel", "rpart", "spatial",
+                   "splines", "stats", "stats4", "survival", "tcltk", "tools",
+                   "utils", ]
 
 class BioCProjectPage(object):
     def __init__(self, package):
@@ -215,12 +219,14 @@ class BioCProjectPage(object):
             # Try finding the dependency on the bioconductor site; if it can't
             # be found then we assume it's in CRAN.
             try:
-                logger.info('   checking dependency: name="{0}" version="{1}"'.format(name, version))
                 BioCProjectPage(name)
                 prefix = 'bioconductor-'
             except urllib.error.HTTPError:
                 prefix = 'r-'
 
+            logger.info('{0:>12} dependency: name="{1}" version="{2}"'.format(
+                {'r-': 'R', 'bioconductor-': 'BioConductor'}[prefix],
+                name, version))
             # DESCRIPTION notes base R packages, but we don't need to specify
             # them in the dependencies.
             if name in BASE_R_PACKAGES:
