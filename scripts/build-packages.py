@@ -9,16 +9,17 @@ import sys
 import nose
 
 PYTHON_VERSIONS = ["27", "34"]
+CONDA_NPY = "19"
 
 
 def build_recipe(recipe):
     try:
-        os.environ["CONDA_NPY"] = "18"
         for py in PYTHON_VERSIONS:
-            os.environ["CONDA_PY"] = py
-            sp.check_output(["conda", "build", "--no-anaconda-upload",
-                             "--skip-existing", "--quiet", recipe],
-                            stderr=sp.STDOUT)
+            sp_call = sp.check_call if args.verbose else sp.check_output
+            sp_call(["conda", "build", "--no-anaconda-upload",
+                     "--numpy", CONDA_NPY, "--python", py,
+                     "--skip-existing", "--quiet", recipe],
+                    stderr=sp.STDOUT)
     except sp.CalledProcessError as e:
         print(e.output.decode())
         assert False
@@ -36,13 +37,12 @@ def test_recipes():
         yield build_recipe, recipe
 
     if os.environ.get("TRAVIS_BRANCH") == "master" and os.environ.get(
-        "TRAVIS_PULL_REQUEST") == "false":
+          "TRAVIS_PULL_REQUEST") == "false":
         for recipe in recipes:
             packages = set()
-            os.environ["CONDA_NPY"] = "18"
             for py in PYTHON_VERSIONS:
-                os.environ["CONDA_PY"] = py
                 packages.add(sp.check_output(["conda", "build", "--output",
+                                              "--numpy", CONDA_NPY, "--python", py,
                                               recipe]).strip())
             for package in packages:
                 if os.path.exists(package):
@@ -63,6 +63,8 @@ if __name__ == "__main__":
     p.add_argument("--packages",
                    nargs="+",
                    help="A specific package to build.")
+    p.add_argument("-v", "--verbose", help="Make output more verbose for local debugging",
+                   default=False, action="store_true")
 
     global args
     args = p.parse_args()
