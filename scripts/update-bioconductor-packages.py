@@ -40,7 +40,7 @@ def dependencies(meta):
     for dep in deps:
         if (
             os.path.exists(os.path.join('recipes', dep)) and
-            'bioconductor' in dep
+            ('bioconductor-' in dep or 'r-' in dep)
         ):
             results.append(dep)
     return results
