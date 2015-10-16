@@ -8,7 +8,7 @@ import sys
 
 import nose
 
-PYTHON_VERSIONS = ["27", "34"]
+PYTHON_VERSIONS = ["27", "35"]
 CONDA_NPY = "19"
 
 
