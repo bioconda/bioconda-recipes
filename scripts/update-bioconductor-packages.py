@@ -40,7 +40,7 @@ def dependencies(meta):
     for dep in deps:
         if (
             os.path.exists(os.path.join('recipes', dep)) and
-            'bioconductor' in dep
+            ('bioconductor-' in dep or 'r-' in dep)
         ):
             results.append(dep)
     return results
@@ -55,4 +55,4 @@ for meta in glob.glob('recipes/bioconductor-*/meta.yaml'):
 
 
 for dep in nx.topological_sort(g, reverse=True):
-    print(bioc_name(dep))
+    print('{0}:{1}'.format(bioc_name(dep), dep))
