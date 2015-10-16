@@ -13,7 +13,7 @@ else
     bash Miniconda3-latest-MacOSX-x86_64.sh -b -p /tmp/anaconda
     mkdir -p /tmp/anaconda/conda-bld/osx-64 # workaround for bug in current conda
     export PATH=/tmp/anaconda/bin:$PATH
-    conda install -y conda conda-build anaconda-client pyyaml toolz jinja2 nose
+    conda install -y conda conda-build anaconda-client pyyaml toolz jinja2 nose toposort
 
     # setup bioconda channel
     conda config --add channels bioconda
