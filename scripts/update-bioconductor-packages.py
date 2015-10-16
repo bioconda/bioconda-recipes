@@ -55,4 +55,4 @@ for meta in glob.glob('recipes/bioconductor-*/meta.yaml'):
 
 
 for dep in nx.topological_sort(g, reverse=True):
-    print(bioc_name(dep))
+    print('{0}:{1}'.format(bioc_name(dep), dep))
