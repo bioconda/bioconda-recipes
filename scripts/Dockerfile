@@ -20,9 +20,10 @@ ENV LC_ALL en_US.UTF-8
 RUN mkdir -p /anaconda/conda-bld/linux-64 # workaround for bug in current conda
 
 # setup conda
-RUN conda install -y conda conda-build anaconda-client pyyaml toolz jinja2 nose toposort
+RUN conda install -y conda conda-build anaconda-client pyyaml toolz jinja2 nose
 RUN conda config --add channels bioconda
 RUN conda config --add channels r
+RUN conda install -y toposort
 
 # setup entrypoint
 COPY build-packages.py /bin/build-packages.py
