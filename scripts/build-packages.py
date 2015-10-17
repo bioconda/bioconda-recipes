@@ -14,9 +14,16 @@ PYTHON_VERSIONS = ["27", "34"]
 CONDA_NPY = "19"
 
 
+def get_metadata(recipes):
+    for recipe in recipes:
+        print("Reading recipe", recipe, file=sys.stderr)
+        yield MetaData(recipe)
+
+
 # inspired by conda-build-all from https://github.com/omnia-md/conda-recipes
 def toposort_recipes(recipes):
-    metadata = list(map(MetaData, recipes))
+    metadata = list(get_metadata(recipes))
+
     name2recipe = {
         meta.get_value("package/name"): recipe
         for meta, recipe in zip(metadata, recipes)
