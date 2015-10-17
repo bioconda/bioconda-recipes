@@ -23,7 +23,7 @@ RUN mkdir -p /anaconda/conda-bld/linux-64 # workaround for bug in current conda
 RUN conda install -y conda conda-build anaconda-client pyyaml toolz jinja2 nose
 RUN conda config --add channels bioconda
 RUN conda config --add channels r
-RUN conda config --add channels file:///anaconda/conda-bld/
+RUN conda config --add channels file://anaconda/conda-bld/
 RUN conda install -y toposort
 
 # setup entrypoint
