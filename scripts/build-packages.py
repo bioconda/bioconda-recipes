@@ -16,12 +16,24 @@ CONDA_NPY = "19"
 
 # inspired by conda-build-all from https://github.com/omnia-md/conda-recipes
 def toposort_recipes(recipes):
+    metadata = list(map(MetaData, recipes))
+    name2recipe = {
+        meta.get_value("package/name"): recipe
+        for meta, recipe in zip(metadata, recipes)
+    }
+
+    def get_inner_deps(dependencies):
+        for dep in dependencies:
+            name = dep.split()[0]
+            if name in name2recipe:
+                yield name
+
     dag = {
         meta.get_value("package/name"): set(
-            meta.get_value("requirements/build", []))
-        for meta in map(MetaData, recipes)
+            get_inner_deps(meta.get_value("requirements/build", [])))
+        for meta in metadata
     }
-    return toposort_flatten(dag)
+    return [name2recipe[name] for name in toposort_flatten(dag)]
 
 
 def build_recipe(recipe):
@@ -46,7 +58,7 @@ def test_recipes():
                                               "*")))
 
     # ensure that packages are build in the right order
-    recipes = toposort_flatten(recipes)
+    recipes = toposort_recipes(recipes)
 
     # build packages
     for recipe in recipes:
