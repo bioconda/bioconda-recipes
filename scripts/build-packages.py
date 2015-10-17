@@ -44,15 +44,21 @@ def toposort_recipes(recipes):
 
 
 def build_recipe(recipe):
-    try:
-        for py in PYTHON_VERSIONS:
+    errors = 0
+    builds = 0
+    for py in PYTHON_VERSIONS:
+        try:
+            builds += 1
             sp_call = sp.check_call if args.verbose else sp.check_output
             sp_call(["conda", "build", "--no-anaconda-upload", "--numpy",
                      CONDA_NPY, "--python", py, "--skip-existing", "--quiet",
                      recipe],
                     stderr=sp.STDOUT)
-    except sp.CalledProcessError as e:
-        print(e.output.decode())
+        except sp.CalledProcessError as e:
+            print(e.output.decode())
+            errors += 1
+    if errors == builds:
+        # fail if all builds result in an error
         assert False
 
 
