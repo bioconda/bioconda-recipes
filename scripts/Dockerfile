@@ -25,7 +25,6 @@ RUN conda config --add channels bioconda
 RUN conda config --add channels r
 RUN conda install -y toposort
 
-# setup entrypoint
-COPY build-packages.py /bin/build-packages.py
-ENTRYPOINT ["build-packages.py"]
+# setup entrypoint (assuming that repo is mounted under /bioconda-recipes)
+ENTRYPOINT ["/bioconda-recipes/scripts/build-packages.py"]
 CMD []
