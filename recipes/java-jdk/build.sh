@@ -1,6 +1,9 @@
 #!/bin/bash
 
-cp -r bin include jre lib $PREFIX
+mkdir -p $PREFIX/bin
+
+cp bin/* $PREFIX/bin
+cp -r include jre lib $PREFIX
 
 # TODO the following, more self-contained approach does currently
 # not work because the .so files are not found
