@@ -10,7 +10,7 @@ import nose
 from conda_build.metadata import MetaData
 from toposort import toposort_flatten
 
-PYTHON_VERSIONS = ["27", "34"]
+PYTHON_VERSIONS = ["27", "35"]
 CONDA_NPY = "19"
 
 
@@ -62,6 +62,17 @@ def build_recipe(recipe):
         assert False
 
 
+def filter_recipes(recipes):
+    return [
+        recipe for recipe, msg in zip(
+        recipes,
+        sp.check_output(
+            ["conda", "build", "--skip-existing", "--output"] + recipes
+        ).decode().split("\n"))
+        if "already built, skipping" not in msg
+    ]
+
+
 def test_recipes():
     if args.packages:
         recipes = [os.path.join(args.repository, "recipes", package)
@@ -70,8 +81,8 @@ def test_recipes():
         recipes = list(glob.glob(os.path.join(args.repository, "recipes",
                                               "*")))
 
-    # ensure that packages are build in the right order
-    recipes = toposort_recipes(recipes)
+    # ensure that packages which need a build are built in the right order
+    recipes = toposort_recipes(filter_recipes(recipes))
 
     # build packages
     for recipe in recipes:
