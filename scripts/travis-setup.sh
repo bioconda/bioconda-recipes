@@ -14,10 +14,12 @@ else
     mkdir -p /tmp/anaconda/conda-bld/osx-64 # workaround for bug in current conda
     export PATH=/tmp/anaconda/bin:$PATH
     conda install -y conda conda-build anaconda-client pyyaml toolz jinja2 nose
+    conda index /tmp/anaconda/conda-bld/
 
     # setup bioconda channel
     conda config --add channels bioconda
     conda config --add channels r
+    conda config --add channels file://tmp/anaconda/conda-bld/
 
     conda install -y toposort
 fi
