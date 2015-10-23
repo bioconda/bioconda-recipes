@@ -63,12 +63,16 @@ def build_recipe(recipe):
 
 
 def filter_recipes(recipes):
-    return [
-        recipe for recipe, msg in zip(
-        recipes,
+    msgs = [
+        msg for msg in
         sp.check_output(
             ["conda", "build", "--skip-existing", "--output"] + recipes
         ).decode().split("\n"))
+        if "Ignoring non-recipe" not in msg
+    ][1:-1]
+    assert len(msgs) == len(recipes)
+    return [
+        recipe for recipe, msg in zip(recipes, msgs)
         if "already built, skipping" not in msg
     ]
 
