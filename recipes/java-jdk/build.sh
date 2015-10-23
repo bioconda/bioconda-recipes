@@ -3,6 +3,7 @@
 mkdir -p $PREFIX/bin
 
 cp bin/* $PREFIX/bin
+chmod +x $PREFIX/bin
 cp -r include jre lib $PREFIX
 
 # TODO the following, more self-contained approach does currently
