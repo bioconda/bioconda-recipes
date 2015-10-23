@@ -14,7 +14,7 @@ RUN curl -sSf http://static.rust-lang.org/rustup.sh | sh -s -- --channel=nightly
 # install conda
 RUN mkdir -p /tmp/conda-build
 RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh && bash Miniconda3-latest-Linux-x86_64.sh -b -p /tmp/anaconda
-ENV PATH=/opt/rh/devtoolset-2/root/usr/bin:/opt/rh/autotools-latest/root/usr/bin:/anaconda/bin:$PATH
+ENV PATH=/opt/rh/devtoolset-2/root/usr/bin:/opt/rh/autotools-latest/root/usr/bin:/tmp/anaconda/bin:$PATH
 ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 RUN mkdir -p /tmp/anaconda/conda-bld/linux-64  # workaround for bug in current conda (conda issue #466)
