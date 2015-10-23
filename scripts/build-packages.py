@@ -67,14 +67,15 @@ def filter_recipes(recipes):
         msg for msg in
         sp.check_output(
             ["conda", "build", "--skip-existing", "--output"] + recipes
-        ).decode().split("\n"))
+        ).decode().split("\n")
         if "Ignoring non-recipe" not in msg
     ][1:-1]
     assert len(msgs) == len(recipes)
-    return [
-        recipe for recipe, msg in zip(recipes, msgs)
-        if "already built, skipping" not in msg
-    ]
+    for recipe, msg in zip(recipes, msgs):
+        if "already built, skipping" not in msg:
+            yield recipe
+        else:
+            print("Skipping recipe", recipe, file=sys.stderr)
 
 
 def test_recipes():
@@ -86,7 +87,7 @@ def test_recipes():
                                               "*")))
 
     # ensure that packages which need a build are built in the right order
-    recipes = toposort_recipes(filter_recipes(recipes))
+    recipes = toposort_recipes(list(filter_recipes(recipes)))
 
     # build packages
     for recipe in recipes:
