@@ -4,5 +4,7 @@ outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 mkdir -p $PREFIX/bin
 cp -R ./* $outdir/
-ln -s $outdir/snpEff.jar $PREFIX/bin
-ln -s $outdir/SnpSift.jar $PREFIX/bin
+cp $RECIPE_DIR/snpeff.sh $outdir/snpEff
+chmod +x $outdir/snpEff
+
+ln -s $outdir/snpEff $PREFIX/bin
