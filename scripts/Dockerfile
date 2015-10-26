@@ -22,6 +22,7 @@ RUN mkdir -p /anaconda/conda-bld/osx-64    # workaround for bug in current conda
 
 # setup conda
 RUN conda install -y conda conda-build anaconda-client pyyaml toolz jinja2 nose
+RUN conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
 RUN conda config --add channels bioconda
 RUN conda config --add channels r
 RUN conda install -y toposort
