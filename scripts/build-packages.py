@@ -64,7 +64,8 @@ def build_recipe(recipe):
                      recipe],
                     stderr=sp.STDOUT)
         except sp.CalledProcessError as e:
-            print(e.output.decode())
+            if e.output is not None:
+                print(e.output.decode())
             errors += 1
     if errors == builds:
         # fail if all builds result in an error
