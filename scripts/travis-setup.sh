@@ -10,9 +10,9 @@ else
 
     # install conda
     wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-    bash Miniconda3-latest-MacOSX-x86_64.sh -b -p /tmp/anaconda
     mkdir -p /tmp/anaconda/conda-bld/osx-64 # workaround for bug in current conda
-    export PATH=/tmp/anaconda/bin:$PATH
+    bash Miniconda3-latest-MacOSX-x86_64.sh -b -p /anaconda
+    export PATH=/anaconda/bin:$PATH
     conda install -y conda conda-build anaconda-client pyyaml toolz jinja2 nose
 
     # setup bioconda channel
