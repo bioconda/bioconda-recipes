@@ -25,6 +25,7 @@ RUN conda install -y conda conda-build anaconda-client pyyaml toolz jinja2 nose
 RUN conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
 RUN conda config --add channels bioconda
 RUN conda config --add channels r
+RUN conda config --add channels file://anaconda/conda-bld
 RUN conda install -y toposort
 
 # setup entrypoint (assuming that repo is mounted under /bioconda-recipes)
