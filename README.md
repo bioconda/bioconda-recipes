@@ -22,13 +22,13 @@ compatibility across multiple systems. The steps below describe how to
 contribute a new package. It is assumed you have
 [docker](https://www.docker.com/) and [git](https://git-scm.com/) installed.
 
-### Step 1: create a new recipe
+### Step 1: Create a new recipe
 
 Fork this repository or create a new branch to work in. Within the new branch,
 [create a recipe](http://conda.pydata.org/docs/building/build.html)
 (`your_package` in this example) in the `recipes` directory.
 
-### Step 2: test the recipe
+### Step 2: Test the recipe
 
 When the recipe
 is ready first test it with your local conda installation via
@@ -49,7 +49,12 @@ package name:
 
     docker run -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder
 
-### Step 3: submit a pull request
+If rebuilding a previously-built package and the version number hasn't changed, be sure to increment the build number in `meta.yaml` (the default build number is 0):
+
+    build:
+      number: 1
+
+### Step 3: Submit a pull request
 
 Once these local tests pass, submit a [pull
 request](https://help.github.com/articles/using-pull-requests) to this
