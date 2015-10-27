@@ -9,10 +9,9 @@ else
     curl -sSf http://static.rust-lang.org/rustup.sh | sh -s -- --channel=nightly -y --disable-sudo
 
     # install conda
-    sudo mkdir -p /anaconda
-    sudo chown -R $USER /anaconda
     wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-    bash Miniconda3-latest-MacOSX-x86_64.sh -b -p /anaconda
+    sudo bash Miniconda3-latest-MacOSX-x86_64.sh -b -p /anaconda
+    sudo chown -R $USER /anaconda
     mkdir -p /anaconda/conda-bld/osx-64 # workaround for bug in current conda
     mkdir -p /anaconda/conda-bld/linux-64 # workaround for bug in current conda
     export PATH=/anaconda/bin:$PATH
