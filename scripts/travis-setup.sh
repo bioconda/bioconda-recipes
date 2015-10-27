@@ -10,7 +10,7 @@ else
 
     # install conda
     sudo mkdir -p /anaconda
-    sudo chown -R $USER:$USER /anaconda
+    sudo chown -R $USER /anaconda
     wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
     bash Miniconda3-latest-MacOSX-x86_64.sh -b -p /anaconda
     mkdir -p /anaconda/conda-bld/osx-64 # workaround for bug in current conda
