@@ -43,9 +43,18 @@ def toposort_recipes(recipes):
     return [name2recipe[name] for name in toposort_flatten(dag)]
 
 
+def conda_index():
+    index_dirs = [
+        "/tmp/anaconda/conda-bld/linux-64",
+        "/tmp/anaconda/conda-bld/osx-64",
+    ]
+    sp_call = sp.check_call(["conda", "index"] + index_dirs)
+
+
 def build_recipe(recipe):
     errors = 0
     builds = 0
+    conda_index()
     for py in PYTHON_VERSIONS:
         try:
             builds += 1
@@ -55,7 +64,8 @@ def build_recipe(recipe):
                      recipe],
                     stderr=sp.STDOUT)
         except sp.CalledProcessError as e:
-            print(e.output.decode())
+            if e.output is not None:
+                print(e.output.decode())
             errors += 1
     if errors == builds:
         # fail if all builds result in an error
