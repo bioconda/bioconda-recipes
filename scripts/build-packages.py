@@ -45,8 +45,8 @@ def toposort_recipes(recipes):
 
 def conda_index():
     index_dirs = [
-        "/tmp/anaconda/conda-bld/linux-64",
-        "/tmp/anaconda/conda-bld/osx-64",
+        "/anaconda/conda-bld/linux-64",
+        "/anaconda/conda-bld/osx-64",
     ]
     sp_call = sp.check_call(["conda", "index"] + index_dirs)
 
