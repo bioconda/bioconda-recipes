@@ -17,15 +17,12 @@ RUN wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh &
 ENV PATH=/opt/rh/devtoolset-2/root/usr/bin:/opt/rh/autotools-latest/root/usr/bin:/anaconda/bin:$PATH
 ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
-RUN mkdir -p /anaconda/conda-bld/linux-64  # workaround for bug in current conda (conda issue #466)
-RUN mkdir -p /anaconda/conda-bld/osx-64    # workaround for bug in current conda (conda issue #466)
+RUN mkdir -p /anaconda/conda-bld/linux-64 # workaround for bug in current conda
 
 # setup conda
 RUN conda install -y conda conda-build anaconda-client pyyaml toolz jinja2 nose
-RUN conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
 RUN conda config --add channels bioconda
 RUN conda config --add channels r
-RUN conda config --add channels file://anaconda/conda-bld
 RUN conda install -y toposort
 
 # setup entrypoint (assuming that repo is mounted under /bioconda-recipes)
