@@ -1,3 +1,5 @@
+from __future__ import absolute_import, print_function
+
 import os
 import sys
 import subprocess
@@ -13,17 +15,16 @@ def main():
         A list of arguments to pass on to ``t_coffee``.
     """
     print("\n" + "*" * 80)
-    print('Command line arguments: {0}'.format(sys.argv))
-    print("Install folder: {0}".format(config.tcoffee_install_path))
+    print('Command line arguments: {}'.format(sys.argv))
+    print("Install folder: {}".format(config.tcoffee_install_dir))
     print("*" * 80 + "\n")
     env = config.get_tcoffee_environ()
     child_process = subprocess.Popen([config.tcoffee_exe_file] + sys.argv[1:], env=env)
     result, error_message = child_process.communicate()
     print("\n" + "*" * 80 )
-    print("Result: {0}".format(result))
-    print("Error message: {0}".format(error_message))
+    print("Result: {}".format(result))
+    print("Error message: {}".format(error_message))
     print("*" * 80 + "\n")
-
 
 if __name__ == '__main__':
     main()
