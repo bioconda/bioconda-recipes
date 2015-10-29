@@ -64,17 +64,18 @@ for i in $(python scripts/update-bioconductor-packages.py); do
         (cd $TOP/recipes && conda skeleton cran "$bioconductor_name" --update-outdated)
     fi
 
-    # Check git status output to see if the recipe changed
-    if [[ ! $(git status $TOP | grep "$recipe_name") ]]; then
-        log "***$recipe_name is unchanged"
-    else
-        # If the test fails, then roll back this recipe and exit
-        log "***Testing $recipe_name"
-        (
-            cd $TOP && docker run \
-                -v `pwd`:/bioconda-recipes bioconda/bioconda-builder \
-                --packages "$recipe_name" \
-                || (git checkout -- recipes/$recipe_name && exit 1)
-        )
-    fi
+
+    ## Check git status output to see if the recipe changed
+    #if [[ ! $(git status $TOP | grep "$recipe_name") ]]; then
+    #    log "***$recipe_name is unchanged"
+    #else
+    #    # If the test fails, then roll back this recipe and exit
+    #    log "***Testing $recipe_name"
+    #    (
+    #        cd $TOP && docker run \
+    #            -v `pwd`:/bioconda-recipes bioconda/bioconda-builder \
+    #            --packages "$recipe_name" \
+    #            || (git checkout -- recipes/$recipe_name && exit 1)
+    #    )
+    #fi
 done

@@ -43,9 +43,18 @@ def toposort_recipes(recipes):
     return [name2recipe[name] for name in toposort_flatten(dag)]
 
 
+def conda_index():
+    index_dirs = [
+        "/anaconda/conda-bld/linux-64",
+        "/anaconda/conda-bld/osx-64",
+    ]
+    sp_call = sp.check_call(["conda", "index"] + index_dirs)
+
+
 def build_recipe(recipe):
     errors = 0
     builds = 0
+    conda_index()
     for py in PYTHON_VERSIONS:
         try:
             builds += 1
@@ -55,11 +64,28 @@ def build_recipe(recipe):
                      recipe],
                     stderr=sp.STDOUT)
         except sp.CalledProcessError as e:
-            print(e.output.decode())
+            if e.output is not None:
+                print(e.output.decode())
             errors += 1
     if errors == builds:
         # fail if all builds result in an error
         assert False
+
+
+def filter_recipes(recipes):
+    msgs = [
+        msg for msg in
+        sp.check_output(
+            ["conda", "build", "--skip-existing", "--output"] + recipes
+        ).decode().split("\n")
+        if "Ignoring non-recipe" not in msg
+    ][1:-1]
+    assert len(msgs) == len(recipes)
+    for recipe, msg in zip(recipes, msgs):
+        if "already built, skipping" not in msg:
+            yield recipe
+        else:
+            print("Skipping recipe", recipe, file=sys.stderr)
 
 
 def test_recipes():
@@ -70,8 +96,8 @@ def test_recipes():
         recipes = list(glob.glob(os.path.join(args.repository, "recipes",
                                               "*")))
 
-    # ensure that packages are build in the right order
-    recipes = toposort_recipes(recipes)
+    # ensure that packages which need a build are built in the right order
+    recipes = toposort_recipes(list(filter_recipes(recipes)))
 
     # build packages
     for recipe in recipes:

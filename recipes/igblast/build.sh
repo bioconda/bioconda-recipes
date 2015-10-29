@@ -17,7 +17,7 @@ done
 
 for IGBLAST_DIR in internal_data optional_file; do
     mkdir -p $INCLUDE_DIR/$IGBLAST_DIR
-    wget -r -np -nd -P $INCLUDE_DIR/$IGBLAST_DIR $IGBLAST_ADDRESS/$IGBLAST_DIR
+    wget -r -nH --cut-dirs=5 -P $INCLUDE_DIR/$IGBLAST_DIR $IGBLAST_ADDRESS/$IGBLAST_DIR
     for CVS_FILE in Entries Repository Root; do
         rm -f $INCLUDE_DIR/$IGBLAST_DIR/$CVS_FILE
     done
