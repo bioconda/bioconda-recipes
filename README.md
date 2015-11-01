@@ -75,20 +75,6 @@ using:
 If you want your package to be built for Mac OSX as well, you have to add it to
 the ``osx-whitelist.txt`` file in the root of this repository.
 
-### Handling recipes with new dependencies
-
-If your new recipe has dependencies that shall also be included in the
-`bioconda` channel, the the following workflow is recommended. Assume recipe
-B depends on recipe A. Then:
-
-- submit a PR for recipe A
-- wait for PR tests to pass
-- once they pass, merge the PR into master
-- wait for master branch tests to pass, which will then upload A to the
-  bioconda channel
-- submit another PR for recipe B. The built recipe A will be available for
-      it to use as a dependency.
-
 ###Other notes
 
 We use a pre-built CentOS 5 image with compilers installed as part of the
