@@ -1,6 +1,11 @@
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # directory of current script
-source $DIR/etc/activate.d/*
-export CONDA_ENV_PATH=$DIR
-migmap -h
-source $DIR/etc/deactivate.d/*
-unset CONDA_ENV_PATH
+#!/bin/bash
+
+set +e
+
+echo "Running migmap test..." >&2
+migmap -h > /dev/null 2>&1
+if [[ $? == 3 ]]; then
+    exit 0
+else
+    exit 1
+fi

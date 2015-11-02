@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# migmap runner script
-
-# directory of current script, from http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+# from http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
@@ -11,8 +9,8 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 
 SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+IGBLAST_DIR=$SCRIPT_DIR/../share/igblast
 
-MIGMAP_DIR=$SCRIPT_DIR/../share
-
-# calls igblastn internally, which itself export IGDATA temporarily
-java -jar $MIGMAP_DIR/migmap-0.9.7.jar "$@"
+export IGDATA=$IGBLAST_DIR
+$IGBLAST_DIR/bin/igblastn "$@"
+unset IGDATA
