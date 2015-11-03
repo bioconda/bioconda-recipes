@@ -7,22 +7,85 @@ import argparse
 import sys
 
 import nose
+from conda_build.metadata import MetaData
+from toposort import toposort_flatten
 
-PYTHON_VERSIONS = ["27", "34"]
+PYTHON_VERSIONS = ["27", "35"]
 CONDA_NPY = "19"
 
 
+def get_metadata(recipes):
+    for recipe in recipes:
+        print("Reading recipe", recipe, file=sys.stderr)
+        yield MetaData(recipe)
+
+
+# inspired by conda-build-all from https://github.com/omnia-md/conda-recipes
+def toposort_recipes(recipes):
+    metadata = list(get_metadata(recipes))
+
+    name2recipe = {
+        meta.get_value("package/name"): recipe
+        for meta, recipe in zip(metadata, recipes)
+    }
+
+    def get_inner_deps(dependencies):
+        for dep in dependencies:
+            name = dep.split()[0]
+            if name in name2recipe:
+                yield name
+
+    dag = {
+        meta.get_value("package/name"): set(
+            get_inner_deps(meta.get_value("requirements/build", [])))
+        for meta in metadata
+    }
+    return [name2recipe[name] for name in toposort_flatten(dag)]
+
+
+def conda_index():
+    index_dirs = [
+        "/anaconda/conda-bld/linux-64",
+        "/anaconda/conda-bld/osx-64",
+    ]
+    sp_call = sp.check_call(["conda", "index"] + index_dirs)
+
+
 def build_recipe(recipe):
-    try:
-        for py in PYTHON_VERSIONS:
+    errors = 0
+    builds = 0
+    conda_index()
+    for py in PYTHON_VERSIONS:
+        try:
+            builds += 1
             sp_call = sp.check_call if args.verbose else sp.check_output
-            sp_call(["conda", "build", "--no-anaconda-upload",
-                     "--numpy", CONDA_NPY, "--python", py,
-                     "--skip-existing", "--quiet", recipe],
+            sp_call(["conda", "build", "--no-anaconda-upload", "--numpy",
+                     CONDA_NPY, "--python", py, "--skip-existing", "--quiet",
+                     recipe],
                     stderr=sp.STDOUT)
-    except sp.CalledProcessError as e:
-        print(e.output.decode())
+        except sp.CalledProcessError as e:
+            if e.output is not None:
+                print(e.output.decode())
+            errors += 1
+    if errors == builds:
+        # fail if all builds result in an error
         assert False
+
+
+def filter_recipes(recipes):
+    msgs = [
+        msg for msg in
+        sp.check_output(
+            ["conda", "build", "--skip-existing", "--output"] + recipes
+        ).decode().split("\n")
+        if "Ignoring non-recipe" not in msg
+    ][1:-1]
+    assert len(msgs) == len(recipes)
+    for recipe, msg in zip(recipes, msgs):
+        if "already built, skipping" not in msg:
+            yield recipe
+        else:
+            print("Skipping recipe", recipe, file=sys.stderr)
 
 
 def test_recipes():
@@ -33,17 +96,22 @@ def test_recipes():
         recipes = list(glob.glob(os.path.join(args.repository, "recipes",
                                               "*")))
 
+    # ensure that packages which need a build are built in the right order
+    recipes = toposort_recipes(list(filter_recipes(recipes)))
+
+    # build packages
     for recipe in recipes:
         yield build_recipe, recipe
 
+    # upload builds
     if os.environ.get("TRAVIS_BRANCH") == "master" and os.environ.get(
-          "TRAVIS_PULL_REQUEST") == "false":
+        "TRAVIS_PULL_REQUEST") == "false":
         for recipe in recipes:
             packages = set()
             for py in PYTHON_VERSIONS:
                 packages.add(sp.check_output(["conda", "build", "--output",
-                                              "--numpy", CONDA_NPY, "--python", py,
-                                              recipe]).strip())
+                                              "--numpy", CONDA_NPY, "--python",
+                                              py, recipe]).strip())
             for package in packages:
                 if os.path.exists(package):
                     try:
@@ -63,8 +131,10 @@ if __name__ == "__main__":
     p.add_argument("--packages",
                    nargs="+",
                    help="A specific package to build.")
-    p.add_argument("-v", "--verbose", help="Make output more verbose for local debugging",
-                   default=False, action="store_true")
+    p.add_argument("-v", "--verbose",
+                   help="Make output more verbose for local debugging",
+                   default=False,
+                   action="store_true")
 
     global args
     args = p.parse_args()
