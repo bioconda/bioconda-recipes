@@ -1,8 +1,6 @@
 #!/bin/bash
 
-BASE=$PREFIX/../..
-
-LIBRARY_PATH=$BASE/lib CPATH=$BASE/include make
+LIBRARY_PATH=$PREFIX/lib CPATH=$PREFIX/include make
 
 mkdir -p $PREFIX/bin
 cp gfold $PREFIX/bin
