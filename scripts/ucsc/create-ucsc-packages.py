@@ -1,7 +1,7 @@
 import os
 import re
 
-re_summary = re.compile('^(?P<program>.*) - (?P<description>.*)')
+re_summary = re.compile(r'^(?P<program>\w.*?) - (?P<description>.*)$')
 
 # This is the version of the last available tarball visible on
 # http://hgdownload.cse.ucsc.edu/admin/exe/
@@ -12,7 +12,15 @@ def parse_footer(fn):
         m = re_summary.match(line)
         if not m:
             continue
-        yield m.groups()
+
+        program, description = m.groups()
+        try:
+            program = program.split()[0]
+        except IndexError:
+            print(line)
+            continue
+
+        yield program, description
 
 if __name__ == "__main__":
     meta_template = open('template-meta.yaml').read()
@@ -30,7 +38,11 @@ if __name__ == "__main__":
         #   bedGraphToBigWig v 4 - Convert a bedGraph file to bigWig format
         #
         # So just get the first word as the program name.
-        program = program.split()[0]
+        try:
+            program = program.split()[0]
+        except IndexError:
+            print(program)
+            raise
         package = 'ucsc-' + program.lower()
         recipe_dir = os.path.join(recipes_dir, package)
 
