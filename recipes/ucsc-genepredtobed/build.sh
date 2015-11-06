@@ -6,7 +6,7 @@ mkdir -p $BINDIR
 (cd kent/src/lib && make)
 (cd kent/src/jkOwnLib && make)
 (cd kent/src/hg/lib && make)
-(cd kent/src/hg/altSplice/altSplice/genePredToBed.c && make)
+(cd kent/src/hg/genePredToBed && make)
 mkdir -p $PREFIX/bin
 cp bin/genePredToBed $PREFIX/bin
 chmod +x $PREFIX/bin/genePredToBed
