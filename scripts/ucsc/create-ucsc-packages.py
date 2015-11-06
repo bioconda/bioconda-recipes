@@ -69,13 +69,13 @@ for program, summary in parse_footer('FOOTER'):
     package = 'ucsc-' + program.lower()
     recipe_dir = os.path.join(recipes_dir, package)
 
-    if not os.path.exists(recipe_dir):
-        os.makedirs(recipe_dir)
-
     subdir = program_subdir(program, names)
     if subdir is None:
         print("Skipping {0}".format(program))
         continue
+
+    if not os.path.exists(recipe_dir):
+        os.makedirs(recipe_dir)
 
     # Fill in templates and write them to recipe dir
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
