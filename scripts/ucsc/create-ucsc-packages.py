@@ -6,7 +6,7 @@ re_summary = re.compile(r'^(?P<program>\w.*?) - (?P<description>.*)$')
 
 # This is the version of the last available tarball visible on
 # http://hgdownload.cse.ucsc.edu/admin/exe/
-VERSION = "323"
+VERSION = "324"
 
 def parse_footer(fn):
     for line in open(fn):
