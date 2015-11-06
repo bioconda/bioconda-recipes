@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 import re
 
@@ -18,6 +19,8 @@ if __name__ == "__main__":
     meta_template = open('template-meta.yaml').read()
     build_template = open('template-build.sh').read()
     test_template = open('template-run_test.sh').read()
+
+    # relative to where this file lives
     recipes_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'recipes')
 
     # FOOTER is from:
@@ -31,12 +34,15 @@ if __name__ == "__main__":
         #
         # So just get the first word as the program name.
         program = program.split()[0]
+
+        # conda package names must be lowercase
         package = 'ucsc-' + program.lower()
         recipe_dir = os.path.join(recipes_dir, package)
 
         if not os.path.exists(recipe_dir):
             os.makedirs(recipe_dir)
 
+        # Fill in templates and write them to recipe dir
         with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
             fout.write(
                 meta_template.format(
@@ -48,16 +54,17 @@ if __name__ == "__main__":
             )
 
         with open(os.path.join(recipe_dir, 'build.sh'), 'w') as fout:
-                fout.write(
-                    build_template.format(
-                        program=program)
-                )
+            fout.write(
+                build_template.format(
+                    program=program)
+            )
 
         with open(os.path.join(recipe_dir, 'run_test.sh'), 'w') as fout:
-                fout.write(
-                    test_template.format(
-                        program=program
-                    )
+            fout.write(
+                test_template.format(
+                    program=program
                 )
+            )
 
-
+        with open(os.path.join(recipe_dir, 'include.patch'), 'w') as fout:
+            fout.write(open('include.patch').read())
