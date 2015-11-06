@@ -6,7 +6,7 @@ mkdir -p $BINDIR
 (cd kent/src/lib && make)
 (cd kent/src/jkOwnLib && make)
 (cd kent/src/hg/lib && make)
-(cd kent/src/utils/bedToBigBed && make)
+(cd kent/src/utils/bigWigCluster && make)
 mkdir -p $PREFIX/bin
-cp bin/bedToBigBed $PREFIX/bin
-chmod +x $PREFIX/bin/bedToBigBed
+cp bin/bigWigCluster $PREFIX/bin
+chmod +x $PREFIX/bin/bigWigCluster
