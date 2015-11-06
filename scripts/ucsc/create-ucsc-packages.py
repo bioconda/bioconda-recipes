@@ -25,13 +25,16 @@ if not os.path.exists(os.path.basename(tarball)):
 
 # Different programs are built under different subdirectories in the source. So
 # get a directory listing of the tarball
-names = [i for i in tarfile.open((os.path.basename(tarball))).getnames()
+t = tarfile.open(os.path.basename(tarball))
+names = [i for i in t.getnames()
          if i.startswith('./userApps/kent/src')]
 
 def program_subdir(program, names):
-    # shortest one should be the directory entry
-    hits = [i for i in names if program in i]
+    hits = [i for i in names if program in i and t.getmember(i).isdir() ]
+    if len(hits) == 0:
+        return
     top = sorted(hits)[0]
+
     return top.replace('./userApps/', '')
 
 
@@ -68,6 +71,11 @@ for program, summary in parse_footer('FOOTER'):
 
     if not os.path.exists(recipe_dir):
         os.makedirs(recipe_dir)
+
+    subdir = program_subdir(program, names)
+    if subdir is None:
+        print("Skipping {0}".format(program))
+        continue
 
     # Fill in templates and write them to recipe dir
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
