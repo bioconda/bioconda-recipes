@@ -1,36 +1,34 @@
 #!/bin/bash
 
 IGBLAST_ADDRESS=ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release
-INCLUDE_DIR=$PREFIX/include/igblast
+SHARE_DIR=$PREFIX/share/igblast
 
 wget $IGBLAST_ADDRESS/edit_imgt_file.pl
-sed -i '1 s/^.*$/#!\/usr\/bin\/env perl/g' edit_imgt_file.pl # replace the first line with /usr/bin/env perl instead of the hard-coded /opt
+# replace the first line with /usr/bin/env perl instead of the hard-coded /opt
+# does this require an explicit perl dependency? 
+sed -i '1 s/^.*$/#!\/usr\/bin\/env perl/g' edit_imgt_file.pl 
 chmod +x edit_imgt_file.pl
 mv edit_imgt_file.pl bin/
 
 mkdir -p $PREFIX/bin
-mkdir -p $INCLUDE_DIR
+mkdir -p $SHARE_DIR/bin
 
-for FILE in igblastn igblastp makeblastdb edit_imgt_file.pl; do
+for FILE in makeblastdb edit_imgt_file.pl; do
     cp -f bin/$FILE $PREFIX/bin/
 done
 
-for IGBLAST_DIR in internal_data optional_file; do
-    mkdir -p $INCLUDE_DIR/$IGBLAST_DIR
-    wget -r -nH --cut-dirs=5 -P $INCLUDE_DIR/$IGBLAST_DIR $IGBLAST_ADDRESS/$IGBLAST_DIR
-    for CVS_FILE in Entries Repository Root; do
-        rm -f $INCLUDE_DIR/$IGBLAST_DIR/$CVS_FILE
-    done
+for FILE in igblastn igblastp; do
+    cp -f bin/$FILE $SHARE_DIR/bin/
 done
 
-ACTIVATE_SCRIPT=$PREFIX/etc/conda/activate.d/igblast_vars.sh
-DEACTIVATE_SCRIPT=$PREFIX/etc/conda/deactivate.d/igblast_vars.sh
+cp -f $RECIPE_DIR/igblastn.sh $PREFIX/bin/igblastn
+sed 's/igblastn/igblastp/g' $PREFIX/bin/igblastn > $PREFIX/bin/igblastp
+chmod +x $PREFIX/bin/igblastn $PREFIX/bin/igblastp
 
-for SCRIPT in $ACTIVATE_SCRIPT $DEACTIVATE_SCRIPT; do
-    mkdir -p $(dirname "$SCRIPT")
-    if [[ $SCRIPT == $ACTIVATE_SCRIPT ]]; then
-        echo "export IGDATA=\$CONDA_ENV_PATH/include/igblast" > $SCRIPT
-    else
-        echo "unset IGDATA" > $SCRIPT
-    fi
+for IGBLAST_DIR in internal_data optional_file; do
+    mkdir -p $SHARE_DIR/$IGBLAST_DIR
+    wget -r -nH --cut-dirs=5 -P $SHARE_DIR/$IGBLAST_DIR $IGBLAST_ADDRESS/$IGBLAST_DIR
+    for CVS_FILE in Entries Repository Root; do
+        rm -f $SHARE_DIR/$IGBLAST_DIR/$CVS_FILE
+    done
 done
