@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+echo Building on $TRAVIS_OS_NAME
+
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
     # run CentOS5 based docker container
