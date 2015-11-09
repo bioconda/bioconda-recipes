@@ -139,4 +139,7 @@ if __name__ == "__main__":
     global args
     args = p.parse_args()
 
+    sp.check_call(["gcc", "--version"])
+    sp.check_call(["ldd", "--version"])
+
     nose.main(argv=sys.argv[:1], defaultTest="__main__")
