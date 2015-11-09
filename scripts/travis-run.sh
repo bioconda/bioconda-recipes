@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-echo Building on $TRAVIS_OS_NAME
-
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
     echo Building in CentOS 5 Docker container
