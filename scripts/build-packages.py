@@ -140,6 +140,9 @@ if __name__ == "__main__":
     args = p.parse_args()
 
     sp.check_call(["gcc", "--version"])
-    sp.check_call(["ldd", "--version"])
+    try:
+        sp.check_call(["ldd", "--version"])
+    except:
+        pass
 
     nose.main(argv=sys.argv[:1], defaultTest="__main__")
