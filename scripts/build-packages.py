@@ -11,7 +11,7 @@ from conda_build.metadata import MetaData
 from toposort import toposort_flatten
 
 PYTHON_VERSIONS = ["27", "35"]
-CONDA_NPY = "19"
+CONDA_NPY = "110"
 
 
 def get_metadata(recipes):
