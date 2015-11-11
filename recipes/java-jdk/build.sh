@@ -1,18 +1,20 @@
 #/bin/bash -eu
 
-if [[ `uname` == "linux" ]]
+if [[ `uname` == "Linux" ]]
 then
     REFERER=http://www.azul.com/downloads/zulu/zulu-linux/
     URL=http://cdn.azulsystems.com/zulu/bin/zulu1.8.0_60-8.9.0.4-x86lx64.zip
-    FILE=zulu1.8.0_60-8.9.0.4-x86lx64.zip
+    NAME=zulu1.8.0_60-8.9.0.4-x86lx64
 else
     REFERER=http://www.azul.com/downloads/zulu/zulu-mac/
     URL=http://cdn.azulsystems.com/zulu/bin/zulu1.8.0_60-8.9.0.4-macosx.zip
-    FILE=zulu1.8.0_60-8.9.0.4-macosx.zip
+    NAME=zulu1.8.0_60-8.9.0.4-macosx
 fi
 
 wget --referer=$REFERER $URL
-unzip $FILE
+unzip $NAME.zip
+mv $NAME/* .
+rm -r $NAME
 
 # the rest is taken from https://github.com/cyclus/ciclus/tree/master/java-jdk
 
@@ -33,7 +35,7 @@ find $PREFIX -type f -name '*.so' -exec chmod +x {} \;
 
 # Some clean up
 rm -rf $PREFIX/release $PREFIX/README $PREFIX/Welcome.html
-rm $PREFIX/DISCLAIMER
-rm $PREFIX/LICENSE
-rm $PREFIX/THIRD_PARTY_README
-rm $PREFIX/ASSEMBLY_EXCEPTION
+rm -f $PREFIX/DISCLAIMER
+rm -f $PREFIX/LICENSE
+rm -f $PREFIX/THIRD_PARTY_README
+rm -f $PREFIX/ASSEMBLY_EXCEPTION
