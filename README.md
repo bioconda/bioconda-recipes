@@ -76,7 +76,7 @@ If you want to promote the Bioconda installation of your package, we recommend t
 
     [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io)
 
-This will display as [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io). For other styles, replace ``?style=flat-square`` with ``?style=flat`` or ``?style=plastic``.
+This will display as [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](https://bioconda.github.io). For other styles, replace ``?style=flat-square`` with ``?style=flat`` or ``?style=plastic``.
 
 ### Building packages for Mac OSX
 
