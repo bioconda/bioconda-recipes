@@ -11,7 +11,7 @@ from conda_build.metadata import MetaData
 from toposort import toposort_flatten
 
 PYTHON_VERSIONS = ["27", "35"]
-CONDA_NPY = "19"
+CONDA_NPY = "110"
 
 
 def get_metadata(recipes):
@@ -138,5 +138,11 @@ if __name__ == "__main__":
 
     global args
     args = p.parse_args()
+
+    sp.check_call(["gcc", "--version"])
+    try:
+        sp.check_call(["ldd", "--version"])
+    except:
+        pass
 
     nose.main(argv=sys.argv[:1], defaultTest="__main__")
