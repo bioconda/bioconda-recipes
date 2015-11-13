@@ -69,6 +69,14 @@ Once these tests pass, your new package can now be installed from anywhere
 using:
 
     conda install -c bioconda your_package
+    
+### Step 4:
+
+If you want to promote the Bioconda installation of your package, we recommend to add the following badge to your homepage:
+
+    [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io)
+
+This will display as [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io). For other styles, replace ``?style=flat-square`` with ``?style=flat`` or ``?style=plastic``.
 
 ### Building packages for Mac OSX
 
