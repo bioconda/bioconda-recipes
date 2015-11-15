@@ -9,6 +9,9 @@ RUN yum install -y devtoolset-2-gcc devtoolset-2-binutils devtoolset-2-gcc-c++ d
 # Needed for perl-db-file
 RUN yum install db4-devel
 
+# install X11 and various dependencies
+RUN yum install xorg-x11-apps
+
 # install rust compiler and cargo in the nightly version
 RUN yum install -y file gpg
 RUN curl -sSf http://static.rust-lang.org/rustup.sh | sh -s -- --channel=nightly -y --disable-sudo
