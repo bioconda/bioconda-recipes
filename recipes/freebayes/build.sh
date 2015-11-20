@@ -18,7 +18,7 @@ cd ..
 mkdir -p $PREFIX/bin
 cp bin/freebayes $PREFIX/bin
 cp scripts/freebayes-parallel $PREFIX/bin
-sed -i 's@#!/usr/bin/python@#!/usr/bin/env python@g' scripts/fasta_generate_regions.py
+sed -i.bak 's@#!/usr/bin/python@#!/usr/bin/env python@g' scripts/fasta_generate_regions.py
 cp scripts/fasta_generate_regions.py $PREFIX/bin
 cp scripts/coverage_to_regions.py $PREFIX/bin
 cp scripts/generate_freebayes_region_scripts.sh $PREFIX/bin
