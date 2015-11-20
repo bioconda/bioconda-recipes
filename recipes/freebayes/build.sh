@@ -4,10 +4,6 @@
 if [ "$(uname)" == "Darwin" ]; then
    sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' vcflib/smithwaterman/Makefile
 fi
-# tabix missing library https://github.com/ekg/tabixpp/issues/5
-# Uses newline trick for OSX from: http://stackoverflow.com/a/24299845/252589
-sed -i.bak 's/SUBDIRS=./SUBDIRS=.\'$'\n''LOBJS=tabix.o/' vcflib/tabixpp/Makefile
-sed -i.bak 's/-ltabix//' vcflib/Makefile
 
 mkdir -p bamtools/build
 cd bamtools/build
