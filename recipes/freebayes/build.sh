@@ -5,7 +5,8 @@ if [ "$(uname)" == "Darwin" ]; then
    sed -i 's/LDFLAGS=-Wl,-s/LDFLAGS=/g' vcflib/smithwaterman/Makefile
 fi
 # tabix missing library https://github.com/ekg/tabixpp/issues/5
-sed -i 's/SUBDIRS=./SUBDIRS=.\nLOBJS=tabix.o/g' vcflib/tabixpp/Makefile
+sed -i 's/SUBDIRS=./SUBDIRS=.\'$'\n''LOBJS=tabix.o/g' vcflib/tabixpp/Makefile
+sed -i 's/-ltabix//g' vcflib/Makefile
 
 mkdir -p bamtools/build
 cd bamtools/build
