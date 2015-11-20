@@ -2,11 +2,12 @@
 
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
 if [ "$(uname)" == "Darwin" ]; then
-   sed -i 's/LDFLAGS=-Wl,-s/LDFLAGS=/g' vcflib/smithwaterman/Makefile
+   sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' vcflib/smithwaterman/Makefile
 fi
 # tabix missing library https://github.com/ekg/tabixpp/issues/5
-sed -i 's/SUBDIRS=./SUBDIRS=.\'$'\n''LOBJS=tabix.o/g' vcflib/tabixpp/Makefile
-sed -i 's/-ltabix//g' vcflib/Makefile
+# Uses newline trick for OSX from: http://stackoverflow.com/a/24299845/252589
+sed -i.bak 's/SUBDIRS=./SUBDIRS=.\'$'\n''LOBJS=tabix.o/' vcflib/tabixpp/Makefile
+sed -i.bak 's/-ltabix//' vcflib/Makefile
 
 mkdir -p bamtools/build
 cd bamtools/build
