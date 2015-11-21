@@ -6,6 +6,11 @@ RUN yum install -y wget bzip2 bzip2-devel git gcc gcc-c++ patch zlib-devel make 
 RUN wget http://people.centos.org/tru/devtools-2/devtools-2.repo -O /etc/yum.repos.d/devtools-2.repo
 RUN wget --no-check-certificate https://copr.fedoraproject.org/coprs/praiskup/autotools/repo/epel-5/praiskup-autotools-epel-5.repo -O /etc/yum.repos.d/autotools.repo
 RUN yum install -y devtoolset-2-gcc devtoolset-2-binutils devtoolset-2-gcc-c++ devtoolset-2-gcc-gfortran autotools-latest pkgconfig which
+# Needed for perl-db-file
+RUN yum -y install db4-devel
+
+# install X11 and various dependencies
+RUN yum install -y xorg-x11-apps
 
 # install rust compiler and cargo in the nightly version
 RUN yum install -y file gpg
