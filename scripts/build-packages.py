@@ -12,6 +12,13 @@ from toposort import toposort_flatten
 
 PYTHON_VERSIONS = ["27", "35"]
 CONDA_NPY = "110"
+CONDA_PERL = "5.22.0"
+
+# Passing `--perl 5.22.0` to conda-build fails (apparently due to
+# version parsing errors?), but setting the CONDA_PERL env var
+# works.
+env = os.environ
+env.update({'CONDA_PERL': CONDA_PERL})
 
 
 def get_metadata(recipes):
@@ -58,11 +65,13 @@ def build_recipe(recipe):
     for py in PYTHON_VERSIONS:
         try:
             builds += 1
+
             out = None if args.verbose else sp.PIPE
             sp.run(["conda", "build", "--no-anaconda-upload", "--numpy",
                      CONDA_NPY, "--python", py, "--skip-existing", "--quiet",
                      recipe],
-                    stderr=out, stdout=out, check=True, universal_newlines=True)
+                   stderr=out, stdout=out, check=True, universal_newlines=True,
+                   env=env)
         except sp.CalledProcessError as e:
             if e.stdout is not None:
                 print(e.stdout)
