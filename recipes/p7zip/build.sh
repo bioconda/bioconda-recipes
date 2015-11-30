@@ -1,7 +1,8 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+sed -i "s|DEST_HOME=.*|DEST_HOME=$PREFIX|" install.sh
+./install.sh
 
-# make all_test  # need this line for the source version
-cp -r ./bin/* $PREFIX/bin/
+rm -r $PREFIX/man
+rm -r $PREFIX/share
 
