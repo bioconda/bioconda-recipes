@@ -1,6 +1,6 @@
 # The bioconda channel
 
-[![Build Status](https://travis-ci.org/bioconda/recipes.svg?branch=master)](https://travis-ci.org/bioconda/recipes)
+[![Build Status](https://travis-ci.org/bioconda/bioconda-recipes.svg?branch=master)](https://travis-ci.org/bioconda/recipes)
 
 [Conda](http://anaconda.org) is a platform and language independent package manager, that sports easy distribution, installation and version management of software.
 The [bioconda channel](https://anaconda.org/bioconda) is a Conda channel providing bioinformatics related packages.
