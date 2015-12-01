@@ -135,6 +135,7 @@ def test_recipes():
                                 os.environ.get("ANACONDA_TOKEN"),
                                 "upload", package], stdout=sp.PIPE, check=True)
                     except sp.CalledProcessError as e:
+                        print(e.stdout)
                         if b"already exists" in e.stdout:
                             # ignore error assuming that it is caused by existing package
                             pass
