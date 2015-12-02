@@ -154,7 +154,7 @@ cp configureHomer.pl $outdir/
 # For all binaries, wrap configureHomer.pl; not the ideal way to go
 for i in $binaries; do
     echo "#! /bin/bash" > $outdir/bin/$i;
-    echo configureHomer.pl >> $outdir/bin/$i;
+    echo "echo $i not installed - please run configureHomer.pl -install to install" >> $outdir/bin/$i;
     chmod +x $outdir/bin/$i;
     ln -s $outdir/bin/$i $PREFIX/bin/$i; 
 done
