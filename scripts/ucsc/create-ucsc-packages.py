@@ -94,6 +94,9 @@ for program, summary in parse_footer('FOOTER'):
     program = program.split()[0]
 
     program = problematic.get(program, program)
+custom_build_scripts = {
+    'fetchChromSizes': 'template-build-fetchChromSizes.sh',
+}
 
     # conda package names must be lowercase
     package = 'ucsc-' + program.lower()
@@ -119,8 +122,12 @@ for program, summary in parse_footer('FOOTER'):
         )
 
     with open(os.path.join(recipe_dir, 'build.sh'), 'w') as fout:
+        _template = open(
+            custom_build_scripts.get(program, 'template-build.sh')
+        ).read()
+
         fout.write(
-            build_template.format(
+            _template.format(
                 program=program,
                 program_source_dir=program_subdir(program, names),
             )
