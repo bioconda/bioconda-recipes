@@ -79,8 +79,6 @@ def program_subdir(program, names):
     return top.replace('./userApps/', '')
 
 
-download('http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/FOOTER', 'FOOTER')
-
 meta_template = open('template-meta.yaml').read()
 build_template = open('template-build.sh').read()
 test_template = open('template-run_test.sh').read()
@@ -94,27 +92,108 @@ problematic = {
     'LiftSpec': 'liftSpec',
 }
 
-for program, summary in parse_footer('FOOTER'):
+# Mismatches between the header and the summary; keys are the program name in
+# the header and values are the dir in the source code.
+resolve_header_and_summary_conflicts = {
+    'rmFaDups': 'rmFaDups',
+}
 
-    # some programs -- like bedGraphToBigWig -- have summary lines that
-    # look like this:
-    #
-    #   bedGraphToBigWig v 4 - Convert a bedGraph file to bigWig format
-    #
-    # So just get the first word as the program name.
-    program = program.split()[0]
+# Programs whose descriptions do not meet the regex and therefore must be
+# manually assigned.
+manual_descriptions = {
 
-    program = problematic.get(program, program)
+    'estOrient': dedent(
+        """
+        Read ESTs from a database and determine orientation based on
+        estOrientInfo table or direction in gbCdnaInfo table.  Update
+        PSLs so that the strand reflects the direction of transcription.
+        By default, PSLs where the direction can't be determined are dropped.
+        """),
+
+    'fetchChromSizes': dedent(
+        """
+        used to fetch chrom.sizes information from UCSC for the given <db>
+        """),
+
+    'overlapSelect': dedent(
+        """
+        Select records based on overlapping chromosome ranges.  The ranges are
+        specified in the selectFile, with each block specifying a range.
+        Records are copied from the inFile to outFile based on the selection
+        criteria.  Selection is based on blocks or exons rather than entire
+        range.
+        """),
+
+    'pslCDnaFilter': dedent(
+        """
+        Filter cDNA alignments in psl format.  Filtering criteria are
+        comparative, selecting near best in genome alignments for each given
+        cDNA and non-comparative, based only on the quality of an individual
+        alignment.
+        """),
+
+    'pslHisto': dedent(
+        """
+        Collect counts on PSL alignments for making histograms. These then be
+        analyzed with R, textHistogram, etc.
+        """),
+
+    'pslSwap': dedent(
+        """
+        Swap target and query in psls
+        """),
+
+    'pslToBed': dedent(
+        """
+        transform a psl format file to a bed format file.
+        """),  # note for those keeping track, s/tranform/transform
+}
+
+SKIP = [
+    'sizeof',
+]
+
 custom_build_scripts = {
     'fetchChromSizes': 'template-build-fetchChromSizes.sh',
 }
+
+for block in parse_footer('FOOTER'):
+    if len(block) == 2:
+        program, summary = block
+        program = problematic.get(program, program)
+        summary_program, description = summary
+
+        # some programs -- like bedGraphToBigWig -- have summary lines that
+        # look like this:
+        #
+        #   bedGraphToBigWig v 4 - Convert a bedGraph file to bigWig format
+        #
+        # So just get the first word as the program name.
+        summary_program = summary_program.split()[0]
+        if program != summary_program:
+            try:
+                program = resolve_header_and_summary_conflicts[program]
+            except KeyError:
+                raise ValueError(
+                    "mismatch in header and summary. header: "
+                    "'{0}'; summary: '{1}'"
+                    .format(program, summary_program))
+        if program in SKIP:
+            continue
+
+    else:
+        assert len(block) == 1
+        program = block[0]
+        if program in SKIP:
+            continue
+        description = manual_descriptions[program]
 
     # conda package names must be lowercase
     package = 'ucsc-' + program.lower()
     recipe_dir = os.path.join(recipes_dir, package)
 
     subdir = program_subdir(program, names)
-    if subdir is None:
+    if subdir is None and program not in custom_build_scripts:
         print("Skipping {0}".format(program))
         continue
 
@@ -127,7 +206,7 @@ custom_build_scripts = {
             meta_template.format(
                 program=program,
                 package=package,
-                summary=summary,
+                summary=description,
                 version=VERSION,
             )
         )
