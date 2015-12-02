@@ -159,4 +159,11 @@ chmod +x $configureHomer;
 # script *hard-codes* the paths in the perl scripts. Nevertheless,
 # create symlinks to $outdir/bin as this is where configureHomer.pl
 # -install will put the binaries
-for i in $binaries; do ln -s $outdir/bin/$i $PREFIX/bin/$i; done
+
+# For all binaries, wrap configureHomer
+for i in $binaries; do
+    echo "#! /bin/bash" > $outdir/bin/$i;
+    echo configureHomer.pl >> $outdir/bin/$i;
+    chmod +x $outdir/bin/$i;
+    ln -s $outdir/bin/$i $PREFIX/bin/$i; 
+done
