@@ -1,5 +1,5 @@
 #!/bin/bash
-# VarScan executable shell script
+# miraligner executable shell script based on @chapmanb magic
 set -eu -o pipefail
 
 export LC_ALL=en_US.UTF-8

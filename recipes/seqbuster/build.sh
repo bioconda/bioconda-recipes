@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu -o pipefail
 target=$PREFIX/share/java/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $target
 mkdir -p $PREFIX/bin
