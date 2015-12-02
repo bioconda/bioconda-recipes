@@ -19,7 +19,7 @@ JAR_DIR=$DIR
 
 java=java
 
-if [ -z "${JAVA_HOME:=}"]; then
+if [ -z "${JAVA_HOME:=}" ]; then
   if [ -e "$JAVA_HOME/bin/java" ]; then
       java="$JAVA_HOME/bin/java"
   fi
