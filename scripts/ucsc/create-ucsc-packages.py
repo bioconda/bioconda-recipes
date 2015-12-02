@@ -4,16 +4,46 @@ import re
 import tarfile
 from conda.fetch import download
 
+# e.g., "========   addCols   ===================================="
+re_header = re.compile(r'^=+\s+(?P<program>\w+)\s+=+$')
+
+# e.g.,# "addCols - Sum columns in a text file."
+re_summary = re.compile(r'^(?P<program>\w.*?) - (?P<description>.*)$')
+
 
 def parse_footer(fn):
-    for line in open(fn):
-        m = re_summary.match(line)
-        if not m:
+    """
+    Parse the downloaded FOOTER file, which contains a header for each program
+    and (usually) a description line.
+
+    Yields either a nested 2-tuple of (header-program-name,
+    (description-program-name, description-text)) if a description can be
+    found, or a 1-tuple of (header-program-name,) if no description found.
+    """
+    block = []
+    f = open(fn)
+    while True:
+        line = f.readline()
+        if not line:
+            break
+        m1 = re_header.match(line)
+        if m1:
+            if block:
+                yield block
+                block = []
+            name = m1.groups()[0]
+            block.append(name)
             continue
-        yield m.groups()
+        m = re_summary.match(line)
+        if m:
+            if not block:
+                continue
+            block.append(m.groups())
+            yield block
+            block = []
+    if block:
+        yield block
 
-
-re_summary = re.compile(r'^(?P<program>\w.*?) - (?P<description>.*)$')
 
 # This is the version of the last available tarball visible on
 # http://hgdownload.cse.ucsc.edu/admin/exe/
