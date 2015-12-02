@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import re
+from textwrap import dedent
 import tarfile
 from conda.fetch import download
 
@@ -49,9 +50,15 @@ def parse_footer(fn):
 # http://hgdownload.cse.ucsc.edu/admin/exe/
 VERSION = "324"
 
-tarball = 'http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{0}.src.tgz'.format(VERSION)
+# Download tarball if it doesn't exist. Always download FOOTER.
+tarball = (
+    'http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{0}.src.tgz'
+    .format(VERSION))
 if not os.path.exists(os.path.basename(tarball)):
     download(tarball, os.path.basename(tarball))
+download(
+    'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/FOOTER',
+    'FOOTER')
 
 # Different programs are built under different subdirectories in the source. So
 # get a directory listing of the tarball
@@ -59,8 +66,12 @@ t = tarfile.open(os.path.basename(tarball))
 names = [i for i in t.getnames()
          if i.startswith('./userApps/kent/src')]
 
+
 def program_subdir(program, names):
-    hits = [i for i in names if program in i and t.getmember(i).isdir() ]
+    """
+    Identify the source directory for a program.
+    """
+    hits = [i for i in names if program in i and t.getmember(i).isdir()]
     if len(hits) == 0:
         return
     top = sorted(hits)[0]
