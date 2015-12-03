@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import re
+import sys
 from textwrap import dedent
 import tarfile
 from conda.fetch import download
@@ -160,10 +161,11 @@ SKIP = [
 custom_build_scripts = {
     'fetchChromSizes': 'template-build-fetchChromSizes.sh',
     'pslCDnaFilter': 'template-build-with-stringify.sh',
+    'pslMap': 'template-build-with-stringify.sh',
 }
 
 for block in parse_footer('FOOTER'):
-
+    sys.stderr.write('.')
     # If len == 2, then a description was parsed.
     if len(block) == 2:
         program, summary = block
@@ -206,7 +208,7 @@ for block in parse_footer('FOOTER'):
     # cases it may not exist, in which case we expect a custom build script.
     subdir = program_subdir(program, names)
     if subdir is None and program not in custom_build_scripts:
-        print("Skipping {0}".format(program))
+        sys.stderr.write(" Skipping {0} ".format(program))
         continue
 
     # Fill in templates and write them to recipe dir
@@ -241,3 +243,5 @@ for block in parse_footer('FOOTER'):
 
     with open(os.path.join(recipe_dir, 'include.patch'), 'w') as fout:
         fout.write(open('include.patch').read())
+
+sys.stderr.write('\n')
