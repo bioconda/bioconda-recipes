@@ -133,7 +133,7 @@ def test_recipes():
                     try:
                         sp.run(["anaconda", "-t",
                                 os.environ.get("ANACONDA_TOKEN"),
-                                "upload", package], stdout=sp.PIPE, check=True)
+                                "upload", package], stdout=sp.PIPE, stderr=sp.STDOUT, check=True)
                     except sp.CalledProcessError as e:
                         if b"already exists" in e.stdout:
                             # ignore error assuming that it is caused by existing package
