@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import re
+import sys
 from textwrap import dedent
 import tarfile
 from conda.fetch import download
@@ -98,8 +99,8 @@ resolve_header_and_summary_conflicts = {
     'rmFaDups': 'rmFaDups',
 }
 
-# Programs whose descriptions do not meet the regex and therefore must be
-# manually assigned.
+# Some programs' descriptions do not meet the regex in FOOTER and therefore
+# must be manually assigned.
 manual_descriptions = {
 
     'estOrient': dedent(
@@ -149,22 +150,29 @@ manual_descriptions = {
         """),  # note for those keeping track, s/tranform/transform
 }
 
+# programs listed in FOOTER that should not be considered a "ucsc utility"
 SKIP = [
     'sizeof',
 ]
 
+# Some programs need to be built differently. It seems that a subset of
+# programs need the "stringify" binary build as well. Or, in the case of
+# fetchChromSizes, it's simply a script that needs to be copied.
 custom_build_scripts = {
     'fetchChromSizes': 'template-build-fetchChromSizes.sh',
+    'pslCDnaFilter': 'template-build-with-stringify.sh',
+    'pslMap': 'template-build-with-stringify.sh',
 }
 
 for block in parse_footer('FOOTER'):
+    sys.stderr.write('.')
+    # If len == 2, then a description was parsed.
     if len(block) == 2:
         program, summary = block
         program = problematic.get(program, program)
         summary_program, description = summary
 
-        # some programs -- like bedGraphToBigWig -- have summary lines that
-        # look like this:
+        # Some programs have summary lines that look like this:
         #
         #   bedGraphToBigWig v 4 - Convert a bedGraph file to bigWig format
         #
@@ -181,6 +189,8 @@ for block in parse_footer('FOOTER'):
         if program in SKIP:
             continue
 
+    # If len == 1 then no description was parsed, so we expect one to be in
+    # manual_descriptions.
     else:
         assert len(block) == 1
         program = block[0]
@@ -191,14 +201,15 @@ for block in parse_footer('FOOTER'):
     # conda package names must be lowercase
     package = 'ucsc-' + program.lower()
     recipe_dir = os.path.join(recipes_dir, package)
-
-    subdir = program_subdir(program, names)
-    if subdir is None and program not in custom_build_scripts:
-        print("Skipping {0}".format(program))
-        continue
-
     if not os.path.exists(recipe_dir):
         os.makedirs(recipe_dir)
+
+    # Identify the subdirectory we need to go to in the build script. In some
+    # cases it may not exist, in which case we expect a custom build script.
+    subdir = program_subdir(program, names)
+    if subdir is None and program not in custom_build_scripts:
+        sys.stderr.write(" Skipping {0} ".format(program))
+        continue
 
     # Fill in templates and write them to recipe dir
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
@@ -232,3 +243,5 @@ for block in parse_footer('FOOTER'):
 
     with open(os.path.join(recipe_dir, 'include.patch'), 'w') as fout:
         fout.write(open('include.patch').read())
+
+sys.stderr.write('\n')
