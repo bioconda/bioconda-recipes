@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-source ./long-wait.sh
-
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
     # run CentOS5 based docker container
