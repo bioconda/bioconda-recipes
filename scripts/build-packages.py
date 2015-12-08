@@ -10,7 +10,7 @@ import nose
 from conda_build.metadata import MetaData
 from toposort import toposort_flatten
 
-PYTHON_VERSIONS = ["27", "35"]
+PYTHON_VERSIONS = ["27", "34", "35"]
 CONDA_NPY = "110"
 CONDA_PERL = "5.22.0"
 
