@@ -79,7 +79,7 @@ def build_recipe(recipe):
             errors += 1
     if errors == builds:
         # fail if all builds result in an error
-        assert False
+        assert False, "All builds of recipe {} failed.".format(recipe)
 
 
 def filter_recipes(recipes):
