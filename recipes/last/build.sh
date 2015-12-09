@@ -26,4 +26,4 @@ make
 
 mkdir -p $PREFIX/bin
 for i in $binaries; do cp $SRC_DIR/src/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
-make install prefix=$PREFIX
+make install prefix=$PREFIX # to install scripts, primarily
