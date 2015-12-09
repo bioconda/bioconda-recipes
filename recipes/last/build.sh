@@ -8,8 +8,18 @@ lastdb \
 last-split \
 last-pair-probs \
 last-merge-batches \
-maf-convert
 "
+
+scripts=" \
+maf-convert \
+maf-join \
+last-train \
+last-postmask \
+last-map-probs \
+last-dotplot \
+"
+
+for i in $scripts; do 2to3 $SRC_DIR/scripts/$i -w --no-diffs &&  sed -i -- 's/string.maketrans("", "")/None/g' $SRC_DIR/scripts/$i && sed -i -- 's/#! \/usr\/bin\/env python/#! \/usr\/bin\/env python\'$'\n''from __future__ import print_function/g' && chmod +x $PREFIX/scripts/$i; done
 
 chmod +x $SRC_DIR/build/*
 make
