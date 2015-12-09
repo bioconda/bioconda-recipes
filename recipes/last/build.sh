@@ -11,6 +11,10 @@ last-merge-batches \
 "
 
 scripts=" \
+maf-sort \
+"
+
+pythonScripts=" \
 maf-convert \
 maf-join \
 last-train \
@@ -19,7 +23,9 @@ last-map-probs \
 last-dotplot \
 "
 
-for i in $scripts; do 2to3 $SRC_DIR/scripts/$i -w --no-diffs &&  sed -i -- 's/string.maketrans("", "")/None/g' $SRC_DIR/scripts/$i && sed -i -- 's/#! \/usr\/bin\/env python/#! \/usr\/bin\/env python\'$'\n''from __future__ import print_function/g' && chmod +x $PREFIX/scripts/$i; done
+for i in $scripts; do cp $SRC_DIR/scripts/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
+
+for i in $pythonScripts; do 2to3 $SRC_DIR/scripts/$i -w --no-diffs &&  sed -i -- 's/string.maketrans("", "")/None/g' $SRC_DIR/scripts/$i && sed -i -- 's/#! \/usr\/bin\/env python/#! \/usr\/bin\/env python\'$'\n''from __future__ import print_function/g' && chmod +x $PREFIX/scripts/$i; done
 
 chmod +x $SRC_DIR/build/*
 make
