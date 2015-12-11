@@ -51,11 +51,5 @@ if [ "$jvm_mem_opts" == "" ]; then
     jvm_mem_opts="$default_jvm_mem_opts"
 fi
 
-pass_arr=($pass_args)
-if [[ ${pass_arr[0]:=} == org* ]]
-then
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/qsignature.jar" $pass_args
-else
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/qsignature.jar" $pass_args
-fi
+eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/qsignature.jar" $pass_args
 exit
