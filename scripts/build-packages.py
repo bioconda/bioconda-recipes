@@ -31,10 +31,9 @@ def get_metadata(recipes):
 def toposort_recipes(recipes):
     metadata = list(get_metadata(recipes))
 
-    name2recipe = {
-        meta.get_value("package/name"): recipe
-        for meta, recipe in zip(metadata, recipes)
-    }
+    name2recipe = defaultdict(list)
+    for meta, recipe in zip(metadata, recipes):
+        name2recipe[meta.get_value("package/name")].append(recipe)
 
     def get_inner_deps(dependencies):
         for dep in dependencies:
@@ -47,7 +46,7 @@ def toposort_recipes(recipes):
             get_inner_deps(meta.get_value("requirements/build", [])))
         for meta in metadata
     }
-    return [name2recipe[name] for name in toposort_flatten(dag)]
+    return [recipe for name in toposort_flatten(dag) for recipe in name2recipe[name]]
 
 
 def conda_index():
