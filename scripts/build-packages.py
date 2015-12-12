@@ -113,7 +113,7 @@ def test_recipes():
     if args.packages:
         recipes = [recipe for package in args.packages for recipe in get_recipes(package)]
     else:
-        recipes = get_recipes()
+        recipes = list(get_recipes())
 
     # ensure that packages which need a build are built in the right order
     recipes = toposort_recipes(list(filter_recipes(recipes)))
