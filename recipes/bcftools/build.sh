@@ -11,3 +11,6 @@ mkdir -p $PREFIX/lib
 
 #cp $RECIPE_DIR/scripts/activate.sh $ACTIVATE_DIR/bcftools-activate.sh
 #cp $RECIPE_DIR/scripts/deactivate.sh $DEACTIVATE_DIR/bcftools-deactivate.sh
+
+#Note: the plugin install appears to be having difficulties on OSX so we have
+#commented this out for now.  See discussion on bioconda issues #430, #431, and #432
