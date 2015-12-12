@@ -5,6 +5,7 @@ import glob
 import subprocess as sp
 import argparse
 import sys
+from collections import defaultdict
 
 import nose
 from conda_build.metadata import MetaData
