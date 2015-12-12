@@ -5,6 +5,7 @@ import glob
 import subprocess as sp
 import argparse
 import sys
+from collections import defaultdict
 
 import nose
 from conda_build.metadata import MetaData
@@ -31,10 +32,9 @@ def get_metadata(recipes):
 def toposort_recipes(recipes):
     metadata = list(get_metadata(recipes))
 
-    name2recipe = {
-        meta.get_value("package/name"): recipe
-        for meta, recipe in zip(metadata, recipes)
-    }
+    name2recipe = defaultdict(list)
+    for meta, recipe in zip(metadata, recipes):
+        name2recipe[meta.get_value("package/name")].append(recipe)
 
     def get_inner_deps(dependencies):
         for dep in dependencies:
@@ -47,7 +47,7 @@ def toposort_recipes(recipes):
             get_inner_deps(meta.get_value("requirements/build", [])))
         for meta in metadata
     }
-    return [name2recipe[name] for name in toposort_flatten(dag)]
+    return [recipe for name in toposort_flatten(dag) for recipe in name2recipe[name]]
 
 
 def conda_index():
@@ -103,13 +103,17 @@ def filter_recipes(recipes):
             yield recipe
 
 
+def get_recipes(package="*"):
+    path = os.path.join(args.repository, "recipes", package)
+    yield from map(os.path.dirname, glob.glob(os.path.join(path, "meta.yaml")))
+    yield from map(os.path.dirname, glob.glob(os.path.join(path, "*", "meta.yaml")))
+
+
 def test_recipes():
     if args.packages:
-        recipes = [os.path.join(args.repository, "recipes", package)
-                   for package in args.packages]
+        recipes = [recipe for package in args.packages for recipe in get_recipes(package)]
     else:
-        recipes = list(glob.glob(os.path.join(args.repository, "recipes",
-                                              "*")))
+        recipes = list(get_recipes())
 
     # ensure that packages which need a build are built in the right order
     recipes = toposort_recipes(list(filter_recipes(recipes)))
