@@ -103,13 +103,17 @@ def filter_recipes(recipes):
             yield recipe
 
 
+def get_recipes(package="*"):
+    path = os.path.join(args.repository, "recipes", package)
+    yield from map(os.path.dirname, glob.glob(os.path.join(path, "meta.yaml")))
+    yield from map(os.path.dirname, glob.glob(os.path.join(path, "*", "meta.yaml"))
+
+
 def test_recipes():
     if args.packages:
-        recipes = [os.path.join(args.repository, "recipes", package)
-                   for package in args.packages]
+        recipes = [recipe for package in args.packages for recipe in get_recipes(package)]
     else:
-        recipes = list(glob.glob(os.path.join(args.repository, "recipes",
-                                              "*")))
+        recipes = get_recipes()
 
     # ensure that packages which need a build are built in the right order
     recipes = toposort_recipes(list(filter_recipes(recipes)))
