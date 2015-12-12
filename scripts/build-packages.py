@@ -106,7 +106,7 @@ def filter_recipes(recipes):
 def get_recipes(package="*"):
     path = os.path.join(args.repository, "recipes", package)
     yield from map(os.path.dirname, glob.glob(os.path.join(path, "meta.yaml")))
-    yield from map(os.path.dirname, glob.glob(os.path.join(path, "*", "meta.yaml"))
+    yield from map(os.path.dirname, glob.glob(os.path.join(path, "*", "meta.yaml")))
 
 
 def test_recipes():
