@@ -22,6 +22,7 @@ rm -rf release README readme.txt Welcome.html *jli.* demo sample *.zip
 if [[ `uname` == "Linux" ]]
 then
     mv lib/amd64/jli/*.so lib
+    mv jre/lib/amd64/*.so lib
     rm -r lib/amd64
 fi
 cp -r * $PREFIX
