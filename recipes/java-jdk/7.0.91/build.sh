@@ -17,18 +17,6 @@ mv $NAME/* .
 rm -r $NAME
 
 # clean up
-rm -rf release README readme.txt Welcome.html *jli.* demo sample *.zip
+rm -rf release README readme.txt Welcome.html *jli.* demo sample *.zip DISCLAIMER LICENSE THIRD_PARTY_README ASSEMBLY_EXCEPTION
 
-if [[ `uname` == "Linux" ]]
-then
-    mv lib/amd64/jli/*.so lib
-    rm -r lib/amd64
-fi
 cp -r * $PREFIX
-
-# more clean up
-rm -rf $PREFIX/release $PREFIX/README $PREFIX/Welcome.html
-rm -f $PREFIX/DISCLAIMER
-rm -f $PREFIX/LICENSE
-rm -f $PREFIX/THIRD_PARTY_README
-rm -f $PREFIX/ASSEMBLY_EXCEPTION
