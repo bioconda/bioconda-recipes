@@ -4,4 +4,4 @@ chmod +x $SRC_DIR/build/*
 
 export PRFX=$PREFIX
 make
-make install
+make install prefix=$PREFIX
