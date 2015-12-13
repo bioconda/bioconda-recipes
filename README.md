@@ -1,6 +1,6 @@
 # The bioconda channel
 
-[![Build Status](https://travis-ci.org/bioconda/recipes.svg?branch=master)](https://travis-ci.org/bioconda/recipes)
+[![Build Status](https://travis-ci.org/bioconda/bioconda-recipes.svg?branch=master)](https://travis-ci.org/bioconda/bioconda-recipes)
 
 [Conda](http://anaconda.org) is a platform and language independent package manager, that sports easy distribution, installation and version management of software.
 The [bioconda channel](https://anaconda.org/bioconda) is a Conda channel providing bioinformatics related packages.
@@ -83,7 +83,23 @@ This will display as [![bioconda-badge](https://img.shields.io/badge/install%20w
 If you want your package to be built for Mac OSX as well, you have to add it to
 the ``osx-whitelist.txt`` file in the root of this repository.
 
-###Other notes
+### Managing multiple versions of a package
+
+If there is interest to keep multiple versions of a package or to explicitly build an older version of a package,
+you can store those versions in subdirectories of the corresponding recipe, e.g.:
+
+```
+java-jdk/
+├── 7.0.91
+│   ├── build.sh
+│   └── meta.yaml
+├── build.sh
+└── meta.yaml
+```
+
+There should always be a primary in the root directory of a package that is updated when new releases are made.
+
+### Other notes
 
 We use a pre-built CentOS 5 image with compilers installed as part of the
 standard build. To build this yourself, you can do:
@@ -91,7 +107,7 @@ standard build. To build this yourself, you can do:
     docker login
     cd scripts && docker build -t bicoonda/bioconda-builder .
 
-###Creating Bioconductor recipes
+### Creating Bioconductor recipes
 A helper script is provided for generating a skeleton recipe for Bioconductor
 packages. The `scripts/bioconductor-scraper.py` script accepts the name of a Bioconductor
 package (e.g., "Biobase"). This script:
