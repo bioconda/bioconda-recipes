@@ -369,8 +369,8 @@ def write_recipe(package, recipe_dir, force=False):
     # *has* changed, then bump the version number.
     meta_file = os.path.join(recipe_dir, 'meta.yaml')
     if os.path.exists(meta_file):
-        updated_meta = yaml.load(proj.meta_yaml)
-        current_meta = yaml.load(open(meta_file))
+        updated_meta = pyaml.yaml.load(proj.meta_yaml)
+        current_meta = pyaml.yaml.load(open(meta_file))
 
         # pop off the version and build numbers so we can compare the rest of
         # the dicts
@@ -380,7 +380,7 @@ def write_recipe(package, recipe_dir, force=False):
         current_build_number = current_meta['build'].pop('number')
 
         if (
-            (updated_version != current_version)
+            (updated_version == current_version)
             and
             (updated_meta != current_meta)
         ):
