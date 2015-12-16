@@ -69,7 +69,7 @@ Once these tests pass, your new package can now be installed from anywhere
 using:
 
     conda install -c bioconda your_package
-    
+
 ### Step 4:
 
 If you want to promote the Bioconda installation of your package, we recommend to add the following badge to your homepage:
@@ -105,7 +105,12 @@ We use a pre-built CentOS 5 image with compilers installed as part of the
 standard build. To build this yourself, you can do:
 
     docker login
-    cd scripts && docker build -t bicoonda/bioconda-builder .
+    cd scripts && docker build -t bioconda/bioconda-builder .
+
+Once built, back up to the root repo directory and test using `docker`:
+
+    cd ..
+    docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
 
 ### Creating Bioconductor recipes
 A helper script is provided for generating a skeleton recipe for Bioconductor
@@ -120,7 +125,7 @@ package (e.g., "Biobase"). This script:
   package names
 - writes a `meta.yaml` and `build.sh` file to `recipes/<new package name>`.
 
-That is, 
+That is,
 
 ```bash
  scripts/bioconductor-scraper.py Biobase
