@@ -6,6 +6,7 @@ import subprocess as sp
 import argparse
 import sys
 from collections import defaultdict
+from itertools import chain
 
 import nose
 from conda_build.metadata import MetaData
@@ -28,6 +29,11 @@ def get_metadata(recipes):
         yield MetaData(recipe)
 
 
+def get_deps(metadata, build=True):
+    for dep in metadata.get_value("requirements/{}".format("build" if build else "run"), []):
+        yield dep.split()[0]
+
+
 # inspired by conda-build-all from https://github.com/omnia-md/conda-recipes
 def toposort_recipes(recipes):
     metadata = list(get_metadata(recipes))
@@ -43,8 +49,7 @@ def toposort_recipes(recipes):
                 yield name
 
     dag = {
-        meta.get_value("package/name"): set(
-            get_inner_deps(meta.get_value("requirements/build", [])))
+        meta.get_value("package/name"): set(get_inner_deps(chain(get_deps(meta), get_deps(meta, build=False))))
         for meta in metadata
     }
     return [recipe for name in toposort_flatten(dag) for recipe in name2recipe[name]]
@@ -59,25 +64,29 @@ def conda_index():
 
 
 def build_recipe(recipe):
-    errors = 0
-    builds = 0
-    conda_index()
-    for py in PYTHON_VERSIONS:
+    def build(py=None):
         try:
-            builds += 1
-
             out = None if args.verbose else sp.PIPE
-            sp.run(["conda", "build", "--no-anaconda-upload", "--numpy",
-                     CONDA_NPY, "--python", py, "--skip-existing", "--quiet",
-                     recipe],
+            py = ["--python", py, "--numpy", CONDA_NPY] if py is not None else []
+            sp.run(["conda", "build", "--no-anaconda-upload"] + py +
+                   ["--skip-existing", "--quiet", recipe],
                    stderr=out, stdout=out, check=True, universal_newlines=True,
                    env=env)
+            return True
         except sp.CalledProcessError as e:
             if e.stdout is not None:
                 print(e.stdout)
                 print(e.stderr)
-            errors += 1
-    if errors == builds:
+            return False
+
+    conda_index()
+    if "python" not in get_deps(MetaData(recipe), build=False):
+        success = build()
+    else:
+        # use list to enforce all builds
+        success = any(list(map(build, PYTHON_VERSIONS)))
+
+    if not success:
         # fail if all builds result in an error
         assert False, "All builds of recipe {} failed.".format(recipe)
 
@@ -117,6 +126,7 @@ def test_recipes():
 
     # ensure that packages which need a build are built in the right order
     recipes = toposort_recipes(list(filter_recipes(recipes)))
+    print(recipes, file=sys.stderr)
 
     # build packages
     for recipe in recipes:
