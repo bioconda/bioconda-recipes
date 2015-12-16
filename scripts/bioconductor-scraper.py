@@ -85,11 +85,7 @@ class BioCProjectPage(object):
     @property
     def tarball_url(self):
         """
-        Return the url to the tarball.
-
-        If we can find a tarball for this version in the bioaRchive, then use
-        that. Otherwise use the tarball indicated in the "Package Source"
-        section of the project's page.
+        Return the url to the tarball from the bioconductor site.
         """
 
 
@@ -121,6 +117,10 @@ class BioCProjectPage(object):
 
         This is because we need the whole tarball to get the DESCRIPTION file
         and to generate an md5 hash, so we might as well save it somewhere.
+
+        Note that we always get the bioconductor tarball and get its md5. Its
+        md5 *should* match that of the equivalent bioaRchive tarball -- if it
+        doesn't, conda will catch it when testing the package build.
         """
         if self._cached_tarball:
             return self._cached_tarball
