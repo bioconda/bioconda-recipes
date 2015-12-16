@@ -6,6 +6,7 @@ import subprocess as sp
 import argparse
 import sys
 from collections import defaultdict
+from itertools import chain
 
 import nose
 from conda_build.metadata import MetaData
@@ -48,7 +49,7 @@ def toposort_recipes(recipes):
                 yield name
 
     dag = {
-        meta.get_value("package/name"): set(get_inner_deps(get_deps(meta)))
+        meta.get_value("package/name"): set(get_inner_deps(chain(get_deps(meta), get_deps(meta, build=False))))
         for meta in metadata
     }
     return [recipe for name in toposort_flatten(dag) for recipe in name2recipe[name]]
@@ -125,6 +126,7 @@ def test_recipes():
 
     # ensure that packages which need a build are built in the right order
     recipes = toposort_recipes(list(filter_recipes(recipes)))
+    print(recipes, file=sys.stderr)
 
     # build packages
     for recipe in recipes:
