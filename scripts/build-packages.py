@@ -28,6 +28,11 @@ def get_metadata(recipes):
         yield MetaData(recipe)
 
 
+def get_deps(metadata, build=True):
+    for dep in metadata.get_value("requirements/{}".format("build" if build else "run"), []):
+        yield dep.split()[0]
+
+
 # inspired by conda-build-all from https://github.com/omnia-md/conda-recipes
 def toposort_recipes(recipes):
     metadata = list(get_metadata(recipes))
@@ -43,8 +48,7 @@ def toposort_recipes(recipes):
                 yield name
 
     dag = {
-        meta.get_value("package/name"): set(
-            get_inner_deps(meta.get_value("requirements/build", [])))
+        meta.get_value("package/name"): set(get_inner_deps(get_deps(meta)))
         for meta in metadata
     }
     return [recipe for name in toposort_flatten(dag) for recipe in name2recipe[name]]
@@ -59,25 +63,28 @@ def conda_index():
 
 
 def build_recipe(recipe):
-    errors = 0
-    builds = 0
-    conda_index()
-    for py in PYTHON_VERSIONS:
+    def build(py=PYTHON_VERSIONS[-1]):
         try:
-            builds += 1
-
             out = None if args.verbose else sp.PIPE
             sp.run(["conda", "build", "--no-anaconda-upload", "--numpy",
                      CONDA_NPY, "--python", py, "--skip-existing", "--quiet",
                      recipe],
                    stderr=out, stdout=out, check=True, universal_newlines=True,
                    env=env)
+            return True
         except sp.CalledProcessError as e:
             if e.stdout is not None:
                 print(e.stdout)
                 print(e.stderr)
-            errors += 1
-    if errors == builds:
+            return False
+
+    conda_index()
+    if "python" in get_deps(MetaData(recipe), build=False):
+        success = build()
+    else:
+        success = any(map(build, PYTHON_VERSIONS))
+
+    if not success:
         # fail if all builds result in an error
         assert False, "All builds of recipe {} failed.".format(recipe)
 
