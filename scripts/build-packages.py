@@ -63,11 +63,12 @@ def conda_index():
 
 
 def build_recipe(recipe):
-    def build(py=PYTHON_VERSIONS[-1]):
+    def build(py=None):
         try:
             out = None if args.verbose else sp.PIPE
+            py = ["--python", py] if py is not None else []
             sp.run(["conda", "build", "--no-anaconda-upload", "--numpy",
-                     CONDA_NPY, "--python", py, "--skip-existing", "--quiet",
+                     CONDA_NPY] + py + ["--skip-existing", "--quiet",
                      recipe],
                    stderr=out, stdout=out, check=True, universal_newlines=True,
                    env=env)
@@ -79,10 +80,11 @@ def build_recipe(recipe):
             return False
 
     conda_index()
-    if "python" in get_deps(MetaData(recipe), build=False):
+    if "python" not in get_deps(MetaData(recipe), build=False):
         success = build()
     else:
-        success = any(map(build, PYTHON_VERSIONS))
+        # use list to enforce all builds
+        success = any(list(map(build, PYTHON_VERSIONS)))
 
     if not success:
         # fail if all builds result in an error
