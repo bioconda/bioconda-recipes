@@ -51,22 +51,48 @@ class BioCProjectPage(object):
         self._cached_tarball = None
         self._dependencies = None
         self.url = os.path.join(base_url, package + '.html')
-        self.soup = bs4.BeautifulSoup(
-            request.urlopen(self.url),
-            'html.parser')
 
         # The table at the bottom of the page has the info we want. An earlier
         # draft of this script parsed the dependencies from the details table.
         # That's still an option if we need a double-check on the DESCRIPTION
         # fields.
+        self.soup = bs4.BeautifulSoup(
+            request.urlopen(self.url),
+            'html.parser')
         self.details_table = self.soup.find_all(attrs={'class': 'details'})[0]
+
+    @property
+    def bioaRchive_url(self):
+        """
+        Returns the bioaRchive URL if one exists for this version of this
+        package, otherwise returns None.
+
+        Note that to get the package version, we're still getting the
+        bioconductor tarball to extract the DESCRIPTION file.
+        """
+        try:
+            url = 'https://bioarchive.galaxyproject.org/{0.package}_{0.version}.tar.gz'.format(self)
+            check = request.urlopen(url)
+            return url
+        except request.HTTPError as e:
+            if e.code == 404:
+                pass
+            else:
+                raise
+        return None
+
 
     @property
     def tarball_url(self):
         """
-        Return the url to the tarball indicated in the "Package Source"
+        Return the url to the tarball.
+
+        If we can find a tarball for this version in the bioaRchive, then use
+        that. Otherwise use the tarball indicated in the "Package Source"
         section of the project's page.
         """
+
+
         r = re.compile('{0}.*\.tar.gz'.format(self.package))
 
         def f(href):
@@ -272,6 +298,10 @@ class BioCProjectPage(object):
         We use pyaml (rather than yaml) because it has better handling of
         OrderedDicts.
         """
+        url = self.bioaRchive_url
+        if not url:
+            url = self.tarball_url
+
         DEPENDENCIES = sorted(self.dependencies)
         d = OrderedDict((
             (
@@ -283,7 +313,7 @@ class BioCProjectPage(object):
             (
                 'source', OrderedDict((
                     ('fn', self.tarball_basename),
-                    ('url', self.tarball_url),
+                    ('url', url),
                     ('md5', self.md5),
                 )),
             ),
