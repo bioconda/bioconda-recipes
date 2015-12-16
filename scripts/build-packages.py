@@ -66,10 +66,9 @@ def build_recipe(recipe):
     def build(py=None):
         try:
             out = None if args.verbose else sp.PIPE
-            py = ["--python", py] if py is not None else []
-            sp.run(["conda", "build", "--no-anaconda-upload", "--numpy",
-                     CONDA_NPY] + py + ["--skip-existing", "--quiet",
-                     recipe],
+            py = ["--python", py, "--numpy", CONDA_NPY] if py is not None else []
+            sp.run(["conda", "build", "--no-anaconda-upload"] + py +
+                   ["--skip-existing", "--quiet", recipe],
                    stderr=out, stdout=out, check=True, universal_newlines=True,
                    env=env)
             return True
