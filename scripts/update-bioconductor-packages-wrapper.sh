@@ -3,10 +3,10 @@
 # This script helps update R and BioConductor packages by attempting to bundle
 # newly-updated packages together into a single pull request.
 #
-# It uses the output of scripts/update-bioconductor-packages.py to get the
+# It uses the output of scripts/update_bioconductor_packages.py to get the
 # sorted DAG of bioconductor and R recipes defined in this repo.
 #
-# For each recipe, we run scripts/bioconductor-scraper.py to build
+# For each recipe, we run scripts/bioconductor_scraper.py to build
 # a recipe for the latest version.
 #
 # If git status reports no change in that recipe, we move on.
@@ -52,14 +52,14 @@ function log () {
 log "***Discarding un-committed R and bioconductor recipes"
 git checkout -- recipes/bioconductor-* recipes/r-*
 
-for i in $(python scripts/update-bioconductor-packages.py); do
+for i in $(python scripts/update_bioconductor_packages.py); do
     bioconductor_name=$(echo "$i" | awk -F ":" '{print $1}')
     recipe_name="$(echo "$i" | awk -F ":" '{print $2}')"
     log "Updating Bioconductor package $bioconductor_name (recipe $recipe_name)"
 
     # Handle bioconductor and CRAN packages separately
     if [ $(echo "$recipe_name" | grep "^bioconductor-") ]; then
-        python $TOP/scripts/bioconductor-scraper.py $bioconductor_name --force
+        python $TOP/scripts/bioconductor_scraper.py $bioconductor_name --force
     else
         (cd $TOP/recipes && conda skeleton cran "$bioconductor_name" --update-outdated)
     fi

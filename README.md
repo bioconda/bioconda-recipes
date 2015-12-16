@@ -109,7 +109,7 @@ standard build. To build this yourself, you can do:
 
 ### Creating Bioconductor recipes
 A helper script is provided for generating a skeleton recipe for Bioconductor
-packages. The `scripts/bioconductor-scraper.py` script accepts the name of a Bioconductor
+packages. The `scripts/bioconductor_scraper.py` script accepts the name of a Bioconductor
 package (e.g., "Biobase"). This script:
 
 - parses the Bioconductor web page for the tarball
@@ -120,10 +120,10 @@ package (e.g., "Biobase"). This script:
   package names
 - writes a `meta.yaml` and `build.sh` file to `recipes/<new package name>`.
 
-That is, 
+That is,
 
 ```bash
- scripts/bioconductor-scraper.py Biobase
+ scripts/bioconductor_scraper.py Biobase
 ```
 
 results in the files:

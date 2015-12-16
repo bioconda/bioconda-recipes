@@ -62,6 +62,14 @@ class BioCProjectPage(object):
             'html.parser')
         self.details_table = self.soup.find_all(attrs={'class': 'details'})[0]
 
+        # However, it is helpful to get the version info from this table. That
+        # way we can try getting the bioaRchive tarball and cache that.
+        for td in self.details_table.findAll('td'):
+            if td.getText() == 'Version':
+                version = td.findNext().getText()
+                break
+        self.version = version
+
     @property
     def bioaRchive_url(self):
         """
@@ -84,12 +92,10 @@ class BioCProjectPage(object):
 
 
     @property
-    def tarball_url(self):
+    def bioconductor_tarball_url(self):
         """
         Return the url to the tarball from the bioconductor site.
         """
-
-
         r = re.compile('{0}.*\.tar.gz'.format(self.package))
 
         def f(href):
@@ -105,6 +111,13 @@ class BioCProjectPage(object):
         # relative URL from the source. Here we're just hard-coding
         # '../src/contrib' based on the structure of the bioconductor site.
         return os.path.join(parse.urljoin(self.url, '../src/contrib'), s[0])
+
+    @property
+    def tarball_url(self):
+        url = self.bioaRchive_url
+        if url:
+            return url
+        return self.bioconductor_tarball_url
 
     @property
     def tarball_basename(self):
@@ -162,9 +175,9 @@ class BioCProjectPage(object):
 
         return dict(e)
 
-    @property
-    def version(self):
-        return self.description['version']
+    #@property
+    #def version(self):
+    #    return self.description['version']
 
     @property
     def license(self):
