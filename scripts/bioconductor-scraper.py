@@ -51,6 +51,7 @@ class BioCProjectPage(object):
         self._cached_tarball = None
         self._dependencies = None
         self.url = os.path.join(base_url, package + '.html')
+        self.build_number = 0
 
         # The table at the bottom of the page has the info we want. An earlier
         # draft of this script parsed the dependencies from the details table.
@@ -319,7 +320,7 @@ class BioCProjectPage(object):
             ),
             (
                 'build', OrderedDict((
-                    ('number', 0),
+                    ('number', self.build_number),
                     ('rpaths', ['lib/R/lib/', 'lib/']),
                 )),
             ),
@@ -364,8 +365,32 @@ def write_recipe(package, recipe_dir, force=False):
             print('creating %s' % recipe_dir)
             os.makedirs(recipe_dir)
 
+    # If the version number has not changed but something else in the recipe
+    # *has* changed, then bump the version number.
+    meta_file = os.path.join(recipe_dir, 'meta.yaml')
+    if os.path.exists(meta_file):
+        updated_meta = yaml.load(proj.meta_yaml)
+        current_meta = yaml.load(open(meta_file))
+
+        # pop off the version and build numbers so we can compare the rest of
+        # the dicts
+        updated_version = updated_meta['package'].pop('version')
+        current_version = current_meta['package'].pop('version')
+        updated_build_number = updated_meta['build'].pop('number')
+        current_build_number = current_meta['build'].pop('number')
+
+        if (
+            (updated_version != current_version)
+            and
+            (updated_meta != current_meta)
+        ):
+            proj.build_number = int(current_build_number) + 1
+
+
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
         fout.write(proj.meta_yaml)
+
+
 
     with open(os.path.join(recipe_dir, 'build.sh'), 'w') as fout:
         fout.write(dedent(
