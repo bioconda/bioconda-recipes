@@ -2,7 +2,7 @@
 
 BINARY=Trinity
 BINARY_HOME=$PREFIX/bin
-TRINITY_HOME=$PREFIX/bin/trinity-$PKG_VERSION
+TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
 
 cd $SRC_DIR
 
@@ -16,4 +16,4 @@ mkdir -p $PREFIX/bin
 mkdir -p $TRINITY_HOME
 cp -R $SRC_DIR/* $TRINITY_HOME/
 cd $TRINITY_HOME && chmod +x Trinity.pl
-cd $BINARY_HOME && ln -s trinity-$PKG_VERSION/Trinity.pl $BINARY
+cd $BINARY_HOME && ln -s $TRINITY_HOME/Trinity.pl $BINARY
