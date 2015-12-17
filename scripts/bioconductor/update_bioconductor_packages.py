@@ -18,18 +18,18 @@ import os
 import networkx as nx
 
 
-def bioc_name(recipe_name):
+def bioc_name(recipe_name, recipes):
     """
     Returns the Bioconductor name (rather than the sanitized lowercase bioconda
     name) that can be provided to bioconda-scraper.py
     """
-    meta = os.path.join('recipes', recipe_name, 'meta.yaml')
+    meta = os.path.join(recipes, recipe_name, 'meta.yaml')
     yml = yaml.load(open(meta))
     fn = yml['source']['fn']
     return fn.split('_')[0]
 
 
-def dependencies(meta):
+def dependencies(meta, recipes):
     """
     Given a meta.yaml file, return its depdencies that are in the current repo.
     """
@@ -39,20 +39,25 @@ def dependencies(meta):
     results = []
     for dep in deps:
         if (
-            os.path.exists(os.path.join('recipes', dep)) and
+            os.path.exists(os.path.join(recipes, dep)) and
             ('bioconductor-' in dep or 'r-' in dep)
         ):
             results.append(dep)
     return results
 
 
-g = nx.DiGraph()
+if __name__ == "__main__":
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--recipes', default='recipes', help='Recipes directory')
+    args = ap.parse_args()
 
-for meta in glob.glob('recipes/bioconductor-*/meta.yaml'):
-    bioconda_name = os.path.basename(os.path.dirname(meta))
-    for dep in dependencies(meta):
-        g.add_edge(bioconda_name, dep)
+    g = nx.DiGraph()
 
+    for meta in glob.glob(os.path.join(args.recipes, 'bioconductor-*/meta.yaml')):
+        bioconda_name = os.path.basename(os.path.dirname(meta))
+        for dep in dependencies(meta, args.recipes):
+            g.add_edge(bioconda_name, dep)
 
-for dep in nx.topological_sort(g, reverse=True):
-    print('{0}:{1}'.format(bioc_name(dep), dep))
+    for dep in nx.topological_sort(g, reverse=True):
+        print('{0}:{1}'.format(bioc_name(dep, args.recipes), dep))
