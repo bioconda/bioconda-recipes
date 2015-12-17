@@ -36,6 +36,8 @@ BASE_R_PACKAGES = ["base", "boot", "class", "cluster", "codetools", "compiler",
                    "splines", "stats", "stats4", "survival", "tcltk", "tools",
                    "utils", ]
 
+HERE = os.path.abspath(os.path.dirname(__file__))
+
 class BioCProjectPage(object):
     def __init__(self, package):
         """
@@ -134,7 +136,7 @@ class BioCProjectPage(object):
         """
         if self._cached_tarball:
             return self._cached_tarball
-        cache_dir = 'cached_bioconductor_tarballs'
+        cache_dir = os.path.join(HERE, 'cached_bioconductor_tarballs')
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
         fn = os.path.join(cache_dir, self.tarball_basename)
