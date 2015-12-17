@@ -113,31 +113,11 @@ Once built, back up to the root repo directory and test using `docker`:
     docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
 
 ### Creating Bioconductor recipes
-A helper script is provided for generating a skeleton recipe for Bioconductor
-packages. The `scripts/bioconductor-scraper.py` script accepts the name of a Bioconductor
-package (e.g., "Biobase"). This script:
 
-- parses the Bioconductor web page for the tarball
-- downloads the tarball to a temp file and extracts the `DESCRIPTION` file
-- parses the DESCRIPTION file to identify dependencies
-- converts dependencies to package names more friendly to `conda`,
-  specifically prefixing `bioconductor-` or `r-` as needed and using lowercase
-  package names
-- writes a `meta.yaml` and `build.sh` file to `recipes/<new package name>`.
+See [`scripts/bioconductor/README.md`](scripts/bioconductor/README.md) for
+details on creating and updating Bioconductor recipes.
 
-That is,
+### Creating and updating UCSC tools
 
-```bash
- scripts/bioconductor-scraper.py Biobase
-```
-
-results in the files:
-
-```
-recipes/bioconductor-biobase/meta.yaml
-recipes/bioconductor-biobase/build.sh
-
-```
-
-After the recipe has been created, you can follow the build test instructions
-above.
+See [`scripts/ucsc/README.md`](scripts/ucsc/README.md) for details on creating
+and updating recipes for UCSC programs.
