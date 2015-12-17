@@ -430,9 +430,9 @@ if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument('package', help='Bioconductor package name')
-    ap.add_argument('--recipe-dir', default='recipes',
+    ap.add_argument('--recipes', default='recipes',
                     help='Recipe will be created in <recipe-dir>/<package>')
     ap.add_argument('--force', action='store_true',
                     help='Overwrite the contents of an existing recipe')
     args = ap.parse_args()
-    write_recipe(args.package, args.recipe_dir, args.force)
+    write_recipe(args.package, args.recipes, args.force)
