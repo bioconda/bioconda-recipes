@@ -4,6 +4,7 @@ These scripts help create recipes for bioconductor packages. You can set up an
 environment for running them using:
 
 ```bash
+conda config --add channels bioconda
 conda create -n bioconductor-recipes --file requirements.txt
 source activate bioconductor-recipes
 ```
