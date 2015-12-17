@@ -108,38 +108,6 @@ standard build. To build this yourself, you can do:
     cd scripts && docker build -t bicoonda/bioconda-builder .
 
 ### Creating Bioconductor recipes
-A helper script is provided for generating a skeleton recipe for Bioconductor
-packages. The `scripts/bioconductor_scraper.py` script accepts the name of a Bioconductor
-package (e.g., "Biobase"). This script:
 
-- parses the Bioconductor web page for the current version
-- checks to see if a tarball for the version is available on
-  [bioaRchive](https://bioarchive.galaxyproject.org/) and if so uses that for
-  long-term stability, otherwise uses the tarball from the Bioconductor page
-- downloads the tarball to the `cached_bioconductor_tarballs` dir and extracts
-  the `DESCRIPTION` file
-- parses the DESCRIPTION file to identify dependencies
-- converts dependencies to package names more friendly to `conda`,
-  specifically prefixing `bioconductor-` or `r-` as needed and using lowercase
-  package names
-- bumps the build number if package versions are the same but something else in
-  the recipe changed
-- calculates md5sum on the cached tarball
-- writes a `meta.yaml` and `build.sh` file to `recipes/<new package name>`.
-
-That is,
-
-```bash
- scripts/bioconductor_scraper.py Biobase
-```
-
-results in the files:
-
-```
-recipes/bioconductor-biobase/meta.yaml
-recipes/bioconductor-biobase/build.sh
-
-```
-
-After the recipe has been created, you can follow the build test instructions
-above.
+See [`scripts/bioconductor/README.md`](scripts/bioconductor/README.md) for
+details on creating and updating Bioconductor recipes.
