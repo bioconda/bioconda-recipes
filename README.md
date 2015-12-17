@@ -111,3 +111,8 @@ standard build. To build this yourself, you can do:
 
 See [`scripts/bioconductor/README.md`](scripts/bioconductor/README.md) for
 details on creating and updating Bioconductor recipes.
+
+### Creating and updating UCSC tools
+
+See [`scripts/ucsc/README.md`](scripts/ucsc/README.md) for details on creating
+and updating recipes for UCSC programs.
