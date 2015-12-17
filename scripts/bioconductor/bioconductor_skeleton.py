@@ -36,6 +36,8 @@ BASE_R_PACKAGES = ["base", "boot", "class", "cluster", "codetools", "compiler",
                    "splines", "stats", "stats4", "survival", "tcltk", "tools",
                    "utils", ]
 
+HERE = os.path.abspath(os.path.dirname(__file__))
+
 class BioCProjectPage(object):
     def __init__(self, package):
         """
@@ -51,6 +53,7 @@ class BioCProjectPage(object):
         self._cached_tarball = None
         self._dependencies = None
         self.url = os.path.join(base_url, package + '.html')
+        self.build_number = 0
 
         # The table at the bottom of the page has the info we want. An earlier
         # draft of this script parsed the dependencies from the details table.
@@ -60,6 +63,14 @@ class BioCProjectPage(object):
             request.urlopen(self.url),
             'html.parser')
         self.details_table = self.soup.find_all(attrs={'class': 'details'})[0]
+
+        # However, it is helpful to get the version info from this table. That
+        # way we can try getting the bioaRchive tarball and cache that.
+        for td in self.details_table.findAll('td'):
+            if td.getText() == 'Version':
+                version = td.findNext().getText()
+                break
+        self.version = version
 
     @property
     def bioaRchive_url(self):
@@ -83,12 +94,10 @@ class BioCProjectPage(object):
 
 
     @property
-    def tarball_url(self):
+    def bioconductor_tarball_url(self):
         """
         Return the url to the tarball from the bioconductor site.
         """
-
-
         r = re.compile('{0}.*\.tar.gz'.format(self.package))
 
         def f(href):
@@ -106,6 +115,13 @@ class BioCProjectPage(object):
         return os.path.join(parse.urljoin(self.url, '../src/contrib'), s[0])
 
     @property
+    def tarball_url(self):
+        url = self.bioaRchive_url
+        if url:
+            return url
+        return self.bioconductor_tarball_url
+
+    @property
     def tarball_basename(self):
         return os.path.basename(self.tarball_url)
 
@@ -117,14 +133,10 @@ class BioCProjectPage(object):
 
         This is because we need the whole tarball to get the DESCRIPTION file
         and to generate an md5 hash, so we might as well save it somewhere.
-
-        Note that we always get the bioconductor tarball and get its md5. Its
-        md5 *should* match that of the equivalent bioaRchive tarball -- if it
-        doesn't, conda will catch it when testing the package build.
         """
         if self._cached_tarball:
             return self._cached_tarball
-        cache_dir = 'cached_bioconductor_tarballs'
+        cache_dir = os.path.join(HERE, 'cached_bioconductor_tarballs')
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
         fn = os.path.join(cache_dir, self.tarball_basename)
@@ -161,9 +173,9 @@ class BioCProjectPage(object):
 
         return dict(e)
 
-    @property
-    def version(self):
-        return self.description['version']
+    #@property
+    #def version(self):
+    #    return self.description['version']
 
     @property
     def license(self):
@@ -319,7 +331,7 @@ class BioCProjectPage(object):
             ),
             (
                 'build', OrderedDict((
-                    ('number', 0),
+                    ('number', self.build_number),
                     ('rpaths', ['lib/R/lib/', 'lib/']),
                 )),
             ),
@@ -364,8 +376,32 @@ def write_recipe(package, recipe_dir, force=False):
             print('creating %s' % recipe_dir)
             os.makedirs(recipe_dir)
 
+    # If the version number has not changed but something else in the recipe
+    # *has* changed, then bump the version number.
+    meta_file = os.path.join(recipe_dir, 'meta.yaml')
+    if os.path.exists(meta_file):
+        updated_meta = pyaml.yaml.load(proj.meta_yaml)
+        current_meta = pyaml.yaml.load(open(meta_file))
+
+        # pop off the version and build numbers so we can compare the rest of
+        # the dicts
+        updated_version = updated_meta['package'].pop('version')
+        current_version = current_meta['package'].pop('version')
+        updated_build_number = updated_meta['build'].pop('number')
+        current_build_number = current_meta['build'].pop('number')
+
+        if (
+            (updated_version == current_version)
+            and
+            (updated_meta != current_meta)
+        ):
+            proj.build_number = int(current_build_number) + 1
+
+
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
         fout.write(proj.meta_yaml)
+
+
 
     with open(os.path.join(recipe_dir, 'build.sh'), 'w') as fout:
         fout.write(dedent(
@@ -394,9 +430,9 @@ if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument('package', help='Bioconductor package name')
-    ap.add_argument('--recipe-dir', default='recipes',
+    ap.add_argument('--recipes', default='recipes',
                     help='Recipe will be created in <recipe-dir>/<package>')
     ap.add_argument('--force', action='store_true',
                     help='Overwrite the contents of an existing recipe')
     args = ap.parse_args()
-    write_recipe(args.package, args.recipe_dir, args.force)
+    write_recipe(args.package, args.recipes, args.force)
