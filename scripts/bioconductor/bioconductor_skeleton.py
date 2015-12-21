@@ -13,6 +13,7 @@ import bs4
 import urllib
 from urllib import request
 from urllib import parse
+from urllib import error
 from collections import OrderedDict
 import logging
 import requests
@@ -36,7 +37,7 @@ BASE_R_PACKAGES = ["base", "boot", "class", "cluster", "codetools", "compiler",
                    "KernSmooth", "lattice", "MASS", "Matrix", "methods",
                    "mgcv", "nlme", "nnet", "parallel", "rpart", "spatial",
                    "splines", "stats", "stats4", "survival", "tcltk", "tools",
-                   "utils", ]
+                   "utils", 'R']
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -268,6 +269,11 @@ class BioCProjectPage(object):
 
 
         for name, version in sorted(versions.items()):
+            # DESCRIPTION notes base R packages, but we don't need to specify
+            # them in the dependencies.
+            if name in BASE_R_PACKAGES:
+                continue
+
             # Try finding the dependency on the bioconductor site; if it can't
             # be found then we assume it's in CRAN.
             try:
@@ -279,10 +285,6 @@ class BioCProjectPage(object):
             logger.info('{0:>12} dependency: name="{1}" version="{2}"'.format(
                 {'r-': 'R', 'bioconductor-': 'BioConductor'}[prefix],
                 name, version))
-            # DESCRIPTION notes base R packages, but we don't need to specify
-            # them in the dependencies.
-            if name in BASE_R_PACKAGES:
-                continue
 
             # add padding to version string
             if version:
