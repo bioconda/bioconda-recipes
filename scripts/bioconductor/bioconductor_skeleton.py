@@ -15,11 +15,13 @@ from urllib import request
 from urllib import parse
 from collections import OrderedDict
 import logging
+import requests
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s]: %(message)s')
 logger = logging.getLogger()
+logging.getLogger("requests").setLevel(logging.WARNING)
 
-base_url = 'http://bioconductor.org/packages/release/bioc/html'
+base_url = 'http://bioconductor.org/packages/'
 
 # Packages that might be specified in the DESCRIPTION of a package as
 # dependencies, but since they're built-in we don't need to specify them in
@@ -38,6 +40,8 @@ BASE_R_PACKAGES = ["base", "boot", "class", "cluster", "codetools", "compiler",
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
+class PageNotFoundError(Exception): pass
+
 class BioCProjectPage(object):
     def __init__(self, package):
         """
@@ -52,15 +56,23 @@ class BioCProjectPage(object):
         self._md5 = None
         self._cached_tarball = None
         self._dependencies = None
-        self.url = os.path.join(base_url, package + '.html')
         self.build_number = 0
+        self.request = requests.get(os.path.join(base_url, package))
+        if not self.request:
+            raise PageNotFoundError('Error {0.status_code} ({0.reason})'.format(self.request))
+
+        # Since we provide the "short link" we will get redirected. Using
+        # requests allows us to keep track of the final destination URL, which
+        # we need for reconstructing the tarball URL.
+        self.url = self.request.url
+
 
         # The table at the bottom of the page has the info we want. An earlier
         # draft of this script parsed the dependencies from the details table.
         # That's still an option if we need a double-check on the DESCRIPTION
         # fields.
         self.soup = bs4.BeautifulSoup(
-            request.urlopen(self.url),
+            self.request.content,
             'html.parser')
         self.details_table = self.soup.find_all(attrs={'class': 'details'})[0]
 
@@ -81,16 +93,14 @@ class BioCProjectPage(object):
         Note that to get the package version, we're still getting the
         bioconductor tarball to extract the DESCRIPTION file.
         """
-        try:
-            url = 'https://bioarchive.galaxyproject.org/{0.package}_{0.version}.tar.gz'.format(self)
-            check = request.urlopen(url)
+        url = 'https://bioarchive.galaxyproject.org/{0.package}_{0.version}.tar.gz'.format(self)
+        response = requests.get(url)
+        if response:
             return url
-        except request.HTTPError as e:
-            if e.code == 404:
-                pass
-            else:
-                raise
-        return None
+        elif response.status_code == 404:
+            return
+        else:
+            raise PageNotFoundError("Unexpected error: {0.status_code} ({0.reason})".format(response))
 
 
     @property
@@ -146,7 +156,11 @@ class BioCProjectPage(object):
         tmp = tempfile.NamedTemporaryFile(delete=False).name
         with open(tmp, 'wb') as fout:
             logger.info('Downloading {0} to {1}'.format(self.tarball_url, fn))
-            fout.write(request.urlopen(self.tarball_url).read())
+            response = requests.get(self.tarball_url)
+            if response:
+                fout.write(response.content)
+            else:
+                raise PageNotFoundError('Unexpected error {0.status_code} ({0.reason})'.format(response))
         shutil.move(tmp, fn)
         self._cached_tarball = fn
         return fn
@@ -259,7 +273,7 @@ class BioCProjectPage(object):
             try:
                 BioCProjectPage(name)
                 prefix = 'bioconductor-'
-            except urllib.error.HTTPError:
+            except PageNotFoundError:
                 prefix = 'r-'
 
             logger.info('{0:>12} dependency: name="{1}" version="{2}"'.format(
