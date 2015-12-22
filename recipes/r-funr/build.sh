@@ -8,6 +8,8 @@ $R CMD INSTALL --build .
 
 # Add more build steps here, if they are necessary.
 BIN=$PREFIX/bin
+mkdir -p $BIN
+
 $R -e "funr::setup(bin='$BIN')"
 
 # See
