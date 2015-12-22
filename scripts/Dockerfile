@@ -9,8 +9,8 @@ RUN yum install -y devtoolset-2-gcc devtoolset-2-binutils devtoolset-2-gcc-c++ d
 # Needed for perl-db-file
 RUN yum -y install db4-devel
 
-# install X11 and various dependencies
-RUN yum install -y xorg-x11-apps
+# install X11 dependencies and openGL/mesa
+RUN yum install -y xorg-x11-apps mesa-libGLU-devel
 
 # install rust compiler and cargo in the nightly version
 RUN yum install -y file gpg
