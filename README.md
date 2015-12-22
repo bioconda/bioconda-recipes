@@ -69,7 +69,7 @@ Once these tests pass, your new package can now be installed from anywhere
 using:
 
     conda install -c bioconda your_package
-    
+
 ### Step 4:
 
 If you want to promote the Bioconda installation of your package, we recommend to add the following badge to your homepage:
@@ -82,6 +82,18 @@ This will display as [![bioconda-badge](https://img.shields.io/badge/install%20w
 
 If you want your package to be built for Mac OSX as well, you have to add it to
 the ``osx-whitelist.txt`` file in the root of this repository.
+
+To set up a local machine for building and testing OSX recipes, run
+``scripts/travis-setup.sh``. Several commands in this script will prompt for
+sudo privileges, but the script itself should be run as a regular user. This
+script will set up a conda environment in ``/anaconda`` and install necessary prerequisites.
+
+To test all recipes in the ``osx-whitelist``, use:
+
+```
+scripts/build-packages.py --repository . --packages `cat osx-whitelist.txt`
+```
+
 
 ### Managing multiple versions of a package
 
