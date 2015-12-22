@@ -37,7 +37,7 @@ BASE_R_PACKAGES = ["base", "boot", "class", "cluster", "codetools", "compiler",
                    "KernSmooth", "lattice", "MASS", "Matrix", "methods",
                    "mgcv", "nlme", "nnet", "parallel", "rpart", "spatial",
                    "splines", "stats", "stats4", "survival", "tcltk", "tools",
-                   "utils", 'R']
+                   "utils"]
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
