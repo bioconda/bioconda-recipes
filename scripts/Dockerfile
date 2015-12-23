@@ -2,15 +2,15 @@ FROM centos:centos5
 
 # add tools useful for compilation
 RUN rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
-RUN yum install -y wget bzip2 bzip2-devel git gcc gcc-c++ patch zlib-devel make gcc44 gcc44-c++ cmake ncurses-devel unzip
+RUN yum install -y wget bzip2 bzip2-devel git gcc gcc-c++ patch zlib-devel make gcc44 gcc44-c++ cmake ncurses-devel unzip byacc
 RUN wget http://people.centos.org/tru/devtools-2/devtools-2.repo -O /etc/yum.repos.d/devtools-2.repo
 RUN wget --no-check-certificate https://copr.fedoraproject.org/coprs/praiskup/autotools/repo/epel-5/praiskup-autotools-epel-5.repo -O /etc/yum.repos.d/autotools.repo
 RUN yum install -y devtoolset-2-gcc devtoolset-2-binutils devtoolset-2-gcc-c++ devtoolset-2-gcc-gfortran autotools-latest pkgconfig which
 # Needed for perl-db-file
 RUN yum -y install db4-devel
 
-# install X11 and various dependencies
-RUN yum install -y xorg-x11-apps
+# install X11 dependencies and openGL/mesa
+RUN yum install -y xorg-x11-apps mesa-libGLU-devel
 
 # install rust compiler and cargo in the nightly version
 RUN yum install -y file gpg

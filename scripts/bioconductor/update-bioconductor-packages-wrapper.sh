@@ -20,8 +20,8 @@ if [ -z $1 ]; then
     exit 1
 fi
 
-RECIPES=$1
-
+RECIPES="$1"
+HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 echo -n "
 Warning: this script ($0) modifies the working directory, and discards any
@@ -41,17 +41,17 @@ function log () {
 }
 
 log "***Discarding un-committed R and bioconductor recipes in $RECIPES"
-git checkout -- $RECIPES/bioconductor-* $RECIPES/r-*
+git checkout -- "$RECIPES/bioconductor-*" "$RECIPES/r-*"
 
-for i in $(python update_bioconductor_packages.py --recipes $RECIPES); do
+for i in $(python "$HERE/update_bioconductor_packages.py" --recipes "$RECIPES"); do
     bioconductor_name=$(echo "$i" | awk -F ":" '{print $1}')
     recipe_name="$(echo "$i" | awk -F ":" '{print $2}')"
     log "Updating Bioconductor package $bioconductor_name (recipe $recipe_name)"
 
     # Handle bioconductor and CRAN packages separately
     if [ $(echo "$recipe_name" | grep "^bioconductor-") ]; then
-        python bioconductor_skeleton.py $bioconductor_name --force --recipes $RECIPES
+        python "$HERE/bioconductor_skeleton.py" $bioconductor_name --force --recipes "$RECIPES"
     else
-        (cd $RECIPES && conda skeleton cran "$bioconductor_name" --update-outdated)
+        (cd "$RECIPES" && conda skeleton cran "$bioconductor_name" --update-outdated)
     fi
 done
