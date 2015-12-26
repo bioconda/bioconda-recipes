@@ -117,7 +117,12 @@ We use a pre-built CentOS 5 image with compilers installed as part of the
 standard build. To build this yourself, you can do:
 
     docker login
-    cd scripts && docker build -t bicoonda/bioconda-builder .
+    cd scripts && docker build -t bioconda/bioconda-builder .
+
+Once built, back up to the root repo directory and test using `docker`:
+
+    cd ..
+    docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
 
 ### Creating Bioconductor recipes
 
