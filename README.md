@@ -47,6 +47,13 @@ When the recipe is ready, first test it with your local conda installation via
 
     conda build recipes/your_package
 
+If the recipe has dependencies in the bioconda channel (this is often the
+case), you will need to add `--channel bioconda` to the command. If the recipe
+is an R package, you will also need to add `--channel r`. For example many
+Bioconductor packages will be built using:
+
+    conda build recipes/your_package --channel bioconda --channel r
+
 Then, you can test it in the docker container with:
 
     docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
