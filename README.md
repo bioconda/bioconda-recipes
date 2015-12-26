@@ -75,6 +75,8 @@ is 0):
     build:
       number: 1
 
+See below for building on OSX.
+
 ### Step 3: Submit a pull request
 
 Once these local tests pass, submit a [pull
@@ -155,6 +157,68 @@ Then test a recipe with:
 docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
 ```
 
+
+## The bioconda build system
+This repository is set up on [Travis CI](https://travis-ci.org) such that on
+every pull request, the following steps are performed once within the Docker
+CentOS 5 container and once within the OSX build environment:
+
+- find all recipes in the `recipes` dir
+- filter out recipes that have already been uploaded to the bioconda channel
+- parse the remaining recipes to recursively find dependencies
+- topologically sort the recipes such that when they are built in order,
+  dependency packages are built first
+- build and test each recipe
+- add the recipe to the "local" channel so that subsequent recipes in this
+  build can use it as a dependency if needed
+
+If all recipes build and test without error, the pull request can be merged
+with the master branch. Upon merging, Travis-CI will detect the merge and the
+same steps will be performed again. In addition, at the end of the build, all
+built packages will be uploaded to the bioconda channel. This means that as
+soon as the Travis-CI tests pass on the master branch, the packages are now
+publicly available to all users.
+
+### Dependencies
+
+There is currently no mechanism to define, in the `meta.yaml` file, that
+a particular dependency should come from a particular channel. This means that
+a recipe must have its dependencies in one of the following:
+
+- as-yet-unbuilt recipes in the repo included in the PR
+- `bioconda` channel
+- `r` channel
+- default Anaconda channel
+
+Otherwise, you will have to write the recipes for those dependencies and
+include them in the PR. `conda skeleton` is very useful for Python (PyPI), Perl
+(CPAN), and R (CRAN) packages.  Another option is to use `anaconda search -t
+conda <dependency name>` to look for other packages built by others. Inspecting
+those recipes can give some clues into building a version of the dependency for
+bioconda.
+
+### Python versions
+By default, Python recipes (those that have `python` listed as a dependency)
+must be successfully built and tested on Python 2.7, 3.4, and 3.5 in order to
+pass. However, many Python packages are not fully compatible across all Python
+versions. Use the [preprocessing
+selectors](http://conda.pydata.org/docs/building/meta-yaml.html#preprocessing-selectors)
+in the meta.yaml file along with the `build/skip` entry to indicate that
+a recipe should be skipped.
+
+For example, a recipe that only runs on Python 2.7 should include the
+following:
+
+```yaml
+build:
+  skip: True  # [not py27]
+```
+
+Or a package that only runs on Python 3.4 and 3.5:
+
+```yaml
+build:
+  skip: True # [py27]
 ### Creating Bioconductor recipes
 
 See [`scripts/bioconductor/README.md`](scripts/bioconductor/README.md) for
