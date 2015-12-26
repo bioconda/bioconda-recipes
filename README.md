@@ -19,15 +19,27 @@ Bioconda team.  Please post in the [team thread on
 GitHub](https://github.com/bioconda/recipes/issues/1) to ask for permission.
 
 We build Linux packages inside a CentOS 5 docker container to maintain
-compatibility across multiple systems. The steps below describe how to
-contribute a new package. It is assumed you have
-[docker](https://www.docker.com/) and [git](https://git-scm.com/) installed.
+compatibility across multiple systems. OSX packages are built using the [OSX
+build environment](https://docs.travis-ci.com/user/osx-ci-environment/) on
+[Travis CI](https://travis-ci.org/).
+
+The steps below describe how to contribute a new package. The following
+prerequisites are assumed:
+
+- The [`conda`](http://anaconda.org) command line tool. This comes with the
+  full [Anaconda scientific Python stack](https://www.continuum.io/downloads)
+  installation, or the slimmed-down
+  [Miniconda](http://conda.pydata.org/miniconda.html). The Python 3 version is
+  recommended.
+- [`docker`](https://www.docker.com/)
+- [`git`](https://git-scm.com/)
 
 ### Step 1: Create a new recipe
 
 Fork this repository or create a new branch to work in. Within the new branch,
 [create a recipe](http://conda.pydata.org/docs/building/build.html)
-(`your_package` in this example) in the `recipes` directory.
+(`your_package` in this example) in the `recipes` directory. See the "bioconda
+build system" section below for further details.
 
 ### Step 2: Test the recipe
 
