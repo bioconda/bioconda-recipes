@@ -98,7 +98,9 @@ using:
 If you want to promote the Bioconda installation of your package, we recommend
 to add the following badge to your homepage:
 
-    [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io)
+```
+[![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io)
+```
 
 This will display as
 [![bioconda-badge](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](https://bioconda.github.io).
@@ -118,10 +120,9 @@ prerequisites.
 
 To test all recipes in the ``osx-whitelist``, use:
 
-```
+```bash
 scripts/build-packages.py --repository . --packages `cat osx-whitelist.txt`
 ```
-
 
 ### Managing multiple versions of a package
 
@@ -219,6 +220,12 @@ Or a package that only runs on Python 3.4 and 3.5:
 ```yaml
 build:
   skip: True # [py27]
+```
+
+Alternatively, for straightforward compatibility fixes you can apply a [patch
+in the
+meta.yaml](http://conda.pydata.org/docs/building/meta-yaml.html#patches).
+
 ### Creating Bioconductor recipes
 
 See [`scripts/bioconductor/README.md`](scripts/bioconductor/README.md) for
