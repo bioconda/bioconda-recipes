@@ -84,7 +84,7 @@ def build_recipe(recipe):
         success = build()
     else:
         # use list to enforce all builds
-        success = any(list(map(build, PYTHON_VERSIONS)))
+        success = all(list(map(build, PYTHON_VERSIONS)))
 
     if not success:
         # fail if all builds result in an error
