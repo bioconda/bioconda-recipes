@@ -11,6 +11,8 @@ from itertools import chain
 import nose
 from conda_build.metadata import MetaData
 from toposort import toposort_flatten
+import helpers
+
 
 PYTHON_VERSIONS = ["27", "34", "35"]
 CONDA_NPY = "110"
@@ -36,6 +38,7 @@ def get_deps(metadata, build=True):
 
 # inspired by conda-build-all from https://github.com/omnia-md/conda-recipes
 def toposort_recipes(recipes):
+    print('toposorting', recipes)
     metadata = list(get_metadata(recipes))
 
     name2recipe = defaultdict(list)
@@ -56,6 +59,7 @@ def toposort_recipes(recipes):
 
 
 def conda_index():
+    print('indexing')
     index_dirs = [
         "/anaconda/conda-bld/linux-64",
         "/anaconda/conda-bld/osx-64",
@@ -63,7 +67,7 @@ def conda_index():
     sp.run(["conda", "index"] + index_dirs, check=True, stdout=sp.PIPE)
 
 
-def build_recipe(recipe):
+def build_recipe(recipe, py):
     def build(py=None):
         try:
             out = None if args.verbose else sp.PIPE
@@ -83,36 +87,36 @@ def build_recipe(recipe):
     if "python" not in get_deps(MetaData(recipe), build=False):
         success = build()
     else:
-        # use list to enforce all builds
-        success = all(list(map(build, PYTHON_VERSIONS)))
+        success = build(py)
 
     if not success:
         # fail if all builds result in an error
-        assert False, "At least one build of recipe {} failed.".format(recipe)
+        assert False, "Recipe {0} failed.".format(recipe)
 
 
-def filter_recipes(recipes):
-    msgs = lambda py: [
-        msg for msg in
-        sp.run(
+def filter_recipes(recipes, py):
+    print(recipes, file=sys.stderr)
+    for recipe in recipes:
+        if helpers.should_skip(recipe, py):
+            print("Skipping recipe (defines skip for py{})".format(py), recipe, file=sys.stderr)
+            continue
+        msg = sp.run(
             ["conda", "build", "--numpy", CONDA_NPY, "--python", py,
-             "--skip-existing", "--output"] + recipes,
+             "--skip-existing", "--output", recipe],
             check=True, stdout=sp.PIPE, universal_newlines=True
         ).stdout.split("\n")
-        if "Ignoring non-recipe" not in msg
-    ][1:-1]
+        if any('already built, skipping' in m for m in msg):
+            print("Skipping recipe (already built)", py, recipe, file=sys.stderr)
+            continue
+        elif any('Ignoring non-recipe' in m for m in msg):
+            continue
 
-    for item in zip(recipes, *map(msgs, PYTHON_VERSIONS)):
-        recipe = item[0]
-        msg = item[1:]
-
-        if all("already built, skipping" in m for m in msg):
-            print("Skipping recipe", recipe, file=sys.stderr)
-        else:
-            yield recipe
+        yield recipe
 
 
 def get_recipes(package="*"):
+    print("getting recipes")
+    sys.stdout.flush()
     path = os.path.join(args.repository, "recipes", package)
     yield from map(os.path.dirname, glob.glob(os.path.join(path, "meta.yaml")))
     yield from map(os.path.dirname, glob.glob(os.path.join(path, "*", "meta.yaml")))
@@ -124,13 +128,14 @@ def test_recipes():
     else:
         recipes = list(get_recipes())
 
-    # ensure that packages which need a build are built in the right order
-    recipes = toposort_recipes(list(filter_recipes(recipes)))
-    print(recipes, file=sys.stderr)
+    for py in PYTHON_VERSIONS:
+        # ensure that packages which need a build are built in the right order
+        recipes = toposort_recipes(list(filter_recipes(recipes, py)))
+        print(py, recipes)
 
-    # build packages
-    for recipe in recipes:
-        yield build_recipe, recipe
+        # build packages
+        for recipe in recipes:
+            yield build_recipe, recipe, py
 
     # upload builds
     if os.environ.get("TRAVIS_BRANCH") == "master" and os.environ.get(
