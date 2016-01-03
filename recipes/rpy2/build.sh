@@ -1,6 +1,6 @@
 #!/bin/bash
 
-$PYTHON setup.py install
+CFLAGS="-I$PREFIX/include" $PYTHON setup.py install
 
 # Add more build steps here, if they are necessary.
 
