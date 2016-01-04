@@ -1,10 +1,19 @@
 #!/bin/bash
 
-#binaries="\
-#prinseq-lite.pl \
-#"
+BINARY=Trinity
+BINARY_HOME=$PREFIX/bin
+TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
 
+cd $SRC_DIR
+
+#make
+
+# remove the sample data
+rm -rf $SRC_DIR/sample_data
+
+# copy source to bin
 mkdir -p $PREFIX/bin
-#for i in $binaries; do cp $SRC_DIR/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
-
-cp -R $SRC_DIR/* $PREFIX/bin/
+mkdir -p $TRINITY_HOME
+cp -R $SRC_DIR/* $TRINITY_HOME/
+cd $TRINITY_HOME && chmod +x Trinity
+cd $BINARY_HOME && ln -s $TRINITY_HOME/Trinity $BINARY

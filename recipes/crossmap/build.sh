@@ -7,3 +7,5 @@ rm -rf lib/samtools
 rm -rf lib/tabix
 rm -rf lib/src
 $PYTHON setup.py install
+# Fix strange permission issue in egg-info
+find $PREFIX/lib/python*/site-packages/CrossMap*egg -type f -execdir chmod 664 {} \;

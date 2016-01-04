@@ -13,13 +13,16 @@ import bs4
 import urllib
 from urllib import request
 from urllib import parse
+from urllib import error
 from collections import OrderedDict
 import logging
+import requests
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s]: %(message)s')
 logger = logging.getLogger()
+logging.getLogger("requests").setLevel(logging.WARNING)
 
-base_url = 'http://bioconductor.org/packages/release/bioc/html'
+base_url = 'http://bioconductor.org/packages/'
 
 # Packages that might be specified in the DESCRIPTION of a package as
 # dependencies, but since they're built-in we don't need to specify them in
@@ -34,7 +37,11 @@ BASE_R_PACKAGES = ["base", "boot", "class", "cluster", "codetools", "compiler",
                    "KernSmooth", "lattice", "MASS", "Matrix", "methods",
                    "mgcv", "nlme", "nnet", "parallel", "rpart", "spatial",
                    "splines", "stats", "stats4", "survival", "tcltk", "tools",
-                   "utils", ]
+                   "utils"]
+
+HERE = os.path.abspath(os.path.dirname(__file__))
+
+class PageNotFoundError(Exception): pass
 
 class BioCProjectPage(object):
     def __init__(self, package):
@@ -50,22 +57,57 @@ class BioCProjectPage(object):
         self._md5 = None
         self._cached_tarball = None
         self._dependencies = None
-        self.url = os.path.join(base_url, package + '.html')
-        self.soup = bs4.BeautifulSoup(
-            request.urlopen(self.url),
-            'html.parser')
+        self.build_number = 0
+        self.request = requests.get(os.path.join(base_url, package))
+        if not self.request:
+            raise PageNotFoundError('Error {0.status_code} ({0.reason})'.format(self.request))
+
+        # Since we provide the "short link" we will get redirected. Using
+        # requests allows us to keep track of the final destination URL, which
+        # we need for reconstructing the tarball URL.
+        self.url = self.request.url
+
 
         # The table at the bottom of the page has the info we want. An earlier
         # draft of this script parsed the dependencies from the details table.
         # That's still an option if we need a double-check on the DESCRIPTION
         # fields.
+        self.soup = bs4.BeautifulSoup(
+            self.request.content,
+            'html.parser')
         self.details_table = self.soup.find_all(attrs={'class': 'details'})[0]
 
+        # However, it is helpful to get the version info from this table. That
+        # way we can try getting the bioaRchive tarball and cache that.
+        for td in self.details_table.findAll('td'):
+            if td.getText() == 'Version':
+                version = td.findNext().getText()
+                break
+        self.version = version
+
     @property
-    def tarball_url(self):
+    def bioaRchive_url(self):
         """
-        Return the url to the tarball indicated in the "Package Source"
-        section of the project's page.
+        Returns the bioaRchive URL if one exists for this version of this
+        package, otherwise returns None.
+
+        Note that to get the package version, we're still getting the
+        bioconductor tarball to extract the DESCRIPTION file.
+        """
+        url = 'https://bioarchive.galaxyproject.org/{0.package}_{0.version}.tar.gz'.format(self)
+        response = requests.get(url)
+        if response:
+            return url
+        elif response.status_code == 404:
+            return
+        else:
+            raise PageNotFoundError("Unexpected error: {0.status_code} ({0.reason})".format(response))
+
+
+    @property
+    def bioconductor_tarball_url(self):
+        """
+        Return the url to the tarball from the bioconductor site.
         """
         r = re.compile('{0}.*\.tar.gz'.format(self.package))
 
@@ -84,6 +126,13 @@ class BioCProjectPage(object):
         return os.path.join(parse.urljoin(self.url, '../src/contrib'), s[0])
 
     @property
+    def tarball_url(self):
+        url = self.bioaRchive_url
+        if url:
+            return url
+        return self.bioconductor_tarball_url
+
+    @property
     def tarball_basename(self):
         return os.path.basename(self.tarball_url)
 
@@ -98,7 +147,7 @@ class BioCProjectPage(object):
         """
         if self._cached_tarball:
             return self._cached_tarball
-        cache_dir = 'cached_bioconductor_tarballs'
+        cache_dir = os.path.join(HERE, 'cached_bioconductor_tarballs')
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
         fn = os.path.join(cache_dir, self.tarball_basename)
@@ -108,7 +157,11 @@ class BioCProjectPage(object):
         tmp = tempfile.NamedTemporaryFile(delete=False).name
         with open(tmp, 'wb') as fout:
             logger.info('Downloading {0} to {1}'.format(self.tarball_url, fn))
-            fout.write(request.urlopen(self.tarball_url).read())
+            response = requests.get(self.tarball_url)
+            if response:
+                fout.write(response.content)
+            else:
+                raise PageNotFoundError('Unexpected error {0.status_code} ({0.reason})'.format(response))
         shutil.move(tmp, fn)
         self._cached_tarball = fn
         return fn
@@ -135,9 +188,9 @@ class BioCProjectPage(object):
 
         return dict(e)
 
-    @property
-    def version(self):
-        return self.description['version']
+    #@property
+    #def version(self):
+    #    return self.description['version']
 
     @property
     def license(self):
@@ -216,21 +269,22 @@ class BioCProjectPage(object):
 
 
         for name, version in sorted(versions.items()):
+            # DESCRIPTION notes base R packages, but we don't need to specify
+            # them in the dependencies.
+            if name in BASE_R_PACKAGES:
+                continue
+
             # Try finding the dependency on the bioconductor site; if it can't
             # be found then we assume it's in CRAN.
             try:
                 BioCProjectPage(name)
                 prefix = 'bioconductor-'
-            except urllib.error.HTTPError:
+            except PageNotFoundError:
                 prefix = 'r-'
 
             logger.info('{0:>12} dependency: name="{1}" version="{2}"'.format(
                 {'r-': 'R', 'bioconductor-': 'BioConductor'}[prefix],
                 name, version))
-            # DESCRIPTION notes base R packages, but we don't need to specify
-            # them in the dependencies.
-            if name in BASE_R_PACKAGES:
-                continue
 
             # add padding to version string
             if version:
@@ -272,6 +326,10 @@ class BioCProjectPage(object):
         We use pyaml (rather than yaml) because it has better handling of
         OrderedDicts.
         """
+        url = self.bioaRchive_url
+        if not url:
+            url = self.tarball_url
+
         DEPENDENCIES = sorted(self.dependencies)
         d = OrderedDict((
             (
@@ -283,13 +341,13 @@ class BioCProjectPage(object):
             (
                 'source', OrderedDict((
                     ('fn', self.tarball_basename),
-                    ('url', self.tarball_url),
+                    ('url', url),
                     ('md5', self.md5),
                 )),
             ),
             (
                 'build', OrderedDict((
-                    ('number', 0),
+                    ('number', self.build_number),
                     ('rpaths', ['lib/R/lib/', 'lib/']),
                 )),
             ),
@@ -334,8 +392,32 @@ def write_recipe(package, recipe_dir, force=False):
             print('creating %s' % recipe_dir)
             os.makedirs(recipe_dir)
 
+    # If the version number has not changed but something else in the recipe
+    # *has* changed, then bump the version number.
+    meta_file = os.path.join(recipe_dir, 'meta.yaml')
+    if os.path.exists(meta_file):
+        updated_meta = pyaml.yaml.load(proj.meta_yaml)
+        current_meta = pyaml.yaml.load(open(meta_file))
+
+        # pop off the version and build numbers so we can compare the rest of
+        # the dicts
+        updated_version = updated_meta['package'].pop('version')
+        current_version = current_meta['package'].pop('version')
+        updated_build_number = updated_meta['build'].pop('number')
+        current_build_number = current_meta['build'].pop('number')
+
+        if (
+            (updated_version == current_version)
+            and
+            (updated_meta != current_meta)
+        ):
+            proj.build_number = int(current_build_number) + 1
+
+
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
         fout.write(proj.meta_yaml)
+
+
 
     with open(os.path.join(recipe_dir, 'build.sh'), 'w') as fout:
         fout.write(dedent(
@@ -364,9 +446,9 @@ if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument('package', help='Bioconductor package name')
-    ap.add_argument('--recipe-dir', default='recipes',
+    ap.add_argument('--recipes', default='recipes',
                     help='Recipe will be created in <recipe-dir>/<package>')
     ap.add_argument('--force', action='store_true',
                     help='Overwrite the contents of an existing recipe')
     args = ap.parse_args()
-    write_recipe(args.package, args.recipe_dir, args.force)
+    write_recipe(args.package, args.recipes, args.force)
