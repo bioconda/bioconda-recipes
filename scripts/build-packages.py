@@ -5,12 +5,14 @@ import glob
 import subprocess as sp
 import argparse
 import sys
+from collections import defaultdict
+from itertools import chain
 
 import nose
 from conda_build.metadata import MetaData
 from toposort import toposort_flatten
 
-PYTHON_VERSIONS = ["27", "35"]
+PYTHON_VERSIONS = ["27", "34", "35"]
 CONDA_NPY = "110"
 CONDA_PERL = "5.22.0"
 
@@ -27,14 +29,18 @@ def get_metadata(recipes):
         yield MetaData(recipe)
 
 
+def get_deps(metadata, build=True):
+    for dep in metadata.get_value("requirements/{}".format("build" if build else "run"), []):
+        yield dep.split()[0]
+
+
 # inspired by conda-build-all from https://github.com/omnia-md/conda-recipes
 def toposort_recipes(recipes):
     metadata = list(get_metadata(recipes))
 
-    name2recipe = {
-        meta.get_value("package/name"): recipe
-        for meta, recipe in zip(metadata, recipes)
-    }
+    name2recipe = defaultdict(list)
+    for meta, recipe in zip(metadata, recipes):
+        name2recipe[meta.get_value("package/name")].append(recipe)
 
     def get_inner_deps(dependencies):
         for dep in dependencies:
@@ -43,11 +49,10 @@ def toposort_recipes(recipes):
                 yield name
 
     dag = {
-        meta.get_value("package/name"): set(
-            get_inner_deps(meta.get_value("requirements/build", [])))
+        meta.get_value("package/name"): set(get_inner_deps(chain(get_deps(meta), get_deps(meta, build=False))))
         for meta in metadata
     }
-    return [name2recipe[name] for name in toposort_flatten(dag)]
+    return [recipe for name in toposort_flatten(dag) for recipe in name2recipe[name]]
 
 
 def conda_index():
@@ -59,27 +64,31 @@ def conda_index():
 
 
 def build_recipe(recipe):
-    errors = 0
-    builds = 0
-    conda_index()
-    for py in PYTHON_VERSIONS:
+    def build(py=None):
         try:
-            builds += 1
-
             out = None if args.verbose else sp.PIPE
-            sp.run(["conda", "build", "--no-anaconda-upload", "--numpy",
-                     CONDA_NPY, "--python", py, "--skip-existing", "--quiet",
-                     recipe],
+            py = ["--python", py, "--numpy", CONDA_NPY] if py is not None else []
+            sp.run(["conda", "build", "--no-anaconda-upload"] + py +
+                   ["--skip-existing", "--quiet", recipe],
                    stderr=out, stdout=out, check=True, universal_newlines=True,
                    env=env)
+            return True
         except sp.CalledProcessError as e:
             if e.stdout is not None:
                 print(e.stdout)
                 print(e.stderr)
-            errors += 1
-    if errors == builds:
+            return False
+
+    conda_index()
+    if "python" not in get_deps(MetaData(recipe), build=False):
+        success = build()
+    else:
+        # use list to enforce all builds
+        success = all(list(map(build, PYTHON_VERSIONS)))
+
+    if not success:
         # fail if all builds result in an error
-        assert False
+        assert False, "At least one build of recipe {} failed.".format(recipe)
 
 
 def filter_recipes(recipes):
@@ -103,16 +112,21 @@ def filter_recipes(recipes):
             yield recipe
 
 
+def get_recipes(package="*"):
+    path = os.path.join(args.repository, "recipes", package)
+    yield from map(os.path.dirname, glob.glob(os.path.join(path, "meta.yaml")))
+    yield from map(os.path.dirname, glob.glob(os.path.join(path, "*", "meta.yaml")))
+
+
 def test_recipes():
     if args.packages:
-        recipes = [os.path.join(args.repository, "recipes", package)
-                   for package in args.packages]
+        recipes = [recipe for package in args.packages for recipe in get_recipes(package)]
     else:
-        recipes = list(glob.glob(os.path.join(args.repository, "recipes",
-                                              "*")))
+        recipes = list(get_recipes())
 
     # ensure that packages which need a build are built in the right order
     recipes = toposort_recipes(list(filter_recipes(recipes)))
+    print(recipes, file=sys.stderr)
 
     # build packages
     for recipe in recipes:
@@ -135,10 +149,12 @@ def test_recipes():
                                 os.environ.get("ANACONDA_TOKEN"),
                                 "upload", package], stdout=sp.PIPE, stderr=sp.STDOUT, check=True)
                     except sp.CalledProcessError as e:
+                        print(e.stdout.decode(), file=sys.stderr)
                         if b"already exists" in e.stdout:
                             # ignore error assuming that it is caused by existing package
                             pass
-                        raise e
+                        else:
+                            raise e
 
 
 if __name__ == "__main__":

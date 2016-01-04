@@ -1,5 +1,10 @@
 #!/bin/bash
 
+echo "INCLUDE = $PREFIX/include" > config.in
+echo "LIB = $PREFIX/lib" >> config.in
+echo "PREFIX = size_t" >> config.in
+echo "HASH = u_int32_t" >> config.in
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
