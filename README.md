@@ -158,6 +158,11 @@ Then test a recipe with:
 docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
 ```
 
+If you wish the open a bash shell in the Docker container for manual debugging:
+
+```bash
+docker run -i -t --entrypoint /bin/bash bioconda/bioconda-builder
+```
 
 ## The bioconda build system
 This repository is set up on [Travis CI](https://travis-ci.org) such that on
