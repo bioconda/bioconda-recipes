@@ -2,19 +2,19 @@
 
 set -e -x -o pipefail
 
+DESTDIR=$PREFIX/opt/tbl2asn-$PKG_VERSION
+
+cd $SRC_DIR/
 
 for i in $SRC_DIR/*tbl2asn.gz ; do gunzip "$i"; done
 #for i in $SRC_DIR/*_tbl2asn ; do mv "$i" "${i/[a-zA-Z0-9]*.tbl2asn/tbl2asn}" ; done
 
-cd $SRC_DIR/
-
 binaries="\
-tbl2asn \
+*.tbl2asn \
 "
 
-mkdir -p $PREFIX/bin
-
-for i in $binaries; do cp $SRC_DIR/$i $PREFIX/bin/ && chmod +x $PREFIX/bin/$i; done
+mkdir -p $DESTDIR
+for i in $binaries; do chmod +x $SRC_DIR/$i && cp $SRC_DIR/$i $DESTDIR/${i/*.tbl2asn/tbl2asn} && ln -s $DESTDIR/tbl2asn $PREFIX/bin/tbl2asn ; done
 
 # if [ "$(uname)" == "Darwin" ]; then
 #     echo "Platform: Mac"
