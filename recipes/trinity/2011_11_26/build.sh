@@ -16,4 +16,15 @@ mkdir -p $PREFIX/bin
 mkdir -p $TRINITY_HOME
 cp -R $SRC_DIR/* $TRINITY_HOME/
 cd $TRINITY_HOME && chmod +x Trinity.pl
-cd $BINARY_HOME && ln -s $TRINITY_HOME/Trinity.pl $BINARY
+
+echo $'#!/bin/sh' > $TRINITY_HOME/Trinity-runner.sh
+echo $'$(dirname $0)/$(dirname $(readlink $0) )/Trinity.pl $@' >> $TRINITY_HOME/Trinity-runner.sh
+
+echo $'#!/bin/sh' > $TRINITY_HOME/Trinity-test.sh
+echo $'perl -c $(dirname $0)/$(dirname $(readlink $0) )/Trinity.pl &> /dev/null' >> $TRINITY_HOME/Trinity-test.sh
+
+chmod +x $TRINITY_HOME/Trinity-*.sh
+
+cd $BINARY_HOME
+ln -s $TRINITY_HOME/Trinity-runner.sh $BINARY
+ln -s $TRINITY_HOME/Trinity-test.sh "$BINARY-test"
