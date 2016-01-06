@@ -1,9 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
-$PYTHON setup.py install
+cd $SRC_DIR
 
-# Add more build steps here, if they are necessary.
-
-# See
-# http://docs.continuum.io/conda/build.html
-# for a list of environment variables that are set during the build process.
+rm -f "src/magic.h"
+./configure --prefix=$PREFIX --enable-static --enable-fsect-man5 --disable-silent-rules --disable-dependency-tracking
+make
+make install
