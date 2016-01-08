@@ -1,4 +1,3 @@
 #!/bin/sh
-sed -i.bak 's#/usr/local#$PREFIX#' Makefile
-make
-make install
+make plugins
+make prefix=$PREFIX install
