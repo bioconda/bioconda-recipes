@@ -123,6 +123,7 @@ To test all recipes in the ``osx-whitelist``, use:
 ```bash
 scripts/build-packages.py --repository . --packages `cat osx-whitelist.txt`
 ```
+Note: to build osx you will need a python3 environment with conda-build. You may have trouble with a 2.x install and a py3 env; so it may be recommended to have a base anaconda/miniconda install of python3  
 
 ### Managing multiple versions of a package
 
