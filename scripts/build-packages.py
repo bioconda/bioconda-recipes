@@ -101,12 +101,13 @@ def filter_recipes(recipes):
         ).stdout.split("\n")
         if "Ignoring non-recipe" not in msg
     ][1:-1]
+    skip = lambda msg: "already built, skipping" in msg or "defines build/skip" in msg
 
     for item in zip(recipes, *map(msgs, PYTHON_VERSIONS)):
         recipe = item[0]
         msg = item[1:]
 
-        if all("already built, skipping" in m for m in msg):
+        if all(map(skip, msg)):
             print("Skipping recipe", recipe, file=sys.stderr)
         else:
             yield recipe
