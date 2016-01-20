@@ -95,8 +95,8 @@ the `meta.yaml` files in above examples).
 
 ### C/C++
 
-In general, standard `make` should work. Other build tools should be specified
-in the build requirements.
+In general, standard `make` should work. Other build tools (e.g., `autoconf`)
+and compilers (e.g., `gcc`) should be specified in the build requirements.
 
 * example requiring `autoconf`: [srprism](recipes/srprism)
 * simple example: [samtools](recipes/samtools)
