@@ -1,9 +1,10 @@
 #!/bin/bash
 
-export CFLAGS="-I${PREFIX}/include"
-export LDFLAGS="-L${PREFIX}/lib"
+# R refuses to build packages that mark themselves as Priority: Recommended
+mv DESCRIPTION DESCRIPTION.old
+grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 
-$PYTHON setup.py install
+$R CMD INSTALL --build .
 
 # Add more build steps here, if they are necessary.
 
