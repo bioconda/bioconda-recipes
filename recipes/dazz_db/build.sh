@@ -6,5 +6,6 @@ CXX=${PREFIX}/bin/g++
 
 
 mkdir -p $PREFIX/bin
-make all
-make install
+make
+cp $(find . -maxdepth 1 -type f -perm /u=x)  $PREFIX/bin
+
