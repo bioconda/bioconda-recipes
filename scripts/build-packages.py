@@ -174,9 +174,6 @@ if __name__ == "__main__":
     global args
     args = p.parse_args()
 
-    # Install conda-build with fixes to skipping mechanism (PR #726)
-    sp.run(["pip", "install", "git+https://github.com/conda/conda-build.git@237e8fd2643863b6c1df6a4fd413dba8c24119b5"], check=True)
-
     sp.run(["gcc", "--version"], check=True)
     try:
         sp.run(["ldd", "--version"], check=True)
