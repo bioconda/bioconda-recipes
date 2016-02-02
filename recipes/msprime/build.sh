@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CPPFLAGS="-I${PREFIX}/include"
+export CFLAGS="-I${PREFIX}/include"
 export LDFLAGS="-L${PREFIX}/lib"
 
 $PYTHON setup.py install
