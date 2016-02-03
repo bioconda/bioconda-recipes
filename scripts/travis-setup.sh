@@ -6,10 +6,10 @@ then
     docker pull bioconda/bioconda-builder
 else
     # install Rust
-    curl -sSf http://static.rust-lang.org/rustup.sh | sh -s -- --channel=nightly -y --disable-sudo
+    curl -sSf http://static.rust-lang.org/rustup.sh | sudo sh -s -- --channel=nightly -y --disable-sudo
 
     # install conda
-    wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
+    curl -O https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
     sudo bash Miniconda3-latest-MacOSX-x86_64.sh -b -p /anaconda
     sudo chown -R $USER /anaconda
     mkdir -p /anaconda/conda-bld/osx-64 # workaround for bug in current conda
