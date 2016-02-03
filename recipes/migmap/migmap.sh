@@ -15,4 +15,8 @@ SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 MIGMAP_DIR=$SCRIPT_DIR/../share
 
 # calls igblastn internally, which itself export IGDATA temporarily
+# for some reason migmap expects the internal_data and optional_file directories to be in $MIGMAP_DIR/data, 
+# so temporarily symlink this
+ln -s $MIGMAP_DIR/igblast $MIGMAP_DIR/data
 java -jar $MIGMAP_DIR/migmap-0.9.7.jar "$@"
+rm -f $MIGMAP_DIR/data
