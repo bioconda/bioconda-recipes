@@ -1,15 +1,8 @@
 #!/bin/bash
 set -eu
 
-
-# samtools dependency
-wget -O samtools-0.1.19.tar.bz2 https://downloads.sourceforge.net/project/samtools/samtools/0.1.19/samtools-0.1.19.tar.bz2
-tar -xjvpf samtools-0.1.19.tar.bz2
-cd samtools-0.1.19
-make
-cd ..
-
-echo 'SAMTOOLS=samtools-0.1.19' > Makefile.local
-./INSTALL samtools-0.1.19
+echo "HTSLIB_CPPFLAGS=-I$PREFIX/include" > Makefile.local
+echo "HTSLIB_LDFLAGS=-L$PREFIX/lib -Wl,-rpath $PREFIX/lib" >> Makefile.local
+./INSTALL $PREFIX
 mkdir -p $PREFIX/bin
-cp pindel pindel2vcf sam2pindel $PREFIX/bin
+cp pindel pindel2vcf pindel2vcf4tcga sam2pindel $PREFIX/bin
