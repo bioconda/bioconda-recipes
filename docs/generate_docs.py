@@ -1,12 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Jan 31 15:15:54 2016
-
-@author: strokach
-"""
-
-#!/usr/env python
-
+#!/usr/bin/env python3
 import os
 import os.path as op
 from conda_build.metadata import MetaData
