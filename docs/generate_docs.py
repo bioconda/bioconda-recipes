@@ -1,7 +1,15 @@
 # -*- coding: utf-8 -*-
+"""
+Created on Sun Jan 31 15:15:54 2016
+
+@author: strokach
+"""
+
+#!/usr/env python
+
 import os
 import os.path as op
-import yaml
+from conda_build.metadata import MetaData
 from distutils.version import LooseVersion
 
 BASE_DIR = op.dirname(op.abspath(__file__))
@@ -69,54 +77,32 @@ def setup(*args):
         versions.sort(key=LooseVersion, reverse=True)
         # Read the meta.yaml file
         try:
-            meta_file = op.join(RECIPE_DIR, folder, 'meta.yaml')
-            with open(meta_file, 'rb') as ifh:
-                meta = yaml.load(ifh)
-            if meta['package']['version'] not in versions:
-                versions.insert(0, meta['package']['version'])
-        except FileNotFoundError:
+            metadata = MetaData(op.join(RECIPE_DIR, folder))
+            if metadata.version() not in versions:
+                versions.insert(0, metadata.version())
+        except SystemExit:
             if versions:
-                meta_file = (
-                    op.join(RECIPE_DIR, folder, versions[0], 'meta.yaml'))
-                with open(meta_file, 'rb') as ifh:
-                    meta = yaml.load(ifh)
+                metadata = MetaData(op.join(RECIPE_DIR, folder, versions[0]))
             else:
                 raise
-        except yaml.scanner.ScannerError:
-            print(
-                "The following recipe is improperly formatted: {}. "
-                "Skipping..."
-                .format(meta_file)
-            )
-            continue
         # Format the README
         template_options = {
-            'title': (
-                meta['package']['name']),
-            'title_underline': (
-                '=' * len(meta['package']['name'])),
-            'summary': (
-                meta['about'].get('summary') if
-                meta['about'].get('summary') else
-                ''),
-            'home': (
-                meta['about'].get('home') if
-                meta['about'].get('home') else
-                ''),
+            'title': metadata.name(),
+            'title_underline': '=' * len(metadata.name()),
+            'summary': metadata.get_section('about').get('summary', ''),
+            'home': metadata.get_section('about').get('home', ''),
             'versions': (
                 '\n'.join(['- {}'.format(f) for f in versions])),
-            'license': (
-                meta['about'].get('license')
-                if meta['about'].get('license')
-                else ''),
-            'meta_file': op.relpath(meta_file, op.join(OUTPUT_DIR, folder))
+            'license': metadata.get_section('about').get('license', ''),
+            'meta_file': (
+                op.relpath(metadata.meta_path, op.join(OUTPUT_DIR, folder)))
         }
         readme = README_TEMPLATE.format(**template_options)
         # Write to file
         os.makedirs(op.join(OUTPUT_DIR, folder), exist_ok=True)
         output_file = op.join(OUTPUT_DIR, folder, 'README.rst')
-        with open(output_file, 'wb') as ofh:
-            ofh.write(readme.encode('utf-8'))
+        with open(output_file, 'wt') as ofh:
+            ofh.write(readme)
 
 
 if __name__ == '__main__':
