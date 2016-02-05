@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import os
 import os.path as op
 from conda_build.metadata import MetaData
@@ -8,7 +7,7 @@ BASE_DIR = op.dirname(op.abspath(__file__))
 RECIPE_DIR = op.join(op.dirname(BASE_DIR), 'recipes')
 OUTPUT_DIR = op.join(BASE_DIR, 'recipes')
 
-README_TEMPLATE = """\
+README_TEMPLATE = u"""\
 .. _`{title}`:
 
 {title}
@@ -91,11 +90,15 @@ def setup(*args):
         }
         readme = README_TEMPLATE.format(**template_options)
         # Write to file
-        os.makedirs(op.join(OUTPUT_DIR, folder), exist_ok=True)
+        try:
+            os.makedirs(op.join(OUTPUT_DIR, folder))  # exist_ok=True on Python 3
+        except OSError:
+            pass
         output_file = op.join(OUTPUT_DIR, folder, 'README.rst')
-        with open(output_file, 'wt') as ofh:
-            ofh.write(readme)
+        with open(output_file, 'wb') as ofh:
+            ofh.write(readme.encode('utf-8'))
 
 
 if __name__ == '__main__':
     setup()
+
