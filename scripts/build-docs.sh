@@ -7,7 +7,7 @@ if ! [[ "${TRAVIS_BRANCH}" == "master" && "${TRAVIS_PULL_REQUEST}" == "false" ]]
     exit 0
 fi
 
-if [[ -z "{GITHUB_TOKEN}" ]] ; then
+if [[ -z "${GITHUB_TOKEN}" ]] ; then
     echo "GitHub API key needs to be set to update docs."
     exit 0
 fi
