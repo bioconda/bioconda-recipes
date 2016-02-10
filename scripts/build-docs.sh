@@ -26,6 +26,8 @@ git init
 sphinx-build .. .
 
 # Add generated files to the bioconda.github.io repository
+touch .nojekyll
+git add .nojekyll
 echo '.*' >> .gitignore
 git add .
 git config user.name "Travis CI"
