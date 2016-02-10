@@ -15,6 +15,8 @@
   Exceptions: Anaconda version is too old or some sort of patch is required that
   is not in the main Anaconda channel (TODO: examples of the latter?)
 
+- If the recipe installs custom wrapper scripts, usage notes should be added to ``extra -> notes`` in the `meta.yaml`.
+
 ## Examples
 
 The following recipes serve as examples of good recipes that can be used as
