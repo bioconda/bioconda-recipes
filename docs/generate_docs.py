@@ -13,36 +13,29 @@ README_TEMPLATE = u"""\
 {title}
 {title_underline}
 
-Summary
--------
-
 {summary}
 
+======== ===========
+Home     {home}
+Versions {versions}
+License  {license}
+Recipe   {recipe}
+======== ===========
 
-Home
-----
+Installation
+------------
 
-{home}
+.. highlight: bash
 
+With an activated Bioconda channel (see :ref:`setup`), install with::
 
-Versions
---------
+   conda install {title}
 
-{versions}
+and update with::
 
+   conda update {title}
 
-License
--------
-
-{license}
-
-
-Meta
-----
-
-.. literalinclude:: {meta_file}
-   :language: yaml
-
+{notes}
 """
 
 
@@ -76,17 +69,21 @@ def setup(*args):
                 metadata = MetaData(op.join(RECIPE_DIR, folder, versions[0]))
             else:
                 raise
+
         # Format the README
+        notes = metadata.get_section('extra').get('notes', '')
+        if notes:
+            notes = 'Notes\n-----\n\n' + notes
         template_options = {
             'title': metadata.name(),
             'title_underline': '=' * len(metadata.name()),
             'summary': metadata.get_section('about').get('summary', ''),
             'home': metadata.get_section('about').get('home', ''),
-            'versions': (
-                '\n'.join(['- {}'.format(f) for f in versions])),
+            'versions': ', '.join(versions),
             'license': metadata.get_section('about').get('license', ''),
-            'meta_file': (
-                op.relpath(metadata.meta_path, op.join(OUTPUT_DIR, folder)))
+            'recipe': ('https://github.com/bioconda/bioconda-recipes/tree/master/recipes/' +
+                op.dirname(op.relpath(metadata.meta_path, RECIPE_DIR))),
+            'notes': notes
         }
         readme = README_TEMPLATE.format(**template_options)
         # Write to file
@@ -101,4 +98,3 @@ def setup(*args):
 
 if __name__ == '__main__':
     setup()
-
