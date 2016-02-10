@@ -31,7 +31,7 @@ cd bioconda.github.io
 echo '.*' >> .gitignore
 git add .
 git -c user.name='travis' -c user.email='travis' commit --all -m "Updated docs to commit ${TRAVIS_COMMIT}."
-git push -f -q "https://${GITHUB_TOKEN}@github.com/${GITHUB_USERNAME}/bioconda.github.io.git" master
+git push -f -q "https://${GITHUB_TOKEN}@github.com/${GITHUB_USERNAME}/bioconda.github.io.git" master &> /dev/null
 
 # Cleanup
 cd ..
