@@ -20,17 +20,16 @@ sudo pip install -r requirements.txt
 
 # Build the documentation
 GITHUB_USERNAME=${TRAVIS_REPO_SLUG%/*}
-rm -rf bioconda.github.io
-git clone https://github.com/${GITHUB_USERNAME}/bioconda.github.io.git
-rm -rf bioconda.github.io
 mkdir -p bioconda.github.io
-sphinx-build . bioconda.github.io
+cd bioconda.github.io
+git init
+sphinx-build .. .
 
 # Add generated files to the bioconda.github.io repository
-cd bioconda.github.io
 echo '.*' >> .gitignore
 git add .
-git -c user.name='travis' -c user.email='travis' commit --all -m "Updated docs to commit ${TRAVIS_COMMIT}."
+git config user.name "Travis CI"
+git commit --all -m "Updated docs to commit ${TRAVIS_COMMIT}."
 git push -f -q "https://${GITHUB_TOKEN}@github.com/${GITHUB_USERNAME}/bioconda.github.io.git" master &> /dev/null
 
 # Cleanup
