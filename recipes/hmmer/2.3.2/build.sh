@@ -5,6 +5,6 @@ CC=${PREFIX}/bin/gcc
 CXX=${PREFIX}/bin/g++
 
 ./configure --prefix=$PREFIX
-make -j4
+make 
 make install
 
