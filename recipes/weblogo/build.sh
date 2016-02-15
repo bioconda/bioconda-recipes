@@ -9,5 +9,5 @@ mkdir -p $BINDIR
 seqlogo=$BINDIR/seqlogo
 echo "#! /bin/bash" > $seqlogo;
 echo 'DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )' >>  $seqlogo;
-echo '$DIR/../share/'$(basename $outdir)/seqlogo $@ >> $seqlogo;
+echo '$DIR/../share/'$(basename $outdir)/seqlogo '$@' >> $seqlogo;
 chmod +x $seqlogo
