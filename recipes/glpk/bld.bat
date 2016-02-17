@@ -3,12 +3,8 @@ copy config_VC config.h
 
 nmake /f Makefile_VC
 
-mkdir %PREFIX%\bin
-mkdir %PREFIX%\include
-mkdir %PREFIX%\libs
-
-copy glpsol.exe %PREFIX%\bin
-copy ..\src\glpk.h %PREFIX%\include
-copy glpk.lib %PREFIX%\libs
+copy glpsol.exe %LIBRARY_BIN%
+copy ..\src\glpk.h %LIBRARY_INC%
+copy glpk.lib %LIBRARY_LIB%
 
 if errorlevel 1 exit 1
