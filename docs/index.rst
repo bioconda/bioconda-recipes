@@ -130,6 +130,8 @@ Developers
 * `Jerome Kelleher <https://github.com/jeromekelleher>`_
 * `Thomas Cokelaer <https://github.com/cokelaer>`_
 * `Dilmurat Yusuf <https://github.com/dyusuf>`_
+* `Vince Yokois <https://github.com/vyokois>`_
+* `Daniel Klevebring <https://github.com/dakl>`_
 
 ----
 
