@@ -28,6 +28,7 @@ promer \
 repeat-match \
 run-mummer1 \
 run-mummer3 \
+show-aligns \
 show-coords \
 show-diff \
 show-snps \
