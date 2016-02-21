@@ -132,6 +132,7 @@ Developers
 * `Dilmurat Yusuf <https://github.com/dyusuf>`_
 * `Vince Yokois <https://github.com/vyokois>`_
 * `Daniel Klevebring <https://github.com/dakl>`_
+* `Dane Kennedy <https://github.com/kennedydane>`_
 
 ----
 
