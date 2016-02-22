@@ -17,8 +17,7 @@ RUN yum install -y \
     xorg-x11-apps mesa-libGLU-devel \
     && yum clean all
 
-# install rust compiler and cargo in the nightly version
-RUN curl -sSf http://static.rust-lang.org/rustup.sh | sh -s -- --channel=nightly -y --disable-sudo
+
 
 # install conda
 RUN mkdir -p /tmp/conda-build && wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh && bash Miniconda3-latest-Linux-x86_64.sh -b -p /anaconda
