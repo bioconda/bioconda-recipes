@@ -133,6 +133,7 @@ Developers
 * `Vince Yokois <https://github.com/vyokois>`_
 * `Daniel Klevebring <https://github.com/dakl>`_
 * `Dane Kennedy <https://github.com/kennedydane>`_
+* `Alain Domissy <https://github.com/alaindomissy>`_
 
 ----
 
