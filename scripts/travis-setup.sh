@@ -5,8 +5,6 @@ if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
     docker pull bioconda/bioconda-builder
 else
-    # install Rust
-    curl -sSf http://static.rust-lang.org/rustup.sh | sudo sh -s -- --channel=nightly -y --disable-sudo
 
     # install conda
     curl -O https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
