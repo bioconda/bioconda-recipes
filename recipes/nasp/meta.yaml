@@ -1,0 +1,75 @@
+package:
+  name: nasp
+  version: "1.0.1"
+
+source:
+  fn: nasp-1.0.1.tar.gz
+  url: https://pypi.python.org/packages/source/n/nasp/nasp-1.0.1.tar.gz
+  md5: a6c552062d03ce4cb261164147b9a711
+#  patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  skip: True # [py27]
+  # noarch_python: True
+  # preserve_egg_dir: True
+  entry_points:
+    # Put any entry points (scripts to be generated automatically) here. The
+    # syntax is module:function.  For example
+    #
+    # - nasp = nasp:main
+    #
+    # Would create an entry point called nasp that calls nasp.main()
+
+    - nasp = nasp.nasp:main
+    - format_fasta = nasp.format_fasta:main
+    - find_duplicates = nasp.find_duplicates:main
+    - convert_external_genome = nasp.convert_external_genome:main
+    - vcf_to_matrix = nasp.vcf_to_matrix:main
+
+  # If this is a new build for the same version, increment the build
+  # number. If you do not include this key, it defaults to 0.
+  number: 1
+
+requirements:
+  build:
+    - python
+    - setuptools
+
+  run:
+    - python
+    - samtools <1.3
+    - trimmomatic
+    - mummer >=3.23
+
+test:
+  # Python imports
+  imports:
+    - nasp
+
+  commands:
+    # You can put test commands to be run here.  Use this to test that the
+    # entry points work.
+
+    - nasp --help > /dev/null
+    - format_fasta --help > /dev/null
+    - find_duplicates --help > /dev/null
+    - convert_external_genome --help > /dev/null
+    - vcf_to_matrix --help > /dev/null
+
+  # You can also put a file called run_test.py in the recipe that will be run
+  # at test time.
+
+  # requires:
+    # Put any additional test requirements here.  For example
+    # - nose
+
+about:
+  home: https://github.com/TGenNorth/nasp
+  license: Academic and Research License
+  summary: The Northern Arizona SNP Pipeline (NASP)
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
