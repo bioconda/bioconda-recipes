@@ -6,11 +6,11 @@ binaries="\
 lastal \
 lastdb \
 last-split \
-last-pair-probs \
 last-merge-batches \
 "
 
 scripts=" \
+last-pair-probs \
 maf-sort \
 maf-convert \
 maf-join \
@@ -20,11 +20,8 @@ last-map-probs \
 last-dotplot \
 "
 
-export CMAKE_CXX_FLAGS="-std=c++11 -stdlib=libc++"
-
 for i in $scripts; do cp $SRC_DIR/scripts/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
 
-chmod +x $SRC_DIR/build/*
 make
 
 mkdir -p $PREFIX/bin
