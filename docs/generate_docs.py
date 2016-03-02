@@ -68,7 +68,8 @@ def setup(*args):
             if versions:
                 metadata = MetaData(op.join(RECIPE_DIR, folder, versions[0]))
             else:
-                raise
+                # ignore non-recipe folders
+                continue
 
         # Format the README
         notes = metadata.get_section('extra').get('notes', '')
