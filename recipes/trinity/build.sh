@@ -20,4 +20,4 @@ cd $BINARY_HOME && ln -s $TRINITY_HOME/Trinity $BINARY
 ln -s $TRINITY_HOME/util/* .
 ln -s $TRINITY_HOME/Analysis/DifferentialExpression/PtR
 ln -s $TRINITY_HOME/Analysis/DifferentialExpression/run_DE_analysis.pl
-find $TRINITY_HOME -type f -print0 | xargs -0 sed -i 's/FindBin::Bin/FindBin::RealBin/g'
+find $TRINITY_HOME -type f -print0 | xargs -0 sed -i.bak 's/FindBin::Bin/FindBin::RealBin/g'
