@@ -1,5 +1,3 @@
-# copied and modified from https://anaconda.org/conda/conda-recipes
-
 package:
   name: glpk
   version: 4.57
@@ -11,19 +9,32 @@ source:
 
 build:
   features:
-    - vc9      # [win and py27]
-    - vc10     # [win and py34]
-    - vc14     # [win and py35]
-
-  number: 0
+    - vc9      [win and py27]
+    - vc10     [win and py34]
+    - vc14     [win and py35]
 
 requirements:
   build:
-    - gmp      # [not win]
-    - gcc
+    - python   [win]
+    - gcc      [linux]
+    - gmp      [not win]
 
   run:
-    - libgcc
+    - gmp      [not win]
+
+test:
+  requires:
+    - python   [linux]
+
+  files:
+    - plan.mps
+    - setup.py
+    - spam.c
+
+  commands:
+    - glpsol --mps plan.mps
+    - "$PYTHON setup.py test" [linux]
+    - "python setup.py test"  [win]
 
 about:
   home: https://www.gnu.org/software/glpk/
