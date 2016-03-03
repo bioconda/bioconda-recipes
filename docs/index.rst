@@ -134,6 +134,7 @@ Developers
 * `Daniel Klevebring <https://github.com/dakl>`_
 * `Dane Kennedy <https://github.com/kennedydane>`_
 * `Alain Domissy <https://github.com/alaindomissy>`_
+* `Sebastian Schmeier` <https://github.com/sschmeier>`_
 
 ----
 
