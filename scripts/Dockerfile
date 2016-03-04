@@ -13,6 +13,8 @@ RUN yum install -y \
     devtoolset-2-gcc-gfortran autotools-latest pkgconfig which file gpg \
     # Needed for perl-db-file
     db4-devel \
+    # Needed for perl XML modules
+    expat expat-devel \
     # install X11 dependencies and openGL/mesa
     xorg-x11-apps mesa-libGLU-devel \
     && yum clean all
