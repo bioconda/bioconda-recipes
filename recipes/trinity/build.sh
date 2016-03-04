@@ -26,14 +26,8 @@ ln -s $TRINITY_HOME/trinity-plugins/collectl/bin/col2tlviz.pl
 ln -s $TRINITY_HOME/trinity-plugins/collectl/bin/collectl
 ln -s $TRINITY_HOME/trinity-plugins/collectl/bin/collectl2html
 ln -s $TRINITY_HOME/trinity-plugins/fastool/fastool
-ln -s $TRINITY_HOME/trinity-plugins/jellyfish/bin/jellyfish
 ln -s $TRINITY_HOME/trinity-plugins/parafly/bin/ParaFly
-ln -s $TRINITY_HOME/trinity-plugins/Trimmomatic/trimmomatic.jar
 ln -s $TRINITY_HOME/trinity-plugins/slclust/bin/slclust
-ln -s $TRINITY_HOME/trinity-plugins/BIN/samtools
-ln -s $TRINITY_HOME/trinity-plugins/htslib/bgzip
-ln -s $TRINITY_HOME/trinity-plugins/htslib/htsfile
-ln -s $TRINITY_HOME/trinity-plugins/htslib/tabix
 
 
 export LC_ALL=C
