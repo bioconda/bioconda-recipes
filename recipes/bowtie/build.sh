@@ -1,25 +1,16 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+if [ $(uname) == "Darwin" ]; then
+    CXXFLAGS="$CXXFLAGS -I$(xcrun --show-sdk-path)/usr/include"
+    LDFLAGS="$LDFLAGS -L$(xcrun --show-sdk-path)/usr/lib"
+fi
 
-binaries="\
-bowtie \
-bowtie-align-l \
-bowtie-align-s \
-bowtie-build \
-bowtie-build-l \
-bowtie-build-s \
-bowtie-inspect \
-bowtie-inspect-l \
-bowtie-inspect-s \
-"
-pythonfiles="bowtie-build bowtie-inspect"
+make && make install prefix=$PREFIX
 
 PY3_BUILD="${PY_VER%.*}"
 
-if [ $PY3_BUILD -eq 3 ]
-then
-    for i in $pythonfiles; do 2to3 --write $i; done
-fi
+PYTHON_FILES="bowtie bowtie-build bowtie-inspect"
 
-for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
+if [ $PY3_BUILD -eq 3 ]; then
+    for i in $PYTHON_FILES; do 2to3 --write $i; done
+fi
