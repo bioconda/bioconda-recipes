@@ -30,7 +30,6 @@ ln -s $TRINITY_HOME/trinity-plugins/jellyfish/bin/jellyfish
 ln -s $TRINITY_HOME/trinity-plugins/parafly/bin/ParaFly
 ln -s $TRINITY_HOME/trinity-plugins/Trimmomatic/trimmomatic.jar
 ln -s $TRINITY_HOME/trinity-plugins/slclust/bin/slclust
-ln -s $TRINITY_HOME/trinity-plugins/GAL_0.2.1/fasta_tool
 ln -s $TRINITY_HOME/trinity-plugins/BIN/samtools
 ln -s $TRINITY_HOME/trinity-plugins/htslib/bgzip
 ln -s $TRINITY_HOME/trinity-plugins/htslib/htsfile
