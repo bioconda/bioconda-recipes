@@ -5,7 +5,9 @@
             --with-jpeg \
             --with-tiff \
             --with-freetype \
-            --with-zlib
+            --with-zlib \
+            --without-vpx \
+            --without-xpm
 
 make
 make install
