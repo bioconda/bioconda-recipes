@@ -5,6 +5,8 @@ export DYLD_LIBRARY_PATH=$PREFIX/lib:$PREFIX
 export C_INCLUDE_PATH=$PREFIX/include
 export CPP_INCLUDE_PATH=$PREFIX/include
 
+export CPPFLAGS="-I${PREFIX}/include"
+export LDFLAGS="-L${PREFIX}/lib"
 
 export CPPFLAGS="-std=c++11"
 ./configure --prefix=$PREFIX
