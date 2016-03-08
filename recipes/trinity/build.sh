@@ -22,5 +22,13 @@ ln -s $TRINITY_HOME/Analysis/DifferentialExpression/PtR
 ln -s $TRINITY_HOME/Analysis/DifferentialExpression/run_DE_analysis.pl
 
 
+# Find real path when executing from a symlink
 export LC_ALL=C
 find $TRINITY_HOME -type f -print0 | xargs -0 sed -i.bak 's/FindBin::Bin/FindBin::RealBin/g'
+
+# Replace hard coded path to deps
+find $TRINITY_HOME -type f -print0 | xargs -0 sed -i.bak 's/$FASTOOL_DIR\/fastool/fastool/g'
+find $TRINITY_HOME -type f -print0 | xargs -0 sed -i.bak 's/$JELLYFISH_DIR\/bin\/jellyfish/jellyfish/g'
+find $TRINITY_HOME -type f -print0 | xargs -0 sed -i.bak 's/$COLLECTL_DIR\///g'
+find $TRINITY_HOME -type f -print0 | xargs -0 sed -i.bak "s/$\{COLLECTL_DIR\}\///g"
+find $TRINITY_HOME -type f -print0 | xargs -0 sed -i.bak 's/$PARAFLY -c/ParaFly/g'
