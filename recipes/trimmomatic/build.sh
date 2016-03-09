@@ -1,8 +1,8 @@
 #!/bin/bash
 
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-ln -s $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM $PREFIX/share/$PKG_NAME
 mkdir -p $outdir
+ln -s $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM $PREFIX/share/$PKG_NAME
 mkdir -p $PREFIX/bin
 cp -R ./* $outdir/
 mv $outdir/trimmomatic-$PKG_VERSION.jar $outdir/trimmomatic.jar
