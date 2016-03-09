@@ -136,6 +136,7 @@ Developers
 * `Alain Domissy <https://github.com/alaindomissy>`_
 * `Sebastian Schmeier <https://github.com/sschmeier>`_
 * `Saket Choudhary <https://github.com/saketkc>`_
+* `Daniel Gaston <https://github.com/dgaston>`_
 
 ----
 
