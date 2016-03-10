@@ -157,6 +157,22 @@ Examples of somewhat non-standard recipes, in no particular order:
   copies over individual scripts to the bin dir
 * [htslib](recipes/htslib) has a small test script that creates example data
   and runs multiple programs on it
+* [spectacle](recipes/spectacle) runs `2to3` to make the wrapper script Python
+  3 compatible, patches the wrapper script to have a shebang line, deletes
+  example data to avoid taking up space in the bioconda channel, and includes
+  a script for downloading the example data separately.
+
+### Name collisions
+In some cases, there may be a name collision when writing a recipe. For example the
+[wget](recipes/wget) recipe is for the standard command-line tool. There is
+also a Python package called `wget` [on
+PyPI](https://pypi.python.org/pypi/wget). In this case, we prefixed the Python
+package with `python-` (see [python-wget](recipes/python-wget)). A similiar
+collision was resolved with [weblogo](recipes/weblogo) and
+[python-weblogo](recipes/python-weblogo).
+
+If in doubt about how to handle a naming collision, please submit an issue.
+
 
 ## Tests
 
