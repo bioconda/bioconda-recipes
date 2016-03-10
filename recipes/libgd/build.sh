@@ -7,7 +7,9 @@
             --with-freetype \
             --with-zlib \
             --without-vpx \
-            --without-xpm
+            --without-xpm \
+            --without-x \
+            --without-fontconfig
 
 make
 make install
