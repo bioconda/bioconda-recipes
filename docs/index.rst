@@ -137,6 +137,8 @@ Developers
 * `Sebastian Schmeier <https://github.com/sschmeier>`_
 * `Saket Choudhary <https://github.com/saketkc>`_
 * `Daniel Gaston <https://github.com/dgaston>`_
+* `Joris van Steenbrugge <https://github.com/Jorisvansteenbrugge>`_
+* `Gildas Le Corguillé <https://github.com/lecorguille>`_
 
 ----
 
