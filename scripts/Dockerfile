@@ -17,8 +17,7 @@ RUN yum install -y \
     xorg-x11-apps mesa-libGLU-devel \
     && yum clean all
 
-# install rust compiler and cargo in the nightly version
-RUN curl -sSf http://static.rust-lang.org/rustup.sh | sh -s -- --channel=nightly -y --disable-sudo
+
 
 # install conda
 RUN mkdir -p /tmp/conda-build && wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh && bash Miniconda3-latest-Linux-x86_64.sh -b -p /anaconda
@@ -28,7 +27,7 @@ ENV LC_ALL en_US.UTF-8
 RUN mkdir -p /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64 # workaround for bug in current conda (conda issue #466)
 
 # setup conda
-RUN conda install -y conda conda-build anaconda-client pyyaml toolz jinja2 nose
+RUN conda install -y --file /bioconda-recipes/scripts/requirements.txt
 RUN conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
 RUN conda config --add channels bioconda
 RUN conda config --add channels r

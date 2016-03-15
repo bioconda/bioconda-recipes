@@ -38,8 +38,7 @@ prerequisites are assumed:
 
 Fork this repository or create a new branch to work in. Within the new branch,
 [create a recipe](http://conda.pydata.org/docs/building/build.html)
-(`your_package` in this example) in the `recipes` directory. See the "bioconda
-build system" section below for further details.
+(`your_package` in this example) in the `recipes` directory. See our [guidelines](GUIDELINES.md) for best practices and examples.
 
 ### Step 2: Test the recipe
 
@@ -158,6 +157,11 @@ Then test a recipe with:
 docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
 ```
 
+If you wish the open a bash shell in the Docker container for manual debugging:
+
+```bash
+docker run -i -t --entrypoint /bin/bash bioconda/bioconda-builder
+```
 
 ## The bioconda build system
 This repository is set up on [Travis CI](https://travis-ci.org) such that on

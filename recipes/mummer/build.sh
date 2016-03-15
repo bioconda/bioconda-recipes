@@ -1,7 +1,16 @@
 #!/bin/bash
 
+BINARY=mummer
+BINARY_HOME=$PREFIX/bin
+MUMMER_HOME=$PREFIX/opt/mummer-$PKG_VERSION
+
+mkdir -p $BINARY_HOME
+mkdir -p $MUMMER_HOME
+
 # cd to location of Makefile and source
-cd $SRC_DIR
+cp -R $SRC_DIR/* $MUMMER_HOME
+
+cd $MUMMER_HOME
 
 make
 
@@ -19,11 +28,14 @@ promer \
 repeat-match \
 run-mummer1 \
 run-mummer3 \
+show-aligns \
 show-coords \
 show-diff \
 show-snps \
 show-tiling \
 "
 
-mkdir -p $PREFIX/bin
-for i in $binaries; do cp $SRC_DIR/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
+for i in $binaries; do 
+  chmod +x $MUMMER_HOME/$i
+  ln -s "$MUMMER_HOME/$i" "$BINARY_HOME/$i"
+done
