@@ -29,7 +29,7 @@ These features turn Conda into the perfect package manager for bioinformatics,
 where analyses often involve the application of various tools with sometimes
 complicated and even conflicting dependencies or mixtures of different languages.
 Ultimately, the usage of Conda should help to **perform reproducible science**.
-Bioconda already contains over 500 bioinformatics related packages.
+Bioconda already contains **over 700 bioinformatics related packages**.
 
 
 .. _setup:
@@ -130,6 +130,15 @@ Developers
 * `Jerome Kelleher <https://github.com/jeromekelleher>`_
 * `Thomas Cokelaer <https://github.com/cokelaer>`_
 * `Dilmurat Yusuf <https://github.com/dyusuf>`_
+* `Vince Yokois <https://github.com/vyokois>`_
+* `Daniel Klevebring <https://github.com/dakl>`_
+* `Dane Kennedy <https://github.com/kennedydane>`_
+* `Alain Domissy <https://github.com/alaindomissy>`_
+* `Sebastian Schmeier <https://github.com/sschmeier>`_
+* `Saket Choudhary <https://github.com/saketkc>`_
+* `Daniel Gaston <https://github.com/dgaston>`_
+* `Joris van Steenbrugge <https://github.com/Jorisvansteenbrugge>`_
+* `Gildas Le Corguillé <https://github.com/lecorguille>`_
 
 ----
 
