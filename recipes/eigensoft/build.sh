@@ -1,7 +1,7 @@
 #!/bin/bash
 cd src
-#sed -i -e 's/-lgsl/-llapacke -lgsl/g' Makefile
-ls $PREFIX/lib
+sed -i -e 's/-Wl,-Bdynamic//g' Makefile
+sed -i -e 's/-Wl,-Bstatic//g' Makefile
 export OPENBLAS=$PREFIX
 make 
 cd ..
