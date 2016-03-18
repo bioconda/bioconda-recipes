@@ -5,8 +5,10 @@
 
 .. highlight:: bash
 
+========
 Bioconda
 ========
+
 
 .. image:: https://img.shields.io/github/watchers/bioconda/recipes.svg?style=social&label=Watch
    :target: https://github.com/bioconda/recipes/watchers
@@ -42,7 +44,7 @@ Step 1: Install Conda
 
 To use bioconda, you need to install the **Conda package manager** which is most
 easily obtained via the `Miniconda <http://conda.pydata.org/miniconda.html>`_
-Python distribution.
+Python distribution. Miniconda can be installed to your home directory without admin priviledges.
 
 Step 2: Setup Bioconda
 --------------------------------------
@@ -142,6 +144,9 @@ Developers
 * `Zhuoqing Fang <https://github.com/BioNinja>`_
 
 ----
+
+Bioconda is a derivative mark of Anaconda :sup:`®`, a trademark of Continuum Analytics, Inc registered in the U.S. and other countries.
+Continuum Analytics, Inc. grants permission of the derivative use but is not associated with Bioconda.
 
 The Bioconda channel is sponsored by `Continuum Analytics <https://www.continuum.io/>`_.
 
