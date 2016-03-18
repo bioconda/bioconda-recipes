@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BINARY_HOME=$PREFIX/bin
-BBMAP_HOME=$PREFIX/opt/trinity-$PKG_VERSION
+BBMAP_HOME=$PREFIX/opt/bbmap-$PKG_VERSION
 
 cd $SRC_DIR
 
