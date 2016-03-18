@@ -139,6 +139,7 @@ Developers
 * `Daniel Gaston <https://github.com/dgaston>`_
 * `Joris van Steenbrugge <https://github.com/Jorisvansteenbrugge>`_
 * `Gildas Le Corguillé <https://github.com/lecorguille>`_
+* `Zhuoqing Fang <https://github.com/BioNinja>`_
 
 ----
 
