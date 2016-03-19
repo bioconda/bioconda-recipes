@@ -4,7 +4,7 @@ mkdir -p $PREFIX/bin
 
 if [ $PY3K -eq 1 ]
 then
-    2to3 --write extract_exons.py extract_snps.py extract_splice_sites.py hisat2-build hisat2-inspect simulate_reads.py 
+    2to3 --write hisat2_extract_exons.py hisat2_extract_HLA_vars.py hisat2_extract_snps_haplotypes_UCSC.py hisat2_extract_splice_sites.py hisat2-build hisat2-inspect hisat2_simulate_reads.py hisat2_extract_snps_haplotypes_VCF.py 
 fi
 
 for i in \
@@ -17,11 +17,13 @@ for i in \
     hisat2-inspect \
     hisat2-inspect-s \
     hisat2-inspect-l \
-    extract_splice_sites.py \
-    extract_snps.py \
-    extract_exons.py \
-    simulate_reads.py \
-;do
+    hisat2_extract_splice_sites.py \
+    hisat2_extract_exons.py \
+    hisat2_simulate_reads.py \
+    hisat2_extract_HLA_vars.py \
+    hisat2_extract_snps_haplotypes_UCSC.py \
+    hisat2_extract_snps_haplotypes_VCF.py;
+do
     echo $i
     cp $i $PREFIX/bin
     chmod +x $PREFIX/bin/$i
