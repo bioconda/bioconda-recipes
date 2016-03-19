@@ -1,5 +1,5 @@
 #!/bin/bash
-export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))
+export JAVA_HOME=$PREFIX
 
 TGT=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p ${TGT}
