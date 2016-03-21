@@ -10,5 +10,5 @@ then
 else
     export PATH=/anaconda/bin:$PATH
     # build packages
-    scripts/build-packages.py --repository . --packages `cat osx-whitelist.txt`
+    scripts/build-packages.py --repository .
 fi
