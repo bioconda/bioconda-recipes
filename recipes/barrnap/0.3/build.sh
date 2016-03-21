@@ -2,7 +2,7 @@
 
 mkdir -p $PREFIX/share/barrnap
 mkdir -p $PREFIX/bin
-cp ./binaries $PREFIX/share/barrnap/ -R
-cp ./db $PREFIX/share/barrnap/ -R
+cp -R ./binaries $PREFIX/share/barrnap/
+cp -R ./db $PREFIX/share/barrnap/
 cp ./barrnap $PREFIX/share/barrnap/
 ln -s $PREFIX/share/barrnap/barrnap $PREFIX/bin/
