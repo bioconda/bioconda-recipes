@@ -1,3 +1,4 @@
 #!/bin/bash
 make
-cp blockbuster.x $PREFIX
+mkdir $PREFIX/bin
+cp blockbuster.x $PREFIX/bin
