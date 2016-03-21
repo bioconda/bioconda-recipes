@@ -1,3 +1,3 @@
 #!/bin/sh
-mkdir -p $PREFIX
-mv ./* $PREFIX/
+mkdir -p $PREFIX/bin
+mv ./* $PREFIX/bin
