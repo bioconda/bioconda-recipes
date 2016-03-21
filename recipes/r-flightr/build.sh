@@ -1,4 +1,6 @@
 #!/bin/bash
 
-echo  'require("devtools")\ninstall_github("eldarrak/FLightR") ' | $R
+echo 'require("devtools")' > setup.R
+echo 'install_github("eldarrak/FLightR")'  >> setup.R
+cat setup.R | $R --no-save
 
