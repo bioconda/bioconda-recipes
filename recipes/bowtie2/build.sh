@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+make
 
 binaries="\
 bowtie2 \
@@ -23,5 +23,7 @@ then
     for i in $pythonfiles; do 2to3 --write $i; done
 fi
 
-for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
-for d in $directories; do cp -r $d $PREFIX/bin; done
+for d in $directories; do cp -r $d $PREFIX; done
+
+cp -r ./* $PREFIX
+chmod +x $PREFIX/*
