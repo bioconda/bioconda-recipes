@@ -107,20 +107,35 @@ For other styles, replace ``?style=flat-square`` with ``?style=flat`` or
 ``?style=plastic``.
 
 ### Building packages for Mac OSX
+**By default, recipes will be built for both Linux and OSX**
+(see "The bioconda build system" section below) upon submitting
+a pull request. Many recipes build cleanly on Linux but not on OSX. The easy
+fix is to explicitly skip the OSX build using a [platform-specific
+selector](http://conda.pydata.org/docs/building/meta-yaml.html#skipping-builds)
+on a line in the `meta.yaml` that skips the build, like this:
 
-If you want your package to be built for Mac OSX as well, add the recipe name
-to the ``osx-whitelist.txt`` file in the root of this repository.
+```
+build:
+  skip: True  # [osx]
+```
 
-To set up a local machine for building and testing OSX recipes, run
+A better fix is to figure out what needs to be changed for a build to work on
+OSX, and include those changes using platform-specific selectors. Such changes
+could include tweaks to the build script, applying patches, or using
+OS-specific installation methods. See [graphviz](recipes/graphviz),
+[blast](recipes/blast), and UCSC utils like
+[ucsc-pslcdnafilter](recipes/ucsc-pslcdnafilter) for examples of these methods.
+
+To set up a local OSX machine for building and testing OSX recipes, run
 ``scripts/travis-setup.sh``. Several commands in this script will prompt for
 sudo privileges, but the script itself should be run as a regular user. This
 script will set up a conda environment in ``/anaconda`` and install necessary
 prerequisites.
 
-To test all recipes in the ``osx-whitelist``, use:
+To test all OSX recipes (skipping those that define`skip: True #[osx]`) use:
 
 ```bash
-scripts/build-packages.py --repository . --packages `cat osx-whitelist.txt`
+scripts/build-packages.py --repository .
 ```
 
 ### Managing multiple versions of a package

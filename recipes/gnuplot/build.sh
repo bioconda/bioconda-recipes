@@ -3,6 +3,6 @@
 ./configure \
     --prefix=$PREFIX \
     --without-x \
-    --without-fontconfig
+    --without-lua
 
 make && make install
