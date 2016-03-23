@@ -9,6 +9,10 @@ cd $SRC_DIR
 make inchworm_target
 make chrysalis_target
 
+cd $SRC_DIR/trinity-plugins/
+make scaffold_iworm_contigs_target
+cd $SRC_DIR
+
 # remove the sample data
 rm -rf $SRC_DIR/sample_data
 
