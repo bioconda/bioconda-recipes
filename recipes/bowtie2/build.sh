@@ -1,6 +1,9 @@
 #!/bin/bash
+set -eu -o pipefail
 
-make
+if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    make
+fi
 
 binaries="\
 bowtie2 \
@@ -23,7 +26,5 @@ then
     for i in $pythonfiles; do 2to3 --write $i; done
 fi
 
-for d in $directories; do cp -r $d $PREFIX; done
-
-cp -r ./* $PREFIX
-chmod +x $PREFIX/*
+for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
+for d in $directories; do cp -r $d $PREFIX/bin; done
