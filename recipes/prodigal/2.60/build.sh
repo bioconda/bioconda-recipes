@@ -1,3 +1,3 @@
 #!/bin/sh
 make
-mv prodigal $PREFIX
+mv prodigal $PREFIX/bin
