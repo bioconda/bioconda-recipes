@@ -1,9 +1,10 @@
 #!/bin/bash
 
-cd sdk/cwl
-sed -i.bak -e '/cmdclass=/s/^/#/' setup.py
-sed -i.bak "s/version='1.0'/version='$PKG_VERSION'/" setup.py
-$PYTHON setup.py install
+# R refuses to build packages that mark themselves as Priority: Recommended
+mv DESCRIPTION DESCRIPTION.old
+grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
+
+$R CMD INSTALL --build .
 
 # Add more build steps here, if they are necessary.
 
