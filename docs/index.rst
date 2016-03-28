@@ -143,6 +143,7 @@ Developers
 * `Gildas Le Corguillé <https://github.com/lecorguille>`_
 * `Zhuoqing Fang <https://github.com/BioNinja>`_
 * `Anthony Bretaudeau <https://github.com/abretaud>`_
+* `Jillian Rowe <https://github.com/jerowe>`_
 
 ----
 
