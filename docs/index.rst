@@ -5,8 +5,10 @@
 
 .. highlight:: bash
 
+========
 Bioconda
 ========
+
 
 .. image:: https://img.shields.io/github/watchers/bioconda/recipes.svg?style=social&label=Watch
    :target: https://github.com/bioconda/recipes/watchers
@@ -29,7 +31,7 @@ These features turn Conda into the perfect package manager for bioinformatics,
 where analyses often involve the application of various tools with sometimes
 complicated and even conflicting dependencies or mixtures of different languages.
 Ultimately, the usage of Conda should help to **perform reproducible science**.
-Bioconda already contains over 500 bioinformatics related packages.
+Bioconda already contains **over 700 bioinformatics related packages**.
 
 
 .. _setup:
@@ -42,7 +44,7 @@ Step 1: Install Conda
 
 To use bioconda, you need to install the **Conda package manager** which is most
 easily obtained via the `Miniconda <http://conda.pydata.org/miniconda.html>`_
-Python distribution.
+Python distribution. Miniconda can be installed to your home directory without admin priviledges.
 
 Step 2: Setup Bioconda
 --------------------------------------
@@ -134,8 +136,20 @@ Developers
 * `Daniel Klevebring <https://github.com/dakl>`_
 * `Dane Kennedy <https://github.com/kennedydane>`_
 * `Alain Domissy <https://github.com/alaindomissy>`_
+* `Sebastian Schmeier <https://github.com/sschmeier>`_
+* `Saket Choudhary <https://github.com/saketkc>`_
+* `Daniel Gaston <https://github.com/dgaston>`_
+* `Joris van Steenbrugge <https://github.com/Jorisvansteenbrugge>`_
+* `Gildas Le Corguillé <https://github.com/lecorguille>`_
+* `Zhuoqing Fang <https://github.com/BioNinja>`_
+* `Anthony Bretaudeau <https://github.com/abretaud>`_
+* `Jillian Rowe <https://github.com/jerowe>`_
+* `James Taylor <https://github.com/jxtx>`_
 
 ----
+
+Bioconda is a derivative mark of Anaconda :sup:`®`, a trademark of Continuum Analytics, Inc registered in the U.S. and other countries.
+Continuum Analytics, Inc. grants permission of the derivative use but is not associated with Bioconda.
 
 The Bioconda channel is sponsored by `Continuum Analytics <https://www.continuum.io/>`_.
 
