@@ -1,7 +1,5 @@
 #!/bin/bash
 
-PKG_BINARY=ua
-
 BINARY_HOME=$PREFIX/bin
 PKG_HOME=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
 
