@@ -1,6 +1,11 @@
 #!/bin/bash
 
 # Build perl
-sh Configure -de -Dprefix=$PREFIX -Duserelocatableinc -Dusethreads -Dcc=${PREFIX}/bin/gcc
+if [ "$(uname)" == "Darwin" ]; then
+    sh Configure -de -Dprefix=$PREFIX -Duserelocatableinc -Dusethreads -Dcc=clang
+else
+    sh Configure -de -Dprefix=$PREFIX -Duserelocatableinc -Dusethreads -Dcc=gcc
+fi
+
 make
 make install
