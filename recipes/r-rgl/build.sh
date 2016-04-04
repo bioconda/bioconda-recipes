@@ -4,7 +4,7 @@
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 
-$R CMD INSTALL .
+$R CMD INSTALL --build .
 
 # Add more build steps here, if they are necessary.
 
