@@ -1,7 +1,5 @@
 #!/bin/bash
-CFLAGS=-I$PREFIX/include
-
-make
+export CFLAGS=-I$PREFIX/include make
 
 mv bamhash_checksum_bam $PREFIX/bin
 mv bamhash_checksum_fasta $PREFIX/bin
