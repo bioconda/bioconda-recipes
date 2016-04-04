@@ -42,7 +42,7 @@ for arg in "$@"; do
     esac
 done
 
-if [ "$jvm_mem_opts" == "" ]; then
+if [ "$jvm_mem_opts" == "" ] && [ -z ${_JAVA_OPTIONS+x} ]; then
     jvm_mem_opts="$default_jvm_mem_opts"
 fi
 
