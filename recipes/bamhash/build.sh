@@ -1,5 +1,8 @@
 #!/bin/bash
-export DYLD_LIBRARY_PATH=$PREFIX/lib
+CFLAGS=-I$PREFIX/include
 
 make
-make install
+
+mv bamhash_checksum_bam $PREFIX/bin
+mv bamhash_checksum_fasta $PREFIX/bin
+mv bamhash_checksum_fastq $PREFIX/bin
