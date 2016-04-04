@@ -4,10 +4,9 @@
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 
-$R CMD INSTALL --build .
+$R CMD INSTALL .
 
 # Add more build steps here, if they are necessary.
-sudo apt-get build-dep r-cran-rgl
 
 # See
 # http://docs.continuum.io/conda/build.html
