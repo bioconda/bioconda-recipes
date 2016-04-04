@@ -1,4 +1,6 @@
 #!/bin/bash
+export DYLD_LIBRARY_PATH=$PREFIX/lib
+
 export CFLAGS=-I$PREFIX/include
 export CXXFLAGS="${CFLAGS}"
 
