@@ -145,6 +145,7 @@ Developers
 * `Anthony Bretaudeau <https://github.com/abretaud>`_
 * `Jillian Rowe <https://github.com/jerowe>`_
 * `James Taylor <https://github.com/jxtx>`_
+* `Bérénice Batut <https://github.com/bebatut>`_
 
 ----
 
