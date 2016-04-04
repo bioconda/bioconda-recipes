@@ -1,4 +1,4 @@
-"%R%" CMD INSTALL --build .
+"%R%" CMD INSTALL --build --no-configure "x11".
 if errorlevel 1 exit 1
 
 @rem Add more build steps here, if they are necessary.
