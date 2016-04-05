@@ -69,7 +69,7 @@ def build_recipe(recipe):
             sp.run(["conda", "build", "--no-anaconda-upload"] + py +
                    ["--skip-existing", "--quiet", recipe],
                    stderr=out, stdout=out, check=True, universal_newlines=True,
-                   env=env)
+                   env=os.environ)
             return True
         except sp.CalledProcessError as e:
             if e.stdout is not None:
@@ -95,7 +95,7 @@ def filter_recipes(recipes):
         sp.run(
             ["conda", "build", "--python", py,
              "--skip-existing", "--output"] + recipes,
-            check=True, stdout=sp.PIPE, universal_newlines=True
+            check=True, stdout=sp.PIPE, universal_newlines=True, env=os.environ
         ).stdout.split("\n")
         if "Ignoring non-recipe" not in msg
     ][1:-1]
