@@ -93,7 +93,7 @@ def filter_recipes(recipes):
     msgs = lambda py: [
         msg for msg in
         sp.run(
-            ["conda", "build", "--numpy", CONDA_NPY, "--python", py,
+            ["conda", "build", "--python", py,
              "--skip-existing", "--output"] + recipes,
             check=True, stdout=sp.PIPE, universal_newlines=True
         ).stdout.split("\n")
