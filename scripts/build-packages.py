@@ -14,12 +14,9 @@ from toposort import toposort_flatten
 
 PYTHON_VERSIONS = ["27", "34", "35"]
 
-# Passing `--perl 5.22.0` to conda-build fails (apparently due to
-# version parsing errors?), but setting the CONDA_PERL env var
-# works.
 os.environ.update({
     "CONDA_PERL": "5.22.0",
-    "CONDA_BOOST": "1.60.0",
+    "CONDA_BOOST": "1.60",
     "CONDA_NPY": "110"
 })
 
