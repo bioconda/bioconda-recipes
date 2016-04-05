@@ -13,14 +13,12 @@ from conda_build.metadata import MetaData
 from toposort import toposort_flatten
 
 PYTHON_VERSIONS = ["27", "34", "35"]
-CONDA_NPY = "110"
-CONDA_PERL = "5.22.0"
 
-# Passing `--perl 5.22.0` to conda-build fails (apparently due to
-# version parsing errors?), but setting the CONDA_PERL env var
-# works.
-env = os.environ
-env.update({'CONDA_PERL': CONDA_PERL})
+os.environ.update({
+    "CONDA_PERL": "5.22.0",
+    "CONDA_BOOST": "1.60",
+    "CONDA_NPY": "110"
+})
 
 
 def get_metadata(recipes):
@@ -67,11 +65,11 @@ def build_recipe(recipe):
     def build(py=None):
         try:
             out = None if args.verbose else sp.PIPE
-            py = ["--python", py, "--numpy", CONDA_NPY] if py is not None else []
+            py = ["--python", py] if py is not None else []
             sp.run(["conda", "build", "--no-anaconda-upload"] + py +
                    ["--skip-existing", "--quiet", recipe],
                    stderr=out, stdout=out, check=True, universal_newlines=True,
-                   env=env)
+                   env=os.environ)
             return True
         except sp.CalledProcessError as e:
             if e.stdout is not None:
@@ -95,9 +93,9 @@ def filter_recipes(recipes):
     msgs = lambda py: [
         msg for msg in
         sp.run(
-            ["conda", "build", "--numpy", CONDA_NPY, "--python", py,
+            ["conda", "build", "--python", py,
              "--skip-existing", "--output"] + recipes,
-            check=True, stdout=sp.PIPE, universal_newlines=True
+            check=True, stdout=sp.PIPE, universal_newlines=True, env=os.environ
         ).stdout.split("\n")
         if "Ignoring non-recipe" not in msg
     ][1:-1]
