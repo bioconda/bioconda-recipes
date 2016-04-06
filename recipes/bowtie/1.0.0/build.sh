@@ -1,5 +1,6 @@
 #!/bin/sh
 make
-mv bowtie $PREFIX
-mv bowtie-build $PREFIX
-mv bowtie-inspect $PREFIX
+mkdir $PREFIX/bin
+mv bowtie $PREFIX/bin
+mv bowtie-build $PREFIX/bin
+mv bowtie-inspect $PREFIX/bin

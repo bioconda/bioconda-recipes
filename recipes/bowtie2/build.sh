@@ -1,6 +1,9 @@
 #!/bin/bash
+set -eu -o pipefail
 
-mkdir -p $PREFIX/bin
+if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    make
+fi
 
 binaries="\
 bowtie2 \

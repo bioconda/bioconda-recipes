@@ -5,7 +5,7 @@ CC=${PREFIX}/bin/gcc
 CXX=${PREFIX}/bin/g++
 
 make
-mv megahit $PREFIX
-mv megahit_asm_core $PREFIX 
-mv megahit_sdbg_build $PREFIX
-mv megahit_toolkit $PREFIX
+mv megahit $PREFIX/bin
+mv megahit_asm_core $PREFIX/bin
+mv megahit_sdbg_build $PREFIX/bin
+mv megahit_toolkit $PREFIX/bin
