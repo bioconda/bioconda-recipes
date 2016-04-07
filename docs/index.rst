@@ -146,6 +146,11 @@ Developers
 * `Jillian Rowe <https://github.com/jerowe>`_
 * `James Taylor <https://github.com/jxtx>`_
 * `Bérénice Batut <https://github.com/bebatut>`_
+* `Rémi Marenco <https://github.com/remimarenco>`_
+* `Nitesh Turaga <https://github.com/nitesh1989>`_
+* `Daniel Blankenberg <https://github.com/blankenberg>`_
+* `Saskia Hiltemann <https://github.com/shiltemann>`_
+* `Tom Smith <https://github.com/TomSmithCGAT>`_
 
 ----
 
