@@ -1,2 +1,3 @@
+#!/bin/bash
 make install
-cp bin/slclust $PREFIX
+cp bin/slclust $PREFIX/bin
