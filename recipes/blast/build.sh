@@ -18,7 +18,7 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     cd $SRC_DIR/c++
     ./configure --prefix=$PREFIX
 
-    make -j4
+    make
 
     cp $SRC_DIR/c++/ReleaseMT/bin/* $PREFIX/bin
 fi
