@@ -142,6 +142,15 @@ Developers
 * `Joris van Steenbrugge <https://github.com/Jorisvansteenbrugge>`_
 * `Gildas Le Corguillé <https://github.com/lecorguille>`_
 * `Zhuoqing Fang <https://github.com/BioNinja>`_
+* `Anthony Bretaudeau <https://github.com/abretaud>`_
+* `Jillian Rowe <https://github.com/jerowe>`_
+* `James Taylor <https://github.com/jxtx>`_
+* `Bérénice Batut <https://github.com/bebatut>`_
+* `Rémi Marenco <https://github.com/remimarenco>`_
+* `Nitesh Turaga <https://github.com/nitesh1989>`_
+* `Daniel Blankenberg <https://github.com/blankenberg>`_
+* `Saskia Hiltemann <https://github.com/shiltemann>`_
+* `Tom Smith <https://github.com/TomSmithCGAT>`_
 
 ----
 
