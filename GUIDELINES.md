@@ -110,6 +110,8 @@ and compilers (e.g., `gcc`) should be specified in the build requirements.
 * example requiring `autoconf`: [srprism](recipes/srprism)
 * simple example: [samtools](recipes/samtools)
 
+If your package links dynamically against a particular library, it is often necessary to pin the version against which it was compiled, in order to avoid ABI incompatibilities. Instead of hardcoding a particular version in the recipe, we use jinja templates to achieve this. For example, bioconda provides an environnmnet variable `CONDA_BOOST` that contains the current major version of boost. You should pin your boost dependency against that version. An example is the [salmon recipe](recipes/salmon). If you need to pin another library, please notify @bioconda/core, and we will set up a corresponding environment variable.
+
 ## General command-line tools
 If a command-line tool is installed, it should be tested. If it has a shebang
 line, it should be patched to use `/usr/bin/env` for more general use.
@@ -157,6 +159,22 @@ Examples of somewhat non-standard recipes, in no particular order:
   copies over individual scripts to the bin dir
 * [htslib](recipes/htslib) has a small test script that creates example data
   and runs multiple programs on it
+* [spectacle](recipes/spectacle) runs `2to3` to make the wrapper script Python
+  3 compatible, patches the wrapper script to have a shebang line, deletes
+  example data to avoid taking up space in the bioconda channel, and includes
+  a script for downloading the example data separately.
+
+### Name collisions
+In some cases, there may be a name collision when writing a recipe. For example the
+[wget](recipes/wget) recipe is for the standard command-line tool. There is
+also a Python package called `wget` [on
+PyPI](https://pypi.python.org/pypi/wget). In this case, we prefixed the Python
+package with `python-` (see [python-wget](recipes/python-wget)). A similiar
+collision was resolved with [weblogo](recipes/weblogo) and
+[python-weblogo](recipes/python-weblogo).
+
+If in doubt about how to handle a naming collision, please submit an issue.
+
 
 ## Tests
 

@@ -2,29 +2,40 @@ package:
     name: "ucsc-pslxtofa"
     version: "324"
 source:
-    url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v324.src.tgz"                # [linux]
+    url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v324.src.tgz"          # [linux]
     fn: "userApps.src.tgz"                                                                     # [linux]
     md5: "c49c168584c5917081d71df854e3cd9d"                                                    # [linux]
-    patches:                                                                                 # [linux]
+    patches:                                                                                   # [linux]
         - "include.patch"                                                                      # [linux]
 
     url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/pslxToFa"                    # [osx]
     fn: "pslxToFa"                                                                            # [osx]
 
-build:                                                                                       # [osx]
-    script: "mkdir -p $PREFIX/bin; cp pslxToFa $PREFIX/bin; chmod +x $PREFIX/bin/pslxToFa" # [osx]
+build:
+  script: "mkdir -p $PREFIX/bin; cp pslxToFa $PREFIX/bin; chmod +x $PREFIX/bin/pslxToFa" # [osx]
+  number: 0
+  skip: False
+
 requirements:
     build:
         - libpng                                                    # [linux]
         - mysql                                                     # [linux]
         - zlib                                                      # [linux]
         - openssl                                                   # [linux]
+        - gcc
 
     run:                                                            # [linux]
         - libpng                                                    # [linux]
         - mysql                                                     # [linux]
         - zlib                                                      # [linux]
         - openssl                                                   # [linux]
+        - libgcc
+
+test:
+    commands:
+        # just check for existence, because the individual programs have no unified behavior
+        - which pslxToFa
+
 about:
     home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
     license: "varies; see http://genome.ucsc.edu/license"
