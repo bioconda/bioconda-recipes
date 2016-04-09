@@ -150,6 +150,8 @@ Developers
 * `Nitesh Turaga <https://github.com/nitesh1989>`_
 * `Daniel Blankenberg <https://github.com/blankenberg>`_
 * `Saskia Hiltemann <https://github.com/shiltemann>`_
+* `Tom Smith <https://github.com/TomSmithCGAT>`_
+* `Justin Fear <https://github.com/jfear>`_
 
 ----
 
