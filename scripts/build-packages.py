@@ -138,8 +138,8 @@ def test_recipes():
             packages = set()
             for py in PYTHON_VERSIONS:
                 packages.add(sp.run(["conda", "build", "--output",
-                                     "--numpy", CONDA_NPY, "--python",
-                                     py, recipe], stdout=sp.PIPE,
+                                     "--python",
+                                     py, recipe], stdout=sp.PIPE, env=os.environ,
                                      check=True).stdout.strip().decode())
             for package in packages:
                 if os.path.exists(package):
