@@ -152,6 +152,8 @@ Developers
 * `Saskia Hiltemann <https://github.com/shiltemann>`_
 * `Tom Smith <https://github.com/TomSmithCGAT>`_
 * `Justin Fear <https://github.com/jfear>`_
+* `Hai Nguyen <https://github.com/hainm>`_
+* `Greg Von Kuster <https://github.com/gregvonkuster>`_
 
 ----
 
