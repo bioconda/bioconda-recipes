@@ -4,6 +4,8 @@ set -e
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
     docker pull bioconda/bioconda-builder
+    # update conda environment
+    docker run --entrypoint "/bin/bash -c" -v `pwd`:/bioconda-recipes bioconda/bioconda-builder "conda install -y --file /bioconda-recipes/scripts/requirements.txt"
 else
 
     # install conda
