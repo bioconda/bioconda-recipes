@@ -8,6 +8,7 @@ import sys
 from collections import defaultdict
 from itertools import chain
 
+import networkx as nx
 import nose
 from conda_build.metadata import MetaData
 from toposort import toposort_flatten
@@ -30,6 +31,29 @@ def get_metadata(recipes):
 def get_deps(metadata, build=True):
     for dep in metadata.get_value("requirements/{}".format("build" if build else "run"), []):
         yield dep.split()[0]
+
+
+def get_dag(recipes):
+    metadata = list(get_metadata(recipes))
+
+    name2recipe = defaultdict(list)
+    for meta, recipe in zip(metadata, recipes):
+        name2recipe[meta.get_value("package/name")].append(recipe)
+
+    def get_inner_deps(dependencies):
+        for dep in dependencies:
+            name = dep.split()[0]
+            if name in name2recipe:
+                yield name
+
+    dag = nx.Graph()
+    dag.add_nodes_from(meta.get_value("package/name") for meta in metadata)
+    for meta in metadata:
+        name = meta.get_value("package/name")
+        dag.add_edges_from((name, dep) for dep in set(get_inner_deps(chain(get_deps(meta), get_deps(meta, build=False)))))
+
+    nx.relabel_nodes(dag, name2recipe, copy=False)
+    return dag
 
 
 # inspired by conda-build-all from https://github.com/omnia-md/conda-recipes
@@ -122,10 +146,30 @@ def test_recipes():
         recipes = [recipe for package in args.packages for recipe in get_recipes(package)]
     else:
         recipes = list(get_recipes())
+    # filter out recipes that don't need to be build
+    recipes = list(filter_recipes(recipes))
 
+    # Build dag of recipes
+    dag = get_dag(recipes)
+    subdags_n = os.environ.get("SUBDAGS", 1)
+    subdag_i = os.environ.get("SUBDAG", 0)
+    # Get connected subdags and sort by nodes
+    subdags = sorted(connected_component_subgraphs(dag), key=lambda subdag: nx.nodes(subdag))
+    # chunk subdags such that we have at most args.subdags many
+    if subdags_n < len(subdags):
+        k = len(subdags) // subdags_n
+        chunks = [subdags[i:i+k] for i in range(0, subdags_n, k)]
+    else:
+        chunks = subdags
+    if subdag_i >= len(chunks):
+        print("Nothing to be done.")
+        return
+    subdag = nx.compose(*chunks[subdag_i]))
     # ensure that packages which need a build are built in the right order
-    recipes = toposort_recipes(list(filter_recipes(recipes)))
-    print(recipes, file=sys.stderr)
+    recipes = nx.topological_sort(subdag)
+
+    print("Building recipes in order:")
+    print(*recipes, file=sys.stderr, sep="\n")
 
     # build packages
     for recipe in recipes:
