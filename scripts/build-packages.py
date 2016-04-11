@@ -164,7 +164,7 @@ def test_recipes():
     if subdag_i >= len(chunks):
         print("Nothing to be done.")
         return
-    subdag = nx.compose(*chunks[subdag_i]))
+    subdag = nx.compose(*chunks[subdag_i])
     # ensure that packages which need a build are built in the right order
     recipes = nx.topological_sort(subdag)
 

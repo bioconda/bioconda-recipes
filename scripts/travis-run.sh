@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then

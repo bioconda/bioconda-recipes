@@ -1,4 +1,6 @@
 #!/bin/bash
+# activate bash strict mode
+set -euo pipefail
 
 # A custom travis-wait that directly prints the output.
 # Originally presented here: https://github.com/travis-ci/travis-ci/issues/4190#issuecomment-169987525
