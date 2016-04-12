@@ -1,6 +1,4 @@
 #!/bin/bash
-./configure --prefix=$PREFIX/RNAz --datadir=$PREFIX/RNAz/share
+./configure --prefix=$PREFIX --datadir=$PREFIX/share
 make
 make install
-mkdir -p $PREFIX/bin
-cp $PREFIX/RNAz/bin/RNAz $PREFIX/bin
