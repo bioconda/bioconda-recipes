@@ -23,3 +23,13 @@ else
 
     conda install -y toposort
 fi
+
+wget https://github.com/thriqon/involucro/releases/download/v1.0.1/involucro -O involucro
+chmod a+x involucro
+
+if [[ $TRAVIS_SECURE_ENV_VARS = "true" ]]
+then
+  echo "$QUAY_AUTH" > ~/.involucro
+fi
+
+touch built_packages
