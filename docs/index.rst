@@ -154,6 +154,8 @@ Developers
 * `Justin Fear <https://github.com/jfear>`_
 * `Hai Nguyen <https://github.com/hainm>`_
 * `Greg Von Kuster <https://github.com/gregvonkuster>`_
+* `Florian Eggenhofer <https://github.com/eggzilla>`_
+* `Sebastian Will <https://github.com/s-will>`_
 
 ----
 
