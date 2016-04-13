@@ -142,7 +142,10 @@ def test_recipes():
                                      py, recipe], stdout=sp.PIPE, env=os.environ,
                                      check=True).stdout.strip().decode())
             for package in packages:
-                if os.path.exists(package):
+                if os.path.exists(package) or True:
+                    with open("built_packages", "a") as f:
+                        packageinfo = os.path.basename(package).replace(".tar.bz2", "").split("-", 1)
+                        f.write("--set package=" + packageinfo[0] + " --set version=" + packageinfo[1] + " --set conda_version=" + packageinfo[1].replace("-", "=") + "\n")
                     try:
                         sp.run(["anaconda", "-t",
                                 os.environ.get("ANACONDA_TOKEN"),
