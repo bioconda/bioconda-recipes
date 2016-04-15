@@ -10,5 +10,5 @@ scripts/plot_go_term.py \
 scripts/write_hierarchy.py
 "
 
-mkdir -p $PREFIX/bin/scripts/
-for i in $binaries; do cp $SRC_DIR/$i $PREFIX/bin/scripts; done
+mkdir -p $PREFIX/bin/
+for i in $binaries; do cp $SRC_DIR/$i $PREFIX/bin/; done
