@@ -156,6 +156,7 @@ Developers
 * `Greg Von Kuster <https://github.com/gregvonkuster>`_
 * `Florian Eggenhofer <https://github.com/eggzilla>`_
 * `Sebastian Will <https://github.com/s-will>`_
+* `Simon Ye <https://github.com/yesimon>`_
 
 ----
 
