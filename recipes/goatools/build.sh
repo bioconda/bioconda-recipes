@@ -3,11 +3,9 @@
 $PYTHON setup.py install
 
 binaries="\
-scripts/fetch_associations.py \
 scripts/find_enrichment.py \
 scripts/map_to_slim.py \
-scripts/plot_go_term.py \
-scripts/write_hierarchy.py
+scripts/plot_go_term.py
 "
 
 mkdir -p $PREFIX/bin/
