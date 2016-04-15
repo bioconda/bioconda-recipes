@@ -1,0 +1,37 @@
+
+package:
+  name: rdp-tools
+  version: "2.0.2"
+
+source:
+  git_url: https://github.com/rdpstaff/RDPTools.git
+  git_rev: 2.0.2
+
+requirements:
+  build:
+    - ant
+
+build:
+  number: 0
+  script:
+#    - brew update              # [osx]
+#    - brew install ant         # [osx]
+
+    - git config --global url."https://".insteadOf git://
+    - git submodule init
+    - git submodule update
+
+    - make
+
+    - mkdir -p $PREFIX/bin
+    - mv *.jar $PREFIX/bin
+    - mv lib $PREFIX/bin
+
+test:
+  commands:
+    - java -Xmx1g -jar $PREFIX/bin/classifier.jar classify -c 0.5 -o usga_classified.txt -h soil_hier.txt $SRC_DIR/classifier/samplefiles/USGA_2_4_B_trimmed.fasta
+
+about:
+  summary: Metaproject for RDP Tools
+  home: https://rdp.cme.msu.edu/classifier/classifier.jsp
+  license: GPL2
