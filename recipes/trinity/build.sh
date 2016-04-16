@@ -5,11 +5,14 @@ BINARY_HOME=$PREFIX/bin
 TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
 
 cd $SRC_DIR
+sed -i.bak 's/: htslib_target$/:/g' trinity-plugins/Makefile
+sed -i.bak 's|-I$(prefix) -L$(prefix)|-I$(PREFIX)/include -L$(PREFIX)/lib|' trinity-plugins/scaffold_iworm_contigs/Makefile
 
 make inchworm_target
 make chrysalis_target
 
 cd $SRC_DIR/trinity-plugins/
+
 make scaffold_iworm_contigs_target
 cd $SRC_DIR
 
