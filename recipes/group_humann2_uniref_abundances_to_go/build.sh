@@ -7,4 +7,3 @@ chmod +x $PREFIX/bin/*
 
 cp -r $SRC_DIR/src $PREFIX/bin/src
 
-cp -r $SRC_DIR/test-data $PREFIX/bin/test-data

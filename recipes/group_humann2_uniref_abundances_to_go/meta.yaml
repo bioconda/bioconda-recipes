@@ -20,5 +20,16 @@ requirements:
     - goatools
     - humann2
 test:
+   files:
+      - test-data/humann2_gene_families.csv
+      - test-data/go_02_22_2016.obo
+      - test-data/goslim_metagenomics_02_22_2016.obo
+      - test-data/map_infogo1000_uniref50_02_22_2016.txt
+      - test-data/expected_biological_process_abundance.txt
+      - test-data/expected_cellular_component_abundance.txt
+      - test-data/expected_molecular_function_abundances.txt
    commands:
-      - run_tests.sh
+      - group_to_GO_abundances.sh -i "humann2_gene_families.csv" -a "go_02_22_2016.obo" -s "goslim_metagenomics_02_22_2016.obo" -u "map_infogo1000_uniref50_02_22_2016.txt" -g `which map_to_slim.py | xargs -n1 dirname` -p `which humann2 | xargs -n1 dirname` -m "molecular_function_abundances.txt" -b "biological_process_abundance.txt" -c "cellular_component_abundance.txt"
+      - diff biological_process_abundance.txt expected_biological_process_abundance.txt
+      - diff cellular_component_abundance.txt expected_cellular_component_abundance.txt
+      - diff molecular_function_abundances.txt expected_molecular_function_abundances.txt
