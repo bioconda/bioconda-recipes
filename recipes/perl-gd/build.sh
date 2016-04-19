@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export DYLD_LIBRARY_PATH=$PREFIX/lib
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
