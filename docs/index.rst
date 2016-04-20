@@ -143,6 +143,20 @@ Developers
 * `Gildas Le Corguillé <https://github.com/lecorguille>`_
 * `Zhuoqing Fang <https://github.com/BioNinja>`_
 * `Anthony Bretaudeau <https://github.com/abretaud>`_
+* `Jillian Rowe <https://github.com/jerowe>`_
+* `James Taylor <https://github.com/jxtx>`_
+* `Bérénice Batut <https://github.com/bebatut>`_
+* `Rémi Marenco <https://github.com/remimarenco>`_
+* `Nitesh Turaga <https://github.com/nitesh1989>`_
+* `Daniel Blankenberg <https://github.com/blankenberg>`_
+* `Saskia Hiltemann <https://github.com/shiltemann>`_
+* `Tom Smith <https://github.com/TomSmithCGAT>`_
+* `Justin Fear <https://github.com/jfear>`_
+* `Hai Nguyen <https://github.com/hainm>`_
+* `Greg Von Kuster <https://github.com/gregvonkuster>`_
+* `Florian Eggenhofer <https://github.com/eggzilla>`_
+* `Sebastian Will <https://github.com/s-will>`_
+* `Simon Ye <https://github.com/yesimon>`_
 
 ----
 
