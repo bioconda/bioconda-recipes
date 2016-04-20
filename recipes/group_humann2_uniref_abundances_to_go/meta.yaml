@@ -1,0 +1,34 @@
+about:
+  home: 'https://github.com/ASaiM/group_humann2_uniref_abundances_to_GO'
+  summary: "Group abundances of UniRef50 gene families obtained with HUMAnN2 to Gene Ontology (GO) slim terms with relative abundances"
+  license: "Apache 2"
+package:
+  name: group_humann2_uniref_abundances_to_go
+  version: '1.2.0'
+build:
+  number: 0
+  skip: True # [ not py27 or osx]
+source:
+  fn: v1.2.0.zip
+  md5: d84001d850a004ae9d43dbf5a54c15b2
+  url: https://github.com/ASaiM/group_humann2_uniref_abundances_to_GO/archive/v1.2.0.zip
+requirements:
+  run:
+    - python 
+    - humann2 
+    - goatools
+test:
+   files:
+      - test-data/humann2_gene_families.csv
+      - test-data/go_02_22_2016.obo
+      - test-data/goslim_metagenomics_02_22_2016.obo
+      - test-data/map_infogo1000_uniref50_02_22_2016.txt
+      - test-data/expected_biological_process_abundance.txt
+      - test-data/expected_cellular_component_abundance.txt
+      - test-data/expected_molecular_function_abundances.txt
+   commands:
+      - group_humann2_uniref_abundances_to_GO.sh -h
+      - group_humann2_uniref_abundances_to_GO.sh -i "humann2_gene_families.csv" -a "go_02_22_2016.obo" -s "goslim_metagenomics_02_22_2016.obo" -u "map_infogo1000_uniref50_02_22_2016.txt" -g `which map_to_slim.py | xargs -n1 dirname` -p `which humann2 | xargs -n1 dirname` -m "molecular_function_abundances.txt" -b "biological_process_abundance.txt" -c "cellular_component_abundance.txt"
+      - diff biological_process_abundance.txt expected_biological_process_abundance.txt
+      - diff cellular_component_abundance.txt expected_cellular_component_abundance.txt
+      - diff molecular_function_abundances.txt expected_molecular_function_abundances.txt
