@@ -137,7 +137,7 @@ def test_recipes():
     subdags_n = os.environ.get("SUBDAGS", 1)
     subdag_i = os.environ.get("SUBDAG", 0)
     # Get connected subdags and sort by nodes
-    subdags = sorted(connected_component_subgraphs(dag), key=lambda subdag: nx.nodes(subdag))
+    subdags = sorted(nx.connected_component_subgraphs(dag), key=lambda subdag: nx.nodes(subdag))
     # chunk subdags such that we have at most args.subdags many
     if subdags_n < len(subdags):
         k = len(subdags) // subdags_n
