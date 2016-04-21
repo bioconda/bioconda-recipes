@@ -56,27 +56,6 @@ def get_dag(recipes):
     return dag
 
 
-# inspired by conda-build-all from https://github.com/omnia-md/conda-recipes
-def toposort_recipes(recipes):
-    metadata = list(get_metadata(recipes))
-
-    name2recipe = defaultdict(list)
-    for meta, recipe in zip(metadata, recipes):
-        name2recipe[meta.get_value("package/name")].append(recipe)
-
-    def get_inner_deps(dependencies):
-        for dep in dependencies:
-            name = dep.split()[0]
-            if name in name2recipe:
-                yield name
-
-    dag = {
-        meta.get_value("package/name"): set(get_inner_deps(chain(get_deps(meta), get_deps(meta, build=False))))
-        for meta in metadata
-    }
-    return [recipe for name in toposort_flatten(dag) for recipe in name2recipe[name]]
-
-
 def conda_index():
     index_dirs = [
         "/anaconda/conda-bld/linux-64",
