@@ -9,13 +9,9 @@ import sys
 from collections import defaultdict
 from itertools import chain
 
-# TODO temporary install of networkx. Move into Docker image.
-sp.run(["conda", "install", "networkx"], check=True)
-
 import networkx as nx
 import nose
 from conda_build.metadata import MetaData
-from toposort import toposort_flatten
 
 PYTHON_VERSIONS = ["27", "34", "35"]
 
@@ -153,7 +149,7 @@ def test_recipes():
     # ensure that packages which need a build are built in the right order
     recipes = [recipe for package in nx.topological_sort(subdag) for recipe in name2recipes[package]]
 
-    print("Building recipes in order:")
+    print("Building recipes in order:", file=sys.stderr)
     print(*recipes, file=sys.stderr, sep="\n")
 
     # build packages
