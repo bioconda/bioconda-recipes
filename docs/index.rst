@@ -157,6 +157,7 @@ Developers
 * `Florian Eggenhofer <https://github.com/eggzilla>`_
 * `Sebastian Will <https://github.com/s-will>`_
 * `Simon Ye <https://github.com/yesimon>`_
+* `Simon van Heeringen <https://github.com/simonvh>`_
 
 ----
 
