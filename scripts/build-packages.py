@@ -147,7 +147,10 @@ def test_recipes():
     if subdag_i >= len(chunks):
         print("Nothing to be done.")
         return
-    subdag = nx.compose(*chunks[subdag_i])
+    # merge subdags of the selected chunk
+    subdag = nx.Graph()
+    for g in chunks[subdag_i]:
+        subdag = nx.compose(subdag, g)
     # ensure that packages which need a build are built in the right order
     recipes = [recipe for package in nx.topological_sort(subdag) for recipe in name2recipes[package]]
 
