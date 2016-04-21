@@ -134,8 +134,8 @@ def test_recipes():
 
     # Build dag of recipes
     dag, name2recipes = get_dag(recipes)
-    subdags_n = os.environ.get("SUBDAGS", 1)
-    subdag_i = os.environ.get("SUBDAG", 0)
+    subdags_n = int(os.environ.get("SUBDAGS", 1))
+    subdag_i = int(os.environ.get("SUBDAG", 0))
     # Get connected subdags and sort by nodes
     subdags = sorted(nx.connected_component_subgraphs(dag), key=lambda subdag: nx.nodes(subdag))
     # chunk subdags such that we have at most args.subdags many
