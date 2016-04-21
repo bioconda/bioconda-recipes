@@ -8,9 +8,9 @@ grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 
 #While developing a bioconductor pacakge,
 #bioconductor only allows using the development version of R
-#which is R 3.3.0 when the recipe is being built.
+#which is 3.3.0 at the time of development.
 #Aapart from the above reason,
-#bioconductor-rcas works on R 3.2.2.
+#bioconductor-rcas has been tested and so allowed on R 3.2.2.
 sed -e 's|Depends: R (>= 3.3.0)|Depends: R (>= 3.2.2)|' -i DESCRIPTION
 
 
