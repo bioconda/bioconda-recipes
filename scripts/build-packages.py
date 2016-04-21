@@ -50,11 +50,11 @@ def get_dag(recipes):
             if name in name2recipe:
                 yield name
 
-    dag = nx.Graph()
+    dag = nx.DiGraph()
     dag.add_nodes_from(meta.get_value("package/name") for meta in metadata)
     for meta in metadata:
         name = meta.get_value("package/name")
-        dag.add_edges_from((name, dep) for dep in set(get_inner_deps(chain(get_deps(meta), get_deps(meta, build=False)))))
+        dag.add_edges_from((dep, name) for dep in set(get_inner_deps(chain(get_deps(meta), get_deps(meta, build=False)))))
 
     #nx.relabel_nodes(dag, name2recipe, copy=False)
     return dag, name2recipe
@@ -148,7 +148,7 @@ def test_recipes():
         print("Nothing to be done.")
         return
     # merge subdags of the selected chunk
-    subdag = nx.Graph()
+    subdag = nx.DiGraph()
     for g in chunks[subdag_i]:
         subdag = nx.compose(subdag, g)
     # ensure that packages which need a build are built in the right order
