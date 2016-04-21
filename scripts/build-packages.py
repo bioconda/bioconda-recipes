@@ -137,20 +137,19 @@ def test_recipes():
     subdags_n = int(os.environ.get("SUBDAGS", 1))
     subdag_i = int(os.environ.get("SUBDAG", 0))
     # Get connected subdags and sort by nodes
-    subdags = sorted(nx.connected_component_subgraphs(dag), key=lambda subdag: nx.nodes(subdag))
+    subdags = sorted(nx.connected_components(dag.to_undirected()))
     # chunk subdags such that we have at most args.subdags many
     if subdags_n < len(subdags):
         k = len(subdags) // subdags_n
-        chunks = [subdags[i:i+k] for i in range(0, subdags_n, k)]
+        chunks = [[n for subdag in subdags[i:i+k] for n in subdag]
+                  for i in range(0, subdags_n, k)]
     else:
         chunks = subdags
     if subdag_i >= len(chunks):
         print("Nothing to be done.")
         return
     # merge subdags of the selected chunk
-    subdag = nx.DiGraph()
-    for g in chunks[subdag_i]:
-        subdag = nx.compose(subdag, g)
+    subdag = dag.subgraph(chunks[subdag_i])
     # ensure that packages which need a build are built in the right order
     recipes = [recipe for package in nx.topological_sort(subdag) for recipe in name2recipes[package]]
 
