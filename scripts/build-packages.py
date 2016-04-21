@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 import os
 import glob
 import subprocess as sp
@@ -7,6 +8,9 @@ import argparse
 import sys
 from collections import defaultdict
 from itertools import chain
+
+# TODO temporary install of networkx. Move into Docker image.
+sp.run(["conda", "install", "networkx"], check=True)
 
 import networkx as nx
 import nose
