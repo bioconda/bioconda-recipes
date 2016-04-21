@@ -24,7 +24,6 @@ os.environ.update({
 
 def get_metadata(recipes):
     for recipe in recipes:
-        print("Reading recipe", recipe, file=sys.stderr)
         yield MetaData(recipe)
 
 
@@ -108,9 +107,7 @@ def filter_recipes(recipes):
         recipe = item[0]
         msg = item[1:]
 
-        if all(map(skip, msg)):
-            print("Skipping recipe", recipe, file=sys.stderr)
-        else:
+        if not all(map(skip, msg)):
             yield recipe
 
 
@@ -130,6 +127,10 @@ def test_recipes():
 
     # Build dag of recipes
     dag, name2recipes = get_dag(recipes)
+    
+    print("Packages to build", file=sys.stderr)
+    print(*nx.nodes(dag), file=sys.stderr, sep="\n")
+
     subdags_n = int(os.environ.get("SUBDAGS", 1))
     subdag_i = int(os.environ.get("SUBDAG", 0))
     # Get connected subdags and sort by nodes
@@ -149,7 +150,7 @@ def test_recipes():
     # ensure that packages which need a build are built in the right order
     recipes = [recipe for package in nx.topological_sort(subdag) for recipe in name2recipes[package]]
 
-    print("Building recipes in order:", file=sys.stderr)
+    print("Building subdag {} of recipes in order:".format(subdag_i), file=sys.stderr)
     print(*recipes, file=sys.stderr, sep="\n")
 
     # build packages
