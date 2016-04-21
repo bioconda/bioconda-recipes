@@ -56,8 +56,8 @@ def get_dag(recipes):
         name = meta.get_value("package/name")
         dag.add_edges_from((name, dep) for dep in set(get_inner_deps(chain(get_deps(meta), get_deps(meta, build=False)))))
 
-    nx.relabel_nodes(dag, name2recipe, copy=False)
-    return dag
+    #nx.relabel_nodes(dag, name2recipe, copy=False)
+    return dag, name2recipe
 
 
 def conda_index():
@@ -133,7 +133,7 @@ def test_recipes():
     recipes = list(filter_recipes(recipes))
 
     # Build dag of recipes
-    dag = get_dag(recipes)
+    dag, name2recipes = get_dag(recipes)
     subdags_n = os.environ.get("SUBDAGS", 1)
     subdag_i = os.environ.get("SUBDAG", 0)
     # Get connected subdags and sort by nodes
@@ -149,7 +149,7 @@ def test_recipes():
         return
     subdag = nx.compose(*chunks[subdag_i])
     # ensure that packages which need a build are built in the right order
-    recipes = nx.topological_sort(subdag)
+    recipes = [recipe for package in nx.topological_sort(subdag) for recipe in name2recipes[package]]
 
     print("Building recipes in order:")
     print(*recipes, file=sys.stderr, sep="\n")
