@@ -48,5 +48,5 @@ then
 #elif [ "$unamestr" == 'Darwin' ];
 #then
 #    eval "ImageJ-macosx" $jvm_mem_opts $jvm_prop_opts --ij2 --headless --debug
-#fi
+fi
 exit
