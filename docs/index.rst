@@ -151,6 +151,13 @@ Developers
 * `Daniel Blankenberg <https://github.com/blankenberg>`_
 * `Saskia Hiltemann <https://github.com/shiltemann>`_
 * `Tom Smith <https://github.com/TomSmithCGAT>`_
+* `Justin Fear <https://github.com/jfear>`_
+* `Hai Nguyen <https://github.com/hainm>`_
+* `Greg Von Kuster <https://github.com/gregvonkuster>`_
+* `Florian Eggenhofer <https://github.com/eggzilla>`_
+* `Sebastian Will <https://github.com/s-will>`_
+* `Simon Ye <https://github.com/yesimon>`_
+* `Simon van Heeringen <https://github.com/simonvh>`_
 
 ----
 

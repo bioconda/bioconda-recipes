@@ -163,7 +163,7 @@ standard build. To build this yourself, you can do:
 
 ```bash
 docker login
-(cd scripts && docker build -t bicoonda/bioconda-builder .)
+(cd scripts && docker build -t bioconda/bioconda-builder .)
 ```
 
 Then test a recipe with:
