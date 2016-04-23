@@ -5,5 +5,5 @@
 ln -s $PREFIX/lib/libstdc++.la $PREFIX/lib64/libstdc++.la 
 ln -s $PREFIX/lib/libstdc++.so $PREFIX/lib64/libstdc++.so 
 
-make -j4
+make
 make install
