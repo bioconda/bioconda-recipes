@@ -8,6 +8,8 @@ sed -i.bak 's/^  bioperl();/  # bioperl();/' scripts/variant_effect_predictor/IN
 sed -i.bak 's/^  test();/  # test();/' scripts/variant_effect_predictor/INSTALL.pl
 # Use curl for downloads -- works with proxies
 sed -i.bak 's/our $use_curl = 0/our $use_curl = 1/' scripts/variant_effect_predictor/INSTALL.pl
+# Use vep_convert_cache.pl from vep_install.pl
+sed -i.bak 's@/convert_cache.pl@/vep_convert_cache.pl@' scripts/variant_effect_predictor/INSTALL.pl
 # Allow convert_cache to find libraries
 sed -i.bak 's@use strict;@use strict;\nuse FindBin qw($RealBin);\nuse lib $RealBin;@' scripts/variant_effect_predictor/convert_cache.pl
 # Find plugins in install directory
