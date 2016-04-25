@@ -32,6 +32,7 @@ RUN conda install -y --file requirements.txt
 RUN conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
 RUN conda config --add channels bioconda
 RUN conda config --add channels r
+RUN conda config --add channels conda-forge
 RUN conda config --add channels file://anaconda/conda-bld
 RUN conda install -y toposort
 

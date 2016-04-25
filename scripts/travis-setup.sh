@@ -19,6 +19,7 @@ else
     # setup bioconda channel
     conda config --add channels bioconda
     conda config --add channels r
+    conda config --add channels conda-forge
     conda config --add channels file://anaconda/conda-bld
 
     conda install -y toposort
