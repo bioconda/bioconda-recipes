@@ -1,2 +1,3 @@
+#!/bin/bash
 make
-cp fastool $PREFIX
+cp fastool $PREFIX/bin

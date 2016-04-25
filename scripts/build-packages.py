@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 import os
 import glob
 import subprocess as sp
@@ -8,24 +9,21 @@ import sys
 from collections import defaultdict
 from itertools import chain
 
+import networkx as nx
 import nose
 from conda_build.metadata import MetaData
-from toposort import toposort_flatten
 
 PYTHON_VERSIONS = ["27", "34", "35"]
-CONDA_NPY = "110"
-CONDA_PERL = "5.22.0"
 
-# Passing `--perl 5.22.0` to conda-build fails (apparently due to
-# version parsing errors?), but setting the CONDA_PERL env var
-# works.
-env = os.environ
-env.update({'CONDA_PERL': CONDA_PERL})
+os.environ.update({
+    "CONDA_PERL": "5.22.0",
+    "CONDA_BOOST": "1.60",
+    "CONDA_NPY": "110"
+})
 
 
 def get_metadata(recipes):
     for recipe in recipes:
-        print("Reading recipe", recipe, file=sys.stderr)
         yield MetaData(recipe)
 
 
@@ -34,8 +32,7 @@ def get_deps(metadata, build=True):
         yield dep.split()[0]
 
 
-# inspired by conda-build-all from https://github.com/omnia-md/conda-recipes
-def toposort_recipes(recipes):
+def get_dag(recipes):
     metadata = list(get_metadata(recipes))
 
     name2recipe = defaultdict(list)
@@ -48,11 +45,14 @@ def toposort_recipes(recipes):
             if name in name2recipe:
                 yield name
 
-    dag = {
-        meta.get_value("package/name"): set(get_inner_deps(chain(get_deps(meta), get_deps(meta, build=False))))
-        for meta in metadata
-    }
-    return [recipe for name in toposort_flatten(dag) for recipe in name2recipe[name]]
+    dag = nx.DiGraph()
+    dag.add_nodes_from(meta.get_value("package/name") for meta in metadata)
+    for meta in metadata:
+        name = meta.get_value("package/name")
+        dag.add_edges_from((dep, name) for dep in set(get_inner_deps(chain(get_deps(meta), get_deps(meta, build=False)))))
+
+    #nx.relabel_nodes(dag, name2recipe, copy=False)
+    return dag, name2recipe
 
 
 def conda_index():
@@ -67,11 +67,11 @@ def build_recipe(recipe):
     def build(py=None):
         try:
             out = None if args.verbose else sp.PIPE
-            py = ["--python", py, "--numpy", CONDA_NPY] if py is not None else []
+            py = ["--python", py] if py is not None else []
             sp.run(["conda", "build", "--no-anaconda-upload"] + py +
                    ["--skip-existing", "--quiet", recipe],
                    stderr=out, stdout=out, check=True, universal_newlines=True,
-                   env=env)
+                   env=os.environ)
             return True
         except sp.CalledProcessError as e:
             if e.stdout is not None:
@@ -95,9 +95,9 @@ def filter_recipes(recipes):
     msgs = lambda py: [
         msg for msg in
         sp.run(
-            ["conda", "build", "--numpy", CONDA_NPY, "--python", py,
+            ["conda", "build", "--python", py,
              "--skip-existing", "--output"] + recipes,
-            check=True, stdout=sp.PIPE, universal_newlines=True
+            check=True, stdout=sp.PIPE, universal_newlines=True, env=os.environ
         ).stdout.split("\n")
         if "Ignoring non-recipe" not in msg
     ][1:-1]
@@ -107,9 +107,7 @@ def filter_recipes(recipes):
         recipe = item[0]
         msg = item[1:]
 
-        if all(map(skip, msg)):
-            print("Skipping recipe", recipe, file=sys.stderr)
-        else:
+        if not all(map(skip, msg)):
             yield recipe
 
 
@@ -124,10 +122,35 @@ def test_recipes():
         recipes = [recipe for package in args.packages for recipe in get_recipes(package)]
     else:
         recipes = list(get_recipes())
+    # filter out recipes that don't need to be build
+    recipes = list(filter_recipes(recipes))
 
+    # Build dag of recipes
+    dag, name2recipes = get_dag(recipes)
+    
+    print("Packages to build", file=sys.stderr)
+    print(*nx.nodes(dag), file=sys.stderr, sep="\n")
+
+    subdags_n = int(os.environ.get("SUBDAGS", 1))
+    subdag_i = int(os.environ.get("SUBDAG", 0))
+    # Get connected subdags and sort by nodes
+    subdags = sorted(map(list, nx.connected_components(dag.to_undirected())))
+    # chunk subdags such that we have at most args.subdags many
+    if subdags_n < len(subdags):
+        chunks = [[n for subdag in subdags[i::subdags_n] for n in subdag]
+                  for i in range(subdags_n)]
+    else:
+        chunks = subdags
+    if subdag_i >= len(chunks):
+        print("Nothing to be done.")
+        return
+    # merge subdags of the selected chunk
+    subdag = dag.subgraph(chunks[subdag_i])
     # ensure that packages which need a build are built in the right order
-    recipes = toposort_recipes(list(filter_recipes(recipes)))
-    print(recipes, file=sys.stderr)
+    recipes = [recipe for package in nx.topological_sort(subdag) for recipe in name2recipes[package]]
+
+    print("Building subdag {} of recipes in order:".format(subdag_i), file=sys.stderr)
+    print(*recipes, file=sys.stderr, sep="\n")
 
     # build packages
     for recipe in recipes:
@@ -140,8 +163,8 @@ def test_recipes():
             packages = set()
             for py in PYTHON_VERSIONS:
                 packages.add(sp.run(["conda", "build", "--output",
-                                     "--numpy", CONDA_NPY, "--python",
-                                     py, recipe], stdout=sp.PIPE,
+                                     "--python",
+                                     py, recipe], stdout=sp.PIPE, env=os.environ,
                                      check=True).stdout.strip().decode())
             for package in packages:
                 if os.path.exists(package):

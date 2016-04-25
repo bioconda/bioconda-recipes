@@ -1,21 +1,20 @@
 #!/usr/bin/env python
 
 """
-Often, after successfully building Linux packages we want to add them to the
-OSX whitelist.
+This script can be useful when creating a large number of recipes that, if
+submitted all at once, could result in timeout errors when building on
+travis-ci. A common example is when recipes must be updated for a new
+Bioconductor release. This script batches together recipes such that each batch
+does not depend on any recipes in subsequent batches.
 
-For example, if we have a bunch of bioconductor and R packages to be added to
-osx-whitelist.txt but adding them all results in errors (timeout or otherwise)
-on travis-ci, how should we batch them in to separate commits?
+For example, upon updating recipes for a new version of bioconductor, find all
+the relevant recipes:
 
     ./toposort_recipes.py | grep -E "^bioconductor-|^r-|^---"
 
-Then grab everything up to the first "---" and put it in osx-whitelist.txt.
-Don't forget to sort it to keep things clean:
-
-    LC_ALL=C sort osx-whitelist.txt | uniq > tmp && mv tmp osx-whitelist.txt
-
-Then submit a PR for travis-ci to try testing these packages. Rinse and repeat.
+Then grab everything up to the first "---" (this is the first batch) and commit
+them. Then submit a PR for travis-ci to try testing these packages. Rinse and
+repeat using subsequent batches.
 
 *TODO:* refactor these functions, which are shared with build-packages.py, into
 a separate module.

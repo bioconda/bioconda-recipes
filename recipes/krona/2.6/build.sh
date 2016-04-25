@@ -1,5 +1,5 @@
 #!/bin/sh
-mkdir -p $PREFIX/krona
-mv ./* $PREFIX/krona
-cd $PREFIX/krona
+mkdir -p $PREFIX/opt/krona
+mv ./* $PREFIX/opt/krona
+cd $PREFIX/opt/krona
 ./install.pl --prefix=$PREFIX
