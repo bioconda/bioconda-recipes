@@ -159,6 +159,7 @@ Developers
 * `Simon Ye <https://github.com/yesimon>`_
 * `Simon van Heeringen <https://github.com/simonvh>`_
 * `Kwangbom Choi <https://github.com/kbchoi-jax>`_
+* `Dave Larson <https://github.com/ernfrid>`_
 
 ----
 
