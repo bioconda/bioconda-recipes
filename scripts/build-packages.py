@@ -197,6 +197,9 @@ if __name__ == "__main__":
     global args
     args = p.parse_args()
 
+    # Use a fixed conda-build from our fork
+    sp.run(["pip", "install", "git+https://github.com/bioconda/conda-build.git@fix-skip-existing"], check=True)
+
     sp.run(["gcc", "--version"], check=True)
     try:
         sp.run(["ldd", "--version"], check=True)
