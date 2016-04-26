@@ -1,2 +1,3 @@
 #!/bin/sh
-cp -r * $PREFIX
+mv * "$PREFIX"
+mv "$PREFIX/LICENSE.md" .
