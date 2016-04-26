@@ -92,23 +92,25 @@ def build_recipe(recipe):
 
 
 def filter_recipes(recipes):
-    msgs = lambda py: [
-        msg for msg in
-        sp.run(
+    def msgs(py):
+        p = sp.run(
             ["conda", "build", "--python", py,
              "--skip-existing", "--output"] + recipes,
-            check=True, stdout=sp.PIPE, universal_newlines=True, env=os.environ
-        ).stdout.split("\n")
-        if "Ignoring non-recipe" not in msg
-    ][1:-1]
+            check=True, stdout=sp.PIPE, stderr=sp.PIPE, universal_newlines=True, env=os.environ
+        )
+        return [msg for msg in p.stdout.split("\n") if "Ignoring non-recipe" not in msg][1:-1]
     skip = lambda msg: "already built, skipping" in msg or "defines build/skip" in msg
 
-    for item in zip(recipes, *map(msgs, PYTHON_VERSIONS)):
-        recipe = item[0]
-        msg = item[1:]
+    try:
+        for item in zip(recipes, *map(msgs, PYTHON_VERSIONS)):
+            recipe = item[0]
+            msg = item[1:]
 
-        if not all(map(skip, msg)):
-            yield recipe
+            if not all(map(skip, msg)):
+                yield recipe
+    except sp.CalledProcessError as e:
+        print(e.stderr, file=sys.stderr)
+        exit(1)
 
 
 def get_recipes(package="*"):
