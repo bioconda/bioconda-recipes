@@ -1,5 +1,5 @@
 #!/bin/sh
-./configure --prefix=$PREFIX --disable-qt --disable-examples
+./configure --prefix=$PREFIX --disable-qt
 
-make -j4
+make -j${CPU_COUNT}
 make install
