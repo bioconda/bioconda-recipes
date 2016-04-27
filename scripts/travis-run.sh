@@ -15,14 +15,13 @@ then
 
     if [[ $SUBDAG = 0 ]]
     then
-      # push to testall branch to trigger global tests (TODO replace test-all with master)
-      if [[ $TRAVIS_BRANCH = "test-all" ]]
+      if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = false ]]
       then
-        git push --force --quiet "https://${GITHUB_TOKEN}@github.com/$TRAVIS_REPO_SLUG.git" test-all:testall > /dev/null 2>&1
+        # push to testall branch to trigger tests of all recipes
+        git push --force --quiet "https://${GITHUB_TOKEN}@github.com/$TRAVIS_REPO_SLUG.git" master:testall > /dev/null 2>&1
+        # build package documentation
+        ./scripts/build-docs.sh
       fi
-
-      # Build package documentation
-      ./scripts/build-docs.sh
     fi
 else
     export PATH=/anaconda/bin:$PATH
