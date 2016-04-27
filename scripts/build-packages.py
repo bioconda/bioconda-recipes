@@ -63,13 +63,18 @@ def conda_index():
     sp.run(["conda", "index"] + index_dirs, check=True, stdout=sp.PIPE)
 
 
-def build_recipe(recipe):
+def build_recipe(recipe, testonly=False):
     def build(py=None):
         try:
             out = None if args.verbose else sp.PIPE
-            py = ["--python", py] if py is not None else []
-            sp.run(["conda", "build", "--no-anaconda-upload"] + py +
-                   ["--skip-existing", "--quiet", recipe],
+            build_args = []
+            if py:
+                build_args += ["--python", py]
+            if testonly:
+                build_args.append("--test")
+            else:
+                build_args += ["--no-anaconda-upload", "--skip-existing"]
+            sp.run(["conda", "build", "--quiet", recipe] + build_args,
                    stderr=out, stdout=out, check=True, universal_newlines=True,
                    env=os.environ)
             return True
@@ -124,63 +129,67 @@ def test_recipes():
         recipes = [recipe for package in args.packages for recipe in get_recipes(package)]
     else:
         recipes = list(get_recipes())
-    # filter out recipes that don't need to be build
-    recipes = list(filter_recipes(recipes))
-
-    # Build dag of recipes
-    dag, name2recipes = get_dag(recipes)
-    
-    print("Packages to build", file=sys.stderr)
-    print(*nx.nodes(dag), file=sys.stderr, sep="\n")
-
-    subdags_n = int(os.environ.get("SUBDAGS", 1))
-    subdag_i = int(os.environ.get("SUBDAG", 0))
-    # Get connected subdags and sort by nodes
-    subdags = sorted(map(list, nx.connected_components(dag.to_undirected())))
-    # chunk subdags such that we have at most args.subdags many
-    if subdags_n < len(subdags):
-        chunks = [[n for subdag in subdags[i::subdags_n] for n in subdag]
-                  for i in range(subdags_n)]
-    else:
-        chunks = subdags
-    if subdag_i >= len(chunks):
-        print("Nothing to be done.")
-        return
-    # merge subdags of the selected chunk
-    subdag = dag.subgraph(chunks[subdag_i])
-    # ensure that packages which need a build are built in the right order
-    recipes = [recipe for package in nx.topological_sort(subdag) for recipe in name2recipes[package]]
-
-    print("Building subdag {} of recipes in order:".format(subdag_i), file=sys.stderr)
-    print(*recipes, file=sys.stderr, sep="\n")
-
-    # build packages
-    for recipe in recipes:
-        yield build_recipe, recipe
-
-    # upload builds
-    if os.environ.get("TRAVIS_BRANCH") == "master" and os.environ.get(
-        "TRAVIS_PULL_REQUEST") == "false":
+    if args.testonly:
         for recipe in recipes:
-            packages = set()
-            for py in PYTHON_VERSIONS:
-                packages.add(sp.run(["conda", "build", "--output",
-                                     "--python",
-                                     py, recipe], stdout=sp.PIPE, env=os.environ,
-                                     check=True).stdout.strip().decode())
-            for package in packages:
-                if os.path.exists(package):
-                    try:
-                        sp.run(["anaconda", "-t",
-                                os.environ.get("ANACONDA_TOKEN"),
-                                "upload", package], stdout=sp.PIPE, stderr=sp.STDOUT, check=True)
-                    except sp.CalledProcessError as e:
-                        print(e.stdout.decode(), file=sys.stderr)
-                        if b"already exists" in e.stdout:
-                            # ignore error assuming that it is caused by existing package
-                            pass
-                        else:
-                            raise e
+            yield build_recipe, recipe, True
+    else:
+        # filter out recipes that don't need to be build
+        recipes = list(filter_recipes(recipes))
+
+        # Build dag of recipes
+        dag, name2recipes = get_dag(recipes)
+
+        print("Packages to build", file=sys.stderr)
+        print(*nx.nodes(dag), file=sys.stderr, sep="\n")
+
+        subdags_n = int(os.environ.get("SUBDAGS", 1))
+        subdag_i = int(os.environ.get("SUBDAG", 0))
+        # Get connected subdags and sort by nodes
+        subdags = sorted(map(list, nx.connected_components(dag.to_undirected())))
+        # chunk subdags such that we have at most args.subdags many
+        if subdags_n < len(subdags):
+            chunks = [[n for subdag in subdags[i::subdags_n] for n in subdag]
+                      for i in range(subdags_n)]
+        else:
+            chunks = subdags
+        if subdag_i >= len(chunks):
+            print("Nothing to be done.")
+            return
+        # merge subdags of the selected chunk
+        subdag = dag.subgraph(chunks[subdag_i])
+        # ensure that packages which need a build are built in the right order
+        recipes = [recipe for package in nx.topological_sort(subdag) for recipe in name2recipes[package]]
+
+        print("Building subdag {} of recipes in order:".format(subdag_i), file=sys.stderr)
+        print(*recipes, file=sys.stderr, sep="\n")
+
+        # build packages
+        for recipe in recipes:
+            yield build_recipe, recipe
+
+        # upload builds
+        if os.environ.get("TRAVIS_BRANCH") == "master" and os.environ.get(
+            "TRAVIS_PULL_REQUEST") == "false":
+            for recipe in recipes:
+                packages = set()
+                for py in PYTHON_VERSIONS:
+                    packages.add(sp.run(["conda", "build", "--output",
+                                         "--python",
+                                         py, recipe], stdout=sp.PIPE, env=os.environ,
+                                         check=True).stdout.strip().decode())
+                for package in packages:
+                    if os.path.exists(package):
+                        try:
+                            sp.run(["anaconda", "-t",
+                                    os.environ.get("ANACONDA_TOKEN"),
+                                    "upload", package], stdout=sp.PIPE, stderr=sp.STDOUT, check=True)
+                        except sp.CalledProcessError as e:
+                            print(e.stdout.decode(), file=sys.stderr)
+                            if b"already exists" in e.stdout:
+                                # ignore error assuming that it is caused by existing package
+                                pass
+                            else:
+                                raise e
 
 
 if __name__ == "__main__":
@@ -191,6 +200,7 @@ if __name__ == "__main__":
     p.add_argument("--packages",
                    nargs="+",
                    help="A specific package to build.")
+    p.add_argument("--testonly", action="store_true", help="Test packages instead of building.")
     p.add_argument("-v", "--verbose",
                    help="Make output more verbose for local debugging",
                    default=False,
