@@ -129,40 +129,42 @@ def test_recipes():
         recipes = [recipe for package in args.packages for recipe in get_recipes(package)]
     else:
         recipes = list(get_recipes())
+
+    if not args.testonly:
+        # filter out recipes that don't need to be build
+        recipes = list(filter_recipes(recipes))
+
+    # Build dag of recipes
+    dag, name2recipes = get_dag(recipes)
+
+    print("Packages to build", file=sys.stderr)
+    print(*nx.nodes(dag), file=sys.stderr, sep="\n")
+
+    subdags_n = int(os.environ.get("SUBDAGS", 1))
+    subdag_i = int(os.environ.get("SUBDAG", 0))
+    # Get connected subdags and sort by nodes
+    subdags = sorted(map(list, nx.connected_components(dag.to_undirected())))
+    # chunk subdags such that we have at most args.subdags many
+    if subdags_n < len(subdags):
+        chunks = [[n for subdag in subdags[i::subdags_n] for n in subdag]
+                  for i in range(subdags_n)]
+    else:
+        chunks = subdags
+    if subdag_i >= len(chunks):
+        print("Nothing to be done.")
+        return
+    # merge subdags of the selected chunk
+    subdag = dag.subgraph(chunks[subdag_i])
+    # ensure that packages which need a build are built in the right order
+    recipes = [recipe for package in nx.topological_sort(subdag) for recipe in name2recipes[package]]
+
+    print("Building/testing subdag {} of recipes in order:".format(subdag_i), file=sys.stderr)
+    print(*recipes, file=sys.stderr, sep="\n")
+
     if args.testonly:
         for recipe in recipes:
             yield build_recipe, recipe, True
     else:
-        # filter out recipes that don't need to be build
-        recipes = list(filter_recipes(recipes))
-
-        # Build dag of recipes
-        dag, name2recipes = get_dag(recipes)
-
-        print("Packages to build", file=sys.stderr)
-        print(*nx.nodes(dag), file=sys.stderr, sep="\n")
-
-        subdags_n = int(os.environ.get("SUBDAGS", 1))
-        subdag_i = int(os.environ.get("SUBDAG", 0))
-        # Get connected subdags and sort by nodes
-        subdags = sorted(map(list, nx.connected_components(dag.to_undirected())))
-        # chunk subdags such that we have at most args.subdags many
-        if subdags_n < len(subdags):
-            chunks = [[n for subdag in subdags[i::subdags_n] for n in subdag]
-                      for i in range(subdags_n)]
-        else:
-            chunks = subdags
-        if subdag_i >= len(chunks):
-            print("Nothing to be done.")
-            return
-        # merge subdags of the selected chunk
-        subdag = dag.subgraph(chunks[subdag_i])
-        # ensure that packages which need a build are built in the right order
-        recipes = [recipe for package in nx.topological_sort(subdag) for recipe in name2recipes[package]]
-
-        print("Building subdag {} of recipes in order:".format(subdag_i), file=sys.stderr)
-        print(*recipes, file=sys.stderr, sep="\n")
-
         # build packages
         for recipe in recipes:
             yield build_recipe, recipe
