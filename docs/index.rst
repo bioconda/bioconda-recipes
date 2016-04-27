@@ -160,6 +160,7 @@ Developers
 * `Simon van Heeringen <https://github.com/simonvh>`_
 * `Kwangbom Choi <https://github.com/kbchoi-jax>`_
 * `Dave Larson <https://github.com/ernfrid>`_
+* `Henning Timm <https://github.com/HenningTimm>`_
 
 ----
 
