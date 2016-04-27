@@ -41,6 +41,16 @@ and update with::
    conda update {title}
 
 {notes}
+
+Link to this page
+-----------------
+
+Render an |badge| badge with the following Markdown::
+
+   [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io/recipes/{title}/README.html)
+
+.. |badge| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square
+           :target: http://bioconda.github.io/recipes/{title}/README.html
 """
 
 
