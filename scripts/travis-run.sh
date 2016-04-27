@@ -18,6 +18,7 @@ then
       # push to testall branch (TODO replace test-all with master)
       if [[ $TRAVIS_BRANCH = "test-all" ]]
       then
+        git fetch
         git checkout testall
         git merge -s theirs test-all
         git push
