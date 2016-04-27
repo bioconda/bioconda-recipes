@@ -15,13 +15,10 @@ then
 
     if [[ $SUBDAG = 0 ]]
     then
-      # push to testall branch (TODO replace test-all with master)
+      # push to testall branch to trigger global tests (TODO replace test-all with master)
       if [[ $TRAVIS_BRANCH = "test-all" ]]
       then
-        git fetch
-        git checkout testall
-        git merge -s theirs test-all
-        git push
+        git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" test-all:testall > /dev/null 2>&1
       fi
 
       # Build package documentation
