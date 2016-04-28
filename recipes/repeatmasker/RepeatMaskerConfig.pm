@@ -50,7 +50,7 @@ BEGIN {
 ##    Windows w/Cygwin example:
 ##     $REPEATMASKER_DIR = "/cygdrive/c/RepeatMasker";
 ##
-  $REPEATMASKER_DIR          = "SET_RM_DIR";
+  $REPEATMASKER_DIR          = $ENV{'REPEATMASKER_DIR'};
   $REPEATMASKER_MATRICES_DIR = "$REPEATMASKER_DIR/Matrices";
   $REPEATMASKER_LIB_DIR      = "$REPEATMASKER_DIR/Libraries";
 
@@ -84,7 +84,7 @@ BEGIN {
   ## ========================
   ## Set the location of the HMMER programs and support utilities.
   ##
-    $HMMER_DIR   = "/usr/local/hmmer";
+    $HMMER_DIR   = $ENV{'HMMER_DIR'};
     $NHMMSCAN_PRGM = "$HMMER_DIR/nhmmscan";
     $HMMPRESS_PRGM = "$HMMER_DIR/hmmpress";
 
@@ -93,7 +93,7 @@ BEGIN {
   ## ========================
   ## Set the location of the NCBI RMBLAST programs and support utilities.
   ##
-    $RMBLAST_DIR   = "/opt/rmblast/bin";
+    $RMBLAST_DIR   = $ENV{'RMBLAST_DIR'};
     $RMBLASTN_PRGM = "$RMBLAST_DIR/rmblastn";
     $RMBLASTX_PRGM = "$RMBLAST_DIR/blastx";
     $RMBLASTDB_PRGM   = "$RMBLAST_DIR/makeblastdb";
@@ -159,7 +159,7 @@ BEGIN {
 ## Tandem Repeat Finder program.  This is only required by
 ## the RepeatProteinMask program.
 ##
-  $TRF_PRGM = "/opt/trf/trf";
+  $TRF_PRGM = $ENV{'TRF_DIR'} . "/trf";
 
 ##
 ## Turns on debugging in all RepeatMasker modules/scripts
