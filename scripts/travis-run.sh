@@ -15,10 +15,28 @@ then
 
     if [[ $SUBDAG = 0 ]]
     then
+      ############################
+      # TODO move the following into the if statement below before merging
+      # fetch all branches
+      git fetch --all --prune
+      git checkout testall
+      # calculate time since last testall run
+      last=`git log -1 --format=%at`
+      now=`date +%s`
+      hours=`date -u -d "0 $now seconds - $last seconds" +%H`
+      if [[ $hours -ge 20 ]]
+      # if [[ $hours -ge 168 ]] # TODO replace above with this line
+      then
+        # trigger testall run
+        git merge -s theirs test-all
+        git push
+      fi
+      git checkout $TRAVIS_BRANCH
+      ############################
       if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = false ]]
       then
         # push to testall branch to trigger tests of all recipes
-        git push --force --quiet "https://${GITHUB_TOKEN}@github.com/$TRAVIS_REPO_SLUG.git" master:testall > /dev/null 2>&1
+        #git push --force --quiet "https://${GITHUB_TOKEN}@github.com/$TRAVIS_REPO_SLUG.git" master:testall > /dev/null 2>&1
         # build package documentation
         ./scripts/build-docs.sh
       fi
