@@ -161,6 +161,7 @@ Developers
 * `Kwangbom Choi <https://github.com/kbchoi-jax>`_
 * `Dave Larson <https://github.com/ernfrid>`_
 * `Henning Timm <https://github.com/HenningTimm>`_
+* `Stephen J Newhouse <https://github.com/snewhouse>`_
 
 ----
 
