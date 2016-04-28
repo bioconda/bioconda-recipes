@@ -18,8 +18,9 @@ then
       ############################
       # TODO move the following into the if statement below before merging
       # fetch all branches
-      git fetch --all --prune
-      git checkout testall
+      git remote set-branches origin '*'
+      git fetch
+      git checkout origin/testall
       # calculate time since last testall run
       last=`git log -1 --format=%at`
       now=`date +%s`
@@ -28,10 +29,9 @@ then
       # if [[ $hours -ge 168 ]] # TODO replace above with this line
       then
         # trigger testall run
-        git merge -s theirs test-all
+        git merge -X theirs origin/test-all
         git push
       fi
-      git checkout $TRAVIS_BRANCH
       ############################
       if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = false ]]
       then
