@@ -30,6 +30,7 @@ then
       then
         # trigger testall run
         git merge -X theirs origin/test-all
+        git commit -a
         git push
       fi
       ############################
