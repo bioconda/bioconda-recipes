@@ -2,7 +2,9 @@
 # ViennaRNA does not support Python 3 yet.
 
 if [ `uname` == Darwin ] ; then
-    extra_config_options="--disable-openmp --enable-universal-binary"
+    extra_config_options="--disable-openmp 
+                          --enable-universal-binary 
+                          LDFLAGS=-Wl,-header-pad_max_install_names"
 fi
 
 ./configure --prefix=$PREFIX \
