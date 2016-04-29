@@ -76,7 +76,7 @@ BEGIN {
   ##            $CROSSMATCH_DIR = "/cygdrive/c/phrap";
   ##            $CROSSMATCH_PRGM = "cross_match.exe";
   ##
-    $CROSSMATCH_DIR = "/usr/local/bin";
+    $CROSSMATCH_DIR = $ENV{'CROSSMATCH_DIR'};
     $CROSSMATCH_PRGM = "$CROSSMATCH_DIR/cross_match";
 
   ##
@@ -103,7 +103,7 @@ BEGIN {
   ## ========================
   ## Set the location of the WUBLAST/ABBlast programs and support utilities.
   ##
-    $WUBLAST_DIR   = "/usr/local/abblast";
+    $WUBLAST_DIR   = $ENV{'WUBLAST_DIR'};
     $WUBLASTN_PRGM = "$WUBLAST_DIR/blastn";
     $WUBLASTP_PRGM = "$WUBLAST_DIR/blastp";
     $WUBLASTX_PRGM = "$WUBLAST_DIR/blastx";
