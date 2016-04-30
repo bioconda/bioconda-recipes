@@ -1,7 +1,7 @@
 # The bioconda channel
 
-[![Build Status](https://travis-ci.org/bioconda/bioconda-recipes.svg?branch=master)](https://travis-ci.org/bioconda/bioconda-recipes)
-[![Test Status](https://travis-ci.org/bioconda/bioconda-tests.svg?branch=master)](https://travis-ci.org/bioconda/bioconda-tests)
+[![Travis builds](https://img.shields.io/travis/bioconda/bioconda-recipes/master.svg?style=flat-square&label=builds)](https://travis-ci.org/bioconda/bioconda-recipes)
+[![Travis tests](https://img.shields.io/travis/bioconda/bioconda-tests/master.svg?style=flat-square&label=tests)](https://travis-ci.org/bioconda/bioconda-tests)
 
 [Conda](http://anaconda.org) is a platform- and language-independent package
 manager that sports easy distribution, installation and version management of
