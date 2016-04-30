@@ -56,17 +56,17 @@ Bioconductor packages will be built using:
 
 Then, you can test it in the docker container with:
 
-    docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
+    docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix scripts/env_matrix.yml
 
 To optionally build for a specific Python version, provide the `CONDA_PY`
 environmental variable. For example, to build specifically for Python 3.4:
 
-    docker run -e CONDA_PY=34 -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
+    docker run -e CONDA_PY=34 -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix scripts/env_matrix.yml
 
 To optionally build and test all packages (if they don't already exist), leave off the
 package name:
 
-    docker run -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder
+    docker run -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder --env-matrix scripts/env_matrix.yml
 
 If rebuilding a previously-built package and the version number hasn't changed,
 be sure to increment the build number in `meta.yaml` (the default build number
