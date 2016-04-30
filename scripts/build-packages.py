@@ -6,7 +6,7 @@ import glob
 import subprocess as sp
 import argparse
 import sys
-from collections import defaultdict
+from collections import defaultdict, Iterable
 from itertools import product, chain
 
 import networkx as nx
