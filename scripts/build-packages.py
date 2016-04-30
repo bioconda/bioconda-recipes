@@ -7,19 +7,28 @@ import subprocess as sp
 import argparse
 import sys
 from collections import defaultdict
-from itertools import chain
+from itertools import product, chain
 
 import networkx as nx
 import nose
 from conda_build.metadata import MetaData
+import yaml
 
-PYTHON_VERSIONS = ["27", "34", "35"]
 
-os.environ.update({
-    "CONDA_PERL": "5.22.0",
-    "CONDA_BOOST": "1.60",
-    "CONDA_NPY": "110"
-})
+def flatten_dict(dict):
+    for key, values in dict.items():
+        if isinstance(values, str) or not isinstance(values, Iterable):
+            values = [values]
+        yield [(key, value) for value in values]
+
+
+class EnvMatrix:
+    def __init__(self, path):
+        with open(path) as f:
+            self.env = yaml.load(f)
+
+    def __iter__(self):
+        return product(*flatten_dict(self.env))
 
 
 def get_metadata(recipes):
@@ -63,20 +72,18 @@ def conda_index():
     sp.run(["conda", "index"] + index_dirs, check=True, stdout=sp.PIPE)
 
 
-def build_recipe(recipe, testonly=False):
-    def build(py=None):
+def build_recipe(recipe, env_matrix, testonly=False):
+    def build(env):
         try:
             out = None if args.verbose else sp.PIPE
             build_args = []
-            if py:
-                build_args += ["--python", py]
             if testonly:
                 build_args.append("--test")
             else:
                 build_args += ["--no-anaconda-upload", "--skip-existing"]
             sp.run(["conda", "build", "--quiet", recipe] + build_args,
                    stderr=out, stdout=out, check=True, universal_newlines=True,
-                   env=os.environ)
+                   env=env)
             return True
         except sp.CalledProcessError as e:
             if e.stdout is not None:
@@ -85,29 +92,26 @@ def build_recipe(recipe, testonly=False):
             return False
 
     conda_index()
-    if "python" not in get_deps(MetaData(recipe), build=False):
-        success = build()
-    else:
-        # use list to enforce all builds
-        success = all(list(map(build, PYTHON_VERSIONS)))
+    # use list to enforce all builds
+    success = all(list(map(build, env_matrix)))
 
     if not success:
         # fail if all builds result in an error
         assert False, "At least one build of recipe {} failed.".format(recipe)
 
 
-def filter_recipes(recipes):
-    def msgs(py):
+def filter_recipes(recipes, env_matrix):
+    def msgs(env):
         p = sp.run(
-            ["conda", "build", "--python", py,
-             "--skip-existing", "--output"] + recipes,
-            check=True, stdout=sp.PIPE, stderr=sp.PIPE, universal_newlines=True, env=os.environ
+            ["conda", "build", "--skip-existing", "--output"] + recipes,
+            check=True, stdout=sp.PIPE, stderr=sp.PIPE, universal_newlines=True,
+            env=env
         )
         return [msg for msg in p.stdout.split("\n") if "Ignoring non-recipe" not in msg][1:-1]
     skip = lambda msg: "already built, skipping" in msg or "defines build/skip" in msg
 
     try:
-        for item in zip(recipes, *map(msgs, PYTHON_VERSIONS)):
+        for item in zip(recipes, *map(msgs, env_matrix)):
             recipe = item[0]
             msg = item[1:]
 
@@ -130,9 +134,11 @@ def test_recipes():
     else:
         recipes = list(get_recipes())
 
+    env_matrix = EnvMatrix(args.env_matrix)
+
     if not args.testonly:
         # filter out recipes that don't need to be build
-        recipes = list(filter_recipes(recipes))
+        recipes = list(filter_recipes(recipes, env_matrix))
 
     # Build dag of recipes
     dag, name2recipes = get_dag(recipes)
@@ -163,11 +169,11 @@ def test_recipes():
 
     if args.testonly:
         for recipe in recipes:
-            yield build_recipe, recipe, True
+            yield build_recipe, recipe, env_matrix, True
     else:
         # build packages
         for recipe in recipes:
-            yield build_recipe, recipe
+            yield build_recipe, recipe, env_matrix
 
         # upload builds
         if os.environ.get("TRAVIS_BRANCH") == "master" and os.environ.get(
@@ -196,6 +202,7 @@ def test_recipes():
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description="Build bioconda packages")
+    p.add_argument("--env-matrix", required=True, help="Path to environment variable matrix.")
     p.add_argument("--repository",
                    default="/bioconda-recipes",
                    help="Path to checkout of bioconda recipes repository.")
