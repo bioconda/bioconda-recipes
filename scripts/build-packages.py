@@ -28,7 +28,10 @@ class EnvMatrix:
             self.env = yaml.load(f)
 
     def __iter__(self):
-        return product(*flatten_dict(self.env))
+        for env in product(*flatten_dict(self.env)):
+            e = dict(os.environ)
+            e.update(env)
+            yield e
 
 
 def get_metadata(recipes):
@@ -179,12 +182,12 @@ def test_recipes():
         if os.environ.get("TRAVIS_BRANCH") == "master" and os.environ.get(
             "TRAVIS_PULL_REQUEST") == "false":
             for recipe in recipes:
-                packages = set()
-                for py in PYTHON_VERSIONS:
-                    packages.add(sp.run(["conda", "build", "--output",
-                                         "--python",
-                                         py, recipe], stdout=sp.PIPE, env=os.environ,
-                                         check=True).stdout.strip().decode())
+                packages = {
+                    sp.run(["conda", "build", "--output", recipe],
+                           stdout=sp.PIPE, env=env,
+                           check=True).stdout.strip().decode()
+                    for env in env_matrix
+                }
                 for package in packages:
                     if os.path.exists(package):
                         try:
