@@ -110,6 +110,38 @@ def get_dag(recipes):
     return dag, name2recipe
 
 
+def toposort_recipes(repository, only_modified=False, subset="*"):
+    """
+    `repository` is the top-level directory of the repository.
+
+
+    `subset` is either a string or a list of strings of recipe name patterns
+    (e.g., ['bioconductor-*', 'r-*']).
+
+    If `only_modified=True`, then use `git status` to identify which recipes
+    have changed. `subset` will also be applied to these recipes.
+    """
+    recipes = list(get_recipes(repository, subset))
+    if only_modified:
+        status = sp.check_output(['git', 'status'], cwd=repository, universal_newlines=True)
+
+        def modified(f):
+            return f.startswith('\tmodified:') and 'recipes/' in f
+
+        def recipe_name(f):
+            "extract recipe name from a 'modified:' line in git status"
+            toks = f.split('modified:')[-1].strip().split(os.path.sep)
+            recipes_idx = toks.index('recipes')
+            return toks[recipes_idx + 1]
+
+        modified = get_recipes(repository, set(map(recipe_name, filter(modified, status.splitlines()))))
+        recipes = set(modified).intersection(recipes)
+
+    dag, name2recipe = get_dag(recipes)
+    subdags = sorted(map(list, nx.connected_components(dag.to_undirected())))
+    for subdag in subdags:
+        yield nx.topological_sort(dag.subgraph(subdag))
+
 
 def get_recipes(repository, package="*"):
     """
