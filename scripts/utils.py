@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 import os
 import glob
 import subprocess as sp
@@ -8,7 +7,6 @@ import argparse
 import sys
 from collections import defaultdict, Iterable
 from itertools import product, chain
-
 import networkx as nx
 import nose
 from conda_build.metadata import MetaData
@@ -24,7 +22,7 @@ def flatten_dict(dict):
 
 class EnvMatrix:
     """
-    Class for updating environment variables based on the combinations listed
+    Class for updating environment variables based on combinations listed
     in a YAML file.
     """
     def __init__(self, path):
@@ -76,8 +74,9 @@ def get_dag(recipes):
     """
     `recipes` is an iterable of recipe paths.
 
-    Returns the DAG of recipe paths and a dictionary mapping package names to
-    recipe paths.
+    Returns the DAG of recipe paths and a dictionary that maps package names to
+    recipe paths. These recipe path values are lists and contain paths to all
+    defined versions.
     """
     recipes = list(recipes)
     metadata = [MetaData(recipe) for recipe in recipes]
@@ -111,7 +110,14 @@ def get_dag(recipes):
     return dag, name2recipe
 
 
+
 def get_recipes(repository, package="*"):
+    """
+    Generator of all recipes matching the pattern `package`.
+
+    `repository` is the top-level directory of the repo which is expected to
+    have a "recipes" subdirectory.
+    """
     path = os.path.join(repository, "recipes", package)
     yield from map(os.path.dirname, glob.glob(os.path.join(path, "meta.yaml")))
     yield from map(os.path.dirname, glob.glob(os.path.join(path, "*", "meta.yaml")))
