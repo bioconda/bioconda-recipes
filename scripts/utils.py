@@ -115,9 +115,14 @@ def get_recipes(repository, package="*"):
     """
     Generator of all recipes matching the pattern `package`.
 
+    `package` can also be an iterable of patterns.
+
     `repository` is the top-level directory of the repo which is expected to
     have a "recipes" subdirectory.
     """
-    path = os.path.join(repository, "recipes", package)
-    yield from map(os.path.dirname, glob.glob(os.path.join(path, "meta.yaml")))
-    yield from map(os.path.dirname, glob.glob(os.path.join(path, "*", "meta.yaml")))
+    if isinstance(package, str):
+        package = [package]
+    for p in package:
+        path = os.path.join(repository, "recipes", p)
+        yield from map(os.path.dirname, glob.glob(os.path.join(path, "meta.yaml")))
+        yield from map(os.path.dirname, glob.glob(os.path.join(path, "*", "meta.yaml")))
