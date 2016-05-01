@@ -1,8 +1,8 @@
 """
 New version of bioconductor? This script goes through each current Bioconductor
 recipe, finds the corresponding dependencies that are also in this repo, and
-reports the [reverse toplogically sorted] set of Bioconductor packages should
-be updated using bioconductor-scraper.py.
+reports the [reverse toplogically sorted] set of Bioconductor packages that
+should be updated using bioconductor-scraper.py.
 
 In other words, the first items in the list should be updated and built first
 since they are those that other packages are most dependent on.
@@ -17,6 +17,7 @@ import os
 import networkx as nx
 import itertools
 from conda_build.metadata import MetaData
+from conda import version
 import sys
 sys.path.insert(0, '..')
 import utils
@@ -36,7 +37,7 @@ if __name__ == "__main__":
     ap.add_argument('--repository', default='recipes', help='Recipes directory')
     args = ap.parse_args()
 
-    recipes = list(utils.get_recipes(args.repository, 'bioconductor-*', recursive=False))
+    recipes = list(utils.get_recipes(args.repository, 'bioconductor-*'))
     deps = itertools.chain(
         itertools.chain(*(utils.get_deps(i, build=True) for i in recipes)),
         itertools.chain(*(utils.get_deps(i, build=False) for i in recipes))
@@ -53,6 +54,9 @@ if __name__ == "__main__":
 
     dag, name2recipe = utils.get_dag(bioconda_deps)
 
+    def version_sort(x):
+        return version.VersionOrder(MetaData(x).meta['package']['version'])
+
     for name in nx.topological_sort(dag):
-        recipe = sorted(name2recipe[name])[0]
+        recipe = sorted(name2recipe[name], key=version_sort)[-1]
         print('{0}:{1}'.format(bioc_name(recipe), name))
