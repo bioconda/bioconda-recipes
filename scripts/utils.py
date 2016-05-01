@@ -123,9 +123,11 @@ def toposort_recipes(repository, only_modified=False, subset="*"):
     """
     recipes = list(get_recipes(repository, subset))
     if only_modified:
-        status = sp.check_output(['git', 'status'], cwd=repository, universal_newlines=True)
+        status = sp.check_output(
+            ['git', 'status'], cwd=repository, universal_newlines=True)
 
         def modified(f):
+            "True for files reported by git to be modified"
             return f.startswith('\tmodified:') and 'recipes/' in f
 
         def recipe_name(f):
@@ -134,7 +136,18 @@ def toposort_recipes(repository, only_modified=False, subset="*"):
             recipes_idx = toks.index('recipes')
             return toks[recipes_idx + 1]
 
-        modified = get_recipes(repository, set(map(recipe_name, filter(modified, status.splitlines()))))
+        modified = get_recipes(
+            repository,
+            set(
+                map(
+                    recipe_name,
+                    filter(
+                        modified,
+                        status.splitlines()
+                    )
+                )
+            )
+        )
         recipes = set(modified).intersection(recipes)
 
     dag, name2recipe = get_dag(recipes)
@@ -156,5 +169,7 @@ def get_recipes(repository, package="*"):
         package = [package]
     for p in package:
         path = os.path.join(repository, "recipes", p)
-        yield from map(os.path.dirname, glob.glob(os.path.join(path, "meta.yaml")))
-        yield from map(os.path.dirname, glob.glob(os.path.join(path, "*", "meta.yaml")))
+        yield from map(
+            os.path.dirname, glob.glob(os.path.join(path, "meta.yaml")))
+        yield from map(
+            os.path.dirname, glob.glob(os.path.join(path, "*", "meta.yaml")))
