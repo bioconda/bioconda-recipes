@@ -31,7 +31,7 @@ subset = args.subset or "*"
 
 for sorted_subdag in utils.toposort_recipes(
     repository=args.repository,
-    subset=args.subset,
+    subset=subset,
     only_modified=args.only_modified
 ):
     print('\n'.join(sorted_subdag))
