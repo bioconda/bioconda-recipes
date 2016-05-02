@@ -1,10 +1,12 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/src/
+NCBI_SRC=$PREFIX/src/ncbi
 
-cp -r $SRC_DIR $PREFIX/src/ncbi-vdb
+mkdir -p $NCBI_SRC
+cp -r $SRC_DIR $NCBI_SRC/ncbi-vdb
+cd $NCBI_SRC
 
-cd $PREFIX/src/ncbi-vdb
-
-./configure --prefix=$PREFIX/ --build-prefix=$PREFIX/share/ncbi  --with-ngs-sdk-prefix=$PREFIX
+./configure --prefix=$PREFIX/ \
+	--build-prefix=$PREFIX/share/ncbi \
+	--with-ngs-sdk-prefix=$PREFIX
 make install

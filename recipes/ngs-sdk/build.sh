@@ -1,10 +1,10 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/src/
+NCBI_SRC=$PREFIX/src/ncbi
 
-cp -r $SRC_DIR $PREFIX/src/ngs-sdk
-
-cd $PREFIX/src/ngs-sdk
+mkdir -p $NCBI_SRC
+cp -r $SRC_DIR $NCBI_SRC/ngs-sdk
+cd $NCBI_SRC
 
 # First configure fails
 # See: https://github.com/ncbi/ngs/issues/1
