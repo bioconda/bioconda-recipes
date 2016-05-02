@@ -8,12 +8,12 @@ mkdir -p $PREFIX/bin
 
 if [ "$(uname)" == "Darwin" ]; then
     echo "Installing GraphMap for OSX."
-    make deps
+    make modules
     make mac
     cp bin/Mac/graphmap $PREFIX/bin
 else 
     echo "Installing GraphMap for UNIX/Linux."
-    make deps
+    make modules
     make 
     cp bin/Linux-x64/graphmap $PREFIX/bin 
 fi
