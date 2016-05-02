@@ -4,7 +4,7 @@ NCBI_SRC=$PREFIX/src/ncbi
 
 mkdir -p $NCBI_SRC
 cp -r $SRC_DIR $NCBI_SRC/ngs-sdk
-cd $NCBI_SRC
+cd $NCBI_SRC/ngs-sdk
 
 # First configure fails
 # See: https://github.com/ncbi/ngs/issues/1
