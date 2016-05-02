@@ -1,6 +1,7 @@
 # The bioconda channel
 
-[![Build Status](https://travis-ci.org/bioconda/bioconda-recipes.svg?branch=master)](https://travis-ci.org/bioconda/bioconda-recipes)
+[![Travis builds](https://img.shields.io/travis/bioconda/bioconda-recipes/master.svg?style=flat-square&label=builds)](https://travis-ci.org/bioconda/bioconda-recipes)
+[![Travis tests](https://img.shields.io/travis/bioconda/bioconda-tests/master.svg?style=flat-square&label=tests)](https://travis-ci.org/bioconda/bioconda-tests)
 
 [Conda](http://anaconda.org) is a platform- and language-independent package
 manager that sports easy distribution, installation and version management of
@@ -55,17 +56,17 @@ Bioconductor packages will be built using:
 
 Then, you can test it in the docker container with:
 
-    docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
+    docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix scripts/env_matrix.yml
 
 To optionally build for a specific Python version, provide the `CONDA_PY`
 environmental variable. For example, to build specifically for Python 3.4:
 
-    docker run -e CONDA_PY=34 -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
+    docker run -e CONDA_PY=34 -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix scripts/env_matrix.yml
 
 To optionally build and test all packages (if they don't already exist), leave off the
 package name:
 
-    docker run -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder
+    docker run -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder --env-matrix scripts/env_matrix.yml
 
 If rebuilding a previously-built package and the version number hasn't changed,
 be sure to increment the build number in `meta.yaml` (the default build number
@@ -163,7 +164,7 @@ standard build. To build this yourself, you can do:
 
 ```bash
 docker login
-(cd scripts && docker build -t bicoonda/bioconda-builder .)
+(cd scripts && docker build -t bioconda/bioconda-builder .)
 ```
 
 Then test a recipe with:
