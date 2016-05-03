@@ -56,17 +56,17 @@ Bioconductor packages will be built using:
 
 Then, you can test it in the docker container with:
 
-    docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix scripts/env_matrix.yml
+    docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix /bioconda-recipes/scripts/env_matrix.yml
 
 To optionally build for a specific Python version, provide the `CONDA_PY`
 environmental variable. For example, to build specifically for Python 3.4:
 
-    docker run -e CONDA_PY=34 -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix scripts/env_matrix.yml
+    docker run -e CONDA_PY=34 -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix /bioconda-recipes/scripts/env_matrix.yml
 
 To optionally build and test all packages (if they don't already exist), leave off the
 package name:
 
-    docker run -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder --env-matrix scripts/env_matrix.yml
+    docker run -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder --env-matrix /bioconda-recipes/scripts/env_matrix.yml
 
 If rebuilding a previously-built package and the version number hasn't changed,
 be sure to increment the build number in `meta.yaml` (the default build number
@@ -133,10 +133,11 @@ sudo privileges, but the script itself should be run as a regular user. This
 script will set up a conda environment in ``/anaconda`` and install necessary
 prerequisites.
 
-To test all OSX recipes (skipping those that define`skip: True #[osx]`) use:
+To test all OSX recipes (skipping those that define `skip: True #[osx]`) use
+the following from the top-level dir:
 
 ```bash
-scripts/build-packages.py --repository .
+scripts/build-packages.py --repository . --env-matrix scripts/env_matrix.yml
 ```
 
 ### Managing multiple versions of a package
