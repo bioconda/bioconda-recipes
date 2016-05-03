@@ -152,7 +152,12 @@ def test_recipes():
     subdags_n = int(os.environ.get("SUBDAGS", 1))
     subdag_i = int(os.environ.get("SUBDAG", 0))
     # Get connected subdags and sort by nodes
-    subdags = sorted(map(list, nx.connected_components(dag.to_undirected())))
+    if args.testonly:
+        # use each node as a subdag (they are grouped into equal sizes below)
+        subdags = sorted([[n] for n in nx.nodes(dag)])
+    else:
+        # take connected components as subdags
+        subdags = sorted(map(sorted, nx.connected_components(dag.to_undirected())))
     # chunk subdags such that we have at most args.subdags many
     if subdags_n < len(subdags):
         chunks = [[n for subdag in subdags[i::subdags_n] for n in subdag]
