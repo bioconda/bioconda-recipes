@@ -1,6 +1,11 @@
 #!/bin/bash
 
-TMP_DIR=`mktemp -d`
+if [ "$(uname)" == "Darwin" ]; then
+    TMP_DIR=`mktemp -d -t 'tmpdir'`
+else
+    TMP_DIR=`mktemp -d`
+fi
+
 BUILD_DIR=${TMP_DIR}/VelvetOpt
 mkdir -p ${PREFIX}/bin
 cp VelvetOptimiser.pl ${PREFIX}/bin
