@@ -1,4 +1,4 @@
 #!/bin/sh
 cd src
 ./make
-mv ../bin/CCAT $PREFIX
+mv ../bin/CCAT $PREFIX/bin
