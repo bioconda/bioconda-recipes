@@ -227,8 +227,8 @@ if __name__ == "__main__":
     args = p.parse_args()
 
     # Use a fixed conda-build from our fork
-    #sp.run(["pip", "install", "git+https://github.com/bioconda/conda-build.git@fix-skip-existing"], check=True)
-    sp.run(["pip", "install", "git+https://github.com/bioconda/conda-build.git@20afe8250c617ab5bf3a3dcce89ea6d758b8851a"], check=True)
+    sp.run(["pip", "install", "git+https://github.com/bioconda/conda-build.git@reintroduce-skip-existing"], check=True)
+    #sp.run(["pip", "install", "git+https://github.com/bioconda/conda-build.git@20afe8250c617ab5bf3a3dcce89ea6d758b8851a"], check=True)
 
     sp.run(["gcc", "--version"], check=True)
     try:
