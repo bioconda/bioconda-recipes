@@ -1,5 +1,4 @@
 #!/bin/sh
 
-./configure --prefix=$PREFIX
-make
-make install
+cp -r bin $PREFIX
+cp -r lib $PREFIX
