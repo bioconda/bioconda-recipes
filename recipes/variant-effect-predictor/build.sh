@@ -29,3 +29,4 @@ rm -rf t/
 wget --no-check-certificate https://raw.githubusercontent.com/ensembl-variation/VEP_plugins/master/CADD.pm
 wget --no-check-certificate https://raw.githubusercontent.com/ensembl-variation/VEP_plugins/master/dbNSFP.pm
 wget --no-check-certificate https://raw.githubusercontent.com/konradjk/loftee/master/LoF.pm
+wget --no-check-certificate https://raw.githubusercontent.com/konradjk/loftee/master/splice_module.pl
