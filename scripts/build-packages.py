@@ -6,20 +6,32 @@ import glob
 import subprocess as sp
 import argparse
 import sys
-from collections import defaultdict
-from itertools import chain
+from collections import defaultdict, Iterable
+from itertools import product, chain
 
 import networkx as nx
 import nose
 from conda_build.metadata import MetaData
+import yaml
 
-PYTHON_VERSIONS = ["27", "34", "35"]
 
-os.environ.update({
-    "CONDA_PERL": "5.22.0",
-    "CONDA_BOOST": "1.60",
-    "CONDA_NPY": "110"
-})
+def flatten_dict(dict):
+    for key, values in dict.items():
+        if isinstance(values, str) or not isinstance(values, Iterable):
+            values = [values]
+        yield [(key, value) for value in values]
+
+
+class EnvMatrix:
+    def __init__(self, path):
+        with open(path) as f:
+            self.env = yaml.load(f)
+
+    def __iter__(self):
+        for env in product(*flatten_dict(self.env)):
+            e = dict(os.environ)
+            e.update(env)
+            yield e
 
 
 def get_metadata(recipes):
@@ -63,15 +75,18 @@ def conda_index():
     sp.run(["conda", "index"] + index_dirs, check=True, stdout=sp.PIPE)
 
 
-def build_recipe(recipe):
-    def build(py=None):
+def build_recipe(recipe, env_matrix, testonly=False):
+    def build(env):
         try:
             out = None if args.verbose else sp.PIPE
-            py = ["--python", py] if py is not None else []
-            sp.run(["conda", "build", "--no-anaconda-upload"] + py +
-                   ["--skip-existing", "--quiet", recipe],
+            build_args = []
+            if testonly:
+                build_args.append("--test")
+            else:
+                build_args += ["--no-anaconda-upload", "--skip-existing"]
+            sp.run(["conda", "build", "--quiet", recipe] + build_args,
                    stderr=out, stdout=out, check=True, universal_newlines=True,
-                   env=os.environ)
+                   env=env)
             return True
         except sp.CalledProcessError as e:
             if e.stdout is not None:
@@ -80,29 +95,26 @@ def build_recipe(recipe):
             return False
 
     conda_index()
-    if "python" not in get_deps(MetaData(recipe), build=False):
-        success = build()
-    else:
-        # use list to enforce all builds
-        success = all(list(map(build, PYTHON_VERSIONS)))
+    # use list to enforce all builds
+    success = all(list(map(build, env_matrix)))
 
     if not success:
         # fail if all builds result in an error
         assert False, "At least one build of recipe {} failed.".format(recipe)
 
 
-def filter_recipes(recipes):
-    def msgs(py):
+def filter_recipes(recipes, env_matrix):
+    def msgs(env):
         p = sp.run(
-            ["conda", "build", "--python", py,
-             "--skip-existing", "--output"] + recipes,
-            check=True, stdout=sp.PIPE, stderr=sp.PIPE, universal_newlines=True, env=os.environ
+            ["conda", "build", "--skip-existing", "--output"] + recipes,
+            check=True, stdout=sp.PIPE, stderr=sp.PIPE, universal_newlines=True,
+            env=env
         )
         return [msg for msg in p.stdout.split("\n") if "Ignoring non-recipe" not in msg][1:-1]
     skip = lambda msg: "already built, skipping" in msg or "defines build/skip" in msg
 
     try:
-        for item in zip(recipes, *map(msgs, PYTHON_VERSIONS)):
+        for item in zip(recipes, *map(msgs, env_matrix)):
             recipe = item[0]
             msg = item[1:]
 
@@ -124,19 +136,28 @@ def test_recipes():
         recipes = [recipe for package in args.packages for recipe in get_recipes(package)]
     else:
         recipes = list(get_recipes())
-    # filter out recipes that don't need to be build
-    recipes = list(filter_recipes(recipes))
+
+    env_matrix = EnvMatrix(args.env_matrix)
+
+    if not args.testonly:
+        # filter out recipes that don't need to be build
+        recipes = list(filter_recipes(recipes, env_matrix))
 
     # Build dag of recipes
     dag, name2recipes = get_dag(recipes)
-    
+
     print("Packages to build", file=sys.stderr)
     print(*nx.nodes(dag), file=sys.stderr, sep="\n")
 
     subdags_n = int(os.environ.get("SUBDAGS", 1))
     subdag_i = int(os.environ.get("SUBDAG", 0))
     # Get connected subdags and sort by nodes
-    subdags = sorted(map(list, nx.connected_components(dag.to_undirected())))
+    if args.testonly:
+        # use each node as a subdag (they are grouped into equal sizes below)
+        subdags = sorted([[n] for n in nx.nodes(dag)])
+    else:
+        # take connected components as subdags
+        subdags = sorted(map(sorted, nx.connected_components(dag.to_undirected())))
     # chunk subdags such that we have at most args.subdags many
     if subdags_n < len(subdags):
         chunks = [[n for subdag in subdags[i::subdags_n] for n in subdag]
@@ -151,46 +172,52 @@ def test_recipes():
     # ensure that packages which need a build are built in the right order
     recipes = [recipe for package in nx.topological_sort(subdag) for recipe in name2recipes[package]]
 
-    print("Building subdag {} of recipes in order:".format(subdag_i), file=sys.stderr)
+    print("Building/testing subdag {} of recipes in order:".format(subdag_i), file=sys.stderr)
     print(*recipes, file=sys.stderr, sep="\n")
 
-    # build packages
-    for recipe in recipes:
-        yield build_recipe, recipe
-
-    # upload builds
-    if os.environ.get("TRAVIS_BRANCH") == "master" and os.environ.get(
-        "TRAVIS_PULL_REQUEST") == "false":
+    if args.testonly:
         for recipe in recipes:
-            packages = set()
-            for py in PYTHON_VERSIONS:
-                packages.add(sp.run(["conda", "build", "--output",
-                                     "--python",
-                                     py, recipe], stdout=sp.PIPE, env=os.environ,
-                                     check=True).stdout.strip().decode())
-            for package in packages:
-                if os.path.exists(package):
-                    try:
-                        sp.run(["anaconda", "-t",
-                                os.environ.get("ANACONDA_TOKEN"),
-                                "upload", package], stdout=sp.PIPE, stderr=sp.STDOUT, check=True)
-                    except sp.CalledProcessError as e:
-                        print(e.stdout.decode(), file=sys.stderr)
-                        if b"already exists" in e.stdout:
-                            # ignore error assuming that it is caused by existing package
-                            pass
-                        else:
-                            raise e
+            yield build_recipe, recipe, env_matrix, True
+    else:
+        # build packages
+        for recipe in recipes:
+            yield build_recipe, recipe, env_matrix
+
+        # upload builds
+        if os.environ.get("TRAVIS_BRANCH") == "master" and os.environ.get(
+            "TRAVIS_PULL_REQUEST") == "false":
+            for recipe in recipes:
+                packages = {
+                    sp.run(["conda", "build", "--output", recipe],
+                           stdout=sp.PIPE, env=env,
+                           check=True).stdout.strip().decode()
+                    for env in env_matrix
+                }
+                for package in packages:
+                    if os.path.exists(package):
+                        try:
+                            sp.run(["anaconda", "-t",
+                                    os.environ.get("ANACONDA_TOKEN"),
+                                    "upload", package], stdout=sp.PIPE, stderr=sp.STDOUT, check=True)
+                        except sp.CalledProcessError as e:
+                            print(e.stdout.decode(), file=sys.stderr)
+                            if b"already exists" in e.stdout:
+                                # ignore error assuming that it is caused by existing package
+                                pass
+                            else:
+                                raise e
 
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description="Build bioconda packages")
+    p.add_argument("--env-matrix", required=True, help="Path to environment variable matrix.")
     p.add_argument("--repository",
                    default="/bioconda-recipes",
                    help="Path to checkout of bioconda recipes repository.")
     p.add_argument("--packages",
                    nargs="+",
                    help="A specific package to build.")
+    p.add_argument("--testonly", action="store_true", help="Test packages instead of building.")
     p.add_argument("-v", "--verbose",
                    help="Make output more verbose for local debugging",
                    default=False,
@@ -200,7 +227,8 @@ if __name__ == "__main__":
     args = p.parse_args()
 
     # Use a fixed conda-build from our fork
-    sp.run(["pip", "install", "git+https://github.com/bioconda/conda-build.git@fix-skip-existing"], check=True)
+    sp.run(["pip", "install", "git+https://github.com/bioconda/conda-build.git@reintroduce-skip-existing"], check=True)
+    #sp.run(["pip", "install", "git+https://github.com/bioconda/conda-build.git@20afe8250c617ab5bf3a3dcce89ea6d758b8851a"], check=True)
 
     sp.run(["gcc", "--version"], check=True)
     try:

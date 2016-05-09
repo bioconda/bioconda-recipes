@@ -8,3 +8,5 @@ for bin in kraken kraken-build kraken-filter kraken-mpa-report kraken-report kra
     chmod +x "$PREFIX/libexec/$bin"
     ln -s "$PREFIX/libexec/$bin" "$PREFIX/bin/$bin"
 done
+
+sed -i.bak 's|#!/usr/bin/perl|#!/usr/bin/env perl|' $PREFIX/bin/*

@@ -18,7 +18,7 @@ from collections import OrderedDict
 import logging
 import requests
 
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s]: %(message)s')
+logging.basicConfig(level=logging.INFO, format='[bioconductor_skeleton.py %(asctime)s]: %(message)s')
 logger = logging.getLogger()
 logging.getLogger("requests").setLevel(logging.WARNING)
 
