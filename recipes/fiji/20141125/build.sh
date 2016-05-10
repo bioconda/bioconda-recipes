@@ -8,10 +8,7 @@ mkdir -p $PREFIX/bin
 unamestr=`uname`
 if [ "$unamestr" == 'Linux' ];
 then
-    cp -R $SRC_DIR/* $PREFIX
-    # Provide a link to the Linux executable from $PREFIX/bin.
-    ln -s $PREFIX/ImageJ-linux32 $PREFIX/bin/ImageJ-linux32
-    ln -s $PREFIX/ImageJ-linux64 $PREFIX/bin/ImageJ-linux64
+    cp -R $SRC_DIR/* $PREFIX/bin/
 elif [ "$unamestr" == 'Darwin' ];
 then
     hdiutil attach fiji-macosx-20141125.dmg
