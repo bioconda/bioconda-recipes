@@ -1,41 +1,37 @@
 #!/bin/bash
 set -eu -o pipefail
 
-outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+sharedir=$PREFIX/share
+outdir=$sharedir/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 mkdir -p $PREFIX/bin
 
 unamestr=`uname`
 if [ "$unamestr" == 'Linux' ];
 then
-    cp -R $SRC_DIR/* $PREFIX
+    cp -R $SRC_DIR/* $sharedir
     # Provide a link to the Linux executable from $PREFIX/bin.
-    # ln -s $PREFIX/ImageJ-linux32 $PREFIX/bin/ImageJ-linux32
-    ln -s $PREFIX/ImageJ-linux64 $PREFIX/bin/ImageJ-linux64
+    ln -s $sharedir/ImageJ-linux64 $PREFIX/bin/ImageJ-linux64
 elif [ "$unamestr" == 'Darwin' ];
 then
     hdiutil attach fiji-macosx-20141125.dmg
-    cp -R /Volumes/Fiji/Fiji.app/ $PREFIX
+    cp -R /Volumes/Fiji/Fiji.app/ $sharedir
     hdiutil detach /Volumes/Fiji
     # Eliminate problematic java3d for osx since we do not use it anyway.
-    rm -rf $PREFIX/java
+    rm -rf $sharedir/java
     if [[ `sw_vers -productVersion | tr -d '.'` -ge 1010 ]];
     then
         # The ImageJ launcher contained in this version of Fiji will not
         # run on Yosemite or newer OS versions due to some operating system
         # change, so apply the patched version of the ImageJ launcher.
-        cp $RECIPE_DIR/ImageJ-macosx $PREFIX/Contents/MacOS/ImageJ-macosx
+        cp $RECIPE_DIR/ImageJ-macosx $sharedir/Contents/MacOS/ImageJ-macosx
         # Remove the old ImageJ launcher for tiger.
-        rm $PREFIX/Contents/MacOS/ImageJ-tiger
-        # Provide a link to the osx executable from the installation dir.
-        ln -s $PREFIX/Contents/MacOS/ImageJ-macosx $PREFIX/ImageJ-macosx
+        rm $sharedir/Contents/MacOS/ImageJ-tiger
         # Provide a link to the osx executable from $PREFIX/bin.
-        ln -s $PREFIX/Contents/MacOS/ImageJ-macosx $PREFIX/bin/ImageJ-macosx
+        ln -s $sharedir/Contents/MacOS/ImageJ-macosx $PREFIX/bin/ImageJ-macosx
     else
-        # Provide a link to the osx executable from the installation dir.
-        ln -s $PREFIX/Contents/MacOS/ImageJ-tiger $PREFIX/ImageJ-tiger
         # Provide a link to the osx executable from $PREFIX/bin.
-        ln -s $PREFIX/Contents/MacOS/ImageJ-tiger $PREFIX/bin/ImageJ-tiger
+        ln -s $sharedir/Contents/MacOS/ImageJ-tiger $PREFIX/bin/ImageJ-tiger
     fi
 fi
 
