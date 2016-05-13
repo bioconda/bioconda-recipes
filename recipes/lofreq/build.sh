@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 
 if [[ "${PY_VER}" =~ 3 ]]
 then
