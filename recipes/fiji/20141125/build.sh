@@ -38,3 +38,7 @@ fi
 cp $RECIPE_DIR/fiji.sh $outdir/fiji
 ln -s $outdir/fiji $PREFIX/bin
 chmod 0755 "${PREFIX}/bin/fiji"
+
+cp $RECIPE_DIR/bunwarpj.sh $outdir/bunwarpj
+ln -s $outdir/bunwarpj $PREFIX/bin
+chmod 0755 "${PREFIX}/bin/bunwarpj"
