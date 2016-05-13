@@ -128,7 +128,7 @@ def toposort_recipes(repository, only_modified=False, subset="*"):
 
         def modified(f):
             "True for files reported by git to be modified"
-            return f.startswith('\tmodified:') and 'recipes/' in f
+            return '\tmodified:' in f and 'recipes/' in f
 
         def recipe_name(f):
             "extract recipe name from a 'modified:' line in git status"
