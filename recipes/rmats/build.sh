@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-cp ./* $PREFIX/ -R
+cp -R ./* $PREFIX/
 
 echo '#!/usr/bin/env python' > $PREFIX/RNASeq-MATS.py
 cat ./RNASeq-MATS.py >> $PREFIX/RNASeq-MATS.py
