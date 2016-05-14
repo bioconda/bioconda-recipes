@@ -24,3 +24,7 @@ make install
 
 cd scripts/python
 OPENBABEL_INCLUDE_DIRS=$(pwd)/..:$PREFIX/include/openbabel-2.0 python setup.py install
+
+$PYTHON $SRC_DIR/test/test_pybel.py
+$PYTHON $SRC_DIR/test/testbindings.py
+$PYTHON $SRC_DIR/test/testexample.py
