@@ -7,6 +7,8 @@ sed -i.bak 's|^CC=\s*gcc$|CC=gcc -I$PREFIX/include -L$PREFIX/lib|g' Makefile
 export CPPFLAGS="-I$PREFIX/include"
 export INCLUDES="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
+export C_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
 
 make
 
