@@ -5,4 +5,4 @@ export LIBRARY_PATH=${PREFIX}/lib
 
 make all
 mkdir -p $PREFIX/bin
-cp -f seqtk trimadap $PREFIX/bin/
+cp -f seqtk $PREFIX/bin/
