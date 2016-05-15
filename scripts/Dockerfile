@@ -2,19 +2,37 @@ FROM centos:centos5
 
 # add tools useful for compilation
 RUN rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
-RUN yum install -y \
-    wget bzip2 bzip2-devel git gcc gcc-c++ patch zlib-devel make gcc44 \
-    gcc44-c++ cmake ncurses-devel unzip byacc && \
+# Install wget first so we can download devtools-2 and autotools repos
+RUN yum install -y wget && \
     yum clean all
 RUN wget http://people.centos.org/tru/devtools-2/devtools-2.repo -O /etc/yum.repos.d/devtools-2.repo && \
     wget --no-check-certificate https://copr.fedoraproject.org/coprs/praiskup/autotools/repo/epel-5/praiskup-autotools-epel-5.repo -O /etc/yum.repos.d/autotools.repo
 RUN yum install -y \
-    devtoolset-2-gcc devtoolset-2-binutils devtoolset-2-gcc-c++ \
-    devtoolset-2-gcc-gfortran autotools-latest pkgconfig which file gpg \
+    bzip2 \
+    git \
+    gcc \
+    gcc-c++ \
+    patch \
+    make \
+    gcc44 \
+    gcc44-c++ \
+    cmake \
+    unzip \
+    byacc \
+    devtoolset-2-gcc \
+    devtoolset-2-binutils \
+    devtoolset-2-gcc-c++ \
+    devtoolset-2-gcc-gfortran \
+    autotools-latest \
+    pkgconfig \
+    which \
+    file \
+    gpg \
     # Needed for perl-db-file
     db4-devel \
     # install X11 dependencies and openGL/mesa
-    xorg-x11-apps mesa-libGLU-devel \
+    xorg-x11-apps \
+    mesa-libGLU-devel \
     && yum clean all
 
 
@@ -28,7 +46,9 @@ RUN mkdir -p /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64 # workaroun
 
 # setup conda
 ADD requirements.txt requirements.txt
+RUN conda update conda
 RUN conda install -y --file requirements.txt
+RUN conda update conda-build 
 RUN conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
 RUN conda config --add channels bioconda
 RUN conda config --add channels r

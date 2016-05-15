@@ -1,3 +1,7 @@
+
+![](https://raw.githubusercontent.com/bioconda/bioconda-recipes/master/logo/bioconda_monochrome_small.png
+ "Bioconda")
+
 # The bioconda channel
 
 [![Travis builds](https://img.shields.io/travis/bioconda/bioconda-recipes/master.svg?style=flat-square&label=builds)](https://travis-ci.org/bioconda/bioconda-recipes)
