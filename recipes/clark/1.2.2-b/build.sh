@@ -8,7 +8,6 @@ mkdir -p $PREFIX/bin
 
 ./install.sh
 
-mv install.sh install.sh.old
 mv exe/* $PREFIX/bin
-mv *.sh $PREFIX/opt/clark
+
 
