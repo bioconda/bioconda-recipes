@@ -18,6 +18,8 @@ README_TEMPLATE = u"""\
 {title}
 {title_underline}
 
+.. image:: https://anaconda.org/bioconda/{title}/badges/downloads.svg   :target: https://anaconda.org/bioconda/{title}
+
 {summary}
 
 ======== ===========
