@@ -2,4 +2,4 @@
 
 mkdir -p $PREFIX/bin/
 cp BUSCO_v1.2.py $PREFIX/bin
-ln -s $PREFIX/bin/BUSCO_v1.2.py $PREFIX/bin/BUSCO.py
+ln -s $PREFIX/bin/BUSCO_v1.2.py $PREFIX/bin/busco
