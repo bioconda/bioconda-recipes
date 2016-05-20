@@ -18,7 +18,7 @@ README_TEMPLATE = u"""\
 {title}
 {title_underline}
 
-.. image:: https://anaconda.org/bioconda/{title}/badges/downloads.svg   :target: https://anaconda.org/bioconda/{title}
+|downloads|
 
 {summary}
 
@@ -53,6 +53,8 @@ Render an |badge| badge with the following Markdown::
 
 .. |badge| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square
            :target: http://bioconda.github.io/recipes/{title}/README.html
+.. |downloads| image:: https://anaconda.org/bioconda/{title}/badges/downloads.svg
+               :target: https://anaconda.org/bioconda/{title}
 """
 
 
