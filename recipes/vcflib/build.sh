@@ -9,6 +9,13 @@ fi
 sed -i.bak 's/SUBDIRS=./SUBDIRS=.\'$'\n''LOBJS=tabix.o/' tabixpp/Makefile
 sed -i.bak 's/-ltabix//' Makefile
 
+# https://github.com/bioconda/bioconda-recipes/pull/1201
+sed -i.bak 's/^CPPFLAGS =$//g' tabixpp/htslib/Makefile
+sed -i.bak 's/^LDFLAGS  =$//g' tabixpp/htslib/Makefile
+
+export CPPFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+
 make
 
 mkdir -p $PREFIX/bin
