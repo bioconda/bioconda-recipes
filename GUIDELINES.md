@@ -17,6 +17,8 @@
 
 - If the recipe installs custom wrapper scripts, usage notes should be added to ``extra -> notes`` in the `meta.yaml`.
 
+- If uploading of an unreleased version is necessary, please follow the versioning scheme of conda for pre- and post-releases (e.g. using a, b, rc, and dev suffixes, see [here](https://github.com/conda/conda/blob/d1348cf3eca0f78093c7c46157989509572e9c25/conda/version.py#L30)).
+
 ## Examples
 
 The following recipes serve as examples of good recipes that can be used as
