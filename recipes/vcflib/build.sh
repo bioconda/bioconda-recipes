@@ -1,6 +1,5 @@
 #!/bin/bash
 
-export CPLUS_INCLUDE_PATH=$PREFIX/include
 export C_INCLUDE_PATH=$PREFIX/include
 
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
