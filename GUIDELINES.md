@@ -17,6 +17,8 @@
 
 - If the recipe installs custom wrapper scripts, usage notes should be added to ``extra -> notes`` in the `meta.yaml`.
 
+- If uploading of an unreleased version is necessary, please follow the versioning scheme of conda for pre- and post-releases (e.g. using a, b, rc, and dev suffixes, see [here](https://github.com/conda/conda/blob/d1348cf3eca0f78093c7c46157989509572e9c25/conda/version.py#L30)).
+
 ## Examples
 
 The following recipes serve as examples of good recipes that can be used as
@@ -110,7 +112,7 @@ and compilers (e.g., `gcc`) should be specified in the build requirements.
 * example requiring `autoconf`: [srprism](recipes/srprism)
 * simple example: [samtools](recipes/samtools)
 
-If your package links dynamically against a particular library, it is often necessary to pin the version against which it was compiled, in order to avoid ABI incompatibilities. Instead of hardcoding a particular version in the recipe, we use jinja templates to achieve this. For example, bioconda provides an environnmnet variable `CONDA_BOOST` that contains the current major version of boost. You should pin your boost dependency against that version. An example is the [salmon recipe](recipes/salmon). If you need to pin another library, please notify @bioconda/core, and we will set up a corresponding environment variable.
+If your package links dynamically against a particular library, it is often necessary to pin the version against which it was compiled, in order to avoid ABI incompatibilities. Instead of hardcoding a particular version in the recipe, we use jinja templates to achieve this. For example, bioconda provides an environnmnet variable `CONDA_BOOST` that contains the current major version of boost. You should pin your boost dependency against that version. An example is the [salmon recipe](recipes/salmon). You find the libraries you can currently pin in [scripts/env_matrix.yml](https://github.com/bioconda/bioconda-recipes/blob/master/scripts/env_matrix.yml). If you need to pin another library, please notify @bioconda/core, and we will set up a corresponding environment variable.
 
 ## General command-line tools
 If a command-line tool is installed, it should be tested. If it has a shebang
