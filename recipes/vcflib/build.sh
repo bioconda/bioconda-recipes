@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export CPLUS_INCLUDE_PATH=$PREFIX/include
+
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
 if [ "$(uname)" == "Darwin" ]; then
     sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' smithwaterman/Makefile
