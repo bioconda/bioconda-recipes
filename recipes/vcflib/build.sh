@@ -5,7 +5,6 @@ export CPLUS_INCLUDE_PATH=$PREFIX/include
 
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
 if [ "$(uname)" == "Darwin" ]; then
-    export CXXFLAGS='-std=c++11 -stdlib=libc++'
     sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' smithwaterman/Makefile
 fi
 # tabix missing library https://github.com/ekg/tabixpp/issues/5
