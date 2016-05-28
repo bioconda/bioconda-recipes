@@ -2,8 +2,6 @@
 
 mkdir -p ${PREFIX}/bin
 
-#export CPPFLAGS="-I$PREFIX/include"
-#export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
 cd src
