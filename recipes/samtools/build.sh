@@ -9,4 +9,8 @@ sed -i.bak 's/^LDFLAGS  =$//g' htslib-1.3.1/Makefile
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
-make install prefix=$PREFIX
+cd htslib*
+./configure --prefix=$PREFIX --enable-libcurl CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
+make
+cd ..
+make install prefix=$PREFIX LIBS+=-lcurl LIBS+=-lcrypto
