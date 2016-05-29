@@ -1,5 +1,10 @@
 #!/bin/bash
 
+export C_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+
+ln -s ${PREFIX}/lib/pkgconfig/cairo-xlib-xrender.pc ${PREFIX}/lib/pkgconfig/xrender.pc 
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
