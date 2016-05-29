@@ -119,15 +119,26 @@ def build(config, repository, packages="*", testonly=False, verbose=False,
 
 
 @arg('repository', help='Path to top-level dir of repository')
-@arg('gml', help='Output GML file. If filename ends in .gz or .bz2 it will '
-     'be compressed')
+#@arg('gml', help='Output GML file. If filename ends in .gz or .bz2 it will '
+#     'be compressed')
 @arg('--packages', nargs="+",
      help='Glob for package[s] to show in DAG. Default is to show all '
      'packages. Can be specified more than once')
-def dag(repository, gml, packages="*"):
+@arg('--format', choices=['gml', 'dot'], help='Set format to print graph.')
+@arg('--hide-singletons', action='store_true', help='Hide singletons in the printed graph.')
+def dag(repository, packages="*", format='gml', hide_singletons=False):
     """
     Export the DAG of packages to a GML-format file for visualization
     """
-    nx.write_gml(utils.get_dag(utils.get_recipes(repository, packages))[0], gml)
+    dag = utils.get_dag(utils.get_recipes(repository, packages))[0]
+    if hide_singletons:
+        for node in nx.nodes(dag):
+            if dag.degree(node) == 0:
+                dag.remove_node(node)
+    if format == 'gml':
+        nx.write_gml(dag, sys.stdout.buffer)
+    elif format == 'dot':
+        from networkx.drawing.nx_pydot import write_dot
+        write_dot(dag, sys.stdout)
 
 argh.dispatch_commands([build, dag])
