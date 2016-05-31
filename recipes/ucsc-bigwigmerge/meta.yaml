@@ -1,0 +1,40 @@
+package:
+    name: "ucsc-bigwigmerge"
+    version: "332"
+source:
+    url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v332.src.tgz"          # [linux]
+    fn: "userApps.src.tgz"                                                                     # [linux]
+    md5: "8c2663c7bd302a77cdf52b2e9e85e2cd"                                                    # [linux]
+    patches:                                                                                   # [linux]
+        - "include.patch"                                                                      # [linux]
+
+    url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/bigWigMerge"                    # [osx]
+    fn: "bigWigMerge"                                                                            # [osx]
+
+build:                                                                                       # [osx]
+    script: "mkdir -p $PREFIX/bin; cp bigWigMerge $PREFIX/bin; chmod +x $PREFIX/bin/bigWigMerge" # [osx]
+
+requirements:
+    build:
+        - libpng                                                    # [linux]
+        - mysql                                                     # [linux]
+        - zlib                                                      # [linux]
+        - openssl                                                   # [linux]
+        - gcc
+
+    run:                                                            # [linux]
+        - libpng                                                    # [linux]
+        - mysql                                                     # [linux]
+        - zlib                                                      # [linux]
+        - openssl                                                   # [linux]
+        - libgcc
+
+test:
+    commands:
+        # just check for existence, because the individual programs have no unified behavior
+        - which bigWigMerge
+
+about:
+    home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
+    license: "varies; see http://genome.ucsc.edu/license"
+    summary: "Merge together multiple bigWigs into a single output bedGraph."

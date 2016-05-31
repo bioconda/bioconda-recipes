@@ -1,6 +1,11 @@
+
+![](https://raw.githubusercontent.com/bioconda/bioconda-recipes/master/logo/bioconda_monochrome_small.png
+ "Bioconda")
+
 # The bioconda channel
 
-[![Build Status](https://travis-ci.org/bioconda/bioconda-recipes.svg?branch=master)](https://travis-ci.org/bioconda/bioconda-recipes)
+[![Travis builds](https://img.shields.io/travis/bioconda/bioconda-recipes/master.svg?style=flat-square&label=builds)](https://travis-ci.org/bioconda/bioconda-recipes)
+[![Travis tests](https://img.shields.io/travis/bioconda/bioconda-tests/master.svg?style=flat-square&label=tests)](https://travis-ci.org/bioconda/bioconda-tests)
 
 [Conda](http://anaconda.org) is a platform- and language-independent package
 manager that sports easy distribution, installation and version management of
@@ -55,17 +60,17 @@ Bioconductor packages will be built using:
 
 Then, you can test it in the docker container with:
 
-    docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
+    docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix /bioconda-recipes/scripts/env_matrix.yml
 
 To optionally build for a specific Python version, provide the `CONDA_PY`
 environmental variable. For example, to build specifically for Python 3.4:
 
-    docker run -e CONDA_PY=34 -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
+    docker run -e CONDA_PY=34 -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix /bioconda-recipes/scripts/env_matrix.yml
 
 To optionally build and test all packages (if they don't already exist), leave off the
 package name:
 
-    docker run -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder
+    docker run -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder --env-matrix /bioconda-recipes/scripts/env_matrix.yml
 
 If rebuilding a previously-built package and the version number hasn't changed,
 be sure to increment the build number in `meta.yaml` (the default build number
@@ -107,20 +112,36 @@ For other styles, replace ``?style=flat-square`` with ``?style=flat`` or
 ``?style=plastic``.
 
 ### Building packages for Mac OSX
+**By default, recipes will be built for both Linux and OSX**
+(see "The bioconda build system" section below) upon submitting
+a pull request. Many recipes build cleanly on Linux but not on OSX. The easy
+fix is to explicitly skip the OSX build using a [platform-specific
+selector](http://conda.pydata.org/docs/building/meta-yaml.html#skipping-builds)
+on a line in the `meta.yaml` that skips the build, like this:
 
-If you want your package to be built for Mac OSX as well, add the recipe name
-to the ``osx-whitelist.txt`` file in the root of this repository.
+```
+build:
+  skip: True  # [osx]
+```
 
-To set up a local machine for building and testing OSX recipes, run
+A better fix is to figure out what needs to be changed for a build to work on
+OSX, and include those changes using platform-specific selectors. Such changes
+could include tweaks to the build script, applying patches, or using
+OS-specific installation methods. See [graphviz](recipes/graphviz),
+[blast](recipes/blast), and UCSC utils like
+[ucsc-pslcdnafilter](recipes/ucsc-pslcdnafilter) for examples of these methods.
+
+To set up a local OSX machine for building and testing OSX recipes, run
 ``scripts/travis-setup.sh``. Several commands in this script will prompt for
 sudo privileges, but the script itself should be run as a regular user. This
 script will set up a conda environment in ``/anaconda`` and install necessary
 prerequisites.
 
-To test all recipes in the ``osx-whitelist``, use:
+To test all OSX recipes (skipping those that define `skip: True #[osx]`) use
+the following from the top-level dir:
 
 ```bash
-scripts/build-packages.py --repository . --packages `cat osx-whitelist.txt`
+scripts/build-packages.py --repository . --env-matrix scripts/env_matrix.yml
 ```
 
 ### Managing multiple versions of a package
@@ -148,7 +169,7 @@ standard build. To build this yourself, you can do:
 
 ```bash
 docker login
-(cd scripts && docker build -t bicoonda/bioconda-builder .)
+(cd scripts && docker build -t bioconda/bioconda-builder .)
 ```
 
 Then test a recipe with:
