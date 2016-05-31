@@ -7,7 +7,7 @@ installed along with it. For example, to install the VEP library for human
 hg19/GRCh37 to a directory:
 
 vep_install.pl -a c -s homo_sapiens_vep_83_GRCh37 -c /output/path/to/hg19/vep
-vep_convert_cache.pl -species home_sapiens -version 83_GRCh37 -d /output/path/to/hg19/vep
+vep_convert_cache.pl -species homo_sapiens -version 83_GRCh37 -d /output/path/to/hg19/vep
 
 (note that vep_install.pl is renamed from INSTALL.pl 
  and vep_convert_cache.pl from covert_cache.pl
