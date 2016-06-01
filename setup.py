@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 # load version info
 exec(open("bioconda_utils/version.py").read())

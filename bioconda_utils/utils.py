@@ -312,20 +312,19 @@ def test_recipes(repository, env_matrix, packages="*", testonly=False,
     """
     Build one or many bioconda packages.
     """
-
     env_matrix = EnvMatrix(env_matrix, verbose=verbose)
 
     recipes = [
         recipe for package in packages for recipe in
-        utils.get_recipes(repository, package)
+        get_recipes(repository, package)
     ]
 
     if not force:
-        recipes = list(utils.filter_recipes(recipes, env_matrix))
+        recipes = list(filter_recipes(recipes, env_matrix))
 
     env_matrix.verbose = verbose
 
-    dag, name2recipes = utils.get_dag(recipes)
+    dag, name2recipes = get_dag(recipes)
 
     print("Packages to build", file=sys.stderr)
     print(*nx.nodes(dag), file=sys.stderr, sep="\n")
@@ -362,7 +361,7 @@ def test_recipes(repository, env_matrix, packages="*", testonly=False,
 
     for recipe in recipes:
         for env in env_matrix:
-            yield utils.build(recipe, env, verbose, testonly, force)
+            yield build(recipe, env, verbose, testonly, force)
 
     if not testonly:
         # upload builds

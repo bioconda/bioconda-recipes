@@ -3,12 +3,15 @@
 import sys
 import os
 import subprocess as sp
+from functools import partial
 
 import yaml
 import argh
 from argh import arg
 import networkx as nx
-from nose.core import TextTestRunner
+from networkx.drawing.nx_pydot import write_dot
+from nose.suite import LazySuite
+from nose.core import run as nose_run
 
 from . import utils
 
@@ -21,21 +24,22 @@ from . import utils
 
 
 @arg('repository', help='Path to top-level dir of repository')
+@arg('env-matrix', help='Path to yaml file specifying the environment matrix.')
 @arg('--packages', nargs="+",
      help='Glob for package[s] to build. Default is to build all packages. Can '
      'be specified more than once')
-@arg('--env-matrix', help='Path to yaml file specifying the environment matrix.')
 @arg('--testonly', help='Test packages instead of building')
 @arg('--verbose', help='Make output more verbose for local debugging')
 @arg('--force', help='Force building the recipe even if it already exists in '
      'the bioconda channel')
-def build(repository, packages="*", testonly=False, verbose=False,
+def build(repository, env_matrix, packages="*", testonly=False, verbose=False,
           force=False):
-    test_runner = TextTestRunner(verbosity=2 if verbose else 1)
-    result = test_runner.run(utils.test_recipes(repository, packages=packages,
-                                                testonly=testonly, verbose=verbose,
-                                                force=force))
-    sys.exit(not result.wasSuccessful())
+    tests = LazySuite(tests=utils.test_recipes(repository, env_matrix,
+                                               packages=packages,
+                                               testonly=testonly,
+                                               verbose=verbose,
+                                               force=force))
+    nose_run(suite=tests)
 
 
 @arg('repository', help='Path to top-level dir of repository')
@@ -58,7 +62,8 @@ def dag(repository, packages="*", format='gml', hide_singletons=False):
     if format == 'gml':
         nx.write_gml(dag, sys.stdout.buffer)
     elif format == 'dot':
-        from networkx.drawing.nx_pydot import write_dot
         write_dot(dag, sys.stdout)
 
-argh.dispatch_commands([build, dag])
+
+def main():
+    argh.dispatch_commands([build, dag])
