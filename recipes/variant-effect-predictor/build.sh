@@ -26,7 +26,7 @@ perl vep_install.pl -a a
 # Remove test data
 rm -rf t/
 # Install plugins
-wget --no-check-certificate https://raw.githubusercontent.com/ensembl-variation/VEP_plugins/master/CADD.pm
-wget --no-check-certificate https://raw.githubusercontent.com/ensembl-variation/VEP_plugins/master/dbNSFP.pm
-wget --no-check-certificate https://raw.githubusercontent.com/konradjk/loftee/master/LoF.pm
-wget --no-check-certificate https://raw.githubusercontent.com/konradjk/loftee/master/splice_module.pl
+wget --no-check-certificate https://raw.githubusercontent.com/Ensembl/VEP_plugins/fd7bd1a63afaf106ff49445127cb04451b5e63b4/CADD.pm
+wget --no-check-certificate https://raw.githubusercontent.com/Ensembl/VEP_plugins/fd7bd1a63afaf106ff49445127cb04451b5e63b4/dbNSFP.pm
+wget --no-check-certificate https://raw.githubusercontent.com/konradjk/loftee/537ac71a447fb21ef7e949d4f2f05a191488a9fa/LoF.pm
+wget --no-check-certificate https://raw.githubusercontent.com/konradjk/loftee/537ac71a447fb21ef7e949d4f2f05a191488a9fa/splice_module.pl
