@@ -307,13 +307,90 @@ def build(recipe, env, verbose=False, testonly=False, force=False):
         return False
 
 
-def index_dirs(dirs):
-    if all(map(os.path.exists, index_dirs)):
-        sp.run(["conda", "index"] + index_dirs, check=True, stdout=sp.PIPE)
+def test_recipes(repository, env_matrix, packages="*", testonly=False,
+                 verbose=False, force=False):
+    """
+    Build one or many bioconda packages.
+    """
+    env_matrix = EnvMatrix(env_matrix, verbose=verbose)
 
+    recipes = [
+        recipe for package in packages for recipe in
+        get_recipes(repository, package)
+    ]
 
-def _index_dirs_from_config(config):
-    index_dirs(yaml.load(open(config))['index_dirs'])
+    if not force:
+        recipes = list(filter_recipes(recipes, env_matrix))
+
+    env_matrix.verbose = verbose
+
+    dag, name2recipes = get_dag(recipes)
+
+    print("Packages to build", file=sys.stderr)
+    print(*nx.nodes(dag), file=sys.stderr, sep="\n")
+
+    subdags_n = int(os.environ.get("SUBDAGS", 1))
+    subdag_i = int(os.environ.get("SUBDAG", 0))
+
+    # Get connected subdags and sort by nodes
+    if testonly:
+        # use each node as a subdag (they are grouped into equal sizes below)
+        subdags = sorted([[n] for n in nx.nodes(dag)])
+    else:
+        # take connected components as subdags
+        subdags = sorted(
+            map(sorted, nx.connected_components(dag.to_undirected())))
+    # chunk subdags such that we have at most subdags_n many
+    if subdags_n < len(subdags):
+        chunks = [[n for subdag in subdags[i::subdags_n] for n in subdag]
+                  for i in range(subdags_n)]
+    else:
+        chunks = subdags
+    if subdag_i >= len(chunks):
+        print("Nothing to be done.")
+        return
+    # merge subdags of the selected chunk
+    subdag = dag.subgraph(chunks[subdag_i])
+    # ensure that packages which need a build are built in the right order
+    recipes = [recipe for package in nx.topological_sort(subdag) for recipe in
+               name2recipes[package]]
+
+    print("Building/testing subdag {} of recipes in order:".format(subdag_i),
+          file=sys.stderr)
+    print(*recipes, file=sys.stderr, sep="\n")
+
+    for recipe in recipes:
+        for env in env_matrix:
+            yield build(recipe, env, verbose, testonly, force)
+
+    if not testonly:
+        # upload builds
+        if (
+            os.environ.get("TRAVIS_BRANCH") == "master" and
+            os.environ.get("TRAVIS_PULL_REQUEST") == "false"
+        ):
+            for recipe in recipes:
+                packages = {
+                    sp.run(["conda", "build", "--output", recipe],
+                           stdout=sp.PIPE, env=env,
+                           check=True).stdout.strip().decode()
+                    for env in env_matrix
+                }
+                for package in packages:
+                    if os.path.exists(package):
+                        try:
+                            sp.run(["anaconda", "-t",
+                                    os.environ.get("ANACONDA_TOKEN"),
+                                    "upload", package], stdout=sp.PIPE,
+                                   stderr=sp.STDOUT, check=True)
+                        except sp.CalledProcessError as e:
+                            print(e.stdout.decode(), file=sys.stderr)
+                            if b"already exists" in e.stdout:
+                                # ignore error assuming that it is caused by
+                                # existing package
+                                pass
+                            else:
+                                raise e
 
 
 def _env_matrix_from_config(config, verbose=False):
@@ -322,9 +399,3 @@ def _env_matrix_from_config(config, verbose=False):
     return EnvMatrix(
         os.path.relpath(cfg['env_matrix'], os.path.dirname(config)),
         verbose=verbose)
-
-
-def run_setup_from_config(config):
-    cfg = yaml.load(open(config))
-    for cmd in cfg['setup']:
-        sp.run(cmd.split(), check=True)
