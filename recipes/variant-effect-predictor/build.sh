@@ -15,6 +15,8 @@ sed -i.bak 's@/convert_cache.pl@/vep_convert_cache.pl@' scripts/variant_effect_p
 sed -i.bak 's@use strict;@use strict;\nuse FindBin qw($RealBin);\nuse lib $RealBin;@' scripts/variant_effect_predictor/convert_cache.pl
 # Find plugins in install directory
 sed -i.bak 's@$config->{dir_plugins} ||=.*@$config->{dir_plugins} ||= $RealBin;@' scripts/variant_effect_predictor/variant_effect_predictor.pl
+# Change location where INSTALL.pl looks for the zlib headers
+sed -i -e "s@/usr/include/zlib.h@${PREFIX}/include@" scripts/variant_effect_predictor/INSTALL.pl
 cp scripts/variant_effect_predictor/convert_cache.pl $target/vep_convert_cache.pl
 cp scripts/variant_effect_predictor/INSTALL.pl $target/vep_install.pl
 cp scripts/variant_effect_predictor/variant_effect_predictor.pl $target
