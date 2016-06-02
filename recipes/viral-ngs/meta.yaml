@@ -8,24 +8,58 @@ about:
   summary: A set of scripts and tools for the analysis of viral NGS data
 
 source:
-  fn: viral-ngs-master2.zip
-  url: https://github.com/broadinstitute/viral-ngs/archive/master.zip
-  #fn: viral-ngs-v1.4.4.zip
-  #url: https://github.com/broadinstitute/viral-ngs/archive/v1.4.4.zip
-  #md5: 0c2e117a6ec9f94947d9434cee18bec6
+  fn: viral-ngs-v1.4.4.zip
+  url: https://github.com/broadinstitute/viral-ngs/archive/v1.4.4.zip
+  md5: 0c2e117a6ec9f94947d9434cee18bec6
 
 build:
-  skip: False 
+    number: 1
+    rpaths:
+        - lib/
+        - lib//
+  #skip: False 
 
 requirements:
   build:
-    - biopython ==1.64
-    - future ==0.15.2
-    - pytest ==2.9.1
-    - pysam ==0.8.3
+    #- python >=3.5.0
+    - biopython #==1.66
+    - future >=0.15.2
+    - futures # [py2k]
+    - pytest #>=2.9.1
+    - pysam ==0.8.4
     - pyyaml >=3.11
-    - boto ==2.38.0 #[py3k]
-    - snakemake #[py3k]
+    - boto ==2.38.0 
+    - snakemake # [py3k]
+    - blast ==2.2.31
+    - bmtagger ==3.101
+    - last ==719
+    - mafft ==7.221
+    - mummer ==3.23
+    - muscle ==3.8.1551
+    - mvicuna ==1.0
+    - novoalign ==3.03.02
+    - perl-threaded
+    - picard ==1.126
+    - prinseq ==0.20.4
+    - samtools ==1.2
+    - snpeff ==4.1l
+    - trimmomatic ==0.35
+    - trinity ==date.2011_11_26
+    - vphaser2 ==2.0
+    
+    - gcc
+    - boost ==1.60 # needed for diamond, among other packages
+
+  run:
+    #- python >=3.5.0
+    - biopython #==1.66
+    - future >=0.15.2
+    - futures # [py2k]
+    - pytest #>=2.9.1
+    - pysam ==0.8.4
+    - pyyaml >=3.11
+    - boto ==2.38.0 
+    - snakemake # [py3k]
     - blast ==2.2.31
     - bmtagger ==3.101
     - last ==719
@@ -43,40 +77,22 @@ requirements:
     - trinity ==date.2011_11_26
     - vphaser2 ==2.0
 
-  run:
-    - biopython ==1.64
-    - future ==0.15.2
-    - pytest ==2.9.1
-    - pysam ==0.8.3
-    - pyyaml >=3.11
-    - boto ==2.38.0 #[py3k]
-    - snakemake #[py3k]
-    - blast ==2.2.31
-    - bmtagger ==3.101
-    - last ==719
-    - mafft ==7.221
-    - mummer ==3.23
-    - muscle ==3.8.1551
-    - mvicuna ==1.0
-    - novoalign ==3.03.02
-    - perl-threaded
-    - picard ==1.126
-    - prinseq ==0.20.4
-    - samtools ==1.2
-    - snpeff ==4.1l
-    - trimmomatic ==0.35
-    - trinity ==date.2011_11_26
-    - vphaser2 ==2.0
+    - gcc # used for compiling any tools that are installed by viral-ngs
+    - libgcc
+    - boost ==1.60 # needed for diamond, among other packages
+
 test:
   requires:
     - perl-threaded
 
+    - libgcc
+
     # testing-related
     - flake8 <=3
-    - mock ==2.0.0
+    - mock >=2.0.0
     - six <2
-    - pytest-xdist ==1.14
-    - pytest-cov ==2.2.1
+    - pytest-cov
+    - pytest-xdist
     
   commands:
     # preserve CONDA_DEFAULT_ENV to restore later
@@ -100,10 +116,10 @@ test:
     - "cd $PREFIX/opt/$PKG_NAME-$PKG_VERSION && py.test -v test/unit/test_tools.py"
 
     # various unit tests
+    - "cd $PREFIX/opt/$PKG_NAME-$PKG_VERSION && py.test -v test/unit/test_tools_vphaser2.py"
     - "cd $PREFIX/opt/$PKG_NAME-$PKG_VERSION && py.test -v test/unit/test_tools_novoalign.py"
     - "cd $PREFIX/opt/$PKG_NAME-$PKG_VERSION && py.test -v test/unit/test_tools_picard.py"
     - "cd $PREFIX/opt/$PKG_NAME-$PKG_VERSION && py.test -v test/unit/test_tools_samtools.py"
-    - "cd $PREFIX/opt/$PKG_NAME-$PKG_VERSION && py.test -v test/unit/test_tools_vphaser2.py"
     - "cd $PREFIX/opt/$PKG_NAME-$PKG_VERSION && py.test -v test/unit/test_taxon_filter.py"
     - "cd $PREFIX/opt/$PKG_NAME-$PKG_VERSION && py.test -v test/unit/test_util_misc.py"
     - "cd $PREFIX/opt/$PKG_NAME-$PKG_VERSION && py.test -v test/unit/test_util_vcf.py"    
@@ -115,6 +131,6 @@ test:
     - "cd $PREFIX/opt/$PKG_NAME-$PKG_VERSION && py.test -v test/unit/test_assembly.py"
     - "cd $PREFIX/opt/$PKG_NAME-$PKG_VERSION && py.test -v test/unit/test_illumina.py"
 
-    # Restore CONDA_DEFAULT_ENV
+    # Restore CONDA_DEFAULT_ENV after tool install
     - "export CONDA_DEFAULT_ENV=$CONDA_DEFAULT_ENV_BAK"
     
