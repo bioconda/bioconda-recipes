@@ -13,7 +13,6 @@ export BOOST_LIBRARY_DIR=${PREFIX}/lib
 export CXXFLAGS="-DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
 export LDFLAGS="-L${BOOST_LIBRARY_DIR}"
 
-
 make
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/scripts
