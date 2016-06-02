@@ -17,9 +17,12 @@ make
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/scripts
 mkdir -p $PREFIX/config
+
+sed -i 's/#!\/usr\/bin\/perl/#!\/usr\/bin\/env perl/g' scripts/*
+
 mv bin/* $PREFIX/bin/
 mv scripts/* $PREFIX/scripts/
 mv config/* $PREFIX/config/
 
 #Install perl reqs
-cpanm Cwd File::Basename FileHandle File::Path File::Spec::Functions Getopt::Long IO::File List::Util Term::ANSIColor
+#cpanm Cwd File::Basename FileHandle File::Path File::Spec::Functions Getopt::Long IO::File List::Util Term::ANSIColor
