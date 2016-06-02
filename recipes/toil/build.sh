@@ -8,4 +8,4 @@ sed -i.bak 's/boto==/boto>=/' setup.py
 sed -i.bak 's/azure==/azure>=/' setup.py
 sed -i.bak 's/pynacl==/pynacl>=/' setup.py
 sed -i.bak 's/gcs_oauth2_boto_plugin==/gcs_oauth2_boto_plugin>=/' setup.py
-$PYTHON setup.py install
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt
