@@ -1,27 +1,32 @@
 build:
-  number: 0
+  number: 1
   skip: True # [osx]
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
 
 package:
   name: diamond
   version: "0.7.10"
+
 source:
   git_url: https://github.com/bbuchfink/diamond/
   git_tag: v0.7.10
   patches:
     - cmake_patch
+
 # We pin on gcc version to avoid gcc-5 dual ABI issues depending on boost.
 requirements:
   build:
     - gcc >=4.8.5,<5 # [unix]
-    - boost >=1.53.0
+    - boost >=1.53.0,{{CONDA_BOOST}}*
     - cmake
   run:
     - libgcc >=4.8.5,<5 # [unix]
-    - boost >=1.53.0
+    - boost {{CONDA_BOOST}}*
+
 test:
   commands:
     - diamond --help 2>&1 > /dev/null
+
 about:
   home: http://ab.inf.uni-tuebingen.de/software/diamond/
   license: BSD
