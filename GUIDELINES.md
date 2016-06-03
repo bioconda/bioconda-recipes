@@ -17,6 +17,8 @@
 
 - If the recipe installs custom wrapper scripts, usage notes should be added to ``extra -> notes`` in the `meta.yaml`.
 
+- If uploading of an unreleased version is necessary, please follow the versioning scheme of conda for pre- and post-releases (e.g. using a, b, rc, and dev suffixes, see [here](https://github.com/conda/conda/blob/d1348cf3eca0f78093c7c46157989509572e9c25/conda/version.py#L30)).
+
 ## Examples
 
 The following recipes serve as examples of good recipes that can be used as
@@ -107,10 +109,37 @@ the `meta.yaml` files in above examples).
 In general, standard `make` should work. Other build tools (e.g., `autoconf`)
 and compilers (e.g., `gcc`) should be specified in the build requirements.
 
+We have not yet decided whether to have `gcc` as a conda package or to assume
+it is in the build environment. Until this decision is made, please add `gcc`
+(for Linux packages) and `llvm` (for OSX packages) to the `meta.yaml` as
+follows:
+
+```yaml
+requirements:
+  build:
+    - gcc   # [not osx]
+    - llvm  # [osx]
+
+  run:
+    - libgcc    # [not osx]
+```
+
+If the package uses `zlib`, then please see the `ZLIB` section below.
+
 * example requiring `autoconf`: [srprism](recipes/srprism)
 * simple example: [samtools](recipes/samtools)
 
-If your package links dynamically against a particular library, it is often necessary to pin the version against which it was compiled, in order to avoid ABI incompatibilities. Instead of hardcoding a particular version in the recipe, we use jinja templates to achieve this. For example, bioconda provides an environnmnet variable `CONDA_BOOST` that contains the current major version of boost. You should pin your boost dependency against that version. An example is the [salmon recipe](recipes/salmon). If you need to pin another library, please notify @bioconda/core, and we will set up a corresponding environment variable.
+If your package links dynamically against a particular library, it is often
+necessary to pin the version against which it was compiled, in order to avoid
+ABI incompatibilities. Instead of hardcoding a particular version in the
+recipe, we use jinja templates to achieve this. For example, bioconda provides
+an environnmnet variable `CONDA_BOOST` that contains the current major version
+of boost. You should pin your boost dependency against that version. An example
+is the [salmon recipe](recipes/salmon). You find the libraries you can
+currently pin in
+[scripts/env_matrix.yml](https://github.com/bioconda/bioconda-recipes/blob/master/scripts/env_matrix.yml).
+If you need to pin another library, please notify @bioconda/core, and we will
+set up a corresponding environment variable.
 
 ## General command-line tools
 If a command-line tool is installed, it should be tested. If it has a shebang
@@ -198,3 +227,41 @@ cluttering the output in the Travis-CI build environment.
 If an older version is required, put it in a subdirectory of the recipe.
 Examples of this can be found in [bowtie2](recipes/bowtie2),
 [bx-python](recipes/bx-python), and others.
+
+## ZLIB
+
+If a package depends on zlib, then it will most likely also depend on `gcc` (on
+Linux) and `llvm` (on OSX). The `meta.yaml` requirements section should
+therefore at least have the following:
+
+
+```yaml
+requirements:
+  build:
+    - gcc   # [not osx]
+    - llvm  # [osx]
+    - zlib
+
+  run:
+    - libgcc    # [not osx]
+    - zlib
+```
+
+When building the package, you may get an error saying that zlib.h can't be
+found -- despite having zlib listed in the dependencies. This is becuase the
+location of `zlib` often has to be specified in the `build.sh` script, which
+can be done like this:
+
+```bash
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+```
+
+Or sometimes:
+
+```
+export CPATH=${PREFIX}/include
+```
+
+Sometimes Makefiles may specify these locations, in which case they need to be
+edited. See the [samtools](recipes/samtools) recipe for an example of this.
