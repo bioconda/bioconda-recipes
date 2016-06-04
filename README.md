@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/jerowe/bioconda-recipes.png?label=ready&title=Ready)](https://waffle.io/jerowe/bioconda-recipes)
 
 ![](https://raw.githubusercontent.com/bioconda/bioconda-recipes/master/logo/bioconda_monochrome_small.png
  "Bioconda")
