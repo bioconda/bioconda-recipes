@@ -26,3 +26,9 @@ mv config/* $PREFIX/config/
 
 #Install perl reqs
 #cpanm Cwd File::Basename FileHandle File::Path File::Spec::Functions Getopt::Long IO::File List::Util Term::ANSIColor
+
+  #- perl-file-path
+  #- perl-getopt-long
+  #- perl-io
+  #- perl-scalar-list-utils
+  #- perl-term-ansicolor
