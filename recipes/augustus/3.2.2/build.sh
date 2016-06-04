@@ -25,4 +25,4 @@ mv scripts/* $PREFIX/scripts/
 mv config/* $PREFIX/config/
 
 #Install perl reqs
-cpanm Cwd File::Basename FileHandle File::Path File::Spec::Functions Getopt::Long IO::File List::Util Term::ANSIColor
+#cpanm Cwd File::Basename FileHandle File::Path File::Spec::Functions Getopt::Long IO::File List::Util Term::ANSIColor
