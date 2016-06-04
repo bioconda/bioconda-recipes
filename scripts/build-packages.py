@@ -76,6 +76,7 @@ def conda_index():
 
 
 def build_recipe(recipe, env_matrix, testonly=False):
+    print("Building recipe {}".format(recipe))
     def build(env):
         try:
             out = None if args.verbose else sp.PIPE
