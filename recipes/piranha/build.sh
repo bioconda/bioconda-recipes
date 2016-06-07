@@ -3,7 +3,11 @@
 CC=${PREFIX}/bin/gcc
 CXX=${PREFIX}/bin/g++
 
-./configure --prefix=$PREFIX && \
+mkdir -p $PREFIX/bin
+
+./configure && \
 make && \
 make test && \
 make install
+
+cp bin/* $PREFIX/bin
