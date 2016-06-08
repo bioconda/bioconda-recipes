@@ -12,6 +12,8 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 ENV_PREFIX="$(dirname $(dirname $DIR))"
+# Use Java installed with Anaconda to ensure correct version
+JAVA="$ENV_PREFIX/bin/java"
 
 
 function print_license_notice(){
@@ -31,7 +33,7 @@ function print_usage(){
 
 function check_version(){
     # exits if version does not match version defined in conda package
-    jar_version=$(java -jar $1 --version | grep -oEi '[0-9]\.[0-9]')
+    jar_version=$(${JAVA} -jar $1 --version | grep -oEi '[0-9]\.[0-9]')
     if [[ "$jar_version" != "$PKG_VERSION" ]]; then
         echo "The version of the jar specified, $jar_version, does not match the version expected by conda: $PKG_VERSION"
         exit 1
@@ -41,7 +43,7 @@ function check_version(){
 }
 
 if [[ "$#" -ne 1 ]]; then
-    if ! $(java -jar $ENV_PREFIX/opt/$PKG_NAME-$PKG_VERSION/GenomeAnalysisTK.jar --version &> /dev/null); then
+    if ! $(${JAVA} -jar $ENV_PREFIX/opt/$PKG_NAME-$PKG_VERSION/GenomeAnalysisTK.jar --version &> /dev/null); then
         echo "  It looks like GATK has not yet been installed."
         echo ""
         print_usage
