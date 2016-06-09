@@ -1,3 +1,3 @@
 #!/bin/sh
-make
-env PREFIX=$PREFIX prefix=$PREFIX make install
+mv * "$PREFIX"
+mv "$PREFIX/LICENSE.md" .
