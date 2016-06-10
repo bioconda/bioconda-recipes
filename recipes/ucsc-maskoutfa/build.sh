@@ -6,7 +6,7 @@ mkdir -p $BINDIR
 (cd kent/src/lib && make)
 (cd kent/src/jkOwnLib && make)
 (cd kent/src/hg/lib && make)
-(cd kent/src/hg/utils/gtfToGenePred && make)
+(cd kent/src/hg/maskOutFa && make)
 mkdir -p $PREFIX/bin
-cp bin/gtfToGenePred $PREFIX/bin
-chmod +x $PREFIX/bin/gtfToGenePred
+cp bin/maskOutFa $PREFIX/bin
+chmod +x $PREFIX/bin/maskOutFa
