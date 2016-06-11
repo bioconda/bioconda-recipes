@@ -7,32 +7,28 @@
 #
 # Program Parameters
 #
-
+import os
+import sys
+import subprocess
+from os import access, getenv, X_OK
 jar_file = 'PeptideShaker-1.1.3.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
 # !!! End of parameter section. No user-serviceable code below this line !!!
 
-
-import sys
-from os import access, getenv, system, X_OK
-from os.path import dirname, realpath, join as join_path
-from subprocess import call
-
-
 def real_dirname(path):
     """Return the symlink-resolved, canonicalized directory-portion of path."""
-    return dirname(realpath(path))
+    return os.path.dirname(os.path.realpath(path))
 
 
 def java_executable():
     """Return the executable name of the Java interpreter."""
     java_home = getenv('JAVA_HOME')
-    java_bin = join_path('bin', 'java')
+    java_bin = os.path.join('bin', 'java')
 
-    if java_home and access(join_path(java_home, java_bin), X_OK):
-        return join_path(java_home, java_bin)
+    if java_home and access(os.path.join(java_home, java_bin), X_OK):
+        return os.path.join(java_home, java_bin)
     else:
         return 'java'
 
@@ -49,11 +45,11 @@ def jvm_opts(argv):
     pass_args = []
 
     for arg in argv:
-        if arg[0:2] == '-D':
+        if arg.startswith('-D'):
             prop_opts.append(arg)
-        elif arg[0:3] == '-XX':
+        elif arg.startswith('-XX'):
             prop_opts.append(arg)
-        elif arg[0:3] == '-Xm':
+        elif arg.startswith('-Xm'):
             mem_opts.append(arg)
         else:
             pass_args.append(arg)
@@ -75,22 +71,17 @@ def main():
     jar_dir = real_dirname(sys.argv[0])
     (mem_opts, prop_opts, pass_args) = jvm_opts(sys.argv[1:])
 
-    if pass_args != [] and pass_args[0][0:2] == 'eu':
+    if pass_args != [] and pass_args[0].startswith('eu'):
         jar_arg = '-cp'
     else:
         jar_arg = '-jar'
 
-    jar_path = join_path(jar_dir, jar_file)
+    jar_path = os.path.join(jar_dir, jar_file)
 
     java_args = [java]+ mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
-    java_args = ' '.join(java_args)
 
-    sys.exit(call(java_args, shell=True))
+    sys.exit(subprocess.call(java_args))
 
 
 if __name__ == '__main__':
     main()
-
-
-
-
