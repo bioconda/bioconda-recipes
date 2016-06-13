@@ -1,14 +1,13 @@
 """
 New version of bioconductor? This script goes through each current Bioconductor
 recipe, finds the corresponding dependencies that are also in this repo, and
-reports the [reverse toplogically sorted] set of Bioconductor packages should
-be updated using bioconductor-scraper.py.
+reports the [reverse toplogically sorted] set of Bioconductor packages that
+should be updated using bioconductor-scraper.py.
 
 In other words, the first items in the list should be updated and built first
 since they are those that other packages are most dependent on.
 
-
-Currently depends on networkx for the DAG and toplogical sort.
+Outputs strings of the format BioconductorName:recipename
 """
 
 import glob
@@ -16,48 +15,48 @@ import yaml
 import pyaml
 import os
 import networkx as nx
+import itertools
+from conda_build.metadata import MetaData
+from conda import version
+import sys
+sys.path.insert(0, '..')
+import utils
 
 
-def bioc_name(recipe_name, recipes):
+def bioc_name(recipe):
     """
     Returns the Bioconductor name (rather than the sanitized lowercase bioconda
     name) that can be provided to bioconda-scraper.py
     """
-    meta = os.path.join(recipes, recipe_name, 'meta.yaml')
-    yml = yaml.load(open(meta))
-    fn = yml['source']['fn']
-    return fn.split('_')[0]
-
-
-def dependencies(meta, recipes):
-    """
-    Given a meta.yaml file, return its depdencies that are in the current repo.
-    """
-    yml = yaml.load(open(meta))
-    deps = list(set(yml['requirements']['build'] + yml['requirements']['run']))
-    deps = [dep.split(' ')[0] for dep in deps]
-    results = []
-    for dep in deps:
-        if (
-            os.path.exists(os.path.join(recipes, dep)) and
-            ('bioconductor-' in dep or 'r-' in dep)
-        ):
-            results.append(dep)
-    return results
+    return MetaData(recipe).meta['source']['fn'].split('_')[0]
 
 
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument('--recipes', default='recipes', help='Recipes directory')
+    ap.add_argument('--repository', default='recipes', help='Recipes directory')
     args = ap.parse_args()
 
-    g = nx.DiGraph()
+    recipes = list(utils.get_recipes(args.repository, 'bioconductor-*'))
+    deps = itertools.chain(
+        itertools.chain(*(utils.get_deps(i, build=True) for i in recipes)),
+        itertools.chain(*(utils.get_deps(i, build=False) for i in recipes))
+    )
 
-    for meta in glob.glob(os.path.join(args.recipes, 'bioconductor-*/meta.yaml')):
-        bioconda_name = os.path.basename(os.path.dirname(meta))
-        for dep in dependencies(meta, args.recipes):
-            g.add_edge(bioconda_name, dep)
+    deps = list(filter(lambda x: x.startswith(('r-', 'bioconductor-')), deps))
 
-    for dep in nx.topological_sort(g, reverse=True):
-        print('{0}:{1}'.format(bioc_name(dep, args.recipes), dep))
+    bioconda_deps = list(
+        filter(
+            lambda x: os.path.isdir(x),
+            itertools.chain(*(utils.get_recipes(args.repository, i) for i in deps))
+        )
+    )
+
+    dag, name2recipe = utils.get_dag(bioconda_deps)
+
+    def version_sort(x):
+        return version.VersionOrder(MetaData(x).meta['package']['version'])
+
+    for name in nx.topological_sort(dag):
+        recipe = sorted(name2recipe[name], key=version_sort)[-1]
+        print('{0}:{1}'.format(bioc_name(recipe), name))

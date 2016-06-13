@@ -1,15 +1,12 @@
 #!/bin/sh
-./configure --prefix=$PREFIX PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig/ CXXFLAGS="-I$PREFIX/include"
-make install
+./configure --prefix=$PREFIX --with-vrna=$PREFIX
 
-for p in \
-    locarna \
-    locarna_p \
-    exparna_p \
-    locarnap_fit \
-    locarna_rnafold_pp \
-    ribosum2cc \
-    sparse \
-; do
-  strip $PREFIX/bin/$p
-done
+if [ $(uname) == Linux ] ; then
+    ## libstdc++ is expected in lib64, so link it there
+    if [ ! -d $PREFIX/lib64 ] ; then mkdir $PREFIX/lib64 ; fi
+    ln -s $PREFIX/lib/libstdc++.la $PREFIX/lib64/libstdc++.la 
+    ln -s $PREFIX/lib/libstdc++.so $PREFIX/lib64/libstdc++.so 
+fi
+
+make -j ${CPU_COUNT} && \
+make install
