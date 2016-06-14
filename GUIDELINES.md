@@ -192,6 +192,7 @@ Examples of somewhat non-standard recipes, in no particular order:
   3 compatible, patches the wrapper script to have a shebang line, deletes
   example data to avoid taking up space in the bioconda channel, and includes
   a script for downloading the example data separately.
+* [gatk](recipes/gatk) is a package for licensed software that cannot be redistributed. The package installs a placeholder script (in this case doubling as the `jar` [wrapper](https://github.com/bioconda/bioconda-recipes/blob/master/GUIDELINES.md#java)) to alert the user if the program is not installed, along with a separate script (`gatk-register`) to copy in a user-supplied archive/binary to the conda environment
 
 ### Name collisions
 In some cases, there may be a name collision when writing a recipe. For example the
