@@ -186,6 +186,7 @@ Examples of somewhat non-standard recipes, in no particular order:
   distribution
 * [hisat2](recipes/hisat2) runs `2to3` to make it Python 3 compatible, and
   copies over individual scripts to the bin dir
+* [krona](recipes/krona) has a `post-link.sh` script that gets called after installation to alert the user a manual step is required
 * [htslib](recipes/htslib) has a small test script that creates example data
   and runs multiple programs on it
 * [spectacle](recipes/spectacle) runs `2to3` to make the wrapper script Python
@@ -205,9 +206,7 @@ collision was resolved with [weblogo](recipes/weblogo) and
 
 If in doubt about how to handle a naming collision, please submit an issue.
 
-
 ## Tests
-
 An adequate test must be included in the recipe. An "adequate" test depends on
 the recipe, but must be able to detect a successful installation. While many
 packages may ship their own test suite (unit tests or otherwise), including
