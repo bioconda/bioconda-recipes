@@ -221,6 +221,20 @@ testing).
 It is recommended to pipe unneeded stdout/stderr to /dev/null to avoid
 cluttering the output in the Travis-CI build environment.
 
+## Link and unlink scripts (pre- and post- install hooks)
+It is possible to include [scripts](http://conda.pydata.org/docs/spec.html#link-and-unlink-scripts) that are executed before or 
+after installing a package, or before uninstalling a package. These scripts can be helpful for alerting the user that manual actions are required after adding or removing a package. For example, a `post-link.sh` script may be used to alert the user that he or she will need to create a database or modify a settings file. Any package that requires a manual preparatory step before it can be used should consider alerting the user via an `echo` statement in a `post-link.sh` script. These scripts may be added at the same level as `meta.yaml` and `build.sh`:
+
+* `pre-link.sh` is executed *prior* to linking (installation). An error causes conda to stop.
+* `post-link.sh` is executed *after* linking (installation). When the post-link step fails, no package metadata is written, and the package is not considered installed.
+* `pre-unlink.sh` is executed *prior* to unlinking (uninstallation). Errors are ignored. Used for cleanup.
+
+These scripts have access to the following environment variables:
+
+* `$PREFIX`	The install prefix
+* `$PKG_NAME`	The name of the package
+* `$PKG_VERSION`	The version of the package
+* `$PKG_BUILDNUM`	The build number of the package
 
 ## Versions
 
