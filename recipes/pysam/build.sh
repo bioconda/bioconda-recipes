@@ -9,10 +9,5 @@ sed -i'' -e 's/"-Wno-error=declaration-after-statement"//g' setup.py
 #export HTSLIB_LIBRARY_DIR=$PREFIX/lib
 #export HTSLIB_INCLUDE_DIR=$PREFIX/include
 
-# Need for zlib
-export CFLAGS="-I$PREFIX/include"
-export CPPFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-
-#sed -i'' -e 's/HTSLIB_MODE = \"shared\"/HTSLIB_MODE = \"separate\"/g' setup.py
-$PYTHON setup.py install
+sed -i'' -e 's/HTSLIB_MODE = \"shared\"/HTSLIB_MODE = \"separate\"/g' setup.py
+$PYTHON setup.py install --enable-libcurl
