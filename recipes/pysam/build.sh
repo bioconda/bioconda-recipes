@@ -14,5 +14,5 @@ export CFLAGS="-I$PREFIX/include"
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
-sed -i'' -e 's/HTSLIB_MODE = \"shared\"/HTSLIB_MODE = \"separate\"/g' setup.py
+#sed -i'' -e 's/HTSLIB_MODE = \"shared\"/HTSLIB_MODE = \"separate\"/g' setup.py
 $PYTHON setup.py install
