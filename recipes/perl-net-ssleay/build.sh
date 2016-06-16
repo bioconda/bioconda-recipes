@@ -1,6 +1,9 @@
 #!/bin/bash
 
 export OPENSSL_PREFIX=${PREFIX}
+
+export PERL_MM_USE_DEFAULT=1
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
