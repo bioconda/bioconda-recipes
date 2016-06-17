@@ -160,6 +160,10 @@ Examples:
 
 * confirm expected text in stderr: [weblogo](recipes/weblogo)
 
+If a package depends on Python and has a custom build string, then
+`py{{CONDA_PY}}` must be contained in that build string. Otherwise Python will
+be automatically pinned to one minor version, resulting in dependency conflicts
+with other packages. See [mapsplice](recipes/mapsplice) for an example of this.
 
 ### Metapackages
 
