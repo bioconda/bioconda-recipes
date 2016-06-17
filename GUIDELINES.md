@@ -264,7 +264,8 @@ Examples of this can be found in [bowtie2](recipes/bowtie2),
 
 If a package depends on zlib, then it will most likely also depend on `gcc` (on
 Linux) and `llvm` (on OSX). The `meta.yaml` requirements section should
-therefore at least have the following:
+therefore at least have the following for a recipe that supports both Linux and
+OSX:
 
 
 ```yaml
@@ -280,7 +281,7 @@ requirements:
 ```
 
 When building the package, you may get an error saying that zlib.h can't be
-found -- despite having zlib listed in the dependencies. This is becuase the
+found -- despite having zlib listed in the dependencies. The reason is that the
 location of `zlib` often has to be specified in the `build.sh` script, which
 can be done like this:
 
@@ -296,4 +297,6 @@ export CPATH=${PREFIX}/include
 ```
 
 Sometimes Makefiles may specify these locations, in which case they need to be
-edited. See the [samtools](recipes/samtools) recipe for an example of this.
+edited. See the [samtools](recipes/samtools) recipe for an example of this. It
+may take some tinkering to get the recipe to build; if it doesn't seem to work
+then please submit an issue.
