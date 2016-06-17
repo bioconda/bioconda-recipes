@@ -164,6 +164,7 @@ Developers
 * `Stephen J Newhouse <https://github.com/snewhouse>`_
 * `Phil Ewels <https://github.com/ewels>`_
 * `Xiao-Ou Zhang <https://github.com/kepbod>`_
+* `Felipe Leprevost <https://github.com/prvst>`_
 
 ----
 
