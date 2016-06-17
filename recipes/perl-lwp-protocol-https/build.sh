@@ -1,4 +1,5 @@
 #!/bin/bash
+
 export OPENSSL_PREFIX=$PREFIX
 
 # If it has Build.PL use that, otherwise use Makefile.PL
