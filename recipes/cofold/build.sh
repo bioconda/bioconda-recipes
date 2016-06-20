@@ -1,5 +1,5 @@
-#!/bin/bash
-
-./configure --with-cluster -q
-#make
-#make install
+#!/bin/sh
+# ViennaRNA does not support Python 3 yet.
+./configure --prefix=$PREFIX --without-perl -q
+make
+make install
