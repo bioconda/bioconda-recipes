@@ -1,4 +1,5 @@
 #!/bin/bash
+
 export MACHTYPE=x86_64
 export BINDIR=$(pwd)/bin
 mkdir -p $BINDIR
