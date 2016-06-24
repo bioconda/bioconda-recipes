@@ -1,5 +1,5 @@
 #!/bin/bash
-# GATK (protected) executable shell script
+# snpEff executable shell script, adapted from VarScan shell script
 set -eu -o pipefail
 
 set -o pipefail
@@ -16,12 +16,10 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 JAR_DIR=$DIR
-ENV_PREFIX="$(dirname $(dirname $DIR))"
-# Use Java installed with Anaconda to ensure correct version
-java="$ENV_PREFIX/bin/java"
 
-# if JAVA_HOME is set (non-empty), use it. Otherwise keep "java"
-if [ ! -z "${JAVA_HOME:=}" ]; then
+java=java
+
+if [ -z "${JAVA_HOME:=}" ]; then
   if [ -e "$JAVA_HOME/bin/java" ]; then
       java="$JAVA_HOME/bin/java"
   fi
@@ -54,16 +52,11 @@ if [ "$jvm_mem_opts" == "" ]; then
     jvm_mem_opts="$default_jvm_mem_opts"
 fi
 
-if [[ ! -f "$JAR_DIR/GenomeAnalysisTK.jar" ]]; then
-  echo "GATK jar file not found. Have you run \"gatk-register\"?"
-  exit 1
-fi
-
 pass_arr=($pass_args)
 if [[ ${pass_arr[0]:=} == org* ]]
 then
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/GenomeAnalysisTK.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/snpEff.jar" $pass_args
 else
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/GenomeAnalysisTK.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/snpEff.jar" $pass_args
 fi
 exit
