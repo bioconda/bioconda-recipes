@@ -6,9 +6,12 @@ TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
 
 cd $SRC_DIR
 
-export CFLAGS="-I$PREFIX/include"
+export CFLAGS="-I$PREFIX/include -I$PREFIX/include/ncurses"
+export CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/ncurses" 
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
+#export LIBS="-lncurses"
+#export LDLIBS="-lncurses"
 
 make
 
