@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-./autogen.sh
+autoreconf -i -I /usr/share/aclocal
 ./configure --prefix=$PREFIX
 make
 make install
