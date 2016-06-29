@@ -2,12 +2,26 @@ use strict;
 use warnings;
 
 use Module::Build 0.28;
+use File::Find;
 
-my @files = glob q("*pl script/*pl bin/*pl");
+our @files = ();
+find( \&wanted, ".");
+
+sub wanted {
+	my $file = $_;
+
+	return unless $file;
+	return unless -e $file;
+
+	#print "File $file\n";
+	if($file =~ m/.*\.pl$/){
+		push(@files, $file);
+	}
+}
 
 foreach my $file (@files){
     my $tfile = "$file.t";
-    print STDERR "Change shebang line to #!perl $file\n";
+    #    print STDERR "Change shebang line to #!perl $file\n";
     open my $in,  "<$file" or die $!;
     open my $out, ">$tfile" or die $!;
     while (<$in>) {
