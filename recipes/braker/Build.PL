@@ -39,23 +39,21 @@ my %module_build_args = (
     "build_requires"     => { "Module::Build" => "0.28" },
     "configure_requires" => { "Module::Build" => "0.28" },
     "dist_abstract"      => "Base Build Script for perl scripts",
-    "dist_author"          => [ "Jillian Rowe <jillian.e.rowe\@gmail.com>" ],
-    "dist_name"            => "Bioconda Perl Execs",
+    "dist_author"          => [ "" ],
+    "dist_name"            => "BiocondaPerlExecs",
     "dist_version"         => "1.9",
     "license"              => "perl",
-    "module_name"          => "Bioconda Perl Execs",
+    "module_name"          => "BiocondaPerlExecs",
     "recursive_test_files" => 1,
     "requires"             => { "perl" => "5.008005" },
     "script_files"         => \@files,
     "test_requires"        => {
-        "Capture::Tiny" => 0,
         "Test::More"    => 0,
         "strict"        => 0
     }
 );
 
 my %fallback_build_requires = (
-    "Capture::Tiny" => 0,
     "Module::Build" => "0.28",
     "Test::More"    => 0,
     "strict"        => 0
