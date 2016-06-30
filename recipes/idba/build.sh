@@ -10,6 +10,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 ./configure
 make
 
+
 sed -i 's/usr\/bin\/python/usr\/bin\/env python/g' script/*py
 
 mkdir -p ${PREFIX}/bin
