@@ -17,7 +17,7 @@ METADIR=`pwd`
 make clean
 make
 
-mv meta-velvetg ${PREFIX}/bin
+cp meta-velvetg ${PREFIX}/bin
 
 mkdir -p perl-build
 mv *pl perl-build
