@@ -39,7 +39,7 @@ my %module_build_args = (
     "build_requires"     => { "Module::Build" => "0.28" },
     "configure_requires" => { "Module::Build" => "0.28" },
     "dist_abstract"      => "Base Build Script for perl scripts",
-    "dist_author"          => [ "Jillian Rowe <jillian.e.rowe\@gmail.com>" ],
+    "dist_author"          => [ "" ],
     "dist_name"            => "BiocondaPerlExecs",
     "dist_version"         => "1.9",
     "license"              => "perl",
