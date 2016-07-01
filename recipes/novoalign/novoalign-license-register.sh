@@ -40,6 +40,8 @@ if [[ "$file_ext" != "lic" ]]; then
     exit 1
 fi
 
-echo "Copying $(basename $1) to $ENV_PREFIX/bin"
-cp "$1" "$LICENSE_DESTINATION"
-echo "...done!"
+if [[ ! -e "$LICENSE_DESTINATION" ]]; then
+    echo "Copying $(basename $1) to $ENV_PREFIX/bin"
+    cp "$1" "$LICENSE_DESTINATION"
+    echo "...done!"
+fi
