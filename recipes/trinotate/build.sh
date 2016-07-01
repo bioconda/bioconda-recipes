@@ -1,8 +1,5 @@
 #!/bin/bash
 
-
-cpanm --notest File::Find::Rule
-
 mkdir -p perl-build/scripts
 
 mv util/generate_Trinotate_report.txt util/generate_Trinotate_report.sh
@@ -21,5 +18,3 @@ cp ${RECIPE_DIR}/Build.PL ./
 ${PREFIX}/bin/perl ./Build.PL
 ./Build manifest
 ./Build install --installdirs site
-
-#exit 1
