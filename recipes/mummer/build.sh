@@ -35,6 +35,10 @@ show-snps \
 show-tiling \
 "
 
+# patch defined(%hash) out
+# https://github.com/bioconda/bioconda-recipes/issues/1254
+perl -i -pe 's/defined \(%/\(%/' mummerplot
+
 for i in $binaries; do 
   chmod +x $MUMMER_HOME/$i
   ln -s "$MUMMER_HOME/$i" "$BINARY_HOME/$i"

@@ -6,6 +6,8 @@ TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
 
 cd $SRC_DIR
 
+export CPATH=${PREFIX}/include
+
 make
 
 # remove the sample data
