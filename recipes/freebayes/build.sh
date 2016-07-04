@@ -19,6 +19,15 @@ make autoversion
 make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
 cd ..
 
+pythonfiles="scripts/fasta_generate_regions.py scripts/coverage_to_regions.py"
+
+PY3_BUILD="${PY_VER%.*}"
+
+if [ $PY3_BUILD -eq 3 ]
+then
+    for i in $pythonfiles; do 2to3 --write $i; done
+fi
+
 mkdir -p $PREFIX/bin
 cp bin/freebayes $PREFIX/bin
 cp scripts/freebayes-parallel $PREFIX/bin

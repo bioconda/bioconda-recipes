@@ -42,7 +42,7 @@ function check_version(){
     fi    
 }
 
-if [[ "$#" -ne 1 ]]; then
+if [[ "$#" -lt 1 ]]; then
     if ! $(${JAVA} -jar $ENV_PREFIX/opt/$PKG_NAME-$PKG_VERSION/GenomeAnalysisTK.jar --version &> /dev/null); then
         echo "  It looks like GATK has not yet been installed."
         echo ""
@@ -76,18 +76,23 @@ mkdir -p $ENV_PREFIX/opt/$PKG_NAME-$PKG_VERSION/
 
 if [[ "$file_ext" == "jar" ]]; then
     # copy in to conda env opt/
-    check_version $1
+    if [[ "$2" != "--noversioncheck" ]]; then
+      check_version $1
+    fi
     echo "Copying $(basename $1) to $ENV_PREFIX/opt/$PKG_NAME-$PKG_VERSION"
     cp $1 $ENV_PREFIX/opt/$PKG_NAME-$PKG_VERSION
 elif [[ "$file_ext" == "tar.bz2" ]]; then
     # extract archive and copy in
-    echo "Extracting $(basename $1)"
+    abspath_tarball="$(cd "$(dirname "$1")"; pwd)/$(basename "$1")"
+    echo "Extracting $(basename $abspath_tarball)"
 
     mkdir /tmp/gatk
     cd /tmp/gatk
-    tar -vxjf $1
+    tar -vxjf $abspath_tarball
     
-    check_version ./GenomeAnalysisTK.jar
-    echo "Moving $(basename $1) to $ENV_PREFIX/opt/$PKG_NAME-$PKG_VERSION"
+    if [[ "$2" != "--noversioncheck" ]]; then
+      check_version ./GenomeAnalysisTK.jar
+    fi
+    echo "Moving $(basename $abspath_tarball) to $ENV_PREFIX/opt/$PKG_NAME-$PKG_VERSION"
     mv ./GenomeAnalysisTK.jar $ENV_PREFIX/opt/$PKG_NAME-$PKG_VERSION/
 fi

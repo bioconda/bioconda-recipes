@@ -2,7 +2,7 @@
 
 pushd $SRC_DIR
 
-autoreconf -i -I /usr/share/aclocal
+autoreconf -i
 ./configure --prefix=$PREFIX
 make
 make install
