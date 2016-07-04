@@ -8,6 +8,7 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 
+autoreconf -i
 ./configure --prefix=$PREFIX
 make
 make install
