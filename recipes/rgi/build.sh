@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# copy MetaGeneMark key to working directory
-cp ./package/rgi/mgm/gm_key ~/.gm_key
+#brew tap homebrew/science
+
+#brew install homebrew/science/prodigal
+
+#brew link --overwrite prodigal
 
 # install setup
 $PYTHON setup.py install
