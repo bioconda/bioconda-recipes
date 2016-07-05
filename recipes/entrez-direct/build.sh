@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mv * "$PREFIX/"
+mv * "$PREFIX/bin/"
 mkdir -p "$PREFIX/home"
 export HOME="$PREFIX/home"
-sh "$PREFIX/setup.sh"
+sh "$PREFIX/bin/setup.sh"
