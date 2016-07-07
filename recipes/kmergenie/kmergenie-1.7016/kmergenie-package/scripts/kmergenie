@@ -1,0 +1,127 @@
+#!/usr/bin/env python 
+
+# you cannot change these default values, they are fixed in another program (main.cpp)
+# these variables are only used to print kmergenie usage
+default_max_k = 121
+default_min_k = 15
+default_step = 10
+default_prefix = 'histograms'
+
+doc = """KmerGenie
+
+Usage:
+    kmergenie <read_file> [options]
+
+Options:
+    --diploid    use the diploid model (default: haploid model)
+    --one-pass   skip the second pass to estimate k at 2 bp resolution (default: two passes)
+    -k <value>   largest k-mer size to consider (default: %d)
+    -l <value>   smallest k-mer size to consider (default: %d)
+    -s <value>   interval between consecutive kmer sizes (default: %d)
+    -e <value>   k-mer sampling value (default: auto-detected to use ~200 MB memory/thread)
+    -t <value>   number of threads (default: number of cores minus one)
+    -o <prefix>  prefix of the output files (default: %s)
+    --debug      developer output of R scripts
+
+""" % (default_max_k, default_min_k, default_step, default_prefix)
+
+from third_party.docopt import docopt
+from subprocess import call
+from glob import glob
+import sys, os 
+from multiprocessing import cpu_count
+
+if sys.version_info[0] == 2 and sys.version_info[1] < 5:
+    sys.exit("Python >= 2.5 is required")
+
+if sys.version_info[0] == 2:
+    #unbuffered print, solves badly ordered stdout on clusters
+    #I don't yet know how to make this python3-compatible, so it's active for python2 only
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'wb', 0)
+
+arguments = docopt(doc)
+
+read_file = arguments['<read_file>']
+is_diploid = arguments['--diploid']
+one_pass = arguments['--one-pass']
+sampling = arguments['-e']
+prefix = arguments['-o']
+nb_threads = arguments['-t']
+lowest_k = arguments['-l']
+largest_k = arguments['-k']
+debug = arguments['--debug']
+
+if not nb_threads:
+    nb_threads = max(1,(cpu_count() - 1))
+else:
+    nb_threads = int(nb_threads)
+
+if prefix is None:
+    prefix = default_prefix
+
+# make output dir if it doesn't exist (for galaxy for instance)
+dir_prefix = os.path.dirname(prefix)
+if len(dir_prefix) > 0 and not os.path.exists(dir_prefix):
+    os.makedirs(dir_prefix)
+
+DIR = os.path.dirname(os.path.realpath(__file__))
+
+# remove existing histograms
+call(["rm","-f","%s.dat" % prefix])
+for f in glob('%s-k*.histo' % prefix):
+    call(["rm","-f",f])
+
+def execute_once(arguments_passed_list, first_pass=False):
+    print("running histogram estimation")
+    rc = 0 
+    try:
+        # specialk is the software that computes approximate histograms
+        rc = call(["%s/specialk" % DIR, read_file, "-o", prefix, "-t", str(nb_threads)] + arguments_passed_list)
+    except OSError as e:
+        print >>sys.stderr, "Execution of specialk failed:", e
+        exit()
+    if rc != 0:
+        exit("")
+    
+    print("fitting model to histograms to estimate best k")
+    try:
+        args = ["%s/scripts/decide" % DIR, prefix, "-t", str(nb_threads)]
+        if is_diploid:
+            args += ["--diploid"]
+        if first_pass:
+            args += ["--first_pass"]
+        if debug:
+            args += ["--debug"]
+        best_k = call(args) 
+        if best_k == 1: # most likely an error code
+            sys.exit("Execution of 'scripts/decide' failed (return code %d). If this is a fresh Kmergenie install, try running 'make check'." % best_k)
+    except OSError as e:
+        print >>sys.stderr, "Execution of decide failed:", e
+
+
+    return best_k
+
+arguments_passed_tuples = [ (key,  value) for key, value in arguments.items() if key.startswith("-") and not key.startswith("--") and value != None]
+arguments_passed_list = [ y for x in arguments_passed_tuples for y in x ]
+
+first_pass = not one_pass
+best_k = execute_once(arguments_passed_list, first_pass=first_pass)
+
+# another round for more precise estimation (suggested by Erwan)
+refine_around = 6
+refined_step = 2
+if best_k != 0 and (not one_pass):
+    lowest_k = int(lowest_k) if lowest_k else default_min_k
+    largest_k = int(largest_k) if largest_k else default_max_k
+    min_k = max(lowest_k, best_k-refine_around)
+    max_k = min(largest_k, best_k+refine_around)
+    print("refining estimation around [%d; %d], with a step of %d" % (min_k, max_k, refined_step))
+    arguments_list = [read_file, "-k", str(max_k), "-l", str(min_k), "-s", str(refined_step)]
+    if is_diploid:
+        arguments_list += ["--diploid"]
+    if sampling != None:
+        arguments_list += ["-e", str(sampling)]
+    best_k = execute_once(arguments_list, first_pass=False)
+
+if best_k == 0:
+    sys.exit("No best k found")
