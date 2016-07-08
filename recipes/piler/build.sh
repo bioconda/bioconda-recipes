@@ -6,7 +6,8 @@ then
 	cd piler
 	make
 	cp piler $PREFIX/bin
-else  # linux 
+else  # linux
+        sed -i 's/piler2/piler/' Makefile	
 	make
-	cp piler2 $PREFIX/bin
+	cp piler $PREFIX/bin
 fi
