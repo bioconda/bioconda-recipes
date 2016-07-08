@@ -5,7 +5,7 @@
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 #
-export CXXFLAGS=${CXXFLAGS} -std=c++11
+export CXXFLAGS="${CXXFLAGS} -std=c++11"
 $R CMD INSTALL --build .
 #
 # # Add more build steps here, if they are necessary.
