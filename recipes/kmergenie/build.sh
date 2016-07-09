@@ -14,10 +14,28 @@ export CPPFLAGS="-I${PREFIX}/include"
 
 mkdir -p $PREFIX/bin
 
-make
-make install
+sed -i 's/print sys.hexversion>=0x02050000/print(sys.hexversion>=0x02050000)/' makefile
 
-#cp scripts/* $PREFIX/bin
-#cp kmergenie $PREFIX/bin
-#cp specialk $PREFIX/bin
-#cp main.cpp $PREFIX/bin
+make
+
+sed -i 's/third_party/kmergenie/g' scripts/*
+sed -i 's/third_party/kmergenie/g' kmergenie
+
+cp scripts/* $PREFIX/bin
+cp specialk $PREFIX/bin
+
+mkdir -p python-build/scripts
+cp kmergenie python-build/scripts
+cp wrapper.py python-build/scripts
+cp -rf third_party python-build/kmergenie
+
+
+cd python-build
+
+echo "GREPPING FOR THIRD PARTY"
+grep -nri 'third_party' *
+
+cp $RECIPE_DIR/setup.py ./
+
+python setup.py build
+python setup.py install

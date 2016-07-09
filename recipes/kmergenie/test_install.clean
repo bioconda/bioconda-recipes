@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+from subprocess import call, Popen, PIPE
+import sys, os
+
+
+if sys.version_info[0] == 2:
+    #unbuffered print, solves badly ordered stdout on clusters
+    #I don't yet know how to make this python3-compatible, so it's active for python2 only
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'wb', 0)
+
+DIR = os.path.dirname(os.path.realpath(__file__))
+
+def check_r():
+    print("Testing presence of specialk....")
+    if not os.path.isfile(DIR + '/../specialk'):
+        sys.exit("KmerGenie was not compiled correctly")
+    print("OK")
+
+    print("Testing presence of Rscript....")
+    ret = call(['Rscript','--version'])
+    if ret != 0:
+        sys.exit("Could not find Rscript - check your R installation")
+    print("OK")
+
+    print("Testing basic Rscript functionality....")
+    cmd = ['Rscript','--no-init-file','-e','\'rnorm(1)\'']
+    print(' '.join(cmd))
+    ret = call(cmd)
+    if ret != 0:
+        sys.exit("Rscript cannot even run a simple command: Rscript --no-init-file -e 'rnorm(1)'; check your R installation.")
+    print("OK")
+
+    print("Testing a simple KmerGenie example....")
+    test_out = '%s/test.hist' % os.getcwd()
+    args = ['echo','1 1000\n2 0\n3 7\n4 28\n5 7']
+    call(args,stdout=open(test_out,'w'))
+    rcmd = 'hist.file=\'%s/test.hist\'; is.diploid=F; ' % os.getcwd() \
+            + 'suppressWarnings(source(\'%s/est-genomic-kmers.r\',chdir=T))' \
+             % DIR
+    args = ['Rscript','--no-init-file','-e',rcmd]
+    #output = check_output(args) #only in python2.7
+    try:
+        output = Popen(args, stdout=PIPE).communicate()[0].decode("utf-8")
+        if output.split('\n')[-1].strip() != "42":
+            raise "bad value"
+    except Exception as e:
+            print("Exception: ")
+            print(output)
+            sys.exit("Simple test failed, please copy the whole output to kmergenie@cse.psu.edu")
+    print("OK")
+    call(["rm","%s/test.hist" % os.getcwd()])
+    call(["rm","%s/fit.dat-test.hist" % os.getcwd()])
+    print("Test successful. KmerGenie is ready, type `./kmergenie`.")
+
+check_r()
