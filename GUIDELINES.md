@@ -160,6 +160,10 @@ Examples:
 
 * confirm expected text in stderr: [weblogo](recipes/weblogo)
 
+If a package depends on Python and has a custom build string, then
+`py{{CONDA_PY}}` must be contained in that build string. Otherwise Python will
+be automatically pinned to one minor version, resulting in dependency conflicts
+with other packages. See [mapsplice](recipes/mapsplice) for an example of this.
 
 ### Metapackages
 
@@ -186,14 +190,21 @@ Examples of somewhat non-standard recipes, in no particular order:
   distribution
 * [hisat2](recipes/hisat2) runs `2to3` to make it Python 3 compatible, and
   copies over individual scripts to the bin dir
-* [krona](recipes/krona) has a `post-link.sh` script that gets called after installation to alert the user a manual step is required
+* [krona](recipes/krona) has a `post-link.sh` script that gets called after
+  installation to alert the user a manual step is required
 * [htslib](recipes/htslib) has a small test script that creates example data
   and runs multiple programs on it
 * [spectacle](recipes/spectacle) runs `2to3` to make the wrapper script Python
   3 compatible, patches the wrapper script to have a shebang line, deletes
   example data to avoid taking up space in the bioconda channel, and includes
   a script for downloading the example data separately.
-* [gatk](recipes/gatk) is a package for licensed software that cannot be redistributed. The package installs a placeholder script (in this case doubling as the `jar` [wrapper](https://github.com/bioconda/bioconda-recipes/blob/master/GUIDELINES.md#java)) to alert the user if the program is not installed, along with a separate script (`gatk-register`) to copy in a user-supplied archive/binary to the conda environment
+* [gatk](recipes/gatk) is a package for licensed software that cannot be
+  redistributed. The package installs a placeholder script (in this case
+  doubling as the `jar`
+  [wrapper](https://github.com/bioconda/bioconda-recipes/blob/master/GUIDELINES.md#java))
+  to alert the user if the program is not installed, along with a separate
+  script (`gatk-register`) to copy in a user-supplied archive/binary to the
+  conda environment
 
 ### Name collisions
 In some cases, there may be a name collision when writing a recipe. For example the
@@ -222,12 +233,23 @@ It is recommended to pipe unneeded stdout/stderr to /dev/null to avoid
 cluttering the output in the Travis-CI build environment.
 
 ## Link and unlink scripts (pre- and post- install hooks)
-It is possible to include [scripts](http://conda.pydata.org/docs/spec.html#link-and-unlink-scripts) that are executed before or 
-after installing a package, or before uninstalling a package. These scripts can be helpful for alerting the user that manual actions are required after adding or removing a package. For example, a `post-link.sh` script may be used to alert the user that he or she will need to create a database or modify a settings file. Any package that requires a manual preparatory step before it can be used should consider alerting the user via an `echo` statement in a `post-link.sh` script. These scripts may be added at the same level as `meta.yaml` and `build.sh`:
+It is possible to include
+[scripts](http://conda.pydata.org/docs/spec.html#link-and-unlink-scripts) that
+are executed before or after installing a package, or before uninstalling
+a package. These scripts can be helpful for alerting the user that manual
+actions are required after adding or removing a package. For example,
+a `post-link.sh` script may be used to alert the user that he or she will need
+to create a database or modify a settings file. Any package that requires
+a manual preparatory step before it can be used should consider alerting the
+user via an `echo` statement in a `post-link.sh` script. These scripts may be
+added at the same level as `meta.yaml` and `build.sh`:
 
 * `pre-link.sh` is executed *prior* to linking (installation). An error causes conda to stop.
-* `post-link.sh` is executed *after* linking (installation). When the post-link step fails, no package metadata is written, and the package is not considered installed.
-* `pre-unlink.sh` is executed *prior* to unlinking (uninstallation). Errors are ignored. Used for cleanup.
+* `post-link.sh` is executed *after* linking (installation). When the post-link
+  step fails, no package metadata is written, and the package is not considered
+  installed.
+* `pre-unlink.sh` is executed *prior* to unlinking (uninstallation). Errors are
+  ignored. Used for cleanup.
 
 These scripts have access to the following environment variables:
 
@@ -246,7 +268,8 @@ Examples of this can be found in [bowtie2](recipes/bowtie2),
 
 If a package depends on zlib, then it will most likely also depend on `gcc` (on
 Linux) and `llvm` (on OSX). The `meta.yaml` requirements section should
-therefore at least have the following:
+therefore at least have the following for a recipe that supports both Linux and
+OSX:
 
 
 ```yaml
@@ -262,7 +285,7 @@ requirements:
 ```
 
 When building the package, you may get an error saying that zlib.h can't be
-found -- despite having zlib listed in the dependencies. This is becuase the
+found -- despite having zlib listed in the dependencies. The reason is that the
 location of `zlib` often has to be specified in the `build.sh` script, which
 can be done like this:
 
@@ -278,4 +301,6 @@ export CPATH=${PREFIX}/include
 ```
 
 Sometimes Makefiles may specify these locations, in which case they need to be
-edited. See the [samtools](recipes/samtools) recipe for an example of this.
+edited. See the [samtools](recipes/samtools) recipe for an example of this. It
+may take some tinkering to get the recipe to build; if it doesn't seem to work
+then please submit an issue.
