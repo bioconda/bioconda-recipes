@@ -11,10 +11,10 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 export CXXFLAGS="-I$PREFIX/include"
 export CPPFLAGS="-I${PREFIX}/include"
+export LC_ALL=C
 
 mkdir -p $PREFIX/bin
 
-LC_ALL=C sed -i.bak 's' doobar
 sed -i.bak 's/print sys.hexversion>=0x02050000/print(sys.hexversion>=0x02050000)/' makefile
 rm *.bak
 
