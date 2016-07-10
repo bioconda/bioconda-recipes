@@ -77,8 +77,8 @@ For example, [fastqc](recipes/fastqc) already had a wrapper script, but
 JAR files should go in `$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM`.
 A wrapper script should be placed here as well, and symlinked to `$PREFIX/bin`.
 
-Example with added wrapper script: [peptide-shaker](recipes/peptide-shaker)
-Example with patch to fix memory: [fastqc](recipes/fastqc)
+* Example with added wrapper script: [peptide-shaker](recipes/peptide-shaker)
+* Example with patch to fix memory: [fastqc](recipes/fastqc)
 
 ### Perl
 
