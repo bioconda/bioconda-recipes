@@ -14,8 +14,9 @@ export CPPFLAGS="-I${PREFIX}/include"
 
 mkdir -p $PREFIX/bin
 
+LC_ALL=C sed -i.bak 's' doobar
 sed -i.bak 's/print sys.hexversion>=0x02050000/print(sys.hexversion>=0x02050000)/' makefile
-rm makefile.bak
+rm *.bak
 
 make
 
