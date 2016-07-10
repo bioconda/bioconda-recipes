@@ -14,12 +14,16 @@ export CPPFLAGS="-I${PREFIX}/include"
 
 mkdir -p $PREFIX/bin
 
-sed -i 's/print sys.hexversion>=0x02050000/print(sys.hexversion>=0x02050000)/' makefile
+sed -i.bak 's/print sys.hexversion>=0x02050000/print(sys.hexversion>=0x02050000)/' makefile
+rm makefile.bak
 
 make
 
-sed -i 's/third_party/kmergenie/g' scripts/*
-sed -i 's/third_party/kmergenie/g' kmergenie
+sed -i.bak 's/third_party/kmergenie/g' scripts/*
+sed -i.bak 's/third_party/kmergenie/g' kmergenie
+
+rm scripts/*.bak
+rm kmergenie.bak
 
 cp scripts/* $PREFIX/bin
 cp specialk $PREFIX/bin
@@ -29,11 +33,7 @@ cp kmergenie python-build/scripts
 cp wrapper.py python-build/scripts
 cp -rf third_party python-build/kmergenie
 
-
 cd python-build
-
-echo "GREPPING FOR THIRD PARTY"
-grep -nri 'third_party' *
 
 cp $RECIPE_DIR/setup.py ./
 
