@@ -1,8 +1,8 @@
 #!/bin/sh
 set -x -e
 
-export GCC=${PREFIX}/bin/gcc
-export CXX=${PREFIX}/bin/g++
+#export GCC=${PREFIX}/bin/gcc
+#export CXX=${PREFIX}/bin/g++
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
