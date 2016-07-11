@@ -1,9 +1,5 @@
 #!/bin/bash
-
-
-cd flock
-mkdir bin
-cd bin
-cc -o flock1 ../src/flock1.c ../src/find_connected.c -lm
-cc -o flock2 ../src/flock2.c -lm
-cc -o cent_adjust ../src/cent_adjust.c -lm
+cd flock/src
+cc -o $PREFIX/bin/flock1 flock1.c find_connected.c -lm
+cc -o $PREFIX/bin/flock2 flock2.c -lm
+cc -o $PREFIX/bin/cent_adjust cent_adjust.c -lm
