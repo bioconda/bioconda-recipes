@@ -12,6 +12,5 @@ export CPPFLAGS="-I${PREFIX}/include"
 mkdir -p $PREFIX/bin
 
 make all
-#make install
-#chmod 777 genblast*
-#cp genblast_v138 $PREFIX/bin/genblastG
+chmod 777 genblast*
+cp genblast_v138 $PREFIX/bin/genblastG
