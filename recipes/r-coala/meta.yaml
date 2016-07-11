@@ -1,0 +1,87 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-coala
+  # Note that conda versions cannot contain -, so any -'s in the version have
+  # been replaced with _'s.
+  version: "0.4.0"
+
+source:
+  fn: coala_0.4.0.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/coala_0.4.0.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/coala/coala_0.4.0.tar.gz
+
+build:
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: abc (>= 2.0), knitr, PopGenome (>= 2.1.0), phyclust (>= 0.1-16), rmarkdown, testthat (>= 0.11.0)
+requirements:
+  build:
+    - r-base
+    - r-r6 >=2.0.1
+    - r-rcpp >=0.11.0
+    - r-rcpparmadillo >=0.3.810.0
+    - r-assertthat >=0.1
+    - r-rehh >=1.11
+    - r-scrm >=1.6.0_2
+    - posix               # [win]
+    - {{native}}toolchain # [win]
+    - gcc                 # [not win]
+  run:
+    - r-base
+    - r-r6 >=2.0.1
+    - r-rcpp >=0.11.0
+    - r-rcpparmadillo >=0.3.810.0
+    - r-assertthat >=0.1
+    - r-rehh >=1.11
+    - r-scrm >=1.6.0_2
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('coala')" # [not win]
+    - "\"%R%\" -e \"library('coala')\"" # [win]
+
+about:
+  home: https://github.com/statgenlmu/coala
+  license: MIT + file LICENSE
+  summary: Coalescent simulators can rapidly simulate biological sequences evolving according
+    to a given model of evolution. You can use this package to specify such models,
+    to conduct the simulations and to calculate additional statistics from the results.
+    It relies on existing simulators for doing the simulation, and currently supports
+    the programs 'ms', 'msms' and 'scrm'. It also supports finite-sites mutation models
+    by combining the simulators with the program 'seq-gen'.
+  license_family: MIT
+
+# The original CRAN metadata for this package was:
+
+# Package: coala
+# Version: 0.4.0
+# License: MIT + file LICENSE
+# Title: A Framework for Coalescent Simulation
+# Authors@R: c( person('Paul', 'Staab', , 'develop@paulstaab.de', role=c('aut', 'cre')), person('Dirk', 'Metzler', , 'metzler@bio.lmu.de', role=c('aut', 'ths')) )
+# BugReports: https://github.com/statgenlmu/coala/issues
+# URL: https://github.com/statgenlmu/coala
+# Description: Coalescent simulators can rapidly simulate biological sequences evolving according to a given model of evolution. You can use this package to specify such models, to conduct the simulations and to calculate additional statistics from the results. It relies on existing simulators for doing the simulation, and currently supports the programs 'ms', 'msms' and 'scrm'. It also supports finite-sites mutation models by combining the simulators with the program 'seq-gen'.
+# Depends: R (>= 3.1.0)
+# Imports: assertthat (>= 0.1), methods, parallel, R6 (>= 2.0.1), Rcpp (>= 0.11.0), rehh (>= 1.11), scrm (>= 1.6.0-2), stats, utils
+# Suggests: abc (>= 2.0), knitr, PopGenome (>= 2.1.0), phyclust (>= 0.1-16), rmarkdown, testthat (>= 0.11.0)
+# LinkingTo: Rcpp, RcppArmadillo (>= 0.3.810.0)
+# VignetteBuilder: knitr
+# Collate: 'RcppExports.R' 'cache.R' 'coala.R' 'model.R' 'feature.R' 'feature_growth.R' 'feature_ignore_singletons.R' 'feature_migration.R' 'feature_mutation.R' 'feature_outgroup.R' 'feature_pop_merge.R' 'feature_recombination.R' 'feature_sample.R' 'feature_selection.R' 'feature_size_change.R' 'feature_sumstats.R' 'feature_unphased.R' 'import_popgenome.R' 'interface_abc.R' 'locus.R' 'model_build.R' 'model_check.R' 'model_examples.R' 'model_getters.R' 'model_print.R' 'model_scale.R' 'model_simulate.R' 'onLoad.R' 'parameter.R' 'parameter_prior.R' 'parameter_variation.R' 'parameter_zero_inflation.R' 'sample_seed.R' 'search_executable.R' 'segsites.R' 'simulator_class.R' 'simulator_ms.R' 'simulator_msms.R' 'simulator_scrm.R' 'simulator_seqgen.R' 'sumstat.R' 'sumstat_dna.R' 'sumstat_file.R' 'sumstat_four_gamete.R' 'sumstat_ihh.R' 'sumstat_jsfs.R' 'sumstat_mcmf.R' 'sumstat_nucleotide_div.R' 'sumstat_omega.R' 'sumstat_seg_sites.R' 'sumstat_sfs.R' 'sumstat_tajimas_d.R' 'sumstat_trees.R' 'tools.R'
+# RoxygenNote: 5.0.1
+# NeedsCompilation: yes
+# Packaged: 2016-02-06 10:29:07 UTC; paul
+# Author: Paul Staab [aut, cre], Dirk Metzler [aut, ths]
+# Maintainer: Paul Staab <develop@paulstaab.de>
+# Repository: CRAN
+# Date/Publication: 2016-02-06 12:17:38
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
