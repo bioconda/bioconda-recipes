@@ -13,4 +13,4 @@ mkdir -p $PREFIX/bin
 
 make all
 chmod 777 genblast*
-cp genblast_v138 $PREFIX/bin/genblastG
+cp genblast* $PREFIX/bin/genblastG
