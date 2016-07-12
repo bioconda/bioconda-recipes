@@ -7,6 +7,6 @@ mkdir -p $PREFIX/bin
 
 mkdir build
 cd build
-cmake -DCMAKE_PREFIX_PATH=${PREFIX} ..
+cmake -DCMAKE_PREFIX_PATH=$PREFIX -DCMAKE_INSTALL_PREFIX=${PREFIX} ..
 make
 cp bcalm $PREFIX/bin
