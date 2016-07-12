@@ -3,5 +3,5 @@ set -x -e
 
 mkdir -p $PREFIX/bin
 
-chmod 777 bin/*
+chmod u+x bin/*
 cp bin/* $PREFIX/bin
