@@ -298,7 +298,15 @@ class BioCProjectPage(object):
             if name.lower() == 'r':
                 # "r >=2.5" rather than "r-r >=2.5"
                 specific_r_version = True
-                results.append(name.lower() + version)
+
+                # before we were doing this:
+                # results.append(name.lower() + version)
+
+                # But now that we're using CONDA_R template, even if the
+                # minimum R version is specified, pin it to the env var.
+                results.append('r {{CONDA_R}}')
+
+
             else:
                 results.append(prefix + name.lower() + version)
 
@@ -307,7 +315,7 @@ class BioCProjectPage(object):
 
         # Add R itself if no specific version was specified
         if not specific_r_version:
-            results.append('r')
+            results.append('r {{CONDA_R}}')
         self._dependencies = results
         return self._dependencies
 
@@ -364,6 +372,7 @@ class BioCProjectPage(object):
             ),
             (
                 'build', OrderedDict((
+                    ('string', 'r{{CONDA_R}}_{{PKG_BUILDNUM}}'),
                     ('number', self.build_number),
                     ('rpaths', ['lib/R/lib/', 'lib/']),
                 )),
@@ -437,15 +446,12 @@ def write_recipe(package, recipe_dir, force=False):
         ):
             proj.build_number = int(current_build_number) + 1
 
-
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
         fout.write(proj.meta_yaml)
 
-
-
     with open(os.path.join(recipe_dir, 'build.sh'), 'w') as fout:
         fout.write(dedent(
-            """
+            """\
             #!/bin/bash
 
             # R refuses to build packages that mark themselves as
@@ -461,7 +467,7 @@ def write_recipe(package, recipe_dir, force=False):
             # http://docs.continuum.io/conda/build.html
             # for a list of environment variables that are set during the build
             # process.
-            # """
+            """
             )
         )
 
