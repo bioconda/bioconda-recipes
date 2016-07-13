@@ -3,6 +3,9 @@
 #strictly use anaconda build environment
 CC=${PREFIX}/bin/gcc
 CXX=${PREFIX}/bin/g++
+CFLAGS="-I$PREFIX/include"
+LDFLAGS="-L$PREFIX/lib"
+CPATH=${PREFIX}/include
 
 make
 mv megahit $PREFIX/bin
