@@ -16,7 +16,7 @@ them. Then submit a PR for travis-ci to try testing these packages. Rinse and
 repeat using subsequent batches.
 
 """
-import utils
+from bioconda_utils import utils
 import argparse
 ap = argparse.ArgumentParser()
 ap.add_argument('--only-modified', action='store_true', help='Only list '
