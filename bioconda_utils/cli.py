@@ -4,6 +4,7 @@ import sys
 import os
 import subprocess as sp
 from functools import partial
+import shlex
 
 import yaml
 import argh
@@ -24,7 +25,7 @@ from . import utils
 
 
 @arg('repository', help='Path to top-level dir of repository')
-@arg('env-matrix', help='Path to yaml file specifying the environment matrix.')
+@arg('config', help='Path to yaml file specifying the configuration')
 @arg('--packages', nargs="+",
      help='Glob for package[s] to build. Default is to build all packages. Can '
      'be specified more than once')
@@ -32,15 +33,19 @@ from . import utils
 @arg('--verbose', help='Make output more verbose for local debugging')
 @arg('--force', help='Force building the recipe even if it already exists in '
      'the bioconda channel')
-def build(repository, env_matrix, packages="*", testonly=False, verbose=False,
+def build(repository, config, packages="*", testonly=False, verbose=False,
           force=False):
-    tests = LazySuite(tests=utils.test_recipes(repository, env_matrix,
-                                               packages=packages,
-                                               testonly=testonly,
-                                               verbose=verbose,
-                                               force=force))
-    nose_run(suite=tests)
 
+    cfg = utils.load_config(config)
+    setup = cfg.get('setup', None)
+    if setup:
+        for cmd in setup:
+            sp.run(shlex.split(cmd))
+
+    suite = LazySuite(tests=utils.test_recipes(
+        repository, config=config, packages=packages, testonly=testonly,
+        verbose=verbose, force=force))
+    nose_run(suite=suite)
 
 @arg('repository', help='Path to top-level dir of repository')
 #@arg('gml', help='Output GML file. If filename ends in .gz or .bz2 it will '

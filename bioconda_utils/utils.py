@@ -307,16 +307,18 @@ def build(recipe, env, verbose=False, testonly=False, force=False):
         return False
 
 
-def test_recipes(repository, env_matrix, packages="*", testonly=False,
+def test_recipes(repository, config, packages="*", testonly=False,
                  verbose=False, force=False):
     """
     Build one or many bioconda packages.
     """
-    env_matrix = EnvMatrix(env_matrix, verbose=verbose)
+    env_matrix = _env_matrix_from_config(config, verbose=verbose)
+    skip_recipes = _skip_recipes_from_config(config)
 
     recipes = [
         recipe for package in packages for recipe in
         get_recipes(repository, package)
+        if os.path.basename(recipe) not in skip_recipes
     ]
 
     if not force:
@@ -362,6 +364,7 @@ def test_recipes(repository, env_matrix, packages="*", testonly=False,
     for recipe in recipes:
         for env in env_matrix:
             yield build(recipe, env, verbose, testonly, force)
+            conda_index(config)
 
     if not testonly:
         # upload builds
@@ -393,9 +396,28 @@ def test_recipes(repository, env_matrix, packages="*", testonly=False,
                                 raise e
 
 
+def conda_index(config):
+    index_dirs = yaml.load(open(config))['index_dirs']
+    sp.run(['conda', 'index'] + index_dirs, check=True, stdout=sp.PIPE)
+
+
 def _env_matrix_from_config(config, verbose=False):
     "Returns EnvMatrix from env_matrix.yaml path relative to config path."
-    cfg = yaml.load(open(config))
+    cfg = load_config(config)
     return EnvMatrix(
         os.path.relpath(cfg['env_matrix'], os.path.dirname(config)),
         verbose=verbose)
+
+
+def _skip_recipes_from_config(config):
+    "Return list of recipes to skip from blacklists"
+    cfg = load_config(config)
+    skip_recipes = set()
+    blacklists = cfg.get('blacklists', [])
+    for fn in blacklists:
+        skip_recipes.update([i.strip() for i in open(fn) if not i.startswith('#')])
+    return list(skip_recipes)
+
+
+def load_config(config):
+    return yaml.load(open(config))
