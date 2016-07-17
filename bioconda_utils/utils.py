@@ -367,7 +367,7 @@ def test_recipes(repository, config, packages="*", testonly=False,
 
 def conda_index(config):
     if config['index_dirs']:
-        sp.run(['conda', 'index'] + index_dirs, check=True, stdout=sp.PIPE)
+        sp.run(['conda', 'index'] + config['index_dirs'], check=True, stdout=sp.PIPE)
 
 
 def get_blacklist(blacklists):
