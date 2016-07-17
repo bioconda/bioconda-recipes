@@ -113,6 +113,9 @@ def get_dag(recipes, blacklist=None):
     recipes : iterable
         An iterable of recipe paths, typically obtained via `get_recipes()`
 
+    blacklist : set
+        Package names to skip
+
     Returns
     -------
     dag : nx.DiGraph
@@ -131,7 +134,9 @@ def get_dag(recipes, blacklist=None):
     # meta.yaml's package:name mapped to the recipe path
     name2recipe = defaultdict(list)
     for meta, recipe in zip(metadata, recipes):
-        name2recipe[meta.get_value("package/name")].append(recipe)
+        name = meta.get_value('package/name')
+        if name not in blacklist:
+            name2recipe[name].append(recipe)
 
     def get_inner_deps(dependencies):
         for dep in dependencies:
@@ -143,8 +148,6 @@ def get_dag(recipes, blacklist=None):
     dag.add_nodes_from(meta.get_value("package/name") for meta in metadata)
     for meta in metadata:
         name = meta.get_value("package/name")
-        if name in blacklist:
-            continue
         dag.add_edges_from(
             (dep, name) for dep in set(
                 get_inner_deps(
@@ -274,6 +277,9 @@ def test_recipes(repository, config, packages="*", testonly=False,
     env_matrix = EnvMatrix(config['env_matrix'], verbose=verbose)
     blacklist = get_blacklist(config['blacklists'])
 
+    if verbose:
+        print('blacklist:', blacklist)
+
     if packages == "*":
         packages = ["*"]
     recipes = [
@@ -289,7 +295,7 @@ def test_recipes(repository, config, packages="*", testonly=False,
 
     env_matrix.verbose = verbose
 
-    dag, name2recipes = get_dag(recipes)
+    dag, name2recipes = get_dag(recipes, blacklist=blacklist)
 
     print("Packages to build", file=sys.stderr)
     print(*nx.nodes(dag), file=sys.stderr, sep="\n")
