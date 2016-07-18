@@ -72,11 +72,6 @@ class EnvMatrix:
             yield e
 
 
-class Blacklist:
-    def __init__(self, blacklist_paths):
-        self.blacklist = set()
-
-
 def get_deps(recipe, build=True):
     """
     Generator of dependencies for a single recipe
