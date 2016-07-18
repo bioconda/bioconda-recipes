@@ -11,8 +11,6 @@ import argh
 from argh import arg
 import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
-from nose.suite import LazySuite
-from nose.core import run as nose_run
 
 from . import utils
 
@@ -26,14 +24,21 @@ from . import utils
 
 @arg('repository', help='Path to top-level dir of repository')
 @arg('config', help='Path to yaml file specifying the configuration')
-@arg('--packages', nargs="+",
-     help='Glob for package[s] to build. Default is to build all packages. Can '
-     'be specified more than once')
+@arg(
+    '--packages',
+    nargs="+",
+    help='Glob for package[s] to build. Default is to build all packages. Can '
+    'be specified more than once')
 @arg('--testonly', help='Test packages instead of building')
 @arg('--verbose', help='Make output more verbose for local debugging')
-@arg('--force', help='Force building the recipe even if it already exists in '
+@arg('--force',
+     help='Force building the recipe even if it already exists in '
      'the bioconda channel')
-def build(repository, config, packages="*", testonly=False, verbose=False,
+def build(repository,
+          config,
+          packages="*",
+          testonly=False,
+          verbose=False,
           force=False):
 
     cfg = utils.load_config(config)
@@ -42,19 +47,26 @@ def build(repository, config, packages="*", testonly=False, verbose=False,
         for cmd in setup:
             sp.run(shlex.split(cmd))
 
-    suite = LazySuite(tests=utils.test_recipes(
-        repository, config=config, packages=packages, testonly=testonly,
-        verbose=verbose, force=force))
-    nose_run(suite=suite)
+    success = utils.test_recipes(repository,
+                                 config=config,
+                                 packages=packages,
+                                 testonly=testonly,
+                                 verbose=verbose,
+                                 force=force)
+    exit(0 if success else 1)
+
 
 @arg('repository', help='Path to top-level dir of repository')
 #@arg('gml', help='Output GML file. If filename ends in .gz or .bz2 it will '
 #     'be compressed')
-@arg('--packages', nargs="+",
+@arg('--packages',
+     nargs="+",
      help='Glob for package[s] to show in DAG. Default is to show all '
      'packages. Can be specified more than once')
 @arg('--format', choices=['gml', 'dot'], help='Set format to print graph.')
-@arg('--hide-singletons', action='store_true', help='Hide singletons in the printed graph.')
+@arg('--hide-singletons',
+     action='store_true',
+     help='Hide singletons in the printed graph.')
 def dag(repository, packages="*", format='gml', hide_singletons=False):
     """
     Export the DAG of packages to a GML-format file for visualization

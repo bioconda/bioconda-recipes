@@ -8,7 +8,7 @@ import sys
 from collections import defaultdict, Iterable
 from itertools import product, chain
 import networkx as nx
-import nose
+
 from conda_build.metadata import MetaData
 import yaml
 
@@ -18,6 +18,12 @@ def flatten_dict(dict):
         if isinstance(values, str) or not isinstance(values, Iterable):
             values = [values]
         yield [(key, value) for value in values]
+
+
+def merged_env(env):
+    _env = dict(os.environ)
+    _env.update(env)
+    return _env
 
 
 class EnvMatrix:
@@ -37,10 +43,15 @@ class EnvMatrix:
         CONDA_GSL: "1.16"
 
     """
+
     def __init__(self, path, verbose=False):
         self.verbose = verbose
         with open(path) as f:
             self.env = yaml.load(f)
+            for key, val in self.env.items():
+                if key != "CONDA_PY" and not isinstance(val, str):
+                    raise ValueError(
+                        "All versions except CONDA_PY must be strings.")
 
     def __iter__(self):
         """
@@ -61,15 +72,10 @@ class EnvMatrix:
         these sets.
         """
         for env in product(*flatten_dict(self.env)):
-            e = dict(os.environ)
-            if self.verbose:
-                print(
-                    'environment:',
-                    *('\t{}={}'.format(*i) for i in sorted(env)),
-                    sep="\n"
-                )
-            e.update(env)
-            yield e
+            yield env
+            #e = dict(os.environ)
+            #e.update(env)
+            #yield e
 
 
 def get_deps(recipe, build=True):
@@ -92,8 +98,7 @@ def get_deps(recipe, build=True):
     else:
         metadata = recipe
     for dep in metadata.get_value(
-        "requirements/{}".format("build" if build else "run"), []
-    ):
+            "requirements/{}".format("build" if build else "run"), []):
         yield dep.split()[0]
 
 
@@ -143,15 +148,11 @@ def get_dag(recipes, blacklist=None):
     dag.add_nodes_from(meta.get_value("package/name") for meta in metadata)
     for meta in metadata:
         name = meta.get_value("package/name")
-        dag.add_edges_from(
-            (dep, name) for dep in set(
-                get_inner_deps(
-                    chain(
-                        get_deps(meta), get_deps(meta, build=False)
-                    )
-                )
-            )
-        )
+        dag.add_edges_from((dep, name)
+                           for dep in set(get_inner_deps(chain(
+                               get_deps(meta),
+                               get_deps(meta,
+                                        build=False)))))
 
     #nx.relabel_nodes(dag, name2recipe, copy=False)
     return dag, name2recipe
@@ -175,10 +176,10 @@ def get_recipes(repository, package="*"):
         package = [package]
     for p in package:
         path = os.path.join(repository, p)
-        yield from map(
-            os.path.dirname, glob.glob(os.path.join(path, "meta.yaml")))
-        yield from map(
-            os.path.dirname, glob.glob(os.path.join(path, "*", "meta.yaml")))
+        yield from map(os.path.dirname,
+                       glob.glob(os.path.join(path, "meta.yaml")))
+        yield from map(os.path.dirname,
+                       glob.glob(os.path.join(path, "*", "meta.yaml")))
 
 
 def filter_recipes(recipes, env_matrix):
@@ -195,15 +196,20 @@ def filter_recipes(recipes, env_matrix):
 
     env_matrix : EnvMatrix
     """
+
     def msgs(env):
         p = sp.run(
-            ["conda", "build", "--skip-existing", "--output", "--dirty"] + recipes,
-            check=True, stdout=sp.PIPE, stderr=sp.PIPE,
-            universal_newlines=True, env=env
-        )
+            ["conda", "build", "--skip-existing", "--output", "--dirty"
+             ] + recipes,
+            check=True,
+            stdout=sp.PIPE,
+            stderr=sp.PIPE,
+            universal_newlines=True,
+            env=merged_env(env))
         return [
-            msg for msg in p.stdout.split("\n")
-            if "Ignoring non-recipe" not in msg][1:-1]
+            msg
+            for msg in p.stdout.split("\n") if "Ignoring non-recipe" not in msg
+        ][1:-1]
     skip = lambda msg: \
         "already built" in msg or "defines build/skip" in msg
 
@@ -243,6 +249,8 @@ def build(recipe, env, verbose=False, testonly=False, force=False):
         typically you'd want to bump the build number rather than force
         a build.
     """
+    print("Building/testing", recipe, "for environment:")
+    print(*('\t{}={}'.format(*i) for i in sorted(env)), sep="\n")
     try:
         out = None if verbose else sp.PIPE
         build_args = []
@@ -253,8 +261,11 @@ def build(recipe, env, verbose=False, testonly=False, force=False):
         if not force:
             build_args += ["--skip-existing"]
         sp.run(["conda", "build", "--quiet", recipe] + build_args,
-               stderr=out, stdout=out, check=True, universal_newlines=True,
-               env=env)
+               stderr=out,
+               stdout=out,
+               check=True,
+               universal_newlines=True,
+               env=merged_env(env))
         return True
     except sp.CalledProcessError as e:
         if e.stdout is not None:
@@ -263,8 +274,12 @@ def build(recipe, env, verbose=False, testonly=False, force=False):
         return False
 
 
-def test_recipes(repository, config, packages="*", testonly=False,
-                 verbose=False, force=False):
+def test_recipes(repository,
+                 config,
+                 packages="*",
+                 testonly=False,
+                 verbose=False,
+                 force=False):
     """
     Build one or many bioconda packages.
     """
@@ -278,8 +293,8 @@ def test_recipes(repository, config, packages="*", testonly=False,
     if packages == "*":
         packages = ["*"]
     recipes = [
-        recipe for package in packages for recipe in
-        get_recipes(repository, package)
+        recipe
+        for package in packages for recipe in get_recipes(repository, package)
     ]
     if not recipes:
         print("Nothing to be done.")
@@ -292,8 +307,11 @@ def test_recipes(repository, config, packages="*", testonly=False,
 
     dag, name2recipes = get_dag(recipes, blacklist=blacklist)
 
-    print("Packages to build", file=sys.stderr)
-    print(*nx.nodes(dag), file=sys.stderr, sep="\n")
+    if not dag:
+        print("Nothing to be done.")
+        return True
+    else:
+        print("Building/testing", len(dag), "recipes in total.")
 
     subdags_n = int(os.environ.get("SUBDAGS", 1))
     subdag_i = int(os.environ.get("SUBDAG", 0))
@@ -304,8 +322,8 @@ def test_recipes(repository, config, packages="*", testonly=False,
         subdags = sorted([[n] for n in nx.nodes(dag)])
     else:
         # take connected components as subdags
-        subdags = sorted(
-            map(sorted, nx.connected_components(dag.to_undirected())))
+        subdags = sorted(map(sorted, nx.connected_components(dag.to_undirected(
+        ))))
     # chunk subdags such that we have at most subdags_n many
     if subdags_n < len(subdags):
         chunks = [[n for subdag in subdags[i::subdags_n] for n in subdag]
@@ -314,42 +332,50 @@ def test_recipes(repository, config, packages="*", testonly=False,
         chunks = subdags
     if subdag_i >= len(chunks):
         print("Nothing to be done.")
-        return
+        return True
     # merge subdags of the selected chunk
     subdag = dag.subgraph(chunks[subdag_i])
     # ensure that packages which need a build are built in the right order
-    recipes = [recipe for package in nx.topological_sort(subdag) for recipe in
-               name2recipes[package]]
+    recipes = [recipe
+               for package in nx.topological_sort(subdag)
+               for recipe in name2recipes[package]]
 
-    print("Building/testing subdag {} of recipes in order:".format(subdag_i),
-          file=sys.stderr)
-    print(*recipes, file=sys.stderr, sep="\n")
+    print("Building/testing subdag", subdag_i, "of", subdags_n, " (",
+          len(recipes), "recipes).")
 
+    success = True
     for recipe in recipes:
-        for env in env_matrix:
-            yield build(recipe, env, verbose, testonly, force)
+        envs = iter(env_matrix)
+        # Use only first envionment if package does not depend on Python.
+        if "python" not in get_deps(recipe):
+            envs = [next(envs)]
+        for env in envs:
+            success |= build(recipe, env, verbose, testonly, force)
             conda_index(config)
 
     if not testonly:
         # upload builds
-        if (
-            os.environ.get("TRAVIS_BRANCH") == "master" and
-            os.environ.get("TRAVIS_PULL_REQUEST") == "false"
-        ):
+        if (os.environ.get("TRAVIS_BRANCH") == "master" and
+                os.environ.get("TRAVIS_PULL_REQUEST") == "false"):
             for recipe in recipes:
                 packages = {
-                    sp.run(["conda", "build", "--output", recipe],
-                           stdout=sp.PIPE, env=env,
-                           check=True).stdout.strip().decode()
+                    sp.run(
+                        ["conda", "build", "--output", "--dirty", recipe],
+                        stdout=sp.PIPE,
+                        env=merged_env(env),
+                        check=True).stdout.strip().decode()
                     for env in env_matrix
                 }
                 for package in packages:
                     if os.path.exists(package):
                         try:
-                            sp.run(["anaconda", "-t",
-                                    os.environ.get("ANACONDA_TOKEN"),
-                                    "upload", package], stdout=sp.PIPE,
-                                   stderr=sp.STDOUT, check=True)
+                            sp.run(
+                                ["anaconda", "-t",
+                                 os.environ.get("ANACONDA_TOKEN"), "upload",
+                                 package],
+                                stdout=sp.PIPE,
+                                stderr=sp.STDOUT,
+                                check=True)
                         except sp.CalledProcessError as e:
                             print(e.stdout.decode(), file=sys.stderr)
                             if b"already exists" in e.stdout:
@@ -358,11 +384,14 @@ def test_recipes(repository, config, packages="*", testonly=False,
                                 pass
                             else:
                                 raise e
+    return success
 
 
 def conda_index(config):
     if config['index_dirs']:
-        sp.run(['conda', 'index'] + config['index_dirs'], check=True, stdout=sp.PIPE)
+        sp.run(['conda', 'index'] + config['index_dirs'],
+               check=True,
+               stdout=sp.PIPE)
 
 
 def get_blacklist(blacklists):
@@ -376,6 +405,7 @@ def get_blacklist(blacklists):
 def load_config(path):
     relpath = lambda p: os.path.relpath(p, os.path.dirname(path))
     config = yaml.load(open(path))
+
     def get_list(key):
         # always return empty list, also if NoneType is defined in yaml
         value = config.get(key)
