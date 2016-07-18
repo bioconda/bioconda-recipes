@@ -1,7 +1,7 @@
 #!/bin/bash
 
-NGS_SDK_VERSION=1.2.4
-NCBI_VDB_VERSION=2.6.3
+NGS_SDK_VERSION=1.2.5
+NCBI_VDB_VERSION=2.7.0
 
 # download extra sources using conda's mechanism
 # see: https://github.com/stuarteberg/conda-multisrc-example
