@@ -8,7 +8,7 @@ import sys
 from collections import defaultdict, Iterable
 from itertools import product, chain
 import networkx as nx
-import nose
+
 from conda_build.metadata import MetaData
 import yaml
 
@@ -18,6 +18,12 @@ def flatten_dict(dict):
         if isinstance(values, str) or not isinstance(values, Iterable):
             values = [values]
         yield [(key, value) for value in values]
+
+
+def merged_env(env):
+    _env = dict(os.environ)
+    _env.update(env)
+    return _env
 
 
 class EnvMatrix:
@@ -37,10 +43,15 @@ class EnvMatrix:
         CONDA_GSL: "1.16"
 
     """
+
     def __init__(self, path, verbose=False):
         self.verbose = verbose
         with open(path) as f:
             self.env = yaml.load(f)
+            for key, val in self.env.items():
+                if key != "CONDA_PY" and not isinstance(val, str):
+                    raise ValueError(
+                        "All versions except CONDA_PY must be strings.")
 
     def __iter__(self):
         """
@@ -61,14 +72,10 @@ class EnvMatrix:
         these sets.
         """
         for env in product(*flatten_dict(self.env)):
-            e = dict(os.environ)
-            if self.verbose:
-                print(
-                    'environment:',
-                    ','.join(['='.join(i) for i in sorted(env)])
-                )
-            e.update(env)
-            yield e
+            yield env
+            #e = dict(os.environ)
+            #e.update(env)
+            #yield e
 
 
 def get_deps(recipe, build=True):
@@ -91,12 +98,11 @@ def get_deps(recipe, build=True):
     else:
         metadata = recipe
     for dep in metadata.get_value(
-        "requirements/{}".format("build" if build else "run"), []
-    ):
+            "requirements/{}".format("build" if build else "run"), []):
         yield dep.split()[0]
 
 
-def get_dag(recipes):
+def get_dag(recipes, blacklist=None):
     """
     Returns the DAG of recipe paths and a dictionary that maps package names to
     recipe paths. These recipe path values are lists and contain paths to all
@@ -106,6 +112,9 @@ def get_dag(recipes):
     ----------
     recipes : iterable
         An iterable of recipe paths, typically obtained via `get_recipes()`
+
+    blacklist : set
+        Package names to skip
 
     Returns
     -------
@@ -119,11 +128,15 @@ def get_dag(recipes):
     """
     recipes = list(recipes)
     metadata = [MetaData(recipe) for recipe in recipes]
+    if blacklist is None:
+        blacklist = set()
 
     # meta.yaml's package:name mapped to the recipe path
     name2recipe = defaultdict(list)
     for meta, recipe in zip(metadata, recipes):
-        name2recipe[meta.get_value("package/name")].append(recipe)
+        name = meta.get_value('package/name')
+        if name not in blacklist:
+            name2recipe[name].append(recipe)
 
     def get_inner_deps(dependencies):
         for dep in dependencies:
@@ -135,70 +148,14 @@ def get_dag(recipes):
     dag.add_nodes_from(meta.get_value("package/name") for meta in metadata)
     for meta in metadata:
         name = meta.get_value("package/name")
-        dag.add_edges_from(
-            (dep, name) for dep in set(
-                get_inner_deps(
-                    chain(
-                        get_deps(meta), get_deps(meta, build=False)
-                    )
-                )
-            )
-        )
+        dag.add_edges_from((dep, name)
+                           for dep in set(get_inner_deps(chain(
+                               get_deps(meta),
+                               get_deps(meta,
+                                        build=False)))))
 
     #nx.relabel_nodes(dag, name2recipe, copy=False)
     return dag, name2recipe
-
-
-def toposort_recipes(repository, only_modified=False, subset="*"):
-    """
-    Topologically sort recipes
-
-    Parameters
-    ----------
-    repository : str
-        Top-level directory of the repository
-
-    only_modified : bool
-        If True, then use `git status` to identify which recipes have changed.
-        `subset` will also be applied to these recipes.
-
-    subset : str or iterable
-        Pattern or patterns to restrict toposorted recipes (e.g.,
-        ['bioconductor-*', 'r-*']).
-    """
-    recipes = list(get_recipes(repository, subset))
-    if only_modified:
-        status = sp.check_output(
-            ['git', 'status'], cwd=repository, universal_newlines=True)
-
-        def modified(f):
-            "True for files reported by git to be modified"
-            return ('\tmodified:' in f) and ('recipes/' in f)
-
-        def recipe_name(f):
-            "extract recipe name from a 'modified:' line in git status"
-            toks = f.split('modified:')[-1].strip().split(os.path.sep)
-            recipes_idx = toks.index('recipes')
-            return toks[recipes_idx + 1]
-
-        modified = get_recipes(
-            repository,
-            set(
-                map(
-                    recipe_name,
-                    filter(
-                        modified,
-                        status.splitlines()
-                    )
-                )
-            )
-        )
-        recipes = set(modified).intersection(recipes)
-
-    dag, name2recipe = get_dag(recipes)
-    subdags = sorted(map(list, nx.connected_components(dag.to_undirected())))
-    for subdag in subdags:
-        yield nx.topological_sort(dag.subgraph(subdag))
 
 
 def get_recipes(repository, package="*"):
@@ -218,11 +175,11 @@ def get_recipes(repository, package="*"):
     if isinstance(package, str):
         package = [package]
     for p in package:
-        path = os.path.join(repository, "recipes", p)
-        yield from map(
-            os.path.dirname, glob.glob(os.path.join(path, "meta.yaml")))
-        yield from map(
-            os.path.dirname, glob.glob(os.path.join(path, "*", "meta.yaml")))
+        path = os.path.join(repository, p)
+        yield from map(os.path.dirname,
+                       glob.glob(os.path.join(path, "meta.yaml")))
+        yield from map(os.path.dirname,
+                       glob.glob(os.path.join(path, "*", "meta.yaml")))
 
 
 def filter_recipes(recipes, env_matrix):
@@ -239,17 +196,22 @@ def filter_recipes(recipes, env_matrix):
 
     env_matrix : EnvMatrix
     """
+
     def msgs(env):
         p = sp.run(
-            ["conda", "build", "--skip-existing", "--output"] + recipes,
-            check=True, stdout=sp.PIPE, stderr=sp.PIPE,
-            universal_newlines=True, env=env
-        )
+            ["conda", "build", "--skip-existing", "--output", "--dirty"
+             ] + recipes,
+            check=True,
+            stdout=sp.PIPE,
+            stderr=sp.PIPE,
+            universal_newlines=True,
+            env=merged_env(env))
         return [
-            msg for msg in p.stdout.split("\n")
-            if "Ignoring non-recipe" not in msg][1:-1]
+            msg
+            for msg in p.stdout.split("\n") if "Ignoring non-recipe" not in msg
+        ][1:-1]
     skip = lambda msg: \
-        "already built, skipping" in msg or "defines build/skip" in msg
+        "already built" in msg or "defines build/skip" in msg
 
     try:
         for item in zip(recipes, *map(msgs, env_matrix)):
@@ -287,6 +249,8 @@ def build(recipe, env, verbose=False, testonly=False, force=False):
         typically you'd want to bump the build number rather than force
         a build.
     """
+    print("Building/testing", recipe, "for environment:")
+    print(*('\t{}={}'.format(*i) for i in sorted(env)), sep="\n")
     try:
         out = None if verbose else sp.PIPE
         build_args = []
@@ -297,8 +261,11 @@ def build(recipe, env, verbose=False, testonly=False, force=False):
         if not force:
             build_args += ["--skip-existing"]
         sp.run(["conda", "build", "--quiet", recipe] + build_args,
-               stderr=out, stdout=out, check=True, universal_newlines=True,
-               env=env)
+               stderr=out,
+               stdout=out,
+               check=True,
+               universal_newlines=True,
+               env=merged_env(env))
         return True
     except sp.CalledProcessError as e:
         if e.stdout is not None:
@@ -307,27 +274,44 @@ def build(recipe, env, verbose=False, testonly=False, force=False):
         return False
 
 
-def test_recipes(repository, env_matrix, packages="*", testonly=False,
-                 verbose=False, force=False):
+def test_recipes(repository,
+                 config,
+                 packages="*",
+                 testonly=False,
+                 verbose=False,
+                 force=False):
     """
     Build one or many bioconda packages.
     """
-    env_matrix = EnvMatrix(env_matrix, verbose=verbose)
+    config = load_config(config)
+    env_matrix = EnvMatrix(config['env_matrix'], verbose=verbose)
+    blacklist = get_blacklist(config['blacklists'])
 
+    if verbose:
+        print('blacklist:', blacklist)
+
+    if packages == "*":
+        packages = ["*"]
     recipes = [
-        recipe for package in packages for recipe in
-        get_recipes(repository, package)
+        recipe
+        for package in packages for recipe in get_recipes(repository, package)
     ]
+    if not recipes:
+        print("Nothing to be done.")
+        return
 
     if not force:
         recipes = list(filter_recipes(recipes, env_matrix))
 
     env_matrix.verbose = verbose
 
-    dag, name2recipes = get_dag(recipes)
+    dag, name2recipes = get_dag(recipes, blacklist=blacklist)
 
-    print("Packages to build", file=sys.stderr)
-    print(*nx.nodes(dag), file=sys.stderr, sep="\n")
+    if not dag:
+        print("Nothing to be done.")
+        return True
+    else:
+        print("Building/testing", len(dag), "recipes in total.")
 
     subdags_n = int(os.environ.get("SUBDAGS", 1))
     subdag_i = int(os.environ.get("SUBDAG", 0))
@@ -338,8 +322,8 @@ def test_recipes(repository, env_matrix, packages="*", testonly=False,
         subdags = sorted([[n] for n in nx.nodes(dag)])
     else:
         # take connected components as subdags
-        subdags = sorted(
-            map(sorted, nx.connected_components(dag.to_undirected())))
+        subdags = sorted(map(sorted, nx.connected_components(dag.to_undirected(
+        ))))
     # chunk subdags such that we have at most subdags_n many
     if subdags_n < len(subdags):
         chunks = [[n for subdag in subdags[i::subdags_n] for n in subdag]
@@ -348,41 +332,50 @@ def test_recipes(repository, env_matrix, packages="*", testonly=False,
         chunks = subdags
     if subdag_i >= len(chunks):
         print("Nothing to be done.")
-        return
+        return True
     # merge subdags of the selected chunk
     subdag = dag.subgraph(chunks[subdag_i])
     # ensure that packages which need a build are built in the right order
-    recipes = [recipe for package in nx.topological_sort(subdag) for recipe in
-               name2recipes[package]]
+    recipes = [recipe
+               for package in nx.topological_sort(subdag)
+               for recipe in name2recipes[package]]
 
-    print("Building/testing subdag {} of recipes in order:".format(subdag_i),
-          file=sys.stderr)
-    print(*recipes, file=sys.stderr, sep="\n")
+    print("Building/testing subdag", subdag_i, "of", subdags_n, " (",
+          len(recipes), "recipes).")
 
+    success = True
     for recipe in recipes:
-        for env in env_matrix:
-            yield build(recipe, env, verbose, testonly, force)
+        envs = iter(env_matrix)
+        # Use only first envionment if package does not depend on Python.
+        if "python" not in get_deps(recipe):
+            envs = [next(envs)]
+        for env in envs:
+            success |= build(recipe, env, verbose, testonly, force)
+            conda_index(config)
 
     if not testonly:
         # upload builds
-        if (
-            os.environ.get("TRAVIS_BRANCH") == "master" and
-            os.environ.get("TRAVIS_PULL_REQUEST") == "false"
-        ):
+        if (os.environ.get("TRAVIS_BRANCH") == "master" and
+                os.environ.get("TRAVIS_PULL_REQUEST") == "false"):
             for recipe in recipes:
                 packages = {
-                    sp.run(["conda", "build", "--output", recipe],
-                           stdout=sp.PIPE, env=env,
-                           check=True).stdout.strip().decode()
+                    sp.run(
+                        ["conda", "build", "--output", "--dirty", recipe],
+                        stdout=sp.PIPE,
+                        env=merged_env(env),
+                        check=True).stdout.strip().decode()
                     for env in env_matrix
                 }
                 for package in packages:
                     if os.path.exists(package):
                         try:
-                            sp.run(["anaconda", "-t",
-                                    os.environ.get("ANACONDA_TOKEN"),
-                                    "upload", package], stdout=sp.PIPE,
-                                   stderr=sp.STDOUT, check=True)
+                            sp.run(
+                                ["anaconda", "-t",
+                                 os.environ.get("ANACONDA_TOKEN"), "upload",
+                                 package],
+                                stdout=sp.PIPE,
+                                stderr=sp.STDOUT,
+                                check=True)
                         except sp.CalledProcessError as e:
                             print(e.stdout.decode(), file=sys.stderr)
                             if b"already exists" in e.stdout:
@@ -391,11 +384,36 @@ def test_recipes(repository, env_matrix, packages="*", testonly=False,
                                 pass
                             else:
                                 raise e
+    return success
 
 
-def _env_matrix_from_config(config, verbose=False):
-    "Returns EnvMatrix from env_matrix.yaml path relative to config path."
-    cfg = yaml.load(open(config))
-    return EnvMatrix(
-        os.path.relpath(cfg['env_matrix'], os.path.dirname(config)),
-        verbose=verbose)
+def conda_index(config):
+    if config['index_dirs']:
+        sp.run(['conda', 'index'] + config['index_dirs'],
+               check=True,
+               stdout=sp.PIPE)
+
+
+def get_blacklist(blacklists):
+    "Return list of recipes to skip from blacklists"
+    blacklist = set()
+    for p in blacklists:
+        blacklist.update([i.strip() for i in open(p) if not i.startswith('#')])
+    return blacklist
+
+
+def load_config(path):
+    relpath = lambda p: os.path.relpath(p, os.path.dirname(path))
+    config = yaml.load(open(path))
+
+    def get_list(key):
+        # always return empty list, also if NoneType is defined in yaml
+        value = config.get(key)
+        if value is None:
+            return []
+        return value
+
+    config['env_matrix'] = relpath(config['env_matrix'])
+    config['blacklists'] = [relpath(p) for p in get_list('blacklists')]
+    config['index_dirs'] = [relpath(p) for p in get_list('index_dirs')]
+    return config
