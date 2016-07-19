@@ -1,4 +1,5 @@
 #!/bin/bash
+export CPATH=${PREFIX}/include
 $PYTHON setup.py install
 
 # Add more build steps here, if they are necessary.

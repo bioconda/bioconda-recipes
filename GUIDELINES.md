@@ -71,15 +71,14 @@ recipes. Recipes for dependencies with an `r-` prefix should be created using
 ### Java
 
 Add a wrapper script if the software is typically called via `java -jar ...`.
-For example, [fastqc](recipes/fastqc) already has a wrapper script, but
-[gatk-framework](recipes/gatk-framework) does not. [chromhmm](recipes/chromhmm)
-mimics the installation pattern of gatk-framework.
+For example, [fastqc](recipes/fastqc) already had a wrapper script, but
+[peptide-shaker](recipes/peptide-shaker) did not.
 
 JAR files should go in `$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM`.
 A wrapper script should be placed here as well, and symlinked to `$PREFIX/bin`.
 
-Example: [gatk-framework](recipes/gatk-framework)
-Example with patch to fix memory: [fastqc](recipes/fastqc)
+* Example with added wrapper script: [peptide-shaker](recipes/peptide-shaker)
+* Example with patch to fix memory: [fastqc](recipes/fastqc)
 
 ### Perl
 
