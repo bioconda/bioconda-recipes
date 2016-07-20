@@ -33,6 +33,7 @@ cp -rf PerlLib perl-build/lib
 cp Trinity perl-build/scripts
 cd perl-build/scripts
 
+#Find and replace
 find -noleaf -type f |xargs -I {} sed -i 's/$JELLYFISH_DIR\/bin\/jellyfish/jellyfish/g' {}
 find -noleaf -type f |xargs -I {} sed -i 's/$FASTOOL_DIR\/fastool/fastool/g' {}
 find -noleaf -type f |xargs -I {} sed -i 's/${FASTOOL_DIR}\/fastool/fastool/g' {}
