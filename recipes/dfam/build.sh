@@ -6,4 +6,5 @@ mkdir -p $PREFIX/bin
 
 chmod 777 dfamscan.pl
 cp dfamscan.pl $PREFIX/bin
-cp $RECIPE_DIR/download-dfam.sh $PREFIX/bin
+chmod 777 download-dfam.py
+cp $RECIPE_DIR/download-dfam.py $PREFIX/bin
