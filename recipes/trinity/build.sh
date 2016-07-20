@@ -33,6 +33,7 @@ cp -rf PerlLib perl-build/lib
 cp Trinity perl-build/scripts
 cd perl-build/scripts
 
+#Find and replace
 find -noleaf -type f |xargs -I {} sed -i 's/$JELLYFISH_DIR\/bin\/jellyfish/jellyfish/g' {}
 find -noleaf -type f |xargs -I {} sed -i 's/$FASTOOL_DIR\/fastool/fastool/g' {}
 find -noleaf -type f |xargs -I {} sed -i 's/${FASTOOL_DIR}\/fastool/fastool/g' {}
@@ -55,6 +56,7 @@ find -noleaf -type f |xargs -I {} sed -i 's/$BASEDIR\/Analysis\/DifferentialExpr
 find -noleaf -type f |xargs -I {} sed -i 's/$FindBin::RealBin\/support_scripts\///g' {}
 find -noleaf -type f |xargs -I {} sed -i "s|\$TRIMMOMATIC_DIR/adapters|${PREFIX}/trimmomatic_adapters|g" {}
 find -noleaf -type f |xargs -I {} sed -i "s|\$BUTTERFLY_DIR/|${PREFIX}/share/|g" {}
+find -noleaf -type f |xargs -I {} sed -i "s|ExitTest.jar|${PREFIX}/share/ExitTester.jar|g" {}
 find -noleaf -type f |xargs -I {} sed -i 's/java -jar $TRIMMOMATIC/trimmomatic/g' {}
 
 cd ..
