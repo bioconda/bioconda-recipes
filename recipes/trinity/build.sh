@@ -55,6 +55,7 @@ find -noleaf -type f |xargs -I {} sed -i 's/$BASEDIR\/Analysis\/DifferentialExpr
 find -noleaf -type f |xargs -I {} sed -i 's/$FindBin::RealBin\/support_scripts\///g' {}
 find -noleaf -type f |xargs -I {} sed -i "s|\$TRIMMOMATIC_DIR/adapters|${PREFIX}/trimmomatic_adapters|g" {}
 find -noleaf -type f |xargs -I {} sed -i "s|\$BUTTERFLY_DIR/|${PREFIX}/share/|g" {}
+find -noleaf -type f |xargs -I {} sed -i "s|ExitTest.jar|${PREFIX}/share/ExitTester.jar|g" {}
 find -noleaf -type f |xargs -I {} sed -i 's/java -jar $TRIMMOMATIC/trimmomatic/g' {}
 
 cd ..
