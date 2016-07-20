@@ -10,7 +10,7 @@ setup(
     description="Utilities for building and managing conda packages",
     license="MIT",
     packages=["bioconda_utils"],
-    install_requires=["argh", "networkx", "pydotplus", "pyyaml", "conda_build"],
+    install_requires=["argh", "networkx", "pydotplus", "pyyaml", "conda_build", "docker-py"],
     entry_points={"console_scripts": ["bioconda-utils = bioconda_utils.cli:main"]},
     classifiers=[
         "Development Status :: 4 - Beta",

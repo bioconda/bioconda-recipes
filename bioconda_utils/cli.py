@@ -11,6 +11,7 @@ import argh
 from argh import arg
 import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
+from docker import Client as DockerClient
 
 from . import utils
 
@@ -22,7 +23,7 @@ from . import utils
 # `recipes/bowtie` or `recipes/bowtie/1.0.1`.
 
 
-@arg('repository', help='Path to top-level dir of repository')
+@arg('recipe_folder', help='Path to top-level dir of recipes.')
 @arg('config', help='Path to yaml file specifying the configuration')
 @arg(
     '--packages',
@@ -34,25 +35,31 @@ from . import utils
 @arg('--force',
      help='Force building the recipe even if it already exists in '
      'the bioconda channel')
-def build(repository,
+@arg('--docker', nargs='?', metavar='URL', const='unix://var/run/docker.sock',
+     help='Build packages in docker container (continuumio/conda_builder_linux).')
+def build(recipe_folder,
           config,
           packages="*",
           testonly=False,
           verbose=False,
-          force=False):
+          force=False,
+          docker=None):
 
     cfg = utils.load_config(config)
     setup = cfg.get('setup', None)
     if setup:
         for cmd in setup:
             sp.run(shlex.split(cmd))
+    if docker is not None:
+        docker = DockerClient(base_url=docker)
 
-    success = utils.test_recipes(repository,
+    success = utils.test_recipes(recipe_folder,
                                  config=config,
                                  packages=packages,
                                  testonly=testonly,
                                  verbose=verbose,
-                                 force=force)
+                                 force=force,
+                                 docker=docker)
     exit(0 if success else 1)
 
 
