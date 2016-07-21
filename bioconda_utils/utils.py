@@ -403,7 +403,6 @@ def test_recipes(recipe_folder,
                              testonly,
                              force,
                              docker=docker)
-            conda_index(config)
 
     if not testonly:
         # upload builds
@@ -437,13 +436,6 @@ def test_recipes(recipe_folder,
                             else:
                                 raise e
     return success
-
-
-def conda_index(config):
-    if config['index_dirs']:
-        sp.run(['conda', 'index'] + config['index_dirs'],
-               check=True,
-               stdout=sp.PIPE)
 
 
 def get_blacklist(blacklists):
