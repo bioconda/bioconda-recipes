@@ -1,0 +1,36 @@
+--- ref-eval/sam/misc/Makefile	2016-07-21 15:16:06.441511801 +0400
++++ ref-eval/sam/misc/Makefile	2016-07-21 17:34:01.274450789 +0400
+@@ -1,17 +1,17 @@
+ CC=			gcc
+ CXX=		g++
+-CFLAGS=		-g -Wall -O2 #-m64 #-arch ppc
++CFLAGS=		-g -Wall -O2 $(CFLAGS_EXTRA) #-m64 #-arch ppc
+ CXXFLAGS=	$(CFLAGS)
+ DFLAGS=		-D_FILE_OFFSET_BITS=64
+ OBJS=		
+ PROG=		md5sum-lite md5fa maq2sam-short maq2sam-long wgsim seqtk
+-INCLUDES=	-I..
++INCLUDES=	-I.. $(CPPFLAGS)
+ SUBDIRS=	.
+ 
+ .SUFFIXES:.c .o
+ 
+ .c.o:
+-		$(CC) -c $(CFLAGS) $(DFLAGS) $(INCLUDES) $< -o $@
++		$(CC) $(CPPFLAGS) -c $(CFLAGS) $(DFLAGS) $(INCLUDES) $< -o $@
+ 
+ all:$(PROG)
+ 
+@@ -34,10 +34,10 @@
+ 		$(CC) $(CFLAGS) -o $@ wgsim.o -lm -lz
+ 
+ md5fa:md5.o md5fa.o md5.h ../kseq.h
+-		$(CC) $(CFLAGS) -o $@ md5.o md5fa.o -lz
++		$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ md5.o md5fa.o -lz
+ 
+ md5sum-lite:md5sum-lite.o
+-		$(CC) $(CFLAGS) -o $@ md5sum-lite.o
++		$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ md5sum-lite.o
+ 
+ md5sum-lite.o:md5.c md5.h
+ 		$(CC) -c $(CFLAGS) -DMD5SUM_MAIN -o $@ md5.c
