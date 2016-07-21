@@ -5,12 +5,16 @@ import glob
 import subprocess as sp
 import argparse
 import sys
+import shutil
 from collections import defaultdict, Iterable
 from itertools import product, chain
 import networkx as nx
 
 from conda_build.metadata import MetaData
 import yaml
+
+
+DOCKER_IMAGE = "continuumio/conda_builder_linux:5.11-5.2-0-1"
 
 
 def flatten_dict(dict):
@@ -158,7 +162,7 @@ def get_dag(recipes, blacklist=None):
     return dag, name2recipe
 
 
-def get_recipes(repository, package="*"):
+def get_recipes(recipe_folder, package="*"):
     """
     Generator of recipes.
 
@@ -166,8 +170,8 @@ def get_recipes(repository, package="*"):
 
     Parameters
     ----------
-    repository : str
-        Top-level dir of the repository
+    recipe_folder : str
+        Top-level dir of the recipes
 
     package : str or iterable
         Pattern or patterns to restrict the results.
@@ -175,7 +179,7 @@ def get_recipes(repository, package="*"):
     if isinstance(package, str):
         package = [package]
     for p in package:
-        path = os.path.join(repository, p)
+        path = os.path.join(recipe_folder, p)
         yield from map(os.path.dirname,
                        glob.glob(os.path.join(path, "meta.yaml")))
         yield from map(os.path.dirname,
@@ -225,7 +229,13 @@ def filter_recipes(recipes, env_matrix):
         exit(1)
 
 
-def build(recipe, env, verbose=False, testonly=False, force=False):
+def build(recipe,
+          recipe_folder,
+          env,
+          verbose=False,
+          testonly=False,
+          force=False,
+          docker=None):
     """
     Build a single recipe for a single env
 
@@ -251,35 +261,66 @@ def build(recipe, env, verbose=False, testonly=False, force=False):
     """
     print("Building/testing", recipe, "for environment:")
     print(*('\t{}={}'.format(*i) for i in sorted(env)), sep="\n")
-    try:
-        out = None if verbose else sp.PIPE
-        build_args = []
-        if testonly:
-            build_args.append("--test")
-        else:
-            build_args += ["--no-anaconda-upload"]
-        if not force:
-            build_args += ["--skip-existing"]
-        sp.run(["conda", "build", "--quiet", recipe] + build_args,
-               stderr=out,
-               stdout=out,
-               check=True,
-               universal_newlines=True,
-               env=merged_env(env))
+    build_args = []
+    if testonly:
+        build_args.append("--test")
+    else:
+        build_args += ["--no-anaconda-upload"]
+    if not force:
+        build_args += ["--skip-existing"]
+    if docker is not None:
+        conda_build_folder = os.path.join(os.path.dirname(os.path.dirname(shutil.which("conda"))), "conda-bld")
+        recipe = os.path.relpath(recipe, recipe_folder)
+        env = dict(env)
+        env["ABI"] = 4
+        container = docker.create_container(
+            image=DOCKER_IMAGE,
+            volumes=["/home/dev/recipes", "/opt/miniconda"],
+            environment=env,
+            command="bash /opt/share/internal_startup.sh "
+                "conda build -c r -c bioconda --quiet recipes/{}".format(recipe),
+            host_config=docker.create_host_config(binds={
+                os.path.abspath(recipe_folder): {
+                    "bind": "/home/dev/recipes",
+                    "mode": "ro"
+                },
+                conda_build_folder: {
+                    "bind": "/opt/miniconda/conda-bld",
+                    "mode": "rw"
+                }
+            },
+            network_mode="host"))
+        cid = container["Id"]
+        docker.start(container=cid)
+        status = docker.wait(container=cid)
+        if status != 0:
+            print(docker.logs(container=cid, stdout=True, stderr=True).decode())
+            return False
         return True
-    except sp.CalledProcessError as e:
-        if e.stdout is not None:
-            print(e.stdout)
-            print(e.stderr)
-        return False
+    else:
+        try:
+            out = None if verbose else sp.PIPE
+            sp.run(["conda", "build", "--quiet", recipe] + build_args,
+                   stderr=out,
+                   stdout=out,
+                   check=True,
+                   universal_newlines=True,
+                   env=merged_env(env))
+            return True
+        except sp.CalledProcessError as e:
+            if e.stdout is not None:
+                print(e.stdout)
+                print(e.stderr)
+            return False
 
 
-def test_recipes(repository,
+def test_recipes(recipe_folder,
                  config,
                  packages="*",
                  testonly=False,
                  verbose=False,
-                 force=False):
+                 force=False,
+                 docker=None):
     """
     Build one or many bioconda packages.
     """
@@ -290,11 +331,14 @@ def test_recipes(repository,
     if verbose:
         print('blacklist:', blacklist)
 
+    print("Filtering recipes...")
+
     if packages == "*":
         packages = ["*"]
     recipes = [
         recipe
-        for package in packages for recipe in get_recipes(repository, package)
+        for package in packages
+        for recipe in get_recipes(recipe_folder, package)
     ]
     if not recipes:
         print("Nothing to be done.")
@@ -343,6 +387,11 @@ def test_recipes(repository,
     print("Building/testing subdag", subdag_i, "of", subdags_n, " (",
           len(recipes), "recipes).")
 
+    if docker is not None:
+        print('Pulling docker image...')
+        docker.pull(DOCKER_IMAGE)
+        print('Done.')
+
     success = True
     for recipe in recipes:
         envs = iter(env_matrix)
@@ -350,8 +399,13 @@ def test_recipes(repository,
         if "python" not in get_deps(recipe):
             envs = [next(envs)]
         for env in envs:
-            success |= build(recipe, env, verbose, testonly, force)
-            conda_index(config)
+            success |= build(recipe,
+                             recipe_folder,
+                             env,
+                             verbose,
+                             testonly,
+                             force,
+                             docker=docker)
 
     if not testonly:
         # upload builds
@@ -385,13 +439,6 @@ def test_recipes(repository,
                             else:
                                 raise e
     return success
-
-
-def conda_index(config):
-    if config['index_dirs']:
-        sp.run(['conda', 'index'] + config['index_dirs'],
-               check=True,
-               stdout=sp.PIPE)
 
 
 def get_blacklist(blacklists):
