@@ -14,6 +14,9 @@ from conda_build.metadata import MetaData
 import yaml
 
 
+DOCKER_IMAGE = "continuumio/conda_builder_linux:5.11-5.2-0-1"
+
+
 def flatten_dict(dict):
     for key, values in dict.items():
         if isinstance(values, str) or not isinstance(values, Iterable):
@@ -271,7 +274,7 @@ def build(recipe,
         env = dict(env)
         env["ABI"] = 4
         container = docker.create_container(
-            image="continuumio/conda_builder_linux:latest",
+            image=DOCKER_IMAGE,
             volumes=["/home/dev/recipes", "/opt/miniconda"],
             environment=env,
             command="bash /opt/share/internal_startup.sh "
@@ -386,7 +389,7 @@ def test_recipes(recipe_folder,
 
     if docker is not None:
         print('Pulling docker image...')
-        docker.pull('continuumio/conda_builder_linux:latest')
+        docker.pull(DOCKER_IMAGE)
         print('Done.')
 
     success = True
