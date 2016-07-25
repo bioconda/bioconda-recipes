@@ -3,16 +3,21 @@
 if [[ `uname` == "Linux" ]]
 then
     REFERER=http://www.azul.com/downloads/zulu/zulu-linux/
-    URL=http://cdn.azulsystems.com/zulu/bin/zulu1.8.0_60-8.9.0.4-x86lx64.zip
-    NAME=zulu1.8.0_60-8.9.0.4-x86lx64
+    URL=http://cdn.azul.com/zulu/bin/zulu8.15.0.1-jdk8.0.92-linux_x64.tar.gz
+    NAME=zulu8.15.0.1-jdk8.0.92-linux_x64
 else
     REFERER=http://www.azul.com/downloads/zulu/zulu-mac/
-    URL=http://cdn.azulsystems.com/zulu/bin/zulu1.8.0_60-8.9.0.4-macosx.zip
-    NAME=zulu1.8.0_60-8.9.0.4-macosx
+    URL=http://cdn.azul.com/zulu/bin/zulu8.15.0.1-jdk8.0.92-macosx_x64.zip
+    NAME=zulu8.15.0.1-jdk8.0.92-macosx_x64
 fi
 
 wget --referer=$REFERER $URL
-unzip $NAME.zip
+if [[ `uname` == "Linux" ]]
+then
+    tar -xpf $NAME.tar.gz
+else
+    unzip $NAME.zip
+fi
 mv $NAME/* .
 rm -r $NAME
 
@@ -24,7 +29,17 @@ then
     mv lib/amd64/jli/*.so lib
     mv lib/amd64/*.so lib
     rm -r lib/amd64
+
+    # fonts
+    mkdir -p jre/lib/fonts
+    cd jre/lib/fonts
+    wget --no-check-certificate http://sourceforge.net/projects/dejavu/files/dejavu/2.36/dejavu-fonts-ttf-2.36.tar.bz2
+    tar -xjvpf dejavu-fonts-ttf-2.36.tar.bz2
+    mv dejavu-fonts-ttf-*/ttf/* .
+    rm -rf dejavu-fonts-ttf-*
+    cd ../../..
 fi
+
 mv * $PREFIX
 
 # more clean up
