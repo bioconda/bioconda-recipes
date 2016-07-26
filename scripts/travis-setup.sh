@@ -32,4 +32,7 @@ then
     conda config --add channels bioconda
     conda config --add channels r
     conda config --add channels file://anaconda/conda-bld
+
+    # setup bioconda-utils
+    pip install git+https://github.com/bioconda/bioconda-utils.git
 fi
