@@ -29,7 +29,7 @@ then
 fi
 
 mkdir -p $PREFIX/bin
-cp bin/freebayes $PREFIX/bin
+cp -r bin/* $PREFIX/bin
 cp scripts/freebayes-parallel $PREFIX/bin
 sed -i.bak 's@#!/usr/bin/python@#!/usr/bin/env python@g' scripts/fasta_generate_regions.py
 cp scripts/fasta_generate_regions.py $PREFIX/bin

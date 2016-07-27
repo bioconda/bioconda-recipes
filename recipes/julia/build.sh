@@ -1,3 +1,3 @@
 #!/bin/sh
-mv * "$PREFIX"
+cp -r * "$PREFIX"
 mv "$PREFIX/LICENSE.md" .
