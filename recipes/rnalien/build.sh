@@ -1,5 +1,5 @@
 #!/bin/bash
-if [hash stack &>hash.out]; then
+if ! [ -x "$(command -v stack)" ]; then
 	wget -qO- https://get.haskellstack.org/ | sh
 else
 	echo "Stack available"
