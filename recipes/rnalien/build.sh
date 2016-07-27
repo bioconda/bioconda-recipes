@@ -5,5 +5,6 @@ if ! [ -x "$(command -v stack)" ]; then
 else
 	echo "Stack available"
 fi
+export PATH=/root/.local/bin:/usr/local/bin/:$PATH
 stack setup
 stack build
