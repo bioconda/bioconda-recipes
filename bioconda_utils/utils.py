@@ -229,6 +229,7 @@ def filter_recipes(recipes, env_matrix):
 def build(recipe,
           recipe_folder,
           env,
+          config,
           verbose=False,
           testonly=False,
           force=False,
@@ -245,6 +246,9 @@ def build(recipe,
         Environment (typically a single yielded dictionary from EnvMatrix
         instance)
 
+    config : dict
+        Configuration dictionary.
+
     verbose : bool
 
     testonly : bool
@@ -255,6 +259,8 @@ def build(recipe,
         If True, the recipe will be built even if it already exists. Note that
         typically you'd want to bump the build number rather than force
         a build.
+    docker : docker.Client object
+        Run docker container using this client
     """
     print("Building/testing", recipe, "for environment:")
     print(*('\t{}={}'.format(*i) for i in sorted(env)), sep="\n")
@@ -271,7 +277,7 @@ def build(recipe,
         env = dict(env)
         env["ABI"] = 4
         container = docker.create_container(
-            image="continuumio/conda_builder_linux:latest",
+            image=config['docker_image'],
             volumes=["/home/dev/recipes", "/opt/miniconda"],
             environment=env,
             command="bash /opt/share/internal_startup.sh "
@@ -386,7 +392,7 @@ def test_recipes(recipe_folder,
 
     if docker is not None:
         print('Pulling docker image...')
-        docker.pull('continuumio/conda_builder_linux:latest')
+        docker.pull(config['docker_image'])
         print('Done.')
 
     success = True
@@ -399,6 +405,7 @@ def test_recipes(recipe_folder,
             success |= build(recipe,
                              recipe_folder,
                              env,
+                             config,
                              verbose,
                              testonly,
                              force,
