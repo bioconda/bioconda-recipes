@@ -11,7 +11,7 @@ if [ "$unamestr" == 'Linux' ];
 then
     cp -R $SRC_DIR/* $sharedir
     # Provide a link to the Linux executable from $PREFIX/bin.
-    ln -s $sharedir/ImageJ-linux64 $PREFIX/bin/ImageJ-linux64
+    ln -s $sharedir/ImageJ-linux64 $PREFIX/bin/ImageJ
 elif [ "$unamestr" == 'Darwin' ];
 then
     hdiutil attach fiji-macosx-20141125.dmg
@@ -28,16 +28,12 @@ then
         # Remove the old ImageJ launcher for tiger.
         rm $sharedir/Contents/MacOS/ImageJ-tiger
         # Provide a link to the osx executable from $PREFIX/bin.
-        ln -s $sharedir/Contents/MacOS/ImageJ-macosx $PREFIX/bin/ImageJ-macosx
+        ln -s $sharedir/Contents/MacOS/ImageJ-macosx $PREFIX/bin/ImageJ
     else
         # Provide a link to the osx executable from $PREFIX/bin.
-        ln -s $sharedir/Contents/MacOS/ImageJ-tiger $PREFIX/bin/ImageJ-tiger
+        ln -s $sharedir/Contents/MacOS/ImageJ-tiger $PREFIX/bin/ImageJ
     fi
 fi
-
-cp $RECIPE_DIR/fiji.sh $outdir/fiji
-ln -s $outdir/fiji $PREFIX/bin
-chmod 0755 "${PREFIX}/bin/fiji"
 
 cp $RECIPE_DIR/bunwarpj.sh $outdir/bunwarpj
 ln -s $outdir/bunwarpj $PREFIX/bin
