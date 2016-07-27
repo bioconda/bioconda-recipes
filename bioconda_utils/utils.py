@@ -233,6 +233,7 @@ def build(recipe,
           verbose=False,
           testonly=False,
           force=False,
+          channels=None,
           docker=None):
     """
     Build a single recipe for a single env
@@ -259,6 +260,10 @@ def build(recipe,
         If True, the recipe will be built even if it already exists. Note that
         typically you'd want to bump the build number rather than force
         a build.
+
+    channels : list
+        Channels to include via the `--channel` argument to conda-build
+
     docker : docker.Client object
         Run docker container using this client
     """
@@ -271,6 +276,9 @@ def build(recipe,
         build_args += ["--no-anaconda-upload"]
     if not force:
         build_args += ["--skip-existing"]
+
+    channel_args = ' '.join(map(lambda x: '-c ' + x, config['channels']))
+
     if docker is not None:
         conda_build_folder = os.path.join(os.path.dirname(os.path.dirname(shutil.which("conda"))), "conda-bld")
         recipe = os.path.relpath(recipe, recipe_folder)
@@ -281,7 +289,7 @@ def build(recipe,
             volumes=["/home/dev/recipes", "/opt/miniconda"],
             environment=env,
             command="bash /opt/share/internal_startup.sh "
-                "conda build -c r -c bioconda --quiet recipes/{}".format(recipe),
+                "conda build {0} --quiet recipes/{1}".format(channel_args, recipe),
             host_config=docker.create_host_config(binds={
                 os.path.abspath(recipe_folder): {
                     "bind": "/home/dev/recipes",
@@ -303,7 +311,7 @@ def build(recipe,
     else:
         try:
             out = None if verbose else sp.PIPE
-            sp.run(["conda", "build", "--quiet", recipe] + build_args,
+            sp.run(["conda", "build", "--quiet", recipe] + build_args + channel_args,
                    stderr=out,
                    stdout=out,
                    check=True,
@@ -467,4 +475,5 @@ def load_config(path):
     config['env_matrix'] = relpath(config['env_matrix'])
     config['blacklists'] = [relpath(p) for p in get_list('blacklists')]
     config['index_dirs'] = [relpath(p) for p in get_list('index_dirs')]
+    config['channels'] = get_list('channels')
     return config
