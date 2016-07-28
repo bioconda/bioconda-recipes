@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-export PATH=/anaconda/bin:$PATH
+export PATH=/tmp/anaconda/bin:$PATH
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
