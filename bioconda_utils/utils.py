@@ -287,6 +287,7 @@ def build(recipe,
         container = docker.create_container(
             image=config['docker_image'],
             volumes=["/home/dev/recipes", "/opt/miniconda"],
+            user=os.getuid(),
             environment=env,
             command="bash /opt/share/internal_startup.sh "
                 "conda build {0} --quiet recipes/{1}".format(channel_args, recipe),
