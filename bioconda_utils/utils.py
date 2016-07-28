@@ -14,9 +14,6 @@ from conda_build.metadata import MetaData
 import yaml
 
 
-DOCKER_IMAGE = "continuumio/conda_builder_linux:5.11-5.2-0-1"
-
-
 def flatten_dict(dict):
     for key, values in dict.items():
         if isinstance(values, str) or not isinstance(values, Iterable):
@@ -232,9 +229,11 @@ def filter_recipes(recipes, env_matrix):
 def build(recipe,
           recipe_folder,
           env,
+          config,
           verbose=False,
           testonly=False,
           force=False,
+          channels=None,
           docker=None):
     """
     Build a single recipe for a single env
@@ -248,6 +247,9 @@ def build(recipe,
         Environment (typically a single yielded dictionary from EnvMatrix
         instance)
 
+    config : dict
+        Configuration dictionary.
+
     verbose : bool
 
     testonly : bool
@@ -258,6 +260,12 @@ def build(recipe,
         If True, the recipe will be built even if it already exists. Note that
         typically you'd want to bump the build number rather than force
         a build.
+
+    channels : list
+        Channels to include via the `--channel` argument to conda-build
+
+    docker : docker.Client object
+        Run docker container using this client
     """
     print("Building/testing", recipe, "for environment:")
     print(*('\t{}={}'.format(*i) for i in sorted(env)), sep="\n")
@@ -268,17 +276,20 @@ def build(recipe,
         build_args += ["--no-anaconda-upload"]
     if not force:
         build_args += ["--skip-existing"]
+
+    channel_args = ' '.join(map(lambda x: '-c ' + x, config['channels']))
+
     if docker is not None:
         conda_build_folder = os.path.join(os.path.dirname(os.path.dirname(shutil.which("conda"))), "conda-bld")
         recipe = os.path.relpath(recipe, recipe_folder)
         env = dict(env)
         env["ABI"] = 4
         container = docker.create_container(
-            image=DOCKER_IMAGE,
+            image=config['docker_image'],
             volumes=["/home/dev/recipes", "/opt/miniconda"],
             environment=env,
             command="bash /opt/share/internal_startup.sh "
-                "conda build -c r -c bioconda --quiet recipes/{}".format(recipe),
+                "conda build {0} --quiet recipes/{1}".format(channel_args, recipe),
             host_config=docker.create_host_config(binds={
                 os.path.abspath(recipe_folder): {
                     "bind": "/home/dev/recipes",
@@ -300,7 +311,7 @@ def build(recipe,
     else:
         try:
             out = None if verbose else sp.PIPE
-            sp.run(["conda", "build", "--quiet", recipe] + build_args,
+            sp.run(["conda", "build", "--quiet", recipe] + build_args + channel_args,
                    stderr=out,
                    stdout=out,
                    check=True,
@@ -389,7 +400,7 @@ def test_recipes(recipe_folder,
 
     if docker is not None:
         print('Pulling docker image...')
-        docker.pull(DOCKER_IMAGE)
+        docker.pull(config['docker_image'])
         print('Done.')
 
     success = True
@@ -402,6 +413,7 @@ def test_recipes(recipe_folder,
             success |= build(recipe,
                              recipe_folder,
                              env,
+                             config,
                              verbose,
                              testonly,
                              force,
@@ -463,4 +475,5 @@ def load_config(path):
     config['env_matrix'] = relpath(config['env_matrix'])
     config['blacklists'] = [relpath(p) for p in get_list('blacklists')]
     config['index_dirs'] = [relpath(p) for p in get_list('index_dirs')]
+    config['channels'] = get_list('channels')
     return config

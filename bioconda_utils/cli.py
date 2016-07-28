@@ -51,7 +51,7 @@ def build(recipe_folder,
         for cmd in setup:
             sp.run(shlex.split(cmd))
     if docker is not None:
-        docker = DockerClient(base_url=docker)
+        docker = DockerClient(base_url=docker, version=cfg['docker_client_version'])
 
     success = utils.test_recipes(recipe_folder,
                                  config=config,
