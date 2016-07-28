@@ -311,7 +311,7 @@ def build(recipe,
     else:
         try:
             out = None if verbose else sp.PIPE
-            sp.run(["conda", "build", "--quiet", recipe] + build_args + channel_args,
+            sp.run(["conda", "build", "--quiet", recipe] + build_args + [channel_args],
                    stderr=out,
                    stdout=out,
                    check=True,
