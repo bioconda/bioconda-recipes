@@ -8,11 +8,13 @@ import sys
 import shutil
 from collections import defaultdict, Iterable
 from itertools import product, chain
+import logging
 import networkx as nx
 
 from conda_build.metadata import MetaData
 import yaml
 
+logger = logging.getLogger(__name__)
 
 def flatten_dict(dict):
     for key, values in dict.items():
@@ -45,8 +47,7 @@ class EnvMatrix:
 
     """
 
-    def __init__(self, path, verbose=False):
-        self.verbose = verbose
+    def __init__(self, path):
         with open(path) as f:
             self.env = yaml.load(f)
             for key, val in self.env.items():
@@ -74,9 +75,6 @@ class EnvMatrix:
         """
         for env in product(*flatten_dict(self.env)):
             yield env
-            #e = dict(os.environ)
-            #e.update(env)
-            #yield e
 
 
 def get_deps(recipe, build=True):
@@ -176,6 +174,7 @@ def get_recipes(recipe_folder, package="*"):
     if isinstance(package, str):
         package = [package]
     for p in package:
+        logger.debug("get_recipes(%s, package='%s'): %s", recipe_folder, package, p)
         path = os.path.join(recipe_folder, p)
         yield from map(os.path.dirname,
                        glob.glob(os.path.join(path, "meta.yaml")))
@@ -197,10 +196,11 @@ def filter_recipes(recipes, env_matrix):
 
     env_matrix : EnvMatrix
     """
-
+    # Given the startup time of conda-build, provide all recipes at once.
     def msgs(env):
+        logger.debug(env)
         p = sp.run(
-            ["conda", "build", "--skip-existing", "--output", "--dirty"
+            ["conda", "build", "--skip-existing", "--output", "--dirty",
              ] + recipes,
             check=True,
             stdout=sp.PIPE,
@@ -218,7 +218,7 @@ def filter_recipes(recipes, env_matrix):
         for item in zip(recipes, *map(msgs, env_matrix)):
             recipe = item[0]
             msg = item[1:]
-
+            logger.debug("recipe %s: %s", recipe, '\n\t' + '\n\t'.join(msg))
             if not all(map(skip, msg)):
                 yield recipe
     except sp.CalledProcessError as e:
@@ -230,7 +230,6 @@ def build(recipe,
           recipe_folder,
           env,
           config,
-          verbose=False,
           testonly=False,
           force=False,
           channels=None,
@@ -250,8 +249,6 @@ def build(recipe,
     config : dict
         Configuration dictionary.
 
-    verbose : bool
-
     testonly : bool
         If True, skip building and instead run the test described in the
         meta.yaml.
@@ -267,8 +264,7 @@ def build(recipe,
     docker : docker.Client object
         Run docker container using this client
     """
-    print("Building/testing", recipe, "for environment:")
-    print(*('\t{}={}'.format(*i) for i in sorted(env)), sep="\n")
+    logger.info("Building and testing '%s' for environment %s", recipe, ';'.join(['='.join(i) for i in sorted(env)]))
     build_args = []
     if testonly:
         build_args.append("--test")
@@ -311,7 +307,7 @@ def build(recipe,
         return True
     else:
         try:
-            out = None if verbose else sp.PIPE
+            out = None if logger.level <= logging.DEBUG else sp.PIPE
             sp.run(["conda", "build", "--quiet", recipe] + build_args + [channel_args],
                    stderr=out,
                    stdout=out,
@@ -330,44 +326,40 @@ def test_recipes(recipe_folder,
                  config,
                  packages="*",
                  testonly=False,
-                 verbose=False,
                  force=False,
                  docker=None):
     """
     Build one or many bioconda packages.
     """
     config = load_config(config)
-    env_matrix = EnvMatrix(config['env_matrix'], verbose=verbose)
+    env_matrix = EnvMatrix(config['env_matrix'])
     blacklist = get_blacklist(config['blacklists'])
 
-    if verbose:
-        print('blacklist:', blacklist)
-
-    print("Filtering recipes...")
+    logger.info('blacklist: %s', ', '.join(sorted(blacklist)))
 
     if packages == "*":
         packages = ["*"]
-    recipes = [
-        recipe
-        for package in packages
-        for recipe in get_recipes(recipe_folder, package)
-    ]
+    recipes = []
+    for package in packages:
+        for recipe in get_recipes(recipe_folder, package):
+            recipes.append(recipe)
+            logger.debug(recipe)
     if not recipes:
-        print("Nothing to be done.")
+        logger.info("Nothing to be done.")
         return
 
     if not force:
+        logger.info('Filtering recipes')
         recipes = list(filter_recipes(recipes, env_matrix))
 
-    env_matrix.verbose = verbose
 
     dag, name2recipes = get_dag(recipes, blacklist=blacklist)
 
     if not dag:
-        print("Nothing to be done.")
+        logger.info("Nothing to be done.")
         return True
     else:
-        print("Building/testing", len(dag), "recipes in total.")
+        logger.info("Building and testing", len(dag), "recipes in total.")
 
     subdags_n = int(os.environ.get("SUBDAGS", 1))
     subdag_i = int(os.environ.get("SUBDAG", 0))
@@ -387,7 +379,7 @@ def test_recipes(recipe_folder,
     else:
         chunks = subdags
     if subdag_i >= len(chunks):
-        print("Nothing to be done.")
+        logger.info("Nothing to be done.")
         return True
     # merge subdags of the selected chunk
     subdag = dag.subgraph(chunks[subdag_i])
@@ -396,8 +388,7 @@ def test_recipes(recipe_folder,
                for package in nx.topological_sort(subdag)
                for recipe in name2recipes[package]]
 
-    print("Building/testing subdag", subdag_i, "of", subdags_n, " (",
-          len(recipes), "recipes).")
+    logger.info("Building and testing subdag %s of %s (%s recipes)", subdag_i, subdags_n, len(recipes))
 
     if docker is not None:
         print('Pulling docker image...')
@@ -415,7 +406,6 @@ def test_recipes(recipe_folder,
                              recipe_folder,
                              env,
                              config,
-                             verbose,
                              testonly,
                              force,
                              docker=docker)

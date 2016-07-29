@@ -5,6 +5,7 @@ import os
 import subprocess as sp
 from functools import partial
 import shlex
+import logging
 
 import yaml
 import argh
@@ -31,33 +32,37 @@ from . import utils
     help='Glob for package[s] to build. Default is to build all packages. Can '
     'be specified more than once')
 @arg('--testonly', help='Test packages instead of building')
-@arg('--verbose', help='Make output more verbose for local debugging')
 @arg('--force',
      help='Force building the recipe even if it already exists in '
      'the bioconda channel')
 @arg('--docker', nargs='?', metavar='URL', const='unix://var/run/docker.sock',
      help='Build packages in docker container (continuumio/conda_builder_linux).')
+@arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
 def build(recipe_folder,
           config,
           packages="*",
           testonly=False,
-          verbose=False,
           force=False,
-          docker=None):
+          docker=None,
+          loglevel="warning",
+          ):
 
+    logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s", level=getattr(logging, loglevel.upper()))
+    logger = logging.getLogger(__name__)
     cfg = utils.load_config(config)
     setup = cfg.get('setup', None)
     if setup:
+        logger.debug("Running setup: %s" % setup)
         for cmd in setup:
             sp.run(shlex.split(cmd))
     if docker is not None:
+        logger.debug("Setting up docker client v%s at %s", cfg['docker_client_version'], docker)
         docker = DockerClient(base_url=docker, version=cfg['docker_client_version'])
 
     success = utils.test_recipes(recipe_folder,
                                  config=config,
                                  packages=packages,
                                  testonly=testonly,
-                                 verbose=verbose,
                                  force=force,
                                  docker=docker)
     exit(0 if success else 1)
