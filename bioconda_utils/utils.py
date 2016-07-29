@@ -277,9 +277,22 @@ def build(recipe,
 
     if docker is not None:
         conda_build_folder = os.path.join(os.path.dirname(os.path.dirname(shutil.which("conda"))), "conda-bld")
+        logger.info("Using client's conda-build folder: %s", conda_build_folder)
         recipe = os.path.relpath(recipe, recipe_folder)
+        binds={
+            os.path.abspath(recipe_folder): {
+                "bind": "/home/dev/recipes",
+                "mode": "ro"
+            },
+            conda_build_folder: {
+                "bind": "/opt/miniconda/conda-bld",
+                "mode": "rw"
+            }
+        }
         env = dict(env)
         env["ABI"] = 4
+        logger.debug('Docker binds: %s', binds)
+        logger.debug('Docker env: %s', env)
         container = docker.create_container(
             image=config['docker_image'],
             volumes=["/home/dev/recipes", "/opt/miniconda"],
@@ -287,17 +300,7 @@ def build(recipe,
             environment=env,
             command="bash /opt/share/internal_startup.sh "
                 "conda build {0} --quiet recipes/{1}".format(channel_args, recipe),
-            host_config=docker.create_host_config(binds={
-                os.path.abspath(recipe_folder): {
-                    "bind": "/home/dev/recipes",
-                    "mode": "ro"
-                },
-                conda_build_folder: {
-                    "bind": "/opt/miniconda/conda-bld",
-                    "mode": "rw"
-                }
-            },
-            network_mode="host"))
+            host_config=docker.create_host_config(binds=binds, network_mode="host"))
         cid = container["Id"]
         docker.start(container=cid)
         status = docker.wait(container=cid)
@@ -359,7 +362,7 @@ def test_recipes(recipe_folder,
         logger.info("Nothing to be done.")
         return True
     else:
-        logger.info("Building and testing", len(dag), "recipes in total.")
+        logger.info("Building and testing %s recipes in total", len(dag))
 
     subdags_n = int(os.environ.get("SUBDAGS", 1))
     subdag_i = int(os.environ.get("SUBDAG", 0))
