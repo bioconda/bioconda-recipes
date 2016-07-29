@@ -182,7 +182,7 @@ def get_recipes(recipe_folder, package="*"):
                        glob.glob(os.path.join(path, "*", "meta.yaml")))
 
 
-def filter_recipes(recipes, env_matrix):
+def filter_recipes(recipes, env_matrix, config):
     """
     Generator yielding only those recipes that do not already exist.
 
@@ -196,12 +196,17 @@ def filter_recipes(recipes, env_matrix):
 
     env_matrix : EnvMatrix
     """
+
+    channel_args = []
+    for c in config['channels']:
+        channel_args.extend(['--channel', c])
+
     # Given the startup time of conda-build, provide all recipes at once.
     def msgs(env):
         logger.debug(env)
+        cmds = ["conda", "build", "--skip-existing", "--output", "--dirty"] + channel_args + recipes
         p = sp.run(
-            ["conda", "build", "--skip-existing", "--output", "--dirty",
-             ] + recipes,
+            cmds,
             check=True,
             stdout=sp.PIPE,
             stderr=sp.PIPE,
@@ -273,7 +278,7 @@ def build(recipe,
     if not force:
         build_args += ["--skip-existing"]
 
-    channel_args = ' '.join(map(lambda x: '-c ' + x, config['channels']))
+    channel_args = ['--channel ' + x for x in config['channels']]
 
     if docker is not None:
         conda_build_folder = os.path.join(os.path.dirname(os.path.dirname(shutil.which("conda"))), "conda-bld")
@@ -293,13 +298,15 @@ def build(recipe,
         env["ABI"] = 4
         logger.debug('Docker binds: %s', binds)
         logger.debug('Docker env: %s', env)
+        command = ("bash /opt/share/internal_startup.sh "
+                "conda build {0} --quiet recipes/{1}".format(' '.join(channel_args), recipe))
+        logger.debug('Docker command: %s', command)
         container = docker.create_container(
             image=config['docker_image'],
             volumes=["/home/dev/recipes", "/opt/miniconda"],
             user=os.getuid(),
             environment=env,
-            command="bash /opt/share/internal_startup.sh "
-                "conda build {0} --quiet recipes/{1}".format(channel_args, recipe),
+            command=command,
             host_config=docker.create_host_config(binds=binds, network_mode="host"))
         cid = container["Id"]
         docker.start(container=cid)
@@ -353,7 +360,7 @@ def test_recipes(recipe_folder,
 
     if not force:
         logger.info('Filtering recipes')
-        recipes = list(filter_recipes(recipes, env_matrix))
+        recipes = list(filter_recipes(recipes, env_matrix, config))
 
 
     dag, name2recipes = get_dag(recipes, blacklist=blacklist)
