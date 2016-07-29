@@ -69,8 +69,6 @@ def build(recipe_folder,
 
 
 @arg('repository', help='Path to top-level dir of repository')
-#@arg('gml', help='Output GML file. If filename ends in .gz or .bz2 it will '
-#     'be compressed')
 @arg('--packages',
      nargs="+",
      help='Glob for package[s] to show in DAG. Default is to show all '
@@ -81,7 +79,7 @@ def build(recipe_folder,
      help='Hide singletons in the printed graph.')
 def dag(repository, packages="*", format='gml', hide_singletons=False):
     """
-    Export the DAG of packages to a GML-format file for visualization
+    Export the DAG of packages to a graph format file for visualization
     """
     dag = utils.get_dag(utils.get_recipes(repository, packages))[0]
     if hide_singletons:
@@ -94,5 +92,26 @@ def dag(repository, packages="*", format='gml', hide_singletons=False):
         write_dot(dag, sys.stdout)
 
 
+@arg('repository', help='Path to top-level dir of repository')
+@arg('--packages', nargs='+', help='Glob for packages to inspect (default is all)')
+@arg('--dependencies', nargs='+', help='Return recipes with these dependencies')
+def dependent(repository, packages="*", dependencies=None):
+    """
+    Print recipes dependent on a package
+    """
+    if dependencies is None:
+        return
+
+    d, n2r = utils.get_dag(utils.get_recipes(repository, packages), restrict=False)
+
+    recipes = []
+    for dep in dependencies:
+        for i in d[dep]:
+            recipes.extend(n2r[i])
+    print('\n'.join(sorted(recipes)))
+
+
+
+
 def main():
-    argh.dispatch_commands([build, dag])
+    argh.dispatch_commands([build, dag, dependent])

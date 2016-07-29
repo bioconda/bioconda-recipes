@@ -101,7 +101,7 @@ def get_deps(recipe, build=True):
         yield dep.split()[0]
 
 
-def get_dag(recipes, blacklist=None):
+def get_dag(recipes, blacklist=None, restrict=True):
     """
     Returns the DAG of recipe paths and a dictionary that maps package names to
     recipe paths. These recipe path values are lists and contain paths to all
@@ -114,6 +114,11 @@ def get_dag(recipes, blacklist=None):
 
     blacklist : set
         Package names to skip
+
+    restrict : bool
+        If True, then dependencies will be included in the DAG only if they are
+        themselves in `recipes`. Otherwise, include all dependencies of
+        `recipes`.
 
     Returns
     -------
@@ -140,7 +145,7 @@ def get_dag(recipes, blacklist=None):
     def get_inner_deps(dependencies):
         for dep in dependencies:
             name = dep.split()[0]
-            if name in name2recipe:
+            if name in name2recipe or not restrict:
                 yield name
 
     dag = nx.DiGraph()
