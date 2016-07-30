@@ -12,8 +12,20 @@ setup(
     description="Utilities for building and managing conda packages",
     license="MIT",
     packages=["bioconda_utils"],
+    include_package_data=True,
+    data_files=[
+        (
+            'bioconda_utils',
+            [
+                'bioconda_startup.sh',
+            ],
+        )
+    ],
     install_requires=["argh", "networkx", "pydotplus", "pyyaml", "conda_build", "docker-py"],
-    entry_points={"console_scripts": ["bioconda-utils = bioconda_utils.cli:main"]},
+    entry_points={"console_scripts": [
+        "bioconda-utils = bioconda_utils.cli:main",
+        "bioconductor_skeleton = bioconda_utils.bioconductor_skeleton:main"
+    ]},
     classifiers=[
         "Development Status :: 4 - Beta",
         #"Development Status :: 5 - Production/Stable",

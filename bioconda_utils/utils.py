@@ -9,6 +9,7 @@ import shutil
 from collections import defaultdict, Iterable
 from itertools import product, chain
 import logging
+import pkg_resources
 import networkx as nx
 
 from conda_build.metadata import MetaData
@@ -292,6 +293,10 @@ def build(recipe,
         logger.info("Using client's conda-build folder: %s", conda_build_folder)
         recipe = os.path.relpath(recipe, recipe_folder)
         binds={
+            pkg_resources.resource_filename('bioconda_utils', 'bioconda_startup.sh'): {
+                "bind": "/opt/share/bioconda_startup.sh",
+                "mode": "ro"
+            },
             os.path.abspath(recipe_folder): {
                 "bind": "/home/dev/recipes",
                 "mode": "ro"
@@ -305,13 +310,13 @@ def build(recipe,
         env["ABI"] = 4
         logger.debug('Docker binds: %s', binds)
         logger.debug('Docker env: %s', env)
-        command = ("bash /opt/share/internal_startup.sh "
+        command = ("bash /opt/share/bioconda_startup.sh "
                 "conda build {0} --quiet recipes/{1}".format(' '.join(channel_args), recipe))
         logger.debug('Docker command: %s', command)
         container = docker.create_container(
             image=config['docker_image'],
             volumes=["/home/dev/recipes", "/opt/miniconda"],
-            #user=os.getuid(),
+            user=os.getuid(),
             environment=env,
             command=command,
             host_config=docker.create_host_config(binds=binds, network_mode="host"))
