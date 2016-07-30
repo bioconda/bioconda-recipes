@@ -386,6 +386,7 @@ def test_recipes(recipe_folder,
         return True
     else:
         logger.info("Building and testing %s recipes in total", len(dag))
+        logger.info("Recipes to build: %s", "\n".join(dag.nodes()))
 
     subdags_n = int(os.environ.get("SUBDAGS", 1))
     subdag_i = int(os.environ.get("SUBDAG", 0))
@@ -428,7 +429,7 @@ def test_recipes(recipe_folder,
         if "python" not in get_deps(recipe):
             envs = [next(envs)]
         for env in envs:
-            success |= build(recipe,
+            success &= build(recipe,
                              recipe_folder,
                              env,
                              config,
