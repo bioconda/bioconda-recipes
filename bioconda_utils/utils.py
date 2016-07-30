@@ -283,7 +283,9 @@ def build(recipe,
     if not force:
         build_args += ["--skip-existing"]
 
-    channel_args = ['--channel ' + x for x in config['channels']]
+    channel_args = []
+    for c in config['channels']:
+        channel_args.extend(['--channel', c])
 
     if docker is not None:
         conda_build_folder = os.path.join(os.path.dirname(os.path.dirname(shutil.which("conda"))), "conda-bld")
@@ -323,7 +325,7 @@ def build(recipe,
     else:
         try:
             out = None if logger.level <= logging.DEBUG else sp.PIPE
-            sp.run(["conda", "build", "--quiet", recipe] + build_args + [channel_args],
+            sp.run(["conda", "build", "--quiet", recipe] + build_args + channel_args,
                    stderr=out,
                    stdout=out,
                    check=True,
@@ -348,7 +350,7 @@ def test_recipes(recipe_folder,
     """
     config = load_config(config)
     env_matrix = EnvMatrix(config['env_matrix'])
-    blacklist = get_blacklist(config['blacklists'])
+    blacklist = get_blacklist(config['blacklists'], recipe_folder)
 
     logger.info('blacklist: %s', ', '.join(sorted(blacklist)))
 
@@ -357,6 +359,9 @@ def test_recipes(recipe_folder,
     recipes = []
     for package in packages:
         for recipe in get_recipes(recipe_folder, package):
+            if os.path.relpath(recipe, recipe_folder) in  blacklist:
+                logger.debug('blacklisted: %s', recipe)
+                continue
             recipes.append(recipe)
             logger.debug(recipe)
     if not recipes:
@@ -459,11 +464,16 @@ def test_recipes(recipe_folder,
     return success
 
 
-def get_blacklist(blacklists):
+def get_blacklist(blacklists, recipe_folder):
     "Return list of recipes to skip from blacklists"
     blacklist = set()
     for p in blacklists:
-        blacklist.update([i.strip() for i in open(p) if not i.startswith('#')])
+        blacklist.update(
+            [
+                os.path.relpath(i.strip(), recipe_folder)
+                for i in open(p) if not i.startswith('#')
+            ]
+        )
     return blacklist
 
 
