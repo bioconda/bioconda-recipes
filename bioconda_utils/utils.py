@@ -298,7 +298,7 @@ def build(recipe,
                 "mode": "ro"
             },
             os.path.abspath(recipe_folder): {
-                "bind": "/home/dev/recipes",
+                "bind": "/opt/recipes",
                 "mode": "ro"
             },
             conda_build_folder: {
@@ -315,7 +315,7 @@ def build(recipe,
         logger.debug('Docker command: %s', command)
         container = docker.create_container(
             image=config['docker_image'],
-            volumes=["/home/dev/recipes", "/opt/miniconda"],
+            volumes=["/opt/recipes", "/opt/miniconda"],
             user=os.getuid(),
             environment=env,
             command=command,
