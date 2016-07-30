@@ -89,5 +89,6 @@ if [[ $# < 1 ]]; then
     exec bash
 else
     # Run whatever the user wants to pass in
-    exec "$@"
+    echo "/home/dev:"
+    ls /home/dev;  exec "$@"
 fi
