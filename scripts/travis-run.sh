@@ -6,7 +6,7 @@ export PATH=/tmp/anaconda/bin:$PATH
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
 
-    bioconda-utils build recipes config.yml --docker --loglevel=debug
+    bioconda-utils build recipes config.yml --docker --loglevel=info
 
     if [[ $SUBDAG = 0 ]]
     then
@@ -18,6 +18,6 @@ then
     fi
 else
 
-    bioconda-utils build recipes config.yml --loglevel=debug
+    bioconda-utils build recipes config.yml --loglevel=info
 
 fi
