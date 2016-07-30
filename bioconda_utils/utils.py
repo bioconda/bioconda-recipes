@@ -323,6 +323,7 @@ def build(recipe,
         cid = container["Id"]
         docker.start(container=cid)
         status = docker.wait(container=cid)
+        logger.debug('Docker status: %s', status)
         if status != 0:
             print(docker.logs(container=cid, stdout=True, stderr=True).decode())
             return False
