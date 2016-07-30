@@ -311,7 +311,7 @@ def build(recipe,
         container = docker.create_container(
             image=config['docker_image'],
             volumes=["/home/dev/recipes", "/opt/miniconda"],
-            user=os.getuid(),
+            #user=os.getuid(),
             environment=env,
             command=command,
             host_config=docker.create_host_config(binds=binds, network_mode="host"))
