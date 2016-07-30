@@ -327,6 +327,7 @@ def build(recipe,
         if status != 0:
             logger.error(docker.logs(container=cid, stdout=True, stderr=True).decode())
             return False
+        logger.info('Successfully built %s', recipe)
         return True
     else:
         try:
@@ -337,6 +338,7 @@ def build(recipe,
                    check=True,
                    universal_newlines=True,
                    env=merged_env(env))
+            logger.info('Successfully built %s', recipe)
             return True
         except sp.CalledProcessError as e:
             if e.stdout is not None:
