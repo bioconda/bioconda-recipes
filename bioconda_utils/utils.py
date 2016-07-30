@@ -8,11 +8,13 @@ import sys
 import shutil
 from collections import defaultdict, Iterable
 from itertools import product, chain
+import logging
 import networkx as nx
 
 from conda_build.metadata import MetaData
 import yaml
 
+logger = logging.getLogger(__name__)
 
 def flatten_dict(dict):
     for key, values in dict.items():
@@ -45,8 +47,7 @@ class EnvMatrix:
 
     """
 
-    def __init__(self, path, verbose=False):
-        self.verbose = verbose
+    def __init__(self, path):
         with open(path) as f:
             self.env = yaml.load(f)
             for key, val in self.env.items():
@@ -74,9 +75,6 @@ class EnvMatrix:
         """
         for env in product(*flatten_dict(self.env)):
             yield env
-            #e = dict(os.environ)
-            #e.update(env)
-            #yield e
 
 
 def get_deps(recipe, build=True):
@@ -103,7 +101,7 @@ def get_deps(recipe, build=True):
         yield dep.split()[0]
 
 
-def get_dag(recipes, blacklist=None):
+def get_dag(recipes, blacklist=None, restrict=True):
     """
     Returns the DAG of recipe paths and a dictionary that maps package names to
     recipe paths. These recipe path values are lists and contain paths to all
@@ -116,6 +114,11 @@ def get_dag(recipes, blacklist=None):
 
     blacklist : set
         Package names to skip
+
+    restrict : bool
+        If True, then dependencies will be included in the DAG only if they are
+        themselves in `recipes`. Otherwise, include all dependencies of
+        `recipes`.
 
     Returns
     -------
@@ -142,7 +145,7 @@ def get_dag(recipes, blacklist=None):
     def get_inner_deps(dependencies):
         for dep in dependencies:
             name = dep.split()[0]
-            if name in name2recipe:
+            if name in name2recipe or not restrict:
                 yield name
 
     dag = nx.DiGraph()
@@ -176,6 +179,7 @@ def get_recipes(recipe_folder, package="*"):
     if isinstance(package, str):
         package = [package]
     for p in package:
+        logger.debug("get_recipes(%s, package='%s'): %s", recipe_folder, package, p)
         path = os.path.join(recipe_folder, p)
         yield from map(os.path.dirname,
                        glob.glob(os.path.join(path, "meta.yaml")))
@@ -183,7 +187,7 @@ def get_recipes(recipe_folder, package="*"):
                        glob.glob(os.path.join(path, "*", "meta.yaml")))
 
 
-def filter_recipes(recipes, env_matrix):
+def filter_recipes(recipes, env_matrix, config):
     """
     Generator yielding only those recipes that do not already exist.
 
@@ -198,10 +202,16 @@ def filter_recipes(recipes, env_matrix):
     env_matrix : EnvMatrix
     """
 
+    channel_args = []
+    for c in config['channels']:
+        channel_args.extend(['--channel', c])
+
+    # Given the startup time of conda-build, provide all recipes at once.
     def msgs(env):
+        logger.debug(env)
+        cmds = ["conda", "build", "--skip-existing", "--output", "--dirty"] + channel_args + recipes
         p = sp.run(
-            ["conda", "build", "--skip-existing", "--output", "--dirty"
-             ] + recipes,
+            cmds,
             check=True,
             stdout=sp.PIPE,
             stderr=sp.PIPE,
@@ -218,7 +228,7 @@ def filter_recipes(recipes, env_matrix):
         for item in zip(recipes, *map(msgs, env_matrix)):
             recipe = item[0]
             msg = item[1:]
-
+            logger.debug("recipe %s: %s", recipe, '\n\t' + '\n\t'.join(msg))
             if not all(map(skip, msg)):
                 yield recipe
     except sp.CalledProcessError as e:
@@ -230,7 +240,6 @@ def build(recipe,
           recipe_folder,
           env,
           config,
-          verbose=False,
           testonly=False,
           force=False,
           channels=None,
@@ -250,8 +259,6 @@ def build(recipe,
     config : dict
         Configuration dictionary.
 
-    verbose : bool
-
     testonly : bool
         If True, skip building and instead run the test described in the
         meta.yaml.
@@ -267,8 +274,7 @@ def build(recipe,
     docker : docker.Client object
         Run docker container using this client
     """
-    print("Building/testing", recipe, "for environment:")
-    print(*('\t{}={}'.format(*i) for i in sorted(env)), sep="\n")
+    logger.info("Building and testing '%s' for environment %s", recipe, ';'.join(['='.join(i) for i in sorted(env)]))
     build_args = []
     if testonly:
         build_args.append("--test")
@@ -277,31 +283,38 @@ def build(recipe,
     if not force:
         build_args += ["--skip-existing"]
 
-    channel_args = ' '.join(map(lambda x: '-c ' + x, config['channels']))
+    channel_args = []
+    for c in config['channels']:
+        channel_args.extend(['--channel', c])
 
     if docker is not None:
         conda_build_folder = os.path.join(os.path.dirname(os.path.dirname(shutil.which("conda"))), "conda-bld")
+        logger.info("Using client's conda-build folder: %s", conda_build_folder)
         recipe = os.path.relpath(recipe, recipe_folder)
+        binds={
+            os.path.abspath(recipe_folder): {
+                "bind": "/home/dev/recipes",
+                "mode": "ro"
+            },
+            conda_build_folder: {
+                "bind": "/opt/miniconda/conda-bld",
+                "mode": "rw"
+            }
+        }
         env = dict(env)
         env["ABI"] = 4
+        logger.debug('Docker binds: %s', binds)
+        logger.debug('Docker env: %s', env)
+        command = ("bash /opt/share/internal_startup.sh "
+                "conda build {0} --quiet recipes/{1}".format(' '.join(channel_args), recipe))
+        logger.debug('Docker command: %s', command)
         container = docker.create_container(
             image=config['docker_image'],
             volumes=["/home/dev/recipes", "/opt/miniconda"],
             user=os.getuid(),
             environment=env,
-            command="bash /opt/share/internal_startup.sh "
-                "conda build {0} --quiet recipes/{1}".format(channel_args, recipe),
-            host_config=docker.create_host_config(binds={
-                os.path.abspath(recipe_folder): {
-                    "bind": "/home/dev/recipes",
-                    "mode": "ro"
-                },
-                conda_build_folder: {
-                    "bind": "/opt/miniconda/conda-bld",
-                    "mode": "rw"
-                }
-            },
-            network_mode="host"))
+            command=command,
+            host_config=docker.create_host_config(binds=binds, network_mode="host"))
         cid = container["Id"]
         docker.start(container=cid)
         status = docker.wait(container=cid)
@@ -311,8 +324,8 @@ def build(recipe,
         return True
     else:
         try:
-            out = None if verbose else sp.PIPE
-            sp.run(["conda", "build", "--quiet", recipe] + build_args + [channel_args],
+            out = None if logger.level <= logging.DEBUG else sp.PIPE
+            sp.run(["conda", "build", "--quiet", recipe] + build_args + channel_args,
                    stderr=out,
                    stdout=out,
                    check=True,
@@ -330,44 +343,43 @@ def test_recipes(recipe_folder,
                  config,
                  packages="*",
                  testonly=False,
-                 verbose=False,
                  force=False,
                  docker=None):
     """
     Build one or many bioconda packages.
     """
     config = load_config(config)
-    env_matrix = EnvMatrix(config['env_matrix'], verbose=verbose)
-    blacklist = get_blacklist(config['blacklists'])
+    env_matrix = EnvMatrix(config['env_matrix'])
+    blacklist = get_blacklist(config['blacklists'], recipe_folder)
 
-    if verbose:
-        print('blacklist:', blacklist)
-
-    print("Filtering recipes...")
+    logger.info('blacklist: %s', ', '.join(sorted(blacklist)))
 
     if packages == "*":
         packages = ["*"]
-    recipes = [
-        recipe
-        for package in packages
-        for recipe in get_recipes(recipe_folder, package)
-    ]
+    recipes = []
+    for package in packages:
+        for recipe in get_recipes(recipe_folder, package):
+            if os.path.relpath(recipe, recipe_folder) in  blacklist:
+                logger.debug('blacklisted: %s', recipe)
+                continue
+            recipes.append(recipe)
+            logger.debug(recipe)
     if not recipes:
-        print("Nothing to be done.")
+        logger.info("Nothing to be done.")
         return
 
     if not force:
-        recipes = list(filter_recipes(recipes, env_matrix))
+        logger.info('Filtering recipes')
+        recipes = list(filter_recipes(recipes, env_matrix, config))
 
-    env_matrix.verbose = verbose
 
     dag, name2recipes = get_dag(recipes, blacklist=blacklist)
 
     if not dag:
-        print("Nothing to be done.")
+        logger.info("Nothing to be done.")
         return True
     else:
-        print("Building/testing", len(dag), "recipes in total.")
+        logger.info("Building and testing %s recipes in total", len(dag))
 
     subdags_n = int(os.environ.get("SUBDAGS", 1))
     subdag_i = int(os.environ.get("SUBDAG", 0))
@@ -387,7 +399,7 @@ def test_recipes(recipe_folder,
     else:
         chunks = subdags
     if subdag_i >= len(chunks):
-        print("Nothing to be done.")
+        logger.info("Nothing to be done.")
         return True
     # merge subdags of the selected chunk
     subdag = dag.subgraph(chunks[subdag_i])
@@ -396,8 +408,7 @@ def test_recipes(recipe_folder,
                for package in nx.topological_sort(subdag)
                for recipe in name2recipes[package]]
 
-    print("Building/testing subdag", subdag_i, "of", subdags_n, " (",
-          len(recipes), "recipes).")
+    logger.info("Building and testing subdag %s of %s (%s recipes)", subdag_i, subdags_n, len(recipes))
 
     if docker is not None:
         print('Pulling docker image...')
@@ -415,7 +426,6 @@ def test_recipes(recipe_folder,
                              recipe_folder,
                              env,
                              config,
-                             verbose,
                              testonly,
                              force,
                              docker=docker)
@@ -454,11 +464,16 @@ def test_recipes(recipe_folder,
     return success
 
 
-def get_blacklist(blacklists):
+def get_blacklist(blacklists, recipe_folder):
     "Return list of recipes to skip from blacklists"
     blacklist = set()
     for p in blacklists:
-        blacklist.update([i.strip() for i in open(p) if not i.startswith('#')])
+        blacklist.update(
+            [
+                os.path.relpath(i.strip(), recipe_folder)
+                for i in open(p) if not i.startswith('#')
+            ]
+        )
     return blacklist
 
 
