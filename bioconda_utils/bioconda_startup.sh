@@ -81,5 +81,5 @@ if [[ $# < 1 ]]; then
     exec bash
 else
     # Run whatever the user wants to pass in
-    ls /opt;  exec "$@"
+    cd /opt;  exec "$@"
 fi
