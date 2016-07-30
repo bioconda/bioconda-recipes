@@ -325,7 +325,7 @@ def build(recipe,
         status = docker.wait(container=cid)
         logger.debug('Docker status: %s', status)
         if status != 0:
-            print(docker.logs(container=cid, stdout=True, stderr=True).decode())
+            logger.error(docker.logs(container=cid, stdout=True, stderr=True).decode())
             return False
         return True
     else:
