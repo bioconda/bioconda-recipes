@@ -68,7 +68,7 @@ def build(recipe_folder,
     exit(0 if success else 1)
 
 
-@arg('repository', help='Path to top-level dir of repository')
+@arg('recipe_folder', help='Path to recipes directory')
 @arg('--packages',
      nargs="+",
      help='Glob for package[s] to show in DAG. Default is to show all '
@@ -77,11 +77,11 @@ def build(recipe_folder,
 @arg('--hide-singletons',
      action='store_true',
      help='Hide singletons in the printed graph.')
-def dag(repository, packages="*", format='gml', hide_singletons=False):
+def dag(recipe_folder, packages="*", format='gml', hide_singletons=False):
     """
     Export the DAG of packages to a graph format file for visualization
     """
-    dag = utils.get_dag(utils.get_recipes(repository, packages))[0]
+    dag = utils.get_dag(utils.get_recipes(recipe_folder, packages))[0]
     if hide_singletons:
         for node in nx.nodes(dag):
             if dag.degree(node) == 0:
@@ -92,25 +92,27 @@ def dag(repository, packages="*", format='gml', hide_singletons=False):
         write_dot(dag, sys.stdout)
 
 
-@arg('repository', help='Path to top-level dir of repository')
+@arg('recipe_folder', help='Path to recipes directory')
 @arg('--packages', nargs='+', help='Glob for packages to inspect (default is all)')
 @arg('--dependencies', nargs='+', help='Return recipes with these dependencies')
-def dependent(repository, packages="*", dependencies=None):
+@arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
+def dependent(recipe_folder, packages="*", dependencies=None, loglevel='warning'):
     """
     Print recipes dependent on a package
     """
+    logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s", level=getattr(logging, loglevel.upper()))
+    logger = logging.getLogger(__name__)
     if dependencies is None:
         return
 
-    d, n2r = utils.get_dag(utils.get_recipes(repository, packages), restrict=False)
+    d, n2r = utils.get_dag(utils.get_recipes(recipe_folder, packages), restrict=False)
 
     recipes = []
     for dep in dependencies:
         for i in d[dep]:
-            recipes.extend(n2r[i])
+            for r in n2r[i]:
+                recipes.append(r)
     print('\n'.join(sorted(recipes)))
-
-
 
 
 def main():
