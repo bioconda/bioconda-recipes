@@ -73,14 +73,6 @@ if [[ $# < 1 ]]; then
     echo "    miniconda (2.7) is installed at /opt/miniconda."
     echo "    git is also available."
 
-    if [ -f "/home/dev/.gitconfig" ]; then
-        echo "    Your .gitconfig has been imported."
-    fi
-
-    if [ -f /id_rsa ]; then
-        echo "    Your ssh private key has been imported for passwordless ssh."
-    fi
-
     echo
 
     # restore stdout
