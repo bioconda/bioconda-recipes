@@ -84,7 +84,7 @@ else
 
     userid=$1
     shift
-    useradd -m --uid $userid -G wheel bioconda
+    sudo useradd -m --uid $userid -G wheel bioconda
 
     # Run whatever the user wants to pass in
     cd /opt;  exec "$@"
