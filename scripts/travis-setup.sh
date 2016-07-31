@@ -3,7 +3,6 @@ set -euo pipefail
 
 [[ $TRAVIS_OS_NAME = "linux" ]] && tag=Linux || tag=MacOSX
 curl -O https://repo.continuum.io/miniconda/Miniconda3-latest-${tag}-x86_64.sh
-sudo su
 bash Miniconda3-latest-${tag}-x86_64.sh -b -p /tmp/anaconda
 export PATH=/tmp/anaconda/bin:$PATH
 conda install -y --file scripts/requirements.txt
