@@ -301,11 +301,12 @@ def build(recipe,
                 "bind": "/opt/recipes",
                 "mode": "ro"
             },
-            conda_build_folder: {
-                "bind": "/opt/miniconda/conda-bld",
-                "mode": "rw"
-            }
         }
+        for subdir in ['svn-cache', 'hg-cache', 'git-cache', 'src-cache', 'linux-64']:
+            binds[os.path.join(conda_build_folder, subdir)] = {
+                'bind': os.path.join('/opt/miniconda/conda-bld/', subdir),
+                'mode': 'rw'
+            }
         env = dict(env)
         env["ABI"] = 4
         logger.debug('Docker binds: %s', binds)
@@ -317,7 +318,7 @@ def build(recipe,
         container = docker.create_container(
             image=config['docker_image'],
             volumes=["/opt/recipes", "/opt/miniconda"],
-            user=os.getuid(),
+            #user=os.getuid(),
             environment=env,
             command=command,
             host_config=docker.create_host_config(binds=binds, network_mode="host"))

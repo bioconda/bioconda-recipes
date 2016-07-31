@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 set -eo pipefail
 
 if [[ -z "${ABI}" ]]; then
@@ -85,8 +84,6 @@ else
 
     userid=$1
     shift
-    sudo useradd -o -m --uid $userid -G wheel bioconda
-
-    # Run whatever the user wants to pass in
-    cd /opt;  exec "$@"
+    cd /opt;
+    exec "$@"
 fi
