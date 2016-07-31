@@ -1,5 +1,6 @@
 #!/bin/bash
-
+set -x
+set -eo pipefail
 
 if [[ -z "${ABI}" ]]; then
     ABI_WARNING="WARNING: No ABI default set.  Falling back to compatibility mode with GCC 4."
