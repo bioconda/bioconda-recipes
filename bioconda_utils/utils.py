@@ -310,8 +310,9 @@ def build(recipe,
         env["ABI"] = 4
         logger.debug('Docker binds: %s', binds)
         logger.debug('Docker env: %s', env)
-        command = ("bash /opt/share/bioconda_startup.sh "
-                "conda build {0} --quiet recipes/{1}".format(' '.join(channel_args), recipe))
+        command = ("bash /opt/share/bioconda_startup.sh {uid} "
+                "conda build {args} --quiet recipes/{recipe}".format(
+                    uid=os.getuid(), args=' '.join(channel_args), recipe=recipe))
         logger.debug('Docker command: %s', command)
         container = docker.create_container(
             image=config['docker_image'],

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 if [[ -z "${ABI}" ]]; then
     ABI_WARNING="WARNING: No ABI default set.  Falling back to compatibility mode with GCC 4."
     export ABI=4
@@ -80,6 +81,11 @@ if [[ $# < 1 ]]; then
 
     exec bash
 else
+
+    userid=$1
+    shift
+    useradd -m --uid $userid -G wheel bioconda
+
     # Run whatever the user wants to pass in
     cd /opt;  exec "$@"
 fi
