@@ -1,3 +1,3 @@
 #!/bin/bash
 stack setup
-stack build
+stack --local-bin-path $PREFIX/bin build
