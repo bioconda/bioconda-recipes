@@ -6,6 +6,8 @@ if [[ -z "${ABI}" ]]; then
     export ABI=4
 fi
 
+sudo chown 1000:1000 /opt/miniconda/ -R
+
 # Setup home environment
 
 export PATH=/usr/local/bin:/opt/miniconda/bin:$PATH
@@ -87,3 +89,4 @@ else
     cd /opt;
     exec "$@"
 fi
+
