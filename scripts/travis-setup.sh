@@ -18,9 +18,3 @@ chmod -R 777 /tmp/anaconda
 ls -lrth /tmp/anaconda
 echo "$UID"
 echo "$USER"
-
-if [[ $TRAVIS_OS_NAME = "linux" ]]
-then
-    sudo chown ubuntu:ubuntu /tmp/anaconda -R
-    sudo chmod 777 /tmp/anaconda -R
-fi
