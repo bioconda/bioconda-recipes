@@ -17,6 +17,6 @@ then
 else
     export PATH=/anaconda/bin:$PATH
     # build packages
-    # scripts/build-packages.py --repository . --env-matrix scripts/env_matrix.yml
-    bioconda-utils build . scripts/env_matrix.yml
+    scripts/build-packages.py --repository . --env-matrix scripts/env_matrix.yml
+    # bioconda-utils build . scripts/env_matrix.yml
 fi
