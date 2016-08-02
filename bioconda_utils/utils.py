@@ -233,7 +233,7 @@ def filter_recipes(recipes, env_matrix, config):
             if not all(map(skip, msg)):
                 yield recipe
     except sp.CalledProcessError as e:
-        print(e.stderr, file=sys.stderr)
+        logger.error("%s" % e.stderr)
         exit(1)
 
 
@@ -346,8 +346,8 @@ def build(recipe,
             return True
         except sp.CalledProcessError as e:
             if e.stdout is not None:
-                print(e.stdout)
-                print(e.stderr)
+                logger.error(e.stdout)
+                logger.error(e.stderr)
             return False
 
 
@@ -424,9 +424,9 @@ def test_recipes(recipe_folder,
     logger.info("Building and testing subdag %s of %s (%s recipes)", subdag_i, subdags_n, len(recipes))
 
     if docker is not None:
-        print('Pulling docker image...')
+        logger.info(('Pulling docker image...')
         docker.pull(config['docker_image'])
-        print('Done.')
+        logger.info('Done.')
 
     success = True
     for recipe in recipes:
