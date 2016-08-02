@@ -424,7 +424,7 @@ def test_recipes(recipe_folder,
     logger.info("Building and testing subdag %s of %s (%s recipes)", subdag_i, subdags_n, len(recipes))
 
     if docker is not None:
-        logger.info(('Pulling docker image...')
+        logger.info('Pulling docker image...')
         docker.pull(config['docker_image'])
         logger.info('Done.')
 
