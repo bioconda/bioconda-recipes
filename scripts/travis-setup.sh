@@ -7,7 +7,3 @@ bash Miniconda3-latest-${tag}-x86_64.sh -b -p /tmp/anaconda
 export PATH=/tmp/anaconda/bin:$PATH
 conda install -y --file scripts/requirements.txt
 pip install git+https://github.com/bioconda/bioconda-utils.git@bgruening
-chmod -R 777 /tmp/anaconda
-ls -lrth /tmp/anaconda
-echo "$UID"
-echo "$USER"
