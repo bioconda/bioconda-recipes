@@ -6,7 +6,10 @@ if [[ -z "${ABI}" ]]; then
     export ABI=4
 fi
 
-sudo chown 1000:1000 /opt/miniconda/ -R
+uid=`id --user`
+gid=`id --group`
+
+sudo chown $uid:$gid /opt/miniconda/ -R
 
 # Setup home environment
 
