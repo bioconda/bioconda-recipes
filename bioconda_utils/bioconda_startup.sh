@@ -6,8 +6,8 @@ if [[ -z "${ABI}" ]]; then
     export ABI=4
 fi
 
-_uid=`id --user`
-_gid=`id --group`
+uid=`id --user`
+gid=`id --group`
 
 # This does not work, as the login user (docker --user) does not exist and are not in sudoers
 #getent group $_gid || sudo groupadd $_gid
