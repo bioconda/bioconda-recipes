@@ -312,7 +312,7 @@ def build(recipe,
         logger.debug('Docker binds: %s', binds)
         logger.debug('Docker env: %s', env)
 
-        user_id = os.getuid()
+        user_id = 1000  #os.getuid()
         command = ("bash /opt/share/bioconda_startup.sh {uid} "
                 "conda build {args} --quiet recipes/{recipe}".format(
                     uid=user_id, args=' '.join(channel_args), recipe=recipe))
