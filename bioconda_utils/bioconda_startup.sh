@@ -9,6 +9,9 @@ fi
 uid=`id --user`
 gid=`id --group`
 
+getent group $gid | groupadd $gid
+id -u $uid &>/dev/null || useradd -u $uid -g $gid -m bioconda
+
 sudo chown $uid:$gid /opt/miniconda/ -R
 
 # Setup home environment
