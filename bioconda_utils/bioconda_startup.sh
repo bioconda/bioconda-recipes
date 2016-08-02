@@ -6,6 +6,15 @@ if [[ -z "${ABI}" ]]; then
     export ABI=4
 fi
 
+uid=`id --user`
+gid=`id --group`
+
+# This does not work, as the login user (docker --user) does not exist and are not in sudoers
+#getent group $_gid || sudo groupadd $_gid
+#id -u $_uid &>/dev/null || sudo useradd -u $_uid -g $_gid -m bioconda
+
+sudo chown $uid:$gid /opt/miniconda/ -R
+
 # Setup home environment
 
 export PATH=/usr/local/bin:/opt/miniconda/bin:$PATH
@@ -87,3 +96,4 @@ else
     cd /opt;
     exec "$@"
 fi
+
