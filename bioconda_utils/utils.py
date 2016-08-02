@@ -484,7 +484,7 @@ def get_blacklist(blacklists, recipe_folder):
         blacklist.update(
             [
                 os.path.relpath(i.strip(), recipe_folder)
-                for i in open(p) if not i.startswith('#')
+                for i in open(p) if not i.startswith('#') and i.strip()
             ]
         )
     return blacklist
