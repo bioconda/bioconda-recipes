@@ -312,14 +312,15 @@ def build(recipe,
         logger.debug('Docker binds: %s', binds)
         logger.debug('Docker env: %s', env)
 
+        user_id = os.getuid()
         command = ("bash /opt/share/bioconda_startup.sh {uid} "
                 "conda build {args} --quiet recipes/{recipe}".format(
-                    uid=1000, args=' '.join(channel_args), recipe=recipe))
+                    uid=user_id, args=' '.join(channel_args), recipe=recipe))
         logger.debug('Docker command: %s', command)
         container = docker.create_container(
             image=config['docker_image'],
             volumes=["/opt/recipes", "/opt/miniconda"],
-            user=1000,
+            user=user_id,
             environment=env,
             command=command,
             host_config=docker.create_host_config(binds=binds, network_mode="host"))
