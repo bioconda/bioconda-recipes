@@ -32,8 +32,7 @@ if [ -z $1 ]; then
     exit 1
 fi
 
-REPO="$1"
-RECIPES="$1/recipes"
+RECIPES="$1"
 HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 
@@ -60,7 +59,7 @@ function log () {
 log "***Discarding un-committed R and bioconductor recipes in $RECIPES"
 git checkout -- "$RECIPES/bioconductor-*" "$RECIPES/r-*"
 
-for i in $(python "$HERE/update_bioconductor_packages.py" --repository "$REPO"); do
+for i in $(python "$HERE/update_bioconductor_packages.py" --repository "$RECIPES"); do
     bioconductor_name=$(echo "$i" | awk -F ":" '{print $1}')
     recipe_name="$(echo "$i" | awk -F ":" '{print $2}')"
     log "Updating package $bioconductor_name (recipe $recipe_name)"
