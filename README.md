@@ -1,3 +1,4 @@
+
 ![](https://raw.githubusercontent.com/bioconda/bioconda-recipes/master/logo/bioconda_monochrome_small.png
  "Bioconda")
 
@@ -37,14 +38,12 @@ prerequisites are assumed:
   recommended.
 - [`docker`](https://www.docker.com/)
 - [`git`](https://git-scm.com/)
-- [`bioconda-utils](https://github.com/bioconda/bioconda-utils)
 
 ### Step 1: Create a new recipe
 
 Fork this repository or create a new branch to work in. Within the new branch,
 [create a recipe](http://conda.pydata.org/docs/building/build.html)
-(`your_package` in this example) in the `recipes` directory. See our
-[guidelines](GUIDELINES.md) for best practices and examples.
+(`your_package` in this example) in the `recipes` directory. See our [guidelines](GUIDELINES.md) for best practices and examples.
 
 ### Step 2: Test the recipe
 
@@ -59,22 +58,19 @@ Bioconductor packages will be built using:
 
     conda build recipes/your_package --channel bioconda --channel r
 
-Then, you can test it using the `bioconda-utils` tools. This should work
-whether on OSX or Linux:
+Then, you can test it in the docker container with:
 
-    bioconda-utils build recipes config.yml --package your_package
+    docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix /bioconda-recipes/scripts/env_matrix.yml
 
-Adding the `--docker` flag will build your package using a CentOS 5 Docker
-container to maximize compatibility. This will automatically export your conda
-build directory to the container, so that any packages you build will be
-accessible to your machine even when not running in a Docker container:
+To optionally build for a specific Python version, provide the `CONDA_PY`
+environmental variable. For example, to build specifically for Python 3.4:
 
-    bioconda-utils build recipes config.yml --package your_package --docker
+    docker run -e CONDA_PY=34 -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix /bioconda-recipes/scripts/env_matrix.yml
 
 To optionally build and test all packages (if they don't already exist), leave off the
 package name:
 
-    bioconda-utils build recipes config.yml --docker
+    docker run -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder --env-matrix /bioconda-recipes/scripts/env_matrix.yml
 
 If rebuilding a previously-built package and the version number hasn't changed,
 be sure to increment the build number in `meta.yaml` (the default build number
@@ -117,11 +113,9 @@ For other styles, replace ``?style=flat-square`` with ``?style=flat`` or
 
 ### Building packages for Mac OSX
 **By default, recipes will be built for both Linux and OSX**
-(see "The bioconda build system" section below) upon submitting a pull request.
-Many recipes build cleanly on Linux but not on OSX. The easiest way to find out
-is to let the travis-ci tests try building for both platforms. If it fails on
-OSX but not Linux, the easy fix is to explicitly skip the OSX build using
-a [platform-specific
+(see "The bioconda build system" section below) upon submitting
+a pull request. Many recipes build cleanly on Linux but not on OSX. The easy
+fix is to explicitly skip the OSX build using a [platform-specific
 selector](http://conda.pydata.org/docs/building/meta-yaml.html#skipping-builds)
 on a line in the `meta.yaml` that skips the build, like this:
 
@@ -147,7 +141,7 @@ To test all OSX recipes (skipping those that define `skip: True #[osx]`) use
 the following from the top-level dir:
 
 ```bash
-bioconda-utils build recipes config.yml
+scripts/build-packages.py --repository . --env-matrix scripts/env_matrix.yml
 ```
 
 ### Managing multiple versions of a package
@@ -159,8 +153,8 @@ subdirectories of the corresponding recipe, e.g.:
 ```
 java-jdk/
 ├── 7.0.91
-│   ├── build.sh
-│   └── meta.yaml
+│   ├── build.sh
+│   └── meta.yaml
 ├── build.sh
 └── meta.yaml
 ```
@@ -170,16 +164,25 @@ updated when new releases are made.
 
 ### Other notes
 
-We use the docker container `continuumio/conda_builder_linux` pre-built CentOS
-5 image with compilers installed as part of the standard build. To debug
-a recipe in this container, run it in interactive mode while exporting the
-recipes directory to the `/home/dev/recipes` dir in the container:
-
+We use a pre-built CentOS 5 image with compilers installed as part of the
+standard build. To build this yourself, you can do:
 
 ```bash
-docker run -it --rm -v `pwd`/recipes:/home/dev/recipes continuumio/conda_builder_linux /bin/bash /opt/share/internal_startup.sh
+docker login
+(cd scripts && docker build -t bioconda/bioconda-builder .)
 ```
 
+Then test a recipe with:
+
+```bash
+docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
+```
+
+If you wish the open a bash shell in the Docker container for manual debugging:
+
+```bash
+docker run -i -t --entrypoint /bin/bash bioconda/bioconda-builder
+```
 
 ## The bioconda build system
 This repository is set up on [Travis CI](https://travis-ci.org) such that on
