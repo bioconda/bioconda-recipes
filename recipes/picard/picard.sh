@@ -16,8 +16,9 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 JAR_DIR=$DIR
-
-java=java
+ENV_PREFIX="$(dirname $(dirname $DIR))"
+# Use Java installed with Anaconda to ensure correct version
+java="$ENV_PREFIX/bin/java"
 
 # if JAVA_HOME is set (non-empty), use it. Otherwise keep "java"
 if [ ! -z "${JAVA_HOME:=}" ]; then
