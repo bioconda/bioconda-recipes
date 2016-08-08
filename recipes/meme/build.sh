@@ -12,5 +12,4 @@ cpanm XML::Parser::Expat --configure-args "EXPATLIBPATH=$PREFIX/lib" --configure
 ./configure --prefix="$PREFIX" --with-gnu-ld # --enable-build-libxml2 --enable-build-libxslt
 make clean
 make AM_CFLAGS='-DNAN="(0.0/0.0)"'
-MEME_ETC_DIR=${PREFIX}/etc
 make install

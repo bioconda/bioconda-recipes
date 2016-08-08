@@ -1,0 +1,78 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-scrm
+  # Note that conda versions cannot contain -, so any -'s in the version have
+  # been replaced with _'s.
+  version: "1.6.0_2"
+
+source:
+  fn: scrm_1.6.0-2.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/scrm_1.6.0-2.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/scrm/scrm_1.6.0-2.tar.gz
+
+build:
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  skip: True # [osx]
+
+# Suggests: testthat (>= 0.9.0), knitr, ape
+requirements:
+  build:
+    - r-base
+    - r-rcpp >=0.11.2
+    - posix               # [win]
+    - {{native}}toolchain # [win]
+    - gcc                 # [not win]
+  run:
+    - r-base
+    - r-rcpp >=0.11.2
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('scrm')" # [not win]
+    - "\"%R%\" -e \"library('scrm')\"" # [win]
+
+about:
+  home: https://github.com/scrm/scrm-r
+  license: GPL (>= 3)
+  summary: A coalescent simulator that allows the rapid simulation of biological sequences under
+    neutral models of evolution. Different to other coalescent based simulations, it
+    has an optional approximation parameter that allows for high accuracy while maintaining
+    a linear run time cost for long sequences. It is optimized for simulating massive
+    data sets as produced by Next-Generation Sequencing technologies for up to several
+    thousand sequences.
+  license_family: GPL3
+
+# The original CRAN metadata for this package was:
+
+# Package: scrm
+# Type: Package
+# Title: Simulating the Evolution of Biological Sequences
+# Version: 1.6.0-2
+# Date: 2015-06-06
+# Authors@R: c( person('Paul', 'Staab', , 'develop@paulstaab.de', role=c('aut', 'cre', 'cph')), person('Zhu', 'Sha', role=c('aut', 'cph')), person('Dirk', 'Metzler', role=c('aut', 'cph', 'ths')), person('Gerton', 'Lunter', role=c('aut', 'cph', 'ths')) )
+# Description: A coalescent simulator that allows the rapid simulation of biological sequences under neutral models of evolution. Different to other coalescent based simulations, it has an optional approximation parameter that allows for high accuracy while maintaining a linear run time cost for long sequences. It is optimized for simulating massive data sets as produced by Next-Generation Sequencing technologies for up to several thousand sequences.
+# URL: https://github.com/scrm/scrm-r
+# License: GPL (>= 3)
+# Depends: R (>= 3.1.0)
+# Imports: Rcpp (>= 0.11.2)
+# Suggests: testthat (>= 0.9.0), knitr, ape
+# SystemRequirements: C++11
+# VignetteBuilder: knitr
+# LinkingTo: Rcpp
+# NeedsCompilation: yes
+# Packaged: 2015-06-06 14:03:32 UTC; paul
+# Author: Paul Staab [aut, cre, cph], Zhu Sha [aut, cph], Dirk Metzler [aut, cph, ths], Gerton Lunter [aut, cph, ths]
+# Maintainer: Paul Staab <develop@paulstaab.de>
+# Repository: CRAN
+# Date/Publication: 2015-06-07 08:24:01
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
