@@ -6,7 +6,7 @@ SHARE_DIR=$PREFIX/share/igblast
 wget $IGBLAST_ADDRESS/edit_imgt_file.pl
 # replace the first line with /usr/bin/env perl instead of the hard-coded /opt
 # does this require an explicit perl dependency? 
-sed -i '1 s/^.*$/#!\/usr\/bin\/env perl/g' edit_imgt_file.pl 
+sed -i.backup '1 s/^.*$/#!\/usr\/bin\/env perl/g' edit_imgt_file.pl
 chmod +x edit_imgt_file.pl
 mv edit_imgt_file.pl bin/
 

@@ -11,6 +11,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
+
 BINARY=Trinity
 BINARY_HOME=$PREFIX/bin
 TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
