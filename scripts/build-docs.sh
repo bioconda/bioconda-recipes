@@ -28,6 +28,7 @@ git add .nojekyll
 echo '.*' >> .gitignore
 git add .
 git config user.name "Travis CI"
+git config user.email "bioconda@users.noreply.github.com"
 git commit --all -m "Updated docs to commit ${TRAVIS_COMMIT}."
 git push -f -q "https://${GITHUB_TOKEN}@github.com/${GITHUB_USERNAME}/bioconda.github.io.git" master &> /dev/null
 
