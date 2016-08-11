@@ -8,7 +8,7 @@ if [ `uname` == Darwin ] ; then
 fi
 
 ./configure --prefix=$PREFIX \
-            --without-perl --without-python --with-python3
+            --without-perl --without-python --with-python3 \
             ${extra_config_options} && \
 make -j${CPU_COUNT} && \
 make install
