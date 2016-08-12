@@ -6,7 +6,8 @@
 ##
 if [ `uname` == Darwin ] ; then
     extra_config_options="--disable-openmp 
-                          --enable-universal-binary 
+                          --enable-universal-binary
+                          --without-python3
                           LDFLAGS=-Wl,-headerpad_max_install_names"
 else ## linux
     extra_config_options="--with-python3"
