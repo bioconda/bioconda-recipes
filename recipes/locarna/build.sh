@@ -12,6 +12,6 @@ elif [ $(uname) == Darwin ] ; then
     extra_config_options="CXXFLAGS='-D __restrict='"
 fi
 
-./configure --prefix=$PREFIX --with-vrna=$PREFIX ${extra_config_options} && \
+./configure --prefix=$PREFIX --with-vrna=$PREFIX "${extra_config_options}" && \
 make -j ${CPU_COUNT} && \
 make install
