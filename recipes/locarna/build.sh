@@ -9,7 +9,7 @@ elif [ $(uname) == Darwin ] ; then
     ## define __restrict as empty, since otherwise clang does not
     ## compile with C99 or C11 (this is set by locarna for linking the
     ## Vienna RNAlib, until it offers a cleaner solution)
-    extra_config_options="CXXFLAGS='-D __restrict='"
+    extra_config_options="CXXFLAGS=-D restrict="
 fi
 
 ./configure --prefix=$PREFIX --with-vrna=$PREFIX "${extra_config_options}" && \
