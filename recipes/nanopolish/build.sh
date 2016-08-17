@@ -2,7 +2,7 @@
 
 mkdir -p $PREFIX/bin
 
-make
+make HDF5= EIGEN=
 cp nanopolish $PREFIX/bin
 cp scripts/nanopolish_makerange.py $PREFIX/bin
 cp scripts/nanopolish_merge.py $PREFIX/bin

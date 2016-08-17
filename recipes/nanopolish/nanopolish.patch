@@ -13,14 +13,41 @@
    import sys
    from Bio import SeqIO
 
---- Makefile.bak        2016-08-12 18:29:05.000000000 +0300
-+++ Makefile    2016-08-12 18:29:31.000000000 +0300
-@@ -14,7 +14,7 @@
- CFLAGS=-O3
- CXX=g++
- CC=gcc
--HDF5=install
-+#HDF5=install
+--- src/nanopolish_methyltrain.cpp  2016-08-17 15:19:18.000000000 +0200
++++ src/nanopolish_methyltrain.cpp      2016-08-17 15:19:41.000000000 +0200
+@@ -42,7 +42,7 @@
+ #include "logger.hpp"
 
- # Check operating system, OSX doesn't have -lrt
- UNAME_S := $(shell uname -s)
+ #include "nanopolish_scorereads.h"
+-#include "../eigen/Eigen/Dense"
++#include <Eigen/Dense>
+
+ extern float g_p_skip, g_p_skip_self, g_p_bad, g_p_bad_self;
+
+--- Makefile        2016-08-17 15:15:11.000000000 +0200
++++ Makefile    2016-08-17 15:29:58.000000000 +0200
+@@ -35,17 +35,20 @@
+ endif
+
+ # Bulild and link the libhts submodule
+-HTS_LIB=./htslib/libhts.a
+-HTS_INCLUDE=-I./htslib
++HTS_LIB=${PREFIX}/lib/libhts.a
++HTS_INCLUDE=-I${PREFIX}/include
+
+ # Include the header-only fast5 library
+-FAST5_INCLUDE=-I./fast5/src
++FAST5_INCLUDE=-I${PREFIX}/include/fast5
++
++# Include the eigen headers
++EIGEN_INCLUDE=-I${PREFIX}/include/eigen3
+
+ # Include the src subdirectories
+ NP_INCLUDE=$(addprefix -I./, $(SUBDIRS))
+
+ # Add include flags
+-CPPFLAGS += $(H5_INCLUDE) $(HTS_INCLUDE) $(FAST5_INCLUDE) $(NP_INCLUDE)
++CPPFLAGS += $(H5_INCLUDE) $(HTS_INCLUDE) $(FAST5_INCLUDE) $(EIGEN_INCLUDE) $(NP_INCLUDE)
+
+ # Main programs to build
+ PROGRAM=nanopolish
