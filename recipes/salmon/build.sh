@@ -9,6 +9,10 @@ if [ "$(uname)" == "Darwin" ]; then
     cp -r bin lib $outdir
     ln -s $outdir/bin/salmon $PREFIX/bin
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+
+    export CFLAGS="-I$PREFIX/include"
+    export LDFLAGS="-L$PREFIX/lib"
+
     # Custom built version running into problems with NFS segfaults
     # https://github.com/COMBINE-lab/salmon/issues/34
     # Download and use tcmalloc in our build to avoid
