@@ -16,7 +16,7 @@ make
 cp bin/lumpy $PREFIX/bin
 cp scripts/lumpyexpress $PREFIX/bin
 
-cp scripts/cnvantor_to_bedpes.py $PREFIX/bin
+cp scripts/cnvanator_to_bedpes.py $PREFIX/bin
 
 cp scripts/*.py $outdir/scripts
 cp scripts/*.sh $outdir/scripts
