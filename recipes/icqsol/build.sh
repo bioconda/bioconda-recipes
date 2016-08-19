@@ -1,0 +1,6 @@
+#!/bin/sh
+
+cmake -DINSTALL_PREFIX=ON -DCMAKE_INSTALL_PREFIX=$PREFIX .
+make
+
+
