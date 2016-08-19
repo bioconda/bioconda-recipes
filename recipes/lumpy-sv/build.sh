@@ -1,9 +1,10 @@
 #!/bin/bash
 set -eu -o pipefail
 
-export CFLAGS="-I$PREFIX/include"
+export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 export C_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
 
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
