@@ -13,7 +13,5 @@ else
 fi
 
 make
-if [ -z "${OSX_ARCH}" ]; then
-		make check   # fails on macos, even though smalt binary seems ok
-fi
+make -d -d -d check   # fails on macos, even though smalt binary seems ok
 make install
