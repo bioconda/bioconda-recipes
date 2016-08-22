@@ -227,10 +227,10 @@ Port](https://depot.galaxyproject.org/software/), developed and maintained by
 the [Galaxy](https://galaxyproject.org/) team. The Galaxy Jenkins server
 performs daily archives of the source code of packages in `bioconda`, and makes
 these tarballs permanently available in Cargo Port. If you try rebuilding
-a recipe and the seems to have disappeared, do the following:
+a recipe and the source seems to have disappeared, do the following:
 
 - search for the package and version at https://depot.galaxyproject.org/software/
-- add the URL listed in the "Package Version" column to your `meta.yaml` file
+- add the URL listed in the "Package Version" column to your `meta.yaml` file as
   another entry in the `source: url` section.
 - add the corresponding sha256 checksum displayed upon clicking the Info icon
   in the "Help" column to the `source:` section.
