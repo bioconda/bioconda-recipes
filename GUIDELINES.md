@@ -210,11 +210,53 @@ In some cases, there may be a name collision when writing a recipe. For example 
 [wget](recipes/wget) recipe is for the standard command-line tool. There is
 also a Python package called `wget` [on
 PyPI](https://pypi.python.org/pypi/wget). In this case, we prefixed the Python
-package with `python-` (see [python-wget](recipes/python-wget)). A similiar
+package with `python-` (see [python-wget](recipes/python-wget)). A similar
 collision was resolved with [weblogo](recipes/weblogo) and
 [python-weblogo](recipes/python-weblogo).
 
 If in doubt about how to handle a naming collision, please submit an issue.
+
+### Fixes for missing URLs
+Sometimes, URLs to source code may disappear -- particularly with R and
+Bioconductor packages, where only the very latest source code is hosted on the
+Bioconductor servers. This means that rebuilding an older package version fails
+because the source can't be found.
+
+The solution to this is the [Cargo
+Port](https://depot.galaxyproject.org/software/), developed and maintained by
+the [Galaxy](https://galaxyproject.org/) team. The Galaxy Jenkins server
+performs daily archives of the source code of packages in `bioconda`, and makes
+these tarballs permanently available in Cargo Port. If you try rebuilding
+a recipe and the seems to have disappeared, do the following:
+
+- search for the package and version at https://depot.galaxyproject.org/software/
+- add the URL listed in the "Package Version" column to your `meta.yaml` file
+  another entry in the `source: url` section.
+- add the corresponding sha256 checksum displayed upon clicking the Info icon
+  in the "Help" column to the `source:` section.
+
+For example, if this stopped working:
+
+```yaml
+source:
+  fn: argh-0.26.1.tar.gz
+  url: https://pypi.python.org/packages/source/a/argh/argh-0.26.1.tar.gz
+  md5: 5a97ce2ae74bbe3b63194906213f1184
+```
+
+then change it to this:
+
+```yaml
+source:
+  fn: argh-0.26.1.tar.gz
+  url:
+    - https://pypi.python.org/packages/source/a/argh/argh-0.26.1.tar.gz
+    - https://depot.galaxyproject.org/software/argh/argh_0.26.1_src_all.tar.gz
+  md5: 5a97ce2ae74bbe3b63194906213f1184
+  sha256: 06a7442cb9130fb8806fe336000fcf20edf1f2f8ad205e7b62cec118505510db
+```
+
+
 
 ## Tests
 An adequate test must be included in the recipe. An "adequate" test depends on
