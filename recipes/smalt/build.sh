@@ -9,9 +9,11 @@ export LDFLAGS="-L${PREFIX}/lib"
 if [ -z "${OSX_ARCH}" ]; then
 		./configure --prefix=$PREFIX
 else
-		./configure --prefix=$PREFIX --build=x86_64-apple-darwin
+		./configure --prefix=$PREFIX #--build=x86_64-apple-darwin
 fi
 
 make
-make check   # fails on osx
+env
+make .SHELLFLAGS=-ecx check   # fails on osx
 make install
+
