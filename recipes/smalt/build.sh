@@ -5,13 +5,14 @@ set -ef -o pipefail
 export CPPFLAGS="-I${PREFIX}/include"
 export LDFLAGS="-L${PREFIX}/lib"
 
+./configure --prefix=$PREFIX
+make
 
 if [ -z "${OSX_ARCH}" ]; then
-		./configure --prefix=$PREFIX
+		make check
 else
-		./configure --prefix=$PREFIX --build=x86_64-apple-darwin
+		env DYLD_LIBRARY_PATH=${PREFIX}/lib:${DYLD_LIBRARY_PATH} make check
 fi
 
-make
-make check   # fails on osx
 make install
+
