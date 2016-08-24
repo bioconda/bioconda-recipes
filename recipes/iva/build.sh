@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euf -o pipefail
+
 $PYTHON setup.py install 
 
 # Add more build steps here, if they are necessary.
