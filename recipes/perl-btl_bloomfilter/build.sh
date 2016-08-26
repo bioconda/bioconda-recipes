@@ -10,8 +10,8 @@ g++ -c BloomFilter_wrap.cxx -I$PERL5DIR/CORE -fPIC -Dbool=char -O3
 g++ -Wall -shared BloomFilter_wrap.o -o BloomFilter.so -O3
 
 
-h2xs -n BloomFilter -O  -F -'I ../../../'
-cd BloomFilter
+h2xs -n BTL::BloomFilter -O  -F -'I ../../../'
+cd BTL-BloomFilter
 perl Makefile.PL
 make
 make install
