@@ -3,6 +3,8 @@
 #strictly use anaconda build environment
 CC=${PREFIX}/bin/gcc
 CXX=${PREFIX}/bin/g++
+export CPATH=${PREFIX}/include
+export CPP_INCLUDE_PATH=${PREFIX}/include
 
 make
 mv megahit $PREFIX/bin
