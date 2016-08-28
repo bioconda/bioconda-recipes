@@ -13,3 +13,5 @@ export LIBRARY_PATH=${PREFIX}/lib
 make
 mkdir -p $PREFIX/bin
 cp ococo $PREFIX/bin
+cp ococo.1 ${PREFIX}/share/man/man1
+
