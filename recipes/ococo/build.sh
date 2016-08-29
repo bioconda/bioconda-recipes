@@ -1,9 +1,9 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include
+export C_INCLUDE_PATH=$C_INCLUDE_PATH:${PREFIX}/include
 #export CPPFLAGS="-I$PREFIX/include"
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
+export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:${PREFIX}/include
+export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
 
 (
 	cd ext
