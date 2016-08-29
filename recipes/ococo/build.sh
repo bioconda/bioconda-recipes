@@ -11,6 +11,10 @@ export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
 	git clone git://github.com/samtools/htslib
 )
 
+echo "g++"
+g++ -v || true
+echo "CXX"
+$(CXX) -v || true
 
 make
 mkdir -p $PREFIX/bin
