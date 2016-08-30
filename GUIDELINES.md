@@ -140,6 +140,22 @@ currently pin in
 If you need to pin another library, please notify @bioconda/core, and we will
 set up a corresponding environment variable.
 
+It's not uncommon to have difficulty compiling package into a portable conda
+package. Since there is no single solution, here are some examples of how
+bioconda contributors have solved compiling issues to give you some ideas on 
+what to try:
+
+- [ococo](recipes/ococo) edits the source in `build.sh` to accommodate the C++ compiler on OSX
+- [muscle](recipes/muscle) patches the makefile on OSX so it doesn't use static libs
+- [metavelvet](recipes/metavelvet), [eautils](recipes/eautils),
+  [preseq](recipes/preseq) have several patches to their makefiles to fix
+  `LIBS` and `INCLUDES`, `INCLUDEARGS`, and `CFLAGS`
+- [mapsplice](recipes/mapsplice) includes an older version of samtools; the
+  included samtools' makefile is patched to work in conda envs.
+- [mosaik](recipes/mosaik) has platform-specific patches -- one removes
+  `-static` on linux, and the other sets `BLD_PLATFORM` correctly on OSX
+- [mothur](recipes/mothur) and [soapdenovo](recipes/soapdenovo) have many fixes to makefiles
+
 ## General command-line tools
 If a command-line tool is installed, it should be tested. If it has a shebang
 line, it should be patched to use `/usr/bin/env` for more general use.
