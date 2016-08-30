@@ -16,7 +16,7 @@ g++ -v || true
 echo "CXX"
 $CXX -v || true
 
-make
+make VERBOSE=1
 mkdir -p $PREFIX/bin
 cp ococo $PREFIX/bin
 cp ococo.1 ${PREFIX}/share/man/man1
