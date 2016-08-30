@@ -1,7 +1,11 @@
 #!/bin/bash
 
+
+#strictly use anaconda build environment
+CXX=${PREFIX}/bin/g++
+
+#to fix problems with zlib
 export C_INCLUDE_PATH=$C_INCLUDE_PATH:${PREFIX}/include
-#export CPPFLAGS="-I$PREFIX/include"
 export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:${PREFIX}/include
 export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
 
@@ -21,7 +25,7 @@ $CXX -v || true
 cat src/ococo.h | sed 's/cstdio/cerrno/g' > tmp.h
 cp tmp.h src/ococo.h
 
-make VERBOSE=1 CXX=g++
+make VERBOSE=1
 mkdir -p ${PREFIX}/bin
 cp ococo ${PREFIX}/bin
 cp ococo.1 ${PREFIX}/share/man/man1
