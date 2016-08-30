@@ -13,6 +13,8 @@ export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
 
 echo "g++"
 g++ -v || true
+echo "c++"
+c++ -v || true
 echo "CXX"
 $CXX -v || true
 
