@@ -18,7 +18,8 @@ c++ -v || true
 echo "CXX"
 $CXX -v || true
 
-sed -i "bak" 's/cstdio/cerrno/g' src/ococo.h
+cat src/ococo.h | sed 's/cstdio/cerrno/g' > tmp.h
+cp tmp.h src/ococo.h
 
 make VERBOSE=1 CXX=g++
 mkdir -p ${PREFIX}/bin
