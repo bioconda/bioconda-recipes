@@ -18,8 +18,10 @@ c++ -v || true
 echo "CXX"
 $CXX -v || true
 
+sed -i ".bak" 's/cstdio/cerror/g' src/ococo.h
+
 make VERBOSE=1 CXX=g++
-mkdir -p $PREFIX/bin
-cp ococo $PREFIX/bin
+mkdir -p ${PREFIX}/bin
+cp ococo ${PREFIX}/bin
 cp ococo.1 ${PREFIX}/share/man/man1
 
