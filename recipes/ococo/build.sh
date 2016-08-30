@@ -22,9 +22,6 @@ c++ -v || true
 echo "CXX"
 $CXX -v || true
 
-cat src/ococo.h | sed 's/cstdio/cerrno/g' > tmp.h
-cp tmp.h src/ococo.h
-
 make VERBOSE=1
 mkdir -p ${PREFIX}/bin
 cp ococo ${PREFIX}/bin
