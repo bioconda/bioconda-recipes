@@ -14,7 +14,7 @@ export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
 echo "g++"
 g++ -v || true
 echo "CXX"
-$(CXX) -v || true
+$CXX -v || true
 
 make
 mkdir -p $PREFIX/bin
