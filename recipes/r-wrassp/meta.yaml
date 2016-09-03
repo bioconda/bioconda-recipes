@@ -1,0 +1,91 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-wrassp
+  # Note that conda versions cannot contain -, so any -'s in the version have
+  # been replaced with _'s.
+  version: "0.1.4"
+
+source:
+  fn: wrassp_0.1.4.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/wrassp_0.1.4.tar.gz
+
+
+  # You can add a hash for the file here, like md5 or sha1
+  # md5: 49448ba4863157652311cc5ea4fea3ea
+  # sha1: 3bcfbee008276084cbb37a2b453963c61176a322
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # If this is a new build for the same version, increment the build
+  # number. If you do not include this key, it defaults to 0.
+  # number: 1
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: compare(>= 0.2.4), rmarkdown, knitr, testthat(>= 0.7.1)
+requirements:
+  build:
+    - r-base
+    - posix               # [win]
+    - {{native}}toolchain # [win]
+    - gcc                 # [not win]
+
+  run:
+    - r-base
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('wrassp')" # [not win]
+    - "\"%R%\" -e \"library('wrassp')\"" # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://github.com/IPS-LMU/wrassp
+  license: GPL (>= 3)
+  summary: A wrapper around Michel Scheffers's libassp (Advanced Speech Signal Processor). The
+    libassp library aims at providing functionality for handling speech signal files
+    in most common audio formats and for performing analyses common in phonetic science/speech
+    science. This includes the calculation of formants, fundamental frequency, root
+    mean square, auto correlation, a variety of spectral analyses, zero crossing rate,
+    filtering etc. This wrapper provides R with a large subset of libassp's signal processing
+    functions and provides them to the user in a (hopefully) user-friendly manner.
+  license_family: GPL3
+
+# The original CRAN metadata for this package was:
+
+# Package: wrassp
+# Version: 0.1.4
+# Title: Interface to the ASSP Library
+# Authors@R: c( person("Raphael", "Winkelmann", ,"raphael@phonetik.uni-muenchen.de", role = c("aut", "cre")), person("Lasse", "Bombien", , "lasse@phonetik.uni-muenchen.de", role = c("aut")), person("Michel", "Scheffers", role = c("aut")))
+# Description: A wrapper around Michel Scheffers's libassp (Advanced Speech Signal Processor). The libassp library aims at providing functionality for handling speech signal files in most common audio formats and for performing analyses common in phonetic science/speech science. This includes the calculation of formants, fundamental frequency, root mean square, auto correlation, a variety of spectral analyses, zero crossing rate, filtering etc. This wrapper provides R with a large subset of libassp's signal processing functions and provides them to the user in a (hopefully) user-friendly manner.
+# Depends: R (>= 3.1.1)
+# VignetteBuilder: knitr
+# Suggests: compare(>= 0.2.4), rmarkdown, knitr, testthat(>= 0.7.1)
+# License: GPL (>= 3)
+# URL: https://github.com/IPS-LMU/wrassp
+# BugReports: https://github.com/IPS-LMU/wrassp/issues
+# RoxygenNote: 5.0.1
+# NeedsCompilation: yes
+# Packaged: 2016-05-30 14:36:51 UTC; raphaelwinkelmann
+# Author: Raphael Winkelmann [aut, cre], Lasse Bombien [aut], Michel Scheffers [aut]
+# Maintainer: Raphael Winkelmann <raphael@phonetik.uni-muenchen.de>
+# Repository: CRAN
+# Date/Publication: 2016-05-30 16:54:01
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
