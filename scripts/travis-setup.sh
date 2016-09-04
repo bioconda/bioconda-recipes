@@ -5,7 +5,7 @@ SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
-    docker pull bgruening/bioconda-builder
+    docker pull condaforge/linux-anvil
 else
 
     # install conda
