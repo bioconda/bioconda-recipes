@@ -88,6 +88,13 @@ If you don't want to join us permanently, you can also fork the
 `recipes <https://github.com/bioconda/bioconda-recipes>`_ repository and create
 pull requests.
 
+Step 5: Spread the word
+---------------------
+
+Consider `adding a badge <_static/badge-generator/>`_ to your posters and presentations to promote
+that a tool can be easily installed from bioconda.
+
+
 Developers
 ==========
 
