@@ -210,7 +210,7 @@ def filter_recipes(recipes, env_matrix, config):
     # Given the startup time of conda-build, provide all recipes at once.
     def msgs(env):
         logger.debug(env)
-        cmds = ["conda", "build", "--skip-existing", "--output", "--dirty"] + channel_args + recipes
+        cmds = ["conda", "build", "--skip-existing", "--override-channels", "--output", "--dirty"] + channel_args + recipes
         p = sp.run(
             cmds,
             check=True,
@@ -314,7 +314,7 @@ def build(recipe,
 
         user_id = 1000  #os.getuid()
         command = ("bash /opt/share/bioconda_startup.sh {uid} "
-                "conda build {args} --quiet recipes/{recipe}".format(
+                "conda build {args} --override-channels --quiet recipes/{recipe}".format(
                     uid=user_id, args=' '.join(channel_args), recipe=recipe))
         logger.debug('Docker command: %s', command)
         container = docker.create_container(
@@ -336,7 +336,7 @@ def build(recipe,
     else:
         try:
             out = None if logger.level <= logging.DEBUG else sp.PIPE
-            sp.run(["conda", "build", "--quiet", recipe] + build_args + channel_args,
+            sp.run(["conda", "build", "--quiet", "--override-channels", recipe] + build_args + channel_args,
                    stderr=out,
                    stdout=out,
                    check=True,
@@ -450,7 +450,7 @@ def test_recipes(recipe_folder,
             for recipe in recipes:
                 packages = {
                     sp.run(
-                        ["conda", "build", "--output", "--dirty", recipe],
+                        ["conda", "build", "--override-channels", "--output", "--dirty", recipe],
                         stdout=sp.PIPE,
                         env=merged_env(env),
                         check=True).stdout.strip().decode()
