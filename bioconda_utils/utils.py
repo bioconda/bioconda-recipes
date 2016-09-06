@@ -220,8 +220,8 @@ def filter_recipes(recipes, env_matrix, config):
             env=merged_env(env))
         return [
             msg
-            for msg in p.stdout.split("\n") if "Ignoring non-recipe" not in msg
-        ][1:-1]
+            for msg in p.stdout.strip().split("\n") if "Ignoring non-recipe" not in msg
+        ]
     skip = lambda msg: \
         "already built" in msg or "defines build/skip" in msg
 
