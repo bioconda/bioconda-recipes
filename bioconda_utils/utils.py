@@ -204,9 +204,9 @@ def filter_recipes(recipes, env_matrix, config):
     env_matrix : EnvMatrix
     """
 
-    if sys.platform == "linux":
+    if sys.platform.startswith("linux"):
         repodata = requests.get('https://conda.anaconda.org/bioconda/linux-64/repodata.json').json()
-    elif sys.platform == "osx":
+    elif sys.platform.startswith("darwin"):
         repodata = requests.get('https://conda.anaconda.org/bioconda/osx-64/repodata.json').json()
     else:
         raise ValueError('Unsupported OS: bioconda only supports linux and osx.')
