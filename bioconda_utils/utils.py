@@ -11,6 +11,7 @@ from itertools import product, chain
 import logging
 import pkg_resources
 import networkx as nx
+import requests
 
 from conda_build.metadata import MetaData
 import yaml
@@ -203,34 +204,37 @@ def filter_recipes(recipes, env_matrix, config):
     env_matrix : EnvMatrix
     """
 
+    if sys.platform == "linux":
+        repodata = requests.get('https://conda.anaconda.org/bioconda/linux-64/repodata.json').json()
+    elif sys.platform == "osx":
+        repodata = requests.get('https://conda.anaconda.org/bioconda/osx-64/repodata.json').json()
+    else:
+        raise ValueError('Unsupported OS: bioconda only supports linux and osx.')
+    channel_packages = set(repodata['packages'].keys())
+
     channel_args = []
     for c in config['channels']:
         channel_args.extend(['--channel', c])
 
-    # Given the startup time of conda-build, provide all recipes at once.
-    def msgs(env):
+    def pkgnames(env):
         logger.debug(env)
-        cmds = ["conda", "build", "--skip-existing", "--override-channels", "--output", "--dirty"] + channel_args + recipes
+        cmd = ["conda", "build", "--no-source", "--override-channels", "--output"] + channel_args + recipes
         p = sp.run(
-            cmds,
+            cmd,
             check=True,
             stdout=sp.PIPE,
             stderr=sp.PIPE,
             universal_newlines=True,
             env=merged_env(env))
-        return [
-            msg
-            for msg in p.stdout.strip().split("\n") if "Ignoring non-recipe" not in msg
-        ]
-    skip = lambda msg: \
-        "already built" in msg or "defines build/skip" in msg
+        pkgpaths = p.stdout.strip().split("\n")
+        return [os.path.basename(f) for f in pkgpaths]
 
     try:
-        for item in zip(recipes, *map(msgs, env_matrix)):
+        for item in zip(recipes, *map(pkgnames, env_matrix)):
             recipe = item[0]
-            msg = item[1:]
-            logger.debug("recipe %s: %s", recipe, '\n\t' + '\n\t'.join(msg))
-            if not all(map(skip, msg)):
+            pkgs = [f for f in item[1:] if f != "skipped"]
+            logger.debug("recipe %s: %s", recipe, '\n\t' + '\n\t'.join(pkgs))
+            if not channel_packages.issuperset(pkgs):
                 yield recipe
     except sp.CalledProcessError as e:
         logger.error("%s" % e.stderr)
