@@ -140,6 +140,22 @@ currently pin in
 If you need to pin another library, please notify @bioconda/core, and we will
 set up a corresponding environment variable.
 
+It's not uncommon to have difficulty compiling package into a portable conda
+package. Since there is no single solution, here are some examples of how
+bioconda contributors have solved compiling issues to give you some ideas on 
+what to try:
+
+- [ococo](recipes/ococo) edits the source in `build.sh` to accommodate the C++ compiler on OSX
+- [muscle](recipes/muscle) patches the makefile on OSX so it doesn't use static libs
+- [metavelvet](recipes/metavelvet), [eautils](recipes/eautils),
+  [preseq](recipes/preseq) have several patches to their makefiles to fix
+  `LIBS` and `INCLUDES`, `INCLUDEARGS`, and `CFLAGS`
+- [mapsplice](recipes/mapsplice) includes an older version of samtools; the
+  included samtools' makefile is patched to work in conda envs.
+- [mosaik](recipes/mosaik) has platform-specific patches -- one removes
+  `-static` on linux, and the other sets `BLD_PLATFORM` correctly on OSX
+- [mothur](recipes/mothur) and [soapdenovo](recipes/soapdenovo) have many fixes to makefiles
+
 ## General command-line tools
 If a command-line tool is installed, it should be tested. If it has a shebang
 line, it should be patched to use `/usr/bin/env` for more general use.
@@ -210,11 +226,53 @@ In some cases, there may be a name collision when writing a recipe. For example 
 [wget](recipes/wget) recipe is for the standard command-line tool. There is
 also a Python package called `wget` [on
 PyPI](https://pypi.python.org/pypi/wget). In this case, we prefixed the Python
-package with `python-` (see [python-wget](recipes/python-wget)). A similiar
+package with `python-` (see [python-wget](recipes/python-wget)). A similar
 collision was resolved with [weblogo](recipes/weblogo) and
 [python-weblogo](recipes/python-weblogo).
 
 If in doubt about how to handle a naming collision, please submit an issue.
+
+### Fixes for missing URLs
+Sometimes, URLs to source code may disappear -- particularly with R and
+Bioconductor packages, where only the very latest source code is hosted on the
+Bioconductor servers. This means that rebuilding an older package version fails
+because the source can't be found.
+
+The solution to this is the [Cargo
+Port](https://depot.galaxyproject.org/software/), developed and maintained by
+the [Galaxy](https://galaxyproject.org/) team. The Galaxy Jenkins server
+performs daily archives of the source code of packages in `bioconda`, and makes
+these tarballs permanently available in Cargo Port. If you try rebuilding
+a recipe and the source seems to have disappeared, do the following:
+
+- search for the package and version at https://depot.galaxyproject.org/software/
+- add the URL listed in the "Package Version" column to your `meta.yaml` file as
+  another entry in the `source: url` section.
+- add the corresponding sha256 checksum displayed upon clicking the Info icon
+  in the "Help" column to the `source:` section.
+
+For example, if this stopped working:
+
+```yaml
+source:
+  fn: argh-0.26.1.tar.gz
+  url: https://pypi.python.org/packages/source/a/argh/argh-0.26.1.tar.gz
+  md5: 5a97ce2ae74bbe3b63194906213f1184
+```
+
+then change it to this:
+
+```yaml
+source:
+  fn: argh-0.26.1.tar.gz
+  url:
+    - https://pypi.python.org/packages/source/a/argh/argh-0.26.1.tar.gz
+    - https://depot.galaxyproject.org/software/argh/argh_0.26.1_src_all.tar.gz
+  md5: 5a97ce2ae74bbe3b63194906213f1184
+  sha256: 06a7442cb9130fb8806fe336000fcf20edf1f2f8ad205e7b62cec118505510db
+```
+
+
 
 ## Tests
 An adequate test must be included in the recipe. An "adequate" test depends on
