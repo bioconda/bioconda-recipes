@@ -227,12 +227,12 @@ def filter_recipes(recipes, env_matrix, config):
             universal_newlines=True,
             env=merged_env(env))
         pkgpaths = p.stdout.strip().split("\n")
-        return [os.path.basename(f) for f in pkgpaths]
+        return pkgpaths
 
     try:
         for item in zip(recipes, *map(pkgnames, env_matrix)):
             recipe = item[0]
-            pkgs = [f for f in item[1:] if f != "skipped"]
+            pkgs = [os.path.basename(f) for f in item[1:] if not f.startswith("Skipped:")]
             logger.debug("recipe %s: %s", recipe, '\n\t' + '\n\t'.join(pkgs))
             if not channel_packages.issuperset(pkgs):
                 yield recipe
