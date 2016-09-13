@@ -1,8 +1,7 @@
 #!/bin/bash
 
-#strictly use anaconda build environment
-CC=${PREFIX}/bin/gcc
-CXX=${PREFIX}/bin/g++
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
 
 mkdir -p $PREFIX/bin
 
