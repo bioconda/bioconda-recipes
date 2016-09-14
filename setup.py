@@ -21,7 +21,7 @@ setup(
             ],
         )
     ],
-    install_requires=["argh", "networkx", "pydotplus", "pyyaml", "conda_build", "docker-py", "requests"],
+    install_requires=["argh", "networkx", "pydotplus", "pyyaml", "conda_build", "docker-py", "requests<2.11"],
     entry_points={"console_scripts": [
         "bioconda-utils = bioconda_utils.cli:main",
         "bioconductor_skeleton = bioconda_utils.bioconductor_skeleton:main"
