@@ -237,7 +237,8 @@ def filter_recipes(recipes, env_matrix, config):
             if not channel_packages.issuperset(pkgs):
                 yield recipe
     except sp.CalledProcessError as e:
-        logger.error("%s" % e.stderr)
+        logger.debug(e.stdout)
+        logger.error(e.stderr)
         exit(1)
 
 
