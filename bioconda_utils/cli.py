@@ -12,7 +12,6 @@ import argh
 from argh import arg
 import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
-from docker import Client as DockerClient
 
 from . import utils
 
@@ -35,8 +34,8 @@ from . import utils
 @arg('--force',
      help='Force building the recipe even if it already exists in '
      'the bioconda channel')
-@arg('--docker', nargs='?', metavar='URL', const='unix://var/run/docker.sock',
-     help='Build packages in docker container (continuumio/conda_builder_linux).')
+@arg('--docker', action='store_true',
+     help='Build packages in docker container.')
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
 def build(recipe_folder,
           config,
@@ -55,9 +54,6 @@ def build(recipe_folder,
         logger.debug("Running setup: %s" % setup)
         for cmd in setup:
             sp.run(shlex.split(cmd))
-    if docker is not None:
-        logger.debug("Setting up docker client v%s at %s", cfg['docker_client_version'], docker)
-        docker = DockerClient(base_url=docker, version=cfg['docker_client_version'])
 
     success = utils.test_recipes(recipe_folder,
                                  config=config,

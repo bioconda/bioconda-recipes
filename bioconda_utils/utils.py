@@ -15,6 +15,8 @@ import networkx as nx
 from conda_build.metadata import MetaData
 import yaml
 
+from . import docker_utils
+
 logger = logging.getLogger(__name__)
 
 def flatten_dict(dict):
@@ -25,6 +27,9 @@ def flatten_dict(dict):
 
 
 def merged_env(env):
+    """
+    Merges dict `env` with current os.environ
+    """
     _env = dict(os.environ)
     _env.update(env)
     return _env
@@ -105,8 +110,8 @@ def get_deps(recipe, build=True):
 def get_dag(recipes, blacklist=None, restrict=True):
     """
     Returns the DAG of recipe paths and a dictionary that maps package names to
-    recipe paths. These recipe path values are lists and contain paths to all
-    defined versions.
+    lists of recipe paths to all defined versions of the package.  defined
+    versions.
 
     Parameters
     ----------
@@ -244,7 +249,7 @@ def build(recipe,
           testonly=False,
           force=False,
           channels=None,
-          docker=None):
+          docker_builder=None):
     """
     Build a single recipe for a single env
 
@@ -272,8 +277,9 @@ def build(recipe,
     channels : list
         Channels to include via the `--channel` argument to conda-build
 
-    docker : docker.Client object
-        Run docker container using this client
+    docker_builder : docker_utils.RecipeBuilder object
+        Use this docker builder to build the recipe, copying over the built
+        recipe to the host's conda-bld directory.
     """
     logger.info("Building and testing '%s' for environment %s", recipe, ';'.join(['='.join(i) for i in sorted(env)]))
     build_args = []
@@ -284,59 +290,28 @@ def build(recipe,
     if not force:
         build_args += ["--skip-existing"]
 
+    logger.debug('config: %s', config)
     channel_args = []
-    for c in config['channels']:
+    for c in config.get('channels', []):
         channel_args.extend(['--channel', c])
 
-    if docker is not None:
-        conda_build_folder = os.path.join(os.path.dirname(os.path.dirname(shutil.which("conda"))), "conda-bld")
-        logger.info("Using client's conda-build folder: %s", conda_build_folder)
-        recipe = os.path.relpath(recipe, recipe_folder)
-        binds={
-            pkg_resources.resource_filename('bioconda_utils', 'bioconda_startup.sh'): {
-                "bind": "/opt/share/bioconda_startup.sh",
-                "mode": "ro"
-            },
-            os.path.abspath(recipe_folder): {
-                "bind": "/opt/recipes",
-                "mode": "ro"
-            },
-        }
-        for subdir in ['svn-cache', 'hg-cache', 'git-cache', 'src-cache', 'linux-64']:
-            binds[os.path.join(conda_build_folder, subdir)] = {
-                'bind': os.path.join('/opt/miniconda/conda-bld/', subdir),
-                'mode': 'rw'
-            }
-        env = dict(env)
-        env["ABI"] = 4
-        logger.debug('Docker binds: %s', binds)
-        logger.debug('Docker env: %s', env)
+    CONDA_BUILD_CMD = ['conda', 'build', '--quiet', '--override-channels'] + channel_args + build_args
+    CONDA_BUILD_CMD = ['conda', 'build']
 
-        user_id = 1000  #os.getuid()
-        command = ("bash /opt/share/bioconda_startup.sh {uid} "
-                "conda build {args} --override-channels --quiet recipes/{recipe}".format(
-                    uid=user_id, args=' '.join(channel_args), recipe=recipe))
-        logger.debug('Docker command: %s', command)
-        container = docker.create_container(
-            image=config['docker_image'],
-            volumes=["/opt/recipes", "/opt/miniconda"],
-            user=user_id,
-            environment=env,
-            command=command,
-            host_config=docker.create_host_config(binds=binds, network_mode="host"))
-        cid = container["Id"]
-        docker.start(container=cid)
-        status = docker.wait(container=cid)
-        logger.debug('Docker status: %s', status)
-        if status != 0:
-            logger.error(docker.logs(container=cid, stdout=True, stderr=True).decode())
-            return False
-        logger.info('Successfully built %s', recipe)
-        return True
-    else:
-        try:
+    try:
+        if docker_builder is not None:
+
+
+            response = docker_builder.build_recipe(
+                recipe_dir=os.path.abspath(recipe),
+                build_args=' '.join(channel_args + build_args),
+                environment=dict(env)
+            )
+            logger.info('Successfully built %s', recipe)
+            return True
+        else:
             out = None if logger.level <= logging.DEBUG else sp.PIPE
-            sp.run(["conda", "build", "--quiet", "--override-channels", recipe] + build_args + channel_args,
+            sp.run(CONDA_BUILD_CMD + [recipe],
                    stderr=out,
                    stdout=out,
                    check=True,
@@ -344,12 +319,12 @@ def build(recipe,
                    env=merged_env(env))
             logger.info('Successfully built %s', recipe)
             return True
-        except sp.CalledProcessError as e:
-            if e.stdout is not None:
-                logger.error(e.stdout)
-                logger.error(e.stderr)
-            return False
-
+    except (docker_utils.DockerCalledProcessError, sp.CalledProcessError) as e:
+        if e.stdout is not None:
+            logger.error(e.stdout)
+            logger.error(e.stderr)
+            logger.error(e.cmd)
+        return False
 
 def test_recipes(recipe_folder,
                  config,
@@ -392,7 +367,7 @@ def test_recipes(recipe_folder,
         return True
     else:
         logger.info("Building and testing %s recipes in total", len(dag))
-        logger.info("Recipes to build: %s", "\n".join(dag.nodes()))
+        logger.info("Recipes to build: \n%s", "\n".join(dag.nodes()))
 
     subdags_n = int(os.environ.get("SUBDAGS", 1))
     subdag_i = int(os.environ.get("SUBDAG", 0))
@@ -423,9 +398,18 @@ def test_recipes(recipe_folder,
 
     logger.info("Building and testing subdag %s of %s (%s recipes)", subdag_i, subdags_n, len(recipes))
 
-    if docker is not None:
+    if docker:
         logger.info('Pulling docker image...')
-        docker.pull(config['docker_image'])
+        from docker import Client as DockerClient
+        docker_client = DockerClient(base_url=config['docker_url'])
+        docker_client.pull(config['docker_image'])
+
+        builder = docker_utils.RecipeBuilder(
+            image=config['docker_image'],
+            requirements=config['requirements'],
+            base_url=config['docker_url'],
+        )
+
         logger.info('Done.')
 
     success = True
@@ -441,7 +425,7 @@ def test_recipes(recipe_folder,
                              config,
                              testonly,
                              force,
-                             docker=docker)
+                             docker_builder=builder)
 
     if not testonly:
         # upload builds
