@@ -189,7 +189,33 @@ def get_recipes(recipe_folder, package="*"):
                        glob.glob(os.path.join(path, "*", "meta.yaml")))
 
 
-def filter_recipes(recipes, env_matrix, config):
+def get_channel_packages():
+    if sys.platform.startswith("linux"):
+        repodata = requests.get('https://conda.anaconda.org/bioconda/linux-64/repodata.json').json()
+    elif sys.platform.startswith("darwin"):
+        repodata = requests.get('https://conda.anaconda.org/bioconda/osx-64/repodata.json').json()
+    else:
+        raise ValueError('Unsupported OS: bioconda only supports linux and osx.')
+    channel_packages = set(repodata['packages'].keys())
+    # add noarch repodata
+    noarch_repodata = requests.get('https://conda.anaconda.org/bioconda/noarch/repodata.json').json()
+    channel_packages.update(noarch_repodata['packages'].keys())
+    return channel_packages
+
+
+class Target:
+    def __init__(self, pkg, env):
+        self.pkg = pkg
+        self.env = env
+
+    def __hash__(self):
+        return self.pkg.__hash__()
+
+    def __eq__(self, other):
+        return self.pkg == other.pkg
+
+
+def filter_recipes(recipes, env_matrix, config, force=False):
     """
     Generator yielding only those recipes that do not already exist.
 
@@ -203,21 +229,13 @@ def filter_recipes(recipes, env_matrix, config):
 
     env_matrix : EnvMatrix
     """
-
-    if sys.platform.startswith("linux"):
-        repodata = requests.get('https://conda.anaconda.org/bioconda/linux-64/repodata.json').json()
-    elif sys.platform.startswith("darwin"):
-        repodata = requests.get('https://conda.anaconda.org/bioconda/osx-64/repodata.json').json()
-    else:
-        raise ValueError('Unsupported OS: bioconda only supports linux and osx.')
-    channel_packages = set(repodata['packages'].keys())
-    # add noarch repodata
-    noarch_repodata = requests.get('https://conda.anaconda.org/bioconda/noarch/repodata.json').json()
-    channel_packages.update(noarch_repodata['packages'].keys())
+    channel_packages = get_channel_packages()
 
     channel_args = []
     for c in config['channels']:
         channel_args.extend(['--channel', c])
+
+    tobuild = lambda f: not f.startswith("Skipped:") and (force or f not in channel_packages)
 
     def pkgnames(env):
         logger.debug(env)
@@ -235,10 +253,11 @@ def filter_recipes(recipes, env_matrix, config):
     try:
         for item in zip(recipes, *map(pkgnames, env_matrix)):
             recipe = item[0]
-            pkgs = [os.path.basename(f) for f in item[1:] if not f.startswith("Skipped:")]
+            pkgs = [os.path.basename(f) for f in item[1:]]
+            targets = {Target(f, env) for f, env in zip(pkgs, env_matrix) if tobuild(f)}
             logger.debug("recipe %s: %s", recipe, '\n\t' + '\n\t'.join(pkgs))
-            if not channel_packages.issuperset(pkgs):
-                yield recipe
+            if targets:
+                yield recipe, targets
     except sp.CalledProcessError as e:
         logger.debug(e.stdout)
         logger.error(e.stderr)
@@ -250,7 +269,6 @@ def build(recipe,
           env,
           config,
           testonly=False,
-          force=False,
           channels=None,
           docker=None):
     """
@@ -272,11 +290,6 @@ def build(recipe,
         If True, skip building and instead run the test described in the
         meta.yaml.
 
-    force : bool
-        If True, the recipe will be built even if it already exists. Note that
-        typically you'd want to bump the build number rather than force
-        a build.
-
     channels : list
         Channels to include via the `--channel` argument to conda-build
 
@@ -289,8 +302,6 @@ def build(recipe,
         build_args.append("--test")
     else:
         build_args += ["--no-anaconda-upload"]
-    if not force:
-        build_args += ["--skip-existing"]
 
     channel_args = []
     for c in config['channels']:
@@ -387,9 +398,9 @@ def test_recipes(recipe_folder,
         logger.info("Nothing to be done.")
         return
 
-    if not force:
-        logger.info('Filtering recipes')
-        recipes = list(filter_recipes(recipes, env_matrix, config))
+    logger.info('Filtering recipes')
+    recipe_targets = dict(filter_recipes(recipes, env_matrix, config, force=force))
+    recipes = list(recipe_targets.keys())
 
 
     dag, name2recipes = get_dag(recipes, blacklist=blacklist)
@@ -423,6 +434,7 @@ def test_recipes(recipe_folder,
         return True
     # merge subdags of the selected chunk
     subdag = dag.subgraph(chunks[subdag_i])
+
     # ensure that packages which need a build are built in the right order
     recipes = [recipe
                for package in nx.topological_sort(subdag)
@@ -437,17 +449,12 @@ def test_recipes(recipe_folder,
 
     success = True
     for recipe in recipes:
-        envs = iter(env_matrix)
-        # Use only first envionment if package does not depend on Python.
-        if "python" not in get_deps(recipe):
-            envs = [next(envs)]
-        for env in envs:
+        for target in recipe_targets[recipe]:
             success &= build(recipe,
                              recipe_folder,
-                             env,
+                             target.env,
                              config,
                              testonly,
-                             force,
                              docker=docker)
 
     if not testonly:
@@ -455,15 +462,8 @@ def test_recipes(recipe_folder,
         if (os.environ.get("TRAVIS_BRANCH") == "master" and
                 os.environ.get("TRAVIS_PULL_REQUEST") == "false"):
             for recipe in recipes:
-                packages = {
-                    sp.run(
-                        ["conda", "build", "--no-source", "--override-channels", "--output", recipe],
-                        stdout=sp.PIPE,
-                        env=merged_env(env),
-                        check=True).stdout.strip().decode()
-                    for env in env_matrix
-                }
-                for package in packages:
+                for target in recipe_targets[recipe]:
+                    package = target.pkg
                     logger.debug("Checking existence of package {}".format(package))
                     if os.path.exists(package):
                         logger.info("Uploading package {}".format(package))
@@ -483,6 +483,9 @@ def test_recipes(recipe_folder,
                                 pass
                             else:
                                 raise e
+                    else:
+                        logger.error("Package {} has not been built.".format(package))
+                        success = False
     return success
 
 
