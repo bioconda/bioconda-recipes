@@ -64,6 +64,7 @@ def setup(*args):
     and generate a README.rst file.
     """
     print('Generating package READMEs...')
+    # TODO obtain information from repodata.json.
     summaries = []
     for folder in os.listdir(RECIPE_DIR):
         # Subfolders correspond to different versions
@@ -78,15 +79,17 @@ def setup(*args):
                 print("'{}' does not look like a proper version!".format(sf))
                 continue
             versions.append(sf)
-        versions.sort(key=LooseVersion, reverse=True)
+        #versions.sort(key=LooseVersion, reverse=True)
         # Read the meta.yaml file
-        try:
-            metadata = MetaData(op.join(RECIPE_DIR, folder))
+        recipe = op.join(RECIPE_DIR, folder, "meta.yaml")
+        if op.exists(recipe):
+            metadata = MetaData(recipe)
             if metadata.version() not in versions:
                 versions.insert(0, metadata.version())
-        except SystemExit:
+        else:
             if versions:
-                metadata = MetaData(op.join(RECIPE_DIR, folder, versions[0]))
+                recipe = op.join(RECIPE_DIR, folder, versions[0], "meta.yaml")
+                metadata = MetaData(recipe)
             else:
                 # ignore non-recipe folders
                 continue
