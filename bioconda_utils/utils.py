@@ -214,6 +214,9 @@ class Target:
     def __eq__(self, other):
         return self.pkg == other.pkg
 
+    def __str__(self):
+        return os.path.basename(self.pkg)
+
 
 def filter_recipes(recipes, env_matrix, config, force=False):
     """
@@ -235,7 +238,7 @@ def filter_recipes(recipes, env_matrix, config, force=False):
     for c in config['channels']:
         channel_args.extend(['--channel', c])
 
-    tobuild = lambda f: not f.startswith("Skipped:") and (force or f not in channel_packages)
+    tobuild = lambda f: not f.startswith("Skipped:") and (force or os.path.basename(f) not in channel_packages)
 
     def pkgnames(env):
         logger.debug(env)
@@ -253,9 +256,9 @@ def filter_recipes(recipes, env_matrix, config, force=False):
     try:
         for item in zip(recipes, *map(pkgnames, env_matrix)):
             recipe = item[0]
-            pkgs = [os.path.basename(f) for f in item[1:]]
+            pkgs = item[1:]
             targets = {Target(f, env) for f, env in zip(pkgs, env_matrix) if tobuild(f)}
-            logger.debug("recipe %s: %s", recipe, '\n\t' + '\n\t'.join(pkgs))
+            logger.debug("recipe %s: %s", recipe, '\n\t' + '\n\t'.join(map(str, targets)))
             if targets:
                 yield recipe, targets
     except sp.CalledProcessError as e:
