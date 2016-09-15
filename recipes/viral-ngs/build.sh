@@ -9,8 +9,8 @@ cd $SRC_DIR
 rm tools/binaries/V-Phaser-2.0/MacOSX/libgomp.1.dylib
 #chmod +x tools/scripts/*
 
-find tools/scripts/ -name "*.py" -exec chmod +x {} \;
-find tools/scripts/ -name "*.sh" -exec chmod +x {} \;
+find tools/scripts/ pipes -name "*.py" -exec chmod +x {} \;
+find tools/scripts/ pipes -name "*.sh" -exec chmod +x {} \;
 
 # copy source to bin
 mkdir -p $PREFIX/bin
