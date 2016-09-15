@@ -211,6 +211,9 @@ def filter_recipes(recipes, env_matrix, config):
     else:
         raise ValueError('Unsupported OS: bioconda only supports linux and osx.')
     channel_packages = set(repodata['packages'].keys())
+    # add noarch repodata
+    noarch_repodata = requests.get('https://conda.anaconda.org/bioconda/noarch/repodata.json').json()
+    channel_packages.update(noarch_repodata['packages'].keys())
 
     channel_args = []
     for c in config['channels']:
@@ -340,19 +343,18 @@ def build(recipe,
         return True
     else:
         try:
-            p = sp.run(["conda", "build", "--quiet", "--override-channels", recipe] + build_args + channel_args,
-                   stderr=sp.PIPE,
+            p = sp.run(["conda", "build", "--override-channels", recipe] + build_args + channel_args,
                    stdout=sp.PIPE,
+                   stderr=sp.STDOUT,
                    check=True,
                    universal_newlines=True,
                    env=merged_env(env))
             logger.debug(p.stdout)
-            logger.debug(p.stderr)
+            logger.debug(" ".join(p.args))
             logger.info('Successfully built %s', recipe)
             return True
         except sp.CalledProcessError as e:
             logger.error(e.stdout)
-            logger.error(e.stderr)
             return False
 
 
@@ -455,14 +457,16 @@ def test_recipes(recipe_folder,
             for recipe in recipes:
                 packages = {
                     sp.run(
-                        ["conda", "build", "--override-channels", "--output", "--dirty", recipe],
+                        ["conda", "build", "--no-source", "--override-channels", "--output", recipe],
                         stdout=sp.PIPE,
                         env=merged_env(env),
                         check=True).stdout.strip().decode()
                     for env in env_matrix
                 }
                 for package in packages:
+                    logger.debug("Checking existence of package {}".format(package))
                     if os.path.exists(package):
+                        logger.info("Uploading package {}".format(package))
                         try:
                             sp.run(
                                 ["anaconda", "-t",
