@@ -9,11 +9,7 @@ fi
 
 cd "${TRAVIS_BUILD_DIR}/docs"
 
-# Install sphinx requirements
-sudo pip install -U pip
-# Work around missing dependency in conda.
-sudo pip install auxlib
-sudo pip install -r requirements.txt
+pip install -r requirements.txt
 
 # Build the documentation
 GITHUB_USERNAME=${TRAVIS_REPO_SLUG%/*}
