@@ -1,6 +1,11 @@
 import os
 import os.path as op
-from conda_build.metadata import MetaData
+try:
+    from conda_build.metadata import MetaData
+except Exception as e:
+    import traceback
+    traceback.print_exc()
+    raise e
 from distutils.version import LooseVersion
 #import matplotlib
 #matplotlib.use("agg")
