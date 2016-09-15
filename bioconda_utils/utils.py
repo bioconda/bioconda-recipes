@@ -340,19 +340,19 @@ def build(recipe,
         return True
     else:
         try:
-            out = None if logger.level <= logging.DEBUG else sp.PIPE
-            sp.run(["conda", "build", "--quiet", "--override-channels", recipe] + build_args + channel_args,
-                   stderr=out,
-                   stdout=out,
+            p = sp.run(["conda", "build", "--quiet", "--override-channels", recipe] + build_args + channel_args,
+                   stderr=sp.PIPE,
+                   stdout=sp.PIPE,
                    check=True,
                    universal_newlines=True,
                    env=merged_env(env))
+            logger.debug(p.stdout)
+            logger.debug(p.stderr)
             logger.info('Successfully built %s', recipe)
             return True
         except sp.CalledProcessError as e:
-            if e.stdout is not None:
-                logger.error(e.stdout)
-                logger.error(e.stderr)
+            logger.error(e.stdout)
+            logger.error(e.stderr)
             return False
 
 
