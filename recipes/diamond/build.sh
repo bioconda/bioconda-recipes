@@ -6,7 +6,8 @@ cd build
 cmake .. \
       -DCMAKE_INSTALL_PREFIX=$PREFIX \
       -DCMAKE_PREFIX_PATH=$PREFIX \
-      -DBOOST_NO_SYSTEM_PATHS=on
+      -DBOOST_NO_SYSTEM_PATHS=on \
+      -DCMAKE_OSX_DEPLOYMENT_TARGET=""
 
 cmake --build . --config Release --target install
 
