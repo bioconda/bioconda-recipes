@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+export PATH=/anaconda/bin:$PATH
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
@@ -16,7 +17,6 @@ then
       fi
     fi
 else
-    export PATH=/anaconda/bin:$PATH
     # build packages
     #scripts/build-packages.py --repository . --env-matrix scripts/env_matrix.yml
     pip install git+https://github.com/bioconda/conda-build.git@fix-build-skip-existing

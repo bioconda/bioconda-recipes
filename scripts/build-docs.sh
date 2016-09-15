@@ -16,7 +16,6 @@ GITHUB_USERNAME=${TRAVIS_REPO_SLUG%/*}
 mkdir -p bioconda.github.io
 cd bioconda.github.io
 git init
-which sphinx-build
 sphinx-build -T .. .
 
 # Add generated files to the bioconda.github.io repository
