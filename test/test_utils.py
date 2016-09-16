@@ -155,3 +155,28 @@ def test_docker_builder_build():
     assert os.path.exists(built_package)
     os.unlink(built_package)
     assert not os.path.exists(built_package)
+
+
+def test_docker_build_image_fails():
+    template = dedent(
+        """
+        FROM {self.image}
+        RUN nonexistent command
+        """)
+    with pytest.raises(docker_utils.DockerBuildError):
+        docker_builder = docker_utils.RecipeBuilder(verbose=True, dockerfile_template=template)
+
+
+def test_conda_purge_cleans_up():
+
+    def tmp_dir_exists(d):
+        contents = os.listdir(d)
+        for i in contents:
+            if i.startswith('tmp') and '_' in i:
+                return True
+
+    bld = docker_utils.get_host_conda_bld(purge=False)
+    assert tmp_dir_exists(bld)
+    bld = docker_utils.get_host_conda_bld(purge=True)
+    assert not tmp_dir_exists(bld)
+
