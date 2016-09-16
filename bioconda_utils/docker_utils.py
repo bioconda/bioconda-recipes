@@ -148,7 +148,7 @@ def dummy_recipe():
     return tmpdir
 
 
-def get_host_conda_bld():
+def get_host_conda_bld(purge=True):
     """
     Identifies the conda-bld directory on the host.
 
@@ -163,9 +163,8 @@ def get_host_conda_bld():
             ).splitlines()[0]
         )
     )
-    # TODO: when we start running conda-build 2.0+, will need a `conda purge`
-    # call to clean up temp recipes
-    #sp.check_call(['conda', 'build', 'purge'])
+    if purge:
+        sp.check_call(['conda', 'build', 'purge'])
     return res
 
 
