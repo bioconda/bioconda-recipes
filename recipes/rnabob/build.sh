@@ -1,4 +1,4 @@
 #!/bin/sh
 make clean
 make
-make install HOME=/usr/local
+make install HOME=$PREFIX
