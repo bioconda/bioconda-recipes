@@ -22,6 +22,7 @@ from . import docker_utils
 
 logger = logging.getLogger(__name__)
 
+
 def flatten_dict(dict):
     for key, values in dict.items():
         if isinstance(values, str) or not isinstance(values, Iterable):
@@ -178,7 +179,6 @@ def get_dag(recipes, blacklist=None, restrict=True):
                                get_deps(meta,
                                         build=False)))))
 
-    #nx.relabel_nodes(dag, name2recipe, copy=False)
     return dag, name2recipe
 
 
@@ -199,7 +199,8 @@ def get_recipes(recipe_folder, package="*"):
     if isinstance(package, str):
         package = [package]
     for p in package:
-        logger.debug("get_recipes(%s, package='%s'): %s", recipe_folder, package, p)
+        logger.debug(
+            "get_recipes(%s, package='%s'): %s", recipe_folder, package, p)
         path = os.path.join(recipe_folder, p)
         yield from map(os.path.dirname,
                        glob.glob(os.path.join(path, "meta.yaml")))
@@ -221,12 +222,19 @@ def get_channel_packages(channel='bioconda', platform=None):
         currently-detected platform.
     """
     url_template = 'https://conda.anaconda.org/{channel}/{arch}/repodata.json'
-    if (platform == 'linux') or (platform is None and sys.platform.startswith("linux")):
+    if (
+        (platform == 'linux') or
+        (platform is None and sys.platform.startswith("linux"))
+    ):
         arch = 'linux-64'
-    elif (platform == 'osx') or (platform is None and sys.platform.startswith("darwin")):
+    elif (
+        (platform == 'osx') or
+        (platform is None and sys.platform.startswith("darwin"))
+    ):
         arch = 'osx-64'
     else:
-        raise ValueError('Unsupported OS: bioconda only supports linux and osx.')
+        raise ValueError(
+            'Unsupported OS: bioconda only supports linux and osx.')
 
     url = url_template.format(channel=channel, arch=arch)
     repodata = requests.get(url)
@@ -296,12 +304,20 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         channel_packages.update(get_channel_packages(channel=channel))
         channel_args.extend(['--channel', channel])
 
-    tobuild = lambda f: not f.startswith("Skipped:") and (force or os.path.basename(f) not in channel_packages)
+    def tobuild(f):
+        return (
+            not f.startswith("Skipped:") and
+            (
+                force or os.path.basename(f) not in channel_packages
+            )
+        )
 
     # conda build no longer supports multiple recipes as input and instead only
     # takes the first.
     def pkgname(recipe, env):
-        cmd = ["conda", "build", "--no-source", "--override-channels", "--output"] + channel_args + [recipe]
+        cmd = [
+            "conda", "build", "--no-source", "--override-channels", "--output"
+        ] + channel_args + [recipe]
         logger.debug(env)
         logger.debug(cmd)
         p = sp.run(
@@ -323,13 +339,17 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
                 pkg = pkgname(recipe, env)
                 if tobuild(pkg):
                     targets.update([Target(pkg, env)])
-            logger.debug("targets for recipe %s: %s", recipe, '\n\t' + '\n\t'.join(map(str, targets)))
+            logger.debug(
+                "targets for recipe %s: %s",
+                recipe, '\n\t' + '\n\t'.join(map(str, targets))
+            )
             if targets:
                 yield recipe, targets
     except sp.CalledProcessError as e:
         logger.debug(e.stdout)
         logger.error(e.stderr)
         exit(1)
+
 
 def build(recipe,
           recipe_folder,
@@ -366,7 +386,10 @@ def build(recipe,
         Use this docker builder to build the recipe, copying over the built
         recipe to the host's conda-bld directory.
     """
-    logger.info("Building and testing '%s' for environment %s", recipe, ';'.join(['='.join(i) for i in sorted(env)]))
+    logger.info(
+        "Building and testing '%s' for environment %s",
+        recipe, ';'.join(['='.join(i) for i in sorted(env)])
+    )
     build_args = []
     if testonly:
         build_args.append("--test")
@@ -393,12 +416,14 @@ def build(recipe,
             logger.info('Successfully built %s', recipe)
             return True
         else:
-            p = sp.run(CONDA_BUILD_CMD + [recipe],
-                   stdout=sp.PIPE,
-                   stderr=sp.STDOUT,
-                   check=True,
-                   universal_newlines=True,
-                   env=merged_env(env))
+            p = sp.run(
+                CONDA_BUILD_CMD + [recipe],
+                stdout=sp.PIPE,
+                stderr=sp.STDOUT,
+                check=True,
+                universal_newlines=True,
+                env=merged_env(env)
+            )
             logger.debug(p.stdout)
             logger.debug(" ".join(p.args))
             logger.info('Successfully built %s', recipe)
@@ -408,6 +433,7 @@ def build(recipe,
             logger.error(e.stderr)
             logger.error(e.cmd)
             return False
+
 
 def test_recipes(recipe_folder,
                  config,
@@ -429,7 +455,7 @@ def test_recipes(recipe_folder,
     recipes = []
     for package in packages:
         for recipe in get_recipes(recipe_folder, package):
-            if os.path.relpath(recipe, recipe_folder) in  blacklist:
+            if os.path.relpath(recipe, recipe_folder) in blacklist:
                 logger.debug('blacklisted: %s', recipe)
                 continue
             recipes.append(recipe)
@@ -439,9 +465,10 @@ def test_recipes(recipe_folder,
         return
 
     logger.info('Filtering recipes')
-    recipe_targets = dict(filter_recipes(recipes, env_matrix, config, force=force))
+    recipe_targets = dict(
+        filter_recipes(recipes, env_matrix, config['channels'], force=force)
+    )
     recipes = list(recipe_targets.keys())
-
 
     dag, name2recipes = get_dag(recipes, blacklist=blacklist)
 
@@ -480,7 +507,10 @@ def test_recipes(recipe_folder,
                for package in nx.topological_sort(subdag)
                for recipe in name2recipes[package]]
 
-    logger.info("Building and testing subdag %s of %s (%s recipes)", subdag_i, subdags_n, len(recipes))
+    logger.info(
+        "Building and testing subdag %s of %s (%s recipes)",
+        subdag_i, subdags_n, len(recipes)
+    )
 
     if docker is not None:
         from docker import Client as DockerClient
@@ -520,7 +550,9 @@ def test_recipes(recipe_folder,
             for recipe in recipes:
                 for target in recipe_targets[recipe]:
                     package = target.pkg
-                    logger.debug("Checking existence of package {}".format(package))
+                    logger.debug(
+                        "Checking existence of package {}".format(package)
+                    )
                     if os.path.exists(package):
                         logger.info("Uploading package {}".format(package))
                         try:
@@ -540,7 +572,9 @@ def test_recipes(recipe_folder,
                             else:
                                 raise e
                     else:
-                        logger.error("Package {} has not been built.".format(package))
+                        logger.error(
+                            "Package {} has not been built.".format(package)
+                        )
                         success = False
     return success
 
@@ -558,11 +592,12 @@ def get_blacklist(blacklists, recipe_folder):
     return blacklist
 
 
-
 def validate_config(config):
     if not isinstance(config, dict):
         config = yaml.load(open(config))
-    fn = pkg_resources.resource_filename('bioconda_utils', 'config.schema.yaml')
+    fn = pkg_resources.resource_filename(
+        'bioconda_utils', 'config.schema.yaml'
+    )
     schema = yaml.load(open(fn))
     validate(config, schema)
 

@@ -18,8 +18,9 @@ conda-bld directory) so that the built package appears on the host.
 In the end the workflow is:
 
     - build a custom docker container (assumed to already have conda installed)
-      where the requirements in `bioconda-utils/bioconda-utils_requirements.txt`
-      have been conda installed.
+      where the requirements in
+      `bioconda-utils/bioconda-utils_requirements.txt` have been conda
+      installed.
 
     - mount the host's conda-bld to a read/write temporary dir in the container
       (configured in the RecipeBuilder)
@@ -120,11 +121,14 @@ COPY requirements.txt /tmp/requirements.txt
 RUN /opt/conda/bin/conda install --file /tmp/requirements.txt
 """
 
+
 class DockerCalledProcessError(sp.CalledProcessError):
     pass
 
+
 class DockerBuildError(Exception):
     pass
+
 
 def dummy_recipe():
     """
@@ -275,14 +279,19 @@ class RecipeBuilder(object):
                 fout.write(open(self.requirements).read())
             else:
                 fout.write(open(pkg_resources.resource_filename(
-                    'bioconda_utils', 'bioconda_utils-requirements.txt')).read())
+                    'bioconda_utils',
+                    'bioconda_utils-requirements.txt')
+                ).read())
 
         with open(os.path.join(build_dir, "Dockerfile"), 'w') as fout:
             fout.write(self.dockerfile_template.format(self=self))
 
         logger.debug('Dockerfile:\n' + open(fout.name).read())
 
-        response = list(self.docker.build(path=build_dir, rm=True, tag=self.tag, decode=True))
+        response = list(
+            self.docker.build(
+                path=build_dir, rm=True, tag=self.tag, decode=True)
+        )
         for r in response:
             if 'error' in r:
                 raise DockerBuildError(response)
@@ -361,8 +370,10 @@ class RecipeBuilder(object):
 
         self.docker.start(container=cid)
         status = self.docker.wait(container=cid)
-        stdout = self.docker.logs(container=cid, stdout=True, stderr=False).decode()
-        stderr = self.docker.logs(container=cid, stderr=True, stdout=False).decode()
+        stdout = self.docker.logs(
+            container=cid, stdout=True, stderr=False).decode()
+        stderr = self.docker.logs(
+            container=cid, stderr=True, stdout=False).decode()
 
         logger.debug('cmd:\n%s', cmd)
         logger.debug('stdout:\n%s', stdout)

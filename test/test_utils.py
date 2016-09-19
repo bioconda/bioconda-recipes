@@ -88,7 +88,8 @@ class Recipes(object):
             os.makedirs(rdir)
             self.recipe_dirs[name] = rdir
             with open(os.path.join(rdir, 'meta.yaml'), 'w') as fout:
-                fout.write(yaml.dump(recipe['meta.yaml'], default_flow_style=False))
+                fout.write(
+                    yaml.dump(recipe['meta.yaml'], default_flow_style=False))
             for key, value in recipe.items():
                 if key == 'meta.yaml':
                     continue
@@ -111,6 +112,7 @@ with open('test_env_matrix.yaml', 'w') as fout:
         CONDA_GMP: "5.1"
         """))
 
+
 def test_get_deps():
     r = Recipes('test_case.yaml')
     r.write_recipes()
@@ -118,7 +120,6 @@ def test_get_deps():
     r.recipes['two']['meta.yaml']['requirements']['build'] = []
     r.write_recipes()
     assert list(utils.get_deps(r.recipe_dirs['two'])) == []
-
 
 
 def _single_build(docker_builder=None):
@@ -135,7 +136,7 @@ def _single_build(docker_builder=None):
         recipe=r.recipe_dirs['one'],
         recipe_folder='.',
         docker_builder=docker_builder,
-        config={}, env=env_matrix)
+        env=env_matrix)
     assert os.path.exists(built_package)
     ensure_missing(built_package)
 
@@ -175,7 +176,8 @@ def test_docker_build_image_fails():
         RUN nonexistent command
         """)
     with pytest.raises(docker_utils.DockerBuildError):
-        docker_builder = docker_utils.RecipeBuilder(verbose=True, dockerfile_template=template)
+        docker_builder = docker_utils.RecipeBuilder(
+            verbose=True, dockerfile_template=template)
 
 
 def test_conda_purge_cleans_up():
@@ -190,6 +192,7 @@ def test_conda_purge_cleans_up():
     assert tmp_dir_exists(bld)
     bld = docker_utils.get_host_conda_bld(purge=True)
     assert not tmp_dir_exists(bld)
+
 
 def test_local_channel():
     r = Recipes('test_case.yaml')
@@ -206,6 +209,8 @@ def test_local_channel():
         assert e.code == 0
     conda_bld = docker_utils.get_host_conda_bld()
     print(os.listdir(os.path.join(conda_bld, 'linux-64')))
+
+
 def test_env_matrix():
     contents = {
         'CONDA_PY': ['2.7', '3.5'],
@@ -218,7 +223,8 @@ def test_env_matrix():
     e1 = utils.EnvMatrix(contents)
     e2 = utils.EnvMatrix(fout.name)
     assert e1.env == e2.env
-    assert sorted([sorted(i) for i in e1]) == sorted([sorted(i) for i in e2]) == [
+    assert sorted(
+        [sorted(i) for i in e1]) == sorted([sorted(i) for i in e2]) == [
         [
             ('CONDA_BOOST', '1.60'),
             ('CONDA_PY', '2.7'),
@@ -239,7 +245,8 @@ def test_filter_recipes():
     }
     recipes = list(r.recipe_dirs.values())
     assert len(recipes) == 3
-    filtered = list(utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
+    filtered = list(
+        utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
     assert len(filtered) == 3
 
 
