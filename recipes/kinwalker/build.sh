@@ -1,4 +1,5 @@
 #!/bin/sh
-# ViennaRNA does not support Python 3 yet.
+rm findpath.h	#Already included in ViennaRNA
 make clean
-make
+make all
+cp kinwalker $PREFIX/bin
