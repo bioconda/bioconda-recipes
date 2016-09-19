@@ -249,7 +249,16 @@ class RecipeBuilder(object):
         self.docker = DockerClient(base_url=base_url)
         self.host_conda_bld = get_host_conda_bld()
 
+        self._pull_image()
         self._build_image()
+
+    def _pull_image(self):
+        """
+        Separate out the pull step to provide additional logging info
+        """
+        logger.info('Pulling docker image %s', self.image)
+        self.docker.pull(self.image)
+        logger.info('Done pulling image')
 
     def _build_image(self):
         """
