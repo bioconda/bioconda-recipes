@@ -584,9 +584,21 @@ def load_config(path):
             return []
         return value
 
+    default_config = {
+        'env_matrix': {'CONDA_PY': '3.5'},
+        'blacklists': [],
+        'channels': [],
+        'docker_url': 'unix://var/run/docker.sock',
+        'docker_image': 'condaforge/linux-anvil',
+        'requirements': None,
+        'upload_channel': 'bioconda'
+    }
     if 'env_matrix' in config:
         config['env_matrix'] = relpath(config['env_matrix'])
     if 'blacklists' in config:
         config['blacklists'] = [relpath(p) for p in get_list('blacklists')]
     if 'channels' in config:
         config['channels'] = get_list('channels')
+
+    default_config.update(config)
+    return default_config
