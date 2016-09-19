@@ -234,7 +234,7 @@ class Target:
         return os.path.basename(self.pkg)
 
 
-def filter_recipes(recipes, env_matrix, config, force=False):
+def filter_recipes(recipes, env_matrix, channels=None, force=False):
     """
     Generator yielding only those recipes that do not already exist.
 
@@ -246,19 +246,32 @@ def filter_recipes(recipes, env_matrix, config, force=False):
     recipes : iterable
         Iterable of candidate recipes
 
-    env_matrix : EnvMatrix
-    """
-    channel_packages = get_channel_packages()
+    env_matrix : str, dict, or EnvMatrix
+        If str or dict, create an EnvMatrix; if EnvMatrix already use it as-is.
 
+    channels : None or list
+        Optional list of channels to check for existing recipes
+    """
+    if not isinstance(env_matrix, EnvMatrix):
+        env_matrix = EnvMatrix(env_matrix)
+
+    if channels is None:
+        channels = []
+
+    channel_packages = set()
     channel_args = []
-    for c in config['channels']:
-        channel_args.extend(['--channel', c])
+    for channel in channels:
+        channel_packages.update(get_channel_packages(channel=channel))
+        channel_args.extend(['--channel', channel])
 
     tobuild = lambda f: not f.startswith("Skipped:") and (force or os.path.basename(f) not in channel_packages)
 
-    def pkgnames(env):
+    # conda build no longer supports multiple recipes as input and instead only
+    # takes the first.
+    def pkgname(recipe, env):
+        cmd = ["conda", "build", "--no-source", "--override-channels", "--output"] + channel_args + [recipe]
         logger.debug(env)
-        cmd = ["conda", "build", "--no-source", "--override-channels", "--output"] + channel_args + recipes
+        logger.debug(cmd)
         p = sp.run(
             cmd,
             check=True,
@@ -267,14 +280,18 @@ def filter_recipes(recipes, env_matrix, config, force=False):
             universal_newlines=True,
             env=merged_env(env))
         pkgpaths = p.stdout.strip().split("\n")
-        return pkgpaths
+        assert len(pkgpaths) == 1
+        return pkgpaths[0]
 
+    logger.debug('recipes: %s', recipes)
     try:
-        for item in zip(recipes, *map(pkgnames, env_matrix)):
-            recipe = item[0]
-            pkgs = item[1:]
-            targets = {Target(f, env) for f, env in zip(pkgs, env_matrix) if tobuild(f)}
-            logger.debug("recipe %s: %s", recipe, '\n\t' + '\n\t'.join(map(str, targets)))
+        for recipe in recipes:
+            targets = set()
+            for env in env_matrix:
+                pkg = pkgname(recipe, env)
+                if tobuild(pkg):
+                    targets.update([Target(pkg, env)])
+            logger.debug("targets for recipe %s: %s", recipe, '\n\t' + '\n\t'.join(map(str, targets)))
             if targets:
                 yield recipe, targets
     except sp.CalledProcessError as e:
