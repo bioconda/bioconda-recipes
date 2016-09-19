@@ -370,8 +370,12 @@ def build(recipe,
         build_args += ["--no-anaconda-upload"]
 
     channel_args = []
-    for c in config.get('channels', []):
-        channel_args.extend(['--channel', c])
+    if channels:
+        for c in channels:
+            channel_args.extend(['--channel', c])
+
+    logger.debug('build_args: %s', build_args)
+    logger.debug('channel_args: %s', channel_args)
 
     CONDA_BUILD_CMD = ['conda', 'build']
 
