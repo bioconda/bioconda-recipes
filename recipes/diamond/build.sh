@@ -1,7 +1,10 @@
 #!/bin/bash
 
+sed -i.bak 's/-march=native/-march=x86-64/' CMakeLists.txt
+
 mkdir build
 cd build
+
 
 cmake .. \
       -DCMAKE_INSTALL_PREFIX=$PREFIX \
