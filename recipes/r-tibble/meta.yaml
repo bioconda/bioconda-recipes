@@ -1,0 +1,53 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-tibble
+  version: "1.2"
+
+source:
+  fn: tibble_1.2.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/tibble_1.2.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/tibble/tibble_1.2.tar.gz
+  md5: bdbc3d67aa16860741add6d6ec20ea13
+
+build:
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - r-rcpp
+    - r-assertthat
+    - r-lazyeval >=0.1.10
+    - gcc                 # [not osx]
+    - llvm                # [osx]
+
+  run:
+    - libgcc              # [not osx]
+    - r-base
+    - r-rcpp
+    - r-assertthat
+    - r-lazyeval >=0.1.10
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('tibble')" # [not win]
+    - "\"%R%\" -e \"library('tibble')\"" # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://github.com/hadley/tibble
+  license: MIT + file LICENSE
+  summary: Provides a 'tbl_df' class that offers better checking and printing capabilities than
+    traditional data frames.
+  license_family: MIT
