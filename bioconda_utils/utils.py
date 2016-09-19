@@ -327,8 +327,6 @@ def build(recipe,
 
     try:
         if docker_builder is not None:
-
-
             response = docker_builder.build_recipe(
                 recipe_dir=os.path.abspath(recipe),
                 build_args=' '.join(channel_args + build_args),
@@ -337,7 +335,7 @@ def build(recipe,
             logger.info('Successfully built %s', recipe)
             return True
         else:
-            sp.run(CONDA_BUILD_CMD + [recipe],
+            p = sp.run(CONDA_BUILD_CMD + [recipe],
                    stdout=sp.PIPE,
                    stderr=sp.STDOUT,
                    check=True,
@@ -351,7 +349,7 @@ def build(recipe,
             logger.error(e.stdout)
             logger.error(e.stderr)
             logger.error(e.cmd)
-        return False
+            return False
 
 def test_recipes(recipe_folder,
                  config,

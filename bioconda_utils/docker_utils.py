@@ -57,10 +57,74 @@ import pkg_resources
 import logging
 logger = logging.getLogger(__name__)
 
+# ----------------------------------------------------------------------------
+# BUILD_SCRIPT_TEMPLATE
+# ----------------------------------------------------------------------------
+#
+# The following script is the default that will be regenerated on each call to
+# RecipeBuilder.build_recipe() and mounted at container run time when building
+# a recipe. It can be overridden by providing a different template when calling
+# RecipeBuilder.build_recipe().
+#
+# It will be filled in using BUILD_SCRIPT_TEMPLATE.format(self=self), so you
+# can add additional attributes to the RecipeBuilder instance and have them
+# filled in here.
+#
+BUILD_SCRIPT_TEMPLATE = \
+"""
+#!/bin/bash
+set -e
+
+# Add the host's mounted conda-bld dir so that we can use its contents as
+# dependencies for building this recipe.
+conda config --add channels file://{self.container_staging}
+
+# The actual building....
+conda build {self.conda_build_args} {self.container_recipe}
+
+# Identify the output package
+OUTPUT=$(conda build {self.container_recipe} --output)
+
+# Some args to conda-build make it run and exit 0 without creating a package
+# (e.g., -h or --skip-existing), so check to see if there's anything to copy
+# over first.
+if [[ -e $OUTPUT ]]; then
+
+    # Copy over the recipe from where the container built it to the mounted
+    # conda-bld dir from the host. Since docker containers are Linux, we assume
+    # here that we want the linux-64 arch.
+    cp $OUTPUT {self.container_staging}/linux-64
+
+    # Ensure permissions are correct on the host.
+    HOST_USER={self.user_info[uid]}
+    chown $HOST_USER:$HOST_USER {self.container_staging}/linux-64/$(basename $OUTPUT)
+fi
+"""
+
+
+# ----------------------------------------------------------------------------
+# DOCKERFILE_TEMPLATE
+# ----------------------------------------------------------------------------
+#
+# This Docker file is used by RecipeBuilder and sent to docker build if no
+# other Dockerfile is provided to RecipeBuilder. It will be filled in using
+# DOCKERFILE.format(self=self).
+#
+# It assumes that there will be a requirements.txt in the build directory
+# (the default is to use bioconda_utils-requierments.txt). THe
+# RecipeBuilder._build_image
+DOCKERFILE_TEMPLATE = \
+"""
+FROM {self.image}
+COPY requirements.txt /tmp/requirements.txt
+RUN /opt/conda/bin/conda install --file /tmp/requirements.txt
+"""
 
 class DockerCalledProcessError(sp.CalledProcessError):
     pass
 
+class DockerBuildError(Exception):
+    pass
 
 def dummy_recipe():
     """
@@ -84,7 +148,7 @@ def dummy_recipe():
     return tmpdir
 
 
-def get_host_conda_bld():
+def get_host_conda_bld(purge=True):
     """
     Identifies the conda-bld directory on the host.
 
@@ -99,9 +163,8 @@ def get_host_conda_bld():
             ).splitlines()[0]
         )
     )
-    # TODO: when we start running conda-build 2.0+, will need a `conda purge`
-    # call to clean up temp recipes
-    #sp.check_call(['conda', 'build', 'purge'])
+    if purge:
+        sp.check_call(['conda', 'build', 'purge'])
     return res
 
 
@@ -114,6 +177,8 @@ class RecipeBuilder(object):
         image='condaforge/linux-anvil',
         base_url='unix://var/run/docker.sock',
         requirements=None,
+        build_script_template=BUILD_SCRIPT_TEMPLATE,
+        dockerfile_template=DOCKERFILE_TEMPLATE,
         verbose=False,
     ):
         """
@@ -148,12 +213,23 @@ class RecipeBuilder(object):
             conda in a newly-created container. If None, then use the default
             installed with bioconda_utils.
 
+        build_script_template : str
+            Template that will be filled in with .format(self=self) and that
+            will be run in the container each time build_recipe() is called.
+
+        dockerfile_template : str
+            Template that will be filled in with .format(self=self) and that
+            will be used to build a custom image.
+
         verbose : bool
         """
         self.image = image
         self.tag = tag
         self.verbose = verbose
         self.requirements = requirements
+        self.conda_build_args = ""
+        self.build_script_template = build_script_template
+        self.dockerfile_template = dockerfile_template
         uid = os.getuid()
         usr = pwd.getpwuid(uid)
         self.user_info = dict(
@@ -164,7 +240,7 @@ class RecipeBuilder(object):
         self.container_recipe = container_recipe
         self.container_staging = container_staging
 
-        # Don't import until here to allow module import if docker not
+        # Don't import until here to allow module import if docker is not
         # installed.
         try:
             from docker import Client as DockerClient
@@ -172,9 +248,10 @@ class RecipeBuilder(object):
             raise ImportError("docker-py module must be installed")
         self.docker = DockerClient(base_url=base_url)
         self.host_conda_bld = get_host_conda_bld()
-        self._build_container()
 
-    def _build_container(self):
+        self._build_image()
+
+    def _build_image(self):
         """
         Builds a new image with requirements installed.
         """
@@ -192,59 +269,19 @@ class RecipeBuilder(object):
                     'bioconda_utils', 'bioconda_utils-requirements.txt')).read())
 
         with open(os.path.join(build_dir, "Dockerfile"), 'w') as fout:
-            fout.write(dedent(
-                """\
-                FROM {self.image}
-                COPY requirements.txt /tmp/requirements.txt
-                RUN /opt/conda/bin/conda install --file /tmp/requirements.txt
-                """.format(**locals())))
+            fout.write(self.dockerfile_template.format(self=self))
 
         logger.debug('Dockerfile:\n' + open(fout.name).read())
 
-        # TODO: need a better way of detecting build failure
-        response =self.docker.build(path=build_dir, rm=True, tag=self.tag)
-        response = ''.join(i.decode() for i in response)
-        if 'errorDetail' in response:
-            raise ValueError(''.join(response))
-
+        response = list(self.docker.build(path=build_dir, rm=True, tag=self.tag, decode=True))
+        for r in response:
+            if 'error' in r:
+                raise DockerBuildError(response)
         self._build = response
         logger.info('Built docker image tag=%s', self.tag)
         logger.debug(self._build)
         shutil.rmtree(build_dir)
         return self._build
-
-    def _write_build_script(self):
-        """
-        Writes a script to do the recipe building and copying over to mounted
-        host dir.
-
-        Filled in using currently-configured self.container_recipe and
-        self.container_staging.
-
-        Expects `HOST_USER` and `CONDA_BUILD_ARGS` to be passed in as
-        environmental variables.
-        """
-        build_dir = tempfile.mkdtemp()
-        with open(os.path.join(build_dir, 'build_script.bash'), 'w') as fout:
-            fout.write(dedent(
-                """
-                #!/bin/bash
-                set -e
-                conda config --add channels file://{self.container_staging}
-                conda index {self.container_staging}/linux-64
-                echo "Using {self.container_staging} for recipes"
-                OUTPUT=$(conda build {self.container_recipe} --output)
-                conda build $CONDA_BUILD_ARGS {self.container_recipe}
-
-                # If CONDA_BUILD_ARGS contains args that make conda-build run
-                # and exit 0 without creating a recipe (e.g., -h or
-                # --skip-existing), then there's nothing to copy over.
-                if [[ -e $OUTPUT ]]; then
-                    cp $OUTPUT {self.container_staging}/linux-64
-                    chown $HOST_USER:$HOST_USER {self.container_staging}/linux-64/$(basename $OUTPUT)
-                fi
-                """.format(self=self)))
-        return fout.name
 
     def build_recipe(self, recipe_dir, build_args, **kwargs):
         """
@@ -257,30 +294,32 @@ class RecipeBuilder(object):
             Path to recipe that contains meta.yaml
 
         build_args : str
-            Additional arguments to `conda build`. For example channels,
+            Additional arguments to `conda build`. For example --channel,
             --skip-existing, etc
 
         Additional kwargs are passed to docker.Client.create_container.
-        `environment` is a useful one; note that HOST_USER and CONDA_BUILD_ARGS
-        are added by this method. Also note that the binds are set up
-        automatically to match the expectations of the build script, and use
-        the currently-configured self.container_staging and
-        self.container_recipe.
+        (`environment` is a useful one).
+
+        Note that the binds are set up automatically to match the expectations
+        of the build script, and will use the currently-configured
+        self.container_staging and self.container_recipe.
         """
 
-        logger.info('Building recipe with docker: %s', recipe_dir)
+        # Attach the build args to self so that it can be filled in by the
+        # template.
         if not isinstance(build_args, str):
             raise ValueError('build_args must be str')
+        self.conda_build_args = build_args
 
-        # build_script.bash uses these
-        _env = {
-            'HOST_USER': self.user_info['uid'],
-            'CONDA_BUILD_ARGS': build_args,
-        }
-        _env.update(kwargs.pop('environment', {}))
+        # Write build script to tempfile
+        build_dir = tempfile.mkdtemp()
+        with open(os.path.join(build_dir, 'build_script.bash'), 'w') as fout:
+            fout.write(self.build_script_template.format(self=self))
+        build_script = fout.name
+        logger.debug('Container build script: \n%s', open(fout.name).read())
 
-        build_script = self._write_build_script()
-        cmd = '/bin/bash /opt/build_script.bash'
+        logger.info('Building recipe with docker: %s', recipe_dir)
+
         binds = {
             build_script: {
                 'bind': '/opt/build_script.bash',
@@ -295,18 +334,20 @@ class RecipeBuilder(object):
                 'mode': 'ro',
             },
         }
-        logger.debug('environment: %s', _env)
-        logger.debug('cmd: %s', cmd)
         logger.debug('binds: %s', binds)
 
+        cmd = '/bin/bash /opt/build_script.bash'
+        logger.debug('cmd: %s', cmd)
+        logger.debug('kwargs: %s', kwargs)
         container = self.docker.create_container(
             image=self.tag,
             command=cmd,
-            environment=_env,
-            host_config=self.docker.create_host_config(binds=binds, network_mode='host'),
+            host_config=self.docker.create_host_config(
+                binds=binds, network_mode='host'
+            ),
             **kwargs)
-        cid = container['Id']
 
+        cid = container['Id']
         logger.debug('Container ID: %s', cid)
 
         self.docker.start(container=cid)
