@@ -4,8 +4,10 @@ import pytest
 from textwrap import dedent
 import yaml
 import tempfile
+import requests
 from bioconda_utils import utils
 from bioconda_utils import docker_utils
+from bioconda_utils import cli
 
 
 def ensure_missing(package):
@@ -63,6 +65,15 @@ class Recipes(object):
               two/
                 meta.yaml
                 build.sh
+
+
+
+        Useful attributes:
+
+        * recipes: a dict mapping recipe names to parsed meta.yaml contents
+        * basedir: the tempdir containing all recipes
+        * recipe_dirs: a dict mapping recipe names to newly-created recipe
+          dirs (these are full paths to subdirs in `basedir`)
         """
         self.filename = os.path.join(os.path.dirname(__file__), filename)
         self.recipes = {}
@@ -180,6 +191,21 @@ def test_conda_purge_cleans_up():
     bld = docker_utils.get_host_conda_bld(purge=True)
     assert not tmp_dir_exists(bld)
 
+def test_local_channel():
+    r = Recipes('test_case.yaml')
+    r.write_recipes()
+    with pytest.raises(SystemExit) as e:
+        cli.build(r.basedir,
+                  config={},
+                  packages="*",
+                  testonly=False,
+                  force=False,
+                  docker=True,
+                  loglevel="debug",
+                  )
+        assert e.code == 0
+    conda_bld = docker_utils.get_host_conda_bld()
+    print(os.listdir(os.path.join(conda_bld, 'linux-64')))
 def test_env_matrix():
     contents = {
         'CONDA_PY': ['2.7', '3.5'],
@@ -204,3 +230,20 @@ def test_env_matrix():
     ]
 
 
+def test_filter_recipes():
+    r = Recipes('test_case.yaml')
+    r.write_recipes()
+    env_matrix = {
+        'CONDA_PY': ['2.7', '3.5'],
+        'CONDA_BOOST': '1.60'
+    }
+    recipes = list(r.recipe_dirs.values())
+    assert len(recipes) == 3
+    filtered = list(utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
+    assert len(filtered) == 3
+
+
+def test_get_channel_packages():
+    with pytest.raises(requests.HTTPError):
+        utils.get_channel_packages('bioconda_xyz_nonexistent_channel')
+    utils.get_channel_packages('bioconda')
