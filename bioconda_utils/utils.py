@@ -568,8 +568,14 @@ def validate_config(config):
 
 
 def load_config(path):
-    relpath = lambda p: os.path.relpath(p, os.path.dirname(path))
-    config = yaml.load(open(path))
+    validate_config(path)
+
+    if isinstance(path, dict):
+        config = path
+        relpath = lambda p: p
+    else:
+        config = yaml.load(open(path))
+        relpath = lambda p: os.path.relpath(p, os.path.dirname(path))
 
     def get_list(key):
         # always return empty list, also if NoneType is defined in yaml
@@ -578,8 +584,9 @@ def load_config(path):
             return []
         return value
 
-    config['env_matrix'] = relpath(config['env_matrix'])
-    config['blacklists'] = [relpath(p) for p in get_list('blacklists')]
-    config['index_dirs'] = [relpath(p) for p in get_list('index_dirs')]
-    config['channels'] = get_list('channels')
-    return config
+    if 'env_matrix' in config:
+        config['env_matrix'] = relpath(config['env_matrix'])
+    if 'blacklists' in config:
+        config['blacklists'] = [relpath(p) for p in get_list('blacklists')]
+    if 'channels' in config:
+        config['channels'] = get_list('channels')
