@@ -249,6 +249,10 @@ def get_channel_packages(channel='bioconda', platform=None):
 
 class Target:
     def __init__(self, pkg, env):
+        """
+        Class to represent a package built with a particular environment
+        (e.g. from EnvMatirix).
+        """
         self.pkg = pkg
         self.env = env
 
@@ -481,6 +485,18 @@ def test_recipes(recipe_folder,
     if docker is not None:
         from docker import Client as DockerClient
 
+        # Use the defaults for RecipeBuilder unless otherwise specified in
+        # config file.
+        kwargs = {}
+        for key, argname in [
+            ('docker_image', 'image'),
+            ('requirements', 'requirements'),
+            ('docker_url', 'base_url'),
+        ]:
+            if key in config:
+                kwargs[argname] = config[key]
+
+        builder = docker_utils.RecipeBuilder(**kwargs)
 
         logger.info('Done.')
 
