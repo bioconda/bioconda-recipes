@@ -54,13 +54,24 @@ class EnvMatrix:
 
     """
 
-    def __init__(self, path):
-        with open(path) as f:
-            self.env = yaml.load(f)
-            for key, val in self.env.items():
-                if key != "CONDA_PY" and not isinstance(val, str):
-                    raise ValueError(
-                        "All versions except CONDA_PY must be strings.")
+    def __init__(self, env):
+        """
+        Parameters
+        ----------
+
+        env : str or dict
+            If str, assume it's a path to a YAML-format filename and load it
+            into a dict. If a dict is provided, use it directly.
+        """
+        if isinstance(env, str):
+            with open(env) as f:
+                self.env = yaml.load(f)
+        else:
+            self.env = env
+        for key, val in self.env.items():
+            if key != "CONDA_PY" and not isinstance(val, str):
+                raise ValueError(
+                    "All versions except CONDA_PY must be strings.")
 
     def __iter__(self):
         """

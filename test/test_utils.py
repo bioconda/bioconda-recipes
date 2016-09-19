@@ -180,3 +180,27 @@ def test_conda_purge_cleans_up():
     bld = docker_utils.get_host_conda_bld(purge=True)
     assert not tmp_dir_exists(bld)
 
+def test_env_matrix():
+    contents = {
+        'CONDA_PY': ['2.7', '3.5'],
+        'CONDA_BOOST': '1.60'
+    }
+
+    with open(tempfile.NamedTemporaryFile().name, 'w') as fout:
+        fout.write(yaml.dump(contents, default_flow_style=False))
+
+    e1 = utils.EnvMatrix(contents)
+    e2 = utils.EnvMatrix(fout.name)
+    assert e1.env == e2.env
+    assert sorted([sorted(i) for i in e1]) == sorted([sorted(i) for i in e2]) == [
+        [
+            ('CONDA_BOOST', '1.60'),
+            ('CONDA_PY', '2.7'),
+        ],
+        [
+            ('CONDA_BOOST', '1.60'),
+            ('CONDA_PY', '3.5'),
+        ]
+    ]
+
+
