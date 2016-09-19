@@ -327,11 +327,9 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         logger.error(e.stderr)
         exit(1)
 
-
 def build(recipe,
           recipe_folder,
           env,
-          config,
           testonly=False,
           force=False,
           channels=None,
@@ -347,9 +345,6 @@ def build(recipe,
     env : dict
         Environment (typically a single yielded dictionary from EnvMatrix
         instance)
-
-    config : dict
-        Configuration dictionary.
 
     testonly : bool
         If True, skip building and instead run the test described in the
@@ -374,7 +369,6 @@ def build(recipe,
     else:
         build_args += ["--no-anaconda-upload"]
 
-    logger.debug('config: %s', config)
     channel_args = []
     for c in config.get('channels', []):
         channel_args.extend(['--channel', c])
@@ -489,13 +483,15 @@ def test_recipes(recipe_folder,
     success = True
     for recipe in recipes:
         for target in recipe_targets[recipe]:
-            success &= build(recipe,
-                             recipe_folder,
-                             target.env,
-                             config,
-                             testonly,
-                             force,
-                             docker_builder=builder)
+            success &= build(
+                recipe=recipe,
+                recipe_folder=recipe_folder,
+                env=target.env,
+                testonly=testonly,
+                force=force,
+                channels=config['channels'],
+                docker_builder=builder
+            )
 
     if not testonly:
         # upload builds
