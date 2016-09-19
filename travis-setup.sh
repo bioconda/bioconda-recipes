@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 if [[ $TRAVIS_OS_NAME == "linux" ]]; then
     tag="Linux"
 else
@@ -10,7 +11,7 @@ sudo chown -R $USER /anaconda
 mkdir -p /anaconda/conda-bld/osx-64 # workaround for bug in current conda
 mkdir -p /anaconda/conda-bld/linux-64 # workaround for bug in current conda
 export PATH=/anaconda/bin:$PATH
-conda install bioconda_utils/bioconda_utils-requirements.txt
+conda install --file bioconda_utils/bioconda_utils-requirements.txt
 pip install -r requirements.txt
 pip install -r test-requirements.txt
 python setup.py develop
