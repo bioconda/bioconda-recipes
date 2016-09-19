@@ -12,6 +12,7 @@ import logging
 import pkg_resources
 import networkx as nx
 import requests
+from jsonschema import validate
 
 from conda_build.metadata import MetaData
 import yaml
@@ -512,6 +513,15 @@ def get_blacklist(blacklists, recipe_folder):
             ]
         )
     return blacklist
+
+
+
+def validate_config(config):
+    if not isinstance(config, dict):
+        config = yaml.load(open(config))
+    fn = pkg_resources.resource_filename('bioconda_utils', 'config.schema.yaml')
+    schema = yaml.load(open(fn))
+    validate(config, schema)
 
 
 def load_config(path):
