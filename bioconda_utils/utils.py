@@ -4,6 +4,7 @@ import os
 import glob
 import subprocess as sp
 import argparse
+import itertools
 import sys
 import shutil
 from collections import defaultdict, Iterable
@@ -206,17 +207,43 @@ def get_recipes(recipe_folder, package="*"):
                        glob.glob(os.path.join(path, "*", "meta.yaml")))
 
 
-def get_channel_packages():
-    if sys.platform.startswith("linux"):
-        repodata = requests.get('https://conda.anaconda.org/bioconda/linux-64/repodata.json').json()
-    elif sys.platform.startswith("darwin"):
-        repodata = requests.get('https://conda.anaconda.org/bioconda/osx-64/repodata.json').json()
+def get_channel_packages(channel='bioconda', platform=None):
+    """
+    Retrieves the existing packages for a channel from conda.anaconda.org
+
+    Parameters
+    ----------
+    channel : str
+        Channel to retrieve packages for
+
+    platform : None | linux | osx
+        Platform (OS) to retrieve packages for from `channel`. If None, use the
+        currently-detected platform.
+    """
+    url_template = 'https://conda.anaconda.org/{channel}/{arch}/repodata.json'
+    if (platform == 'linux') or (platform is None and sys.platform.startswith("linux")):
+        arch = 'linux-64'
+    elif (platform == 'osx') or (platform is None and sys.platform.startswith("darwin")):
+        arch = 'osx-64'
     else:
         raise ValueError('Unsupported OS: bioconda only supports linux and osx.')
-    channel_packages = set(repodata['packages'].keys())
-    # add noarch repodata
-    noarch_repodata = requests.get('https://conda.anaconda.org/bioconda/noarch/repodata.json').json()
-    channel_packages.update(noarch_repodata['packages'].keys())
+
+    url = url_template.format(channel=channel, arch=arch)
+    repodata = requests.get(url)
+    if repodata.status_code != 200:
+        raise requests.HTTPError(
+            '{0.status_code} {0.reason} for {1}'
+            .format(repodata, url))
+
+    noarch_url = url_template.format(channel=channel, arch='noarch')
+    noarch_repodata = requests.get(noarch_url)
+    if noarch_repodata.status_code != 200:
+        raise requests.HTTPError(
+            '{0.status_code} {0.reason} for {1}'
+            .format(noarch_repodata, noarch_url))
+
+    channel_packages = set(repodata.json()['packages'].keys())
+    channel_packages.update(noarch_repodata.json()['packages'].keys())
     return channel_packages
 
 
