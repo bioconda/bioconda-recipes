@@ -14,8 +14,7 @@ else ## linux
 fi
 
 ./configure --prefix=$PREFIX \
-            --without-perl --without-python \
-            --with-kinwalker \
+            --without-perl --without-python --disable-c11 \
             ${extra_config_options} && \
 make -j${CPU_COUNT} && \
 make install
