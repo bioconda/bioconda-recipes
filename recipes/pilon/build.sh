@@ -1,11 +1,14 @@
 #!/bin/bash
-target=$PREFIX/share/java/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-mkdir -p $target
+set -eu -o pipefail
+
+outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+mkdir -p $outdir
 mkdir -p $PREFIX/bin
-cp  *jar $target/.
-mv $target/pilon-$PKG_VERSION.jar $target/pilon.jar
-cp $RECIPE_DIR/pilon.sh $target/pilon
-ln -s $target/pilon $PREFIX/bin
-chmod 0755 $PREFIX/bin/pilon
+cp -R * $outdir/
+cp $RECIPE_DIR/pilon.py $outdir/pilon
+ls -l $outdir
+ln -s $outdir/pilon $PREFIX/bin
+chmod 0755 "${PREFIX}/bin/pilon"
+
 
 
