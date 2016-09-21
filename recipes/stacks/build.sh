@@ -2,6 +2,6 @@
 
 export CPATH=${PREFIX}/include
 
-./configure --prefix=$PREFIX --enable-sparsehash --enable-bam --with-bam-include-path=${PREFIX}/include/bam --with-bam-lib-path=${PREFIX}/lib
+./configure --prefix=$PREFIX --enable-sparsehash --enable-bam --includedir=${PREFIX}/include/bam --libdir=${PREFIX}/lib
 make
 make install
