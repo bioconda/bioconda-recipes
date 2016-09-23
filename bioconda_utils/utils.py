@@ -593,6 +593,15 @@ def get_blacklist(blacklists, recipe_folder):
 
 
 def validate_config(config):
+    """
+    Validate config against schema
+
+    Parameters
+    ----------
+    config : str or dict
+        If str, assume it's a path to YAML file and load it. If dict, use it
+        directly.
+    """
     if not isinstance(config, dict):
         config = yaml.load(open(config))
     fn = pkg_resources.resource_filename(
