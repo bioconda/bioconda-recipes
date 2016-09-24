@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euo pipefail
 
 IGBLAST_ADDRESS=ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release
 SHARE_DIR=$PREFIX/share/igblast
@@ -28,5 +27,8 @@ chmod +x $PREFIX/bin/igblastn $PREFIX/bin/igblastp
 
 for IGBLAST_DIR in internal_data optional_file; do
     mkdir -p $SHARE_DIR/$IGBLAST_DIR
-    wget -nv -r -nH --cut-dirs=5 -X Entries,Repository,Root -P $SHARE_DIR/$IGBLAST_DIR $IGBLAST_ADDRESS/$IGBLAST_DIR
+    wget -r -nH --cut-dirs=5 -P $SHARE_DIR/$IGBLAST_DIR $IGBLAST_ADDRESS/$IGBLAST_DIR
+    for CVS_FILE in Entries Repository Root; do
+        rm -f $SHARE_DIR/$IGBLAST_DIR/$CVS_FILE
+    done
 done
