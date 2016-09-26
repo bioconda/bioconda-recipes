@@ -1,4 +1,4 @@
-# tests for openbabel-2.3.2
+# tests for openbabel in python
 
 # A test of some smiple SMILES manipulation
 # by Richard West <r.west@neu.edu>
