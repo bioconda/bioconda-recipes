@@ -53,11 +53,15 @@ After installing Miniconda, you can use the ``conda`` command to setup bioconda 
 
    conda config --add channels r
    conda config --add channels bioconda
+   conda config --add channels conda-forge
 
 The ``r`` channel is added to satisfy the `R language <https://www.r-project.org/>`_
 dependencies of some packages as well as some non-R dependencies.
 Even if you don't plan on installing R packages, the `r` channel is required
-for some Bioconda packages.
+for some Bioconda packages. Similarly, the ``conda-forge`` channel contains
+many dependencies that are not strictly for bioinformatics but that are
+required for Bioconda packages to work (see more at
+`https://conda-forge.github.io/_`)
 
 Step 3: Install packages or create environments
 -----------------------------------------------
