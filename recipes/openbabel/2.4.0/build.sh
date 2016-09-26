@@ -21,6 +21,3 @@ cmake -DCMAKE_INSTALL_PREFIX=$PREFIX \
 
 make -j${CPU_COUNT}
 make install
-
-cd scripts/python
-OPENBABEL_INCLUDE_DIRS=$(pwd)/..:$PREFIX/include/openbabel-2.0 python setup.py install
