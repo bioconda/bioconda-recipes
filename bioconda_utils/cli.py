@@ -105,7 +105,7 @@ def dependent(recipe_folder, packages="*", dependencies=None, loglevel='warning'
 
     recipes = []
     for dep in dependencies:
-        for i in d[dep]:
+        for i in nx.algorithms.descendants(d, dep):
             for r in n2r[i]:
                 recipes.append(r)
     print('\n'.join(sorted(recipes)))
