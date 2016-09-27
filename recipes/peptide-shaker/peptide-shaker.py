@@ -2,20 +2,22 @@
 #
 # Wrapper script for Java Conda packages that ensures that the java runtime
 # is invoked with the right options. Adapted from the bash script (http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128).
-#
 
 #
 # Program Parameters
 #
 import os
-import sys
 import subprocess
-from os import access, getenv, X_OK
-jar_file = 'PeptideShaker-1.1.3.jar'
+import sys
+from os import access
+from os import getenv
+from os import X_OK
+jar_file = 'PeptideShaker-1.13.3.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
 # !!! End of parameter section. No user-serviceable code below this line !!!
+
 
 def real_dirname(path):
     """Return the symlink-resolved, canonicalized directory-portion of path."""
@@ -60,7 +62,7 @@ def jvm_opts(argv):
     # it is important to explictly check for equality with None
     # in the second condition, so a null envar value counts as True!
 
-    if mem_opts == [] and getenv('_JAVA_OPTIONS') == None:
+    if mem_opts == [] and getenv('_JAVA_OPTIONS') is None:
         mem_opts = default_jvm_mem_opts
 
     return (mem_opts, prop_opts, pass_args)
@@ -78,7 +80,7 @@ def main():
 
     jar_path = os.path.join(jar_dir, jar_file)
 
-    java_args = [java]+ mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
+    java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
 
     sys.exit(subprocess.call(java_args))
 
