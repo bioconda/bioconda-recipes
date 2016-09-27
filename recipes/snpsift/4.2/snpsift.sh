@@ -1,6 +1,6 @@
 #!/bin/bash
-# snpEff executable shell script, adapted from VarScan shell script
-jar_name="snpEff.jar"
+# snpSift executable shell script, adapted from VarScan shell script
+jar_name="SnpSift.jar"
 
 set -eu -o pipefail
 
