@@ -23,7 +23,7 @@ If you want to contribute new packages to Bioconda, you are invited to join the
 Bioconda team.  Please post in the [team thread on
 GitHub](https://github.com/bioconda/recipes/issues/1) to ask for permission.
 
-We build Linux packages inside a CentOS 5 docker container to maintain
+We build Linux packages inside a CentOS 6 docker container to maintain
 compatibility across multiple systems. OSX packages are built using the [OSX
 build environment](https://docs.travis-ci.com/user/osx-ci-environment/) on
 [Travis CI](https://travis-ci.org/).
