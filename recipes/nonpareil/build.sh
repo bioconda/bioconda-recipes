@@ -1,4 +1,3 @@
 #!/bin/bash
-set -euo pipefail
 make
-make install
+mv nonpareil $PREFIX/bin
