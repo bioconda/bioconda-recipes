@@ -1,3 +1,3 @@
 #!/bin/bash
 make
-mv nonpareil $PREFIX/bin
+cp nonpareil $PREFIX/bin
