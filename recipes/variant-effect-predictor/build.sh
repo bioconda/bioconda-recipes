@@ -25,7 +25,9 @@ chmod 0755 $target/*.pl
 ln -s $target/*.pl $PREFIX/bin
 
 cd $target
-perl vep_install.pl -a a
+# Use external Bio::DB::HTS::Faidx instead of compiling interally
+# Compile in VEP causes issues linking to /lib64 outside of rpath
+perl vep_install.pl -a a --NO_HTSLIB
 # Remove test data
 rm -rf t/
 # Install plugins
