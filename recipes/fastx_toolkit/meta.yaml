@@ -8,24 +8,34 @@ source:
 
 build:
   preserve_egg_dir: True
-  number: 0
+  number: 3
+  skip: False
 
 requirements:
   build:
+    - gcc [not osx]
+    - llvm [osx]
     - cython
     - nose
     - libgtextutils
-    #- pkg-config
 
   run:
+    - libgcc [not osx]
     - cython
     - nose
     - libgtextutils
+    - gnuplot
+    - libgd >=2.1.1post 1
+    - perl-threaded
+    - perl-perlio-gzip
+    - perl-gd >=2.5.6 2
+    - perl-gdgraph-histogram
     #- pkg-config
 
 test:
     commands:
-      #- fastx_quality_stats -h  # This fails for some unknown reason, even though it prints the output successfully...
+      - SCRIPT=$(which fasta_clipping_histogram.pl) && perl5.22.0 "$SCRIPT"
+      - 'fastx_trimmer -h | grep "Part of FASTX Toolkit 0.0.14 by A. Gordon (assafgordon@gmail.com)"'
 
 about:
   home: https://github.com/agordon/fastx_toolkit

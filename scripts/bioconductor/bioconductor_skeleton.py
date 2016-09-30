@@ -18,7 +18,7 @@ from collections import OrderedDict
 import logging
 import requests
 
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s]: %(message)s')
+logging.basicConfig(level=logging.INFO, format='[bioconductor_skeleton.py %(asctime)s]: %(message)s')
 logger = logging.getLogger()
 logging.getLogger("requests").setLevel(logging.WARNING)
 
@@ -38,6 +38,9 @@ BASE_R_PACKAGES = ["base", "boot", "class", "cluster", "codetools", "compiler",
                    "mgcv", "nlme", "nnet", "parallel", "rpart", "spatial",
                    "splines", "stats", "stats4", "survival", "tcltk", "tools",
                    "utils"]
+
+# A list of packages, in recipe name format
+GCC_PACKAGES = ['r-rcpp']
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -84,6 +87,8 @@ class BioCProjectPage(object):
                 version = td.findNext().getText()
                 break
         self.version = version
+
+        self.depends_on_gcc = False
 
     @property
     def bioaRchive_url(self):
@@ -297,6 +302,9 @@ class BioCProjectPage(object):
             else:
                 results.append(prefix + name.lower() + version)
 
+            if prefix + name.lower() in GCC_PACKAGES:
+                self.depends_on_gcc = True
+
         # Add R itself if no specific version was specified
         if not specific_r_version:
             results.append('r')
@@ -320,11 +328,20 @@ class BioCProjectPage(object):
         Build the meta.yaml string based on discovered values.
 
         Here we use a nested OrderedDict so that all meta.yaml files created by
-        this script have the same consistent format. Otherwise we're the whims
-        of Python dict sorting.
+        this script have the same consistent format. Otherwise we're at the
+        mercy of Python dict sorting.
 
         We use pyaml (rather than yaml) because it has better handling of
         OrderedDicts.
+
+        However pyaml does not support comments, but if there are gcc and llvm
+        dependencies then they need to be added with preprocessing selectors
+        for `# [linux]` and `# [osx]`.
+
+        We do this with a unique placeholder (not a jinja or $-based
+        string.Template so as to avoid conflicting with the conda jinja
+        templating or the `$R` in the test commands, and replace the text once
+        the yaml is written.
         """
         url = self.bioaRchive_url
         if not url:
@@ -376,7 +393,14 @@ class BioCProjectPage(object):
                 )),
             ),
         ))
-        return pyaml.dumps(d).decode('utf-8')
+        if self.depends_on_gcc:
+            d['requirements']['build'].append('GCC_PLACEHOLDER')
+            d['requirements']['build'].append('LLVM_PLACEHOLDER')
+
+        rendered = pyaml.dumps(d).decode('utf-8')
+        rendered = rendered.replace('GCC_PLACEHOLDER', 'gcc  # [linux]')
+        rendered = rendered.replace('LLVM_PLACEHOLDER', 'llvm  # [osx]')
+        return rendered
 
 
 def write_recipe(package, recipe_dir, force=False):

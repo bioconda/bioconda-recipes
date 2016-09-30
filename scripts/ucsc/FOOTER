@@ -398,7 +398,7 @@ twoBitInfo on the assembly .2bit file.
 The in.bed file must be sorted by chromosome,start,
   to sort a bed file, use the unix sort command:
      sort -k1,1 -k2,2n unsorted.bed > sorted.bed
-Sorting must be case insensitive (LC_COLLATE=C).
+Sorting must be set to skip Unicode mapping (LC_COLLATE=C).
 
 options:
    -type=bedN[+[P]] : 
@@ -521,6 +521,15 @@ options:
    -end=N - if set, restict output to only that under end
    -maxItems=N - if set, restrict output to first N items
    -udcDir=/dir/to/cache - place to put cache for remote bigBed/bigWigs
+
+================================================================
+========   bigPslToPsl   ====================================
+================================================================
+bigPslToPsl - convert bigPsl file to psle
+usage:
+   bigPslToPsl bigPsl.bb output.psl
+options:
+   -xxx=XXX
 
 ================================================================
 ========   bigWigAverageOverBed   ====================================
@@ -1015,9 +1024,6 @@ Where tSizes and qSizes are tab-delimited files with
 columns.
 The target and query lists can either be fasta files, nib files, 2bit files
 or a list of fasta, 2bit and/or nib files one per line
-options:
-   -tMasked - If specified, the target is soft-masked and the repMatch counts are
-    computed
 
 ================================================================
 ========   chainToPslBasic   ====================================
@@ -1142,7 +1148,7 @@ where:
 ================================================================
 ========   countChars   ====================================
 ================================================================
-countChars - Count the number of occurences of a particular char
+countChars - Count the number of occurrences of a particular char
 usage:
    countChars char file(s)
 Char can either be a two digit hexadecimal value or
@@ -1567,14 +1573,16 @@ used in dir/chrN_something*.bed you'd do:
 ========   fetchChromSizes   ====================================
 ================================================================
 usage: fetchChromSizes <db> > <db>.chrom.sizes
-   used to fetch chrom.sizes information from UCSC for the given <db>
-<db> - name of UCSC database, e.g.: hg18, mm9, etc ...
+    used to fetch chrom.sizes information from UCSC for the given <db>
+<db> - name of UCSC database, e.g.: hg38, hg18, mm9, etc ...
 
 This script expects to find one of the following commands:
-   wget, mysql, or ftp in order to fetch information from UCSC.
+    wget, mysql, or ftp in order to fetch information from UCSC.
 Route the output to the file <db>.chrom.sizes as indicated above.
+This data is available at the URL:
+  http://hgdownload.cse.ucsc.edu/goldenPath/<db>/bigZips/<db>.chrom.sizes
 
-Example:   fetchChromSizes hg18 > hg18.chrom.sizes
+Example:   fetchChromSizes hg38 > hg38.chrom.sizes
 ================================================================
 ========   findMotif   ====================================
 ================================================================
@@ -1778,7 +1786,8 @@ getRna - Get mrna for GenBank or RefSeq sequences found in a database
 usage:
    getRna [options] database accFile outfa
 
-Get mrna for all accessions in accFile, writing to a fasta file. 
+Get mrna for all accessions in accFile, writing to a fasta file. If accession
+ has a version, that version is returned or an error generated
 
 Options:
   -cdsUpper - lookup CDS and output it as upper case. If CDS annotation
@@ -1928,9 +1937,12 @@ gff3ToGenePred - convert a GFF3 file to a genePred file
 usage:
    gff3ToGenePred inGff3 outGp
 options:
-  -warnAndContinue - on bad genePreds, put out warning but continue
+  -warnAndContinue - on bad genePreds being created, put out warning but continue
   -useName - rather than using 'id' as names, use the 'name' tag
   -attrsOut=file - output attributes of mRNA to file
+  -unprocessedRootsOut=file - output GFF3 root records that were not used.  This will not be a
+   valid GFF3 file.  It's expected that many non-root records will not be used and they are not
+   reported.
   -bad=file   - output genepreds that fail checks to file
   -maxParseErrors=50 - Maximum number of parsing errors before aborting. A negative
    value will allow an unlimited number of errors.  Default is 50.
@@ -1938,6 +1950,11 @@ options:
    value will allow an unlimited number of errors.  Default is 50.
   -honorStartStopCodons - only set CDS start/stop status to complete if there are
    corresponding start_stop codon records
+  -allowMinimalGenes - normally this programs assumes that genes contains
+   transcripts which contain exons.  If this option is specified, genes with exons
+   as direct children of genes and stand alone genes with no exon or transcript
+   children will be converted.
+
 This converts:
    - top-level gene records with RNA records
    - top-level RNA records
@@ -3806,6 +3823,19 @@ changes the qName field to qName:qStart-qEnd
 (can be used to create links to query position on details page)
 
 ================================================================
+========   pslToBigPsl   ====================================
+================================================================
+pslToBigPsl - converts psl to bigPsl input (bed format with extra fields)
+usage:
+  pslToBigPsl file.psl stdout | sort -k1,1 -k2,2n > file.bigPslInput
+options:
+  -cds=file.cds
+  -fa=file.fasta
+  -snakes
+NOTE: to build bigBed:
+   bedToBigBed -type=bed12+12 -tab -as=bigPsl.as file.bigPslInput chrom.sizes output.bb
+
+================================================================
 ========   pslToChain   ====================================
 ================================================================
 pslToChain - Convert psl records to chain records 
@@ -4204,6 +4234,7 @@ twoBitDup - check to see if a twobit file has any identical sequences in it
 usage:
    twoBitDup file.2bit
 options:
+   -keyList=file - file to write a key list, two columns: key and sequenceName
    -udcDir=/dir/to/cache - place to put cache for remote bigBed/bigWigs
 
 ================================================================

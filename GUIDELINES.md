@@ -17,6 +17,8 @@
 
 - If the recipe installs custom wrapper scripts, usage notes should be added to ``extra -> notes`` in the `meta.yaml`.
 
+- If uploading of an unreleased version is necessary, please follow the versioning scheme of conda for pre- and post-releases (e.g. using a, b, rc, and dev suffixes, see [here](https://github.com/conda/conda/blob/d1348cf3eca0f78093c7c46157989509572e9c25/conda/version.py#L30)).
+
 ## Examples
 
 The following recipes serve as examples of good recipes that can be used as
@@ -69,15 +71,14 @@ recipes. Recipes for dependencies with an `r-` prefix should be created using
 ### Java
 
 Add a wrapper script if the software is typically called via `java -jar ...`.
-For example, [fastqc](recipes/fastqc) already has a wrapper script, but
-[gatk-framework](recipes/gatk-framework) does not. [chromhmm](recipes/chromhmm)
-mimics the installation pattern of gatk-framework.
+For example, [fastqc](recipes/fastqc) already had a wrapper script, but
+[peptide-shaker](recipes/peptide-shaker) did not.
 
 JAR files should go in `$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM`.
 A wrapper script should be placed here as well, and symlinked to `$PREFIX/bin`.
 
-Example: [gatk-framework](recipes/gatk-framework)
-Example with patch to fix memory: [fastqc](recipes/fastqc)
+* Example with added wrapper script: [peptide-shaker](recipes/peptide-shaker)
+* Example with patch to fix memory: [fastqc](recipes/fastqc)
 
 ### Perl
 
@@ -107,8 +108,53 @@ the `meta.yaml` files in above examples).
 In general, standard `make` should work. Other build tools (e.g., `autoconf`)
 and compilers (e.g., `gcc`) should be specified in the build requirements.
 
+We have not yet decided whether to have `gcc` as a conda package or to assume
+it is in the build environment. Until this decision is made, please add `gcc`
+(for Linux packages) and `llvm` (for OSX packages) to the `meta.yaml` as
+follows:
+
+```yaml
+requirements:
+  build:
+    - gcc   # [not osx]
+    - llvm  # [osx]
+
+  run:
+    - libgcc    # [not osx]
+```
+
+If the package uses `zlib`, then please see the `ZLIB` section below.
+
 * example requiring `autoconf`: [srprism](recipes/srprism)
 * simple example: [samtools](recipes/samtools)
+
+If your package links dynamically against a particular library, it is often
+necessary to pin the version against which it was compiled, in order to avoid
+ABI incompatibilities. Instead of hardcoding a particular version in the
+recipe, we use jinja templates to achieve this. For example, bioconda provides
+an environnmnet variable `CONDA_BOOST` that contains the current major version
+of boost. You should pin your boost dependency against that version. An example
+is the [salmon recipe](recipes/salmon). You find the libraries you can
+currently pin in
+[scripts/env_matrix.yml](https://github.com/bioconda/bioconda-recipes/blob/master/scripts/env_matrix.yml).
+If you need to pin another library, please notify @bioconda/core, and we will
+set up a corresponding environment variable.
+
+It's not uncommon to have difficulty compiling package into a portable conda
+package. Since there is no single solution, here are some examples of how
+bioconda contributors have solved compiling issues to give you some ideas on 
+what to try:
+
+- [ococo](recipes/ococo) edits the source in `build.sh` to accommodate the C++ compiler on OSX
+- [muscle](recipes/muscle) patches the makefile on OSX so it doesn't use static libs
+- [metavelvet](recipes/metavelvet), [eautils](recipes/eautils),
+  [preseq](recipes/preseq) have several patches to their makefiles to fix
+  `LIBS` and `INCLUDES`, `INCLUDEARGS`, and `CFLAGS`
+- [mapsplice](recipes/mapsplice) includes an older version of samtools; the
+  included samtools' makefile is patched to work in conda envs.
+- [mosaik](recipes/mosaik) has platform-specific patches -- one removes
+  `-static` on linux, and the other sets `BLD_PLATFORM` correctly on OSX
+- [mothur](recipes/mothur) and [soapdenovo](recipes/soapdenovo) have many fixes to makefiles
 
 ## General command-line tools
 If a command-line tool is installed, it should be tested. If it has a shebang
@@ -129,6 +175,10 @@ Examples:
 
 * confirm expected text in stderr: [weblogo](recipes/weblogo)
 
+If a package depends on Python and has a custom build string, then
+`py{{CONDA_PY}}` must be contained in that build string. Otherwise Python will
+be automatically pinned to one minor version, resulting in dependency conflicts
+with other packages. See [mapsplice](recipes/mapsplice) for an example of this.
 
 ### Metapackages
 
@@ -155,11 +205,76 @@ Examples of somewhat non-standard recipes, in no particular order:
   distribution
 * [hisat2](recipes/hisat2) runs `2to3` to make it Python 3 compatible, and
   copies over individual scripts to the bin dir
+* [krona](recipes/krona) has a `post-link.sh` script that gets called after
+  installation to alert the user a manual step is required
 * [htslib](recipes/htslib) has a small test script that creates example data
   and runs multiple programs on it
+* [spectacle](recipes/spectacle) runs `2to3` to make the wrapper script Python
+  3 compatible, patches the wrapper script to have a shebang line, deletes
+  example data to avoid taking up space in the bioconda channel, and includes
+  a script for downloading the example data separately.
+* [gatk](recipes/gatk) is a package for licensed software that cannot be
+  redistributed. The package installs a placeholder script (in this case
+  doubling as the `jar`
+  [wrapper](https://github.com/bioconda/bioconda-recipes/blob/master/GUIDELINES.md#java))
+  to alert the user if the program is not installed, along with a separate
+  script (`gatk-register`) to copy in a user-supplied archive/binary to the
+  conda environment
+
+### Name collisions
+In some cases, there may be a name collision when writing a recipe. For example the
+[wget](recipes/wget) recipe is for the standard command-line tool. There is
+also a Python package called `wget` [on
+PyPI](https://pypi.python.org/pypi/wget). In this case, we prefixed the Python
+package with `python-` (see [python-wget](recipes/python-wget)). A similar
+collision was resolved with [weblogo](recipes/weblogo) and
+[python-weblogo](recipes/python-weblogo).
+
+If in doubt about how to handle a naming collision, please submit an issue.
+
+### Fixes for missing URLs
+Sometimes, URLs to source code may disappear -- particularly with R and
+Bioconductor packages, where only the very latest source code is hosted on the
+Bioconductor servers. This means that rebuilding an older package version fails
+because the source can't be found.
+
+The solution to this is the [Cargo
+Port](https://depot.galaxyproject.org/software/), developed and maintained by
+the [Galaxy](https://galaxyproject.org/) team. The Galaxy Jenkins server
+performs daily archives of the source code of packages in `bioconda`, and makes
+these tarballs permanently available in Cargo Port. If you try rebuilding
+a recipe and the source seems to have disappeared, do the following:
+
+- search for the package and version at https://depot.galaxyproject.org/software/
+- add the URL listed in the "Package Version" column to your `meta.yaml` file as
+  another entry in the `source: url` section.
+- add the corresponding sha256 checksum displayed upon clicking the Info icon
+  in the "Help" column to the `source:` section.
+
+For example, if this stopped working:
+
+```yaml
+source:
+  fn: argh-0.26.1.tar.gz
+  url: https://pypi.python.org/packages/source/a/argh/argh-0.26.1.tar.gz
+  md5: 5a97ce2ae74bbe3b63194906213f1184
+```
+
+then change it to this:
+
+```yaml
+source:
+  fn: argh-0.26.1.tar.gz
+  url:
+    - https://pypi.python.org/packages/source/a/argh/argh-0.26.1.tar.gz
+    - https://depot.galaxyproject.org/software/argh/argh_0.26.1_src_all.tar.gz
+  md5: 5a97ce2ae74bbe3b63194906213f1184
+  sha256: 06a7442cb9130fb8806fe336000fcf20edf1f2f8ad205e7b62cec118505510db
+```
+
+
 
 ## Tests
-
 An adequate test must be included in the recipe. An "adequate" test depends on
 the recipe, but must be able to detect a successful installation. While many
 packages may ship their own test suite (unit tests or otherwise), including
@@ -174,9 +289,75 @@ testing).
 It is recommended to pipe unneeded stdout/stderr to /dev/null to avoid
 cluttering the output in the Travis-CI build environment.
 
+## Link and unlink scripts (pre- and post- install hooks)
+It is possible to include
+[scripts](http://conda.pydata.org/docs/spec.html#link-and-unlink-scripts) that
+are executed before or after installing a package, or before uninstalling
+a package. These scripts can be helpful for alerting the user that manual
+actions are required after adding or removing a package. For example,
+a `post-link.sh` script may be used to alert the user that he or she will need
+to create a database or modify a settings file. Any package that requires
+a manual preparatory step before it can be used should consider alerting the
+user via an `echo` statement in a `post-link.sh` script. These scripts may be
+added at the same level as `meta.yaml` and `build.sh`:
+
+* `pre-link.sh` is executed *prior* to linking (installation). An error causes conda to stop.
+* `post-link.sh` is executed *after* linking (installation). When the post-link
+  step fails, no package metadata is written, and the package is not considered
+  installed.
+* `pre-unlink.sh` is executed *prior* to unlinking (uninstallation). Errors are
+  ignored. Used for cleanup.
+
+These scripts have access to the following environment variables:
+
+* `$PREFIX`	The install prefix
+* `$PKG_NAME`	The name of the package
+* `$PKG_VERSION`	The version of the package
+* `$PKG_BUILDNUM`	The build number of the package
 
 ## Versions
 
 If an older version is required, put it in a subdirectory of the recipe.
 Examples of this can be found in [bowtie2](recipes/bowtie2),
 [bx-python](recipes/bx-python), and others.
+
+## ZLIB
+
+If a package depends on zlib, then it will most likely also depend on `gcc` (on
+Linux) and `llvm` (on OSX). The `meta.yaml` requirements section should
+therefore at least have the following for a recipe that supports both Linux and
+OSX:
+
+
+```yaml
+requirements:
+  build:
+    - gcc   # [not osx]
+    - llvm  # [osx]
+    - zlib
+
+  run:
+    - libgcc    # [not osx]
+    - zlib
+```
+
+When building the package, you may get an error saying that zlib.h can't be
+found -- despite having zlib listed in the dependencies. The reason is that the
+location of `zlib` often has to be specified in the `build.sh` script, which
+can be done like this:
+
+```bash
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+```
+
+Or sometimes:
+
+```
+export CPATH=${PREFIX}/include
+```
+
+Sometimes Makefiles may specify these locations, in which case they need to be
+edited. See the [samtools](recipes/samtools) recipe for an example of this. It
+may take some tinkering to get the recipe to build; if it doesn't seem to work
+then please submit an issue.

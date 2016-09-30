@@ -1,8 +1,11 @@
 #!/bin/bash
 set -eu -o pipefail
 
-sed -i.bak 's#I$with_boost#I$with_boost/include#' configure
-sed -i.bak 's#L$with_boost/lib#L$with_boost/lib -Wl,-rpath $with_boost/lib#' configure
-./configure --prefix=$PREFIX --with-boost=$PREFIX
+export CPPFLAGS=-I$PREFIX/include
+export LDFLAGS=-L$PREFIX/lib
+export LIBS=-lpthread
+
+./configure --prefix=$PREFIX
 make
-make install
+mkdir -p $PREFIX/bin
+cp src/variant $PREFIX/bin

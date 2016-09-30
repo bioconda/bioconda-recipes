@@ -2,6 +2,8 @@
 
 binaries="\
 prinseq-lite.pl \
+prinseq-graphs.pl \
+prinseq-graphs-noPCA.pl \
 "
 
 mkdir -p $PREFIX/bin
