@@ -17,6 +17,3 @@ clean:
 EOF
 
 $PYTHON setup.py install
-which mapDamage
-mapDamage -h
-echo $PATH
