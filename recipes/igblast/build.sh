@@ -6,7 +6,6 @@ SHARE_DIR=$PREFIX/share/igblast
 
 wget $IGBLAST_ADDRESS/edit_imgt_file.pl
 # replace the first line with /usr/bin/env perl instead of the hard-coded /opt
-# does this require an explicit perl dependency? 
 sed -i.backup '1 s/^.*$/#!\/usr\/bin\/env perl/g' edit_imgt_file.pl
 chmod +x edit_imgt_file.pl
 mv edit_imgt_file.pl bin/
@@ -14,12 +13,19 @@ mv edit_imgt_file.pl bin/
 mkdir -p $PREFIX/bin
 mkdir -p $SHARE_DIR/bin
 
+if [ $(uname) == Linux ]; then
+    # Distributed IgBLAST 1.5.0 binaries set an RPATH that conda build complains build.
+    for FILE in makeblastdb igblastn igblastp; do
+        patchelf --remove-rpath bin/$FILE
+    done
+fi
+
 for FILE in makeblastdb edit_imgt_file.pl; do
-    cp -f bin/$FILE $PREFIX/bin/
+    mv bin/$FILE $PREFIX/bin/
 done
 
 for FILE in igblastn igblastp; do
-    cp -f bin/$FILE $SHARE_DIR/bin/
+    mv bin/$FILE $SHARE_DIR/bin/
 done
 
 cp -f $RECIPE_DIR/igblastn.sh $PREFIX/bin/igblastn
