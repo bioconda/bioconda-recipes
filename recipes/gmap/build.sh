@@ -1,4 +1,4 @@
 #!/bin/sh
-./configure MAX_READLENGTH=500 --prefix=$PREFIX
+env MAX_READLENGTH=500 ./configure --prefix=$PREFIX
 make
 make install prefix=$PREFIX
