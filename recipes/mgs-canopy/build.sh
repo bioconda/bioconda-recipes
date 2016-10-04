@@ -3,7 +3,6 @@ cd src/
 
 echo "> Compiling sources"
 for F in $(find . -name "*.cpp") ; do
-	echo "  - $F"
 	FF=${F%.*}
 	g++ -o $FF.o -fopenmp -c -Wall -Wextra -O3 -march=native -I./ -I${PREFIX}/include -L${PREFIX}/lib $FF.cpp
 done;
