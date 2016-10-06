@@ -6,8 +6,8 @@ code. To install data libraries, you can use the 'vep_install.pl' command
 installed along with it. For example, to install the VEP library for human
 hg19/GRCh37 to a directory:
 
-vep_install.pl -a cf -s homo_sapiens_vep_83_GRCh37 -c /output/path/to/hg19/vep
-vep_convert_cache.pl -species homo_sapiens -version 83_GRCh37 -d /output/path/to/hg19/vep
+vep_install.pl -a cf -s homo_sapiens -y GRCh37 -c /output/path/to/hg19/vep
+vep_convert_cache.pl -species homo_sapiens -version 86_GRCh37 -d /output/path/to/hg19/vep
 
 (note that vep_install.pl is renamed from INSTALL.pl
  and vep_convert_cache.pl from covert_cache.pl
