@@ -1,7 +1,6 @@
-target=$PREFIX/share/
-mkdir -p $target
-mkdir -p $PREFIX/bin
-
-mv * $target && cd $target
-rm -rf bin
-cd sources/ && make && cp genesplicer $PREFIX/bin
+mkdir -p $PREFIX/bin $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+cd sources/ && make
+rm -rf ../bin/*
+mv genesplicer ../ && cd ../
+cp -r * $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+ln -s $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/genesplicer $PREFIX/bin
