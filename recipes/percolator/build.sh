@@ -2,7 +2,14 @@ cmake . -DXML_SUPPORT=OFF -DCMAKE_INSTALL_PREFIX=$PREFIX
 make
 make install
 
-cd src/converters
-cmake . -DSERIALIZE="Boost" -DCMAKE_INSTALL_PREFIX=$PREFIX -DBOOST_INCLUDEDIR=$PREFIX/include/boost/ -DBOOST_LIBRARYDIR=$PREFIX/lib -DBOOST_ROOT=$PREFIX -DSQLITE3_INCLUDE_DIR=$PREFIX/include/ -DCMAKE_PREFIX_PATH=$PREFIX/lib
-make -I$PREFIX/include/
+
+curl -L http://fallabs.com/tokyocabinet/tokyocabinet-1.4.48.tar.gz -o tokyocabinet.tar.gz
+tar xvfz tokyocabinet.tar.gz
+cd tokyocabinet-1.4.48
+./configure --prefix=$PREFIX
+make
+make install
+
+cmake -DTARGET_ARCH=x86_64 -DCMAKE_BUILD_TYPE=Release -DBOOST_ROOT=$PREFIX -DBOOST_LIBRARYDIR=$PREFIX/lib -DSERIALIZE="TokyoCabinet" -DCMAKE_PREFIX_PATH="$PREFIX/lib" .
+make
 make install
