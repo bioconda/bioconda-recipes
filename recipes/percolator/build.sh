@@ -6,7 +6,7 @@ make install
 curl -L http://fallabs.com/tokyocabinet/tokyocabinet-1.4.48.tar.gz -o tokyocabinet.tar.gz
 tar xvfz tokyocabinet.tar.gz
 cd tokyocabinet-1.4.48
-./configure --prefix=$PREFIX
+./configure --prefix=$PREFIX --with-zlib=$PREFIX --with-bzip=$PREFIX
 make
 make install
 
