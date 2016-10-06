@@ -10,6 +10,7 @@ cd tokyocabinet-1.4.48
 make
 make install
 
+cd ../src/converters
 cmake -DTARGET_ARCH=x86_64 -DCMAKE_BUILD_TYPE=Release -DBOOST_ROOT=$PREFIX -DBOOST_LIBRARYDIR=$PREFIX/lib -DSERIALIZE="TokyoCabinet" -DCMAKE_PREFIX_PATH="$PREFIX/lib" .
 make
 make install
