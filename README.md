@@ -52,26 +52,39 @@ When the recipe is ready, first test it with your local conda installation via
 
     conda build recipes/your_package
 
-If the recipe has dependencies in the bioconda channel (this is often the
-case), you will need to add `--channel bioconda` to the command. If the recipe
-is an R package, you will also need to add `--channel r`. For example many
-Bioconductor packages will be built using:
+Bioconda uses the `bioconda`, `r`, and `conda-forge` channels. You can either
+set them globally with:
+```
+conda config --add channels bioconda
+conda config --add channels r
+conda config --add channels conda-forge
+```
 
-    conda build recipes/your_package --channel bioconda --channel r
+or by adding the channels to the build command:
 
-Then, you can test it in the docker container with:
+    conda build recipes/your_package --channel bioconda --channel r --channel conda-forge
 
-    docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix /bioconda-recipes/scripts/env_matrix.yml
+Then, you can test it in the docker container. The authoritative source for how
+packages are built can be found in the `scripts/travis-run.sh` script, the
+`config.yml` config file, and the `.travis.yml` config file. The following
+script sets some environmental variables to simulate the travis-ci build and
+then calls the `travis-run.sh` script. It should be called from the top level
+of the repository.
 
-To optionally build for a specific Python version, provide the `CONDA_PY`
-environmental variable. For example, to build specifically for Python 3.4:
+```bash
+    #!/bin/bash
 
-    docker run -e CONDA_PY=34 -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix /bioconda-recipes/scripts/env_matrix.yml
+    export SUBDAGS=1
+    export TRAVIS_OS_NAME=linux
+    export TRAVIS_BRANCH=0
+    export TRAVIS_PULL_REQUEST=false
+    export SUBDAG=0
 
-To optionally build and test all packages (if they don't already exist), leave off the
-package name:
+    # set this to match .travis.yml
+    export BIOCONDA_UTILS_TAG=2f8fa70
+    scripts/travis-run.sh
+```
 
-    docker run -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder --env-matrix /bioconda-recipes/scripts/env_matrix.yml
 
 If rebuilding a previously-built package and the version number hasn't changed,
 be sure to increment the build number in `meta.yaml` (the default build number
