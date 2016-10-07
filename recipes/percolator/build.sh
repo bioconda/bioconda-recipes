@@ -18,6 +18,6 @@ export CPPFLAGS="-I${PREFIX}/include"
 export PATH="${PREFIX}/bin":$PATH
 
 cd ../src/converters
-cmake -DTARGET_ARCH=x86_64 -DCMAKE_BUILD_TYPE=Release -DBOOST_ROOT=$PREFIX -DBOOST_LIBRARYDIR=$PREFIX/lib -DSERIALIZE="TokyoCabinet" -DCMAKE_PREFIX_PATH="$PREFIX;$PREFIX/lib" .
+cmake -DBOOST_ROOT=$PREFIX -DSERIALIZE="TokyoCabinet" -DCMAKE_PREFIX_PATH=$PREFIX -DTokyoCabinet_INCLUDE_DIR=$PREFIX/include
 make
 make install
