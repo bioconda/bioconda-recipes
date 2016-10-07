@@ -18,6 +18,6 @@ export CPPFLAGS="-I${PREFIX}/include"
 export PATH="${PREFIX}/bin":$PATH
 
 cd ../src/converters
-cmake -DBoost_INCLUDE_DIR=$PREFIX/include -DBoost_LIBRARY_DIR=$PREFIX/lib -DSERIALIZE="TokyoCabinet" -DCMAKE_PREFIX_PATH=$PREFIX -DTokyoCabinet_INCLUDE_DIR=$PREFIX/include
+cmake -DBOOST_INCLUDEDIR=$PREFIX/include/boost/ -DBOOST_LIBRARYDIR=$PREFIX/lib -DBOOST_ROOT=$PREFIX -DSERIALIZE="TokyoCabinet" -DCMAKE_PREFIX_PATH=$PREFIX -DTokyoCabinet_INCLUDE_DIR=$PREFIX/include
 make
 make install
