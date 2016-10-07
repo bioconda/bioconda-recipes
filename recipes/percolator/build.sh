@@ -10,14 +10,7 @@ cd tokyocabinet-1.4.48
 make
 make install
 
-export INCLUDE_PATH="${PREFIX}/include" 
-export LIBRARY_PATH="${PREFIX}/lib" 
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="-L${PREFIX}/lib" 
-export CPPFLAGS="-I${PREFIX}/include"
-export PATH="${PREFIX}/bin":$PATH
-
 cd ../src/converters
-cmake -DBOOST_INCLUDEDIR=$PREFIX/include/boost/ -DBOOST_LIBRARYDIR=$PREFIX/lib -DBOOST_ROOT=$PREFIX -DSERIALIZE="TokyoCabinet" -DCMAKE_PREFIX_PATH=$PREFIX -DTokyoCabinet_INCLUDE_DIR=$PREFIX/include
+cmake -DBOOST_INCLUDEDIR=$PREFIX/include/boost/ -DBOOST_LIBRARYDIR=$PREFIX/lib -DBOOST_ROOT=$PREFIX -DSERIALIZE="TokyoCabinet" -DCMAKE_PREFIX_PATH="$PREFIX/lib;$PREFIX" -DTokyoCabinet_INCLUDE_DIR=$PREFIX/include
 make
 make install
