@@ -11,6 +11,6 @@ make
 make install
 
 cd ../src/converters
-cmake -DBOOST_INCLUDEDIR=$PREFIX/include/boost/ -DBOOST_LIBRARYDIR=$PREFIX/lib -DBOOST_ROOT=$PREFIX -DSERIALIZE="TokyoCabinet" -DCMAKE_PREFIX_PATH="$PREFIX/lib;$PREFIX" -DTokyoCabinet_INCLUDE_DIR=$PREFIX/include
+cmake -DSERIALIZE="TokyoCabinet" -DBOOST_INCLUDEDIR=$PREFIX/include -DCMAKE_PREFIX_PATH=$PREFIX
 make
 make install
