@@ -3,7 +3,7 @@
 mkdir -p $PREFIX/bin
 
 cd $SRC_DIR/src/
-#cd kaiju/src
+
 make
 
 cd $SRC_DIR/bin/
