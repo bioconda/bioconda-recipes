@@ -20,6 +20,16 @@ Please visit https://bioconda.github.io for details.
 
 ## Developer guide
 
+**Note: the `bioconda` build system has recently been changed to use CentOS6
+instead of CentOS5. See the conversation in
+[#2274](https://github.com/bioconda/bioconda-recipes/pull/2274) for details on
+the reasoning behind this. To better take advantage of the efforts of the
+[`conda-forge`](https://conda-forge.github.io/) team, we are using the CentOS5
+Docker container ``condaforge/linux-anvil`` for building, and our
+[``bioconda-utils``](https://github.com/bioconda/bioconda-utils) package for
+managing the infrastructure. See below for updated testing instructions.**
+
+
 If you want to contribute new packages to Bioconda, you are invited to join the
 Bioconda team.  Please post in the [team thread on
 GitHub](https://github.com/bioconda/recipes/issues/1) to ask for permission.
