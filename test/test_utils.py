@@ -24,39 +24,40 @@ def ensure_missing(package):
 
 
 class Recipes(object):
-    def __init__(self, filename):
+    def __init__(self, data, from_string=False):
         """
         Handles the creation of a directory of recipes.
 
         This class, combined with YAML files describing test cases, can be used
-        for building test cases of interdependent recipes.
+        for building test cases of interdependent recipes in an isolated
+        directory.
 
-        Recipes are specified in a YAML file.  Each block (delimited by "---")
-        represents a recipe and must at least include a meta.yaml key,
-        containing the meta.yaml contents in standard YAML format.  Any other
-        keys are assumed to be filenames, and their string contents will be
-        saved to that recipe.
+        Recipes are specified in a YAML file. Each top-level key represents
+        a recipe, and the recipe will be written in a temp dir named after that
+        key. Sub-keys are filenames to create in that directory, and the value
+        of each sub-key is a string (likely a multi-line string indicated with
+        a "|").
 
         For example, this YAML file::
 
-            ---
-            meta.yaml:
-              package:
-                name: one
-                version: 0.1
-            build.sh: |
-                #!/bin/bash
-                # do installation
-            ---
-            meta.yaml:
-              package:
-                name: two
-                version: 0.1
-            build.sh:
-                #!/bin/bash
-                python setup.py install
+            one:
+              meta.yaml: |
+                package:
+                  name: one
+                  version: 0.1
+              build.sh: |
+                  #!/bin/bash
+                  # do installation
+            two:
+              meta.yaml: |
+                package:
+                  name: two
+                  version: 0.1
+              build.sh:
+                  #!/bin/bash
+                  python setup.py install
 
-        will result in these files:
+        will result in these files::
 
             /tmp/tmpdirname/
               one/
@@ -66,19 +67,32 @@ class Recipes(object):
                 meta.yaml
                 build.sh
 
+        Parameters
+        ----------
+
+        data : str
+            If `from_string` is False, this is a filename relative to this
+            module's file. If `from_string` is True, then use the contents of
+            the string directly.
+
+        from_string : bool
 
 
         Useful attributes:
 
         * recipes: a dict mapping recipe names to parsed meta.yaml contents
-        * basedir: the tempdir containing all recipes
+        * basedir: the tempdir containing all recipes. Many bioconda-utils
+                   functions need the "recipes dir"; that's this basedir.
         * recipe_dirs: a dict mapping recipe names to newly-created recipe
-          dirs (these are full paths to subdirs in `basedir`)
+                   dirs. These are full paths to subdirs in `basedir`.
         """
-        self.filename = os.path.join(os.path.dirname(__file__), filename)
-        self.recipes = {}
-        for recipe in yaml.load_all(open(self.filename)):
-            self.recipes[recipe['meta.yaml']['package']['name']] = recipe
+
+        if from_string:
+            self.data = data
+            self.recipes = yaml.load(data)
+        else:
+            self.data = os.path.join(os.path.dirname(__file__), data)
+            self.recipes = yaml.load(open(self.data))
 
     def write_recipes(self):
         basedir = tempfile.mkdtemp()
@@ -87,12 +101,7 @@ class Recipes(object):
             rdir = os.path.join(basedir, name)
             os.makedirs(rdir)
             self.recipe_dirs[name] = rdir
-            with open(os.path.join(rdir, 'meta.yaml'), 'w') as fout:
-                fout.write(
-                    yaml.dump(recipe['meta.yaml'], default_flow_style=False))
             for key, value in recipe.items():
-                if key == 'meta.yaml':
-                    continue
                 with open(os.path.join(rdir, key), 'w') as fout:
                     fout.write(value)
         self.basedir = basedir
