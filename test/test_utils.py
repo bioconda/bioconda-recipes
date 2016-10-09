@@ -2,6 +2,7 @@ import os
 import subprocess as sp
 import pytest
 from textwrap import dedent
+from conda_build.metadata import MetaData
 import yaml
 import tempfile
 import requests
@@ -10,12 +11,36 @@ from bioconda_utils import docker_utils
 from bioconda_utils import cli
 
 
+def built_package_path(recipe):
+    """
+    Returns the path to which a recipe would be built.
+
+    Does not necessarily exist; equivalent to `conda build --output recipename`
+    but without the subprocess.
+    """
+    m = MetaData(recipe)
+    config = m.config
+    output_dir = m.info_index()['subdir']
+    return os.path.join(
+        os.path.dirname(config.bldpkgs_dir), output_dir, '%s.tar.bz2'
+        % m.dist()
+    )
+
+
 def ensure_missing(package):
     """
+    Delete a package if it exists and re-index the conda-bld dir.
+
     If a package is deleted from the conda-bld directory but conda-index is not
     re-run, it remains in the metadata (.index.json, repodata.json) files and
     appears to conda as if the recipe still exists.  This ensures that the
     package is deleted and is removed from the index. Useful for test cases.
+
+    Parameters
+    ----------
+    package : str
+        Path to tarball of built package. If all you have is a recipe path, use
+        `built_package_path()` to get the tarball path.
     """
     if os.path.exists(package):
         os.unlink(package)
@@ -123,12 +148,36 @@ with open('test_env_matrix.yaml', 'w') as fout:
 
 
 def test_get_deps():
-    r = Recipes('test_case.yaml')
+    r = Recipes(dedent(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: 0.1
+        two:
+          meta.yaml: |
+            package:
+              name: two
+              version: 0.1
+            requirements:
+              build:
+                - one
+        three:
+          meta.yaml: |
+            package:
+              name: three
+              version: 0.1
+            requirements:
+              build:
+                - one
+              run:
+                - two
+    """), from_string=True)
     r.write_recipes()
-    assert list(utils.get_deps(r.recipe_dirs['two']))[0] == 'one'
-    r.recipes['two']['meta.yaml']['requirements']['build'] = []
-    r.write_recipes()
-    assert list(utils.get_deps(r.recipe_dirs['two'])) == []
+    assert list(utils.get_deps(r.recipe_dirs['two'])) == ['one']
+    assert list(utils.get_deps(r.recipe_dirs['three'], build=True)) == ['one']
+    assert list(utils.get_deps(r.recipe_dirs['three'], build=False)) == ['two']
 
 
 def _single_build(docker_builder=None):
@@ -208,7 +257,6 @@ def test_docker_build_image_fails():
 
 
 def test_conda_purge_cleans_up():
-
     def tmp_dir_exists(d):
         contents = os.listdir(d)
         for i in contents:
@@ -263,18 +311,127 @@ def test_env_matrix():
     ]
 
 
-def test_filter_recipes():
-    r = Recipes('test_case.yaml')
+def test_filter_recipes_no_skipping():
+    """
+    No recipes have skip so make sure none are filtered out.
+    """
+    r = Recipes(dedent(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: "0.1"
+        """), from_string=True)
     r.write_recipes()
     env_matrix = {
         'CONDA_PY': ['2.7', '3.5'],
         'CONDA_BOOST': '1.60'
     }
     recipes = list(r.recipe_dirs.values())
-    assert len(recipes) == 3
+    assert len(recipes) == 1
     filtered = list(
         utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
-    assert len(filtered) == 3
+    assert len(filtered) == 1
+
+
+def test_filter_recipes_skip_is_true():
+    r = Recipes(dedent(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: "0.1"
+            build:
+              skip: true
+        """), from_string=True)
+    r.write_recipes()
+    env_matrix = {
+        'CONDA_PY': ['2.7', '3.5'],
+        'CONDA_BOOST': '1.60'
+    }
+    recipes = list(r.recipe_dirs.values())
+    filtered = list(
+        utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
+    assert len(filtered) == 0
+
+
+def test_filter_recipes_skip_py27():
+    """
+    When we add build/skip = True # [py27] to recipe, it should not be
+    filtered out. This is because python version is not encoded in the output
+    package name, and so one-0.1-0.tar.bz2 will still be created for py35.
+    """
+    r = Recipes(dedent(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: "0.1"
+            build:
+              skip: true  # [py27]
+        """), from_string=True)
+    r.write_recipes()
+    env_matrix = {
+        'CONDA_PY': ['2.7', '3.5'],
+        'CONDA_BOOST': '1.60'
+    }
+    recipes = list(r.recipe_dirs.values())
+    filtered = list(
+        utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
+    assert len(filtered) == 1
+
+
+def test_filter_recipes_skip_py27_in_build_string():
+    """
+    When CONDA_PY is in the build string, py27 should be skipped
+    """
+    r = Recipes(dedent(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: "0.1"
+            build:
+              string: {{CONDA_PY}}_{{PKG_BUILDNUM}}
+        """), from_string=True)
+    r.write_recipes()
+    env_matrix = {
+        'CONDA_PY': ['2.7', '3.5'],
+    }
+    recipes = list(r.recipe_dirs.values())
+    filtered = list(
+        utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
+
+    # one recipe, two targets
+    assert len(filtered) == 1
+    assert len(filtered[0][1]) == 2
+
+    r = Recipes(dedent(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: "0.1"
+            build:
+              string: {{CONDA_PY}}_{{PKG_BUILDNUM}}
+              skip: True # [py27]
+        """), from_string=True)
+    r.write_recipes()
+    env_matrix = {
+        'CONDA_PY': ['2.7', '3.5'],
+    }
+    recipes = list(r.recipe_dirs.values())
+    filtered = list(
+        utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
+
+    # one recipe, one target
+    assert len(filtered) == 1
+    assert len(filtered[0][1]) == 1
 
 
 def test_get_channel_packages():
