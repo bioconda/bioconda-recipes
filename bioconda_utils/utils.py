@@ -304,11 +304,13 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         channel_packages.update(get_channel_packages(channel=channel))
         channel_args.extend(['--channel', channel])
 
+    logger.debug(sorted(list(channel_packages)))
     def tobuild(f):
+        logger.debug('f is %s', f)
         return (
             not f.startswith("Skipped:") and
             (
-                force or os.path.basename(f) not in channel_packages
+                force or (os.path.basename(f) not in channel_packages)
             )
         )
 
@@ -337,6 +339,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
             targets = set()
             for env in env_matrix:
                 pkg = pkgname(recipe, env)
+                logger.debug(pkg)
                 if tobuild(pkg):
                     targets.update([Target(pkg, env)])
             logger.debug(
