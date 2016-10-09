@@ -14,12 +14,12 @@ curl -O https://repo.continuum.io/miniconda/Miniconda3-latest-${tag}-x86_64.sh
 sudo bash Miniconda3-latest-${tag}-x86_64.sh -b -p /anaconda
 sudo chown -R $USER /anaconda
 export PATH=/anaconda/bin:$PATH
-conda update -y conda-build
-
-python setup.py install
 
 # TODO: add remaining pip reqs to conda-forge
 conda install -y --file conda-requirements.txt
+
+python setup.py install
+
 pip install -r pip-test-requirements.txt
 pip install -r pip-requirements.txt
 
