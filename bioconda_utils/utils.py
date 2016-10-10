@@ -19,6 +19,7 @@ from conda_build.metadata import MetaData
 import yaml
 
 from . import docker_utils
+from . import pkg_test
 
 logger = logging.getLogger(__name__)
 
@@ -291,6 +292,9 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
 
     channels : None or list
         Optional list of channels to check for existing recipes
+
+    force : bool
+        Build the package even if it is already available in supplied channels.
     """
     if not isinstance(env_matrix, EnvMatrix):
         env_matrix = EnvMatrix(env_matrix)
@@ -308,6 +312,8 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
     def tobuild(f):
         logger.debug('f is %s', f)
         return (
+            # note recent conda-build versions do not report "Skipped", so this
+            # will primarily be checking for presence in channel_packages.
             not f.startswith("Skipped:") and
             (
                 force or (os.path.basename(f) not in channel_packages)
@@ -358,6 +364,7 @@ def build(recipe,
           recipe_folder,
           env,
           testonly=False,
+          mulled_test=True,
           force=False,
           channels=None,
           docker_builder=None):
@@ -376,6 +383,9 @@ def build(recipe,
     testonly : bool
         If True, skip building and instead run the test described in the
         meta.yaml.
+
+    mulled_test : bool
+        Test the built package in a minimal docker container
 
     force : bool
         If True, the recipe will be built even if it already exists. Note that
@@ -417,7 +427,7 @@ def build(recipe,
                 environment=dict(env)
             )
             logger.info('Successfully built %s', recipe)
-            return True
+            build_success = True
         else:
             p = sp.run(
                 CONDA_BUILD_CMD + [recipe],
@@ -430,22 +440,69 @@ def build(recipe,
             logger.debug(p.stdout)
             logger.debug(" ".join(p.args))
             logger.info('Successfully built %s', recipe)
-            return True
+            build_success = True
     except (docker_utils.DockerCalledProcessError, sp.CalledProcessError) as e:
             logger.error(e.stdout)
             logger.error(e.stderr)
             logger.error(e.cmd)
-            return False
+            build_success = False
 
+    if not mulled_test:
+        return build_success
+
+    def pkgname(recipe, env):
+        cmd = [
+            "conda", "build", "--no-source", "--override-channels", "--output"
+        ] + channel_args + [recipe]
+        logger.debug(env)
+        logger.debug(cmd)
+        p = sp.run(
+            cmd,
+            check=True,
+            stdout=sp.PIPE,
+            stderr=sp.PIPE,
+            universal_newlines=True,
+            env=merged_env(env))
+        pkgpaths = p.stdout.strip().split("\n")
+        assert len(pkgpaths) == 1
+        return pkgpaths[0]
+
+    pkg_path = pkgname(recipe, env)
+    pkg_test.test_package(pkg_path)
 
 def test_recipes(recipe_folder,
                  config,
                  packages="*",
+                 mulled_test=True,
                  testonly=False,
                  force=False,
                  docker=None):
     """
     Build one or many bioconda packages.
+
+    Parameters
+    ----------
+
+    recipe_folder : str
+        Directory containing possibly many, and possibly nested, recipes.
+
+    config : str or dict
+        If string, path to config file; if dict then assume it's an
+        already-parsed config file.
+
+    packages : str
+        Glob indicating which packages should be considered. Note that packages
+        matching the glob will still be filtered out by any blacklists
+        specified in the config.
+
+    mulled_test : bool
+        If True, then test the package in a minimal container.
+
+    testonly : bool
+        If True, only run test.
+
+    force : bool
+        If True, build the recipe even though it would otherwise be filtered out.
     """
     config = load_config(config)
     env_matrix = EnvMatrix(config['env_matrix'])
@@ -541,10 +598,13 @@ def test_recipes(recipe_folder,
                 recipe_folder=recipe_folder,
                 env=target.env,
                 testonly=testonly,
+                mulled_test=mulled_test,
                 force=force,
                 channels=config['channels'],
                 docker_builder=builder
             )
+
+
 
     if not testonly:
         # upload builds
