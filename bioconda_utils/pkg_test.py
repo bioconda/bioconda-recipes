@@ -6,11 +6,6 @@ import shlex
 
 from conda_build.metadata import MetaData
 
-'mulled-build build-and-test "gffutils" --test "python -c \'import gffutils\''
-
-
-
-
 
 def get_tests(path):
     "Extract tests from a built package"
@@ -34,10 +29,8 @@ def get_tests(path):
         elif tests_imports and ('perl' in requirements or 'perl-threaded' in requirements):
             tests.append(' && '.join('''perl -e "use %s;"''' % imp for imp in tests_imports))
 
-        tests = ' && '.join(tests)
-        tests = tests.replace('$R ', 'Rscript ')
-    else:
-        pass
+    tests = ' && '.join(tests)
+    tests = tests.replace('$R ', 'Rscript ')
     return tests
 
 
