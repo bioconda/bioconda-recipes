@@ -214,13 +214,10 @@ def test_filter_recipes_skip_is_true():
               skip: true
         """), from_string=True)
     r.write_recipes()
-    env_matrix = {
-        'CONDA_PY': ['2.7', '3.5'],
-        'CONDA_BOOST': '1.60'
-    }
+    env_matrix = {}
     recipes = list(r.recipe_dirs.values())
     filtered = list(
-        utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
+        utils.filter_recipes(recipes, env_matrix))
     assert len(filtered) == 0
 
 

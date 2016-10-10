@@ -468,7 +468,10 @@ def build(recipe,
         return pkgpaths[0]
 
     pkg_path = pkgname(recipe, env)
+
+    # TODO: better granularity; e.g. report if the build worked but test failed
     pkg_test.test_package(pkg_path)
+    return build_success
 
 def test_recipes(recipe_folder,
                  config,
