@@ -17,7 +17,7 @@ setup(
         (
             'bioconda_utils',
             [
-                'bioconda_utils-requirements.txt',
+                'bioconda_utils/bioconda_utils-requirements.txt',
             ],
         )
     ],
