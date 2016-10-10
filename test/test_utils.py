@@ -66,7 +66,7 @@ def _single_build(docker_builder=None):
     ensure_missing(built_package)
 
 
-def test_single_build():
+def test_single_build1():
     _single_build(docker_builder=None)
 
 
@@ -300,6 +300,59 @@ def test_filter_recipes_skip_py27_in_build_string():
     assert len(filtered) == 1
     assert len(filtered[0][1]) == 1
 
+
+def test_filter_recipes_existing_package():
+
+    # use a known-to-exist package in bioconda
+    #
+    # note that we need python as a run requirement in order to get the "pyXY"
+    # in the build string that matches the existing bioconda built package.
+    r = Recipes(dedent(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: gffutils
+              version: "0.8.7.1"
+            requirements:
+              run:
+                - python
+        """), from_string=True)
+    r.write_recipes()
+    recipes = list(r.recipe_dirs.values())
+    env_matrix = {
+        'CONDA_PY': ['2.7', '3.5'],
+    }
+    pkgs = utils.get_channel_packages('bioconda')
+    pth = built_package_path(recipes[0])
+    filtered = list(
+        utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
+    assert len(filtered) == 0
+
+def test_filter_recipes_force_existing_package():
+    # same as above, but this time force the recipe
+    # TODO: refactor as py.test fixture
+    r = Recipes(dedent(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: gffutils
+              version: "0.8.7.1"
+            requirements:
+              run:
+                - python
+        """), from_string=True)
+    r.write_recipes()
+    recipes = list(r.recipe_dirs.values())
+    env_matrix = {
+        'CONDA_PY': ['2.7', '3.5'],
+    }
+    pkgs = utils.get_channel_packages('bioconda')
+    pth = built_package_path(recipes[0])
+    filtered = list(
+        utils.filter_recipes(recipes, env_matrix, channels=['bioconda'], force=True))
+    assert len(filtered) == 1
 
 def test_get_channel_packages():
     with pytest.raises(requests.HTTPError):
