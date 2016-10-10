@@ -2,7 +2,6 @@
 set -euo pipefail
 
 # Sets up travis-ci environment for testing bioconda-utils.
-#
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
@@ -32,3 +31,9 @@ conda config --add channels bioconda
 conda config --add channels r
 conda config --add channels conda-forge
 conda config --add channels file://anaconda/conda-bld
+
+# involucro used for mulled-build
+curl -O https://github.com/involucro/involucro/releases/download/v1.1.2/involucro
+mv involucro /opt/involucro
+chmod +x /opt/involucro
+export PATH=/opt/involucro:$PATH
