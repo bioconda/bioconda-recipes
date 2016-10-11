@@ -25,11 +25,16 @@ chmod 0755 $target/*.pl
 ln -s $target/*.pl $PREFIX/bin
 
 cd $target
-perl vep_install.pl -a a
+# Use external Bio::DB::HTS::Faidx instead of compiling interally
+# Compile in VEP causes issues linking to /lib64 outside of rpath
+perl vep_install.pl -a a --NO_HTSLIB
 # Remove test data
 rm -rf t/
 # Install plugins
-wget --no-check-certificate https://raw.githubusercontent.com/Ensembl/VEP_plugins/fd7bd1a63afaf106ff49445127cb04451b5e63b4/CADD.pm
-wget --no-check-certificate https://raw.githubusercontent.com/Ensembl/VEP_plugins/fd7bd1a63afaf106ff49445127cb04451b5e63b4/dbNSFP.pm
-wget --no-check-certificate https://raw.githubusercontent.com/konradjk/loftee/537ac71a447fb21ef7e949d4f2f05a191488a9fa/LoF.pm
-wget --no-check-certificate https://raw.githubusercontent.com/konradjk/loftee/537ac71a447fb21ef7e949d4f2f05a191488a9fa/splice_module.pl
+wget --no-check-certificate https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/86/CADD.pm
+wget --no-check-certificate https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/86/dbNSFP.pm
+wget --no-check-certificate https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/86/MaxEntScan.pm
+wget --no-check-certificate https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/86/GeneSplicer.pm
+wget --no-check-certificate https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/86/dbscSNV.pm
+wget --no-check-certificate https://raw.githubusercontent.com/konradjk/loftee/master/LoF.pm
+wget --no-check-certificate https://raw.githubusercontent.com/konradjk/loftee/master/splice_module.pl
