@@ -74,27 +74,15 @@ or by adding the channels to the build command:
 
     conda build recipes/your_package --channel bioconda --channel r --channel conda-forge
 
-Then, you can test it in the docker container. The authoritative source for how
-packages are built can be found in the `scripts/travis-run.sh` script, the
-`config.yml` config file, and the `.travis.yml` config file. The following
-script sets some environmental variables to simulate the travis-ci build and
-then calls the `travis-run.sh` script. It should be called from the top level
-of the repository.
+Then, you can test the build in a docker container. The authoritative source
+for how packages are built can be found in the `scripts/travis-run.sh` script,
+the `config.yml` config file, and the `.travis.yml` config file. However, the
+`simulate-travis.py` script can be used for conveniently testing on a local
+machine. For example,
 
-```bash
-    #!/bin/bash
-
-    export SUBDAGS=1
-    export TRAVIS_OS_NAME=linux
-    export TRAVIS_BRANCH=0
-    export TRAVIS_PULL_REQUEST=false
-    export SUBDAG=0
-
-    # set this to match .travis.yml
-    export BIOCONDA_UTILS_TAG=2f8fa70
-    scripts/travis-run.sh
 ```
-
+./simulate-travis.py --packages mypackagename --loglevel=debug
+```
 
 If rebuilding a previously-built package and the version number hasn't changed,
 be sure to increment the build number in `meta.yaml` (the default build number
