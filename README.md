@@ -23,7 +23,7 @@ Please visit https://bioconda.github.io for details.
 instead of CentOS5. See the conversation in
 [#2274](https://github.com/bioconda/bioconda-recipes/pull/2274) for details on
 the reasoning behind this. To better take advantage of the efforts of the
-[`conda-forge`](https://conda-forge.github.io/) team, we are using the CentOS5
+[`conda-forge`](https://conda-forge.github.io/) team, we are using the CentOS6
 Docker container ``condaforge/linux-anvil`` for building, and our
 [``bioconda-utils``](https://github.com/bioconda/bioconda-utils) package for
 managing the infrastructure. See below for updated testing instructions.**
