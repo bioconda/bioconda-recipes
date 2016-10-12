@@ -1,4 +1,1 @@
-make
-make install
-cp bin/* $PREFIX/bin
-chmod +x $PREFIX/bin
+make BIN_DIR=$PREFIX/bin
