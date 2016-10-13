@@ -37,6 +37,7 @@ from . import utils
 @arg('--docker', action='store_true',
      help='Build packages in docker container.')
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
+@arg('--mulled-test', action='store_true', help="Run a mulled-build test on the built package")
 def build(recipe_folder,
           config,
           packages="*",
@@ -44,6 +45,7 @@ def build(recipe_folder,
           force=False,
           docker=None,
           loglevel="warning",
+          mulled_test=False,
           ):
 
     logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s", level=getattr(logging, loglevel.upper()))
@@ -60,6 +62,7 @@ def build(recipe_folder,
                                  packages=packages,
                                  testonly=testonly,
                                  force=force,
+                                 mulled_test=mulled_test,
                                  docker=docker)
     exit(0 if success else 1)
 

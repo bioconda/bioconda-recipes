@@ -470,7 +470,8 @@ def build(recipe,
     pkg_path = pkgname(recipe, env)
 
     # TODO: better granularity; e.g. report if the build worked but test failed
-    pkg_test.test_package(pkg_path)
+    res = pkg_test.test_package(pkg_path)
+    logger.info('mulled-build results: %s', res)
     return build_success
 
 def test_recipes(recipe_folder,
@@ -506,6 +507,7 @@ def test_recipes(recipe_folder,
 
     force : bool
         If True, build the recipe even though it would otherwise be filtered out.
+
     """
     config = load_config(config)
     env_matrix = EnvMatrix(config['env_matrix'])
@@ -575,6 +577,7 @@ def test_recipes(recipe_folder,
         subdag_i, subdags_n, len(recipes)
     )
 
+    builder = None
     if docker is not None:
         from docker import Client as DockerClient
 

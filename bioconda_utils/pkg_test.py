@@ -3,9 +3,11 @@ import tempfile
 import tarfile
 import os
 import shlex
+import logging
 
 from conda_build.metadata import MetaData
 
+logger = logging.getLogger(__name__)
 
 def get_tests(path):
     "Extract tests from a built package"
@@ -57,6 +59,8 @@ def test_package(path, name_override='tmp', channels=['bioconda', 'r', 'conda-fo
         mulled_args="--dry-run --involucro-path /opt/involucro"
 
     """
+    logger.info('Testing %s with mulled-build', path)
+
     assert path.endswith('.tar.bz2'), "Unrecognized path {0}".format(path)
     assert os.path.exists(path), '{0} does not exist'.format(path)
 
@@ -83,6 +87,7 @@ def test_package(path, name_override='tmp', channels=['bioconda', 'r', 'conda-fo
         channel_args.extend(['--extra-channel', channel])
 
     tests = get_tests(path)
+    logger.debug('Tests to run: %s', tests)
 
 
     cmds = [
@@ -94,4 +99,5 @@ def test_package(path, name_override='tmp', channels=['bioconda', 'r', 'conda-fo
     ]
     cmds.extend(channel_args)
     cmds.extend(shlex.split(mulled_args))
+    logger.debug('mulled-build commands: %s' % cmds)
     return sp.check_output(cmds, stderr=sp.STDOUT, universal_newlines=True)
