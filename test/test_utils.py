@@ -154,7 +154,7 @@ def test_local_channel():
 
 def test_env_matrix():
     contents = {
-        'CONDA_PY': ['2.7', '3.5'],
+        'CONDA_PY': [27, 35],
         'CONDA_BOOST': '1.60'
     }
 
@@ -168,11 +168,11 @@ def test_env_matrix():
         [sorted(i) for i in e1]) == sorted([sorted(i) for i in e2]) == [
         [
             ('CONDA_BOOST', '1.60'),
-            ('CONDA_PY', '2.7'),
+            ('CONDA_PY', 27),
         ],
         [
             ('CONDA_BOOST', '1.60'),
-            ('CONDA_PY', '3.5'),
+            ('CONDA_PY', 35),
         ]
     ]
 
@@ -191,7 +191,7 @@ def test_filter_recipes_no_skipping():
         """), from_string=True)
     r.write_recipes()
     env_matrix = {
-        'CONDA_PY': ['2.7', '3.5'],
+        'CONDA_PY': [27, 35],
         'CONDA_BOOST': '1.60'
     }
     recipes = list(r.recipe_dirs.values())
@@ -238,7 +238,7 @@ def test_filter_recipes_skip_py27():
         """), from_string=True)
     r.write_recipes()
     env_matrix = {
-        'CONDA_PY': ['2.7', '3.5'],
+        'CONDA_PY': [27, 35],
         'CONDA_BOOST': '1.60'
     }
     recipes = list(r.recipe_dirs.values())
@@ -263,7 +263,7 @@ def test_filter_recipes_skip_py27_in_build_string():
         """), from_string=True)
     r.write_recipes()
     env_matrix = {
-        'CONDA_PY': ['2.7', '3.5'],
+        'CONDA_PY': [27, 35],
     }
     recipes = list(r.recipe_dirs.values())
     filtered = list(
@@ -286,7 +286,7 @@ def test_filter_recipes_skip_py27_in_build_string():
         """), from_string=True)
     r.write_recipes()
     env_matrix = {
-        'CONDA_PY': ['2.7', '3.5'],
+        'CONDA_PY': [27, 35],
     }
     recipes = list(r.recipe_dirs.values())
     filtered = list(
@@ -317,7 +317,7 @@ def test_filter_recipes_existing_package():
     r.write_recipes()
     recipes = list(r.recipe_dirs.values())
     env_matrix = {
-        'CONDA_PY': ['2.7', '3.5'],
+        'CONDA_PY': [27, 35],
     }
     pkgs = utils.get_channel_packages('bioconda')
     pth = utils.built_package_path(recipes[0])
@@ -342,7 +342,7 @@ def test_filter_recipes_force_existing_package():
     r.write_recipes()
     recipes = list(r.recipe_dirs.values())
     env_matrix = {
-        'CONDA_PY': ['2.7', '3.5'],
+        'CONDA_PY': [27, 35],
     }
     pkgs = utils.get_channel_packages('bioconda')
     pth = utils.built_package_path(recipes[0])

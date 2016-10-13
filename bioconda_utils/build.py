@@ -50,7 +50,7 @@ def build(recipe,
 
     logger.info(
         "Building and testing '%s' for environment %s",
-        recipe, ';'.join(['='.join(i) for i in sorted(env)])
+        recipe, ';'.join(['='.join(map(str, i)) for i in sorted(env)])
     )
     build_args = []
     if testonly:

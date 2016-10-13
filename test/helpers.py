@@ -34,8 +34,8 @@ def tmp_env_matrix():
         fout.write(dedent(
             """\
             CONDA_PY:
-            - "2.7"
-            - "3.5"
+            - "27"
+            - "35"
             CONDA_BOOST: "1.60"
             CONDA_R: "3.3.1"
             CONDA_PERL: "5.22.0"

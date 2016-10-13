@@ -256,6 +256,25 @@ def get_channel_packages(channel='bioconda', platform=None):
     return channel_packages
 
 
+def _string_or_float_to_integer_python(s):
+    """
+    conda-build 2.0.4 expects CONDA_PY values to be integers (e.g., 27, 35) but
+    older versions were OK with strings or even floats.
+
+    To avoid editing existing config files, we support those values here.
+    """
+
+    try:
+        s = float(s)
+        if s < 10:  # it'll be a looong time before we hit Python 10.0
+            s = int(s * 10)
+        else:
+            s = int(s)
+    except ValueError:
+        raise ValueError("{} is an unrecognized Python version".format(s))
+    return s
+
+
 def built_package_path(recipe, env=None):
     """
     Returns the path to which a recipe would be built.
@@ -428,7 +447,7 @@ def load_config(path):
         return value
 
     default_config = {
-        'env_matrix': {'CONDA_PY': '3.5'},
+        'env_matrix': {'CONDA_PY': 35},
         'blacklists': [],
         'channels': [],
         'docker_url': 'unix://var/run/docker.sock',
