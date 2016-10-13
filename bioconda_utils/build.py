@@ -8,6 +8,7 @@ from . import pkg_test
 
 logger = logging.getLogger(__name__)
 
+
 def build(recipe,
           recipe_folder,
           env,
@@ -155,7 +156,8 @@ def test_recipes(recipe_folder,
         If True, only run test.
 
     force : bool
-        If True, build the recipe even though it would otherwise be filtered out.
+        If True, build the recipe even though it would otherwise be filtered
+        out.
 
     """
     config = utils.load_config(config)
@@ -180,7 +182,8 @@ def test_recipes(recipe_folder,
 
     logger.info('Filtering recipes')
     recipe_targets = dict(
-        utils.filter_recipes(recipes, env_matrix, config['channels'], force=force)
+        utils.filter_recipes(
+            recipes, env_matrix, config['channels'], force=force)
     )
     recipes = list(recipe_targets.keys())
 
@@ -258,8 +261,6 @@ def test_recipes(recipe_folder,
                 channels=config['channels'],
                 docker_builder=builder
             )
-
-
 
     if not testonly:
         # upload builds

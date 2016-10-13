@@ -144,6 +144,7 @@ conda config --add channels file:/{self.container_staging}
 conda install {package}
 """
 
+
 class DockerCalledProcessError(sp.CalledProcessError):
     pass
 
@@ -368,7 +369,8 @@ class RecipeBuilder(object):
 
         tmp = tempfile.NamedTemporaryFile().name
         with open(tmp, 'w') as fout:
-            fout.write(self.test_script_template.format(package=package, self=self))
+            fout.write(
+                self.test_script_template.format(package=package, self=self))
 
         binds = {
             self.host_conda_bld: {

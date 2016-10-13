@@ -12,7 +12,6 @@ from bioconda_utils import build
 from helpers import ensure_missing, Recipes, tmp_env_matrix
 
 
-
 def test_get_deps():
     r = Recipes(dedent(
         """
@@ -325,6 +324,7 @@ def test_filter_recipes_existing_package():
         utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
     assert len(filtered) == 0
 
+
 def test_filter_recipes_force_existing_package():
     # same as above, but this time force the recipe
     # TODO: refactor as py.test fixture
@@ -347,8 +347,10 @@ def test_filter_recipes_force_existing_package():
     pkgs = utils.get_channel_packages('bioconda')
     pth = utils.built_package_path(recipes[0])
     filtered = list(
-        utils.filter_recipes(recipes, env_matrix, channels=['bioconda'], force=True))
+        utils.filter_recipes(
+            recipes, env_matrix, channels=['bioconda'], force=True))
     assert len(filtered) == 1
+
 
 def test_get_channel_packages():
     with pytest.raises(requests.HTTPError):

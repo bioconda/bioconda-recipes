@@ -33,6 +33,7 @@ def test_pkg_test():
         env=env_matrix)
     res = pkg_test.test_package(built_package)
 
+
 def test_pkg_test_missing_involucro():
     r = Recipes(dedent(
         """
