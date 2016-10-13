@@ -286,6 +286,8 @@ def built_package_path(recipe, env=None):
     if env is None:
         env = {}
 
+    env = merged_env(env)
+
     # Ensure CONDA_PY is an integer (needed by conda-build 2.0.4)
     py = env.get('CONDA_PY', None)
     env = dict(env)

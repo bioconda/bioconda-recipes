@@ -296,6 +296,29 @@ def test_filter_recipes_skip_py27_in_build_string():
     assert len(filtered[0][1]) == 1
 
 
+def test_filter_recipes_extra_in_build_string():
+    """
+    If CONDA_EXTRA is in os.environ, the pkg name should still be identifiable.
+
+    This helps test env vars that don't have other defaults like CONDA_PY does
+    (e.g., CONDA_BOOST in bioconda)
+    """
+    r = Recipes(dedent(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: "0.1"
+            build:
+              number: 0
+              string: {{CONDA_EXTRA}}_{{PKG_BUILDNUM}}
+        """), from_string=True)
+    r.write_recipes()
+    os.environ['CONDA_EXTRA'] = 'asdf'
+    pkg = utils.built_package_path(r.recipe_dirs['one'])
+    assert os.path.basename(pkg) == 'one-0.1-asdf_0.tar.bz2'
+
 def test_filter_recipes_existing_package():
 
     # use a known-to-exist package in bioconda
