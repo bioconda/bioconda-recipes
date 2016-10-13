@@ -375,6 +375,8 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
             logger.debug('Filtering %s', recipe)
             targets = set()
             for env in env_matrix:
+                env = merged_env(env)
+                logger.debug('env: %s', env)
                 pkg = built_package_path(recipe, env)
                 if tobuild(recipe, env):
                     targets.update([Target(pkg, env)])
