@@ -15,6 +15,7 @@ import networkx as nx
 import requests
 from jsonschema import validate
 
+from conda_build import api
 from conda_build.metadata import MetaData
 import yaml
 
@@ -282,15 +283,16 @@ def built_package_path(recipe, env=None):
     Does not necessarily exist; equivalent to `conda build --output recipename`
     but without the subprocess.
     """
+    if env is None:
+        env = {}
 
-    m = MetaData(recipe)
-    config = m.config
-    output_dir = m.info_index()['subdir']
-    return os.path.join(
-        os.path.dirname(config.bldpkgs_dir), output_dir, '%s.tar.bz2'
-        % m.dist()
-    )
+    # Ensure CONDA_PY is an integer (needed by conda-build 2.0.4)
+    py = env.get('CONDA_PY', None)
+    env = dict(env)
+    if py is not None:
+        env['CONDA_PY'] = _string_or_float_to_integer_python(py)
 
+    return api.get_output_file_path(recipe, no_download_source=True, **env)
 
 
 class Target:

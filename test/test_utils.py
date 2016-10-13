@@ -356,3 +356,60 @@ def test_get_channel_packages():
     with pytest.raises(requests.HTTPError):
         utils.get_channel_packages('bioconda_xyz_nonexistent_channel')
     utils.get_channel_packages('bioconda')
+
+
+def test_built_package_path():
+    r = Recipes(dedent(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: "0.1"
+            requirements:
+              run:
+                - python
+
+        two:
+          meta.yaml: |
+            package:
+              name: two
+              version: "0.1"
+            build:
+              number: 0
+              string: ncurses{{ CONDA_NCURSES }}_{{ PKG_BUILDNUM }}
+        """), from_string=True)
+    r.write_recipes()
+
+    # assumes we're running on py35
+    assert os.path.basename(
+        utils.built_package_path(r.recipe_dirs['one'])
+    ) == 'one-0.1-py35_0.tar.bz2'
+
+    # resetting with a different CONDA_PY passed as env dict
+    assert os.path.basename(
+        utils.built_package_path(r.recipe_dirs['one'], env=dict(CONDA_PY=27))
+    ) == 'one-0.1-py27_0.tar.bz2'
+
+    # resetting CONDA_PY using os.environ
+    existing_env = dict(os.environ)
+    try:
+        os.environ['CONDA_PY'] = '27'
+        assert os.path.basename(
+            utils.built_package_path(r.recipe_dirs['one'])
+        ) == 'one-0.1-py27_0.tar.bz2'
+        os.environ = existing_env
+    except:
+        os.environ = existing_env
+        raise
+
+    existing_env = dict(os.environ)
+    os.environ['CONDA_NCURSES'] = '9.0'
+    assert os.path.basename(
+        utils.built_package_path(r.recipe_dirs['two'], env=os.environ)
+    ) == 'two-0.1-ncurses9.0_0.tar.bz2'
+
+
+def test_string_or_float_to_integer_python():
+    f = utils._string_or_float_to_integer_python
+    assert f(27) == f('27') == f(2.7) == f('2.7') == 27
