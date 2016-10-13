@@ -348,16 +348,20 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         channel_args.extend(['--channel', channel])
 
     def tobuild(recipe, env):
-        pkg = os.path.basename(built_package_path(recipe, merged_env(env)))
+
+        # add os.environ
+        env = merged_env(env)
+
+        pkg = os.path.basename(built_package_path(recipe, env))
         in_channels = pkg in channel_packages
-        skip = MetaData(recipe, config=api.Config(**merged_env(env))).skip()
+        skip = MetaData(recipe, config=api.Config(**env)).skip()
         answer = force or (not in_channels and not skip)
         if answer:
             label = 'building'
         else:
             label = 'not building'
         logger.debug(
-            '{label} {pkg} '
+            '{label} {pkg} {env}'
             'because force={force};in channels={in_channels};skip={skip}'
             .format(**locals())
         )
