@@ -372,15 +372,12 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
     logger.debug('recipes: %s', recipes)
     try:
         for recipe in recipes:
+            logger.debug('Filtering %s', recipe)
             targets = set()
             for env in env_matrix:
                 pkg = built_package_path(recipe, merged_env(env))
                 if tobuild(recipe, env):
                     targets.update([Target(pkg, env)])
-            logger.debug(
-                "targets for recipe %s: %s",
-                recipe, '\n\t' + '\n\t'.join(map(str, targets))
-            )
             if targets:
                 yield recipe, targets
     except sp.CalledProcessError as e:
