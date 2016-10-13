@@ -14,6 +14,7 @@ import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
 
 from . import utils
+from .build import test_recipes
 
 # NOTE:
 #
@@ -57,7 +58,7 @@ def build(recipe_folder,
         for cmd in setup:
             sp.run(shlex.split(cmd))
 
-    success = utils.test_recipes(recipe_folder,
+    success = test_recipes(recipe_folder,
                                  config=config,
                                  packages=packages,
                                  testonly=testonly,

@@ -4,22 +4,7 @@ import yaml
 import os
 import subprocess as sp
 from conda_build.metadata import MetaData
-
-
-def built_package_path(recipe):
-    """
-    Returns the path to which a recipe would be built.
-
-    Does not necessarily exist; equivalent to `conda build --output recipename`
-    but without the subprocess.
-    """
-    m = MetaData(recipe)
-    config = m.config
-    output_dir = m.info_index()['subdir']
-    return os.path.join(
-        os.path.dirname(config.bldpkgs_dir), output_dir, '%s.tar.bz2'
-        % m.dist()
-    )
+from bioconda_utils.utils import built_package_path
 
 
 def ensure_missing(package):

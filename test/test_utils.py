@@ -8,9 +8,8 @@ import requests
 from bioconda_utils import utils
 from bioconda_utils import docker_utils
 from bioconda_utils import cli
-
-
-from helpers import built_package_path, ensure_missing, Recipes, tmp_env_matrix
+from bioconda_utils import build
+from helpers import ensure_missing, Recipes, tmp_env_matrix
 
 
 
@@ -57,7 +56,7 @@ def _single_build(docker_builder=None):
     conda_bld = docker_utils.get_host_conda_bld()
     built_package = os.path.join(conda_bld, 'linux-64', 'one-0.1-0.tar.bz2')
     ensure_missing(built_package)
-    utils.build(
+    build.build(
         recipe=r.recipe_dirs['one'],
         recipe_folder='.',
         docker_builder=docker_builder,
@@ -78,7 +77,7 @@ def test_single_build_docker_with_post_test():
     conda_bld = docker_utils.get_host_conda_bld()
     built_package = os.path.join(conda_bld, 'linux-64', 'one-0.1-0.tar.bz2')
     ensure_missing(built_package)
-    utils.build(
+    build.build(
         recipe=r.recipe_dirs['one'],
         recipe_folder='.',
         docker_builder=docker_builder,
@@ -321,7 +320,7 @@ def test_filter_recipes_existing_package():
         'CONDA_PY': ['2.7', '3.5'],
     }
     pkgs = utils.get_channel_packages('bioconda')
-    pth = built_package_path(recipes[0])
+    pth = utils.built_package_path(recipes[0])
     filtered = list(
         utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
     assert len(filtered) == 0
@@ -346,7 +345,7 @@ def test_filter_recipes_force_existing_package():
         'CONDA_PY': ['2.7', '3.5'],
     }
     pkgs = utils.get_channel_packages('bioconda')
-    pth = built_package_path(recipes[0])
+    pth = utils.built_package_path(recipes[0])
     filtered = list(
         utils.filter_recipes(recipes, env_matrix, channels=['bioconda'], force=True))
     assert len(filtered) == 1

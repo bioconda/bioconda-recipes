@@ -4,9 +4,10 @@ import subprocess as sp
 
 import pytest
 
-from helpers import Recipes, ensure_missing, built_package_path, tmp_env_matrix
+from helpers import Recipes, ensure_missing, tmp_env_matrix
 from bioconda_utils import pkg_test
 from bioconda_utils import utils
+from bioconda_utils import build
 
 
 def test_pkg_test():
@@ -24,9 +25,9 @@ def test_pkg_test():
     r.write_recipes()
     env_matrix = list(utils.EnvMatrix(tmp_env_matrix()))[0]
     recipe = r.recipe_dirs['one']
-    built_package = built_package_path(recipe)
+    built_package = utils.built_package_path(recipe)
     ensure_missing(built_package)
-    utils.build(
+    build.build(
         recipe=r.recipe_dirs['one'],
         recipe_folder='.',
         env=env_matrix)
@@ -47,9 +48,9 @@ def test_pkg_test_missing_involucro():
     r.write_recipes()
     env_matrix = list(utils.EnvMatrix(tmp_env_matrix()))[0]
     recipe = r.recipe_dirs['one']
-    built_package = built_package_path(recipe)
+    built_package = utils.built_package_path(recipe)
     ensure_missing(built_package)
-    utils.build(
+    build.build(
         recipe=r.recipe_dirs['one'],
         recipe_folder='.',
         env=env_matrix)
