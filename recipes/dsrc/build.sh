@@ -1,6 +1,7 @@
 #!/bin/sh
 
 
+yum install glibc-static
 sed -i -e  "s/\$(CXXFLAGS)/\$(CXXFLAGS) \$(CFLAGS)/g" src/Makefile
 sed -i -e "s/-lpthread/-lpthread -lrt/g" Makefile
 export CFLAGS=" -I${PREFIX}/include -L${PREFIX}/lib"
