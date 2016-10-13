@@ -347,45 +347,29 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         channel_packages.update(get_channel_packages(channel=channel))
         channel_args.extend(['--channel', channel])
 
-    logger.debug(sorted(list(channel_packages)))
-    def tobuild(f):
-        logger.debug('f is %s', f)
-        return (
-            # note recent conda-build versions do not report "Skipped", so this
-            # will primarily be checking for presence in channel_packages.
-            not f.startswith("Skipped:") and
-            (
-                force or (os.path.basename(f) not in channel_packages)
-            )
+    def tobuild(recipe, env):
+        pkg = os.path.basename(built_package_path(recipe, merged_env(env)))
+        in_channels = pkg in channel_packages
+        skip = MetaData(recipe, config=api.Config(**merged_env(env))).skip()
+        answer = force or (not in_channels and not skip)
+        if answer:
+            label = 'building'
+        else:
+            label = 'not building'
+        logger.debug(
+            '{label} {pkg} '
+            'because force={force};in channels={in_channels};skip={skip}'
+            .format(**locals())
         )
-
-    # conda build no longer supports multiple recipes as input and instead only
-    # takes the first.
-    def pkgname(recipe, env):
-        cmd = [
-            "conda", "build", "--no-source", "--override-channels", "--output"
-        ] + channel_args + [recipe]
-        logger.debug(env)
-        logger.debug(cmd)
-        p = sp.run(
-            cmd,
-            check=True,
-            stdout=sp.PIPE,
-            stderr=sp.PIPE,
-            universal_newlines=True,
-            env=merged_env(env))
-        pkgpaths = p.stdout.strip().split("\n")
-        assert len(pkgpaths) == 1
-        return pkgpaths[0]
+        return answer
 
     logger.debug('recipes: %s', recipes)
     try:
         for recipe in recipes:
             targets = set()
             for env in env_matrix:
-                pkg = pkgname(recipe, env)
-                logger.debug(pkg)
-                if tobuild(pkg):
+                pkg = built_package_path(recipe, merged_env(env))
+                if tobuild(recipe, env):
                     targets.update([Target(pkg, env)])
             logger.debug(
                 "targets for recipe %s: %s",
