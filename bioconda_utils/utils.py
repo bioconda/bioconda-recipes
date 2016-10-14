@@ -32,12 +32,24 @@ def flatten_dict(dict):
         yield [(key, value) for value in values]
 
 
-def merged_env(env):
+def merged_env(env, ensure_all_strings=False):
     """
     Merges dict `env` with current os.environ
+
+    Parameters
+    ----------
+    env : dict
+
+    ensure_all_strings : bool
+        If True, the returned dictionary's keys are all strings. Needed for
+        when, e.g., CONDA_PY is an integer but you want to pass the entire dict
+        to a subprocess call.
     """
     _env = dict(os.environ)
     _env.update(env)
+    for k, v in list(_env.items()):
+        if ensure_all_strings:
+            _env[k] = str(v)
     return _env
 
 
