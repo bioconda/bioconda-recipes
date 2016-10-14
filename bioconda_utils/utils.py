@@ -306,7 +306,9 @@ def built_package_path(recipe, env=None):
     if py is not None:
         env['CONDA_PY'] = _string_or_float_to_integer_python(py)
 
-    return api.get_output_file_path(recipe, no_download_source=True, **env)
+    metadata = MetaData(recipe, config=api.Config(**env))
+
+    return api.get_output_file_path(metadata, no_download_source=True)
 
 
 class Target:
@@ -369,7 +371,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         pkg = os.path.basename(built_package_path(recipe, env))
         in_channels = pkg in channel_packages
         skip = MetaData(recipe, config=api.Config(**env)).skip()
-        answer = force or (not in_channels and not skip)
+        answer = force or not (in_channels or skip)
         if answer:
             label = 'building'
         else:
@@ -388,7 +390,6 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
             targets = set()
             for env in env_matrix:
                 env = merged_env(env)
-                logger.debug('env: %s', env)
                 pkg = built_package_path(recipe, env)
                 if tobuild(recipe, env):
                     targets.update([Target(pkg, env)])

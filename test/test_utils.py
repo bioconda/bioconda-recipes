@@ -6,10 +6,13 @@ import yaml
 import tempfile
 import requests
 from bioconda_utils import utils
+from bioconda_utils import pkg_test
 from bioconda_utils import docker_utils
 from bioconda_utils import cli
 from bioconda_utils import build
 from helpers import ensure_missing, Recipes, tmp_env_matrix
+from conda_build import api
+from conda_build.metadata import MetaData
 
 
 def test_get_deps():
@@ -59,13 +62,14 @@ def _single_build(docker_builder=None):
         recipe=r.recipe_dirs['one'],
         recipe_folder='.',
         docker_builder=docker_builder,
-        env=env_matrix)
+        env=env_matrix,
+    )
     assert os.path.exists(built_package)
-    ensure_missing(built_package)
+    return built_package
 
 
 def test_single_build1():
-    _single_build(docker_builder=None)
+    built_package = _single_build(docker_builder=None)
 
 
 def test_single_build_docker_with_post_test():
@@ -82,13 +86,13 @@ def test_single_build_docker_with_post_test():
         docker_builder=docker_builder,
         env=env_matrix)
     assert os.path.exists(built_package)
-
-    docker_builder.test_recipe('one')
-
+    pkg_test.test_package(built_package)
+    ensure_missing(built_package)
 
 def test_single_build_docker():
     docker_builder = docker_utils.RecipeBuilder(verbose=True)
-    _single_build(docker_builder=docker_builder)
+    built_package = _single_build(docker_builder=docker_builder)
+    ensure_missing(built_package)
 
 
 def test_docker_builder_build():
@@ -116,7 +120,7 @@ def test_docker_build_image_fails():
         FROM {self.image}
         RUN nonexistent command
         """)
-    with pytest.raises(docker_utils.DockerBuildError):
+    with pytest.raises(sp.CalledProcessError):
         docker_builder = docker_utils.RecipeBuilder(
             verbose=True, dockerfile_template=template)
 
@@ -294,7 +298,6 @@ def test_filter_recipes_skip_py27_in_build_string():
     # one recipe, one target
     assert len(filtered) == 1
     assert len(filtered[0][1]) == 1
-
 
 def test_filter_recipes_extra_in_build_string():
     """
