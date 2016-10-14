@@ -346,7 +346,7 @@ class RecipeBuilder(object):
         # Build the args for env vars. Note can also write these to tempfile
         # and use --env-file arg, but using -e seems clearer in debug output.
         env_list = []
-        for k, v in kwargs.pop('env', {}).items():
+        for k, v in env.items():
             env_list.append('-e')
             env_list.append('{0}:{1}'.format(k, v))
 

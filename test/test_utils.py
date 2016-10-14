@@ -108,7 +108,7 @@ def test_docker_builder_build():
     r = Recipes('test_case.yaml')
     r.write_recipes()
     recipe_dir = r.recipe_dirs['one']
-    docker_builder.build_recipe(recipe_dir, build_args='')
+    docker_builder.build_recipe(recipe_dir, build_args='', env={})
     assert os.path.exists(built_package)
     os.unlink(built_package)
     assert not os.path.exists(built_package)
@@ -299,8 +299,7 @@ def test_filter_recipes_skip_py27_in_build_string():
     assert len(filtered) == 1
     assert len(filtered[0][1]) == 1
 
-# See https://github.com/conda/conda-build/issues/1464
-@pytest.mark.xfail
+
 def test_filter_recipes_extra_in_build_string():
     """
     If CONDA_EXTRA is in os.environ, the pkg name should still be identifiable.
@@ -316,8 +315,8 @@ def test_filter_recipes_extra_in_build_string():
               name: one
               version: "0.1"
             build:
-              number: 1
-              string: {{CONDA_EXTRA}}_{{PKG_BUILDNUM}}_{{PKG_NAME}}
+              number: 0
+              string: {{CONDA_EXTRA}}_{{PKG_BUILDNUM}}
         """), from_string=True)
     r.write_recipes()
     recipe = r.recipe_dirs['one']
@@ -438,8 +437,6 @@ def test_built_package_path():
         raise
 
 
-# See https://github.com/conda/conda-build/issues/1464
-@pytest.mark.xfail
 def test_built_package_path2():
     r = Recipes(dedent(
         """
@@ -463,12 +460,15 @@ def test_built_package_path2():
         """), from_string=True)
     r.write_recipes()
 
-    existing_env = dict(os.environ)
     os.environ['CONDA_NCURSES'] = '9.0'
     assert os.path.basename(
         utils.built_package_path(r.recipe_dirs['two'], env=os.environ)
     ) == 'two-0.1-ncurses9.0_0.tar.bz2'
 
+    del os.environ['CONDA_NCURSES']
+    assert os.path.basename(
+        utils.built_package_path(r.recipe_dirs['two'], env=dict(CONDA_NCURSES='9.0'))
+    ) == 'two-0.1-ncurses9.0_0.tar.bz2'
 
 def test_string_or_float_to_integer_python():
     f = utils._string_or_float_to_integer_python

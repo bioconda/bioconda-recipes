@@ -7,6 +7,7 @@ import argparse
 import itertools
 import sys
 import shutil
+import contextlib
 from collections import defaultdict, Iterable
 from itertools import product, chain
 import logging
@@ -25,32 +26,32 @@ from . import pkg_test
 logger = logging.getLogger(__name__)
 
 
+@contextlib.contextmanager
+def temp_env(env):
+    """
+    Context manager to temporarily set os.environ.
+
+    Used to send values in `env` to processes that only read the os.environ,
+    for example when filling in meta.yaml with jinja2 template variables.
+
+    All values are converted to string before sending to os.environ
+    """
+    env = dict(env)
+    orig = os.environ.copy()
+    _env = {k: str(v) for k, v in env.items()}
+    os.environ.update(_env)
+    try:
+        yield
+    finally:
+        os.environ.clear()
+        os.environ.update(orig)
+
+
 def flatten_dict(dict):
     for key, values in dict.items():
         if isinstance(values, str) or not isinstance(values, Iterable):
             values = [values]
         yield [(key, value) for value in values]
-
-
-def merged_env(env, ensure_all_strings=False):
-    """
-    Merges dict `env` with current os.environ
-
-    Parameters
-    ----------
-    env : dict
-
-    ensure_all_strings : bool
-        If True, the returned dictionary's keys are all strings. Needed for
-        when, e.g., CONDA_PY is an integer but you want to pass the entire dict
-        to a subprocess call.
-    """
-    _env = dict(os.environ)
-    _env.update(env)
-    for k, v in list(_env.items()):
-        if ensure_all_strings:
-            _env[k] = str(v)
-    return _env
 
 
 class EnvMatrix:
@@ -297,8 +298,7 @@ def built_package_path(recipe, env=None):
     """
     if env is None:
         env = {}
-
-    env = merged_env(env)
+    env = dict(env)
 
     # Ensure CONDA_PY is an integer (needed by conda-build 2.0.4)
     py = env.get('CONDA_PY', None)
@@ -306,9 +306,9 @@ def built_package_path(recipe, env=None):
     if py is not None:
         env['CONDA_PY'] = _string_or_float_to_integer_python(py)
 
-    metadata = MetaData(recipe, config=api.Config(**env))
-
-    return api.get_output_file_path(metadata, no_download_source=True)
+    with temp_env(env):
+        path = api.get_output_file_path(recipe)
+    return path
 
 
 class Target:
@@ -332,10 +332,7 @@ class Target:
 
 def filter_recipes(recipes, env_matrix, channels=None, force=False):
     """
-    Generator yielding only those recipes that do not already exist.
-
-    Relies on `conda build --skip-existing` to determine if a recipe already
-    exists.
+    Generator yielding only those recipes that should be built.
 
     Parameters
     ----------
@@ -364,20 +361,20 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         channel_args.extend(['--channel', channel])
 
     def tobuild(recipe, env):
-
-        # add os.environ
-        env = merged_env(env)
-
         pkg = os.path.basename(built_package_path(recipe, env))
         in_channels = pkg in channel_packages
-        skip = MetaData(recipe, config=api.Config(**env)).skip()
+        with temp_env(env):
+            # with temp_env, MetaData sees everything in env added to
+            # os.environ.
+            skip = MetaData(recipe).skip()
+
         answer = force or not (in_channels or skip)
         if answer:
             label = 'building'
         else:
             label = 'not building'
         logger.debug(
-            '{label} {pkg} {env}'
+            '{label} {pkg} '
             'because force={force};in channels={in_channels};skip={skip}'
             .format(**locals())
         )
@@ -389,7 +386,6 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
             logger.debug('Filtering %s', recipe)
             targets = set()
             for env in env_matrix:
-                env = merged_env(env)
                 pkg = built_package_path(recipe, env)
                 if tobuild(recipe, env):
                     targets.update([Target(pkg, env)])

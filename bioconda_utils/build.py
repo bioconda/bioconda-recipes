@@ -5,6 +5,7 @@ import networkx as nx
 from . import utils
 from . import docker_utils
 from . import pkg_test
+from conda_build import api
 
 logger = logging.getLogger(__name__)
 
@@ -48,13 +49,7 @@ def build(recipe,
         Use this docker builder to build the recipe, copying over the built
         recipe to the host's conda-bld directory.
     """
-    # We want to avoid cluttering the docker container with all existing
-    # environmental variables (this caused some hard-to-track-down problems
-    # when I was testing).
     env = dict(env)
-    if docker_builder is None:
-        env = utils.merged_env(env, ensure_all_strings=True)
-
     logger.info(
         "Building and testing '%s' for environment %s",
         recipe, ';'.join(['='.join(map(str, i)) for i in sorted(env.items())])
@@ -76,6 +71,7 @@ def build(recipe,
     CONDA_BUILD_CMD = ['conda', 'build']
 
     try:
+        # Note we're not sending the contents of os.environ here
         if docker_builder is not None:
             response = docker_builder.build_recipe(
                 recipe_dir=os.path.abspath(recipe),
@@ -85,13 +81,16 @@ def build(recipe,
             logger.info('Successfully built %s', recipe)
             build_success = True
         else:
-            p = sp.run(
-                CONDA_BUILD_CMD + [recipe],
-                stdout=sp.PIPE,
-                stderr=sp.STDOUT,
-                check=True,
-                universal_newlines=True,
-                env=env)
+            # Since we're calling out to shell and we want to send at least
+            # some env vars send them all via the temporarily-reset os.environ.
+            with utils.temp_env(env):
+                p = sp.run(
+                    CONDA_BUILD_CMD + [recipe],
+                    stdout=sp.PIPE,
+                    stderr=sp.STDOUT,
+                    check=True,
+                    universal_newlines=True,
+                    env=os.environ)
             logger.debug(p.stdout)
             logger.debug(" ".join(p.args))
             logger.info('Successfully built %s', recipe)
@@ -105,23 +104,7 @@ def build(recipe,
     if not mulled_test:
         return build_success
 
-    def pkgname(recipe, env):
-        cmd = [
-            "conda", "build", "--no-source", "--override-channels", "--output"
-        ] + channel_args + [recipe]
-        logger.debug(cmd)
-        p = sp.run(
-            cmd,
-            check=True,
-            stdout=sp.PIPE,
-            stderr=sp.PIPE,
-            universal_newlines=True,
-            env=utils.merged_env(env))
-        pkgpaths = p.stdout.strip().split("\n")
-        assert len(pkgpaths) == 1
-        return pkgpaths[0]
-
-    pkg_path = pkgname(recipe, env)
+    pkg_path = utils.built_package_path(recipe, env)
 
     # TODO: better granularity; e.g. report if the build worked but test failed
     res = pkg_test.test_package(pkg_path)
@@ -243,7 +226,6 @@ def test_recipes(recipe_folder,
         for key, argname in [
             ('docker_image', 'image'),
             ('requirements', 'requirements'),
-            ('docker_url', 'base_url'),
         ]:
             if key in config:
                 kwargs[argname] = config[key]
