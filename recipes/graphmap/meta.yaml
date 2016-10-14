@@ -1,33 +1,36 @@
+{% set name = "graphmap" %}
+{% set version = "0.3.0" %}
+
 package:
-  name: graphmap
-  version: "0.22.1"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 build:
   number: 0
-  skip: False
+  skip: True # [osx]
 
 source:
-  fn: 0.22.1.tar.gz
-  url: https://github.com/isovic/graphmap/archive/0.22.1.tar.gz
-  md5: 339ccbc170f6309a5fd7da7d10e3b581
+  fn: {{ name|lower }}_{{ version }}.tar.gz
+  url: https://github.com/isovic/{{ name|lower }}/archive/v0.3.0.tar.gz
+  md5: 79c203ec60b39ae1f2381c4b547e91eb
 
   patches:
     - makefile.patch
 
 requirements:
   build:
-  - gcc
+  - gcc [not osx]
+  - llvm [osx]
 
   run:
-  - libgcc
+  - libgcc [not osx]
 
 test:
   commands:
-    - graphmap -h  > /dev/null
+    - graphmap align  > /dev/null
 
 about:
   home: https://github.com/isovic/graphmap
   license: MIT
   license_file: LICENCE
-  summary: A highly sensitive and accurate mapper for long, error-prone reads
-
+  summary: A highly sensitive and accurate mapper for long, error-prone reads.
