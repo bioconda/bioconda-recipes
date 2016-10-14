@@ -48,10 +48,16 @@ def build(recipe,
         Use this docker builder to build the recipe, copying over the built
         recipe to the host's conda-bld directory.
     """
+    # We want to avoid cluttering the docker container with all existing
+    # environmental variables (this caused some hard-to-track-down problems
+    # when I was testing).
+    env = dict(env)
+    if docker_builder is None:
+        env = utils.merged_env(env, ensure_all_strings=True)
 
     logger.info(
         "Building and testing '%s' for environment %s",
-        recipe, ';'.join(['='.join(map(str, i)) for i in sorted(env)])
+        recipe, ';'.join(['='.join(map(str, i)) for i in sorted(env.items())])
     )
     build_args = []
     if testonly:
@@ -74,7 +80,7 @@ def build(recipe,
             response = docker_builder.build_recipe(
                 recipe_dir=os.path.abspath(recipe),
                 build_args=' '.join(channel_args + build_args),
-                environment=dict(env)
+                env=env
             )
             logger.info('Successfully built %s', recipe)
             build_success = True
@@ -85,8 +91,7 @@ def build(recipe,
                 stderr=sp.STDOUT,
                 check=True,
                 universal_newlines=True,
-                env=utils.merged_env(env)
-            )
+                env=env)
             logger.debug(p.stdout)
             logger.debug(" ".join(p.args))
             logger.info('Successfully built %s', recipe)
@@ -104,7 +109,6 @@ def build(recipe,
         cmd = [
             "conda", "build", "--no-source", "--override-channels", "--output"
         ] + channel_args + [recipe]
-        logger.debug(env)
         logger.debug(cmd)
         p = sp.run(
             cmd,
