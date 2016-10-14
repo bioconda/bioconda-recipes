@@ -180,7 +180,6 @@ class RecipeBuilder(object):
         container_recipe='/opt/recipe',
         container_staging="/opt/host-conda-bld",
         image='condaforge/linux-anvil',
-        base_url='unix://var/run/docker.sock',
         requirements=None,
         build_script_template=BUILD_SCRIPT_TEMPLATE,
         dockerfile_template=DOCKERFILE_TEMPLATE,
@@ -209,9 +208,6 @@ class RecipeBuilder(object):
         image : str
             Base image from which the new custom image will be built (used on
             the `FROM:` line of the Dockerfile)
-
-        base_url : str
-            Passed to docker.Client()
 
         requirements : None or str
             Path to a "requirements.txt" file which will be installed with
@@ -247,13 +243,6 @@ class RecipeBuilder(object):
         self.container_recipe = container_recipe
         self.container_staging = container_staging
 
-        # Don't import until here to allow module import if docker is not
-        # installed.
-        try:
-            from docker import Client as DockerClient
-        except ImportError:
-            raise ImportError("docker-py module must be installed")
-        self.docker = DockerClient(base_url=base_url)
         self.host_conda_bld = get_host_conda_bld()
 
         self._pull_image()
@@ -264,7 +253,13 @@ class RecipeBuilder(object):
         Separate out the pull step to provide additional logging info
         """
         logger.info('Pulling docker image %s', self.image)
-        self.docker.pull(self.image)
+        p = sp.run(['docker', 'pull', self.image], stdout=sp.PIPE,
+                   stderr=sp.STDOUT, check=True, universal_newlines=True)
+        logger.debug('stdout: %s', p.stdout)
+        logger.debug('stderr: %s', p.stderr)
+        if p.returncode != 0:
+            raise ValueError(p.stdout, p.stderr)
+
         logger.info('Done pulling image')
 
     def _build_image(self):
@@ -291,21 +286,28 @@ class RecipeBuilder(object):
 
         logger.debug('Dockerfile:\n' + open(fout.name).read())
 
-        response = list(
-            self.docker.build(
-                path=build_dir, rm=True, tag=self.tag, decode=True)
-        )
-        for r in response:
-            if 'error' in r:
-                raise DockerBuildError(response)
-        self._build = response
+        cmd = [
+            'docker', 'build',
+            '-t', self.tag,
+            build_dir
+        ]
+        p = sp.run(
+            cmd,
+            stdout=sp.PIPE,
+            stderr=sp.STDOUT,
+            check=True,
+            universal_newlines=True)
+
+        if p.returncode != 0:
+            raise ValueError(
+                p.stdout,
+                p.stderr)
+
         logger.info('Built docker image tag=%s', self.tag)
-        logger.debug(self._build)
         shutil.rmtree(build_dir)
-        return self._build
+        return p
 
-
-    def build_recipe(self, recipe_dir, build_args, **kwargs):
+    def build_recipe(self, recipe_dir, build_args, env):
         """
         Build a single recipe.
 
@@ -319,8 +321,8 @@ class RecipeBuilder(object):
             Additional arguments to `conda build`. For example --channel,
             --skip-existing, etc
 
-        Additional kwargs are passed to docker.Client.create_container.
-        (`environment` is a useful one).
+        env : dict
+            Environmental variables
 
         Note that the binds are set up automatically to match the expectations
         of the build script, and will use the currently-configured
@@ -340,51 +342,37 @@ class RecipeBuilder(object):
         build_script = fout.name
         logger.debug('Container build script: \n%s', open(fout.name).read())
 
-        logger.info('Building recipe with docker: %s', recipe_dir)
 
-        binds = {
-            build_script: {
-                'bind': '/opt/build_script.bash',
-                'mode': 'ro',
-            },
-            self.host_conda_bld: {
-                'bind': self.container_staging,
-                'mode': 'rw',
-            },
-            recipe_dir: {
-                'bind': self.container_recipe,
-                'mode': 'ro',
-            },
-        }
-        logger.debug('binds: %s', binds)
+        # Build the args for env vars. Note can also write these to tempfile
+        # and use --env-file arg, but using -e seems clearer in debug output.
+        env_list = []
+        for k, v in kwargs.pop('env', {}).items():
+            env_list.append('-e')
+            env_list.append('{0}:{1}'.format(k, v))
 
-        cmd = '/bin/bash /opt/build_script.bash'
+        cmd = [
+            'docker', 'run',
+            '-v', '{0}:/opt/build_script.bash'.format(build_script),
+            '-v', '{0}:{1}'.format(self.host_conda_bld, self.container_staging),
+            '-v', '{0}:{1}'.format(recipe_dir, self.container_recipe),
+        ] + env_list + [
+            self.tag,
+            '/bin/bash', '/opt/build_script.bash',
+        ]
+
+
         logger.debug('cmd: %s', cmd)
-        logger.debug('kwargs: %s', kwargs)
-        container = self.docker.create_container(
-            image=self.tag,
-            command=cmd,
-            host_config=self.docker.create_host_config(
-                binds=binds, network_mode='host'
-            ),
-            **kwargs)
+        logger.info('Building recipe with docker: %s', recipe_dir)
+        p = sp.run(cmd, stdout=sp.PIPE, stderr=sp.STDOUT, universal_newlines=True, check=True,)
 
-        cid = container['Id']
-        logger.debug('Container ID: %s', cid)
-
-        self.docker.start(container=cid)
-        status = self.docker.wait(container=cid)
-        stdout = self.docker.logs(
-            container=cid, stdout=True, stderr=False).decode()
-        stderr = self.docker.logs(
-            container=cid, stderr=True, stdout=False).decode()
-
-        logger.debug('cmd:\n%s', cmd)
+        status = p.returncode
+        stdout = p.stdout
+        stderr = p.stderr
         logger.debug('stdout:\n%s', stdout)
         logger.debug('stderr:\n%s', stderr)
 
         if status != 0:
-            raise DockerCalledProcessError(
+            raise ValueError(
                 status, cmd, output=stdout, stderr=stderr)
 
         return dict(status=status, stdout=stdout, stderr=stderr, cmd=cmd)
