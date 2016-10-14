@@ -299,6 +299,8 @@ def test_filter_recipes_skip_py27_in_build_string():
     assert len(filtered) == 1
     assert len(filtered[0][1]) == 1
 
+# See https://github.com/conda/conda-build/issues/1464
+@pytest.mark.xfail
 def test_filter_recipes_extra_in_build_string():
     """
     If CONDA_EXTRA is in os.environ, the pkg name should still be identifiable.
@@ -314,16 +316,22 @@ def test_filter_recipes_extra_in_build_string():
               name: one
               version: "0.1"
             build:
-              number: 0
-              string: {{CONDA_EXTRA}}_{{PKG_BUILDNUM}}
+              number: 1
+              string: {{CONDA_EXTRA}}_{{PKG_BUILDNUM}}_{{PKG_NAME}}
         """), from_string=True)
     r.write_recipes()
+    recipe = r.recipe_dirs['one']
+
+    from conda_build.render import bldpkg_path
+
+    metadata = MetaData(recipe, api.Config(**dict(CONDA_EXTRA='asdf')))
+    print(bldpkg_path(metadata, metadata.config))
+
     os.environ['CONDA_EXTRA'] = 'asdf'
-    pkg = utils.built_package_path(r.recipe_dirs['one'])
+    pkg = utils.built_package_path(recipe)
     assert os.path.basename(pkg) == 'one-0.1-asdf_0.tar.bz2'
 
 def test_filter_recipes_existing_package():
-
     # use a known-to-exist package in bioconda
     #
     # note that we need python as a run requirement in order to get the "pyXY"
@@ -428,6 +436,32 @@ def test_built_package_path():
     except:
         os.environ = existing_env
         raise
+
+
+# See https://github.com/conda/conda-build/issues/1464
+@pytest.mark.xfail
+def test_built_package_path2():
+    r = Recipes(dedent(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: "0.1"
+            requirements:
+              run:
+                - python
+
+        two:
+          meta.yaml: |
+            package:
+              name: two
+              version: "0.1"
+            build:
+              number: 0
+              string: ncurses{{ CONDA_NCURSES }}_{{ PKG_BUILDNUM }}
+        """), from_string=True)
+    r.write_recipes()
 
     existing_env = dict(os.environ)
     os.environ['CONDA_NCURSES'] = '9.0'
