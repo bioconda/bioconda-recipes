@@ -123,28 +123,6 @@ RUN /opt/conda/bin/conda install --file /tmp/requirements.txt
 """
 
 
-# ----------------------------------------------------------------------------
-# TEST_DOCKERFILE_TEMPLATE
-# ----------------------------------------------------------------------------
-#
-# This image will be used for testing the package. It is deliberately missing
-# packages like gcc in order to better test dependencies.
-TEST_DOCKERFILE_TEMPLATE = \
-"""
-FROM centos:6
-RUN curl -O https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-RUN bash Miniconda3-latest-Linux-x86_64.sh -b -p /anaconda
-ENV PATH "/anaconda/bin:$PATH"
-"""
-
-TEST_SCRIPT_TEMPLATE = \
-"""
-#!/bin/bash
-conda config --add channels file:/{self.container_staging}
-conda install {package}
-"""
-
-
 class DockerCalledProcessError(sp.CalledProcessError):
     pass
 
@@ -205,9 +183,7 @@ class RecipeBuilder(object):
         base_url='unix://var/run/docker.sock',
         requirements=None,
         build_script_template=BUILD_SCRIPT_TEMPLATE,
-        test_script_template=TEST_SCRIPT_TEMPLATE,
         dockerfile_template=DOCKERFILE_TEMPLATE,
-        test_dockerfile_template=TEST_DOCKERFILE_TEMPLATE,
         verbose=False,
     ):
         """
@@ -252,17 +228,6 @@ class RecipeBuilder(object):
             will be used to build a custom image. Uses
             docker_utils.DOCKERFILE_TEMPLATE by default.
 
-        test_dockerfile_template : str
-            Template that will be filled in with .format(self=self) and that
-            will be used to build a custom image (independent of the image used
-            for building) to be used for testing. Uses TEST_DOCKERFILE_TEMPLATE
-            by default.
-
-        test_script_template : str
-            Template that will be filled in with .format(self=self,
-            package=package) and that will be used to install a package for
-            testing. Uses docker_utils.TEST_DOCKERFILE_TEMPLATE
-
         verbose : bool
         """
         self.image = image
@@ -272,8 +237,6 @@ class RecipeBuilder(object):
         self.conda_build_args = ""
         self.build_script_template = build_script_template
         self.dockerfile_template = dockerfile_template
-        self.test_dockerfile_template = test_dockerfile_template
-        self.test_script_template = test_script_template
         uid = os.getuid()
         usr = pwd.getpwuid(uid)
         self.user_info = dict(
@@ -341,78 +304,6 @@ class RecipeBuilder(object):
         shutil.rmtree(build_dir)
         return self._build
 
-    def _build_test_image(self):
-        test_tag = self.tag + '_test'
-        build_dir = tempfile.mkdtemp()
-        logger.debug('Building image "%s" from %s', test_tag, build_dir)
-
-        with open(os.path.join(build_dir, "Dockerfile"), 'w') as fout:
-            fout.write(self.test_dockerfile_template.format(self=self))
-
-        logger.debug('Dockerfile:\n' + open(fout.name).read())
-
-        response = list(
-            self.docker.build(
-                path=build_dir, rm=True, tag=test_tag, decode=True)
-        )
-        for r in response:
-            if 'error' in r:
-                raise DockerBuildError(response)
-        self._build = response
-        logger.info('Built docker image tag=%s', test_tag)
-        logger.debug(self._build)
-        shutil.rmtree(build_dir)
-        return self._build
-
-    def test_recipe(self, package, **kwargs):
-        self._build_test_image()
-
-        tmp = tempfile.NamedTemporaryFile().name
-        with open(tmp, 'w') as fout:
-            fout.write(
-                self.test_script_template.format(package=package, self=self))
-
-        binds = {
-            self.host_conda_bld: {
-                'bind': self.container_staging,
-                'mode': 'rw',
-            },
-            tmp: {
-                'bind': '/opt/test_script.sh',
-                'mode': 'ro',
-            },
-        }
-        logger.debug('testing')
-        logger.debug(open(tmp).read())
-
-        cmd = '/bin/bash /opt/test_script.sh'
-        container = self.docker.create_container(
-            image=self.tag + "_test",
-            command=cmd,
-            host_config=self.docker.create_host_config(
-                binds=binds, network_mode='host'
-            ),
-            **kwargs)
-
-        cid = container['Id']
-        logger.debug('Container ID: %s', cid)
-
-        self.docker.start(container=cid)
-        status = self.docker.wait(container=cid)
-        stdout = self.docker.logs(
-            container=cid, stdout=True, stderr=False).decode()
-        stderr = self.docker.logs(
-            container=cid, stderr=True, stdout=False).decode()
-
-        logger.debug('cmd:\n%s', cmd)
-        logger.debug('stdout:\n%s', stdout)
-        logger.debug('stderr:\n%s', stderr)
-
-        if status != 0:
-            raise DockerCalledProcessError(
-                status, cmd, output=stdout, stderr=stderr)
-
-        return dict(status=status, stdout=stdout, stderr=stderr, cmd=cmd)
 
     def build_recipe(self, recipe_dir, build_args, **kwargs):
         """
