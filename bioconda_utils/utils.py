@@ -306,13 +306,15 @@ def built_package_path(recipe, env=None):
     if py is not None:
         env['CONDA_PY'] = _string_or_float_to_integer_python(py)
 
-    # Disabling set_build_id prevents the creation of uniquely-named work
-    # directories just for checking the output file.
-    config = api.Config(
-        no_download_source=True,
-        set_build_id=False)
 
     with temp_env(env):
+        # Disabling set_build_id prevents the creation of uniquely-named work
+        # directories just for checking the output file.
+        # It needs to be done within the context manager so that it sees the
+        # os.environ.
+        config = api.Config(
+            no_download_source=True,
+            set_build_id=False)
         path = api.get_output_file_path(recipe, config=config)
     return path
 
