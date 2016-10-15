@@ -48,9 +48,7 @@ def build(recipe_folder,
           loglevel="warning",
           mulled_test=False,
           ):
-
-    logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s", level=getattr(logging, loglevel.upper()))
-    logger = logging.getLogger(__name__)
+    logging.getLogger('bioconda_utils').setLevel(getattr(logging, loglevel.upper()))
     cfg = utils.load_config(config)
     setup = cfg.get('setup', None)
     if setup:
@@ -100,8 +98,7 @@ def dependent(recipe_folder, packages="*", dependencies=None, loglevel='warning'
     """
     Print recipes dependent on a package
     """
-    logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s", level=getattr(logging, loglevel.upper()))
-    logger = logging.getLogger(__name__)
+    logging.getLogger('bioconda_utils').setLevel(getattr(logging, loglevel.upper()))
     if dependencies is None:
         return
 
