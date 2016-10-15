@@ -387,9 +387,16 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         return answer
 
     logger.debug('recipes: %s', recipes)
+    nrecipes = len(recipes)
+    max_recipe = max(map(len, recipes))
+    template = 'Filtering {{0}} of {{1}} ({{2:.1f}}%) {{3:<{0}}}'.format(max_recipe)
     try:
-        for recipe in recipes:
-            logger.debug('Filtering %s', recipe)
+        for i, recipe in enumerate(sorted(recipes)):
+            perc = (i + 1) / nrecipes * 100
+            print(
+                template.format(i + 1, nrecipes, perc, recipe),
+                end='\r'
+            )
             targets = set()
             for env in env_matrix:
                 pkg = built_package_path(recipe, env)
@@ -456,7 +463,6 @@ def load_config(path):
         'env_matrix': {'CONDA_PY': 35},
         'blacklists': [],
         'channels': [],
-        'docker_url': 'unix://var/run/docker.sock',
         'docker_image': 'condaforge/linux-anvil',
         'requirements': None,
         'upload_channel': 'bioconda'
