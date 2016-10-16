@@ -181,28 +181,6 @@ java-jdk/
 There should always be a primary in the root directory of a package that is
 updated when new releases are made.
 
-### Other notes
-
-We use a pre-built CentOS 5 image with compilers installed as part of the
-standard build. To build this yourself, you can do:
-
-```bash
-docker login
-(cd scripts && docker build -t bioconda/bioconda-builder .)
-```
-
-Then test a recipe with:
-
-```bash
-docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
-```
-
-If you wish the open a bash shell in the Docker container for manual debugging:
-
-```bash
-docker run -i -t --entrypoint /bin/bash bioconda/bioconda-builder
-```
-
 ## The bioconda build system
 This repository is set up on [Travis CI](https://travis-ci.org) such that on
 every pull request, the following steps are performed once within the Docker
