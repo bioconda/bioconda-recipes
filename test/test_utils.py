@@ -470,6 +470,33 @@ def test_built_package_path2():
         utils.built_package_path(r.recipe_dirs['two'], env=dict(CONDA_NCURSES='9.0'))
     ) == 'two-0.1-ncurses9.0_0.tar.bz2'
 
+
+
+def test_pkgname_with_numpy_x_x():
+    r = Recipes(dedent(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: "0.1"
+            requirements:
+              run:
+                - python
+                - numpy x.x
+              build:
+                - python
+                - numpy x.x
+
+        """), from_string=True)
+    r.write_recipes()
+
+    os.environ['CONDA_NPY'] = '1.9'
+    assert os.path.basename(
+        utils.built_package_path(r.recipe_dirs['one'], env=os.environ)
+    ) == 'one-0.1-np19py35_0.tar.bz2'
+
+
 def test_string_or_float_to_integer_python():
     f = utils._string_or_float_to_integer_python
     assert f(27) == f('27') == f(2.7) == f('2.7') == 27

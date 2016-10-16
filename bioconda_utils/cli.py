@@ -16,6 +16,7 @@ from networkx.drawing.nx_pydot import write_dot
 from . import utils
 from .build import test_recipes
 
+logger = logging.getLogger(__name__)
 # NOTE:
 #
 # A package is the name of the software package, like `bowtie`.
@@ -48,6 +49,8 @@ def build(recipe_folder,
           loglevel="warning",
           mulled_test=False,
           ):
+    LEVEL = getattr(logging, loglevel.upper())
+    logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
     logging.getLogger('bioconda_utils').setLevel(getattr(logging, loglevel.upper()))
     cfg = utils.load_config(config)
     setup = cfg.get('setup', None)
@@ -98,6 +101,8 @@ def dependent(recipe_folder, packages="*", dependencies=None, loglevel='warning'
     """
     Print recipes dependent on a package
     """
+    LEVEL = getattr(logging, loglevel.upper())
+    logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
     logging.getLogger('bioconda_utils').setLevel(getattr(logging, loglevel.upper()))
     if dependencies is None:
         return
