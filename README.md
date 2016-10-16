@@ -77,10 +77,18 @@ Then, you can test the build in a docker container. The authoritative source
 for how packages are built can be found in the `scripts/travis-run.sh` script,
 the `config.yml` config file, and the `.travis.yml` config file. However, the
 `simulate-travis.py` script can be used for conveniently testing on a local
-machine. For example,
+machine.  Any environmental variables will be passed to `scripts/travis-run.sh` and will
+override any defaults detected in .travis.yml. Currently the only variables
+useful to modify are TRAVIS_OS_NAME and BIOCONDA_UTILS_TAG and they can be used as
+ follows:
 
 ```
+# run `mypackagename`
 ./simulate-travis.py --packages mypackagename --loglevel=debug
+# use the linux build system from a non-linux machine
+TRAVIS_OS_NAME=linux ./simulate-travis.py
+# specify the bioconda-utils commit to use for your builds
+BIOCONDA_UTILS_TAG=63543b34 ./simulate-travis.py
 ```
 
 If rebuilding a previously-built package and the version number hasn't changed,
@@ -172,28 +180,6 @@ java-jdk/
 
 There should always be a primary in the root directory of a package that is
 updated when new releases are made.
-
-### Other notes
-
-We use a pre-built CentOS 5 image with compilers installed as part of the
-standard build. To build this yourself, you can do:
-
-```bash
-docker login
-(cd scripts && docker build -t bioconda/bioconda-builder .)
-```
-
-Then test a recipe with:
-
-```bash
-docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
-```
-
-If you wish the open a bash shell in the Docker container for manual debugging:
-
-```bash
-docker run -i -t --entrypoint /bin/bash bioconda/bioconda-builder
-```
 
 ## The bioconda build system
 This repository is set up on [Travis CI](https://travis-ci.org) such that on
