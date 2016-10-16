@@ -77,10 +77,18 @@ Then, you can test the build in a docker container. The authoritative source
 for how packages are built can be found in the `scripts/travis-run.sh` script,
 the `config.yml` config file, and the `.travis.yml` config file. However, the
 `simulate-travis.py` script can be used for conveniently testing on a local
-machine. For example,
+machine.  Any environmental variables will be passed to `scripts/travis-run.sh` and will
+override any defaults detected in .travis.yml. Currently the only variables
+useful to modify are TRAVIS_OS_NAME and BIOCONDA_UTILS_TAG and they can be used as
+ follows:
 
 ```
+# run `mypackagename`
 ./simulate-travis.py --packages mypackagename --loglevel=debug
+# use the linux build system from a non-linux machine
+TRAVIS_OS_NAME=linux ./simulate-travis.py
+# specify the bioconda-utils commit to use for your builds
+BIOCONDA_UTILS_TAG=63543b34 ./simulate-travis.py
 ```
 
 If rebuilding a previously-built package and the version number hasn't changed,
