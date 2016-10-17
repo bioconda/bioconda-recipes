@@ -44,6 +44,10 @@ logger = logging.getLogger(__name__)
 @arg('--build_script_template', help='''Filename to optionally replace build
      script template used by the Docker container. By default use
      docker_utils.BUILD_SCRIPT_TEMPLATE. Only used if --docker is True.''')
+@arg('--pkg_dir', help='''Specifies the directory to which container-built
+     packages should be stored on the host. Default is to use the host's
+     conda-bld dir. If --docker is not specified, then this argument is
+     ignored.''')
 def build(recipe_folder,
           config,
           packages="*",
@@ -53,6 +57,7 @@ def build(recipe_folder,
           loglevel="info",
           mulled_test=False,
           build_script_template=None,
+          pkg_dir=None,
           ):
     LEVEL = getattr(logging, loglevel.upper())
     logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
@@ -68,8 +73,16 @@ def build(recipe_folder,
             build_script_template = open(build_script_template).read()
         else:
             build_script_template = docker_utils.BUILD_SCRIPT_TEMPLATE
+        if pkg_dir is None:
+            use_host_conda_bld = True
+        else:
+            use_host_conda_bld = False
+
         docker_builder = docker_utils.RecipeBuilder(
-            build_script_template=build_script_template)
+            build_script_template=build_script_template,
+            pkg_dir=pkg_dir,
+            use_host_conda_bld=use_host_conda_bld,
+        )
     else:
         docker_builder = None
 
