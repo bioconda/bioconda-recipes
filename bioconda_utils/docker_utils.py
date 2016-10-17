@@ -184,6 +184,7 @@ class RecipeBuilder(object):
         build_script_template=BUILD_SCRIPT_TEMPLATE,
         dockerfile_template=DOCKERFILE_TEMPLATE,
         use_host_conda_bld=False,
+        pkg_dir=None,
     ):
         """
         Class to handle building a custom docker container that can be used for
