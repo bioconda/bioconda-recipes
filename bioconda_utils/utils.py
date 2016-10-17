@@ -400,13 +400,14 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
     nrecipes = len(recipes)
     max_recipe = max(map(len, recipes))
     template = 'Filtering {{0}} of {{1}} ({{2:.1f}}%) {{3:<{0}}}'.format(max_recipe)
+    # print()
     try:
         for i, recipe in enumerate(sorted(recipes)):
             perc = (i + 1) / nrecipes * 100
-            print(
-                template.format(i + 1, nrecipes, perc, recipe),
-                end='\r'
-            )
+            # print(
+            #     template.format(i + 1, nrecipes, perc, recipe),
+            #     end='\r'
+            # )
             targets = set()
             for env in env_matrix:
                 pkg = built_package_path(recipe, env)
@@ -418,6 +419,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         logger.debug(e.stdout)
         logger.error(e.stderr)
         exit(1)
+    print()
 
 
 def get_blacklist(blacklists, recipe_folder):
@@ -478,7 +480,8 @@ def load_config(path):
         'upload_channel': 'bioconda'
     }
     if 'env_matrix' in config:
-        config['env_matrix'] = relpath(config['env_matrix'])
+        if isinstance(config['env_matrix'], str):
+            config['env_matrix'] = relpath(config['env_matrix'])
     if 'blacklists' in config:
         config['blacklists'] = [relpath(p) for p in get_list('blacklists')]
     if 'channels' in config:

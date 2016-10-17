@@ -224,11 +224,30 @@ class RecipeBuilder(object):
             will be used to build a custom image. Uses
             docker_utils.DOCKERFILE_TEMPLATE by default.
 
-        verbose : bool
+        use_host_conda_bld : bool
+            If True, then use the host's conda-bld directory. This will export
+            the host's existing conda-bld directory to the docker container,
+            and any recipes successfully built by the container will be added
+            here.
+
+            Otherwise, use `pkg_dir` as a common host directory used across
+            multiple runs of this RecipeBuilder object.
+
+        pkg_dir : str or None
+            Specify where packages should appear on the host. If
+            `use_host_conda_bld` is True, then force `pkg_dir` to use the
+            host's conda-bld directory.
+
+            Otherwise, if `pkg_dir` is None, then a temporary directory will be
+            used for each call to `RecipeBuilder.build()`. If `pkg_dir` is
+            a string, then it will be created if needed and this directory will
+            be used store all built packages on the host.
+
+            In all cases, `pkg_dir` will be mounted to `container_staging` in
+            the container.
         """
         self.image = image
         self.tag = tag
-        self.verbose = verbose
         self.requirements = requirements
         self.conda_build_args = ""
         self.build_script_template = build_script_template
@@ -244,6 +263,16 @@ class RecipeBuilder(object):
         self.container_staging = container_staging
 
         self.host_conda_bld = get_host_conda_bld()
+
+        if use_host_conda_bld:
+            self.pkg_dir = self.host_conda_bld
+        else:
+            if pkg_dir is None:
+                self.pkg_dir = tempfile.mkdtemp()
+            else:
+                if not os.path.exists(pkg_dir):
+                    os.makedirs(pkg_dir)
+                self.pkg_dir = pkg_dir
 
         self._pull_image()
         self._build_image()
@@ -348,12 +377,13 @@ class RecipeBuilder(object):
         env_list = []
         for k, v in env.items():
             env_list.append('-e')
-            env_list.append('{0}:{1}'.format(k, v))
+            env_list.append('{0}={1}'.format(k, v))
 
         cmd = [
             'docker', 'run',
+            '--net', 'host',
             '-v', '{0}:/opt/build_script.bash'.format(build_script),
-            '-v', '{0}:{1}'.format(self.host_conda_bld, self.container_staging),
+            '-v', '{0}:{1}'.format(self.pkg_dir, self.container_staging),
             '-v', '{0}:{1}'.format(recipe_dir, self.container_recipe),
         ] + env_list + [
             self.tag,
