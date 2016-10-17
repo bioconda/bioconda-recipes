@@ -360,19 +360,12 @@ class RecipeBuilder(object):
             '/bin/bash', '/opt/build_script.bash',
         ]
 
-
         logger.debug('cmd: %s', cmd)
-        logger.info('Building recipe with docker: %s', recipe_dir)
         p = sp.run(cmd, stdout=sp.PIPE, stderr=sp.STDOUT, universal_newlines=True, check=True,)
-
-        status = p.returncode
-        stdout = p.stdout
-        stderr = p.stderr
-        logger.debug('stdout:\n%s', stdout)
-        logger.debug('stderr:\n%s', stderr)
-
-        if status != 0:
-            raise ValueError(
-                status, cmd, output=stdout, stderr=stderr)
-
-        return dict(status=status, stdout=stdout, stderr=stderr, cmd=cmd)
+        if p.returncode != 0:
+            raise DockerCalledProcessError(
+                cmd=cmd,
+                stdout=p.stdout,
+                stderr=p.stderr,
+                returncode=p.returncode)
+        return p

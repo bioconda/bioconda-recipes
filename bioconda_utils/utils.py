@@ -47,6 +47,11 @@ def temp_env(env):
         os.environ.update(orig)
 
 
+def envstr(env):
+    env = dict(env)
+    return ';'.join(['='.join([i, str(j)]) for i, j in sorted(env.items())])
+
+
 def flatten_dict(dict):
     for key, values in dict.items():
         if isinstance(values, str) or not isinstance(values, Iterable):
@@ -336,6 +341,9 @@ class Target:
 
     def __str__(self):
         return os.path.basename(self.pkg)
+
+    def envstring(self):
+        return ';'.join(['='.join([i, str(j)]) for i, j in self.env])
 
 
 def filter_recipes(recipes, env_matrix, channels=None, force=False):
