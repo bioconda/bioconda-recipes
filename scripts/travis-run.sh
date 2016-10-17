@@ -18,6 +18,5 @@ then
 else
     # build packages
     #scripts/build-packages.py --repository . --env-matrix scripts/env_matrix.yml
-    pip install git+https://github.com/bioconda/conda-build.git@fix-build-skip-existing
     bioconda-utils build recipes config.yml $BIOCONDA_UTILS_ARGS
 fi
