@@ -115,6 +115,22 @@ def test_docker_builder_build():
     assert not os.path.exists(built_package)
 
 
+def test_docker_build_fails():
+    "test for expected failure when a recipe fails to build"
+    docker_builder = docker_utils.RecipeBuilder(
+        build_script_template="exit 1")
+    assert docker_builder.build_script_template == 'exit 1'
+    r = Recipes('test_case.yaml')
+    r.write_recipes()
+    result = build.test_recipes(
+        r.basedir,
+        config={},
+        docker_builder=docker_builder,
+        mulled_test=True
+    )
+    assert not result
+
+
 def test_docker_build_image_fails():
     template = dedent(
         """
@@ -123,7 +139,7 @@ def test_docker_build_image_fails():
         """)
     with pytest.raises(sp.CalledProcessError):
         docker_builder = docker_utils.RecipeBuilder(
-            verbose=True, dockerfile_template=template)
+             dockerfile_template=template)
 
 
 def test_conda_purge_cleans_up():
@@ -331,9 +347,10 @@ def test_filter_recipes_extra_in_build_string():
     pkg = utils.built_package_path(recipe)
     assert os.path.basename(pkg) == 'one-0.1-asdf_0.tar.bz2'
 
+
 def test_filter_recipes_existing_package():
-    # use a known-to-exist package in bioconda
-    #
+    "use a known-to-exist package in bioconda"
+
     # note that we need python as a run requirement in order to get the "pyXY"
     # in the build string that matches the existing bioconda built package.
     r = Recipes(dedent(
@@ -360,6 +377,8 @@ def test_filter_recipes_existing_package():
 
 
 def test_filter_recipes_force_existing_package():
+    "same as above but force the recipe"
+
     # same as above, but this time force the recipe
     # TODO: refactor as py.test fixture
     r = Recipes(dedent(
@@ -472,7 +491,6 @@ def test_built_package_path2():
     ) == 'two-0.1-ncurses9.0_0.tar.bz2'
 
 
-
 def test_pkgname_with_numpy_x_x():
     r = Recipes(dedent(
         """
@@ -501,3 +519,55 @@ def test_pkgname_with_numpy_x_x():
 def test_string_or_float_to_integer_python():
     f = utils._string_or_float_to_integer_python
     assert f(27) == f('27') == f(2.7) == f('2.7') == 27
+
+
+def test_skip_dependencies():
+    r = Recipes(dedent(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: 0.1
+        two:
+          meta.yaml: |
+            package:
+              name: two
+              version: 0.1
+            requirements:
+              build:
+                - one
+                - nonexistent
+        three:
+          meta.yaml: |
+            package:
+              name: three
+              version: 0.1
+            requirements:
+              build:
+                - one
+              run:
+                - two
+    """), from_string=True)
+    r.write_recipes()
+    pkgs = {}
+    for k, v in r.recipe_dirs.items():
+        pkgs[k] = utils.built_package_path(v)
+
+    for p in pkgs.values():
+        ensure_missing(p)
+
+    build.test_recipes(r.basedir,
+                  config={},
+                  packages="*",
+                  testonly=False,
+                  force=False,
+                  )
+    assert os.path.exists(pkgs['one'])
+    assert not os.path.exists(pkgs['two'])
+    assert not os.path.exists(pkgs['three'])
+
+    # clean up
+    for p in pkgs.values():
+        ensure_missing(p)
+
