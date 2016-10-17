@@ -59,10 +59,9 @@ def test_package(path, name_override='tmp', channels=['bioconda', 'r', 'conda-fo
         mulled_args="--dry-run --involucro-path /opt/involucro"
 
     """
-    logger.info('Testing %s with mulled-build', path)
 
     assert path.endswith('.tar.bz2'), "Unrecognized path {0}".format(path)
-    assert os.path.exists(path), '{0} does not exist'.format(path)
+    #assert os.path.exists(path), '{0} does not exist'.format(path)
 
     conda_bld_dir = os.path.abspath(os.path.dirname(os.path.dirname(path)))
 
@@ -100,4 +99,4 @@ def test_package(path, name_override='tmp', channels=['bioconda', 'r', 'conda-fo
     cmds.extend(channel_args)
     cmds.extend(shlex.split(mulled_args))
     logger.debug('mulled-build commands: %s' % cmds)
-    return sp.check_output(cmds, stderr=sp.STDOUT, universal_newlines=True)
+    return sp.run(cmds, stdout=sp.PIPE, stderr=sp.PIPE, check=True, universal_newlines=True)

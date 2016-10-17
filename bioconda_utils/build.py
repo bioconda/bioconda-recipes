@@ -196,6 +196,10 @@ def test_recipes(recipe_folder,
     recipes = list(recipe_targets.keys())
 
     dag, name2recipes = utils.get_dag(recipes, blacklist=blacklist)
+    recipe2name = {}
+    for k, v in name2recipes.items():
+        for i in v:
+            recipe2name[i] = k
 
     if not dag:
         logger.info("Nothing to be done.")
@@ -237,28 +241,16 @@ def test_recipes(recipe_folder,
         subdag_i, subdags_n, len(recipes)
     )
 
-    builder = None
-    if docker is not None:
-        from docker import Client as DockerClient
-
-        # Use the defaults for RecipeBuilder unless otherwise specified in
-        # config file.
-        kwargs = {}
-        for key, argname in [
-            ('docker_image', 'image'),
-            ('requirements', 'requirements'),
-        ]:
-            if key in config:
-                kwargs[argname] = config[key]
-
-        builder = docker_utils.RecipeBuilder(**kwargs)
-
-        logger.info('Done.')
-
+    failed = []
     success = True
+    skip_dependent = defaultdict(list)
     for recipe in recipes:
+        name = recipe2name[recipe]
+        if name in skip_dependent:
+            logger.info('BIOCONDA BUILD SKIP: skipping %s because it depends on %s which had a failed build.', recipe, skip_dependent[name])
+            continue
         for target in recipe_targets[recipe]:
-            success &= build(
+            result = build(
                 recipe=recipe,
                 recipe_folder=recipe_folder,
                 env=target.env,
@@ -266,8 +258,14 @@ def test_recipes(recipe_folder,
                 mulled_test=mulled_test,
                 force=force,
                 channels=config['channels'],
-                docker_builder=builder
+                docker_builder=docker_builder
             )
+            success &= result
+            if not result:
+                failed.append((recipe, target))
+                name = recipe2name[recipe]
+                for n in nx.algorithms.descendants(subdag, name):
+                    skip_dependent[n].append(recipe)
 
     if len(failed) == 0:
         logger.info("BIOCONA BUILD SUCCESS: successfully built %s recipes", len(recipes))
