@@ -136,7 +136,7 @@ def test_recipes(recipe_folder,
                  mulled_test=True,
                  testonly=False,
                  force=False,
-                 docker=None):
+                 docker_builder=None):
     """
     Build one or many bioconda packages.
 
@@ -165,6 +165,8 @@ def test_recipes(recipe_folder,
         If True, build the recipe even though it would otherwise be filtered
         out.
 
+    docker_builder : docker_utils.RecipeBuilder instance
+        If not None, then use this RecipeBuilder to build all recipes.
     """
     config = utils.load_config(config)
     env_matrix = utils.EnvMatrix(config['env_matrix'])

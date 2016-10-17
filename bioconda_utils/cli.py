@@ -15,6 +15,7 @@ from networkx.drawing.nx_pydot import write_dot
 
 from . import utils
 from .build import test_recipes
+from . import docker_utils
 
 logger = logging.getLogger(__name__)
 # NOTE:
@@ -40,14 +41,18 @@ logger = logging.getLogger(__name__)
      help='Build packages in docker container.')
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
 @arg('--mulled-test', action='store_true', help="Run a mulled-build test on the built package")
+@arg('--build_script_template', help='''Filename to optionally replace build
+     script template used by the Docker container. By default use
+     docker_utils.BUILD_SCRIPT_TEMPLATE. Only used if --docker is True.''')
 def build(recipe_folder,
           config,
           packages="*",
           testonly=False,
           force=False,
           docker=None,
-          loglevel="warning",
+          loglevel="info",
           mulled_test=False,
+          build_script_template=None,
           ):
     LEVEL = getattr(logging, loglevel.upper())
     logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
@@ -58,6 +63,15 @@ def build(recipe_folder,
         logger.debug("Running setup: %s" % setup)
         for cmd in setup:
             sp.run(shlex.split(cmd))
+    if docker:
+        if build_script_template is not None:
+            build_script_template = open(build_script_template).read()
+        else:
+            build_script_template = docker_utils.BUILD_SCRIPT_TEMPLATE
+        docker_builder = docker_utils.RecipeBuilder(
+            build_script_template=build_script_template)
+    else:
+        docker_builder = None
 
     success = test_recipes(recipe_folder,
                                  config=config,
@@ -65,7 +79,7 @@ def build(recipe_folder,
                                  testonly=testonly,
                                  force=force,
                                  mulled_test=mulled_test,
-                                 docker=docker)
+                                 docker_builder=docker_builder)
     exit(0 if success else 1)
 
 
