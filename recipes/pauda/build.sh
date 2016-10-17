@@ -13,3 +13,4 @@ cp -rf pauda-1.0.1/bin $PREFIX
 cp -rf pauda-1.0.1/data $PREFIX/data
 cp -rf pauda-1.0.1/lib $PREFIX
 chmod +x $PREFIX/bin/pauda-run
+chmod +x $PREFIX/bin/pauda-build
