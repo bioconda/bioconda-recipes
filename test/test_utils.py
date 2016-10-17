@@ -73,7 +73,7 @@ def test_single_build1():
 
 
 def test_single_build_docker_with_post_test():
-    docker_builder = docker_utils.RecipeBuilder()
+    docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
     r = Recipes('test_case.yaml')
     r.write_recipes()
     env_matrix = list(utils.EnvMatrix(tmp_env_matrix()))[0]
@@ -91,7 +91,7 @@ def test_single_build_docker_with_post_test():
 
 
 def test_single_build_docker():
-    docker_builder = docker_utils.RecipeBuilder()
+    docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
     built_package = _single_build(docker_builder=docker_builder)
     ensure_missing(built_package)
 
@@ -105,7 +105,7 @@ def test_docker_builder_build():
     conda_bld = docker_utils.get_host_conda_bld()
     built_package = os.path.join(conda_bld, 'linux-64', 'one-0.1-0.tar.bz2')
     ensure_missing(built_package)
-    docker_builder = docker_utils.RecipeBuilder()
+    docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
     r = Recipes('test_case.yaml')
     r.write_recipes()
     recipe_dir = r.recipe_dirs['one']
