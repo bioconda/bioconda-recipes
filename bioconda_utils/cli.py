@@ -121,26 +121,42 @@ def dag(recipe_folder, packages="*", format='gml', hide_singletons=False):
 
 
 @arg('recipe_folder', help='Path to recipes directory')
-@arg('--packages', nargs='+', help='Glob for packages to inspect (default is all)')
-@arg('--dependencies', nargs='+', help='Return recipes with these dependencies')
+@arg('--packages', nargs='+',
+     help='''One or more packages to inspect.''')
+@arg('--dependencies', action='store_true',
+     help='''Return recipes in `recipe_folder` in the dependency chain
+     for `packages`. Answers the question "what does PACKAGE need?"''')
+@arg('--reverse-dependencies', action='store_true',
+     help='''Return recipes in `recipe_folder` in the reverse dependency chain
+     for `packages`. Answers the question "what depends on PACKAGE?"''')
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
-def dependent(recipe_folder, packages="*", dependencies=None, loglevel='warning'):
+def dependent(recipe_folder, packages=None, dependencies=False, reverse_dependencies=False, loglevel='warning'):
     """
     Print recipes dependent on a package
     """
+
+    if dependencies and reverse_dependencies:
+        raise ValueError(
+            '`dependencies` and `reverse_dependencies` are mutually exclusive')
     LEVEL = getattr(logging, loglevel.upper())
     logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
     logging.getLogger('bioconda_utils').setLevel(getattr(logging, loglevel.upper()))
-    if dependencies is None:
-        return
 
-    d, n2r = utils.get_dag(utils.get_recipes(recipe_folder, packages), restrict=False)
+    d, n2r = utils.get_dag(utils.get_recipes(recipe_folder, "*"), restrict=False)
 
-    recipes = []
-    for dep in dependencies:
-        for i in nx.algorithms.descendants(d, dep):
-            for r in n2r[i]:
-                recipes.append(r)
+    if reverse_dependencies:
+        recipes = []
+        for dep in packages:
+            for i in nx.algorithms.descendants(d, dep):
+                for r in n2r[i]:
+                    recipes.append(r)
+    elif dependencies:
+        recipes = []
+        for dep in packages:
+            for i in nx.algorithms.ancestors(d, dep):
+                for r in n2r[i]:
+                    recipes.append(r)
+
     print('\n'.join(sorted(recipes)))
 
 
