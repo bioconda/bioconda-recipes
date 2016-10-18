@@ -1,34 +1,20 @@
 #!/bin/bash
 
+BINARY_HOME=$PREFIX/bin
+PACKAGE_HOME=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
+
+cd $SRC_DIR
 make
+make clean
 
-cd $SRC_DIR/cms
+find cms/ -name "*.py" -exec chmod +x {} \;
+
 mkdir -p $PREFIX/bin
-
-combine_binaries="\
-combine_scores_poppair \
-combine_scores_multiplepops \
-combine_scores_multiplepops_region \
-write_xpehh_from_ihh \
-"
-
-model_binaries="\
-calc_fst_deldaf \
-bootstrap_freq_popstats_regions \
-bootstrap_ld_popstats_regions \
-bootstrap_fst_popstats_regions \
-"
-
-for i in $combine_binaries; do cp $SRC_DIR/cms/combine/$i $PREFIX/bin/ && chmod +x $PREFIX/bin/$i; done
-
-for i in $model_binaries; do cp $SRC_DIR/cms/model/$i $PREFIX/bin/ && chmod +x $PREFIX/bin/$i; done
-
-
-#top_scripts="\
-#cms_modeller.py \
-#likes_from_model.py \
-#scans.py \
-#composite.py \
-#"
-#for i in $top_scripts; do cp $SRC_DIR/cms/$i $PREFIX && chmod +x $PREFIX/$i; done
-
+mkdir -p $PACKAGE_HOME
+cp -R $SRC_DIR/* $PACKAGE_HOME/
+cd $PACKAGE_HOME/cms && chmod a+x *.py
+find *.py -type f -exec ln -s $PACKAGE_HOME/cms/{} $BINARY_HOME/{} \;
+cd $PACKAGE_HOME/cms/combine
+find * -type f -exec ln -s $PACKAGE_HOME/cms/combine/{} $BINARY_HOME/{} \;
+cd $PACKAGE_HOME/cms/model
+find * -type f -exec ln -s $PACKAGE_HOME/cms/model/{} $BINARY_HOME/{} \;
