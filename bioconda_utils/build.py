@@ -268,11 +268,11 @@ def test_recipes(recipe_folder,
                     skip_dependent[n].append(recipe)
 
     if len(failed) == 0:
-        logger.info("BIOCONA BUILD SUCCESS: successfully built %s recipes", len(recipes))
+        logger.info("BIOCONDA BUILD SUMMARY: successfully built %s recipes", len(recipes))
     else:
         failed_recipes = list(set(i[0] for i in failed))
         logger.error(
-            'BIOCONDA BUILD FAILED: %s of %s recipes failed. Details of recipes and environments follow.',
+            'BIOCONDA BUILD SUMMARY: %s of %s recipes failed. Details of recipes and environments follow.',
             len(failed_recipes), len(recipes))
         for recipe, target in failed:
             logger.error('BIOCONDA BUILD FAILED for recipe %s, environment %s', str(target), target.envstring())
