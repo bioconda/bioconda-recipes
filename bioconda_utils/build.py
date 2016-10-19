@@ -324,11 +324,9 @@ def build_recipes(recipe_folder,
             for recipe in recipes:
                 for target in recipe_targets[recipe]:
                     package = target.pkg
-                    logger.debug(
-                        "Checking existence of package {}".format(package)
-                    )
                     if os.path.exists(package):
-                        logger.info("Uploading package {}".format(package))
+                        logger.info(
+                            "BIOCONDA UPLOAD uploading package %s", package)
                         try:
                             sp.run(
                                 ["anaconda", "-t",
@@ -337,6 +335,10 @@ def build_recipes(recipe_folder,
                                 stdout=sp.PIPE,
                                 stderr=sp.STDOUT,
                                 check=True)
+
+                            logger.info(
+                                "BIOCONDA UPLOAD SUCCESS: uploaded package %s",
+                                package)
                         except sp.CalledProcessError as e:
                             print(e.stdout.decode(), file=sys.stderr)
                             if b"already exists" in e.stdout:
@@ -345,9 +347,10 @@ def build_recipes(recipe_folder,
                                 pass
                             else:
                                 raise e
+                        return True
                     else:
                         logger.error(
-                            "Package {} has not been built.".format(package)
-                        )
-                        all_success = False
+                            "BIOCONDA UPLOAD ERROR: package %s cannot be found.",
+                            package)
+                        return False
     return all_success
