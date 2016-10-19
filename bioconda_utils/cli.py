@@ -121,43 +121,41 @@ def dag(recipe_folder, packages="*", format='gml', hide_singletons=False):
 
 
 @arg('recipe_folder', help='Path to recipes directory')
-@arg('--packages', nargs='+',
-     help='''One or more packages to inspect.''')
-@arg('--dependencies', action='store_true',
-     help='''Return recipes in `recipe_folder` in the dependency chain
-     for `packages`. Answers the question "what does PACKAGE need?"''')
-@arg('--reverse-dependencies', action='store_true',
+@arg('--dependencies', nargs='+',
+     help='''Return recipes in `recipe_folder` in the dependency chain for the
+     packages listed here. Answers the question "what does PACKAGE need?"''')
+@arg('--reverse-dependencies', nargs='+',
      help='''Return recipes in `recipe_folder` in the reverse dependency chain
-     for `packages`. Answers the question "what depends on PACKAGE?"''')
+     for packages listed here. Answers the question "what depends on
+     PACKAGE?"''')
+@arg('--restrict',
+     help='''Restrict --dependencies to packages in `recipe_folder`. Has no
+     effect if --reverse-dependencies, which always looks just in the recipe
+     dir.''')
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
-def dependent(recipe_folder, packages=None, dependencies=False, reverse_dependencies=False, loglevel='warning'):
+def dependent(recipe_folder, restrict=False, dependencies=None, reverse_dependencies=None, loglevel='warning'):
     """
     Print recipes dependent on a package
     """
-
     if dependencies and reverse_dependencies:
         raise ValueError(
             '`dependencies` and `reverse_dependencies` are mutually exclusive')
+
     LEVEL = getattr(logging, loglevel.upper())
     logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
     logging.getLogger('bioconda_utils').setLevel(getattr(logging, loglevel.upper()))
 
-    d, n2r = utils.get_dag(utils.get_recipes(recipe_folder, "*"), restrict=False)
+    d, n2r = utils.get_dag(utils.get_recipes(recipe_folder, "*"), restrict=restrict)
 
-    if reverse_dependencies:
-        recipes = []
-        for dep in packages:
-            for i in nx.algorithms.descendants(d, dep):
-                for r in n2r[i]:
-                    recipes.append(r)
-    elif dependencies:
-        recipes = []
-        for dep in packages:
-            for i in nx.algorithms.ancestors(d, dep):
-                for r in n2r[i]:
-                    recipes.append(r)
+    if reverse_dependencies is not None:
+        func, packages = nx.algorithms.descendants, reverse_dependencies
+    elif dependencies is not None:
+        func, packages = nx.algorithms.ancestors, dependencies
 
-    print('\n'.join(sorted(recipes)))
+    pkgs = []
+    for pkg in packages:
+        pkgs.extend(list(func(d, pkg)))
+    print('\n'.join(sorted(pkgs)))
 
 
 def main():
