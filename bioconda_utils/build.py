@@ -249,15 +249,24 @@ def test_recipes(recipe_folder,
     )
 
     failed = []
-    success = True
+    built_recipes = []
+    skipped_recipes = []
+    all_success = True
     skip_dependent = defaultdict(list)
     for recipe in recipes:
+        recipe_success = True
         name = recipe2name[recipe]
         if name in skip_dependent:
-            logger.info('BIOCONDA BUILD SKIP: skipping %s because it depends on %s which had a failed build.', recipe, skip_dependent[name])
+            logger.info(
+                'BIOCONDA BUILD SKIP: '
+                'skipping %s because it depends on %s '
+                'which had a failed build.',
+                recipe, skip_dependent[name])
+            skipped_recipes.append(recipe)
             continue
         for target in recipe_targets[recipe]:
-            result = build(
+
+            target_success = build(
                 recipe=recipe,
                 recipe_folder=recipe_folder,
                 env=target.env,
@@ -267,16 +276,18 @@ def test_recipes(recipe_folder,
                 channels=config['channels'],
                 docker_builder=docker_builder
             )
-            success &= result
-            if not result:
+
+            all_success &= target_success
+            recipe_success &= target_success
+
+            if not target_success:
                 failed.append((recipe, target))
-                name = recipe2name[recipe]
                 for n in nx.algorithms.descendants(subdag, name):
                     skip_dependent[n].append(recipe)
+        if recipe_success:
+            built_recipes.append(recipe)
 
-    if len(failed) == 0:
-        logger.info("BIOCONDA BUILD SUMMARY: successfully built %s recipes", len(recipes))
-    else:
+    if len(failed) > 0:
         failed_recipes = list(set(i[0] for i in failed))
         logger.error(
             'BIOCONDA BUILD SUMMARY: of %s recipes, '
@@ -336,5 +347,5 @@ def test_recipes(recipe_folder,
                         logger.error(
                             "Package {} has not been built.".format(package)
                         )
-                        success = False
-    return success
+                        all_success = False
+    return all_success
