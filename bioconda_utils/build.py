@@ -82,10 +82,13 @@ def build(recipe,
 
             pkg = utils.built_package_path(recipe, env)
             if not os.path.exists(pkg):
-                logger.error("BIOCONDA BUILD FAILED because %s does not exist", pkg)
+                logger.error(
+                    "BIOCONDA BUILD FAILED because %s does not exist", pkg)
                 return False
             build_success = True
-            logger.info('BIOCONDA BUILD SUCCESS %s, %s', utils.built_package_path(recipe, env), utils.envstr(env))
+            logger.info(
+                'BIOCONDA BUILD SUCCESS %s, %s',
+                utils.built_package_path(recipe, env), utils.envstr(env))
         else:
             # Since we're calling out to shell and we want to send at least
             # some env vars send them all via the temporarily-reset os.environ.
@@ -99,10 +102,12 @@ def build(recipe,
                     env=os.environ)
             logger.debug(p.stdout)
             logger.debug(" ".join(p.args))
-            logger.info('BIOCONDA BUILD SUCCESS %s, %s', recipe, utils.envstr(env))
+            logger.info(
+                'BIOCONDA BUILD SUCCESS %s, %s', recipe, utils.envstr(env))
             build_success = True
     except (docker_utils.DockerCalledProcessError, sp.CalledProcessError) as e:
-            logger.error('BIOCONDA BUILD FAILED %s, %s', recipe, utils.envstr(env))
+            logger.error(
+                'BIOCONDA BUILD FAILED %s, %s', recipe, utils.envstr(env))
             logger.error('COMMAND: %s', e.cmd)
             logger.error('STDOUT: %s', e.stdout)
             logger.error('STDERR: %s', e.stderr)
@@ -113,7 +118,9 @@ def build(recipe,
 
     pkg_path = utils.built_package_path(recipe, env)
 
-    logger.info('BIOCONDA TEST START via mulled-build %s, %s', recipe, utils.envstr(env))
+    logger.info(
+        'BIOCONDA TEST START via mulled-build %s, %s',
+        recipe, utils.envstr(env))
     res = pkg_test.test_package(pkg_path)
 
     if res.returncode == 0:
@@ -272,12 +279,30 @@ def test_recipes(recipe_folder,
     else:
         failed_recipes = list(set(i[0] for i in failed))
         logger.error(
-            'BIOCONDA BUILD SUMMARY: %s of %s recipes failed. Details of recipes and environments follow.',
-            len(failed_recipes), len(recipes))
+            'BIOCONDA BUILD SUMMARY: of %s recipes, '
+            '%s failed and %s were skipped. '
+            'Details of recipes and environments follow.',
+            len(recipes), len(failed_recipes), len(skipped_recipes))
+
+        logger.error(
+            'BIOCONDA BUILD SUMMARY: while the entire build failed, '
+            'the following recipes were built successfully:\n%s',
+            '\n'.join(built_recipes))
+
         for recipe, target in failed:
-            logger.error('BIOCONDA BUILD FAILED for recipe %s, environment %s', str(target), target.envstring())
+            logger.error(
+                'BIOCONDA BUILD SUMMARY: FAILED recipe %s, environment %s',
+                str(target), target.envstring())
+
         for name, dep in skip_dependent.items():
-            logger.error('BIOCONDA BUILD SKIPPED recipe %s due to failed dependencies %s', name, dep)
+            logger.error(
+                'BIOCONDA BUILD SUMMARY: SKIPPED recipe %s '
+                'due to failed dependencies %s', name, dep)
+        return False
+
+    logger.info(
+        "BIOCONDA BUILD SUMMARY: successfully built %s of %s recipes",
+        len(built_recipes), len(recipes))
 
     if not testonly:
         # upload builds
