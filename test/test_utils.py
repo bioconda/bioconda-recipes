@@ -571,3 +571,24 @@ def test_skip_dependencies():
     for p in pkgs.values():
         ensure_missing(p)
 
+
+@pytest.fixture
+def recipes1():
+    r = Recipes('test_case.yaml')
+    r.write_recipes()
+    return r
+
+class TestSubdags(object):
+
+    def _build(self, recipes1):
+        build.build_recipes(recipes1.basedir, config={})
+
+    def test_subdags_out_of_range(self, recipes1):
+        with pytest.raises(ValueError):
+            with utils.temp_env({'SUBDAGS': '1', 'SUBDAG': '5'}):
+                self._build(recipes1)
+
+    def test_subdags_more_than_recipes(self, caplog, recipes1):
+        with utils.temp_env({'SUBDAGS': '5', 'SUBDAG': '4'}):
+            self._build(recipes1)
+        assert 'Nothing to be done' in caplog.records()[-1].getMessage()
