@@ -83,12 +83,9 @@ def build(recipe,
             pkg = utils.built_package_path(recipe, env)
             if not os.path.exists(pkg):
                 logger.error(
-                    "BIOCONDA BUILD FAILED because %s does not exist", pkg)
+                    "BIOCONDA BUILD FAILED: the built package %s cannot be found", pkg)
                 return False
             build_success = True
-            logger.info(
-                'BIOCONDA BUILD SUCCESS %s, %s',
-                utils.built_package_path(recipe, env), utils.envstr(env))
         else:
             # Since we're calling out to shell and we want to send at least
             # some env vars send them all via the temporarily-reset os.environ.
@@ -100,11 +97,15 @@ def build(recipe,
                     check=True,
                     universal_newlines=True,
                     env=os.environ)
-            logger.debug(p.stdout)
             logger.debug(" ".join(p.args))
-            logger.info(
-                'BIOCONDA BUILD SUCCESS %s, %s', recipe, utils.envstr(env))
+            logger.debug(p.stdout)
             build_success = True
+
+        logger.info(
+            'BIOCONDA BUILD SUCCESS %s, %s',
+            utils.built_package_path(recipe, env), utils.envstr(env)
+        )
+
     except (docker_utils.DockerCalledProcessError, sp.CalledProcessError) as e:
             logger.error(
                 'BIOCONDA BUILD FAILED %s, %s', recipe, utils.envstr(env))
@@ -114,7 +115,7 @@ def build(recipe,
             return False
 
     if not mulled_test:
-        return build_success
+        return True
 
     pkg_path = utils.built_package_path(recipe, env)
 
@@ -124,17 +125,15 @@ def build(recipe,
     res = pkg_test.test_package(pkg_path)
 
     if res.returncode == 0:
-        test_success = True
         logger.info("BIOCONDA TEST SUCCESS %s, %s", recipe, utils.envstr(env))
         logger.debug('STDOUT:\n%s', res.stdout)
         logger.debug('STDERR:\n%s', res.stderr)
+        return True
     else:
-        test_success = False
         logger.error('BIOCONDA TEST FAILED: %s, %s', recipe, utils.envstr(env))
         logger.debug('STDOUT:\n%s', res.stdout)
         logger.debug('STDERR:\n%s', res.stderr)
-
-    return test_success & build_success
+        return False
 
 
 def test_recipes(recipe_folder,
