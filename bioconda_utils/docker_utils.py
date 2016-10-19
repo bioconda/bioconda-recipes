@@ -282,15 +282,14 @@ class RecipeBuilder(object):
         """
         Separate out the pull step to provide additional logging info
         """
-        logger.info('Pulling docker image %s', self.image)
+        logger.info('BIOCONDA DOCKER: Pulling docker image %s', self.image)
         p = sp.run(['docker', 'pull', self.image], stdout=sp.PIPE,
                    stderr=sp.STDOUT, check=True, universal_newlines=True)
-        logger.debug('stdout: %s', p.stdout)
-        logger.debug('stderr: %s', p.stderr)
+        logger.debug('BIOCONDA DOCKER: stdout+stderr: %s', p.stdout)
         if p.returncode != 0:
-            raise ValueError(p.stdout, p.stderr)
+            raise ValueError(p.stdout)
 
-        logger.info('Done pulling image')
+        logger.info('BIOCONDA DOCKER: Done pulling image')
 
     def _build_image(self):
         """
@@ -301,7 +300,7 @@ class RecipeBuilder(object):
         # requirements file over
         build_dir = tempfile.mkdtemp()
 
-        logger.debug('Building image "%s" from %s', self.tag, build_dir)
+        logger.debug('BIOCONDA DOCKER: Building image "%s" from %s', self.tag, build_dir)
         with open(os.path.join(build_dir, 'requirements.txt'), 'w') as fout:
             if self.requirements:
                 fout.write(open(self.requirements).read())
@@ -329,11 +328,9 @@ class RecipeBuilder(object):
             universal_newlines=True)
 
         if p.returncode != 0:
-            raise ValueError(
-                p.stdout,
-                p.stderr)
+            raise ValueError(p.stdout)
 
-        logger.info('Built docker image tag=%s', self.tag)
+        logger.info('BIOCONDA DOCKER: Built docker image tag=%s', self.tag)
         shutil.rmtree(build_dir)
         return p
 
@@ -370,7 +367,7 @@ class RecipeBuilder(object):
         with open(os.path.join(build_dir, 'build_script.bash'), 'w') as fout:
             fout.write(self.build_script_template.format(self=self))
         build_script = fout.name
-        logger.debug('Container build script: \n%s', open(fout.name).read())
+        logger.debug('BIOCONDA DOCKER: Container build script: \n%s', open(fout.name).read())
 
 
         # Build the args for env vars. Note can also write these to tempfile
@@ -391,12 +388,6 @@ class RecipeBuilder(object):
             '/bin/bash', '/opt/build_script.bash',
         ]
 
-        logger.debug('cmd: %s', cmd)
+        logger.debug('BIOCONDA DOCKER: cmd: %s', cmd)
         p = sp.run(cmd, stdout=sp.PIPE, stderr=sp.STDOUT, universal_newlines=True, check=True,)
-        if p.returncode != 0:
-            raise DockerCalledProcessError(
-                cmd=cmd,
-                stdout=p.stdout,
-                stderr=p.stderr,
-                returncode=p.returncode)
         return p
