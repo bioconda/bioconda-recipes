@@ -20,7 +20,7 @@ from conda_build.metadata import MetaData
 from conda import version
 import sys
 sys.path.insert(0, '..')
-import utils
+from bioconda_utils import utils
 
 
 def bioc_name(recipe):

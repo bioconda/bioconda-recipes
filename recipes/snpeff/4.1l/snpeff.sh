@@ -1,5 +1,7 @@
 #!/bin/bash
 # snpEff executable shell script, adapted from VarScan shell script
+jar_name="snpEff.jar"
+
 set -eu -o pipefail
 
 set -o pipefail
@@ -55,8 +57,8 @@ fi
 pass_arr=($pass_args)
 if [[ ${pass_arr[0]:=} == org* ]]
 then
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/snpEff.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/$jar_name" $pass_args
 else
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/snpEff.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/$jar_name" $pass_args
 fi
 exit
