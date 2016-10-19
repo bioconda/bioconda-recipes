@@ -217,6 +217,9 @@ def build_recipes(recipe_folder,
     subdags_n = int(os.environ.get("SUBDAGS", 1))
     subdag_i = int(os.environ.get("SUBDAG", 0))
 
+    if subdag_i >= subdags_n:
+        raise ValueError("SUBDAG=%s (zero-based) but only SUBDAGS=%s subdags are available")
+
     # Get connected subdags and sort by nodes
     if testonly:
         # use each node as a subdag (they are grouped into equal sizes below)
