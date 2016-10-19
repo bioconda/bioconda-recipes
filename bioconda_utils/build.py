@@ -64,7 +64,7 @@ def build(recipe,
     channel_args = []
     if channels:
         for c in channels:
-            channel_args.extend(['--channel', c])
+            channel_args += ['--channel', c]
 
     logger.debug('build_args: %s', build_args)
     logger.debug('channel_args: %s', channel_args)
