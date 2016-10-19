@@ -122,7 +122,7 @@ def test_docker_build_fails():
     assert docker_builder.build_script_template == 'exit 1'
     r = Recipes('test_case.yaml')
     r.write_recipes()
-    result = build.test_recipes(
+    result = build.build_recipes(
         r.basedir,
         config={},
         docker_builder=docker_builder,
@@ -557,7 +557,7 @@ def test_skip_dependencies():
     for p in pkgs.values():
         ensure_missing(p)
 
-    build.test_recipes(r.basedir,
+    build.build_recipes(r.basedir,
                   config={},
                   packages="*",
                   testonly=False,

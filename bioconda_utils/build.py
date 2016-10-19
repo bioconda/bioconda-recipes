@@ -136,7 +136,7 @@ def build(recipe,
         return False
 
 
-def test_recipes(recipe_folder,
+def build_recipes(recipe_folder,
                  config,
                  packages="*",
                  mulled_test=True,

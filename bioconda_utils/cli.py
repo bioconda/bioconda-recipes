@@ -14,7 +14,7 @@ import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
 
 from . import utils
-from .build import test_recipes
+from .build import build_recipes
 from . import docker_utils
 
 logger = logging.getLogger(__name__)
@@ -86,7 +86,7 @@ def build(recipe_folder,
     else:
         docker_builder = None
 
-    success = test_recipes(recipe_folder,
+    success = build_recipes(recipe_folder,
                                  config=config,
                                  packages=packages,
                                  testonly=testonly,
