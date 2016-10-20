@@ -1,0 +1,52 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-purrr
+  version: "0.2.2"
+
+source:
+  fn: purrr_0.2.2.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/purrr_0.2.2.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/purrr/purrr_0.2.2.tar.gz
+  md5: 2277bd639557a38be45ec5d7ba455bbb
+
+build:
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - r-bh
+    - r-rcpp
+    - r-dplyr >=0.4.3
+    - r-lazyeval >=0.2.0
+    - r-magrittr >=1.5
+    - gcc                 # [not osx]
+    - llvm                # [osx]
+
+  run:
+    - libgcc              # [not osx]
+    - r-base
+    - r-bh
+    - r-rcpp
+    - r-dplyr >=0.4.3
+    - r-lazyeval >=0.2.0
+    - r-magrittr >=1.5
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('purrr')" # [not win]
+    - "\"%R%\" -e \"library('purrr')\"" # [win]
+
+about:
+  home: https://github.com/hadley/purrr
+  license: GPL-3 | file LICENSE
+  summary: Make your pure functions purr with the 'purrr' package. This package completes R's
+    functional programming tools with missing features present in other programming
+    languages.
+  license_family: GPL3
