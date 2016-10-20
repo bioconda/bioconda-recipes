@@ -23,6 +23,21 @@ or modify the log level:
 
     simulate-travis.py --packages mypackagename --loglevel=debug
 
+Notes
+-----
+
+Any environmental variables will be passed to `scripts/travis-run.sh` and will
+override any defaults detected in .travis.yml. Currently the only variables
+useful to modify are TRAVIS_OS_NAME and BIOCONDA_UTILS_TAG.  For example you
+can set TRAVIS_OS_NAME to "linux" while running on a Mac to build packages in
+a docker container:
+
+    TRAVIS_OS_NAME=linux ./simulate-travis.py
+
+Or specify a different commit of `bioconda_utils`:
+
+    BIOCONDA_UTILS_TAG=63543b34 ./simulate-travis.py
+
 """
 
 ap = argparse.ArgumentParser(usage=usage)
@@ -60,5 +75,8 @@ env['TRAVIS_PULL_REQUEST'] = 'false'
 
 # Any additional arguments from the command line are added here.
 env['BIOCONDA_UTILS_ARGS'] += ' ' + ' '.join(extra)
+
+# Override with whatever's in the shell environment
+env.update(os.environ)
 
 sp.check_call(['scripts/travis-run.sh'], env=env)
