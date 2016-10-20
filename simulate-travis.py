@@ -5,6 +5,7 @@ import platform
 import sys
 import yaml
 import subprocess as sp
+import shlex
 import argparse
 
 usage = """
@@ -75,6 +76,7 @@ env['TRAVIS_PULL_REQUEST'] = 'false'
 
 # Any additional arguments from the command line are added here.
 env['BIOCONDA_UTILS_ARGS'] += ' ' + ' '.join(extra)
+env['BIOCONDA_UTILS_ARGS'] = ' '.join(shlex.split(env['BIOCONDA_UTILS_ARGS']))
 
 # Override with whatever's in the shell environment
 env.update(os.environ)
