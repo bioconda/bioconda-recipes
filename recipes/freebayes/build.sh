@@ -59,6 +59,3 @@ cp scripts/generate_freebayes_region_scripts.sh $PREFIX/bin
 cp vcflib/bin/vcfstreamsort $PREFIX/bin
 cp vcflib/bin/vcfuniq $PREFIX/bin
 cp vcflib/scripts/vcffirstheader $PREFIX/bin
-
-# Copy library for vcflib.
-cp vcflib/tabixpp/htslib/libhts.so* $PREFIX/lib
