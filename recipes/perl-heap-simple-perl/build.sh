@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sed -i 's|VERSION = "0.12"|VERSION = "0.14"|g' lib/Heap/Simple/Perl.pm # Typo in 0.14 version, evaluated by perl-heap-simple
+sed -i.bak 's|VERSION = "0.12"|VERSION = "0.14"|g' lib/Heap/Simple/Perl.pm # Typo in 0.14 version, evaluated by perl-heap-simple
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
