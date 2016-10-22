@@ -4,6 +4,8 @@ import pytest
 import yaml
 import tempfile
 import requests
+import uuid
+import contextlib
 from bioconda_utils import utils
 from bioconda_utils import pkg_test
 from bioconda_utils import docker_utils
@@ -13,6 +15,28 @@ from bioconda_utils import upload
 from helpers import ensure_missing, Recipes, tmp_env_matrix
 from conda_build import api
 from conda_build.metadata import MetaData
+
+
+# Label that will be used for uploading test packages to anaconda/binstar
+TEST_LABEL = 'bioconda-utils-test'
+
+
+@contextlib.contextmanager
+def ensure_env_missing(env_name):
+    def _clean():
+        p = sp.run(
+            ['conda', 'env', 'list'],
+            stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
+            universal_newlines=True)
+
+        if env_name in p.stdout:
+            p = sp.run(
+                ['conda', 'env', 'remove', '-y', '-n', env_name],
+                stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
+                universal_newlines=True)
+    _clean()
+    yield
+    _clean()
 
 
 # ----------------------------------------------------------------------------
@@ -80,23 +104,45 @@ def multi_build(request, recipes_fixture):
 
 
 @pytest.fixture(scope='module')
-def single_upload(single_build):
+def single_upload():
     """
-    Fixture to upload the "one" package using a label so that it doesn't affect
-    the main bioconda channel. Cleans up when it's done.
+    Creates a randomly-named recipe and uploads it using a label so that it
+    doesn't affect the main bioconda channel. Tests using the fixture get
+    a tuple of name, pakage, recipe dir. Cleans up when it's done.
     """
-    pkg = single_build
+    name = 'upload-test-' + str(uuid.uuid4()).split('-')[0]
+    r = Recipes(
+        '''
+        {0}:
+          meta.yaml: |
+            package:
+              name: {0}
+              version: "0.1"
+        '''.format(name), from_string=True)
+    r.write_recipes()
+
+    env_matrix = list(utils.EnvMatrix(tmp_env_matrix()))[0]
+    build.build(
+        recipe=r.recipe_dirs[name],
+        recipe_folder='.',
+        docker_builder=None,
+        mulled_test=False,
+        env=env_matrix,
+    )
+
+    pkg = utils.built_package_path(r.recipe_dirs[name])
+
     with utils.temp_env(dict(
         TRAVIS_BRANCH='master',
         TRAVIS_PULL_REQUEST='false')
     ):
-        upload.upload(single_build, label='bioconda-utils-test')
+        upload.upload(pkg, label=TEST_LABEL)
 
-    yield True
+    yield (name, pkg, r.recipe_dirs[name])
 
     p = sp.run(
         ['anaconda', '-t', os.environ.get('ANACONDA_TOKEN'), 'remove',
-         'bioconda/one', '--force'],
+         'bioconda/{0}'.format(name), '--force'],
         stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
         universal_newlines=True)
 
@@ -104,16 +150,14 @@ def single_upload(single_build):
 
 
 def test_upload(single_upload):
-    p = sp.run(
-        ['conda', 'create', '-n', 'bioconda-utils-test',
-         '-c', 'bioconda/label/bioconda-utils-test', 'one'],
-        stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
-        universal_newlines=True)
-
-    p = sp.run(
-        ['conda', 'env', 'remove', '-n', 'bioconda-utils-test'],
-        stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
-        universal_newlines=True)
+    name, pkg, recipe = single_upload
+    env_name = 'bioconda-utils-test-' + str(uuid.uuid4()).split('-')[0]
+    with ensure_env_missing(env_name):
+        p = sp.run(
+            ['conda', 'create', '-n', env_name,
+             '-c', 'bioconda/label/{0}'.format(TEST_LABEL), name],
+            stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
+            universal_newlines=True)
 
 
 def test_single_build_only(single_build):
