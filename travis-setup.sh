@@ -34,6 +34,6 @@ conda config --add channels file://anaconda/conda-bld
 
 # involucro used for mulled-build
 curl -O https://github.com/involucro/involucro/releases/download/v1.1.2/involucro
-mv involucro /opt/involucro
-chmod +x /opt/involucro
+sudo mv involucro /opt/involucro
+sudo chmod +x /opt/involucro
 export PATH=/opt/involucro:$PATH
