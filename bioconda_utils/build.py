@@ -256,9 +256,11 @@ def build_recipes(recipe_folder,
     skipped_recipes = []
     all_success = True
     skip_dependent = defaultdict(list)
+
     for recipe in recipes:
         recipe_success = True
         name = recipe2name[recipe]
+
         if name in skip_dependent:
             logger.info(
                 'BIOCONDA BUILD SKIP: '
@@ -267,6 +269,7 @@ def build_recipes(recipe_folder,
                 recipe, skip_dependent[name])
             skipped_recipes.append(recipe)
             continue
+
         for target in recipe_targets[recipe]:
 
             target_success = build(
@@ -287,6 +290,7 @@ def build_recipes(recipe_folder,
                 failed.append((recipe, target))
                 for n in nx.algorithms.descendants(subdag, name):
                     skip_dependent[n].append(recipe)
+
         if recipe_success:
             built_recipes.append(recipe)
 

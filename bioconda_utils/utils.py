@@ -311,7 +311,6 @@ def built_package_path(recipe, env=None):
     if py is not None:
         env['CONDA_PY'] = _string_or_float_to_integer_python(py)
 
-
     with temp_env(env):
         # Disabling set_build_id prevents the creation of uniquely-named work
         # directories just for checking the output file.
@@ -370,44 +369,64 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
     if channels is None:
         channels = []
 
-    channel_packages = set()
-    channel_args = []
+    channel_packages = defaultdict(set)
     for channel in channels:
-        channel_packages.update(get_channel_packages(channel=channel))
-        channel_args.extend(['--channel', channel])
+        channel_packages[channel].update(get_channel_packages(channel=channel))
+
+    # TODO: get the time of the last master branch, e.g.:
+    #
+    # git log master | grep "^Date:" | head -n1
 
     def tobuild(recipe, env):
+        # TODO: get the modification time of recipe/meta.yaml. Only continue
+        # the slow steps below if it's newer than the last commit to master.
+        if force:
+            logger.debug(
+                'BIOCONDA FILTER: building %s because force=True', recipe)
+            return True
+
         pkg = os.path.basename(built_package_path(recipe, env))
-        in_channels = pkg in channel_packages
+        in_channels = [
+            channel for channel, pkgs in channel_packages.items()
+            if pkg in pkgs
+        ]
+        if in_channels:
+            logger.debug(
+                'BIOCONDA FILTER: not building %s because '
+                'it is in channel(s): %s', pkg, in_channels)
+            return False
+
         with temp_env(env):
             # with temp_env, MetaData sees everything in env added to
             # os.environ.
             skip = MetaData(recipe).skip()
 
-        answer = force or not (in_channels or skip)
-        if answer:
-            label = 'building'
-        else:
-            label = 'not building'
+        if skip:
+            logger.debug(
+                'BIOCONDA FILTER: not building %s because '
+                'it defines skip for this env', pkg)
+            return False
+
         logger.debug(
-            '{label} {pkg} '
-            'because force={force};in channels={in_channels};skip={skip}'
-            .format(**locals())
-        )
-        return answer
+            'BIOCONDA FILTER: building %s because it is not in channels '
+            'does not define skip, and force is not specified', pkg)
+        return True
 
     logger.debug('recipes: %s', recipes)
+    recipes = list(recipes)
     nrecipes = len(recipes)
     max_recipe = max(map(len, recipes))
-    template = 'Filtering {{0}} of {{1}} ({{2:.1f}}%) {{3:<{0}}}'.format(max_recipe)
-    # print()
+    template = (
+        'Filtering {{0}} of {{1}} ({{2:.1f}}%) {{3:<{0}}}'.format(max_recipe)
+    )
+    print(flush=True)
     try:
         for i, recipe in enumerate(sorted(recipes)):
             perc = (i + 1) / nrecipes * 100
-            # print(
-            #     template.format(i + 1, nrecipes, perc, recipe),
-            #     end='\r'
-            # )
+            print(
+                template.format(i + 1, nrecipes, perc, recipe),
+                end='\r'
+            )
             targets = set()
             for env in env_matrix:
                 pkg = built_package_path(recipe, env)
@@ -419,7 +438,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         logger.debug(e.stdout)
         logger.error(e.stderr)
         exit(1)
-    print()
+    print(flush=True)
 
 
 def get_blacklist(blacklists, recipe_folder):
