@@ -20,6 +20,15 @@ from conda_build.metadata import MetaData
 # Label that will be used for uploading test packages to anaconda/binstar
 TEST_LABEL = 'bioconda-utils-test'
 
+SKIP_DOCKER_TESTS = os.environ.get('TRAVIS_OS_NAME') == 'osx'
+
+if SKIP_DOCKER_TESTS:
+    PARAMS = [False]
+    IDS = ['system conda']
+else:
+    PARAMS = [True, False]
+    IDS = ['with docker', 'system conda']
+
 
 @contextlib.contextmanager
 def ensure_env_missing(env_name):
@@ -58,9 +67,7 @@ def recipes_fixture():
         ensure_missing(v)
 
 
-@pytest.fixture(
-    scope='module', params=[True, False],
-    ids=['using docker', 'using system conda'])
+@pytest.fixture(scope='module', params=PARAMS, ids=IDS)
 def single_build(request, recipes_fixture):
     """
     Builds the "one" recipe.
@@ -81,9 +88,7 @@ def single_build(request, recipes_fixture):
     ensure_missing(built_package)
 
 
-@pytest.fixture(
-    scope='module', params=[True, False],
-    ids=['using docker', 'using system conda'])
+@pytest.fixture(scope='module', params=PARAMS, ids=IDS)
 def multi_build(request, recipes_fixture):
     """
     Builds the "one", "two", and "three" recipes.
@@ -173,6 +178,7 @@ def test_multi_build(multi_build):
         assert os.path.exists(v)
 
 
+@pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')
 def test_docker_builder_build(recipes_fixture):
     """
     Tests just the build_recipe method of a RecipeBuilder object.
@@ -183,6 +189,7 @@ def test_docker_builder_build(recipes_fixture):
     assert os.path.exists(recipes_fixture.pkgs['one'])
 
 
+@pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')
 def test_docker_build_fails(recipes_fixture):
     "test for expected failure when a recipe fails to build"
     docker_builder = docker_utils.RecipeBuilder(
@@ -197,6 +204,7 @@ def test_docker_build_fails(recipes_fixture):
     assert not result
 
 
+@pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')
 def test_docker_build_image_fails():
     template = (
         """
@@ -649,6 +657,7 @@ def test_skip_dependencies():
         packages="*",
         testonly=False,
         force=False,
+        mulled_test=False,
     )
     assert os.path.exists(pkgs['one'])
     assert not os.path.exists(pkgs['two'])
@@ -662,7 +671,7 @@ def test_skip_dependencies():
 class TestSubdags(object):
 
     def _build(self, recipes_fixture):
-        build.build_recipes(recipes_fixture.basedir, config={})
+        build.build_recipes(recipes_fixture.basedir, config={}, mulled_test=False)
 
     def test_subdags_out_of_range(self, recipes_fixture):
         with pytest.raises(ValueError):
