@@ -15,7 +15,11 @@ sudo chown -R $USER /anaconda
 export PATH=/anaconda/bin:$PATH
 
 # TODO: add remaining pip reqs to conda-forge
-conda install -y --file conda-requirements.txt --channel bioconda --channel conda-forge --channel anaconda
+conda install -y --file conda-requirements.txt \
+    --channel anaconda \
+    --channel r \
+    --channel conda-forge \
+    --channel bioconda
 
 python setup.py install
 
