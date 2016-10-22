@@ -6,6 +6,7 @@ import networkx as nx
 from . import utils
 from . import docker_utils
 from . import pkg_test
+from . import upload
 from conda_build import api
 
 logger = logging.getLogger(__name__)
@@ -323,34 +324,5 @@ def build_recipes(recipe_folder,
                 os.environ.get("TRAVIS_PULL_REQUEST") == "false"):
             for recipe in recipes:
                 for target in recipe_targets[recipe]:
-                    package = target.pkg
-                    if os.path.exists(package):
-                        logger.info(
-                            "BIOCONDA UPLOAD uploading package %s", package)
-                        try:
-                            sp.run(
-                                ["anaconda", "-t",
-                                 os.environ.get("ANACONDA_TOKEN"), "upload",
-                                 package],
-                                stdout=sp.PIPE,
-                                stderr=sp.STDOUT,
-                                check=True)
-
-                            logger.info(
-                                "BIOCONDA UPLOAD SUCCESS: uploaded package %s",
-                                package)
-                        except sp.CalledProcessError as e:
-                            print(e.stdout.decode(), file=sys.stderr)
-                            if b"already exists" in e.stdout:
-                                # ignore error assuming that it is caused by
-                                # existing package
-                                pass
-                            else:
-                                raise e
-                        return True
-                    else:
-                        logger.error(
-                            "BIOCONDA UPLOAD ERROR: package %s cannot be found.",
-                            package)
-                        return False
+                    all_success &= upload.upload(target.pkg, label)
     return all_success
