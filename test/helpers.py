@@ -112,7 +112,7 @@ class Recipes(object):
         """
 
         if from_string:
-            self.data = data
+            self.data = dedent(data)
             self.recipes = yaml.load(data)
         else:
             self.data = os.path.join(os.path.dirname(__file__), data)

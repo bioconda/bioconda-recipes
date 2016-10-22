@@ -1,7 +1,6 @@
 import os
 import subprocess as sp
 import pytest
-from textwrap import dedent
 import yaml
 import tempfile
 import requests
@@ -41,7 +40,6 @@ def test_get_deps():
                 - one
               run:
                 - two
-    """), from_string=True)
     r.write_recipes()
     assert list(utils.get_deps(r.recipe_dirs['two'])) == ['one']
     assert list(utils.get_deps(r.recipe_dirs['three'], build=True)) == ['one']
@@ -132,7 +130,7 @@ def test_docker_build_fails():
 
 
 def test_docker_build_image_fails():
-    template = dedent(
+    template = (
         """
         FROM {self.image}
         RUN nonexistent command
@@ -201,14 +199,14 @@ def test_filter_recipes_no_skipping():
     """
     No recipes have skip so make sure none are filtered out.
     """
-    r = Recipes(dedent(
+    r = Recipes(
         """
         one:
           meta.yaml: |
             package:
               name: one
               version: "0.1"
-        """), from_string=True)
+        """, from_string=True)
     r.write_recipes()
     env_matrix = {
         'CONDA_PY': [27, 35],
@@ -222,7 +220,10 @@ def test_filter_recipes_no_skipping():
 
 
 def test_filter_recipes_skip_is_true():
-    r = Recipes(dedent(
+    """
+
+    """
+    r = Recipes(
         """
         one:
           meta.yaml: |
@@ -231,7 +232,7 @@ def test_filter_recipes_skip_is_true():
               version: "0.1"
             build:
               skip: true
-        """), from_string=True)
+        """, from_string=True)
     r.write_recipes()
     env_matrix = {}
     recipes = list(r.recipe_dirs.values())
@@ -246,7 +247,7 @@ def test_filter_recipes_skip_py27():
     filtered out. This is because python version is not encoded in the output
     package name, and so one-0.1-0.tar.bz2 will still be created for py35.
     """
-    r = Recipes(dedent(
+    r = Recipes(
         """
         one:
           meta.yaml: |
@@ -255,7 +256,7 @@ def test_filter_recipes_skip_py27():
               version: "0.1"
             build:
               skip: true  # [py27]
-        """), from_string=True)
+        """, from_string=True)
     r.write_recipes()
     env_matrix = {
         'CONDA_PY': [27, 35],
@@ -271,7 +272,7 @@ def test_filter_recipes_skip_py27_in_build_string():
     """
     When CONDA_PY is in the build string, py27 should be skipped
     """
-    r = Recipes(dedent(
+    r = Recipes(
         """
         one:
           meta.yaml: |
@@ -280,7 +281,7 @@ def test_filter_recipes_skip_py27_in_build_string():
               version: "0.1"
             build:
               string: {{CONDA_PY}}_{{PKG_BUILDNUM}}
-        """), from_string=True)
+        """, from_string=True)
     r.write_recipes()
     env_matrix = {
         'CONDA_PY': [27, 35],
@@ -293,7 +294,7 @@ def test_filter_recipes_skip_py27_in_build_string():
     assert len(filtered) == 1
     assert len(filtered[0][1]) == 2
 
-    r = Recipes(dedent(
+    r = Recipes(
         """
         one:
           meta.yaml: |
@@ -303,7 +304,7 @@ def test_filter_recipes_skip_py27_in_build_string():
             build:
               string: {{CONDA_PY}}_{{PKG_BUILDNUM}}
               skip: True # [py27]
-        """), from_string=True)
+        """, from_string=True)
     r.write_recipes()
     env_matrix = {
         'CONDA_PY': [27, 35],
@@ -324,7 +325,7 @@ def test_filter_recipes_extra_in_build_string():
     This helps test env vars that don't have other defaults like CONDA_PY does
     (e.g., CONDA_BOOST in bioconda)
     """
-    r = Recipes(dedent(
+    r = Recipes(
         """
         one:
           meta.yaml: |
@@ -334,7 +335,7 @@ def test_filter_recipes_extra_in_build_string():
             build:
               number: 0
               string: {{CONDA_EXTRA}}_{{PKG_BUILDNUM}}
-        """), from_string=True)
+        """, from_string=True)
     r.write_recipes()
     recipe = r.recipe_dirs['one']
 
@@ -353,7 +354,7 @@ def test_filter_recipes_existing_package():
 
     # note that we need python as a run requirement in order to get the "pyXY"
     # in the build string that matches the existing bioconda built package.
-    r = Recipes(dedent(
+    r = Recipes(
         """
         one:
           meta.yaml: |
@@ -363,7 +364,7 @@ def test_filter_recipes_existing_package():
             requirements:
               run:
                 - python
-        """), from_string=True)
+        """, from_string=True)
     r.write_recipes()
     recipes = list(r.recipe_dirs.values())
     env_matrix = {
@@ -381,7 +382,7 @@ def test_filter_recipes_force_existing_package():
 
     # same as above, but this time force the recipe
     # TODO: refactor as py.test fixture
-    r = Recipes(dedent(
+    r = Recipes(
         """
         one:
           meta.yaml: |
@@ -391,7 +392,7 @@ def test_filter_recipes_force_existing_package():
             requirements:
               run:
                 - python
-        """), from_string=True)
+        """, from_string=True)
     r.write_recipes()
     recipes = list(r.recipe_dirs.values())
     env_matrix = {
@@ -412,7 +413,7 @@ def test_get_channel_packages():
 
 
 def test_built_package_path():
-    r = Recipes(dedent(
+    r = Recipes(
         """
         one:
           meta.yaml: |
@@ -431,7 +432,7 @@ def test_built_package_path():
             build:
               number: 0
               string: ncurses{{ CONDA_NCURSES }}_{{ PKG_BUILDNUM }}
-        """), from_string=True)
+        """, from_string=True)
     r.write_recipes()
 
     # assumes we're running on py35
@@ -458,7 +459,7 @@ def test_built_package_path():
 
 
 def test_built_package_path2():
-    r = Recipes(dedent(
+    r = Recipes(
         """
         one:
           meta.yaml: |
@@ -477,7 +478,7 @@ def test_built_package_path2():
             build:
               number: 0
               string: ncurses{{ CONDA_NCURSES }}_{{ PKG_BUILDNUM }}
-        """), from_string=True)
+        """, from_string=True)
     r.write_recipes()
 
     os.environ['CONDA_NCURSES'] = '9.0'
@@ -492,7 +493,7 @@ def test_built_package_path2():
 
 
 def test_pkgname_with_numpy_x_x():
-    r = Recipes(dedent(
+    r = Recipes(
         """
         one:
           meta.yaml: |
@@ -507,7 +508,7 @@ def test_pkgname_with_numpy_x_x():
                 - python
                 - numpy x.x
 
-        """), from_string=True)
+        """, from_string=True)
     r.write_recipes()
 
     os.environ['CONDA_NPY'] = '1.9'
@@ -522,7 +523,7 @@ def test_string_or_float_to_integer_python():
 
 
 def test_skip_dependencies():
-    r = Recipes(dedent(
+    r = Recipes(
         """
         one:
           meta.yaml: |
@@ -548,7 +549,7 @@ def test_skip_dependencies():
                 - one
               run:
                 - two
-    """), from_string=True)
+    """, from_string=True)
     r.write_recipes()
     pkgs = {}
     for k, v in r.recipe_dirs.items():
