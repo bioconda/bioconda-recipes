@@ -22,9 +22,9 @@ python setup.py install
 pip install -r pip-test-requirements.txt
 pip install -r pip-requirements.txt
 
-mkdir -p /anaconda/conda-bld/osx-64 # workaround for bug in current conda
-mkdir -p /anaconda/conda-bld/linux-64 # workaround for bug in current conda
-conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
+#mkdir -p /anaconda/conda-bld/osx-64 # workaround for bug in current conda
+#mkdir -p /anaconda/conda-bld/linux-64 # workaround for bug in current conda
+#conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
 
 # setup bioconda channel
 conda config --add channels bioconda
