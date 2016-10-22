@@ -83,13 +83,37 @@ def multi_build(request, recipes_fixture):
 def single_upload(single_build):
     """
     Fixture to upload the "one" package using a label so that it doesn't affect
-def test_single_build_docker():
-    docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
-    built_package = _single_build(docker_builder=docker_builder)
-    ensure_missing(built_package)
+    the main bioconda channel. Cleans up when it's done.
+    """
+    pkg = single_build
+    with utils.temp_env(dict(
+        TRAVIS_BRANCH='master',
+        TRAVIS_PULL_REQUEST='false')
+    ):
+        upload.upload(single_build, label='bioconda-utils-test')
+
+    yield True
+
+    p = sp.run(
+        ['anaconda', '-t', os.environ.get('ANACONDA_TOKEN'), 'remove',
+         'bioconda/one', '--force'],
+        stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
+        universal_newlines=True)
+
+# ----------------------------------------------------------------------------
 
 
+def test_upload(single_upload):
+    p = sp.run(
+        ['conda', 'create', '-n', 'bioconda-utils-test',
+         '-c', 'bioconda/label/bioconda-utils-test', 'one'],
+        stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
+        universal_newlines=True)
 
+    p = sp.run(
+        ['conda', 'env', 'remove', '-n', 'bioconda-utils-test'],
+        stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
+        universal_newlines=True)
 
 
 def test_single_build_only(single_build):
