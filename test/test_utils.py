@@ -9,119 +9,119 @@ from bioconda_utils import pkg_test
 from bioconda_utils import docker_utils
 from bioconda_utils import cli
 from bioconda_utils import build
+from bioconda_utils import upload
 from helpers import ensure_missing, Recipes, tmp_env_matrix
 from conda_build import api
 from conda_build.metadata import MetaData
 
 
-def test_get_deps():
-    r = Recipes(dedent(
-        """
-        one:
-          meta.yaml: |
-            package:
-              name: one
-              version: 0.1
-        two:
-          meta.yaml: |
-            package:
-              name: two
-              version: 0.1
-            requirements:
-              build:
-                - one
-        three:
-          meta.yaml: |
-            package:
-              name: three
-              version: 0.1
-            requirements:
-              build:
-                - one
-              run:
-                - two
-    r.write_recipes()
-    assert list(utils.get_deps(r.recipe_dirs['two'])) == ['one']
-    assert list(utils.get_deps(r.recipe_dirs['three'], build=True)) == ['one']
-    assert list(utils.get_deps(r.recipe_dirs['three'], build=False)) == ['two']
-
-
-def _single_build(docker_builder=None):
+# ----------------------------------------------------------------------------
+# FIXTURES
+#
+@pytest.fixture(scope='module')
+def recipes_fixture():
     """
-    Tests the building of a single configured recipe, with or without docker
+    Writes example recipes, figures out the package paths and attaches them to
+    the Recipes instance, and cleans up afterward.
     """
     r = Recipes('test_case.yaml')
     r.write_recipes()
+    r.pkgs = {}
+    for k, v in r.recipe_dirs.items():
+        r.pkgs[k] = utils.built_package_path(v)
+    yield r
+    for v in r.pkgs.values():
+        ensure_missing(v)
+
+
+@pytest.fixture(
+    scope='module', params=[True, False],
+    ids=['using docker', 'using system conda'])
+def single_build(request, recipes_fixture):
+    """
+    Builds the "one" recipe.
+    """
     env_matrix = list(utils.EnvMatrix(tmp_env_matrix()))[0]
-    conda_bld = docker_utils.get_host_conda_bld()
-    built_package = os.path.join(conda_bld, 'linux-64', 'one-0.1-0.tar.bz2')
-    ensure_missing(built_package)
+    if request.param:
+        docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
+    else:
+        docker_builder = None
     build.build(
-        recipe=r.recipe_dirs['one'],
+        recipe=recipes_fixture.recipe_dirs['one'],
         recipe_folder='.',
         docker_builder=docker_builder,
         env=env_matrix,
     )
-    assert os.path.exists(built_package)
-    return built_package
-
-
-def test_single_build1():
-    built_package = _single_build(docker_builder=None)
-
-
-def test_single_build_docker_with_post_test():
-    docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
-    r = Recipes('test_case.yaml')
-    r.write_recipes()
-    env_matrix = list(utils.EnvMatrix(tmp_env_matrix()))[0]
-    conda_bld = docker_utils.get_host_conda_bld()
-    built_package = os.path.join(conda_bld, 'linux-64', 'one-0.1-0.tar.bz2')
+    built_package = recipes_fixture.pkgs['one']
+    yield built_package
     ensure_missing(built_package)
-    build.build(
-        recipe=r.recipe_dirs['one'],
-        recipe_folder='.',
+
+
+@pytest.fixture(
+    scope='module', params=[True, False],
+    ids=['using docker', 'using system conda'])
+def multi_build(request, recipes_fixture):
+    """
+    Builds the "one", "two", and "three" recipes.
+    """
+    if request.param:
+        docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
+    else:
+        docker_builder = None
+    build.build_recipes(
+        recipe_folder=recipes_fixture.basedir,
         docker_builder=docker_builder,
-        env=env_matrix)
-    assert os.path.exists(built_package)
-    pkg_test.test_package(built_package)
-    ensure_missing(built_package)
+        config={},
+    )
+    built_packages = recipes_fixture.pkgs
+    yield built_packages
+    for v in built_packages.values():
+        ensure_missing(v)
 
 
+@pytest.fixture(scope='module')
+def single_upload(single_build):
+    """
+    Fixture to upload the "one" package using a label so that it doesn't affect
 def test_single_build_docker():
     docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
     built_package = _single_build(docker_builder=docker_builder)
     ensure_missing(built_package)
 
 
-def test_docker_builder_build():
+
+
+
+def test_single_build_only(single_build):
+    assert os.path.exists(single_build)
+
+
+def test_single_build_with_post_test(single_build):
+    pkg_test.test_package(single_build)
+
+
+def test_multi_build(multi_build):
+    for v in multi_build.values():
+        assert os.path.exists(v)
+
+
+def test_docker_builder_build(recipes_fixture):
     """
     Tests just the build_recipe method of a RecipeBuilder object.
-
-    Makes sure the built recipe shows up on the host machine.
     """
-    conda_bld = docker_utils.get_host_conda_bld()
-    built_package = os.path.join(conda_bld, 'linux-64', 'one-0.1-0.tar.bz2')
-    ensure_missing(built_package)
     docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
-    r = Recipes('test_case.yaml')
-    r.write_recipes()
-    recipe_dir = r.recipe_dirs['one']
-    docker_builder.build_recipe(recipe_dir, build_args='', env={})
-    assert os.path.exists(built_package)
-    os.unlink(built_package)
-    assert not os.path.exists(built_package)
+    docker_builder.build_recipe(
+        recipes_fixture.recipe_dirs['one'], build_args='', env={})
+    assert os.path.exists(recipes_fixture.pkgs['one'])
 
 
-def test_docker_build_fails():
+def test_docker_build_fails(recipes_fixture):
     "test for expected failure when a recipe fails to build"
     docker_builder = docker_utils.RecipeBuilder(
         build_script_template="exit 1")
     assert docker_builder.build_script_template == 'exit 1'
-    r = Recipes('test_case.yaml')
-    r.write_recipes()
     result = build.build_recipes(
-        r.basedir,
+        recipes_fixture.basedir,
         config={},
         docker_builder=docker_builder,
         mulled_test=True
@@ -153,21 +153,37 @@ def test_conda_purge_cleans_up():
     assert not tmp_dir_exists(bld)
 
 
-def test_local_channel():
-    r = Recipes('test_case.yaml')
+def test_get_deps():
+    r = Recipes(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: 0.1
+        two:
+          meta.yaml: |
+            package:
+              name: two
+              version: 0.1
+            requirements:
+              build:
+                - one
+        three:
+          meta.yaml: |
+            package:
+              name: three
+              version: 0.1
+            requirements:
+              build:
+                - one
+              run:
+                - two
+    """, from_string=True)
     r.write_recipes()
-    with pytest.raises(SystemExit) as e:
-        cli.build(r.basedir,
-                  config={},
-                  packages="*",
-                  testonly=False,
-                  force=False,
-                  docker=True,
-                  loglevel="debug",
-                  )
-        assert e.code == 0
-    conda_bld = docker_utils.get_host_conda_bld()
-    print(os.listdir(os.path.join(conda_bld, 'linux-64')))
+    assert list(utils.get_deps(r.recipe_dirs['two'])) == ['one']
+    assert list(utils.get_deps(r.recipe_dirs['three'], build=True)) == ['one']
+    assert list(utils.get_deps(r.recipe_dirs['three'], build=False)) == ['two']
 
 
 def test_env_matrix():
@@ -488,7 +504,8 @@ def test_built_package_path2():
 
     del os.environ['CONDA_NCURSES']
     assert os.path.basename(
-        utils.built_package_path(r.recipe_dirs['two'], env=dict(CONDA_NCURSES='9.0'))
+        utils.built_package_path(
+            r.recipe_dirs['two'], env=dict(CONDA_NCURSES='9.0'))
     ) == 'two-0.1-ncurses9.0_0.tar.bz2'
 
 
@@ -558,12 +575,13 @@ def test_skip_dependencies():
     for p in pkgs.values():
         ensure_missing(p)
 
-    build.build_recipes(r.basedir,
-                  config={},
-                  packages="*",
-                  testonly=False,
-                  force=False,
-                  )
+    build.build_recipes(
+        r.basedir,
+        config={},
+        packages="*",
+        testonly=False,
+        force=False,
+    )
     assert os.path.exists(pkgs['one'])
     assert not os.path.exists(pkgs['two'])
     assert not os.path.exists(pkgs['three'])
@@ -573,23 +591,17 @@ def test_skip_dependencies():
         ensure_missing(p)
 
 
-@pytest.fixture
-def recipes1():
-    r = Recipes('test_case.yaml')
-    r.write_recipes()
-    return r
-
 class TestSubdags(object):
 
-    def _build(self, recipes1):
-        build.build_recipes(recipes1.basedir, config={})
+    def _build(self, recipes_fixture):
+        build.build_recipes(recipes_fixture.basedir, config={})
 
-    def test_subdags_out_of_range(self, recipes1):
+    def test_subdags_out_of_range(self, recipes_fixture):
         with pytest.raises(ValueError):
             with utils.temp_env({'SUBDAGS': '1', 'SUBDAG': '5'}):
-                self._build(recipes1)
+                self._build(recipes_fixture)
 
-    def test_subdags_more_than_recipes(self, caplog, recipes1):
+    def test_subdags_more_than_recipes(self, caplog, recipes_fixture):
         with utils.temp_env({'SUBDAGS': '5', 'SUBDAG': '4'}):
-            self._build(recipes1)
+            self._build(recipes_fixture)
         assert 'Nothing to be done' in caplog.records()[-1].getMessage()
