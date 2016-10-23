@@ -1,3 +1,6 @@
+#!/bin/sh
+set -x -e
+
 RM_DIR=${PREFIX}/share/RepeatModeler
 RM_OTHER_PROGRAMS="BuildDatabase Refiner RepeatClassifier TRFMask util/Linup util/viewMSA.pl"
 RM_PROGRAMS="RepeatModeler $RM_OTHER_PROGRAMS"

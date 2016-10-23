@@ -1,5 +1,5 @@
-#!/bin/bash
-
+#!/bin/sh
+set -x -e
 
 cd src/
 make
