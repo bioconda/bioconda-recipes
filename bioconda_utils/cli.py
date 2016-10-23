@@ -67,7 +67,7 @@ def build(recipe_folder,
     if setup:
         logger.debug("Running setup: %s" % setup)
         for cmd in setup:
-            sp.run(shlex.split(cmd))
+            utils.run(shlex.split(cmd))
     if docker:
         if build_script_template is not None:
             build_script_template = open(build_script_template).read()

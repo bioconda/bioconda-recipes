@@ -5,6 +5,8 @@ import os
 import shlex
 import logging
 
+from . import utils
+
 from conda_build.metadata import MetaData
 
 logger = logging.getLogger(__name__)
@@ -99,4 +101,4 @@ def test_package(path, name_override='tmp', channels=['bioconda', 'r', 'conda-fo
     cmds.extend(channel_args)
     cmds.extend(shlex.split(mulled_args))
     logger.debug('mulled-build commands: %s' % cmds)
-    return sp.run(cmds, stdout=sp.PIPE, stderr=sp.PIPE, check=True, universal_newlines=True)
+    return utils.run(cmds)

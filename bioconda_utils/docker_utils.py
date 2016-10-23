@@ -55,6 +55,8 @@ from io import BytesIO
 from textwrap import dedent
 import pkg_resources
 
+from . import utils
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -283,8 +285,7 @@ class RecipeBuilder(object):
         Separate out the pull step to provide additional logging info
         """
         logger.info('BIOCONDA DOCKER: Pulling docker image %s', self.image)
-        p = sp.run(['docker', 'pull', self.image], stdout=sp.PIPE,
-                   stderr=sp.STDOUT, check=True, universal_newlines=True)
+        p = utils.run(['docker', 'pull', self.image])
         logger.debug('BIOCONDA DOCKER: stdout+stderr: %s', p.stdout)
         if p.returncode != 0:
             raise ValueError(p.stdout)
@@ -320,15 +321,7 @@ class RecipeBuilder(object):
             '-t', self.tag,
             build_dir
         ]
-        p = sp.run(
-            cmd,
-            stdout=sp.PIPE,
-            stderr=sp.STDOUT,
-            check=True,
-            universal_newlines=True)
-
-        if p.returncode != 0:
-            raise ValueError(p.stdout)
+        p = utils.run(cmd)
 
         logger.info('BIOCONDA DOCKER: Built docker image tag=%s', self.tag)
         shutil.rmtree(build_dir)
@@ -389,5 +382,5 @@ class RecipeBuilder(object):
         ]
 
         logger.debug('BIOCONDA DOCKER: cmd: %s', cmd)
-        p = sp.run(cmd, stdout=sp.PIPE, stderr=sp.STDOUT, universal_newlines=True, check=True,)
+        p = utils.run(cmd)
         return p

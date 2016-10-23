@@ -91,15 +91,10 @@ def build(recipe,
             # Since we're calling out to shell and we want to send at least
             # some env vars send them all via the temporarily-reset os.environ.
             with utils.temp_env(env):
-                p = sp.run(
-                    CONDA_BUILD_CMD + [recipe],
-                    stdout=sp.PIPE,
-                    stderr=sp.STDOUT,
-                    check=True,
-                    universal_newlines=True,
-                    env=os.environ)
-            logger.debug(" ".join(p.args))
-            logger.debug(p.stdout)
+                cmd = CONDA_BUILD_CMD + build_args + channel_args + [recipe]
+                logger.debug('command: %s', cmd)
+                p = utils.run(cmd, env=os.environ)
+
             build_success = True
 
         logger.info(
@@ -123,6 +118,7 @@ def build(recipe,
     logger.info(
         'BIOCONDA TEST START via mulled-build %s, %s',
         recipe, utils.envstr(env))
+
     res = pkg_test.test_package(pkg_path)
 
     if res.returncode == 0:

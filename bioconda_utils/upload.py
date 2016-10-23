@@ -1,6 +1,7 @@
 import os
 import subprocess as sp
 import logging
+from . import utils
 logger = logging.getLogger(__name__)
 
 def upload(package, token=None, label=None):
@@ -37,15 +38,7 @@ def upload(package, token=None, label=None):
 
     logger.info("BIOCONDA UPLOAD uploading package %s", package)
     try:
-        sp.run(
-            [
-                "anaconda", "-t", token, 'upload', package
-            ] + label_arg,
-            stdout=sp.PIPE,
-            stderr=sp.STDOUT,
-            check=True,
-            universal_newlines=True
-        )
+        utils.run(["anaconda", "-t", token, 'upload', package] + label_arg,)
 
         logger.info("BIOCONDA UPLOAD SUCCESS: uploaded package %s", package)
         return True

@@ -20,9 +20,6 @@ from conda_build import api
 from conda_build.metadata import MetaData
 import yaml
 
-from . import docker_utils
-from . import pkg_test
-
 logger = logging.getLogger(__name__)
 
 
@@ -45,6 +42,28 @@ def temp_env(env):
     finally:
         os.environ.clear()
         os.environ.update(orig)
+
+
+def run(cmds, env=None):
+    """
+    Wrapper around subprocess.run()
+
+    Explicitly decodes stdout to avoid UnicodeDecodeErrors that can occur when
+    using the `universal_newlines=True` argument in the standard
+    subprocess.run.
+
+    Also uses check=True and merges stderr with stdout. If a CalledProcessError
+    is raised, the output is decoded.
+
+    Returns the subprocess.CompletedProcess object.
+    """
+    try:
+        p = sp.run(cmds, stdout=sp.PIPE, stderr=sp.STDOUT, check=True, env=env)
+        p.stdout = p.stdout.decode(errors='replace')
+    except sp.CalledProcessError as e:
+        e.stdout = e.stdout.decode(errors='replace')
+        raise e
+    return p
 
 
 def envstr(env):
