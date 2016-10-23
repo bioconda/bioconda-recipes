@@ -154,6 +154,10 @@ def single_upload():
 # ----------------------------------------------------------------------------
 
 
+@pytest.mark.skipif(
+    not os.environ.get('ANACONDA_TOKEN'),
+    reason='No ANACONDA_TOKEN found'
+)
 def test_upload(single_upload):
     name, pkg, recipe = single_upload
     env_name = 'bioconda-utils-test-' + str(uuid.uuid4()).split('-')[0]
