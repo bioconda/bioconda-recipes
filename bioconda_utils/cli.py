@@ -48,6 +48,9 @@ logger = logging.getLogger(__name__)
      packages should be stored on the host. Default is to use the host's
      conda-bld dir. If --docker is not specified, then this argument is
      ignored.''')
+@arg('--conda-build-version',
+     help='''Version of conda-build to use if building
+     in a docker container. Has no effect otherwise.''')
 def build(recipe_folder,
           config,
           packages="*",
@@ -58,12 +61,14 @@ def build(recipe_folder,
           mulled_test=False,
           build_script_template=None,
           pkg_dir=None,
+          conda_build_version=docker_utils.DEFAULT_CONDA_BUILD_VERSION,
           ):
     LEVEL = getattr(logging, loglevel.upper())
     logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
     logging.getLogger('bioconda_utils').setLevel(getattr(logging, loglevel.upper()))
     cfg = utils.load_config(config)
     setup = cfg.get('setup', None)
+    conda_build_version = cfg.get('conda_build_version', None)
     if setup:
         logger.debug("Running setup: %s" % setup)
         for cmd in setup:
@@ -82,6 +87,7 @@ def build(recipe_folder,
             build_script_template=build_script_template,
             pkg_dir=pkg_dir,
             use_host_conda_bld=use_host_conda_bld,
+            conda_build_version=conda_build_version,
         )
     else:
         docker_builder = None
