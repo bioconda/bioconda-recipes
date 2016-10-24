@@ -81,4 +81,4 @@ env['BIOCONDA_UTILS_ARGS'] = ' '.join(shlex.split(env['BIOCONDA_UTILS_ARGS']))
 # Override with whatever's in the shell environment
 env.update(os.environ)
 
-sp.check_call(['scripts/travis-run.sh'], env=env)
+sp.run(['scripts/travis-run.sh'], env=env, universal_newlines=True, check=True)
