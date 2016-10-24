@@ -8,12 +8,16 @@ RM_PROGRAMS="RepeatModeler $RM_OTHER_PROGRAMS"
 mkdir -p ${PREFIX}/bin
 mkdir -p ${RM_DIR}
 cp -r * ${RM_DIR}
+
+# Fix perl references
 for name in ${RM_PROGRAMS} ; do 
   perl -i -0pe 's/^#\\!.*perl.*/#\\!\/usr\/bin\/perl/g;' ${RM_DIR}/${name}
 done
 
+# Copy edited config file for auto configuration
 cp ${RECIPE_DIR}/RepModelConfig.pm ${RM_DIR}/RepModelConfig.pm
 
+# Set env variables for config parameters needed in RepModelConfig.pm
 cat <<END >>${PREFIX}/bin/RepeatModeler
 #!/bin/bash
 REPEATMODELER_DIR=${PREFIX}/share/RepeatModeler
