@@ -68,7 +68,6 @@ def build(recipe_folder,
     logging.getLogger('bioconda_utils').setLevel(getattr(logging, loglevel.upper()))
     cfg = utils.load_config(config)
     setup = cfg.get('setup', None)
-    conda_build_version = cfg.get('conda_build_version', None)
     if setup:
         logger.debug("Running setup: %s" % setup)
         for cmd in setup:
