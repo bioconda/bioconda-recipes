@@ -8,19 +8,19 @@ then
     # install conda
     curl -O https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
     sudo bash Miniconda3-latest-Linux-x86_64.sh -b -p /anaconda
-    
+
     docker pull condaforge/linux-anvil
 else
     # install conda
     curl -O https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
     sudo bash Miniconda3-latest-MacOSX-x86_64.sh -b -p /anaconda
 fi
-    
+
 sudo chown -R $USER /anaconda
 mkdir -p /anaconda/conda-bld/osx-64 # workaround for bug in current conda
 mkdir -p /anaconda/conda-bld/linux-64 # workaround for bug in current conda
 export PATH=/anaconda/bin:$PATH
-conda install -y --file $SCRIPT_DIR/requirements.txt
+conda install -y --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/conda-requirements.txt
 conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
 
 # setup bioconda channel
