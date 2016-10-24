@@ -1,5 +1,5 @@
 #!/bin/sh
-./configure --prefix=$PREFIX --with-RNA=$PREFIX/inlude
+./configure --prefix=$PREFIX --with-RNA=prefix
 make clean
 make
 make install
