@@ -106,8 +106,7 @@ def build(recipe,
             logger.error(
                 'BIOCONDA BUILD FAILED %s, %s', recipe, utils.envstr(env))
             logger.error('COMMAND: %s', e.cmd)
-            logger.error('STDOUT: %s', e.stdout)
-            logger.error('STDERR: %s', e.stderr)
+            logger.error('STDOUT+STDERR: %s', e.stdout)
             return False
 
     if not mulled_test:
@@ -298,10 +297,11 @@ def build_recipes(recipe_folder,
             'Details of recipes and environments follow.',
             len(recipes), len(failed_recipes), len(skipped_recipes))
 
-        logger.error(
-            'BIOCONDA BUILD SUMMARY: while the entire build failed, '
-            'the following recipes were built successfully:\n%s',
-            '\n'.join(built_recipes))
+        if len(built_recipes) > 0:
+            logger.error(
+                'BIOCONDA BUILD SUMMARY: while the entire build failed, '
+                'the following recipes were built successfully:\n%s',
+                '\n'.join(built_recipes))
 
         for recipe, target in failed:
             logger.error(
