@@ -1,7 +1,7 @@
 #!/bin/bash
 
-NGS_SDK_VERSION=1.2.5
-NCBI_VDB_VERSION=2.7.0
+NGS_SDK_VERSION=1.3.0
+NCBI_VDB_VERSION=2.8.0
 
 curl -L https://github.com/ncbi/ngs/archive/${NGS_SDK_VERSION}.tar.gz \
 	> ngs-sdk-${NGS_SDK_VERSION}.tar.gz
