@@ -15,14 +15,17 @@ curl -O https://repo.continuum.io/miniconda/Miniconda3-latest-$tag-x86_64.sh
 sudo bash Miniconda3-latest-$tag-x86_64.sh -b -p /anaconda
 sudo chown -R $USER /anaconda
 export PATH=/anaconda/bin:$PATH
+
+# setup bioconda channel
+conda config --add channels anaconda
+conda config --add channels r
+conda config --add channels conda-forge
+conda config --add channels bioconda
+conda config --add channels file://anaconda/conda-bld
+
 conda update -y conda
 conda install -y --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/conda-requirements.txt
 conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
-
-# setup bioconda channel
-conda config --add channels bioconda
-conda config --add channels r
-conda config --add channels file://anaconda/conda-bld
 
 # setup bioconda-utils
 pip install git+https://github.com/galaxyproject/galaxy-lib.git@871c090
