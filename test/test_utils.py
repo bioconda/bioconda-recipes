@@ -88,6 +88,9 @@ def single_build(request, recipes_fixture):
     ensure_missing(built_package)
 
 
+
+# TODO: need to have a variant of this where TRAVIS_BRANCH_NAME="master" in
+# order to properly test for upload.
 @pytest.fixture(scope='module', params=PARAMS, ids=IDS)
 def multi_build(request, recipes_fixture):
     """

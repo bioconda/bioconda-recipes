@@ -132,13 +132,16 @@ def build(recipe,
         return False
 
 
-def build_recipes(recipe_folder,
-                 config,
-                 packages="*",
-                 mulled_test=True,
-                 testonly=False,
-                 force=False,
-                 docker_builder=None):
+def build_recipes(
+    recipe_folder,
+    config,
+    packages="*",
+    mulled_test=True,
+    testonly=False,
+    force=False,
+    docker_builder=None,
+    label=None,
+):
     """
     Build one or many bioconda packages.
 
@@ -169,6 +172,10 @@ def build_recipes(recipe_folder,
 
     docker_builder : docker_utils.RecipeBuilder instance
         If not None, then use this RecipeBuilder to build all recipes.
+
+    label : str
+        Optional label to use when uploading packages. Useful for testing and
+        debugging. Default is to use the "main" label.
     """
     config = utils.load_config(config)
     env_matrix = utils.EnvMatrix(config['env_matrix'])
