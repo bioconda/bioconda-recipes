@@ -7,7 +7,7 @@
 sed -i -e  "s/\$(CXXFLAGS)/\$(CXXFLAGS) \$(CFLAGS)/g" src/Makefile
 
 # There seem to be a missing library for the linkage (lrt)
-sed -i -e "s/-lpthread/-lpthread -lrt/g" Makefile
+#sed -i -e "s/-lpthread/-lpthread -lrt/g" Makefile
 
 # The static boost_thread library cannot be found during the linkage. Let us
 # comment the -static flag
