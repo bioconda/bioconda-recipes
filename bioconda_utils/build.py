@@ -141,6 +141,7 @@ def build_recipes(
     force=False,
     docker_builder=None,
     label=None,
+    disable_upload=False,
 ):
     """
     Build one or many bioconda packages.
@@ -176,6 +177,9 @@ def build_recipes(
     label : str
         Optional label to use when uploading packages. Useful for testing and
         debugging. Default is to use the "main" label.
+
+    disable_upload :  bool
+        If True, do not upload the package. Useful for testing.
     """
     config = utils.load_config(config)
     env_matrix = utils.EnvMatrix(config['env_matrix'])
@@ -325,7 +329,7 @@ def build_recipes(
         "BIOCONDA BUILD SUMMARY: successfully built %s of %s recipes",
         len(built_recipes), len(recipes))
 
-    if not testonly:
+    if not testonly and not disable_upload:
         # upload builds
         if (os.environ.get("TRAVIS_BRANCH") == "master" and
                 os.environ.get("TRAVIS_PULL_REQUEST") == "false"):
