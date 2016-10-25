@@ -1,6 +1,6 @@
 #!/bin/sh
 
-yum install glibc-static -y
+#yum install glibc-static -y
 
 
 # The CFLAGS are not available in the Maefile, so let us add it
