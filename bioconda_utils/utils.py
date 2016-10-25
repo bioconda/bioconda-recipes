@@ -4,31 +4,78 @@ import os
 import glob
 import subprocess as sp
 import argparse
+import itertools
 import sys
 import shutil
+import contextlib
 from collections import defaultdict, Iterable
 from itertools import product, chain
 import logging
 import pkg_resources
 import networkx as nx
 import requests
+from jsonschema import validate
 
+from conda_build import api
 from conda_build.metadata import MetaData
 import yaml
 
 logger = logging.getLogger(__name__)
+
+
+@contextlib.contextmanager
+def temp_env(env):
+    """
+    Context manager to temporarily set os.environ.
+
+    Used to send values in `env` to processes that only read the os.environ,
+    for example when filling in meta.yaml with jinja2 template variables.
+
+    All values are converted to string before sending to os.environ
+    """
+    env = dict(env)
+    orig = os.environ.copy()
+    _env = {k: str(v) for k, v in env.items()}
+    os.environ.update(_env)
+    try:
+        yield
+    finally:
+        os.environ.clear()
+        os.environ.update(orig)
+
+
+def run(cmds, env=None):
+    """
+    Wrapper around subprocess.run()
+
+    Explicitly decodes stdout to avoid UnicodeDecodeErrors that can occur when
+    using the `universal_newlines=True` argument in the standard
+    subprocess.run.
+
+    Also uses check=True and merges stderr with stdout. If a CalledProcessError
+    is raised, the output is decoded.
+
+    Returns the subprocess.CompletedProcess object.
+    """
+    try:
+        p = sp.run(cmds, stdout=sp.PIPE, stderr=sp.STDOUT, check=True, env=env)
+        p.stdout = p.stdout.decode(errors='replace')
+    except sp.CalledProcessError as e:
+        e.stdout = e.stdout.decode(errors='replace')
+        raise e
+    return p
+
+
+def envstr(env):
+    env = dict(env)
+    return ';'.join(['='.join([i, str(j)]) for i, j in sorted(env.items())])
+
 
 def flatten_dict(dict):
     for key, values in dict.items():
         if isinstance(values, str) or not isinstance(values, Iterable):
             values = [values]
         yield [(key, value) for value in values]
-
-
-def merged_env(env):
-    _env = dict(os.environ)
-    _env.update(env)
-    return _env
 
 
 class EnvMatrix:
@@ -49,13 +96,24 @@ class EnvMatrix:
 
     """
 
-    def __init__(self, path):
-        with open(path) as f:
-            self.env = yaml.load(f)
-            for key, val in self.env.items():
-                if key != "CONDA_PY" and not isinstance(val, str):
-                    raise ValueError(
-                        "All versions except CONDA_PY must be strings.")
+    def __init__(self, env):
+        """
+        Parameters
+        ----------
+
+        env : str or dict
+            If str, assume it's a path to a YAML-format filename and load it
+            into a dict. If a dict is provided, use it directly.
+        """
+        if isinstance(env, str):
+            with open(env) as f:
+                self.env = yaml.load(f)
+        else:
+            self.env = env
+        for key, val in self.env.items():
+            if key != "CONDA_PY" and not isinstance(val, str):
+                raise ValueError(
+                    "All versions except CONDA_PY must be strings.")
 
     def __iter__(self):
         """
@@ -106,8 +164,8 @@ def get_deps(recipe, build=True):
 def get_dag(recipes, blacklist=None, restrict=True):
     """
     Returns the DAG of recipe paths and a dictionary that maps package names to
-    recipe paths. These recipe path values are lists and contain paths to all
-    defined versions.
+    lists of recipe paths to all defined versions of the package.  defined
+    versions.
 
     Parameters
     ----------
@@ -160,7 +218,6 @@ def get_dag(recipes, blacklist=None, restrict=True):
                                get_deps(meta,
                                         build=False)))))
 
-    #nx.relabel_nodes(dag, name2recipe, copy=False)
     return dag, name2recipe
 
 
@@ -181,7 +238,8 @@ def get_recipes(recipe_folder, package="*"):
     if isinstance(package, str):
         package = [package]
     for p in package:
-        logger.debug("get_recipes(%s, package='%s'): %s", recipe_folder, package, p)
+        logger.debug(
+            "get_recipes(%s, package='%s'): %s", recipe_folder, package, p)
         path = os.path.join(recipe_folder, p)
         yield from map(os.path.dirname,
                        glob.glob(os.path.join(path, "meta.yaml")))
@@ -189,22 +247,107 @@ def get_recipes(recipe_folder, package="*"):
                        glob.glob(os.path.join(path, "*", "meta.yaml")))
 
 
-def get_channel_packages():
-    if sys.platform.startswith("linux"):
-        repodata = requests.get('https://conda.anaconda.org/bioconda/linux-64/repodata.json').json()
-    elif sys.platform.startswith("darwin"):
-        repodata = requests.get('https://conda.anaconda.org/bioconda/osx-64/repodata.json').json()
+def get_channel_packages(channel='bioconda', platform=None):
+    """
+    Retrieves the existing packages for a channel from conda.anaconda.org
+
+    Parameters
+    ----------
+    channel : str
+        Channel to retrieve packages for
+
+    platform : None | linux | osx
+        Platform (OS) to retrieve packages for from `channel`. If None, use the
+        currently-detected platform.
+    """
+    url_template = 'https://conda.anaconda.org/{channel}/{arch}/repodata.json'
+    if (
+        (platform == 'linux') or
+        (platform is None and sys.platform.startswith("linux"))
+    ):
+        arch = 'linux-64'
+    elif (
+        (platform == 'osx') or
+        (platform is None and sys.platform.startswith("darwin"))
+    ):
+        arch = 'osx-64'
     else:
-        raise ValueError('Unsupported OS: bioconda only supports linux and osx.')
-    channel_packages = set(repodata['packages'].keys())
-    # add noarch repodata
-    noarch_repodata = requests.get('https://conda.anaconda.org/bioconda/noarch/repodata.json').json()
-    channel_packages.update(noarch_repodata['packages'].keys())
+        raise ValueError(
+            'Unsupported OS: bioconda only supports linux and osx.')
+
+    url = url_template.format(channel=channel, arch=arch)
+    repodata = requests.get(url)
+    if repodata.status_code != 200:
+        raise requests.HTTPError(
+            '{0.status_code} {0.reason} for {1}'
+            .format(repodata, url))
+
+    noarch_url = url_template.format(channel=channel, arch='noarch')
+    noarch_repodata = requests.get(noarch_url)
+    if noarch_repodata.status_code != 200:
+        raise requests.HTTPError(
+            '{0.status_code} {0.reason} for {1}'
+            .format(noarch_repodata, noarch_url))
+
+    channel_packages = set(repodata.json()['packages'].keys())
+    channel_packages.update(noarch_repodata.json()['packages'].keys())
     return channel_packages
+
+
+def _string_or_float_to_integer_python(s):
+    """
+    conda-build 2.0.4 expects CONDA_PY values to be integers (e.g., 27, 35) but
+    older versions were OK with strings or even floats.
+
+    To avoid editing existing config files, we support those values here.
+    """
+
+    try:
+        s = float(s)
+        if s < 10:  # it'll be a looong time before we hit Python 10.0
+            s = int(s * 10)
+        else:
+            s = int(s)
+    except ValueError:
+        raise ValueError("{} is an unrecognized Python version".format(s))
+    return s
+
+
+def built_package_path(recipe, env=None):
+    """
+    Returns the path to which a recipe would be built.
+
+    Does not necessarily exist; equivalent to `conda build --output recipename`
+    but without the subprocess.
+    """
+    if env is None:
+        env = {}
+    env = dict(env)
+
+    # Ensure CONDA_PY is an integer (needed by conda-build 2.0.4)
+    py = env.get('CONDA_PY', None)
+    env = dict(env)
+    if py is not None:
+        env['CONDA_PY'] = _string_or_float_to_integer_python(py)
+
+    with temp_env(env):
+        # Disabling set_build_id prevents the creation of uniquely-named work
+        # directories just for checking the output file.
+        # It needs to be done within the context manager so that it sees the
+        # os.environ.
+        config = api.Config(
+            no_download_source=True,
+            set_build_id=False)
+        path = api.get_output_file_path(recipe, config=config)
+    return path
 
 
 class Target:
     def __init__(self, pkg, env):
+        """
+        Class to represent a package built with a particular environment
+        (e.g. from EnvMatirix).
+        """
         self.pkg = pkg
         self.env = env
 
@@ -217,279 +360,104 @@ class Target:
     def __str__(self):
         return os.path.basename(self.pkg)
 
+    def envstring(self):
+        return ';'.join(['='.join([i, str(j)]) for i, j in self.env])
 
-def filter_recipes(recipes, env_matrix, config, force=False):
+
+def filter_recipes(recipes, env_matrix, channels=None, force=False):
     """
-    Generator yielding only those recipes that do not already exist.
-
-    Relies on `conda build --skip-existing` to determine if a recipe already
-    exists.
+    Generator yielding only those recipes that should be built.
 
     Parameters
     ----------
     recipes : iterable
         Iterable of candidate recipes
 
-    env_matrix : EnvMatrix
+    env_matrix : str, dict, or EnvMatrix
+        If str or dict, create an EnvMatrix; if EnvMatrix already use it as-is.
+
+    channels : None or list
+        Optional list of channels to check for existing recipes
+
+    force : bool
+        Build the package even if it is already available in supplied channels.
     """
-    channel_packages = get_channel_packages()
+    if not isinstance(env_matrix, EnvMatrix):
+        env_matrix = EnvMatrix(env_matrix)
 
-    channel_args = []
-    for c in config['channels']:
-        channel_args.extend(['--channel', c])
+    if channels is None:
+        channels = []
 
-    tobuild = lambda f: not f.startswith("Skipped:") and (force or os.path.basename(f) not in channel_packages)
+    channel_packages = defaultdict(set)
+    for channel in channels:
+        channel_packages[channel].update(get_channel_packages(channel=channel))
 
-    def pkgnames(env):
-        logger.debug(env)
-        cmd = ["conda", "build", "--no-source", "--override-channels", "--output"] + channel_args + recipes
-        p = sp.run(
-            cmd,
-            check=True,
-            stdout=sp.PIPE,
-            stderr=sp.PIPE,
-            universal_newlines=True,
-            env=merged_env(env))
-        pkgpaths = p.stdout.strip().split("\n")
-        return pkgpaths
+    # TODO: get the time of the last master branch, e.g.:
+    #
+    # git log master | grep "^Date:" | head -n1
 
+    def tobuild(recipe, env):
+        # TODO: get the modification time of recipe/meta.yaml. Only continue
+        # the slow steps below if it's newer than the last commit to master.
+        if force:
+            logger.debug(
+                'BIOCONDA FILTER: building %s because force=True', recipe)
+            return True
+
+        pkg = os.path.basename(built_package_path(recipe, env))
+        in_channels = [
+            channel for channel, pkgs in channel_packages.items()
+            if pkg in pkgs
+        ]
+        if in_channels:
+            logger.debug(
+                'BIOCONDA FILTER: not building %s because '
+                'it is in channel(s): %s', pkg, in_channels)
+            return False
+
+        with temp_env(env):
+            # with temp_env, MetaData sees everything in env added to
+            # os.environ.
+            skip = MetaData(recipe).skip()
+
+        if skip:
+            logger.debug(
+                'BIOCONDA FILTER: not building %s because '
+                'it defines skip for this env', pkg)
+            return False
+
+        logger.debug(
+            'BIOCONDA FILTER: building %s because it is not in channels '
+            'does not define skip, and force is not specified', pkg)
+        return True
+
+    logger.debug('recipes: %s', recipes)
+    recipes = list(recipes)
+    nrecipes = len(recipes)
+    max_recipe = max(map(len, recipes))
+    template = (
+        'Filtering {{0}} of {{1}} ({{2:.1f}}%) {{3:<{0}}}'.format(max_recipe)
+    )
+    print(flush=True)
     try:
-        for item in zip(recipes, *map(pkgnames, env_matrix)):
-            recipe = item[0]
-            pkgs = item[1:]
-            targets = {Target(f, env) for f, env in zip(pkgs, env_matrix) if tobuild(f)}
-            logger.debug("recipe %s: %s", recipe, '\n\t' + '\n\t'.join(map(str, targets)))
+        for i, recipe in enumerate(sorted(recipes)):
+            perc = (i + 1) / nrecipes * 100
+            print(
+                template.format(i + 1, nrecipes, perc, recipe),
+                end='\r'
+            )
+            targets = set()
+            for env in env_matrix:
+                pkg = built_package_path(recipe, env)
+                if tobuild(recipe, env):
+                    targets.update([Target(pkg, env)])
             if targets:
                 yield recipe, targets
     except sp.CalledProcessError as e:
         logger.debug(e.stdout)
         logger.error(e.stderr)
         exit(1)
-
-
-def build(recipe,
-          recipe_folder,
-          env,
-          config,
-          testonly=False,
-          channels=None,
-          docker=None):
-    """
-    Build a single recipe for a single env
-
-    Parameters
-    ----------
-    recipe : str
-        Path to recipe
-
-    env : dict
-        Environment (typically a single yielded dictionary from EnvMatrix
-        instance)
-
-    config : dict
-        Configuration dictionary.
-
-    testonly : bool
-        If True, skip building and instead run the test described in the
-        meta.yaml.
-
-    channels : list
-        Channels to include via the `--channel` argument to conda-build
-
-    docker : docker.Client object
-        Run docker container using this client
-    """
-    logger.info("Building and testing '%s' for environment %s", recipe, ';'.join(['='.join(i) for i in sorted(env)]))
-    build_args = []
-    if testonly:
-        build_args.append("--test")
-    else:
-        build_args += ["--no-anaconda-upload"]
-
-    channel_args = []
-    for c in config['channels']:
-        channel_args.extend(['--channel', c])
-
-    if docker is not None:
-        conda_build_folder = os.path.join(os.path.dirname(os.path.dirname(shutil.which("conda"))), "conda-bld")
-        logger.info("Using client's conda-build folder: %s", conda_build_folder)
-        recipe = os.path.relpath(recipe, recipe_folder)
-        binds={
-            pkg_resources.resource_filename('bioconda_utils', 'bioconda_startup.sh'): {
-                "bind": "/opt/share/bioconda_startup.sh",
-                "mode": "ro"
-            },
-            os.path.abspath(recipe_folder): {
-                "bind": "/opt/recipes",
-                "mode": "ro"
-            },
-        }
-        for subdir in ['svn-cache', 'hg-cache', 'git-cache', 'src-cache', 'linux-64']:
-            binds[os.path.join(conda_build_folder, subdir)] = {
-                'bind': os.path.join('/opt/miniconda/conda-bld/', subdir),
-                'mode': 'rw'
-            }
-        env = dict(env)
-        env["ABI"] = 4
-        logger.debug('Docker binds: %s', binds)
-        logger.debug('Docker env: %s', env)
-
-        user_id = 1000  #os.getuid()
-        command = ("bash /opt/share/bioconda_startup.sh {uid} "
-                "conda build {args} --override-channels --quiet recipes/{recipe}".format(
-                    uid=user_id, args=' '.join(channel_args), recipe=recipe))
-        logger.debug('Docker command: %s', command)
-        container = docker.create_container(
-            image=config['docker_image'],
-            volumes=["/opt/recipes", "/opt/miniconda"],
-            user=user_id,
-            environment=env,
-            command=command,
-            host_config=docker.create_host_config(binds=binds, network_mode="host"))
-        cid = container["Id"]
-        docker.start(container=cid)
-        status = docker.wait(container=cid)
-        logger.debug('Docker status: %s', status)
-        if status != 0:
-            logger.error(docker.logs(container=cid, stdout=True, stderr=True).decode())
-            return False
-        logger.info('Successfully built %s', recipe)
-        return True
-    else:
-        try:
-            p = sp.run(["conda", "build", "--override-channels", recipe] + build_args + channel_args,
-                   stdout=sp.PIPE,
-                   stderr=sp.STDOUT,
-                   check=True,
-                   universal_newlines=True,
-                   env=merged_env(env))
-            logger.debug(p.stdout)
-            logger.debug(" ".join(p.args))
-            logger.info('Successfully built %s', recipe)
-            return True
-        except sp.CalledProcessError as e:
-            logger.error(e.stdout)
-            return False
-
-
-def test_recipes(recipe_folder,
-                 config,
-                 packages="*",
-                 testonly=False,
-                 force=False,
-                 docker=None):
-    """
-    Build one or many bioconda packages.
-    """
-    config = load_config(config)
-    env_matrix = EnvMatrix(config['env_matrix'])
-    blacklist = get_blacklist(config['blacklists'], recipe_folder)
-
-    logger.info('blacklist: %s', ', '.join(sorted(blacklist)))
-
-    if packages == "*":
-        packages = ["*"]
-    recipes = []
-    for package in packages:
-        for recipe in get_recipes(recipe_folder, package):
-            if os.path.relpath(recipe, recipe_folder) in  blacklist:
-                logger.debug('blacklisted: %s', recipe)
-                continue
-            recipes.append(recipe)
-            logger.debug(recipe)
-    if not recipes:
-        logger.info("Nothing to be done.")
-        return
-
-    logger.info('Filtering recipes')
-    recipe_targets = dict(filter_recipes(recipes, env_matrix, config, force=force))
-    recipes = list(recipe_targets.keys())
-
-
-    dag, name2recipes = get_dag(recipes, blacklist=blacklist)
-
-    if not dag:
-        logger.info("Nothing to be done.")
-        return True
-    else:
-        logger.info("Building and testing %s recipes in total", len(dag))
-        logger.info("Recipes to build: %s", "\n".join(dag.nodes()))
-
-    subdags_n = int(os.environ.get("SUBDAGS", 1))
-    subdag_i = int(os.environ.get("SUBDAG", 0))
-
-    # Get connected subdags and sort by nodes
-    if testonly:
-        # use each node as a subdag (they are grouped into equal sizes below)
-        subdags = sorted([[n] for n in nx.nodes(dag)])
-    else:
-        # take connected components as subdags
-        subdags = sorted(map(sorted, nx.connected_components(dag.to_undirected(
-        ))))
-    # chunk subdags such that we have at most subdags_n many
-    if subdags_n < len(subdags):
-        chunks = [[n for subdag in subdags[i::subdags_n] for n in subdag]
-                  for i in range(subdags_n)]
-    else:
-        chunks = subdags
-    if subdag_i >= len(chunks):
-        logger.info("Nothing to be done.")
-        return True
-    # merge subdags of the selected chunk
-    subdag = dag.subgraph(chunks[subdag_i])
-
-    # ensure that packages which need a build are built in the right order
-    recipes = [recipe
-               for package in nx.topological_sort(subdag)
-               for recipe in name2recipes[package]]
-
-    logger.info("Building and testing subdag %s of %s (%s recipes)", subdag_i, subdags_n, len(recipes))
-
-    if docker is not None:
-        logger.info('Pulling docker image...')
-        docker.pull(config['docker_image'])
-        logger.info('Done.')
-
-    success = True
-    for recipe in recipes:
-        for target in recipe_targets[recipe]:
-            success &= build(recipe,
-                             recipe_folder,
-                             target.env,
-                             config,
-                             testonly,
-                             docker=docker)
-
-    if not testonly:
-        # upload builds
-        if (os.environ.get("TRAVIS_BRANCH") == "master" and
-                os.environ.get("TRAVIS_PULL_REQUEST") == "false"):
-            for recipe in recipes:
-                for target in recipe_targets[recipe]:
-                    package = target.pkg
-                    logger.debug("Checking existence of package {}".format(package))
-                    if os.path.exists(package):
-                        logger.info("Uploading package {}".format(package))
-                        try:
-                            sp.run(
-                                ["anaconda", "-t",
-                                 os.environ.get("ANACONDA_TOKEN"), "upload",
-                                 package],
-                                stdout=sp.PIPE,
-                                stderr=sp.STDOUT,
-                                check=True)
-                        except sp.CalledProcessError as e:
-                            print(e.stdout.decode(), file=sys.stderr)
-                            if b"already exists" in e.stdout:
-                                # ignore error assuming that it is caused by
-                                # existing package
-                                pass
-                            else:
-                                raise e
-                    else:
-                        logger.error("Package {} has not been built.".format(package))
-                        success = False
-    return success
+    print(flush=True)
 
 
 def get_blacklist(blacklists, recipe_folder):
@@ -505,9 +473,34 @@ def get_blacklist(blacklists, recipe_folder):
     return blacklist
 
 
+def validate_config(config):
+    """
+    Validate config against schema
+
+    Parameters
+    ----------
+    config : str or dict
+        If str, assume it's a path to YAML file and load it. If dict, use it
+        directly.
+    """
+    if not isinstance(config, dict):
+        config = yaml.load(open(config))
+    fn = pkg_resources.resource_filename(
+        'bioconda_utils', 'config.schema.yaml'
+    )
+    schema = yaml.load(open(fn))
+    validate(config, schema)
+
+
 def load_config(path):
-    relpath = lambda p: os.path.relpath(p, os.path.dirname(path))
-    config = yaml.load(open(path))
+    validate_config(path)
+
+    if isinstance(path, dict):
+        config = path
+        relpath = lambda p: p
+    else:
+        config = yaml.load(open(path))
+        relpath = lambda p: os.path.relpath(p, os.path.dirname(path))
 
     def get_list(key):
         # always return empty list, also if NoneType is defined in yaml
@@ -516,8 +509,21 @@ def load_config(path):
             return []
         return value
 
-    config['env_matrix'] = relpath(config['env_matrix'])
-    config['blacklists'] = [relpath(p) for p in get_list('blacklists')]
-    config['index_dirs'] = [relpath(p) for p in get_list('index_dirs')]
-    config['channels'] = get_list('channels')
-    return config
+    default_config = {
+        'env_matrix': {'CONDA_PY': 35},
+        'blacklists': [],
+        'channels': [],
+        'docker_image': 'condaforge/linux-anvil',
+        'requirements': None,
+        'upload_channel': 'bioconda'
+    }
+    if 'env_matrix' in config:
+        if isinstance(config['env_matrix'], str):
+            config['env_matrix'] = relpath(config['env_matrix'])
+    if 'blacklists' in config:
+        config['blacklists'] = [relpath(p) for p in get_list('blacklists')]
+    if 'channels' in config:
+        config['channels'] = get_list('channels')
+
+    default_config.update(config)
+    return default_config

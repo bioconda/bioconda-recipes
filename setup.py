@@ -17,11 +17,12 @@ setup(
         (
             'bioconda_utils',
             [
-                'bioconda_utils/bioconda_startup.sh',
+                'bioconda_utils/bioconda_utils-requirements.txt',
+                'bioconda_utils/config.schema.yaml',
             ],
         )
     ],
-    install_requires=["argh", "networkx", "pydotplus", "pyyaml", "conda_build", "docker-py", "requests<2.11"],
+    install_requires=["argh", "networkx", "pydotplus", "pyyaml", "requests<2.11", "jsonschema"],
     entry_points={"console_scripts": [
         "bioconda-utils = bioconda_utils.cli:main",
         "bioconductor_skeleton = bioconda_utils.bioconductor_skeleton:main"

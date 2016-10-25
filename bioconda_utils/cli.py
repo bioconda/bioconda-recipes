@@ -12,10 +12,12 @@ import argh
 from argh import arg
 import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
-from docker import Client as DockerClient
 
 from . import utils
+from .build import build_recipes
+from . import docker_utils
 
+logger = logging.getLogger(__name__)
 # NOTE:
 #
 # A package is the name of the software package, like `bowtie`.
@@ -35,36 +37,67 @@ from . import utils
 @arg('--force',
      help='Force building the recipe even if it already exists in '
      'the bioconda channel')
-@arg('--docker', nargs='?', metavar='URL', const='unix://var/run/docker.sock',
-     help='Build packages in docker container (continuumio/conda_builder_linux).')
+@arg('--docker', action='store_true',
+     help='Build packages in docker container.')
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
+@arg('--mulled-test', action='store_true', help="Run a mulled-build test on the built package")
+@arg('--build_script_template', help='''Filename to optionally replace build
+     script template used by the Docker container. By default use
+     docker_utils.BUILD_SCRIPT_TEMPLATE. Only used if --docker is True.''')
+@arg('--pkg_dir', help='''Specifies the directory to which container-built
+     packages should be stored on the host. Default is to use the host's
+     conda-bld dir. If --docker is not specified, then this argument is
+     ignored.''')
+@arg('--conda-build-version',
+     help='''Version of conda-build to use if building
+     in a docker container. Has no effect otherwise.''')
 def build(recipe_folder,
           config,
           packages="*",
           testonly=False,
           force=False,
           docker=None,
-          loglevel="warning",
+          loglevel="info",
+          mulled_test=False,
+          build_script_template=None,
+          pkg_dir=None,
+          conda_build_version=docker_utils.DEFAULT_CONDA_BUILD_VERSION,
           ):
-
-    logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s", level=getattr(logging, loglevel.upper()))
-    logger = logging.getLogger(__name__)
+    LEVEL = getattr(logging, loglevel.upper())
+    logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
+    logging.getLogger('bioconda_utils').setLevel(getattr(logging, loglevel.upper()))
     cfg = utils.load_config(config)
     setup = cfg.get('setup', None)
     if setup:
         logger.debug("Running setup: %s" % setup)
         for cmd in setup:
-            sp.run(shlex.split(cmd))
-    if docker is not None:
-        logger.debug("Setting up docker client v%s at %s", cfg['docker_client_version'], docker)
-        docker = DockerClient(base_url=docker, version=cfg['docker_client_version'])
+            utils.run(shlex.split(cmd))
+    if docker:
+        if build_script_template is not None:
+            build_script_template = open(build_script_template).read()
+        else:
+            build_script_template = docker_utils.BUILD_SCRIPT_TEMPLATE
+        if pkg_dir is None:
+            use_host_conda_bld = True
+        else:
+            use_host_conda_bld = False
 
-    success = utils.test_recipes(recipe_folder,
+        docker_builder = docker_utils.RecipeBuilder(
+            build_script_template=build_script_template,
+            pkg_dir=pkg_dir,
+            use_host_conda_bld=use_host_conda_bld,
+            conda_build_version=conda_build_version,
+        )
+    else:
+        docker_builder = None
+
+    success = build_recipes(recipe_folder,
                                  config=config,
                                  packages=packages,
                                  testonly=testonly,
                                  force=force,
-                                 docker=docker)
+                                 mulled_test=mulled_test,
+                                 docker_builder=docker_builder)
     exit(0 if success else 1)
 
 
@@ -93,26 +126,41 @@ def dag(recipe_folder, packages="*", format='gml', hide_singletons=False):
 
 
 @arg('recipe_folder', help='Path to recipes directory')
-@arg('--packages', nargs='+', help='Glob for packages to inspect (default is all)')
-@arg('--dependencies', nargs='+', help='Return recipes with these dependencies')
+@arg('--dependencies', nargs='+',
+     help='''Return recipes in `recipe_folder` in the dependency chain for the
+     packages listed here. Answers the question "what does PACKAGE need?"''')
+@arg('--reverse-dependencies', nargs='+',
+     help='''Return recipes in `recipe_folder` in the reverse dependency chain
+     for packages listed here. Answers the question "what depends on
+     PACKAGE?"''')
+@arg('--restrict',
+     help='''Restrict --dependencies to packages in `recipe_folder`. Has no
+     effect if --reverse-dependencies, which always looks just in the recipe
+     dir.''')
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
-def dependent(recipe_folder, packages="*", dependencies=None, loglevel='warning'):
+def dependent(recipe_folder, restrict=False, dependencies=None, reverse_dependencies=None, loglevel='warning'):
     """
     Print recipes dependent on a package
     """
-    logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s", level=getattr(logging, loglevel.upper()))
-    logger = logging.getLogger(__name__)
-    if dependencies is None:
-        return
+    if dependencies and reverse_dependencies:
+        raise ValueError(
+            '`dependencies` and `reverse_dependencies` are mutually exclusive')
 
-    d, n2r = utils.get_dag(utils.get_recipes(recipe_folder, packages), restrict=False)
+    LEVEL = getattr(logging, loglevel.upper())
+    logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
+    logging.getLogger('bioconda_utils').setLevel(getattr(logging, loglevel.upper()))
 
-    recipes = []
-    for dep in dependencies:
-        for i in d[dep]:
-            for r in n2r[i]:
-                recipes.append(r)
-    print('\n'.join(sorted(recipes)))
+    d, n2r = utils.get_dag(utils.get_recipes(recipe_folder, "*"), restrict=restrict)
+
+    if reverse_dependencies is not None:
+        func, packages = nx.algorithms.descendants, reverse_dependencies
+    elif dependencies is not None:
+        func, packages = nx.algorithms.ancestors, dependencies
+
+    pkgs = []
+    for pkg in packages:
+        pkgs.extend(list(func(d, pkg)))
+    print('\n'.join(sorted(pkgs)))
 
 
 def main():
