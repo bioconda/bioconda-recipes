@@ -3,14 +3,19 @@
 NGS_SDK_VERSION=1.2.5
 NCBI_VDB_VERSION=2.7.0
 
-# download extra sources using conda's mechanism
-# see: https://github.com/stuarteberg/conda-multisrc-example
-CONDA_PYTHON=$(conda info --root)/bin/python
-${CONDA_PYTHON} ${RECIPE_DIR}/download-extra-sources.py
+curl -L https://github.com/ncbi/ngs/archive/${NGS_SDK_VERSION}.tar.gz \
+	> ngs-sdk-${NGS_SDK_VERSION}.tar.gz
+curl -L https://github.com/ncbi/ncbi-vdb/archive/${NCBI_VDB_VERSION}.tar.gz \
+	> ncbi-vdb-${NCBI_VDB_VERSION}.tar.gz
 
-WORK_DIR=`dirname $SRC_DIR`
-SRC_SDK=$WORK_DIR/ngs-sdk/ngs-${NGS_SDK_VERSION}
-SRC_VDB=$WORK_DIR/ncbi-vdb/ncbi-vdb-${NCBI_VDB_VERSION}
+mkdir -p ngs-sdk
+mkdir -p ncbi-vdb
+
+tar xzf ngs-sdk-${NGS_SDK_VERSION}.tar.gz -C ngs-sdk
+tar xzf ncbi-vdb-${NCBI_VDB_VERSION}.tar.gz -C ncbi-vdb
+
+SRC_SDK=$SRC_DIR/ngs-sdk/ngs-${NGS_SDK_VERSION}
+SRC_VDB=$SRC_DIR/ncbi-vdb/ncbi-vdb-${NCBI_VDB_VERSION}
 
 ####
 # build ngs-sdk
