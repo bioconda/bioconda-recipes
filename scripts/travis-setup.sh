@@ -15,6 +15,7 @@ curl -O https://repo.continuum.io/miniconda/Miniconda3-latest-$tag-x86_64.sh
 sudo bash Miniconda3-latest-$tag-x86_64.sh -b -p /anaconda
 sudo chown -R $USER /anaconda
 export PATH=/anaconda/bin:$PATH
+conda update conda
 conda install -y --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/conda-requirements.txt
 conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
 
