@@ -38,8 +38,8 @@ def upload(package, token=None, label=None):
 
     logger.info("BIOCONDA UPLOAD uploading package %s", package)
     try:
-        utils.run(["anaconda", "-t", token, 'upload', package] + label_arg,)
-
+        cmds = ["anaconda", "-t", token, 'upload', package] + label_arg
+        p = utils.run(cmds)
         logger.info("BIOCONDA UPLOAD SUCCESS: uploaded package %s", package)
         return True
 
@@ -53,5 +53,8 @@ def upload(package, token=None, label=None):
             return True
         else:
             # to avoid broadcasting the token in logs
-            e.args = ['<overwritten>']
+            e.cmd = ' '.join(cmds).replace(token, '<token>')
+            logger.error('BIOCONDA UPLOAD ERROR: command: %s', e.cmd)
+            logger.error('BIOCONDA UPLOAD ERROR: stdout+stderr: %s', e.stdout)
             raise e
+
