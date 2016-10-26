@@ -1,5 +1,4 @@
-#!/bin/sh
-set -x -e
+#!/bin/bash
 
 # install program
 $PYTHON setup.py install
