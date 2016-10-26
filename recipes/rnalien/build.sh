@@ -6,4 +6,5 @@ export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
 stack setup
+stack update
 stack build
