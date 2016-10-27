@@ -179,7 +179,7 @@ class BioCProjectPage(object):
         t = tarfile.open(self.cached_tarball)
         d = t.extractfile(os.path.join(self.package, 'DESCRIPTION')).read()
         self._contents = d
-        c = configparser.ConfigParser()
+        c = configparser.ConfigParser(strict=False)
 
         # On-spec config files need a "section", but the DESCRIPTION file
         # doesn't have one. So we just add a fake section, and let the
@@ -296,18 +296,24 @@ class BioCProjectPage(object):
                 version = " " + version
 
             if name.lower() == 'r':
-                # "r >=2.5" rather than "r-r >=2.5"
-                specific_r_version = True
-                results.append(name.lower() + version)
+
+                # Had some issues with CONDA_R finding the right version if "r"
+                # had version restrictions. Since we're generally building
+                # up-to-date packages, we can just use "r".
+
+                # # "r >=2.5" rather than "r-r >=2.5"
+                # specific_r_version = True
+                # results.append(name.lower() + version)
+                # results.append('r')
+                pass
             else:
                 results.append(prefix + name.lower() + version)
 
             if prefix + name.lower() in GCC_PACKAGES:
                 self.depends_on_gcc = True
 
-        # Add R itself if no specific version was specified
-        if not specific_r_version:
-            results.append('r')
+        # Add R itself
+        results.append('r')
         self._dependencies = results
         return self._dependencies
 

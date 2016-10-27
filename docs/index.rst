@@ -52,8 +52,8 @@ Step 2: Setup Bioconda
 After installing Miniconda, you can use the ``conda`` command to setup bioconda with::
 
    conda config --add channels r
-   conda config --add channels bioconda
    conda config --add channels conda-forge
+   conda config --add channels bioconda
 
 The ``r`` channel is added to satisfy the `R language <https://www.r-project.org/>`_
 dependencies of some packages as well as some non-R dependencies.
@@ -61,7 +61,9 @@ Even if you don't plan on installing R packages, the `r` channel is required
 for some Bioconda packages. Similarly, the ``conda-forge`` channel contains
 many dependencies that are not strictly for bioinformatics but that are
 required for Bioconda packages to work (see more at
-`https://conda-forge.github.io/_`)
+`https://conda-forge.github.io`_).
+Be sure to add the channels in the given order, because it defines how conda handles ambiguity between channels.
+See `http://conda.pydata.org/docs/channels.html`_ for more information.
 
 Step 3: Install packages or create environments
 -----------------------------------------------
@@ -99,85 +101,21 @@ Consider `adding a badge <_static/badge-generator/>`_ to your posters and presen
 that a tool can be easily installed from bioconda.
 
 
-Developers
-==========
+Contributors
+============
+
+Core
+----
 
 * `Johannes Köster <https://github.com/johanneskoester>`_
-* `Hyeshik Chang <https://github.com/hyeshik>`_
 * `Ryan Dale <https://github.com/daler>`_
-* `David Koppstein <https://github.com/dkoppstein>`_
 * `Brad Chapman <https://github.com/chapmanb>`_
-* `Per Unneberg <https://github.com/percyfal>`_
 * `Chris Tomkins-Tinch <https://github.com/tomkinsc>`_
-* `Saulo Alves <https://github.com/sauloal>`_
-* `Augustine (Gus) Dunn <https://github.com/xguse>`_
-* `Rory Kirchner <https://github.com/roryk>`_
-* `Will Dampier <https://github.com/JudoWill>`_
-* `Luca Pinello <https://github.com/lucapinello>`_
-* `Sebastian Luna Valero <https://github.com/sebastian-luna-valero>`_
-* `Brant Faircloth <https://github.com/brantfaircloth>`_
-* `Kyle Beauchamp <https://github.com/kyleabeauchamp>`_
-* `Adam caprez <https://github.com/acaprez>`_
-* `Alexey Strokach <https://github.com/ostrokach>`_
-* `Brent Pedersen <https://github.com/brentp>`_
-* `Guillermo Carrasco <https://github.com/guillermo-carrasco>`_
-* `Yuri Pirola <https://github.com/yp>`_
-* `Robin Andeer <https://github.com/robinandeer>`_
-* `Måns Magnusson <https://github.com/moonso>`_
-* `Lorena Pantano <https://github.com/lpantano>`_
-* `Roman Valls Guimerà <https://github.com/brainstorm>`_
-* `Vivek Rai <https://github.com/vivekiitkgp>`_
-* `Zachary Charlop-Powers <https://github.com/zachcp>`_
-* `Tiago Antao <https://github.com/tiagoantao>`_
-* `Olga Botvinnik <https://github.com/olgabot>`_
-* `Marcel Martin <https://github.com/marcelm>`_
-* `Andreas Sjödin <https://github.com/druvus>`_
-* `Joe Brown <https://github.com/brwnj>`_
-* `Sahil Seth <https://github.com/sahilseth>`_
-* `Ino de Bruijn <https://github.com/inodb>`_
-* `Keith Simmon <https://github.com/kes1smmn>`_
 * `Björn Grüning <https://github.com/bgruening>`_
-* `Devon Ryan <https://github.com/dpryan79>`_
-* `Miika Ahdesmaki <https://github.com/mjafin>`_
-* `Christian Brueffer <https://github.com/cbrueffer>`_
-* `Jerome Kelleher <https://github.com/jeromekelleher>`_
-* `Thomas Cokelaer <https://github.com/cokelaer>`_
-* `Dilmurat Yusuf <https://github.com/dyusuf>`_
-* `Vince Yokois <https://github.com/vyokois>`_
-* `Daniel Klevebring <https://github.com/dakl>`_
-* `Dane Kennedy <https://github.com/kennedydane>`_
-* `Alain Domissy <https://github.com/alaindomissy>`_
-* `Sebastian Schmeier <https://github.com/sschmeier>`_
-* `Saket Choudhary <https://github.com/saketkc>`_
-* `Daniel Gaston <https://github.com/dgaston>`_
-* `Joris van Steenbrugge <https://github.com/Jorisvansteenbrugge>`_
-* `Gildas Le Corguillé <https://github.com/lecorguille>`_
-* `Zhuoqing Fang <https://github.com/BioNinja>`_
-* `Anthony Bretaudeau <https://github.com/abretaud>`_
-* `Jillian Rowe <https://github.com/jerowe>`_
-* `James Taylor <https://github.com/jxtx>`_
-* `Bérénice Batut <https://github.com/bebatut>`_
-* `Rémi Marenco <https://github.com/remimarenco>`_
-* `Nitesh Turaga <https://github.com/nitesh1989>`_
-* `Daniel Blankenberg <https://github.com/blankenberg>`_
-* `Saskia Hiltemann <https://github.com/shiltemann>`_
-* `Tom Smith <https://github.com/TomSmithCGAT>`_
-* `Justin Fear <https://github.com/jfear>`_
-* `Hai Nguyen <https://github.com/hainm>`_
-* `Greg Von Kuster <https://github.com/gregvonkuster>`_
-* `Florian Eggenhofer <https://github.com/eggzilla>`_
-* `Sebastian Will <https://github.com/s-will>`_
-* `Simon Ye <https://github.com/yesimon>`_
-* `Simon van Heeringen <https://github.com/simonvh>`_
-* `Kwangbom Choi <https://github.com/kbchoi-jax>`_
-* `Dave Larson <https://github.com/ernfrid>`_
-* `Henning Timm <https://github.com/HenningTimm>`_
-* `Stephen J Newhouse <https://github.com/snewhouse>`_
-* `Phil Ewels <https://github.com/ewels>`_
-* `Xiao-Ou Zhang <https://github.com/kepbod>`_
-* `Felipe Leprevost <https://github.com/prvst>`_
-* `Mattias de Hollander <https://github.com/mdehollander>`_
-* `Pierrick Roger <https://github.com/pierrickrogermele>`_
+
+Others
+------
+Bioconda has over 120 contributors, see `here <https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
 
 ----
 
