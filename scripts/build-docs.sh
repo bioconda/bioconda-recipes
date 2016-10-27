@@ -9,7 +9,8 @@ fi
 
 cd "${TRAVIS_BUILD_DIR}/docs"
 
-pip install -r requirements.txt
+pip install auxlib --ignore-installed
+pip install -r requirements.txt --ignore-installed
 
 # Build the documentation
 GITHUB_USERNAME=${TRAVIS_REPO_SLUG%/*}
