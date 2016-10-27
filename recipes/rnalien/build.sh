@@ -7,4 +7,4 @@ export CPPFLAGS="-I${PREFIX}/include"
 
 stack setup
 stack update
-stack build
+stack build --extra-include-dirs ${PREFIX}/include
