@@ -37,8 +37,13 @@ bioconda-utils -h
 
 ## Developer notes
 
-New version of conda-build? Update `DEFAULT_CONDA_BUILD_VERSION`
-in [docker_utils.py](bioconda_utils/docker_utils.py) and the version spec in
-[conda-requirements.txt](conda-requirements.txt), for example as in
-[#24](https://github.com/bioconda/bioconda-utils/pull/24/files).
+New version of conda-build? Update `DEFAULT_CONDA_BUILD_VERSION` in
+[`docker_utils.py`](bioconda_utils/docker_utils.py) which is the version used
+for docker containers, and the version spec in
+[`conda-requirements.txt`](conda-requirements.txt) which is used to set up the
+system environment and will therefore be used for non-docker builds (primarily
+OSX but will also be used for Linux if `--docker` is not provided to
+`bioconda-utils build`).
+
+For example see [#24](https://github.com/bioconda/bioconda-utils/pull/24/files).
 
