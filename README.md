@@ -34,3 +34,11 @@ bioconda-utils -h
   to specify libs (e.g., libgcc) in the run dependencies.
 - the `mulled-build` testing also means we get per-package docker containers for free
 
+
+## Developer notes
+
+New version of conda-build? Update `DEFAULT_CONDA_BUILD_VERSION`
+in [docker_utils.py](bioconda_utils/docker_utils.py) and the version spec in
+[conda-requirements.txt](conda-requirements.txt), for example as in
+[#24](https://github.com/bioconda/bioconda-utils/pull/24/files).
+
