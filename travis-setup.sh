@@ -26,6 +26,8 @@ python setup.py install
 pip install -r pip-test-requirements.txt
 pip install -r pip-requirements.txt
 
+set -x
+
 # setup bioconda channel
 conda config --add channels bioconda
 conda config --add channels r
