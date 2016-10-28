@@ -62,7 +62,7 @@ logger = logging.getLogger(__name__)
 
 
 # If conda_build_version is not provided, this is what is used by default.
-DEFAULT_CONDA_BUILD_VERSION = '2.0.6'
+DEFAULT_CONDA_BUILD_VERSION = '2.0.7'
 
 # ----------------------------------------------------------------------------
 # BUILD_SCRIPT_TEMPLATE
