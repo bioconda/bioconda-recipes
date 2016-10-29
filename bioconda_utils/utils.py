@@ -16,6 +16,8 @@ import networkx as nx
 import requests
 from jsonschema import validate
 import datetime
+import tempfile
+
 
 from conda_build import api
 from conda_build.metadata import MetaData
@@ -381,7 +383,50 @@ def last_commit_to_master():
     return date
 
 
-def filter_recipes(recipes, env_matrix, channels=None, force=False, quick=True):
+def newly_unblacklisted(config_file, recipe_folder):
+    """
+    Returns the set of recipes that were blacklisted in master branch but have
+    since been removed from the blacklist. Considers the contents of all
+    blacklists in the current config file and all blacklists in the same config
+    file in master branch.
+
+    Parameters
+    ----------
+
+    config_file : str
+        Needs filename (and not dict) because we check what the contents of the
+        config file were in the master branch.
+
+    recipe_folder : str
+        Path to recipe dir, needed by get_blacklist
+
+    """
+    logger.debug('Examining master branch config file')
+    curr = get_blacklist(
+        yaml.load(open(config_file))['blacklists'], recipe_folder)
+    p = run(['git', 'show', 'master:{}'.format(config_file)])
+    prev = set()
+    for bl in yaml.load(p.stdout)['blacklists']:
+        p = run(['git', 'show', 'master:{}'.format(bl)])
+        tmp = tempfile.NamedTemporaryFile(delete=False).name
+        with open(tmp, 'w') as fout:
+            fout.write(p.stdout)
+        prev.update(get_blacklist([tmp], recipe_folder))
+    results = prev.difference(curr)
+    logger.debug('Recipes newly unblacklisted:\n%s', '\n'.join(list(results)))
+    return results
+
+
+def changed_since_master(recipe_folder):
+    "Return filenames changed since master branch"
+    p = run(['git', 'diff', 'master', '--name-only'])
+    return [
+        os.path.dirname(os.path.relpath(i, recipe_folder))
+        for i in p.stdout.splitlines(False)
+    ]
+
+
+def filter_recipes(recipes, env_matrix, channels=None, force=False):
     """
     Generator yielding only those recipes that should be built.
 
@@ -398,10 +443,6 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False, quick=True):
 
     force : bool
         Build the package even if it is already available in supplied channels.
-
-    quick : bool
-        If True, then if a recipe hasn't changed within two days after the last
-        merge to the master branch, then skip it. This helps speed up testing.
     """
     if not isinstance(env_matrix, EnvMatrix):
         env_matrix = EnvMatrix(env_matrix)
@@ -451,27 +492,6 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False, quick=True):
     logger.debug('recipes: %s', recipes)
     recipes = list(recipes)
     nrecipes = len(recipes)
-
-    if quick:
-        last = last_commit_to_master()
-
-        def is_new(recipe):
-            for fn in os.listdir(recipe):
-                m = datetime.datetime.fromtimestamp(
-                    os.path.getmtime(os.path.join(recipe, fn))
-                )
-                diff = (m - last).days
-                if diff > -2:
-                    return True
-
-        recipes = [recipe for recipe in recipes if is_new(recipe)]
-        logger.info('Quick filter: filtered out %s of %s recipes '
-                    'that are >2 days older than master branch',
-                    nrecipes - len(recipes), nrecipes)
-        nrecipes = len(recipes)
-        if nrecipes == 0:
-            raise StopIteration
-
     max_recipe = max(map(len, recipes))
     template = (
         'Filtering {{0}} of {{1}} ({{2:.1f}}%) {{3:<{0}}}'.format(max_recipe)

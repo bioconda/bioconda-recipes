@@ -187,6 +187,7 @@ def build_recipes(
         Speed up recipe filtering by only checking those that are reasonably
         new.
     """
+    orig_config = config
     config = utils.load_config(config)
     env_matrix = utils.EnvMatrix(config['env_matrix'])
     blacklist = utils.get_blacklist(config['blacklists'], recipe_folder)
@@ -207,10 +208,29 @@ def build_recipes(
         logger.info("Nothing to be done.")
         return
 
+    logger.debug('recipes: %s', recipes)
+    if quick:
+        if not isinstance(orig_config, str):
+            raise ValueError("Need a config filename (and not a dict) for "
+                             "quick filtering since we need to check that "
+                             "file in the master branch")
+        unblacklisted = [
+            os.path.join(recipe_folder, i)
+            for i in utils.newly_unblacklisted(orig_config, recipe_folder)
+        ]
+        logger.debug('Unblacklisted: %s', unblacklisted)
+        changed = [
+            os.path.join(recipe_folder, i) for i in
+            utils.changed_since_master(recipe_folder)
+        ]
+        logger.debug('Changed: %s', changed)
+        recipes = set(unblacklisted + changed).intersection(recipes)
+        logger.debug('Quick-filtered recipes: %s', recipes)
+
     logger.info('Filtering recipes')
     recipe_targets = dict(
         utils.filter_recipes(
-            recipes, env_matrix, config['channels'], force=force, quick=quick)
+            recipes, env_matrix, config['channels'], force=force)
     )
     recipes = list(recipe_targets.keys())
 
