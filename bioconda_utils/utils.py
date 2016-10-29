@@ -413,7 +413,6 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False, quick=True):
     for channel in channels:
         channel_packages[channel].update(get_channel_packages(channel=channel))
 
-
     def tobuild(recipe, env):
         # TODO: get the modification time of recipe/meta.yaml. Only continue
         # the slow steps below if it's newer than the last commit to master.

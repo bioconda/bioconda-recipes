@@ -84,7 +84,8 @@ def build(recipe,
             pkg = utils.built_package_path(recipe, env)
             if not os.path.exists(pkg):
                 logger.error(
-                    "BIOCONDA BUILD FAILED: the built package %s cannot be found", pkg)
+                    "BIOCONDA BUILD FAILED: the built package %s "
+                    "cannot be found", pkg)
                 return False
             build_success = True
         else:
@@ -230,7 +231,9 @@ def build_recipes(
     subdag_i = int(os.environ.get("SUBDAG", 0))
 
     if subdag_i >= subdags_n:
-        raise ValueError("SUBDAG=%s (zero-based) but only SUBDAGS=%s subdags are available")
+        raise ValueError(
+            "SUBDAG=%s (zero-based) but only SUBDAGS=%s "
+            "subdags are available")
 
     # Get connected subdags and sort by nodes
     if testonly:
