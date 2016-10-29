@@ -51,6 +51,8 @@ logger = logging.getLogger(__name__)
 @arg('--conda-build-version',
      help='''Version of conda-build to use if building
      in a docker container. Has no effect otherwise.''')
+@arg('--quick', help='''To speed up filtering, do not consider any recipes that
+     are > 2 days older than the latest commit to master branch.''')
 def build(recipe_folder,
           config,
           packages="*",
@@ -62,6 +64,7 @@ def build(recipe_folder,
           build_script_template=None,
           pkg_dir=None,
           conda_build_version=docker_utils.DEFAULT_CONDA_BUILD_VERSION,
+          quick=False,
           ):
     LEVEL = getattr(logging, loglevel.upper())
     logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
@@ -97,7 +100,9 @@ def build(recipe_folder,
                                  testonly=testonly,
                                  force=force,
                                  mulled_test=mulled_test,
-                                 docker_builder=docker_builder)
+                                 docker_builder=docker_builder,
+                                 quick=quick,
+                            )
     exit(0 if success else 1)
 
 

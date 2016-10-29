@@ -142,6 +142,7 @@ def build_recipes(
     docker_builder=None,
     label=None,
     disable_upload=False,
+    quick=False,
 ):
     """
     Build one or many bioconda packages.
@@ -180,6 +181,10 @@ def build_recipes(
 
     disable_upload :  bool
         If True, do not upload the package. Useful for testing.
+
+    quick : bool
+        Speed up recipe filtering by only checking those that are reasonably
+        new.
     """
     config = utils.load_config(config)
     env_matrix = utils.EnvMatrix(config['env_matrix'])
@@ -204,7 +209,7 @@ def build_recipes(
     logger.info('Filtering recipes')
     recipe_targets = dict(
         utils.filter_recipes(
-            recipes, env_matrix, config['channels'], force=force)
+            recipes, env_matrix, config['channels'], force=force, quick=quick)
     )
     recipes = list(recipe_targets.keys())
 

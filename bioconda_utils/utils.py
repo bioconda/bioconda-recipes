@@ -15,6 +15,7 @@ import pkg_resources
 import networkx as nx
 import requests
 from jsonschema import validate
+import datetime
 
 from conda_build import api
 from conda_build.metadata import MetaData
@@ -364,7 +365,23 @@ class Target:
         return ';'.join(['='.join([i, str(j)]) for i, j in self.env])
 
 
-def filter_recipes(recipes, env_matrix, channels=None, force=False):
+def last_commit_to_master():
+    """
+    Identifies the day of the last commit to master branch.
+    """
+    if not shutil.which('git'):
+        raise ValueError("git not found")
+    p = sp.run(
+        'git log master --date=iso | grep "^Date:" | head -n1',
+        shell=True, stdout=sp.PIPE, check=True
+    )
+    date = datetime.datetime.strptime(
+        p.stdout[:-1].decode().split()[1],
+        '%Y-%m-%d')
+    return date
+
+
+def filter_recipes(recipes, env_matrix, channels=None, force=False, quick=True):
     """
     Generator yielding only those recipes that should be built.
 
@@ -381,6 +398,10 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
 
     force : bool
         Build the package even if it is already available in supplied channels.
+
+    quick : bool
+        If True, then if a recipe hasn't changed within two days after the last
+        merge to the master branch, then skip it. This helps speed up testing.
     """
     if not isinstance(env_matrix, EnvMatrix):
         env_matrix = EnvMatrix(env_matrix)
@@ -392,9 +413,6 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
     for channel in channels:
         channel_packages[channel].update(get_channel_packages(channel=channel))
 
-    # TODO: get the time of the last master branch, e.g.:
-    #
-    # git log master | grep "^Date:" | head -n1
 
     def tobuild(recipe, env):
         # TODO: get the modification time of recipe/meta.yaml. Only continue
@@ -434,6 +452,27 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
     logger.debug('recipes: %s', recipes)
     recipes = list(recipes)
     nrecipes = len(recipes)
+
+    if quick:
+        last = last_commit_to_master()
+
+        def is_new(recipe):
+            for fn in os.listdir(recipe):
+                m = datetime.datetime.fromtimestamp(
+                    os.path.getmtime(os.path.join(recipe, fn))
+                )
+                diff = (m - last).days
+                if diff > -2:
+                    return True
+
+        recipes = [recipe for recipe in recipes if is_new(recipe)]
+        logger.info('Quick filter: filtered out %s of %s recipes '
+                    'that are >2 days older than master branch',
+                    nrecipes - len(recipes), nrecipes)
+        nrecipes = len(recipes)
+        if nrecipes == 0:
+            raise StopIteration
+
     max_recipe = max(map(len, recipes))
     template = (
         'Filtering {{0}} of {{1}} ({{2:.1f}}%) {{3:<{0}}}'.format(max_recipe)
