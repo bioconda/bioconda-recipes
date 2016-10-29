@@ -5,5 +5,11 @@ make
 cd ../../
 cd src
 make
-./r2r --GSC-weighted-consensus ../demo/demo1.sto ../demo/intermediate/demo1.cons.sto 3 0.97 0.9 0.75 4 0.97 0.9 0.75 0.5 0.1
-cp -p r2r $PREFIX/bin 
+#copy binary to bin
+cp -p r2r $PREFIX/bin
+cd ../demo
+make
+#copy test files to share
+cp -p demo1.sto $PREFIX/share/
+cp -p intermediate/demo1.cons.sto $PREFIX/share/
+
