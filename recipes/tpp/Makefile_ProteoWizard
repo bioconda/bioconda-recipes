@@ -1,0 +1,474 @@
+# -*- Makefile -*-
+# vim: set ft=make ts=8 sw=8 sts=8 noet:
+#
+# Copyright (C) 2014 Institute for Systems Biology
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+# 
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# 
+# Institute for Systems Biology
+# 401 Terry Avenue North
+# Seattle, WA  98109  USA
+#
+# $ Id: $
+#
+
+#
+# TPP uses its own Makefile rules for building Proteowizard as the bjam/GNU 
+# autotool mechanism in Proteowizard doesn't appear to be working correctly
+# with the minimal Proteowizard source package they release.
+#
+# Also note that unlike many of the other external packages TPP depends on or
+# includes this one doesn't get unpackaged but instead is directly checked into
+# our repository. This is presumbably to allow us to make some source code 
+# changes. See the README for more details.
+#
+# And one last detail, for Windows we also use the pre-compiled archive 
+# provided by the ProteoWizard project as it contains vendor specific dll's.
+#
+
+# Include TPP make configuration
+include $(or $(SRC_DIR),$(abspath ../..))/common.mk
+
+# Default directories
+PWIZ_DIR    := $(TPP_EXT)/ProteoWizard
+PWIZ_SRCDIR := $(PWIZ_DIR)/pwiz-src
+PWIZ_OBJDIR := $(BUILD_OBJ)/pwiz
+PWIZ_MSIDIR := $(PWIZ_DIR)/pwiz-msi
+
+# Proteowizard Team City Server
+PWIZ_TEAMCITY := https://teamcity.labkey.org/repository/download
+
+# List Proteowizard source files used by TPP
+PWIZ_SRCS := \
+   $(PWIZ_SRCDIR)/libraries/libsvm-3.0/svm.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/common/ExtraZeroSamplesFilter.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/common/LocalMaximumPeakDetector.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/common/ZeroSampleFiller.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/frequency/FrequencyEstimatorPhysicalModel.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/frequency/FrequencyEstimatorSimple.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/frequency/MagnitudeLorentzian.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/frequency/ParameterEstimator.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/frequency/PeakDetectorMatchedFilter.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/frequency/PeakDetectorNaive.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/frequency/TruncatedLorentzian.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/frequency/TruncatedLorentzianEstimator.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/frequency/TruncatedLorentzianParameters.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/passive/MSDataCache.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/peakdetect/PeakFamilyDetector.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/peakdetect/PeakFamilyDetectorFT.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/MS2Deisotoper.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/MS2NoiseFilter.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/PrecursorMassFilter.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/PrecursorRecalculatorDefault.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/SpectrumList_ChargeStateCalculator.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/SpectrumListFactory.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/SpectrumList_Filter.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/SpectrumList_MetadataFixer.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/SpectrumList_MZWindow.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/SpectrumList_PeakFilter.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/SpectrumList_PeakPicker.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/SpectrumList_PrecursorRecalculator.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/SpectrumList_PrecursorRefine.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/SpectrumList_Sorter.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/SpectrumList_TitleMaker.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/SpectrumList_ZeroSamplesFilter.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/spectrum_processing/ThresholdFilter.cpp \
+   $(PWIZ_SRCDIR)/pwiz/analysis/Version.cpp \
+   $(PWIZ_SRCDIR)/pwiz_aux/msrc/utility/vendor_api/thermo/ScanFilter.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/common/cv.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/common/CVTranslator.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/common/diff_std.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/common/obo.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/common/ParamTypes.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/identdata/DefaultReaderList.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/identdata/Diff.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/identdata/IO.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/identdata/Reader.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/identdata/References.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/identdata/Version.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/misc/FrequencyData.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/misc/PeakData.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/BinaryDataEncoder.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/ChromatogramList_mzML.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/DefaultReaderList.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/Diff.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/Index_mzML.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/IO.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/LegacyAdapter.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/MSData.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/MSDataFile.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/MSDataMerger.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/MSNumpress.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/RAMPAdapter.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/Reader.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/References.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/Serializer_MGF.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/Serializer_MSn.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/Serializer_mzML.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/Serializer_mzXML.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/SpectrumInfo.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/SpectrumList_BTDX.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/SpectrumListCache.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/SpectrumList_MGF.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/SpectrumList_MSn.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/SpectrumList_mzML.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/SpectrumList_mzXML.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/msdata/Version.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/proteome/AminoAcid.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/proteome/DefaultReaderList.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/proteome/Diff.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/proteome/Reader.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/tradata/DefaultReaderList.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/tradata/Diff.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/tradata/IO.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/tradata/Reader.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/tradata/References.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/ABI/Reader_ABI.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/ABI/Reader_ABI_Detail.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/ABI/SpectrumList_ABI.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/ABI/T2D/Reader_ABI_T2D.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/ABI/T2D/SpectrumList_ABI_T2D.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/Agilent/Reader_Agilent.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/Agilent/SpectrumList_Agilent.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/Bruker/Reader_Bruker.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/Bruker/Reader_Bruker_Detail.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/Bruker/SpectrumList_Bruker.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/ExtendedReaderList.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/Shimadzu/Reader_Shimadzu.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/Shimadzu/ChromatogramList_Shimadzu.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/Thermo/ChromatogramList_Thermo.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/Thermo/Reader_Thermo.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/Thermo/Reader_Thermo_Detail.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/Thermo/SpectrumList_Thermo.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/vendor_readers/Waters/Reader_Waters.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/chemistry/Chemistry.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/chemistry/ChemistryData.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/chemistry/IsotopeCalculator.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/chemistry/IsotopeEnvelopeEstimator.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/chemistry/IsotopeTable.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/chemistry/MZTolerance.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/math/Parabola.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/minimxml/SAXParser.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/minimxml/XMLWriter.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/misc/Base64.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/misc/Filesystem.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/misc/IntegerSet.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/misc/IterationListener.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/misc/random_access_compressed_ifstream.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/misc/SHA1Calculator.cpp \
+   $(PWIZ_SRCDIR)/pwiz/utility/misc/SHA1.cpp \
+   $(PWIZ_SRCDIR)/pwiz/Version.cpp 
+
+# ...add idconvert dependency source files
+PWIZ_SRCS += \
+   $(PWIZ_SRCDIR)/pwiz/data/common/Unimod.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/identdata/IdentData.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/identdata/IdentDataFile.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/identdata/MascotReader_dummy.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/identdata/Serializer_mzid.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/identdata/Serializer_pepXML.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/identdata/Serializer_protXML.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/proteome/Digestion.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/proteome/Modification.cpp \
+   $(PWIZ_SRCDIR)/pwiz/data/proteome/Peptide.cpp
+
+# ...include HD5 support?
+ifneq ($(HDF5_SUPPORT),)
+   PWIZ_SRCS += $(PWIZ_SRCDIR)/pwiz/data/msdata/mz5/Configuration_mz5.cpp \
+      $(PWIZ_SRCDIR)/pwiz/data/msdata/mz5/Connection_mz5.cpp \
+      $(PWIZ_SRCDIR)/pwiz/data/msdata/mz5/Datastructures_mz5.cpp \
+      $(PWIZ_SRCDIR)/pwiz/data/msdata/mz5/ReferenceRead_mz5.cpp \
+      $(PWIZ_SRCDIR)/pwiz/data/msdata/mz5/ReferenceWrite_mz5.cpp \
+      $(PWIZ_SRCDIR)/pwiz/data/msdata/mz5/Translator_mz5.cpp \
+      $(PWIZ_SRCDIR)/pwiz/data/msdata/ChromatogramList_mz5.cpp \
+      $(PWIZ_SRCDIR)/pwiz/data/msdata/Serializer_mz5.cpp \
+      $(PWIZ_SRCDIR)/pwiz/data/msdata/SpectrumList_mz5.cpp
+endif
+
+# PWIZ_OBJS and PWIZ_DEPS are based on the PWIZ_SRCS
+PWIZ_OBJS := $(patsubst $(PWIZ_SRCDIR)/%.cpp,$(PWIZ_OBJDIR)/%.o,$(PWIZ_SRCS))
+PWIZ_DEPS := $(patsubst %.o,%.d,$(PWIZ_OBJS))
+
+# Build products
+PWIZ_LIB  := $(BUILD_LIB)/libpwiz.a
+PWIZ_LICS := ProteoWizard/LICENSE
+PWIZ_BINS := msconvert idconvert qtofpeakpicker
+PWIZ_ISS  := $(BUILD_DIR)/tpp_pwiz.iss
+PWIZ_MSI  := $(notdir $(firstword $(wildcard $(PWIZ_MSIDIR)/pwiz-setup*.msi missing.msi)))
+
+# Windows specific products
+ifeq ($(OS),Windows_NT)		
+
+# ...no executables
+PWIZ_BINS :=
+
+# ...additional licenses
+PWIZ_LICS += \
+   ProteoWizard/EULA.MHDAC \
+   ProteoWizard/EULA.MSFileReader \
+   ProteoWizard/EULA.SFCS
+
+endif
+
+
+# -- HELP ----------------------------------------------------------------------
+#
+help ::
+	@echo "Additional targets for Proteowizard:"
+	@echo "   pwiz         Build Proteowizard" 
+	@echo "   pwiz-clean   Removes all build products" 
+	@echo "   pwiz-win32   Download the Win32 version of ProteoWizard"
+	@echo "   pwiz-src     Download the Linux source version of ProteoWizard"
+	@echo
+
+
+# -- FULLINFO ------------------------------------------------------------------
+#
+# Print additional make info: 
+#
+fullinfo ::
+	@echo "Additional information for Proteowizard:"
+	@echo "   PWIZ_SRCDIR = $(PWIZ_SRCDIR)"
+	@echo "   PWIZ_OBJDIR = $(PWIZ_OBJDIR)"
+	@echo "   PWIZ_MSIDIR = $(PWIZ_MSIDIR)"
+	@echo
+	@echo "   PWIZ_SRCS = $(PWIZ_SRCS)"
+	@echo
+	@echo "   PWIZ_OBJS = $(PWIZ_OBJS)"
+	@echo
+
+
+# -- ALL ----------------------------------------------------------------------
+#
+# Top level build rule
+#
+.PHONY: pwiz all
+
+all : pwiz
+
+pwiz : $(PWIZ_LIB) 
+pwiz : $(addprefix $(BUILD_LIC)/,$(PWIZ_LICS))
+pwiz : $(addprefix $(BUILD_BIN)/,$(PWIZ_BINS))
+#pwiz : $(addprefix $(BUILD_DIR)/,$(PWIZ_MSI))
+
+
+# -- BUILD --------------------------------------------------------------------
+#
+
+# Additional CXX flags
+PWIZ_CXXFLAGS := -DPWIZ_USER_VERSION_INFO_H_STR="\"$(TPP_BUILDID)\"" \
+   -Wno-error=invalid-offsetof \
+   -MMD \
+   -I$(TPP_SRC)/Parsers/ramp \
+   -I$(BUILD_DIR)/include \
+   -I$(PWIZ_SRCDIR) \
+   -I$(PWIZ_SRCDIR)/libraries/boost_aux \
+   -I$(PWIZ_SRCDIR)/libraries/libsvm-3.0
+
+ifeq ($(HDF5_SUPPORT),)
+   PWIZ_CXXFLAGS += -DWITHOUT_MZ5
+endif
+
+# Include any pre-made source code header dependencies
+-include $(PWIZ_DEPS)
+
+# Build dependencies and objects
+$(PWIZ_OBJDIR)/pwiz%.o : $(PWIZ_SRCDIR)/pwiz%.cpp | $(MKDIR)
+	$(CXX) $(CXXFLAGS) $(PWIZ_CXXFLAGS) -c -o $@ $<
+
+$(PWIZ_OBJDIR)/libraries%.o : $(PWIZ_SRCDIR)/libraries%.cpp | $(MKDIR)
+	$(CXX) $(CXXFLAGS) $(PWIZ_CXXFLAGS) -c -o $@ $<
+
+#
+#
+# $(PWIZ_LIB): $(BOOST_LIBS) $(PWIZ_OBJS) 
+# TODO: should we bundling these in the pwiz static library?
+#       and it looks as if a few didn't get built by the boost rule but later
+#       get picked up because this file is included in the other
+
+
+# Build a single monolithic static library 
+$(PWIZ_LIB) : $(PWIZ_OBJS) 
+	ar -r $@ $^
+
+# Build programs
+.PHONY: msconvert 
+
+msconvert : $(BUILD_BIN)/msconvert
+
+$(BUILD_BIN)/msconvert : $(PWIZ_OBJDIR)/pwiz_tools/commandline/msconvert.o \
+                         $(TPP_VERSION_OBJ) $(PWIZ_LIB)
+	$(LD) $(LDFLAGS) -o $@ $^ \
+	   -L$(BUILD_LIB) \
+	   -lboost_system -lboost_program_options \
+	   -lboost_filesystem -lboost_iostreams -lboost_regex -lboost_thread \
+	   -lboost_serialization \
+	   $(HDF5_LDFLAGS) -lm -lrt -lz -lpthread
+
+.PHONY: idconvert 
+
+idconvert : $(BUILD_BIN)/idconvert
+
+$(BUILD_BIN)/idconvert : $(PWIZ_OBJDIR)/pwiz_tools/commandline/idconvert.o \
+			 $(TPP_VERSION_OBJ) $(PWIZ_LIB)
+	$(LD) $(LDFLAGS) -o $@ $^ \
+	   -L$(BUILD_LIB) \
+	   -lboost_system -lboost_program_options \
+	   -lboost_filesystem -lboost_iostreams -lboost_regex -lboost_thread \
+	   -lm -lrt -lz -lpthread
+
+.PHONY: qtofpeakpicker
+
+qtofpeakpicker : $(BUILD_BIN)/qtofpeakpicker
+
+$(BUILD_BIN)/qtofpeakpicker : $(PWIZ_OBJDIR)/pwiz_tools/commandline/qtofpeakpicker.o \
+			      $(TPP_VERSION_OBJ) $(PWIZ_LIB)
+	$(LD) $(LDFLAGS) -o $@ $^ \
+	   -L$(BUILD_LIB) \
+	   -lboost_system -lboost_program_options \
+	   -lboost_filesystem  -lboost_iostreams -lboost_regex -lboost_thread \
+	   $(HDF5_LDFLAGS) -lm -lrt -lz -lpthread
+
+# ProteoWizard License(s)
+$(BUILD_LIC)/ProteoWizard/LICENSE : $(PWIZ_SRCDIR)/LICENSE | $(MKDIR)
+	cp $^ $@
+
+$(BUILD_LIC)/ProteoWizard/EULA% : $(PWIZ_MSIDIR)/EULA% | $(MKDIR)
+	cp $^ $@
+
+# ProteoWizard Windows msi
+$(BUILD_DIR)/$(PWIZ_MSI) : $(PWIZ_MSIDIR)/$(PWIZ_MSI)
+	cp $^ $@
+
+
+# -- INSTALL -------------------------------------------------------------------
+#
+
+install :: $(addprefix $(INSTALL_BIN)/,$(PWIZ_BINS))
+install :: $(addprefix $(INSTALL_LIC)/,$(PWIZ_LICS))
+
+ifeq ($(OS),Windows_NT)
+install :: $(PWIZ_ISS)
+endif
+
+
+# -- PWIZ-ISS ------------------------------------------------------------------
+#
+# Autogenerate an Windows ISS installer file for Proteowizard
+#
+.PHONY: pwiz-iss pwiz-iss-clean
+
+
+pwiz-iss : $(PWIZ_ISS)
+
+PWIZ_MSI_PARMS =  /i ""{tmp}\$(PWIZ_MSI)"" 
+PWIZ_MSI_PARMS += APPLICATIONROOTDIRECTORY=""{app}\bin""
+PWIZ_MSI_PARMS += /qn
+
+_start_pwiz_lic :
+	echo ";"                            >  $(PWIZ_ISS)
+	echo "; Date: `date`"               >> $(PWIZ_ISS)
+	echo "; Autogenerated. DO NOT EDIT" >> $(PWIZ_ISS)
+	echo ";"                            >> $(PWIZ_ISS)
+	echo >> $(PWIZ_ISS)
+	echo -n "#define TPP_EXCLUDES \"{#TPP_EXCLUDES}," >> $(PWIZ_ISS)
+	echo -n "*ProteoWizard*" >> $(PWIZ_ISS)
+	echo >> $(PWIZ_ISS)
+	echo >> $(PWIZ_ISS)
+
+	echo "[Run]" >> $(PWIZ_ISS)
+	echo 'Filename: "msiexec.exe"; \'                    >> $(PWIZ_ISS)
+	echo '   Parameters: "$(PWIZ_MSI_PARMS)"; \'         >> $(PWIZ_ISS)
+	echo '   StatusMsg: "Installing ProteoWizard..."; \' >> $(PWIZ_ISS)
+	echo '   Components: pwiz '                          >> $(PWIZ_ISS)
+	echo >> $(PWIZ_ISS)
+
+	echo "[Files]" >> $(PWIZ_ISS)
+	echo 'Source: "$(PWIZ_MSI)"; DestDir: "{tmp}"' >> $(PWIZ_ISS)
+	echo >> $(PWIZ_ISS)
+
+%_add_pwiz_lic : _start_pwiz_lic
+	echo -n 'Source: "{#INSTALL_LIC}\$*"; ' 	>> $(PWIZ_ISS)
+	echo -n 'DestDir: "{app}\lic\ProteoWizard"; '	>> $(PWIZ_ISS)
+	echo 'Components: pwiz'				>> $(PWIZ_ISS)
+
+$(PWIZ_ISS) : $(BUILD_DIR)/$(PWIZ_MSI) 
+$(PWIZ_ISS) : $(foreach F,$(PWIZ_LICS),$(F)_add_pwiz_lic)
+
+
+pwiz-iss-clean : 
+	rm -f $(PWIZ_ISS)
+
+
+# -- CLEAN ---------------------------------------------------------------------
+#
+# Deletes all files that are normally created by the build.
+#
+.PHONY: clean pwiz-clean
+
+clean : pwiz-clean
+
+pwiz-clean : 
+	rm -vf $(PWIZ_LIB) $(PWIZ_ISS) \
+	   $(addprefix $(BUILD_LIC)/,$(PWIZ_LICS)) \
+	   $(addprefix $(BUILD_BIN)/,$(PWIZ_BINS)) \
+	   $(addprefix $(BUILD_DIR)/,$(PWIZ_MSI))
+	rm -vrf $(PWIZ_OBJDIR)/pwiz \
+	   $(PWIZ_OBJDIR)/pwiz_aux \
+	   $(PWIZ_OBJDIR)/pwiz_tools \
+	   $(PWIZ_OBJDIR)/libraries
+
+pwiz-realclean : pwiz-clean
+
+
+# -- PWIZ-SRC ------------------------------------------------------------------
+#
+# Download the latest Linux source from the TeamCity project website.
+#
+
+PWIZ_TCSRC := $(PWIZ_TEAMCITY)/bt81/.lastSuccessful
+
+.PHONY: pwiz-src-version pwiz-src
+
+pwiz-src-version :
+	rm -f $(PWIZ_SRCDIR)/VERSION
+	wget -nv -O $(PWIZ_SRCDIR)/VERSION $(PWIZ_TCSRC)/VERSION\?guest=1
+
+pwiz-src : V=$(shell cat $(PWIZ_SRCDIR)/VERSION | sed -e 's/\./_/g')
+pwiz-src : pwiz-src-version 
+	rm -f pwiz-src-without-lt-*.tar.bz2
+	wget --content-disposition -nv -P $(PWIZ_SRCDIR) \
+	   $(PWIZ_TCSRC)/pwiz-src-without-lt-$(V).tar.bz2\?guest=1
+
+
+# -- PWIZ-MSI ------------------------------------------------------------------
+#
+# Download the latest Windows MSI installer from the TeamCity project website.
+#
+
+PWIZ_TCMSI := $(PWIZ_TEAMCITY)/bt83/.lastSuccessful
+
+.PHONY: pwiz-msi-version pwiz-msi
+
+pwiz-msi-version :
+	rm -f $(PWIZ_MSIDIR)/VERSION
+	wget -nv -O $(PWIZ_MSIDIR)/VERSION $(PWIZ_TCMSI)/VERSION\?guest=1
+
+pwiz-msi : V=$(shell cat $(PWIZ_MSIDIR)/VERSION)
+pwiz-msi : pwiz-msi-version 
+	rm -f pwiz-setup-*-x86_64.msi 
+	wget --content-disposition -nv -P $(PWIZ_MSIDIR) \
+	   $(PWIZ_TCMSI)/pwiz-setup-$(V)-x86_64.msi\?guest=1
+

@@ -1,0 +1,4 @@
+INSTALL_DIR := ${PREFIX}
+BASE_URL := /tpp
+TPP_DATA := ${PREFIX}/share
+
