@@ -1,6 +1,14 @@
 #!/bin/bash
 set -eu -o pipefail
 
+# fix autoconf
+sed -i '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autom4te
+sed -i '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoheader
+sed -i '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoreconf
+sed -i '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/ifnames
+sed -i '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoscan
+sed -i '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
+
 # pre-built version
 if [ "$(uname)" == "Darwin" ]; then
     outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
@@ -16,6 +24,5 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     sed -i 's/CFLAGS+=${STADEN_LIB}/CFLAGS+=${STADEN_LIB} CFLAGS+=-lz/' CMakeLists.txt
     cd build
     cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBOOST_ROOT=$PREFIX -DBoost_NO_SYSTEM_PATHS=ON -DBoost_DEBUG=ON ..
-    sed -i 's|/usr/bin/perl|/usr/bin/env perl|' ./bin/autom4te
     make install CFLAGS="-L${PREFIX}/lib -I${PREFIX}/include"
 fi
