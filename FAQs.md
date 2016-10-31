@@ -1,16 +1,5 @@
 # FAQs
 
-## How is Travis-CI set up and configured?
-
-- `.travis.yml` is read by the Travis-CI worker.
-
-- the worker runs `scripts/travis-setup.sh`, which installs conda, adds channels, and installs `bioconda-utils`
-
-- the worker runs `scripts/travis-run.sh`. If the system is Linux, then the
-build is performed in a docker container (the one listed in `.travis.yml`). If
-OSX, then the build is performed without docker.
-
-- Only if the build is on the master branch will it be uploaded to anaconda.org
 
 
 ## How do I get set up to test recipes locally?
@@ -120,6 +109,28 @@ Open a [pull request](https://help.github.com/articles/about-pull-requests/) on
 the bioconda-recipes repo. If it's your first recipe or the recipe is doing
 something non-standard, please ask `@bioconda/core` for a review.
 
+### Use your new recipe
+
+When the PR is merged with the master branch, travis-ci will again do the
+builds but at the end will upload the packages to anaconda.org. Once the merge
+build completes, your new package is installable by anyone using:
+
+```
+conda install my-package-name -c bioconda
+```
+
+
+## How is Travis-CI set up and configured?
+
+- `.travis.yml` is read by the Travis-CI worker.
+
+- the worker runs `scripts/travis-setup.sh`, which installs conda, adds channels, and installs `bioconda-utils`
+
+- the worker runs `scripts/travis-run.sh`. If the system is Linux, then the
+build is performed in a docker container (the one listed in `.travis.yml`). If
+OSX, then the build is performed without docker.
+
+- Only if the build is on the master branch will it be uploaded to anaconda.org
 ## What does "SUBDAG" mean on Travis-CI?
 
 We have limited resources on Travis-CI on which to build packages. In an
