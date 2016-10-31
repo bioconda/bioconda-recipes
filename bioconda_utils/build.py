@@ -56,7 +56,10 @@ def build(recipe,
         "BIOCONDA BUILD START %s, env: %s",
         recipe, ';'.join(['='.join(map(str, i)) for i in sorted(env.items())])
     )
-    build_args = []
+    # --no-build-id is needed for some very long package names that triggers the 89 character limits
+    # this option can be removed as soon as all packages are rebuild with the 255 character limit
+    # Moreover, --no-build-id will block us from using parallel builds in conda-build 2.x
+    build_args = ["--no-build-id"]
     if testonly:
         build_args.append("--test")
     else:
