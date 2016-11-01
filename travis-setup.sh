@@ -16,7 +16,7 @@ export PATH=/anaconda/bin:$PATH
 
 # Add channels in the specified order.
 for channel in $(grep -v "^#" bioconda_utils/channel_order.txt); do
-    conda config --add channels $i
+    conda config --add channels $channel
 done
 
 conda config --get
