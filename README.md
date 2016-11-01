@@ -64,14 +64,20 @@ When the recipe is ready, first test it with your local conda installation via
 Bioconda uses the `bioconda`, `r`, and `conda-forge` channels. You can either
 set them globally with:
 ```
-conda config --add channels bioconda
-conda config --add channels r
 conda config --add channels conda-forge
+conda config --add channels defaults
+conda config --add channels r
+conda config --add channels bioconda
+
 ```
 
 or by adding the channels to the build command:
 
-    conda build recipes/your_package --channel bioconda --channel r --channel conda-forge
+    conda build recipes/your_package \
+        --channel conda-forge \
+        --channel defaults \
+        --channel r \
+        --channel bioconda
 
 Then, you can test the build in a docker container. The authoritative source
 for how packages are built can be found in the `scripts/travis-run.sh` script,
