@@ -179,7 +179,7 @@ class BioCProjectPage(object):
         t = tarfile.open(self.cached_tarball)
         d = t.extractfile(os.path.join(self.package, 'DESCRIPTION')).read()
         self._contents = d
-        c = configparser.ConfigParser()
+        c = configparser.ConfigParser(strict=False)
 
         # On-spec config files need a "section", but the DESCRIPTION file
         # doesn't have one. So we just add a fake section, and let the
