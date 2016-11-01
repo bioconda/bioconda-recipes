@@ -692,3 +692,7 @@ class TestSubdags(object):
         with utils.temp_env({'SUBDAGS': '5', 'SUBDAG': '4'}):
             self._build(recipes_fixture)
         assert 'Nothing to be done' in caplog.records()[-1].getMessage()
+
+
+def test_get_default_channels():
+    assert utils.get_default_channels() == ['conda-forge', 'defaults', 'r', 'bioconda']
