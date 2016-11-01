@@ -14,25 +14,22 @@ sudo bash Miniconda3-latest-${tag}-x86_64.sh -b -p /anaconda
 sudo chown -R $USER /anaconda
 export PATH=/anaconda/bin:$PATH
 
-# TODO: add remaining pip reqs to conda-forge
-conda install -y --file conda-requirements.txt \
-    --channel anaconda \
-    --channel r \
-    --channel conda-forge \
-    --channel bioconda
+# Add channels in the specified order.
+for channel in $(grep -v "^#" bioconda_utils/channel_order.txt); do
+    conda config --add channels $channel
+done
+
+conda config --get
+conda install -y --file conda-requirements.txt
 
 python setup.py install
 
 pip install -r pip-test-requirements.txt
 pip install -r pip-requirements.txt
 
-set -x
-
-# setup bioconda channel
-conda config --add channels bioconda
-conda config --add channels r
-conda config --add channels conda-forge
+# Add local channel as highest priority
 conda config --add channels file://anaconda/conda-bld
+conda config --get
 
 # involucro used for mulled-build
 curl -O https://github.com/involucro/involucro/releases/download/v1.1.2/involucro
