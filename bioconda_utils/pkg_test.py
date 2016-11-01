@@ -11,6 +11,7 @@ from conda_build.metadata import MetaData
 
 logger = logging.getLogger(__name__)
 
+
 def get_tests(path):
     "Extract tests from a built package"
     tmp = tempfile.mkdtemp()
@@ -29,9 +30,17 @@ def get_tests(path):
         if tests_commands:
             tests.append(' && '.join(tests_commands))
         if tests_imports and 'python' in requirements:
-            tests.append(' && '.join('python -c "import %s"' % imp for imp in tests_imports))
-        elif tests_imports and ('perl' in requirements or 'perl-threaded' in requirements):
-            tests.append(' && '.join('''perl -e "use %s;"''' % imp for imp in tests_imports))
+            tests.append(
+                ' && '.join('python -c "import %s"' % imp
+                            for imp in tests_imports)
+            )
+        elif tests_imports and (
+            'perl' in requirements or 'perl-threaded' in requirements
+        ):
+            tests.append(
+                ' && '.join('''perl -e "use %s;"''' % imp
+                            for imp in tests_imports)
+            )
 
     tests = ' && '.join(tests)
     tests = tests.replace('$R ', 'Rscript ')
@@ -63,7 +72,7 @@ def test_package(path, name_override='tmp', channels=['bioconda', 'r', 'conda-fo
     """
 
     assert path.endswith('.tar.bz2'), "Unrecognized path {0}".format(path)
-    #assert os.path.exists(path), '{0} does not exist'.format(path)
+    # assert os.path.exists(path), '{0} does not exist'.format(path)
 
     conda_bld_dir = os.path.abspath(os.path.dirname(os.path.dirname(path)))
 
@@ -89,7 +98,6 @@ def test_package(path, name_override='tmp', channels=['bioconda', 'r', 'conda-fo
 
     tests = get_tests(path)
     logger.debug('Tests to run: %s', tests)
-
 
     cmds = [
         'mulled-build',
