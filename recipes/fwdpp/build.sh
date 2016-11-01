@@ -6,6 +6,6 @@ make
 #block of yaml fails, presumably b/c pwd has changed by that point.
 export LD_LIBRARY_PATH=$PREFIX/lib
 if [ `uname` == 'Linux' ]; then make check; fi
-if [ `uname` == 'Darwin' ]; then for i in $(find testsuite -type f -perm +111|grep -v integration); do $i -r detailed; done; fi
+if [ `uname` == 'Darwin' ]; then cd test; for i in $(find testsuite -type f -perm +111|grep -v integration); do $i -r detailed; done; cd ..;fi
 make install
 
