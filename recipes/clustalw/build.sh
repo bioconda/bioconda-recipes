@@ -1,5 +1,5 @@
 #!/bin/bash
 
-mkdir -p ${PREFIX}/bin
-./configure --prefix=$PREFIX/bin
+mkdir -p ${PREFIX}
+./configure --prefix=$PREFIX
 make install
