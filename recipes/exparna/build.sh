@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # fix automake
-sed -i '' '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/aclocal
-sed -i '' '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/automake
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/aclocal
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/automake
 
 # fix autoconf
-sed -i '' '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autom4te
-sed -i '' '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoheader
-sed -i '' '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoreconf
-sed -i '' '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/ifnames
-sed -i '' '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoscan
-sed -i '' '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autom4te
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoheader
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoreconf
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/ifnames
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoscan
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
 
 # create configure file
 bash ./autotools-init.sh
