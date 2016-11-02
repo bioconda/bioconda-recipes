@@ -1,6 +1,6 @@
 #!/bin/bash -euo
 
-cmake -DCMAKE_INSTALL_PREFIX=$PREFIX CMakeLists.txt && make
-cp bin/prosic-call $PREFIX/bin
+# build statically linked binary with Rust
+LIBRARY_PATH=$PREFIX/lib cargo build --release
 
-$PYTHON setup.py install
+cp target/release/prosic $PREFIX/bin
