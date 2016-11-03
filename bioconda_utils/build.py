@@ -202,7 +202,7 @@ def build_recipes(
     blacklist = utils.get_blacklist(config['blacklists'], recipe_folder)
 
     if check_channels is None:
-        check_channels = config['channels'][-1]
+        check_channels = config['channels'][-1:]
 
     logger.info('blacklist: %s', ', '.join(sorted(blacklist)))
 
