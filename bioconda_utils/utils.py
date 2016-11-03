@@ -503,6 +503,8 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
     logger.debug('recipes: %s', recipes)
     recipes = list(recipes)
     nrecipes = len(recipes)
+    if nrecipes == 0:
+        raise StopIteration
     max_recipe = max(map(len, recipes))
     template = (
         'Filtering {{0}} of {{1}} ({{2:.1f}}%) {{3:<{0}}}'.format(max_recipe)

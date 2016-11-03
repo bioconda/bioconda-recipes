@@ -696,3 +696,7 @@ class TestSubdags(object):
 
 def test_get_default_channels():
     assert utils.get_default_channels() == ['conda-forge', 'defaults', 'r', 'bioconda']
+
+
+def test_zero_packages():
+    assert list(utils.filter_recipes([], {'CONDA_PY': [27, 35]})) == []
