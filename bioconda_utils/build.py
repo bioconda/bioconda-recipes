@@ -146,6 +146,7 @@ def build_recipes(
     docker_builder=None,
     label=None,
     disable_upload=False,
+    check_channels=None,
     quick=False,
 ):
     """
@@ -186,6 +187,11 @@ def build_recipes(
     disable_upload :  bool
         If True, do not upload the package. Useful for testing.
 
+    check_channels : list
+        Channels to check to see if packages already exist in them. If None,
+        then defaults to the highest-priority channel (that is,
+        `config['channels'][-1]`)
+
     quick : bool
         Speed up recipe filtering by only checking those that are reasonably
         new.
@@ -194,6 +200,9 @@ def build_recipes(
     config = utils.load_config(config)
     env_matrix = utils.EnvMatrix(config['env_matrix'])
     blacklist = utils.get_blacklist(config['blacklists'], recipe_folder)
+
+    if check_channels is None:
+        check_channels = config['channels'][-1]
 
     logger.info('blacklist: %s', ', '.join(sorted(blacklist)))
 
@@ -233,7 +242,7 @@ def build_recipes(
     logger.info('Filtering recipes')
     recipe_targets = dict(
         utils.filter_recipes(
-            recipes, env_matrix, config['channels'], force=force)
+            recipes, env_matrix, check_channels, force=force)
     )
     recipes = list(recipe_targets.keys())
 
