@@ -33,14 +33,16 @@ complicated and even conflicting dependencies or mixtures of different languages
 Ultimately, the usage of Conda should help to **perform reproducible science**.
 Bioconda already contains **over 1500 bioinformatics related packages**.
 
-Bioconda provides all packages for **Linux** (GLIBC >=2.12) and a subset of the packages for **Mac OS**.
-Windows is not supported.
-
 
 .. _setup:
 
 Setup and usage
 ===============
+
+Requirements
+------------
+
+**Linux** (any distribution with GLIBC >=2.12) or **Max OS**.
 
 Step 1: Install Conda
 ---------------------
