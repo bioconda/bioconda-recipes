@@ -415,7 +415,8 @@ def newly_unblacklisted(config_file, recipe_folder):
     logger.debug('Examining master branch config file')
     curr = get_blacklist(
         yaml.load(open(config_file))['blacklists'], recipe_folder)
-    p = run(['git', 'show', 'master:{}'.format(config_file)])
+    p = run(['git', 'fetch', 'origin', 'master'])
+    p = run(['git', 'show', 'FETCH_HEAD:{}'.format(config_file)])
     prev = set()
     for bl in yaml.load(p.stdout)['blacklists']:
         p = run(['git', 'show', 'master:{}'.format(bl)])
@@ -430,7 +431,8 @@ def newly_unblacklisted(config_file, recipe_folder):
 
 def changed_since_master(recipe_folder):
     "Return filenames changed since master branch"
-    p = run(['git', 'diff', 'master', '--name-only'])
+    p = run(['git', 'fetch', 'origin', 'master'])
+    p = run(['git', 'diff', 'FETCH_HEAD', '--name-only'])
     return [
         os.path.dirname(os.path.relpath(i, recipe_folder))
         for i in p.stdout.splitlines(False)
