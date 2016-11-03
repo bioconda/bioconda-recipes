@@ -419,7 +419,7 @@ def newly_unblacklisted(config_file, recipe_folder):
     p = run(['git', 'show', 'FETCH_HEAD:{}'.format(config_file)])
     prev = set()
     for bl in yaml.load(p.stdout)['blacklists']:
-        p = run(['git', 'show', 'master:{}'.format(bl)])
+        p = run(['git', 'show', 'FETCH_HEAD:{}'.format(bl)])
         tmp = tempfile.NamedTemporaryFile(delete=False).name
         with open(tmp, 'w') as fout:
             fout.write(p.stdout)
