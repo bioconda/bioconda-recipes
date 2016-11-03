@@ -33,5 +33,4 @@ conda config --get
 # setup bioconda-utils
 pip install git+https://github.com/bioconda/bioconda-utils.git@$BIOCONDA_UTILS_TAG
 
-git fetch origin master
-git show master:config.yml
+git diff --name-only $TRAVIS_COMMIT_RANGE | xargs -n1 dirname
