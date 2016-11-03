@@ -22,10 +22,16 @@ Export that as an environment variable:
 export BIOCONDA_UTILS_TAG=<PASTE TAG HERE>
 ```
 
+- Install the requirements for that version of bioconda-utils:
+
+```
+conda install --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/conda-requirements.txt
+```
+
 - Install that version of bioconda-utils:
 
 ```
-pip install https://github.com/bioconda/bioconda-utils.git@BIOCONDA_UTILS_TAG
+pip install git+https://github.com/bioconda/bioconda-utils.git@BIOCONDA_UTILS_TAG
 ```
 
 
