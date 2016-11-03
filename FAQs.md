@@ -25,7 +25,7 @@ export BIOCONDA_UTILS_TAG=<PASTE TAG HERE>
 - Install that version of bioconda-utils:
 
 ```
-pip install https://github.com/bioconda/bioconda-utils.git@BIOCONDA_UTILS_TAG
+pip install git+https://github.com/bioconda/bioconda-utils.git@BIOCONDA_UTILS_TAG
 ```
 
 
