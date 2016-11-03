@@ -3,11 +3,11 @@
 ./configure --prefix=$PREFIX
 make
 
-sed -i.bak 's|/usr/bin/perl|/usr/bin/env perl|' bin/autom4te
-sed -i.bak 's|/usr/bin/perl|/usr/bin/env perl|' bin/autoheader 
-sed -i.bak 's|/usr/bin/perl|/usr/bin/env perl|' bin/autoreconf 
-sed -i.bak 's|/usr/bin/perl|/usr/bin/env perl|' bin/ifnames 
-sed -i.bak 's|/usr/bin/perl|/usr/bin/env perl|' bin/autoscan 
-sed -i.bak 's|/usr/bin/perl|/usr/bin/env perl|' bin/autoupdate
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' bin/autom4te
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' bin/autoheader
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' bin/autoreconf
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' bin/ifnames
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' bin/autoscan
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' bin/autoupdate
 
 make install
