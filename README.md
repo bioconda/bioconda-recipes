@@ -10,8 +10,8 @@
 [Conda](http://anaconda.org) is a platform- and language-independent package
 manager that sports easy distribution, installation and version management of
 software.  The [bioconda channel](https://anaconda.org/bioconda) is a Conda
-channel providing bioinformatics related packages.  This repository hosts the
-corresponding recipes.
+channel providing bioinformatics related packages for **Linux** and **Mac OS**.
+This repository hosts the corresponding recipes.
 
 ## User guide
 
@@ -53,7 +53,8 @@ prerequisites are assumed:
 
 Fork this repository or create a new branch to work in. Within the new branch,
 [create a recipe](http://conda.pydata.org/docs/building/build.html)
-(`your_package` in this example) in the `recipes` directory. See our [guidelines](GUIDELINES.md) for best practices and examples.
+(`your_package` in this example) in the `recipes` directory. See our 
+[guidelines](GUIDELINES.md) for best practices and examples.
 
 ### Step 2: Test the recipe
 
