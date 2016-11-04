@@ -3,7 +3,7 @@
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
 if [ "$(uname)" == "Darwin" ]; then
    sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' vcflib/smithwaterman/Makefile
-   CXXFLAGS="${CXXFLAGS} -std=c++11"
+   CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
 fi
 
 export C_INCLUDE_PATH=$PREFIX/include
@@ -21,7 +21,7 @@ cd ../..
 
 cd src
 make autoversion
-make CPPFLAGS="-I$PREFIX/include ${CXXFLAGS}" LDFLAGS="-L$PREFIX/lib"
+make CPPFLAGS="-I$PREFIX/include" CXXFLAGS="${CXXFLAGS}" LDFLAGS="-L$PREFIX/lib"
 cd ..
 
 pythonfiles="scripts/fasta_generate_regions.py scripts/coverage_to_regions.py"
