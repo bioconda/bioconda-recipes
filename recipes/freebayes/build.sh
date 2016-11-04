@@ -21,7 +21,7 @@ cd ../..
 
 cd src
 make autoversion
-make CPPFLAGS="-I$PREFIX/include" CXXFLAGS="${CXXFLAGS}" LDFLAGS="-L$PREFIX/lib"
+make CPPFLAGS="-I$PREFIX/include" CXXFLAGS=${CXXFLAGS} LDFLAGS="-L$PREFIX/lib"
 cd ..
 
 pythonfiles="scripts/fasta_generate_regions.py scripts/coverage_to_regions.py"
