@@ -5,6 +5,9 @@ if [ "$(uname)" == "Darwin" ]; then
    sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' vcflib/smithwaterman/Makefile
 fi
 
+export C_INCLUDE_PATH=$PREFIX/include
+export CFLAGS="-I$PREFIX/include"
+
 # bamtools/cmake for zlib
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
