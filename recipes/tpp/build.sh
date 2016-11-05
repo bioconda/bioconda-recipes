@@ -37,5 +37,9 @@ sed -i.bak 's/^HTMLDOC_/#HTMLDOC_/g' Makefile.incl
 sed -i.bak 's|^GD_INCL.*|GD_INCL= -I ${PREFIX}/include/|g' Makefile.incl
 sed -i.bak 's|--with-thread stage|--with-thread stage include="${INCLUDE_PATH}" cxxflags="${CXXFLAGS}"|g' Makefile.incl
 
+# needed to supress long outputs that forces travis to fails (4MB limit)
+sed -i.bak 's|make \$(HDF5_ENV)|make --silent \$(HDF5_ENV)|g' Makefile.incl
+
+
 make --silent 2>&1 >/dev/null
-make install
+make install --silent 2>&1 >/dev/null
