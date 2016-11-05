@@ -4,6 +4,10 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 
+export CFLAGS="-I$PREFIX/include"
+export CPATH=${PREFIX}/include
+
+
 # Always build PIC code for enable static linking into other shared libraries
 export CXXFLAGS="${CXXFLAGS} -fPIC"
 
@@ -16,7 +20,7 @@ mkdir -p $PREFIX/params
 sed -i.bak s/endform/end_form/g trans_proteomic_pipeline/CGI/ProtXMLViewer.pl
 
 rm trans_proteomic_pipeline/extern/htmldoc.tgz
-rm trans_proteomic_pipeline/extern/htmldoc -rf
+rm -rf trans_proteomic_pipeline/extern/htmldoc
 cd trans_proteomic_pipeline/src/
 
 echo "TPP_ROOT=${PREFIX}/" >> Makefile.config.incl
