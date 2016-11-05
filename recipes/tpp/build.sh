@@ -1,11 +1,11 @@
 #!/bin/bash
 
-INCLUDE_PATH="${PREFIX}/include"
-LIBRARY_PATH="${PREFIX}/lib"
-LD_LIBRARY_PATH="${PREFIX}/lib"
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LD_LIBRARY_PATH="${PREFIX}/lib"
 
 # Always build PIC code for enable static linking into other shared libraries
-CXXFLAGS="${CXXFLAGS} -fPIC"
+export CXXFLAGS="${CXXFLAGS} -fPIC"
 
 ls -l $PREFIX/include/
 
