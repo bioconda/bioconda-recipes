@@ -1,9 +1,13 @@
 #!/bin/bash
 
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
+INCLUDE_PATH="${PREFIX}/include"
+LIBRARY_PATH="${PREFIX}/lib"
+LD_LIBRARY_PATH="${PREFIX}/lib"
 
+# Always build PIC code for enable static linking into other shared libraries
+CXXFLAGS="${CXXFLAGS} -fPIC"
+
+ls -l $PREFIX/include/
 
 mkdir -p $PREFIX/web
 mkdir -p $PREFIX/cgi-bin
@@ -27,8 +31,7 @@ echo "XSLT_PROC=${PREFIX}/bin/xsltproc" >> Makefile.config.incl
 
 sed -i.bak 's/^HTMLDOC_/#HTMLDOC_/g' Makefile.incl
 sed -i.bak 's|^GD_INCL.*|GD_INCL= -I ${PREFIX}/include/|g' Makefile.incl
-
-
+sed -i.bak 's|--with-thread stage|--with-thread stage include="${INCLUDE_PATH}" cxxflags="${CXXFLAGS}"|g' Makefile.incl
 
 make 
 make install
