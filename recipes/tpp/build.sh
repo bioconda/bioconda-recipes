@@ -39,6 +39,9 @@ sed -i.bak 's|--with-thread stage|--with-thread stage include="${INCLUDE_PATH}" 
 
 # needed to supress long outputs that forces travis to fails (4MB limit)
 sed -i.bak 's|make \$(HDF5_ENV)|make --silent \$(HDF5_ENV) 2>\&1 >/dev/null|g' Makefile.incl
+sed -i.bak 's|^XTANDEM_ZLIB_LIB=|XTANDEM_ZLIB_LIB=${PREFIX}/lib/|g' Makefile
+
+
 
 make --silent 2>&1 >/dev/null
 make install --silent 2>&1 >/dev/null
