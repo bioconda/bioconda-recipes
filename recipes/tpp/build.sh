@@ -37,5 +37,5 @@ sed -i.bak 's/^HTMLDOC_/#HTMLDOC_/g' Makefile.incl
 sed -i.bak 's|^GD_INCL.*|GD_INCL= -I ${PREFIX}/include/|g' Makefile.incl
 sed -i.bak 's|--with-thread stage|--with-thread stage include="${INCLUDE_PATH}" cxxflags="${CXXFLAGS}"|g' Makefile.incl
 
-make 
+make > /dev/null
 make install
