@@ -19,6 +19,12 @@ cd bamtools/build
 cmake ..
 cd ../..
 
+cd SeqLib
+./configure
+make CXXFLAGS="${CXXFLAGS}"
+make install
+cd ..
+
 cd src
 make autoversion
 make CPPFLAGS="-I$PREFIX/include" CXXFLAGS="${CXXFLAGS}" LDFLAGS="-L$PREFIX/lib"
