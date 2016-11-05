@@ -1,25 +1,34 @@
 #!/bin/bash
 
-set -e
-
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
-export C_INCLUDE_PATH=${INCLUDE_PATH}
-export CPLUS_INCLUDE_PATH=${INCLUDE_PATH}
-export TARGET=x86_64-unknown-linux-gnu
-cp ${RECIPE_DIR}/site.mk .
-cp ${RECIPE_DIR}/common.mk .
-ls -l
 
-cp ${RECIPE_DIR}/Makefile_ProteoWizard extern/ProteoWizard/
 
-#cd extern/ProteoWizard/
-#mkdir pwiz-msi
-#make pwiz-msi
+mkdir -p $PREFIX/web
+mkdir -p $PREFIX/cgi-bin
+mkdir -p $PREFIX/params
 
-#cd ../..
+sed -i.bak s/endform/end_form/g trans_proteomic_pipeline/CGI/ProtXMLViewer.pl
 
-make info
-make all
+rm trans_proteomic_pipeline/extern/htmldoc.tgz
+rm trans_proteomic_pipeline/extern/htmldoc -rf
+cd trans_proteomic_pipeline/src/
+
+echo "TPP_ROOT=${PREFIX}/" >> Makefile.config.incl
+echo "TPP_WEB=${PREFIX}/web/" >> Makefile.config.incl
+echo "CGI_USERS_DIR=${PREFIX}/cgi-bin/" >> Makefile.config.incl
+echo "HTMLDOC_BIN=" >> Makefile.config.incl
+#echo "LINK=shared" >> Makefile.config.incl
+#echo "LIBEXT=so" >> Makefile.config.incl
+
+echo "GNUPLOT_BINARY=${PREFIX}/bin/gnuplot" >> Makefile.config.incl
+echo "XSLT_PROC=${PREFIX}/bin/xsltproc" >> Makefile.config.incl
+
+sed -i.bak 's/^HTMLDOC_/#HTMLDOC_/g' Makefile.incl
+sed -i.bak 's|^GD_INCL.*|GD_INCL= -I ${PREFIX}/include/|g' Makefile.incl
+
+
+
+make 
 make install
