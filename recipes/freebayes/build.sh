@@ -3,7 +3,7 @@
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
 if [ "$(uname)" == "Darwin" ]; then
    sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' vcflib/smithwaterman/Makefile
-   CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}"
+   CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
 fi
 
 export C_INCLUDE_PATH=$PREFIX/include
