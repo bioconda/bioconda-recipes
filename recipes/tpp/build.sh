@@ -40,6 +40,9 @@ sed -i.bak 's|--with-thread stage|--with-thread stage include="${INCLUDE_PATH}" 
 # needed to supress long outputs that forces travis to fails (4MB limit)
 sed -i.bak 's|make \$(HDF5_ENV)|make --silent \$(HDF5_ENV) 2>\&1 >/dev/null|g' Makefile.incl
 
-
 make --silent 2>&1 >/dev/null
 make install --silent 2>&1 >/dev/null
+
+# remove the webserver part to save space - could be included if needed
+rm -rf $PREFIX/html/
+rm -rf $PREFIX/cgi-bin/
