@@ -4,8 +4,7 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 
-export CFLAGS="-I$PREFIX/include"
-export CPATH=${PREFIX}/include
+#export CFLAGS="-I$PREFIX/include"
 
 cp $RECIPE_DIR/Makefile trans_proteomic_pipeline/src/Makefile
 
@@ -41,13 +40,14 @@ sed -i.bak 's|--with-thread stage|--with-thread stage include="${INCLUDE_PATH}" 
 # needed to supress long outputs that forces travis to fails (4MB limit)
 sed -i.bak 's|make \$(HDF5_ENV)|make --silent \$(HDF5_ENV) 2>\&1 >/dev/null|g' Makefile.incl
 
-sed -i.bak 's|^ZLIB_INCL=|ZLIB_INCL=${PREFIX}/include|g' Makefile.incl
-sed -i.bak 's|^ZZLIB_LIB= -lz|ZLIB_LIB= -lz |g' Makefile.incl
+#sed -i.bak 's|^ZLIB_INCL=|ZLIB_INCL=${PREFIX}/include|g' Makefile.incl
+# skip make install-examples from hdf5
+sed -i.bak 's|HDF5_ENV); make install|HDF5_ENV); make install-recursive|g' Makefile.incl
 
 
 
-make --silent 2>&1 >/dev/null
-make install --silent 2>&1 >/dev/null
+make #--silent 2>&1 >/dev/null
+make install #--silent 2>&1 >/dev/null
 
 # remove the webserver part to save space - could be included if needed
 rm -rf $PREFIX/html/
