@@ -7,7 +7,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export CFLAGS="-I$PREFIX/include"
 export CPATH=${PREFIX}/include
 
-cp $SRC_DIR/Makefile trans_proteomic_pipeline/src/Makefile
+cp $RECIPE_DIR/Makefile trans_proteomic_pipeline/src/Makefile
 
 # Always build PIC code for enable static linking into other shared libraries
 export CXXFLAGS="${CXXFLAGS} -fPIC"
