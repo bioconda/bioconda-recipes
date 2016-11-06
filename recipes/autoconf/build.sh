@@ -18,15 +18,15 @@ perl_inteprator=$(./configure --prefix=$PREFIX | grep 'checking for perl...' | s
 #create soft link and place its path in bin/Make
 ln -s $perl_inteprator temp_perl
 temp_link=$(pwd)/temp_perl
-sed -i "s|"$perl_inteprator"|"$temp_link"|g" bin/Makefile
+sed -i.bak "s|"$perl_inteprator"|"$temp_link"|g" bin/Makefile
 
 make
 make install
 
 #change the link path back to the real path
-sed -i "s|"$temp_link"|"$perl_inteprator"|g" $PREFIX/bin/autom4te
-sed -i "s|"$temp_link"|"$perl_inteprator"|g" $PREFIX/bin/autoheader
-sed -i "s|"$temp_link"|"$perl_inteprator"|g" $PREFIX/bin/autoreconf
-sed -i "s|"$temp_link"|"$perl_inteprator"|g" $PREFIX/bin/ifnames
-sed -i "s|"$temp_link"|"$perl_inteprator"|g" $PREFIX/bin/autoscan
-sed -i "s|"$temp_link"|"$perl_inteprator"|g" $PREFIX/bin/autoupdate
+sed -i.bak "s|"$temp_link"|"$perl_inteprator"|g" $PREFIX/bin/autom4te
+sed -i.bak "s|"$temp_link"|"$perl_inteprator"|g" $PREFIX/bin/autoheader
+sed -i.bak "s|"$temp_link"|"$perl_inteprator"|g" $PREFIX/bin/autoreconf
+sed -i.bak "s|"$temp_link"|"$perl_inteprator"|g" $PREFIX/bin/ifnames
+sed -i.bak "s|"$temp_link"|"$perl_inteprator"|g" $PREFIX/bin/autoscan
+sed -i.bak "s|"$temp_link"|"$perl_inteprator"|g" $PREFIX/bin/autoupdate
