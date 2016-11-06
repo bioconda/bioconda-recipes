@@ -7,6 +7,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export CFLAGS="-I$PREFIX/include"
 export CPATH=${PREFIX}/include
 
+cp $SRC_DIR/Makefile trans_proteomic_pipeline/src/Makefile
 
 # Always build PIC code for enable static linking into other shared libraries
 export CXXFLAGS="${CXXFLAGS} -fPIC"
@@ -39,7 +40,9 @@ sed -i.bak 's|--with-thread stage|--with-thread stage include="${INCLUDE_PATH}" 
 
 # needed to supress long outputs that forces travis to fails (4MB limit)
 sed -i.bak 's|make \$(HDF5_ENV)|make --silent \$(HDF5_ENV) 2>\&1 >/dev/null|g' Makefile.incl
-sed -i.bak 's|^XTANDEM_ZLIB_LIB=|XTANDEM_ZLIB_LIB=${PREFIX}/lib/|g' Makefile
+
+sed -i.bak 's|^ZLIB_INCL=|ZLIB_INCL=${PREFIX}/include|g' Makefile.incl
+sed -i.bak 's|^ZZLIB_LIB= -lz|ZLIB_LIB= -lz |g' Makefile.incl
 
 
 
