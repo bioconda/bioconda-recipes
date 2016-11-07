@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export PERL_MM_USE_DEFAULT=1
 # If it has Build.PL use that, otherwise use Makefile.PL
 cpanm --installdeps .
 if [ -f Build.PL ]; then
