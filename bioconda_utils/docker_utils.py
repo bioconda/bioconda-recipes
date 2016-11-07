@@ -244,14 +244,21 @@ class RecipeBuilder(object):
             multiple runs of this RecipeBuilder object.
 
         pkg_dir : str or None
-            Specify where packages should appear on the host. If
-            `use_host_conda_bld` is True, then force `pkg_dir` to use the
-            host's conda-bld directory.
+            Specify where packages should appear on the host.
 
-            Otherwise, if `pkg_dir` is None, then a temporary directory will be
-            used for each call to `RecipeBuilder.build()`. If `pkg_dir` is
-            a string, then it will be created if needed and this directory will
-            be used store all built packages on the host.
+            If `pkg_dir` is None, then a temporary directory will be
+            created once for each RecipeBuilder instance and that directory
+            will be used for each call to `RecipeBuilder.build()`. This allows
+            subsequent recipes built by the container to see previous built
+            recipes without polluting the host's conda-bld directory.
+
+            If `pkg_dir` is a string, then it will be created if needed and
+            this directory will be used store all built packages on the host
+            instead of the temp dir.
+
+            If the above argument `use_host_conda_bld` is True, then the value
+            of `pkg_dir` will be ignored and the host's conda-bld directory
+            will be used.
 
             In all cases, `pkg_dir` will be mounted to `container_staging` in
             the container.
