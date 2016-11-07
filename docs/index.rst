@@ -31,13 +31,18 @@ These features turn Conda into the perfect package manager for bioinformatics,
 where analyses often involve the application of various tools with sometimes
 complicated and even conflicting dependencies or mixtures of different languages.
 Ultimately, the usage of Conda should help to **perform reproducible science**.
-Bioconda already contains **over 1000 bioinformatics related packages**.
+Bioconda already contains **over 1500 bioinformatics related packages**.
 
 
 .. _setup:
 
 Setup and usage
 ===============
+
+Requirements
+------------
+
+**Linux** (any distribution with GLIBC >=2.12) or **Max OS**.
 
 Step 1: Install Conda
 ---------------------
