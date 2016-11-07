@@ -388,6 +388,7 @@ class RecipeBuilder(object):
         cmd = [
             'docker', 'run',
             '--net', 'host',
+            '--rm',
             '-v', '{0}:/opt/build_script.bash'.format(build_script),
             '-v', '{0}:{1}'.format(self.pkg_dir, self.container_staging),
             '-v', '{0}:{1}'.format(recipe_dir, self.container_recipe),
