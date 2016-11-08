@@ -1,0 +1,96 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-delaporte
+  # Note that conda versions cannot contain -, so any -'s in the version have
+  # been replaced with _'s.
+  version: "3.0.0"
+
+source:
+  fn: Delaporte_3.0.0.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/Delaporte_3.0.0.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/Delaporte/Delaporte_3.0.0.tar.gz
+
+
+  # You can add a hash for the file here, like md5 or sha1
+  # md5: 49448ba4863157652311cc5ea4fea3ea
+  # sha1: 3bcfbee008276084cbb37a2b453963c61176a322
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # If this is a new build for the same version, increment the build
+  # number. If you do not include this key, it defaults to 0.
+  # number: 1
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: testthat
+requirements:
+  build:
+    - r-base
+    - r-rcpp >=0.11.0
+    - posix               # [win]
+    - {{native}}toolchain # [win]
+    - gcc                 # [not win]
+
+  run:
+    - r-base
+    - r-rcpp >=0.11.0
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('Delaporte')" # [not win]
+    - "\"%R%\" -e \"library('Delaporte')\"" # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://bitbucket.org/aadler/delaporte
+  license: GPL (>= 2) | LGPL (>= 3)
+  summary: Provides probability mass, distribution, quantile, random-variate generation, and
+    method-of-moments parameter-estimation functions for the Delaporte distribution.
+    The Delaporte is a discrete probability distribution which can be considered the
+    convolution of a negative binomial distribution with a Poisson distribution. Alternatively,
+    it can be considered a counting distribution with both Poisson and negative binomial
+    components. It has been studied in actuarial science as a frequency distribution
+    which has more variability than the Poisson, but less than the negative binomial.
+  license_family: GPL3
+
+# The original CRAN metadata for this package was:
+
+# Package: Delaporte
+# Type: Package
+# Title: Statistical Functions for the Delaporte Distribution
+# Version: 3.0.0
+# Date: 2016-07-19
+# Authors@R: c(person(given="Avraham", family="Adler", role=c("aut", "cph", "cre"), email="Avraham.Adler@gmail.com"))
+# Description: Provides probability mass, distribution, quantile, random-variate generation, and method-of-moments parameter-estimation functions for the Delaporte distribution. The Delaporte is a discrete probability distribution which can be considered the convolution of a negative binomial distribution with a Poisson distribution. Alternatively, it can be considered a counting distribution with both Poisson and negative binomial components. It has been studied in actuarial science as a frequency distribution which has more variability than the Poisson, but less than the negative binomial.
+# License: GPL (>= 2) | LGPL (>= 3)
+# URL: https://bitbucket.org/aadler/delaporte
+# BugReports: https://bitbucket.org/aadler/delaporte/issues
+# Imports: Rcpp (>= 0.11.0), stats
+# LinkingTo: Rcpp
+# Suggests: testthat
+# ByteCompile: yes
+# NeedsCompilation: yes
+# Packaged: 2016-07-19 12:25:35 UTC; Parents
+# Author: Avraham Adler [aut, cph, cre]
+# Maintainer: Avraham Adler <Avraham.Adler@gmail.com>
+# Repository: CRAN
+# Date/Publication: 2016-07-19 14:48:40
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
