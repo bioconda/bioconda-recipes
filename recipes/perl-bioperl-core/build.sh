@@ -15,6 +15,8 @@ if [ -f Build.PL ]; then
     ./Build test 2>&1 | tee tests.log
     # Make sure this goes in site
     ./Build install --installdirs site
+    # install scripts
+    ./Build install --install_path script=site/script
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site 2>&1 | tee configure.log
