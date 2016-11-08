@@ -11,9 +11,9 @@ chmod a+x $PREFIX/etc/conda/deactivate.d/jbrowse-sourcedir.sh
 cd $SRC_DIR
 
 mkdir -p $PREFIX/bin/
-cp bin/* $PREFIX/bin/
-chmod a+x $PREFIX/bin/*
-sed -i.bak 's|../src/perl5|../opt/jbrowse/src/perl5|g' $PREFIX/bin/*
+cp bin/*.pl $PREFIX/bin/
+chmod a+x $PREFIX/bin/*.pl
+sed -i.bak 's|../src/perl5|../opt/jbrowse/src/perl5|g' $PREFIX/bin/*.pl
 
 mkdir -p $PREFIX/opt/jbrowse/
 cp -r * $PREFIX/opt/jbrowse/
