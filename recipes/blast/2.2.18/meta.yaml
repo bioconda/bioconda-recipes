@@ -1,0 +1,50 @@
+package:
+    name: blast
+    version: 2.2.18
+
+source:
+    fn: ncbi-blast-2.2.18+-linux.tar.gz # [linux]
+    url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.2.18/ncbi-blast-2.2.18+-x64-linux.tar.gz # [linux]
+    md5: 2c5f4ecbba46ceff0338c9deeadb7faa # [linux]
+    fn: ncbi-blast-2.2.18+-universal-macosx.tar.gz # [osx]
+    url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.2.18/ncbi-blast-2.2.18+-universal-macosx.tar.gz # [osx]
+    md5: 71a3e6d7dfe84dd3ef0f8e4d30be1f8b # [osx]
+    patches:
+        - legacy_blast.pl.patch
+        - update_blastdb.pl.patch
+
+build:
+  number: 0
+
+requirements:
+    build:
+        - pcre # Need to link a dynamic library
+    run:
+        - perl
+        - pcre
+        - libgcc    # [not osx]
+
+test:
+    commands:
+        - blastdb_aliastool -version > /dev/null
+        - blastdbcmd -version > /dev/null
+        - blastn -version > /dev/null
+        - blastp -version > /dev/null
+        - blastx -version > /dev/null
+        - dustmasker -version > /dev/null
+        - legacy_blast.pl --version > /dev/null
+        - makeblastdb -version > /dev/null
+        - makembindex -version > /dev/null
+        - psiblast -version > /dev/null
+        - rpsblast -version > /dev/null
+        - rpstblastn -version > /dev/null
+        - segmasker -version > /dev/null
+        - tblastn -version > /dev/null
+        - tblastx -version > /dev/null
+        - windowmasker -version > /dev/null
+        #- update_blastdb.pl --version > /dev/null # --version does not exist yet
+
+about:
+    home: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs
+    license: Public Domain
+    summary: BLAST+ is a new suite of BLAST tools that utilizes the NCBI C++ Toolkit.
