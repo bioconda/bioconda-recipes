@@ -12,7 +12,7 @@ import sys
 from os import access
 from os import getenv
 from os import X_OK
-jar_file = 'SearchGUI-3.1.4.jar'
+jar_file = 'SearchGUI-2.1.4.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
