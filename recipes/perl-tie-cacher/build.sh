@@ -1,8 +1,6 @@
 #!/bin/bash
 
 # If it has Build.PL use that, otherwise use Makefile.PL
-cpanm  Text::WagnerFischer
-cpanm --installdeps .
 if [ -f Build.PL ]; then
     perl Build.PL
     ./Build
@@ -19,8 +17,6 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
-
-# Add more build steps here, if they are necessary.
 
 # See
 # http://docs.continuum.io/conda/build.html
