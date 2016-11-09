@@ -57,7 +57,7 @@ Step 2: Setup Bioconda
 After installing Miniconda, you can use the ``conda`` command to setup bioconda with::
 
    conda config --add channels conda-forge
-   conda config --add defaults
+   conda config --add channels defaults
    conda config --add channels r
    conda config --add channels bioconda
 
