@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export PATH="$PREFIX/bin:$PATH"
-export PYTHONPATH="$PREFIX/lib/python2.7/site-packages:$PYTHONPATH"
 mkdir $PREFIX/scripts
 cp ./scripts/*.p* $PREFIX/scripts
 cp ./scripts/*.p* $PREFIX/bin
