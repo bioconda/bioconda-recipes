@@ -1,5 +1,8 @@
 #!/bin/bash
 
+CC=${PREFIX}/bin/gcc
+CXX=${PREFIX}/bin/g++
+
 set -e -x -o pipefail
 
 mkdir -p $PREFIX/bin
