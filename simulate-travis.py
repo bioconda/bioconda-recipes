@@ -8,6 +8,9 @@ import subprocess as sp
 import shlex
 import argparse
 
+import conda.fetch
+
+
 usage = """
 
 This script simulates a travis-ci run on the local machine by using the current
@@ -47,13 +50,36 @@ ap.add_argument('--install-requirements', action='store_true', help='''Install
                 dependencies, and then exit.''')
 ap.add_argument('--set-channel-order', action='store_true', help='''Set the
                 correct channel priorities, and then exit''')
+ap.add_argument('--config-from-github', action='store_true', help='''Download
+                and use the config.yml and .travis.yml files from the master
+                branch of the github repo. Default is to use the files
+                currently on disk.''')
 args, extra = ap.parse_known_args()
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-# Read in the current .travis.yml to ensure we're getting the right vars.
-# Mostly we care about the bioconda-utils git tag.
-travis_config = yaml.load(open(os.path.join(HERE, '.travis.yml')))
+
+def _remote_or_local(fn, remote=False):
+    """
+    Downloads a temp file directly from the specified github branch or
+    the current one on disk.
+    """
+    if remote:
+        url = (
+            'https://raw.githubusercontent.com/daler/bioconda-recipes/'
+            '{branch}/{path}'.format(branch='master', path=fn)
+        )
+        print('Using config file {}'.format(url))
+        with conda.fetch.TmpDownload(url) as f:
+            cfg = yaml.load(open(f))
+    else:
+        cfg = yaml.load(open(os.path.join(HERE, fn)))
+    return cfg
+
+
+travis_config = _remote_or_local('.travis.yml', remote=args.config_from_github)
+bioconda_utils_config = _remote_or_local('config.yml', remote=args.config_from_github)
+
 env = {}
 for var in travis_config['env']['global']:
     if isinstance(var, dict) and list(var.keys()) == ['secure']:
@@ -63,7 +89,6 @@ for var in travis_config['env']['global']:
 
 
 if args.set_channel_order:
-    bioconda_utils_config = yaml.load(open(os.path.join(HERE, 'config.yml')))
     channels = bioconda_utils_config['channels']
     print("""
           Warnings like "'conda-forge' already in 'channels' list, moving to the top"
