@@ -16,6 +16,7 @@ sudo bash Miniconda3-latest-$tag-x86_64.sh -b -p /anaconda
 sudo chown -R $USER /anaconda
 export PATH=/anaconda/bin:$PATH
 conda update -y conda
+conda install -y yaml
 
 $SCRIPT_DIR/../simulate-travis.py --set-channel-order
 $SCRIPT_DIR/../simulate-travis.py --install-requirements
