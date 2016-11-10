@@ -1,15 +1,14 @@
 #!/usr/bin/env perl
 
 my @items = (
-    ["YAML", "1.15"],
-    ["YAML::Any", "1.15"],
+    ["YAML", "1.18"],
+    ["YAML::Any", "1.18"],
     ["YAML::Dumper", undef],
     ["YAML::Dumper::Base", undef],
     ["YAML::Error", undef],
     ["YAML::Loader", undef],
     ["YAML::Loader::Base", undef],
     ["YAML::Marshall", undef],
-    ["YAML::Mo", "0.88"],
     ["YAML::Node", undef],
     ["YAML::Tag", undef],
     ["YAML::Types", undef],

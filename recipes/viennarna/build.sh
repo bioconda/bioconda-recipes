@@ -15,6 +15,9 @@ fi
 
 ./configure --prefix=$PREFIX \
             --without-perl --without-python \
+            --with-kinwalker \
+            --disable-lto \
+            --without-doc \
             ${extra_config_options} && \
 make -j${CPU_COUNT} && \
 make install
