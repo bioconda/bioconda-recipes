@@ -42,11 +42,18 @@ Or specify a different commit of `bioconda_utils`:
 """
 
 ap = argparse.ArgumentParser(usage=usage)
+ap.add_argument('--install-requirements', action='store_true', help='''Install
+                the currently-configured version of bioconda-utils and its
+                dependencies, and then exit.''')
+ap.add_argument('--set-channel-order', action='store_true', help='''Set the
+                correct channel priorities, and then exit''')
 args, extra = ap.parse_known_args()
+
+HERE = os.path.abspath(os.path.dirname(__file__))
 
 # Read in the current .travis.yml to ensure we're getting the right vars.
 # Mostly we care about the bioconda-utils git tag.
-travis_config = yaml.load(open('.travis.yml'))
+travis_config = yaml.load(open(os.path.join(HERE, '.travis.yml')))
 env = {}
 for var in travis_config['env']['global']:
     if isinstance(var, dict) and list(var.keys()) == ['secure']:
@@ -54,31 +61,62 @@ for var in travis_config['env']['global']:
     name, value = var.split('=', 1)
     env[name] = value
 
-# SUBDAG is set by travis-ci according to the matrix in .travis.yml, so here we
-# force it to just use one. The default is to run two parallel jobs, but here
-# we set SUBDAGS to 1 so we only run a single job.
-#
-# See https://docs.travis-ci.com/user/speeding-up-the-build for more.
-env['SUBDAGS'] = '1'
-env['SUBDAG'] = '0'
 
-# These are set by the travis-ci environment; here we only set the variables
-# used by bioconda-utils.
-#
-# See https://docs.travis-ci.com/user/environment-variables for more.
-if platform.system() == 'Darwin':
-    env['TRAVIS_OS_NAME'] = 'osx'
-else:
-    env['TRAVIS_OS_NAME'] = 'linux'
+if args.set_channel_order:
+    bioconda_utils_config = yaml.load(open(os.path.join(HERE, 'config.yml')))
+    channels = bioconda_utils_config['channels']
+    print("""
+          Warnings like "'conda-forge' already in 'channels' list, moving to the top"
+          are expected if channels have been added before, and can be safely ignored.
+          """)
+    for channel in channels:
+        sp.run(['conda', 'config', '--add', 'channels', channel], check=True)
+    print("\nconda config is now:\n")
+    sp.run(['conda', 'config', '--get'])
+    sys.exit(0)
 
-env['TRAVIS_BRANCH'] = 'false'
-env['TRAVIS_PULL_REQUEST'] = 'false'
+if args.install_requirements:
+    sp.run(
+        [
+            'conda', 'install', '-y', '--file',
+            'https://raw.githubusercontent.com/bioconda/bioconda-utils/'
+            '{0}/conda-requirements.txt'.format(env['BIOCONDA_UTILS_TAG'])
+        ], check=True)
 
-# Any additional arguments from the command line are added here.
-env['BIOCONDA_UTILS_ARGS'] += ' ' + ' '.join(extra)
-env['BIOCONDA_UTILS_ARGS'] = ' '.join(shlex.split(env['BIOCONDA_UTILS_ARGS']))
+    sp.run(
+        [
+            'pip', 'install',
+            'git+https://github.com/bioconda/bioconda-utils.git@{0}'.format(env['BIOCONDA_UTILS_TAG'])
+        ],
+        check=True)
+    sys.exit(0)
 
-# Override with whatever's in the shell environment
-env.update(os.environ)
+if os.environ.get('TRAVIS', None) != 'true':
+    # SUBDAG is set by travis-ci according to the matrix in .travis.yml, so here we
+    # force it to just use one. The default is to run two parallel jobs, but here
+    # we set SUBDAGS to 1 so we only run a single job.
+    #
+    # See https://docs.travis-ci.com/user/speeding-up-the-build for more.
+    env['SUBDAGS'] = '1'
+    env['SUBDAG'] = '0'
 
-sp.run(['scripts/travis-run.sh'], env=env, universal_newlines=True, check=True)
+    # These are set by the travis-ci environment; so that it works in other
+    # environment, here we only set the variables used by bioconda-utils.
+    #
+    # See https://docs.travis-ci.com/user/environment-variables for more.
+    if platform.system() == 'Darwin':
+        env['TRAVIS_OS_NAME'] = 'osx'
+    else:
+        env['TRAVIS_OS_NAME'] = 'linux'
+
+    env['TRAVIS_BRANCH'] = 'false'
+    env['TRAVIS_PULL_REQUEST'] = 'false'
+
+    # Any additional arguments from the command line are added here.
+    env['BIOCONDA_UTILS_ARGS'] += ' ' + ' '.join(extra)
+    env['BIOCONDA_UTILS_ARGS'] = ' '.join(shlex.split(env['BIOCONDA_UTILS_ARGS']))
+
+    # Override with whatever's in the shell environment
+    env.update(os.environ)
+
+    sp.run(['scripts/travis-run.sh'], env=env, universal_newlines=True, check=True)
