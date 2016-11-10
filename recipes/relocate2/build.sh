@@ -4,7 +4,6 @@ mkdir -p $PREFIX/scripts
 mkdir -p $PREFIX/bin
 cp $SRC_DIR/scripts/*.p* $PREFIX/scripts
 cp $SRC_DIR/scripts/*.p* $PREFIX/bin
-cp $SRC_DIR/scripts/*.p* $PREFIX
 cp $SRC_DIR/README.md $PREFIX
 #cp ./test_data.tar.gz $PREFIX
 echo "bwa=$PREFIX/bin/bwa" >> $PREFIX/CONFIG
