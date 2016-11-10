@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ./configure --prefix=$PREFIX \
             --with-png \
