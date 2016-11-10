@@ -66,7 +66,7 @@ def _remote_or_local(fn, remote=False):
     """
     if remote:
         url = (
-            'https://raw.githubusercontent.com/daler/bioconda-recipes/'
+            'https://raw.githubusercontent.com/bioconda/bioconda-recipes/'
             '{branch}/{path}'.format(branch='master', path=fn)
         )
         print('Using config file {}'.format(url))
