@@ -1,10 +1,12 @@
 #!/usr/bin/env perl
 
+my $GD_VERSION = "2.56";
+
 my @items = (
-    ["GD", undef],
-    ["GD::Polygon", undef],
-    ["GD::Polyline", undef],
-    ["GD::Simple", undef],
+    ["GD", $GD_VERSION],
+    ["GD::Polygon", $GD_VERSION],
+    ["GD::Polyline", $GD_VERSION],
+    ["GD::Simple", $GD_VERSION],
 );
 
 foreach $item (@items) {
@@ -15,10 +17,10 @@ foreach $item (@items) {
     if(defined $actual_version) {
         print STDERR $actual_version;
         if($actual_version == $expected_version) {
-            print STDERR " $actual_version (PASSED)\n";
+            print STDERR " (PASSED)\n";
         }
         else {
-            print STDERR " $actual_version (FAILED)\n";
+            print STDERR " (FAILED)\n";
             die("$module: Expected version '$expected_version', " .
                 "but found '$actual_version'.")
         }
