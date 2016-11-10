@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# ensure script fail on command fail
+set -e -o pipefail
+
 CPPFLAGS=-Wno-error=unused-function \
 ./configure --prefix=$PREFIX \
             --with-png \
