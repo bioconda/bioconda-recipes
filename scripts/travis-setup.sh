@@ -17,8 +17,8 @@ sudo chown -R $USER /anaconda
 export PATH=/anaconda/bin:$PATH
 conda update -y conda
 
-../simulate-travis.py --set-channel-order
-../simulate-travis.py --install-requirements
+$SCRIPT_DIR/../simulate-travis.py --set-channel-order
+$SCRIPT_DIR/../simulate-travis.py --install-requirements
 
 conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
 conda config --add channels file://anaconda/conda-bld
