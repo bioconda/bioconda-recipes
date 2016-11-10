@@ -5,7 +5,7 @@ set -e -o pipefail
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
-    perl Build.PL \
+    perl Build.PL LIB=site \
     	-options "JPEG,PNG,FT" \
     	-lib_jpeg_path $PREFIX \
     	-lib_ft_path $PREFIX \
