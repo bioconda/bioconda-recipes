@@ -8,7 +8,7 @@ if [ -f Build.PL ]; then
     perl Build.PL \
     	-options "JPEG,PNG,FT" \
     	-lib_jpeg_path $PREFIX \
-    	-lib_ft_path2 $PREFIX \
+    	-lib_ft_path $PREFIX \
     	-lib_png_path $PREFIX \
     	-lib_zlib_path $PREFIX \
     	>&1;
