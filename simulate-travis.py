@@ -3,7 +3,7 @@
 import os
 import platform
 import sys
-import yaml
+import ruamel_yaml as yaml
 import subprocess as sp
 import shlex
 import argparse
@@ -75,7 +75,6 @@ def _remote_or_local(fn, remote=False):
     else:
         cfg = yaml.load(open(os.path.join(HERE, fn)))
     return cfg
-
 
 travis_config = _remote_or_local('.travis.yml', remote=args.config_from_github)
 bioconda_utils_config = _remote_or_local('config.yml', remote=args.config_from_github)
