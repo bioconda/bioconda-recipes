@@ -10,6 +10,7 @@ if [ -f Build.PL ]; then
     	-lib_jpeg_path $PREFIX \
     	-lib_ft_path2 $PREFIX \
     	-lib_png_path $PREFIX \
+    	-lib_zlib_path $PREFIX \
     	>&1;
     ./Build 2>&1;
     ./Build test 2>&1;
