@@ -1,10 +1,18 @@
 #!/bin/bash
 
+# ensure script fail on command fail
+set -e -o pipefail
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
-    perl Build.PL --extra_compiler_flags "-I$PREFIX/include"
-    ./Build
-    ./Build test
+    perl Build.PL \
+    	-options "JPEG,PNG,FT" \
+    	-lib_jpeg_path $PREFIX \
+    	-lib_ft_path2 $PREFIX \
+    	-lib_png_path $PREFIX \
+    	>&1;
+    ./Build 2>&1;
+    ./Build test 2>&1;
     # Make sure this goes in site
     ./Build install --installdirs site
 elif [ -f Makefile.PL ]; then
