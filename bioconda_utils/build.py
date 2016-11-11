@@ -45,7 +45,8 @@ def build(recipe,
         a build.
 
     channels : list
-        Channels to include via the `--channel` argument to conda-build
+        Channels to include via the `--channel` argument to conda-build. Higher
+        priority channels should come first.
 
     docker_builder : docker_utils.RecipeBuilder object
         Use this docker builder to build the recipe, copying over the built
@@ -190,7 +191,7 @@ def build_recipes(
     check_channels : list
         Channels to check to see if packages already exist in them. If None,
         then defaults to the highest-priority channel (that is,
-        `config['channels'][-1]`)
+        `config['channels'][0]`)
 
     quick : bool
         Speed up recipe filtering by only checking those that are reasonably
@@ -202,7 +203,7 @@ def build_recipes(
     blacklist = utils.get_blacklist(config['blacklists'], recipe_folder)
 
     if check_channels is None:
-        check_channels = config['channels'][-1:]
+        check_channels = config['channels'][0]
 
     logger.info('blacklist: %s', ', '.join(sorted(blacklist)))
 
