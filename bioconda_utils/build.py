@@ -191,7 +191,8 @@ def build_recipes(
     check_channels : list
         Channels to check to see if packages already exist in them. If None,
         then defaults to the highest-priority channel (that is,
-        `config['channels'][0]`)
+        `config['channels'][0]`). If this list is empty, then do not check any
+        channels.
 
     quick : bool
         Speed up recipe filtering by only checking those that are reasonably
@@ -203,7 +204,10 @@ def build_recipes(
     blacklist = utils.get_blacklist(config['blacklists'], recipe_folder)
 
     if check_channels is None:
-        check_channels = config['channels'][0]
+        if config['channels']:
+            check_channels = config['channels'][0]
+        else:
+            check_channels = []
 
     logger.info('blacklist: %s', ', '.join(sorted(blacklist)))
 

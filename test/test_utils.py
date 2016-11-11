@@ -32,6 +32,10 @@ else:
 
 @contextlib.contextmanager
 def ensure_env_missing(env_name):
+    """
+    context manager that makes sure a conda env of a particular name does not
+    exist, deleting it if needed.
+    """
     def _clean():
         p = sp.run(
             ['conda', 'env', 'list'],
@@ -54,8 +58,8 @@ def ensure_env_missing(env_name):
 @pytest.fixture(scope='module')
 def recipes_fixture():
     """
-    Writes example recipes, figures out the package paths and attaches them to
-    the Recipes instance, and cleans up afterward.
+    Writes example recipes (based on test_case.yaml), figures out the package
+    paths and attaches them to the Recipes instance, and cleans up afterward.
     """
     r = Recipes('test_case.yaml')
     r.write_recipes()
@@ -116,8 +120,8 @@ def multi_build(request, recipes_fixture):
 def single_upload():
     """
     Creates a randomly-named recipe and uploads it using a label so that it
-    doesn't affect the main bioconda channel. Tests using the fixture get
-    a tuple of name, pakage, recipe dir. Cleans up when it's done.
+    doesn't affect the main bioconda channel. Tests that depend on this fixture
+    get a tuple of name, pakage, recipe dir. Cleans up when it's done.
     """
     name = 'upload-test-' + str(uuid.uuid4()).split('-')[0]
     r = Recipes(
@@ -679,7 +683,6 @@ def test_skip_dependencies():
 
 
 class TestSubdags(object):
-
     def _build(self, recipes_fixture):
         build.build_recipes(recipes_fixture.basedir, config={}, mulled_test=False, disable_upload=True)
 
@@ -694,9 +697,9 @@ class TestSubdags(object):
         assert 'Nothing to be done' in caplog.records()[-1].getMessage()
 
 
-def test_get_default_channels():
-    assert utils.get_default_channels() == ['conda-forge', 'defaults', 'r', 'bioconda']
-
-
 def test_zero_packages():
+    """
+    Regression test; make sure filter_recipes exits cleanly if no recipes were
+    provided.
+    """
     assert list(utils.filter_recipes([], {'CONDA_PY': [27, 35]})) == []
