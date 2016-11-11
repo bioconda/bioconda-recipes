@@ -81,17 +81,6 @@ def flatten_dict(dict):
         yield [(key, value) for value in values]
 
 
-def get_default_channels():
-    """
-    Returns a list of channels, from low to high priority.
-    """
-    fn = pkg_resources.resource_filename(
-        'bioconda_utils', 'channel_order.txt'
-    )
-    channels = [i.strip() for i in open(fn) if not i.startswith('#')]
-    return channels
-
-
 class EnvMatrix:
     """
     Intended to be initialized with a YAML file and iterated over to yield all

@@ -61,9 +61,7 @@ def test_package(path, name_override='tmp', channels=None, mulled_args=""):
 
     channels : None | str | list
         The local channel of the provided package will be added automatically;
-        `channels` are channels to use in addition to the local channel. If
-        None, then the set of channels in the installed channel_order.txt file
-        will be used (via utils.get_default_channels()).
+        `channels` are channels to use in addition to the local channel.
 
     mulled_args : str
         Mechanism for passing arguments to the mulled-build command. They will
@@ -88,7 +86,7 @@ def test_package(path, name_override='tmp', channels=None, mulled_args=""):
     spec = '='.join([name, version, build_string])
 
     if channels is None:
-        channels = utils.get_default_channels()
+        channels = []
     if isinstance(channels, str):
         channels = [channels]
 
