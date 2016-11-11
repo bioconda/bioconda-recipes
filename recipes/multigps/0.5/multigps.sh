@@ -15,6 +15,7 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 SHARE_DIR=$DIR/..
 
 java=java
+JAR_DIR=$DIR
 
 if [ -z "${JAVA_HOME:=}" ]; then
   if [ -e "$JAVA_HOME/bin/java" ]; then
@@ -49,6 +50,6 @@ if [ "$jvm_mem_opts" == "" ]; then
     jvm_mem_opts="$default_jvm_mem_opts"
 fi
 
-eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$PREFIX/bin/multigps_v0.5.jar" $pass_args
+eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/multigps_v0.5.jar" $pass_args
 
 exit
