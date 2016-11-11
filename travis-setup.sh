@@ -14,6 +14,13 @@ sudo bash Miniconda3-latest-${tag}-x86_64.sh -b -p /anaconda
 sudo chown -R $USER /anaconda
 export PATH=/anaconda/bin:$PATH
 
+# TODO: it would be nice to have a single location where channels are
+# configured across bioconda-recipes and bioconda-utils.
+conda config --add channels conda-forge
+conda config --add channels defaults
+conda config --add channels r
+conda config --add channels bioconda
+
 conda config --get
 conda install -y --file conda-requirements.txt
 
