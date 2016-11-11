@@ -8,6 +8,9 @@ set -o pipefail
 #   * skipping test that require network access
 export PERL_MM_USE_DEFAULT=1
 
+# ensure perl-gd is loaded properly or die trying
+perl -e 'die "GD module missing!" unless(eval{require GD});';
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
 #    perl Build.PL 2>&1 | tee configure.log
