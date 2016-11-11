@@ -15,7 +15,7 @@ cp -R ./* $out_dir
 unamestr=`uname`
 if [ $unamestr == 'Linux' ];
 then
-    wget https://github.com/smirarab/sate-tools-linux/archive/2924290.tar.gz
+    wget --no-check-certificate https://github.com/smirarab/sate-tools-linux/archive/2924290.tar.gz
     tar -xzf 2924290.tar.gz
     mv sate-tools-linux-292429063ee62055b610b592356ff398f68c0a4a sate-tools-linux
     mv sate-tools-linux $pasta_tools_dev_dir
@@ -24,7 +24,7 @@ then
     cp -R $share_dir/sate-tools-linux/* $PREFIX/bin
 elif [ $unamestr == 'Darwin' ];
 then
-    wget https://github.com/smirarab/sate-tools-mac/archive/0712214.tar.gz
+    wget --no-check-certificate https://github.com/smirarab/sate-tools-mac/archive/0712214.tar.gz
     tar -xzf 0712214.tar.gz
     mv sate-tools-mac-0712214e20152b2ec989fc102602afa53d3a7b1a sate-tools-mac
     mv sate-tools-mac $pasta_tools_dev_dir
