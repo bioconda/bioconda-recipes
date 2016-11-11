@@ -14,11 +14,6 @@ sudo bash Miniconda3-latest-${tag}-x86_64.sh -b -p /anaconda
 sudo chown -R $USER /anaconda
 export PATH=/anaconda/bin:$PATH
 
-# Add channels in the specified order.
-for channel in $(grep -v "^#" bioconda_utils/channel_order.txt); do
-    conda config --add channels $channel
-done
-
 conda config --get
 conda install -y --file conda-requirements.txt
 
