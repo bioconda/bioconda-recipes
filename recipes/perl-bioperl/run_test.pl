@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+my $CURRENT_BIOPERL_VERSION = "1.007001";
+
 my @items = (
     ["Bio::Align::AlignI", undef],
     ["Bio::Align::DNAStatistics", undef],
@@ -7,7 +9,7 @@ my @items = (
     ["Bio::Align::PairwiseStatistics", undef],
     ["Bio::Align::ProteinStatistics", undef],
     ["Bio::Align::StatisticsI", undef],
-    ["Bio::Align::Utilities", "1.006924"],
+    ["Bio::Align::Utilities", $CURRENT_BIOPERL_VERSION],
     ["Bio::AlignIO", undef],
     ["Bio::AlignIO::Handler::GenericAlignHandler", undef],
     ["Bio::AlignIO::arp", undef],
@@ -52,10 +54,10 @@ my @items = (
     ["Bio::Annotation::TypeManager", undef],
     ["Bio::AnnotationCollectionI", undef],
     ["Bio::AnnotationI", undef],
-    ["Bio::Assembly::Contig", "1.006924"],
+    ["Bio::Assembly::Contig", $CURRENT_BIOPERL_VERSION],
     ["Bio::Assembly::ContigAnalysis", undef],
     ["Bio::Assembly::IO", undef],
-    ["Bio::Assembly::IO::ace", "1.006924"],
+    ["Bio::Assembly::IO::ace", $CURRENT_BIOPERL_VERSION],
     ["Bio::Assembly::IO::bowtie", undef],
     ["Bio::Assembly::IO::maq", undef],
     ["Bio::Assembly::IO::phrap", undef],
@@ -63,7 +65,7 @@ my @items = (
     ["Bio::Assembly::IO::tigr", undef],
     ["Bio::Assembly::Scaffold", undef],
     ["Bio::Assembly::ScaffoldI", undef],
-    ["Bio::Assembly::Singlet", "1.006924"],
+    ["Bio::Assembly::Singlet", $CURRENT_BIOPERL_VERSION],
     ["Bio::Assembly::Tools::ContigSpectrum", undef],
     ["Bio::Cluster::ClusterFactory", undef],
     ["Bio::Cluster::FamilyI", undef],
@@ -76,18 +78,18 @@ my @items = (
     ["Bio::ClusterIO::unigene", undef],
     ["Bio::CodonUsage::IO", undef],
     ["Bio::CodonUsage::Table", undef],
-    ["Bio::Coordinate::Chain", undef],
-    ["Bio::Coordinate::Collection", undef],
-    ["Bio::Coordinate::ExtrapolatingPair", undef],
-    ["Bio::Coordinate::GeneMapper", undef],
-    ["Bio::Coordinate::Graph", undef],
-    ["Bio::Coordinate::MapperI", undef],
-    ["Bio::Coordinate::Pair", undef],
-    ["Bio::Coordinate::Result", undef],
-    ["Bio::Coordinate::Result::Gap", undef],
-    ["Bio::Coordinate::Result::Match", undef],
-    ["Bio::Coordinate::ResultI", undef],
-    ["Bio::Coordinate::Utils", undef],
+    #["Bio::Coordinate::Chain", undef], # removed in 1.7.0 to appear as separate classes on CPAN
+    #["Bio::Coordinate::Collection", undef], # removed in 1.7.0 to appear as separate classes on CPAN
+    #["Bio::Coordinate::ExtrapolatingPair", undef], # removed in 1.7.0 to appear as separate classes on CPAN
+    #["Bio::Coordinate::GeneMapper", undef], # removed in 1.7.0 to appear as separate classes on CPAN
+    #["Bio::Coordinate::Graph", undef], # removed in 1.7.0 to appear as separate classes on CPAN
+    #["Bio::Coordinate::MapperI", undef], # removed in 1.7.0 to appear as separate classes on CPAN
+    #["Bio::Coordinate::Pair", undef], # removed in 1.7.0 to appear as separate classes on CPAN
+    #["Bio::Coordinate::Result", undef], # removed in 1.7.0 to appear as separate classes on CPAN
+    #["Bio::Coordinate::Result::Gap", undef], # removed in 1.7.0 to appear as separate classes on CPAN
+    #["Bio::Coordinate::Result::Match", undef], # removed in 1.7.0 to appear as separate classes on CPAN
+    #["Bio::Coordinate::ResultI", undef], # removed in 1.7.0 to appear as separate classes on CPAN
+    #["Bio::Coordinate::Utils", undef], # removed in 1.7.0 to appear as separate classes on CPAN
     ["Bio::DB::Ace", undef],
     ["Bio::DB::BioFetch", undef],
     ["Bio::DB::CUTG", undef],
@@ -107,14 +109,14 @@ my @items = (
     ["Bio::DB::Flat::BinarySearch", undef],
     ["Bio::DB::GFF", undef],
     ["Bio::DB::GFF::Adaptor::ace", undef],
-    ["Bio::DB::GFF::Adaptor::berkeleydb", "1.006924"],
-    ["Bio::DB::GFF::Adaptor::biofetch", "1.006924"],
-    ["Bio::DB::GFF::Adaptor::dbi", "1.006924"],
+    ["Bio::DB::GFF::Adaptor::berkeleydb", $CURRENT_BIOPERL_VERSION],
+    ["Bio::DB::GFF::Adaptor::biofetch", $CURRENT_BIOPERL_VERSION],
+    ["Bio::DB::GFF::Adaptor::dbi", $CURRENT_BIOPERL_VERSION],
     ["Bio::DB::GFF::Adaptor::dbi::caching_handle", undef],
-    ["Bio::DB::GFF::Adaptor::dbi::iterator", "1.006924"],
-    ["Bio::DB::GFF::Adaptor::memory", "1.006924"],
+    ["Bio::DB::GFF::Adaptor::dbi::iterator", $CURRENT_BIOPERL_VERSION],
+    ["Bio::DB::GFF::Adaptor::memory", $CURRENT_BIOPERL_VERSION],
     ["Bio::DB::GFF::Adaptor::memory::feature_serializer", undef],
-    ["Bio::DB::GFF::Adaptor::memory::iterator", "1.006924"],
+    ["Bio::DB::GFF::Adaptor::memory::iterator", $CURRENT_BIOPERL_VERSION],
     ["Bio::DB::GFF::Aggregator", undef],
     ["Bio::DB::GFF::Aggregator::alignment", undef],
     #["Bio::DB::GFF::Aggregator::clone", undef],
@@ -141,8 +143,8 @@ my @items = (
     ["Bio::DB::GFF::RelSegment", undef],
     ["Bio::DB::GFF::Segment", undef],
     ["Bio::DB::GFF::Typename", undef],
-    ["Bio::DB::GFF::Util::Binning", "1.006924"],
-    ["Bio::DB::GFF::Util::Rearrange", "1.006924"],
+    ["Bio::DB::GFF::Util::Binning", $CURRENT_BIOPERL_VERSION],
+    ["Bio::DB::GFF::Util::Rearrange", $CURRENT_BIOPERL_VERSION],
     ["Bio::DB::GenBank", undef],
     ["Bio::DB::GenPept", undef],
     ["Bio::DB::GenericWebAgent", undef],
@@ -168,7 +170,7 @@ my @items = (
     ["Bio::DB::SeqFeature::NormalizedFeatureI", undef],
     ["Bio::DB::SeqFeature::NormalizedTableFeatureI", undef],
     ["Bio::DB::SeqFeature::Segment", undef],
-    ["Bio::DB::SeqFeature::Store", "1.006924"],
+    ["Bio::DB::SeqFeature::Store", $CURRENT_BIOPERL_VERSION],
     ["Bio::DB::SeqFeature::Store::DBI::Iterator", undef],
     ["Bio::DB::SeqFeature::Store::DBI::SQLite", undef],
     ["Bio::DB::SeqFeature::Store::FeatureFileLoader", undef],
@@ -180,7 +182,7 @@ my @items = (
     ["Bio::DB::SeqFeature::Store::berkeleydb", undef],
     #["Bio::DB::SeqFeature::Store::berkeleydb3", undef],
     ["Bio::DB::SeqFeature::Store::memory", undef],
-    ["Bio::DB::SeqHound", undef],
+    #["Bio::DB::SeqHound", undef], # not available and removed in 1.7.0
     ["Bio::DB::SeqI", undef],
     ["Bio::DB::SeqVersion", undef],
     ["Bio::DB::SeqVersion::gi", undef],
@@ -231,14 +233,14 @@ my @items = (
     ["Bio::Index::Fasta", undef],
     ["Bio::Index::Fastq", undef],
     ["Bio::Index::GenBank", undef],
-    ["Bio::Index::Hmmer", "1.006924"],
+    ["Bio::Index::Hmmer", $CURRENT_BIOPERL_VERSION],
     ["Bio::Index::Qual", undef],
     ["Bio::Index::Stockholm", undef],
     ["Bio::Index::SwissPfam", undef],
     ["Bio::Index::Swissprot", undef],
-    ["Bio::LiveSeq::AARange", "1.006924"],
-    ["Bio::LiveSeq::Chain", "1.006924"],
-    ["Bio::LiveSeq::ChainI", "1.006924"],
+    ["Bio::LiveSeq::AARange", $CURRENT_BIOPERL_VERSION],
+    ["Bio::LiveSeq::Chain", $CURRENT_BIOPERL_VERSION],
+    ["Bio::LiveSeq::ChainI", $CURRENT_BIOPERL_VERSION],
     ["Bio::LiveSeq::DNA", undef],
     ["Bio::LiveSeq::Exon", undef],
     ["Bio::LiveSeq::Gene", undef],
@@ -251,7 +253,7 @@ my @items = (
     ["Bio::LiveSeq::Range", undef],
     ["Bio::LiveSeq::Repeat_Region", undef],
     ["Bio::LiveSeq::Repeat_Unit", undef],
-    ["Bio::LiveSeq::SeqI", "1.006924"],
+    ["Bio::LiveSeq::SeqI", $CURRENT_BIOPERL_VERSION],
     ["Bio::LiveSeq::Transcript", undef],
     ["Bio::LiveSeq::Translation", undef],
     ["Bio::LocatableSeq", undef],
@@ -360,7 +362,7 @@ my @items = (
     ["Bio::OntologyIO::simplehierarchy", undef],
     ["Bio::OntologyIO::soflat", undef],
     ["Bio::ParameterBaseI", undef],
-    ["Bio::Perl", "1.006924"],
+    ["Bio::Perl", $CURRENT_BIOPERL_VERSION],
     ["Bio::Phenotype::Correlate", undef],
     ["Bio::Phenotype::MeSH::Term", undef],
     ["Bio::Phenotype::MeSH::Twig", undef],
@@ -424,11 +426,11 @@ my @items = (
     ["Bio::Root::Root", undef],
     ["Bio::Root::RootI", undef],
     ["Bio::Root::Storable", undef],
-    #["Bio::Root::Test", "1.006924"],   # "internal"/build use only
+    #["Bio::Root::Test", $CURRENT_BIOPERL_VERSION],   # "internal"/build use only
     ["Bio::Root::Utilities", undef],
-    ["Bio::Root::Version", "1.006924"],
+    ["Bio::Root::Version", $CURRENT_BIOPERL_VERSION],
     ["Bio::Search::BlastStatistics", undef],
-    ["Bio::Search::BlastUtils", "1.006924"],
+    ["Bio::Search::BlastUtils", $CURRENT_BIOPERL_VERSION],
     ["Bio::Search::DatabaseI", undef],
     ["Bio::Search::GenericDatabase", undef],
     ["Bio::Search::GenericStatistics", undef],
@@ -445,7 +447,7 @@ my @items = (
     ["Bio::Search::HSP::PsiBlastHSP", undef],
     ["Bio::Search::HSP::PullHSPI", undef],
     ["Bio::Search::HSP::WABAHSP", undef],
-    ["Bio::Search::Hit::BlastHit", "1.006924"],
+    ["Bio::Search::Hit::BlastHit", $CURRENT_BIOPERL_VERSION],
     ["Bio::Search::Hit::BlastPullHit", undef],
     ["Bio::Search::Hit::Fasta", undef],
     ["Bio::Search::Hit::GenericHit", undef],
@@ -459,7 +461,7 @@ my @items = (
     ["Bio::Search::Hit::hmmer3Hit", undef],
     ["Bio::Search::Iteration::GenericIteration", undef],
     ["Bio::Search::Iteration::IterationI", undef],
-    ["Bio::Search::Processor", "1.006924"],
+    ["Bio::Search::Processor", $CURRENT_BIOPERL_VERSION],
     ["Bio::Search::Result::BlastPullResult", undef],
     ["Bio::Search::Result::BlastResult", undef],
     ["Bio::Search::Result::CrossMatchResult", undef],
@@ -471,7 +473,7 @@ my @items = (
     ["Bio::Search::Result::ResultI", undef],
     ["Bio::Search::Result::WABAResult", undef],
     ["Bio::Search::Result::hmmer3Result", undef],
-    ["Bio::Search::SearchUtils", "1.006924"],
+    ["Bio::Search::SearchUtils", $CURRENT_BIOPERL_VERSION],
     ["Bio::Search::StatisticsI", undef],
     ["Bio::Search::Tiling::MapTileUtils", undef],
     ["Bio::Search::Tiling::MapTiling", undef],
@@ -482,7 +484,7 @@ my @items = (
     ["Bio::SearchIO::IteratedSearchResultEventBuilder", undef],
     ["Bio::SearchIO::SearchResultEventBuilder", undef],
     ["Bio::SearchIO::SearchWriterI", undef],
-    ["Bio::SearchIO::Writer::BSMLResultWriter", undef],
+    #["Bio::SearchIO::Writer::BSMLResultWriter", undef], # removed in 1.7.0 to appear as separate classes on CPAN
     ["Bio::SearchIO::Writer::GbrowseGFF", undef],
     ["Bio::SearchIO::Writer::HSPTableWriter", undef],
     ["Bio::SearchIO::Writer::HTMLResultWriter", undef],
@@ -495,7 +497,7 @@ my @items = (
     ["Bio::SearchIO::blast", undef],
     ["Bio::SearchIO::blast_pull", undef],
     ["Bio::SearchIO::blasttable", undef],
-    ["Bio::SearchIO::blastxml", undef],
+    #["Bio::SearchIO::blastxml", undef], # removed in 1.7.0 to appear as separate classes on CPAN
     ["Bio::SearchIO::cross_match", undef],
     ["Bio::SearchIO::erpin", undef],
     ["Bio::SearchIO::exonerate", undef],
@@ -541,7 +543,7 @@ my @items = (
     ["Bio::SeqEvolution::Factory", undef],
     ["Bio::SeqFeature::Amplicon", undef],
     ["Bio::SeqFeature::AnnotationAdaptor", undef],
-    ["Bio::SeqFeature::Collection", "1.006924"],
+    ["Bio::SeqFeature::Collection", $CURRENT_BIOPERL_VERSION],
     ["Bio::SeqFeature::CollectionI", undef],
     ["Bio::SeqFeature::Computation", undef],
     ["Bio::SeqFeature::FeaturePair", undef],
@@ -628,7 +630,7 @@ my @items = (
     ["Bio::SeqIO::table", undef],
     ["Bio::SeqIO::tigr", undef],
     ["Bio::SeqIO::tigrxml", undef],
-    ["Bio::SeqIO::tinyseq", "1.006924"],
+    ["Bio::SeqIO::tinyseq", $CURRENT_BIOPERL_VERSION],
     ["Bio::SeqIO::tinyseq::tinyseqHandler", undef],
     ["Bio::SeqIO::ztr", undef],
     ["Bio::SeqUtils", undef],
@@ -665,7 +667,7 @@ my @items = (
     ["Bio::Tools::Analysis::Protein::ELM", undef],
     ["Bio::Tools::Analysis::Protein::GOR4", undef],
     ["Bio::Tools::Analysis::Protein::HNN", undef],
-    ["Bio::Tools::Analysis::Protein::Mitoprot", undef],
+    #["Bio::Tools::Analysis::Protein::Mitoprot", undef], # removed in 1.7.0 due to security issues
     ["Bio::Tools::Analysis::Protein::NetPhos", undef],
     ["Bio::Tools::Analysis::Protein::Scansite", undef],
     ["Bio::Tools::Analysis::Protein::Sopma", undef],
@@ -677,7 +679,7 @@ my @items = (
     ["Bio::Tools::ECnumber", undef],
     ["Bio::Tools::EMBOSS::Palindrome", undef],
     ["Bio::Tools::EPCR", undef],
-    ["Bio::Tools::ERPIN", undef],
+    #["Bio::Tools::ERPIN", undef], # deprecated and removed in 1.7.0
     ["Bio::Tools::ESTScan", undef],
     ["Bio::Tools::Eponine", undef],
     ["Bio::Tools::Est2Genome", undef],
@@ -698,7 +700,7 @@ my @items = (
     ["Bio::Tools::HMMER::Set", undef],
     ["Bio::Tools::Hmmpfam", undef],
     ["Bio::Tools::IUPAC", undef],
-    ["Bio::Tools::Infernal", undef],
+    #["Bio::Tools::Infernal", undef], # deprecated and removed in 1.7.0
     ["Bio::Tools::Lucy", undef],
     ["Bio::Tools::MZEF", undef],
     ["Bio::Tools::Match", undef],
@@ -726,7 +728,7 @@ my @items = (
     ["Bio::Tools::Protparam", undef],
     ["Bio::Tools::Pseudowise", undef],
     ["Bio::Tools::QRNA", undef],
-    ["Bio::Tools::RNAMotif", undef],
+    #["Bio::Tools::RNAMotif", undef], # deprecated and removed in 1.7.0
     ["Bio::Tools::RandomDistFunctions", undef],
     ["Bio::Tools::RepeatMasker", undef],
     ["Bio::Tools::Run::GenericParameters", undef],
@@ -799,22 +801,22 @@ my @items = (
     ["Bio::WebAgent", undef],
 
     ## These connect to databases we don't currently support
-    #["Bio::DB::GFF::Adaptor::biofetch_oracle", undef],
-    #["Bio::DB::GFF::Adaptor::dbi::mysql", "1.006924"],
-    #["Bio::DB::GFF::Adaptor::dbi::mysqlace", undef],
-    #["Bio::DB::GFF::Adaptor::dbi::mysqlcmap", undef],
-    #["Bio::DB::GFF::Adaptor::dbi::mysqlopt", undef],
-    #["Bio::DB::GFF::Adaptor::dbi::oracle", undef],
-    #["Bio::DB::GFF::Adaptor::dbi::oracleace", undef],
-    #["Bio::DB::GFF::Adaptor::dbi::pg", undef],
-    #["Bio::DB::GFF::Adaptor::dbi::pg_fts", undef],
-    #["Bio::DB::SeqFeature::Store::DBI::Pg", undef],
-    #["Bio::DB::SeqFeature::Store::DBI::mysql", undef],
+    ["Bio::DB::GFF::Adaptor::biofetch_oracle", undef],
+    ["Bio::DB::GFF::Adaptor::dbi::mysql", $CURRENT_BIOPERL_VERSION],
+    ["Bio::DB::GFF::Adaptor::dbi::mysqlace", undef],
+    ["Bio::DB::GFF::Adaptor::dbi::mysqlcmap", undef],
+    ["Bio::DB::GFF::Adaptor::dbi::mysqlopt", undef],
+    ["Bio::DB::GFF::Adaptor::dbi::oracle", undef],
+    ["Bio::DB::GFF::Adaptor::dbi::oracleace", undef],
+    ["Bio::DB::GFF::Adaptor::dbi::pg", undef],
+    ["Bio::DB::GFF::Adaptor::dbi::pg_fts", undef],
+    ["Bio::DB::SeqFeature::Store::DBI::Pg", undef],
+    ["Bio::DB::SeqFeature::Store::DBI::mysql", undef],
 
     ## These require the currently broken bioperl-ext package
-    #["Bio::Tools::dpAlign", "1.006924"],
-    #["Bio::SearchDist", "1.006924"],
-    #["Bio::Tools::AlignFactory", "1.006924"],
+    #["Bio::Tools::dpAlign", $CURRENT_BIOPERL_VERSION],
+    #["Bio::SearchDist", $CURRENT_BIOPERL_VERSION],
+    #["Bio::Tools::AlignFactory", $CURRENT_BIOPERL_VERSION],
     #["Bio::Tools::pSW", undef],
 );
 
@@ -825,11 +827,13 @@ foreach $item (@items) {
     if($@) { die $@; }
     if(defined $actual_version) {
         print STDERR $actual_version;
-        if($actual_version == $expected_version) {
-            print STDERR " $actual_version (PASSED)\n";
+        if( not defined $expected_version 
+            or $actual_version == $expected_version ) 
+        {
+            print STDERR " (PASSED)\n";
         }
         else {
-            print STDERR " $actual_version (FAILED)\n";
+            print STDERR " (FAILED)\n";
             die("$module: Expected version '$expected_version', " .
                 "but found '$actual_version'.")
         }
