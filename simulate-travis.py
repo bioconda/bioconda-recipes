@@ -93,7 +93,11 @@ if args.set_channel_order:
           Warnings like "'conda-forge' already in 'channels' list, moving to the top"
           are expected if channels have been added before, and can be safely ignored.
           """)
-    for channel in channels:
+
+    # The config (and .condarc) expect that higher-priority channels are listed
+    # first, but when using `conda config --add` they should be added from
+    # lowest to highest priority.
+    for channel in channels[::-1]:
         sp.run(['conda', 'config', '--add', 'channels', channel], check=True)
     print("\nconda config is now:\n")
     sp.run(['conda', 'config', '--get'])
