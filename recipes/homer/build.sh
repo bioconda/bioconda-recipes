@@ -146,6 +146,8 @@ mkdir -p $PREFIX/bin
 chmod +x configureHomer.pl
 cp configureHomer.pl $outdir/
 
+perl $outdir/configureHomer.pl -install
+
 # Note that homer cannot be built as a package since the installation
 # script *hard-codes* the paths in the perl scripts. Nevertheless,
 # create symlinks to $outdir/bin as this is where configureHomer.pl
@@ -153,18 +155,19 @@ cp configureHomer.pl $outdir/
 
 # For all binaries, wrap configureHomer.pl; not the ideal way to go
 for i in $binaries; do
-    echo "#! /bin/bash" > $outdir/bin/$i;
-    echo "echo $i not installed - please run configureHomer.pl -install to install" >> $outdir/bin/$i;
+    #echo "#! /bin/bash" > $outdir/bin/$i;
+    #echo "echo $i not installed - please run configureHomer.pl -install to install" >> $outdir/bin/$i;
     chmod +x $outdir/bin/$i;
     ln -s $outdir/bin/$i $PREFIX/bin/$i; 
 done
 
+ln -s $outdir/configureHomer.pl $PREFIX/bin/configureHomer.pl 
 # Add helper script to configureHomer.pl so that configureHomer.pl
 # -install really installs in $outdir
-configureHomer=$PREFIX/bin/configureHomer.pl
-echo "#! /bin/bash" > $configureHomer;
-echo 'DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )' >>  $configureHomer;
-echo '$DIR/../share/'$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/configureHomer.pl '$@' >> $configureHomer;
-chmod +x $configureHomer;
+#configureHomer=$PREFIX/bin/configureHomer.pl
+#echo "#! /bin/bash" > $configureHomer;
+#echo 'DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )' >>  $configureHomer;
+#echo '$DIR/../share/'$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/configureHomer.pl '$@' >> $configureHomer;
+#chmod +x $configureHomer;
 
-$configureHomer -install
+#perl $configureHomer -install
