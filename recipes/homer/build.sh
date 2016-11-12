@@ -22,6 +22,7 @@ do
     ln -s $outdir/bin/$id $PREFIX/bin/$id;
 done
 
+chmod +x $outdir/configureHomer.pl
 ln -s $outdir/configureHomer.pl $PREFIX/bin/configureHomer.pl 
 
 # Add helper script to configureHomer.pl so that configureHomer.pl
