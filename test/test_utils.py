@@ -16,6 +16,9 @@ from helpers import ensure_missing, Recipes, tmp_env_matrix
 from conda_build import api
 from conda_build.metadata import MetaData
 
+# TODO: need channel order tests. Could probably do this by adding different
+# file:// channels with different variants of the same package
+
 
 # Label that will be used for uploading test packages to anaconda/binstar
 TEST_LABEL = 'bioconda-utils-test'

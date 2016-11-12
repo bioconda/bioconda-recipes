@@ -85,15 +85,13 @@ def test_package(path, name_override='tmp', channels=None, mulled_args=""):
 
     spec = '='.join([name, version, build_string])
 
+    extra_channels = ['file:/{0}'.format(conda_bld_dir)]
     if channels is None:
         channels = []
     if isinstance(channels, str):
         channels = [channels]
-
-    channel_args = []
-    channels.append('file:/{0}'.format(conda_bld_dir))
-    for channel in channels:
-        channel_args.extend(['--extra-channel', channel])
+    extra_channels.extend(channels)
+    channel_args = ['--extra-channels',','.join(extra_channels)]
 
     tests = get_tests(path)
     logger.debug('Tests to run: %s', tests)
@@ -105,7 +103,7 @@ def test_package(path, name_override='tmp', channels=None, mulled_args=""):
         '--name-override', name_override,
         '--test', tests
     ]
-    cmds.extend(channel_args)
-    cmds.extend(shlex.split(mulled_args))
+    cmds += channel_args
+    cmds += shlex.split(mulled_args)
     logger.debug('mulled-build commands: %s' % cmds)
     return utils.run(cmds)
