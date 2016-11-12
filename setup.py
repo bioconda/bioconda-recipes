@@ -19,7 +19,6 @@ setup(
             [
                 'bioconda_utils/bioconda_utils-requirements.txt',
                 'bioconda_utils/config.schema.yaml',
-                'bioconda_utils/channel_order.txt',
             ],
         )
     ],

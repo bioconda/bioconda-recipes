@@ -9,6 +9,10 @@ from bioconda_utils import pkg_test
 from bioconda_utils import utils
 from bioconda_utils import build
 
+# TODO:
+# need tests for channel order and extra channels (see
+# https://github.com/bioconda/bioconda-utils/issues/31)
+#
 
 def _build_pkg():
     r = Recipes(dedent(
