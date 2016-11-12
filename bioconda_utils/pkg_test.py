@@ -47,7 +47,7 @@ def get_tests(path):
     return tests
 
 
-def test_package(path, name_override='tmp', channels=None, mulled_args=""):
+def test_package(path, name_override=None, channels=None, mulled_args=""):
     """
     Tests a built package in a minimal docker container.
 
@@ -83,7 +83,7 @@ def test_package(path, name_override='tmp', channels=None, mulled_args=""):
     version = toks[-2]
     name = '-'.join(toks[:-2])
 
-    spec = '='.join([name, version, build_string])
+    spec = '%s=%s--%s' % (name, version, build_string)
 
     extra_channels = ['file:/{0}'.format(conda_bld_dir)]
     if channels is None:
@@ -95,15 +95,29 @@ def test_package(path, name_override='tmp', channels=None, mulled_args=""):
 
     tests = get_tests(path)
     logger.debug('Tests to run: %s', tests)
+    # Path to a file where we store the push commands to push all containers to
+    # a Docker registry
+    push_containers = os.environ.get('CONTAINER_PUSH_COMMANDS_PATH', False)
 
-    cmds = [
+    cmd = [
         'mulled-build',
         'build-and-test',
         spec,
-        '--name-override', name_override,
+        '-n', 'biocontainers',
         '--test', tests
     ]
-    cmds += channel_args
-    cmds += shlex.split(mulled_args)
-    logger.debug('mulled-build commands: %s' % cmds)
-    return utils.run(cmds)
+    if name_override:
+        cmd += ['--name-override', name_override]
+    cmd += channel_args
+    cmd += shlex.split(mulled_args)
+    if push_containers:
+        try:
+            with open(push_containers, 'a+') as handle:
+                handle.write('mulled-build push %s -n biocontainers\n' % (spec))
+            logger.debug('Container push commands have been written to "%s"', push_containers)
+        except:
+            logger.error('Could not write container push commands to "%s"', push_containers)
+    else:
+        logger.debug('No container push commands are generated')
+    logger.debug('mulled-build command: %s' % cmd)
+    return utils.run(cmd)
