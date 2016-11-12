@@ -170,4 +170,3 @@ ln -s $outdir/configureHomer.pl $PREFIX/bin/configureHomer.pl
 #echo '$DIR/../share/'$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/configureHomer.pl '$@' >> $configureHomer;
 #chmod +x $configureHomer;
 
-#perl $configureHomer -install
