@@ -110,7 +110,7 @@ def build(recipe,
     except (docker_utils.DockerCalledProcessError, sp.CalledProcessError) as e:
             logger.error(
                 'BIOCONDA BUILD FAILED %s, %s', recipe, utils.envstr(env))
-            logger.error('COMMAND: %s', e.cmd)
+            logger.error('COMMAND: %s', ' '.join(e.cmd))
             logger.error('STDOUT+STDERR: %s', e.stdout)
             return False
 
@@ -129,6 +129,8 @@ def build(recipe,
         logger.info("BIOCONDA TEST SUCCESS %s, %s", recipe, utils.envstr(env))
         logger.debug('STDOUT:\n%s', res.stdout)
         logger.debug('STDERR:\n%s', res.stderr)
+        if res.stdout.find('Unexpected exit code') != -1:
+            return False
         return True
     else:
         logger.error('BIOCONDA TEST FAILED: %s, %s', recipe, utils.envstr(env))
