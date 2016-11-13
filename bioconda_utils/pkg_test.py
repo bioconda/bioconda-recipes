@@ -47,7 +47,7 @@ def get_tests(path):
     return tests
 
 
-def test_package(path, name_override=None, channels=None, mulled_args=""):
+def test_package(path, name_override=None, channels=["r", "defaults", "conda-forge"], mulled_args=""):
     """
     Tests a built package in a minimal docker container.
 
