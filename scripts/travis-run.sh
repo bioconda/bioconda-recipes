@@ -2,6 +2,9 @@
 set -euo pipefail
 
 export PATH=/anaconda/bin:$PATH
+export CONTAINER_PUSH_COMMANDS_PATH=${TRAVIS_BUILD_DIR}/container_push_commands.sh
+
+touch $CONTAINER_PUSH_COMMANDS_PATH
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
@@ -17,6 +20,9 @@ if [[ $TRAVIS_OS_NAME = "linux" && $SUBDAG = 0 ]]
 then
   if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = false ]]
   then
+    echo "Push containers to quay.io"
+    cat $CONTAINER_PUSH_COMMANDS_PATH
+    bash $CONTAINER_PUSH_COMMANDS_PATH
     scripts/build-docs.sh
   fi
 fi
