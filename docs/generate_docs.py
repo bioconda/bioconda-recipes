@@ -49,6 +49,11 @@ and update with::
 
 {notes}
 
+[![Docker Repository on Quay](https://quay.io/repository/biocontainers/{title}/status "Docker Repository on Quay")](https://quay.io/repository/biocontainers/{title})
+
+A [Docker](https://www.docker.com) and [rkt](https://coreos.com/rkt/) 
+container is available at https://quay.io/repository/biocontainers/{title}.
+
 Link to this page
 -----------------
 
