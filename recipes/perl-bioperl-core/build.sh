@@ -10,6 +10,9 @@ export PERL_MM_USE_DEFAULT=1
 
 echo "##++ PREFIX = $PREFIX";
 
+ls $PREFIX/lib;
+ls $PREFIX/lib64;
+
 # ensure perl-gd is loaded properly or die trying
 echo "##++ testing for perl GD library";
 perl -e 'use GD;';
