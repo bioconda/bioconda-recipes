@@ -2,9 +2,12 @@
 set -euo pipefail
 
 export PATH=/anaconda/bin:$PATH
-export CONTAINER_PUSH_COMMANDS_PATH=${TRAVIS_BUILD_DIR}/container_push_commands.sh
 
-touch $CONTAINER_PUSH_COMMANDS_PATH
+if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = false ]]
+then
+   export CONTAINER_PUSH_COMMANDS_PATH=${TRAVIS_BUILD_DIR}/container_push_commands.sh
+   touch $CONTAINER_PUSH_COMMANDS_PATH
+fi
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
