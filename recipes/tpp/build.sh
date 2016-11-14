@@ -3,7 +3,7 @@
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
-
+export ZLIB_INCL="${PREFIX}/include"
 #export CFLAGS="-I$PREFIX/include"
 
 cp $RECIPE_DIR/Makefile trans_proteomic_pipeline/src/Makefile
