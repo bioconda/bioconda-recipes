@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Make sure pipes to tee don't hide configuration or test failures
-set -o pipefail
+#set -o pipefail
 
 # Accept defaults so we don't get prompted about install options; resuls in:
 #   * building all BioPerl scripts
@@ -9,7 +9,7 @@ set -o pipefail
 export PERL_MM_USE_DEFAULT=1
 
 # ensure perl-gd is loaded properly or die trying
-perl -e 'die "GD module missing!" unless(eval{require GD});';
+#perl -e 'die "GD module missing!" unless(eval{require GD});';
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
@@ -20,7 +20,7 @@ if [ -f Build.PL ]; then
     ./Build test 
     # Make sure this goes in site
     ./Build install --installdirs site
-    ./Build install --install_path script=site
+#    ./Build install --install_path script=site
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
 #    perl Makefile.PL INSTALLDIRS=site 2>&1 | tee configure.log
