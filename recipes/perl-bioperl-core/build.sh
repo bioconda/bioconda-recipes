@@ -8,10 +8,8 @@ set -o pipefail
 #   * skipping test that require network access
 export PERL_MM_USE_DEFAULT=1
 
-echo "##++ PREFIX = $PREFIX";
-
+# debug output
 ls $PREFIX/lib;
-ls $PREFIX/lib64;
 
 # ensure perl-gd is loaded properly or die trying
 echo "##++ testing for perl GD library";
