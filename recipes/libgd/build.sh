@@ -14,7 +14,7 @@ sed -i.bak1 "s|-Werror||g" ./configure
             --with-zlib \
             --without-xpm \
             --without-x \
-            --without-fontconfig
+            --with-fontconfig
 # compile
 make
 # install
