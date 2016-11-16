@@ -1,0 +1,51 @@
+
+package:
+    name: openbabel
+    version: 2.4.1
+
+source:
+    fn: openbabel-2-4-1.zip
+    url: https://github.com/openbabel/openbabel/archive/openbabel-2-4-1.zip
+    sha1: 6fefb2355601b665bea5840fe8e6f95bd48023c9
+
+    patches:
+        - fix_library_path_search.diff
+        - fix_data_path.diff
+        - fix_babel_test_paths.diff
+
+build:
+    number: 0
+    detect_binary_files_with_prefix: true
+
+requirements:
+    build:
+        - gcc     # [linux]
+        - llvm    # [osx]
+        - cmake
+        - zlib
+        - swig
+        - eigen
+        - bzip2
+        - python
+        - libxml2
+        - cairo   # [linux]
+    run:
+        - python
+        - libgcc  # [linux]
+        - zlib
+        - libxml2
+        - cairo   # [linux]
+test:
+  imports:
+    - openbabel
+    - pybel
+  commands:
+    - python run_test.py
+    - obabel --help
+    - obabel -:'c1ccccc1' --gen3d -omol2
+    - obabel -:'c1ccccc1' --gen3d -oinchi
+
+about:
+    home: http://www.openbabel.org/
+    license: GPLv2
+    summary: "A chemical toolbox designed to speak the many languages of chemical data"

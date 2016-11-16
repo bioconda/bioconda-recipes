@@ -17,16 +17,8 @@ sudo chown -R $USER /anaconda
 export PATH=/anaconda/bin:$PATH
 conda update -y conda
 
-# setup bioconda channel
-conda config --add channels anaconda
-conda config --add channels r
-conda config --add channels conda-forge
-conda config --add channels bioconda
-
-conda install -y --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/conda-requirements.txt
+$SCRIPT_DIR/../simulate-travis.py --set-channel-order
+$SCRIPT_DIR/../simulate-travis.py --install-requirements
 
 conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
 conda config --add channels file://anaconda/conda-bld
-
-# setup bioconda-utils
-pip install git+https://github.com/bioconda/bioconda-utils.git@$BIOCONDA_UTILS_TAG
