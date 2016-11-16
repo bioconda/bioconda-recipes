@@ -126,11 +126,11 @@ def build(recipe,
     res = pkg_test.test_package(pkg_path)
 
     if res.returncode == 0:
+        if res.stdout.find('Unexpected exit code') != -1:
+            return False
         logger.info("BIOCONDA TEST SUCCESS %s, %s", recipe, utils.envstr(env))
         logger.debug('STDOUT:\n%s', res.stdout)
         logger.debug('STDERR:\n%s', res.stderr)
-        if res.stdout.find('Unexpected exit code') != -1:
-            return False
         return True
     else:
         logger.error('BIOCONDA TEST FAILED: %s, %s', recipe, utils.envstr(env))
