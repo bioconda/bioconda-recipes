@@ -11,3 +11,4 @@ echo "> Building target: cc.bin"
 g++ -o cc.bin -fopenmp -I${PREFIX}/include -L${PREFIX}/lib -lboost_program_options $(find . -name "*.o")
 
 cp cc.bin $PREFIX/bin
+ln -s $PREFIX/bin/cc.bin $PREFIX/bin/canopy
