@@ -86,6 +86,12 @@ conda install conda-build={self.conda_build_version}
 
 # Add the host's mounted conda-bld dir so that we can use its contents as
 # dependencies for building this recipe.
+#
+# Note that if the directory didn't exist on the host, then the staging area
+# will exist in the container but will be empty.  Channels expect at least
+# a linux-64 directory within that directory, so we make sure it exists before
+# adding the channel.
+mkdir -p {self.container_staging}/linux-64
 conda config --add channels file://{self.container_staging}
 
 # The actual building....
