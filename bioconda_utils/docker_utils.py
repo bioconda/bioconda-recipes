@@ -86,6 +86,12 @@ conda install conda-build={self.conda_build_version}
 
 # Add the host's mounted conda-bld dir so that we can use its contents as
 # dependencies for building this recipe.
+#
+# Note that if the directory didn't exist on the host, then the staging area
+# will exist in the container but will be empty.  Channels expect at least
+# a linux-64 directory within that directory, so we make sure it exists before
+# adding the channel.
+mkdir -p {self.container_staging}/linux-64
 conda config --add channels file://{self.container_staging}
 
 # The actual building....
@@ -336,7 +342,14 @@ class RecipeBuilder(object):
             '-t', self.tag,
             build_dir
         ]
-        p = utils.run(cmd)
+        try:
+            p = utils.run(cmd)
+        except sp.CalledProcessError as e:
+            logger.error(
+                'BIOCONDA DOCKER FAIL: Error building docker container %s. '
+                'stdout+stdterr follows:', self.tag)
+            logger.error(e.stderr)
+            raise e
 
         logger.info('BIOCONDA DOCKER: Built docker image tag=%s', self.tag)
         shutil.rmtree(build_dir)
