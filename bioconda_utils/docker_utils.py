@@ -342,7 +342,14 @@ class RecipeBuilder(object):
             '-t', self.tag,
             build_dir
         ]
-        p = utils.run(cmd)
+        try:
+            p = utils.run(cmd)
+        except sp.CalledProcessError as e:
+            logger.error(
+                'BIOCONDA DOCKER FAIL: Error building docker container %s. '
+                'stdout+stdterr follows:', self.tag)
+            logger.error(e.stderr)
+            raise e
 
         logger.info('BIOCONDA DOCKER: Built docker image tag=%s', self.tag)
         shutil.rmtree(build_dir)
