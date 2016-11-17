@@ -1,6 +1,17 @@
 #!/bin/bash
 set -e
 set -x
+
+for dir in . recipes
+do
+    if [ -e $dir/meta.yaml ]
+    then
+        echo "Recipe $dir/meta.yaml found in invalid location."
+        echo "Recipes must be stored in a subfolder of the recipes directory."
+        exit 1
+    fi
+done
+
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
