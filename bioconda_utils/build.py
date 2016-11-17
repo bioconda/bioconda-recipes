@@ -125,6 +125,7 @@ def build(recipe,
 
     res = pkg_test.test_package(pkg_path)
 
+    # TODO remove the second clause once new galaxy-lib has been released.
     if (res.returncode == 0) and (res.stdout.find('Unexpected exit code') == -1):
         logger.info("BIOCONDA TEST SUCCESS %s, %s", recipe, utils.envstr(env))
         logger.debug('STDOUT:\n%s', res.stdout)
