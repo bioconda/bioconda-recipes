@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' Build.PL
+
 # ensure script fail on command fail
 set -e -o pipefail
 
