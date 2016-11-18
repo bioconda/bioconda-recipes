@@ -14,6 +14,8 @@ if [ -f Build.PL ]; then
     	-lib_png_path $PREFIX \
     	-lib_zlib_path $PREFIX \
     	>&1;
+        
+    sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' Build
     ./Build 2>&1;
     # disable non-portable test7
     sed -i.bak1 "s|IMAGE_TESTS => 7|IMAGE_TESTS => 6|1" ./t/GD.t
