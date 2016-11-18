@@ -10,11 +10,11 @@ if [ `uname` == Darwin ] ; then
                           --without-python3
                           LDFLAGS=-Wl,-headerpad_max_install_names"
 else ## linux
-    extra_config_options="--with-python3"
+    extra_config_options=""
 fi
 
 ./configure --prefix=$PREFIX \
-            --without-perl --without-python \
+            --without-perl \
             --with-kinwalker \
             --disable-lto \
             --without-doc \
