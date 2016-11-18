@@ -12,6 +12,8 @@ if [ `uname` == Darwin ] ; then
 else ## linux
     if [ $PY3K -eq 1 ] ; then
         extra_config_options="--with-python3 --without-python"
+    else
+        extra_config_options="--with-python --without-python3"
     fi
 fi
 
