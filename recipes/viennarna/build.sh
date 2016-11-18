@@ -11,7 +11,7 @@ if [ `uname` == Darwin ] ; then
                           LDFLAGS=-Wl,-headerpad_max_install_names"
 else ## linux
     if [ $PY3K == 1 ] ; then
-        extra_config_options="--with-python3"
+        extra_config_options="--with-python3 --without-python"
     fi
 fi
 
