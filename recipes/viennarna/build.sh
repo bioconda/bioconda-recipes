@@ -12,7 +12,7 @@ if [ `uname` == Darwin ] ; then
 else ## linux
     if [ $PY3K == 1 ] ; then
         extra_config_options="--with-python3"
-    else
+    fi
 fi
 
 ./configure --prefix=$PREFIX \
