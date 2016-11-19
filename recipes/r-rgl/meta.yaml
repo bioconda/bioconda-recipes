@@ -1,0 +1,104 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-rgl
+  # Note that conda versions cannot contain -, so any -'s in the version have
+  # been replaced with _'s.
+  version: "0.96.0"
+
+source:
+  fn: rgl_0.96.0.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/rgl_0.96.0.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/rgl/rgl_0.96.0.tar.gz
+
+
+  # You can add a hash for the file here, like md5 or sha1
+  # md5: 49448ba4863157652311cc5ea4fea3ea
+  # sha1: 3bcfbee008276084cbb37a2b453963c61176a322
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # If this is a new build for the same version, increment the build
+  # number. If you do not include this key, it defaults to 0.
+  # number: 1
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: MASS, rmarkdown, deldir, orientlib, lattice, misc3d, rstudioapi
+requirements:
+  build:
+    - r-base
+    - r-htmltools
+    - r-htmlwidgets
+    - r-jsonlite >=0.9.20
+    - r-knitr
+    - r-magrittr
+    - r-shiny
+    - posix               # [win]
+    - {{native}}toolchain # [win]
+    - gcc                 # [not win]
+    - libglu
+
+  run:
+    - r-base
+    - r-htmltools
+    - r-htmlwidgets
+    - r-jsonlite >=0.9.20
+    - r-knitr
+    - r-magrittr
+    - r-shiny
+    - libglu
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('rgl')" # [not win]
+    - "\"%R%\" -e \"library('rgl')\"" # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://r-forge.r-project.org/projects/rgl/
+  license: GPL
+  summary: Provides medium to high level functions for 3D interactive graphics, including functions
+    modelled on base graphics (plot3d(), etc.) as well as functions for constructing
+    representations of geometric objects (cube3d(), etc.).  Output may be on screen
+    using OpenGL, or to various standard 3D file formats including WebGL, PLY, OBJ,
+    STL as well as 2D image formats, including PNG, Postscript, SVG, PGF.
+  license_family: GPL
+
+# The original CRAN metadata for this package was:
+
+# Package: rgl
+# Version: 0.96.0
+# Title: 3D Visualization Using OpenGL
+# Author: Daniel Adler <dadler@uni-goettingen.de>, Duncan Murdoch <murdoch@stats.uwo.ca>, and others (see README)
+# Maintainer: Duncan Murdoch <murdoch@stats.uwo.ca>
+# Depends: R (>= 3.2.0)
+# Suggests: MASS, rmarkdown, deldir, orientlib, lattice, misc3d, rstudioapi
+# Imports: graphics, grDevices, stats, utils, htmlwidgets, htmltools, knitr, jsonlite (>= 0.9.20), shiny, magrittr
+# Description: Provides medium to high level functions for 3D interactive graphics, including functions modelled on base graphics (plot3d(), etc.) as well as functions for constructing representations of geometric objects (cube3d(), etc.).  Output may be on screen using OpenGL, or to various standard 3D file formats including WebGL, PLY, OBJ, STL as well as 2D image formats, including PNG, Postscript, SVG, PGF.
+# License: GPL
+# URL: https://r-forge.r-project.org/projects/rgl/
+# SystemRequirements: OpenGL, GLU Library, XQuartz (on OSX), zlib (optional), libpng (>=1.2.9, optional), FreeType (optional)
+# BugReports: https://r-forge.r-project.org/projects/rgl/
+# VignetteBuilder: knitr
+# NeedsCompilation: yes
+# Packaged: 2016-08-25 10:32:03 UTC; murdoch
+# Repository: CRAN
+# Date/Publication: 2016-08-25 12:59:59
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
