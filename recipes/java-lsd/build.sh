@@ -10,7 +10,7 @@ mv lsd-$PKG_VERSION.jar ${TARGET}
 
 # Generate the lsd script used to invoke the java program
 cat << EOF > ${TARGET}/lsd
-#/bin/bash
+#/usr/bin/env bash
 java -jar -Xmx2G ${TARGET}/lsd-${PKG_VERSION}.jar \$@
 EOF
 
