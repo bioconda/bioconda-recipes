@@ -8,13 +8,18 @@ if [ `uname` == Darwin ] ; then
     extra_config_options="--disable-openmp 
                           --enable-universal-binary
                           --without-python3
+                          --without-python
                           LDFLAGS=-Wl,-headerpad_max_install_names"
 else ## linux
-    extra_config_options="--with-python3"
+    if [ $PY3K -eq 1 ] ; then
+        extra_config_options="--with-python3 --without-python"
+    else
+        extra_config_options="--with-python --without-python3"
+    fi
 fi
 
 ./configure --prefix=$PREFIX \
-            --without-perl --without-python \
+            --without-perl \
             --with-kinwalker \
             --disable-lto \
             --without-doc \
