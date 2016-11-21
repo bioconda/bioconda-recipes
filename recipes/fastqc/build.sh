@@ -1,6 +1,6 @@
 #!/bin/bash
 
-fastqc=$PREFIX/FastQC
+fastqc=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
 mkdir $fastqc
 cp -r ./* $fastqc
 chmod +x $fastqc/fastqc

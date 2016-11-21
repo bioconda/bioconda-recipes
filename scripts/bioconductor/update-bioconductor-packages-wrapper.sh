@@ -35,22 +35,22 @@ fi
 REPO="$1"
 RECIPES="$1/recipes"
 HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+FORCE=$2
 
 
-
-
-echo -n "
-Warning: this script ($0) modifies the working directory, and discards any
-uncommitted changes in the recipe dir $RECIPES. Continue?
-[yes|no] [no] >>> "
-read ans
-if [[ ($ans != "yes") && ($ans != "Yes") && ($ans != "YES") &&
-            ($ans != "y") && ($ans != "Y") ]]
-then
-    echo "Aborting!"
-    exit 2
+if [[ -z $FORCE ]]; then
+    echo -n "
+    Warning: this script ($0) modifies the working directory, and discards any
+    uncommitted changes in the recipe dir $RECIPES. Continue?
+    [yes|no] [no] >>> "
+    read ans
+    if [[ ($ans != "yes") && ($ans != "Yes") && ($ans != "YES") &&
+                ($ans != "y") && ($ans != "Y") ]]
+    then
+        echo "Aborting!"
+        exit 2
+    fi
 fi
-
 
 function log () {
     # log output to match that of bioconductor_skeleton.py
@@ -60,7 +60,7 @@ function log () {
 log "***Discarding un-committed R and bioconductor recipes in $RECIPES"
 git checkout -- "$RECIPES/bioconductor-*" "$RECIPES/r-*"
 
-for i in $(python "$HERE/update_bioconductor_packages.py" --repository "$REPO"); do
+for i in $(python "$HERE/update_bioconductor_packages.py" --repository "$RECIPES"); do
     bioconductor_name=$(echo "$i" | awk -F ":" '{print $1}')
     recipe_name="$(echo "$i" | awk -F ":" '{print $2}')"
     log "Updating package $bioconductor_name (recipe $recipe_name)"
@@ -69,6 +69,6 @@ for i in $(python "$HERE/update_bioconductor_packages.py" --repository "$REPO");
     if [ $(echo "$recipe_name" | grep "^bioconductor-") ]; then
         python "$HERE/bioconductor_skeleton.py" $bioconductor_name --force --recipes "$RECIPES"
     else
-        conda skeleton cran  --update-outdated --output-dir "$RECIPES/$recipe_name"
+        conda skeleton cran  --update-outdated --output-dir "$RECIPES" $bioconductor_name;
     fi
 done

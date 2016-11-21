@@ -5,13 +5,13 @@
 # The bioconda channel
 
 [![Travis builds](https://img.shields.io/travis/bioconda/bioconda-recipes/master.svg?style=flat-square&label=builds)](https://travis-ci.org/bioconda/bioconda-recipes)
-[![Travis tests](https://img.shields.io/travis/bioconda/bioconda-tests/master.svg?style=flat-square&label=tests)](https://travis-ci.org/bioconda/bioconda-tests)
+[![Gitter](https://badges.gitter.im/bioconda/bioconda-recipes.svg)](https://gitter.im/bioconda/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 [Conda](http://anaconda.org) is a platform- and language-independent package
 manager that sports easy distribution, installation and version management of
 software.  The [bioconda channel](https://anaconda.org/bioconda) is a Conda
-channel providing bioinformatics related packages.  This repository hosts the
-corresponding recipes.
+channel providing bioinformatics related packages for **Linux** and **Mac OS**.
+This repository hosts the corresponding recipes.
 
 ## User guide
 
@@ -19,11 +19,21 @@ Please visit https://bioconda.github.io for details.
 
 ## Developer guide
 
+**Note: the `bioconda` build system has recently been changed to use CentOS6
+instead of CentOS5. See the conversation in
+[#2274](https://github.com/bioconda/bioconda-recipes/pull/2274) for details on
+the reasoning behind this. To better take advantage of the efforts of the
+[`conda-forge`](https://conda-forge.github.io/) team, we are using the CentOS6
+Docker container ``condaforge/linux-anvil`` for building, and our
+[``bioconda-utils``](https://github.com/bioconda/bioconda-utils) package for
+managing the infrastructure. See below for updated testing instructions.**
+
+
 If you want to contribute new packages to Bioconda, you are invited to join the
 Bioconda team.  Please post in the [team thread on
 GitHub](https://github.com/bioconda/recipes/issues/1) to ask for permission.
 
-We build Linux packages inside a CentOS 5 docker container to maintain
+We build Linux packages inside a CentOS 6 docker container to maintain
 compatibility across multiple systems. OSX packages are built using the [OSX
 build environment](https://docs.travis-ci.com/user/osx-ci-environment/) on
 [Travis CI](https://travis-ci.org/).
@@ -43,7 +53,8 @@ prerequisites are assumed:
 
 Fork this repository or create a new branch to work in. Within the new branch,
 [create a recipe](http://conda.pydata.org/docs/building/build.html)
-(`your_package` in this example) in the `recipes` directory. See our [guidelines](GUIDELINES.md) for best practices and examples.
+(`your_package` in this example) in the `recipes` directory. See our 
+[guidelines](GUIDELINES.md) for best practices and examples.
 
 ### Step 2: Test the recipe
 
@@ -51,26 +62,41 @@ When the recipe is ready, first test it with your local conda installation via
 
     conda build recipes/your_package
 
-If the recipe has dependencies in the bioconda channel (this is often the
-case), you will need to add `--channel bioconda` to the command. If the recipe
-is an R package, you will also need to add `--channel r`. For example many
-Bioconductor packages will be built using:
+Bioconda uses the `bioconda`, `r`, and `conda-forge` channels. You can either
+set them globally with:
+```
+conda config --add channels conda-forge
+conda config --add channels defaults
+conda config --add channels r
+conda config --add channels bioconda
 
-    conda build recipes/your_package --channel bioconda --channel r
+```
 
-Then, you can test it in the docker container with:
+or by adding the channels to the build command:
 
-    docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix /bioconda-recipes/scripts/env_matrix.yml
+    conda build recipes/your_package \
+        --channel conda-forge \
+        --channel defaults \
+        --channel r \
+        --channel bioconda
 
-To optionally build for a specific Python version, provide the `CONDA_PY`
-environmental variable. For example, to build specifically for Python 3.4:
+Then, you can test the build in a docker container. The authoritative source
+for how packages are built can be found in the `scripts/travis-run.sh` script,
+the `config.yml` config file, and the `.travis.yml` config file. However, the
+`simulate-travis.py` script can be used for conveniently testing on a local
+machine.  Any environmental variables will be passed to `scripts/travis-run.sh` and will
+override any defaults detected in .travis.yml. Currently the only variables
+useful to modify are TRAVIS_OS_NAME and BIOCONDA_UTILS_TAG and they can be used as
+ follows:
 
-    docker run -e CONDA_PY=34 -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package --env-matrix /bioconda-recipes/scripts/env_matrix.yml
-
-To optionally build and test all packages (if they don't already exist), leave off the
-package name:
-
-    docker run -v `pwd`:/tmp/conda-recipes bioconda/bioconda-builder --env-matrix /bioconda-recipes/scripts/env_matrix.yml
+```
+# run `mypackagename`
+./simulate-travis.py --packages mypackagename --loglevel=debug
+# use the linux build system from a non-linux machine
+TRAVIS_OS_NAME=linux ./simulate-travis.py
+# specify the bioconda-utils commit to use for your builds
+BIOCONDA_UTILS_TAG=63543b34 ./simulate-travis.py
+```
 
 If rebuilding a previously-built package and the version number hasn't changed,
 be sure to increment the build number in `meta.yaml` (the default build number
@@ -161,28 +187,6 @@ java-jdk/
 
 There should always be a primary in the root directory of a package that is
 updated when new releases are made.
-
-### Other notes
-
-We use a pre-built CentOS 5 image with compilers installed as part of the
-standard build. To build this yourself, you can do:
-
-```bash
-docker login
-(cd scripts && docker build -t bioconda/bioconda-builder .)
-```
-
-Then test a recipe with:
-
-```bash
-docker run -v `pwd`:/bioconda-recipes bioconda/bioconda-builder --packages your_package
-```
-
-If you wish the open a bash shell in the Docker container for manual debugging:
-
-```bash
-docker run -i -t --entrypoint /bin/bash bioconda/bioconda-builder
-```
 
 ## The bioconda build system
 This repository is set up on [Travis CI](https://travis-ci.org) such that on

@@ -1,20 +1,26 @@
 package:
   name: galaxy-lib
-  version: "16.7.10"
+  version: "16.10.9"
 
 source:
-  fn: galaxy-lib-16.7.10.tar.gz
-  url: https://pypi.python.org/packages/5d/36/68594f5b76323133c5849834cf2d781a73b7166296b1456cd52aaa26e2ac/galaxy-lib-16.7.10.tar.gz
-  md5: 048cdb1ba001fba302f9d0e4e835bd20
+  fn: galaxy-lib-16.10.9.tar.gz
+  url: https://pypi.python.org/packages/6f/e1/981abb4dcf157eb69eface56576ea179e2c5811b66203b38e1f329561c2e/galaxy-lib-16.10.9.tar.gz
+  md5: 147bc3cbfcf2ac5f85ebd835b467d8c2
 
 build:
   preserve_egg_dir: True
-  skip: True # [py3k]
   number: 0
+  entry_points:
+    - mulled-build=galaxy.tools.deps.mulled.mulled_build:main
+    - mulled-build-channel=galaxy.tools.deps.mulled.mulled_build_channel:main
+    - mulled-build-tool=galaxy.tools.deps.mulled.mulled_build_tool:main
+    - mulled-build-files=galaxy.tools.deps.mulled.mulled_build_files:main
+  script: $PYTHON setup.py install
 
 requirements:
   build:
     - python
+    - setuptools
     - pyyaml
     - six >=1.9.0
     - markupsafe
@@ -38,6 +44,8 @@ test:
     - galaxy.tools
     - galaxy.tools.cwl
     - galaxy.tools.deps
+    - galaxy.tools.deps.container_resolvers
+    - galaxy.tools.deps.mulled
     - galaxy.tools.deps.resolvers
     - galaxy.tools.linters
     - galaxy.tools.parser
@@ -47,6 +55,12 @@ test:
     - galaxy.tools.verify
     - galaxy.tools.verify.asserts
     - galaxy.util
+
+  commands:
+    - mulled-build --help
+    - mulled-build-channel --help
+    - mulled-build-tool --help
+    - mulled-build-files --help
 
 about:
   home: https://github.com/galaxyproject/galaxy-lib
