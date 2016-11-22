@@ -38,8 +38,10 @@ else ## linux
     
     ## Add python2 env to search path (don't use activate, since we want
     ## to stay in the build environment)
-    export PATH=$PYTHON2_ENV/bin:$PATH
+    export PATH=${PYTHON2_ENV}/bin:$PATH
     
+    PY2LIB=-L${PYTHON2_ENV}/lib
+
     ##
     ############################################################
 
@@ -51,7 +53,9 @@ fi
             --with-kinwalker \
             --disable-lto \
             --without-doc \
-            ${extra_config_options} &&\
+            ${extra_config_options} \
+            LIBS=${PY2LIB} \
+            &&\
 make -j${CPU_COUNT}
 
 ## Install
