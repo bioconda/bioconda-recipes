@@ -49,6 +49,9 @@ package. The Python 3 version is recommended.
     * The conda `FAQs <http://conda.pydata.org/docs/faq.html>`_ explain how
       it's easy to use with existing Python installations.
 
+
+.. _set-up-channels:
+
 2. Set up channels
 ------------------
 
@@ -71,6 +74,7 @@ used as dependencies for bioconda packages.
 
 3. Install packages
 -------------------
+:ref:`Browse the packages <recipes>` to see what's available.
 
 bioconda is now enabled, so any packages on the bioconda channel can be installed into the current conda environment::
 
@@ -79,6 +83,7 @@ bioconda is now enabled, so any packages on the bioconda channel can be installe
 Or a new environment can be created::
 
     conda create -n aligners bwa bowtie hisat star
+
 
 
 4. Join the team
@@ -137,6 +142,7 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
+    recipes
     contributing
     faqs
     troubleshooting
