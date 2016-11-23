@@ -7,12 +7,8 @@ setup(
     author='Cheng Yuan',
     author_email='chengyuan.china@gmail.com',
     url='https://github.com/chengyuan/reago-1.1',
-    install_requires=[
-	'os',
-	'sys',
-	'time',
-	'networkx',
-	'operator'],
+    install_requires=['networkx'],
+    scripts = ['reago.py'],
     classifiers=[
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
