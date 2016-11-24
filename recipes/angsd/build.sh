@@ -15,7 +15,6 @@ angsd \
 BINDIR=$PREFIX/bin
 mkdir -p $BINDIR
 
-
-make LDFLAGS="-L=${PREFIX}/lib" INC="-I=${PREFIX}/include"
+make LDFLAGS="-L=${PREFIX}/lib" C_INCLUDE_PATH="-I=${PREFIX}/include" CPLUS_INCLUDE_PATH="-I=${PREFIX}/include"
 
 for i in $binaries; do cp $i $BINDIR && chmod +x $BINDIR/$(basename $i); done

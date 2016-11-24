@@ -2,7 +2,7 @@
 
 build:
   number: 0
-  skip: True # [osx]
+  skip: False
 
 about:
   home: http://www.popgen.dk/angsd/index.php/ANGSD
@@ -16,11 +16,16 @@ package:
 requirements:
   build:
     - htslib
+    - gcc # [not osx]
+    - llvm # [osx]
+  run:
+    - libgcc # [not osx]
+    - htslib
 
 test:
   commands:
-    - angsd 2>&1 | grep angsd version
-    - thetaStat 2>&1 | grep neutrality test
+    - angsd 2>&1 | grep "angsd version"
+    - thetaStat 2>&1 | grep "neutrality test"
 
 source:
   fn: angsd-{{ version }}.tar.gz
@@ -28,4 +33,3 @@ source:
   md5: 89a5dcbff49de6b72e474b6f4bf8d112
   patches:
     - Makefile.patch
-    - misc_Makefile.patch
