@@ -49,6 +49,7 @@ Recipes
     </tr>
     {% endfor %}
     </tbody>
+    <tfoot></tfoot>
     </table>
 """
 
@@ -174,31 +175,28 @@ def setup(*args):
             'notes': notes
         }
 
-        # add additional keys for the recipes datatable.
-        template_options['Package'] = template_options['title']
-        template_options['Links'] = (
-            '<a href="recipes/{2}/README.html">install</a>'
-            '| <a href="{0}">recipe</a>'
-            '| <a href="{1}">homepage</a>'
-            .format(
-                template_options['recipe'],
-                template_options['home'],
-                template_options['title'])
-        )
-        template_options['Versions'] = template_options['versions']
+        # Add additional keys to template_options for use in the recipes
+        # datatable.
+        template_options['Package'] = (
+            '<a href="recipes/{0}/README.html">{0}</a>'.format(
+                template_options['title']))
 
-        availability = {
-            (True, True): 'Linux & OSX',
-            (True, False): 'Linux only',
-            (False, True): 'OSX only',
-            (False, False): 'unavailable',
-        }
-        template_options['Availability'] = availability[
-            (template_options['title'] in linux_packages,
-             template_options['title'] in osx_packages)
-        ]
+        template_options['Linux'] = {
+            True: '<i class="fa fa-linux"></i>',
+            False: '',
+        }[template_options['title'] in linux_packages]
 
-        recipes.append(template_options)
+        template_options['OSX'] = {
+            True: '<i class="fa fa-apple"></i>',
+            False: '',
+        }[template_options['title'] in osx_packages]
+
+        template_options['License'] = template_options['license']
+
+        for version in versions:
+            t = template_options.copy()
+            t['Version'] = version
+            recipes.append(t)
 
         readme = README_TEMPLATE.format(**template_options)
         # Write to file
@@ -223,7 +221,7 @@ def setup(*args):
         recipes=recipes,
 
         # order of columns in the table; must be keys in template_options
-        keys=['Package', 'Versions', 'Links', 'Availability']
+        keys=['Package', 'Version', 'License', 'Linux', 'OSX']
     )
     recipes_rst = 'source/recipes.rst'
     if not (
