@@ -1,5 +1,6 @@
 import os
 import os.path as op
+from collections import defaultdict
 from jinja2 import Template
 from bioconda_utils import utils
 
@@ -122,12 +123,23 @@ def setup(*args):
     and generate a README.rst file.
     """
     print('Generating package READMEs...')
-    # TODO obtain information from repodata.json.
+
+
+    repodata = defaultdict(lambda: defaultdict(list))
+    for platform in ['linux', 'osx']:
+        for pkg in utils.get_channel_packages(channel='bioconda', platform=platform):
+            d = parse_pkgname(pkg)
+            repodata[d['name']][d['version']].append(platform)
+
+    # e.g., repodata = {
+    #   'package1': {
+    #       '0.1': ['linux'],
+    #       '0.2': ['linux', 'osx'],
+    #   },
+    #}
+
     summaries = []
     recipes = []
-
-    linux_packages = [parse_pkgname(i)['name'] for i in utils.get_channel_packages(channel='bioconda', platform='linux')]
-    osx_packages = [parse_pkgname(i)['name'] for i in utils.get_channel_packages(channel='bioconda', platform='osx')]
 
     for folder in os.listdir(RECIPE_DIR):
         # Subfolders correspond to different versions
@@ -157,6 +169,9 @@ def setup(*args):
                 # ignore non-recipe folders
                 continue
 
+        name = metadata.name()
+        versions_in_channel = list(repodata[name].keys())
+
         # Format the README
         notes = metadata.get_section('extra').get('notes', '')
         if notes:
@@ -168,7 +183,7 @@ def setup(*args):
             'title_underline': '=' * len(metadata.name()),
             'summary': summary,
             'home': metadata.get_section('about').get('home', ''),
-            'versions': ', '.join(versions),
+            'versions': ', '.join(versions_in_channel),
             'license': metadata.get_section('about').get('license', ''),
             'recipe': ('https://github.com/bioconda/bioconda-recipes/tree/master/recipes/' +
                 op.dirname(op.relpath(metadata.meta_path, RECIPE_DIR))),
@@ -177,24 +192,18 @@ def setup(*args):
 
         # Add additional keys to template_options for use in the recipes
         # datatable.
+
+
         template_options['Package'] = (
-            '<a href="recipes/{0}/README.html">{0}</a>'.format(
-                template_options['title']))
+            '<a href="recipes/{0}/README.html">{0}</a>'.format(name)
+        )
 
-        template_options['Linux'] = {
-            True: '<i class="fa fa-linux"></i>',
-            False: '',
-        }[template_options['title'] in linux_packages]
-
-        template_options['OSX'] = {
-            True: '<i class="fa fa-apple"></i>',
-            False: '',
-        }[template_options['title'] in osx_packages]
-
-        template_options['License'] = template_options['license']
-
-        for version in versions:
+        for version in versions_in_channel:
             t = template_options.copy()
+            if 'linux' in repodata[name][version]:
+                t['Linux'] = '<i class="fa fa-linux"></i>'
+            if 'osx' in repodata[name][version]:
+                t['OSX'] = '<i class="fa fa-apple"></i>'
             t['Version'] = version
             recipes.append(t)
 
