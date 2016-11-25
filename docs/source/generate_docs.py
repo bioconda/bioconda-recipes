@@ -1,5 +1,6 @@
 import os
 import os.path as op
+from collections import defaultdict
 from jinja2 import Template
 from bioconda_utils import utils
 
@@ -49,6 +50,7 @@ Recipes
     </tr>
     {% endfor %}
     </tbody>
+    <tfoot></tfoot>
     </table>
 """
 
@@ -121,12 +123,23 @@ def setup(*args):
     and generate a README.rst file.
     """
     print('Generating package READMEs...')
-    # TODO obtain information from repodata.json.
+
+
+    repodata = defaultdict(lambda: defaultdict(list))
+    for platform in ['linux', 'osx']:
+        for pkg in utils.get_channel_packages(channel='bioconda', platform=platform):
+            d = parse_pkgname(pkg)
+            repodata[d['name']][d['version']].append(platform)
+
+    # e.g., repodata = {
+    #   'package1': {
+    #       '0.1': ['linux'],
+    #       '0.2': ['linux', 'osx'],
+    #   },
+    #}
+
     summaries = []
     recipes = []
-
-    linux_packages = [parse_pkgname(i)['name'] for i in utils.get_channel_packages(channel='bioconda', platform='linux')]
-    osx_packages = [parse_pkgname(i)['name'] for i in utils.get_channel_packages(channel='bioconda', platform='osx')]
 
     for folder in os.listdir(RECIPE_DIR):
         # Subfolders correspond to different versions
@@ -156,6 +169,9 @@ def setup(*args):
                 # ignore non-recipe folders
                 continue
 
+        name = metadata.name()
+        versions_in_channel = sorted(repodata[name].keys())
+
         # Format the README
         notes = metadata.get_section('extra').get('notes', '')
         if notes:
@@ -167,38 +183,29 @@ def setup(*args):
             'title_underline': '=' * len(metadata.name()),
             'summary': summary,
             'home': metadata.get_section('about').get('home', ''),
-            'versions': ', '.join(versions),
+            'versions': ', '.join(versions_in_channel),
             'license': metadata.get_section('about').get('license', ''),
             'recipe': ('https://github.com/bioconda/bioconda-recipes/tree/master/recipes/' +
                 op.dirname(op.relpath(metadata.meta_path, RECIPE_DIR))),
             'notes': notes
         }
 
-        # add additional keys for the recipes datatable.
-        template_options['Package'] = template_options['title']
-        template_options['Links'] = (
-            '<a href="recipes/{2}/README.html">install</a>'
-            '| <a href="{0}">recipe</a>'
-            '| <a href="{1}">homepage</a>'
-            .format(
-                template_options['recipe'],
-                template_options['home'],
-                template_options['title'])
+        # Add additional keys to template_options for use in the recipes
+        # datatable.
+
+
+        template_options['Package'] = (
+            '<a href="recipes/{0}/README.html">{0}</a>'.format(name)
         )
-        template_options['Versions'] = template_options['versions']
 
-        availability = {
-            (True, True): 'Linux & OSX',
-            (True, False): 'Linux only',
-            (False, True): 'OSX only',
-            (False, False): 'unavailable',
-        }
-        template_options['Availability'] = availability[
-            (template_options['title'] in linux_packages,
-             template_options['title'] in osx_packages)
-        ]
-
-        recipes.append(template_options)
+        for version in versions_in_channel:
+            t = template_options.copy()
+            if 'linux' in repodata[name][version]:
+                t['Linux'] = '<i class="fa fa-linux"></i>'
+            if 'osx' in repodata[name][version]:
+                t['OSX'] = '<i class="fa fa-apple"></i>'
+            t['Version'] = version
+            recipes.append(t)
 
         readme = README_TEMPLATE.format(**template_options)
         # Write to file
@@ -223,7 +230,7 @@ def setup(*args):
         recipes=recipes,
 
         # order of columns in the table; must be keys in template_options
-        keys=['Package', 'Versions', 'Links', 'Availability']
+        keys=['Package', 'Version', 'License', 'Linux', 'OSX']
     )
     recipes_rst = 'source/recipes.rst'
     if not (
