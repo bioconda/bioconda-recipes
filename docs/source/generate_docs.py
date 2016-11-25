@@ -170,7 +170,7 @@ def setup(*args):
                 continue
 
         name = metadata.name()
-        versions_in_channel = list(repodata[name].keys())
+        versions_in_channel = sorted(repodata[name].keys())
 
         # Format the README
         notes = metadata.get_section('extra').get('notes', '')
