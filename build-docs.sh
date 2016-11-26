@@ -50,7 +50,10 @@ echo ".*" >> .gitignore
 git add .
 
 
-if [[ ! -z ${TRAVIS:-} && $TRAVIS == "true" ]]; then
+if [[
+    $TRAVIS_BRANCH == "docs"
+    && $TRAVIS_PULL_REQUEST == "false" 
+]];then
     ENCRYPTED_KEY_VAR="encrypted_${ENCRYPTION_LABEL}_key"
     ENCRYPTED_IV_VAR="encrypted_${ENCRYPTION_LABEL}_iv"
     ENCRYPTED_KEY=${!ENCRYPTED_KEY_VAR}
@@ -61,7 +64,6 @@ if [[ ! -z ${TRAVIS:-} && $TRAVIS == "true" ]]; then
     ssh-add key
     git config user.name "Travis CI"
     git config user.email " bioconda@users.noreply.github.com"
+    git commit --all -m "Updated docs to commit ${SHA}."
+    git push $SSH_REPO $BRANCH &> /dev/null
 fi
-
-git commit --all -m "Updated docs to commit ${SHA}."
-git push $SSH_REPO $BRANCH &> /dev/null
