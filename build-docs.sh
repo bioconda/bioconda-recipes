@@ -11,8 +11,8 @@ set -eou pipefail
 
 
 if [[
-    $TRAVIS_BRANCH == "docs"
-    && $TRAVIS_PULL_REQUEST == "false" 
+    $TRAVIS_BRANCH != "docs"
+    || $TRAVIS_PULL_REQUEST == "true"
 ]];then
     exit 0
 fi
