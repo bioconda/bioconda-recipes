@@ -13,6 +13,7 @@ set -eou pipefail
 if [[
     $TRAVIS_BRANCH != "docs"
     || $TRAVIS_PULL_REQUEST == "true"
+    || $TRAVIS_OS_NAME != "linux"
 ]];then
     exit 0
 fi
