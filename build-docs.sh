@@ -2,15 +2,54 @@
 
 set -eou pipefail
 
-# This setup uses a unique ssh keypair where the private key has been encoded
-# via travis encrypt-file.
-#
 # References:
 #  - https://docs.travis-ci.com/user/encrypting-files
 #  - https://gist.github.com/domenic/ec8b0fc8ab45f39403dd
 
+# ----------------------------------------------------------------------------
+#
+# Repository-specific configuration
+#
+# ----------------------------------------------------------------------------
+
+# To push to bioconda.github.io instead, use:
+# BRANCH="master"
+# ORIGIN="bioconda.github.io"
+BRANCH="gh-pages"
+ORIGIN="bioconda-utils"
+GITHUB_USERNAME="bioconda"
+
+HERE=DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# DOCSOURCE is directory containing the Makefile, relative to the directory
+# containing this bash script.
+DOCSOURCE=${HERE}/docs
+
+# DOCHTML is where sphinx is configured to save the output HTML
+DOCHTML=${HERE}/docs/build/html
+
+# tmpdir to which built docs will be copied
+STAGING=/tmp/${GITHUB_USERNAME}-docs
+
+# The public key should have been added to the repo's settings in github; the
+# private key should have been encrypted using `travis encrypt-file` and the
+# encrypted version committed to the repo under $ENCRYPTED_FILE.
+#
+# ENCRYPTION_LABEL is from .travis.yml, and should have been edited to match
+# the hash value reported by `travis encrypt-file`.
+#
+# See https://gist.github.com/domenic/ec8b0fc8ab45f39403dd for details
+ENCRYPTED_FILE=${HERE}/docs/key.enc
+
 # Build docs only if travis-ci is testing this branch:
 BUILD_DOCS_FROM_BRANCH="master"
+
+# ----------------------------------------------------------------------------
+#
+# END repository-specific configuration. The code below is generic; to use for
+# another repo, edit the above settings.
+#
+# ----------------------------------------------------------------------------
 
 # Stop early (and descriptively)
 if [[ $TRAVIS_BRANCH != $BUILD_DOCS_FROM_BRANCH ]]; then
@@ -22,30 +61,11 @@ if [[ $TRAVIS_PULL_REQUEST == "true" ]]; then
     exit 0
 fi
 if [[ $TRAVIS_OS_NAME != "linux" ]]; then
-    echo "OS is not linux, so not building docs"
+    echo "OS is not Linux, so not building docs"
     exit 0
 fi
 
-# To push to bioconda.github.io instead, use:
-# BRANCH="master"
-# ORIGIN="bioconda.github.io"
-BRANCH="gh-pages"
-ORIGIN="bioconda-utils"
-
-GITHUB_USERNAME="bioconda"
-SSH_REPO="git@github.com:${GITHUB_USERNAME}/${ORIGIN}.git"
-SHA=$(git rev-parse --verify HEAD)
-HERE=$(pwd)
-
-# These are specific to how sphinx-quickstart was set up
-DOCSOURCE=${HERE}/docs
-DOCHTML=${HERE}/docs/build/html
-
-# tmpdir to which built docs will be copied
-STAGING=/tmp/bioconda-docs
-
-# decrypt and ssh-add key
-ENCRYPTED_FILE=${HERE}/docs/key.enc
+# Decrypt and ssh-add key.
 ENCRYPTED_KEY_VAR="encrypted_${ENCRYPTION_LABEL}_key"
 ENCRYPTED_IV_VAR="encrypted_${ENCRYPTION_LABEL}_iv"
 ENCRYPTED_KEY=${!ENCRYPTED_KEY_VAR}
@@ -58,6 +78,8 @@ ssh-add key
 # clone the branch to tmpdir, clean out contents
 rm -rf $STAGING
 mkdir -p $STAGING
+SSH_REPO="git@github.com:${GITHUB_USERNAME}/${ORIGIN}.git"
+SHA=$(git rev-parse --verify HEAD)
 git clone $SSH_REPO $STAGING
 cd $STAGING
 git checkout $BRANCH || git checkout --orphan $BRANCH
@@ -73,14 +95,16 @@ cd $STAGING
 touch .nojekyll
 git add .nojekyll
 
+# committing with no changes results in exit 1, so check for that case first.
 if git diff --quiet; then
     echo "No changes to push -- exiting cleanly"
     exit 0
 fi
 
+# Add, commit, and push
 echo ".*" >> .gitignore
 git config user.name "Travis CI"
-git config user.email " bioconda@users.noreply.github.com"
+git config user.email "${GITHUB_USERNAME}@users.noreply.github.com"
 git add -A .
 git commit --all -m "Updated docs to commit ${SHA}."
 echo "Pushing to $SSH_REPO:$BRANCH"
