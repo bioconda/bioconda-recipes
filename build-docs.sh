@@ -9,12 +9,20 @@ set -eou pipefail
 #  - https://docs.travis-ci.com/user/encrypting-files
 #  - https://gist.github.com/domenic/ec8b0fc8ab45f39403dd
 
+# Build docs only if travis-ci is testing this branch:
+BUILD_DOCS_FROM_BRANCH="master"
 
-if [[
-    $TRAVIS_BRANCH != "docs"
-    || $TRAVIS_PULL_REQUEST == "true"
-    || $TRAVIS_OS_NAME != "linux"
-]];then
+# Stop early (and descriptively)
+if [[ $TRAVIS_BRANCH != $BUILD_DOCS_FROM_BRANCH ]]; then
+    echo "Not building docs because not on branch '$BUILD_DOCS_FROM_BRANCH'"
+    exit 0
+fi
+if [[ $TRAVIS_PULL_REQUEST == "true" ]]; then
+    echo "This is a pull request, so not building docs"
+    exit 0
+fi
+if [[ $TRAVIS_OS_NAME != "linux" ]]; then
+    echo "OS is not linux, so not building docs"
     exit 0
 fi
 
@@ -29,10 +37,9 @@ SSH_REPO="git@github.com:${GITHUB_USERNAME}/${ORIGIN}.git"
 SHA=$(git rev-parse --verify HEAD)
 HERE=$(pwd)
 
-# specific to how sphinx-quickstart was set up
+# These are specific to how sphinx-quickstart was set up
 DOCSOURCE=${HERE}/docs
 DOCHTML=${HERE}/docs/build/html
-
 
 # tmpdir to which built docs will be copied
 STAGING=/tmp/bioconda-docs
@@ -56,12 +63,10 @@ cd $STAGING
 git checkout $BRANCH || git checkout --orphan $BRANCH
 rm -r *
 
-
 # build docs and copy over to tmpdir
 cd ${DOCSOURCE}
 make html
 cp -r ${DOCHTML}/* $STAGING
-
 
 # commit and push
 cd $STAGING
@@ -72,4 +77,5 @@ git add .
 git config user.name "Travis CI"
 git config user.email " bioconda@users.noreply.github.com"
 git commit --all -m "Updated docs to commit ${SHA}."
+echo "Pushing to $SSH_REPO:$BRANCH"
 git push $SSH_REPO $BRANCH &> /dev/null
