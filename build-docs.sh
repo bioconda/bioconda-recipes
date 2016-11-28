@@ -65,17 +65,23 @@ rm -r *
 
 # build docs and copy over to tmpdir
 cd ${DOCSOURCE}
-make html
+make html 2>&1 | grep -v "WARNING: nonlocal image URL found:"
 cp -r ${DOCHTML}/* $STAGING
 
 # commit and push
 cd $STAGING
 touch .nojekyll
 git add .nojekyll
+
+if git diff --quiet; then
+    echo "No changes to push -- exiting cleanly"
+    exit 0
+fi
+
 echo ".*" >> .gitignore
-git add .
 git config user.name "Travis CI"
 git config user.email " bioconda@users.noreply.github.com"
+git add -A .
 git commit --all -m "Updated docs to commit ${SHA}."
 echo "Pushing to $SSH_REPO:$BRANCH"
 git push $SSH_REPO $BRANCH &> /dev/null
