@@ -18,3 +18,9 @@ make
 cd ..
 ./configure --prefix=$PREFIX
 make install prefix=$PREFIX LIBS+=-lcurl LIBS+=-lcrypto
+
+# used by tophat --with-bam
+mv libbam.a $PREFIX/lib/
+mkdir -p $PREFIX/include/bam
+ln -s version.h version.hpp
+mv *.h *.hpp $PREFIX/include/bam
