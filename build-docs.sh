@@ -19,7 +19,7 @@ BRANCH="gh-pages"
 ORIGIN="bioconda-utils"
 GITHUB_USERNAME="bioconda"
 
-HERE=DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # DOCSOURCE is directory containing the Makefile, relative to the directory
 # containing this bash script.
