@@ -2,7 +2,7 @@
 
 # Execute tool with dummy file to trigger the creation of motus_data folder
 touch dummy.fq
-./mOTUs.pl dummy.fq 2> /dev/null || true
+./mOTUs.pl dummy.fq 2>&1 | grep -q "ERROR & EXIT:"
 
 # Check files
 if [ ! -f motus_data/bin/2bwt-builder -o ! -f motus_data/bin/fastq_trim_filter_v5_EMBL -o ! -f motus_data/bin/fastx_quality_stats -o ! -f motus_data/bin/msamtools -o ! -f motus_data/bin/soap2.21 ]
