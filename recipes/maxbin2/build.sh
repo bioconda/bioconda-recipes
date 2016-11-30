@@ -1,3 +1,3 @@
 #!/bin/bash
 set -euo pipefail
-make
+cd src && make
