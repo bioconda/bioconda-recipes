@@ -14,4 +14,4 @@ export CXXFLAGS="-pthread"
 export CFLAGS+="-pthread"
 
 make
-make install
+PREFIX=$PREFIX/bin make install

@@ -1,16 +1,17 @@
+
 ![](https://raw.githubusercontent.com/bioconda/bioconda-recipes/master/logo/bioconda_monochrome_small.png
  "Bioconda")
 
 # The bioconda channel
 
 [![Travis builds](https://img.shields.io/travis/bioconda/bioconda-recipes/master.svg?style=flat-square&label=builds)](https://travis-ci.org/bioconda/bioconda-recipes)
-[![Travis tests](https://img.shields.io/travis/bioconda/bioconda-tests/master.svg?style=flat-square&label=tests)](https://travis-ci.org/bioconda/bioconda-tests)
+[![Gitter](https://badges.gitter.im/bioconda/bioconda-recipes.svg)](https://gitter.im/bioconda/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 [Conda](http://anaconda.org) is a platform- and language-independent package
 manager that sports easy distribution, installation and version management of
 software.  The [bioconda channel](https://anaconda.org/bioconda) is a Conda
-channel providing bioinformatics related packages.  This repository hosts the
-corresponding recipes.
+channel providing bioinformatics related packages for **Linux** and **Mac OS**.
+This repository hosts the corresponding recipes.
 
 ## User guide
 
@@ -18,11 +19,21 @@ Please visit https://bioconda.github.io for details.
 
 ## Developer guide
 
+**Note: the `bioconda` build system has recently been changed to use CentOS6
+instead of CentOS5. See the conversation in
+[#2274](https://github.com/bioconda/bioconda-recipes/pull/2274) for details on
+the reasoning behind this. To better take advantage of the efforts of the
+[`conda-forge`](https://conda-forge.github.io/) team, we are using the CentOS6
+Docker container ``condaforge/linux-anvil`` for building, and our
+[``bioconda-utils``](https://github.com/bioconda/bioconda-utils) package for
+managing the infrastructure. See below for updated testing instructions.**
+
+
 If you want to contribute new packages to Bioconda, you are invited to join the
 Bioconda team.  Please post in the [team thread on
 GitHub](https://github.com/bioconda/recipes/issues/1) to ask for permission.
 
-We build Linux packages inside a CentOS 5 docker container to maintain
+We build Linux packages inside a CentOS 6 docker container to maintain
 compatibility across multiple systems. OSX packages are built using the [OSX
 build environment](https://docs.travis-ci.com/user/osx-ci-environment/) on
 [Travis CI](https://travis-ci.org/).
@@ -37,13 +48,12 @@ prerequisites are assumed:
   recommended.
 - [`docker`](https://www.docker.com/)
 - [`git`](https://git-scm.com/)
-- [`bioconda-utils](https://github.com/bioconda/bioconda-utils)
 
 ### Step 1: Create a new recipe
 
 Fork this repository or create a new branch to work in. Within the new branch,
 [create a recipe](http://conda.pydata.org/docs/building/build.html)
-(`your_package` in this example) in the `recipes` directory. See our
+(`your_package` in this example) in the `recipes` directory. See our 
 [guidelines](GUIDELINES.md) for best practices and examples.
 
 ### Step 2: Test the recipe
@@ -52,29 +62,41 @@ When the recipe is ready, first test it with your local conda installation via
 
     conda build recipes/your_package
 
-If the recipe has dependencies in the bioconda channel (this is often the
-case), you will need to add `--channel bioconda` to the command. If the recipe
-is an R package, you will also need to add `--channel r`. For example many
-Bioconductor packages will be built using:
+Bioconda uses the `bioconda`, `r`, and `conda-forge` channels. You can either
+set them globally with:
+```
+conda config --add channels conda-forge
+conda config --add channels defaults
+conda config --add channels r
+conda config --add channels bioconda
 
-    conda build recipes/your_package --channel bioconda --channel r
+```
 
-Then, you can test it using the `bioconda-utils` tools. This should work
-whether on OSX or Linux:
+or by adding the channels to the build command:
 
-    bioconda-utils build recipes config.yml --package your_package
+    conda build recipes/your_package \
+        --channel conda-forge \
+        --channel defaults \
+        --channel r \
+        --channel bioconda
 
-Adding the `--docker` flag will build your package using a CentOS 5 Docker
-container to maximize compatibility. This will automatically export your conda
-build directory to the container, so that any packages you build will be
-accessible to your machine even when not running in a Docker container:
+Then, you can test the build in a docker container. The authoritative source
+for how packages are built can be found in the `scripts/travis-run.sh` script,
+the `config.yml` config file, and the `.travis.yml` config file. However, the
+`simulate-travis.py` script can be used for conveniently testing on a local
+machine.  Any environmental variables will be passed to `scripts/travis-run.sh` and will
+override any defaults detected in .travis.yml. Currently the only variables
+useful to modify are TRAVIS_OS_NAME and BIOCONDA_UTILS_TAG and they can be used as
+ follows:
 
-    bioconda-utils build recipes config.yml --package your_package --docker
-
-To optionally build and test all packages (if they don't already exist), leave off the
-package name:
-
-    bioconda-utils build recipes config.yml --docker
+```
+# run `mypackagename`
+./simulate-travis.py --packages mypackagename --loglevel=debug
+# use the linux build system from a non-linux machine
+TRAVIS_OS_NAME=linux ./simulate-travis.py
+# specify the bioconda-utils commit to use for your builds
+BIOCONDA_UTILS_TAG=63543b34 ./simulate-travis.py
+```
 
 If rebuilding a previously-built package and the version number hasn't changed,
 be sure to increment the build number in `meta.yaml` (the default build number
@@ -117,11 +139,9 @@ For other styles, replace ``?style=flat-square`` with ``?style=flat`` or
 
 ### Building packages for Mac OSX
 **By default, recipes will be built for both Linux and OSX**
-(see "The bioconda build system" section below) upon submitting a pull request.
-Many recipes build cleanly on Linux but not on OSX. The easiest way to find out
-is to let the travis-ci tests try building for both platforms. If it fails on
-OSX but not Linux, the easy fix is to explicitly skip the OSX build using
-a [platform-specific
+(see "The bioconda build system" section below) upon submitting
+a pull request. Many recipes build cleanly on Linux but not on OSX. The easy
+fix is to explicitly skip the OSX build using a [platform-specific
 selector](http://conda.pydata.org/docs/building/meta-yaml.html#skipping-builds)
 on a line in the `meta.yaml` that skips the build, like this:
 
@@ -147,7 +167,7 @@ To test all OSX recipes (skipping those that define `skip: True #[osx]`) use
 the following from the top-level dir:
 
 ```bash
-bioconda-utils build recipes config.yml
+scripts/build-packages.py --repository . --env-matrix scripts/env_matrix.yml
 ```
 
 ### Managing multiple versions of a package
@@ -167,19 +187,6 @@ java-jdk/
 
 There should always be a primary in the root directory of a package that is
 updated when new releases are made.
-
-### Other notes
-
-We use the docker container `continuumio/conda_builder_linux` pre-built CentOS
-5 image with compilers installed as part of the standard build. To debug
-a recipe in this container, run it in interactive mode while exporting the
-recipes directory to the `/home/dev/recipes` dir in the container:
-
-
-```bash
-docker run -it --rm -v `pwd`/recipes:/home/dev/recipes continuumio/conda_builder_linux /bin/bash /opt/share/internal_startup.sh
-```
-
 
 ## The bioconda build system
 This repository is set up on [Travis CI](https://travis-ci.org) such that on

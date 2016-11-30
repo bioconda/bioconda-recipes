@@ -32,24 +32,25 @@ if [ -z $1 ]; then
     exit 1
 fi
 
-RECIPES="$1"
+REPO="$1"
+RECIPES="$1/recipes"
 HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+FORCE=$2
 
 
-
-
-echo -n "
-Warning: this script ($0) modifies the working directory, and discards any
-uncommitted changes in the recipe dir $RECIPES. Continue?
-[yes|no] [no] >>> "
-read ans
-if [[ ($ans != "yes") && ($ans != "Yes") && ($ans != "YES") &&
-            ($ans != "y") && ($ans != "Y") ]]
-then
-    echo "Aborting!"
-    exit 2
+if [[ -z $FORCE ]]; then
+    echo -n "
+    Warning: this script ($0) modifies the working directory, and discards any
+    uncommitted changes in the recipe dir $RECIPES. Continue?
+    [yes|no] [no] >>> "
+    read ans
+    if [[ ($ans != "yes") && ($ans != "Yes") && ($ans != "YES") &&
+                ($ans != "y") && ($ans != "Y") ]]
+    then
+        echo "Aborting!"
+        exit 2
+    fi
 fi
-
 
 function log () {
     # log output to match that of bioconductor_skeleton.py
@@ -68,6 +69,6 @@ for i in $(python "$HERE/update_bioconductor_packages.py" --repository "$RECIPES
     if [ $(echo "$recipe_name" | grep "^bioconductor-") ]; then
         python "$HERE/bioconductor_skeleton.py" $bioconductor_name --force --recipes "$RECIPES"
     else
-        conda skeleton cran  --update-outdated --output-dir "$RECIPES/$recipe_name"
+        conda skeleton cran  --update-outdated --output-dir "$RECIPES" $bioconductor_name;
     fi
 done
