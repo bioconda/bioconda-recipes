@@ -1,4 +1,2 @@
-#!/bin/bash
-
-make install INSTALLDIR=$PREFIX
+OPTFLAG_PROFILE="-O3" make install INSTALLDIR=$PREFIX
 
