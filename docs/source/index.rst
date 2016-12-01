@@ -49,6 +49,9 @@ package. The Python 3 version is recommended.
     * The conda `FAQs <http://conda.pydata.org/docs/faq.html>`_ explain how
       it's easy to use with existing Python installations.
 
+
+.. _set-up-channels:
+
 2. Set up channels
 ------------------
 
@@ -71,6 +74,7 @@ used as dependencies for bioconda packages.
 
 3. Install packages
 -------------------
+:ref:`Browse the packages <recipes>` to see what's available.
 
 bioconda is now enabled, so any packages on the bioconda channel can be installed into the current conda environment::
 
@@ -81,8 +85,52 @@ Or a new environment can be created::
     conda create -n aligners bwa bowtie hisat star
 
 
-4. Contribute!
---------------
+
+4. Join the team
+----------------
+
+Because our time is limited, the policy is to add a package if we need it ourselves.
+However, we invite anybody who wants to use Conda for bioinformatics to
+`join the team <https://github.com/bioconda/bioconda-recipes/issues/1>`_ and
+contribute new packages. To get started, have a look at our
+`recipes <https://github.com/bioconda/bioconda-recipes>`_ and the
+`Conda documentation <http://conda.pydata.org/docs/building/recipe.html#conda-recipe-files-overview>`_.
+If you don't want to join us permanently, you can also fork the
+`recipes <https://github.com/bioconda/bioconda-recipes>`_ repository and create
+pull requests.
+
+5. Spread the word
+------------------
+
+Consider `adding a badge <_static/badge-generator/>`_ to your posters and presentations to promote
+that a tool can be easily installed from bioconda.
+
+
+Contributors
+============
+
+Core
+----
+
+* `Johannes Köster <https://github.com/johanneskoester>`_
+* `Ryan Dale <https://github.com/daler>`_
+* `Brad Chapman <https://github.com/chapmanb>`_
+* `Chris Tomkins-Tinch <https://github.com/tomkinsc>`_
+* `Björn Grüning <https://github.com/bgruening>`_
+
+Others
+------
+Bioconda has over 120 contributors, see `here <https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
+
+----
+
+Bioconda is a derivative mark of Anaconda :sup:`®`, a trademark of Continuum Analytics, Inc registered in the U.S. and other countries.
+Continuum Analytics, Inc. grants permission of the derivative use but is not associated with Bioconda.
+
+The Bioconda channel is sponsored by `Continuum Analytics <https://www.continuum.io/>`_.
+
+Contributor documentation
+-------------------------
 
 The rest of this documentation describes the build system architecture, the
 process of creating and testing recipes, and adding recipes to the bioconda
@@ -94,6 +142,7 @@ Contents:
 .. toctree::
     :maxdepth: 2
 
+    recipes
     contributing
     faqs
     troubleshooting
