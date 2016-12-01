@@ -109,4 +109,3 @@ git add -A .
 git commit --all -m "Updated docs to commit ${SHA}."
 echo "Pushing to $SSH_REPO:$BRANCH"
 git push $SSH_REPO $BRANCH &> /dev/null
->>>>>>> 8b27e83cac08a6b807eb590bd25e1a65258a1fcd
