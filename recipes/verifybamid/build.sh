@@ -1,5 +1,4 @@
-CXX=${PREFIX}/bin/g++
-
+#!/bin/bash
 
 make 
 mkdir -p $PREFIX/bin
