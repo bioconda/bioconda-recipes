@@ -59,7 +59,7 @@ args, extra = ap.parse_known_args()
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 
-def _remote_or_local(fn, remote=False):
+def _remote_or_local(fn, branch='master', remote=False):
     """
     Downloads a temp file directly from the specified github branch or
     the current one on disk.
@@ -67,7 +67,7 @@ def _remote_or_local(fn, remote=False):
     if remote:
         url = (
             'https://raw.githubusercontent.com/bioconda/bioconda-recipes/'
-            '{branch}/{path}'.format(branch='master', path=fn)
+            '{branch}/{path}'.format(branch=branch, path=fn)
         )
         print('Using config file {}'.format(url))
         with conda.fetch.TmpDownload(url) as f:
@@ -108,7 +108,7 @@ if args.install_requirements:
         [
             'conda', 'install', '-y', '--file',
             'https://raw.githubusercontent.com/bioconda/bioconda-utils/'
-            '{0}/conda-requirements.txt'.format(env['BIOCONDA_UTILS_TAG'])
+            '{0}/bioconda_utils/bioconda_utils-requirements.txt'.format(env['BIOCONDA_UTILS_TAG'])
         ], check=True)
 
     sp.run(
