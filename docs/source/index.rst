@@ -1,18 +1,153 @@
-bioconda-utils
-==============
+.. bioconda documentation master file, created by
+   sphinx-quickstart on Sat Nov  5 15:36:41 2016.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
 
-``bioconda-utils`` is a set of management tools used by the `bioconda
-<https://github.com/bioconda/bioconda-recipes>`_ conda channel. It includes
-tools for inspecting sets of interdependent recipes, building recipes in
-isolated Docker containers, creating skeleton recipes as starting points for
-contributing a recipe, and more.
+.. image:: bioconda.png
+
+Bioconda
+========
+**Bioconda** is a channel for the `conda
+<http://conda.pydata.org/docs/intro.html>`_  package manager specializing in
+bioinformatics software. Bioconda consists of:
+
+- a `repository of recipes <https://github.com/bioconda/bioconda-recipes>`_ hosted on GitHub
+- a `build system <https://github.com/bioconda/bioconda-utils>`_ that turns these recipes into conda packages
+- a `repository of >1500 bioinformatics packages
+  <https://anaconda.org/bioconda/>`_ ready to use with ``conda install``
+- Over 130 contributors that add, modify, update and maintain the recipes
+
+The conda package manager has recently made installing software a vastly more
+streamlined process. Conda is a combination of other package managers you may
+have encountered, such as pip, CPAN, CRAN, Bioconductor, apt-get, and homebrew.
+Conda is both language- and OS-agnostic, and can be used to install C/C++,
+Fortran, Go, R, Python, Java etc programs on Linux, Mac OSX, and Windows.
+
+Conda allows separation of packages into separate repositories, or `channels`.
+The main `defaults` channel has a large number of common packages. Users can
+add additional channels from which to install software packages not available
+in the defaults channel. Bioconda is one such channel specializing in
+bioinformatics software.
+
+.. _using-bioconda:
+
+Using bioconda
+==============
+**bioconda supports only 64-bit Linux and Mac OSX**.
+
+
+1. Install conda
+----------------
+Bioconda requires the conda package manager to be installed. If you have an
+Anaconda Python installation, you already have it. Otherwise, the best way to
+install it is with the `Miniconda <http://conda.pydata.org/miniconda.html>`_
+package. The Python 3 version is recommended.
+
+.. seealso::
+
+    * :ref:`conda-anaconda-minconda`
+    * The conda `FAQs <http://conda.pydata.org/docs/faq.html>`_ explain how
+      it's easy to use with existing Python installations.
+
+
+.. _set-up-channels:
+
+2. Set up channels
+------------------
+
+After installing conda you will need to add the bioconda channel as well as the
+other channels bioconda depends on. **It is important to add them in this
+order** so that the priority is set correctly (that is, bioconda is highest
+priority).
+
+The `conda-forge` channel contains many general-purpose packages not already
+found in the `defaults` channel. The `r` channel contains common R packages
+used as dependencies for bioconda packages.
+
+::
+
+    conda config --add channels conda-forge
+    conda config --add channels defaults
+    conda config --add channels r
+    conda config --add channels bioconda
+
+
+3. Install packages
+-------------------
+:ref:`Browse the packages <recipes>` to see what's available.
+
+bioconda is now enabled, so any packages on the bioconda channel can be installed into the current conda environment::
+
+    conda install bwa
+
+Or a new environment can be created::
+
+    conda create -n aligners bwa bowtie hisat star
+
+
+
+4. Join the team
+----------------
+
+Because our time is limited, the policy is to add a package if we need it ourselves.
+However, we invite anybody who wants to use Conda for bioinformatics to
+`join the team <https://github.com/bioconda/bioconda-recipes/issues/1>`_ and
+contribute new packages. To get started, have a look at our
+`recipes <https://github.com/bioconda/bioconda-recipes>`_ and the
+`Conda documentation <http://conda.pydata.org/docs/building/recipe.html#conda-recipe-files-overview>`_.
+If you don't want to join us permanently, you can also fork the
+`recipes <https://github.com/bioconda/bioconda-recipes>`_ repository and create
+pull requests.
+
+5. Spread the word
+------------------
+
+Consider `adding a badge <_static/badge-generator/>`_ to your posters and presentations to promote
+that a tool can be easily installed from bioconda.
+
+
+Contributors
+============
+
+Core
+----
+
+* `Johannes Köster <https://github.com/johanneskoester>`_
+* `Ryan Dale <https://github.com/daler>`_
+* `Brad Chapman <https://github.com/chapmanb>`_
+* `Chris Tomkins-Tinch <https://github.com/tomkinsc>`_
+* `Björn Grüning <https://github.com/bgruening>`_
+
+Others
+------
+Bioconda has over 120 contributors, see `here <https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
+
+----
+
+Bioconda is a derivative mark of Anaconda :sup:`®`, a trademark of Continuum Analytics, Inc registered in the U.S. and other countries.
+Continuum Analytics, Inc. grants permission of the derivative use but is not associated with Bioconda.
+
+The Bioconda channel is sponsored by `Continuum Analytics <https://www.continuum.io/>`_.
+
+Contributor documentation
+-------------------------
+
+The rest of this documentation describes the build system architecture, the
+process of creating and testing recipes, and adding recipes to the bioconda
+channel.
+
 
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   overview
+    recipes
+    contributing
+    faqs
+    troubleshooting
+    build-system
+    guidelines
 
 Indices and tables
 ==================

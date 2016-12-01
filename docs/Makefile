@@ -55,6 +55,8 @@ clean:
 
 .PHONY: html
 html:
+	if [ ! -e bioconda-recipes ]; then git clone --depth=1 https://github.com/bioconda/bioconda-recipes.git bioconda-recipes; fi
+	(cd bioconda-recipes && git pull origin master)
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
@@ -96,9 +98,9 @@ qthelp:
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
 	      ".qhcp project file in $(BUILDDIR)/qthelp, like this:"
-	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/bioconda-utils.qhcp"
+	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/bioconda.qhcp"
 	@echo "To view the help file:"
-	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/bioconda-utils.qhc"
+	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/bioconda.qhc"
 
 .PHONY: applehelp
 applehelp:
@@ -115,8 +117,8 @@ devhelp:
 	@echo
 	@echo "Build finished."
 	@echo "To view the help file:"
-	@echo "# mkdir -p $$HOME/.local/share/devhelp/bioconda-utils"
-	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/bioconda-utils"
+	@echo "# mkdir -p $$HOME/.local/share/devhelp/bioconda"
+	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/bioconda"
 	@echo "# devhelp"
 
 .PHONY: epub
