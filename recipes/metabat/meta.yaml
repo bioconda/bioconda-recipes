@@ -1,0 +1,63 @@
+{% set name = "metabat" %}
+{% set version = "0.32.4" %}
+{% set sha256linux = "6db36f8d43e4e7d246c4f5028979952d8f29ed5fe69ae8175fb4f2be98cb9a22" %}
+{% set sha256osx = "d17fcee3891f2f478379edff30c5eee98dd8d76b2d876859f12087828abb142a" %}
+
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  # Linux binary
+  url: https://bitbucket.org/berkeleylab/{{ name }}/downloads/{{ name }}-static-binary-linux-x64_v{{ version }}.tar.gz  # [linux]
+  sha256linux: {{ sha256linux }}  # [linux]
+
+  # OSX binary
+  url: https://bitbucket.org/berkeleylab/{{ name }}/downloads/{{ name }}-static-binary-osx-elcapitan-x64_v{{ version }}.tar.gz  # [osx]
+  sha256: {{ sha256osx }}  # [osx]
+
+
+requirements:
+  build:
+
+  run:
+    - libgcc  # [not osx]
+    - perl
+    - boost
+    - zlib
+
+test:
+  commands:
+    - metabat --help 2> /dev/null
+    - jgi_summarize_bam_contig_depths 2> /dev/null
+    - contigOverlaps 2> /dev/null
+    - aggregateContigOverlapsByBin.pl 2> /dev/null || [ "$?" == "255" ]
+    - aggregateBinDepths.pl 2> /dev/null || [ "$?" == "255" ]
+    - runMetaBat.pl 2> /dev/null || [ "$?" == "255" ]
+
+about:
+  home: "https://bitbucket.org/berkeleylab/metabat"
+  license: "BSD"
+  summary: "An efficient tool for accurately reconstructing single genomes from complex microbial communities"
+  description: |
+    Grouping large genomic fragments assembled from shotgun metagenomic
+    sequences to deconvolute complex microbial communities, or metagenome 
+    , enables the study of individual organisms and their interactions. Here we
+    developed an automated metagenome binning software, called MetaBAT, which
+    integrates empirical probabilistic distances of genome abundance and
+    tetranucleotide frequency. Tested on both synthetic and real metagenome
+    datasets, MetaBAT outperforms alternative methods in both accuracy and
+    computational efficiency. Applying MetaBAT to an assembly from 1,704 human
+    gut samples formed 1,634 genome bins (>200kb) in 3 hours, where 621 genome
+    bins are >50% complete with <5% contamination from other species. Further
+    analysis shows that the quality of these genome bins approaches manually
+    curated genomes.
+
+extra:
+  maintainers:
+    - keuv-grvl
+  doi: 10.7717/peerj.1165
