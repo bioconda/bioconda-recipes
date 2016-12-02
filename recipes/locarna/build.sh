@@ -9,5 +9,4 @@ fi
 
 ./configure --prefix=$PREFIX --with-vrna=$PREFIX "${extra_config_options}" && \
 make -j ${CPU_COUNT} && \
-make -j ${CPU_COUNT} check && \
 make install
