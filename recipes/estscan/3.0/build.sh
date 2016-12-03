@@ -4,7 +4,8 @@ mkdir -p $PREFIX/bin
 
 export ESTSCANDIR=$PREFIX
 
-sed -i -e 's/g77/gfortran/' Makefile
+sed -i -e 's/F77/#F77/' Makefile
+sed -i -e 's/winsegshuffle/#winsegshuffle/' Makefile
 
 make
 
