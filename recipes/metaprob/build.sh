@@ -1,2 +1,2 @@
-make
-cp MetaProb $PREFIX/bin/
+make PREFIX=$PREFIX install
+# cp MetaProb $PREFIX/bin/
