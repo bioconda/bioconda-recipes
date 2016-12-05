@@ -80,7 +80,7 @@ Once the channels have been added, you can install packages, e.g.::
 
 Isolated environments (with e.g. specific software versions>`_ can be created via::
 
-   conda create -n myenviroment bwa=0.7.12
+   conda create -n myenvironment bwa=0.7.12
 
 For more information, visit the `Conda documentation <http://conda.pydata.org/docs>`_
 or have a look at the command line options by executing::
