@@ -2,6 +2,9 @@ target=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $target
 mkdir -p $PREFIX/bin
 
+# add perl shebang
+sed -i.bak "1i #!/usr/bin/env perl" *.pl
+
 #change hardcoded directory of splicemodels
 sed -i.bak "s@\"splicemodels/\"@\"$target/splicemodels/\"@" *.pl
 
