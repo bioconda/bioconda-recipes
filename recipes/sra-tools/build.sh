@@ -23,6 +23,12 @@ tar xzf ncbi-vdb-${NCBI_VDB_VERSION}.tar.gz -C ncbi-vdb
 SRC_SDK=$SRC_DIR/ngs-sdk/ngs-${NGS_SDK_VERSION}
 SRC_VDB=$SRC_DIR/ncbi-vdb/ncbi-vdb-${NCBI_VDB_VERSION}
 
+
+if [[ $OSTYPE == darwin* ]]; then
+     export CFLAGS="-headerpad_max_install_names"
+     export CXXFLAGS=$CFLAGS
+fi
+
 ####
 # build ngs-sdk
 ####
