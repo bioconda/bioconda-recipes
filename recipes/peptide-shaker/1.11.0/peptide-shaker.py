@@ -9,6 +9,7 @@
 import os
 import subprocess
 import sys
+import shutil
 from os import access
 from os import getenv
 from os import X_OK
@@ -70,7 +71,14 @@ def jvm_opts(argv):
 
 def main():
     java = java_executable()
-    jar_dir = real_dirname(sys.argv[0])
+    """
+    PeptideShaker updates files relative to the path of the jar file.
+    Thus we need to copy the jar file, lib, and resources to the working directory
+    when this script is first invoked in a job.
+    """
+    jar_dir = os.path.join(os.getcwd(),'bin')
+    if not os.path.exists(jar_dir):
+        shutil.copytree(real_dirname(sys.argv[0]), jar_dir, symlinks=False, ignore=None)
     (mem_opts, prop_opts, pass_args) = jvm_opts(sys.argv[1:])
 
     if pass_args != [] and pass_args[0].startswith('eu'):
