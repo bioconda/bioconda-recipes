@@ -11,5 +11,5 @@ cd ../
 cp ./sources/genesplicer $target && rm -rf sources
 cp -r * $target
 
-chmod 0755 $target/*.pl
+chmod 0755 $target/*
 ln -s $target/genesplicer $PREFIX/bin
