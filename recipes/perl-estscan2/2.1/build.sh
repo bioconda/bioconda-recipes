@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Make sure deprecated Perl code is compatible with new Perl.
+sed -i -e 's/defined @/@/' ESTScan
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
