@@ -38,6 +38,7 @@ ln -s $TRINITY_HOME/util/* .
 ln -s $TRINITY_HOME/Analysis/DifferentialExpression/PtR
 ln -s $TRINITY_HOME/Analysis/DifferentialExpression/run_DE_analysis.pl
 ln -s $TRINITY_HOME/Analysis/DifferentialExpression/analyze_diff_expr.pl
+ln -s $TRINITY_HOME/Analysis/DifferentialExpression/define_clusters_by_cutting_tree.pl
 ln -s $TRINITY_HOME/util/support_scripts/get_Trinity_gene_to_trans_map.pl
 
 # Find real path when executing from a symlink

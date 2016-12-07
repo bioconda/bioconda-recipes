@@ -164,8 +164,8 @@ An example of this is [fastq-screen](recipes/fastq-screen).
 
 For command-line tools, running the program with no arguments, checking the
 programs version (e.g. with `-v`) or checking the command-line help is
-sufficient if doing so returns an exit code 0.  Often the output is piped to
-`/dev/null` to avoid output during recipe builds.
+sufficient if doing so returns an exit code 0.  We recommend to not redirect
+output to `/dev/null` because it may hide helpful debugging information.
 
 Examples:
 
