@@ -2,7 +2,7 @@
 ./configure --prefix=$PREFIX
 make
 make install
-cp lib/distParam $PREFIX/lib -r 
+cp -R lib/distParam $PREFIX/lib
 
 #Add RNASNPPATH to the enviroment variables
 ACTIVATE_DIR=$PREFIX/etc/conda/activate.d
