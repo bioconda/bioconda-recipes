@@ -26,8 +26,6 @@ SRC_VDB=$SRC_DIR/ncbi-vdb/ncbi-vdb-${NCBI_VDB_VERSION}
 
 if [[ $OSTYPE == darwin* ]]; then
      export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
-     export CFLAGS="-headerpad_max_install_names"
-     export CXXFLAGS=$CFLAGS
 fi
 
 ####
