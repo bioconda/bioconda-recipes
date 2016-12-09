@@ -84,7 +84,7 @@ def main():
     we copy the jar file, lib, and resources to the exec_dir directory.
     """
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
-    jar_dir = real_dirname(exec_dir if exec_dir else sys.argv[0])
+    jar_dir = exec_dir if exec_dir else real_dirname(sys.argv[0])
 
     if pass_args != [] and pass_args[0].startswith('eu'):
         jar_arg = '-cp'
