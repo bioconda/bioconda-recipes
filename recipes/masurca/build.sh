@@ -6,5 +6,5 @@ mkdir -p $outdir
 mkdir -p $PREFIX/bin
 cd $SRC_DIR
 echo $SRC_DIR
-
+export DEST=$PREFIX
 ./install.sh
