@@ -5,8 +5,6 @@
 
 .. image:: bioconda.png
 
-Bioconda
-========
 **Bioconda** is a channel for the `conda
 <http://conda.pydata.org/docs/intro.html>`_  package manager specializing in
 bioinformatics software. Bioconda consists of:
@@ -140,19 +138,8 @@ channel.
 Contents:
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
     recipes
     contributing
     faqs
-    troubleshooting
-    build-system
-    guidelines
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-

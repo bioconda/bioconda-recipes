@@ -1,10 +1,10 @@
 Troubleshooting failed recipes
-==============================
+------------------------------
 
 .. _reading-logs:
 
 Reading bioconda-utils logs on Travis-CI
-----------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 For successfully-built recipes, bioconda-utils will report build start/success
 and test start/success. If a recipe fails, an error log message starting with
 `BIOCONDA BUILD FAIL` will be printed. After that will be some verbose output.
@@ -430,7 +430,7 @@ Here's an annotated example build log to help familiarize yourself with log outp
     Done. Your build exited with 1.
 
 HTTP 500 errors
----------------
+~~~~~~~~~~~~~~~
 Sometimes recipes fail for reasons outside our control. For example, if
 anaconda.org returns an HTTP 500 error, that has nothing to do with the recipe
 but with anaconda.org's servers. In this case, you can either restart the build
@@ -439,7 +439,7 @@ to trigger a re-build.
 
 
 HTTP 404 errors
----------------
+~~~~~~~~~~~~~~~
 HTTP 404 errors can happen if a url used for a recipe was not stable. In this
 case the solution is to track down a stable URL. For example this problem
 happened frequently with Bioconductor recipes that were up-to-date as of the
@@ -486,7 +486,7 @@ then change it to this:
 .. _zlib:
 
 ZLIB errors
------------
+~~~~~~~~~~~
 When building the package, you may get an error saying that zlib.h can't be
 found -- despite having zlib listed in the dependencies. The reason is that the
 location of `zlib` often has to be specified in the `build.sh` script, which

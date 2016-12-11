@@ -124,15 +124,19 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
 html_theme = 'alabaster'
+#html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-# html_theme_options = {
-#     'logo_only': True
-# }
+html_theme_options = {
+    'logo': 'logo/bioconda_monochrome_small.png',
+    'sidebar_includehidden': False,
+    'show_related': True,
+    'font_family': 'Arial,Helvetica Neue,Helvetica,sans-serif;',
+    'head_font_family': 'Arial,Helvetica Neue,Helvetica,sans-serif;',
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
@@ -146,7 +150,7 @@ html_theme = 'alabaster'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = '../../logo/bioconda_monochrome_small.png'
+#html_logo = '../logo/bioconda_monochrome_small.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -172,7 +176,13 @@ html_static_path = ['static']
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {}
+html_sidebars = {
+    '**': [
+        'about.html',
+        'navigation.html',
+        #'searchbox.html',
+    ]
+}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.

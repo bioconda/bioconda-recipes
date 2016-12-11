@@ -21,8 +21,8 @@ OUTPUT_DIR = op.join(BASE_DIR, 'recipes')
 RECIPES_TEMPLATE = u"""\
 .. _recipes:
 
-Recipes
-=======
+Available packages
+==================
 
 .. toctree::
    :hidden:
@@ -141,7 +141,7 @@ def setup(*args):
     summaries = []
     recipes = []
 
-    for folder in os.listdir(RECIPE_DIR):
+    for folder in os.listdir(RECIPE_DIR)[:10]:
         # Subfolders correspond to different versions
         versions = []
         for sf in os.listdir(op.join(RECIPE_DIR, folder)):
