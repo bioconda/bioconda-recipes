@@ -21,8 +21,8 @@ OUTPUT_DIR = op.join(BASE_DIR, 'recipes')
 RECIPES_TEMPLATE = u"""\
 .. _recipes:
 
-Recipes
-=======
+Available packages
+==================
 
 .. toctree::
    :hidden:

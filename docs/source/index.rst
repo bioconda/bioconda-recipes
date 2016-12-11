@@ -5,8 +5,6 @@
 
 .. image:: bioconda.png
 
-Bioconda
-========
 **Bioconda** is a channel for the `conda
 <http://conda.pydata.org/docs/intro.html>`_  package manager specializing in
 bioinformatics software. Bioconda consists of:
@@ -16,6 +14,8 @@ bioinformatics software. Bioconda consists of:
 - a `repository of >1500 bioinformatics packages
   <https://anaconda.org/bioconda/>`_ ready to use with ``conda install``
 - Over 130 contributors that add, modify, update and maintain the recipes
+
+**Browse packages in the bioconda channel:** :ref:`recipes`
 
 The conda package manager has recently made installing software a vastly more
 streamlined process. Conda is a combination of other package managers you may
@@ -28,6 +28,9 @@ The main `defaults` channel has a large number of common packages. Users can
 add additional channels from which to install software packages not available
 in the defaults channel. Bioconda is one such channel specializing in
 bioinformatics software.
+
+
+
 
 .. _using-bioconda:
 
@@ -140,19 +143,8 @@ channel.
 Contents:
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
     recipes
     contributing
     faqs
-    troubleshooting
-    build-system
-    guidelines
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
