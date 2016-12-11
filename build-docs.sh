@@ -12,13 +12,9 @@ set -eou pipefail
 #
 # ----------------------------------------------------------------------------
 
-# To push to bioconda.github.io instead, use:
-# BRANCH="master"
-# ORIGIN="bioconda.github.io"
-#
-# For testing,
-# BRANCH="dev-branch-name"
-# ORIGIN="bioconda-utils"
+# Note that the keypair needs to be specific to repo, so if ORIGIN changes, the
+# keypair (docs/key.enc, and the corresponding public key in the setting of the
+# repo) need to be updated.
 BRANCH="master"
 ORIGIN="bioconda.github.io"
 GITHUB_USERNAME="bioconda"
