@@ -141,7 +141,7 @@ def setup(*args):
     summaries = []
     recipes = []
 
-    for folder in os.listdir(RECIPE_DIR)[:10]:
+    for folder in os.listdir(RECIPE_DIR):
         # Subfolders correspond to different versions
         versions = []
         for sf in os.listdir(op.join(RECIPE_DIR, folder)):

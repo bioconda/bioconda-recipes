@@ -15,6 +15,8 @@ bioinformatics software. Bioconda consists of:
   <https://anaconda.org/bioconda/>`_ ready to use with ``conda install``
 - Over 130 contributors that add, modify, update and maintain the recipes
 
+**Browse packages in the bioconda channel:** :ref:`recipes`
+
 The conda package manager has recently made installing software a vastly more
 streamlined process. Conda is a combination of other package managers you may
 have encountered, such as pip, CPAN, CRAN, Bioconductor, apt-get, and homebrew.
@@ -27,7 +29,8 @@ add additional channels from which to install software packages not available
 in the defaults channel. Bioconda is one such channel specializing in
 bioinformatics software.
 
-See :ref:`recipes <available packages>`.
+
+
 
 .. _using-bioconda:
 
