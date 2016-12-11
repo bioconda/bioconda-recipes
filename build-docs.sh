@@ -15,8 +15,12 @@ set -eou pipefail
 # To push to bioconda.github.io instead, use:
 # BRANCH="master"
 # ORIGIN="bioconda.github.io"
-BRANCH="gh-pages"
-ORIGIN="bioconda-utils"
+#
+# For testing,
+# BRANCH="dev-branch-name"
+# ORIGIN="bioconda-utils"
+BRANCH="master"
+ORIGIN="bioconda.github.io"
 GITHUB_USERNAME="bioconda"
 
 HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
