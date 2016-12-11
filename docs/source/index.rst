@@ -27,6 +27,8 @@ add additional channels from which to install software packages not available
 in the defaults channel. Bioconda is one such channel specializing in
 bioinformatics software.
 
+See :ref:`recipes <available packages>`.
+
 .. _using-bioconda:
 
 Using bioconda
