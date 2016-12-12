@@ -134,8 +134,8 @@ html_theme_options = {
     'logo': 'logo/bioconda_monochrome_small.png',
     'sidebar_includehidden': False,
     'show_related': True,
-    'font_family': 'Arial,Helvetica Neue,Helvetica,sans-serif;',
-    'head_font_family': 'Arial,Helvetica Neue,Helvetica,sans-serif;',
+    'font_family': "Raleway, sans-serif",
+    'head_font_family': "'Lato', sans-serif",
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
