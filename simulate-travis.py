@@ -59,6 +59,42 @@ args, extra = ap.parse_known_args()
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 
+def _ensure_build_dir_not_empty():
+    """Make sure the build directory can serve as a valid channel.
+    If the directory is empty or contains no builds, the update
+    command will fail. In this case, a dummy package is installed to
+    to create conda index in the build directory.
+    """
+    import bioconda_utils.docker_utils
+    build_dir = bioconda_utils.docker_utils.get_host_conda_bld()
+
+    ADD_CHANNEL_CMD = [
+        'conda', 'config', '--add', 'channels', 'file://%s' % build_dir]
+    REMOVE_CHANNEL_CMD = [
+        'conda', 'config', '--remove', 'channels', 'file://%s' % build_dir]
+    CONDA_UPDATE_DRY_RUN_CMD = ['conda', 'update', '--dry-run', '--all']
+
+    with open(os.devnull, 'w') as DNULL:
+        sp.run(ADD_CHANNEL_CMD, stdout=DNULL, stderr=sp.STDOUT)
+        try:
+            sp.run(
+                CONDA_UPDATE_DRY_RUN_CMD,
+                stdout=DNULL,
+                stderr=sp.STDOUT,
+                check=True
+            )
+        except sp.CalledProcessError:
+                _build_dummy()
+        finally:
+            sp.run(REMOVE_CHANNEL_CMD, stdout=DNULL, stderr=sp.STDOUT)
+
+
+def _build_dummy():
+    DUMMY_PKG = 'recipes/_dummy'
+    CONDA_BUILD_CMD = ['conda', 'build', DUMMY_PKG]
+    sp.run(CONDA_BUILD_CMD)
+
+
 def _remote_or_local(fn, branch='master', remote=False):
     """
     Downloads a temp file directly from the specified github branch or
@@ -146,5 +182,8 @@ if os.environ.get('TRAVIS', None) != 'true':
 
     # Override with whatever's in the shell environment
     env.update(os.environ)
+
+    # make sure the build directory can be added as a conda channel
+    _ensure_build_dir_not_empty()
 
     sp.run(['scripts/travis-run.sh'], env=env, universal_newlines=True, check=True)
