@@ -1,3 +1,2 @@
 ./configure
-make
 make install
