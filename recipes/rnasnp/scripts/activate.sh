@@ -1,5 +1,6 @@
 #!/bin/bash
 if [[ -z "$RNASNPPATH" ]]; then
-	export RNASNPPATH=$CONDA_PREFIX
+    echo `pwd`
+	export RNASNPPATH=`pwd`
 	export _CONDA_SET_RNASNPPATH=1
 fi
