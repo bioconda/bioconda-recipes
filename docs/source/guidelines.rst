@@ -5,16 +5,17 @@ Guidelines for ``bioconda`` recipes
 
 bioconda recipe checklist
 -------------------------
-- :ref:`source url is stable <stable-url>`
-- md5 or sha256 hashes for source download
-- `.bat` :ref:`files for Windows <bat-files>` removed
-- Only :ref:`necessary comments <comments-in-meta>` included
-- :ref:`Adequate tests <tests>` included
-- Files created by the recipe follow the :ref:`fsh-section`
+- Source URL is stable (:ref:`details <stable-url>`)
+- md5 or sha256 hash included for source download (:ref:`details <hashes>`)
+- Appropriate build number (:ref:`details <buildnum>`)
+- `.bat` file for Windows removed (:ref:`details <bat-files>`)
+- Remove unnecessary comments (:ref:`details <comments-in-meta>`)
+- Adequate tests included (:ref:`details <tests>`)
+- Files created by the recipe follow the FSH (:ref:`details <fsh-section>`)
 - License allows redistribution and license is indicated in ``meta.yaml``
 - Package does not already exist in the `defaults`, `r`, or `conda-forge`
-  channels with some exceptions (see :ref:`channel-exceptions`)
-- Package is :ref:`appropriate for bioconda <appropriate-for-bioconda>`
+  channels with some exceptions (:ref:`details <channel-exceptions>`)
+- Package is appropriate for bioconda (:ref:`details <appropriate-for-bioconda>`)```
 - If the recipe installs custom wrapper scripts, usage notes should be added to
   ``extra -> notes`` in the ``meta.yaml``.
 
@@ -23,6 +24,27 @@ bioconda recipe checklist
 Stable urls
 ~~~~~~~~~~~
 TODO: tarballs from git vs git_urls, bioaRchive, cargo-port, R/Bioconductor issues
+
+.. _hashes:
+
+Hashes
+~~~~~~
+Use `md5sum` (Linux) or `md5` (OSX) on a file to compute its md5 hash, and copy
+this into the recipe. A quick way of doing this is:
+
+.. code-block:: bash
+
+    wget -O- $URL | md5sum
+
+.. _buildnum:
+
+Build numbers
+~~~~~~~~~~~~~
+The build number (see `conda docs
+<http://conda.pydata.org/docs/building/meta-yaml.html#build-number-and-string>`_)
+can be used to trigger a new build for a package whose version has not changed.
+This is useful for fixing errors in recipes. The first recipe for a new version
+should always have a build number of 0.
 
 .. _bat-files:
 
@@ -47,7 +69,7 @@ non-standard.
 
 Filesystem Hierarchy Standard
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Recipes should conform to the  Filesystem Hierarchy Standard (`FSH
+Recipes should conform to the Filesystem Hierarchy Standard (`FSH
 <https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard>`_). This is most
 important for libraries and Java packages; for these cases use one of the
 recipes below as a guideline.
@@ -76,12 +98,30 @@ anaconda and conda-forge about the best place to keep general R packages. In
 the meantime, R packages that are not specific to bioinformatics and that
 aren't already in the `r` channel can be added to bioconda.
 
+If uploading of an unreleased version is necessary, please follow the
+versioning scheme of conda for pre- and post-releases (e.g. using a, b, rc, and
+dev suffixes, see `here
+<https://github.com/conda/conda/blob/d1348cf3eca0f78093c7c46157989509572e9c25/conda/version.py#L30>`_).
 
+Dependencies
+~~~~~~~~~~~~
 
-- If uploading of an unreleased version is necessary, please follow the
-  versioning scheme of conda for pre- and post-releases (e.g. using a, b, rc,
-  and dev suffixes, see `here
-  <https://github.com/conda/conda/blob/d1348cf3eca0f78093c7c46157989509572e9c25/conda/version.py#L30>`_).
+There is currently no mechanism to define, in the `meta.yaml` file, that
+a particular dependency should come from a particular channel. This means that
+a recipe must have its dependencies in one of the following:
+
+- as-yet-unbuilt recipes in the repo but that will be included in the PR
+- `bioconda` channel
+- `conda-forge` channel
+- `r` channel
+- default Anaconda channel
+
+Otherwise, you will have to write the recipes for those dependencies and
+include them in the PR. One shortcut is to use `anaconda search -t conda
+<dependency name>` to look for other packages built by others. Inspecting those
+recipes can give some clues into building a version of the dependency for
+bioconda.
+
 
 Examples
 --------
@@ -102,6 +142,35 @@ a command-line tool, in which case that should be tested as well.
 
 - import and command-line tests: `chanjo
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/chanjo>`_
+
+
+By default, Python recipes (those that have `python` listed as a dependency)
+must be successfully built and tested on Python 2.7, 3.4, and 3.5 in order to
+pass. However, many Python packages are not fully compatible across all Python
+versions. Use the `preprocessing selectors
+<http://conda.pydata.org/docs/building/meta-yaml.html#preprocessing-selectors>`_
+in the meta.yaml file along with the `build/skip` entry to indicate that
+a recipe should be skipped.
+
+For example, a recipe that only runs on Python 2.7 should include the
+following:
+
+.. code-block:: yaml
+
+    build:
+      skip: True  # [not py27]
+
+Or a package that only runs on Python 3.4 and 3.5:
+
+.. code-block:: yaml
+
+    build:
+      skip: True # [py27]
+
+Alternatively, for straightforward compatibility fixes you can apply a `patch
+in the meta.yaml`
+<http://conda.pydata.org/docs/building/meta-yaml.html#patches>`_.
+
 
 R (CRAN)
 ~~~~~~~~
