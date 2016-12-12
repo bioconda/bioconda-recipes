@@ -1,4 +1,3 @@
-
 Contributing a recipe
 ---------------------
 
@@ -7,9 +6,10 @@ contribute.
 
 Update repo and requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 1. Before starting, it's best to update your fork with any changes made
    recently to the upstream bioconda repo. Assuming you've set up your fork as
-   above:
+   :ref:`above <github-setup>`:
 
 .. code-block:: bash
 
@@ -38,15 +38,12 @@ Check out a new branch in your fork (here the branch is arbitrarily named "my-re
 
     git checkout -b my-recipe
 
-and write one or more recipes.
+and write one or more recipes. The `conda-build docs
+<http://conda.pydata.org/docs/building/recipe.html>`_ are the authoritative
+source for information on building a recipe.
 
-.. note::
-
-    The `conda-build docs <http://conda.pydata.org/docs/building/recipe.html>`_
-    are the authoritative source for information on building a recipe.
-
-    Please familiarize yourself with the :ref:`guidelines` for details on
-    bioconda-specific policies.
+Please familiarize yourself with the :ref:`guidelines` for details on
+bioconda-specific policies.
 
 
 Test locally
@@ -140,3 +137,11 @@ build completes, your new package is installable by anyone using::
 
     conda install my-package-name -c bioconda
 
+You should recommend to your users that they set up the same channel order as
+used by bioconda to ensure that all dependencies are correctly met, by doing
+the following::
+
+    conda config --add channels conda-forge
+    conda config --add channels defaults
+    conda config --add channels r
+    conda config --add channels bioconda
