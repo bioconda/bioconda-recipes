@@ -1,0 +1,48 @@
+{% set name = "snakemake" %}
+{% set version = "3.9.0" %}
+{% set sha256 = "b47ddf1e761be884f8c39018450e24f58534a4f9ee30558da669830000c588b4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True # [py27]
+  script: python setup.py install --single-version-externally-managed --record record.txt
+  entry_points:
+    - snakemake = snakemake:main
+    - snakemake-bash-completion = snakemake:bash_completion
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - wrapt
+  run:
+    - python
+    - wrapt
+    - docutils
+    - pyyaml
+    - requests >=2.8.1
+    - dropbox >=5.2
+    - ftputil >=3.2
+    - filechunkio >=1.6
+    - pysftp >=0.2.8
+    
+
+test:
+    imports:
+      - snakemake
+    commands:
+      - snakemake --help > /dev/null
+
+about:
+  home: http://snakemake.bitbucket.org
+  license: MIT License
+  summary: 'Snakemake is a workflow management system that aims to reduce the complexity of creating workflows by providing a fast and comfortable execution environment, together with a clean and modern specification language in python style. Snakemake workflows are essentially Python scripts extended by declarative code to define rules. Rules describe how to create output files from input files.'

@@ -1,0 +1,100 @@
+--- ./scripts/last-pair-probs	2014-10-07 21:04:22.000000000 -0400
++++ ./scripts/last-pair-probs	2016-02-27 21:50:04.000000000 -0500
+@@ -1,5 +1,5 @@
+ #! /usr/bin/env python
+-
++from __future__ import print_function
+ # Copyright 2011, 2012, 2013 Martin C. Frith
+ 
+ # This script reads alignments of DNA reads to a genome, and estimates
+@@ -42,20 +42,20 @@
+     """Yields pairs from iterable1 and iterable2 that share the same key."""
+     groups1 = itertools.groupby(iterable1, keyfunc)
+     groups2 = itertools.groupby(iterable2, keyfunc)
+-    k1, v1 = groups1.next()
+-    k2, v2 = groups2.next()
++    k1, v1 = next(groups1)
++    k2, v2 = next(groups2)
+     while 1:
+         if k1 < k2:
+-            k1, v1 = groups1.next()
++            k1, v1 = next(groups1)
+         elif k1 > k2:
+-            k2, v2 = groups2.next()
++            k2, v2 = next(groups2)
+         else:
+             v2 = list(v2)
+             for i1 in v1:
+                 for i2 in v2:
+                     yield i1, i2
+-            k1, v1 = groups1.next()
+-            k2, v2 = groups2.next()
++            k1, v1 = next(groups1)
++            k2, v2 = next(groups2)
+ 
+ class AlignmentParameters:
+     """Parses the score scale factor, minimum score, and genome size."""
+@@ -94,9 +94,9 @@
+         w = lines[0].split()
+         w[6] += suf
+         w.append(p)
+-        print "\t".join(w)
++        print("\t".join(w))
+     else:  # we have MAF format
+-        print lines[0].rstrip() + " mismap=" + p
++        print(lines[0].rstrip() + " mismap=" + p)
+         pad = " " * len(suf)  # spacer to keep the alignment of MAF lines
+         rNameEnd = len(alignment[0]) + 1  # where to insert the spacer
+         qNameEnd = len(qName) + 2  # where to insert the suffix
+@@ -104,11 +104,11 @@
+         for i in lines[1:]:
+             if i[0] in "sq":
+                 if i[0] == "s": s += 1
+-                if s == 1:    print i[:rNameEnd] + pad + i[rNameEnd:],
+-                else:         print i[:qNameEnd] + suf + i[qNameEnd:],
+-            elif i[0] == "p": print i[:1] + pad + i[1:]
+-            else:             print i,
+-        print  # each MAF block should end with a blank line
++                if s == 1:    print(i[:rNameEnd] + pad + i[rNameEnd:], end=' ')
++                else:         print(i[:qNameEnd] + suf + i[qNameEnd:], end=' ')
++            elif i[0] == "p": print(i[:1] + pad + i[1:])
++            else:             print(i, end=' ')
++        print()  # each MAF block should end with a blank line
+ 
+ def headToHeadDistance(alignment1, alignment2):
+     """The 5'-to-5' distance between 2 alignments on opposite strands."""
+@@ -164,7 +164,7 @@
+     z = logSumExp(zs)
+     zw = logSumExp((z, w))
+ 
+-    for i, j in itertools.izip(alignments1, zs):
++    for i, j in zip(alignments1, zs):
+         prob = 1 - math.exp(j - zw)
+         if prob <= opts.mismap: printAlignmentWithMismapProb(i, prob, suf)
+ 
+@@ -250,7 +250,7 @@
+ def readQueryPairs(in1, in2, scale1, scale2, circularChroms):
+     batches1 = readBatches(in1, "+", scale1, circularChroms)
+     batches2 = readBatches(in2, "-", scale2, circularChroms)
+-    for i, j in itertools.izip(batches1, batches2):
++    for i, j in zip(batches1, batches2):
+         i.sort()
+         j.sort()
+         yield i, j
+@@ -335,7 +335,7 @@
+         params2 = readHeaderOrDie(in2)
+         calculateScorePieces(opts, params1, params2)
+         printme = opts.fraglen, opts.sdev, opts.disjoint, params1.g
+-        print "# fraglen=%s sdev=%s disjoint=%s genome=%.17g" % printme
++        print("# fraglen=%s sdev=%s disjoint=%s genome=%.17g" % printme)
+         qp = readQueryPairs(in1, in2, params1.t, params2.t, opts.circular)
+         for i, j in qp:
+             printAlnsForOneRead(i, j, opts, opts.maxMissingScore1, "/1")
+@@ -380,6 +380,6 @@
+ 
+     try: lastPairProbs(opts, args)
+     except KeyboardInterrupt: pass  # avoid silly error message
+-    except Exception, e:
++    except Exception as e:
+         warn("error:", e)
+         sys.exit(1)

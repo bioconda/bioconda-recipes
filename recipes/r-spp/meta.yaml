@@ -1,0 +1,40 @@
+package:
+  name: r-spp
+  version: "1.13"
+
+source:
+  fn: 1.13.tar.gz
+  url: https://github.com/hms-dbmi/spp/archive/1.13.tar.gz
+  md5: bdea5fbf5fbd09243f7ddd6cf8a062c8
+
+build:
+  number: 0
+  string: r_{{CONDA_R}}_boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r
+    - boost {{CONDA_BOOST}}*
+    - r-catools
+    - bioconductor-rsamtools
+    - gcc
+
+  run:
+    - r
+    - boost {{CONDA_BOOST}}*
+    - r-catools
+    - bioconductor-rsamtools
+    - libgcc
+
+test:
+  commands:
+    - $R -e "library('spp')" # [not win]
+
+about:
+  license: GPL
+  summary: 'ChIP-seq peak caller'
