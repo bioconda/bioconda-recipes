@@ -123,14 +123,8 @@ recipes can give some clues into building a version of the dependency for
 bioconda.
 
 
-Examples
---------
-
-The following recipes serve as examples of good recipes that can be used
-as guides or templates when developing new recipes.
-
 Python
-~~~~~~
+------
 If a Python package is available on PyPI, use ``conda skeleton pypi
 <packagename>`` to create a recipe, then remove the ``bld.bat`` and any extra
 comments in ``meta.yaml`` and ``build.sh``. The test that is automatically
@@ -173,7 +167,7 @@ in the meta.yaml`
 
 
 R (CRAN)
-~~~~~~~~
+--------
 Use ``conda skeleton cran <packagename>`` where ``packagename`` is a
 package available on CRAN and is *case-sensitive*. Either run that command
 in the ``recipes`` dir or move the recipe it creates to ``recipes``. The
@@ -195,7 +189,7 @@ performed for R packages.
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/r-spp>`_
 
 R (Bioconductor)
-~~~~~~~~~~~~~~~~
+----------------
 
 Use ``scripts/bioconductor/bioconductor_skeleton.py <packagename>``
 where ``packagename`` is a case-sensitive package available on
@@ -209,7 +203,7 @@ dependencies with an ``r-`` prefix should be created using
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/bioconductor-limma>`_
 
 Java
-~~~~
+----
 
 Add a wrapper script if the software is typically called via ``java -jar ...``.
 Sometimes the software already comes with one; for example, `fastqc
@@ -229,7 +223,7 @@ A wrapper script should be placed here as well, and symlinked to
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/fastqc>`_
 
 Perl
-~~~~
+----
 
 Use ``conda skeleton cpan <packagename>`` to build a recipe for Perl and
 place the recipe in the ``recipes`` dir. The recipe will have the
@@ -255,7 +249,7 @@ likely sufficient. Otherwise, test the import of modules (see the
 ``imports`` section of the ``meta.yaml`` files in above examples).
 
 C/C++
-~~~~~
+-----
 
 Build tools (e.g., ``autoconf``) and compilers (e.g., ``gcc``) should be
 specified in the build requirements.
@@ -328,7 +322,7 @@ some ideas on what to try:
   have many fixes to makefiles
 
 General command-line tools
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------
 If a command-line tool is installed, it should be tested. If it has a
 shebang line, it should be patched to use ``/usr/bin/env`` for more
 general use. An example of this is `fastq-screen
@@ -358,7 +352,7 @@ conflicts with other packages. See `mapsplice
 for an example of this.
 
 Metapackages
-~~~~~~~~~~~~
+------------
 `Metapackages <http://conda.pydata.org/docs/building/meta-pkg.html>`_ tie
 together other packages. All they do is define dependencies. For example, the
 `hubward-all
@@ -374,7 +368,7 @@ example above), we recommended `semantic versioning <http://semver.org/>`_
 starting at 1.0.0 for metapackages.
 
 Other examples of interest
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------
 
 Packaging is hard. Here are some examples, in no particular order, of how
 contributors have solved various problems:
