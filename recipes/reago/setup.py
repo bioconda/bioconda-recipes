@@ -8,7 +8,7 @@ setup(
     author_email='chengyuan.china@gmail.com',
     url='https://github.com/chengyuan/reago-1.1',
     install_requires=['networkx'],
-    scripts = ['reago.py'],
+    scripts = ['reago.py', 'filter_input.py'],
     classifiers=[
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
