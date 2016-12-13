@@ -7,6 +7,8 @@ mkdir -p $PREFIX/bin
 # Do not install BioPerl and run tests
 sed -i.bak 's/^  bioperl();/  # bioperl();/' scripts/variant_effect_predictor/INSTALL.pl
 sed -i.bak 's/^  test();/  # test();/' scripts/variant_effect_predictor/INSTALL.pl
+# Use insecure CURL
+sed -i.bak 's/curl --location/curl -k --location/' scripts/variant_effect_predictor/INSTALL.pl
 # Use vep_convert_cache.pl from vep_install.pl
 sed -i.bak 's@/convert_cache.pl@/vep_convert_cache.pl@' scripts/variant_effect_predictor/INSTALL.pl
 # Allow convert_cache to find libraries
