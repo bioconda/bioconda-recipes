@@ -7,8 +7,6 @@ mkdir -p $PREFIX/bin
 # Do not install BioPerl and run tests
 sed -i.bak 's/^  bioperl();/  # bioperl();/' scripts/variant_effect_predictor/INSTALL.pl
 sed -i.bak 's/^  test();/  # test();/' scripts/variant_effect_predictor/INSTALL.pl
-# Use curl for downloads -- works with proxies
-sed -i.bak 's/our $use_curl = 0/our $use_curl = 1/' scripts/variant_effect_predictor/INSTALL.pl
 # Use vep_convert_cache.pl from vep_install.pl
 sed -i.bak 's@/convert_cache.pl@/vep_convert_cache.pl@' scripts/variant_effect_predictor/INSTALL.pl
 # Allow convert_cache to find libraries
@@ -27,7 +25,7 @@ ln -s $target/*.pl $PREFIX/bin
 cd $target
 # Use external Bio::DB::HTS::Faidx instead of compiling interally
 # Compile in VEP causes issues linking to /lib64 outside of rpath
-perl vep_install.pl -a a --NO_HTSLIB
+perl vep_install.pl -a a --NO_HTSLIB --CURL
 # Remove test data
 rm -rf t/
 # Install plugins
