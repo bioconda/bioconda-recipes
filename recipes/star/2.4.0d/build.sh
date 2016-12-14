@@ -5,7 +5,7 @@ if [ "$(uname)" == "Darwin" ]; then
     rm STAR STARstatic
     
     # -pthread is implemented in later versions of STAR
-    sed -i 's/-fopenmp//g' Makefile
+    sed -i "s/-fopenmp//g" Makefile
     make STARforMac
     
     mkdir -p $PREFIX/bin
