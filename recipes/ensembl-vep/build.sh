@@ -11,7 +11,7 @@ sed -i.bak 's/curl -s --location/curl -k -s --location/' INSTALL.pl
 # Use vep_convert_cache.pl from vep_install.pl
 sed -i.bak 's@/convert_cache.pl@/vep_convert_cache.pl@' INSTALL.pl
 # Find plugins in install directory
-sed -i.bak "s@'dir_plugins=s'@'dir_plugins=s'=> \$RealBin;@" vep.pl
+sed -i.bak "s@'dir_plugins=s,'@'dir_plugins=s' => (\$RealBin || []),@" vep.pl
 # Change location where INSTALL.pl looks for the zlib headers
 sed -i -e "s@/usr/include/zlib.h@${PREFIX}/include@" INSTALL.pl
 # Add perl shebang to vep and haplo script
