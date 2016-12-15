@@ -6,6 +6,8 @@ if [ "$(uname)" == "Darwin" ]; then
     
     # -pthread is implemented in later versions of STAR
     sed -i.bak 's/.fopenmp//g' Makefile
+    sed -i.bak 's/to_string/std::to_string/g' *.cpp
+    
     make STARforMac
     
     mkdir -p $PREFIX/bin
