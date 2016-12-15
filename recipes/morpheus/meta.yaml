@@ -1,0 +1,31 @@
+{% set name = "morpheus" %}
+{% set version = "255" %}
+# Do not forget to update the version string in the searchgui.py file
+
+about:
+    home: https://github.com/cwenger/Morpheus/
+    license: MIT
+    summary: mass spectrometry–based proteomics database search algorithm
+
+package:
+    name: {{ name }}
+    version: {{ version }}
+
+build:
+  number: 0
+  skip: True    # [osx]
+  script: "cp * $PREFIX/bin && cd $PREFIX/bin && ln -s ./morpheus_mzml_mono_cl.exe ./morpheus"
+
+source:
+    fn: Morpheus_mzML_Mono.tar.gz
+    url: https://github.com/cwenger/Morpheus/releases/download/r{{ version }}/Morpheus_mzML_Mono.tar.gz
+    md5: 918207ce1ecf20f6cdcd4aeb03b84e4b
+
+requirements:
+  build:
+  run:
+    - mono >=4.0.0
+
+test:
+    commands:
+      - mono `which morpheus` | grep 'mzML Mono command line'
