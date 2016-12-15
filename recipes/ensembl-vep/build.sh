@@ -16,12 +16,10 @@ sed -i.bak "s@'dir_plugins=s,'@'dir_plugins=s' => (\$RealBin || []),@" vep.pl
 sed -i -e "s@/usr/include/zlib.h@${PREFIX}/include@" INSTALL.pl
 # Add perl shebang to vep and haplo script
 sed -i "1i #!/usr/bin/env perl" vep.pl
-sed -i "1i #!/usr/bin/env perl" haplo.pl
 
 # Copy executables & modules
 cp convert_cache.pl $target/ensembl_convert_cache.pl
 cp INSTALL.pl $target/ensembl_vep_install.pl
-cp haplo.pl $target/ensembl_haplosaurus.pl
 cp filter_vep.pl $target/ensembl_filter_vep.pl
 cp vep.pl $target/ensembl_vep.pl
 cp -r modules $target/modules
