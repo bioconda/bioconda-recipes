@@ -4,28 +4,29 @@ if [ "$(uname)" == "Darwin" ]; then
     
     rm STAR STARstatic
     
-    # -pthread is implemented in later versions of STAR
+    # This gave problems
     sed -i.bak 's/.fopenmp//g' Makefile
-    sed -i.bak 's/to_string/std::to_string/g' *.cpp
+    
+    # Linkers need to be after the objects
+    sed -i.bak 's/STAR $(CCFLAGS) $(LDFLAGS) $(OBJECTS)/STAR $(CCFLAGS) $(OBJECTS) $(LDFLAGS)/g' Makefile
+    
+    # Include stdlib
+    sed -i.bak '1i\
+using namespace std;\
+' *.cpp
     
     make STARforMac
     
     mkdir -p $PREFIX/bin
-    chmod -R +x $PREFIX/bin
     
-    mv STARforMac $PREFIX/bin
-    ln -s $PREFIX/bin/STARforMac $PREFIX/bin/STAR
-
-    chmod +x $PREFIX/bin/STARforMac
+    mv STAR $PREFIX/bin
+    chmod +x $PREFIX/bin/STAR
 else 
     echo "Installing STAR for UNIX/Linux."
     mkdir -p $PREFIX/bin
     
-    ls -alsh
     mv STAR $PREFIX/bin
     mv STARstatic $PREFIX/bin
-    
-    ls -alsh $PREFIX/bin
 
     chmod +x $PREFIX/bin/STARstatic
     chmod +x $PREFIX/bin/STAR
