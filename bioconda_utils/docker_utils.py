@@ -388,7 +388,7 @@ class RecipeBuilder(object):
         self.conda_build_args = build_args
 
         # Write build script to tempfile
-        build_dir = tempfile.mkdtemp()
+        build_dir = os.path.realpath(tempfile.mkdtemp())
         with open(os.path.join(build_dir, 'build_script.bash'), 'w') as fout:
             fout.write(self.build_script_template.format(self=self))
         build_script = fout.name
