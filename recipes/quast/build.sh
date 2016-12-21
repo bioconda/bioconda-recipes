@@ -11,9 +11,9 @@ export LDFLAGS="-L${BOOST_LIBRARY_DIR}"
 export CFLAGS="-DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
 
 
-sed -i 's|^CXXFLAGS.*||' libs/E-MEM-linux/Makefile
-sed -i 's|^CFLAGS.*||' libs/E-MEM-linux/Makefile
-sed -i 's|^LDFLAGS.*||' libs/E-MEM-linux/Makefile
+sed -i 's|^CXXFLAGS.*||' quast_libs/E-MEM-linux/Makefile
+sed -i 's|^CFLAGS.*||' quast_libs/E-MEM-linux/Makefile
+sed -i 's|^LDFLAGS.*||' quast_libs/E-MEM-linux/Makefile
 
 
 BINARY_HOME=$PREFIX/bin
@@ -24,9 +24,9 @@ mkdir -p $QUAST_HOME
 
 cp -R $SRC_DIR/* $QUAST_HOME
 
-make CFLAGS="-Wall -Wextra -Wunused -mpopcnt -std=gnu++0x -fopenmp -I${PREFIX}/include" -C $PREFIX/opt/quast-4.1/libs/MUMmer3.23-linux
+make CFLAGS="-Wall -Wextra -Wunused -mpopcnt -std=gnu++0x -fopenmp -I${PREFIX}/include" -C $PREFIX/opt/quast-4.3/quast_libs/MUMmer3.23-linux
 
-make CFLAGS="-Wall -Wextra -Wunused -mpopcnt -std=gnu++0x -fopenmp -I${PREFIX}/include" -C $PREFIX/opt/quast-4.1/libs/E-MEM-linux
+make CFLAGS="-Wall -Wextra -Wunused -mpopcnt -std=gnu++0x -fopenmp -I${PREFIX}/include" -C $PREFIX/opt/quast-4.3/quast_libs/E-MEM-linux
 
 #Linking to binfolder
 chmod +x $QUAST_HOME/quast.py
