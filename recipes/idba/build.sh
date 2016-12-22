@@ -7,8 +7,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 ./configure --prefix=$PREFIX
 make
 
-
-sed -i 's/usr\/bin\/python/usr\/bin\/env python/g' script/*py
+gawk -i inplace '/usr\/bin\//{ gsub(/python/, "env python");}1' script/*.py
 
 mkdir -p ${PREFIX}/bin
 
