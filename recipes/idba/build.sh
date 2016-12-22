@@ -1,5 +1,5 @@
 gawk -i inplace '/usr\/bin\//{ gsub(/python/, "env python");}1' script/*.py
-gawk -i inplace '/usr\/bin\//{ gsub(/perl/, "env perl");}1' script/*.py
+gawk -i inplace '/usr\/bin\//{ gsub(/perl/, "env perl");}1' script/*
 
 aclocal
 autoconf
