@@ -5,7 +5,7 @@ export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
 cd $SRC_DIR/kmer
-sed -i '' -e 's/usr\/bin\/perl/usr\/bin\/env perl/g' $(find . -type f -name "*.pl")
+find . -type f -name "*.pl" | xargs sed -i.bak 's/usr\/bin\/perl/usr\/bin\/env perl/g'
 make install prefix=$PREFIX
 cd $SRC_DIR/src
 make
