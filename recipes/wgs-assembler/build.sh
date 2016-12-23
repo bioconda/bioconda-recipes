@@ -1,6 +1,9 @@
-find . -type f -name "*.pl" | xargs sed -i.bak 's/usr\/bin\/perl/usr\/bin\/env perl/g'
-find . -type f -name "*.pm" | xargs sed -i.bak 's/usr\/local\/bin\/perl/usr\/bin\/env perl/g'
-find . -type f -name "*.sh" | xargs sed -i.bak 's/usr\/bin\/perl/usr\/bin\/env perl/g'
+export LC_CTYPE=C 
+export LANG=C
+
+find . -type f -name "*.pl" | xargs sed -i.bak -e 's/usr\/bin\/perl/usr\/bin\/env perl/g'
+find . -type f -name "*.pm" | xargs sed -i.bak -e 's/usr\/local\/bin\/perl/usr\/bin\/env perl/g'
+find . -type f -name "*.sh" | xargs sed -i.bak -e 's/usr\/bin\/perl/usr\/bin\/env perl/g'
 
 cd $SRC_DIR/kmer
 ./configure.sh
