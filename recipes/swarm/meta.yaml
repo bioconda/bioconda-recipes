@@ -1,24 +1,31 @@
+{% set name = "swarm" %}
+{% set version = "2.1.10" %}
+
 package:
-  name: swarm
-  version: 2.1.5
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: v2.1.5.tar.gz
-  url: https://github.com/torognes/swarm/archive/v2.1.5.tar.gz
-  md5: 0ab87c5c55b28f63daedf406332c4f8d
+  fn: {{ name|lower }}_{{ version }}.tar.gz
+  url: https://github.com/torognes/swarm/archive/v{{ version }}.tar.gz
+  md5: 935b74e34674d97d743ad4b8254f0c52
 
 requirements:
+  build: 
+    - gcc  # [not osx]
+    - llvm # [osx]
+
   run:
+    - libgcc  # [not osx]
     - python
     - python-igraph
 
 build:
   number: 0
-  skip: True # [not linux64 or osx]
 
 test:
   commands:
-     - swarm -v 2>&1 | grep 2.1.5
+     - swarm -v 
      - graph_plot.py --version
 
 about:
