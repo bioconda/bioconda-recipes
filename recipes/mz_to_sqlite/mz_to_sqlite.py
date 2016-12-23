@@ -13,7 +13,7 @@ import shutil
 from os import access
 from os import getenv
 from os import X_OK
-jar_file = 'mztosqlite-1.2.0.jar'
+jar_file = 'mzToSQLite-1.2.0.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
