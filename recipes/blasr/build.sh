@@ -8,6 +8,9 @@ mkdir -p $PREFIX/bin
 
 export HDF5_INCLUDE=$PREFIX/include 
 export HDF5_LIB=$PREFIX/lib
+if [ `uname` == Darwin ]; then
+    export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++ -lstdc++"
+fi
 ./configure.py --shared --sub --no-pbbam 
 
 make configure-submodule
