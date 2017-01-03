@@ -8,8 +8,6 @@ mkdir -p $PREFIX/bin
 
 export HDF5_INCLUDE=$PREFIX/include 
 export HDF5_LIB=$PREFIX/lib
-export CC=${PREFIX}/bin/gcc
-export CXX=${PREFIX}/bin/g++
 ./configure.py --shared --sub --no-pbbam 
 
 make configure-submodule
