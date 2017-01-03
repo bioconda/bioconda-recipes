@@ -19,7 +19,9 @@ def build(recipe,
           mulled_test=True,
           force=False,
           channels=None,
-          docker_builder=None):
+          docker_builder=None,
+          disable_travis_env_vars=False,
+         ):
     """
     Build a single recipe for a single env
 
@@ -51,6 +53,10 @@ def build(recipe,
     docker_builder : docker_utils.RecipeBuilder object
         Use this docker builder to build the recipe, copying over the built
         recipe to the host's conda-bld directory.
+
+    disable_travis_env_vars : bool
+        By default, any env vars starting with TRAVIS are sent to the Docker
+        container. Use this to disable that behavior.
     """
     env = dict(env)
     logger.info(
@@ -77,12 +83,21 @@ def build(recipe,
     CONDA_BUILD_CMD = ['conda', 'build']
 
     try:
-        # Note we're not sending the contents of os.environ here
+        # Note we're not sending the contents of os.environ here. But we do
+        # want to add TRAVIS* vars if that behavior is not disabled.
         if docker_builder is not None:
+
+            # see https://github.com/bioconda/bioconda-recipes/issues/3271
+            docker_env = env.copy()
+            if not disable_travis_env_vars:
+                for k, v in os.environ.items():
+                    if k.startswith('TRAVIS'):
+                        docker_env[k] = v
+
             response = docker_builder.build_recipe(
                 recipe_dir=os.path.abspath(recipe),
                 build_args=' '.join(channel_args + build_args),
-                env=env
+                env=docker_env
             )
 
             pkg = utils.built_package_path(recipe, env)
