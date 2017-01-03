@@ -47,6 +47,20 @@ def temp_env(env):
         os.environ.update(orig)
 
 
+@contextlib.contextmanager
+def temp_os(platform):
+    """
+    Context manager to temporarily set sys.platform.
+    """
+    original = sys.platform
+    sys.platform = platform
+    try:
+        yield
+    finally:
+        sys.platform = original
+
+
+
 def run(cmds, env=None):
     """
     Wrapper around subprocess.run()
@@ -475,10 +489,17 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
                 'it is in channel(s): %s', pkg, in_channels)
             return False
 
+        # with temp_env, MetaData will see everything in env added to
+        # os.environ.
         with temp_env(env):
-            # with temp_env, MetaData sees everything in env added to
-            # os.environ.
-            skip = MetaData(recipe).skip()
+
+            # with temp_os, we can fool the MetaData if needed.
+            platform = os.environ.get('TRAVIS_OS_NAME', sys.platform)
+            if platform == 'darwin':
+                platform = 'osx'
+
+            with temp_os(platform):
+                skip = MetaData(recipe).skip()
 
         if skip:
             logger.debug(
