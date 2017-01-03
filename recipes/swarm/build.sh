@@ -7,4 +7,5 @@ if [[ "${PY_VER}" =~ 3 ]]
 then
 	2to3 -w -n scripts/*
 fi
+chmod +x scripts/*
 cp scripts/* ${PREFIX}/bin
