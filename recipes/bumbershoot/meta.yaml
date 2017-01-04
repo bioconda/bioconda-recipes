@@ -1,0 +1,35 @@
+{% set version = "3_0_10246" %}
+{% set buildid = "392156" %}
+{% set root = "pwiz_tools/Bumbershoot/" %}
+{% set targets = root~"myrimatch//install "~root~"directag//install "~root~"tagrecon//install "~root~"idpicker//install "~root~"pepitome//install "~root~"quameter//install" %}
+
+package:
+  name: bumbershoot
+  version: {{ version }}
+
+source:
+  url: http://teamcity.labkey.org/guestAuth/repository/download/BumbershootSubsetSourceTarball/{{ buildid }}:id/bumbershoot-src-without-t-{{ version }}.tar.bz2
+  sha1: 6afb2853ec2e35bebe39c55d2c7f471696026d2b
+
+build:
+  script: bash -c "./quickbuild.sh -j{{ CPU_COUNT }} address-model=64 runtime-link=shared {{ targets }} && cp build-linux-x86_64/gcc-release-x86_64/* $PREFIX/bin"
+  skip: True # [osx]
+
+requirements:
+  build:
+    - gcc   # [linux]
+  run:
+    - libgcc # [linux]
+
+
+about:
+  home: https://proteowizard.sourceforge.net
+  license: Apache 2.0
+  summary: The Bumbershoot tool suite for analyzing shotgun proteomic data
+
+test:
+  commands:
+    - myrimatch --help
+    - directag --help
+    - quameter --help
+    - pepitome --help

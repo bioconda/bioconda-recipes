@@ -56,8 +56,9 @@ Step 2: Setup Bioconda
 
 After installing Miniconda, you can use the ``conda`` command to setup bioconda with::
 
-   conda config --add channels r
    conda config --add channels conda-forge
+   conda config --add channels defaults
+   conda config --add channels r
    conda config --add channels bioconda
 
 The ``r`` channel is added to satisfy the `R language <https://www.r-project.org/>`_
@@ -79,7 +80,7 @@ Once the channels have been added, you can install packages, e.g.::
 
 Isolated environments (with e.g. specific software versions>`_ can be created via::
 
-   conda create -n myenviroment bwa=0.7.12
+   conda create -n myenvironment bwa=0.7.12
 
 For more information, visit the `Conda documentation <http://conda.pydata.org/docs>`_
 or have a look at the command line options by executing::

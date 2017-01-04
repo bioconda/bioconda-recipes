@@ -19,4 +19,3 @@ cp makeDB.sh $PREFIX/bin
 cp mergeOutputs $PREFIX/bin
 cp mkbwt $PREFIX/bin
 cp mkfmi $PREFIX/bin
-

@@ -1,0 +1,39 @@
+{% set name = "snp-sites" %}
+{% set version = "2.3.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  fn: {{ name|lower }}_{{ version }}.tar.gz
+  url: https://github.com/sanger-pathogens/snp-sites/archive/{{ version }}.tar.gz
+  md5: af96f857c3842157dbec677e129d8735
+  patches:
+    - configure.patch
+
+requirements:
+  build:
+  - gcc  # [not osx]
+  - llvm  # [osx]
+  - automake
+  - autoconf
+  - libtool
+  - zlib
+
+  run:
+  - libgcc [not osx]
+  - zlib
+
+test:
+  commands:
+    - snp-sites -V
+
+about:
+  home: https://github.com/sanger-pathogens/snp-sites
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: 'Finds SNP sites from a multi-FASTA alignment file.'
