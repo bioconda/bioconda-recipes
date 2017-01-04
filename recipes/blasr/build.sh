@@ -15,10 +15,6 @@ if [ `uname` == Darwin ]; then
 fi
 ./configure.py --shared --sub --no-pbbam 
 
-make configure-submodule
-
-make build-submodule
-
 make blasr
 cp blasr $PREFIX/bin
 cp libcpp/alignment/libblasr.* $PREFIX/lib
