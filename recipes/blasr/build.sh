@@ -8,6 +8,8 @@ mkdir -p $PREFIX/bin
 
 export HDF5_INCLUDE=$PREFIX/include 
 export HDF5_LIB=$PREFIX/lib
+export DYLD_FALLBACK_LIBRARY_PATH=$PREFIX/lib
+export LD_LIBRARY_PATH=$PREFIX/lib
 if [ `uname` == Darwin ]; then
     export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++ -lstdc++"
 fi
@@ -22,4 +24,4 @@ cp blasr $PREFIX/bin
 cp libcpp/alignment/libblasr.* $PREFIX/lib
 cp libcpp/hdf/libpbihdf.* $PREFIX/lib
 cp libcpp/pbdata/libpbdata.* $PREFIX/lib
-export LD_LIBRARY_PATH=$PREFIX/lib
+
