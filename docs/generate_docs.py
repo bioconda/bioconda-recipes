@@ -49,6 +49,10 @@ and update with::
 
 {notes}
 
+|docker|
+
+A Docker container is available at https://quay.io/repository/biocontainers/{title}.
+
 Link to this page
 -----------------
 
@@ -60,6 +64,10 @@ Render an |badge| badge with the following Markdown::
            :target: http://bioconda.github.io/recipes/{title}/README.html
 .. |downloads| image:: https://anaconda.org/bioconda/{title}/badges/downloads.svg
                :target: https://anaconda.org/bioconda/{title}
+.. |docker| image:: https://quay.io/repository/biocontainers/{title}/status
+                :target: https://quay.io/repository/biocontainers/{title}
+
+
 """
 
 
