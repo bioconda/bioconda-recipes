@@ -1,5 +1,8 @@
 #!/bin/bash
 
+outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+mkdir -p $outdir
 
-mkdir $PREFIX/lib/dotlib
-mv dotlib/DotLib.pm $PREFIX/lib/dotlib
+mv dotlib $outdir
+
+export ${outdir}/dotlib
