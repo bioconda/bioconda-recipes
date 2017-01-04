@@ -3,11 +3,11 @@
 export PARAVIEW_VERSION=5.2.0
 export PARAVIEW_VERSHORT=5.2
 
-#export INCLUDE_PATH="${PREFIX}/include"
-#export LIBRARY_PATH="${PREFIX}/lib"
-#export LD_LIBRARY_PATH="${PREFIX}/lib"
-#export LDFLAGS="-L${PREFIX}/lib"
-#export CPPFLAGS="-I${PREFIX}/include -static"
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LD_LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="-L${PREFIX}/lib"
+export CPPFLAGS="-I${PREFIX}/include"
 
 #export CFLAGS+="-pthread -static"
 
