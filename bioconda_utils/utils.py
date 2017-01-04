@@ -498,7 +498,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
 
             # TRAVIS_OS_NAME uses 'osx', but sys.platform uses 'darwin', and
             # that's what conda will be looking for.
-            if platform == 'osx'
+            if platform == 'osx':
                  platform = 'darwin'
 
             with temp_os(platform):
