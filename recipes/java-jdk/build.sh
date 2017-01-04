@@ -22,7 +22,7 @@ mv $NAME/* .
 rm -r $NAME
 
 # clean up
-rm -rf release README readme.txt Welcome.html *jli.* demo sample *.zip
+rm -rf release README readme.txt Welcome.html *jli.* demo sample *.zip *.tar.gz ASSEMBLY_EXCEPTION THIRD_PARTY_README DISCLAIMER LICENSE
 
 if [[ `uname` == "Linux" ]]
 then
@@ -42,11 +42,8 @@ then
     cd ../../..
 fi
 
-mv * $PREFIX
+mv include jre lib man $PREFIX
+# bin might already exist on $PREFIX
+mkdir -p $PREFIX/bin
+mv bin/* $PREFIX/bin
 
-# more clean up
-rm -rf $PREFIX/release $PREFIX/README $PREFIX/Welcome.html
-rm -f $PREFIX/DISCLAIMER
-rm -f $PREFIX/LICENSE
-rm -f $PREFIX/THIRD_PARTY_README
-rm -f $PREFIX/ASSEMBLY_EXCEPTION
