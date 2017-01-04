@@ -2,9 +2,6 @@
 
 set -x -e
 
-export CC=${PREFIX}/bin/gcc
-export CXX=${PREFIX}/bin/g++
-
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
@@ -28,6 +25,7 @@ sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoscan
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
 
 ./autogen.sh
-./configure --prefix=$PREFIX --with-boost=${PREFIX}
+./configure --prefix=$PREFIX
+##--with-boost=${PREFIX}
 make
 make install
