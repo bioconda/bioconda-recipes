@@ -212,6 +212,10 @@ already had a wrapper script, but `peptide-shaker
 <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/peptide-shaker>`_
 did not.
 
+New recipes should use the ``openjdk`` package from `conda-forge
+<https://github.com/conda-forge/openjdk-feedstock>`_
+, the java-jdk package from bioconda is deprecated.
+
 JAR files should go in ``$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM``.
 A wrapper script should be placed here as well, and symlinked to
 ``$PREFIX/bin``.
