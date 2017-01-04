@@ -1,10 +1,16 @@
 import os
 import os.path as op
+import platform
+
+if platform.system() == "Darwin":
+    sys_dir = 'macosx'
+else:
+    sys_dir = 'linux'
 
 tcoffee_install_dir = op.normpath(op.join(op.dirname(__file__), '..', '..', '..', '{{TCOFFEE_FOLDER_NAME}}'))
 tcoffee_bin_dir = op.join(tcoffee_install_dir, 'bin')
 tcoffee_exe_file = op.join(tcoffee_bin_dir, 't_coffee')
-tcoffee_plugins_dir = op.join(tcoffee_install_dir, 'plugins', 'linux')
+tcoffee_plugins_dir = op.join(tcoffee_install_dir, 'plugins', sys_dir)
 tcoffee_perl_dir = op.join(tcoffee_install_dir, 'perl', 'lib', 'perl5')
 tcoffee_default_email = 'username@hostname.com'
 
