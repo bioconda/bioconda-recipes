@@ -1,5 +1,14 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin/
-cp EvaluateSegmentation $PREFIX/bin/EvaluateSegmentation
-chmod a+x $PREFIX/bin/EvaluateSegmentation
+cd "source"
+mkdir build
+cd build
+
+cmake \
+    -D CMAKE_INSTALL_PREFIX=${PREFIX} \
+    -D CMAKE_INSTALL_RPATH:STRING=${PREFIX}/lib \
+    -D CMAKE_BUILD_TYPE=Release \
+    ..
+
+make -j4
+cp EvaluateSegmentation ${PREFIX}/bin/EvaluateSegmentation
