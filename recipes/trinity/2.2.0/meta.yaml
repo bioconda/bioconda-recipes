@@ -1,23 +1,20 @@
-{% set name = "trinity" %}
-{% set version = "2.3.2" %}
-
-package:
-  name: {{ name|lower }}
-  version: {{ version }}
+about:
+  home: https://github.com/trinityrnaseq/trinityrnaseq/
+  license: ''
+  summary: 'Trinity RNA-Seq de novo transcriptome assembly'
 
 build:
-  number: 0
-  skip: True  # [osx]
+  number: 5
+  skip: True # [osx]
 
-source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://github.com/trinityrnaseq/trinityrnaseq/archive/Trinity-v{{ version }}.tar.gz
-  patches:
-    - makefile.clean.patch
-    - trinity-plugins.makefile.clean.patch
+
+package:
+  name: trinity
+  version: '2.2.0'
 
 requirements:
   build:
+    - libgcc
     - gcc
     - perl-app-cpanminus
     - perl-module-build
@@ -31,9 +28,6 @@ requirements:
     - fastool
     - parafly
     - slclust
-    - autoconf 
-    - automake
-
   run:
     - perl-app-cpanminus
     - perl-module-build
@@ -48,21 +42,22 @@ requirements:
     - fastool
     - parafly
     - slclust
-    - libgcc
+
+source:
+  fn: trinity-2.2.0.tar.gz
+  url: https://github.com/trinityrnaseq/trinityrnaseq/archive/v2.2.0.tar.gz
+  patches:
+    - makefile.clean.patch
+    - trinity-plugins.makefile.clean.patch
 
 test:
     commands:
-        - "Trinity --cite"
+        - "Trinity --cite &> /dev/null"
         - "align_and_estimate_abundance.pl --help &> /dev/null || [[ \"$?\" == 255 ]]"
         - "abundance_estimates_to_matrix.pl --help &> /dev/null || [[ \"$?\" == 255 ]]"
         - "run_DE_analysis.pl -h &> /dev/null || [[ \"$?\" == 255 ]]"
         - "analyze_diff_expr.pl -h &> /dev/null || [[ \"$?\" == 255 ]]"
         - "PtR --help &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "TrinityStats.pl 2>&1 | grep \"usage:\" "
-        - "define_clusters_by_cutting_tree.pl 2>&1 | grep \"define K clusters via k-means algorithm\" "
-
-about:
-  home: https://github.com/trinityrnaseq/trinityrnaseq/
-  license: 'BSD-3-Clause'
-  summary: 'Trinity RNA-Seq de novo transcriptome assembly'
+        - "TrinityStats.pl 2>&1 | grep \"usage:\" &> /dev/null"
+        - "define_clusters_by_cutting_tree.pl 2>&1 | grep \"define K clusters via k-means algorithm\" &> /dev/null"
 
