@@ -495,8 +495,11 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
 
             # with temp_os, we can fool the MetaData if needed.
             platform = os.environ.get('TRAVIS_OS_NAME', sys.platform)
-            if platform == 'darwin':
-                platform = 'osx'
+
+            # TRAVIS_OS_NAME uses 'osx', but sys.platform uses 'darwin', and
+            # that's what conda will be looking for.
+            if platform == 'osx'
+                 platform = 'darwin'
 
             with temp_os(platform):
                 skip = MetaData(recipe).skip()
