@@ -6,4 +6,5 @@ export CPATH=${PREFIX}/include
 
 ./configure
 make
-mkdir install
+cp kalign $PREFIX/bin
+
