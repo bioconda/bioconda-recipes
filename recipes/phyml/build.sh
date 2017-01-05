@@ -4,10 +4,11 @@ export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
-# For some reason without this patch compilation fails in OSX. BEAGLE is not
+# For some reason, without this patch compilation fails in OSX. BEAGLE is not
 # used in the default compilation.
 patch configure.ac $RECIPE_DIR/phyml.patch
-./autogen.sh
+
+/bin/sh autogen.sh
 ./configure
 make
 
