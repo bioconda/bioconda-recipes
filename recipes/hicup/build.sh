@@ -13,7 +13,7 @@ cp -R * $outdir
 
 cd $outdir
 
-for p in hicup_module.pm $(grep -l -R "usr/bin/perl"); do
+for p in hicup_module.pm $(grep -l -R "usr/bin/perl" . ); do
 
   # Fix shebang lines
   sed -i.bak "s/\/usr\/bin\/perl/\/usr\/bin\/env perl/" $p
