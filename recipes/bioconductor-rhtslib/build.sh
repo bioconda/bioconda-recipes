@@ -7,6 +7,7 @@ mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 #
 $R CMD INSTALL --build .
+cat src/htslib/config.log
 #
 # # Add more build steps here, if they are necessary.
 #
