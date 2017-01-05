@@ -9,10 +9,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
-#export CFLAGS+="-pthread -static"
-
 rm -R ./Plugins/*
-
 mkdir build
 cd build
 
@@ -41,7 +38,7 @@ cmake \
     -D VTK_USE_SYSTEM_PNG:BOOL=ON \
     -D VTK_USE_SYSTEM_TIFF:BOOL=ON \
     -D VTK_USE_SYSTEM_OGGTHEORA=OFF \
-    -D VTK_USE_SYSTEM_PUGIXML:BOOL=ON \
+    -D VTK_USE_SYSTEM_PUGIXML:BOOL=OFF \
     -D VTK_USE_SYSTEM_LIBXML2:BOOL=ON \
     -D VTK_USE_SYSTEM_FREETYPE:BOOL=ON \
     -D VTK_USE_SYSTEM_TWISTED:BOOL=ON \
@@ -57,14 +54,5 @@ cmake \
     -D PUGIXML_INCLUDE_DIRS=${PREFIX}/include/ \
         ..
 
-    ##-D OPENGL_GLU_LIBRARY="${PREFIX}/lib/libGLU.so" \
-    ##-D LINK_SEARCH_START_STATIC=ON \
-    ## -D  LINK_SEARCH_START_STATIC=ON
-    ##-D PYTHON_INCLUDE_PATH="${PREFIX}/include/python${PY_VER}" \
-    ##-D PYTHON_LIBRARY="${PREFIX}/lib/${PY_LIB}" \
-    ##-D PYTHON_EXECUTABLE="${PYTHON}" \
-    #-D OPENGL_INCLUDE_DIR=/usr/include \
-
 make -j4
 make install
-
