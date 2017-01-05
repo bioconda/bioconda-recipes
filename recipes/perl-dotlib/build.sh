@@ -1,8 +1,12 @@
 #!/bin/bash
 
-outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-mkdir -p $outdir
+mkdir -p perl-build/
+#mv *.pl perl-build           #Alternately , use find -name "*.pl" 
+mv dotlib/*.pm perl-build/    #Alternately, use find -name "*.pm"
+cp ${RECIPE_DIR}/Build.PL perl-build
 
-mv dotlib $outdir
+cd perl-build
 
-export ${outdir}/dotlib
+perl ./Build.PL
+./Build manifest
+./Build install --installdirs site
