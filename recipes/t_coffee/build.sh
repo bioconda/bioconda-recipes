@@ -1,5 +1,5 @@
 #!/bin/bash
-
+(
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
@@ -8,16 +8,13 @@ TCOFFEE_INSTALL_PATH="$PREFIX/lib/$TCOFFEE_FOLDER_NAME"
 
 if [ "$(uname)" == "Darwin" ]; then
     echo "Platform: Mac"
-    mkdir -p $TCOFFEE_INSTALL_PATH
     mkdir -p $TCOFFEE_INSTALL_PATH/bin
-    
-    ./install t_coffee -tcdir=$TCOFFEE_INSTALL_PATH/ -exec=$TCOFFEE_INSTALL_PATH/bin/ 
+
+    ./install t_coffee -tcdir=$TCOFFEE_INSTALL_PATH/ -exec=$TCOFFEE_INSTALL_PATH/bin/
     cp -rf "$RECIPE_DIR/t_coffee" "$TCOFFEE_INSTALL_PATH"
     ln -s "$TCOFFEE_INSTALL_PATH/t_coffee" "$SP_DIR/t_coffee"
     sed -i "s|{{TCOFFEE_FOLDER_NAME}}|$TCOFFEE_FOLDER_NAME|g" "$TCOFFEE_INSTALL_PATH/t_coffee/config.py"
-    find $TCOFFEE_INSTALL_PATH
 
-    
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     echo "Platform: Linux"
 
@@ -31,3 +28,4 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     ln -s "$TCOFFEE_INSTALL_PATH/t_coffee" "$SP_DIR/t_coffee"
     sed -i "s|{{TCOFFEE_FOLDER_NAME}}|$TCOFFEE_FOLDER_NAME|g" "$TCOFFEE_INSTALL_PATH/t_coffee/config.py"
 fi
+)
