@@ -8,6 +8,7 @@ $R CMD config LDFLAGS
 $R CMD config CPPFLAGS
 $R CMD config CPP
 which gcc
+trap "cat $SRC_DIR/src/htslib/config.log" ERR
 # R refuses to build packages that mark themselves as
 # "Priority: Recommended"
 mv DESCRIPTION DESCRIPTION.old
