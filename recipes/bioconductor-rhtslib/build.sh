@@ -1,13 +1,19 @@
 
 #!/bin/bash
-
+/usr/bin/env
+$R CMD config CC
+$R CMD config CFLAGS
+$R CMD config CPICFLAGS
+$R CMD config LDFLAGS
+$R CMD config CPPFLAGS
+$R CMD config CPP
+which gcc
 # R refuses to build packages that mark themselves as
 # "Priority: Recommended"
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 #
 $R CMD INSTALL --build .
-cat src/htslib/config.log
 #
 # # Add more build steps here, if they are necessary.
 #
