@@ -19,7 +19,6 @@ if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
 elif [ "$(uname)" == "Darwin" ]; then
     echo "Platform: OSX"
     # modifies makefile to use openblas
-    cat Makefile.osx
     patch Makefile.osx $RECIPE_DIR/framework.patch
     make -f Makefile.osx
     otool -L ../bin/Slr
