@@ -25,7 +25,8 @@ sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoscan
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
 
 ./autogen.sh
-./configure --prefix=$PREFIX
-##--with-boost=${PREFIX}
+./configure --prefix=${PREFIX} \
+        --with-boost-libdir=${PREFIX}/lib \
+        --with-boost=${PREFIX}
 make
 make install
