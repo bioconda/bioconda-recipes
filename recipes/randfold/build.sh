@@ -11,6 +11,8 @@ make install
 
 cd ..
 
+export CFLAGS="-I$PREFIX/include"
+
 make
 cp randfold $PREFIX/bin
 
