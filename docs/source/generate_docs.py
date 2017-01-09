@@ -175,6 +175,7 @@ def setup(*args):
         # Format the README
         notes = metadata.get_section('extra').get('notes', '')
         if notes:
+            if isinstance(notes,list): notes = "\n".join(notes)
             notes = 'Notes\n-----\n\n' + notes
         summary = metadata.get_section('about').get('summary', '')
         summaries.append(summary)
