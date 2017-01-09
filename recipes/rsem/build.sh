@@ -43,6 +43,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
+export CFLAGS="-I${PREFIX}/include"
 
 ########################################################
 ### Prepare Samtools/Htslib 
@@ -62,9 +63,9 @@ sed -i.bak 's#misc/varfilter.py##g' samtools-1.3/Makefile
 sed -i.bak 's/ -rdynamic//g' samtools-1.3/Makefile
 sed -i.bak 's/ -rdynamic//g' samtools-1.3/htslib-1.3/configure
 
-########################################################
-### Build htslib 
-########################################################
+#########################################################
+#### Build htslib 
+#########################################################
 cd samtools-1.3/htslib-1.3
 ./configure --prefix=$PREFIX --enable-libcurl CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
 make
@@ -78,7 +79,8 @@ cd ..
 # https://github.com/samtools/samtools/issues/577
 # I get weird errors when trying to enable libcurl
 ./configure --prefix=$PREFIX  --without-curses
-make install prefix=$PREFIX
+make
+#make install prefix=$PREFIX
 
 
 ########################################################
@@ -86,6 +88,7 @@ make install prefix=$PREFIX
 ########################################################
 
 cd ..
+
 INSTALLDIR=$PREFIX/lib/rsem
 BINDIR=$PREFIX/bin
 mkdir -p $BINDIR
