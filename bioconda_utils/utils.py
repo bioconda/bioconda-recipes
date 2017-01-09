@@ -410,7 +410,7 @@ def newly_unblacklisted(config_file, recipe_folder):
     for bl in yaml.load(p.stdout)['blacklists']:
         p = run(['git', 'show', 'FETCH_HEAD:{}'.format(bl)])
         tmp = tempfile.NamedTemporaryFile(delete=False).name
-        with open(tmp, 'w') as fout:
+        with open(tmp, 'w', encoding='utf8') as fout:
             fout.write(p.stdout)
         prev.update(get_blacklist([tmp], recipe_folder))
     results = prev.difference(curr)
@@ -529,7 +529,7 @@ def get_blacklist(blacklists, recipe_folder):
         blacklist.update(
             [
                 os.path.relpath(i.strip(), recipe_folder)
-                for i in open(p) if not i.startswith('#') and i.strip()
+                for i in open(p, encoding='utf8') if not i.startswith('#') and i.strip()
             ]
         )
     return blacklist
