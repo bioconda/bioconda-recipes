@@ -53,6 +53,9 @@ logger = logging.getLogger(__name__)
      in a docker container. Has no effect otherwise.''')
 @arg('--quick', help='''To speed up filtering, do not consider any recipes that
      are > 2 days older than the latest commit to master branch.''')
+@arg('--disable-travis-env-vars', action='store_true', help='''By default, any
+     environment variables starting with TRAVIS are sent to the Docker
+     container. Use this flag to disable that behavior.''')
 def build(recipe_folder,
           config,
           packages="*",
@@ -65,6 +68,7 @@ def build(recipe_folder,
           pkg_dir=None,
           conda_build_version=docker_utils.DEFAULT_CONDA_BUILD_VERSION,
           quick=False,
+          disable_travis_env_vars=False,
           ):
     LEVEL = getattr(logging, loglevel.upper())
     logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
@@ -94,15 +98,17 @@ def build(recipe_folder,
     else:
         docker_builder = None
 
-    success = build_recipes(recipe_folder,
-                                 config=config,
-                                 packages=packages,
-                                 testonly=testonly,
-                                 force=force,
-                                 mulled_test=mulled_test,
-                                 docker_builder=docker_builder,
-                                 quick=quick,
-                            )
+    success = build_recipes(
+        recipe_folder,
+        config=config,
+        packages=packages,
+        testonly=testonly,
+        force=force,
+        mulled_test=mulled_test,
+        docker_builder=docker_builder,
+        quick=quick,
+        disable_travis_env_vars=disable_travis_env_vars,
+    )
     exit(0 if success else 1)
 
 
