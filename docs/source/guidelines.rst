@@ -3,7 +3,7 @@
 Guidelines for ``bioconda`` recipes
 ===================================
 
-bioconda recipe checklistF
+bioconda recipe checklist
 -------------------------
 - Source URL is stable (:ref:`details <stable-url>`)
 - md5 or sha256 hash included for source download (:ref:`details <hashes>`)
