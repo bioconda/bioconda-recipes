@@ -9,6 +9,7 @@
 import os
 import subprocess
 import sys
+import shutil
 from os import access
 from os import getenv
 from os import X_OK
@@ -45,6 +46,7 @@ def jvm_opts(argv):
     mem_opts = []
     prop_opts = []
     pass_args = []
+    exec_dir = None
 
     for arg in argv:
         if arg.startswith('-D'):
@@ -53,6 +55,10 @@ def jvm_opts(argv):
             prop_opts.append(arg)
         elif arg.startswith('-Xm'):
             mem_opts.append(arg)
+        elif arg.startswith('--exec_dir='):
+            exec_dir = arg.split('=')[1].strip('"').strip("'")
+            if not os.path.exists(exec_dir):
+                shutil.copytree(real_dirname(sys.argv[0]), exec_dir, symlinks=False, ignore=None)
         else:
             pass_args.append(arg)
 
@@ -65,13 +71,20 @@ def jvm_opts(argv):
     if mem_opts == [] and getenv('_JAVA_OPTIONS') is None:
         mem_opts = default_jvm_mem_opts
 
-    return (mem_opts, prop_opts, pass_args)
+    return (mem_opts, prop_opts, pass_args, exec_dir)
 
 
 def main():
     java = java_executable()
-    jar_dir = real_dirname(sys.argv[0])
-    (mem_opts, prop_opts, pass_args) = jvm_opts(sys.argv[1:])
+    """
+    PeptideShaker updates files relative to the path of the jar file.
+    In a multiuser setting, the option --exec_dir="exec_dir"
+    can be used as the location for the peptide-shaker distribution.
+    If the exec_dir dies not exist,
+    we copy the jar file, lib, and resources to the exec_dir directory.
+    """
+    (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
+    jar_dir = exec_dir if exec_dir else real_dirname(sys.argv[0])
 
     if pass_args != [] and pass_args[0].startswith('eu'):
         jar_arg = '-cp'
