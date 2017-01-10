@@ -15,6 +15,8 @@ cd build
 
 PY_LIB="libpython${PY_VER}.so" 
 
+ls -l ${PREFIX}/lib/
+
 cmake \
     -D CMAKE_INSTALL_PREFIX=${PREFIX} \
     -D CMAKE_INSTALL_RPATH:STRING=${PREFIX}/lib \
@@ -29,8 +31,7 @@ cmake \
     -D PARAVIEW_ENABLE_PYTHON:BOOL=ON \
     -D PARAVIEW_ENABLE_WEB:BOOL=ON \
     -D OPENGL_gl_LIBRARY="" \
-    -D OPENGL_glu_LIBRARY="$PREFIX/lib/libGLU.so"
-    \
+    -D OPENGL_glu_LIBRARY="${PREFIX}/lib/libGLU.so" \
     -D VTK_USE_X:BOOL=OFF \
     -D VTK_USE_OFFSCREEN:BOOL=ON \
     -D VTK_USE_SYSTEM_PROTOBUF:BOOL=ON \
