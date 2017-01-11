@@ -1,0 +1,40 @@
+{% set name = "blasr_libcpp" %}
+{% set version = "1.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True # [not py27]
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+
+source:
+  git_url: https://github.com/PacificBiosciences/{{ name }}.git
+  git_rev: fd288b6f36062b7677b2bbd16f5a29862cbe7b59
+    
+requirements:
+  build:
+    - llvm # [osx]
+    - gcc # [linux]
+    - hdf5
+    - python
+    - htslib
+    - pbbam
+    - boost {{CONDA_BOOST}}*
+
+  run:
+    - libgcc # [linux]
+    - hdf5
+    - boost {{CONDA_BOOST}}*
+
+test:
+  commands:
+    - test -f $PREFIX/lib/libblasr.*
+
+about:
+  home: https://github.com/PacificBiosciences/{{ name }}
+  license: BSD-3-Clause-Clear
+  summary: Blasr_libcpp is a library used by blasr and other executables such as samtoh5, loadPulses for analyzing PacBio sequences
+
