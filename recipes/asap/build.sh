@@ -1,0 +1,16 @@
+#!/bin/bash
+
+mkdir build
+cd build
+
+cmake \
+    -D CMAKE_INSTALL_PREFIX=${PREFIX} \
+    -D CMAKE_INSTALL_RPATH:STRING=${PREFIX}/lib \
+    -D CMAKE_BUILD_TYPE=Release \
+    -D BUILD_DIAG_PATHOLOGY_EXECUTABLES:BOOL=ON \
+    -D BUILD_DIAG_PATHOLOGY_WORKSTATION:BOOL=ON \
+    -D BUILD_DIAG_PATHOLOGY_IMAGEPROCESSING:BOOL=ON \
+        ..
+
+make -j4
+make install
