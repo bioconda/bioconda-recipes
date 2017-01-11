@@ -1,5 +1,5 @@
 RM_DIR=${PREFIX}/share/RepeatMasker
-RM_OTHER_PROGRAMS="DateRepeats ProcessRepeats RepeatProteinMask DupMasker util/queryRepeatDatabase.pl util/queryTaxonomyDatabase.pl util/rmOutToGFF3.pl util/rmToUCSCTables.pl"
+RM_OTHER_PROGRAMS="DateRepeats ProcessRepeats RepeatProteinMask DupMasker util/queryRepeatDatabase.pl util/queryTaxonomyDatabase.pl util/rmOutToGFF3.pl util/rmToUCSCTables.pl util/buildRMLibFromEMBL.pl"
 RM_PROGRAMS="RepeatMasker $RM_OTHER_PROGRAMS"
 
 mkdir -p ${PREFIX}/bin
