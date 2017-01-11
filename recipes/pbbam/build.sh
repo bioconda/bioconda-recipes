@@ -12,6 +12,6 @@ make
 #ls include
 #cp lib/* $PREFIX/lib
 cp bin/* $PREFIX/bin
-#cp include/* $PREFIX/include
+cp -r ../include/pbbam $PREFIX/include
 ls $PREFIX/lib
 ls $PREFIX/include
