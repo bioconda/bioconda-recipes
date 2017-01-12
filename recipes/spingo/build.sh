@@ -8,7 +8,6 @@ if [ `uname` == Darwin ] ; then
     make
 elif [ `uname` == Linux ] ; then ## linux    
     make boost-fix=1
-
 else
     echo "Unknown OS system detected"
     exit
