@@ -71,7 +71,7 @@ def main():
     jar_dir = real_dirname(sys.argv[0])
     (mem_opts, prop_opts, pass_args) = jvm_opts(sys.argv[1:])
 
-    jar_path = os.path.join(jar_dir, jar_file
+    jar_path = os.path.join(jar_dir, jar_file)
 
     if pass_args != [] and '-get_jar_path' in pass_args:
         print(jar_path)
