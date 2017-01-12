@@ -3,8 +3,11 @@
 mkdir -p $PREFIX/bin
 
 sed -i.bak "s/\/usr\/bin\/perl/\/usr\/bin\/env perl/" NOVOPlasty${PKG_VERSION}.pl
+tail -n+2 NOVOPlasty${PKG_VERSION}.pl > NOVOPlasty${PKG_VERSION}.pl.new
 
+mv NOVOPlasty${PKG_VERSION}.pl.new NOVOPlasty${PKG_VERSION}.pl 
+ln -s NOVOPlasty${PKG_VERSION}.pl novoplasty.pl
 chmod +x NOVOPlasty${PKG_VERSION}.pl
-mv *.pl $PREFIX/bin
-ln -s $PREFIX/bin/NOVOPlasty${PKG_VERSION}.pl $PREFIX/bin/novoplasty.pl
+chmod +x novoplasty.pl
 
+mv *.pl $PREFIX/bin
