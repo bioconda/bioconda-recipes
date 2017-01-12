@@ -18,11 +18,11 @@ echo "##++ exist status for perl GD test = $?";
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
-    sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' Build.PL
-    cat Build.PL
     echo "##++ running Build.PL"
 #    perl Build.PL 2>&1 | tee configure.log
     perl Build.PL 
+    sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' Build.PL
+    cat Build.PL
     ./Build
 #    ./Build test 2>&1 | tee tests.log
     ./Build test 
