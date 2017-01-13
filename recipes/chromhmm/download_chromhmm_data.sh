@@ -10,8 +10,7 @@ if [[ -z "$1" ]]; then
     echo
     exit 1
 fi
-
-OUTDIR=$(readlink -f $1)
+OUTDIR=$1
 mkdir -p $OUTDIR
 TMP=$(mktemp -d)
 cd $TMP
