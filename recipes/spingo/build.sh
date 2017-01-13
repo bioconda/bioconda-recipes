@@ -3,15 +3,7 @@
 export CXX=${PREFIX}/bin/g++
 
 
-cd source
-if [ `uname` == Darwin ] ; then
-    make
-elif [ `uname` == Linux ] ; then ## linux    
-    make boost-fix=1
-else
-    echo "Unknown OS system detected"
-    exit
-fi
+make boost-fix=1
 
 mkdir -p $PREFIX/bin
 cp spingo spindex $PREFIX/bin
