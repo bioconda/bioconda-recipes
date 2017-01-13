@@ -16,6 +16,8 @@ from networkx.drawing.nx_pydot import write_dot
 from . import utils
 from .build import build_recipes
 from . import docker_utils
+from . import lint_functions
+from . import linting
 
 logger = logging.getLogger(__name__)
 # NOTE:
@@ -24,6 +26,28 @@ logger = logging.getLogger(__name__)
 #
 # A recipe is the path to the recipe of one version of a package, like
 # `recipes/bowtie` or `recipes/bowtie/1.0.1`.
+
+
+@arg('recipe_folder', help='Path to top-level dir of recipes.')
+@arg('config', help='Path to yaml file specifying the configuration')
+@arg(
+    '--packages',
+    nargs="+",
+    help='Glob for package[s] to build. Default is to build all packages. Can '
+    'be specified more than once')
+@arg('--cache', help='''To speed up debugging, use repodata cached locally in
+     the provided filename. If the file does not exist, it will be created the
+     first time.''')
+def lint(recipe_folder, config, packages="*", cache=None):
+    df = linting.channel_dataframe(cache=cache)
+    report = linting.lint(
+        recipe_folder=recipe_folder,
+        config=config,
+        df=df,
+        registry=lint_functions.registry,
+        packages=packages,
+    )
+    report.to_csv(sys.stdout, sep='\t', index=False)
 
 
 @arg('recipe_folder', help='Path to top-level dir of recipes.')
@@ -175,4 +199,4 @@ def dependent(recipe_folder, restrict=False, dependencies=None, reverse_dependen
 
 
 def main():
-    argh.dispatch_commands([build, dag, dependent])
+    argh.dispatch_commands([build, dag, dependent, lint])
