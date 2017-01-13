@@ -250,9 +250,13 @@ def get_recipes(recipe_folder, package="*"):
                        glob.glob(os.path.join(path, "*", "meta.yaml")))
 
 
-def get_channel_packages(channel='bioconda', platform=None):
+def get_channel_repodata(channel='bioconda', platform=None):
     """
-    Retrieves the existing packages for a channel from conda.anaconda.org
+    Returns the parsed JSON repodata for a channel from conda.anaconda.org.
+
+    A tuple of dicts is returned, (repodata, noarch_repodata). The first is the
+    repodata for the provided platform, and the second is the noarch repodata,
+    which will be the same for a channel no matter what the platform.
 
     Parameters
     ----------
@@ -291,9 +295,25 @@ def get_channel_packages(channel='bioconda', platform=None):
         raise requests.HTTPError(
             '{0.status_code} {0.reason} for {1}'
             .format(noarch_repodata, noarch_url))
+    return repodata.json(), noarch_repodata.json()
 
-    channel_packages = set(repodata.json()['packages'].keys())
-    channel_packages.update(noarch_repodata.json()['packages'].keys())
+
+def get_channel_packages(channel='bioconda', platform=None):
+    """
+    Retrieves the existing packages for a channel from conda.anaconda.org
+
+    Parameters
+    ----------
+    channel : str
+        Channel to retrieve packages for
+
+    platform : None | linux | osx
+        Platform (OS) to retrieve packages for from `channel`. If None, use the
+        currently-detected platform.
+    """
+    repodata, noarch_repodata = get_channel_repodata(channel=channel, platform=platform)
+    channel_packages = set(repodata['packages'].keys())
+    channel_packages.update(noarch_repodata['packages'].keys())
     return channel_packages
 
 
