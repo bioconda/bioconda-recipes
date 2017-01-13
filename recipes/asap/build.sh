@@ -12,5 +12,5 @@ cmake \
     -D BUILD_DIAG_PATHOLOGY_IMAGEPROCESSING:BOOL=ON \
         ..
 
-make -j4
+make -j$CPU_COUNT
 make install
