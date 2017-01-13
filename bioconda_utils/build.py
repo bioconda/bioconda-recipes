@@ -165,6 +165,7 @@ def build_recipes(
     disable_upload=False,
     check_channels=None,
     quick=False,
+    disable_travis_env_vars=False,
 ):
     """
     Build one or many bioconda packages.
@@ -213,6 +214,10 @@ def build_recipes(
     quick : bool
         Speed up recipe filtering by only checking those that are reasonably
         new.
+
+    disable_travis_env_vars : bool
+        By default, any env vars starting with TRAVIS are sent to the Docker
+        container. Use this to disable that behavior.
     """
     orig_config = config
     config = utils.load_config(config)
