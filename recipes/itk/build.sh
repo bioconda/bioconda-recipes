@@ -1,6 +1,13 @@
 mkdir build
 cd build
 
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LD_LIBRARY_PATH="${PREFIX}/lib"
+export LDFLAGS="-L${PREFIX}/lib"
+export CPPFLAGS="-I${PREFIX}/include"
+
+
 cmake \
     -D CMAKE_INSTALL_PREFIX=${PREFIX} \
     -D CMAKE_INSTALL_RPATH:STRING=${PREFIX}/lib \
