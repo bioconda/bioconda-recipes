@@ -17,12 +17,11 @@ cmake \
     -D ITK_USE_SYSTEM_TIFF:BOOL=ON \
     -D ITK_USE_SYSTEM_ZLIB:BOOL=ON \
     -D ITK_USE_SYSTEM_HDF5:BOOL=ON \
+    -D ITK_USE_SYSTEM_DCMTK:BOOL=ON \
     -D ITK_USE_SYSTEM_ZLIB:BOOL=ON \
-    -D ITK_WRAP_PYTHON:BOOL = ON \
     ..
 
-#-D ITK_USE_SYSTEM_VXL:BOOL=ON \
-VERBOSE=1 make -j$CPU_COUNT
+make -j$CPU_COUNT > /dev/null
 make install
 
 # Fix absolute path to system libaries, that are different for example on
