@@ -10,7 +10,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export BOOST_INCLUDE_DIR="${PREFIX}/include"
 export BOOST_LIBRARY_DIR="${PREFIX}/lib"
 
-export LIBS='-lboost_regex -lboost_system -lboost_program_options -lboost_filesystem -lboost_timer'
+export LIBS='-lboost_math_c99 -lboost_program_options -lboost_regex -lboost_graph -lboost_thread -lboost_system -lboost_filesystem'
 
 export BAMTOOLS_INCLUDE_DIR="${PREFIX}/include/bamtools/"
 export BAMTOOLS_LIBRARY_DIR="${PREFIX}/lib/"
