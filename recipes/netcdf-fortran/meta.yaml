@@ -8,7 +8,7 @@ source:
     md5: 418c7e998e63e6d76b2da14019fa9c8f
 
 build:
-    number: 0
+    number: 1
     skip: True  # [win or osx]
 
 requirements:
@@ -16,15 +16,24 @@ requirements:
         - gcc
         - libgfortran
         - libnetcdf 
+        - hdf5
     run:
+        - gcc
         - libgfortran
         - libnetcdf 
+        - hdf5
 
 test:
     commands:
         - nf-config --all
+        - gfortran test1.f90 -I${PREFIX}/include -L${PREFIX}/lib -lnetcdff -lnetcdf
+        - gfortran test2.f90 -I${PREFIX}/include -L${PREFIX}/lib -lnetcdff -lnetcdf
+    files:
+        - test1.f90
+        - test2.f90
+
 
 about:
     home: https://github.com/Unidata/netcdf-fortran
     license: http://www.unidata.ucar.edu/software/netcdf/copyright.html
-    summary: Unidata NetCDF Fortran Library
+    summary: Unidata NetCDF Fortran Library with netCDF 4 enabled
