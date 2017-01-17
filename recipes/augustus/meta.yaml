@@ -1,20 +1,23 @@
-about:
-  home: http://bioinf.uni-greifswald.de/augustus/
-  license: ''
-  summary: 'AUGUSTUS is a gene prediction program for eukaryotes written by Mario
-    Stanke and Oliver Keller. It can be used as an ab initio program, which means
-    it bases its prediction purely on the sequence. AUGUSTUS may also incorporate
-    hints on the gene structure coming from extrinsic sources such as EST, MS/MS,
-    protein alignments and synthenic genomic alignments.'
+{% set name = "augustus" %}
+{% set version = "3.2.3" %}
+{% set sha256 = "a1af128aefd228dea0c46d6f5234910fdf068a2b9133175ca8da3af639cb4514" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: http://bioinf.uni-greifswald.de/augustus/binaries/augustus-3.2.3.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+      - patches/bam2hints.Makefile.patch
+      - patches/filterBam.src.Makefile.patch
+      - patches/filterBam.Makefile.patch
 
 build:
   number: 1
   string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
-  #skip: True # [osx]
-
-package:
-  name: augustus
-  version: '3.2.3'
 
 requirements:
   build:
@@ -27,6 +30,7 @@ requirements:
       - lp_solve
       - perl-app-cpanminus
       - perl-module-build
+      - perl
       - boost {{CONDA_BOOST}}*
   run:
       - libgcc # [not osx]
@@ -35,20 +39,12 @@ requirements:
       - boost {{CONDA_BOOST}}*
       - gsl
       - lp_solve
+      - perl
       - perl-app-cpanminus
       - perl-module-build
       - perl-yaml
       - perl-dbi
       - perl-scalar-list-utils
-
-source:
-  fn: augustus-3.2.3.tar.gz
-  url: http://bioinf.uni-greifswald.de/augustus/binaries/augustus-3.2.3.tar.gz
-  md5: b8c47ea8d0c45aa7bb9a82626c8ff830
-  patches:
-      - patches/bam2hints.Makefile.patch
-      - patches/filterBam.src.Makefile.patch
-      - patches/filterBam.Makefile.patch
 
 test:
   commands:
@@ -118,3 +114,14 @@ test:
     - writeResultsPage.pl --help 2>&1 | grep "writeResultsPage ID species-name db-file grails-out www-out AugustusConfigPath AugustusScriptsPath final-flag"
     - yaml2gff.1.4.pl --help 2>&1 | grep "< scipio.yaml > scipio.gff"
     - echo $AUGUSTUS_CONFIG_PATH | grep "/config"
+
+about:
+  home: http://bioinf.uni-greifswald.de/augustus/
+  license: MIT
+  # The license_family, i.e. "BSD" if license is "BSD-3-Clause". (optional)
+  license_family: MIT
+  summary: 'AUGUSTUS is a gene prediction program for eukaryotes written by Mario
+    Stanke and Oliver Keller. It can be used as an ab initio program, which means
+    it bases its prediction purely on the sequence. AUGUSTUS may also incorporate
+    hints on the gene structure coming from extrinsic sources such as EST, MS/MS,
+    protein alignments and synthenic genomic alignments.'
