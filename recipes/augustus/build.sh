@@ -48,5 +48,3 @@ mkdir -p $PREFIX/etc/conda/deactivate.d/
 echo "unset AUGUSTUS_CONFIG_PATH" > $PREFIX/etc/conda/deactivate.d/augustus-confdir.sh
 chmod a+x $PREFIX/etc/conda/deactivate.d/augustus-confdir.sh
 
-
-exit 1
