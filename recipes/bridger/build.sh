@@ -17,7 +17,7 @@ export LDFLAGS="-L${BOOST_LIBRARY_DIR} -lboost_regex -lboost_filesystem -lboost_
 
 mkdir -p $PREFIX/bin
  
-./configure --prefix=$PREFIX --with-boost=${PREFIX} --with-boost-libdir=${PREFIX}/lib
+./configure --prefix=$PREFIX --with-boost=${PREFIX} --with-boost-libdir=${PREFIX}/lib --without-curses
 
 make 
 make install
