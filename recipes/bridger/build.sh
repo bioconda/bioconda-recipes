@@ -13,11 +13,12 @@ export LIBS='-lboost_regex -lboost_system -lboost_program_options -lboost_filesy
 export CXXFLAGS="-DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
 export LDFLAGS="-L${BOOST_LIBRARY_DIR} -lboost_regex -lboost_filesystem -lboost_system"
 
-
+export LIBCURSES=''
 
 mkdir -p $PREFIX/bin
  
-./configure --prefix=$PREFIX --with-boost=${PREFIX} --with-boost-libdir=${PREFIX}/lib --without-curses
+./configure --prefix=$PREFIX --with-boost=${PREFIX} --with-boost-libdir=${PREFIX}/lib 
+#--without-curses
 
 make 
 make install
