@@ -7,5 +7,5 @@ export DYLD_LIBRARY_PATH=${PREFIX}/lib
 ./configure --prefix=$PREFIX --enable-netcdf4
 
 make
-make check
+#make check
 make install
