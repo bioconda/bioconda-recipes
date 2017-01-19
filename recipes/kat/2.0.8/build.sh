@@ -25,18 +25,9 @@ sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/ifnames
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoscan
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
 
-<<<<<<< HEAD
-
-
-./autogen.sh
-./configure --prefix=$PREFIX \
-	--with-boost-libdir=${PREFIX}/lib \
-	--with-boost=${PREFIX}
-=======
 ./autogen.sh
 ./configure --prefix=${PREFIX} \
         --with-boost-libdir=${PREFIX}/lib \
         --with-boost=${PREFIX}
->>>>>>> 950985969c9f2cf7abaed90ebfaa3b5dcd4e2681
 make
 make install
