@@ -1,26 +1,29 @@
+{% set version = "2.2.21" %}
+
 package:
     name: blast
-    version: 2.2.21
+    version: {{ version }}
 
 source:
-    fn: ncbi-blast-2.2.21+-x64-linux.tar.gz # [linux]
-    url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.2.21/ncbi-blast-2.2.21+-x64-linux.tar.gz # [linux]
-    md5: 401062f0f581158c5ee77fe1bdde8014 # [linux]
-    fn: ncbi-blast-2.2.21+-universal-macosx.tar.gz # [osx]
-    url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.2.21/ncbi-blast-2.2.21+-universal-macosx.tar.gz # [osx]
+    fn: ncbi-blast-{{ version }}+-src.tar.gz # [linux]
+    url: http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz # [linux]
+    md5: 116db962a2988d23bab34e2b44130743 # [linux]
+    fn: ncbi-blast-{{ version }}+-universal-macosx.tar.gz # [osx]
+    url: http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-universal-macosx.tar.gz # [osx]
     md5: 03cbf1c151691ce22f22c337ba1f00a5 # [osx]
-    patches:
-        - legacy_blast.pl.patch
-        - update_blastdb.pl.patch
 
 build:
   number: 0
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
 
 requirements:
-    run:
-        - perl
-        - libgcc    # [not osx]
-        - zlib
+  build:
+    - boost {{CONDA_BOOST}}*  # [linux]
+    - gcc  # [linux]
+  run:
+    - boost {{CONDA_BOOST}}*  # [linux]
+    - libgcc  # [linux]
+    - perl
 
 test:
     commands:
