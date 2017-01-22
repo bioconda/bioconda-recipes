@@ -130,6 +130,7 @@ class BioCProjectPage(object):
         # '../src/contrib' based on the structure of the bioconductor site.
         return os.path.join(parse.urljoin(self.url, '../src/contrib'), s[0])
 
+
     @property
     def tarball_url(self):
         url = self.bioaRchive_url
