@@ -1,11 +1,24 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
+mkdir -p $PREFIX
+ln -s NOVOPlasty${PKG_VERSION}.pl NOVOPlasty.pl
 
-sed -i.bak "s|!/usr/bin/perl||" NOVOPlasty${PKG_VERSION}.pl
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g'  NOVOPlasty${PKG_VERSION}.pl
+## Build Perl
 
-mv *.pl  $PREFIX/bin
+mkdir perl-build
+find . -name "*.pl" | xargs -I {} mv {} perl-build
+# find . -name "*.pm`" | xargs -I {} cp {} perl-build/lib
+cd perl-build
+cp ${RECIPE_DIR}/Build.PL ./
+perl ./Build.PL
+perl ./Build manifest
+perl ./Build install --installdirs site
 
-chmod +x $PREFIX/bin/NOVOPlasty${PKG_VERSION}.pl
-ln -s $PREFIX/bin/NOVOPlasty${PKG_VERSION}.pl $PREFIX/bin/NOVOPlasty.pl
+cd ..
+## End build perl
+
+
+
+#mv *.pl  $PREFIX/bin
+#chmod +x $PREFIX/bin/NOVOPlasty${PKG_VERSION}.pl
+#ln -s $PREFIX/bin/NOVOPlasty${PKG_VERSION}.pl $PREFIX/bin/NOVOPlasty.pl
