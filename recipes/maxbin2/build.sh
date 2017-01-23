@@ -1,4 +1,5 @@
 #!/bin/bash
 set -euo pipefail
-cd src && make
+cp makefile.new src
+cd src && make -f makefile.new
 cp src/MaxBin $PREFIX/bin/
