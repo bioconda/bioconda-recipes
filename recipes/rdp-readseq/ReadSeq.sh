@@ -1,5 +1,5 @@
 #!/bin/bash
-# Picard executable shell script
+# ReadSeq executable shell script (highly inspired from Picard one)
 set -eu -o pipefail
 
 set -o pipefail
