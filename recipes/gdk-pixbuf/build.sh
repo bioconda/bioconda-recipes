@@ -19,5 +19,3 @@ sed -i.bak 's|#!/usr/bin/perl.*|#!/usr/bin/env perl|' ./gdk-pixbuf/*.pl
 
 make
 make install
-
-unlink $PREFIX/lib64
