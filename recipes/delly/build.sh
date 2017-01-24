@@ -1,6 +1,3 @@
-#!/bin/bash
-
 mkdir -p $PREFIX/bin
-
-make STATIC=1 PARALLEL=1 -B src/delly
-cp src/delly $PREFIX/bin/delly
+cp ${SRC_DIR}/delly_v0.7.6_CentOS5.4_x86_64bit $PREFIX/bin/delly
+chmod 0755 ${PREFIX}/bin/delly

@@ -2,6 +2,18 @@
 
 set -x -e
 
+# fix automake
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/aclocal
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/automake
+
+# fix autoconf
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autom4te
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoheader
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoreconf
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/ifnames
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoscan
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
+
 export CC=${PREFIX}/bin/gcc
 export CXX=${PREFIX}/bin/g++
 export INCLUDE_PATH="${PREFIX}/include"
@@ -37,6 +49,8 @@ cd $BINARY_HOME && ln -s $TRINITY_HOME/Trinity $BINARY
 ln -s $TRINITY_HOME/util/* .
 ln -s $TRINITY_HOME/Analysis/DifferentialExpression/PtR
 ln -s $TRINITY_HOME/Analysis/DifferentialExpression/run_DE_analysis.pl
+ln -s $TRINITY_HOME/Analysis/DifferentialExpression/analyze_diff_expr.pl
+ln -s $TRINITY_HOME/Analysis/DifferentialExpression/define_clusters_by_cutting_tree.pl
 ln -s $TRINITY_HOME/util/support_scripts/get_Trinity_gene_to_trans_map.pl
 
 # Find real path when executing from a symlink

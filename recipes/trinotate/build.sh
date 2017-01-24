@@ -15,6 +15,6 @@ cd perl-build
 
 cp ${RECIPE_DIR}/Build.PL ./
 
-${PREFIX}/bin/perl ./Build.PL
-./Build manifest
-./Build install --installdirs site
+perl ./Build.PL
+perl ./Build manifest
+perl ./Build install --installdirs site

@@ -1,15 +1,20 @@
+{% set name = "snakemake" %}
+{% set version = "3.10.0" %}
+{% set sha256 = "07161e5b581ca3973c743be08189fabec1dd690e057e04bc5e6e94d3c2c85ac2" %}
+
 package:
-  name: snakemake
-  version: "3.7.1"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: snakemake-3.7.1.tar.gz
-  url: https://pypi.python.org/packages/b2/d2/d9b46cc9f5906efd41a33f42e33ba56350a859fdda6d40e35b02fae81bf8/snakemake-3.7.1.tar.gz
-  md5: 8c3c98d7fa967b0ce3bd778743d0cbaf
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   skip: True # [py27]
+  script: python setup.py install --single-version-externally-managed --record record.txt
   entry_points:
     - snakemake = snakemake:main
     - snakemake-bash-completion = snakemake:bash_completion
@@ -18,8 +23,10 @@ requirements:
   build:
     - python
     - setuptools
+    - wrapt
   run:
     - python
+    - wrapt
     - docutils
     - pyyaml
     - requests >=2.8.1
@@ -27,6 +34,7 @@ requirements:
     - ftputil >=3.2
     - filechunkio >=1.6
     - pysftp >=0.2.8
+    
 
 test:
     imports:
