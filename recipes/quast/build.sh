@@ -16,9 +16,14 @@ QUAST_HOME=$PREFIX/opt/quast-$PKG_VERSION
 mkdir -p $BINARY_HOME
 mkdir -p $QUAST_HOME
 
-cp -R $SRC_DIR/* $QUAST_HOME
+python "setup.py" install_full
 
-python "$QUAST_HOME/setup.py" install_full
+cp -R $SRC_DIR/*quast.py $QUAST_HOME/
+cp -R $SRC_DIR/icarus.py $QUAST_HOME/
+
+lib_path=`python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"`
+
+ln -s $lib_path/quast_libs $QUAST_HOME/quast_libs
 
 #Linking to binfolder
 chmod +x $QUAST_HOME/quast.py
