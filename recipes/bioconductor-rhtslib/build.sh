@@ -4,9 +4,6 @@
 # "Priority: Recommended"
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
-if [ `uname` == "Darwin" ]; then
-        patch -p0 -i ${RECIPE_DIR}/rpath.patch
-fi
 #
 $R CMD INSTALL --build .
 #
