@@ -10,9 +10,11 @@ for fn in \
     makeProxOEFile.py \
     runChicago.R;
 do
-    # python files have mostly py2 print statements and an xrange or two. 2to3
-    # seems to handle it fine.
-    [[ "${fn##*.}" = "py" ]] && 2to3 $fn -w
+    if [ $PY3K == 1 ] && [ "${fn##*.}" = "py" ]; then
+        # python files have mostly py2 print statements and an xrange or two. 2to3
+        # seems to handle it fine.
+        2to3 $fn -w
+    fi
     chmod +x $fn
     cp $fn ${PREFIX}/bin
 done
