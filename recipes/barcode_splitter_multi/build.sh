@@ -1,2 +1,5 @@
 #!/bin/bash
-$PYTHON -m pip install barcode_splitter_multi
+
+$PYTHON setup.py install 
+
+# This build script was created using `conda skeleton pypi barcode_splitter_multi`
