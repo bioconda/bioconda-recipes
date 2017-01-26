@@ -1,0 +1,39 @@
+{% set name = "snoscan" %}
+{% set version = "0.9b" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  fn: {{ name|lower }}_{{ version }}.tar.gz
+  url: http://lowelab.ucsc.edu/software/snoscan-0.9.tar.gz
+  md5: 30719dc179f00c892d50ce070336d0a1
+  patches:
+    - patches/sort-snos.patch
+    - patches/sqio.c.patch
+    
+
+requirements:
+  build:
+    - gcc  # [not osx]
+    - llvm  # [osx]
+    - zlib
+
+  run:
+    - libgcc  # [not osx]
+    - zlib
+
+test:
+  commands:
+    - snoscan -h #| grep "Error! Genome size not given." > /dev/null
+    - sort-snos -h #
+
+about:
+  home: http://lowelab.ucsc.edu/snoscan
+  summary: Search for C/D box methylation guide snoRNA genes in a genomic sequence
+  licence: GPL
+
