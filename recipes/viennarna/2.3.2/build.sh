@@ -18,22 +18,13 @@ else ## linux
     ## workaround: install Python 2 in a different environment and set the
     ## path accordingly.
     ##
-    MY_PYTHON2_ENV_NAME=viennarna_builder_python2
     
     ## install python 2.7 in separate environment
-    #
+    conda create -y -n python2 'python<3'
     
-    # if env $MY_PYTHON2_ENV_NAME exists, remove it
-    if conda env list | grep -w "$MY_PYTHON2_ENV_NAME" > /dev/null ; then
-        conda env remove -y -n "$MY_PYTHON2_ENV_NAME"
-    fi
-
-    # create new env $MY_PYTHON2_ENV_NAME with python<3
-    conda create -y -n $MY_PYTHON2_ENV_NAME 'python<3'
-    
-    ## get path to $MY_PYTHON2_ENV_NAME environment
+    ## get path to python2 environment
     MY_PATH_BACKUP=${PATH}         # backup path
-    source activate $MY_PYTHON2_ENV_NAME
+    source activate python2
     PYTHON2_ENV=${CONDA_PREFIX}
     source deactivate
     export PATH=${MY_PATH_BACKUP}  # restore path
@@ -69,11 +60,3 @@ make -j${CPU_COUNT}
 
 ## Install
 make install
-
-
-## cleanup env $MY_PYTHON2_ENV_NAME
-if [ "$MY_PYTHON2_ENV_NAME" != "" ] ; then
-   if conda env list | grep -w "$MY_PYTHON2_ENV_NAME" > /dev/null ; then
-       conda env remove -y -n "$MY_PYTHON2_ENV_NAME"
-   fi
-fi
