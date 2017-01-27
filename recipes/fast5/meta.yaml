@@ -1,27 +1,33 @@
+{% set name = "fast5" %}
+{% set version = "0.5.9" %}
+
 package:
-  name: fast5
-  version: "0.5.6"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 build:
   number: 0
 
 source:
-  fn: fast5_v0.2.0.tar.gz
-  url: https://github.com/mateidavid/fast5/archive/v0.5.6.tar.gz
-  md5: 649a37d83b4199a7f406754bf3dd6d83
+  fn: {{ name|lower }}_{{ version }}.tar.gz
+  url: https://github.com/mateidavid/fast5/archive/v{{ version }}.tar.gz
+  md5: 5082495779140c74aa3cbfc6119ea338
 
 requirements:
   build:
-
   run:
+    - hdf5
 
 test:
+  requires:
+    - gcc
+  files:
+    - test.c
   commands:
-    - ls $PREFIX/include/fast5/fast5.hpp | grep fast5.hpp > /dev/null
+    - g++ -std=c++11 -I ${PREFIX}/include -L ${PREFIX}/lib  test.c
 
 about:
   home: https://github.com/mateidavid/fast5
   license: MIT
   license_file: LICENSE
-  summary: A C++ header-only library for reading Oxford Nanopore Fast5 files
-
+  summary: 'A C++ header-only library for reading Oxford Nanopore Fast5 files.'

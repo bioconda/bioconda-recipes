@@ -1,0 +1,35 @@
+{% set name = "diamond" %}
+{% set version = "0.7.12" %}
+{% set sha256 = "16f8f618e4e5e81071ef8b66dc39685a1e969434ddeff3d88fa01091971b662f" %}
+{% set md5 = "55f29ecad8c1aa15b7ff7c2c50c5019a" %}
+
+build:
+  number: 0
+  skip: True # [osx]
+  string: boost{{CONDA_BOOST}}_0
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bbuchfink/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  md5: {{ md5 }}
+
+requirements:
+  build:
+    - gcc  # [unix]
+    - boost >=1.53.0,{{CONDA_BOOST}}*
+  run:
+    - libgcc  # [unix]
+    - boost {{CONDA_BOOST}}*
+
+test:
+  commands:
+    - diamond -h 2>&1 > /dev/null
+
+about:
+  home: http://ab.inf.uni-tuebingen.de/software/diamond/
+  license: BSD
+  summary: Accelerated BLAST compatible local sequence aligner
