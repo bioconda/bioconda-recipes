@@ -14,4 +14,4 @@ perl ./Build install --installdirs site
 cd ..
 ## End build perl
 
-find . -name "*.py" | xargs -I {} mv {} perl-build
+mv *.py $PREFIX/bin
