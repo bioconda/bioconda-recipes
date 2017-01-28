@@ -4,6 +4,6 @@ set -eu -o pipefail
 #cd ExpansionHunter
 mkdir build
 cd build
-cmake  -DBOOST_ROOT=$PREFIX  ..
+cmake ..
 make
 mv ExpansionHunter $PREFIX/bin
