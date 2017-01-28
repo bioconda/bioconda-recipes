@@ -61,11 +61,11 @@ export BOWTIE2_INDEXES=$input_folder
 
 if [ ! -z $left_reads ] && [ ! -z $right_reads ]; 
 then
-    /usr/local/bin/bowtie2 -x $ref_index -1 $left_reads -2 $right_reads -S $sam_out
+    bowtie2 -x $ref_index -1 $left_reads -2 $right_reads -S $sam_out
 
 elif [ ! -z $single_reads ]
 then
-   /usr/local/bin/bowtie2 -x $ref_index -U $single_reads -S $sam_out
+    bowtie2 -x $ref_index -U $single_reads -S $sam_out
 
 else
    echo "You need to specify either two paired end reads or one single end reads for bowtie2 to run"
