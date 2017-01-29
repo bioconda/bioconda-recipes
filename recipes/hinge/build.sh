@@ -9,7 +9,7 @@ export BOOST_LIBRARY_DIR=${PREFIX}/lib
 #export CXXFLAGS=" -std=c++11 -stdlib=libstdc++ -stdlib=libc++ -DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
 export CXXFLAGS=" -std=c++11  -DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
 export LDFLAGS="-L${BOOST_LIBRARY_DIR}"
-export Boost_NO_BOOST_CMAKE=TRUE) 
+export Boost_NO_BOOST_CMAKE=TRUE 
 
 mkdir -p $PREFIX/bin
 
