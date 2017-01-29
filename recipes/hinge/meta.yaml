@@ -1,0 +1,63 @@
+{% set name = "hinge" %}
+{% set version = "0.41" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True  # [not py27]
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+
+source:
+  fn: {{ name|lower }}_{{ version }}.tar.gz
+  url: https://github.com/fxia22/HINGE/archive/v0.41.tar.gz
+  md5: d2012769150da11577c93513ec0db50d
+  patches:
+    - patches/draft.cpp.patch
+    - patches/draft_chopper.cpp.patch
+    - patches/filter.cpp.patch
+    - patches/hinging.cpp.patch
+    - patches/io_base.cpp.patch
+
+requirements:
+  build:
+    - python
+    - gcc  # [not osx]
+    - llvm  # [osx]
+    - spdlog
+    - cmake
+    - boost {{CONDA_BOOST}}*
+    - hdf5
+    - numpy
+    - ujson
+    - colormap
+    - easydev
+
+  run:
+    - python
+    - libgcc  # [not osx]
+    - boost {{CONDA_BOOST}}*
+    - spdlog
+    - hdf5
+    - numpy
+    - ujson
+    - colormap
+    - easydev
+    - daligner
+    - dascrubber
+    - dazz_db
+    - dextractor
+
+
+test:
+  commands:
+    - hinge -h #| grep "" > /dev/null
+
+about:
+  home: https://github.com/yechengxi/SparseAssembler
+  summary: HINGE is a long read assembler based on an idea called hinging
+  licence: Copyright (c) 2016, Govinda Kamath, Fei Xia, Ilan Shomorony, Thomas Courtade and David Tse. All rights reserved.  
+  license_file: licence.txt
+
