@@ -1,11 +1,11 @@
 #!/bin/bash
 
-target=$PREFIX/lib/knime
+target=$PREFIX/share/knime-$KNIME_VERSION
 mkdir -p $target
 mkdir -p $PREFIX/bin
 
-chmod +x ./knime
+cp -R * $target/
 
-cp -R * $target
-ln -s $target/knime $PREFIX/bin/knime
+ln -s $target/knime $PREFIX/bin
+chmod 0755 "${PREFIX}/bin/knime"
 
