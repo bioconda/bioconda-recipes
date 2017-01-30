@@ -7,8 +7,6 @@ export BOOST_INC=$PREFIX/include
 
 NOPBBAM=1 NOHDF=1 ./configure.py PREFIX=$PREFIX
 make all
-ls alignment
-cp alignment/*.so $PREFIX/lib
-cp hdf/*.so $PREFIX/lib
-cp pbdata/*.so $PREFIX/lib
-ls $PREFIX/lib/
+cp alignment/libblasr.* $PREFIX/lib
+cp hdf/libpbihdf.* $PREFIX/lib
+cp pbdata/libpbdata.* $PREFIX/lib
