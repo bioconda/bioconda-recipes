@@ -1,4 +1,4 @@
-export CXXFLAGS="${CXXFLAGS} -std=c++11 -lstdc++ -x c++"
+export CXXFLAGS="${CXXFLAGS} -std=c++0x -stdlib=libc++ -lc++abi -lsupc++ -lstdc++ -x c++"
 export CPPFLAGS="-I${PREFIX}/include"
 export LDFLAGS="-L$PREFIX/lib"
 export PBBAM_INC=$PREFIX/include
