@@ -28,3 +28,9 @@ fi
 
 for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
 for d in $directories; do cp -r $d $PREFIX/bin; done
+
+# Adding the Bowtie2 wrapper script to the path
+
+SOURCE_FILE=$RECIPE_DIR/bowtie2_wrapper.sh
+chmod +x $SOURCE_FILE
+cp $SOURCE_FILE $PREFIX/bin
