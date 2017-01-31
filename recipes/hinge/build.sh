@@ -19,7 +19,7 @@ mkdir -p $PREFIX/bin
 mkdir build
 cd build
 
-cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX 
+cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DBoost_USE_STATIC_LIBS=ON 
 make
 make install
 
