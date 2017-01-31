@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu -o pipefail
+
 make -C squid-1.5j
 make
 
