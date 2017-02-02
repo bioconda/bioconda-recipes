@@ -1,1 +1,1 @@
-make INSTALLDIR=$PREFIX/bin install
+make INCLUDES=$PREFIX/include INSTALLDIR=$PREFIX/bin install -j${CPU_COUNT}
