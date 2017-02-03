@@ -1,36 +1,67 @@
-about:
-  home: http://kmergenie.bx.psu.edu/
-  license: 'free software license'
-  summary: 'KmerGenie estimates the best k-mer length for genome de novo assembly'
+{% set name = "kmergenie" %}
+{% set version = "1.7038" %}
+{% set sha256 = 'c6ae971b86be6d70de0af75982491aaff90be635536e0c03fa71b485604732f0' %}
+# sha256 is the prefered checksum -- you can get it for a file with:
+#  `openssl sha256 <file name>`.
+# You may need the openssl package, available on conda-forge
+#  `conda install openssl -c conda-forge``
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: http://{{ name }}.bx.psu.edu/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  #patches:
+  #    - test_install.patch
 
 build:
   number: 0
 
-package:
-  name: kmergenie
-  version: '1.7016'
-
 requirements:
   build:
-      - python
       - gcc # [linux]
       - llvm # [osx]
+      - python
       - zlib
       - r-base
       - r-essentials
   run:
-      - python
       - libgcc  # [linux]
+      - python
       - zlib
       - r-base
       - r-essentials
 
-source:
-  fn: kmergenie-1.7016.tar.gz
-  url: http://kmergenie.bx.psu.edu/kmergenie-1.7016.tar.gz
-  patches:
-      - test_install.patch
-
 test:
-    commands:
-        - kmergenie --help
+  commands:
+    - kmergenie --help
+
+about:
+  home: http://kmergenie.bx.psu.edu/
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: 'KmerGenie estimates the best k-mer length for genome de novo assembly'
+
+  description: |
+      KmerGenie estimates the best k-mer length for genome de novo assembly.
+      Given a set of reads, KmerGenie first computes the k-mer abundance
+      histogram for many values of k. Then, for each value of k, it predicts
+      the number of distinct genomic k-mers in the dataset, and returns the
+      k-mer length which maximizes this number. Experiments show that
+      KmerGenie's choices lead to assemblies that are close to the best
+      possible over all k-mer lengths. KmerGenie predictions can be applied to
+      single-k genome assemblers (e.g. Velvet, SOAPdenovo 2, ABySS, Minia).
+      However, multi-k genome assemblers (e.g. SPAdes, IDBA) generally perform
+      better with default parameters (using multiple k values), rather than the
+      single best k predicted by KmerGenie. 
+  doc_url: http://kmergenie.bx.psu.edu/README
+  dev_url: http://kmergenie.bx.psu.edu/README
+
+extra:
+  recipe-maintainers:
+    - jerowe
+
