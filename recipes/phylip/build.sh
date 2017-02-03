@@ -1,9 +1,8 @@
 #!/bin/bash
 
-## The build file is taken from the biobuilds conda recipe by Cheng H. Lee,
-## slightly adjusted to fit the bioconda format (the reason for migrating
-## it to bioconda is to be able to use it as a requirement for the
-## r-rphylip recipe, and currently bioconda does not search biobuilds:(
+## The build file is taken from the biobuilds conda recipe by Cheng
+## H. Lee, adjusted to fit the bioconda format.
+
 # Configure
 [ "$BB_ARCH_FLAGS" == "<UNDEFINED>" ] && BB_ARCH_FLAGS=
 [ "$BB_OPT_FLAGS" == "<UNDEFINED>" ] && BB_OPT_FLAGS=
@@ -43,53 +42,23 @@ pushd "${SHARE_DIR}/java"
 rm -f *.unx
 popd
 
-# Generate wrapper scripts in ${PREFIX}/bin like the Debian package does
+# Install wrapper scripts
 [ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
+ln -s $SHARE_DIR/exe/* $PREFIX/bin/
+# phylip's java interface can't find its dylibs (libtreegram.so,
+# libdrawtree.dylib) Easiest, but oh so inelegant, solution was to
+# link them to $PREFIX/bin
+ln -s $SHARE_DIR/java/* $PREFIX/bin/
 
-cat > "${PREFIX}/bin/phylip" << EOF
-#!/bin/bash
+cp $RECIPE_DIR/phylip.py $PREFIX/bin/phylip
 
-BINDIR="${SHARE_DIR}/exe"
-if [ \$# -lt 1 ] ; then
-    echo "Usage: \$0 <program>" >&2
-    echo "Existing programs are:" >&2
-    ls \${BINDIR} >&2
-    exit 1
-fi
+cp $RECIPE_DIR/drawtree.py $SHARE_DIR/drawtree_gui
+ln -s $SHARE_DIR/drawtree_gui $PREFIX/bin
 
-WRAPPER=\$0
-PROGRAM=\$1
-shift
-
-if [ -x "\${BINDIR}/\${PROGRAM}" ]; then
-    exec "\${BINDIR}/\${PROGRAM}" \$*
-else
-    echo "Usage: \${PROGRAM} does not exist in Phylip" >&2
-    echo "Existing programs are:" >&2
-    ls \${BINDIR} >&2
-    exit 1
-fi
-EOF
-
-cat > "${PREFIX}/bin/drawgram" <<EOF
-#!/bin/bash
-export "PATH=${SHARE_DIR}/exe:\$PATH"
-
-# TODO: replace this with conda JRE
-command -v java 1>/dev/null 2>/dev/null ||
-    { echo "FATAL: Cannot find 'java' executable" >&2; exit 1; }
-java -cp "${SHARE_DIR}/java/DrawTree.jar" drawgram.DrawgramUserInterface
-EOF
-
-cat > "${PREFIX}/bin/drawtree" <<EOF
-#!/bin/bash
-export "PATH=${SHARE_DIR}/exe:\$PATH"
-
-# TODO: replace this with conda JRE
-command -v java 1>/dev/null 2>/dev/null ||
-    { echo "FATAL: Cannot find 'java' executable" >&2; exit 1; }
-java -cp "${SHARE_DIR}/java/DrawTree.jar" drawtree.DrawtreeUserInterface
-EOF
+cp $RECIPE_DIR/drawgram.py $SHARE_DIR/drawgram_gui
+ln -s $SHARE_DIR/drawgram_gui $PREFIX/bin
 
 cd "${PREFIX}/bin"
-chmod 0755 phylip drawgram drawtree
+chmod 0755 phylip drawgram drawtree drawgram_gui drawtree_gui
+
+ls $PREFIX/bin
