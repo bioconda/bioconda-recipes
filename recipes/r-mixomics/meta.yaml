@@ -1,27 +1,20 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-mixomics
   # Note that conda versions cannot contain -, so any -'s in the version have
   # been replaced with _'s.
-  version: "5.2.0"
+  version: "6.1.1"
 
 source:
-  fn: mixOmics_5.2.0.tar.gz
+  fn: mixOmics_6.1.1.tar.gz
   url:
-    - http://cran.r-project.org/src/contrib/mixOmics_5.2.0.tar.gz
-    - http://cran.r-project.org/src/contrib/Archive/mixOmics/mixOmics_5.2.0.tar.gz
-
-
-  # You can add a hash for the file here, like md5 or sha1
-  # md5: 49448ba4863157652311cc5ea4fea3ea
-  # sha1: 3bcfbee008276084cbb37a2b453963c61176a322
-  # patches:
-   # List any patch files here
-   # - fix.patch
+    - http://cran.r-project.org/src/contrib/mixOmics_6.1.1.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/mixOmics/mixOmics_6.1.1.tar.gz
 
 build:
-  # If this is a new build for the same version, increment the build
-  # number. If you do not include this key, it defaults to 0.
-  # number: 1
+  number: 0
 
   # This is required to make R link correctly on Linux.
   rpaths:
@@ -31,26 +24,36 @@ build:
 
 requirements:
   build:
-    - r
-    - r-mass # [not win]
+    - r-base
+    - r-mass
+    - r-rcolorbrewer
     - r-corpcor
+    - r-dplyr
     - r-ellipse
     - r-ggplot2
     - r-igraph
-    - r-lattice # [not win]
+    - r-lattice
+    - r-plyr
+    - r-reshape2
     - r-rgl
-    - gmp
+    - r-tidyr
+    - libglu # [linux]
 
   run:
-    - r
-    - r-mass # [not win]
+    - r-base
+    - r-mass
+    - r-rcolorbrewer
     - r-corpcor
+    - r-dplyr
     - r-ellipse
     - r-ggplot2
     - r-igraph
-    - r-lattice # [not win]
+    - r-lattice
+    - r-plyr
+    - r-reshape2
     - r-rgl
-    - gmp
+    - r-tidyr
+    - libglu # [linux]
 
 test:
   commands:
@@ -67,44 +70,25 @@ test:
 about:
   home: http://www.mixOmics.org
   license: GPL (>= 2)
-  summary: 'We provide statistical integrative techniques and variants to analyse highly dimensional
-    data sets: regularized Canonical Correlation Analysis (''rCCA'') and sparse Partial
-    Least Squares variants (''sPLS'')  to unravel relationships between two heterogeneous
-    data sets of size (n times p) and (n times q) where the p and q variables are measured
-    on the same samples or individuals n. These data may come from high throughput  technologies,
-    such as ''omics'' data (e.g. transcriptomics, metabolomics or proteomics data) that
-    require an integrative or joint analysis. However, ''mixOmics'' can also be applied
-    to any other  large data sets where p + q >> n. ''rCCA'' is a regularized version
-    of Canonical Correlation Analysis to deal with the large number of variables. ''sPLS''
-    allows variable selection in a one step procedure and two frameworks  are proposed:
-    regression and canonical analysis. Numerous graphical outputs are provided to help
-    interpreting  the results. Recent methodological developments include: sparse PLS-Discriminant
-    Analysis (''sPLS-DA''), Independent  Principal Component Analysis (''IPCA''), multilevel
-    analysis using variance decomposition of the data and integration  of multiple data
-    sets with regularized Generalised Canonical Correlation Analysis (''rGCCA'') and
-    variants (sparse ''GCCA''). More details  can be found  on our website.'
+  summary: 'Multivariate methods are well suited to large omics data sets where the number of
+    variables (e.g. genes, proteins, metabolites) is much larger than the number of
+    samples (patients, cells, mice). They have the appealing properties of reducing
+    the dimension of the data by using instrumental variables (components), which are
+    defined as combinations of all variables. Those components are then used to produce
+    useful graphical outputs that enable better understanding of the relationships and
+    correlation structures between the different data sets that are integrated. mixOmics
+    offers a wide range of multivariate methods for the exploration and integration
+    of biological datasets with a particular focus on variable selection. The package
+    proposes several sparse multivariate models we have developed to identify the key
+    variables that are highly correlated, and/or explain the biological outcome of interest.
+    The data that can be analysed with mixOmics may come from high throughput sequencing
+    technologies, such as omics data (transcriptomics, metabolomics, proteomics, metagenomics
+    etc) but also beyond the realm of omics (e.g. spectral imaging). The methods implemented
+    in mixOmics can also handle missing values without having to delete entire rows
+    with missing data. A non exhaustive list of methods include generalised Canonical
+    Correlation Analysis, sparse Partial Least Squares and sparse Discriminant Analysis.
+    Recently we implemented integrative methods to combine multiple data sets: horizontal
+    integration with regularised Generalised Canonical Correlation Analysis and vertical
+    integration with multi-group Partial Least Squares.'
 
-
-# The original CRAN metadata for this package was:
-
-# Package: mixOmics
-# Type: Package
-# Title: Omics Data Integration Project
-# Version: 5.2.0
-# Date: 2015-11-06
-# Depends: R (>= 2.10), MASS, lattice, ggplot2
-# Imports: igraph, rgl, ellipse, corpcor
-# Author: Kim-Anh Le Cao,  Ignacio Gonzalez, Sebastien Dejean with key contributors Florian Rohart, Benoit Gautier and contributions from Pierre Monget, Jeff Coquery, FangZou Yao, Benoit Liquet.
-# Maintainer: Kim-Anh Le Cao <k.lecao@uq.edu.au>
-# Description: We provide statistical integrative techniques and variants to analyse highly dimensional data sets: regularized Canonical Correlation Analysis ('rCCA') and sparse Partial Least Squares variants ('sPLS')  to unravel relationships between two heterogeneous data sets of size (n times p) and (n times q) where the p and q variables are measured on the same samples or individuals n. These data may come from high throughput  technologies, such as 'omics' data (e.g. transcriptomics, metabolomics or proteomics data) that require an integrative or joint analysis. However, 'mixOmics' can also be applied to any other  large data sets where p + q >> n. 'rCCA' is a regularized version of Canonical Correlation Analysis to deal with the large number of variables. 'sPLS' allows variable selection in a one step procedure and two frameworks  are proposed: regression and canonical analysis. Numerous graphical outputs are provided to help interpreting  the results. Recent methodological developments include: sparse PLS-Discriminant Analysis ('sPLS-DA'), Independent  Principal Component Analysis ('IPCA'), multilevel analysis using variance decomposition of the data and integration  of multiple data sets with regularized Generalised Canonical Correlation Analysis ('rGCCA') and variants (sparse 'GCCA'). More details  can be found  on our website.
-# License: GPL (>= 2)
-# URL: http://www.mixOmics.org
-# BugReports: mixomics@math.univ-toulouse.fr or https://bitbucket.org/klecao/package-mixomics/issues
-# Repository: CRAN
-# Date/Publication: 2015-11-19 11:02:25
-# Packaged: 2015-11-19 02:17:00 UTC; klecao
-# NeedsCompilation: no
-
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
+  license_family: GPL3
