@@ -3,7 +3,7 @@ OUTDIR=$PREFIX/share/dkfz-bias-filter
 mkdir -p $OUTDIR
 cp -r scripts/* $OUTDIR
 
-for $file in biasFilter.py dkfzbiasfilter_summarize.py
+for file in biasFilter.py dkfzbiasfilter_summarize.py
 do
     chmod a+x $OUTDIR/$file
     sed -i.bak 's#!/usr/bin/env python#!/opt/anaconda1anaconda2anaconda3/bin/python#' $OUTDIR/$file
