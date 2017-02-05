@@ -108,6 +108,23 @@ class BioCProjectPage(object):
         else:
             raise PageNotFoundError("Unexpected error: {0.status_code} ({0.reason})".format(response))
 
+    @property
+    def cargoport_url(self):
+        """
+        Returns the Galaxy cargo-port URL if one exists for this version of
+        this package, otherwise returns None.
+
+        Note that to get the package version, we're still getting the
+        bioconductor tarball to extract the DESCRIPTION file.
+        """
+        url = 'https://depot.galaxyproject.org/software/{0.package}/{0.package}_{0.version}_src_all.tar.gz'
+        response = requests.get(url)
+        if response:
+            return url
+        elif response.status_code == 404:
+            return
+        else:
+            raise PageNotFoundError("Unexpected error: {0.status_code} ({0.reason})".format(response))
 
     @property
     def bioconductor_tarball_url(self):
@@ -132,10 +149,9 @@ class BioCProjectPage(object):
 
     @property
     def tarball_url(self):
-        url = self.bioaRchive_url
-        if url:
-            return url
-        return self.bioconductor_tarball_url
+        for url in [self.bioconductor_tarball_url, self.bioaRchive_url, self.cargoport_url]:
+            if url:
+                return url
 
     @property
     def tarball_basename(self):
@@ -349,9 +365,11 @@ class BioCProjectPage(object):
         templating or the `$R` in the test commands, and replace the text once
         the yaml is written.
         """
-        url = self.bioaRchive_url
-        if not url:
-            url = self.tarball_url
+        url = [
+            u for u in
+            [self.bioconductor_tarball_url, self.bioaRchive_url, self.cargoport_url]
+            if u is not None
+        ]
 
         DEPENDENCIES = sorted(self.dependencies)
         d = OrderedDict((
@@ -409,7 +427,7 @@ class BioCProjectPage(object):
         return rendered
 
 
-def write_recipe(package, recipe_dir, force=False):
+def write_recipe(package, recipe_dir, force=False, version=None):
     """
     Write the meta.yaml and build.sh files.
     """
@@ -447,26 +465,13 @@ def write_recipe(package, recipe_dir, force=False):
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
         fout.write(proj.meta_yaml)
 
-
-
     with open(os.path.join(recipe_dir, 'build.sh'), 'w') as fout:
         fout.write(dedent(
             """
             #!/bin/bash
-
-            # R refuses to build packages that mark themselves as
-            # "Priority: Recommended"
             mv DESCRIPTION DESCRIPTION.old
             grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
-            #
             $R CMD INSTALL --build .
-            #
-            # # Add more build steps here, if they are necessary.
-            #
-            # See
-            # http://docs.continuum.io/conda/build.html
-            # for a list of environment variables that are set during the build
-            # process.
             # """
             )
         )
