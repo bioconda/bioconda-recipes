@@ -4,7 +4,8 @@
 ## (mac or linux)
 ##
 if [ `uname` == Darwin ] ; then
-    extra_config_options=""
+# enable c++11 support
+    extra_config_options="CXXFLAGS=-stdlib=libc++ LDFLAGS=-stdlib=libc++"
 else ## linux
     # add -fopenmp to compilation due to viennarna setup
     extra_config_options="CXXFLAGS=-fopenmp"
