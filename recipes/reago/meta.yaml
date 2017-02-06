@@ -3,7 +3,8 @@ package:
   version: 1.1
 
 build:
-  number: 0
+  number: 1
+  skip: True  # [osx or py3k]
 
 source:
   url: https://github.com/chengyuan/reago-1.1/archive/release-2015.12.18.tar.gz
@@ -15,17 +16,24 @@ requirements:
   build:
     - python
     - setuptools
-    - networkx
 
   run:
     - python
     - networkx
+    - infernal ==1.1.1
+    - genometools-genometools
 
 test:
+  source_files:
+    - sample_1.fasta
+    - sample_2.fasta
+
   commands:
     - reago.py
+    - filter_input.py sample_1.fasta sample_2.fasta filter_out $PREFIX/bin/cm ba 10
+    - reago.py filter_out/filtered.fasta sample_out -l 101
 
 about:
   home: https://github.com/chengyuan/reago-1.1
-  license: MIT
+  license:
   summary: An assembly tool for 16S ribosomal RNA recovery from metagenomic data

@@ -1,6 +1,6 @@
 
 #!/bin/bash
-
+export LD_LIBRARY_PATH=${PREFIX}/lib
 # R refuses to build packages that mark themselves as
 # "Priority: Recommended"
 mv DESCRIPTION DESCRIPTION.old

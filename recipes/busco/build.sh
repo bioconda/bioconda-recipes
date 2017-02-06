@@ -1,5 +1,7 @@
 #!/bin/bash
 
 mkdir -p $PREFIX/bin/
-cp BUSCO_v1.2.py $PREFIX/bin
-ln -s $PREFIX/bin/BUSCO_v1.2.py $PREFIX/bin/busco
+cp BUSCO.py $PREFIX/bin
+cp BUSCO_plot.py $PREFIX/bin
+ln -s $PREFIX/bin/BUSCO.py $PREFIX/bin/busco
+ln -s $PREFIX/bin/BUSCO_plot.py $PREFIX/bin/busco_plot
