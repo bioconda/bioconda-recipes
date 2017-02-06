@@ -7,7 +7,7 @@ if [ `uname` == Darwin ] ; then
     extra_config_options=""
 else ## linux
     # add -fopenmp to compilation due to viennarna setup
-    extra_config_options="CXX_FLAGS=-fopenmp"
+    extra_config_options="CXXFLAGS=-fopenmp"
 fi
 
 ./configure --prefix=$PREFIX \
