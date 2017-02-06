@@ -2,9 +2,13 @@
 set -euo pipefail
 
 export PATH=/anaconda/bin:$PATH
-export CONTAINER_PUSH_COMMANDS_PATH=${TRAVIS_BUILD_DIR}/container_push_commands.sh
 
-touch $CONTAINER_PUSH_COMMANDS_PATH
+if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
+then
+   echo "Create Container push commands file: ${TRAVIS_BUILD_DIR}/container_push_commands.sh"
+   export CONTAINER_PUSH_COMMANDS_PATH=${TRAVIS_BUILD_DIR}/container_push_commands.sh
+   touch $CONTAINER_PUSH_COMMANDS_PATH
+fi
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
@@ -15,17 +19,13 @@ fi
 
 set -x; bioconda-utils build recipes config.yml $USE_DOCKER $BIOCONDA_UTILS_ARGS; set +x;
 
-# build package documentation
+
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
-    if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = false ]]
+    if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
     then
         echo "Push containers to quay.io"
         cat $CONTAINER_PUSH_COMMANDS_PATH
         bash $CONTAINER_PUSH_COMMANDS_PATH
-        if [[ $SUBDAG = 0 ]]
-        then
-            scripts/build-docs.sh
-        fi
     fi
 fi
