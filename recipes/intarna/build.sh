@@ -5,7 +5,12 @@
 ##
 if [ `uname` == Darwin ] ; then
 # enable c++11 support
-    extra_config_options="CC=clang CXX=clang++ CXXFLAGS=-stdlib=libc++ LDFLAGS=-stdlib=libc++"
+    echo;
+    echo "PREFIX/lib";
+    ls -l $PREFIX/lib;
+    echo;
+    extra_config_options="CC=clang CXX=clang++"
+#    extra_config_options="CC=clang CXX=clang++ CXXFLAGS=-stdlib=libc++ LDFLAGS=-stdlib=libc++"
 else ## linux
     # add -fopenmp to compilation due to viennarna setup
     extra_config_options="CXXFLAGS=-fopenmp"
