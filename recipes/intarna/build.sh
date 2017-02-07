@@ -3,6 +3,8 @@
 ## Choose extra configure options depending on the operating system
 ## (mac or linux)
 ##
+CXXFLAGS="$CXXFLAGS";
+LDFLAGS="$LDFLAGS";
 if [ `uname` == Darwin ] ; then
 # enable c++11 support
     #echo;
@@ -16,12 +18,15 @@ if [ `uname` == Darwin ] ; then
     #otool -L $PREFIX/lib/libboost_program_options.dylib
     #echo;
     MACOSX_VERSION_MIN=10.6
-    extra_config_options="CXXFLAGS=\"-stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}\" LDFLAGS=\"-stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${LIBRARY_PATH}\""
-#    extra_config_options="CC=clang CXX=clang++ CXXFLAGS=\"-stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}\" LDFLAGS=\"-stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${LIBRARY_PATH}\""
+    CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}"
+    LDFLAGS="${LDFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${PREFIX}/lib"
 else ## linux
     # add -fopenmp to compilation due to viennarna setup
-    extra_config_options="CXXFLAGS=-fopenmp"
+    CXXFLAGS="-fopenmp"
 fi
+
+export CXXFLAGS=${CXXFLAGS}
+export LDFLAGS=${LDFLAGS}
 
 ./configure --prefix=$PREFIX \
             --with-RNA=$PREFIX \
