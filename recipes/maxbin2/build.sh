@@ -13,9 +13,9 @@ cp -R $SRC_DIR/* $MAXBIN_HOME/
 
 cd $MAXBIN_HOME
 # fix perl path
-sed -i.bak 's|/usr/bin/perl|/usr/bin/env perl|' run_MaxBin.pl
-sed -i.bak 's|/usr/bin/perl|/usr/bin/env perl|' _getabund.pl
-sed -i.bak 's|/usr/bin/perl|/usr/bin/env perl|' _getmarker.pl
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' run_MaxBin.pl
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' _getabund.pl
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' _getmarker.pl
 # fix script's bin dir to follow symlinks
 sed -i.bak 's|\$Bin|\$RealBin|' run_MaxBin.pl
 chmod a+x *.pl
