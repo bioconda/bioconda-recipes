@@ -15,13 +15,17 @@ if [ `uname` == Darwin ] ; then
     #cat $PREFIX/lib/pkgconfig/boost*;
     #cat $PREFIX/lib/pkgconfig/RNAlib*;
     #echo "otool"
-    otool -L $PREFIX/lib/libboost_program_options.dylib
+    #otool -L $PREFIX/lib/libboost_program_options.dylib
     #echo;
-    MACOSX_VERSION_MIN=10.6
-    CC=clang
-    CXX=clang++
-    CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}"
-    LDFLAGS="${LDFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${PREFIX}/lib"
+    #MACOSX_VERSION_MIN=10.6
+    #CC=clang
+    #CXX=clang++
+    CC=gcc
+    CXX=g++
+    CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
+    LDFLAGS="${LDFLAGS} -stdlib=libc++ -L${PREFIX}/lib"
+    #CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}"
+    #LDFLAGS="${LDFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${PREFIX}/lib"
 else ## linux
     # add -fopenmp to compilation due to viennarna setup
     CC=gcc
