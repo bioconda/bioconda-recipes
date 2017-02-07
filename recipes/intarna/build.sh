@@ -22,8 +22,8 @@ if [ `uname` == Darwin ] ; then
     #CXX=clang++
     CC=gcc
     CXX=g++
-    CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
-    LDFLAGS="${LDFLAGS} -stdlib=libc++ -L${PREFIX}/lib"
+    CXXFLAGS="${CXXFLAGS} -stdlib=libstdc++"
+    LDFLAGS="${LDFLAGS} -stdlib=libstdc++ -L${PREFIX}/lib"
     #CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}"
     #LDFLAGS="${LDFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${PREFIX}/lib"
 else ## linux
