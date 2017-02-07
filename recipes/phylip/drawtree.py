@@ -91,15 +91,14 @@ def main():
         jar_arg = '-cp'
     else:
         jar_arg = '-jar'
-
     jar_path = os.path.join(jar_dir, jar_file)
     
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
     
-    # trying to fix font problems
-    # phylip appears to require that fonts are placed in the working directory
-    # Currently I link them thereworkaround is to link them there and then remove links
-    # Far from optimal solution, but I can't get anything else to work:(
+    # Trying to fix font problems phylip appears to require that fonts
+    # are placed in the working directory Current workaround is to
+    # temporarily link them there and then remove links. Far from
+    # optimal solution, but I can't get anything else to work:(
     subprocess.call("ln -s {fd}/* .".format(fd=re.sub("java","fonts",jar_dir)), shell=True)
 
     # execute jar-file, record signal
