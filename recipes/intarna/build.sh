@@ -18,10 +18,10 @@ if [ `uname` == Darwin ] ; then
     #otool -L $PREFIX/lib/libboost_program_options.dylib
     #echo;
     #MACOSX_VERSION_MIN=10.6
-    #CC=clang
-    #CXX=clang++
-    CC=gcc
-    CXX=g++
+    CC=clang
+    CXX=clang++
+    #CC=gcc
+    #CXX=g++
     CXXFLAGS="${CXXFLAGS} -stdlib=libstdc++"
     LDFLAGS="${LDFLAGS} -stdlib=libstdc++ -L${PREFIX}/lib"
     #CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}"
