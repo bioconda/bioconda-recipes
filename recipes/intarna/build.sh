@@ -10,8 +10,8 @@ if [ `uname` == Darwin ] ; then
     #echo;
     echo "PREFIX/lib";
     ls -l $PREFIX/lib;
-    #echo "PREFIX/lib/pkgconfig";
-    #ls -l $PREFIX/lib/pkgconfig/boost*;
+    echo "PREFIX/lib/pkgconfig";
+    ls -l $PREFIX/lib/pkgconfig;
     #cat $PREFIX/lib/pkgconfig/boost*;
     #cat $PREFIX/lib/pkgconfig/RNAlib*;
     echo "otool"
