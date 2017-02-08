@@ -12,10 +12,11 @@ if [ `uname` == Darwin ] ; then
     ls -l $PREFIX/lib;
     echo "PREFIX/lib/pkgconfig";
     ls -l $PREFIX/lib/pkgconfig;
-    #cat $PREFIX/lib/pkgconfig/boost*;
+    echo "PREFIX/lib/pkgconfig/icu*";
+    cat $PREFIX/lib/pkgconfig/icu*;
     #cat $PREFIX/lib/pkgconfig/RNAlib*;
-    echo "otool"
-    otool -L $PREFIX/lib/libboost_program_options.dylib
+    #echo "otool"
+    #otool -L $PREFIX/lib/libboost_program_options.dylib
     #echo;
     MACOSX_VERSION_MIN=10.6
     #CC=clang
@@ -48,8 +49,8 @@ export CXX=${CXX}
 if [ `uname` == Darwin ] ; then
   # replace all dependency libs
   for l in RNA boost_regex boost_program_options boost_filesystem boost_system; do
-    sed -i "s/-l${l}/${PREFIX}/lib/lib${l}.a/g" src/Makefile
-    sed -i "s/-l${l}/${PREFIX}/lib/lib${l}.a/g" tests/Makefile
+    sed -i "s|-l${l}|${PREFIX}/lib/lib${l}.a|g" src/Makefile
+    sed -i "s|-l${l}|${PREFIX}/lib/lib${l}.a|g" tests/Makefile
   done
 fi         
 
