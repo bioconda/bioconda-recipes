@@ -8,8 +8,8 @@ LDFLAGS="$LDFLAGS";
 if [ `uname` == Darwin ] ; then
 # enable c++11 support
     #echo;
-    #echo "PREFIX/lib";
-    #ls -l $PREFIX/lib;
+    echo "PREFIX/lib";
+    ls -l $PREFIX/lib;
     #echo "PREFIX/lib/pkgconfig";
     #ls -l $PREFIX/lib/pkgconfig/boost*;
     #cat $PREFIX/lib/pkgconfig/boost*;
@@ -22,8 +22,8 @@ if [ `uname` == Darwin ] ; then
     #CXX=clang++
     CC=gcc
     CXX=g++
-    CXXFLAGS="${CXXFLAGS} -stdlib=libstdc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}"
-    LDFLAGS="${LDFLAGS} -stdlib=libstdc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${PREFIX}/lib"
+    CXXFLAGS="${CXXFLAGS} -stdlib=libstdc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -static"
+    LDFLAGS="${LDFLAGS} -stdlib=libstdc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${PREFIX}/lib -static"
     #CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}"
     #LDFLAGS="${LDFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${PREFIX}/lib"
 else ## linux
