@@ -1,6 +1,14 @@
 #!/bin/bash
 set -eu -o pipefail
 
+# fix autoconf
+sed -i '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autom4te
+sed -i '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoheader
+sed -i '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoreconf
+sed -i '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/ifnames
+sed -i '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoscan
+sed -i '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
+
 # pre-built version
 if [ "$(uname)" == "Darwin" ]; then
     outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
