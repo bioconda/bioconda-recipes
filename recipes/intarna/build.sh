@@ -22,8 +22,8 @@ if [ `uname` == Darwin ] ; then
     #CXX=clang++
     CC=gcc
     CXX=g++
-    CXXFLAGS="${CXXFLAGS} -stdlib=libstdc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -static"
-    LDFLAGS="${LDFLAGS} -stdlib=libstdc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${PREFIX}/lib -static"
+    CXXFLAGS="${CXXFLAGS} -stdlib=libstdc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}"
+    LDFLAGS="${LDFLAGS} -stdlib=libstdc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${PREFIX}/lib"
     #CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}"
     #LDFLAGS="${LDFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${PREFIX}/lib"
 else ## linux
@@ -43,6 +43,15 @@ export CXX=${CXX}
             --with-boost=$PREFIX \
             --disable-multithreading \
             ${extra_config_options} \
-            && \
+            
+# replace libs with static full path for OSX
+if [ `uname` == Darwin ] ; then
+  # replace all dependency libs
+  for l in RNA boost_regex boost_program_options boost_filesystem boost_system; do
+    sed -i "s/-l${l}/${PREFIX}/lib/lib${l}.a/g" src/Makefile
+    sed -i "s/-l${l}/${PREFIX}/lib/lib${l}.a/g" tests/Makefile
+  done
+fi         
+
 make && \
 make install
