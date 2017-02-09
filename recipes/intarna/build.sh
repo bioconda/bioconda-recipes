@@ -23,10 +23,10 @@ if [ `uname` == Darwin ] ; then
     #CXX=clang++
     CC=gcc
     CXX=g++
-    CXXFLAGS="${CXXFLAGS} -stdlib=libstdc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}"
-    LDFLAGS="${LDFLAGS} -stdlib=libstdc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${PREFIX}/lib"
-    #CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}"
-    #LDFLAGS="${LDFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${PREFIX}/lib"
+    #CXXFLAGS="${CXXFLAGS} -stdlib=libstdc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}"
+    #LDFLAGS="${LDFLAGS} -stdlib=libstdc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${PREFIX}/lib"
+    CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN}"
+    LDFLAGS="${LDFLAGS} -stdlib=libc++ -mmacosx-version-min=${MACOSX_VERSION_MIN} -L${PREFIX}/lib"
 else ## linux
     # add -fopenmp to compilation due to viennarna setup
     CC=gcc
