@@ -5,6 +5,7 @@ set -x -e
 pushd $SRC_DIR
 
 binaries="\
+EBSeq/rsem-for-ebseq-calculate-clustering-info \
 EBSeq/rsem-for-ebseq-find-DE \
 EBSeq/rsem-for-ebseq-generate-ngvector-from-clustering-info \
 convert-sam-for-rsem \
@@ -124,5 +125,9 @@ cp ${RECIPE_DIR}/Build.PL perl-build
 cd perl-build
 
 perl ./Build.PL
+
+# patch shebang line to make it shorter
+perl -i.bak -wpe 's[^#!.+][#!/usr/bin/env perl]' Build
+
 ./Build manifest
 ./Build install --installdirs site
