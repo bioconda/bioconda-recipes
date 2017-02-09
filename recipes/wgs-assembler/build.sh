@@ -1,4 +1,4 @@
-export LC_CTYPE=C 
+export LC_CTYPE=C
 export LANG=C
 
 find . -type f -name "*.pl" | xargs sed -i.bak -e 's/usr\/bin\/perl/usr\/bin\/env perl/g'
@@ -7,7 +7,7 @@ find . -type f -name "*.sh" | xargs sed -i.bak -e 's/usr\/bin\/perl/usr\/bin\/en
 
 #cd $SRC_DIR/kmer
 #./configure.sh
-    
+
 #export INCLUDE_PATH="${PREFIX}/include"
 #export LIBRARY_PATH="${PREFIX}/lib"
 #export LD_LIBRARY_PATH="${PREFIX}/lib"
@@ -17,14 +17,17 @@ find . -type f -name "*.sh" | xargs sed -i.bak -e 's/usr\/bin\/perl/usr\/bin\/en
 cd $SRC_DIR/src
 
 export KMER=$PREFIX
+sed -i.bak 's/$(LOCAL_OS)/$(PREFIX)/' c_make.gen
+sed -i.bak 's/getBinDirectory()/`which gatekeeper`/' AS_RUN/runCA.pl
 make
 cd ../
-ls
+#ls Linux-amd64/
 
-mkdir -p $PREFIX/bin
-if [ `uname` == Darwin ]; then
-    mv Darwin-amd64/bin/* $PREFIX/bin/
-else
-    mv Linux-amd64/bin/* $PREFIX/bin/
-fi
-
+#mkdir -p $PREFIX/bin
+#if [ `uname` == Darwin ]; then
+#    mv Darwin-amd64/bin/* $PREFIX/bin/
+#    mv Darwin-amd64/lib/* $PREFIX/lib/
+#else
+#    mv Linux-amd64/bin/* $PREFIX/bin/
+#    mv Linux-amd64/lib/* $PREFIX/lib/
+#fi
