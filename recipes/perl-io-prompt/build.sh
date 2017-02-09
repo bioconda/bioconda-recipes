@@ -6,10 +6,10 @@ set -eu -o pipefail
 if [ -f Build.PL ]; then
     perl Build.PL
     sed -i.bak 's| /usr/bin/perl|/usr/bin/env perl|' Build
-    ./Build
-    ./Build test
+    perl Build
+    perl Build test
     # Make sure this goes in site
-    ./Build install --installdirs site
+    perl Build install --installdirs site
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site
