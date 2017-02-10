@@ -40,6 +40,9 @@ conda environment which must be a Python 3 environment.
 2. Install `Docker <https://www.docker.com/>`_. (optional, but allows you to
    simulate most closely the Travis-CI tests).
 
+Please note that it is also required to build *any* recipe prior to using the
+`simulate-travis.py` command as explained :ref:`here <test-locally>`.
+
 Request to be added to the bioconda team
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 While not required, you can be added to the bioconda by posting in `Issue #1
