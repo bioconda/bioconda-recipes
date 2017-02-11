@@ -1,0 +1,45 @@
+{% set name = 'reshape2' %}
+{% set version = '1.4.2' %}
+
+package:
+  name: r-{{ name|lower }}
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: {{ name }}_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - r-rcpp
+    - r-plyr >=1.8.1
+    - r-stringr
+    - gcc                  # [not win]
+
+  run:
+    - r-base
+    - r-rcpp
+    - r-plyr >=1.8.1
+    - r-stringr
+
+test:
+  commands:
+    - $R -e "library('reshape2')"  # [not win]
+    - "\"%R%\" -e \"library('reshape2')\""  # [win]
+
+about:
+  home: https://github.com/hadley/reshape
+  license: MIT + file LICENSE
+  summary: 'Flexibly restructure and aggregate data using just two functions: melt and ''dcast''
+    (or ''acast'').'
+  license_family: MIT
+
