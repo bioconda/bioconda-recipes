@@ -3,6 +3,9 @@
 mkdir build
 cd build
 
+export OPENSLIDE_LIBRARY=${PREFIX}/lib
+export OPENSLIDE_INCLUDE_DIR=${PREFIX}/include
+
 cmake \
     -D CMAKE_INSTALL_PREFIX=${PREFIX} \
     -D CMAKE_INSTALL_RPATH:STRING=${PREFIX}/lib \
