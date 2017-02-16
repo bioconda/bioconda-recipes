@@ -14,7 +14,7 @@ cmake \
     -D DCMTKJPEG_INCLUDE_DIR:STRING=${PREFIX}/include \    
     -D OPENSLIDE_LIBRARY:STRING=${PREFIX}/lib \
     -D OPENSLIDE_INCLUDE_DIR:STRING=${PREFIX}/include \
-        ..
+    ..
 
 make -j$CPU_COUNT
 make install
