@@ -1,0 +1,19 @@
+# Need to make LocusCount constructor public, or Apple's clang++ (v6.0) will
+# fail with a "calling a private constructor of class 'LocusCount'" error when
+# compiling abundances.h and abundances.cpp.
+--- src/common.h
++++ src/common.h
+@@ -382,10 +382,11 @@
+     std::vector<std::string> gene_ids;
+     std::vector<std::string> gene_short_names;
+     
+-private:
+-    
++    // CHL: Need public constructor to prevent XCode's clang from complaining
+     LocusCount() {} //needs an empty constructor for serialization
+ 
++private:
++    
+     friend std::ostream & operator<<(std::ostream &os, const LocusCount &gp);
+     friend class boost::serialization::access;
+     

@@ -1,25 +1,55 @@
-about:
-    home: 'http://cole-trapnell-lab.github.io/cufflinks/'
-    license: Boost Software License
-    summary: Transcriptome assembly and differential expression analysis for RNA-Seq.
+{% set name = "cufflinks" %}
+{% set version = "2.1.1" %}
+{% set sha256 = "c069c8666c2f7d6b382d08c75aacd08e4c341996228fbb3687a147f2aacbc1ab" %}
+
 package:
-    name: cufflinks
-    version: 2.2.1
-requirements:
-    build:
-        - python
-    run:
-        - python
-test:
-    commands:
-        - (cuffmerge --help 2>&1) | grep Options > /dev/null
+  name: {{ name|lower }}
+  version: {{ version }}
+
 source:
-  fn: cufflinks-2.2.1.Linux_x86_64.tar.gz
-  url: http://cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks-2.2.1.OSX_x86_64.tar.gz # [osx]
-  url: http://cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks-2.2.1.Linux_x86_64.tar.gz # [linux]
-  patches:
-        - cuffmerge.python3.patch # [py3k]
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://github.com/cole-trapnell-lab/{{name}}/archive/v{{version}}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
-  skip: False
+  number: 0
+
+requirements:
+  build:
+      - gcc # [linux]
+      - libgcc # [linux]
+      - llvm # [osx]
+      - zlib
+      - eigen 
+      - autoconf
+      - automake
+  run:
+      - libgcc # [linux]
+      - zlib
+      - boost 
+      - eigen 
+
+test:
+  imports:
+    - simplejson
+    - simplejson.tests
+
+about:
+  home: http://github.com/simplejson/simplejson
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: 'Simple, fast, extensible JSON encoder/decoder for Python'
+
+  # The remaining entries in this section are optional, but recommended
+  description: |
+    simplejson is a simple, fast, complete, correct and extensible
+    JSON <http://json.org> encoder and decoder for Python 2.5+ and
+    Python 3.3+. It is pure Python code with no dependencies, but includes
+    an optional C extension for a serious speed boost.
+  doc_url: http://simplejson.readthedocs.io/
+  dev_url: https://github.com/simplejson/simplejson
+
+extra:
+  recipe-maintainers:
+    - jerowe 

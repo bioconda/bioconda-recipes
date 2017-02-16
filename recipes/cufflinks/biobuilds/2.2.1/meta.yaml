@@ -1,0 +1,54 @@
+{% set name = "cufflinks" %}
+{% set version = "2.2.1" %}
+{% set sha256 = "d5843" %}
+
+package:
+  name: cufflinks
+  version: "2.2.1"
+
+source:
+  fn: cufflinks-2.2.1.tar.gz
+  url: http://download.lab7.io/sources/cufflinks-2.2.1.tar.gz
+  md5: 9a5ba7a7710cd864932cf205c17851f0
+  patches:
+   # - samtools-includes.patch
+    - configure-boost-dylibs.patch
+    - LocusCount-constructor.patch  # [osx]
+
+build:
+  number: 0 
+  skip: True # [osx or py3k]
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+
+requirements:
+  build:
+    - zlib
+    - boost {{CONDA_BOOST}}*
+    # Require older version of samtools to _build_, due to incompatibilities
+    # between the older samtools 0.1.x and newer htslib 1.x APIs and headers.
+    - samtools 0.1.19
+    - python
+    - eigen
+  run:
+    - zlib
+    - boost {{CONDA_BOOST}}*
+    # Allow newer samtools versions at _runtime_, because nothing in the code
+    # suggests we will have version-compatibility problems (i.e., cufflinks
+    # doesn't write BCF files). Without this "hack", we wouldn't be able to
+    # include cufflinks in a standard BioBuilds environment (since that
+    # installs the htslib-1.x version of samtools).
+    - samtools
+    - eigen
+    - python
+
+test:
+  files:
+    - test_data.sam
+  commands:
+    - cufflinks test_data.sam
+
+about:
+  home: http://cole-trapnell-lab.github.io/cufflinks/
+  license: Boost
+  license_file: LICENSE
+  summary: "Transcriptome assembly and differential expression analysis for RNA-Seq"
