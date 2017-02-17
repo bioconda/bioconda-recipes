@@ -11,6 +11,8 @@ utils/plot_bug.py
 "
 
 mkdir -p $PREFIX/bin
-for i in $binaries; do cp $SRC_DIR/$i $PREFIX/bin; done
+for i in $binaries; do cp $i $PREFIX/bin; done
+cp -r strainphlan_src $PREFIX/bin
+
 
 #cp -rf db_v20 $PREFIX/bin/db_v20
