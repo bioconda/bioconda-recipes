@@ -1,0 +1,46 @@
+--- src/common.cpp	2017-02-17 10:06:37.706240717 +0400
++++ src/common.cpp	2017-02-17 12:43:52.209785312 +0400
+@@ -264,39 +264,11 @@
+ 
+ int mkpath(const char *s, mode_t mode)
+ {
+-    char *q, *r = NULL, *path = NULL, *up = NULL;
+-    int rv;
+     
+-    rv = -1;
+-    if (strcmp(s, ".") == 0 || strcmp(s, "/") == 0)
+-        return (0);
+-    
+-    if ((path = strdup(s)) == NULL)
+-        exit(1);
+-    
+-    if ((q = strdup(s)) == NULL)
+-        exit(1);
+-    
+-    if ((r = dirname(q)) == NULL)
+-        goto out;
+-    
+-    if ((up = strdup(r)) == NULL)
+-        exit(1);
+-    
+-    if ((mkpath(up, mode) == -1) && (errno != EEXIST))
+-        goto out;
+-    
+-    if ((mkdir(path, mode) == -1) && (errno != EEXIST))
+-        rv = -1;
+-    else
+-        rv = 0;
+-    
+-out:
+-    if (up != NULL)
+-        free(up);
+-    free(q);
+-    free(path);
+-    return (rv);
++    boost::filesystem::path p(s);
++    boost::filesystem::create_directories(p);
++
++    return 0;
+ }
+ 
+ void init_library_table()

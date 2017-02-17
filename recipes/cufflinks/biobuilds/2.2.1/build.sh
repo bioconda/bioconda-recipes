@@ -3,6 +3,10 @@
 set -x -e
 
 # Configure
+
+# This recipe is adapted from the recipe available at biobuilds
+# https://github.com/lab7/biobuilds/tree/master/cufflinks/2.2.1
+
 build_os=$(uname -s)
 
 export INCLUDE_PATH="${PREFIX}/include"
@@ -10,10 +14,6 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 export EIGEN_CPPFLAGS="-I${PREFIX}/include/eigen3"
 export PKG_CONFIG_PATH="${PREFIX}/share/pkgconfig:${PKG_CONFIG_PATH}"
-
-#export CFLAGS="${CFLAGS} $(pkg-config --cflags eigen --cflags eigen)"
-#export CXXFLAGS="${CFLAGS}"
-#export LDFLAGS="${LDFLAGS} $(pkg-config --libs zlib)"
 
 export BOOST_INCLUDE_DIR=${PREFIX}/include
 export BOOST_LIBRARY_DIR=${PREFIX}/lib
@@ -25,6 +25,7 @@ export CXXFLAGS="-I$PREFIX/include"
 export CPPFLAGS="-I${PREFIX}/include -I${PREFIX}/include/eigen3 -I${PREFIX}/include/bam"
 export CXXFLAGS="${CXXFLAGS} -DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
 export LDFLAGS="${LDFLAGS} -L${BOOST_LIBRARY_DIR} -lboost_filesystem -lboost_system"
+
 
 if [ "$build_os" == 'Darwin' ]; then
     CFLAGS="${CFLAGS} -Wno-deprecated-register -Wno-unused-variable"
@@ -64,9 +65,6 @@ env BAM_ROOT="${PREFIX}/include/bam/" \
     	--with-zlib="${PREFIX}" \
     	--with-boost="${PREFIX}"
 
-## Build
 make
 
-# Install
-# make install-strip
 make install

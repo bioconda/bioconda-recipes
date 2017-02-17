@@ -1,0 +1,818 @@
+#ifndef COMMON_H
+#define COMMON_H
+/*
+ *  common.h
+ *  Cufflinks
+ *
+ *  Created by Cole Trapnell on 11/26/08.
+ *  Copyright 2008 Cole Trapnell. All rights reserved.
+ *
+ */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <stdint.h>
+#include <cassert>
+#include <string>
+#include <utility>
+
+#include <boost/math/distributions/normal.hpp> 
+using boost::math::normal;
+
+#include <boost/archive/tmpdir.hpp>
+
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+
+#include <boost/serialization/base_object.hpp>
+#include <boost/serialization/utility.hpp>
+#include <boost/serialization/list.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/set.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/assume_abstract.hpp>
+#include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/export.hpp>
+
+#include <boost/foreach.hpp>
+
+#include <boost/thread.hpp>
+#include <boost/shared_ptr.hpp>
+
+#include <boost/crc.hpp>
+#include <boost/filesystem.hpp>
+
+// Non-option globals
+extern bool final_est_run;
+extern bool allow_junk_filtering;
+extern bool user_provided_fld;
+extern int def_max_frag_len;
+extern int max_frag_len;
+extern int min_frag_len;
+
+// Behavior options
+extern int num_threads;
+extern bool no_update_check;
+extern bool cuff_quiet;
+extern bool cuff_verbose;
+extern bool output_fld;
+extern bool output_bias_params;
+
+// General options
+extern int max_partner_dist;
+extern uint32_t max_gene_length;
+extern std::string ref_gtf_filename;
+extern std::string mask_gtf_filename;
+extern std::string contrast_filename;
+extern std::string norm_standards_filename;
+extern bool use_sample_sheet;
+extern std::string output_dir;
+extern std::string fasta_dir;
+extern std::string library_type;
+
+// Abundance estimation options
+extern bool corr_bias;
+extern bool corr_multi;
+
+extern int def_frag_len_mean;
+extern int def_frag_len_std_dev;
+extern int max_mle_iterations;
+extern int num_importance_samples;
+extern float min_isoform_fraction;
+extern bool cond_prob_collapse;
+extern bool use_compat_mass;
+extern bool use_total_mass;
+extern bool model_mle_error;
+
+// Ref-guided assembly options
+extern int overhang_3;
+extern int ref_merge_overhang_tolerance;
+extern int tile_len;
+extern int tile_off;
+extern bool enable_faux_reads;
+extern bool enable_5_extend;
+
+// Assembly options
+extern uint32_t min_intron_length;
+extern uint32_t max_intron_length;
+extern int olap_radius;
+extern int bowtie_overhang_tolerance;
+extern int min_frags_per_transfrag;
+extern int microexon_length;
+extern float pre_mrna_fraction;
+extern float high_phred_err_prob;
+extern double trim_3_dropoff_frac;
+extern double trim_3_avgcov_thresh;
+extern double small_anchor_fraction;
+extern double binomial_junc_filter_alpha;
+extern std::string user_label;
+extern long random_seed;
+extern bool emit_count_tables;
+extern bool use_fisher_covariance;
+extern bool split_variance;
+extern bool bootstrap;
+extern int num_bootstrap_samples;
+extern double bootstrap_fraction;
+extern double bootstrap_delta_gap;
+extern int max_frags_per_bundle;
+//extern bool analytic_diff;
+extern bool no_differential;
+extern double num_frag_count_draws;
+extern double num_frag_assignments;
+extern double max_multiread_fraction;
+extern double max_frag_multihits;
+extern int min_reps_for_js_test;
+extern bool no_effective_length_correction;
+extern bool no_length_correction;
+extern bool no_js_tests;
+
+extern bool no_scv_correction;
+
+extern double min_outlier_p;
+
+
+extern std::string default_dispersion_method;
+extern std::string default_lib_norm_method;
+extern std::string default_cufflinks_lib_norm_method;
+extern std::string default_output_format;
+
+// SECRET OPTIONS: 
+// These options are just for instrumentation and benchmarking code
+
+extern bool no_read_pairs;
+extern float read_skip_fraction;
+extern int trim_read_length;
+extern double mle_accuracy;
+
+// END SECRET OPTIONS
+
+#define ASM_VERBOSE 0
+#define ENABLE_THREADS 1
+
+#if ENABLE_THREADS
+extern boost::thread_specific_ptr<std::string> bundle_label; // for consistent, traceable logging
+#else
+extern boost::shared_ptr<std::string> bundle_label;
+#endif
+
+// Global switch to mark when we're in the middle of learning bias.
+extern bool bias_run;
+
+// Hold the command line string used to run the program
+extern std::string cmd_str;
+
+bool gaurd_assembly();
+
+void asm_verbose(const char* fmt,...);
+void verbose_msg(const char* fmt,...); 
+
+int parseInt(int lower, 
+			 const char *errmsg, 
+			 void (*print_usage)());
+
+float parseFloat(float lower, 
+				 float upper, 
+				 const char *errmsg, 
+				 void (*print_usage)());
+
+void encode_seq(const std::string seqStr, char* seq, char* c_seq);
+int mkpath(const char *s, mode_t mode);
+
+
+template<typename InputIterator,
+		 typename OutputIterator,
+		 typename Predicate>
+OutputIterator copy_if(InputIterator begin,
+					   InputIterator end,
+					   OutputIterator destBegin,
+					   Predicate p)
+{
+	while (begin != end)
+	{
+		if (p(*begin)) *destBegin++ = *begin;
+		++begin;
+	}
+	return destBegin;
+}
+
+enum BundleMode
+{
+	HIT_DRIVEN,
+	REF_DRIVEN,
+	REF_GUIDED
+};
+extern BundleMode bundle_mode;
+extern BundleMode init_bundle_mode;
+
+enum BiasMode
+{
+	SITE,
+	VLMM,
+	POS,
+	POS_VLMM,
+    POS_SITE
+};
+extern BiasMode bias_mode;
+
+enum Strandedness 
+{
+    UNKNOWN_STRANDEDNESS,
+	STRANDED_PROTOCOL,
+    UNSTRANDED_PROTOCOL
+};
+
+enum StandardMateOrientation
+{
+    UNKNOWN_MATE_ORIENTATION,
+    MATES_POINT_TOWARD,
+    MATES_POINT_SAME,
+    MATES_POINT_AWAY,
+    UNPAIRED,
+};
+
+enum MateStrandMapping
+{
+	FF,
+	FR,
+	RF, // This is really FR with first-strandedness
+	RR // This is really FF with first-strandedness
+};
+
+enum Platform
+{
+    UNKNOWN_PLATFORM,
+    ILLUMINA,
+    SOLID
+};
+
+enum FLDSource
+{
+    LEARNED,
+    USER,
+    DEFAULT
+};
+
+enum DispersionMethod
+{
+    DISP_NOT_SET,
+    BLIND,
+    PER_CONDITION,
+    POOLED,
+    POISSON
+};
+
+enum LibNormalizationMethod
+{
+    LIB_NORM_NOT_SET,
+    GEOMETRIC,
+    CLASSIC_FPKM,
+    TMM,
+    QUARTILE,
+    ESTIMATED_ABSOLUTE,
+    ABSOLUTE // Requires spike-in controls, not yet implemented
+};
+
+enum OutputFormat
+{
+    OUTPUT_FMT_NOT_SET,
+    CUFFDIFF_OUTPUT_FMT,
+    SIMPLE_TABLE_OUTPUT_FMT
+};
+
+
+class EmpDist
+{
+	//Vectors only valid between min and max!
+	std::vector<double> _pdf;
+	std::vector<double> _cdf;
+	int _mode;
+	double _mean;
+    double _std_dev;
+	int _min;
+	int _max;
+	FLDSource _source;
+    
+    EmpDist() {}
+    
+    friend std::ostream & operator<<(std::ostream &os, const EmpDist &gp);
+    friend class boost::serialization::access;
+    
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int /* file_version */){
+        ar & _pdf;
+        ar & _cdf;
+        ar & _mode;
+        ar & _mean;
+        ar & _std_dev;
+        ar & _min;
+        ar & _max;
+        ar & _source;
+    }
+    
+public:
+	EmpDist(std::vector<double>& pdf, std::vector<double>& cdf, int mode, double mean, double std_dev, int min, int max, FLDSource source)
+	: _pdf(pdf), _cdf(cdf), _mode(mode), _mean(mean), _std_dev(std_dev), _min(min), _max(max), _source(source) {}
+	
+	void pdf(std::vector<double>& pdf)	{ _pdf = pdf; }
+	double pdf(int l) const
+	{
+		if (!valid_len(l))
+			return 0.0;
+		return _pdf[l];
+	}
+	
+	// pdf renomalized over the lengths <= r
+	double npdf(int l, int r) const
+ 	{
+		if (!valid_len(l))
+			return 0.0;
+		
+		if (r > _max || r == 0)
+			return pdf(l);
+		
+		return pdf(l)/cdf(r);
+	}
+	
+	void cdf(std::vector<double>& cdf)	{ _cdf = cdf; }
+	double cdf(int l) const
+	{
+		if (l > _max)
+			return 1.0;
+        if (l < 0)
+            return 0.0;
+		return _cdf[l];
+	}
+	
+	bool valid_len(int l) const { return (l >= _min && l <= _max); }
+	bool too_short(int l) const { return (l < _min); }
+	
+	void mode(int mode)				{ _mode = mode; }
+	int mode() const				{ return _mode; }
+	
+	void max(int max)				{ _max = max;  }
+	int max() const					{ return _max; }
+	
+	void min(int min)				{ _min = min;  }
+	int min() const					{ return _min; }
+    
+    void mean(double mean)				{ _mean = mean;  }
+	double mean() const					{ return _mean; }
+    
+    void std_dev(double std_dev)				{ _std_dev = std_dev;  }
+	double std_dev() const					{ return _std_dev; }
+    
+    FLDSource source() const        { return _source; }
+    void source(FLDSource source)   { _source = source; } 
+};
+
+class BiasLearner;
+class MultiReadTable;
+
+class MassDispersionModel;
+class MleErrorModel;
+
+struct LocusCount
+{
+    LocusCount(std::string ld, double c, int nt, const std::vector<std::string>& gids, const std::vector<std::string>& gnms) :
+        locus_desc(ld), count(c), num_transcripts(nt), gene_ids(gids), gene_short_names(gnms) {}
+    std::string locus_desc;
+    double count;
+    int num_transcripts;
+    std::vector<std::string> gene_ids;
+    std::vector<std::string> gene_short_names;
+    
+private:
+    
+    LocusCount() {} //needs an empty constructor for serialization
+
+    friend std::ostream & operator<<(std::ostream &os, const LocusCount &gp);
+    friend class boost::serialization::access;
+    
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int /* file_version */){
+        ar & locus_desc;
+        ar & count;
+        ar & num_transcripts;
+        ar & gene_ids;
+        ar & gene_short_names;
+    }
+};
+
+// This class stores user-supplied options that affect quantification
+// We'll serialize these into abundance files (i.e. CXB files)
+// so we can ensure that they're consistent across all samples
+// provided to cuffnorm and cuffdiff.
+struct CheckedParameters
+{
+    CheckedParameters() :
+        frag_len_mean(0.0),
+        frag_len_std_dev(0.0),
+        corr_bias(0.0),
+        frag_bias_mode(VLMM),
+        corr_multireads(false),
+        max_mle_iterations(false),
+        min_mle_accuracy(0.0),
+        max_bundle_frags(0.0),
+        max_frags_multihits(0.0),
+        no_effective_length_correction(false),
+        no_length_correction(false),
+        ref_gtf_file_path(""),
+        ref_gtf_crc(0),
+        mask_gtf_file_path(""),
+        mask_gtf_crc(0)
+    {} //needs an empty constructor for serialization
+    
+    double frag_len_mean;
+    double frag_len_std_dev;
+    
+    // TODO: add CRCs for reference GTF, mask file
+    bool corr_bias;
+    
+    BiasMode frag_bias_mode;
+    bool corr_multireads;
+    
+    double max_mle_iterations;
+    double min_mle_accuracy;
+    
+    double max_bundle_frags;
+    double max_frags_multihits;
+    
+    bool no_effective_length_correction;
+    bool no_length_correction;
+    
+    std::string ref_gtf_file_path;
+    boost::crc_32_type::value_type ref_gtf_crc;
+    
+    std::string mask_gtf_file_path;
+    boost::crc_32_type::value_type mask_gtf_crc;
+    
+    friend std::ostream & operator<<(std::ostream &os, const CheckedParameters &gp);
+    friend class boost::serialization::access;
+    
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int /* file_version */){
+        ar & frag_len_mean;
+        ar & frag_len_std_dev;
+        ar & corr_bias;
+        ar & frag_bias_mode;
+        ar & corr_multireads;
+        ar & max_mle_iterations;
+        ar & min_mle_accuracy;
+        ar & max_bundle_frags;
+        ar & max_frags_multihits;
+        ar & no_effective_length_correction;
+        ar & no_length_correction;
+        ar & ref_gtf_file_path;
+        ar & ref_gtf_crc;
+        ar & mask_gtf_file_path;
+        ar & mask_gtf_crc;
+    }
+    
+    bool operator!=(const CheckedParameters& rhs) const {
+        return !(*this == rhs);
+    }
+    
+    bool operator==(const CheckedParameters& rhs) const
+    {
+        return (frag_len_mean == rhs.frag_len_mean &&
+                frag_len_std_dev == rhs.frag_len_std_dev &&
+                corr_bias == rhs.corr_bias &&
+                frag_bias_mode  == rhs.frag_bias_mode &&
+                corr_multireads == rhs.corr_multireads &&
+                max_mle_iterations  == rhs.max_mle_iterations &&
+                min_mle_accuracy == rhs.min_mle_accuracy &&
+                max_bundle_frags == rhs.max_bundle_frags &&
+                max_frags_multihits == rhs.max_frags_multihits &&
+                no_effective_length_correction == rhs.no_effective_length_correction &&
+                no_length_correction == rhs.no_length_correction &&
+                ref_gtf_file_path == rhs.ref_gtf_file_path &&
+                ref_gtf_crc == rhs.ref_gtf_crc &&
+                mask_gtf_file_path == rhs.mask_gtf_file_path &&
+                mask_gtf_crc == rhs.mask_gtf_crc);
+                
+    }
+
+};
+
+class ReadGroupProperties
+{
+public:
+    
+    ReadGroupProperties(); 
+    
+    Strandedness strandedness() const { return _strandedness; }
+    void strandedness(Strandedness s) { _strandedness = s; }
+    
+    StandardMateOrientation std_mate_orientation() const { return _std_mate_orient; }
+    void std_mate_orientation(StandardMateOrientation so)  { _std_mate_orient = so; }
+    
+	MateStrandMapping mate_strand_mapping() const { return _mate_strand_mapping; }
+	void mate_strand_mapping(MateStrandMapping msm) { _mate_strand_mapping = msm; }
+	
+    Platform platform() const { return _platform; }
+    void platform(Platform p)  { _platform = p; }   
+    
+    long double total_map_mass() const { return _total_map_mass; }
+    void total_map_mass(long double p)  { _total_map_mass = p; }  
+    
+    long double normalized_map_mass() const { return _norm_map_mass; }
+    void normalized_map_mass(long double p)  { _norm_map_mass = p; }  
+    
+    boost::shared_ptr<EmpDist const> frag_len_dist() const { return _frag_len_dist; }
+    void frag_len_dist(boost::shared_ptr<EmpDist const> p)  { _frag_len_dist = p; }
+    
+	boost::shared_ptr<BiasLearner const> bias_learner() const { return _bias_learner; }
+    void bias_learner(boost::shared_ptr<BiasLearner const> bl)  { _bias_learner = bl; } 
+	
+    // The internal scaling factor relates replicates to each other, so
+    // that replicates with larger library sizes don't bias the isoform
+    // deconvolution over smaller libraries
+    void internal_scale_factor(double sf) { _internal_scale_factor = sf; }
+    double internal_scale_factor() const  { return _internal_scale_factor; }
+    
+    void external_scale_factor(double sf) { _external_scale_factor = sf; }
+    double external_scale_factor() const  { return _external_scale_factor; }
+    
+    void complete_fragments(bool c)  { _complete_fragments = c; }
+    bool complete_fragments() const { return _complete_fragments; }
+    
+    double internally_scale_mass(double unscaled_mass) const 
+    { 
+        if (_internal_scale_factor == 0)
+            return unscaled_mass;
+        
+        return unscaled_mass * (1.0 / _internal_scale_factor);
+    }
+    
+    boost::shared_ptr<const MassDispersionModel> mass_dispersion_model() const
+    { 
+        return _mass_dispersion_model; 
+    };
+    
+    void mass_dispersion_model(boost::shared_ptr<const MassDispersionModel> nm) 
+    { 
+        _mass_dispersion_model = nm; 
+    }
+    
+    boost::shared_ptr<const MleErrorModel> mle_error_model() const
+    {
+        return _mle_error_model;
+    };
+    
+    void mle_error_model(boost::shared_ptr<const MleErrorModel> nm)
+    {
+        _mle_error_model = nm;
+    }
+    
+    const std::vector<LocusCount>& common_scale_compatible_counts() { return _common_scale_compatible_counts; }
+    void common_scale_compatible_counts(const std::vector<LocusCount>& counts) { _common_scale_compatible_counts = counts; }
+    
+    const std::vector<LocusCount>& common_scale_total_counts() { return _common_scale_total_counts; }
+    void common_scale_total_counts(const std::vector<LocusCount>& counts) { _common_scale_total_counts = counts; }
+    
+    const std::vector<LocusCount>& raw_compatible_counts() { return _raw_compatible_counts; }
+    void raw_compatible_counts(const std::vector<LocusCount>& counts) { _raw_compatible_counts = counts; }
+    
+    const std::vector<LocusCount>& raw_total_counts() { return _raw_total_counts; }
+    void raw_total_counts(const std::vector<LocusCount>& counts) { _raw_total_counts = counts; }
+    
+	boost::shared_ptr<MultiReadTable> multi_read_table() const {return _multi_read_table; }	
+	void multi_read_table(boost::shared_ptr<MultiReadTable> mrt) { _multi_read_table = mrt;	}
+	
+//    const string& description() const { return _description; }
+//    void description(const string& d) { _description = d; }
+    
+    const std::string& condition_name() const { return _condition_name; }
+    void condition_name(const std::string& cd) { _condition_name = cd; }
+    
+    const std::string& file_path() const { return _file_path; }
+    void file_path(const std::string& fp) { _file_path = fp; }
+    
+    int replicate_num() const { return _replicate_num; }
+    void replicate_num(int rn) { _replicate_num = rn; }
+    
+    void ref_gtf(const std::string& file_path, const boost::crc_32_type& gtf_crc )
+    {
+        _checked_params.ref_gtf_file_path = file_path;
+        _checked_params.ref_gtf_crc = gtf_crc();
+    }
+
+    void mask_gtf(const std::string& file_path, const boost::crc_32_type& gtf_crc )
+    {
+        _checked_params.mask_gtf_file_path = file_path;
+        _checked_params.mask_gtf_crc = gtf_crc();
+    }
+
+    
+    const CheckedParameters& checked_parameters() const { return _checked_params; }
+    void checked_parameters(const CheckedParameters& rhs) { _checked_params = rhs; }
+    
+    // NOTE: this only picks up user-supplied options, not GTF files!
+    void collect_checked_parameters() {
+        
+        _checked_params.frag_len_mean = def_frag_len_mean;
+        _checked_params.frag_len_std_dev = def_frag_len_std_dev;
+        
+        // TODO: add CRCs for reference GTF, mask file, norm standards file if using.
+        _checked_params.corr_bias = corr_bias;
+        
+        _checked_params.frag_bias_mode = bias_mode;
+        _checked_params.corr_multireads = corr_multi;
+        
+        _checked_params.max_mle_iterations = max_mle_iterations;
+        _checked_params.min_mle_accuracy = mle_accuracy;
+        
+        _checked_params.max_bundle_frags = max_frags_per_bundle;
+        _checked_params.max_frags_multihits = max_frag_multihits;
+        
+        _checked_params.no_effective_length_correction = no_effective_length_correction;
+        _checked_params.no_length_correction = no_length_correction;
+    }
+    
+    
+private:
+    
+    friend std::ostream & operator<<(std::ostream &os, const ReadGroupProperties &gp);
+    friend class boost::serialization::access;
+    
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int /* file_version */){
+        ar & _strandedness;
+        ar & _std_mate_orient;
+        ar & _mate_strand_mapping;
+        ar & _platform;
+        ar & _total_map_mass;
+        ar & _norm_map_mass;
+        ar & _frag_len_dist;
+        // TODO: probably should serialize the bias parameters somehow.
+        //ar & _bias_learner;
+        //ar & _multi_read_table; // we should never need this, I think.
+        ar & _internal_scale_factor;
+        ar & _external_scale_factor;
+        //ar & _mass_dispersion_model;
+        ar & _common_scale_compatible_counts;
+        ar & _common_scale_total_counts;
+        ar & _raw_compatible_counts;
+        ar & _raw_total_counts;
+        //ar & _mle_error_model;
+        ar & _complete_fragments;
+        ar & _condition_name;
+        ar & _file_path;
+        ar & _replicate_num;
+        ar & _checked_params;
+    }
+    
+    Strandedness _strandedness;
+    StandardMateOrientation _std_mate_orient;
+	MateStrandMapping _mate_strand_mapping;
+    Platform _platform;
+    long double _total_map_mass;
+    long double _norm_map_mass;
+    boost::shared_ptr<EmpDist const> _frag_len_dist;
+	boost::shared_ptr<BiasLearner const> _bias_learner;
+	boost::shared_ptr<MultiReadTable> _multi_read_table;
+    
+    double _internal_scale_factor;
+    double _external_scale_factor;
+    boost::shared_ptr<const MassDispersionModel> _mass_dispersion_model;
+    std::vector<LocusCount> _common_scale_compatible_counts;
+    std::vector<LocusCount> _common_scale_total_counts;
+    std::vector<LocusCount> _raw_compatible_counts;
+    std::vector<LocusCount> _raw_total_counts;
+
+    boost::shared_ptr<const MleErrorModel> _mle_error_model;
+    
+    bool _complete_fragments;
+    
+    std::string _condition_name;
+    std::string _file_path;
+    int _replicate_num;
+    
+    CheckedParameters _checked_params;
+};
+
+BOOST_SERIALIZATION_SHARED_PTR(ReadGroupProperties)
+
+extern std::map<std::string, ReadGroupProperties> library_type_table;
+
+extern const ReadGroupProperties* global_read_properties;
+
+extern std::map<std::string, DispersionMethod> dispersion_method_table;
+extern DispersionMethod dispersion_method;
+
+extern std::map<std::string, LibNormalizationMethod> lib_norm_method_table;
+extern LibNormalizationMethod lib_norm_method;
+
+extern std::map<std::string, OutputFormat> output_format_table;
+extern OutputFormat output_format;
+
+
+void print_library_table();
+void init_library_table();
+
+void print_dispersion_method_table();
+void init_dispersion_method_table();
+
+void print_lib_norm_method_table();
+void init_lib_norm_method_table();
+void init_cufflinks_lib_norm_method_table();
+
+void print_output_format_table();
+void init_output_format_table();
+
+
+struct LibNormStandards
+{
+    
+};
+
+extern boost::shared_ptr<const std::map<std::string, LibNormStandards> > lib_norm_standards;
+
+template<typename T>
+std::string cat_strings(const T& container, const char* delimiter=",")
+{
+    std::string cat;
+	if (container.empty())
+	{
+		cat = "";
+	}
+	else
+	{
+		typename T::const_iterator itr = container.begin();
+		//cat = *(itr);
+		for (; itr != container.end(); itr++)
+		{
+			if (!(*itr).empty()) {
+				if (!cat.empty()) cat += delimiter;
+				cat += *itr; 
+            }
+		}
+	}
+    
+	return cat;
+}
+
+#define OPT_NUM_IMP_SAMPLES         260
+#define OPT_MLE_MAX_ITER            261
+#define OPT_FDR                     262
+#define OPT_LIBRARY_TYPE            263
+#define OPT_OVERHANG_TOLERANCE      264
+#define OPT_MAX_BUNDLE_LENGTH       265
+#define OPT_MIN_FRAGS_PER_TRANSFRAG 266
+#define OPT_BIAS_MODE               267
+#define OPT_MIN_INTRON_LENGTH       268
+#define OPT_3_PRIME_AVGCOV_THRESH	269
+#define OPT_3_PRIME_DROPOFF_FRAC    270
+#define OPT_POISSON_DISPERSION      271
+#define OPT_NO_UPDATE_CHECK         272
+#define OPT_OUTPUT_FLD              273
+#define OPT_OUTPUT_BIAS_PARAMS      274
+#define OPT_USE_EM                  275
+#define OPT_COLLAPSE_COND_PROB      276
+#define OPT_RANDOM_SEED             277
+#define OPT_NO_FAUX_READS           278
+#define OPT_3_OVERHANG_TOLERANCE    279
+#define OPT_INTRON_OVERHANG_TOLERANCE 280
+#define OPT_EMIT_COUNT_TABLES       281
+#define OPT_USE_COMPAT_MASS         282
+#define OPT_USE_TOTAL_MASS          283
+#define OPT_USE_FISHER_COVARIANCE   284
+#define OPT_USE_EMPIRICAL_COVARIANCE   285
+#define OPT_SPLIT_MASS              286
+#define OPT_SPLIT_VARIANCE          287
+#define OPT_BOOTSTRAP               288
+#define OPT_NUM_BOOTSTRAP_SAMPLES   289
+#define OPT_BOOTSTRAP_FRACTION      290
+#define OPT_TILE_LEN                291
+#define OPT_TILE_SEP                292
+#define OPT_NO_5_EXTEND             293
+#define OPT_MAX_FRAGS_PER_BUNDLE    294
+#define OPT_READ_SKIP_FRACTION      295
+#define OPT_NO_READ_PAIRS           296
+#define OPT_TRIM_READ_LENGTH        297
+#define OPT_MAX_DELTA_GAP           298
+#define OPT_MLE_MIN_ACC             299
+//#define OPT_ANALYTIC_DIFF           300
+#define OPT_NO_DIFF                 301
+#define OPT_GEOMETRIC_NORM          302
+#define OPT_RAW_MAPPED_NORM         303
+#define OPT_NUM_FRAG_COUNT_DRAWS    304
+#define OPT_NUM_FRAG_ASSIGN_DRAWS   305
+#define OPT_MAX_MULTIREAD_FRACTION  306
+#define OPT_LOCUS_COUNT_DISPERSION  307
+#define OPT_MIN_OUTLIER_P           308
+#define OPT_FRAG_MAX_MULTIHITS      309
+#define OPT_MIN_REPS_FOR_JS_TEST    310
+#define OPT_OLAP_RADIUS             311
+#define OPT_NO_LENGTH_CORRECTION    312
+#define OPT_NO_EFFECTIVE_LENGTH_CORRECTION    313
+#define OPT_NO_JS_TESTS             314
+#define OPT_DISPERSION_METHOD       315
+#define OPT_LIB_NORM_METHOD         316
+#define OPT_NO_SCV_CORRECTION       317
+#define OPT_NORM_STANDARDS_FILE     318
+#define OPT_USE_SAMPLE_SHEET        319
+#define OPT_OUTPUT_FORMAT           320
+#endif

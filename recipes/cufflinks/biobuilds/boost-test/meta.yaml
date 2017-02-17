@@ -1,0 +1,50 @@
+{% set name = "boost-test" %}
+{% set version = "2.2.1" %}
+{% set sha256 = "d5843" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  fn: cufflinks-2.2.1.tar.gz
+  url: http://download.lab7.io/sources/cufflinks-2.2.1.tar.gz
+  md5: 9a5ba7a7710cd864932cf205c17851f0
+  patches:
+    - configure-boost-dylibs.patch
+    - LocusCount-constructor.patch  # [osx]
+    # There is a known issue on Lustre filesystems with creating directories
+    # https://github.com/cole-trapnell-lab/cufflinks/issues/53
+    - common.cpp.patch
+    - common.h.patch
+
+build:
+  number: 0
+  skip: True # [osx or py3k]
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+
+requirements:
+  build:
+    - zlib
+    - boost {{CONDA_BOOST}}*
+    # Require older version of samtools to _build_, due to incompatibilities
+    # between the older samtools 0.1.x and newer htslib 1.x APIs and headers.
+    - samtools 0.1.19
+    - python
+    - eigen
+  run:
+    - zlib
+    - boost {{CONDA_BOOST}}*
+    - samtools
+    - eigen
+    - python
+
+test:
+  files:
+    - test_data.sam
+
+about:
+  home: http://cole-trapnell-lab.github.io/cufflinks/
+  license: Boost
+  license_file: LICENSE
+  summary: "Transcriptome assembly and differential expression analysis for RNA-Seq"

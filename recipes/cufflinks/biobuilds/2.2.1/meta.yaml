@@ -1,22 +1,25 @@
-{% set name = "cufflinks" %}
+{% set name = "cufflinks-patch" %}
 {% set version = "2.2.1" %}
 {% set sha256 = "d5843" %}
 
 package:
-  name: cufflinks
-  version: "2.2.1"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   fn: cufflinks-2.2.1.tar.gz
   url: http://download.lab7.io/sources/cufflinks-2.2.1.tar.gz
   md5: 9a5ba7a7710cd864932cf205c17851f0
   patches:
-   # - samtools-includes.patch
     - configure-boost-dylibs.patch
     - LocusCount-constructor.patch  # [osx]
+    # There is a known issue on Lustre filesystems with creating directories
+    # https://github.com/cole-trapnell-lab/cufflinks/issues/53
+    - common.cpp.patch
+    - common.h.patch
 
 build:
-  number: 0 
+  number: 0
   skip: True # [osx or py3k]
   string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
 
@@ -32,11 +35,6 @@ requirements:
   run:
     - zlib
     - boost {{CONDA_BOOST}}*
-    # Allow newer samtools versions at _runtime_, because nothing in the code
-    # suggests we will have version-compatibility problems (i.e., cufflinks
-    # doesn't write BCF files). Without this "hack", we wouldn't be able to
-    # include cufflinks in a standard BioBuilds environment (since that
-    # installs the htslib-1.x version of samtools).
     - samtools
     - eigen
     - python
@@ -44,8 +42,6 @@ requirements:
 test:
   files:
     - test_data.sam
-  commands:
-    - cufflinks test_data.sam
 
 about:
   home: http://cole-trapnell-lab.github.io/cufflinks/

@@ -18,12 +18,6 @@ sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
 
 
 # Tell cufflinks to use GCC no matter what
-export CC=${PREFIX}/bin/gcc
-export GCC=${PREFIX}/bin/gcc
-export CXX=${PREFIX}/bin/g++
-export CCC=${PREFIX}/bin/g++
-export CPP=${PREFIX}/bin/cpp
-export LD=${PREFIX}/bin/gcc
 
 export INCLUDE_PATH="${PREFIX}/include/:${PREFIX}/include/bamtools/"
 export LIBRARY_PATH="${PREFIX}/lib"
