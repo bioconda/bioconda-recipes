@@ -7,6 +7,7 @@ cd src
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     (echo yes; yes '') | perl Build.PL
+    perl -i.bak -wpe 's[^#!.+][#!/usr/bin/env perl]' Build
     ./Build
     ./Build test
     # Make sure this goes in site
