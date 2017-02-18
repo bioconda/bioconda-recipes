@@ -10,24 +10,17 @@ import shutil
 METAPHLAN2_URL = 'https://bitbucket.org/biobakery/metaphlan2/get/2.6.0.tar.gz'
 
 
-def download_file(url, target=None, wd=None):
+def download_file(url):
     """Download a file from a URL
     Fetches a file from the specified URL.
-    If 'target' is specified then the file is saved to this
-    name; otherwise it's saved as the basename of the URL.
-    If 'wd' is specified then it is used as the 'working
-    directory' where the file will be save on the local
-    system.
     Returns the name that the file is saved with.
     """
-    print "Downloading %s" % url
-    if not target:
-        target = os.path.basename(url)
-    if wd:
-        target = os.path.join(wd, target)
-    print "Saving to %s" % target
+    print("Downloading %s" % url)
+    target = os.path.basename(url)
+    print("Saving to %s" % target)
     open(target, 'wb').write(urllib2.urlopen(url).read())
     return target
+
 
 def unpack_tar_archive(filen, wd=None):
     """Extract files from a TAR archive
@@ -43,16 +36,18 @@ def unpack_tar_archive(filen, wd=None):
     """
     file_list = []
     if not tarfile.is_tarfile(filen):
-        print "%s: not TAR file"
+        print("%s: not TAR file")
         return [filen]
     t = tarfile.open(filen)
     t.extractall(".")
-    print "Removing %s" % filen
+    print("Removing %s" % filen)
     os.remove(filen)
     return file_list
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Download MetaPhlAn2 database')
+    parser = argparse.ArgumentParser(
+        description='Download MetaPhlAn2 database')
     parser.add_argument('--output', help="Installation directory")
     args = parser.parse_args()
 
@@ -64,12 +59,8 @@ if __name__ == "__main__":
     if not os.path.exists(output):
         os.makedirs(output)
 
-
     metaphlan2_tarfile = download_file(METAPHLAN2_URL)
     file_list = unpack_tar_archive(metaphlan2_tarfile)
     print(file_list)
 
     shutil.move("biobakery-metaphlan2-c43e40a443ed/db_v20", output)
-
-
-
