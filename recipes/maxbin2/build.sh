@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 MAXBIN_HOME=$PREFIX/opt/MaxBin-$PKG_VERSION
 
 # make
@@ -10,7 +9,7 @@ make -f makefile.new
 
 mkdir -p $PREFIX/bin
 mkdir -p $MAXBIN_HOME
-cp -r $SRC_DIR/* $MAXBIN_HOME/
+cp -R $SRC_DIR/* $MAXBIN_HOME/
 
 cd $MAXBIN_HOME
 # fix perl path

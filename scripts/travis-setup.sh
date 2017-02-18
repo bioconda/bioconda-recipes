@@ -22,11 +22,18 @@ else
 fi
 
 # install conda
-curl -O https://repo.continuum.io/archive/Anaconda3-4.3.0-Linux-x86_64.sh
-sudo bash Anaconda3-4.3.0-Linux-x86_64.sh -b -p /anaconda
+
+if [[ $TRAVIS_OS_NAME = "linux" ]]
+then
+    curl -O https://repo.continuum.io/archive/Anaconda3-4.3.0-Linux-x86_64.sh
+    sudo bash Anaconda3-4.3.0-Linux-x86_64.sh -b -p /anaconda
+else
+    curl -O https://repo.continuum.io/archive/Anaconda3-4.3.0-MacOSX-x86_64.sh
+    sudo bash Anaconda3-4.3.0-MacOSX-x86_64.sh -b -p /anaconda
+fi
+
 sudo chown -R $USER /anaconda
 export PATH=/anaconda/bin:$PATH
-#conda install -y conda=4.2.15
 
 $SCRIPT_DIR/../simulate-travis.py --set-channel-order
 $SCRIPT_DIR/../simulate-travis.py --install-requirements
