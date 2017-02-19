@@ -6,8 +6,7 @@ strainphlan.py \
 utils/extract_markers.py \
 utils/merge_metaphlan_tables.py \
 utils/metaphlan2krona.py \
-utils/metaphlan_hclust_heatmap.py \
-utils/plot_bug.py
+utils/metaphlan_hclust_heatmap.py
 "
 
 mkdir -p $PREFIX/bin
