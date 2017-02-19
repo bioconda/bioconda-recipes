@@ -103,10 +103,10 @@ are sent to `conda-build` by setting them as environment variables. More
 specifically:
 
 - `config.yml` indicates an `env_matrix` file in which CONDA_GSL is defined
-    - `config.yaml example
+    - `config.yaml` example
   <https://github.com/bioconda/bioconda-recipes/blob/0be2881ef95be68feb09fae7814e0217aca57285/config.yml#L1>`_ pointing to file
 
-    - `env_matrix.yml example
+    - `env_matrix.yml` example
       <https://github.com/bioconda/bioconda-recipes/blob/0be2881ef95be68feb09fae7814e0217aca57285/scripts/env_matrix.yml>` defining CONDA_GSL.
 
 - When figuring out which recipes need to be built, the filtering step attaches
