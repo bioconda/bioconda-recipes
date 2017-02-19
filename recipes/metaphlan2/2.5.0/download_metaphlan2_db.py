@@ -7,7 +7,7 @@ import urllib2
 import shutil
 
 
-METAPHLAN2_URL = 'https://bitbucket.org/biobakery/metaphlan2/get/2.6.0.tar.gz'
+METAPHLAN2_URL = 'https://bitbucket.org/biobakery/metaphlan2/get/2.5.0.tar.gz'
 
 
 def download_file(url):
