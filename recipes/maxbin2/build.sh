@@ -1,5 +1,4 @@
 #!/bin/bash
-
 MAXBIN_HOME=$PREFIX/opt/MaxBin-$PKG_VERSION
 
 # make
