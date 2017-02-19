@@ -21,4 +21,3 @@ sed -i.bak 's|\$Bin|\$RealBin|' run_MaxBin.pl
 chmod a+x *.pl
 
 ln -s $MAXBIN_HOME/run_MaxBin.pl $PREFIX/bin/run_MaxBin.pl
-
