@@ -22,26 +22,23 @@ def download_file(url):
     return target
 
 
-def unpack_tar_archive(filen, wd=None):
+def unpack_tar_archive(tar_file):
     """Extract files from a TAR archive
     Given a TAR archive (which optionally can be
     compressed with either gzip or bz2), extract the
     files it contains and return a list of the
     resulting file names and paths.
-    'wd' specifies the working directory to extract
-    the files to, otherwise they are extracted to the
-    current working directory.
     Once all the files are extracted the TAR archive
     file is deleted from the file system.
     """
     file_list = []
-    if not tarfile.is_tarfile(filen):
+    if not tarfile.is_tarfile(tar_file):
         print("%s: not TAR file")
-        return [filen]
-    t = tarfile.open(filen)
+        return [tar_file]
+    t = tarfile.open(tar_file)
     t.extractall(".")
-    print("Removing %s" % filen)
-    os.remove(filen)
+    print("Removing %s" % tar_file)
+    os.remove(tar_file)
     return file_list
 
 
