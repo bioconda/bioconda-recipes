@@ -3,7 +3,7 @@ about:
     license: "https://raw.githubusercontent.com/trinityrnaseq/trinityrnaseq/master/LICENSE.txt"
     summary: "Trinity assembles transcript sequences from Illumina RNA-Seq data"
 build:
-  number: 5
+  number: 6
   string: ncurses{{CONDA_NCURSES}}_{{PKG_BUILDNUM}}
 package:
   name: trinity
@@ -16,6 +16,10 @@ source:
     - RunButterfly.cc.patch # this file is missing a header include
     - Trinity.pl.patch # Trinity requires exactly Java 1.6, but works fine >1.6, so adjust to be more permissive
     - samtools_makefile.patch # patch samtools Makefile due to missing curses.h
+    # Adjust compilation to allow 1GB stack size
+    - Chrysalis_stacksize.patch  # [osx]
+    # Allow conda's rpath rewriting to work for an RSEM binary
+    - headerpad.patch  # [osx]
 requirements:
   build:
     - perl-threaded
