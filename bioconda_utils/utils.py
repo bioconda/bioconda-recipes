@@ -439,7 +439,13 @@ def newly_unblacklisted(config_file, recipe_folder):
 
 
 def changed_since_master(recipe_folder):
-    "Return filenames changed since master branch"
+    """
+    Return filenames changed since master branch.
+
+    Note that this uses `origin`, so if you are working on a fork of the main
+    repo and have added the main repo as `upstream`, then you'll have to do
+    a `git checkout master && git pull upstream master` to update your fork.
+    """
     p = run(['git', 'fetch', 'origin', 'master'])
     p = run(['git', 'diff', 'FETCH_HEAD', '--name-only'])
     return [
