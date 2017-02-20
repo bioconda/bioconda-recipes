@@ -4,5 +4,5 @@ cmake -D CMAKE_BUILD_TYPE=Release .
 make VERBOSE=1
 make install DESTDIR=$PREFIX
 
-cp bin/edlib-aligner $PREFIX/bin/
+cp bin/aligner $PREFIX/bin/
 
