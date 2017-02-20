@@ -1,9 +1,8 @@
 export LC_CTYPE=C
 export LANG=C
 
-find . -type f -name "*.pl" | xargs sed -i.bak -e 's/usr\/bin\/perl/usr\/bin\/env perl/g'
-find . -type f -name "*.pm" | xargs sed -i.bak -e 's/usr\/local\/bin\/perl/usr\/bin\/env perl/g'
-find . -type f -name "*.sh" | xargs sed -i.bak -e 's/usr\/bin\/perl/usr\/bin\/env perl/g'
+#find . -type f -name "*.pm" | xargs sed -i.bak -e 's/usr\/local\/bin\/perl/usr\/bin\/env perl/g'
+#find . -type f -name "*.sh" | xargs sed -i.bak -e 's/usr\/bin\/perl/usr\/bin\/env perl/g'
 
 #cd $SRC_DIR/kmer
 #./configure.sh
@@ -19,6 +18,7 @@ cd $SRC_DIR/src
 export KMER=$PREFIX
 sed -i.bak 's/$(LOCAL_OS)/$(PREFIX)/' c_make.gen
 sed -i.bak 's/getBinDirectory()/`which gatekeeper`/' AS_RUN/runCA.pl
+sed -i.bak 's/usr\/local\/bin\/perl/usr\/bin\/env perl/g' AS_RUN/runCA.pl
 make
 cd ../
 #ls Linux-amd64/
