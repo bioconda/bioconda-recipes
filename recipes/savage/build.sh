@@ -13,5 +13,5 @@ cp -r bin quick-cliques scripts sfo_2011_5 savage.py $PACKAGE_HOME/
 # ln -rs $PACKAGE_HOME/savage.py $PREFIX/bin/savage # create a symbolic link
 WRAPPER=$PREFIX/bin/savage
 echo "#!/bin/sh" > $WRAPPER
-echo "$PACKAGE_HOME/savage.py $@" >> $WRAPPER
+echo "$PACKAGE_HOME/savage.py \$@" >> $WRAPPER
 chmod +x $WRAPPER
