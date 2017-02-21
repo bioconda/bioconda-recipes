@@ -5,12 +5,15 @@
 
 if [ "$(uname)" == "Darwin" ]; then
     echo "Compiling segmentation-fold for OSX."
-    export CXXFLAGS=' -DBOOST_NO_CXX11_RVALUE_REFERENCES'
-    export CXX_FLAGS=' -DBOOST_NO_CXX11_RVALUE_REFERENCES'
-    export CMAKE_CXX_FLAGS=' -DBOOST_NO_CXX11_RVALUE_REFERENCES'
+    export CXXFLAGS=' -DBOOST_NO_CXX11_RVALUE_REFERENCES -stdlib=libc++'
+    export CXX_FLAGS=' -DBOOST_NO_CXX11_RVALUE_REFERENCES -stdlib=libc++'
+    export CMAKE_CXX_FLAGS=' -DBOOST_NO_CXX11_RVALUE_REFERENCES -stdlib=libc++'
+    export LDFLAGS=' -stdlib=libc++'
+    export LD_FLAGS=' -stdlib=libc++'
+    export CMAKE_LDFLAGS=' -stdlib=libc++'
     cmake -DCMAKE_BUILD_TYPE=release -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .
     echo "#define BOOST_NO_CXX11_RVALUE_REFERENCE" >> include/config.hpp
-    echo "#define BOOST_NO_CXX11_RVALUE_REFERENCE" >> include/main.hpp  
+    echo "#define BOOST_NO_CXX11_RVALUE_REFERENCE" >> include/main.hpp 
 else 
     echo "Compiling segmentation-fold for UNIX/Linux."
     cmake -DCMAKE_BUILD_TYPE=release -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .
