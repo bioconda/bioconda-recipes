@@ -3,4 +3,5 @@
 mkdir -p $PREFIX/bin
 cp BlastAlign* $PREFIX/bin
 
-sed -i "s/perl/env perl/" $PREFIX/bin
+sed -i "s/perl/env perl/" $PREFIX/bin/BlastAlign
+sed -i "s/perl/env perl/" $PREFIX/bin/BlastAlignP
