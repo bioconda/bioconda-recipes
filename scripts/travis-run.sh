@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+CHANGED_FILES=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
+echo $CHANGED_FILES
+
 export PATH=/anaconda/bin:$PATH
 
 if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
