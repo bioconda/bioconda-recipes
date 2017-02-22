@@ -3,7 +3,7 @@ set -euo pipefail
 
 
 # obtain recipes that changed in this commit
-RECIPES=""
+PACKAGES=""
 git diff --exit-code --name-only $TRAVIS_COMMIT_RANGE scripts/env_matrix.yml
 if [ $? -eq 1 ] || [ $TRAVIS_EVENT_TYPE == "cron" ]
 then
@@ -15,11 +15,20 @@ else
     else
         RANGE="$TRAVIS_BRANCH HEAD"
     fi
+    echo $RANGE
+    git diff --relative=recipes --name-only $RANGE
     RECIPES=$(git diff --relative=recipes --name-only $RANGE recipes/*/meta.yaml recipes/*/*/meta.yaml | xargs --no-run-if-empty dirname)
     echo "considering changed recipes:"
     echo "--------"
     echo $RECIPES
     echo "--------"
+    if [ -z $RECIPES ]
+    then
+        echo "no recipe changed, exiting build"
+        exit 0
+    else
+        PACKAGES="--packages $RECIPES"
+    fi
 fi
 
 
@@ -39,7 +48,7 @@ else
     USE_DOCKER=""
 fi
 
-set -x; bioconda-utils build recipes config.yml $USE_DOCKER $BIOCONDA_UTILS_ARGS --packages $RECIPES; set +x;
+set -x; bioconda-utils build recipes config.yml $USE_DOCKER $BIOCONDA_UTILS_ARGS $PACKAGES; set +x;
 
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
