@@ -1,9 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
-CHANGED_FILES=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
-echo "Changed files:"
-echo $CHANGED_FILES
+
+# obtain recipes that changed in this commit
+RECIPES=""
+ENV_MATRIX_CHANGED=$(git diff master HEAD --name-only scripts/env_matrix.yml)
+if [ -z "$ENV_MATRIX_CHANGED" ]
+then
+    echo "env matrix changed, considering all recipes"
+else
+    RECIPES=$(git diff --relative=recipes --name-only $TRAVIS_COMMIT_RANGE recipes/*/meta.yaml recipes/*/*/meta.yaml | xargs dirname)
+    echo "considering changed recipes:"
+    echo $RECIPES
+fi
+
 
 export PATH=/anaconda/bin:$PATH
 
@@ -21,7 +31,7 @@ else
     USE_DOCKER=""
 fi
 
-set -x; bioconda-utils build recipes config.yml $USE_DOCKER $BIOCONDA_UTILS_ARGS; set +x;
+set -x; bioconda-utils build recipes config.yml $USE_DOCKER $BIOCONDA_UTILS_ARGS --packages $RECIPES; set +x;
 
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
