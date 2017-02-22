@@ -2,6 +2,7 @@
 set -euo pipefail
 
 CHANGED_FILES=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
+echo "Changed files:"
 echo $CHANGED_FILES
 
 export PATH=/anaconda/bin:$PATH
