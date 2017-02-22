@@ -5,9 +5,9 @@ set -euo pipefail
 # obtain recipes that changed in this commit
 RECIPES=""
 ENV_MATRIX_CHANGED=$(git diff master HEAD --name-only scripts/env_matrix.yml)
-if [ -z "$ENV_MATRIX_CHANGED" ]
+if [ -z "$ENV_MATRIX_CHANGED" ] || [ $TRAVIS_EVENT_TYPE == "cron" ]
 then
-    echo "env matrix changed, considering all recipes"
+    echo "considering all recipes because either env matrix was changed or build is triggered via cron"
 else
     RECIPES=$(git diff --relative=recipes --name-only $TRAVIS_COMMIT_RANGE recipes/*/meta.yaml recipes/*/*/meta.yaml | xargs dirname)
     echo "considering changed recipes:"
