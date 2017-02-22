@@ -9,9 +9,17 @@ if [ $? -eq 1 ] || [ $TRAVIS_EVENT_TYPE == "cron" ]
 then
     echo "considering all recipes because either env matrix was changed or build is triggered via cron"
 else
-    RECIPES=$(git diff --relative=recipes --name-only $TRAVIS_COMMIT_RANGE recipes/*/meta.yaml recipes/*/*/meta.yaml | xargs dirname)
+    if [ $TRAVIS_PULL_REQUEST == "false" ]
+    then
+        RANGE=$TRAVIS_COMMIT_RANGE
+    else
+        RANGE="$TRAVIS_BRANCH HEAD"
+    fi
+    RECIPES=$(git diff --relative=recipes --name-only $RANGE recipes/*/meta.yaml recipes/*/*/meta.yaml | xargs --no-run-if-empty dirname)
     echo "considering changed recipes:"
+    echo "--------"
     echo $RECIPES
+    echo "--------"
 fi
 
 
