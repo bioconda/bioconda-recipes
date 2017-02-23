@@ -3,10 +3,12 @@ set -euo pipefail
 
 # determine recipes to build
 # case 1: env matrix changed or this is a cron job. In this case consider all recipes.
-set +e
 PACKAGES=""
+set +e
 git diff --exit-code --name-only $TRAVIS_COMMIT_RANGE scripts/env_matrix.yml
-if [ $? -eq 1 ] || [ $TRAVIS_EVENT_TYPE == "cron" ]
+ANY_CHANGE=$?
+set -e
+if [ $ANY_CHANGE -eq 1 ] || [ $TRAVIS_EVENT_TYPE == "cron" ]
 then
     echo "considering all recipes because either env matrix was changed or build is triggered via cron"
 else
@@ -18,8 +20,10 @@ else
         RANGE="$TRAVIS_BRANCH HEAD"
     fi
     # obtain recipes that changed in this commit
+    set +e
     RECIPES=$(git diff --exit-code --relative=recipes --name-only $RANGE recipes/*/meta.yaml recipes/*/*/meta.yaml)
     ANY_CHANGE=$?
+    set -e
     if [ $ANY_CHANGE -eq 1 ]
     then
         RECIPES=$(echo "$RECIPES" | xargs dirname)
@@ -33,7 +37,6 @@ else
         exit 0
     fi
 fi
-set -e
 
 
 export PATH=/anaconda/bin:$PATH
