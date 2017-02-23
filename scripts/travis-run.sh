@@ -3,6 +3,7 @@ set -euo pipefail
 
 # determine recipes to build
 # case 1: env matrix changed or this is a cron job. In this case consider all recipes.
+set +e
 PACKAGES=""
 git diff --exit-code --name-only $TRAVIS_COMMIT_RANGE scripts/env_matrix.yml
 if [ $? -eq 1 ] || [ $TRAVIS_EVENT_TYPE == "cron" ]
@@ -31,6 +32,7 @@ else
         exit 0
     fi
 fi
+set -e
 
 
 export PATH=/anaconda/bin:$PATH
