@@ -22,7 +22,7 @@ else
     echo "--------"
     echo $RECIPES
     echo "--------"
-    if [ -z $RECIPES ]
+    if [ -z "$RECIPES" ]
     then
         echo "no recipe changed, exiting build"
         exit 0
