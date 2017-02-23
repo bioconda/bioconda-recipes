@@ -1,3 +1,2 @@
-#!/bin/sh
-
-cpanm -n -f -i .
+#!/bin/bash
+echo "Nothing to do."
