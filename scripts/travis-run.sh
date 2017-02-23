@@ -1,33 +1,34 @@
 #!/bin/bash
 set -euo pipefail
 
-
-# obtain recipes that changed in this commit
+# determine recipes to build
+# case 1: env matrix changed or this is a cron job. In this case consider all recipes.
 PACKAGES=""
 git diff --exit-code --name-only $TRAVIS_COMMIT_RANGE scripts/env_matrix.yml
 if [ $? -eq 1 ] || [ $TRAVIS_EVENT_TYPE == "cron" ]
 then
     echo "considering all recipes because either env matrix was changed or build is triggered via cron"
 else
+    # case 2: consider only recipes that (a) changed since the last build on master, or (b) changed in this pull request compared to the target branch.
     if [ $TRAVIS_PULL_REQUEST == "false" ]
     then
         RANGE=$TRAVIS_COMMIT_RANGE
     else
         RANGE="$TRAVIS_BRANCH HEAD"
     fi
-    echo $RANGE
-    git diff --relative=recipes --name-only $RANGE
-    RECIPES=$(git diff --relative=recipes --name-only $RANGE recipes/*/meta.yaml recipes/*/*/meta.yaml | xargs --no-run-if-empty dirname)
-    echo "considering changed recipes:"
-    echo "--------"
-    echo $RECIPES
-    echo "--------"
-    if [ -z "$RECIPES" ]
+    # obtain recipes that changed in this commit
+    RECIPES=$(git diff --exit-code --relative=recipes --name-only $RANGE recipes/*/meta.yaml recipes/*/*/meta.yaml)
+    if [ $? -eq 1 ]
     then
+        RECIPES=$(echo $RECIPES | xargs dirname)
+        echo "considering changed recipes:"
+        echo "--------"
+        echo $RECIPES
+        echo "--------"
+        PACKAGES="--packages $RECIPES"
+    else
         echo "no recipe changed, exiting build"
         exit 0
-    else
-        PACKAGES="--packages $RECIPES"
     fi
 fi
 
