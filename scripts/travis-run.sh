@@ -19,10 +19,10 @@ else
     fi
     # obtain recipes that changed in this commit
     RECIPES=$(git diff --exit-code --relative=recipes --name-only $RANGE recipes/*/meta.yaml recipes/*/*/meta.yaml)
-    echo $RECIPES
-    if [ $? -eq 1 ]
+    ANY_CHANGE=$?
+    if [ $ANY_CHANGE -eq 1 ]
     then
-        RECIPES=$(echo $RECIPES | xargs dirname)
+        RECIPES=$(echo "$RECIPES" | xargs dirname)
         echo "considering changed recipes:"
         echo "--------"
         echo $RECIPES
