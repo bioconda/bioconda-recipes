@@ -1,5 +1,4 @@
 mkdir build
-cd build
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
@@ -18,7 +17,8 @@ cmake \
     -D OPENSLIDE_INCLUDE_DIR:STRING=${PREFIX}/include \
     -D DCMTKJPEG_LIBRARY:STRING=${PREFIX}/lib \
     -D DCMTKJPEG_INCLUDE_DIR:STRING=${PREFIX}/include \
-    ..
+	-B ./build \
+    -H .
 
 make -j$CPU_COUNT
 make install
