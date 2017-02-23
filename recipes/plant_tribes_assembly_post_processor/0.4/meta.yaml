@@ -1,0 +1,30 @@
+package:
+  name: plant_tribes_assembly_post_processor
+  version: "0.4"
+
+source:
+  fn: v0.4.tar.gz
+  url: https://github.com/dePamphilis/PlantTribes/archive/v0.4.tar.gz
+  md5: f26f8e7e9cd2046224527cec2a230af5
+
+build:
+  number: 0
+  # Requires genometools which is not supported on osx
+  skip: True # [osx]
+
+requirements:
+  run:
+    - perl-estscan2 >=2,<3
+    - transdecoder >=3,<4
+    - genometools-genometools >=1,<2
+
+test:
+  commands:
+    - AssemblyPostProcesser 2>&1 | grep Usage
+    - perl -e 'use ESTScan; my @mat = ESTScan::LoadMatrix("Hs.smat", "CODING", 4.0);'
+    - TransDecoder.Predict -h 2>&1 | grep USAGE
+
+about:
+  home: 'https://github.com/dePamphilis/PlantTribes'
+  summary: 'Transcriptome assembly post processing pipeline'
+  license: GNU General Public License v3 (GPLv3)

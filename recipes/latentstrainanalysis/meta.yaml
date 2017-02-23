@@ -1,0 +1,60 @@
+{% set name = "LatentStrainAnalysis" %}
+{% set version = "0.0.1" %}
+{% set sha256 = "dbec0ecb8a53b3c51a6d2d5e99e0ad59da2a60d3e518f8216ff20bb04f563dca" %}
+{% set md5 = "bbcf6b3a18d920aa12d40dd594eabc24" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name|lower }}-{{ version }}.tar.gz
+  url: https://github.com/brian-cleary/LatentStrainAnalysis/archive/7f18468.tar.gz
+  sha256: {{ sha256 }}
+  md5: {{ md5 }}
+
+build:
+  number: 0
+  skip: True # [py3k]
+
+requirements:
+  build:
+    - python
+    - numpy
+    - scipy
+    - gensim
+    - parallel
+    - pyro4
+
+  run:
+    - python
+    - numpy
+    - scipy
+    - gensim
+    - parallel
+    - pyro4
+
+test:
+  commands:
+    - command -v HashCounting.sh
+    - command -v KmerSVDClustering.sh
+    - command -v ReadPartitioning.sh
+    - HashCounting.sh | grep "Usage:"
+    - KmerSVDClustering.sh | grep "Usage:"
+    - ReadPartitioning.sh | grep "Usage:"
+
+about:
+  home: https://github.com/brian-cleary/LatentStrainAnalysis
+  license: "MIT"
+  summary: "Partitioning and analysis methods for large, complex sequence datasets"
+  description: |
+    LSA was developed as a pre-assembly tool for partitioning metagenomic reads.
+    It uses a hyperplane hashing function and streaming SVD in order to find
+    covariance relations between k-mers. The code, and the process outline in
+    LSFScripts in particular, have been optimized to scale to massive data
+    sets in fixed memory with a highly distributed computing environment.
+
+extra:
+  maintainers:
+    - keuv-grvl
+  documentation: http://latentstrainanalysis.readthedocs.io/en/latest/
