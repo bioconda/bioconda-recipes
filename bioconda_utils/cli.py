@@ -33,6 +33,10 @@ logger = logging.getLogger(__name__)
     nargs="+",
     help='Glob for package[s] to build. Default is to build all packages. Can '
     'be specified more than once')
+@arg('--git-range', nargs=2,
+     help='Git range (e.g. commits or something like '
+     '"master HEAD"). All recipes modified within this range will be built if '
+     'not present in the channel.')
 @arg('--testonly', help='Test packages instead of building')
 @arg('--force',
      help='Force building the recipe even if it already exists in '
@@ -59,6 +63,7 @@ logger = logging.getLogger(__name__)
 def build(recipe_folder,
           config,
           packages="*",
+          git_range=None,
           testonly=False,
           force=False,
           docker=None,
@@ -97,6 +102,23 @@ def build(recipe_folder,
         )
     else:
         docker_builder = None
+
+    # handle git range
+    if git_range:
+        p = sp.run(['git', 'diff',
+                          '--exit-code',
+                          '--relative=recipes',
+                          '--name-only'] + git_range +
+                         [os.path.join(recipe_folder, '*', 'meta.yaml'),
+                          os.path.join(recipe_folder, '*', '*', 'meta.yaml')],
+                         stdout=sp.PIPE,
+                         universal_newlines=True)
+        if p.returncode == 0:
+            logger.info('No recipe modified according to git, exiting.')
+            exit(0)
+        # obtain list of packages to build
+        packages = [os.path.dirname(f) for f in p.stdout.strip().split('\n')]
+        logger.info('Recipes modified according to git: {}'.format(' '.join(packages)))
 
     success = build_recipes(
         recipe_folder,
