@@ -3,38 +3,21 @@ set -euo pipefail
 
 # determine recipes to build
 # case 1: env matrix changed or this is a cron job. In this case consider all recipes.
-PACKAGES=""
+RANGE_ARG=""
 set +e
 git diff --exit-code --name-only $TRAVIS_COMMIT_RANGE scripts/env_matrix.yml
-ANY_CHANGE=$?
+ENV_CHANGE=$?
 set -e
-if [ $ANY_CHANGE -eq 1 ] || [ $TRAVIS_EVENT_TYPE == "cron" ]
+if [ $ENV_CHANGE -eq 1 ] || [ $TRAVIS_EVENT_TYPE == "cron" ]
 then
     echo "considering all recipes because either env matrix was changed or build is triggered via cron"
 else
     # case 2: consider only recipes that (a) changed since the last build on master, or (b) changed in this pull request compared to the target branch.
     if [ $TRAVIS_PULL_REQUEST == "false" ]
     then
-        RANGE=$TRAVIS_COMMIT_RANGE
+        RANGE_ARG="--git-range $TRAVIS_COMMIT_RANGE"
     else
-        RANGE="$TRAVIS_BRANCH HEAD"
-    fi
-    # obtain recipes that changed in this commit
-    set +e
-    RECIPES=$(git diff --exit-code --relative=recipes --name-only $RANGE recipes/*/meta.yaml recipes/*/*/meta.yaml)
-    ANY_CHANGE=$?
-    set -e
-    if [ $ANY_CHANGE -eq 1 ]
-    then
-        RECIPES=$(echo "$RECIPES" | xargs dirname)
-        echo "considering changed recipes:"
-        echo "--------"
-        echo $RECIPES
-        echo "--------"
-        PACKAGES="--packages $RECIPES"
-    else
-        echo "no recipe changed, exiting build"
-        exit 0
+        RANGE_ARG="--git-range $TRAVIS_BRANCH HEAD"
     fi
 fi
 
@@ -55,7 +38,7 @@ else
     USE_DOCKER=""
 fi
 
-set -x; bioconda-utils build recipes config.yml $USE_DOCKER $BIOCONDA_UTILS_ARGS $PACKAGES; set +x;
+set -x; bioconda-utils build recipes config.yml $USE_DOCKER $BIOCONDA_UTILS_ARGS $RANGE_ARG; set +x;
 
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
