@@ -4,7 +4,7 @@
 ## (mac or linux)
 ##
 CXXFLAGS="$CXXFLAGS";
-LDFLAGS="$LDFLAGS";
+LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
 CXX=g++;
 CC=gcc;
 if [ `uname` == Darwin ] ; then
