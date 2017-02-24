@@ -2,23 +2,24 @@
 set -euo pipefail
 
 # determine recipes to build
-# case 1: env matrix changed or this is a cron job. In this case consider all recipes.
+RANGE="$TRAVIS_BRANCH HEAD"
+if [ $TRAVIS_PULL_REQUEST == "false" ]
+then
+    RANGE="$TRAVIS_COMMIT_RANGE"
+fi
+
 RANGE_ARG=""
 set +e
-git diff --exit-code --name-only $TRAVIS_COMMIT_RANGE scripts/env_matrix.yml
+git diff --exit-code --name-only $RANGE scripts/env_matrix.yml
 ENV_CHANGE=$?
 set -e
 if [ $ENV_CHANGE -eq 1 ] || [ $TRAVIS_EVENT_TYPE == "cron" ]
 then
+    # case 1: env matrix changed or this is a cron job. In this case consider all recipes.
     echo "considering all recipes because either env matrix was changed or build is triggered via cron"
 else
     # case 2: consider only recipes that (a) changed since the last build on master, or (b) changed in this pull request compared to the target branch.
-    if [ $TRAVIS_PULL_REQUEST == "false" ]
-    then
-        RANGE_ARG="--git-range $TRAVIS_COMMIT_RANGE"
-    else
-        RANGE_ARG="--git-range $TRAVIS_BRANCH HEAD"
-    fi
+    RANGE_ARG="--git-range $RANGE"
 fi
 
 
