@@ -106,18 +106,19 @@ def build(recipe_folder,
     # handle git range
     if git_range:
         p = sp.run(['git', 'diff',
-                          '--exit-code',
                           '--relative=recipes',
                           '--name-only'] + git_range +
                          [os.path.join(recipe_folder, '*', 'meta.yaml'),
                           os.path.join(recipe_folder, '*', '*', 'meta.yaml')],
                          stdout=sp.PIPE,
-                         universal_newlines=True)
-        if p.returncode == 0:
+                         universal_newlines=True,
+                         check=True)
+        modified = p.stdout.strip().split('\n')
+        if not modified:
             logger.info('No recipe modified according to git, exiting.')
             exit(0)
         # obtain list of packages to build
-        packages = [os.path.dirname(f) for f in p.stdout.strip().split('\n')]
+        packages = [os.path.dirname(f) for f in modified]
         logger.info('Recipes modified according to git: {}'.format(' '.join(packages)))
 
     success = build_recipes(
