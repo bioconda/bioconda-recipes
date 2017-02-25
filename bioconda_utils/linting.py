@@ -145,10 +145,12 @@ def lint(recipe_folder, config, df, registry, packages="*"):
                      'check': func.__name__,
                      'info': result})
 
-    report = pd.DataFrame(hits)[['recipe', 'check', 'info']]
+    if hits:
+        report = pd.DataFrame(hits)[['recipe', 'check', 'info']]
 
-    # expand out the info into more columns
-    info = pd.DataFrame(list(report['info'].values))
-    report = pd.concat((report, info), axis=1)
-
+        # expand out the info into more columns
+        info = pd.DataFrame(list(report['info'].values))
+        report = pd.concat((report, info), axis=1)
+    else:
+        report = pd.DataFrame()
     return report
