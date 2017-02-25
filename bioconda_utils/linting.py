@@ -123,7 +123,7 @@ def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge', 'defaults
     return df
 
 
-def lint(recipe_folder, config, df, registry, packages="*"):
+def lint(recipe_folder, config, df, registry=None, packages="*", quick=False):
     """
     Parameters
     ----------
@@ -146,8 +146,29 @@ def lint(recipe_folder, config, df, registry, packages="*"):
     packages : str
         Glob of packages to find within `recipe_folder`
 
+    quick : bool
+        If True, then subset `packages` to be only those that have changed
+        recently.
     """
     recipes = list(utils.get_recipes(recipe_folder, package=packages))
+    if quick:
+        if not isinstance(config, str):
+            raise ValueError("Need a config filename (and not a dict) for "
+                             "quick filtering since we need to check that "
+                             "file in the master branch")
+        unblacklisted = [
+            os.path.join(recipe_folder, i)
+            for i in utils.newly_unblacklisted(orig_config, recipe_folder)
+        ]
+        logger.debug('Unblacklisted: %s', unblacklisted)
+        changed = [
+            os.path.join(recipe_folder, i) for i in
+            utils.changed_since_master(recipe_folder)
+        ]
+        logger.debug('Changed: %s', changed)
+        recipes = set(unblacklisted + changed).intersection(recipes)
+        logger.debug('Quick-filtered recipes: %s', recipes)
+
     hits = []
     for recipe in recipes:
         try:
