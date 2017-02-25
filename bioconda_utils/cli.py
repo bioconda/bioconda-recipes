@@ -38,13 +38,29 @@ logger = logging.getLogger(__name__)
 @arg('--cache', help='''To speed up debugging, use repodata cached locally in
      the provided filename. If the file does not exist, it will be created the
      first time.''')
-def lint(recipe_folder, config, packages="*", cache=None):
+@arg('--list-funcs', help='''List the linting functions to be used and then
+     exit''')
+@arg('--only', nargs='+', help='''Only run this linting function. Can be used
+     multiple times.''')
+@arg('--exclude', nargs='+', help='''Exclude this linting function. Can be used
+     multiple times.''')
+def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
+         only=None, exclude=None):
+    if list_funcs:
+        print('\n'.join([i.__name__ for i in lint_functions.registry]))
+        sys.exit(0)
     df = linting.channel_dataframe(cache=cache)
+    registry = lint_functions.registry
+    if only is not None:
+        registry = list(filter(lambda x: x.__name__ in only, registry))
+        if len(registry) == 0:
+            sys.stderr.write('No valid linting functions selected, exiting.\n')
+            sys.exit(1)
     report = linting.lint(
         recipe_folder=recipe_folder,
         config=config,
         df=df,
-        registry=lint_functions.registry,
+        registry=registry,
         packages=packages,
     )
     report.to_csv(sys.stdout, sep='\t', index=False)
