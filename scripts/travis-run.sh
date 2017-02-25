@@ -5,7 +5,7 @@ set -euo pipefail
 RANGE="$TRAVIS_BRANCH HEAD"
 if [ $TRAVIS_PULL_REQUEST == "false" ]
 then
-    RANGE="$TRAVIS_COMMIT_RANGE"
+    RANGE="${TRAVIS_COMMIT_RANGE/.../ }"
 fi
 
 RANGE_ARG=""
