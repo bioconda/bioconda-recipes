@@ -8,8 +8,8 @@ LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
 CXX=g++;
 CC=gcc;
 if [ `uname` == Darwin ] ; then
-    CXXFLAGS=$CXXFLAGS -stdlib=libc++
-    LDFLAGS=$LDFLAGS -stdlib=libc++
+    CXXFLAGS="$CXXFLAGS -stdlib=libc++"
+    LDFLAGS="$LDFLAGS -stdlib=libc++"
     CXX=clang++;
     CC=clang;
 else ## linux
