@@ -58,8 +58,7 @@ def temp_os(platform):
         sys.platform = original
 
 
-
-def run(cmds, env=None):
+def run(cmds, env=None, **kwargs):
     """
     Wrapper around subprocess.run()
 
@@ -73,10 +72,12 @@ def run(cmds, env=None):
     Returns the subprocess.CompletedProcess object.
     """
     try:
-        p = sp.run(cmds, stdout=sp.PIPE, stderr=sp.STDOUT, check=True, env=env)
+        p = sp.run(cmds, stdout=sp.PIPE, stderr=sp.STDOUT, check=True, env=env,
+                   **kwargs)
         p.stdout = p.stdout.decode(errors='replace')
     except sp.CalledProcessError as e:
         e.stdout = e.stdout.decode(errors='replace')
+        print(e.stdout)
         raise e
     return p
 
