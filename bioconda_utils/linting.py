@@ -124,6 +124,29 @@ def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge', 'defaults
 
 
 def lint(recipe_folder, config, df, registry, packages="*"):
+    """
+    Parameters
+    ----------
+
+    recipe_folder : str
+        Path to top-level recipes dir
+
+    config : str, dict
+        If str, path to config file. If dict, parsed version of the config
+        file. If `quick=True`, then must be path to config file.
+
+    df : pandas.DataFrame
+        Dataframe containing channel data, typically as output from
+        `channel_dataframe()`.
+
+    registry : list or tuple
+        List of functions to apply to each recipe. If None, defaults to
+        `lint_functions.registry`.
+
+    packages : str
+        Glob of packages to find within `recipe_folder`
+
+    """
     recipes = list(utils.get_recipes(recipe_folder, package=packages))
     hits = []
     for recipe in recipes:
