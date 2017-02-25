@@ -3,8 +3,6 @@
 import os
 import glob
 import subprocess as sp
-import argparse
-import itertools
 import sys
 import shutil
 import contextlib

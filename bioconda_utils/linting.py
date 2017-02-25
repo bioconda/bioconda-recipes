@@ -10,8 +10,8 @@ problems to be addressed.
 
 See the `lint_functions` module for these.
 
-
-After writing the function, register it in the global "registry" dict.
+After writing the function, register it in the global `registry` dict,
+`lint_functions.registry`.
 
 The output is a TSV where the "info" column contains the dicts returned by
 each check function, and this column is expanded into multiple extra colums.
@@ -53,8 +53,6 @@ TODO:
   (conda_build.metadata.ensure_valid_license_family is for family)
 
 - gcc/llvm have their respective preprocessing selectors
-
-- no .bat files
 
 - excessive comments (from skeletons?)
 """

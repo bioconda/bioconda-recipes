@@ -177,12 +177,14 @@ def uses_javajdk(recipe, meta, df):
 
                }
 
+
 def uses_setuptools(recipe, meta, df):
     if 'setuptools' in _get_deps(meta):
         return {
             'depends_on_setuptools': True,
             'fix': 'setuptools may not be required',
         }
+
 
 def has_windows_bat_file(recipe, meta, df):
     if len(glob.glob(os.path.join(recipe, '*.bat'))) > 0:
