@@ -8,8 +8,8 @@ cd src
 if [ -f Build.PL ]; then
     (echo yes; yes '') | perl Build.PL
     perl -i.bak -wpe 's[^#!.+][#!/usr/bin/env perl]' Build
-    perl ./Build
-    perl ./Build test
+    #perl ./Build
+    #perl ./Build test
     # Make sure this goes in site
     perl ./Build install --installdirs site
 elif [ -f Makefile.PL ]; then
