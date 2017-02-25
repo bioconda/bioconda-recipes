@@ -657,7 +657,6 @@ def modified_recipes(git_range, recipe_folder):
             os.path.join(recipe_folder, '*', 'meta.yaml'),
             os.path.join(recipe_folder, '*', '*', 'meta.yaml')
         ]),
-        shell=True
     )
     modified = p.stdout.strip().split('\n')
     return modified
