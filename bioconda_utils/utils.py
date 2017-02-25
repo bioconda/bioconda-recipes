@@ -639,3 +639,26 @@ def load_config(path):
 
     default_config.update(config)
     return default_config
+
+
+def modified_recipes(git_range, recipe_folder):
+    """
+    Returns recipes modified within the git range.
+
+    git_range : list or tuple of length 2
+        For example, ['00232ffe', '10fab113'], or commonly ['master', 'HEAD']
+
+    recipe_folder : str
+        Top-level recipes dir in which to search for meta.yaml files.
+    """
+    p = run(
+        ' '.join(['git', 'diff', '--relative={}'.format(recipe_folder), '--name-only'] +
+        git_range +
+        [
+            os.path.join(recipe_folder, '*', 'meta.yaml'),
+            os.path.join(recipe_folder, '*', '*', 'meta.yaml')
+        ]),
+        shell=True
+    )
+    modified = p.stdout.strip().split('\n')
+    return modified
