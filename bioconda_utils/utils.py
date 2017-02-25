@@ -611,7 +611,7 @@ def load_config(path):
         relpath = lambda p: p
     else:
         config = yaml.load(open(path))
-        relpath = lambda p: os.path.relpath(p, os.path.dirname(path))
+        relpath = lambda p: os.path.join(os.path.dirname(path), p)
 
     def get_list(key):
         # always return empty list, also if NoneType is defined in yaml
