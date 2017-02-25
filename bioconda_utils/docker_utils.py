@@ -63,6 +63,8 @@ logger = logging.getLogger(__name__)
 
 # If conda_build_version is not provided, this is what is used by default.
 DEFAULT_CONDA_BUILD_VERSION = '2.0.7'
+DEFAULT_CONDA_VERSION = '4.2.15'
+
 
 # ----------------------------------------------------------------------------
 # BUILD_SCRIPT_TEMPLATE
@@ -82,7 +84,7 @@ BUILD_SCRIPT_TEMPLATE = \
 #!/bin/bash
 set -e
 
-conda install conda-build={self.conda_build_version}
+conda install conda-build={self.conda_build_version} conda={self.conda_version}
 
 # Add the host's mounted conda-bld dir so that we can use its contents as
 # dependencies for building this recipe.
@@ -203,6 +205,7 @@ class RecipeBuilder(object):
         dockerfile_template=DOCKERFILE_TEMPLATE,
         use_host_conda_bld=False,
         conda_build_version=DEFAULT_CONDA_BUILD_VERSION,
+        conda_version=DEFAULT_CONDA_VERSION,
         pkg_dir=None,
     ):
         """
@@ -280,6 +283,8 @@ class RecipeBuilder(object):
         self.build_script_template = build_script_template
         self.dockerfile_template = dockerfile_template
         self.conda_build_version = conda_build_version
+        self.conda_version = conda_version
+
         uid = os.getuid()
         usr = pwd.getpwuid(uid)
         self.user_info = dict(

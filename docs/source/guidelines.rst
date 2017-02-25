@@ -495,4 +495,3 @@ version and put the recipe there. Examples of this can be found in `bowtie2
 `bx-python
 <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/bx-python>`_,
 and others.
-
