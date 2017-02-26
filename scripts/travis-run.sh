@@ -43,12 +43,20 @@ else
     USE_DOCKER=""
 fi
 
+PUSH_STATUS=""
+COMMIT_ARG=""
+if [[ $TRAVIS = "true" ]]
+then
+    PUSH_STATUS='--push-status'
+    COMMIT_ARG="--commit $TRAVIS_COMMIT"
+fi
 set -x
 bioconda-utils lint recipes config.yml \
     $RANGE_ARG \
-    --push-status \
-    --commit $TRAVIS_COMMIT \
+    $PUSH_STATUS \
+    $COMMIT_ARG \
     --user bioconda \
+    --cache .cache \
     --repo bioconda-recipes
 set +x
 
