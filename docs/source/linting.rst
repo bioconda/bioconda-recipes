@@ -20,6 +20,9 @@ For example, if the linter reports a `uses_setuptools` issue for
 `recipes/mypackage/0.1`, but you are certain the package really needs
 setuptools, you can add `[lint skip uses_setuptools for recipes/mypackage/0.1]`
 to the commit message and this linting test will be skipped on Travis-CI.
+Multiple tests can be skipped by adding additional special text. For example,
+`[lint skip uses_setuptools for recipes/pkg1] [lint skip in_other_channels for
+recipes/pkg2]`.
 
 Technically we check for the regular expression `\[\s*lint skip (?P<func>\w+)
 for (?P<recipe>.*?)\s*\]` in the commit message of the HEAD commit. However,
