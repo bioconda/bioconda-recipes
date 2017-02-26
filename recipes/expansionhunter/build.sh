@@ -10,6 +10,6 @@ export LDFLAGS='-stdlib=libc++'
 export LD_FLAGS='-stdlib=libc++'
 export CMAKE_LDFLAGS='-stdlib=libc++'
 fi
-cmake  -DBoost_DEBUG=ON .. #-DBOOST_ROOT=${PREFIX}
-make VERBOSE=1 
+cmake  ..
+make
 mv ExpansionHunter ${PREFIX}/bin/.
