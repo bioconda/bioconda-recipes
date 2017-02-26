@@ -196,6 +196,6 @@ def lint(packages, config, df, registry=None):
         # expand out the info into more columns
         info = pd.DataFrame(list(report['info'].values))
         report = pd.concat((report, info), axis=1)
+        return report
     else:
-        report = pd.DataFrame()
-    return report
+        return

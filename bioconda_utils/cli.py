@@ -49,7 +49,9 @@ logger = logging.getLogger(__name__)
      multiple times.''')
 @arg('--push-status', action='store_true', help='''If set, the lint status will
      be sent to the current commit on github. Also needs --user and --repo to
-     be set. Requires the env var GITHUB_TOKEN to be set.''')
+     be set. Requires the env var GITHUB_TOKEN to be set. Note that pull
+     requests from forks will not have access to encrypted variables on
+     travis-ci, so this feature may be of limited use.''')
 @arg('--commit', help='Commit on github on which to update status')
 @arg('--user', help='Github user')
 @arg('--repo', help='Github repo')
@@ -99,22 +101,26 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
         registry=registry,
     )
 
-    # the returned dataframe is in tidy format; summarize a bit to get a more
+    # The returned dataframe is in tidy format; summarize a bit to get a more
     # reasonable log
-    summarized = pandas.DataFrame(
-        dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
-    if len(summarized) > 0:
+    if report is not None:
+        summarized = pandas.DataFrame(
+            dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
         logger.error('The following recipes failed linting. See '
                      'https://bioconda.github.io/linting.html for details:\n%s\n',
                      summarized)
+
         if push_status:
-            github_integration.update_status(user, repo, commit, state='error',
-                                             context='linting',
-                                             description='linting failed, see travis log', target_url=None)
+            github_integration.update_status(
+                user, repo, commit, state='error', context='linting',
+                description='linting failed, see travis log', target_url=None)
         sys.exit(1)
+
     else:
-            update_status(user, repo, commit, state='success', context='linting',
-                          description='linting passed', target_url=None)
+        if push_status:
+            update_status(
+                user, repo, commit, state='success', context='linting',
+                description='linting passed', target_url=None)
 
 
 
@@ -197,7 +203,7 @@ def build(recipe_folder,
 
     # handle git range
     if git_range:
-        modified = utils.modified_recipes(git_range)
+        modified = utils.modified_recipes(git_range, recipe_folder)
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
             exit(0)
