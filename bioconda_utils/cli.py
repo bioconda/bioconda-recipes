@@ -101,7 +101,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
         dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
     if len(summarized) > 0:
         logger.error('The following recipes failed linting. See '
-                     'https://bioconda.github.io for details:\n%s\n',
+                     'https://bioconda.github.io/linting.html for details:\n%s\n',
                      summarized)
         if push_status:
             github_integration.update_status(user, repo, commit, state='error',
