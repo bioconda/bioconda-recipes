@@ -46,6 +46,8 @@ Please familiarize yourself with the :ref:`guidelines` for details on
 bioconda-specific policies.
 
 
+.. _test-locally:
+
 Test locally
 ~~~~~~~~~~~~
 To make sure your recipe works, there are several options. The quickest, but
@@ -55,11 +57,12 @@ not necessarily most complete, is to run conda-build directly::
 
 To test the recipe in a way more representative of the travis-ci environment,
 use the `simulate-travis.py` script in the top-level directory of the repo.
-`simulate-travis.py` reads the config files in the repo and sets things up as
-closely as possible to how the builds will be run on travis-ci. It should be
-run from the top-level dir of the repo. Any arguments are passed on to the
-`bioconda-utils build` command, so check `bioconda-utils build -h` for help and
-more options.
+Currently, it is mandatory to build any recipe *before* using
+`simulate-travis.py` for the first time. `simulate-travis.py` reads the config
+files in the repo and sets things up as closely as possible to how the builds
+will be run on travis-ci. It should be run from the top-level dir of the repo.
+Any arguments are passed on to the `bioconda-utils build` command, so check
+`bioconda-utils build -h` for help and more options.
 
 Some example commands:
 
