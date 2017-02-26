@@ -99,8 +99,10 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
     summarized = pandas.DataFrame(dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
     if len(summarized) > 0:
         if push_status:
-            update_status(user, repo, commit, state='error', context='linting',
-                          description='linting failed, see travis log', target_url=None)
+            github_integration.update_status(user, repo, commit, state='error',
+                                             context='linting',
+                                             description='linting failed, see
+                                             travis log', target_url=None)
         print(summarized)
         sys.exit(1)
     else:
