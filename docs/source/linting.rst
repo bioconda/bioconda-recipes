@@ -22,15 +22,17 @@ setuptools, you can add `[lint skip uses_setuptools for recipes/mypackage/0.1]`
 to the commit message and this linting test will be skipped on Travis-CI.
 
 Technically we check for the regular expression `\[\s*lint skip (?P<func>\w+)
-for (?P<recipe>.*?)\s*\]` in the environment variable `TRAVIS_COMMIT_MESSAGE`.
-When running `simulate-travis.py` locally for testing, you can add the special
-text to a temporary environment variable. The same example above could be
-tested locally like this::
+for (?P<recipe>.*?)\s*\]` in the commit message of the HEAD commit. However,
+often we want to test changes locally without committing.  When running
+`simulate-travis.py` locally for testing, you can add the same special text to
+a temporary environment variable `LINT_SKIP`. The same example above could be
+tested locally like this without having to make a commit::
 
-    TRAVIS_COMMIT_MESSAGE="[lint skip uses_setuptools for recipes/mypackage/0.1]" ./simulate-travis.py
+    LINT_SKIP="[lint skip uses_setuptools for recipes/mypackage/0.1]" ./simulate-travis.py
 
 Linting functions
 -----------------
+
 `in_other_channels`
 ~~~~~~~~~~~~~~~~~~
 The package exists in another dependent channel (currently conda-forge, r, and
