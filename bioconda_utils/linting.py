@@ -65,8 +65,10 @@ Perform various checks on recipes.
 import os
 import sys
 import glob
+import re
 import json
 import argparse
+from collections import defaultdict
 
 import pandas as pd
 import numpy as np
@@ -150,6 +152,20 @@ def lint(packages, config, df, registry=None):
         `lint_functions.registry`.
     """
 
+    if registry is None:
+        registry = lint_functions.registry
+
+    skip_dict = defaultdict(list)
+    if 'TRAVIS_COMMIT_MESSAGE' in os.environ:
+        # For example the following text in the commit message will skip
+        # lint_functions.uses_setuptools:
+        #
+        # [ lint skip uses_setuptools ]
+        skip_re = re.compile(r'\[\s*lint skip (?P<func>\w+) for (?P<recipe>.*?)\s*\]')
+        to_skip = skip_re.findall(os.environ['TRAVIS_COMMIT_MESSAGE'])
+        for func, recipe in to_skip:
+            skip_dict[recipe].append(func)
+
     hits = []
     for recipe in packages:
         try:
@@ -162,7 +178,11 @@ def lint(packages, config, df, registry=None):
                  'severity': 'ERROR',
                  'info': result})
             continue
+        skip_for_this_recipe = skip_dict[recipe]
         for func in registry:
+            if func.__name__ in skip_for_this_recipe:
+                logger.info('Commit message defines skip lint test %s for recipe %s' % (func.__name__, recipe))
+                continue
             result = func(recipe, meta, df)
             if result:
                 hits.append(
