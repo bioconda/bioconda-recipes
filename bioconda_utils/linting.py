@@ -156,17 +156,28 @@ def lint(packages, config, df, registry=None):
         registry = lint_functions.registry
 
     skip_dict = defaultdict(list)
-    if 'TRAVIS_COMMIT_MESSAGE' in os.environ:
-        # For example the following text in the commit message will skip
-        # lint_functions.uses_setuptools:
-        #
-        # [ lint skip uses_setuptools ]
-        print(os.environ['TRAVIS_COMMIT_MESSAGE'])
 
-        skip_re = re.compile(r'\[\s*lint skip (?P<func>\w+) for (?P<recipe>.*?)\s*\]')
-        to_skip = skip_re.findall(os.environ['TRAVIS_COMMIT_MESSAGE'])
-        for func, recipe in to_skip:
-            skip_dict[recipe].append(func)
+    txt = ""
+    if 'LINT_SKIP' in os.environ:
+        txt = os.environ['LINT_SKIP']
+    elif os.environ.get('TRAVIS') == 'true':
+        if os.environ.get('TRAVIS_COMMIT'):
+            # In pull requests, TRAVIS_COMMIT_MESSAGE doesn't seem to be the latest
+            # commit message but rather a "merge $hash1 into $hash2" message.
+            # So we extract the actual commit message here.
+            p = utils.run(['git', 'log', '--format=%B', '-n', '1', os.environ['TRAVIS_COMMIT']])
+            txt = p.stdout
+
+    # For example the following text in the commit message will skip
+    # lint_functions.uses_setuptools:
+    #
+    # [ lint skip uses_setuptools ]
+    print(txt)
+
+    skip_re = re.compile(r'\[\s*lint skip (?P<func>\w+) for (?P<recipe>.*?)\s*\]')
+    to_skip = skip_re.findall(txt)
+    for func, recipe in to_skip:
+        skip_dict[recipe].append(func)
 
     hits = []
     for recipe in packages:
