@@ -101,8 +101,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
         if push_status:
             github_integration.update_status(user, repo, commit, state='error',
                                              context='linting',
-                                             description='linting failed, see
-                                             travis log', target_url=None)
+                                             description='linting failed, see travis log', target_url=None)
         print(summarized)
         sys.exit(1)
     else:
