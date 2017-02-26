@@ -1,4 +1,17 @@
-#!/usr/bin/env python
+import os
+import re
+from collections import defaultdict
+
+import pandas as pd
+import numpy as np
+import ruamel_yaml as yaml
+import jinja2
+
+from . import utils
+from . import lint_functions
+
+import logging
+logger = logging.getLogger(__name__)
 
 """
 QC checks (linter) for recipes, returning a TSV of issues identified.
@@ -47,7 +60,8 @@ TODO:
 - currently we only check a single environment (see the `get_meta` function).
   This should probably be converted to a generator function.
 
-- currently we don't pay attention to py27/py3. It would be nice to handle that.
+- currently we don't pay attention to py27/py3. It would be nice to handle
+  that.
 
 - how to define valid licenses?
   (conda_build.metadata.ensure_valid_license_family is for family)
@@ -62,25 +76,6 @@ usage = """
 Perform various checks on recipes.
 """
 
-import os
-import sys
-import glob
-import re
-import json
-import argparse
-from collections import defaultdict
-
-import pandas as pd
-import numpy as np
-import ruamel_yaml as yaml
-import jinja2
-from conda_build import metadata
-
-from . import utils
-from . import lint_functions
-
-import logging
-logger = logging.getLogger(__name__)
 
 def get_meta(recipe, config):
     """
@@ -96,12 +91,14 @@ def get_meta(recipe, config):
     env = dict(next(iter(utils.EnvMatrix(yaml.load(open(env_matrix))))))
     pth = os.path.join(recipe, 'meta.yaml')
     jinja_env = jinja2.Environment()
-    content = jinja_env.from_string(open(pth, 'r', encoding='utf-8').read()).render(env)
+    content = jinja_env.from_string(
+        open(pth, 'r', encoding='utf-8').read()).render(env)
     meta = yaml.load(content, yaml.RoundTripLoader)
     return meta
 
 
-def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge', 'defaults', 'r']):
+def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
+                                            'defaults', 'r']):
     if cache is not None and os.path.exists(cache):
         df = pd.read_table(cache)
     else:
@@ -117,7 +114,10 @@ def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge', 'defaults
                     'default_python_version',
                     'platform',
                     'subdir'])
-                for k in ['build', 'build_number', 'name', 'version', 'license', 'platform']:
+                for k in [
+                    'build', 'build_number', 'name', 'version', 'license',
+                    'platform'
+                ]:
                     x[k] = x['packages'].apply(lambda y: y.get(k, np.nan))
 
                 x['channel'] = channel
@@ -170,7 +170,10 @@ def lint(packages, config, df, registry=None):
     if not on_travis and 'LINT_SKIP' in os.environ:
         txt = os.environ['LINT_SKIP']
     if on_travis and pull_request:
-        p = utils.run(['git', 'log', '--format=%B', '-n', '1', os.environ['TRAVIS_PULL_REQUEST_SHA']])
+        p = utils.run(
+            ['git', 'log', '--format=%B', '-n', '1',
+             os.environ['TRAVIS_PULL_REQUEST_SHA']]
+        )
         txt = p.stdout
 
     # For example the following text in the commit message will skip
@@ -179,7 +182,8 @@ def lint(packages, config, df, registry=None):
     # [ lint skip uses_setuptools ]
     print('txt:', txt)
 
-    skip_re = re.compile(r'\[\s*lint skip (?P<func>\w+) for (?P<recipe>.*?)\s*\]')
+    skip_re = re.compile(
+        r'\[\s*lint skip (?P<func>\w+) for (?P<recipe>.*?)\s*\]')
     to_skip = skip_re.findall(txt)
     for func, recipe in to_skip:
         skip_dict[recipe].append(func)
@@ -188,7 +192,9 @@ def lint(packages, config, df, registry=None):
     for recipe in packages:
         try:
             meta = get_meta(recipe, config)
-        except (yaml.scanner.ScannerError, yaml.constructor.ConstructorError) as e:
+        except (
+            yaml.scanner.ScannerError, yaml.constructor.ConstructorError
+        ) as e:
             result = {'parse_error': str(e)}
             hits.append(
                 {'recipe': recipe,
@@ -199,7 +205,9 @@ def lint(packages, config, df, registry=None):
         skip_for_this_recipe = skip_dict[recipe]
         for func in registry:
             if func.__name__ in skip_for_this_recipe:
-                logger.info('Commit message defines skip lint test %s for recipe %s' % (func.__name__, recipe))
+                logger.info(
+                    'Commit message defines skip lint test %s for recipe %s'
+                    % (func.__name__, recipe))
                 continue
             result = func(recipe, meta, df)
             if result:
