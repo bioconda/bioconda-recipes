@@ -1,26 +1,37 @@
+{% set name = "BBMap" %}
+{% set version = "36.84" %}
+{% set sha256 = "2ae82c8265cd7d6d7b4338c71335a2567d54cef51cb871bb2d4f337bae52315a" %}
+
 about:
-    home: 'https://sourceforge.net/projects/bbmap'
-    license: "UC-LBL license (see package)"
-    summary: "BBMap is a short read aligner, as well as various other bioinformatic tools"
+  home: 'https://sourceforge.net/projects/bbmap'
+  license: "UC-LBL license (see package)"
+  summary: "BBMap is a short read aligner, as well as various other bioinformatic tools"
+
 build:
   number: 0
   skip: True # [osx]
+
 package:
-  name: bbmap
-  version: '36.32'
+  name: {{ name|lower }}
+  version: {{ version }}
+
 source:
-  fn: BBMap_36.32.tar.gz
-  md5: 3a9105f400b980ca84aeb3d95cb329b9
-  url: http://downloads.sourceforge.net/project/bbmap/BBMap_36.32.tar.gz
-  #patches:
-  #  - patch1.patch
+  fn: {{ name|lower }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  url: http://downloads.sourceforge.net/project/{{ name|lower }}/{{ name }}_{{ version }}.tar.gz
+
 requirements:
   build:
-    - java-jdk # [not osx]
+    - openjdk # [not osx]
   run:
-    - java-jdk # [not osx]
-extra:
-  notes: "BBMap is a series of Java programs, but they come with a number of custom wrapper shell scripts. Each of these is symlinked to the conda bin directory during install."
+    - openjdk # [not osx]
+
 test:
-    commands:
-        - bbmap.sh -V 2>&1 | grep "Executing" > /dev/null
+  commands:
+    - bbmap.sh -V 2>&1 | grep "Executing" > /dev/null
+
+extra:
+  notes: |
+    BBMap is a series of Java programs, but they come with a number of custom
+    wrapper shell scripts. Each of these is symlinked to the conda bin directory
+    during install.

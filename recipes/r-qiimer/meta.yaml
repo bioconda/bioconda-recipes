@@ -1,0 +1,42 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-qiimer
+  version: "0.9.4"
+
+source:
+  fn: qiimer_0.9.4.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/qiimer_0.9.4.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/qiimer/qiimer_0.9.4.tar.gz
+
+build:
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: testthat, biom
+requirements:
+  build:
+    - r
+    - r-pheatmap
+
+  run:
+    - r
+    - r-pheatmap
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('qiimer')" # [not win]
+    - "\"%R%\" -e \"library('qiimer')\"" # [win]
+
+about:
+  home: http://www.r-project.org
+  license: GPL (>= 2)
+  summary: Open QIIME output files in R, compute statistics, and create plots from the data.
+  license_family: GPL3

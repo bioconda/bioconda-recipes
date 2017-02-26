@@ -1,0 +1,99 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-vgam
+  # Note that conda versions cannot contain -, so any -'s in the version have
+  # been replaced with _'s.
+  version: "1.0_2"
+
+source:
+  fn: VGAM_1.0-2.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/VGAM_1.0-2.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/VGAM/VGAM_1.0-2.tar.gz
+
+
+  # You can add a hash for the file here, like md5 or sha1
+  # md5: 49448ba4863157652311cc5ea4fea3ea
+  # sha1: 3bcfbee008276084cbb37a2b453963c61176a322
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # If this is a new build for the same version, increment the build
+  # number. If you do not include this key, it defaults to 0.
+  # number: 1
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: VGAMdata, MASS, mgcv
+requirements:
+  build:
+    - r
+    - posix               # [win]
+    - {{native}}toolchain # [win]
+    - gcc                 # [not win]
+
+  run:
+    - r
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('VGAM')" # [not win]
+    - "\"%R%\" -e \"library('VGAM')\"" # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://www.stat.auckland.ac.nz/~yee/VGAM
+  license: GPL-2 | GPL-3
+  summary: 'An implementation of about 6 major classes of statistical regression models. At the
+    heart of it are the vector generalized linear and additive model (VGLM/VGAM) classes,
+    and the book "Vector Generalized Linear and Additive Models: With an Implementation
+    in R" (Yee, 2015) <DOI:10.1007/978-1-4939-2818-7> gives details of the statistical
+    framework and VGAM package. Currently only fixed-effects models are implemented,
+    i.e., no random-effects models. Many (150+) models and distributions are estimated
+    by maximum likelihood estimation (MLE) or penalized MLE, using Fisher scoring. VGLMs
+    can be loosely thought of as multivariate GLMs. VGAMs are data-driven VGLMs (i.e.,
+    with smoothing). The other classes are RR-VGLMs (reduced-rank VGLMs), quadratic
+    RR-VGLMs, reduced-rank VGAMs, RCIMs (row-column interaction models)---these classes
+    perform constrained and unconstrained quadratic ordination (CQO/UQO) models in ecology,
+    as well as constrained additive ordination (CAO). Note that these functions are
+    subject to change; see the NEWS and ChangeLog files for latest changes.'
+
+  license_family: GPL3
+
+# The original CRAN metadata for this package was:
+
+# Package: VGAM
+# Version: 1.0-2
+# Date: 2016-05-26
+# Title: Vector Generalized Linear and Additive Models
+# Author: Thomas W. Yee <t.yee@auckland.ac.nz>
+# Maintainer: Thomas Yee <t.yee@auckland.ac.nz>
+# Depends: R (>= 3.1.0), methods, stats, stats4, splines
+# Suggests: VGAMdata, MASS, mgcv
+# Description: An implementation of about 6 major classes of statistical regression models. At the heart of it are the vector generalized linear and additive model (VGLM/VGAM) classes, and the book "Vector Generalized Linear and Additive Models: With an Implementation in R" (Yee, 2015) <DOI:10.1007/978-1-4939-2818-7> gives details of the statistical framework and VGAM package. Currently only fixed-effects models are implemented, i.e., no random-effects models. Many (150+) models and distributions are estimated by maximum likelihood estimation (MLE) or penalized MLE, using Fisher scoring. VGLMs can be loosely thought of as multivariate GLMs. VGAMs are data-driven VGLMs (i.e., with smoothing). The other classes are RR-VGLMs (reduced-rank VGLMs), quadratic RR-VGLMs, reduced-rank VGAMs, RCIMs (row-column interaction models)---these classes perform constrained and unconstrained quadratic ordination (CQO/UQO) models in ecology, as well as constrained additive ordination (CAO). Note that these functions are subject to change; see the NEWS and ChangeLog files for latest changes.
+# License: GPL-2 | GPL-3
+# URL: https://www.stat.auckland.ac.nz/~yee/VGAM
+# NeedsCompilation: yes
+# BuildVignettes: yes
+# LazyLoad: yes
+# LazyData: yes
+# Packaged: 2016-05-26 13:22:19 UTC; tyee001
+# Repository: CRAN
+# Date/Publication: 2016-05-27 18:08:24
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml

@@ -5,18 +5,30 @@ package:
 source:
   url: https://www.mdc-berlin.de/45995549/en/research/research_teams/systems_biology_of_gene_regulatory_elements/projects/miRDeep/mirdeep2_0_0_8.zip
   md5: a707f7d7ad4a2975fb8b2e78c5bcf483
+  patches:
+    - mirdeep2.patch
 
 build:
-  number: 0
+  number: 2
+  skip: False
 
 requirements:
-  build:
-    - perl-threaded
-    - perl-pdf-api2
 
   run:
-    - perl-threaded
+    - bowtie
+    - viennarna
+    - randfold
     - perl-pdf-api2
+    - perl-font-ttf
+    - perl-compress-raw-zlib
+    - perl-threaded
+    - perl-lwp-simple
+
+test:
+  commands:
+    - make_html.pl
+    - miRDeep2.pl -h
+    - quantifier.pl || [[ $? == 255 ]]
 
 about:
   home: https://www.mdc-berlin.de/8551903/en/research/research_teams/systems_biology_of_gene_regulatory_elements/projects/miRDeep
