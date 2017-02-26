@@ -165,7 +165,7 @@ def lint(packages, config, df, registry=None):
             # In pull requests, TRAVIS_COMMIT_MESSAGE doesn't seem to be the latest
             # commit message but rather a "merge $hash1 into $hash2" message.
             # So we extract the actual commit message here.
-            p = utils.run(['git', 'log', '--format=%B', '-n', '1', os.environ['TRAVIS_COMMIT']])
+            p = utils.run(['git', 'log', '--format=%B', '-n', '1', 'HEAD'])
             txt = p.stdout
 
     # For example the following text in the commit message will skip
