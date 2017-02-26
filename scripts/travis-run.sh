@@ -39,6 +39,15 @@ else
     USE_DOCKER=""
 fi
 
+set -x
+bioconda-utils lint recipes config.yml \
+    $RANGE_ARG \
+    --push-status \
+    --commit $TRAVIS_COMMIT \
+    --user bioconda \
+    --repo bioconda-recipes
+set +x
+
 set -x; bioconda-utils build recipes config.yml $USE_DOCKER $BIOCONDA_UTILS_ARGS $RANGE_ARG; set +x;
 
 
