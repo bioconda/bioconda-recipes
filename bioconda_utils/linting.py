@@ -157,23 +157,27 @@ def lint(packages, config, df, registry=None):
 
     skip_dict = defaultdict(list)
 
+    # We want to get the commit message of HEAD to see if we should skip any
+    # linting tests. However, for PRs, travis tests the merge from PR to
+    # master. This means that we can't rely on "TRAVIS_COMMIT_MESSAGE" env var
+    # since, for PRs, it will be "merge $hash into $hash".
+    #
+    # For PRs, we need TRAVIS_PULL_REQUEST_SHA
+    on_travis = os.environ.get('TRAVIS') == 'true'
+    pull_request = os.environ.get('TRAVIS_PULL_REQUEST', 'false') != 'false'
+
     txt = ""
-    if 'LINT_SKIP' in os.environ:
+    if not on_travis and 'LINT_SKIP' in os.environ:
         txt = os.environ['LINT_SKIP']
-    elif os.environ.get('TRAVIS') == 'true':
-        if os.environ.get('TRAVIS_COMMIT'):
-            # In pull requests, TRAVIS_COMMIT_MESSAGE doesn't seem to be the latest
-            # commit message but rather a "merge $hash1 into $hash2" message.
-            # So we extract the actual commit message here.
-            p = utils.run(['git', 'log', '--format=%B', '-n', '1', 'HEAD~'])
-            txt = p.stdout
+    if on_travis and pull_request:
+        p = utils.run(['git', 'log', '--format=%B', '-n', '1', os.environ['TRAVIS_PULL_REQUEST_SHA']])
+        txt = p.stdout
 
     # For example the following text in the commit message will skip
     # lint_functions.uses_setuptools:
     #
     # [ lint skip uses_setuptools ]
     print('txt:', txt)
-    print('commit:', os.environ['TRAVIS_COMMIT'])
 
     skip_re = re.compile(r'\[\s*lint skip (?P<func>\w+) for (?P<recipe>.*?)\s*\]')
     to_skip = skip_re.findall(txt)
