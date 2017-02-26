@@ -103,3 +103,28 @@ which case this can be overridden.
 ~~~~~~~~~~~~~~~~~~~~~~
 Since bioconda does not support Windows, any `*.bat` files should be removed
 from the recipe.
+
+Developer docs
+--------------
+Lint functions are defined in `bioconda_utils.lint_functions`. Each function accepts three arguments:
+
+- `recipe`, the path to the recipe
+- `meta`, the meta.yaml file parsed into a dictionary
+- `df`, a dataframe channel info, typically as returned from
+  `linting.channel_dataframe` and is expected to have the following columns:
+  [build, build_number, name, version, license, platform, channel].
+
+We need `recipe` because some lint functions check files (e.g.,
+`has_windows_bat_file`). We need `meta` because even though we can parse it
+from `recipe` within each lint function, it's faster if we parse the meta.yaml
+once and pass it to many lint functions. We need `df` because we need channel
+info to figure out if a version or build number needs to be bumped relative to
+what's already in the channel.
+
+If the linting test passes, the function should return None. Otherwise it
+should return a dictionary. The keys in the dict will be propagated to columns
+of a pandas DataFrame for downstream processing and so can be somewhat
+arbitrary.
+
+After adding a new linting function, add it to the
+`bioconda_utils.lint_functions.registry` tuple so that it gets used by default.

@@ -1,26 +1,3 @@
-"""
-Functions to apply to recipes.
-
-To add a new QC check, write a function that accepts three arguments (recipe,
-meta, df). `recipe` is the path to the recipe, `meta` is the meta.yaml file
-parsed into a dict, and `df` is a dataframe returned from
-`linting.channel_dataframe` and can be expected to contain the columns:
-
-    [build, build_number, name, version, license, platform, channel]
-
-If the recipe passes the QC check, return None. Otherwise, return a dictionary
-with additional extra information.
-
-To actually *use* the function it should be added to the global `registry`
-tuple so that other code knows it's a QC check function.
-
-(Note: even though we can parse `meta` from `recipe`, both are passed to speed
-things up. We need the recipe dir to do things like check for test scripts, and
-we only want to parse the meta.yaml once and pass it to check functions.  The
-dataframe takes a little time to download, and some checks need it, so we just
-do it once and pass it around)
-"""
-
 import os
 import glob
 
@@ -39,9 +16,9 @@ def _subset_df(recipe, meta, df):
     if build_section:
         build_number = int(build_section.get('number', 0))
     return df[
-        (df.name == name)
-        & (df.version == version)
-        & (df.build_number == build_number)
+        (df.name == name) &
+        (df.version == version) &
+        (df.build_number == build_number)
     ]
 
 
@@ -104,7 +81,8 @@ def missing_license(recipe, meta, df):
 def missing_tests(recipe, meta, df):
     test_files = ['run_test.py', 'run_test.sh', 'run_test.pl']
     if 'test' not in meta:
-        if not any([os.path.exists(os.path.join(recipe, f)) for f in test_files]):
+        if not any([os.path.exists(os.path.join(recipe, f)) for f in
+                    test_files]):
             return {
                 'no_tests': True,
                 'fix': 'add basic tests',
@@ -119,7 +97,6 @@ def missing_hash(recipe, meta, df):
             return
     except KeyError:
         return
-
 
     if not any(
         (
