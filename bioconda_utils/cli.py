@@ -12,12 +12,15 @@ import argh
 from argh import arg
 import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
+import pandas
+
 
 from . import utils
 from .build import build_recipes
 from . import docker_utils
 from . import lint_functions
 from . import linting
+from . import github_integration
 
 logger = logging.getLogger(__name__)
 # NOTE:
@@ -44,26 +47,66 @@ logger = logging.getLogger(__name__)
      multiple times.''')
 @arg('--exclude', nargs='+', help='''Exclude this linting function. Can be used
      multiple times.''')
+@arg('--push-status', action='store_true', help='''If set, the lint status will
+     be sent to the current commit on github. Also needs --user and --repo to
+     be set. Requires the env var GITHUB_TOKEN to be set.''')
+@arg('--commit', help='Commit on github on which to update status')
+@arg('--user', help='Github user')
+@arg('--repo', help='Github repo')
+@arg('--git-range', help='Git range', nargs=2)
 def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
-         only=None, exclude=None):
+         only=None, exclude=None, push_status=False, user='bioconda',
+         commit=None, repo='bioconda-recipes', git_range=None):
+    """
+    Lint recipes
+
+    If --push-status is not set, reports a TSV of linting results to stdout.
+    Otherwise pushes a commit status to the specified commit on github.
+    """
     if list_funcs:
         print('\n'.join([i.__name__ for i in lint_functions.registry]))
         sys.exit(0)
+
     df = linting.channel_dataframe(cache=cache)
     registry = lint_functions.registry
+
     if only is not None:
         registry = list(filter(lambda x: x.__name__ in only, registry))
         if len(registry) == 0:
             sys.stderr.write('No valid linting functions selected, exiting.\n')
             sys.exit(1)
+
+    # returns recipe_folder/package
+    recipes = list(utils.get_recipes(recipe_folder, package=packages))
+
+    if git_range:
+        # returns recipe_folder/package/meta.yaml
+        modified = utils.modified_recipes(git_range, recipe_folder, full=True)
+        if not modified:
+            logger.info('No recipe modified according to git, exiting.')
+            return
+        recipes = [os.path.dirname(f) for f in modified]
+        print(recipes)
+        logger.info('Recipes modified according to git: {}'.format(' '.join(packages)))
+
     report = linting.lint(
-        recipe_folder=recipe_folder,
+        recipes,
         config=config,
         df=df,
         registry=registry,
-        packages=packages,
     )
-    report.to_csv(sys.stdout, sep='\t', index=False)
+
+    summarized = pandas.DataFrame(dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
+    if len(summarized) > 0:
+        if push_status:
+            update_status(user, repo, commit, state='error', context='linting',
+                          description='linting failed, see travis log', target_url=None)
+        print(summarized)
+        sys.exit(1)
+    else:
+            update_status(user, repo, commit, state='success', context='linting',
+                          description='linting passed', target_url=None)
+
 
 
 @arg('recipe_folder', help='Path to top-level dir of recipes.')

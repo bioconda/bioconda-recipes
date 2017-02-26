@@ -123,54 +123,30 @@ def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge', 'defaults
     return df
 
 
-def lint(recipe_folder, config, df, registry=None, packages="*", quick=False):
+def lint(packages, config, df, registry=None):
     """
     Parameters
     ----------
 
-    recipe_folder : str
-        Path to top-level recipes dir
+    packages : list
+        List of packages to lint
 
     config : str, dict
-        If str, path to config file. If dict, parsed version of the config
-        file. If `quick=True`, then must be path to config file.
+        Used to pass any necessary environment variables (CONDA_BOOST, etc) to
+        meta.yaml files. If str, path to config file. If dict, parsed version
+        of the config file. If `quick=True`, then must be path to config file.
 
     df : pandas.DataFrame
         Dataframe containing channel data, typically as output from
-        `channel_dataframe()`.
+        `channel_dataframe()`
 
     registry : list or tuple
         List of functions to apply to each recipe. If None, defaults to
         `lint_functions.registry`.
-
-    packages : str
-        Glob of packages to find within `recipe_folder`
-
-    quick : bool
-        If True, then subset `packages` to be only those that have changed
-        recently.
     """
-    recipes = list(utils.get_recipes(recipe_folder, package=packages))
-    if quick:
-        if not isinstance(config, str):
-            raise ValueError("Need a config filename (and not a dict) for "
-                             "quick filtering since we need to check that "
-                             "file in the master branch")
-        unblacklisted = [
-            os.path.join(recipe_folder, i)
-            for i in utils.newly_unblacklisted(orig_config, recipe_folder)
-        ]
-        logger.debug('Unblacklisted: %s', unblacklisted)
-        changed = [
-            os.path.join(recipe_folder, i) for i in
-            utils.changed_since_master(recipe_folder)
-        ]
-        logger.debug('Changed: %s', changed)
-        recipes = set(unblacklisted + changed).intersection(recipes)
-        logger.debug('Quick-filtered recipes: %s', recipes)
 
     hits = []
-    for recipe in recipes:
+    for recipe in packages:
         try:
             meta = get_meta(recipe, config)
         except (yaml.scanner.ScannerError, yaml.constructor.ConstructorError) as e:
