@@ -65,14 +65,17 @@ Perform various checks on recipes.
 import os
 import sys
 import glob
+import json
+import argparse
+
 import pandas as pd
 import numpy as np
 import ruamel_yaml as yaml
 import jinja2
-import json
-import argparse
 from conda_build import metadata
-from bioconda_utils import utils
+
+from . import utils
+from . import lint_functions
 
 import logging
 logger = logging.getLogger(__name__)
