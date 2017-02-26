@@ -86,7 +86,6 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
             logger.info('No recipe modified according to git, exiting.')
             return
         recipes = [os.path.dirname(f) for f in modified]
-        print(recipes)
         logger.info('Recipes modified according to git: {}'.format(' '.join(packages)))
 
     report = linting.lint(
@@ -96,13 +95,16 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
         registry=registry,
     )
 
-    summarized = pandas.DataFrame(dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
+    # the returned dataframe is in tidy format; summarize a bit to get a more
+    # reasonable log
+    summarized = pandas.DataFrame(
+        dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
     if len(summarized) > 0:
+        logger.error('The following recipes failed linting:%s\n', summarized)
         if push_status:
             github_integration.update_status(user, repo, commit, state='error',
                                              context='linting',
                                              description='linting failed, see travis log', target_url=None)
-        print(summarized)
         sys.exit(1)
     else:
             update_status(user, repo, commit, state='success', context='linting',
