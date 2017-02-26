@@ -172,7 +172,8 @@ def lint(packages, config, df, registry=None):
     # lint_functions.uses_setuptools:
     #
     # [ lint skip uses_setuptools ]
-    print(txt)
+    print('txt:', txt)
+    print('commit:', os.environ['TRAVIS_COMMIT'])
 
     skip_re = re.compile(r'\[\s*lint skip (?P<func>\w+) for (?P<recipe>.*?)\s*\]')
     to_skip = skip_re.findall(txt)
