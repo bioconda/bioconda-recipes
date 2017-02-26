@@ -54,15 +54,19 @@ logger = logging.getLogger(__name__)
 @arg('--user', help='Github user')
 @arg('--repo', help='Github repo')
 @arg('--git-range', help='Git range', nargs=2)
+@arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
 def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
          only=None, exclude=None, push_status=False, user='bioconda',
-         commit=None, repo='bioconda-recipes', git_range=None):
+         commit=None, repo='bioconda-recipes', git_range=None, loglevel='info'):
     """
     Lint recipes
 
     If --push-status is not set, reports a TSV of linting results to stdout.
     Otherwise pushes a commit status to the specified commit on github.
     """
+    LEVEL = getattr(logging, loglevel.upper())
+    logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
+    logging.getLogger('bioconda_utils').setLevel(getattr(logging, loglevel.upper()))
     if list_funcs:
         print('\n'.join([i.__name__ for i in lint_functions.registry]))
         sys.exit(0)

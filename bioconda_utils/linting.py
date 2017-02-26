@@ -74,6 +74,8 @@ import argparse
 from conda_build import metadata
 from bioconda_utils import utils
 
+import logging
+logger = logging.getLogger(__name__)
 
 def get_meta(recipe, config):
     """
