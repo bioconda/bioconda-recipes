@@ -9,9 +9,6 @@ mkdir -p $PREFIX/bin
 cp *.py $PREFIX/bin
 cp *.sh $PREFIX/bin
 
-cp ctgvalidate $PREFIX/bin
-cp extract_fastqread $PREFIX/bin
-
 binaries="\
 ctgvalidate \
 extract_fastqread \
