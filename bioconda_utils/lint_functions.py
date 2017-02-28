@@ -22,6 +22,28 @@ def _subset_df(recipe, meta, df):
     ]
 
 
+def _get_deps(meta, section=None):
+    """
+    meta : dict-like
+        Parsed meta.yaml file.
+
+    section : str, list, or None
+        If None, returns all dependencies. Otherwise can be a string or list of
+        options [build, run, test] to return section-specific dependencies.
+    """
+    reqs = meta.get('requirements')
+    if reqs is None:
+        return []
+    if section is None:
+        sections = ['build', 'run', 'test']
+    if isinstance(section, str):
+        sections = [section]
+    deps = []
+    for s in sections:
+        deps += reqs.get(s, [])
+    return deps
+
+
 def in_other_channels(recipe, meta, df):
     """
     Does the package exist in any other non-bioconda channels?
@@ -127,17 +149,6 @@ def uses_git_url(recipe, meta, df):
         return
 
 
-def _get_deps(meta):
-    reqs = meta.get('requirements')
-    if reqs is None:
-        return []
-    return [
-        i for i in
-        [reqs.get('build'), reqs.get('run'), reqs.get('test')]
-        if i is not None
-    ]
-
-
 def uses_perl_threaded(recipe, meta, df):
     if 'perl-threaded' in _get_deps(meta):
         return {
@@ -151,8 +162,7 @@ def uses_javajdk(recipe, meta, df):
         return {
             'depends_on_java-jdk': True,
             'fix': 'use "openjdk" instead of "java-jdk"',
-
-               }
+        }
 
 
 def uses_setuptools(recipe, meta, df):
