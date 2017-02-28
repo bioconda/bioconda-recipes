@@ -15,6 +15,7 @@ import requests
 from jsonschema import validate
 import datetime
 import tempfile
+from distutils.version import LooseVersion
 
 
 from conda_build import api
@@ -653,14 +654,28 @@ def modified_recipes(git_range, recipe_folder, full=False):
     full : bool
         If True, include the recipe_folder in the path
     """
-    p = run(
+    cmds = (
         ['git', 'diff', '--relative={}'.format(recipe_folder), '--name-only'] +
         git_range +
         [
             os.path.join(recipe_folder, '*', 'meta.yaml'),
             os.path.join(recipe_folder, '*', '*', 'meta.yaml')
-        ],
+        ]
     )
+    shell = False
+
+    # git expands globs only in versions >2, so if it's older than that we need
+    # to run the command using shell=True so that globs are expanded.
+    p = run(['git', '--version'])
+    git_version = LooseVersion(p.stdout.split()[-1])
+    if git_version < LooseVersion('2'):
+        logger.warn(
+            'git version (%s) is < 2.0. Running git diff using shell=True. '
+            'Please consider upgrading git', git_version)
+        cmds = ' '.join(cmds)
+        shell = True
+
+    p = run(cmds, shell=shell)
 
     modified = [os.path.join(recipe_folder, m) for m in p.stdout.strip().split('\n')]
 
