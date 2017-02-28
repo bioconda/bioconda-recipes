@@ -8,7 +8,6 @@ export CPPFLAGS="-I${PREFIX}/include"
 
 cmake \
     -B ./build \
-    -H .
     -D CMAKE_INSTALL_PREFIX=${PREFIX} \
     -D CMAKE_INSTALL_RPATH:STRING=${PREFIX}/lib \
     -D CMAKE_BUILD_TYPE:STRING=Release \
@@ -19,6 +18,7 @@ cmake \
     -D OPENSLIDE_INCLUDE_DIR:STRING=${PREFIX}/include \
     -D DCMTKJPEG_LIBRARY:STRING=${PREFIX}/lib \
     -D DCMTKJPEG_INCLUDE_DIR:STRING=${PREFIX}/include \
+    .
 
 make -j$CPU_COUNT
 make install
