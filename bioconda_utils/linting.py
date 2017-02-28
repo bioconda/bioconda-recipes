@@ -180,7 +180,6 @@ def lint(packages, config, df, registry=None):
     # lint_functions.uses_setuptools:
     #
     # [ lint skip uses_setuptools ]
-    print('txt:', txt)
 
     skip_re = re.compile(
         r'\[\s*lint skip (?P<func>\w+) for (?P<recipe>.*?)\s*\]')
