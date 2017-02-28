@@ -166,7 +166,7 @@ def uses_javajdk(recipe, meta, df):
 
 
 def uses_setuptools(recipe, meta, df):
-    if 'setuptools' in _get_deps(meta):
+    if 'setuptools' in _get_deps(meta, 'run'):
         return {
             'depends_on_setuptools': True,
             'fix': 'setuptools may not be required',
