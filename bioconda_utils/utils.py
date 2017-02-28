@@ -662,7 +662,11 @@ def modified_recipes(git_range, recipe_folder, full=False):
         ],
     )
 
-    modified = p.stdout.strip().split('\n')
+    modified = [os.path.join(recipe_folder, m) for m in p.stdout.strip().split('\n')]
+
+    # exclude recipes that were deleted in the git-range
+    existing = list(filter(os.path.exists, modified))
+
     if full:
-        return [os.path.join(recipe_folder, p) for p in modified]
-    return modified
+        return existing
+    return [os.path.relpath(recipe_folder, m) for m in existing]
