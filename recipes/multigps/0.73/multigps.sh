@@ -1,5 +1,5 @@
 #!/bin/bash
-# Wraps multigps tool
+# Wraps MultiGPS tool
 set -o pipefail
 
 # Find original directory of bash script, resolving symlinks
