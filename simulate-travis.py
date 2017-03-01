@@ -143,6 +143,7 @@ if os.environ.get('TRAVIS', None) != 'true':
 
     env['TRAVIS_BRANCH'] = 'false'
     env['TRAVIS_PULL_REQUEST'] = 'false'
+    env['TRAVIS_REPO_SLUG'] = 'false'
 
     # Any additional arguments from the command line are added here.
     env['BIOCONDA_UTILS_ARGS'] += ' ' + ' '.join(extra)
