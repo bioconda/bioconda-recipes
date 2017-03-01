@@ -119,6 +119,7 @@ if args.install_requirements:
         check=True)
     sys.exit(0)
 
+# Only run if we're not on travis.
 if os.environ.get('TRAVIS', None) != 'true':
 
     # export this so downstream scripts have something to check in set -e mode
@@ -132,8 +133,8 @@ if os.environ.get('TRAVIS', None) != 'true':
     env['SUBDAGS'] = '1'
     env['SUBDAG'] = '0'
 
-    # These are set by the travis-ci environment; so that it works in other
-    # environment, here we only set the variables used by bioconda-utils.
+    # When running on travis, these are set by the travis-ci environment, but
+    # when running locally we have to simulate them.
     #
     # See https://docs.travis-ci.com/user/environment-variables for more.
     if platform.system() == 'Darwin':
