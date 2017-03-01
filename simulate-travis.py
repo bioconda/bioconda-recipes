@@ -120,6 +120,10 @@ if args.install_requirements:
     sys.exit(0)
 
 if os.environ.get('TRAVIS', None) != 'true':
+
+    # export this so downstream scripts have something to check in set -e mode
+    env['TRAVIS'] = 'false'
+
     # SUBDAG is set by travis-ci according to the matrix in .travis.yml, so here we
     # force it to just use one. The default is to run two parallel jobs, but here
     # we set SUBDAGS to 1 so we only run a single job.
@@ -139,6 +143,7 @@ if os.environ.get('TRAVIS', None) != 'true':
 
     env['TRAVIS_BRANCH'] = 'false'
     env['TRAVIS_PULL_REQUEST'] = 'false'
+    env['TRAVIS_REPO_SLUG'] = 'false'
 
     # Any additional arguments from the command line are added here.
     env['BIOCONDA_UTILS_ARGS'] += ' ' + ' '.join(extra)

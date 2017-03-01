@@ -1,0 +1,58 @@
+{% set name = "MetaProb" %}
+{% set version = "2" %}
+{% set sha256 = "c8cb4394c1f183d693802c357bb2506b5649f7ad9cc1c56f3768c3e074f958b6" %}
+{% set md5 = "4271f038dac8a3a0cc0dca53151e7154" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name|lower }}-{{ version }}.tar.gz
+  url: https://bitbucket.org/samu661/metaprob/downloads/{{ name }}_v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  md5: {{ md5 }}
+  patches:
+    - makefile.patch
+
+build:
+  number: 1
+  skip: True  # [ osx ]
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+
+requirements:
+  build:
+    - gcc  # [linux]
+    - llvm  # [osx]
+    - eigen
+    - boost {{ CONDA_BOOST }}*
+
+  run:
+    - libgcc  # [linux]
+    - eigen
+    - boost {{ CONDA_BOOST }}*
+
+test:
+  commands:
+    - command -v MetaProb
+    - MetaProb > /dev/null
+
+about:
+  home: https://bitbucket.org/samu661/metaprob/
+  license: "copyright"
+  summary: "assembly-assisted tool for un-supervised metagenomic binning"
+  description: |
+    MetaProb is a novel assembly-assisted tool for un-supervised metagenomic
+    binning. The novelty of MetaProb derives from solving a few important
+    problems: how to divide reads into groups of independent reads, so that
+    l-mer frequencies are not overestimated; how to convert l-mer counts into
+    probabilistic sequence signatures, that will correct for variable
+    distribution of l-mers, and for unbalanced groups of reads, in order to
+    produce better estimates of the underlying genome statistic. We show that
+    MetaProb is effective for both simulated and real datasets. It can
+    accurately (with F-measures of 87 for short reads and 97 long reads) and
+    efficiently bin short and long reads with varying abundance ratios.
+
+extra:
+  maintainers:
+    - keuv-grvl
