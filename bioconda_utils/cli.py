@@ -98,6 +98,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
         recipes,
         config=config,
         df=df,
+        exclude=exclude,
         registry=registry,
     )
 

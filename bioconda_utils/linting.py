@@ -1,5 +1,6 @@
 import os
 import re
+import itertools
 from collections import defaultdict
 
 import pandas as pd
@@ -130,7 +131,7 @@ def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
     return df
 
 
-def lint(packages, config, df, registry=None):
+def lint(packages, config, df, exclude=None, registry=None):
     """
     Parameters
     ----------
@@ -146,6 +147,14 @@ def lint(packages, config, df, registry=None):
     df : pandas.DataFrame
         Dataframe containing channel data, typically as output from
         `channel_dataframe()`
+
+    exclude : list
+        List of function names in `registry` to skip globally. When running on
+        travis, this will be merged with anything else detected from the commit
+        message or LINT_SKIP environment variable using the special string
+        "[skip lint <function name> for <recipe name>]". While those other
+        mechanisms define skipping on a recipe-specific basis, this argument
+        can be used to skip tests for all recipes. Use sparingly.
 
     registry : list or tuple
         List of functions to apply to each recipe. If None, defaults to
@@ -184,6 +193,10 @@ def lint(packages, config, df, registry=None):
     skip_re = re.compile(
         r'\[\s*lint skip (?P<func>\w+) for (?P<recipe>.*?)\s*\]')
     to_skip = skip_re.findall(txt)
+
+    if exclude is not None:
+        to_skip += list(itertools.product(exclude, packages))
+
     for func, recipe in to_skip:
         skip_dict[recipe].append(func)
 
