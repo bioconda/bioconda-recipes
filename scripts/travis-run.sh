@@ -1,6 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
+# Set some defaults
+set +u
+[[ -z $TRAVIS ]] && TRAVIS="false"
+[[ -z $BIOCONDA_UTILS_LINT_ARGS ]] && BIOCONDA_UTILS_LINT_ARGS=""
+set -u
+
 if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
 then
     echo ""

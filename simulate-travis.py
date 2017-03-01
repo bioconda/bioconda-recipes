@@ -122,9 +122,6 @@ if args.install_requirements:
 # Only run if we're not on travis.
 if os.environ.get('TRAVIS', None) != 'true':
 
-    # export this so downstream scripts have something to check in set -e mode
-    env['TRAVIS'] = 'false'
-
     # SUBDAG is set by travis-ci according to the matrix in .travis.yml, so here we
     # force it to just use one. The default is to run two parallel jobs, but here
     # we set SUBDAGS to 1 so we only run a single job.
