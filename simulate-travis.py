@@ -54,6 +54,9 @@ ap.add_argument('--config-from-github', action='store_true', help='''Download
                 and use the config.yml and .travis.yml files from the master
                 branch of the github repo. Default is to use the files
                 currently on disk.''')
+ap.add_argument('--disable-docker', action='store_true', help='''By default, if
+                the OS is linux then we use Docker. Use this argument to
+                disable this behavior''')
 args, extra = ap.parse_known_args()
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -147,7 +150,13 @@ if os.environ.get('TRAVIS', None) != 'true':
     env['BIOCONDA_UTILS_BUILD_ARGS'] += ' ' + ' '.join(extra)
     env['BIOCONDA_UTILS_BUILD_ARGS'] = ' '.join(shlex.split(env['BIOCONDA_UTILS_BUILD_ARGS']))
 
-    # Override with whatever's in the shell environment
-    env.update(os.environ)
+    if (
+        (env['TRAVIS_OS_NAME'] == 'linux') &
+        (not args.disable_docker) &
+        ('--docker' not in env['BIOCONDA_UTILS_BUILD_ARGS'])
+    ):
+        env['DOCKER_ARG'] = '--docker'
 
+    # Override env with whatever's in the shell environment
+    env.update(os.environ)
     sp.run(['scripts/travis-run.sh'], env=env, universal_newlines=True, check=True)

@@ -3,6 +3,7 @@ set -euo pipefail
 
 # Set some defaults
 set +u
+[[ -z $DOCKER_ARG ]] && DOCKER_ARG=""
 [[ -z $TRAVIS ]] && TRAVIS="false"
 [[ -z $BIOCONDA_UTILS_LINT_ARGS ]] && BIOCONDA_UTILS_LINT_ARGS=""
 set -u
@@ -54,6 +55,15 @@ fi
 
 export PATH=/anaconda/bin:$PATH
 
+# On travis we always run on docker for linux. This may not always be the case
+# for local testing.
+if [[ $TRAVIS_OS_NAME = "linux" && $TRAVIS = "true" ]]
+then
+    DOCKER_ARG="--docker"
+fi
+
+# If this build corresponds to the merge into master, we will be detecting this
+# in bioconda-utils and will be pushing containers to quay.io.
 if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
 then
    echo "Create Container push commands file: ${TRAVIS_BUILD_DIR}/container_push_commands.sh"
@@ -61,12 +71,6 @@ then
    touch $CONTAINER_PUSH_COMMANDS_PATH
 fi
 
-if [[ $TRAVIS_OS_NAME = "linux" ]]
-then
-    USE_DOCKER="--docker"
-else
-    USE_DOCKER=""
-fi
 
 PUSH_STATUS=""
 COMMIT_ARG=""
