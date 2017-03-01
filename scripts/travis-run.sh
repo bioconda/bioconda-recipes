@@ -71,21 +71,7 @@ then
    touch $CONTAINER_PUSH_COMMANDS_PATH
 fi
 
-
-PUSH_STATUS=""
-COMMIT_ARG=""
-if [[ $TRAVIS = "true" ]]
-then
-    PUSH_STATUS='--push-status'
-    COMMIT_ARG="--commit $TRAVIS_COMMIT"
-fi
-set -x
-bioconda-utils lint recipes config.yml \
-    $RANGE_ARG \
-    --cache .cache
-set +x
-
-
+set -x; bioconda-utils lint recipes config.yml $RANGE_ARG $BIOCONDA_UTILS_LINT_ARGS; set +x
 set -x; bioconda-utils build recipes config.yml $DOCKER_ARG $BIOCONDA_UTILS_BUILD_ARGS $RANGE_ARG; set +x;
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
