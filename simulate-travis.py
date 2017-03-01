@@ -146,8 +146,8 @@ if os.environ.get('TRAVIS', None) != 'true':
     env['TRAVIS_REPO_SLUG'] = 'false'
 
     # Any additional arguments from the command line are added here.
-    env['BIOCONDA_UTILS_ARGS'] += ' ' + ' '.join(extra)
-    env['BIOCONDA_UTILS_ARGS'] = ' '.join(shlex.split(env['BIOCONDA_UTILS_ARGS']))
+    env['BIOCONDA_UTILS_BUILD_ARGS'] += ' ' + ' '.join(extra)
+    env['BIOCONDA_UTILS_BUILD_ARGS'] = ' '.join(shlex.split(env['BIOCONDA_UTILS_BUILD_ARGS']))
 
     # Override with whatever's in the shell environment
     env.update(os.environ)

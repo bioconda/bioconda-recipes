@@ -69,8 +69,8 @@ bioconda-utils lint recipes config.yml \
     --cache .cache
 set +x
 
-set -x; bioconda-utils build recipes config.yml $USE_DOCKER $BIOCONDA_UTILS_ARGS $RANGE_ARG; set +x;
 
+set -x; bioconda-utils build recipes config.yml $DOCKER_ARG $BIOCONDA_UTILS_BUILD_ARGS $RANGE_ARG; set +x;
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
