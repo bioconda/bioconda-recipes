@@ -8,6 +8,7 @@ export LDFLAGS="-L${PREFIX}/lib"
 export LD_RUN_PATH="${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 export CFLAGS="-I${PREFIX}/include"
+export CCFLAGS="-I${PREFIX}/include ${CCFLAGS}"
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
@@ -24,6 +25,7 @@ elif [ -f Makefile.PL ]; then
     sed -i.bak 's|-L/usr/local/lib|-L${PREFIX}/lib|g' Makefile
     sed -i.bak 's|LD_RUN_PATH = /usr/lib/../lib64|LD_RUN_PATH = ${PREFIX}/lib|g' Makefile
     sed -i.bak 's|LD_RUN_PATH = /usr/lib64|LD_RUN_PATH = ${PREFIX}/lib|g' Makefile
+    #sed -i.bak 's|-I/usr/local/include|-I${PREFIX}/include|g' Makefile
     make
     make test
     make install
