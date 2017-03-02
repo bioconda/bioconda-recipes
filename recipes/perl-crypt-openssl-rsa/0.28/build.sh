@@ -15,6 +15,7 @@ elif [ -f Makefile.PL ]; then
     sed -i.bak 's|-L/usr/local/lib|-L${PREFIX}/lib|g' Makefile
     sed -i.bak 's|LD_RUN_PATH = /usr/lib/../lib64|LD_RUN_PATH = ${PREFIX}/lib|g' Makefile
     sed -i.bak 's|-I/usr/local/include|-I${PREFIX}/include|g' Makefile
+    sed -i.bak 's|cc -c |cc -c -I${PREFIX}/include|g' Makefile
     make
     make test
     make install
