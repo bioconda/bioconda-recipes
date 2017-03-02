@@ -1,11 +1,11 @@
 #!/bin/bash
 set -euo pipefail
-
 # Set some defaults
 set +u
 [[ -z $DOCKER_ARG ]] && DOCKER_ARG=""
 [[ -z $TRAVIS ]] && TRAVIS="false"
 [[ -z $BIOCONDA_UTILS_LINT_ARGS ]] && BIOCONDA_UTILS_LINT_ARGS=""
+[[ -z $RANGE_ARG ]] && RANGE_ARG="--git-range master HEAD"
 set -u
 
 if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
@@ -21,10 +21,8 @@ fi
 # determine recipes to build. If building locally, build anything that changed
 # since master. If on travis, only build the commit range included in the push
 # or the pull request.
-if [[ $TRAVIS = "false" ]]
+if [[ $TRAVIS = "true" ]]
 then
-    RANGE_ARG="--git-range master HEAD"
-else
     RANGE="$TRAVIS_BRANCH HEAD"
     if [ $TRAVIS_PULL_REQUEST == "false" ]
     then
