@@ -56,10 +56,13 @@ logger = logging.getLogger(__name__)
 @arg('--user', help='Github user')
 @arg('--repo', help='Github repo')
 @arg('--git-range', help='Git range', nargs=2)
+@arg('--full-report', action='store_true', help='''Default behavior is to
+     summarize the linting results; use this argument to get the full
+     results as a TSV printed to stdout.''')
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
 def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
          only=None, exclude=None, push_status=False, user='bioconda',
-         commit=None, repo='bioconda-recipes', git_range=None, loglevel='info'):
+         commit=None, repo='bioconda-recipes', git_range=None, full_report=False, loglevel='info'):
     """
     Lint recipes
 
@@ -92,7 +95,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
             logger.info('No recipe modified according to git, exiting.')
             return
         recipes = [os.path.dirname(f) for f in modified]
-        logger.info('Recipes modified according to git: {}'.format(' '.join(packages)))
+        logger.info('Recipes modified according to git: {}'.format('\n '.join(modified)))
 
     report = linting.lint(
         recipes,
@@ -105,11 +108,15 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
     # The returned dataframe is in tidy format; summarize a bit to get a more
     # reasonable log
     if report is not None:
-        summarized = pandas.DataFrame(
-            dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
-        logger.error('The following recipes failed linting. See '
-                     'https://bioconda.github.io/linting.html for details:\n%s\n',
-                     summarized)
+        if not full_report:
+            pandas.set_option('max_colwidth', 500)
+            summarized = pandas.DataFrame(
+                dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
+            logger.error('\n\nThe following recipes failed linting. See '
+                         'https://bioconda.github.io/linting.html for details:\n\n%s\n',
+                         summarized.to_string())
+        else:
+            report.to_csv(sys.stdout, sep='\t')
 
         if push_status:
             github_integration.update_status(
