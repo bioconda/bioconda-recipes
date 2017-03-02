@@ -20,12 +20,19 @@ chmod +x $SRC_DIR/NGseqBasic.sh
 cp $SRC_DIR/testEnvironment.sh $OUTDIR
 cp $SRC_DIR/NGseqBasic.sh $OUTDIR
 
-# create executable
+# create executables
 BINDIR=$PREFIX/bin
 mkdir -p $BINDIR
+
 NGseqBasic=$BINDIR/NGseqBasic
 echo "#! /bin/bash" > $NGseqBasic;
 echo 'DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )' >>  $NGseqBasic;
 echo '$DIR/../share/'$(basename $OUTDIR)/NGseqBasic.sh '$@' >> $NGseqBasic;
 chmod +x $NGseqBasic
+
+testEnvironment=$BINDIR/testEnvironment
+echo "#! /bin/bash" > $testEnvironment;
+echo 'DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )' >>  $testEnvironment;
+echo '$DIR/../share/'$(basename $OUTDIR)/testEnvironment.sh '$@' >> $testEnvironment;
+chmod +x $testEnvironment
 
