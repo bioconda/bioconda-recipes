@@ -40,7 +40,9 @@ def _get_deps(meta, section=None):
         sections = [section]
     deps = []
     for s in sections:
-        deps += reqs.get(s, [])
+        dep = reqs.get(s, [])
+        if dep:
+            deps += dep
     return deps
 
 
