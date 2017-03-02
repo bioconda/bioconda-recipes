@@ -7,6 +7,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 export LD_RUN_PATH="${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
+export CFLAGS="-I${PREFIX}/include"
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
