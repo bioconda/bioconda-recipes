@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # If it has Build.PL use that, otherwise use Makefile.PL
-
 if [ -f Build.PL ]; then
     perl Build.PL
     perl ./Build
@@ -17,6 +16,7 @@ elif [ -f Makefile.PL ]; then
     sed -i.bak 's|LD_RUN_PATH = /usr/lib/../lib64|LD_RUN_PATH = ${PREFIX}/lib|g' Makefile
     sed -i.bak 's|LD_RUN_PATH = /usr/lib64|LD_RUN_PATH = ${PREFIX}/lib|g' Makefile
     sed -i.bak 's|-I/usr/local/include|-I${PREFIX}/include|g' Makefile
+    make
     make
     make test
     make install
