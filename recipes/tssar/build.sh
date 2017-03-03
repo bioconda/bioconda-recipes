@@ -1,3 +1,7 @@
 #!/bin/bash
 
-./install.sh
+mkdir -p $PREFIX/bin
+
+cp TSSAR $PREFIX/bin
+
+chmod +x $PREFIX/bin/TSSAR
