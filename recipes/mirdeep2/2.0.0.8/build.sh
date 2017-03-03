@@ -37,3 +37,4 @@ chmod +x $PREFIX/bin/sanity_check_reads_ready_file.pl
 chmod +x $PREFIX/bin/select_for_randfold.pl
 chmod +x $PREFIX/bin/survey.pl
 
+touch $PREFIX/install_successful
