@@ -684,6 +684,10 @@ def modified_recipes(git_range, recipe_folder, full=False):
     # exclude recipes that were deleted in the git-range
     existing = list(filter(os.path.exists, modified))
 
+    # if the only diff is that files were deleted, we can have ['recipes/'], so
+    # filter on existing *files*
+    existing = list(filter(os.path.isfile, existing))
+
     if full:
         return existing
     return [os.path.relpath(recipe_folder, m) for m in existing]
