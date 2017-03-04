@@ -654,9 +654,11 @@ def modified_recipes(git_range, recipe_folder, full=False):
     full : bool
         If True, include the recipe_folder in the path
     """
+    git_range = '...'.join(git_range)
     cmds = (
-        ['git', 'diff', '--relative={}'.format(recipe_folder), '--name-only'] +
-        git_range +
+        ['git', 'diff', '--relative={}'.format(recipe_folder), '--name-only',
+         git_range
+        ] +
         [
             os.path.join(recipe_folder, '*', 'meta.yaml'),
             os.path.join(recipe_folder, '*', '*', 'meta.yaml')
