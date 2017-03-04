@@ -325,7 +325,8 @@ def get_channel_packages(channel='bioconda', platform=None):
         Platform (OS) to retrieve packages for from `channel`. If None, use the
         currently-detected platform.
     """
-    repodata, noarch_repodata = get_channel_repodata(channel=channel, platform=platform)
+    repodata, noarch_repodata = get_channel_repodata(
+        channel=channel, platform=platform)
     channel_packages = set(repodata['packages'].keys())
     channel_packages.update(noarch_repodata['packages'].keys())
     return channel_packages
@@ -525,7 +526,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
             # TRAVIS_OS_NAME uses 'osx', but sys.platform uses 'darwin', and
             # that's what conda will be looking for.
             if platform == 'osx':
-                 platform = 'darwin'
+                platform = 'darwin'
 
             with temp_os(platform):
                 skip = MetaData(recipe).skip()
@@ -579,7 +580,8 @@ def get_blacklist(blacklists, recipe_folder):
         blacklist.update(
             [
                 os.path.relpath(i.strip(), recipe_folder)
-                for i in open(p, encoding='utf8') if not i.startswith('#') and i.strip()
+                for i in open(p, encoding='utf8')
+                if not i.startswith('#') and i.strip()
             ]
         )
     return blacklist
@@ -656,8 +658,10 @@ def modified_recipes(git_range, recipe_folder, full=False):
     """
     git_range = '...'.join(git_range)
     cmds = (
-        ['git', 'diff', '--relative={}'.format(recipe_folder), '--name-only',
-         git_range
+        [
+            'git', 'diff', '--relative={}'.format(recipe_folder),
+            '--name-only',
+            git_range
         ] +
         [
             os.path.join(recipe_folder, '*', 'meta.yaml'),
@@ -679,7 +683,10 @@ def modified_recipes(git_range, recipe_folder, full=False):
 
     p = run(cmds, shell=shell)
 
-    modified = [os.path.join(recipe_folder, m) for m in p.stdout.strip().split('\n')]
+    modified = [
+        os.path.join(recipe_folder, m)
+        for m in p.stdout.strip().split('\n')
+    ]
 
     # exclude recipes that were deleted in the git-range
     existing = list(filter(os.path.exists, modified))

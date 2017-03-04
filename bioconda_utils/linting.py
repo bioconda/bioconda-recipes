@@ -142,7 +142,7 @@ def lint(packages, config, df, exclude=None, registry=None):
     config : str, dict
         Used to pass any necessary environment variables (CONDA_BOOST, etc) to
         meta.yaml files. If str, path to config file. If dict, parsed version
-        of the config file. If `quick=True`, then must be path to config file.
+        of the config file.
 
     df : pandas.DataFrame
         Dataframe containing channel data, typically as output from
@@ -172,29 +172,34 @@ def lint(packages, config, df, exclude=None, registry=None):
     # since, for PRs, it will be "merge $hash into $hash".
     #
     # For PRs, we need TRAVIS_PULL_REQUEST_SHA
+    #
+    # If not on travis, then don't look for any commit messages.
+    commit_message = ""
+
     on_travis = os.environ.get('TRAVIS') == 'true'
     pull_request = os.environ.get('TRAVIS_PULL_REQUEST', 'false') != 'false'
 
-    txt = ""
     if not on_travis and 'LINT_SKIP' in os.environ:
-        txt = os.environ['LINT_SKIP']
+        commit_message = os.environ['LINT_SKIP']
+
     if on_travis and pull_request:
         p = utils.run(
             ['git', 'log', '--format=%B', '-n', '1',
              os.environ['TRAVIS_PULL_REQUEST_SHA']]
         )
-        txt = p.stdout
+        commit_message = p.stdout
 
     # For example the following text in the commit message will skip
-    # lint_functions.uses_setuptools:
+    # lint_functions.uses_setuptools for recipe argparse:
     #
-    # [ lint skip uses_setuptools ]
+    # [ lint skip uses_setuptools for argparse ]
 
     skip_re = re.compile(
         r'\[\s*lint skip (?P<func>\w+) for (?P<recipe>.*?)\s*\]')
-    to_skip = skip_re.findall(txt)
+    to_skip = skip_re.findall(commit_message)
 
     if exclude is not None:
+        # exclude arg is used to skip test for *all* packages
         to_skip += list(itertools.product(exclude, packages))
 
     for func, recipe in to_skip:
@@ -202,6 +207,10 @@ def lint(packages, config, df, exclude=None, registry=None):
 
     hits = []
     for recipe in packages:
+        # lint functions need a parsed meta.yaml so this can't be a lint
+        # function. TODO: do we need a way to skip this the same way we can
+        # skip lint functions? I can't think of a reason we'd want to keep an
+        # unparseable YAML.
         try:
             meta = get_meta(recipe, config)
         except (
