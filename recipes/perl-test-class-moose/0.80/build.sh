@@ -2,6 +2,7 @@
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 cpanm --installdeps .
+cpanm --force -nq Test2
 
 if [ -f Build.PL ]; then
     perl Build.PL
@@ -19,6 +20,8 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
+
+cpanm --force -nq Test2
 
 # Add more build steps here, if they are necessary.
 
