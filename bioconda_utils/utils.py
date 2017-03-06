@@ -670,8 +670,8 @@ def modified_recipes(git_range, recipe_folder, full=False):
             git_range
         ] +
         [
-            os.path.join(recipe_folder, '*', 'meta.yaml'),
-            os.path.join(recipe_folder, '*', '*', 'meta.yaml')
+            os.path.join(recipe_folder, '*'),
+            os.path.join(recipe_folder, '*', '*')
         ]
     )
     shell = False
