@@ -216,12 +216,12 @@ def build(recipe_folder,
 
     # handle git range
     if git_range:
-        modified = utils.modified_recipes(git_range, recipe_folder)
+        modified = utils.modified_recipes(git_range, recipe_folder, full=True)
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
             exit(0)
         # obtain list of packages to build
-        packages = [os.path.dirname(f) for f in modified]
+        packages = list(set([os.path.basename(os.path.dirname(f)) for f in modified]))
         logger.info('Recipes modified according to git: {}'.format(' '.join(packages)))
 
     success = build_recipes(
