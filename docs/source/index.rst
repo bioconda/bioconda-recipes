@@ -147,4 +147,5 @@ Contents:
 
     recipes
     contributing
+    linting
     faqs

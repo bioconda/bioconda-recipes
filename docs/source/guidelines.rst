@@ -23,7 +23,11 @@ bioconda recipe checklist
 
 Stable urls
 ~~~~~~~~~~~
-TODO: tarballs from git vs git_urls, bioaRchive, cargo-port, R/Bioconductor issues
+While supported by conda, `git_url` and `git_rev` are not as stable as a git
+tarball. Ideally a github repo should have tagged releases that are accessible
+as tarballs from the "releases" section of the github repo.
+
+TODO: additional info on the various R and bioconductor URLs
 
 .. _hashes:
 

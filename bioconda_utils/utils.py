@@ -3,8 +3,6 @@
 import os
 import glob
 import subprocess as sp
-import argparse
-import itertools
 import sys
 import shutil
 import contextlib
@@ -17,6 +15,7 @@ import requests
 from jsonschema import validate
 import datetime
 import tempfile
+from distutils.version import LooseVersion
 
 
 from conda_build import api
@@ -60,8 +59,7 @@ def temp_os(platform):
         sys.platform = original
 
 
-
-def run(cmds, env=None):
+def run(cmds, env=None, **kwargs):
     """
     Wrapper around subprocess.run()
 
@@ -75,10 +73,12 @@ def run(cmds, env=None):
     Returns the subprocess.CompletedProcess object.
     """
     try:
-        p = sp.run(cmds, stdout=sp.PIPE, stderr=sp.STDOUT, check=True, env=env)
+        p = sp.run(cmds, stdout=sp.PIPE, stderr=sp.STDOUT, check=True, env=env,
+                   **kwargs)
         p.stdout = p.stdout.decode(errors='replace')
     except sp.CalledProcessError as e:
         e.stdout = e.stdout.decode(errors='replace')
+        print(e.stdout)
         raise e
     return p
 
@@ -264,9 +264,13 @@ def get_recipes(recipe_folder, package="*"):
                        glob.glob(os.path.join(path, "*", "meta.yaml")))
 
 
-def get_channel_packages(channel='bioconda', platform=None):
+def get_channel_repodata(channel='bioconda', platform=None):
     """
-    Retrieves the existing packages for a channel from conda.anaconda.org
+    Returns the parsed JSON repodata for a channel from conda.anaconda.org.
+
+    A tuple of dicts is returned, (repodata, noarch_repodata). The first is the
+    repodata for the provided platform, and the second is the noarch repodata,
+    which will be the same for a channel no matter what the platform.
 
     Parameters
     ----------
@@ -305,9 +309,26 @@ def get_channel_packages(channel='bioconda', platform=None):
         raise requests.HTTPError(
             '{0.status_code} {0.reason} for {1}'
             .format(noarch_repodata, noarch_url))
+    return repodata.json(), noarch_repodata.json()
 
-    channel_packages = set(repodata.json()['packages'].keys())
-    channel_packages.update(noarch_repodata.json()['packages'].keys())
+
+def get_channel_packages(channel='bioconda', platform=None):
+    """
+    Retrieves the existing packages for a channel from conda.anaconda.org
+
+    Parameters
+    ----------
+    channel : str
+        Channel to retrieve packages for
+
+    platform : None | linux | osx
+        Platform (OS) to retrieve packages for from `channel`. If None, use the
+        currently-detected platform.
+    """
+    repodata, noarch_repodata = get_channel_repodata(
+        channel=channel, platform=platform)
+    channel_packages = set(repodata['packages'].keys())
+    channel_packages.update(noarch_repodata['packages'].keys())
     return channel_packages
 
 
@@ -433,7 +454,13 @@ def newly_unblacklisted(config_file, recipe_folder):
 
 
 def changed_since_master(recipe_folder):
-    "Return filenames changed since master branch"
+    """
+    Return filenames changed since master branch.
+
+    Note that this uses `origin`, so if you are working on a fork of the main
+    repo and have added the main repo as `upstream`, then you'll have to do
+    a `git checkout master && git pull upstream master` to update your fork.
+    """
     p = run(['git', 'fetch', 'origin', 'master'])
     p = run(['git', 'diff', 'FETCH_HEAD', '--name-only'])
     return [
@@ -499,7 +526,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
             # TRAVIS_OS_NAME uses 'osx', but sys.platform uses 'darwin', and
             # that's what conda will be looking for.
             if platform == 'osx':
-                 platform = 'darwin'
+                platform = 'darwin'
 
             with temp_os(platform):
                 skip = MetaData(recipe).skip()
@@ -553,7 +580,8 @@ def get_blacklist(blacklists, recipe_folder):
         blacklist.update(
             [
                 os.path.relpath(i.strip(), recipe_folder)
-                for i in open(p, encoding='utf8') if not i.startswith('#') and i.strip()
+                for i in open(p, encoding='utf8')
+                if not i.startswith('#') and i.strip()
             ]
         )
     return blacklist
@@ -586,7 +614,7 @@ def load_config(path):
         relpath = lambda p: p
     else:
         config = yaml.load(open(path))
-        relpath = lambda p: os.path.relpath(p, os.path.dirname(path))
+        relpath = lambda p: os.path.join(os.path.dirname(path), p)
 
     def get_list(key):
         # always return empty list, also if NoneType is defined in yaml
@@ -613,3 +641,60 @@ def load_config(path):
 
     default_config.update(config)
     return default_config
+
+
+def modified_recipes(git_range, recipe_folder, full=False):
+    """
+    Returns recipes modified within the git range.
+
+    git_range : list or tuple of length 2
+        For example, ['00232ffe', '10fab113'], or commonly ['master', 'HEAD']
+
+    recipe_folder : str
+        Top-level recipes dir in which to search for meta.yaml files.
+
+    full : bool
+        If True, include the recipe_folder in the path
+    """
+    git_range = '...'.join(git_range)
+    cmds = (
+        [
+            'git', 'diff', '--relative={}'.format(recipe_folder),
+            '--name-only',
+            git_range
+        ] +
+        [
+            os.path.join(recipe_folder, '*', 'meta.yaml'),
+            os.path.join(recipe_folder, '*', '*', 'meta.yaml')
+        ]
+    )
+    shell = False
+
+    # git expands globs only in versions >2, so if it's older than that we need
+    # to run the command using shell=True so that globs are expanded.
+    p = run(['git', '--version'])
+    git_version = LooseVersion(p.stdout.split()[-1])
+    if git_version < LooseVersion('2'):
+        logger.warn(
+            'git version (%s) is < 2.0. Running git diff using shell=True. '
+            'Please consider upgrading git', git_version)
+        cmds = ' '.join(cmds)
+        shell = True
+
+    p = run(cmds, shell=shell)
+
+    modified = [
+        os.path.join(recipe_folder, m)
+        for m in p.stdout.strip().split('\n')
+    ]
+
+    # exclude recipes that were deleted in the git-range
+    existing = list(filter(os.path.exists, modified))
+
+    # if the only diff is that files were deleted, we can have ['recipes/'], so
+    # filter on existing *files*
+    existing = list(filter(os.path.isfile, existing))
+
+    if full:
+        return existing
+    return [os.path.relpath(recipe_folder, m) for m in existing]

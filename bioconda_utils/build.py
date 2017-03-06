@@ -244,7 +244,7 @@ def build_recipes(
             logger.debug(recipe)
     if not recipes:
         logger.info("Nothing to be done.")
-        return
+        return True
 
     logger.debug('recipes: %s', recipes)
     if quick:
