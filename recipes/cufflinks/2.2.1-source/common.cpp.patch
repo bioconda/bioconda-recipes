@@ -1,12 +1,16 @@
---- src/common.cpp	2017-02-17 10:06:37.706240717 +0400
-+++ src/common.cpp	2017-02-17 12:43:52.209785312 +0400
-@@ -264,39 +264,11 @@
+--- src/common.cpp	2017-03-06 15:08:56.969370811 +0400
++++ src/common.cpp	2017-03-06 15:25:44.196025721 +0400
+@@ -260,43 +260,30 @@
+ }
+ 
+ /* Function with behaviour like `mkdir -p'  */
+-/* found at: http://niallohiggins.com/2009/01/08/mkpath-mkdir-p-alike-in-c-for-unix/ */
  
  int mkpath(const char *s, mode_t mode)
  {
 -    char *q, *r = NULL, *path = NULL, *up = NULL;
 -    int rv;
-     
+-    
 -    rv = -1;
 -    if (strcmp(s, ".") == 0 || strcmp(s, "/") == 0)
 -        return (0);
@@ -37,8 +41,25 @@
 -    free(q);
 -    free(path);
 -    return (rv);
-+    boost::filesystem::path p(s);
-+    boost::filesystem::create_directories(p);
++    namespace fs = boost::filesystem;
++    namespace bs = boost::system;
++
++    // First try create the directory
++    try {
++        fs::create_directories(s);
++        try {
++            // Then make sure it is writable
++            fs::permissions(s, fs::owner_all | fs::add_perms);
++            errno = 0;
++            // Otherwise, exit
++        } catch (const fs::filesystem_error & ep) {
++            std::cerr << ep.what() << '\n';
++            exit(-1);
++        }
++    } catch (const fs::filesystem_error & e) {
++        std::cerr << e.what() << '\n';
++        exit(-1);
++    }
 +
 +    return 0;
  }
