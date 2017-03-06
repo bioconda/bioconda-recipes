@@ -55,7 +55,11 @@ logger = logging.getLogger(__name__)
 @arg('--commit', help='Commit on github on which to update status')
 @arg('--user', help='Github user')
 @arg('--repo', help='Github repo')
-@arg('--git-range', help='Git range', nargs=2)
+@arg('--git-range', nargs='+',
+     help='''Git range (e.g. commits or something like
+     "master HEAD" to check commits in HEAD vs master, or just "HEAD" to
+     include uncommitted changes). All recipes modified within this range will
+     be built if not present in the channel.''')
 @arg('--full-report', action='store_true', help='''Default behavior is to
      summarize the linting results; use this argument to get the full
      results as a TSV printed to stdout.''')
@@ -139,10 +143,11 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
     nargs="+",
     help='Glob for package[s] to build. Default is to build all packages. Can '
     'be specified more than once')
-@arg('--git-range', nargs=2,
-     help='Git range (e.g. commits or something like '
-     '"master HEAD"). All recipes modified within this range will be built if '
-     'not present in the channel.')
+@arg('--git-range', nargs='+',
+     help='''Git range (e.g. commits or something like
+     "master HEAD" to check commits in HEAD vs master, or just "HEAD" to
+     include uncommitted changes). All recipes modified within this range will
+     be built if not present in the channel.''')
 @arg('--testonly', help='Test packages instead of building')
 @arg('--force',
      help='Force building the recipe even if it already exists in '
