@@ -184,7 +184,9 @@ def has_windows_bat_file(recipe, meta, df):
 
 registry = (
     in_other_channels,
-    already_in_bioconda,
+
+    # disabling for now until we get better per-OS version detection
+    # already_in_bioconda,
     missing_tests,
     missing_home,
     missing_license,
