@@ -220,8 +220,17 @@ def build(recipe_folder,
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
             exit(0)
-        # obtain list of packages to build
-        packages = list(set([os.path.basename(os.path.dirname(f)) for f in modified]))
+        # obtain list of packages to build. `modified` will be a list of *all*
+        # files so we need to extract just the package names since
+        # build_recipes expects globs
+
+        packages = list(
+            set(
+                [os.path.dirname(os.path.relpath(f, recipe_folder))
+                 for f in modified
+                ]
+            )
+        )
         logger.info('Recipes modified according to git: {}'.format(' '.join(packages)))
 
     success = build_recipes(
