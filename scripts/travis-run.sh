@@ -33,7 +33,6 @@ then
     # good way of knowing which recipes need rebuilding so we check them all.
     #
     # For cron jobs we always want to check everything.
-    RANGE_ARG=""
     set +e
     git diff --exit-code --name-only $RANGE scripts/env_matrix.yml
     ENV_CHANGE=$?
@@ -42,6 +41,7 @@ then
     then
         # case 1: env matrix changed or this is a cron job. In this case
         # consider all recipes.
+        RANGE_ARG=""
         echo "considering all recipes because either env matrix was changed or build is triggered via cron"
     else
         # case 2: consider only recipes that (a) changed since the last build
