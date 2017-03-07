@@ -1,5 +1,12 @@
 #!/bin/bash
 set -euo pipefail
+# Set some defaults
+set +u
+[[ -z $DOCKER_ARG ]] && DOCKER_ARG=""
+[[ -z $TRAVIS ]] && TRAVIS="false"
+[[ -z $BIOCONDA_UTILS_LINT_ARGS ]] && BIOCONDA_UTILS_LINT_ARGS=""
+[[ -z $RANGE_ARG ]] && RANGE_ARG="--git-range HEAD"
+set -u
 
 if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
 then
@@ -11,26 +18,30 @@ then
     exit 0
 fi
 
-# determine recipes to build
-if [[ $TRAVIS == "false" ]]
+# determine recipes to build. If building locally, build anything that changed
+# since master. If on travis, only build the commit range included in the push
+# or the pull request.
+if [[ $TRAVIS = "true" ]]
 then
-    RANGE_ARG="--git-range master HEAD"
-else
     RANGE="$TRAVIS_BRANCH HEAD"
     if [ $TRAVIS_PULL_REQUEST == "false" ]
     then
         RANGE="${TRAVIS_COMMIT_RANGE/.../ }"
     fi
 
-    RANGE_ARG=""
+    # If the environment vars changed (e.g., boost, R, perl) then there's no
+    # good way of knowing which recipes need rebuilding so we check them all.
+    #
+    # For cron jobs we always want to check everything.
     set +e
     git diff --exit-code --name-only $RANGE scripts/env_matrix.yml
     ENV_CHANGE=$?
     set -e
-    if [ $ENV_CHANGE -eq 1 ] || [ $TRAVIS_EVENT_TYPE == "cron" ]
+    if [ $ENV_CHANGE -eq 1 ] || [ $TRAVIS_EVENT_TYPE = "cron" ]
     then
         # case 1: env matrix changed or this is a cron job. In this case
         # consider all recipes.
+        RANGE_ARG=""
         echo "considering all recipes because either env matrix was changed or build is triggered via cron"
     else
         # case 2: consider only recipes that (a) changed since the last build
@@ -42,6 +53,15 @@ fi
 
 export PATH=/anaconda/bin:$PATH
 
+# On travis we always run on docker for linux. This may not always be the case
+# for local testing.
+if [[ $TRAVIS_OS_NAME = "linux" && $TRAVIS = "true" ]]
+then
+    DOCKER_ARG="--docker"
+fi
+
+# If this build corresponds to the merge into master, we will be detecting this
+# in bioconda-utils and will be pushing containers to quay.io.
 if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
 then
    echo "Create Container push commands file: ${TRAVIS_BUILD_DIR}/container_push_commands.sh"
@@ -49,15 +69,8 @@ then
    touch $CONTAINER_PUSH_COMMANDS_PATH
 fi
 
-if [[ $TRAVIS_OS_NAME = "linux" ]]
-then
-    USE_DOCKER="--docker"
-else
-    USE_DOCKER=""
-fi
-
-set -x; bioconda-utils build recipes config.yml $USE_DOCKER $BIOCONDA_UTILS_ARGS $RANGE_ARG; set +x;
-
+set -x; bioconda-utils lint recipes config.yml $RANGE_ARG $BIOCONDA_UTILS_LINT_ARGS; set +x
+set -x; bioconda-utils build recipes config.yml $DOCKER_ARG $BIOCONDA_UTILS_BUILD_ARGS $RANGE_ARG; set +x;
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
