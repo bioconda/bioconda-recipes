@@ -55,7 +55,11 @@ logger = logging.getLogger(__name__)
 @arg('--commit', help='Commit on github on which to update status')
 @arg('--user', help='Github user')
 @arg('--repo', help='Github repo')
-@arg('--git-range', help='Git range', nargs=2)
+@arg('--git-range', nargs='+',
+     help='''Git range (e.g. commits or something like
+     "master HEAD" to check commits in HEAD vs master, or just "HEAD" to
+     include uncommitted changes). All recipes modified within this range will
+     be built if not present in the channel.''')
 @arg('--full-report', action='store_true', help='''Default behavior is to
      summarize the linting results; use this argument to get the full
      results as a TSV printed to stdout.''')
@@ -94,8 +98,8 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
             return
-        recipes = [os.path.dirname(f) for f in modified]
-        logger.info('Recipes modified according to git: {}'.format('\n '.join(modified)))
+        recipes = [os.path.dirname(f) for f in modified if os.path.basename(f) == 'meta.yaml']
+        logger.info('Recipes with modified meta.yaml files according to git: {}'.format('\n '.join(recipes)))
 
     report = linting.lint(
         recipes,
@@ -139,10 +143,11 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
     nargs="+",
     help='Glob for package[s] to build. Default is to build all packages. Can '
     'be specified more than once')
-@arg('--git-range', nargs=2,
-     help='Git range (e.g. commits or something like '
-     '"master HEAD"). All recipes modified within this range will be built if '
-     'not present in the channel.')
+@arg('--git-range', nargs='+',
+     help='''Git range (e.g. commits or something like
+     "master HEAD" to check commits in HEAD vs master, or just "HEAD" to
+     include uncommitted changes). All recipes modified within this range will
+     be built if not present in the channel.''')
 @arg('--testonly', help='Test packages instead of building')
 @arg('--force',
      help='Force building the recipe even if it already exists in '
@@ -211,12 +216,21 @@ def build(recipe_folder,
 
     # handle git range
     if git_range:
-        modified = utils.modified_recipes(git_range, recipe_folder)
+        modified = utils.modified_recipes(git_range, recipe_folder, full=True)
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
             exit(0)
-        # obtain list of packages to build
-        packages = [os.path.dirname(f) for f in modified]
+        # obtain list of packages to build. `modified` will be a list of *all*
+        # files so we need to extract just the package names since
+        # build_recipes expects globs
+
+        packages = list(
+            set(
+                [os.path.dirname(os.path.relpath(f, recipe_folder))
+                 for f in modified
+                ]
+            )
+        )
         logger.info('Recipes modified according to git: {}'.format(' '.join(packages)))
 
     success = build_recipes(
