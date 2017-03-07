@@ -5,7 +5,7 @@ set +u
 [[ -z $DOCKER_ARG ]] && DOCKER_ARG=""
 [[ -z $TRAVIS ]] && TRAVIS="false"
 [[ -z $BIOCONDA_UTILS_LINT_ARGS ]] && BIOCONDA_UTILS_LINT_ARGS=""
-[[ -z $RANGE_ARG ]] && RANGE_ARG="--git-range master HEAD"
+[[ -z $RANGE_ARG ]] && RANGE_ARG="--git-range HEAD"
 set -u
 
 if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
