@@ -1,7 +1,7 @@
 Linting
 =======
 
-In order to ensure high-quality packages, we now perform routine checks on each 
+In order to ensure high-quality packages, we now perform routine checks on each
 recipe (called `linting
 <http://stackoverflow.com/questions/8503559/what-is-linting>`_). By default,
 linting is performed on any recipes that have changed relative to the master
@@ -38,75 +38,146 @@ Linting functions
 
 `in_other_channels`
 ~~~~~~~~~~~~~~~~~~
-The package exists in another dependent channel (currently conda-forge, r, and
-defaults). In special cases this can be overridden, for example if
+Reason for failing: The package exists in another dependent channel (currently
+conda-forge, r, and defaults). This often happens when a general-use package
+was added to bioconda first but was subsequently added to one of the more
+general channels. In this case we'd prefer it to be in the general channel.
+
+Rationale: We want to minimize duplicated work. If a package already exists in
+another dependent channel, it doesn't need to be maintained in the bioconda
+channel.
+
+How to resolve: In special cases this can be overridden, for example if
 a bioconda-specific patch is required. However it is almost always better to
-fix the original package in the other channel.
+fix or update the recipe in the other channel. Note that the package in the
+bioconda channel will remain in order to maintain reproducibility.
 
 `already_in_bioconda`
 ~~~~~~~~~~~~~~~~~~~~~
-The current package version, build, and platform (linux/osx) already exists in
-the bioconda chennel. Increase the version number or `build number
+Reason for failing: The current package version, build, and platform
+(linux/osx) already exists in the bioconda channel.
+
+Rationale: This acts as an early warning to bump version or build numbers.
+
+How to resolve: Increase the version number or `build number
 <https://conda.io/docs/building/meta-yaml.html#build-number-and-string>`_ as
 appropriate.
 
 `missing_home`
 ~~~~~~~~~~~~~~
-No homepage URL. Add the url in the `about section
+Reason for failing: No homepage URL.
+
+Rationale: We want to make sure users can get additional information about
+a package, and it saves a separate search for the tool. Furthermore some tools
+with name collisions have to be renamed to fit into the conda channel and the
+homepage is an unambiguous original source.
+
+How to resolve: Add the url in the `about section
 <https://conda.io/docs/building/meta-yaml.html#about-section>`_.
 
 `missing_summary`
 ~~~~~~~~~~~~~~~~~
-Missing a summary; add a descriptive summary in the `about
+Reason for failing: Missing a summary.
+
+Rationale: We want to provide a minimal amount of information about the
+package.
+
+How to resolve: add a short descriptive summary in the `about
 section <https://conda.io/docs/building/meta-yaml.html#about-section>`_.
 
 `missing_license`
 ~~~~~~~~~~~~~~~~~
-No license provided. Add the license in the `about section
-<https://conda.io/docs/building/meta-yaml.html#about-section>`_.
+Reason for failing: No license provided.
+
+Rationale: We need to ensure that adding the package to bioconda does not
+violate the license
+
+How to resolve: Add the license in the `about section
+<https://conda.io/docs/building/meta-yaml.html#about-section>`_. There are some
+ways of accommodating some licenses; see the GATK package for one method.
 
 `missing_tests`
 ~~~~~~~~~~~~~~~
-No tests provided. Add basic tests to ensure the software gets installed; see
+Reason for failing: No tests provided.
+
+Rationale: We need at least minimal tests to ensure the programs can be found
+on the path to catch basic installation errors.
+
+How to resolve: Add basic tests to ensure the software gets installed; see
 :ref:`tests` for more info.
 
 `missing_hash`
 ~~~~~~~~~~~~~~
-A hash in the `source section
-<https://conda.io/docs/building/meta-yaml.html#source-section>`_ is required.
-aSee :ref:`hashes` for more info.
+Reason for failing: Missing a hash in the source section.
+
+Rationale: Hashes ensure that the source is downloaded correctly without being
+corrupted.
+
+How to resolve: Add a hash in the `source section
+<https://conda.io/docs/building/meta-yaml.html#source-section>`_. See
+:ref:`hashes` for more info.
 
 `uses_git_url`
 ~~~~~~~~~~~~~~
-The source section uses a git URL. While this is supported by conda, we prefer
-to not use this method since it is not always reproducible.  See
-:ref:`stable-url` for more info.
+Reason for failing: The source section uses a git URL.
+
+Rationale: While this is supported by conda, we prefer
+to not use this method since it is not always reproducible. Furthermore, the
+Galaxy team mirrors each successfully built bioconda recipe. Mirroring git_urls
+is problematic.
+
+How to resolve: Use a direct URL. Ideally a github repo should have tagged
+releases that are accessible as tarballs from the "releases" section of the
+github repo.
 
 `uses_perl_threaded`
 ~~~~~~~~~~~~~~~~~~~~
-Previously bioconda used `perl-threaded` as a dependency for Perl packages, but
-now we are using `perl` instead.
+Reason for failing: The recipe has a dependency of `perl-threaded`.
+
+Rationale: Previously bioconda used `perl-threaded` as a dependency for Perl
+packages, but now we are using `perl` instead. When one of these older recipes
+is updated, it will fail this check.
+
+How to resolve: Change `perl-threaded` to `perl`.
 
 `uses_javajdk`
 ~~~~~~~~~~~~~~
-Previously bioconda used `java-jdk` as a dependency for Java packages, but now
-we are using `openjdk` instead.
+Reason for failing: The recipe has a dependency of `java-jdk`.
+
+Rationale: Previously bioconda used `java-jdk` as a dependency for Java
+packages, but now we are using `openjdk` instead. When one of those older
+recipes is updated, it will fail this check.
+
+How to resolve: Change `java-jdk` to `openjdk`.
 
 `uses_setuptools`
 ~~~~~~~~~~~~~~~~~
-`setuptools` is typically used to install dependencies for Python packages but
-most of the time this is not needed within a conda package; rather, all
-dependencies should be explicitly defined. Some packages do need setuptools, in
-which case this can be overridden.
+Reason for failing: The recipe has `setuptools` as a run dependency.
+
+Rationale: `setuptools` is typically used to install dependencies for Python
+packages but most of the time this is not needed within a conda package as
+a run dependency.
+
+How to resolve: Ensure that all dependencies are explicitly defined. Some
+packages do need setuptools, in which case this can be overridden.
 
 `has_windows_bat_file`
 ~~~~~~~~~~~~~~~~~~~~~~
-Since bioconda does not support Windows, any `*.bat` files should be removed
-from the recipe.
+Reason for failing: The recipe includes a `.bat` file.
+
+Rationale: Often when using one of the skeleton commands (`conda skeleton
+{cran,pypi,cpan}`), the command will include a Windows `.bat` file. Since
+bioconda does not support Windows, any `*.bat` files are unused and to reduce
+clutter we try to remove them.
+
+How to resolve: Remove the `.bat` file from the recipe.
 
 Developer docs
 --------------
-Lint functions are defined in `bioconda_utils.lint_functions`. Each function accepts three arguments:
+For developers adding new linting functions:
+
+Lint functions are defined in `bioconda_utils.lint_functions`. Each function
+accepts three arguments:
 
 - `recipe`, the path to the recipe
 - `meta`, the meta.yaml file parsed into a dictionary
