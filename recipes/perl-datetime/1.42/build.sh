@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # If it has Build.PL use that, otherwise use Makefile.PL
+
 if [ -f Build.PL ]; then
     perl Build.PL
     perl ./Build
@@ -16,12 +17,6 @@ elif [ -f Makefile.PL ]; then
     sed -i.bak 's|LD_RUN_PATH = /usr/lib/../lib64|LD_RUN_PATH = ${PREFIX}/lib|g' Makefile
     sed -i.bak 's|LD_RUN_PATH = /usr/lib64|LD_RUN_PATH = ${PREFIX}/lib|g' Makefile
     sed -i.bak 's|-I/usr/local/include|-I${PREFIX}/include|g' Makefile
-    sed -i.bak 's/-fstack-protector-strong//g' myldr/Makefile
-    sed -i.bak 's/-fstack-protector//g' myldr/Makefile
-    sed -i.bak 's|-L/usr/local/lib|-L${PREFIX}/lib|g' myldr/Makefile
-    sed -i.bak 's|LD_RUN_PATH = /usr/lib/../lib64|LD_RUN_PATH = ${PREFIX}/lib|g' myldr/Makefile
-    sed -i.bak 's|LD_RUN_PATH = /usr/lib64|LD_RUN_PATH = ${PREFIX}/lib|g' myldr/Makefile
-    sed -i.bak 's|-I/usr/local/include|-I${PREFIX}/include|g' myldr/Makefile
     make
     make test
     make install
@@ -29,15 +24,6 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
-
-# For some reason the scripts are not being added
-mkdir perl-build
-cp -rf script/* perl-build
-cd perl-build
-cp ${RECIPE_DIR}/Build.PL ./
-perl ./Build.PL
-perl ./Build
-perl ./Build install --installdirs site
 
 # Add more build steps here, if they are necessary.
 
