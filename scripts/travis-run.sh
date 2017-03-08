@@ -6,6 +6,7 @@ set +u
 [[ -z $TRAVIS ]] && TRAVIS="false"
 [[ -z $BIOCONDA_UTILS_LINT_ARGS ]] && BIOCONDA_UTILS_LINT_ARGS=""
 [[ -z $RANGE_ARG ]] && RANGE_ARG="--git-range HEAD"
+[[ -z $DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK  ]] && DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK="false"
 set -u
 
 if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
@@ -69,7 +70,16 @@ then
    touch $CONTAINER_PUSH_COMMANDS_PATH
 fi
 
+
 set -x; bioconda-utils lint recipes config.yml $RANGE_ARG $BIOCONDA_UTILS_LINT_ARGS; set +x
+
+if [[ $DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK = "true" ]]
+then
+    echo
+    echo "DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK is true."
+    echo "A comprehensive check will be performed to see what needs to be built."
+    RANGE_ARG=""
+fi
 set -x; bioconda-utils build recipes config.yml $DOCKER_ARG $BIOCONDA_UTILS_BUILD_ARGS $RANGE_ARG; set +x;
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
