@@ -11,27 +11,28 @@ is a list of the checks performed and how to fix them if they fail.
 Skipping a linting test
 -----------------------
 While only recommended in special cases, it is possible to skip specific
-linting tests on a commit by using special text in the commit message, `[lint
-skip $FUNCTION for $RECIPE]` where `$FUNCTION` is the name of the function to
-skip and `$RECIPE` is the path to the recipe directory for which this test
+linting tests on a commit by using special text in the commit message, ``[lint
+skip $FUNCTION for $RECIPE]`` where ``$FUNCTION`` is the name of the function to
+skip and ``$RECIPE`` is the path to the recipe directory for which this test
 should be skipped.
 
-For example, if the linter reports a `uses_setuptools` issue for
-`recipes/mypackage/0.1`, but you are certain the package really needs
-setuptools, you can add `[lint skip uses_setuptools for recipes/mypackage/0.1]`
+For example, if the linter reports a ``uses_setuptools`` issue for
+``recipes/mypackage``, but you are certain the package really needs
+setuptools, you can add ``[lint skip uses_setuptools for recipes/mypackage]``
 to the commit message and this linting test will be skipped on Travis-CI.
 Multiple tests can be skipped by adding additional special text. For example,
-`[lint skip uses_setuptools for recipes/pkg1] [lint skip in_other_channels for
-recipes/pkg2]`.
+``[lint skip uses_setuptools for recipes/pkg1] [lint skip in_other_channels for
+recipes/pkg2/0.3.5]``. Note in the latter case that the second recipe has
+a subdirectory for an older version.
 
-Technically we check for the regular expression `\[\s*lint skip (?P<func>\w+)
-for (?P<recipe>.*?)\s*\]` in the commit message of the HEAD commit. However,
+Technically we check for the regular expression ``\[\s*lint skip (?P<func>\w+)
+for (?P<recipe>.*?)\s*\]`` in the commit message of the HEAD commit. However,
 often we want to test changes locally without committing.  When running
-`simulate-travis.py` locally for testing, you can add the same special text to
-a temporary environment variable `LINT_SKIP`. The same example above could be
+``simulate-travis.py`` locally for testing, you can add the same special text to
+a temporary environment variable ``LINT_SKIP``. The same example above could be
 tested locally like this without having to make a commit::
 
-    LINT_SKIP="[lint skip uses_setuptools for recipes/mypackage/0.1]" ./simulate-travis.py
+    LINT_SKIP="[lint skip uses_setuptools for recipes/mypackage]" ./simulate-travis.py
 
 Linting functions
 -----------------
@@ -132,29 +133,29 @@ github repo.
 
 `uses_perl_threaded`
 ~~~~~~~~~~~~~~~~~~~~
-Reason for failing: The recipe has a dependency of `perl-threaded`.
+Reason for failing: The recipe has a dependency of ``perl-threaded``.
 
-Rationale: Previously bioconda used `perl-threaded` as a dependency for Perl
-packages, but now we are using `perl` instead. When one of these older recipes
+Rationale: Previously bioconda used ``perl-threaded`` as a dependency for Perl
+packages, but now we are using ``perl`` instead. When one of these older recipes
 is updated, it will fail this check.
 
-How to resolve: Change `perl-threaded` to `perl`.
+How to resolve: Change ``perl-threaded`` to ``perl``.
 
 `uses_javajdk`
 ~~~~~~~~~~~~~~
-Reason for failing: The recipe has a dependency of `java-jdk`.
+Reason for failing: The recipe has a dependency of ``java-jdk``.
 
-Rationale: Previously bioconda used `java-jdk` as a dependency for Java
-packages, but now we are using `openjdk` instead. When one of those older
+Rationale: Previously bioconda used ``java-jdk`` as a dependency for Java
+packages, but now we are using ``openjdk`` instead. When one of those older
 recipes is updated, it will fail this check.
 
-How to resolve: Change `java-jdk` to `openjdk`.
+How to resolve: Change ``java-jdk`` to ``openjdk``.
 
 `uses_setuptools`
 ~~~~~~~~~~~~~~~~~
-Reason for failing: The recipe has `setuptools` as a run dependency.
+Reason for failing: The recipe has ``setuptools`` as a run dependency.
 
-Rationale: `setuptools` is typically used to install dependencies for Python
+Rationale: ``setuptools`` is typically used to install dependencies for Python
 packages but most of the time this is not needed within a conda package as
 a run dependency.
 
@@ -163,20 +164,20 @@ packages do need setuptools, in which case this can be overridden.
 
 `has_windows_bat_file`
 ~~~~~~~~~~~~~~~~~~~~~~
-Reason for failing: The recipe includes a `.bat` file.
+Reason for failing: The recipe includes a ``.bat`` file.
 
-Rationale: Often when using one of the skeleton commands (`conda skeleton
-{cran,pypi,cpan}`), the command will include a Windows `.bat` file. Since
-bioconda does not support Windows, any `*.bat` files are unused and to reduce
+Rationale: Often when using one of the skeleton commands (``conda skeleton
+{cran,pypi,cpan}``), the command will include a Windows ``.bat`` file. Since
+bioconda does not support Windows, any ``*.bat`` files are unused and to reduce
 clutter we try to remove them.
 
-How to resolve: Remove the `.bat` file from the recipe.
+How to resolve: Remove the ``.bat`` file from the recipe.
 
 Developer docs
 --------------
 For developers adding new linting functions:
 
-Lint functions are defined in `bioconda_utils.lint_functions`. Each function
+Lint functions are defined in ``bioconda_utils.lint_functions``. Each function
 accepts three arguments:
 
 - `recipe`, the path to the recipe
@@ -198,4 +199,5 @@ of a pandas DataFrame for downstream processing and so can be somewhat
 arbitrary.
 
 After adding a new linting function, add it to the
-`bioconda_utils.lint_functions.registry` tuple so that it gets used by default.
+``bioconda_utils.lint_functions.registry`` tuple so that it gets used by
+default.
