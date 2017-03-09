@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import re
 import glob
 import subprocess as sp
 import sys
@@ -679,7 +680,8 @@ def modified_recipes(git_range, recipe_folder, full=False):
     # git expands globs only in versions >2, so if it's older than that we need
     # to run the command using shell=True so that globs are expanded.
     p = run(['git', '--version'])
-    git_version = LooseVersion(p.stdout.split()[-1])
+    matches = re.match(r'^git version (?P<version>[\d\.]*)(?:.*)$',p.stdout)
+    git_version = matches.group("version")
     if git_version < LooseVersion('2'):
         logger.warn(
             'git version (%s) is < 2.0. Running git diff using shell=True. '
