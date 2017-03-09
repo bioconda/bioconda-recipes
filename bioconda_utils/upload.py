@@ -57,4 +57,3 @@ def upload(package, token=None, label=None):
             logger.error('BIOCONDA UPLOAD ERROR: command: %s', e.cmd)
             logger.error('BIOCONDA UPLOAD ERROR: stdout+stderr: %s', e.stdout)
             raise e
-

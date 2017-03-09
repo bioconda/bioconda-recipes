@@ -79,7 +79,8 @@ def run(cmds, env=None, **kwargs):
         p.stdout = p.stdout.decode(errors='replace')
     except sp.CalledProcessError as e:
         e.stdout = e.stdout.decode(errors='replace')
-        print(e.stdout)
+        logger.error('COMMAND FAILED: %s', ' '.join(e.cmd))
+        logger.error('STDOUT+STDERR:\n%s', e.stdout)
         raise e
     return p
 
