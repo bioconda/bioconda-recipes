@@ -19,3 +19,5 @@ cmake \
 make -j${CPU_COUNT} all
 make install
 
+mkdir ${PREFIX}/include/dcmtk/dcmjpeg/libijg8/
+cp -R ../dcmjpeg/libijg8/*.h ${PREFIX}/include/dcmtk/dcmjpeg/libijg8/
