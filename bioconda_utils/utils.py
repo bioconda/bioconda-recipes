@@ -79,7 +79,8 @@ def run(cmds, env=None, **kwargs):
         p.stdout = p.stdout.decode(errors='replace')
     except sp.CalledProcessError as e:
         e.stdout = e.stdout.decode(errors='replace')
-        print(e.stdout)
+        logger.error('COMMAND FAILED: %s', ' '.join(e.cmd))
+        logger.error('STDOUT+STDERR:\n%s', e.stdout)
         raise e
     return p
 
@@ -503,7 +504,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         # the slow steps below if it's newer than the last commit to master.
         if force:
             logger.debug(
-                'BIOCONDA FILTER: building %s because force=True', recipe)
+                'FILTER: building %s because force=True', recipe)
             return True
 
         pkg = os.path.basename(built_package_path(recipe, env))
@@ -513,7 +514,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         ]
         if in_channels:
             logger.debug(
-                'BIOCONDA FILTER: not building %s because '
+                'FILTER: not building %s because '
                 'it is in channel(s): %s', pkg, in_channels)
             return False
 
@@ -534,12 +535,12 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
 
         if skip:
             logger.debug(
-                'BIOCONDA FILTER: not building %s because '
+                'FILTER: not building %s because '
                 'it defines skip for this env', pkg)
             return False
 
         logger.debug(
-            'BIOCONDA FILTER: building %s because it is not in channels '
+            'FILTER: building %s because it is not in channels '
             'does not define skip, and force is not specified', pkg)
         return True
 
