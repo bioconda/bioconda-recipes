@@ -60,7 +60,7 @@ def build(recipe,
     """
     env = dict(env)
     logger.info(
-        "BIOCONDA BUILD START %s, env: %s",
+        "BUILD START %s, env: %s",
         recipe, ';'.join(['='.join(map(str, i)) for i in sorted(env.items())])
     )
     # --no-build-id is needed for some very long package names that triggers the 89 character limits
@@ -103,7 +103,7 @@ def build(recipe,
             pkg = utils.built_package_path(recipe, env)
             if not os.path.exists(pkg):
                 logger.error(
-                    "BIOCONDA BUILD FAILED: the built package %s "
+                    "BUILD FAILED: the built package %s "
                     "cannot be found", pkg)
                 return False
             build_success = True
@@ -118,13 +118,13 @@ def build(recipe,
             build_success = True
 
         logger.info(
-            'BIOCONDA BUILD SUCCESS %s, %s',
+            'BUILD SUCCESS %s, %s',
             utils.built_package_path(recipe, env), utils.envstr(env)
         )
 
     except (docker_utils.DockerCalledProcessError, sp.CalledProcessError) as e:
             logger.error(
-                'BIOCONDA BUILD FAILED %s, %s', recipe, utils.envstr(env))
+                'BUILD FAILED %s, %s', recipe, utils.envstr(env))
             return False
 
     if not mulled_test:
@@ -133,19 +133,19 @@ def build(recipe,
     pkg_path = utils.built_package_path(recipe, env)
 
     logger.info(
-        'BIOCONDA TEST START via mulled-build %s, %s',
+        'TEST START via mulled-build %s, %s',
         recipe, utils.envstr(env))
 
     res = pkg_test.test_package(pkg_path)
 
     # TODO remove the second clause once new galaxy-lib has been released.
     if (res.returncode == 0) and (res.stdout.find('Unexpected exit code') == -1):
-        logger.info("BIOCONDA TEST SUCCESS %s, %s", recipe, utils.envstr(env))
+        logger.info("TEST SUCCESS %s, %s", recipe, utils.envstr(env))
         logger.debug('STDOUT:\n%s', res.stdout)
         logger.debug('STDERR:\n%s', res.stderr)
         return True
     else:
-        logger.error('BIOCONDA TEST FAILED: %s, %s', recipe, utils.envstr(env))
+        logger.error('TEST FAILED: %s, %s', recipe, utils.envstr(env))
         logger.error('STDOUT:\n%s', res.stdout)
         logger.error('STDERR:\n%s', res.stderr)
         return False
@@ -333,7 +333,7 @@ def build_recipes(
 
         if name in skip_dependent:
             logger.info(
-                'BIOCONDA BUILD SKIP: '
+                'BUILD SKIP: '
                 'skipping %s because it depends on %s '
                 'which had a failed build.',
                 recipe, skip_dependent[name])
@@ -367,30 +367,30 @@ def build_recipes(
     if len(failed) > 0:
         failed_recipes = list(set(i[0] for i in failed))
         logger.error(
-            'BIOCONDA BUILD SUMMARY: of %s recipes, '
+            'BUILD SUMMARY: of %s recipes, '
             '%s failed and %s were skipped. '
             'Details of recipes and environments follow.',
             len(recipes), len(failed_recipes), len(skipped_recipes))
 
         if len(built_recipes) > 0:
             logger.error(
-                'BIOCONDA BUILD SUMMARY: while the entire build failed, '
+                'BUILD SUMMARY: while the entire build failed, '
                 'the following recipes were built successfully:\n%s',
                 '\n'.join(built_recipes))
 
         for recipe, target in failed:
             logger.error(
-                'BIOCONDA BUILD SUMMARY: FAILED recipe %s, environment %s',
+                'BUILD SUMMARY: FAILED recipe %s, environment %s',
                 str(target), target.envstring())
 
         for name, dep in skip_dependent.items():
             logger.error(
-                'BIOCONDA BUILD SUMMARY: SKIPPED recipe %s '
+                'BUILD SUMMARY: SKIPPED recipe %s '
                 'due to failed dependencies %s', name, dep)
         return False
 
     logger.info(
-        "BIOCONDA BUILD SUMMARY: successfully built %s of %s recipes",
+        "BUILD SUMMARY: successfully built %s of %s recipes",
         len(built_recipes), len(recipes))
 
     if not testonly and not disable_upload:

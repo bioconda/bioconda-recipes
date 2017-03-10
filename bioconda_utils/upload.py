@@ -27,7 +27,7 @@ def upload(package, token=None, label=None):
         label_arg = ['--label', label]
 
     if not os.path.exists(package):
-        logger.error("BIOCONDA UPLOAD ERROR: package %s cannot be found.",
+        logger.error("UPLOAD ERROR: package %s cannot be found.",
                      package)
         return False
 
@@ -36,11 +36,11 @@ def upload(package, token=None, label=None):
         if token is None:
             raise ValueError("Env var ANACONDA_TOKEN not found")
 
-    logger.info("BIOCONDA UPLOAD uploading package %s", package)
+    logger.info("UPLOAD uploading package %s", package)
     try:
         cmds = ["anaconda", "-t", token, 'upload', package] + label_arg
         p = utils.run(cmds)
-        logger.info("BIOCONDA UPLOAD SUCCESS: uploaded package %s", package)
+        logger.info("UPLOAD SUCCESS: uploaded package %s", package)
         return True
 
     except sp.CalledProcessError as e:
@@ -48,12 +48,12 @@ def upload(package, token=None, label=None):
             # ignore error assuming that it is caused by
             # existing package
             logger.warning(
-                "BIOCONDA UPLOAD WARNING: tried to upload package, got: "
+                "UPLOAD WARNING: tried to upload package, got: "
                 "%s", e.stdout)
             return True
         else:
             # to avoid broadcasting the token in logs
             e.cmd = ' '.join(cmds).replace(token, '<token>')
-            logger.error('BIOCONDA UPLOAD ERROR: command: %s', e.cmd)
-            logger.error('BIOCONDA UPLOAD ERROR: stdout+stderr: %s', e.stdout)
+            logger.error('UPLOAD ERROR: command: %s', e.cmd)
+            logger.error('UPLOAD ERROR: stdout+stderr: %s', e.stdout)
             raise e
