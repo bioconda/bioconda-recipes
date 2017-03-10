@@ -54,6 +54,9 @@ ap.add_argument('--config-from-github', action='store_true', help='''Download
                 and use the config.yml and .travis.yml files from the master
                 branch of the github repo. Default is to use the files
                 currently on disk.''')
+ap.add_argument('--disable-docker', action='store_true', help='''By default, if
+                the OS is linux then we use Docker. Use this argument to
+                disable this behavior''')
 args, extra = ap.parse_known_args()
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -119,7 +122,9 @@ if args.install_requirements:
         check=True)
     sys.exit(0)
 
+# Only run if we're not on travis.
 if os.environ.get('TRAVIS', None) != 'true':
+
     # SUBDAG is set by travis-ci according to the matrix in .travis.yml, so here we
     # force it to just use one. The default is to run two parallel jobs, but here
     # we set SUBDAGS to 1 so we only run a single job.
@@ -128,8 +133,8 @@ if os.environ.get('TRAVIS', None) != 'true':
     env['SUBDAGS'] = '1'
     env['SUBDAG'] = '0'
 
-    # These are set by the travis-ci environment; so that it works in other
-    # environment, here we only set the variables used by bioconda-utils.
+    # When running on travis, these are set by the travis-ci environment, but
+    # when running locally we have to simulate them.
     #
     # See https://docs.travis-ci.com/user/environment-variables for more.
     if platform.system() == 'Darwin':
@@ -139,12 +144,19 @@ if os.environ.get('TRAVIS', None) != 'true':
 
     env['TRAVIS_BRANCH'] = 'false'
     env['TRAVIS_PULL_REQUEST'] = 'false'
+    env['TRAVIS_REPO_SLUG'] = 'false'
 
     # Any additional arguments from the command line are added here.
-    env['BIOCONDA_UTILS_ARGS'] += ' ' + ' '.join(extra)
-    env['BIOCONDA_UTILS_ARGS'] = ' '.join(shlex.split(env['BIOCONDA_UTILS_ARGS']))
+    env['BIOCONDA_UTILS_BUILD_ARGS'] += ' ' + ' '.join(extra)
+    env['BIOCONDA_UTILS_BUILD_ARGS'] = ' '.join(shlex.split(env['BIOCONDA_UTILS_BUILD_ARGS']))
 
-    # Override with whatever's in the shell environment
+    if (
+        (env['TRAVIS_OS_NAME'] == 'linux') &
+        (not args.disable_docker) &
+        ('--docker' not in env['BIOCONDA_UTILS_BUILD_ARGS'])
+    ):
+        env['DOCKER_ARG'] = '--docker'
+
+    # Override env with whatever's in the shell environment
     env.update(os.environ)
-
     sp.run(['scripts/travis-run.sh'], env=env, universal_newlines=True, check=True)

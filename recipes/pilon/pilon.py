@@ -80,7 +80,10 @@ def main():
 
     java_args = [java]+ mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
 
-    sys.exit(subprocess.call(java_args))
+    if '--jar_dir' in sys.argv[1:]:
+        print(jar_path)
+    else:
+        sys.exit(subprocess.call(java_args))
 
 
 if __name__ == '__main__':
