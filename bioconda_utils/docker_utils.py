@@ -316,10 +316,7 @@ class RecipeBuilder(object):
         """
         logger.info('BIOCONDA DOCKER: Pulling docker image %s', self.image)
         p = utils.run(['docker', 'pull', self.image])
-        logger.debug('BIOCONDA DOCKER: stdout+stderr: %s', p.stdout)
-        if p.returncode != 0:
-            raise ValueError(p.stdout)
-
+        logger.debug('BIOCONDA DOCKER: stdout+stderr:\n%s', p.stdout)
         logger.info('BIOCONDA DOCKER: Done pulling image')
 
     def _build_image(self):
@@ -355,9 +352,8 @@ class RecipeBuilder(object):
             p = utils.run(cmd)
         except sp.CalledProcessError as e:
             logger.error(
-                'BIOCONDA DOCKER FAIL: Error building docker container %s. '
-                'stdout+stdterr follows:', self.tag)
-            logger.error(e.stderr)
+                'BIOCONDA DOCKER FAILED: Error building docker container %s. ',
+                self.tag)
             raise e
 
         logger.info('BIOCONDA DOCKER: Built docker image tag=%s', self.tag)
