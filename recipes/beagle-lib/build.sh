@@ -1,7 +1,6 @@
 #!/bin/bash
 
 ./autogen.sh
-./configure --prefix=$PREFIX
+./configure --prefix=${PREFIX} --with-jdk=${PREFIX}
 make
-make check
 make install
