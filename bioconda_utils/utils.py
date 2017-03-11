@@ -418,7 +418,20 @@ def last_commit_to_master():
     return date
 
 
-def newly_unblacklisted(config_file, recipe_folder):
+def file_from_commit(commit, filename):
+    """
+    Returns the contents of a file at a particular commit as a string.
+
+    Parameters
+    ----------
+    commit : commit-like string
+
+    filename : str
+    """
+    p = run(['git', 'show', '{0}:{1}'.format(commit, filename)])
+    return str(p.stdout)
+
+def newly_unblacklisted(config_file, recipe_folder, git_range):
     """
     Returns the set of recipes that were blacklisted in master branch but have
     since been removed from the blacklist. Considers the contents of all
@@ -436,19 +449,19 @@ def newly_unblacklisted(config_file, recipe_folder):
         Path to recipe dir, needed by get_blacklist
 
     """
-    logger.debug('Examining master branch config file')
-    curr = get_blacklist(
+    # Get the set of previously blacklisted recipes by reading the original
+    # config file and then all the original blacklists it had listed
+    previous = set()
+    orig_config = file_from_commit(git_range[0], config_file)
+    for bl in yaml.load(orig_config)['blacklists']:
+        with open('.tmp.blacklist', 'w', encoding='utf8') as fout:
+            fout.write(file_from_commit(git_range[0], bl))
+        previous.update(get_blacklist(['.tmp.blacklist'], recipe_folder))
+        os.unlink('.tmp.blacklist')
+
+    current = get_blacklist(
         yaml.load(open(config_file))['blacklists'], recipe_folder)
-    p = run(['git', 'fetch', 'origin', 'master'])
-    p = run(['git', 'show', 'FETCH_HEAD:{}'.format(config_file)])
-    prev = set()
-    for bl in yaml.load(p.stdout)['blacklists']:
-        p = run(['git', 'show', 'FETCH_HEAD:{}'.format(bl)])
-        tmp = tempfile.NamedTemporaryFile(delete=False).name
-        with open(tmp, 'w', encoding='utf8') as fout:
-            fout.write(p.stdout)
-        prev.update(get_blacklist([tmp], recipe_folder))
-    results = prev.difference(curr)
+    results = previous.difference(current)
     logger.debug('Recipes newly unblacklisted:\n%s', '\n'.join(list(results)))
     return results
 
@@ -643,12 +656,15 @@ def load_config(path):
     return default_config
 
 
-def modified_recipes(git_range, recipe_folder, full=False):
+def modified_recipes(git_range, recipe_folder, config_file, full=False):
     """
     Returns recipes modified within the git range.
 
-    git_range : list or tuple of length 2
+    git_range : list or tuple of length 1 or 2
         For example, ['00232ffe', '10fab113'], or commonly ['master', 'HEAD']
+        or ['master']. If length 2, then the commits are provided to `git diff`
+        using the triple-dot syntax, `commit1...commit2`. If length 1, the
+        comparison is any changes in the working tree relative to the commit.
 
     recipe_folder : str
         Top-level recipes dir in which to search for meta.yaml files.
