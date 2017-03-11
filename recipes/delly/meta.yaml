@@ -1,22 +1,41 @@
+{% set version = "0.7.6" %}
+
 package:
   name: delly
-  version: '0.7.6'
+  version: {{ version }}
 
 source:
-  fn: delly_v0.7.6_CentOS5.4_x86_64bit
-  url: https://github.com/tobiasrausch/delly/releases/download/v0.7.6/delly_v0.7.6_CentOS5.4_x86_64bit
-  md5: 8efd63cb83f8f18428bbacf8b1b1945f
+  url: https://github.com/dellytools/delly/archive/v{{ version }}.tar.gz
+  sha256: fab273f17dacde4e15e18a187bfe47826a1b8396a8aa40b44a68c56f059f79b5
+  patches:
+    - Makefile.patch
 
 build:
-  number: 0
+  number: 1
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
   skip: True # [osx]
-  binary_relocation: False
+
+requirements:
+  build:
+    - gcc
+    - zlib
+    - bzip2
+    - bcftools
+    - boost {{CONDA_BOOST}}*
+    - htslib
+  run:
+    - libgcc
+    - zlib
+    - bzip2
+    - bcftools
+    - boost {{CONDA_BOOST}}*
+    - htslib
 
 test:
   commands:
-    - delly --help > /dev/null
+    - delly --help
 
 about:
-  home: https://github.com/tobiasrausch/delly
+  home: https://github.com/dellytools/delly
   license: GPLv3
   summary: Structural variant discovery by integrated paired-end and split-read analysis
