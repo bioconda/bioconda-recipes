@@ -2,4 +2,4 @@
 
 make
 mv *.so $PREFIX/lib
-mv *.py *.sh $PREFIX/bin
+mv *.awk *.sh *.py utils/outconv.py $PREFIX/bin
