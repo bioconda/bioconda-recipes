@@ -6,6 +6,7 @@ import subprocess as sp
 from functools import partial
 import shlex
 import logging
+from colorlog import ColoredFormatter
 
 import yaml
 import argh
@@ -22,7 +23,32 @@ from . import lint_functions
 from . import linting
 from . import github_integration
 
+
+log_stream_handler = logging.StreamHandler()
+log_stream_handler.setFormatter(ColoredFormatter(
+        "%(asctime)s %(log_color)sBIOCONDA %(levelname)s%(reset)s %(message)s",
+        datefmt="%H:%M:%S",
+        reset=True,
+        log_colors={
+            'DEBUG': 'cyan',
+            'INFO': 'green',
+            'WARNING': 'yellow',
+            'ERROR': 'red',
+            'CRITICAL': 'red',
+        }))
+
+
 logger = logging.getLogger(__name__)
+
+
+def setup_logger(loglevel):
+    LEVEL = getattr(logging, loglevel.upper())
+    #logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
+    l = logging.getLogger('bioconda_utils')
+    l.propagate = False
+    l.setLevel(getattr(logging, loglevel.upper()))
+    l.addHandler(log_stream_handler)
+
 # NOTE:
 #
 # A package is the name of the software package, like `bowtie`.
@@ -73,9 +99,8 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
     If --push-status is not set, reports a TSV of linting results to stdout.
     Otherwise pushes a commit status to the specified commit on github.
     """
-    LEVEL = getattr(logging, loglevel.upper())
-    logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
-    logging.getLogger('bioconda_utils').setLevel(getattr(logging, loglevel.upper()))
+    setup_logger(loglevel)
+
     if list_funcs:
         print('\n'.join([i.__name__ for i in lint_functions.registry]))
         sys.exit(0)
@@ -186,9 +211,8 @@ def build(recipe_folder,
           quick=False,
           disable_travis_env_vars=False,
           ):
-    LEVEL = getattr(logging, loglevel.upper())
-    logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
-    logging.getLogger('bioconda_utils').setLevel(getattr(logging, loglevel.upper()))
+    setup_logger(loglevel)
+
     cfg = utils.load_config(config)
     setup = cfg.get('setup', None)
     if setup:
@@ -292,9 +316,7 @@ def dependent(recipe_folder, restrict=False, dependencies=None, reverse_dependen
         raise ValueError(
             '`dependencies` and `reverse_dependencies` are mutually exclusive')
 
-    LEVEL = getattr(logging, loglevel.upper())
-    logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
-    logging.getLogger('bioconda_utils').setLevel(getattr(logging, loglevel.upper()))
+    setup_logger(loglevel)
 
     d, n2r = utils.get_dag(utils.get_recipes(recipe_folder, "*"), restrict=restrict)
 
