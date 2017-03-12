@@ -507,3 +507,42 @@ Sometimes Makefiles may specify these locations, in which case they need to be
 edited. See the `samtools` recipe for an example of this. It may take some
 tinkering to get the recipe to build; if it doesn't seem to work then please
 submit an issue or notify `@bioconda/core` for advice.
+
+
+``/usr/bin/perl`` or ``/usr/bin/python`` not found
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Often a tool hard-codes the shebang line as, e.g., ``/usr/bin/perl`` rather
+than the more portable ``/usr/bin/env perl``. To fix this, use ``sed`` in the
+build script to edit the lines.
+
+Here is an example that will replace the first line of a file
+``$PREFIX/bin/alocal`` with the proper shebang line ::
+
+    sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/aclocal
+
+(note the ``-i.bak``, which is needed to support both Linux and OSX versions of
+``sed``).
+
+It turns out that the version of `autoconf` that is packaged in the defaults
+channel still uses the hard-coded Perl. So if a tool uses `autoconf` for
+building, it is likely you will see this error and it will need some ``sed``
+commands. See `here
+<https://github.com/bioconda/bioconda-recipes/blob/4bc02d7b4d784c923481d8808ed83e048c01d3bb/recipes/exparna/build.sh>`_
+for an example to work from.
+
+Troubleshooting failed ``mulled-build`` tests
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+After conda sucessfully builds and tests a package, we then perform a more
+stringent test in a minimal Docker container using ``mulled-build``. Notably,
+this container does not have conda and has very few libraries. So this test can
+catch issues that the default conda test cannot. However the extra layer of
+abstraction makes it difficult to troubleshoot problems with the recipe. If the
+conda-build test works but the mulled-build test fails try these steps:
+
+- Run ``simulate-travis.py`` locally with ``--loglevel=debug``
+- Look carefully at the output from ``mulled-build`` to look for Docker hashes,
+  and cross-reference with the output of ``docker images | head`` to figure out
+  the hash of the container used.
+- Start up an interactive docker container, ``docker run -it $hash``. You can
+  now try running the tests in the recipe that failed, or otherwise poke around
+  in the running container to see what the problem was.
