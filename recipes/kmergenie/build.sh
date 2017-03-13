@@ -21,6 +21,7 @@ make
 
 sed -i.bak 's/third_party\.//g' scripts/*
 sed -i.bak 's/third_party\.//g' kmergenie
+sed -i.bak 's/scripts\///g' kmergenie
 
 cp scripts/* $PREFIX/bin
 cp third_party/* $PREFIX/bin
