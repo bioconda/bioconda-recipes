@@ -30,6 +30,15 @@ else
     exit 1
 fi
 
+# For some reason the scripts are not being added
+mkdir perl-build
+cp -rf script/* perl-build
+cd perl-build
+cp ${RECIPE_DIR}/Build.PL ./
+perl ./Build.PL
+perl ./Build
+perl ./Build install --installdirs site
+
 # Add more build steps here, if they are necessary.
 
 # See
