@@ -1,0 +1,57 @@
+package:
+  name: pybel
+  version: "0.4.0"
+
+source:
+  fn: PyBEL-0.4.0.tar.gz
+  url: https://pypi.python.org/packages/74/b5/cb8392780d7e73434c0eea02d27b01d9e985af7e661091e1c908cfdc853e/PyBEL-0.4.0.tar.gz
+  md5: d89c8cd35382dbed52a496a8de3cf3ad
+  patches:
+    - configparser.patch
+
+build:
+  entry_points:
+    - pybel = pybel.cli:main
+  number: 0
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - requests
+    - requests-file
+    - networkx
+    - pyparsing
+    - configparser  # [py27]
+    - py2neo
+    - click
+    - sqlalchemy
+    - onto2nx
+  run:
+    - python
+    - requests
+    - requests-file
+    - networkx
+    - pyparsing
+    - configparser  # [py27]
+    - py2neo
+    - click
+    - sqlalchemy
+    - onto2nx
+
+test:
+  # Python imports
+  imports:
+    - pybel
+    - pybel.ext
+    - pybel.manager
+    - pybel.parser
+    - pybel.parser.modifiers
+  commands:
+    # pybel does not work under Python 3 on the docker image because the locale command is not installed
+    - pybel --help  # [py27]
+
+about:
+  home: https://github.com/pybel/pybel
+  license: Apache Software License
+  summary: 'Parsing, validation, and analysis of BEL graphs'
