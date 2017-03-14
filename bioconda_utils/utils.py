@@ -430,8 +430,12 @@ def file_from_commit(commit, filename):
 
     filename : str
     """
+    if commit == 'HEAD':
+        return open(filename).read()
+
     p = run(['git', 'show', '{0}:{1}'.format(commit, filename)])
     return str(p.stdout)
+
 
 def newly_unblacklisted(config_file, recipe_folder, git_range):
     """
@@ -450,7 +454,21 @@ def newly_unblacklisted(config_file, recipe_folder, git_range):
     recipe_folder : str
         Path to recipe dir, needed by get_blacklist
 
+    git_range : str or list
+        If str or single-item list. If 'HEAD' or ['HEAD'] or ['master',
+        'HEAD'], compares the current changes to master. If other commits are
+        specified, then use those commits directly via `git show`.
     """
+
+    # 'HEAD' becomes ['HEAD'] and then ['master', 'HEAD'].
+    # ['HEAD'] becomes ['master', 'HEAD']
+    # ['HEAD~~', 'HEAD'] stays the same
+    if isinstance(git_range, str):
+        git_range = [git_range]
+
+    if len(git_range) == 1:
+        git_range = ['master', git_range[0]]
+
     # Get the set of previously blacklisted recipes by reading the original
     # config file and then all the original blacklists it had listed
     previous = set()
@@ -462,9 +480,11 @@ def newly_unblacklisted(config_file, recipe_folder, git_range):
         os.unlink('.tmp.blacklist')
 
     current = get_blacklist(
-        yaml.load(open(config_file))['blacklists'], recipe_folder)
+        yaml.load(
+            file_from_commit(git_range[1], config_file))['blacklists'],
+            recipe_folder)
     results = previous.difference(current)
-    logger.debug('Recipes newly unblacklisted:\n%s', '\n'.join(list(results)))
+    logger.info('Recipes newly unblacklisted:\n%s', '\n'.join(list(results)))
     return results
 
 
@@ -674,6 +694,7 @@ def modified_recipes(git_range, recipe_folder, config_file, full=False):
     full : bool
         If True, include the recipe_folder in the path
     """
+    orig_git_range = git_range[:]
     if len(git_range) == 2:
         git_range = '...'.join(git_range)
     elif len(git_range) == 1 and isinstance(git_range, list):
@@ -719,6 +740,10 @@ def modified_recipes(git_range, recipe_folder, config_file, full=False):
     # if the only diff is that files were deleted, we can have ['recipes/'], so
     # filter on existing *files*
     existing = list(filter(os.path.isfile, existing))
+
+    unblacklisted = newly_unblacklisted(config_file, recipe_folder, orig_git_range)
+    unblacklisted = [os.path.join(recipe_folder, i, 'meta.yaml') for i in unblacklisted]
+    existing += unblacklisted
 
     if full:
         return existing
