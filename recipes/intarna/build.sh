@@ -4,16 +4,21 @@
 ## (mac or linux)
 ##
 CXXFLAGS="$CXXFLAGS";
-LDFLAGS="$LDFLAGS";
+LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
+CXX=g++;
+CC=gcc;
 if [ `uname` == Darwin ] ; then
-    # boost-setup from https://github.com/conda/conda-recipes/blob/master/boost/build.sh
-    echo "sorry.. cannot figure out how to build against the provided boost on osx.."
-    exit -1;
+    CXXFLAGS="$CXXFLAGS -stdlib=libc++"
+    LDFLAGS="$LDFLAGS -stdlib=libc++"
+    CXX=clang++;
+    CC=clang;
 else ## linux
     # add -fopenmp to compilation due to viennarna setup
-    CXXFLAGS="-fopenmp"
+    CXXFLAGS="$CXXFLAGS -fopenmp"
 fi
 
+export CC=${CC}
+export CXX=${CXX}
 export CXXFLAGS=${CXXFLAGS}
 export LDFLAGS=${LDFLAGS}
 
