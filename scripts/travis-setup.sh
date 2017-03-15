@@ -2,6 +2,14 @@
 set -e
 set -x
 
+if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
+then
+    echo ""
+    echo "Setup is skipped for pushes to the main bioconda-recipes repo."
+    echo ""
+    exit 0
+fi
+
 for dir in . recipes
 do
     if [ -e $dir/meta.yaml ]
@@ -26,7 +34,6 @@ curl -O https://repo.continuum.io/miniconda/Miniconda3-latest-$tag-x86_64.sh
 sudo bash Miniconda3-latest-$tag-x86_64.sh -b -p /anaconda
 sudo chown -R $USER /anaconda
 export PATH=/anaconda/bin:$PATH
-conda update -y conda
 
 $SCRIPT_DIR/../simulate-travis.py --set-channel-order
 $SCRIPT_DIR/../simulate-travis.py --install-requirements

@@ -1,16 +1,19 @@
 package:
   name: multiqc
-  version: "0.8"
+  version: "0.9.1a0"
 
 source:
-  fn: multiqc-0.8.tar.gz
-  url: https://pypi.python.org/packages/ab/e4/9a9eea1facbc3dcb7c90e38d3719eea43d4877aa54a887726982f1ba1671/multiqc-0.8.tar.gz
-  md5: a7740e00a2a0deb57a72fbdd209475fa
+  fn: multiqc-99da2ed.tar.gz
+  url: https://github.com/ewels/MultiQC/archive/99da2ed.tar.gz
+  md5: 273c00ebd0f81025101c6b59b1cc1f77
 
 build:
-  number: 0
+  number: 3
   preserve_egg_dir: True
-  skip: False
+  # python 3 failing on
+  # FileNotFoundError: [Errno 2] No such file or directory: 'locale'
+  # https://travis-ci.org/bioconda/bioconda-recipes/jobs/191266605
+  skip: true # [not py27]
 
 requirements:
   build:
@@ -24,12 +27,12 @@ requirements:
 
   run:
     - python
-    - setuptools
     - jinja2
     - simplejson
     - pyyaml
     - click
     - matplotlib
+    - git
 
 test:
   # Python imports
@@ -41,16 +44,20 @@ test:
     - multiqc.modules.bismark
     - multiqc.modules.bowtie1
     - multiqc.modules.bowtie2
+    - multiqc.modules.custom_content
     - multiqc.modules.cutadapt
     - multiqc.modules.fastq_screen
     - multiqc.modules.fastqc
     - multiqc.modules.featureCounts
     - multiqc.modules.gatk
     - multiqc.modules.hicup
+    - multiqc.modules.htseq
     - multiqc.modules.kallisto
     - multiqc.modules.methylQA
+    - multiqc.modules.peddy
     - multiqc.modules.picard
     - multiqc.modules.preseq
+    - multiqc.modules.prokka
     - multiqc.modules.qualimap
     - multiqc.modules.quast
     - multiqc.modules.rseqc
@@ -58,6 +65,7 @@ test:
     - multiqc.modules.samblaster
     - multiqc.modules.samtools
     - multiqc.modules.skewer
+    - multiqc.modules.slamdunk
     - multiqc.modules.snpeff
     - multiqc.modules.star
     - multiqc.modules.tophat
@@ -65,7 +73,6 @@ test:
     - multiqc.plots
     - multiqc.templates
     - multiqc.templates.default
-    - multiqc.templates.default_dev
     - multiqc.templates.geo
     - multiqc.templates.simple
     - multiqc.utils
@@ -77,4 +84,5 @@ about:
   home: http://multiqc.info
   license: GNU General Public License v3 (GPLv3)
   summary: 'Create aggregate bioinformatics analysis reports across many samples and tools'
+  license_family: GPL3
 

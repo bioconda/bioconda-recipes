@@ -1,0 +1,88 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-wgcna
+  version: "1.51"
+
+source:
+  fn: WGCNA_1.51.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/WGCNA_1.51.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/WGCNA/WGCNA_1.51.tar.gz
+
+build:
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - bioconductor-annotationdbi
+    - bioconductor-go.db
+    - r-hmisc
+    - r-doparallel
+    - r-dynamictreecut >=1.62
+    - r-fastcluster
+    - r-foreach
+    - bioconductor-impute
+    - r-matrixstats >=0.8.1
+    - bioconductor-preprocesscore
+    - r-survival
+    - posix               # [win]
+    - {{native}}toolchain # [win]
+    - gcc                 # [not win]
+
+  run:
+    - r-base
+    - bioconductor-annotationdbi
+    - bioconductor-go.db
+    - r-hmisc
+    - r-doparallel
+    - r-dynamictreecut >=1.62
+    - r-fastcluster
+    - r-foreach
+    - bioconductor-impute
+    - r-matrixstats >=0.8.1
+    - bioconductor-preprocesscore
+    - r-survival
+
+test:
+  commands:
+    - $R -e "library('WGCNA')" # [not win]
+    - "\"%R%\" -e \"library('WGCNA')\"" # [win]
+
+about:
+  home: http://www.genetics.ucla.edu/labs/horvath/CoexpressionNetwork/Rpackages/WGCNA/
+  license: GPL (>= 2)
+  summary: Functions necessary to perform Weighted Correlation Network Analysis on high-dimensional
+    data. Includes functions for rudimentary data cleaning, construction of correlation
+    networks, module identification, summarization, and relating of variables and modules
+    to sample traits. Also includes a number of utility functions for data manipulation
+    and visualization.
+  license_family: GPL3
+
+# The original CRAN metadata for this package was:
+
+# Package: WGCNA
+# Version: 1.51
+# Date: 2016-03-08
+# Title: Weighted Correlation Network Analysis
+# Author: Peter Langfelder <Peter.Langfelder@gmail.com> and Steve Horvath <SHorvath@mednet.ucla.edu> with contributions by Chaochao Cai, Jun Dong, Jeremy Miller, Lin Song, Andy Yip, and Bin Zhang
+# Maintainer: Peter Langfelder <Peter.Langfelder@gmail.com>
+# Depends: R (>= 3.0), dynamicTreeCut (>= 1.62), fastcluster
+# Imports: stats, grDevices, utils, matrixStats (>= 0.8.1), Hmisc, impute, splines, foreach, doParallel, preprocessCore, survival, parallel, GO.db, AnnotationDbi
+# Suggests: org.Hs.eg.db, org.Mm.eg.db, infotheo, entropy, minet
+# ZipData: no
+# License: GPL (>= 2)
+# Description: Functions necessary to perform Weighted Correlation Network Analysis on high-dimensional data. Includes functions for rudimentary data cleaning, construction of correlation networks, module identification, summarization, and relating of variables and modules to sample traits. Also includes a number of utility functions for data manipulation and visualization.
+# URL: http://www.genetics.ucla.edu/labs/horvath/CoexpressionNetwork/Rpackages/WGCNA/
+# NeedsCompilation: yes
+# Packaged: 2016-03-14 22:18:51 UTC; plangfelder
+# Repository: CRAN
+# Date/Publication: 2016-03-15 00:24:08
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml

@@ -1,0 +1,90 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-bbmle
+  # Note that conda versions cannot contain -, so any -'s in the version have
+  # been replaced with _'s.
+  version: "1.0.18"
+
+source:
+  fn: bbmle_1.0.18.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/bbmle_1.0.18.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/bbmle/bbmle_1.0.18.tar.gz
+  md5: e14e672c3d14a6d36133c54292fc57f9
+
+
+  # You can add a hash for the file here, like md5 or sha1
+  # md5: 49448ba4863157652311cc5ea4fea3ea
+  # sha1: 3bcfbee008276084cbb37a2b453963c61176a322
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # If this is a new build for the same version, increment the build
+  # number. If you do not include this key, it defaults to 0.
+  # number: 1
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: emdbook, rms, ggplot2, RUnit, MuMIn, AICcmodavg, Hmisc, optimx (>= 2013.8.6), knitr, testthat
+requirements:
+  build:
+    - r-base
+    - r-mass
+    - r-lattice
+    - r-numderiv
+
+  run:
+    - r-base
+    - r-mass
+    - r-lattice
+    - r-numderiv
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('bbmle')" # [not win]
+    - "\"%R%\" -e \"library('bbmle')\"" # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=bbmle
+  license: GPL-2 | GPL-3
+  summary: Methods and functions for fitting maximum likelihood models in R. This package modifies
+    and extends the 'mle' classes in the 'stats4' package.
+  license_family: GPL3
+
+# The original CRAN metadata for this package was:
+
+# Package: bbmle
+# Title: Tools for General Maximum Likelihood Estimation
+# Version: 1.0.18
+# Author: Ben Bolker <bolker@mcmaster.ca>, R Development Core Team
+# Maintainer: Ben Bolker <bolker@mcmaster.ca>
+# Depends: R (>= 3.0.0), stats4
+# Imports: stats, numDeriv, lattice, MASS, methods
+# Suggests: emdbook, rms, ggplot2, RUnit, MuMIn, AICcmodavg, Hmisc, optimx (>= 2013.8.6), knitr, testthat
+# VignetteBuilder: knitr
+# BuildVignettes: yes
+# Description: Methods and functions for fitting maximum likelihood models in R. This package modifies and extends the 'mle' classes in the 'stats4' package.
+# License: GPL
+# Collate: 'mle2-class.R' 'mle2-methods.R' 'mle.R' 'confint.R' 'predict.R' 'profile.R' 'update.R' 'dists.R' 'IC.R' 'slice.R'
+# NeedsCompilation: no
+# Packaged: 2016-02-11 15:22:35 UTC; bolker
+# Repository: CRAN
+# Date/Publication: 2016-02-11 16:57:55
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml

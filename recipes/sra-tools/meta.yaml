@@ -1,6 +1,5 @@
-{% set SRA_TOOLS_VERSION = "2.7.0" %}
-{% set NCBI_VDB_VERSION = SRA_TOOLS_VERSION %}
-{% set NGS_SDK_VERSION = "1.2.5" %}
+{% set SRA_TOOLS_VERSION = "2.8.1" %}
+{% set SRA_TOOLS_SHA256 = "f7535e99d6895ea9220509e0bc3fe9f3305a74bdf81f16c699d86120ab91875e" %}
 
 package:
   name: sra-tools
@@ -11,26 +10,19 @@ build:
 
 source:
   fn: sra-tools-{{ SRA_TOOLS_VERSION }}.tar.gz
-  url: https://github.com/ncbi/sra-tools/archive/{{ SRA_TOOLS_VERSION }}.tar.gz
-  sha256: 274cd6c4a228c351b5e72eecf382d73d5cccde7d852940af68877883d7e1ea8e
+  url: https://github.com/ncbi/sra-tools/archive/{{ SRA_TOOLS_VERSION }}-3.tar.gz
+  sha256: {{ SRA_TOOLS_SHA256 }}
 
 extra:
-  sources:
-    ncbi-vdb:
-      fn: ncbi-vdb-{{ NCBI_VDB_VERSION }}.tar.gz
-      url: https://github.com/ncbi/ncbi-vdb/archive/{{ NCBI_VDB_VERSION }}.tar.gz
-      sha256: 8e227b06dffb5894cac43c2a8d3fee50b23f4609cc6a7027951ef88d7a782c74
-    ngs-sdk:
-      fn: ngs-sdk-{{ NGS_SDK_VERSION }}.tar.gz
-      url: https://github.com/ncbi/ngs/archive/{{ NGS_SDK_VERSION }}.tar.gz
-      sha256: 2a32c30d1611f8ce68aba81e5b44369969c6d32bcebc37aa41be2cdbaa76c113
-
   notes: "This package includes ncbi-vdb and ngs-sdk. After installation, you should run the configuration tool: ./vdb-config -i. This tool will setup your download/cache area for downloaded files and references."
 
 requirements:
   build:
     - gcc # [not osx]
     - llvm # [osx]
+    - perl
+    - libiconv
+    - libxml2
   run:
     #
 
@@ -48,3 +40,4 @@ test:
     - sra-pileup --help > /dev/null
     - vdb-config --help > /dev/null
     - vdb-decrypt --help > /dev/null
+    - fastq-dump -N 1 -X 1 SRR000001 && grep '@SRR000001.1' SRR000001.fastq

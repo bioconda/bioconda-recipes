@@ -1,27 +1,52 @@
+{% set name = "rsem" %}
+{% set version = "1.3.0" %}
+{% set sha256 = "a6776aae25a690375504974d65e8554d6e3ddab93cef5b82969064854d22c09f" %}
+
 about:
   home: http://deweylab.biostat.wisc.edu/rsem/
   license: GPLv3
   summary: RSEM (RNA-Seq by Expectation-Maximization)
+
 package:
-  name: rsem
-  version: 1.2.28
+  name: {{ name }} 
+  version: {{ version }}
+
 build:
   rpaths:
     - lib/R/lib/
     - lib/
   number: 0
-  skip: True # [osx]
+  skip: False
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+
 requirements:
   build:
+    - gcc
+    - boost {{CONDA_BOOST}}*
+    - zlib
     - r
+    - perl
+    - bioconductor-biobase
+    - perl-module-build
   run:
+    - libgcc
+    - zlib
+    - boost {{CONDA_BOOST}}*
+    - samtools 1.3
     - r
+    - perl
+    - bioconductor-biobase
+    - bioconductor-ebseq
+    - perl-module-build
+
 test:
   commands:
     - rsem-prepare-reference 2>&1 | grep reference_name > /dev/null
     - rsem-for-ebseq-find-DE 2>&1 | grep Usage > /dev/null
     - rsem-bam2wig foo bar foobar 2>&1 | grep 'fail to open file' > /dev/null
+    - which rsem-for-ebseq-calculate-clustering-info
+
 source:
-  fn: v1.2.28.tar.gz
-  url: https://github.com/deweylab/RSEM/archive/v1.2.28.tar.gz
-  md5: a589c7b8f3fdb59ec4bb33aa27b44dd3
+  fn: v{{ version }}.tar.gz
+  url: https://github.com/deweylab/RSEM/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}

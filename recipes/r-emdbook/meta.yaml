@@ -1,0 +1,94 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-emdbook
+  # Note that conda versions cannot contain -, so any -'s in the version have
+  # been replaced with _'s.
+  version: "1.3.9"
+
+source:
+  fn: emdbook_1.3.9.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/emdbook_1.3.9.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/emdbook/emdbook_1.3.9.tar.gz
+  md5: 789bb03075dce1d7b9998c81877b0126
+
+
+  # You can add a hash for the file here, like md5 or sha1
+  # md5: 49448ba4863157652311cc5ea4fea3ea
+  # sha1: 3bcfbee008276084cbb37a2b453963c61176a322
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # If this is a new build for the same version, increment the build
+  # number. If you do not include this key, it defaults to 0.
+  # number: 1
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: R2WinBUGS, ellipse, SuppDists, numDeriv, testthat, rgl
+requirements:
+  build:
+    - r-base
+    - r-mass
+    - r-bbmle
+    - r-coda
+    - r-lattice
+    - r-plyr
+
+  run:
+    - r-base
+    - r-mass
+    - r-bbmle
+    - r-coda
+    - r-lattice
+    - r-plyr
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('emdbook')" # [not win]
+    - "\"%R%\" -e \"library('emdbook')\"" # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=emdbook
+  license: GPL-2 | GPL-3
+  summary: Auxiliary functions and data sets for "Ecological Models and Data", a book presenting
+    maximum likelihood estimation and related topics for ecologists (ISBN 978-0-691-12522-0).
+  license_family: GPL3
+
+# The original CRAN metadata for this package was:
+
+# Package: emdbook
+# Type: Package
+# Title: Support Functions and Data for "Ecological Models and Data"
+# Version: 1.3.9
+# LazyData: yes
+# Date: 2016-01-07
+# Author: Ben Bolker
+# Maintainer: Ben Bolker <bolker@mcmaster.ca>
+# Description: Auxiliary functions and data sets for "Ecological Models and Data", a book presenting maximum likelihood estimation and related topics for ecologists (ISBN 978-0-691-12522-0).
+# Suggests: R2WinBUGS, ellipse, SuppDists, numDeriv, testthat, rgl
+# Imports: MASS, lattice, plyr, coda, bbmle
+# License: GPL
+# URL: http://www.math.mcmaster.ca/bolker/emdbook
+# NeedsCompilation: no
+# Packaged: 2016-02-11 14:35:16 UTC; bolker
+# Repository: CRAN
+# Date/Publication: 2016-02-11 16:43:09
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
