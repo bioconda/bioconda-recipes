@@ -10,24 +10,27 @@ our @files = ();
 find( \&wanted, ".");
 
 sub wanted {
-	my $file = $_;
+    my $file = $_;
 
-	return unless $file;
-	return unless -e $file;
+    return unless $file;
+    return unless -e $file;
 
-	#print "File $file\n";
-	if($file =~ m/.*\.pl$/){
-		push(@files, $file);
-	}
+    #print "File $file\n";
+    if($file =~ m/.*\.pl$/){
+        push(@files, $file);
+    }
 }
 
 foreach my $file (@files){
+    next unless -e $file;
+
     my $tfile = "$file.t";
-    #    print STDERR "Change shebang line to #!perl $file\n";
+    print STDERR "Processing $file\n";
     open my $in,  "<$file" or die $!;
     open my $out, ">$tfile" or die $!;
     while (<$in>) {
         s|^#!/usr/bin/perl -w|#!perl|;    # so MakeMaker can fix it
+        s|^#/usr/bin/perl -w|#!perl|;    # so MakeMaker can fix it
         s|^#!/usr/bin/env perl|#!perl|;    # so MakeMaker can fix it
         s|^#!/usr/bin/perl|#!perl|;    # so MakeMaker can fix it
         print $out $_;
