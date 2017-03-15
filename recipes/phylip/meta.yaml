@@ -1,0 +1,80 @@
+## The build file is taken from the biobuilds conda recipe by Cheng
+## H. Lee, and quite throrougly adjusted to fit the bioconda format
+## (the reason for migrating it to bioconda is to be able to use it as
+## a requirement for the r-rphylip recipe, and currently bioconda does
+## not search biobuilds)
+
+package:
+  name: phylip
+  version: 3.696
+
+source:
+  fn: phylip-3.696.tar.gz
+  url: http://evolution.gs.washington.edu/phylip/download/phylip-3.696.tar.gz
+  md5: dbe5abc26f6089ead3dba41c2db526ee
+  patches:
+    - makefile.patch
+    - font-paths.patch # adapted this patch to bioconda share dir
+
+build:
+  number: 0
+  detect_binary_files_with_prefix: true
+  script_env:
+    - BB_ARCH_FLAGS
+    - BB_OPT_FLAGS
+    - BB_MAKE_JOBS
+
+requirements:
+  build: 
+    - gcc       # [not osx]
+    - llvm      # [osx]
+  run: 
+    - openjdk >=6
+    - libgcc    # [not osx]
+    - python >=3
+
+test:
+  # Test files were copied from the Debian "jessie" phylip package
+  # and implemented into the phylip.py script
+  commands:
+    - mkdir __tmp4phyliptests__; pushd __tmp4phyliptests__; phylip test; pushd; rm -rf __tmp4phyliptests__
+    
+about:
+  home: "http://evolution.genetics.washington.edu/phylip/"
+  license: BSD
+  summary: "Package of programs for inferring phylogenies"
+
+# <Info from the original phylip website>
+#
+# PHYLIP, the Phylogeny Inference Package, is a package of programs
+# for inferring phylogenies (evolutionary trees). It has been
+# distributed since 1980, and has over 30,000 registered users, making
+# it the most widely distributed package of phylogeny programs. It is
+# available free, from its web site:
+#
+# http://evolution.gs.washington.edu/phylip.html
+#
+# PHYLIP is available as source code in C, and also as executables for
+# some common computer systems. It can infer phylogenies by parsimony,
+# compatibility, distance matrix methods, and likelihood. It can also
+# compute consensus trees, compute distances between trees, draw
+# trees, resample data sets by bootstrapping or jackknifing, edit
+# trees, and compute distance matrices. It can handle data that are
+# nucleotide sequences, protein sequences, gene frequencies,
+# restriction sites, restriction fragments, distances, discrete
+# characters, and continuous characters.
+
+# Copyright 1980-2013. University of Washington. All rights
+# reserved. Permission is granted to reproduce, perform, and modify
+# these programs and documentation files. Permission is granted to
+# distribute or provide access to these programs provided that this
+# copyright notice is not removed, the programs are not integrated
+# with or called by any product or service that generates revenue, and
+# that your distribution of these documentation files and programs are
+# free. Any modified versions of these materials that are distributed
+# or accessible shall indicate that they are based on these
+# programs. Institutions of higher education are granted permission to
+# distribute this material to their students and staff for a fee to
+# recover distribution costs. Permission requests for any other
+# distribution of these programs should be directed to license (at)
+# u.washington.edu .
