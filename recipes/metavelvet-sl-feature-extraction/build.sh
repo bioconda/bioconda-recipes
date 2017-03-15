@@ -14,5 +14,5 @@ cd perl-build
 
 mv lib/eval.pl ./
 perl ./Build.PL
-./Build manifest
-./Build install --installdirs site
+perl ./Build manifest
+perl ./Build install --installdirs site
