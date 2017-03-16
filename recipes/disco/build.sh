@@ -8,6 +8,7 @@ if [ `uname` == Darwin ]; then
         # -fopenmpi version
         sed -i.bak "s|mpic++|g++ -I$PREFIX/include -L$PREFIX/lib -lmpi_cxx -lmpi|g" compiler.mk
     fi
+    export CXX=$PREFIX/bin/g++
 fi
 
 make clean
