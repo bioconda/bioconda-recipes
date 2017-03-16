@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+sleep 5
+
 ./bin/prokka --setupdb
 mkdir -p "${PREFIX}/bin" "${PREFIX}/db" "${PREFIX}/share/doc/prokka"
 mv bin/* "${PREFIX}/bin/"
