@@ -10,15 +10,15 @@ our @files = ();
 find( \&wanted, ".");
 
 sub wanted {
-	my $file = $_;
+    my $file = $_;
 
-	return unless $file;
-	return unless -e $file;
+    return unless $file;
+    return unless -e $file;
 
-	#print "File $file\n";
-	if($file =~ m/.*\.pl$/){
-		push(@files, $file);
-	}
+    #print "File $file\n";
+    if($file =~ m/.*\.pl$/){
+        push(@files, $file);
+    }
 }
 
 foreach my $file (@files){
