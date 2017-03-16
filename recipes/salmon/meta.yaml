@@ -1,8 +1,10 @@
+{% set version="0.8.1" %}
 build:
   number: 0
-  # XXX OSX source build currently failing due to unresolved symbols at runtime
-  skip: True # [osx]
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+  # OSX failing due to libary issues even though shipping with Salmon binary
+  # dyld: Library not loaded: /usr/local/opt/tbb/lib/libtbbmalloc_proxy.dylib
+  # https://travis-ci.org/bioconda/bioconda-recipes/jobs/211785820#L295
+  skip: true # [osx]
 
 about:
     home: https://github.com/COMBINE-lab/salmon
@@ -11,32 +13,20 @@ about:
 
 package:
     name: salmon
-    version: 0.8.0
+    version: {{ version }}
 
 source:
-  fn: v0.8.0.tar.gz
-  url: https://github.com/COMBINE-lab/salmon/archive/v0.8.0.tar.gz
-  sha256: a58799eb9ac61a91d941ab23485328e1fe2e869dbc2091c86ff6eb4300f284c5
+  fn: Salmon-{{ version }}_linux_x86_64.tar.gz # [linux]
+  url: https://github.com/COMBINE-lab/salmon/releases/download/v{{ version }}/Salmon-{{ version }}_linux_x86_64.tar.gz # [linux]
+  md5: a0e2d72b33fc571c28a6ce8aef1201fd # [linux]
+  fn: Salmon-{{ version }}_macOS_10.12.tar.gz # [osx]
+  url: https://github.com/COMBINE-lab/salmon/releases/download/v{{ version }}/Salmon-{{ version }}_macOS_10.12.tar.gz # [osx]
+  md5: 28473afefa199a4bb0b7a3625ff48793 # [osx]
+
 
 requirements:
   build:
-    - autoconf 2.69 pl5.*
-    - boost {{CONDA_BOOST}}*
-    - icu 56.*
-    - cmake
-    - tbb
-    - zlib
-    - bzip2
-    - unzip
-    - gcc # [linux]
-    - llvm # [osx]
   run:
-    - boost {{CONDA_BOOST}}*
-    - icu 56.*
-    - tbb
-    - zlib
-    - bzip2
-    - libgcc # [linux]
 
 test:
     commands:
