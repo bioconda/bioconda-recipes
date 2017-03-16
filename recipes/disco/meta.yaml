@@ -1,0 +1,43 @@
+{% set name = "disco" %}
+{% set version = "1.0" %}
+{% set md5 = "774c877e4cf31ebc73ee5ad66a4ed054" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  fn: {{ version }}.tar.gz
+  url: https://github.com/abiswas-odu/Disco/archive/{{ version }}.tar.gz
+  md5: {{ md5 }}
+
+build:
+  number: 0
+  skip: False
+
+requirements:
+  build:
+    - gcc   # [not osx]
+    - llvm  # [osx]
+    - openmpi
+    - zlib
+
+  run:
+    - libgcc    # [not osx]
+    - openmpi
+    - zlib
+
+test:
+  commands:
+    - runDisco.sh -h
+    - runDisco-MPI.sh -h
+    - runDisco-MPI-ALPS.sh -h
+    - runDisco-MPI-SLURM.sh -h
+    - runAssembly.sh -h
+    - runAssembly-MPI.sh -h
+    - runECC.sh -h
+
+about:
+  home: http://disco.omicsbio.org/
+  license: 'GPL-3.0'
+  summary: 'Multi-threaded Distributed Memory Overlap-Layout-Consensus (OLC) Metagenome Assembler'
