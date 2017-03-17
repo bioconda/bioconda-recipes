@@ -2,9 +2,6 @@
 
 make clean
 
-g++ --version
-$PREFIX/bin/g++ --version
-
 if [ `uname` == Darwin ]; then
     if mpic++ --show | grep -q "clang++"; then
         # the openmpi package (and particularly the mpic++) from conda-forge is 
@@ -13,18 +10,8 @@ if [ `uname` == Darwin ]; then
         # -fopenmpi version
         sed -i.bak "s|mpic++|g++ -I$PREFIX/include -L$PREFIX/lib -lmpi_cxx -lmpi|g" compiler.mk
     fi
-    ln -s $PREFIX/bin/g++ g++
-    which g++
 fi
 
-g++ --version
-export CC=$PREFIX/bin/gcc
-export CXX=$PREFIX/bin/g++
-export INCLUDE_PATH="$PREFIX/include"
-export LIBRARY_PATH="$PREFIX/lib"
-export LD_LIBRARY_PATH="$PREFIX/lib"
-
-make -C src/BuildGraph/Release READGZ=0 
 make all
 
 mkdir -p $PREFIX/bin
