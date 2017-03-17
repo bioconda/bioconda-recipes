@@ -12,7 +12,7 @@ if [ `uname` == Darwin ]; then
         # -fopenmpi version
         sed -i.bak "s|mpic++|g++ -I$PREFIX/include -L$PREFIX/lib -lmpi_cxx -lmpi|g" compiler.mk
     fi
-    ln -s g++ $PREFIX/bin/g++
+    ln -s $PREFIX/bin/g++ /usr/bin/g++
 fi
 
 g++ --version
@@ -22,7 +22,6 @@ export INCLUDE_PATH="$PREFIX/include"
 export LIBRARY_PATH="$PREFIX/lib"
 export LD_LIBRARY_PATH="$PREFIX/lib"
 
-which make
 make -C src/BuildGraph/Release READGZ=0 
 make all
 
