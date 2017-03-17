@@ -21,7 +21,8 @@ export LIBRARY_PATH="$PREFIX/lib"
 export LD_LIBRARY_PATH="$PREFIX/lib"
 
 which g++
-
+which make
+make -C src/BuildGraph/Release READGZ=0 
 make all
 
 mkdir -p $PREFIX/bin
