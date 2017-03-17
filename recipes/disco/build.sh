@@ -3,7 +3,7 @@
 make clean
 
 if [ `uname` == Darwin ]; then
-    if mpic++ --show me | grep -q "clang++"; then
+    if mpic++ --show | grep -q "clang++"; then
         # the openmpi package (and particularly the mpic++) from conda-forge is 
         # compiled to use clang++ (despl)
         # and the current package need an openmpi version based on gcc to use the
@@ -12,11 +12,15 @@ if [ `uname` == Darwin ]; then
     fi
 fi
 
-export CC=${PREFIX}/bin/gcc
-export CXX=${PREFIX}/bin/g++
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
+which g++
+
+export CC=$PREFIX/bin/gcc
+export CXX=$PREFIX/bin/g++
+export INCLUDE_PATH="$PREFIX/include"
+export LIBRARY_PATH="$PREFIX/lib"
+export LD_LIBRARY_PATH="$PREFIX/lib"
+
+which g++
 
 make all
 
