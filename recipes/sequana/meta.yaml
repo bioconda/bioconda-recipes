@@ -1,0 +1,85 @@
+{% set version = "0.1.21" %}
+{% set name = "sequana" %}
+{% set md5 = "e19d1b27200976b899f91e0f85ef0d3f" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  md5: {{ md5 }}
+#  patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  skip: True # [py27, py34]
+  entry_points:
+    - sequana_gui=sequana.gui.sequana_gui:main
+    - sequanix=sequana.gui.sequana_gui:main
+    - fastq_head=sequana.scripts.fastq_head:main
+    - fastq_count=sequana.scripts.fastq_count:main
+    - sequana_fastq_head=sequana.scripts.fastq_head:main
+    - sequana_fastq_count=sequana.scripts.fastq_count:main
+    - sequana=sequana.scripts.main:main
+    - sequana_taxonomy=sequana.scripts.taxonomy:main
+    - sequana_coverage=sequana.scripts.coverage:main
+    - sequana_summary=sequana.scripts.summary:main
+    - sequana_mapping=sequana.scripts.mapping:main
+    - sequana_compressor=sequana.scripts.compressor:main
+
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - docutils
+    - colorlog
+
+  run:
+    - python
+    - easydev >=0.9.34
+    - reports >=0.3.0
+    - matplotlib >=2.0.0
+    - pyvcf
+    - pandas
+    - cutadapt >=1.9.1
+    - bioservices >=1.4.14
+    - biokit >=0.4.0
+    - pysam
+    - docutils
+    - mock
+    - qtconsole
+    - colorlog
+    - ruamel.yaml <=0.13.2
+    - snakemake
+
+test:
+  # Python imports
+  imports:
+    - sequana
+    - sequana.gui
+    - sequana.scripts
+    - sequana.sphinxext
+
+  commands:
+    # You can put test commands to be run here.  Use this to test that the
+    # entry points work.
+    - sequanix --help
+    - sequana_gui --help
+    - sequana_fastq_head --help
+    - sequana_fastq_count --help
+    - sequana --help
+    - sequana_coverage --help
+
+  # You can also put a file called run_test.py in the recipe that will be run
+  # at test time.
+
+about:
+  home: ['http://github.com/sequana/']
+  license: "BSD 3-clause"
+  summary: 'A set of standalone application and pipelines dedicated to NGS (new generation sequencing) analysis'
+  license_family: BSD
+

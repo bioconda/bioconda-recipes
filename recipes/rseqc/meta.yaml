@@ -1,28 +1,44 @@
+package:
+  name: rseqc
+  version: 2.6.4
+
+source:
+  fn: RSeQC-2.6.4.tar.gz
+  url: https://pypi.python.org/packages/61/58/1d9c280d8d852f7c5e873c0635952fc19305b0805e9f0ace50e8ef2f93c3/RSeQC-2.6.4.tar.gz
+  md5: 935779c452ffc84f3b8b9fb3d485c782
+
 build:
-  number: 0
-  skip: True # [osx]
+  skip: True # [not py27]
+  number: 1
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - cython >=0.17
+    - pysam
+    - bx-python
+    - numpy
+    - nose
+
+  run:
+    - python
+    - cython >=0.17
+    - pysam
+    - bx-python
+    - numpy
+    - r
+
+test:
+  imports:
+    - qcmodule
+    - qcmodule.SAM
+  commands:
+    - read_distribution.py 2>&1 | grep Usage > /dev/null
+    - geneBody_coverage.py 2>&1 | grep Usage > /dev/null
 
 about:
   home: http://rseqc.sourceforge.net/
-  license: GPLv3
-  summary: RSEQC - An RNA-seq Quality Control Package
-package:
-  name: rseqc
-  version: 2.6.2
-requirements:
-  build:
-    - python >=2.7,<3
-    - numpy
-  run:
-    - python >=2.7,<3
-    - numpy
-test:
-  requires:
-    - python >=2.7,<3
-    - numpy
-  commands:
-    - read_distribution.py 2>&1 | grep Usage > /dev/null
-source:
-  fn: RSeQC-2.6.2.tar.gz
-  url: http://downloads.sourceforge.net/project/rseqc/RSeQC-2.6.2.tar.gz
-  md5: 4e7fcfed2f4f7cff63ff852e150d80d9
+  license: GNU General Public License v2 (GPLv2)
+  summary: 'RNA-seq QC Package'
+  license_family: GPL2

@@ -5,19 +5,18 @@ source:
     fn:  RepeatMasker-open-4-0-6.tar.gz
     url: http://www.repeatmasker.org/RepeatMasker-open-4-0-6.tar.gz
     md5: 324bcb707b23b06adfde34704a8ec0c4
-
+    patches:
+      - patch1
 build:
-  number: 4
+  number: 6
   detect_binary_files_with_prefix: False
-  binary_has_prefix_files:
-    - share/RepeatMasker/Libraries/RepeatMasker.lib.nin
-    - share/RepeatMasker/Libraries/RepeatPeps.lib.pin
   has_prefix_files:
     - bin/RepeatMasker
   skip: True # [ not linux ]
 
 requirements:
   build:
+    - perl-threaded
     - rmblast
   run:
     - rmblast
@@ -25,9 +24,19 @@ requirements:
     - trf
     - perl-threaded
     - perl-text-soundex
+
 test:
-    commands:
-        - RepeatMasker | grep 'RepeatMasker - Mask repetitive DNA' > /dev/null
+# pvanheus - disable file based tests for
+# now - they don't work with Dockerized
+# containers - 13/1/2017
+#  files:
+#    - rm_input1.fasta
+#    - sample_repeats.fasta
+#    - test_md5.txt
+  commands:
+# a test to run in addition to run_test.sh
+    - RepeatMasker | grep 'RepeatMasker - Mask repetitive DNA' > /dev/null
+
 about:
     home: http://www.repeatmasker.org
     license: Open Software License v2.1
