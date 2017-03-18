@@ -14,6 +14,7 @@ cmake \
 	-D DCMTK_WITH_TIFF:BOOL=True \
 	-D DCMTK_WITH_XML:BOOL=True \
 	-D DCMTK_WITH_ZLIB:BOOL=True \
+	-D BUILD_SHARED_LIB:BOOL=True \
 	..
 
 make -j${CPU_COUNT} all
