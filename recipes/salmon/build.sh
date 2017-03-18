@@ -1,11 +1,10 @@
 #!/bin/bash
 set -eu -o pipefail
 
-TGT="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
-[ -d "$TGT" ] || mkdir -p "$TGT"
-[ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
+mkdir -p $PREFIX/bin
+mkdir -p $PREFIX/lib
 
-cd "${SRC_DIR}"
-
-mv bin lib $TGT
-ln -s $TGT/bin/salmon $PREFIX/bin
+mkdir -p build
+cd build
+cmake -DCONDA_BUILD=TRUE -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -DBOOST_ROOT=$PREFIX -DBoost_NO_SYSTEM_PATHS=ON ..
+make install CFLAGS="-L${PREFIX}/lib -I${PREFIX}/include"
