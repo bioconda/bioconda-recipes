@@ -1,6 +1,7 @@
 #!/bin/bash
 set -eu -o pipefail
 
+mkdir bin
 javac -d bin -sourcepath src
 ant -buildfile syntheticwsi.xml
 
