@@ -1,8 +1,8 @@
 #!/bin/bash
 set -eu -o pipefail
 
-mkdir bin
-javac -d bin -sourcepath src
+cp $RECIPE_DIR/build.xml .
+ant -buildfile build.xml
 ant -buildfile syntheticwsi.xml
 
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
