@@ -2,8 +2,8 @@
 
 set -x -e
 
-export CC=${PREFIX}/bin/cc
-export CXX=${PREFIX}/bin/c++
+export CC=${PREFIX}/bin/gcc
+export CXX=${PREFIX}/bin/g++
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
