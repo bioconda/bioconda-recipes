@@ -14,7 +14,10 @@ export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
 	rm -fr htslib
 	git clone git://github.com/samtools/htslib
 	cd htslib
-	git checkout 1.3
+	git checkout 1.4
+	autoheader
+	autoconf
+	make -j
 )
 
 #echo "g++"
