@@ -19,6 +19,8 @@ then
     exit 0
 fi
 
+SKIP_LINTING=false
+
 # determine recipes to build. If building locally, build anything that changed
 # since master. If on travis, only build the commit range included in the push
 # or the pull request.
@@ -43,6 +45,8 @@ then
         # case 1: env matrix changed or this is a cron job. In this case
         # consider all recipes.
         RANGE_ARG=""
+	# skip linting: we don't want to fix all recipes if we just update the env matrix
+	SKIP_LINTING=true
         echo "considering all recipes because either env matrix was changed or build is triggered via cron"
     else
         # case 2: consider only recipes that (a) changed since the last build
@@ -70,7 +74,10 @@ then
     touch $CONTAINER_PUSH_COMMANDS_PATH
 else
     # if building master branch, do not lint
-    set -x; bioconda-utils lint recipes config.yml $RANGE_ARG $BIOCONDA_UTILS_LINT_ARGS; set +x
+    if [ $SKIP_LINTING = false  ]
+    then
+        set -x; bioconda-utils lint recipes config.yml $RANGE_ARG $BIOCONDA_UTILS_LINT_ARGS; set +x
+    fi
 fi
 
 
