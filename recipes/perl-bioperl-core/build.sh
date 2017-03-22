@@ -8,20 +8,29 @@ set -o pipefail
 #   * skipping test that require network access
 export PERL_MM_USE_DEFAULT=1
 
+# debug output
+ls $PREFIX/lib;
+
 # ensure perl-gd is loaded properly or die trying
-perl -e 'die "GD module missing!" unless(eval{require GD});';
+echo "##++ testing for perl GD library";
+perl -e 'use GD;';
+echo "##++ exist status for perl GD test = $?";
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
+    echo "##++ running Build.PL"
 #    perl Build.PL 2>&1 | tee configure.log
     perl Build.PL 
+    sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' Build.PL
+    cat Build.PL
     ./Build
 #    ./Build test 2>&1 | tee tests.log
     ./Build test 
     # Make sure this goes in site
     ./Build install --installdirs site
-    ./Build install --install_path script=site
+#    ./Build install --install_path script=site
 elif [ -f Makefile.PL ]; then
+    echo "##++ running Makefile.PL"
     # Make sure this goes in site
 #    perl Makefile.PL INSTALLDIRS=site 2>&1 | tee configure.log
     perl Makefile.PL INSTALLDIRS=site
@@ -33,3 +42,6 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
+
+echo "##++ ls PREFIX"
+ls -l $PREFIX
