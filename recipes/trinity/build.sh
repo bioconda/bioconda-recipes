@@ -23,8 +23,6 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
-
-BINARY=Trinity
 BINARY_HOME=$PREFIX/bin
 TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
 
@@ -46,8 +44,9 @@ mkdir -p $PREFIX/bin
 mkdir -p $TRINITY_HOME
 cp -R $SRC_DIR/* $TRINITY_HOME/
 cd $TRINITY_HOME && chmod +x Trinity
-cd $BINARY_HOME && ln -s $TRINITY_HOME/Trinity $BINARY
-ln -s $TRINITY_HOME/util/* .
+cd $BINARY_HOME
+ln -s $TRINITY_HOME/Trinity
+ln -s $TRINITY_HOME/util/*.pl .
 ln -s $TRINITY_HOME/Analysis/DifferentialExpression/PtR
 ln -s $TRINITY_HOME/Analysis/DifferentialExpression/run_DE_analysis.pl
 ln -s $TRINITY_HOME/Analysis/DifferentialExpression/analyze_diff_expr.pl
