@@ -17,7 +17,7 @@ export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
 	git checkout 1.4
 	autoheader
 	autoconf
-	./configure
+	./configure --disable-lzma
 	make -j
 )
 
