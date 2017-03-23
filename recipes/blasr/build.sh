@@ -9,7 +9,6 @@ export HDF5_LIB=$PREFIX/lib
 make configure-submodule
 
 make build-submodule
-#make blasr
 make
 cp blasr $PREFIX/bin
 
