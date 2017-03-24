@@ -1,5 +1,9 @@
 
 #!/bin/bash
+
+if [ `uname` == Darwin ]; then
+        export MACOSX_DEPLOYMENT_TARGET=10.9
+fi
 # R refuses to build packages that mark themselves as
 # "Priority: Recommended"
 mv DESCRIPTION DESCRIPTION.old
