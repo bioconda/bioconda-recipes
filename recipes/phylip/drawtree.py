@@ -81,7 +81,7 @@ def main():
     this program updates files relative to the path of the jar file.
     In a multiuser setting, the option --exec_dir="exec_dir"
     can be used as the location for the phylip distribution.
-    If the exec_dir dies not exist,
+    If the exec_dir does not exist,
     we copy the jar file, lib, and resources to the exec_dir directory.
     """
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
@@ -95,7 +95,7 @@ def main():
     
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
     
-    # Trying to fix font problems phylip appears to require that fonts
+    # Trying to fix font problems. Phylip appears to require that fonts
     # are placed in the working directory Current workaround is to
     # temporarily link them there and then remove links. Far from
     # optimal solution, but I can't get anything else to work:(
