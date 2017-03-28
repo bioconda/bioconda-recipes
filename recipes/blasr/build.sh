@@ -5,7 +5,9 @@ mkdir -p $PREFIX/bin
 export HDF5_INCLUDE=$PREFIX/include
 export HDF5_LIB=$PREFIX/lib
 
-./configure.py --shared --sub --no-pbbam
+git submodule update --init
+
+./configure.py CXXFLAGS=-O3 --shared --sub --no-pbbam
 make configure-submodule
 
 make build-submodule
@@ -19,4 +21,3 @@ cp utils/samtom4 $PREFIX/bin
 cp utils/samFilter $PREFIX/bin
 cp utils/sawriter $PREFIX/bin
 cp utils/sdpMatcher  $PREFIX/bin
-
