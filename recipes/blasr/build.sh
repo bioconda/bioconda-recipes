@@ -5,8 +5,6 @@ mkdir -p $PREFIX/bin
 export HDF5_INCLUDE=$PREFIX/include
 export HDF5_LIB=$PREFIX/lib
 
-git submodule update --init
-
 ./configure.py CXXFLAGS=-O3 --shared --sub --no-pbbam
 make configure-submodule
 
