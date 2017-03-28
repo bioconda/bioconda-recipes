@@ -7,11 +7,10 @@ export HDF5_LIB=$PREFIX/lib
 
 ./configure.py CXXFLAGS=-O3 --shared --sub --no-pbbam
 make configure-submodule
-
 make build-submodule
 make
-cp blasr $PREFIX/bin
 
+cp blasr $PREFIX/bin
 cp utils/loadPulses $PREFIX/bin
 cp utils/pls2fasta $PREFIX/bin
 cp utils/samtoh5 $PREFIX/bin
