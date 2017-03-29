@@ -1,0 +1,76 @@
+{% set name = 'ptw' %}
+{% set version = '1.9-11' %}
+
+package:
+  name: r-{{ name|lower }}
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: {{ name }}_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+  md5: 5d8a55494552f62c8c9d6826db9087ad
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - r-nloptr
+    - gcc  # [not osx]
+    - llvm  # [osx]
+
+  run:
+    - r-base
+    - r-nloptr
+    - libgcc  # [not osx]
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('ptw')" 
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=ptw
+  license: GPL (>= 2)
+  summary: 'Parametric Time Warping aligns patterns, i.e. it aims to put corresponding features
+    at the same locations. The algorithm searches for an optimal polynomial describing
+    the warping. It is possible to align one sample to a reference, several samples
+    to the same reference, or several samples to several references. One can choose
+    between calculating individual warpings, or one global warping for a set of samples
+    and one reference. Two optimization criteria are implemented: RMS (Root Mean Square
+    error) and WCC (Weighted Cross Correlation). Both warping of peak profiles and of
+    peak lists are supported.'
+
+  license_family: GPL3
+
+# The original CRAN metadata for this package was:
+
+# Package: ptw
+# Type: Package
+# Title: Parametric Time Warping
+# Version: 1.9-11
+# Author: Jan Gerretzen <j.gerretzen@science.ru.nl>, Paul Eilers <p.eilers@erasmusmc.nl>, Hans Wouters, Tom Bloemberg <t.bloemberg@science.ru.nl>, Ron Wehrens <ron.wehrens@gmail.com>
+# Maintainer: Ron Wehrens <ron.wehrens@gmail.com>
+# Description: Parametric Time Warping aligns patterns, i.e. it aims to put corresponding features at the same locations. The algorithm searches for an optimal polynomial describing the warping. It is possible to align one sample to a reference, several samples to the same reference, or several samples to several references. One can choose between calculating individual warpings, or one global warping for a set of samples and one reference. Two optimization criteria are implemented: RMS (Root Mean Square error) and WCC (Weighted Cross Correlation). Both warping of peak profiles and of peak lists are supported.
+# License: GPL (>= 2)
+# Imports: nloptr, graphics, grDevices, stats
+# NeedsCompilation: yes
+# Packaged: 2015-08-21 08:59:37 UTC; ron
+# Repository: CRAN
+# Date/Publication: 2015-08-21 11:48:26
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
