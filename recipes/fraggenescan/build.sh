@@ -1,10 +1,14 @@
+#!/bin/bash
+
 mkdir -p $PREFIX/bin/
-mkdir -p $PREFIX/FragGeneScan/
 
 make
 make clean
 make fgs
 
-cp FragGeneScan        $PREFIX/bin/
-cp run_FragGeneScan.pl $PREFIX/bin/
-cp -r train/           $PREFIX/bin/
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $SRC_DIR/run_FragGeneScan.pl
+chmod a+x $SRC_DIR/*FragGeneScan*
+
+cp $SRC_DIR/FragGeneScan $PREFIX/bin/
+cp $SRC_DIR/run_FragGeneScan.pl $PREFIX/bin/
+cp -r $SRC_DIR/train $PREFIX/bin/
