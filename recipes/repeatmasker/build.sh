@@ -22,9 +22,11 @@ makeblastdb -dbtype prot -in ${RM_DIR}/Libraries/RepeatPeps.lib
 cat <<END >>${PREFIX}/bin/RepeatMasker
 #!/bin/bash
 
-REPEATMASKER_DIR=\${REPEATMASKER_DIR:-\${CONDA_PREFIX}/share/RepeatMasker}
-REPEATMASKER_MATRICES_DIR=\${REPEATMASKED_MATRICES_DIR:-\${CONDA_PREFIX}/share/RepeatMasker/Matrices}
-REPEATMASKER_LIB_DIR=\${REPEATMASKER_LIB_DIR:-\${CONDA_PREFIX}/share/RepeatMasker/Libraries}
+REPEATMASKER_LOCATION=$(dirname $(which RepeatMasker))
+BASEDIR=\${CONDA_PREFIX:\${REPEATMASKER_LOCATION}}
+REPEATMASKER_DIR=\${REPEATMASKER_DIR:-\${BASEDIR}/share/RepeatMasker}
+REPEATMASKER_MATRICES_DIR=\${REPEATMASKED_MATRICES_DIR:-\${BASEDIR}/share/RepeatMasker/Matrices}
+REPEATMASKER_LIB_DIR=\${REPEATMASKER_LIB_DIR:-\${BASEDIR}/share/RepeatMasker/Libraries}
 TRF_DIR=${PREFIX}/bin
 RMBLAST_DIR=${PREFIX}/bin
 HMMER_DIR=${PREFIX}/bin
