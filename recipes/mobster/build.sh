@@ -9,7 +9,7 @@ mkdir -p $PREFIX/bin
 # install wrapper script
 cp $RECIPE_DIR/mobster.py $outdir/mobster.py
 chmod +x $outdir/mobster.py
-ln -r -s $outdir/mobster.py $PREFIX/bin/mobster
+ln -s $outdir/mobster.py $PREFIX/bin/mobster
 
 # copy jar
 cp target/MobileInsertions-$PKG_VERSION.jar $outdir/
