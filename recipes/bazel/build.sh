@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 scl enable devtoolset-4 bash
 
