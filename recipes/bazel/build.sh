@@ -1,6 +1,6 @@
 #!/bin/sh
 
-chmod u+x **/*.sh
+scl enable devtoolset-4 bash
 
 bash ./compile.sh
 
