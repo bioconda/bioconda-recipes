@@ -24,3 +24,8 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
 fi
 
 chmod +x $PREFIX/bin/*
+
+# if we only have libbz2.so.1.0, make a symlink to libbz2.so.1
+if [[ ! -e $PREFIX/lib/libbz2.so.1 -a -e $PREFIX/lib/libbz2.so.1.0 ]] ; then
+  ln -s $PREFIX/lib/libbz2.so.1.0 $PREFIX/lib/libbz2.so.1
+fi
