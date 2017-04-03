@@ -1,14 +1,18 @@
+{% set name = 'plotrix' %}
+{% set version = '3.6-4' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
-  name: r-plotrix
-  # Note that conda versions cannot contain -, so any -'s in the version have
-  # been replaced with _'s.
-  version: "3.6_1"
+  name: r-{{ name|lower }}
+  version: {{ version|replace("-", "_") }}
 
 source:
-  fn: plotrix_3.6-1.tar.gz
+  fn: {{ name }}_{{ version }}.tar.gz
   url:
-    - http://cran.r-project.org/src/contrib/plotrix_3.6-1.tar.gz
-    - http://cran.r-project.org/src/contrib/Archive/plotrix/plotrix_3.6-1.tar.gz
+    - https://cran.r-project.org/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
 
 
   # You can add a hash for the file here, like md5 or sha1
@@ -19,10 +23,10 @@ source:
    # - fix.patch
 
 build:
-  # If this is a new build for the same version, increment the build
-  # number. If you do not include this key, it defaults to 0.
-  # number: 1
+  # If this is a new build for the same version, increment the build number.
+  number: 0
 
+  # This is required to make R link correctly on Linux.
   rpaths:
     - lib/R/lib/
     - lib/
@@ -30,16 +34,16 @@ build:
 
 requirements:
   build:
-    - r
+    - r-base
 
   run:
-    - r
+    - r-base
 
 test:
   commands:
     # You can put additional test commands to be run here.
-    - $R -e "library('plotrix')" # [not win]
-    - "\"%R%\" -e \"library('plotrix')\"" # [win]
+    - $R -e "library('plotrix')"  # [not win]
+    - "\"%R%\" -e \"library('plotrix')\""  # [win]
 
   # You can also put a file called run_test.py, run_test.sh, or run_test.bat
   # in the recipe that will be run at test time.
@@ -48,15 +52,16 @@ test:
     # Put any additional test requirements here.
 
 about:
-  #home:
+  home: https://CRAN.R-project.org/package=plotrix
   license: GPL (>= 2)
   summary: Lots of plots, various labeling, axis and color scaling functions.
+  license_family: GPL3
 
 # The original CRAN metadata for this package was:
 
 # Package: plotrix
-# Version: 3.6-1
-# Date: 2015-12-20
+# Version: 3.6-4
+# Date: 2016-12-19
 # Title: Various Plotting Functions
 # Author: Jim Lemon, Ben Bolker, Sander Oom, Eduardo Klein, Barry Rowlingson, Hadley Wickham, Anupam Tyagi, Olivier Eterradossi, Gabor Grothendieck, Michael Toews, John Kane, Rolf Turner, Carl Witthoft, Julian Stander, Thomas Petzoldt, Remko Duursma, Elisa Biancotto, Ofir Levy, Christophe Dutang, Peter Solymos, Robby Engelmann,  Michael Hecker, Felix Steinbeck, Hans Borchers, Henrik Singmann, Ted Toal, Derek Ogle
 # Maintainer: Jim Lemon <drjimlemon@gmail.com>
@@ -64,9 +69,9 @@ about:
 # Description: Lots of plots, various labeling, axis and color scaling functions.
 # License: GPL (>= 2)
 # NeedsCompilation: no
-# Packaged: 2015-12-20 10:31:35 UTC; root
+# Packaged: 2016-12-30 09:17:16 UTC; root
 # Repository: CRAN
-# Date/Publication: 2015-12-20 15:36:11
+# Date/Publication: 2016-12-30 16:27:58
 
 # See
 # http://docs.continuum.io/conda/build.html for
