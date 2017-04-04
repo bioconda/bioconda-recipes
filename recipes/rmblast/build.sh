@@ -18,7 +18,10 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     cd $SRC_DIR/c++
     ./configure --prefix=$PREFIX --with-mt --without-debug
 
-    make
+    make > make.log 2>&1
+
+    echo "Last 1000 lines of make log"
+    tail -1000 make.log
 
     cp $SRC_DIR/c++/GCC*-ReleaseMT*/bin/rmblastn $PREFIX/bin
 fi
