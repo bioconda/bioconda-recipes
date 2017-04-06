@@ -5,5 +5,6 @@ make
 install *.o $PREFIX/lib/
 install *.so $PREFIX/lib/
 install *.h $PREFIX/include/
+install *.hh $PREFIX/include/
 install gtest $PREFIX/bin/
 install threads $PREFIX/bin/
