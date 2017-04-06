@@ -7,13 +7,13 @@ index b9b1da9..e162c94 100644
 -
 -INCDIRS := -I. -I${GCLDIR}
 +INCDIRS := -I. -I${PREFIX}/include
-
+ 
  SYSTYPE :=     $(shell uname)
-
+ 
 @@ -78,10 +76,6 @@ endif
-
+ 
  LINKER    := g++
-
+ 
 -OBJS = ${GCLDIR}/GFastaIndex.o ${GCLDIR}/GFaSeqGet.o ${GCLDIR}/gff.o \
 - ./gtf_tracking.o ${GCLDIR}/gdna.o ${GCLDIR}/codons.o ${GCLDIR}/GBase.o \
 - ${GCLDIR}/GStr.o ${GCLDIR}/GArgs.o
@@ -24,16 +24,16 @@ index b9b1da9..e162c94 100644
 @@ -90,11 +84,10 @@ static: gffcompare
  memcheck: gffcompare
  memdebug: gffcompare
-
+ 
 -${GCLDIR}/gff.o  : ${GCLDIR}/gff.h
 -./gtf_tracking.o : ./gtf_tracking.h
 -./gffcompare.o : ./gtf_tracking.h
 -gffcompare: ${OBJS} ./gffcompare.o
--   ${LINKER} ${LDFLAGS} -o $@ ${filter-out %.a %.so, $^} ${LIBS}
+-	${LINKER} ${LDFLAGS} -o $@ ${filter-out %.a %.so, $^} ${LIBS}
 +gtf_tracking.o : gtf_tracking.h
 +gffcompare.o : gtf_tracking.h
-+gffcompare: gtf_tracking.o gffcompare.o
-+   ${LINKER} ${LDFLAGS} -o $@ ${filter-out %.a %.so, $^} ${LIBS} -lgffc
-
++gffcompare: ${OBJS} gffcompare.o
++	${LINKER} ${LDFLAGS} -o $@ ${filter-out %.a %.so, $^} ${LIBS} -lgffc
+ 
  .PHONY : clean
- clean::
+ clean:: 
