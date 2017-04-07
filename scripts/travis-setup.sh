@@ -2,6 +2,14 @@
 set -e
 set -x
 
+if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
+then
+    echo ""
+    echo "Setup is skipped for pushes to the main bioconda-recipes repo."
+    echo ""
+    exit 0
+fi
+
 for dir in . recipes
 do
     if [ -e $dir/meta.yaml ]
