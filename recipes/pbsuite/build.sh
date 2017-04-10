@@ -10,5 +10,5 @@ cp -r * $PACKAGE_HOME
 
 WRAPPER=$PREFIX/bin/Jelly
 echo "#!/bin/sh" > $WRAPPER
-echo "$PACKAGE_HOME/bin/Jelly.py \$@" >> $WRAPPER
+echo "PYTHONPATH=$PACKAGE_HOME:\$PYTHONPATH $PACKAGE_HOME/bin/Jelly.py \$@" >> $WRAPPER
 chmod +x $WRAPPER
