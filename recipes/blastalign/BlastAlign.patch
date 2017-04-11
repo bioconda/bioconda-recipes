@@ -1,8 +1,36 @@
---- BlastAlign.bak	2017-02-21 08:57:30.000000000 +0100
-+++ BlastAlign	2017-02-21 16:50:02.360998557 +0100
-@@ -1,4 +1,4 @@
+--- BlastAlign.bak	2014-04-08 12:23:29.000000000 +0200
++++ BlastAlign	2017-04-11 16:30:07.103476786 +0200
+@@ -1,5 +1,6 @@
 -#! /usr/bin/perl -w
 +#! /usr/bin/env perl
  use Getopt::Std; 	# read in data at command line using -i type options
++use File::Basename;
  
  # Written by Robert Belshaw (School of Biomedical & Healthcare Sciences, University of Plymouth) & Aris Katzourakis (Department of Zoology, University of Oxford)
+ # For more information and to cite see Belshaw, R & Katzourakis, A (2005) BlastAlign: a program that uses blast to align problematic nucleotide sequences. Bioinformatics 21:122-123.
+@@ -15,6 +16,7 @@
+ $blastall = "blastall";
+ $formatdb = "formatdb";
+ $python_script = "BlastAlign.py";
++$script_path = dirname($0);
+ # e.g. 
+ #$blastall = "/usr/software/blast/blast-2.2.6-ia32/blastall"; 
+ #$formatdb = "/usr/software/blast/blast-2.2.6-ia32/formatdb";
+@@ -101,7 +103,7 @@
+ 	if ($number_of_seqs > $max_number_seqs) { # Either too many sequences in input file or user wants to restrict the number. Will randomly select selected number and find reference from these only.
+ 		find_ref_from_reduced();
+ 		parse_blast_output_for_python();
+-		$system_check = (system "python $python_script"); # Run python script BlastAlign.py with input file 'blast_out'
++		$system_check = (system "python %s/$python_script", $script_path); # Run python script BlastAlign.py with input file 'blast_out'
+ 			unless ($system_check eq 0) {
+ 			print "\n****** Error message from BlastAlign: the auxiliary python program BlastAlign.py was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
+ 			exit;
+@@ -125,7 +127,7 @@
+ 			exit;
+ 		}
+ 		parse_blast_output_for_python();
+-		$system_check = (system "python $python_script"); # Run python script BlastAlign.py with input file 'blast_out' and create new file called blast_out_python
++		$system_check = (system "python %s/$python_script", $script_path); # Run python script BlastAlign.py with input file 'blast_out' and create new file called blast_out_python
+ 		unless ($system_check eq 0) {
+ 			print "\n****** Error message from BlastAlign: the auxiliary python program BlastAlign.py was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
+ 			exit;
