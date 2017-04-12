@@ -21,6 +21,9 @@ cp specialk python-build/
 cp readfq.py python-build/
 cp setup.py python-build/
 cp README python-build/
+cp makefile python-build/
+cp main.cpp python-build/
+cp CHANGELOG python-build/
 cp -rf scripts/ python-build/
 cp -rf third_party/ python-build/
 cp -rf ntCard/ python-build/
