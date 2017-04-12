@@ -8,7 +8,19 @@ mkdir -p $PREFIX/bin
 cp -r * $PACKAGE_HOME
 
 
-WRAPPER=$PREFIX/bin/Jelly
-echo "#!/bin/sh" > $WRAPPER
-echo "PYTHONPATH=$PACKAGE_HOME:\$PYTHONPATH $PACKAGE_HOME/bin/Jelly.py \$@" >> $WRAPPER
-chmod +x $WRAPPER
+#WRAPPER=$PREFIX/bin/Jelly.py
+#echo "#!/bin/sh" > $WRAPPER
+#echo "PYTHONPATH=$PACKAGE_HOME:\$PYTHONPATH $PACKAGE_HOME/bin/Jelly.py \$@" >> $WRAPPER
+#chmod +x $WRAPPER
+
+
+for f in bin/*.py
+do
+  echo "Processing $f file..."
+  fn=basename $f
+
+  WRAPPER=$PREFIX/bin/$fn
+  echo "#!/bin/sh" > $WRAPPER
+  echo "PYTHONPATH=$PACKAGE_HOME:\$PYTHONPATH $PACKAGE_HOME/bin/$fn \$@" >> $WRAPPER
+  chmod +x $WRAPPER
+done
