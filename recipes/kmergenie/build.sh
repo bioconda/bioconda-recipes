@@ -14,6 +14,10 @@ export CPPFLAGS="-I${PREFIX}/include"
 export LC_ALL=C
 
 make
+echo "running make twice just to see"
+make
+echo "running make ntcard really to check"
+make ntcard
 
 mkdir -p python-build/
 cp kmergenie python-build/
@@ -21,8 +25,6 @@ cp specialk python-build/
 cp readfq.py python-build/
 cp setup.py python-build/
 cp README python-build/
-cp makefile python-build/
-cp main.cpp python-build/
 cp CHANGELOG python-build/
 cp -rf scripts/ python-build/
 cp -rf third_party/ python-build/
