@@ -80,7 +80,8 @@ def run(cmds, env=None, **kwargs):
     except sp.CalledProcessError as e:
         e.stdout = e.stdout.decode(errors='replace')
         logger.error('COMMAND FAILED: %s', ' '.join(e.cmd))
-        logger.error('STDOUT+STDERR:\n%s', e.stdout)
+        print("--- build log")
+        print(e.stdout)
         raise e
     return p
 
