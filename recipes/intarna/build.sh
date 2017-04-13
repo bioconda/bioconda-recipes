@@ -23,11 +23,11 @@ export CXXFLAGS=${CXXFLAGS}
 export LDFLAGS=${LDFLAGS}
 
 ./configure --prefix=$PREFIX \
-            --with-RNA=$PREFIX \
+            --with-vrna=$PREFIX \
             --with-boost=$PREFIX \
             --disable-multithreading \
             ${extra_config_options} \
             
-make && \
+make -j ${CPU_COUNT} && \
 make tests && \
 make install
