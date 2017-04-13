@@ -1,5 +1,6 @@
 #!/bin/sh
-set -x -e -o pipefile
+
+set -x -e -o pipefail
 
 (git clone http://github.com/samtools/samtools && cd samtools && git checkout 28391e5898804ce6b805016)
 
