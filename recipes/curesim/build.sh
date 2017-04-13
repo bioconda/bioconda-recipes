@@ -1,7 +1,12 @@
 #!/bin/bash -u -f -e -o pipefail
 
-mkdir -p $PREFIX/bin
+STRANGEDIR=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 
-cp CuReSim1.3/CuReSim.jar $PREFIX/bin
-cp curesim $PREFIX/bin
+mkdir -p $PREFIX/bin
+mkdir -p $STRANGEDIR
+
+cp CuReSim1.3/CuReSim.jar $STRANGEDIR
+cp curesim $STRANGEDIR
+
+(cd ${PREFIX}/bin && ln -s ${STRANGEDIR}/curesim)
 
