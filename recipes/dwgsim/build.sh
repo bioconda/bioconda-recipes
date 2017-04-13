@@ -25,13 +25,13 @@ cp dwgsim $PREFIX/bin
 cp dwgsim_eval $PREFIX/bin
 cp scripts/dwgsim_eval_plot.py $PREFIX/bin
 
-cd scripts
-
-mkdir -p perl-build
-cp ${RECIPE_DIR}/Build.PL perl-build
-cp *.pl perl-build
-
-cd perl-build
-perl ./Build.PL
-./Build manifest
-./Build install --installdirs site
+#cd scripts
+#
+#mkdir -p perl-build
+#cp ${RECIPE_DIR}/Build.PL perl-build
+#cp *.pl perl-build
+#
+#cd perl-build
+#perl ./Build.PL
+#./Build manifest
+#./Build install --installdirs site
