@@ -11,6 +11,6 @@ cp CuReSim.jar $STRANGEDIR
 cat /dev/null > $w
 chmod +x $w
 echo '#! /usr/bin/env bash' >> $w
-echo 'java -jar $(dirname "$0")/CuReSim.jar $@' >> $w
+echo 'java -jar $(dirname "$(readlink -f "$0")")/CuReSim.jar $@' >> $w
 
 (cd ${PREFIX}/bin && ln -s $w)
