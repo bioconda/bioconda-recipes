@@ -1,4 +1,4 @@
-#!/bin/bash -u -f -e -o pipefail
+#!/bin/bash
 
 STRANGEDIR=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 
