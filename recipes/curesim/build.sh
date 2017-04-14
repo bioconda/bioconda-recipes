@@ -6,6 +6,6 @@ mkdir -p $PREFIX/bin
 mkdir -p $STRANGEDIR
 
 cp CuReSim.jar $STRANGEDIR
-cp curesim $STRANGEDIR
+cp $(dirname "$0")/curesim $STRANGEDIR
 
 (cd ${PREFIX}/bin && ln -s ${STRANGEDIR}/curesim)
