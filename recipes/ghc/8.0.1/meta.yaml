@@ -1,0 +1,37 @@
+package:
+  name: ghc
+  version: 8.0.1
+
+source:
+  fn: ghc-8.0.1-x86_64-deb8-linux.tar.xz # [linux64]
+  url: http://downloads.haskell.org/~ghc/8.0.1/ghc-8.0.1-x86_64-deb8-linux.tar.xz # [linux64]
+  md5: 08712c37398dd3f31706b279b1c73dc3 # [linux64]
+
+build:
+  number: 0
+  skip: True # [osx]
+  string: "ncurses{{CONDA_NCURSES}}_{{PKG_BUILDNUM}}"
+
+requirements:
+  build:
+    - gmp
+    - gcc   # [linux]
+    - llvm  # [osx]
+    - ncurses {{CONDA_NCURSES}}*
+  run:
+    - gmp
+    - libgcc  # [linux]
+    - ncurses {{CONDA_NCURSES}}*
+
+test:
+  commands:
+    - export GHC_LIBS_PATH=${PREFIX}/lib/ghc-8.0.1/
+    - cp ${PREFIX}/lib/ghc-8.0.1/*/*.so ${PREFIX}/lib/ghc-8.0.1/
+    - export LD_LIBRARY_PATH=$GHC_LIBS_PATH/::$LD_LIBRARY_PATH
+    - ghc-pkg recache 
+    - ghc --help > /dev/null
+
+about:
+  home: https://www.haskell.org/ghc/
+  license: BSD
+  summary: "GHC is a state-of-the-art, open source, compiler and interactive environment for the functional language Haskell."
