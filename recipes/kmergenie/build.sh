@@ -13,18 +13,25 @@ export CXXFLAGS="-I$PREFIX/include"
 export CPPFLAGS="-I${PREFIX}/include"
 export LC_ALL=C
 
-mkdir -p $PREFIX/bin
-
-sed -i.bak 's/print sys.hexversion>=0x02050000/print(sys.hexversion>=0x02050000)/' makefile
-
 make
+echo "running make twice just to see"
+make
+echo "running make ntcard really to check"
+make ntcard
 
-sed -i.bak 's/third_party\.//g' scripts/*
-sed -i.bak 's/third_party\.//g' kmergenie
-sed -i.bak 's/scripts\///g' kmergenie
+mkdir -p python-build/
+cp kmergenie python-build/
+cp specialk python-build/
+cp readfq.py python-build/
+cp setup.py python-build/
+cp README python-build/
+cp CHANGELOG python-build/
+cp -rf scripts/ python-build/
+cp -rf third_party/ python-build/
+cp -rf ntCard/ python-build/
 
-cp scripts/* $PREFIX/bin
-cp third_party/* $PREFIX/bin
-cp specialk $PREFIX/bin
-cp kmergenie $PREFIX/bin
-cp wrapper.py $PREFIX/bin
+cd python-build
+
+python setup.py build
+python setup.py install
+
