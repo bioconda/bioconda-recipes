@@ -1,10 +1,11 @@
 package:
   name: ensembl-vep
-  version: '87.6'
+  version: '88'
 
 source:
-  fn: vep-87_6.tar.gz
-  url: https://github.com/Ensembl/ensembl-vep/archive/release/87.6.tar.gz
+  fn: vep-88.0.tar.gz
+  url: https://github.com/Ensembl/ensembl-vep/archive/release/88.0.tar.gz
+  md5: 07992e6f2aa471e0723cda55d80945eb
 
 build:
   number: 0
@@ -15,12 +16,12 @@ requirements:
     - curl
     - perl-archive-zip
     - perl-lwp-simple
-    - perl-threaded
+    - perl >=5.2*
     - unzip
     - zlib
   run:
     - htslib
-    - perl-bioperl ==1.6.924 4
+    - perl-bioperl
     - perl-bio-db-hts
     - perl-cgi
     - perl-dbi
@@ -30,14 +31,16 @@ requirements:
     - perl-perlio-gzip
     - perl-sereal
     - perl-set-intervaltree
-    - perl-threaded
+    - perl >=5.2*
+    - unzip
 
 
 test:
   commands:
-     - ensembl_vep.pl --help
-     - ensembl_convert_cache.pl --help
-     - ensembl_vep_install.pl --help
+     - vep --help
+     - vep_convert_cache --help
+     - vep_install --help
+     - haplo --help
 
 about:
   home: http://www.ensembl.org/info/docs/tools/vep/index.html
@@ -47,18 +50,16 @@ about:
 extra:
   notes: |
     This package installs only the variant effect predictor (VEP) library
-    code. To install data libraries, you can use the 'ensembl_vep_install.pl' command
+    code. To install data libraries, you can use the 'vep_install' command
     installed along with it. For example, to install the VEP library for human
-    hg19/GRCh37 to a directory
+    GRCh38 to a directory
 
-    ensembl_vep_install.pl -a cf -s homo_sapiens -y GRCh37 -c /output/path/to/hg19/vep
-    ensembl_vep_convert_cache.pl -species homo_sapiens -version 86_GRCh37 -d /output/path/to/hg19/vep
+    vep_install -a cf -s homo_sapiens -y GRCh38 -c /output/path/to/GRCh38/vep --CONVERT
 
-    (note that ensembl_vep_install.pl is renamed from INSTALL.pl
-     and ensembl_vep_convert_cache.pl from covert_cache.pl
+    (note that vep_install is renamed from INSTALL.pl
      to avoid having generic script names in the PATH)
 
-    The convert cache step is not required but improves lookup speeds during
+    The --CONVERT flag is not required but improves lookup speeds during
     runs. See the VEP documentation for more details
 
-    http://useast.ensembl.org/info/docs/tools/vep/script/vep_cache.html
+    http://www.ensembl.org/info/docs/tools/vep/script/vep_cache.html

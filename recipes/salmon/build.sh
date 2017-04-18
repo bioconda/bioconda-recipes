@@ -1,12 +1,10 @@
 #!/bin/bash
 set -eu -o pipefail
 
-export LD_LIBRARY_PATH=${PREFIX}/lib
-cd $SRC_DIR
+mkdir -p $PREFIX/bin
+mkdir -p $PREFIX/lib
+
 mkdir -p build
-sed -i 's/Boost_USE_STATIC_LIBS ON/Boost_USE_STATIC_LIBS OFF/' CMakeLists.txt
-sed -i 's/.\/autogen.sh/CFLAGS=-fPIC CPPFLAGS=-fPIC .\/autogen.sh/' CMakeLists.txt
-sed -i 's/CFLAGS+=${STADEN_LIB}/CFLAGS+=${STADEN_LIB} CFLAGS+=-lz/' CMakeLists.txt
 cd build
-cmake -DCMAKE_EXE_LINKER_FLAGS="-L$PREFIX/lib" -DCMAKE_INSTALL_PREFIX=${PREFIX} -DBOOST_ROOT=$PREFIX -DBoost_NO_SYSTEM_PATHS=ON -DBoost_DEBUG=ON ..
+cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.8 -DCONDA_BUILD=TRUE -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -DBOOST_ROOT=$PREFIX -DBoost_NO_SYSTEM_PATHS=ON ..
 make install CFLAGS="-L${PREFIX}/lib -I${PREFIX}/include"

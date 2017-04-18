@@ -159,4 +159,7 @@ if os.environ.get('TRAVIS', None) != 'true':
 
     # Override env with whatever's in the shell environment
     env.update(os.environ)
-    sp.run(['scripts/travis-run.sh'], env=env, universal_newlines=True, check=True)
+    try:
+        sp.run(['scripts/travis-run.sh'], env=env, universal_newlines=True, check=True)
+    except sp.CalledProcessError:
+        sys.exit(1)
