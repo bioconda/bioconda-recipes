@@ -1,0 +1,76 @@
+package:
+  name: hdfs
+  version: "2.0.5"
+
+source:
+  fn: hdfs-2.0.5.tar.gz
+  url: https://pypi.python.org/packages/28/7a/1120790002a92dfcff21f44247c0d4f2038bcd222751fa8fe1067cf16aae/hdfs-2.0.5.tar.gz
+  md5: b2c5e6b46fceef7fb9cb0218167c58aa
+#  patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # noarch_python: True
+  # preserve_egg_dir: True
+  entry_points:
+    # Put any entry points (scripts to be generated automatically) here. The
+    # syntax is module:function.  For example
+    #
+    # - hdfs = hdfs:main
+    #
+    # Would create an entry point called hdfs that calls hdfs.main()
+
+    - hdfscli = hdfs.__main__:main
+    - hdfscli-avro = hdfs.ext.avro.__main__:main
+
+  # If this is a new build for the same version, increment the build
+  # number. If you do not include this key, it defaults to 0.
+  number: 1
+  skip: False
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - docopt
+    - requests >=2.7.0
+    - six >=1.9.0
+    - fastavro
+
+  run:
+    - python
+    - docopt
+    - requests >=2.7.0
+    - six >=1.9.0
+    - fastavro
+
+test:
+  # Python imports
+  imports:
+    - hdfs
+    - hdfs.ext
+    - hdfs.ext.avro
+
+  commands:
+    # You can put test commands to be run here.  Use this to test that the
+    # entry points work.
+
+    - hdfscli --help
+    - hdfscli-avro --help
+
+  # You can also put a file called run_test.py in the recipe that will be run
+  # at test time.
+
+  # requires:
+    # Put any additional test requirements here.  For example
+    # - nose
+
+about:
+  home: http://hdfscli.readthedocs.org
+  license: MIT License
+  summary: 'HdfsCLI: API and command line interface for HDFS.'
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
