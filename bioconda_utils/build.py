@@ -318,7 +318,7 @@ def build_recipes(
 
     logger.info(
         "Building and testing subdag %s of %s (%s recipes)",
-        subdag_i, subdags_n, len(recipes)
+        subdag_i + 1, subdags_n, len(recipes)
     )
 
     failed = []

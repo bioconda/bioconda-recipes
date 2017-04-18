@@ -310,6 +310,9 @@ class RecipeBuilder(object):
         self._pull_image()
         self._build_image()
 
+    def __del__(self):
+        self.cleanup()
+
     def _pull_image(self):
         """
         Separate out the pull step to provide additional logging info
@@ -418,3 +421,7 @@ class RecipeBuilder(object):
         logger.debug('DOCKER: cmd: %s', cmd)
         p = utils.run(cmd)
         return p
+
+    def cleanup(self):
+        cmd = ['docker', 'rmi', self.tag]
+        utils.run(cmd)
