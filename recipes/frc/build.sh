@@ -8,6 +8,9 @@ then
     export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib"
 fi
 
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
+
 cmake \
     -DBOOST_INCLUDEDIR=$PREFIX/include/ \
     -D CMAKE_INSTALL_PREFIX=$PREFIX \
