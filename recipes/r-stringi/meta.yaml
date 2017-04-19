@@ -1,0 +1,96 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-stringi
+  # Note that conda versions cannot contain -, so any -'s in the version have
+  # been replaced with _'s.
+  version: "1.1.1"
+
+source:
+  fn: stringi_1.1.1.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/stringi_1.1.1.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/stringi/stringi_1.1.1.tar.gz
+
+
+  # You can add a hash for the file here, like md5 or sha1
+  # md5: 49448ba4863157652311cc5ea4fea3ea
+  # sha1: 3bcfbee008276084cbb37a2b453963c61176a322
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # If this is a new build for the same version, increment the build
+  # number. If you do not include this key, it defaults to 0.
+  # number: 1
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+
+requirements:
+  build:
+    - r-base
+    - posix               # [win]
+    - {{native}}toolchain # [win]
+    - gcc                 # [not win]
+
+  run:
+    - r-base
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('stringi')" # [not win]
+    - "\"%R%\" -e \"library('stringi')\"" # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: http://www.gagolewski.com/software/stringi/ http://site.icu-project.org/ http://www.unicode.org/
+  license: file LICENSE (FOSS)
+  summary: 'Allows for fast, correct, consistent, portable, as well as convenient character string/text
+    processing in every locale and any native encoding. Owing to the use of the ICU
+    library, the package provides R users with platform-independent functions known
+    to Java, Perl, Python, PHP, and Ruby programmers. Among available features there
+    are: pattern searching (e.g., with ICU Java-like regular expressions or the Unicode
+    Collation Algorithm), random string generation, case mapping, string transliteration,
+    concatenation, Unicode normalization, date-time formatting and parsing, etc.'
+
+  license_family: Proprietary
+
+# The original CRAN metadata for this package was:
+
+# Package: stringi
+# Version: 1.1.1
+# Date: 2016-05-25
+# Title: Character String Processing Facilities
+# Description: Allows for fast, correct, consistent, portable, as well as convenient character string/text processing in every locale and any native encoding. Owing to the use of the ICU library, the package provides R users with platform-independent functions known to Java, Perl, Python, PHP, and Ruby programmers. Among available features there are: pattern searching (e.g., with ICU Java-like regular expressions or the Unicode Collation Algorithm), random string generation, case mapping, string transliteration, concatenation, Unicode normalization, date-time formatting and parsing, etc.
+# URL: http://www.gagolewski.com/software/stringi/ http://site.icu-project.org/ http://www.unicode.org/
+# BugReports: http://github.com/gagolews/stringi/issues
+# SystemRequirements: ICU4C (>= 50, optional)
+# Type: Package
+# Depends: R (>= 2.13.1)
+# Imports: tools, utils, stats
+# Biarch: TRUE
+# License: file LICENSE
+# Author: Marek Gagolewski [aut, cre] and Bartek Tartanus [ctb] (stringi source code); IBM and other contributors (ICU4C 55.1 source code); Unicode, Inc. (Unicode Character Database)
+# Maintainer: Marek Gagolewski <gagolews@rexamine.com>
+# RoxygenNote: 5.0.1
+# NeedsCompilation: yes
+# Packaged: 2016-05-25 15:59:57 UTC; gagolews
+# License_is_FOSS: yes
+# Repository: CRAN
+# Date/Publication: 2016-05-27 18:08:57
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
