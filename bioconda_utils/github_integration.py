@@ -11,6 +11,30 @@ def _n(x):
     return x
 
 
+def push_comment(user, repo, pull_request_number, msg):
+    """
+    Expects GITHUB_TOKEN to exist as an env var, and uses it to authenticate.
+
+    user : str
+
+    repo : str
+
+    pull_request_number : int
+
+    msg : Markdown-formatted message
+    """
+
+    if 'GITHUB_TOKEN' not in os.environ:
+        raise ValueError("GITHUB_TOKEN not defined as an env var")
+
+    g = github.Github(os.environ['GITHUB_TOKEN'])
+    user = g.get_user(user)
+    repo = user.get_repo(repo)
+    pr = repo.get_pull(pull_request_number)
+    
+    return pr.create_issue_comment(msg)
+
+
 def update_status(user, repo, commit, state, context=None, description=None,
                   target_url=None):
     """
