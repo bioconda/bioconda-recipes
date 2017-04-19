@@ -6,7 +6,7 @@ mkdir -p $BINDIR
 (cd kent/src/lib && make)
 (cd kent/src/jkOwnLib && make)
 (cd kent/src/hg/lib && make)
-(cd kent/src/hg/mouseStuff/netFilter && make)
+(cd kent/src/hg/mouseStuff/mafRanges && make)
 mkdir -p $PREFIX/bin
-cp bin/netFilter $PREFIX/bin
-chmod +x $PREFIX/bin/netFilter
+cp bin/mafRanges $PREFIX/bin
+chmod +x $PREFIX/bin/mafRanges
