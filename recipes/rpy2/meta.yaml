@@ -1,24 +1,25 @@
+{% set VERSION = "2.8.3" %}
+{% set SHA256 = "24c2ea1c0d7321e6913d5d185efa19f29e920ff8e8afbc5c757f894f61c96873" %}
+
 package:
   name: rpy2
-  version: "2.7.8"
+  version: {{ VERSION }}
 
 source:
-  fn: rpy2-2.7.8.tar.gz
-  url: https://pypi.python.org/packages/source/r/rpy2/rpy2-2.7.8.tar.gz
-  md5: 56ca162bca76bb9c3f935f099c916196
-#  patches:
-   # List any patch files here
-   # - fix.patch
+  fn: rpy2-{{ VERSION }}.tar.gz
+  url: https://pypi.io/packages/source/r/rpy2/rpy2-{{ VERSION }}.tar.gz
+  sha256: {{ SHA256 }}
 
 build:
   rpaths:
     - lib/R/lib/
     - lib/
-  skip: False
-  number: 1
+  number: 0
 
 requirements:
   build:
+    - gcc # [linux]
+    - libgcc # [linux]
     - python
     - r
     - setuptools
@@ -28,6 +29,7 @@ requirements:
     - readline
 
   run:
+    - libgcc # [linux]
     - python
     - r
     - argparse # [py26]
@@ -53,8 +55,7 @@ test:
     - rpy2.robjects.tests
 
   commands:
-    - echo
-    # - python -m rpy2.tests
+     - python -m rpy2.tests -v
 
   requires:
     - ipython
@@ -64,10 +65,6 @@ test:
     - pandas
 
 about:
-  home: http://rpy.sourceforge.net
+  home: https://bitbucket.org/rpy2/rpy2
   license: GNU General Public License v2 or later (GPLv2+)
   summary: 'Python interface to the R language (embedded R)'
-
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
