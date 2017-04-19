@@ -1,0 +1,56 @@
+{% set name = 'gdtools' %}
+{% set version = '0.1.4' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-{{ name|lower }}
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: {{ name }}_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+
+  md5: 62c2946391c7d1558e32025a6799cd0e
+
+build:
+  number: 0
+
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - r-rcpp
+    - r-withr
+    - gcc
+    - xorg-libxrender
+    - xorg-libxext
+    - xorg-libxdmcp
+    - xorg-libxau
+    - cairo [osx]
+
+  run:
+    - r-base
+    - r-rcpp
+    - r-withr
+    - xorg-libxrender
+    - xorg-libxext
+    - xorg-libxdmcp
+    - xorg-libxau
+    - cairo [osx]
+
+test:
+  commands:
+    - $R -e "library('gdtools')"
+
+about:
+  home: https://CRAN.R-project.org/package=gdtools
+  license: GPL-3 | file LICENSE
+  summary: Useful tools for writing vector graphics devices.
+  license_family: GPL3

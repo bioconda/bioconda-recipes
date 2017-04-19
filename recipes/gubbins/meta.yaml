@@ -1,0 +1,56 @@
+{% set name = "gubbins" %}
+{% set version = "2.2.1" %}
+{% set md5 = "07315be3d3c0bcaa4b94df9d21b6e63f" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True # [py27]
+
+source:
+  fn: {{ name|lower }}_{{ version }}.tar.gz
+  url: https://github.com/sanger-pathogens/{{ name|lower }}/archive/863d44f56e827531a02b92e94b46786c95c3e747.tar.gz
+  md5: {{ md5 }}
+  patches:
+    - gubbins.patch
+
+requirements:
+  build:
+  - gcc  # [not osx]
+  - llvm  # [osx]
+  - libtool
+  - autoconf
+  - automake
+  - perl
+  - zlib
+  - python
+  - setuptools
+  - nose >=1.3
+  - reportlab >=3.0
+  - dendropy  >=4.0.2
+  - biopython >=1.59
+
+
+  run:
+  - libgcc  # [not osx]
+  - zlib
+  - python
+  - nose >=1.3
+  - reportlab >=3.0
+  - dendropy  >=4.0.2
+  - biopython >=1.59
+  - fasttree
+  - raxml
+
+test:
+  commands:
+    - run_gubbins.py -h
+
+about:
+  home: https://github.com/sanger-pathogens/gubbins
+  license: GPL-2.0
+  license_file: LICENSE
+  summary: 'Rapid phylogenetic analysis of large samples of recombinant bacterial whole genome sequences using Gubbins.'

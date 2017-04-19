@@ -10,6 +10,6 @@ export LDFLAGS='-stdlib=libc++'
 export LD_FLAGS='-stdlib=libc++'
 export CMAKE_LDFLAGS='-stdlib=libc++'
 fi
-cmake  ..
+cmake ..
 make
 mv ExpansionHunter ${PREFIX}/bin/.

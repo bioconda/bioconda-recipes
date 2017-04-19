@@ -1,8 +1,5 @@
 #!/bin/bash
 
-CC=${PREFIX}/bin/gcc
-CXX=${PREFIX}/bin/g++
-
 # R refuses to build packages that mark themselves as
 # "Priority: Recommended"
 mv DESCRIPTION DESCRIPTION.old

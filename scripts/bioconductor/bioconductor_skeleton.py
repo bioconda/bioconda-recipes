@@ -313,7 +313,7 @@ class BioCProjectPage(object):
                 self.depends_on_gcc = True
 
         # Add R itself
-        results.append('r')
+        results.append('r-base')
         self._dependencies = results
         return self._dependencies
 
