@@ -132,7 +132,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
             logger.info('No recipe modified according to git, exiting.')
             return
         recipes = [os.path.dirname(f) for f in modified if os.path.basename(f) == 'meta.yaml' and os.path.exists(f)]
-        logger.info('Recipes with modified meta.yaml files according to git: {}'.format('\n '.join(recipes)))
+        logger.info('Recipes to consider according to git: {}'.format('\n '.join(recipes)))
 
     report = linting.lint(
         recipes,
