@@ -1,8 +1,5 @@
 #!/bin/bash
 
-mkdir build
-cd build
-
 if [ `uname -s` == "Darwin" ];
 then
     export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib"
@@ -11,11 +8,9 @@ fi
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
-cmake \
-    -DBOOST_INCLUDEDIR=$PREFIX/include/ \
-    -D CMAKE_INSTALL_PREFIX=$PREFIX \
-    ..
-
-make
+mkdir -p build
+cd build
+cmake -DBOOST_INCLUDEDIR=${PREFIX}/include/ -DCMAKE_INSTALL_PREFIX=${PREFIX} ..
 make install
 cp ../bin/* $PREFIX/bin
+ln -s $PREFIX/lib/bamtools/libbamtools.so.2.3.0 $PREFIX/lib/libbamtools.so.2.3.0
