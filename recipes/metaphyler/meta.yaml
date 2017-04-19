@@ -1,0 +1,43 @@
+{% set name = "metaphyler" %}
+{% set version = "1.25" %}
+{% set md5 = "fa8a18451e6450359788985be8ab2c5e" %}
+
+source:
+  fn: MetaPhylerV1.25.tar.gz
+  md5: {{ md5 }}
+  url: http://metaphyler.cbcb.umd.edu/MetaPhylerV1.25.tar.gz
+
+build:
+  number: 0
+  skip: True # [osx]
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+requirements:
+  build:
+    - gcc  # [not osx]
+    - llvm  # [osx]
+    - perl
+    - blast-legacy
+  run:
+    - libgcc  # [not osx]
+    - perl
+    - blast-legacy
+
+test:
+  commands:
+    - runMetaphyler.pl
+    - buildMetaphyler.pl
+    - runClassifier.pl
+    - simuReads
+    - metaphylerTrain
+    - metaphylerClassify
+    - combine
+    - taxprof
+
+about:
+    home: 'http://metaphyler.cbcb.umd.edu/'
+    license: ""
+    summary: "Estimating Bacterial Composition from Metagenomic Sequences"
