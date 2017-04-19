@@ -148,7 +148,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
         pandas.set_option('max_colwidth', 500)
         summarized = pandas.DataFrame(
             dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
-        if full_report:
+        if not full_report:
             logger.error('\n\nThe following recipes failed linting. See '
                          'https://bioconda.github.io/linting.html for details:\n\n%s\n',
                          summarized.to_string())
