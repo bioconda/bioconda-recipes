@@ -22,8 +22,15 @@ from distutils.version import LooseVersion
 from conda_build import api
 from conda_build.metadata import MetaData
 import yaml
+from jinja2 import Environment, PackageLoader, select_autoescape
 
 logger = logging.getLogger(__name__)
+
+
+jinja = Environment(
+    loader=PackageLoader('bioconda_utils', 'templates'),
+    autoescape=select_autoescape(['html', 'xml'])
+)
 
 
 @contextlib.contextmanager

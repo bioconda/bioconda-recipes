@@ -246,3 +246,12 @@ def lint(packages, config, df, exclude=None, registry=None):
         return report
     else:
         return
+
+
+def markdown_report(report=None):
+    if report is None:
+        tmpl = utils.jinja.get_template("lint_success.md")
+        return tmpl.render()
+    else:
+        tmpl = utils.jinja.get_template("lint_failure.md")
+        return tmpl.render(report=report)

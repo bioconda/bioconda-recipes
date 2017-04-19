@@ -79,6 +79,12 @@ def setup_logger(loglevel):
      requests from forks will not have access to encrypted variables on
      travis-ci, so this feature may be of limited use.''')
 @arg('--commit', help='Commit on github on which to update status')
+@arg('--push-comment', action='store_true', help='''If set, the lint status
+     will be posted as a comment in the corresponding pull request (given by
+     --pull-request). Also needs --user and --repo to be set. Requires the env
+     var GITHUB_TOKEN to be set.''')
+@arg('--pull-request', type=int, help='''Pull request id on github on which to
+     post a comment.''')
 @arg('--user', help='Github user')
 @arg('--repo', help='Github repo')
 @arg('--git-range', nargs='+',
@@ -92,7 +98,9 @@ def setup_logger(loglevel):
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
 def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
          only=None, exclude=None, push_status=False, user='bioconda',
-         commit=None, repo='bioconda-recipes', git_range=None, full_report=False, loglevel='info'):
+         commit=None, push_comment=False, pull_request=None,
+         repo='bioconda-recipes', git_range=None, full_report=False,
+         loglevel='info'):
     """
     Lint recipes
 
@@ -137,10 +145,10 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
     # The returned dataframe is in tidy format; summarize a bit to get a more
     # reasonable log
     if report is not None:
-        if not full_report:
-            pandas.set_option('max_colwidth', 500)
-            summarized = pandas.DataFrame(
-                dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
+        pandas.set_option('max_colwidth', 500)
+        summarized = pandas.DataFrame(
+            dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
+        if full_report:
             logger.error('\n\nThe following recipes failed linting. See '
                          'https://bioconda.github.io/linting.html for details:\n\n%s\n',
                          summarized.to_string())
@@ -151,13 +159,21 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
             github_integration.update_status(
                 user, repo, commit, state='error', context='linting',
                 description='linting failed, see travis log', target_url=None)
+        if push_comment:
+            msg = linting.markdown_report(summarized)
+            github_integration.push_comment(
+                user, repo, pull_request, msg)
         sys.exit(1)
 
     else:
         if push_status:
-            update_status(
+            github_integration.update_status(
                 user, repo, commit, state='success', context='linting',
                 description='linting passed', target_url=None)
+        if push_comment:
+            msg = linting.markdown_report()
+            github_integration.push_comment(
+                user, repo, pull_request, msg)
 
 
 
