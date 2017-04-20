@@ -29,7 +29,8 @@ logger = logging.getLogger(__name__)
 
 jinja = Environment(
     loader=PackageLoader('bioconda_utils', 'templates'),
-    autoescape=select_autoescape(['html', 'xml'])
+    trim_blocks=True,
+    lstrip_blocks=True
 )
 
 
