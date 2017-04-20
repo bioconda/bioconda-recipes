@@ -8,7 +8,7 @@ cp aligner/*.py $PREFIX/bin
 cd dynamic
 make
 cp mean $PREFIX/bin
-cp mean probability
-cp mean mprobability
-cp mean sample
-cp mean stitch
+cp probability $PREFIX/bin
+cp mprobability $PREFIX/bin
+cp sample $PREFIX/bin
+cp stitch $PREFIX/bin
