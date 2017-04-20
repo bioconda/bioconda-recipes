@@ -72,7 +72,7 @@ then
     echo "Create Container push commands file: ${TRAVIS_BUILD_DIR}/container_push_commands.sh"
     export CONTAINER_PUSH_COMMANDS_PATH=${TRAVIS_BUILD_DIR}/container_push_commands.sh
     touch $CONTAINER_PUSH_COMMANDS_PATH
-    UPLOAD_ARG="--upload"
+    UPLOAD_ARG="--anaconda-upload"
 else
     UPLOAD_ARG=""
     # if building master branch, do not lint
