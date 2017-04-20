@@ -212,6 +212,8 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
 @arg('--disable-travis-env-vars', action='store_true', help='''By default, any
      environment variables starting with TRAVIS are sent to the Docker
      container. Use this flag to disable that behavior.''')
+@arg('--anaconda-upload', action='store_true', help='''After building recipes, upload
+     them to Anaconda. This requires $ANACONDA_TOKEN to be set.''')
 def build(recipe_folder,
           config,
           packages="*",
@@ -226,7 +228,8 @@ def build(recipe_folder,
           conda_build_version=docker_utils.DEFAULT_CONDA_BUILD_VERSION,
           quick=False,
           disable_travis_env_vars=False,
-          ):
+          anaconda_upload=False,
+    ):
     setup_logger(loglevel)
 
     cfg = utils.load_config(config)
@@ -283,6 +286,7 @@ def build(recipe_folder,
         docker_builder=docker_builder,
         quick=quick,
         disable_travis_env_vars=disable_travis_env_vars,
+        anaconda_upload=anaconda_upload,
     )
     exit(0 if success else 1)
 
