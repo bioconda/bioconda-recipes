@@ -151,7 +151,7 @@ def single_upload():
         TRAVIS_BRANCH='master',
         TRAVIS_PULL_REQUEST='false')
     ):
-        upload.upload(pkg, label=TEST_LABEL)
+        upload.anaconda_upload(pkg, label=TEST_LABEL)
 
     yield (name, pkg, r.recipe_dirs[name])
 
