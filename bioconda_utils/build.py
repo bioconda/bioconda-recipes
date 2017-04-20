@@ -141,13 +141,9 @@ def build(recipe,
     # TODO remove the second clause once new galaxy-lib has been released.
     if (res.returncode == 0) and (res.stdout.find('Unexpected exit code') == -1):
         logger.info("TEST SUCCESS %s, %s", recipe, utils.envstr(env))
-        logger.debug('STDOUT:\n%s', res.stdout)
-        logger.debug('STDERR:\n%s', res.stderr)
         return True
     else:
         logger.error('TEST FAILED: %s, %s', recipe, utils.envstr(env))
-        logger.error('STDOUT:\n%s', res.stdout)
-        logger.error('STDERR:\n%s', res.stderr)
         return False
 
 
