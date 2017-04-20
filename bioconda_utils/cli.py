@@ -197,6 +197,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
      help='Build packages in docker container.')
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
 @arg('--mulled-test', action='store_true', help="Run a mulled-build test on the built package")
+@arg('--mulled-upload-target', help="Provide a quay.io target to push mulled docker images to.")
 @arg('--build_script_template', help='''Filename to optionally replace build
      script template used by the Docker container. By default use
      docker_utils.BUILD_SCRIPT_TEMPLATE. Only used if --docker is True.''')
@@ -229,6 +230,7 @@ def build(recipe_folder,
           quick=False,
           disable_travis_env_vars=False,
           anaconda_upload=False,
+          mulled_upload_target=None,
     ):
     setup_logger(loglevel)
 
@@ -287,6 +289,7 @@ def build(recipe_folder,
         quick=quick,
         disable_travis_env_vars=disable_travis_env_vars,
         anaconda_upload=anaconda_upload,
+        mulled_upload_target=mulled_upload_target,
     )
     exit(0 if success else 1)
 
