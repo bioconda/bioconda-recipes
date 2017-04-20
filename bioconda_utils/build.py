@@ -160,7 +160,7 @@ def build_recipes(
     force=False,
     docker_builder=None,
     label=None,
-    upload=False,
+    anaconda_upload=False,
     check_channels=None,
     quick=False,
     disable_travis_env_vars=False,
@@ -200,7 +200,7 @@ def build_recipes(
         Optional label to use when uploading packages. Useful for testing and
         debugging. Default is to use the "main" label.
 
-    upload :  bool
+    anaconda_upload :  bool
         If True, upload the package.
 
     check_channels : list
@@ -393,7 +393,7 @@ def build_recipes(
         "BUILD SUMMARY: successfully built %s of %s recipes",
         len(built_recipes), len(recipes))
 
-    if not testonly and upload:
+    if not testonly and anaconda_upload:
         # upload builds
         for recipe in recipes:
             for target in recipe_targets[recipe]:
