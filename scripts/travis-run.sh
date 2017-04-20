@@ -72,12 +72,15 @@ then
     echo "Create Container push commands file: ${TRAVIS_BUILD_DIR}/container_push_commands.sh"
     export CONTAINER_PUSH_COMMANDS_PATH=${TRAVIS_BUILD_DIR}/container_push_commands.sh
     touch $CONTAINER_PUSH_COMMANDS_PATH
+    UPLOAD_ARG="--anaconda-upload"
 else
+    UPLOAD_ARG=""
     # if building master branch, do not lint
     if [ $SKIP_LINTING = false  ]
     then
         set -x; bioconda-utils lint recipes config.yml $RANGE_ARG $BIOCONDA_UTILS_LINT_ARGS; set +x
     fi
+
 fi
 
 
@@ -88,7 +91,7 @@ then
     echo "A comprehensive check will be performed to see what needs to be built."
     RANGE_ARG=""
 fi
-set -x; bioconda-utils build recipes config.yml $DOCKER_ARG $BIOCONDA_UTILS_BUILD_ARGS $RANGE_ARG; set +x;
+set -x; bioconda-utils build recipes config.yml $UPLOAD_ARG $DOCKER_ARG $BIOCONDA_UTILS_BUILD_ARGS $RANGE_ARG; set +x;
 
 if [[ $TRAVIS_OS_NAME = "linux" ]]
 then
