@@ -69,10 +69,12 @@ fi
 # in bioconda-utils and will be pushing containers to quay.io.
 if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
 then
-    echo "Create Container push commands file: ${TRAVIS_BUILD_DIR}/container_push_commands.sh"
-    export CONTAINER_PUSH_COMMANDS_PATH=${TRAVIS_BUILD_DIR}/container_push_commands.sh
-    touch $CONTAINER_PUSH_COMMANDS_PATH
-    UPLOAD_ARG="--anaconda-upload"
+    if [[ $TRAVIS_OS_NAME = "linux" ]]
+    then
+        UPLOAD_ARG="--anaconda-upload --mulled-upload-target biocontainers"
+    else
+        UPLOAD_ARG="--anaconda-upload"
+    fi
 else
     UPLOAD_ARG=""
     # if building master branch, do not lint
@@ -93,12 +95,3 @@ then
 fi
 set -x; bioconda-utils build recipes config.yml $UPLOAD_ARG $DOCKER_ARG $BIOCONDA_UTILS_BUILD_ARGS $RANGE_ARG; set +x;
 
-if [[ $TRAVIS_OS_NAME = "linux" ]]
-then
-    if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
-    then
-        echo "Push containers to quay.io"
-        cat $CONTAINER_PUSH_COMMANDS_PATH
-        bash $CONTAINER_PUSH_COMMANDS_PATH
-    fi
-fi
