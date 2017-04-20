@@ -160,7 +160,7 @@ def build_recipes(
     force=False,
     docker_builder=None,
     label=None,
-    disable_upload=False,
+    upload=False,
     check_channels=None,
     quick=False,
     disable_travis_env_vars=False,
@@ -200,8 +200,8 @@ def build_recipes(
         Optional label to use when uploading packages. Useful for testing and
         debugging. Default is to use the "main" label.
 
-    disable_upload :  bool
-        If True, do not upload the package. Useful for testing.
+    upload :  bool
+        If True, upload the package.
 
     check_channels : list
         Channels to check to see if packages already exist in them. If None,
@@ -393,11 +393,9 @@ def build_recipes(
         "BUILD SUMMARY: successfully built %s of %s recipes",
         len(built_recipes), len(recipes))
 
-    if not testonly and not disable_upload:
+    if not testonly and upload:
         # upload builds
-        if (os.environ.get("TRAVIS_BRANCH") == "master" and
-                os.environ.get("TRAVIS_PULL_REQUEST") == "false"):
-            for recipe in recipes:
-                for target in recipe_targets[recipe]:
-                    all_success &= upload.upload(target.pkg, label)
+        for recipe in recipes:
+            for target in recipe_targets[recipe]:
+                all_success &= upload.upload(target.pkg, label)
     return all_success
