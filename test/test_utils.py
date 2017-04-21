@@ -111,7 +111,6 @@ def multi_build(request, recipes_fixture):
         recipe_folder=recipes_fixture.basedir,
         docker_builder=docker_builder,
         config={},
-        disable_upload=True,
     )
     built_packages = recipes_fixture.pkgs
     yield built_packages
@@ -152,7 +151,7 @@ def single_upload():
         TRAVIS_BRANCH='master',
         TRAVIS_PULL_REQUEST='false')
     ):
-        upload.upload(pkg, label=TEST_LABEL)
+        upload.anaconda_upload(pkg, label=TEST_LABEL)
 
     yield (name, pkg, r.recipe_dirs[name])
 
@@ -215,7 +214,6 @@ def test_docker_build_fails(recipes_fixture):
         config={},
         docker_builder=docker_builder,
         mulled_test=True,
-        disable_upload=True,
     )
     assert not result
 
@@ -674,7 +672,6 @@ def test_skip_dependencies():
         testonly=False,
         force=False,
         mulled_test=False,
-        disable_upload=True,
     )
     assert os.path.exists(pkgs['one'])
     assert not os.path.exists(pkgs['two'])
@@ -687,7 +684,7 @@ def test_skip_dependencies():
 
 class TestSubdags(object):
     def _build(self, recipes_fixture):
-        build.build_recipes(recipes_fixture.basedir, config={}, mulled_test=False, disable_upload=True)
+        build.build_recipes(recipes_fixture.basedir, config={}, mulled_test=False)
 
     def test_subdags_out_of_range(self, recipes_fixture):
         with pytest.raises(ValueError):

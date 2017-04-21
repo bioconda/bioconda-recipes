@@ -21,7 +21,8 @@ def build(recipe,
           channels=None,
           docker_builder=None,
           disable_travis_env_vars=False,
-         ):
+          mulled_images=None,
+    ):
     """
     Build a single recipe for a single env
 
@@ -57,6 +58,10 @@ def build(recipe,
     disable_travis_env_vars : bool
         By default, any env vars starting with TRAVIS are sent to the Docker
         container. Use this to disable that behavior.
+
+    mulled_images : list
+        If mulled_test == True, the name of the mulled docker image will be
+        appended to this list.
     """
     env = dict(env)
     logger.info(
@@ -139,15 +144,16 @@ def build(recipe,
     res = pkg_test.test_package(pkg_path)
 
     # TODO remove the second clause once new galaxy-lib has been released.
-    if (res.returncode == 0) and (res.stdout.find('Unexpected exit code') == -1):
+    if (res.returncode == 0) and ('Unexpected exit code' not in res.stdout):
         logger.info("TEST SUCCESS %s, %s", recipe, utils.envstr(env))
-        logger.debug('STDOUT:\n%s', res.stdout)
-        logger.debug('STDERR:\n%s', res.stderr)
+
+        if mulled_images is not None:
+            mulled_images.append(pkg_test.get_image_name(pkg_path))
+
         return True
     else:
         logger.error('TEST FAILED: %s, %s', recipe, utils.envstr(env))
-        logger.error('STDOUT:\n%s', res.stdout)
-        logger.error('STDERR:\n%s', res.stderr)
+        logger.error('STDOUT+STDERR:\n%s', res.stdout)
         return False
 
 
@@ -160,7 +166,8 @@ def build_recipes(
     force=False,
     docker_builder=None,
     label=None,
-    disable_upload=False,
+    anaconda_upload=False,
+    mulled_upload_target=None,
     check_channels=None,
     quick=False,
     disable_travis_env_vars=False,
@@ -200,8 +207,11 @@ def build_recipes(
         Optional label to use when uploading packages. Useful for testing and
         debugging. Default is to use the "main" label.
 
-    disable_upload :  bool
-        If True, do not upload the package. Useful for testing.
+    anaconda_upload :  bool
+        If True, upload the package to anaconda.org.
+
+    mulled_upload_target : None
+        If not None, upload the mulled docker image to the given target on quay.io.
 
     check_channels : list
         Channels to check to see if packages already exist in them. If None,
@@ -318,7 +328,7 @@ def build_recipes(
 
     logger.info(
         "Building and testing subdag %s of %s (%s recipes)",
-        subdag_i, subdags_n, len(recipes)
+        subdag_i + 1, subdags_n, len(recipes)
     )
 
     failed = []
@@ -326,6 +336,7 @@ def build_recipes(
     skipped_recipes = []
     all_success = True
     skip_dependent = defaultdict(list)
+    mulled_images = []
 
     for recipe in recipes:
         recipe_success = True
@@ -350,7 +361,8 @@ def build_recipes(
                 mulled_test=mulled_test,
                 force=force,
                 channels=config['channels'],
-                docker_builder=docker_builder
+                docker_builder=docker_builder,
+                mulled_images=mulled_images,
             )
 
             all_success &= target_success
@@ -393,11 +405,13 @@ def build_recipes(
         "BUILD SUMMARY: successfully built %s of %s recipes",
         len(built_recipes), len(recipes))
 
-    if not testonly and not disable_upload:
-        # upload builds
-        if (os.environ.get("TRAVIS_BRANCH") == "master" and
-                os.environ.get("TRAVIS_PULL_REQUEST") == "false"):
+    if not testonly:
+        if anaconda_upload:
+            # upload builds
             for recipe in recipes:
                 for target in recipe_targets[recipe]:
-                    all_success &= upload.upload(target.pkg, label)
+                    all_success &= upload.anaconda_upload(target.pkg, label)
+        if mulled_upload_target:
+            for image in mulled_images:
+                upload.mulled_upload(image, mulled_upload_target)
     return all_success
