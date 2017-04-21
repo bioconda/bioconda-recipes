@@ -153,6 +153,7 @@ def build(recipe,
         return True
     else:
         logger.error('TEST FAILED: %s, %s', recipe, utils.envstr(env))
+        logger.error('STDOUT+STDERR:\n%s', res.stdout)
         return False
 
 
