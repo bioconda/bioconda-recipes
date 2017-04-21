@@ -1,6 +1,8 @@
 #!/bin/bash
 cp src/* $PREFIX/bin
 
+cp Rfam_for_miRDeep.fa $PREFIX/bin
+
 chmod +x $PREFIX/bin/bwa_sam_converter.pl
 chmod +x $PREFIX/bin/clip_adapters.pl
 chmod +x $PREFIX/bin/collapse_reads_md.pl
