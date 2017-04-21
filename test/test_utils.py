@@ -641,6 +641,8 @@ def test_env_sandboxing():
             #!/bin/bash
             if [[ -z $GITHUB_TOKEN ]]
             then
+                exit 0
+            else
                 echo "\$GITHUB_TOKEN has leaked into the build environment!"
                 exit 1
             fi
