@@ -5,7 +5,7 @@ set +u
 [[ -z $DOCKER_ARG ]] && DOCKER_ARG=""
 [[ -z $TRAVIS ]] && TRAVIS="false"
 [[ -z $BIOCONDA_UTILS_LINT_ARGS ]] && BIOCONDA_UTILS_LINT_ARGS=""
-[[ -z $RANGE_ARG ]] && RANGE_ARG="--git-range HEAD"
+[[ -z $RANGE_ARG ]] && RANGE_ARG="--git-range master HEAD"
 [[ -z $DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK  ]] && DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK="false"
 set -u
 
