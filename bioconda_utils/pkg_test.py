@@ -51,7 +51,34 @@ def get_tests(path):
     return tests
 
 
-def test_package(path, name_override=None, channels=["r", "defaults", "conda-forge"], mulled_args=""):
+def get_image_name(path):
+    """
+    Returns name of generated docker image.
+
+    Parameters
+    ----------
+
+    path : str
+        Path to .tar.by2 package build by conda-build
+
+    """
+    assert path.endswith('.tar.bz2')
+
+    pkg = os.path.basename(path).replace('.tar.bz2', '')
+    toks = pkg.split('-')
+    build_string = toks[-1]
+    version = toks[-2]
+    name = '-'.join(toks[:-2])
+
+    spec = '%s=%s--%s' % (name, version, build_string)
+    return spec
+
+
+def test_package(path,
+                 name_override=None,
+                 channels=["r", "defaults", "conda-forge"],
+                 mulled_args=""
+    ):
     """
     Tests a built package in a minimal docker container.
 
@@ -81,13 +108,7 @@ def test_package(path, name_override=None, channels=["r", "defaults", "conda-for
 
     sp.check_call(['conda', 'index', os.path.dirname(path)])
 
-    pkg = os.path.basename(path).replace('.tar.bz2', '')
-    toks = pkg.split('-')
-    build_string = toks[-1]
-    version = toks[-2]
-    name = '-'.join(toks[:-2])
-
-    spec = '%s=%s--%s' % (name, version, build_string)
+    spec = get_image_name(path)
 
     extra_channels = ['file:/{0}'.format(conda_bld_dir)]
     if channels is None:
@@ -99,9 +120,6 @@ def test_package(path, name_override=None, channels=["r", "defaults", "conda-for
 
     tests = get_tests(path)
     logger.debug('Tests to run: %s', tests)
-    # Path to a file where we store the push commands to push all containers to
-    # a Docker registry
-    push_containers = os.environ.get('CONTAINER_PUSH_COMMANDS_PATH', False)
 
     cmd = [
         'mulled-build',
@@ -114,14 +132,5 @@ def test_package(path, name_override=None, channels=["r", "defaults", "conda-for
         cmd += ['--name-override', name_override]
     cmd += channel_args
     cmd += shlex.split(mulled_args)
-    if push_containers:
-        try:
-            with open(push_containers, 'a+') as handle:
-                handle.write('mulled-build push %s -n biocontainers\n' % (spec))
-            logger.debug('Container push commands have been written to "%s"', push_containers)
-        except:
-            logger.error('Could not write container push commands to "%s"', push_containers)
-    else:
-        logger.debug('No container push commands are generated')
     logger.debug('mulled-build command: %s' % cmd)
     return utils.run(cmd)

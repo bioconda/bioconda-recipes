@@ -4,7 +4,7 @@ import logging
 from . import utils
 logger = logging.getLogger(__name__)
 
-def upload(package, token=None, label=None):
+def anaconda_upload(package, token=None, label=None):
     """
     Upload a package to anaconda.
 
@@ -57,3 +57,7 @@ def upload(package, token=None, label=None):
             logger.error('UPLOAD ERROR: command: %s', e.cmd)
             logger.error('UPLOAD ERROR: stdout+stderr: %s', e.stdout)
             raise e
+
+
+def mulled_upload(image, quay_target):
+    return utils.run(['mulled-build', 'push', image, '-n', quay_target])

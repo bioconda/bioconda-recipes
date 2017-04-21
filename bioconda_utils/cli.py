@@ -79,6 +79,12 @@ def setup_logger(loglevel):
      requests from forks will not have access to encrypted variables on
      travis-ci, so this feature may be of limited use.''')
 @arg('--commit', help='Commit on github on which to update status')
+@arg('--push-comment', action='store_true', help='''If set, the lint status
+     will be posted as a comment in the corresponding pull request (given by
+     --pull-request). Also needs --user and --repo to be set. Requires the env
+     var GITHUB_TOKEN to be set.''')
+@arg('--pull-request', type=int, help='''Pull request id on github on which to
+     post a comment.''')
 @arg('--user', help='Github user')
 @arg('--repo', help='Github repo')
 @arg('--git-range', nargs='+',
@@ -92,7 +98,9 @@ def setup_logger(loglevel):
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
 def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
          only=None, exclude=None, push_status=False, user='bioconda',
-         commit=None, repo='bioconda-recipes', git_range=None, full_report=False, loglevel='info'):
+         commit=None, push_comment=False, pull_request=None,
+         repo='bioconda-recipes', git_range=None, full_report=False,
+         loglevel='info'):
     """
     Lint recipes
 
@@ -123,8 +131,8 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
             return
-        recipes = [os.path.dirname(f) for f in modified if os.path.basename(f) == 'meta.yaml']
-        logger.info('Recipes with modified meta.yaml files according to git: {}'.format('\n '.join(recipes)))
+        recipes = [os.path.dirname(f) for f in modified if os.path.basename(f) == 'meta.yaml' and os.path.exists(f)]
+        logger.info('Recipes to consider according to git: {}'.format('\n '.join(recipes)))
 
     report = linting.lint(
         recipes,
@@ -137,10 +145,10 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
     # The returned dataframe is in tidy format; summarize a bit to get a more
     # reasonable log
     if report is not None:
+        pandas.set_option('max_colwidth', 500)
+        summarized = pandas.DataFrame(
+            dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
         if not full_report:
-            pandas.set_option('max_colwidth', 500)
-            summarized = pandas.DataFrame(
-                dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
             logger.error('\n\nThe following recipes failed linting. See '
                          'https://bioconda.github.io/linting.html for details:\n\n%s\n',
                          summarized.to_string())
@@ -151,13 +159,21 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
             github_integration.update_status(
                 user, repo, commit, state='error', context='linting',
                 description='linting failed, see travis log', target_url=None)
+        if push_comment:
+            msg = linting.markdown_report(summarized)
+            github_integration.push_comment(
+                user, repo, pull_request, msg)
         sys.exit(1)
 
     else:
         if push_status:
-            update_status(
+            github_integration.update_status(
                 user, repo, commit, state='success', context='linting',
                 description='linting passed', target_url=None)
+        if push_comment:
+            msg = linting.markdown_report()
+            github_integration.push_comment(
+                user, repo, pull_request, msg)
 
 
 
@@ -181,6 +197,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
      help='Build packages in docker container.')
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
 @arg('--mulled-test', action='store_true', help="Run a mulled-build test on the built package")
+@arg('--mulled-upload-target', help="Provide a quay.io target to push mulled docker images to.")
 @arg('--build_script_template', help='''Filename to optionally replace build
      script template used by the Docker container. By default use
      docker_utils.BUILD_SCRIPT_TEMPLATE. Only used if --docker is True.''')
@@ -196,6 +213,8 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
 @arg('--disable-travis-env-vars', action='store_true', help='''By default, any
      environment variables starting with TRAVIS are sent to the Docker
      container. Use this flag to disable that behavior.''')
+@arg('--anaconda-upload', action='store_true', help='''After building recipes, upload
+     them to Anaconda. This requires $ANACONDA_TOKEN to be set.''')
 def build(recipe_folder,
           config,
           packages="*",
@@ -210,7 +229,9 @@ def build(recipe_folder,
           conda_build_version=docker_utils.DEFAULT_CONDA_BUILD_VERSION,
           quick=False,
           disable_travis_env_vars=False,
-          ):
+          anaconda_upload=False,
+          mulled_upload_target=None,
+    ):
     setup_logger(loglevel)
 
     cfg = utils.load_config(config)
@@ -267,6 +288,8 @@ def build(recipe_folder,
         docker_builder=docker_builder,
         quick=quick,
         disable_travis_env_vars=disable_travis_env_vars,
+        anaconda_upload=anaconda_upload,
+        mulled_upload_target=mulled_upload_target,
     )
     exit(0 if success else 1)
 
