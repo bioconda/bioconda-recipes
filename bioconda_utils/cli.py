@@ -114,12 +114,12 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
             sys.stderr.write('No valid linting functions selected, exiting.\n')
             sys.exit(1)
 
-    # returns recipe_folder/package
-    recipes = list(utils.get_recipes(recipe_folder, package=packages))
+    config_filename = config
+    config = utils.load_config(config)
 
     if git_range:
         # returns recipe_folder/package/meta.yaml
-        modified = utils.modified_recipes(git_range, recipe_folder, config, full=True)
+        modified = utils.modified_recipes(git_range, recipe_folder, config_filename, full=True)
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
             return

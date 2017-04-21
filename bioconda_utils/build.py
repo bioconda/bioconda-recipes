@@ -270,7 +270,7 @@ def build_recipes(
     )
     recipes = list(recipe_targets.keys())
 
-    dag, name2recipes = utils.get_dag(recipes, blacklist=blacklist)
+    dag, name2recipes = utils.get_dag(recipes, config=orig_config, blacklist=blacklist)
     recipe2name = {}
     for k, v in name2recipes.items():
         for i in v:

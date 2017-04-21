@@ -47,6 +47,24 @@ def temp_env(env):
         os.environ.update(orig)
 
 
+def load_meta(recipe, config):
+    """
+    For each environment, yield the rendered meta.yaml
+    """
+    cfg = load_config(config)
+    env_matrix = EnvMatrix(cfg['env_matrix'])
+    for env in env_matrix:
+        with temp_env(env):
+            # Disabling set_build_id prevents the creation of uniquely-named work
+            # directories just for checking the output file.
+            # It needs to be done within the context manager so that it sees the
+            # os.environ.
+            config_obj = api.Config(
+                no_download_source=True,
+                set_build_id=False)
+            yield api.render(recipe, config_obj)[0].meta
+
+
 @contextlib.contextmanager
 def temp_os(platform):
     """
@@ -156,7 +174,7 @@ class EnvMatrix:
             yield env
 
 
-def get_deps(recipe, build=True):
+def get_deps(recipe, config, build=True):
     """
     Generator of dependencies for a single recipe
 
@@ -172,15 +190,19 @@ def get_deps(recipe, build=True):
         If True yield build dependencies, if False yield run dependencies.
     """
     if isinstance(recipe, str):
-        metadata = MetaData(recipe)
+        metadata = load_meta(recipe, config)
     else:
         metadata = recipe
-    for dep in metadata.get_value(
-            "requirements/{}".format("build" if build else "run"), []):
+    reqs = metadata.get('requirements', {})
+    if build:
+        deps = reqs.get('build', [])
+    else:
+        deps = reqs.get('run', [])
+    for dep in deps:
         yield dep.split()[0]
 
 
-def get_dag(recipes, blacklist=None, restrict=True):
+def get_dag(recipes, config, blacklist=None, restrict=True):
     """
     Returns the DAG of recipe paths and a dictionary that maps package names to
     lists of recipe paths to all defined versions of the package.  defined
@@ -210,14 +232,18 @@ def get_dag(recipes, blacklist=None, restrict=True):
         values are lists and contain paths to all defined versions.
     """
     recipes = list(recipes)
-    metadata = [MetaData(recipe) for recipe in recipes]
+    metadata = []
+    for recipe in sorted(recipes):
+        print(recipe)
+        for r in list(load_meta(recipe, config)):
+            metadata.append((r, recipe))
     if blacklist is None:
         blacklist = set()
 
     # meta.yaml's package:name mapped to the recipe path
     name2recipe = defaultdict(list)
-    for meta, recipe in zip(metadata, recipes):
-        name = meta.get_value('package/name')
+    for meta, recipe in metadata:
+        name = meta['package']['name']
         if name not in blacklist:
             name2recipe[name].append(recipe)
 
@@ -228,13 +254,13 @@ def get_dag(recipes, blacklist=None, restrict=True):
                 yield name
 
     dag = nx.DiGraph()
-    dag.add_nodes_from(meta.get_value("package/name") for meta in metadata)
-    for meta in metadata:
-        name = meta.get_value("package/name")
+    dag.add_nodes_from(meta['package']['name'] for meta, recipe in metadata)
+    for meta, recipe in metadata:
+        name = meta['package']['name']
         dag.add_edges_from((dep, name)
                            for dep in set(get_inner_deps(chain(
-                               get_deps(meta),
-                               get_deps(meta,
+                               get_deps(meta, config=config),
+                               get_deps(meta, config=config,
                                         build=False)))))
 
     return dag, name2recipe
