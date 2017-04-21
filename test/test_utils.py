@@ -653,7 +653,7 @@ def test_env_sandboxing():
         env={},
         mulled_test=False
     )
-    pkg = utils.build_package_path(r.recipe_dirs['one'])
+    pkg = utils.built_package_path(r.recipe_dirs['one'])
     assert os.path.exists(pkg)
     ensure_missing(pkg)
 
