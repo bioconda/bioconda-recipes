@@ -629,6 +629,35 @@ def test_string_or_float_to_integer_python():
     assert f(27) == f('27') == f(2.7) == f('2.7') == 27
 
 
+def test_env_sandboxing():
+    r = Recipes(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: 0.1
+          build.sh: |
+            #!/bin/bash
+            if [[ -z $GITHUB_TOKEN ]]
+            then
+                echo "\$GITHUB_TOKEN has leaked into the build environment!"
+                exit 1
+            fi
+    """, from_string=True)
+    r.write_recipes()
+
+    build.build(
+        recipe=r.recipe_dirs['one'],
+        recipe_folder='.',
+        env={},
+        mulled_test=False
+    )
+    pkg = utils.build_package_path(r.recipe_dirs['one'])
+    assert os.path.exists(pkg)
+    ensure_missing(pkg)
+
+
 def test_skip_dependencies():
     r = Recipes(
         """
