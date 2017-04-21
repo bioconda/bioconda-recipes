@@ -94,7 +94,7 @@ def get_meta(recipe, config):
     jinja_env = jinja2.Environment()
     content = jinja_env.from_string(
         open(pth, 'r', encoding='utf-8').read()).render(env)
-    meta = yaml.load(content, yaml.RoundTripLoader)
+    meta = yaml.round_trip_load(content, preserve_quotes=True)
     return meta
 
 
@@ -246,3 +246,18 @@ def lint(packages, config, df, exclude=None, registry=None):
         return report
     else:
         return
+
+
+def bump_build_number(d):
+    """
+    Increase the build number of a recipe, adding the relevant keys if needed.
+
+    d : dict-like
+        Parsed meta.yaml, from get_meta()
+    """
+    if 'build' not in d:
+        d['build'] = {'number': 0}
+    elif 'number' not in d['build']:
+        d['build']['number'] = 0
+    d['build']['number'] += 1
+    return d
