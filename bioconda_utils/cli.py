@@ -126,8 +126,19 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
         recipes = [os.path.dirname(f) for f in modified if os.path.basename(f) == 'meta.yaml']
         logger.info('Recipes with modified meta.yaml files according to git: {}'.format('\n '.join(recipes)))
 
+    blacklist = utils.get_blacklist(config['blacklists'], recipe_folder)
+    _recipes = []
+    for package in packages:
+        for recipe in recipes:
+            if os.path.relpath(recipe, recipe_folder) in blacklist:
+                logger.debug('blacklisted: %s', recipe)
+                continue
+            _recipes.append(recipe)
+            logger.debug(recipe)
+
+
     report = linting.lint(
-        recipes,
+        _recipes,
         config=config,
         df=df,
         exclude=exclude,
@@ -239,7 +250,7 @@ def build(recipe_folder,
         docker_builder = None
 
     # handle git range
-    if git_range:
+    if git_range and not force:
         modified = utils.modified_recipes(git_range, recipe_folder, config, full=True)
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
