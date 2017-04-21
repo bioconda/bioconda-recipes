@@ -1,12 +1,14 @@
 #!/bin/bash
 
-cd src
-make
 
 mkdir -p $PREFIX/bin
-cp freec $PREFIX/bin
+
 for f in scripts/*
 do
+    chmod +x $f
     cp $f $PREFIX/bin
 done
 
+cd src
+make
+cp freec $PREFIX/bin
