@@ -1,0 +1,34 @@
+package:
+  name: samtools
+  version: "1.2"
+
+build:
+  number: 3
+
+source:
+  fn: samtools-1.2.tar.bz2
+  url: https://github.com/samtools/samtools/releases/download/1.2/samtools-1.2.tar.bz2
+  sha256: 420e7a4a107fe37619b9d300b6379452eb8eb04a4a9b65c3ec69de82ccc26daa
+
+requirements:
+  build:
+  - gcc >=4.8 # [linux]
+  - llvm # [osx]
+  - ncurses {{CONDA_NCURSES}}*
+  - zlib
+  - curl
+  run:
+  - libgcc # [not osx]
+  - ncurses {{CONDA_NCURSES}}*
+  - zlib
+  - curl
+
+about:
+  home: https://github.com/samtools/samtools
+  license: MIT
+  summary: Tools for dealing with SAM, BAM and CRAM files
+
+test:
+  commands:
+    - "samtools view --help 2>&1 | grep Notes > /dev/null"
+    - "if [ ! $(ldd  $(which samtools) | grep -c -E '/lib/[^/]+/libncurses.so') -eq 0 ]; then echo 'WARNING: samtools is linked to system ncurses'; fi"
