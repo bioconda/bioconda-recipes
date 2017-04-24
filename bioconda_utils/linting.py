@@ -89,7 +89,8 @@ def get_meta(recipe, config):
     # TODO: Currently just uses the first env. Should turn this into
     # a generator.
 
-    env = dict(next(iter(utils.EnvMatrix(yaml.load(open(env_matrix))))))
+    env = dict(next(iter(utils.EnvMatrix(cfg['env_matrix']))))
+
     pth = os.path.join(recipe, 'meta.yaml')
     jinja_env = jinja2.Environment()
     content = jinja_env.from_string(
