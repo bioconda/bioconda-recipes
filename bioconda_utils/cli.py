@@ -49,6 +49,45 @@ def setup_logger(loglevel):
     l.setLevel(getattr(logging, loglevel.upper()))
     l.addHandler(log_stream_handler)
 
+
+def select_recipes(packages, git_range, recipe_folder, config_filename, config, force):
+    if git_range:
+        modified = utils.modified_recipes(git_range, recipe_folder, config_filename)
+        if not modified:
+            logger.info('No recipe modified according to git, exiting.')
+            return
+
+        # Recipes with changed `meta.yaml` or `build.sh` files
+        changed_recipes = [
+            os.path.dirname(f) for f in modified
+            if os.path.basename(f) in ['meta.yaml', 'build.sh']
+            and os.path.exists(f)
+        ]
+        logger.info('Recipes to consider according to git: \n{}'.format('\n '.join(changed_recipes)))
+    else:
+        changed_recipes = []
+
+    blacklisted_recipes = utils.get_blacklist(config['blacklists'], recipe_folder)
+
+    selected_recipes = list(utils.get_recipes(recipe_folder, packages))
+    _recipes = []
+    for recipe in selected_recipes:
+        if force:
+            _recipes.append(recipe)
+            logger.debug('forced: %s', recipe)
+            continue
+        if recipe in blacklisted_recipes:
+            logger.debug('blacklisted: %s', recipe)
+            continue
+        if git_range:
+            if not recipe in changed_recipes:
+                continue
+        _recipes.append(recipe)
+        logger.debug(recipe)
+
+    logger.info('Recipes to lint:\n{}'.format('\n '.join(_recipes)))
+    return _recipes
+
 # NOTE:
 #
 # A package is the name of the software package, like `bowtie`.
@@ -125,37 +164,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
     config_filename = config
     config = utils.load_config(config)
 
-    if git_range:
-        modified = utils.modified_recipes(git_range, recipe_folder, config_filename)
-        if not modified:
-            logger.info('No recipe modified according to git, exiting.')
-            return
-
-        # Recipes with changed `meta.yaml` or `build.sh` files
-        changed_recipes = [
-            os.path.dirname(f) for f in modified
-            if os.path.basename(f) in ['meta.yaml', 'build.sh']
-            and os.path.exists(f)
-        ]
-        logger.info('Recipes to consider according to git: \n{}'.format('\n '.join(changed_recipes)))
-    else:
-        changed_recipes = []
-
-    blacklisted_recipes = utils.get_blacklist(config['blacklists'], recipe_folder)
-
-    selected_recipes = list(utils.get_recipes(recipe_folder, packages))
-    _recipes = []
-    for recipe in selected_recipes:
-        if recipe in blacklisted_recipes:
-            logger.debug('blacklisted: %s', recipe)
-            continue
-        if git_range:
-            if not recipe in changed_recipes:
-                continue
-        _recipes.append(recipe)
-        logger.debug(recipe)
-
-    logger.info('Recipes to lint:\n{}'.format('\n '.join(_recipes)))
+    _recipes = select_recipes(packages, git_range, recipe_folder, config_filename, config, force)
 
     report = linting.lint(
         _recipes,
