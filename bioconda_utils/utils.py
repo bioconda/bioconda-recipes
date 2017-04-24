@@ -676,6 +676,15 @@ def validate_config(config):
 
 
 def load_config(path):
+    """
+    Parses config file, building paths to relevant blacklists and loading any
+    specified env_matrix files.
+
+    Parameters
+    ----------
+    path : str
+        Path to YAML config file
+    """
     validate_config(path)
 
     if isinstance(path, dict):
@@ -714,7 +723,9 @@ def load_config(path):
 
 def modified_recipes(git_range, recipe_folder, config_file):
     """
-    Returns recipes modified within the git range.
+    Returns files under the recipes dir that have been modified within the git
+    range. Includes meta.yaml files for recipes that have been unblacklisted in
+    the git range. Filenames are returned with the `recipe_folder` included.
 
     git_range : list or tuple of length 1 or 2
         For example, ['00232ffe', '10fab113'], or commonly ['master', 'HEAD']
@@ -744,10 +755,10 @@ def modified_recipes(git_range, recipe_folder, config_file):
             os.path.join(recipe_folder, '*', '*')
         ]
     )
-    shell = False
 
-    # git expands globs only in versions >2, so if it's older than that we need
-    # to run the command using shell=True so that globs are expanded.
+    # In versions >2 git expands globs. But if it's older than that we need to
+    # run the command using shell=True to get the shell to expand globs.
+    shell = False
     p = run(['git', '--version'])
     matches = re.match(r'^git version (?P<version>[\d\.]*)(?:.*)$',p.stdout)
     git_version = matches.group("version")

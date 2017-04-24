@@ -82,6 +82,14 @@ def get_meta(recipe, config):
     """
     Given a package name, find the current meta.yaml file, parse it, and return
     the dict.
+
+    Parameters
+    ----------
+    recipe : str
+        Path to recipe (directory containing the meta.yaml file)
+
+    config : str or dict
+        Config YAML or dict
     """
     cfg = utils.load_config(config)
     env_matrix = cfg['env_matrix']
@@ -101,6 +109,18 @@ def get_meta(recipe, config):
 
 def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
                                             'defaults', 'r']):
+    """
+    Return channel info as a dataframe.
+
+    Parameters
+    ----------
+
+    cache : str
+        Filename of cached channel info
+
+    channels : list
+        Channels to include in the dataframe
+    """
     if cache is not None and os.path.exists(cache):
         df = pd.read_table(cache)
     else:
@@ -207,11 +227,13 @@ def lint(recipes, config, df, exclude=None, registry=None):
         skip_dict[recipe].append(func)
 
     hits = []
-        # lint functions need a parsed meta.yaml so this can't be a lint
-        # function. TODO: do we need a way to skip this the same way we can
-        # skip lint functions? I can't think of a reason we'd want to keep an
-        # unparseable YAML.
     for recipe in recipes:
+        # Since lint functions need a parsed meta.yaml, checking for parsing
+        # errors can't be a lint function.
+        #
+        # TODO: do we need a way to skip this the same way we can skip lint
+        # functions? I can't think of a reason we'd want to keep an unparseable
+        # YAML.
         try:
             meta = get_meta(recipe, config)
         except (
@@ -250,12 +272,22 @@ def lint(recipes, config, df, exclude=None, registry=None):
 
 
 def markdown_report(report=None):
+    """
+    Return a rendered Markdown string.
+
+    Parameters
+    ----------
+    report : None or pandas.DataFrame
+        If None, linting assumed to be successful. If dataframe, it's provided
+        to the lint failure template.
+    """
     if report is None:
         tmpl = utils.jinja.get_template("lint_success.md")
         return tmpl.render()
     else:
         tmpl = utils.jinja.get_template("lint_failure.md")
         return tmpl.render(report=report)
+
 
 def bump_build_number(d):
     """
