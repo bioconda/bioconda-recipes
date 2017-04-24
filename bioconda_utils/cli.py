@@ -126,8 +126,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
     config = utils.load_config(config)
 
     if git_range:
-        # returns recipe_folder/package/meta.yaml
-        modified = utils.modified_recipes(git_range, recipe_folder, config_filename, full=True)
+        modified = utils.modified_recipes(git_range, recipe_folder, config_filename)
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
             return
@@ -272,7 +271,7 @@ def build(recipe_folder,
 
     # handle git range
     if git_range and not force:
-        modified = utils.modified_recipes(git_range, recipe_folder, config, full=True)
+        modified = utils.modified_recipes(git_range, recipe_folder, config)
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
             exit(0)

@@ -712,7 +712,7 @@ def load_config(path):
     return default_config
 
 
-def modified_recipes(git_range, recipe_folder, config_file, full=False):
+def modified_recipes(git_range, recipe_folder, config_file):
     """
     Returns recipes modified within the git range.
 
@@ -724,9 +724,6 @@ def modified_recipes(git_range, recipe_folder, config_file, full=False):
 
     recipe_folder : str
         Top-level recipes dir in which to search for meta.yaml files.
-
-    full : bool
-        If True, include the recipe_folder in the path
     """
     orig_git_range = git_range[:]
     if len(git_range) == 2:
@@ -779,6 +776,4 @@ def modified_recipes(git_range, recipe_folder, config_file, full=False):
     unblacklisted = [os.path.join(recipe_folder, i, 'meta.yaml') for i in unblacklisted]
     existing += unblacklisted
 
-    if full:
-        return existing
-    return [os.path.relpath(recipe_folder, m) for m in existing]
+    return existing
