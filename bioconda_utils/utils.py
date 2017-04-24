@@ -199,8 +199,15 @@ def get_deps(recipe, config, build=True):
     """
     if isinstance(recipe, str):
         metadata = load_meta(recipe, config)
+
+        # TODO: This function is currently used only for creating DAGs, but it's
+        # unclear how to manage different dependencies depending on the
+        # particular environment. For now, just use the first environment.
+        metadata = list(metadata)
+        metadata = metadata[0]
     else:
         metadata = recipe
+
     reqs = metadata.get('requirements', {})
     if build:
         deps = reqs.get('build', [])
