@@ -223,8 +223,9 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
      be built if not present in the channel.''')
 @arg('--testonly', help='Test packages instead of building')
 @arg('--force',
-     help='Force building the recipe even if it already exists in '
-     'the bioconda channel')
+     help='''Force building the recipe even if it already exists in the
+     bioconda channel. If --force is specified, --git-range is ignored and only
+     those packages matching --packages globs will be built.''')
 @arg('--docker', action='store_true',
      help='Build packages in docker container.')
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
