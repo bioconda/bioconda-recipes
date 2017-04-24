@@ -169,7 +169,6 @@ def build_recipes(
     anaconda_upload=False,
     mulled_upload_target=None,
     check_channels=None,
-    quick=False,
     disable_travis_env_vars=False,
 ):
     """
@@ -219,10 +218,6 @@ def build_recipes(
         `config['channels'][0]`). If this list is empty, then do not check any
         channels.
 
-    quick : bool
-        Speed up recipe filtering by only checking those that are reasonably
-        new.
-
     disable_travis_env_vars : bool
         By default, any env vars starting with TRAVIS are sent to the Docker
         container. Use this to disable that behavior.
@@ -255,23 +250,6 @@ def build_recipes(
         return True
 
     logger.debug('recipes: %s', recipes)
-    if quick:
-        if not isinstance(orig_config, str):
-            raise ValueError("Need a config filename (and not a dict) for "
-                             "quick filtering since we need to check that "
-                             "file in the master branch")
-        unblacklisted = [
-            os.path.join(recipe_folder, i)
-            for i in utils.newly_unblacklisted(orig_config, recipe_folder)
-        ]
-        logger.debug('Unblacklisted: %s', unblacklisted)
-        changed = [
-            os.path.join(recipe_folder, i) for i in
-            utils.changed_since_master(recipe_folder)
-        ]
-        logger.debug('Changed: %s', changed)
-        recipes = set(unblacklisted + changed).intersection(recipes)
-        logger.debug('Quick-filtered recipes: %s', recipes)
 
     logger.info('Filtering recipes')
     recipe_targets = dict(
