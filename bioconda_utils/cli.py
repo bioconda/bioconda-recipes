@@ -130,19 +130,32 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
             return
-        recipes = [os.path.dirname(f) for f in modified if os.path.basename(f) == 'meta.yaml' and os.path.exists(f)]
-        logger.info('Recipes to consider according to git: {}'.format('\n '.join(recipes)))
 
-    blacklist = utils.get_blacklist(config['blacklists'], recipe_folder)
+        # Recipes with changed `meta.yaml` or `build.sh` files
+        changed_recipes = [
+            os.path.dirname(f) for f in modified
+            if os.path.basename(f) in ['meta.yaml', 'build.sh']
+            and os.path.exists(f)
+        ]
+        logger.info('Recipes to consider according to git: \n{}'.format('\n '.join(changed_recipes)))
+    else:
+        changed_recipes = []
+
+    blacklisted_recipes = utils.get_blacklist(config['blacklists'], recipe_folder)
+
+    selected_recipes = list(utils.get_recipes(recipe_folder, packages))
     _recipes = []
-    for package in packages:
-        for recipe in recipes:
-            if os.path.relpath(recipe, recipe_folder) in blacklist:
-                logger.debug('blacklisted: %s', recipe)
+    for recipe in selected_recipes:
+        if recipe in blacklisted_recipes:
+            logger.debug('blacklisted: %s', recipe)
+            continue
+        if git_range:
+            if not recipe in changed_recipes:
                 continue
-            _recipes.append(recipe)
-            logger.debug(recipe)
+        _recipes.append(recipe)
+        logger.debug(recipe)
 
+    logger.info('Recipes to lint:\n{}'.format('\n '.join(_recipes)))
 
     report = linting.lint(
         _recipes,
