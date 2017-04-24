@@ -132,13 +132,13 @@ def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
     return df
 
 
-def lint(packages, config, df, exclude=None, registry=None):
+def lint(recipes, config, df, exclude=None, registry=None):
     """
     Parameters
     ----------
 
-    packages : list
-        List of packages to lint
+    recipes : list
+        List of recipes to lint
 
     config : str, dict
         Used to pass any necessary environment variables (CONDA_BOOST, etc) to
@@ -201,17 +201,17 @@ def lint(packages, config, df, exclude=None, registry=None):
 
     if exclude is not None:
         # exclude arg is used to skip test for *all* packages
-        to_skip += list(itertools.product(exclude, packages))
+        to_skip += list(itertools.product(exclude, recipes))
 
     for func, recipe in to_skip:
         skip_dict[recipe].append(func)
 
     hits = []
-    for recipe in packages:
         # lint functions need a parsed meta.yaml so this can't be a lint
         # function. TODO: do we need a way to skip this the same way we can
         # skip lint functions? I can't think of a reason we'd want to keep an
         # unparseable YAML.
+    for recipe in recipes:
         try:
             meta = get_meta(recipe, config)
         except (
