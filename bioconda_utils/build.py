@@ -63,7 +63,13 @@ def build(recipe,
         If mulled_test == True, the name of the mulled docker image will be
         appended to this list.
     """
-    env = dict(env)
+    env = dict(env).copy()
+
+    # see https://github.com/bioconda/bioconda-recipes/issues/3271
+    if not disable_travis_env_vars:
+        for k, v in os.environ.items():
+            if k.startswith('TRAVIS'):
+                env[k] = v
     logger.info(
         "BUILD START %s, env: %s",
         recipe, ';'.join(['='.join(map(str, i)) for i in sorted(env.items())])
@@ -92,17 +98,10 @@ def build(recipe,
         # want to add TRAVIS* vars if that behavior is not disabled.
         if docker_builder is not None:
 
-            # see https://github.com/bioconda/bioconda-recipes/issues/3271
-            docker_env = env.copy()
-            if not disable_travis_env_vars:
-                for k, v in os.environ.items():
-                    if k.startswith('TRAVIS'):
-                        docker_env[k] = v
-
             response = docker_builder.build_recipe(
                 recipe_dir=os.path.abspath(recipe),
                 build_args=' '.join(channel_args + build_args),
-                env=docker_env
+                env=env
             )
 
             pkg = utils.built_package_path(recipe, env)
@@ -113,6 +112,7 @@ def build(recipe,
                 return False
             build_success = True
         else:
+
             # Temporarily reset os.environ to avoid leaking env vars to
             # conda-build, and explicitly provide `env` to `run()`
             with utils.temp_env(env):
