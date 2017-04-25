@@ -116,10 +116,10 @@ def build(recipe,
 
             # Temporarily reset os.environ to avoid leaking env vars to
             # conda-build, and explicitly provide `env` to `run()`
-            with utils.temp_env(env):
+            with utils.sandboxed_env(_env):
                 cmd = CONDA_BUILD_CMD + build_args + channel_args + [recipe]
                 logger.debug('command: %s', cmd)
-                p = utils.run(cmd, env=env)
+                p = utils.run(cmd, env=os.environ)
 
             build_success = True
 
