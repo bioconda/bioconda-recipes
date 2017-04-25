@@ -113,12 +113,12 @@ def build(recipe,
                 return False
             build_success = True
         else:
-            # Since we're calling out to shell and we want to send at least
-            # some env vars send them all via the temporarily-reset os.environ.
+            # Temporarily reset os.environ to avoid leaking env vars to
+            # conda-build, and explicitly provide `env` to `run()`
             with utils.temp_env(env):
                 cmd = CONDA_BUILD_CMD + build_args + channel_args + [recipe]
                 logger.debug('command: %s', cmd)
-                p = utils.run(cmd, env=os.environ)
+                p = utils.run(cmd, env=env)
 
             build_success = True
 
