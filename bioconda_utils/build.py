@@ -70,6 +70,7 @@ def build(recipe,
         for k, v in os.environ.items():
             if k.startswith('TRAVIS'):
                 env[k] = v
+    env['PATH'] = os.environ['PATH']
     logger.info(
         "BUILD START %s, env: %s",
         recipe, ';'.join(['='.join(map(str, i)) for i in sorted(env.items())])
