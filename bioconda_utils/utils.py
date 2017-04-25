@@ -3,6 +3,7 @@
 import os
 import re
 import glob
+import fnmatch
 import subprocess as sp
 import sys
 import shutil
@@ -33,6 +34,18 @@ jinja = Environment(
     lstrip_blocks=True
 )
 
+# Patterns of allowed environment variables that are allowed to be passed to
+# conda-build.
+ENV_VAR_WHITELIST = [
+    'TRAVIS_*',
+    'CONDA_*',
+    'PATH',
+]
+
+def allowed_env_var(s):
+    for pattern in ENV_VAR_WHITELIST:
+        if fnmatch.fnmatch(s, pattern):
+            return True
 
 @contextlib.contextmanager
 def temp_env(env):
@@ -48,6 +61,27 @@ def temp_env(env):
     orig = os.environ.copy()
     _env = {k: str(v) for k, v in env.items()}
     os.environ.update(_env)
+    try:
+        yield
+    finally:
+        os.environ.clear()
+        os.environ.update(orig)
+
+
+@contextlib.contextmanager
+def sandboxed_env(env):
+    """
+    Context manager to temporarily set os.environ, only allowing env vars from
+    the existing `os.environ` or the provided `env` that match
+    ENV_VAR_WHITELIST globs.
+    """
+    env = dict(env)
+    orig = os.environ.copy()
+
+    _env = {k: str(v) for k, v in env.items() if allowed_env_var(k)}
+
+    os.environ = _env
+
     try:
         yield
     finally:
