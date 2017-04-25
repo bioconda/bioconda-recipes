@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cert-sync $PREFIX/ssl/cacert.pem
+
 $PYTHON setup.py install 
 
 # Add more build steps here, if they are necessary.
