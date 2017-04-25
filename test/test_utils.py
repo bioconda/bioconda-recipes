@@ -631,7 +631,7 @@ def test_string_or_float_to_integer_python():
     assert f(27) == f('27') == f(2.7) == f('2.7') == 27
 
 
-def test_rendering_sandboxing():
+def test_rendering_sandboxing(caplog):
     r = Recipes(
         """
         one:
@@ -640,28 +640,71 @@ def test_rendering_sandboxing():
               name: one
               version: 0.1
             extra:
-              token: {{ GITHUB_TOKEN }}
-
+              var: {{ GITHUB_TOKEN }}
     """, from_string=True)
+
     r.write_recipes()
     env = {
+        # First two are allowed, last two are not
+        'CONDA_ARBITRARY_VAR': 'conda-val-here',
+        'TRAVIS_ARBITRARY_VAR': 'travis-val-here',
         'GITHUB_TOKEN': 'asdf',
+        'BUILDKITE_TOKEN': 'asdf',
     }
-    build.build(
+
+    # recipe for "one" should fail because GITHUB_TOKEN is not a jinja var.
+    res = build.build(
         recipe=r.recipe_dirs['one'],
         recipe_folder='.',
         env=env,
         mulled_test=False
     )
+    assert "Undefined Jinja2 variables remain (['GITHUB_TOKEN']).  Please enable source downloading and try again." in caplog.text
 
-    pkg = utils.built_package_path(r.recipe_dirs['one'], env=env)
+    r = Recipes(
+        """
+        two:
+          meta.yaml: |
+            package:
+              name: two
+              version: 0.1
+            extra:
+              var1: {{ TRAVIS_ARBITRARY_VAR }}
+              var2: {{ CONDA_ARBITRARY_VAR }}
+
+    """, from_string=True)
+    r.write_recipes()
+    pkg = utils.built_package_path(r.recipe_dirs['two'], env=env)
+    ensure_missing(pkg)
+    res = build.build(
+        recipe=r.recipe_dirs['two'],
+        recipe_folder='.',
+        env=env,
+        mulled_test=False
+    )
+
     t = tarfile.open(pkg)
     tmp = tempfile.mkdtemp()
     target = 'info/recipe/meta.yaml'
     t.extract(target, path=tmp)
     contents = yaml.load(open(os.path.join(tmp, target)).read())
-    assert contents['extra']['token'] == 'asdf', contents
+    assert contents['extra']['var1'] == 'travis-val-here', contents
+    assert contents['extra']['var2'] == 'conda-val-here', contents
 
+
+def test_sandboxed():
+    env = {
+        'CONDA_ARBITRARY_VAR': 'conda-val-here',
+        'TRAVIS_ARBITRARY_VAR': 'travis-val-here',
+        'GITHUB_TOKEN': 'asdf',
+        'BUILDKITE_TOKEN': 'asdf',
+    }
+    with utils.sandboxed_env(env):
+        print(os.environ)
+        assert os.environ['CONDA_ARBITRARY_VAR'] == 'conda-val-here'
+        assert os.environ['TRAVIS_ARBITRARY_VAR'] == 'travis-val-here'
+        assert 'GITHUB_TOKEN' not in os.environ
+        assert 'BUILDKITE_TOKEN' not in os.environ
 
 def test_env_sandboxing():
     r = Recipes(
