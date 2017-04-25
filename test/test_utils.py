@@ -6,6 +6,8 @@ import tempfile
 import requests
 import uuid
 import contextlib
+import tarfile
+
 from bioconda_utils import utils
 from bioconda_utils import pkg_test
 from bioconda_utils import docker_utils
@@ -629,6 +631,38 @@ def test_string_or_float_to_integer_python():
     assert f(27) == f('27') == f(2.7) == f('2.7') == 27
 
 
+def test_rendering_sandboxing():
+    r = Recipes(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: 0.1
+            extra:
+              token: {{ GITHUB_TOKEN }}
+
+    """, from_string=True)
+    r.write_recipes()
+    env = {
+        'GITHUB_TOKEN': 'asdf',
+    }
+    build.build(
+        recipe=r.recipe_dirs['one'],
+        recipe_folder='.',
+        env=env,
+        mulled_test=False
+    )
+
+    pkg = utils.built_package_path(r.recipe_dirs['one'], env=env)
+    t = tarfile.open(pkg)
+    tmp = tempfile.mkdtemp()
+    target = 'info/recipe/meta.yaml'
+    t.extract(target, path=tmp)
+    contents = yaml.load(open(os.path.join(tmp, target)).read())
+    assert contents['extra']['token'] == 'asdf', contents
+
+
 def test_env_sandboxing():
     r = Recipes(
         """
@@ -652,7 +686,7 @@ def test_env_sandboxing():
     build.build(
         recipe=r.recipe_dirs['one'],
         recipe_folder='.',
-        env={},
+        env={'GITHUB_TOKEN': 'token_here'},
         mulled_test=False
     )
     pkg = utils.built_package_path(r.recipe_dirs['one'])
