@@ -63,17 +63,22 @@ def build(recipe,
         If mulled_test == True, the name of the mulled docker image will be
         appended to this list.
     """
-    env = dict(env).copy()
+
+    # Clean provided env and exisiting os.environ to only allow whitelisted env
+    # vars
+    _env = {}
+    _env.update({k:v for k, v in os.environ.items() if utils.allowed_env_var(k)})
+    _env.update({k:v for k, v in dict(env).items() if utils.allowed_env_var(k)})
 
     # see https://github.com/bioconda/bioconda-recipes/issues/3271
-    if not disable_travis_env_vars:
-        for k, v in os.environ.items():
+    if disable_travis_env_vars:
+        for k in _env.keys():
             if k.startswith('TRAVIS'):
-                env[k] = v
-    env['PATH'] = os.environ['PATH']
+                _env.pop(k)
+
     logger.info(
         "BUILD START %s, env: %s",
-        recipe, ';'.join(['='.join(map(str, i)) for i in sorted(env.items())])
+        recipe, ';'.join(['='.join(map(str, i)) for i in sorted(_env.items())])
     )
     # --no-build-id is needed for some very long package names that triggers the 89 character limits
     # this option can be removed as soon as all packages are rebuild with the 255 character limit
@@ -102,10 +107,10 @@ def build(recipe,
             response = docker_builder.build_recipe(
                 recipe_dir=os.path.abspath(recipe),
                 build_args=' '.join(channel_args + build_args),
-                env=env
+                env=_env
             )
 
-            pkg = utils.built_package_path(recipe, env)
+            pkg = utils.built_package_path(recipe, _env)
             if not os.path.exists(pkg):
                 logger.error(
                     "BUILD FAILED: the built package %s "
@@ -125,35 +130,35 @@ def build(recipe,
 
         logger.info(
             'BUILD SUCCESS %s, %s',
-            utils.built_package_path(recipe, env), utils.envstr(env)
+            utils.built_package_path(recipe, _env), utils.envstr(_env)
         )
 
     except (docker_utils.DockerCalledProcessError, sp.CalledProcessError) as e:
             logger.error(
-                'BUILD FAILED %s, %s', recipe, utils.envstr(env))
+                'BUILD FAILED %s, %s', recipe, utils.envstr(_env))
             return False
 
     if not mulled_test:
         return True
 
-    pkg_path = utils.built_package_path(recipe, env)
+    pkg_path = utils.built_package_path(recipe, _env)
 
     logger.info(
         'TEST START via mulled-build %s, %s',
-        recipe, utils.envstr(env))
+        recipe, utils.envstr(_env))
 
     res = pkg_test.test_package(pkg_path)
 
     # TODO remove the second clause once new galaxy-lib has been released.
     if (res.returncode == 0) and ('Unexpected exit code' not in res.stdout):
-        logger.info("TEST SUCCESS %s, %s", recipe, utils.envstr(env))
+        logger.info("TEST SUCCESS %s, %s", recipe, utils.envstr(_env))
 
         if mulled_images is not None:
             mulled_images.append(pkg_test.get_image_name(pkg_path))
 
         return True
     else:
-        logger.error('TEST FAILED: %s, %s', recipe, utils.envstr(env))
+        logger.error('TEST FAILED: %s, %s', recipe, utils.envstr(_env))
         logger.error('STDOUT+STDERR:\n%s', res.stdout)
         return False
 
