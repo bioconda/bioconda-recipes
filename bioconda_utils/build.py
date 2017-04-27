@@ -124,7 +124,7 @@ def build(recipe,
             with utils.sandboxed_env(_env):
                 cmd = CONDA_BUILD_CMD + build_args + channel_args + [recipe]
                 logger.debug('command: %s', cmd)
-                p = utils.run(cmd, env=os.environ)
+                p = utils.run(cmd, env=_env)
 
             build_success = True
 
