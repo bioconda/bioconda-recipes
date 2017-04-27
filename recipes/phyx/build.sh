@@ -1,7 +1,4 @@
 #!/bin/bash
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib -Wl,-rpath ${PREFIX}/lib"
-export CPATH=${PREFIX}/include
 
 # fix automake
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/aclocal
@@ -18,6 +15,6 @@ sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
 mkdir -p $PREFIX/bin
 cd src
 autoreconf -i
-./configure  --prefix=$PREFIX
+LDFLAGS="-Wl,-rpath -Wl,$PREFIX/lib" CFLAGS="-I$PREFIX/include" sh ./configure  --prefix=$PREFIX
 make
 make install
