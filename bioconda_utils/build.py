@@ -67,8 +67,8 @@ def build(recipe,
     # Clean provided env and exisiting os.environ to only allow whitelisted env
     # vars
     _env = {}
-    _env.update({k:v for k, v in os.environ.items() if utils.allowed_env_var(k)})
-    _env.update({k:v for k, v in dict(env).items() if utils.allowed_env_var(k)})
+    _env.update({k:str(v) for k, v in os.environ.items() if utils.allowed_env_var(k)})
+    _env.update({k:str(v) for k, v in dict(env).items() if utils.allowed_env_var(k)})
 
     # see https://github.com/bioconda/bioconda-recipes/issues/3271
     if disable_travis_env_vars:
