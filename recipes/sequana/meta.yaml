@@ -1,21 +1,16 @@
-{% set version = "0.1.21" %}
-{% set name = "sequana" %}
-{% set md5 = "e19d1b27200976b899f91e0f85ef0d3f" %}
-
 package:
-  name: {{ name }}
-  version: {{ version }}
+  name: sequana
+  version: "0.2.0"
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  md5: {{ md5 }}
-#  patches:
-   # List any patch files here
-   # - fix.patch
+  fn: sequana-0.2.0.tar.gz
+  url: https://pypi.python.org/packages/90/4d/0d334b9e687adfa8bf2f98ecc3f4e5173d72276d296269087b2390fc9aef/sequana-0.2.0.tar.gz
+  md5: 7fde38de7d5327965633432ab8354c80
 
 build:
-  skip: True # [py27, py34]
+  # py36 requires pyvcf do be updated so for now, only 3.5
+  skip: True # [py36]
+  preserve_egg_dir: True
   entry_points:
     - sequana_gui=sequana.gui.sequana_gui:main
     - sequanix=sequana.gui.sequana_gui:main
@@ -29,17 +24,13 @@ build:
     - sequana_summary=sequana.scripts.summary:main
     - sequana_mapping=sequana.scripts.mapping:main
     - sequana_compressor=sequana.scripts.compressor:main
-
+    - sequana_report=sequana.scripts.reports:main
+    - sequana_fox=sequana.scripts.browser:main
 
 requirements:
   build:
     - python
     - setuptools
-    - docutils
-    - colorlog
-
-  run:
-    - python
     - easydev >=0.9.34
     - reports >=0.3.0
     - matplotlib >=2.0.0
@@ -47,39 +38,83 @@ requirements:
     - pandas
     - cutadapt >=1.9.1
     - bioservices >=1.4.14
-    - biokit >=0.4.0
+    - biokit >=0.4.1
     - pysam
     - docutils
     - mock
     - qtconsole
+    - psutil
+    - ruamel.yaml >=0.13.2
     - colorlog
-    - ruamel.yaml <=0.13.2
+
+  run:
+    - python
+    - setuptools
+    - easydev >=0.9.34
+    - reports >=0.3.0
+    - matplotlib >=2.0.0
+    - pyvcf
+    - pandas
+    - cutadapt >=1.9.1
+    - bioservices >=1.4.14
+    - biokit >=0.4.1
+    - pysam
+    - docutils
+    - mock
+    - qtconsole
+    - psutil
+    - ruamel.yaml >=0.13.2
+    - colorlog
     - snakemake
 
 test:
-  # Python imports
   imports:
     - sequana
     - sequana.gui
+    - sequana.modules_report
+    - sequana.pipelines
+    - sequana.plots
+    - sequana.resources
+    - sequana.resources.canvas
+    - sequana.resources.css
+    - sequana.resources.data
+    - sequana.resources.data.adapters
+    - sequana.resources.images
+    - sequana.resources.js
+    - sequana.resources.snpeff
+    - sequana.resources.template
+    - sequana.resources.template.standard
+    - sequana.resources.testing
+    - sequana.rules
+    - sequana.rules.Adapters
+    - sequana.rules.Mapping
+    - sequana.rules.SnpEff
+    - sequana.rules.Taxonomy
+    - sequana.rules.Utils
+    - sequana.rules.Variant_caller
+    - sequana.rules.codecs
     - sequana.scripts
     - sequana.sphinxext
+    - sequana.utils
 
   commands:
-    # You can put test commands to be run here.  Use this to test that the
-    # entry points work.
-    - sequanix --help
     - sequana_gui --help
+    - sequanix --help
+    - fastq_head --help
+    - fastq_count --help
     - sequana_fastq_head --help
     - sequana_fastq_count --help
     - sequana --help
+    - sequana_taxonomy --help
     - sequana_coverage --help
-
-  # You can also put a file called run_test.py in the recipe that will be run
-  # at test time.
+    - sequana_summary --help
+    - sequana_mapping --help
+    - sequana_compressor --help
+    - sequana_report --help
 
 about:
   home: ['http://github.com/sequana/']
-  license: "BSD 3-clause"
+  license: BSD License
   summary: 'A set of standalone application and pipelines dedicated to NGS (new generation sequencing) analysis'
   license_family: BSD
 
