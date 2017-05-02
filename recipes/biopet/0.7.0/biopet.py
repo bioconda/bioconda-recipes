@@ -17,7 +17,7 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = 'Biopet-0.9.0-be7838f2.jar'
+jar_file = 'Biopet-0.7.0-cb7a051c.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
