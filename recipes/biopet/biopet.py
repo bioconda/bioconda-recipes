@@ -2,9 +2,8 @@
 #
 # Wrapper script for starting the Biopet JAR package
 #
-# This script is written for use with the Conda package manager and is ported
-# from a bash script that does the same thing, adapting the style in
-# the peptide-shaker wrapper
+# This script is written for use with the Conda package manager and is copied
+# from the peptide-shaker wrapper. Only the parameters are changed.
 # (https://github.com/bioconda/bioconda-recipes/blob/master/recipes/peptide-shaker/peptide-shaker.py)
 #
 
