@@ -18,7 +18,7 @@ from os import X_OK
 
 jar_file = 'Biopet-0.7.0-cb7a051c.jar'
 
-default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
+default_jvm_mem_opts = ['-Xms512m', '-Xmx2g']
 
 # !!! End of parameter section. No user-serviceable code below this line !!!
 
