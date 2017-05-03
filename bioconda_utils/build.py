@@ -372,7 +372,7 @@ def build_recipes(
                 failed.append((recipe, target))
                 for n in nx.algorithms.descendants(subdag, name):
                     skip_dependent[n].append(recipe)
-            else if not testonly:
+            elif not testonly:
                 # upload build
                 if anaconda_upload:
                     if upload.anaconda_upload(target.pkg, label):
