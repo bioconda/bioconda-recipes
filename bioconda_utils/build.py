@@ -1,5 +1,5 @@
 import subprocess as sp
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 import os
 import logging
 import networkx as nx
@@ -12,6 +12,9 @@ from conda_build import api
 logger = logging.getLogger(__name__)
 
 
+BuildResult = namedtuple("BuildResult", ["success", "mulled_image"])
+
+
 def build(recipe,
           recipe_folder,
           env,
@@ -21,7 +24,6 @@ def build(recipe,
           channels=None,
           docker_builder=None,
           disable_travis_env_vars=False,
-          mulled_images=None,
     ):
     """
     Build a single recipe for a single env
@@ -58,10 +60,6 @@ def build(recipe,
     disable_travis_env_vars : bool
         By default, any env vars starting with TRAVIS are sent to the Docker
         container. Use this to disable that behavior.
-
-    mulled_images : list
-        If mulled_test == True, the name of the mulled docker image will be
-        appended to this list.
     """
     env = dict(env)
     logger.info(
@@ -110,7 +108,7 @@ def build(recipe,
                 logger.error(
                     "BUILD FAILED: the built package %s "
                     "cannot be found", pkg)
-                return False
+                return BuildResult(False, None)
             build_success = True
         else:
             # Since we're calling out to shell and we want to send at least
@@ -130,10 +128,10 @@ def build(recipe,
     except (docker_utils.DockerCalledProcessError, sp.CalledProcessError) as e:
             logger.error(
                 'BUILD FAILED %s, %s', recipe, utils.envstr(env))
-            return False
+            return BuildResult(False, None)
 
     if not mulled_test:
-        return True
+        return BuildResult(True, None)
 
     pkg_path = utils.built_package_path(recipe, env)
 
@@ -147,14 +145,15 @@ def build(recipe,
     if (res.returncode == 0) and ('Unexpected exit code' not in res.stdout):
         logger.info("TEST SUCCESS %s, %s", recipe, utils.envstr(env))
 
-        if mulled_images is not None:
-            mulled_images.append(pkg_test.get_image_name(pkg_path))
+        mulled_image = None
+        if mulled_test:
+            mulled_image = pkg_test.get_image_name(pkg_path)
 
-        return True
+        return BuildResult(True, mulled_image)
     else:
         logger.error('TEST FAILED: %s, %s', recipe, utils.envstr(env))
         logger.error('STDOUT+STDERR:\n%s', res.stdout)
-        return False
+        return BuildResult(False, None)
 
 
 def build_recipes(
@@ -335,8 +334,8 @@ def build_recipes(
     built_recipes = []
     skipped_recipes = []
     all_success = True
+    failed_uploads = []
     skip_dependent = defaultdict(list)
-    mulled_images = []
 
     for recipe in recipes:
         recipe_success = True
@@ -353,7 +352,7 @@ def build_recipes(
 
         for target in recipe_targets[recipe]:
 
-            target_success = build(
+            res = build(
                 recipe=recipe,
                 recipe_folder=recipe_folder,
                 env=target.env,
@@ -362,22 +361,28 @@ def build_recipes(
                 force=force,
                 channels=config['channels'],
                 docker_builder=docker_builder,
-                mulled_images=mulled_images,
             )
 
-            all_success &= target_success
-            recipe_success &= target_success
+            all_success &= res.success
+            recipe_success &= res.success
 
-            if not target_success:
+            if not res.success:
                 failed.append((recipe, target))
                 for n in nx.algorithms.descendants(subdag, name):
                     skip_dependent[n].append(recipe)
+            elif not testonly:
+                # upload build
+                if anaconda_upload:
+                    if upload.anaconda_upload(target.pkg, label):
+                        failed_uploads.append(target.pkg)
+                if mulled_upload_target:
+                    upload.mulled_upload(res.mulled_image, mulled_upload_target)
 
         if recipe_success:
             built_recipes.append(recipe)
 
-    if len(failed) > 0:
-        failed_recipes = list(set(i[0] for i in failed))
+    if failed or failed_uploads:
+        failed_recipes = set(i[0] for i in failed)
         logger.error(
             'BUILD SUMMARY: of %s recipes, '
             '%s failed and %s were skipped. '
@@ -399,19 +404,16 @@ def build_recipes(
             logger.error(
                 'BUILD SUMMARY: SKIPPED recipe %s '
                 'due to failed dependencies %s', name, dep)
+
+        if failed_uploads:
+            logger.error(
+                'UPLOAD SUMMARY: the following packages failed to upload:\n%s',
+                '\n'.join(failed_uploads))
+
         return False
 
     logger.info(
         "BUILD SUMMARY: successfully built %s of %s recipes",
         len(built_recipes), len(recipes))
 
-    if not testonly:
-        if anaconda_upload:
-            # upload builds
-            for recipe in recipes:
-                for target in recipe_targets[recipe]:
-                    all_success &= upload.anaconda_upload(target.pkg, label)
-        if mulled_upload_target:
-            for image in mulled_images:
-                upload.mulled_upload(image, mulled_upload_target)
     return all_success
