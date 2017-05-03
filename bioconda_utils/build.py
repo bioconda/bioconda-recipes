@@ -373,7 +373,7 @@ def build_recipes(
             elif not testonly:
                 # upload build
                 if anaconda_upload:
-                    if upload.anaconda_upload(target.pkg, label):
+                    if not upload.anaconda_upload(target.pkg, label):
                         failed_uploads.append(target.pkg)
                 if mulled_upload_target:
                     upload.mulled_upload(res.mulled_image, mulled_upload_target)
