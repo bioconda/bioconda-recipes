@@ -39,6 +39,16 @@ then
     ENV_CHANGE=$?
     set -e
 
+    if [[ $ENV_CHANGE -eq 1 && $TRAVIS_BRANCH == "master" && $TRAVIS_PULL_REQUEST != "false" ]]
+    then
+        echo ""
+	echo "Env matrix was modified but this pull request does not target a bulk/* branch."
+	echo "Please target a branch named bulk/<reasonable-name>. Rebuild and PR against that branch until all builds succeed."
+	echo "Then, contact @bioconda/core in order to merge the branch into master."
+	echo ""
+	exit 1
+    fi
+
     if [[ $ENV_CHANGE -eq 1 && $TRAVIS_BRANCH == bulk/* && $TRAVIS_PULL_REQUEST == "false" ]] || [[ $TRAVIS_EVENT_TYPE == "cron" ]]
     then
         # Case 1: env matrix changed and we are on a bulk/*-branch.
