@@ -336,7 +336,6 @@ def build_recipes(
     all_success = True
     failed_uploads = []
     skip_dependent = defaultdict(list)
-    mulled_images = []
 
     for recipe in recipes:
         recipe_success = True
@@ -362,7 +361,6 @@ def build_recipes(
                 force=force,
                 channels=config['channels'],
                 docker_builder=docker_builder,
-                mulled_images=mulled_images,
             )
 
             all_success &= res.success
