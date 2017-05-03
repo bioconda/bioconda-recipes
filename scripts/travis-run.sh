@@ -5,7 +5,7 @@ set +u
 [[ -z $DOCKER_ARG ]] && DOCKER_ARG=""
 [[ -z $TRAVIS ]] && TRAVIS="false"
 [[ -z $BIOCONDA_UTILS_LINT_ARGS ]] && BIOCONDA_UTILS_LINT_ARGS=""
-[[ -z $RANGE_ARG ]] && RANGE_ARG="--git-range HEAD"
+[[ -z $RANGE_ARG ]] && RANGE_ARG="--git-range master HEAD"
 [[ -z $DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK  ]] && DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK="false"
 set -u
 
@@ -69,15 +69,20 @@ fi
 # in bioconda-utils and will be pushing containers to quay.io.
 if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
 then
-    echo "Create Container push commands file: ${TRAVIS_BUILD_DIR}/container_push_commands.sh"
-    export CONTAINER_PUSH_COMMANDS_PATH=${TRAVIS_BUILD_DIR}/container_push_commands.sh
-    touch $CONTAINER_PUSH_COMMANDS_PATH
+    if [[ $TRAVIS_OS_NAME = "linux" ]]
+    then
+        UPLOAD_ARG="--anaconda-upload --mulled-upload-target biocontainers"
+    else
+        UPLOAD_ARG="--anaconda-upload"
+    fi
 else
+    UPLOAD_ARG=""
     # if building master branch, do not lint
     if [ $SKIP_LINTING = false  ]
     then
         set -x; bioconda-utils lint recipes config.yml $RANGE_ARG $BIOCONDA_UTILS_LINT_ARGS; set +x
     fi
+
 fi
 
 
@@ -88,14 +93,5 @@ then
     echo "A comprehensive check will be performed to see what needs to be built."
     RANGE_ARG=""
 fi
-set -x; bioconda-utils build recipes config.yml $DOCKER_ARG $BIOCONDA_UTILS_BUILD_ARGS $RANGE_ARG; set +x;
+set -x; bioconda-utils build recipes config.yml $UPLOAD_ARG $DOCKER_ARG $BIOCONDA_UTILS_BUILD_ARGS $RANGE_ARG; set +x;
 
-if [[ $TRAVIS_OS_NAME = "linux" ]]
-then
-    if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]
-    then
-        echo "Push containers to quay.io"
-        cat $CONTAINER_PUSH_COMMANDS_PATH
-        bash $CONTAINER_PUSH_COMMANDS_PATH
-    fi
-fi
