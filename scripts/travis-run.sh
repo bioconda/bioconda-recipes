@@ -39,30 +39,36 @@ then
     ENV_CHANGE=$?
     set -e
 
-    if [[ $ENV_CHANGE -eq 1 && $TRAVIS_BRANCH == "master" && $TRAVIS_PULL_REQUEST != "false" ]]
+    if [[ $TRAVIS_EVENT_TYPE == "cron" ]]
     then
-        echo ""
-	echo "Env matrix was modified but this pull request does not target a bulk/* branch."
-	echo "Please target a branch named bulk/<reasonable-name>. Rebuild and PR against that branch until all builds succeed."
-	echo "Then, contact @bioconda/core in order to merge the branch into master."
-	echo ""
-	exit 1
-    fi
-
-    if [[ $ENV_CHANGE -eq 1 && $TRAVIS_BRANCH == bulk/* && $TRAVIS_PULL_REQUEST == "false" ]] || [[ $TRAVIS_EVENT_TYPE == "cron" ]]
-    then
-        # Case 1: env matrix changed and we are on a bulk/*-branch.
-        # Case 2: this is a cron job that shall collect all missing builds.
-        # In such cases, consider all recipes.
         RANGE_ARG=""
-	# skip linting: we don't want to fix all recipes if we just update the env matrix
-	SKIP_LINTING=true
-        echo "considering all recipes because either env matrix was changed or build is triggered via cron"
+        SKIP_LINTING=true
+        echo "considering all recipes because build is triggered via cron"
     else
-        # Case 3: consider only recipes that (a) changed since the last build
-        # on master, or (b) changed in this pull request compared to the target
-        # branch.
-        RANGE_ARG="--git-range $RANGE"
+        if [[ $ENV_CHANGE -eq 1 ]]
+        then
+            if [[ $TRAVIS_BRANCH == "bulk" ]]
+            then
+                if [[ $TRAVIS_PULL_REQUEST != "false" ]]
+                then
+                    # pull request against bulk: only build additionally changed recipes
+                    RANGE_ARG="--git-range $RANGE"
+                else
+                    # push on bulk: consider all recipes affected by modified env matrix (the bulk update)!
+                    RANGE_ARG=""
+                    SKIP_LINTING=true
+                    echo "running bulk update"
+                fi
+            else
+                # not on bulk branch: ignore env matrix changes
+                RANGE_ARG="--git-range $RANGE"
+            fi
+        else
+            # consider only recipes that (a) changed since the last build
+            # on master, or (b) changed in this pull request compared to the target
+            # branch.
+            RANGE_ARG="--git-range $RANGE"            
+        fi
     fi
 fi
 
@@ -75,9 +81,8 @@ then
     DOCKER_ARG="--docker"
 fi
 
-# If this build corresponds to the merge into master, we will be detecting this
-# in bioconda-utils and will be pushing containers to quay.io.
-if [[ ( $TRAVIS_BRANCH == "master" || $TRAVIS_BRANCH == bulk/* ) && "$TRAVIS_PULL_REQUEST" == "false" ]]
+# When building master or bulk, upload packages to anaconda and quay.io.
+if [[ ( $TRAVIS_BRANCH == "master" || $TRAVIS_BRANCH == "bulk" ) && "$TRAVIS_PULL_REQUEST" == "false" ]]
 then
     if [[ $TRAVIS_OS_NAME == "linux" ]]
     then
@@ -87,7 +92,6 @@ then
     fi
 else
     UPLOAD_ARG=""
-    # if building master branch, do not lint
     if [[ $SKIP_LINTING == "false"  ]]
     then
         set -x; bioconda-utils lint recipes config.yml $RANGE_ARG $BIOCONDA_UTILS_LINT_ARGS; set +x
