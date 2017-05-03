@@ -2,8 +2,6 @@
 set -e
 set -x
 
-MINICONDA_VER="4.2.12"
-
 if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
 then
     echo ""
