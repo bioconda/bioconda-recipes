@@ -19,6 +19,7 @@ import tempfile
 from distutils.version import LooseVersion
 from progress import spinner
 import time
+import threading
 
 
 from conda_build import api
