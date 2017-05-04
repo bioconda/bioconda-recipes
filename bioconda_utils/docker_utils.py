@@ -352,7 +352,7 @@ class RecipeBuilder(object):
             build_dir
         ]
         try:
-            with utils.Spinner("Building"):
+            with utils.Progress():
                 p = utils.run(cmd)
         except sp.CalledProcessError as e:
             logger.error(
@@ -420,7 +420,7 @@ class RecipeBuilder(object):
         ]
 
         logger.debug('DOCKER: cmd: %s', cmd)
-        with utils.Spinner("Building"):
+        with utils.Progress():
             p = utils.run(cmd)
         return p
 
