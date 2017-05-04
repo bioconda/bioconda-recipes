@@ -22,7 +22,7 @@ setup(
             ],
         )
     ],
-    install_requires=["argh", "networkx", "pydotplus", "pyyaml", "requests<2.11", "jsonschema", "pandas", "colorlog", "jinja2"],
+    install_requires=["argh", "networkx", "pydotplus", "pyyaml", "requests<2.11", "jsonschema", "pandas", "colorlog", "jinja2", "progress"],
     entry_points={"console_scripts": [
         "bioconda-utils = bioconda_utils.cli:main",
         "bioconductor_skeleton = bioconda_utils.bioconductor_skeleton:main"
