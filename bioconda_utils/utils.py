@@ -17,7 +17,6 @@ from jsonschema import validate
 import datetime
 import tempfile
 from distutils.version import LooseVersion
-from progress import spinner
 import time
 import threading
 
@@ -761,21 +760,21 @@ def modified_recipes(git_range, recipe_folder, config_file, full=False):
     return [os.path.relpath(recipe_folder, m) for m in existing]
 
 
-class Spinner:
-    def __init__(self, msg):
-        self.spinner = spinner.Spinner(msg)
-        self.thread = threading.Thread(target=self.spin)
-        self.spin = True
+class Progress:
+    def __init__(self):
+        self.thread = threading.Thread(target=self.progress)
+        self.stop = False
 
-    def spin(self):
-        while self.spin:
-            self.spinner.next()
-            time.sleep(5)
+    def progress(self):
+        while not self.stop:
+            print(".", end="")
+            time.sleep(60)
+        print("")
 
     def __enter__(self):
         self.thread.start()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.spin = False
+        self.stop = True
         self.thread.join()

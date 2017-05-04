@@ -116,7 +116,7 @@ def build(recipe,
             with utils.temp_env(env):
                 cmd = CONDA_BUILD_CMD + build_args + channel_args + [recipe]
                 logger.debug('command: %s', cmd)
-                with utils.Spinner("Building"):
+                with utils.Progress():
                     p = utils.run(cmd, env=os.environ)
 
             build_success = True
