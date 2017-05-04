@@ -331,7 +331,7 @@ class RecipeBuilder(object):
         # requirements file over
         build_dir = tempfile.mkdtemp()
 
-        logger.debug('DOCKER: Building image "%s" from %s', self.tag, build_dir)
+        logger.info('DOCKER: Building image "%s" from %s', self.tag, build_dir)
         with open(os.path.join(build_dir, 'requirements.txt'), 'w') as fout:
             if self.requirements:
                 fout.write(open(self.requirements).read())
@@ -352,7 +352,8 @@ class RecipeBuilder(object):
             build_dir
         ]
         try:
-            p = utils.run(cmd)
+            with utils.Spinner("Building"):
+                p = utils.run(cmd)
         except sp.CalledProcessError as e:
             logger.error(
                 'DOCKER FAILED: Error building docker container %s. ',
@@ -419,7 +420,8 @@ class RecipeBuilder(object):
         ]
 
         logger.debug('DOCKER: cmd: %s', cmd)
-        p = utils.run(cmd)
+        with utils.Spinner("Building"):
+            p = utils.run(cmd)
         return p
 
     def cleanup(self):

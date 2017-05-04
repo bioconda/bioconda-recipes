@@ -17,6 +17,9 @@ from jsonschema import validate
 import datetime
 import tempfile
 from distutils.version import LooseVersion
+from progress import spinner
+import time
+import threading
 
 
 from conda_build import api
@@ -756,3 +759,23 @@ def modified_recipes(git_range, recipe_folder, config_file, full=False):
     if full:
         return existing
     return [os.path.relpath(recipe_folder, m) for m in existing]
+
+
+class Spinner:
+    def __init__(self, msg):
+        self.spinner = spinner.Spinner(msg)
+        self.thread = threading.Thread(target=self.spin)
+        self.spin = True
+
+    def spin(self):
+        while self.spin:
+            self.spinner.next()
+            time.sleep(5)
+
+    def __enter__(self):
+        self.thread.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.spin = False
+        self.thread.join()
