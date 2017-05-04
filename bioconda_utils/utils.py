@@ -17,7 +17,7 @@ from jsonschema import validate
 import datetime
 import tempfile
 from distutils.version import LooseVersion
-from progress.spinner import Spinner
+from progress import spinner
 import time
 
 
@@ -763,7 +763,7 @@ def modified_recipes(git_range, recipe_folder, config_file, full=False):
 class Spinner:
     def __init__(self, msg):
         self.thread = None
-        self.spinner = Spinner(msg)
+        self.spinner = spinner.Spinner(msg)
         self.spin = True
 
     def spin(self):
