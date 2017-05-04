@@ -763,8 +763,8 @@ def modified_recipes(git_range, recipe_folder, config_file, full=False):
 
 class Spinner:
     def __init__(self, msg):
-        self.thread = None
         self.spinner = spinner.Spinner(msg)
+        self.thread = threading.Thread(target=self.spin)
         self.spin = True
 
     def spin(self):
@@ -773,7 +773,7 @@ class Spinner:
             time.sleep(5)
 
     def __enter__(self):
-        self.thread = threading.Thread(target=self.spin)
+        self.thread.start()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
