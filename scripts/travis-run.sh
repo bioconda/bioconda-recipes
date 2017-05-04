@@ -32,36 +32,23 @@ then
         RANGE="${TRAVIS_COMMIT_RANGE/.../ }"
     fi
 
-    # If the environment vars changed (e.g., boost, R, perl) then there's no
-    # good way of knowing which recipes need rebuilding so we check them all.
-    set +e
-    git diff --exit-code --name-only $RANGE scripts/env_matrix.yml
-    ENV_CHANGE=$?
-    set -e
-
     if [[ $TRAVIS_EVENT_TYPE == "cron" ]]
     then
         RANGE_ARG=""
         SKIP_LINTING=true
         echo "considering all recipes because build is triggered via cron"
     else
-        if [[ $ENV_CHANGE -eq 1 ]]
+        if [[ $TRAVIS_BRANCH == "bulk" ]]
         then
-            if [[ $TRAVIS_BRANCH == "bulk" ]]
+            if [[ $TRAVIS_PULL_REQUEST != "false" ]]
             then
-                if [[ $TRAVIS_PULL_REQUEST != "false" ]]
-                then
-                    # pull request against bulk: only build additionally changed recipes
-                    RANGE_ARG="--git-range $RANGE"
-                else
-                    # push on bulk: consider all recipes affected by modified env matrix (the bulk update)!
-                    RANGE_ARG=""
-                    SKIP_LINTING=true
-                    echo "running bulk update"
-                fi
-            else
-                # not on bulk branch: ignore env matrix changes
+                # pull request against bulk: only build additionally changed recipes
                 RANGE_ARG="--git-range $RANGE"
+            else
+                # push on bulk: consider all recipes and do not lint (the bulk update)!
+                RANGE_ARG=""
+                SKIP_LINTING=true
+                echo "running bulk update"
             fi
         else
             # consider only recipes that (a) changed since the last build
