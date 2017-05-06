@@ -483,6 +483,38 @@ def test_filter_recipes_existing_package():
     assert len(filtered) == 0
 
 
+def test_filter_recipes_custom_buildstring():
+    "use a known-to-exist package in bioconda"
+
+    # note that we need python as a run requirement in order to get the "pyXY"
+    # in the build string that matches the existing bioconda built package.
+    r = Recipes(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: pindel
+              version: "0.2.5b8"
+            build:
+              number: 2
+              skip: True  # [osx]
+              string: "htslib{{CONDA_HTSLIB}}_{{PKG_BUILDNUM}}"
+            requirements:
+              run:
+                - python
+        """, from_string=True)
+    r.write_recipes()
+    recipes = list(r.recipe_dirs.values())
+    env_matrix = {
+        'CONDA_HTSLIB': "1.4",
+    }
+    pkgs = utils.get_channel_packages('bioconda')
+    pth = utils.built_package_path(recipes[0])
+    filtered = list(
+        utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
+    assert len(filtered) == 0
+
+
 def test_filter_recipes_force_existing_package():
     "same as above but force the recipe"
 
