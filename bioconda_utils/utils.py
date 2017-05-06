@@ -389,6 +389,8 @@ def built_package_path(recipe, env=None):
             no_download_source=True,
             set_build_id=False)
         path = api.get_output_file_path(recipe, config=config)
+        assert not path.endswith("_.tar.bz2"), ("rendered path {} does not "
+            "contain a build number. This is a conda bug.".format(path))
     return path
 
 
