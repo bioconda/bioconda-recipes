@@ -508,8 +508,6 @@ def test_filter_recipes_custom_buildstring():
     env_matrix = {
         'CONDA_HTSLIB': "1.4",
     }
-    pkgs = utils.get_channel_packages('bioconda')
-    pth = utils.built_package_path(recipes[0])
     filtered = list(
         utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
     assert len(filtered) == 0
