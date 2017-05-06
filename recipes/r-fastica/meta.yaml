@@ -1,0 +1,49 @@
+{% set version = '1.2-0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-fastica
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: fastICA_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/fastICA_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/fastICA/fastICA_{{ version }}.tar.gz
+  sha256: 19b82a4b680977e5e101d7cd2dbdb227cabd0a8a929368c213aa95a91d3a737a
+
+build:
+  number: 0
+  skip: true  # [win32]
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - posix                # [win]
+    - {{native}}toolchain  # [win]
+    - gcc                  # [not win]
+  run:
+    - r-base
+    - libgcc  # [not win]
+
+test:
+  commands:
+    - $R -e "library('fastICA')"  # [not win]
+    - "\"%R%\" -e \"library('fastICA')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=fastICA
+  license: GPL (>= 2)
+  summary: Implementation of FastICA algorithm to perform Independent Component Analysis (ICA)
+    and Projection Pursuit.
+  license_family: GPL3
+
+extra:
+  recipe-maintainers:
+    - johanneskoester
+    - bgruening

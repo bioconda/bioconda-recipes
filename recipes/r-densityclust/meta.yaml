@@ -1,0 +1,51 @@
+{% set version = '0.2.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-densityclust
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: densityClust_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/densityClust_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/densityClust/densityClust_{{ version }}.tar.gz
+  sha256: 701d6053415552d8267be7ad3d02003506ccd758e764a887672b1cd00d34982e
+
+build:
+  number: 0
+  skip: true  # [win32]
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - r-rcpp
+    - posix                # [win]
+    - {{native}}toolchain  # [win]
+    - gcc                  # [not win]
+  run:
+    - r-base
+    - r-rcpp
+    - libgcc  # [not win]
+
+test:
+  commands:
+    - $R -e "library('densityClust')"  # [not win]
+    - "\"%R%\" -e \"library('densityClust')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=densityClust
+  license: GPL (>= 2)
+  summary: An implementation of the clustering algorithm described by Alex Rodriguez and Alessandro
+    Laio (Science, 2014 vol. 344), along with tools to inspect and visualize the results.
+  license_family: GPL3
+
+extra:
+  recipe-maintainers:
+    - johanneskoester
+    - bgruening

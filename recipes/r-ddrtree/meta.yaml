@@ -1,0 +1,62 @@
+{% set version = '0.1.5' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-ddrtree
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: DDRTree_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/DDRTree_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/DDRTree/DDRTree_{{ version }}.tar.gz
+  sha256: d351ec029461b43c0dcc7c30d9f378753b31ba16c6dbf667869df279b874459b
+
+build:
+  number: 0
+  skip: true  # [win32]
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - r-bh
+    - r-rcpp
+    - r-rcppeigen
+    - r-irlba
+    - posix                # [win]
+    - {{native}}toolchain  # [win]
+    - gcc                  # [not win]
+  run:
+    - r-base
+    - r-bh
+    - r-rcpp
+    - r-rcppeigen
+    - r-irlba
+    - libgcc  # [not win]
+
+test:
+  commands:
+    - $R -e "library('DDRTree')"  # [not win]
+    - "\"%R%\" -e \"library('DDRTree')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=DDRTree
+  license: Artistic 2.0
+  summary: |
+    Provides an implementation of the framework of reversed graph embedding (RGE) which
+    projects data into a reduced dimensional space while constructs a principal tree
+    which passes through the middle of the data simultaneously. DDRTree shows superiority
+    to alternatives (Wishbone, DPT) for inferring the ordering as well as the intrinsic
+    structure of the single cell genomics data. In general, it could be used to reconstruct
+    the temporal progression as well as bifurcation structure of any datatype.
+  license_family: OTHER
+
+extra:
+  recipe-maintainers:
+    - johanneskoester
+    - bgruening
