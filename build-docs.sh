@@ -87,7 +87,7 @@ rm -r *
 
 # build docs and copy over to tmpdir
 cd ${DOCSOURCE}
-make html 2>&1 | grep -v "WARNING: nonlocal image URL found:"
+make clean html 2>&1 | grep -v "WARNING: nonlocal image URL found:"
 cp -r ${DOCHTML}/* $STAGING
 
 # commit and push
