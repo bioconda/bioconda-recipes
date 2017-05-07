@@ -21,7 +21,7 @@ from distutils.version import LooseVersion
 import time
 import threading
 
-
+from conda_build.exceptions import UnableToParse
 from conda_build import api
 from conda_build.metadata import MetaData
 import yaml
@@ -422,6 +422,7 @@ def built_package_path(recipe, env=None):
             no_download_source=True,
             set_build_id=False)
         path = api.get_output_file_path(recipe, config=config)
+
     return path
 
 
@@ -584,6 +585,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
             return True
 
         pkg = os.path.basename(built_package_path(recipe, env))
+
         in_channels = [
             channel for channel, pkgs in channel_packages.items()
             if pkg in pkgs
@@ -615,6 +617,11 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
                 'it defines skip for this env', pkg)
             return False
 
+        assert not pkg.endswith("_.tar.bz2"), ("rendered path {} does not "
+            "contain a build number and recipe does not "
+            "define skip for this environment. "
+            "This is a conda bug.".format(pkg))
+
         logger.debug(
             'FILTER: building %s because it is not in channels '
             'does not define skip, and force is not specified', pkg)
@@ -633,10 +640,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
     try:
         for i, recipe in enumerate(sorted(recipes)):
             perc = (i + 1) / nrecipes * 100
-            print(
-                template.format(i + 1, nrecipes, perc, recipe),
-                end='\r'
-            )
+            print(template.format(i + 1, nrecipes, perc, recipe))
             targets = set()
             for env in env_matrix:
                 pkg = built_package_path(recipe, env)
