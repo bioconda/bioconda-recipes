@@ -575,7 +575,13 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
                 platform = 'darwin'
 
             with temp_os(platform):
-                skip = MetaData(recipe).skip()
+                try:
+                    skip = MetaData(recipe).skip()
+                except UnableToParse:
+                    logger.error("FILTER: error parsing %s.", recipe)
+                    # If meta.yaml can't be parsed, continue to building in
+                    # order to get a proper error message.
+                    return True
 
         if skip:
             logger.debug(
