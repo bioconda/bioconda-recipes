@@ -575,7 +575,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
                 platform = 'darwin'
 
             with temp_os(platform):
-                skip = MetaData(recipe, config=config).skip()
+                skip = MetaData(recipe).skip()
 
         if skip:
             logger.debug(
