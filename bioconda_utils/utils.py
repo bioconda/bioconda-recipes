@@ -551,13 +551,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
                 'FILTER: building %s because force=True', recipe)
             return True
 
-        try:
-            pkg = os.path.basename(built_package_path(recipe, env))
-        except UnableToParse:
-            logger.error("FILTER: error parsing %s.", recipe)
-            # If meta.yaml can't be parsed, continue to building in
-            # order to get a proper error message.
-            return True
+        pkg = os.path.basename(built_package_path(recipe, env))
 
         in_channels = [
             channel for channel, pkgs in channel_packages.items()
@@ -582,13 +576,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
                 platform = 'darwin'
 
             with temp_os(platform):
-                try:
-                    skip = MetaData(recipe).skip()
-                except UnableToParse:
-                    logger.error("FILTER: error parsing %s.", recipe)
-                    # If meta.yaml can't be parsed, continue to building in
-                    # order to get a proper error message.
-                    return True
+                skip = MetaData(recipe).skip()
 
         if skip:
             logger.debug(
@@ -619,10 +607,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
     try:
         for i, recipe in enumerate(sorted(recipes)):
             perc = (i + 1) / nrecipes * 100
-            print(
-                template.format(i + 1, nrecipes, perc, recipe),
-                end='\r'
-            )
+            print(template.format(i + 1, nrecipes, perc, recipe))
             targets = set()
             for env in env_matrix:
                 pkg = built_package_path(recipe, env)
