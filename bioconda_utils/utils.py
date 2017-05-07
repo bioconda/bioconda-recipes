@@ -575,9 +575,6 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
                 platform = 'darwin'
 
             with temp_os(platform):
-                config = api.Config(
-                    no_download_source=True,
-                    set_build_id=False)
                 skip = MetaData(recipe, config=config).skip()
 
         if skip:

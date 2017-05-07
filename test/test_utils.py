@@ -385,8 +385,11 @@ def test_filter_recipes_skip_py27_in_build_string():
             package:
               name: one
               version: "0.1"
-            build:
-              string: {{CONDA_PY}}_{{PKG_BUILDNUM}}
+            requirements:
+              build:
+                - python
+              run:
+                - python
         """, from_string=True)
     r.write_recipes()
     env_matrix = {
