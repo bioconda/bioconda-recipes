@@ -27,7 +27,6 @@ def build(recipe,
           force=False,
           channels=None,
           docker_builder=None,
-          disable_travis_env_vars=False,
     ):
     """
     Build a single recipe for a single env
@@ -60,15 +59,17 @@ def build(recipe,
     docker_builder : docker_utils.RecipeBuilder object
         Use this docker builder to build the recipe, copying over the built
         recipe to the host's conda-bld directory.
-
-    disable_travis_env_vars : bool
-        By default, any env vars starting with TRAVIS are sent to the Docker
-        container. Use this to disable that behavior.
     """
-    env = dict(env)
+
+    # Clean provided env and exisiting os.environ to only allow whitelisted env
+    # vars
+    _env = {}
+    _env.update({k:str(v) for k, v in os.environ.items() if utils.allowed_env_var(k)})
+    _env.update({k:str(v) for k, v in dict(env).items() if utils.allowed_env_var(k)})
+
     logger.info(
         "BUILD START %s, env: %s",
-        recipe, ';'.join(['='.join(map(str, i)) for i in sorted(env.items())])
+        recipe, ';'.join(['='.join(map(str, i)) for i in sorted(_env.items())])
     )
     # --no-build-id is needed for some very long package names that triggers the 89 character limits
     # this option can be removed as soon as all packages are rebuild with the 255 character limit
@@ -94,20 +95,13 @@ def build(recipe,
         # want to add TRAVIS* vars if that behavior is not disabled.
         if docker_builder is not None:
 
-            # see https://github.com/bioconda/bioconda-recipes/issues/3271
-            docker_env = env.copy()
-            if not disable_travis_env_vars:
-                for k, v in os.environ.items():
-                    if k.startswith('TRAVIS'):
-                        docker_env[k] = v
-
             response = docker_builder.build_recipe(
                 recipe_dir=os.path.abspath(recipe),
                 build_args=' '.join(channel_args + build_args),
-                env=docker_env
+                env=_env
             )
 
-            pkg = utils.built_package_path(recipe, env)
+            pkg = utils.built_package_path(recipe, _env)
             if not os.path.exists(pkg):
                 logger.error(
                     "BUILD FAILED: the built package %s "
@@ -115,9 +109,10 @@ def build(recipe,
                 return BuildResult(False, None)
             build_success = True
         else:
-            # Since we're calling out to shell and we want to send at least
-            # some env vars send them all via the temporarily-reset os.environ.
-            with utils.temp_env(env):
+
+            # Temporarily reset os.environ to avoid leaking env vars to
+            # conda-build, and explicitly provide `env` to `run()`
+            with utils.sandboxed_env(_env):
                 cmd = CONDA_BUILD_CMD + build_args + channel_args + [recipe]
                 logger.debug('command: %s', cmd)
                 with utils.Progress():
@@ -127,7 +122,7 @@ def build(recipe,
 
         logger.info(
             'BUILD SUCCESS %s, %s',
-            utils.built_package_path(recipe, env), utils.envstr(env)
+            utils.built_package_path(recipe, _env), utils.envstr(_env)
         )
 
     except (docker_utils.DockerCalledProcessError, sp.CalledProcessError) as e:
@@ -138,17 +133,17 @@ def build(recipe,
     if not mulled_test:
         return BuildResult(True, None)
 
-    pkg_path = utils.built_package_path(recipe, env)
+    pkg_path = utils.built_package_path(recipe, _env)
 
     logger.info(
         'TEST START via mulled-build %s, %s',
-        recipe, utils.envstr(env))
+        recipe, utils.envstr(_env))
 
     res = pkg_test.test_package(pkg_path)
 
     # TODO remove the second clause once new galaxy-lib has been released.
     if (res.returncode == 0) and ('Unexpected exit code' not in res.stdout):
-        logger.info("TEST SUCCESS %s, %s", recipe, utils.envstr(env))
+        logger.info("TEST SUCCESS %s, %s", recipe, utils.envstr(_env))
 
         mulled_image = None
         if mulled_test:
@@ -156,7 +151,7 @@ def build(recipe,
 
         return BuildResult(True, mulled_image)
     else:
-        logger.error('TEST FAILED: %s, %s', recipe, utils.envstr(env))
+        logger.error('TEST FAILED: %s, %s', recipe, utils.envstr(_env))
         logger.error('STDOUT+STDERR:\n%s', res.stdout)
         return BuildResult(False, None)
 
@@ -174,7 +169,6 @@ def build_recipes(
     mulled_upload_target=None,
     check_channels=None,
     quick=False,
-    disable_travis_env_vars=False,
 ):
     """
     Build one or many bioconda packages.
@@ -227,9 +221,6 @@ def build_recipes(
         Speed up recipe filtering by only checking those that are reasonably
         new.
 
-    disable_travis_env_vars : bool
-        By default, any env vars starting with TRAVIS are sent to the Docker
-        container. Use this to disable that behavior.
     """
     orig_config = config
     config = utils.load_config(config)
