@@ -210,9 +210,6 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
      in a docker container. Has no effect otherwise.''')
 @arg('--quick', help='''To speed up filtering, do not consider any recipes that
      are > 2 days older than the latest commit to master branch.''')
-@arg('--disable-travis-env-vars', action='store_true', help='''By default, any
-     environment variables starting with TRAVIS are sent to the Docker
-     container. Use this flag to disable that behavior.''')
 @arg('--anaconda-upload', action='store_true', help='''After building recipes, upload
      them to Anaconda. This requires $ANACONDA_TOKEN to be set.''')
 def build(recipe_folder,
