@@ -20,7 +20,7 @@ from distutils.version import LooseVersion
 import time
 import threading
 
-
+from conda_build.exceptions import UnableToParse
 from conda_build import api
 from conda_build.metadata import MetaData
 import yaml
@@ -551,7 +551,14 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
                 'FILTER: building %s because force=True', recipe)
             return True
 
-        pkg = os.path.basename(built_package_path(recipe, env))
+        try:
+            pkg = os.path.basename(built_package_path(recipe, env))
+        except UnableToParse:
+            logger.error("FILTER: error parsing %s.", recipe)
+            # If meta.yaml can't be parsed, continue to building in
+            # order to get a proper error message.
+            return True
+
         in_channels = [
             channel for channel, pkgs in channel_packages.items()
             if pkg in pkgs
