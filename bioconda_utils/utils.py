@@ -17,6 +17,8 @@ from jsonschema import validate
 import datetime
 import tempfile
 from distutils.version import LooseVersion
+import time
+import threading
 
 
 from conda_build import api
@@ -756,3 +758,23 @@ def modified_recipes(git_range, recipe_folder, config_file, full=False):
     if full:
         return existing
     return [os.path.relpath(recipe_folder, m) for m in existing]
+
+
+class Progress:
+    def __init__(self):
+        self.thread = threading.Thread(target=self.progress)
+        self.stop = False
+
+    def progress(self):
+        while not self.stop:
+            print(".", end="")
+            time.sleep(60)
+        print("")
+
+    def __enter__(self):
+        self.thread.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop = True
+        self.thread.join()
