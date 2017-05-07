@@ -645,7 +645,7 @@ def test_rendering_sandboxing(caplog):
 
     r.write_recipes()
     env = {
-        # First two are allowed, last two are not
+        # First one is allowed, others are not
         'CONDA_ARBITRARY_VAR': 'conda-val-here',
         'TRAVIS_ARBITRARY_VAR': 'travis-val-here',
         'GITHUB_TOKEN': 'asdf',
@@ -669,7 +669,6 @@ def test_rendering_sandboxing(caplog):
               name: two
               version: 0.1
             extra:
-              var1: {{ TRAVIS_ARBITRARY_VAR }}
               var2: {{ CONDA_ARBITRARY_VAR }}
 
     """, from_string=True)
@@ -688,7 +687,6 @@ def test_rendering_sandboxing(caplog):
     target = 'info/recipe/meta.yaml'
     t.extract(target, path=tmp)
     contents = yaml.load(open(os.path.join(tmp, target)).read())
-    assert contents['extra']['var1'] == 'travis-val-here', contents
     assert contents['extra']['var2'] == 'conda-val-here', contents
 
 
@@ -702,7 +700,7 @@ def test_sandboxed():
     with utils.sandboxed_env(env):
         print(os.environ)
         assert os.environ['CONDA_ARBITRARY_VAR'] == 'conda-val-here'
-        assert os.environ['TRAVIS_ARBITRARY_VAR'] == 'travis-val-here'
+        assert 'TRAVIS_ARBITRARY_VAR' not in os.environ
         assert 'GITHUB_TOKEN' not in os.environ
         assert 'BUILDKITE_TOKEN' not in os.environ
 
