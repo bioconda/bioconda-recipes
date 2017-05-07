@@ -6,6 +6,8 @@ import tempfile
 import requests
 import uuid
 import contextlib
+import tarfile
+
 from bioconda_utils import utils
 from bioconda_utils import pkg_test
 from bioconda_utils import docker_utils
@@ -664,6 +666,110 @@ def test_pkgname_with_numpy_x_x():
 def test_string_or_float_to_integer_python():
     f = utils._string_or_float_to_integer_python
     assert f(27) == f('27') == f(2.7) == f('2.7') == 27
+
+
+def test_rendering_sandboxing(caplog):
+    r = Recipes(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: 0.1
+            extra:
+              var: {{ GITHUB_TOKEN }}
+    """, from_string=True)
+
+    r.write_recipes()
+    env = {
+        # First one is allowed, others are not
+        'CONDA_ARBITRARY_VAR': 'conda-val-here',
+        'TRAVIS_ARBITRARY_VAR': 'travis-val-here',
+        'GITHUB_TOKEN': 'asdf',
+        'BUILDKITE_TOKEN': 'asdf',
+    }
+
+    # recipe for "one" should fail because GITHUB_TOKEN is not a jinja var.
+    res = build.build(
+        recipe=r.recipe_dirs['one'],
+        recipe_folder='.',
+        env=env,
+        mulled_test=False
+    )
+    assert "Undefined Jinja2 variables remain (['GITHUB_TOKEN']).  Please enable source downloading and try again." in caplog.text
+
+    r = Recipes(
+        """
+        two:
+          meta.yaml: |
+            package:
+              name: two
+              version: 0.1
+            extra:
+              var2: {{ CONDA_ARBITRARY_VAR }}
+
+    """, from_string=True)
+    r.write_recipes()
+    pkg = utils.built_package_path(r.recipe_dirs['two'], env=env)
+    ensure_missing(pkg)
+    res = build.build(
+        recipe=r.recipe_dirs['two'],
+        recipe_folder='.',
+        env=env,
+        mulled_test=False
+    )
+
+    t = tarfile.open(pkg)
+    tmp = tempfile.mkdtemp()
+    target = 'info/recipe/meta.yaml'
+    t.extract(target, path=tmp)
+    contents = yaml.load(open(os.path.join(tmp, target)).read())
+    assert contents['extra']['var2'] == 'conda-val-here', contents
+
+
+def test_sandboxed():
+    env = {
+        'CONDA_ARBITRARY_VAR': 'conda-val-here',
+        'TRAVIS_ARBITRARY_VAR': 'travis-val-here',
+        'GITHUB_TOKEN': 'asdf',
+        'BUILDKITE_TOKEN': 'asdf',
+    }
+    with utils.sandboxed_env(env):
+        print(os.environ)
+        assert os.environ['CONDA_ARBITRARY_VAR'] == 'conda-val-here'
+        assert 'TRAVIS_ARBITRARY_VAR' not in os.environ
+        assert 'GITHUB_TOKEN' not in os.environ
+        assert 'BUILDKITE_TOKEN' not in os.environ
+
+def test_env_sandboxing():
+    r = Recipes(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: 0.1
+          build.sh: |
+            #!/bin/bash
+            if [[ -z $GITHUB_TOKEN ]]
+            then
+                exit 0
+            else
+                echo "\$GITHUB_TOKEN has leaked into the build environment!"
+                exit 1
+            fi
+    """, from_string=True)
+    r.write_recipes()
+
+    build.build(
+        recipe=r.recipe_dirs['one'],
+        recipe_folder='.',
+        env={'GITHUB_TOKEN': 'token_here'},
+        mulled_test=False
+    )
+    pkg = utils.built_package_path(r.recipe_dirs['one'])
+    assert os.path.exists(pkg)
+    ensure_missing(pkg)
 
 
 def test_skip_dependencies():
