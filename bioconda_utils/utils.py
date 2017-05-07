@@ -422,6 +422,7 @@ def built_package_path(recipe, env=None):
             no_download_source=True,
             set_build_id=False)
         path = api.get_output_file_path(recipe, config=config)
+
     return path
 
 
@@ -614,6 +615,11 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
                 'FILTER: not building %s because '
                 'it defines skip for this env', pkg)
             return False
+
+        assert not pkg.endswith("_.tar.bz2"), ("rendered path {} does not "
+            "contain a build number and recipe does not "
+            "define skip for this environment. "
+            "This is a conda bug.".format(pkg))
 
         logger.debug(
             'FILTER: building %s because it is not in channels '
