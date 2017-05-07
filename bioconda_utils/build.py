@@ -15,6 +15,10 @@ logger = logging.getLogger(__name__)
 BuildResult = namedtuple("BuildResult", ["success", "mulled_image"])
 
 
+def purge():
+    utils.run(["conda", "build", "purge"])
+
+
 def build(recipe,
           recipe_folder,
           env,
@@ -378,6 +382,9 @@ def build_recipes(
                         failed_uploads.append(target.pkg)
                 if mulled_upload_target:
                     upload.mulled_upload(res.mulled_image, mulled_upload_target)
+
+            # remove traces of the build
+            purge()
 
         if recipe_success:
             built_recipes.append(recipe)
