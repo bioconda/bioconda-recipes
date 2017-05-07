@@ -37,7 +37,6 @@ jinja = Environment(
 # Patterns of allowed environment variables that are allowed to be passed to
 # conda-build.
 ENV_VAR_WHITELIST = [
-    'TRAVIS_*',
     'CONDA_*',
     'PATH',
 ]

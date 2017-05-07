@@ -20,7 +20,6 @@ def build(recipe,
           force=False,
           channels=None,
           docker_builder=None,
-          disable_travis_env_vars=False,
           mulled_images=None,
     ):
     """
@@ -55,10 +54,6 @@ def build(recipe,
         Use this docker builder to build the recipe, copying over the built
         recipe to the host's conda-bld directory.
 
-    disable_travis_env_vars : bool
-        By default, any env vars starting with TRAVIS are sent to the Docker
-        container. Use this to disable that behavior.
-
     mulled_images : list
         If mulled_test == True, the name of the mulled docker image will be
         appended to this list.
@@ -69,12 +64,6 @@ def build(recipe,
     _env = {}
     _env.update({k:str(v) for k, v in os.environ.items() if utils.allowed_env_var(k)})
     _env.update({k:str(v) for k, v in dict(env).items() if utils.allowed_env_var(k)})
-
-    # see https://github.com/bioconda/bioconda-recipes/issues/3271
-    if disable_travis_env_vars:
-        for k in _env.keys():
-            if k.startswith('TRAVIS'):
-                _env.pop(k)
 
     logger.info(
         "BUILD START %s, env: %s",
@@ -176,7 +165,6 @@ def build_recipes(
     mulled_upload_target=None,
     check_channels=None,
     quick=False,
-    disable_travis_env_vars=False,
 ):
     """
     Build one or many bioconda packages.
@@ -229,9 +217,6 @@ def build_recipes(
         Speed up recipe filtering by only checking those that are reasonably
         new.
 
-    disable_travis_env_vars : bool
-        By default, any env vars starting with TRAVIS are sent to the Docker
-        container. Use this to disable that behavior.
     """
     orig_config = config
     config = utils.load_config(config)
