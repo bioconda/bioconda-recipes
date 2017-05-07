@@ -577,7 +577,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
             with temp_os(platform):
                 try:
                     skip = MetaData(recipe).skip()
-                except UnableToParse:
+                except:
                     logger.error("FILTER: error parsing %s.", recipe)
                     # If meta.yaml can't be parsed, continue to building in
                     # order to get a proper error message.
