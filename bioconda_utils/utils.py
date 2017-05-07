@@ -17,6 +17,8 @@ from jsonschema import validate
 import datetime
 import tempfile
 from distutils.version import LooseVersion
+import time
+import threading
 
 
 from conda_build import api
@@ -387,6 +389,7 @@ def built_package_path(recipe, env=None):
             no_download_source=True,
             set_build_id=False)
         path = api.get_output_file_path(recipe, config=config)
+
     return path
 
 
@@ -572,13 +575,24 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
                 platform = 'darwin'
 
             with temp_os(platform):
-                skip = MetaData(recipe).skip()
+                try:
+                    skip = MetaData(recipe).skip()
+                except UnableToParse:
+                    logger.error("FILTER: error parsing %s.", recipe)
+                    # If meta.yaml can't be parsed, continue to building in
+                    # order to get a proper error message.
+                    return True
 
         if skip:
             logger.debug(
                 'FILTER: not building %s because '
                 'it defines skip for this env', pkg)
             return False
+
+        assert not pkg.endswith("_.tar.bz2"), ("rendered path {} does not "
+            "contain a build number and recipe does not "
+            "define skip for this environment. "
+            "This is a conda bug.".format(pkg))
 
         logger.debug(
             'FILTER: building %s because it is not in channels '
@@ -756,3 +770,23 @@ def modified_recipes(git_range, recipe_folder, config_file, full=False):
     if full:
         return existing
     return [os.path.relpath(recipe_folder, m) for m in existing]
+
+
+class Progress:
+    def __init__(self):
+        self.thread = threading.Thread(target=self.progress)
+        self.stop = False
+
+    def progress(self):
+        while not self.stop:
+            print(".", end="")
+            time.sleep(60)
+        print("")
+
+    def __enter__(self):
+        self.thread.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop = True
+        self.thread.join()
