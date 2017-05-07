@@ -38,7 +38,5 @@ export PATH=/anaconda/bin:$PATH
 $SCRIPT_DIR/../simulate-travis.py --set-channel-order
 $SCRIPT_DIR/../simulate-travis.py --install-requirements
 
-conda install -y conda-build=2.1.10
-
 conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
 conda config --add channels file://anaconda/conda-bld
