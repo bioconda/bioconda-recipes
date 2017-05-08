@@ -4,4 +4,3 @@ cd build/
 cmake ..
 make
 cp regtools $PREFIX/bin
-chmod +x $PREFIX/bin/regtools
