@@ -805,6 +805,7 @@ class Progress:
     def progress(self):
         while not self.stop:
             print(".", end="")
+            sys.stdout.flush()
             time.sleep(60)
         print("")
 
