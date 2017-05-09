@@ -1,0 +1,82 @@
+{% set version = '0.9-1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-biglm
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: biglm_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/biglm_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/biglm/biglm_{{ version }}.tar.gz
+
+
+  sha256: e189554913a3b162c8be04e7d0d8143eb4da0fcec56113cb1ce99f42fc22f0fc
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: RSQLite, RODBC
+requirements:
+  build:
+    - r-base
+    - r-dbi
+    - posix                # [win]
+    - {{native}}toolchain  # [win]
+    - gcc                  # [not win]
+
+  run:
+    - r-base
+    - r-dbi
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('biglm')"  # [not win]
+    - "\"%R%\" -e \"library('biglm')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=biglm
+  license: GPL
+  summary: Regression for data too large to fit in memory
+  license_family: GPL
+
+# The original CRAN metadata for this package was:
+
+# Package: biglm
+# Type: Package
+# Title: bounded memory linear and generalized linear models
+# Version: 0.9-1
+# Author: Thomas Lumley
+# Maintainer: Thomas Lumley <tlumley@u.washington.edu>
+# Description: Regression for data too large to fit in memory
+# License: GPL
+# Suggests: RSQLite, RODBC
+# Depends: DBI, methods
+# Enhances: leaps
+# Packaged: 2013-05-15 21:18:22 UTC; tlum005
+# NeedsCompilation: yes
+# Repository: CRAN
+# Date/Publication: 2013-05-16 00:27:42
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
