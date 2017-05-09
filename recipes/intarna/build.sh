@@ -3,7 +3,7 @@
 ## Choose extra configure options depending on the operating system
 ## (mac or linux)
 ##
-CXXFLAGS="$CXXFLAGS";
+CXXFLAGS="$CXXFLAGS -w"; # suppress warnings
 LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
 CXX=g++;
 CC=gcc;
