@@ -640,7 +640,7 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
     try:
         for i, recipe in enumerate(sorted(recipes)):
             perc = (i + 1) / nrecipes * 100
-            print(template.format(i + 1, nrecipes, perc, recipe))
+            print(template.format(i + 1, nrecipes, perc, recipe), end='')
             targets = set()
             for env in env_matrix:
                 pkg = built_package_path(recipe, env)
@@ -648,11 +648,13 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
                     targets.update([Target(pkg, env)])
             if targets:
                 yield recipe, targets
+            print(end='\r')
     except sp.CalledProcessError as e:
         logger.debug(e.stdout)
         logger.error(e.stderr)
         exit(1)
-    print(flush=True)
+    finally:
+        print(flush=True)
 
 
 def get_blacklist(blacklists, recipe_folder):
@@ -805,6 +807,7 @@ class Progress:
     def progress(self):
         while not self.stop:
             print(".", end="")
+            sys.stdout.flush()
             time.sleep(60)
         print("")
 
