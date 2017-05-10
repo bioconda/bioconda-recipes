@@ -1,5 +1,6 @@
 #!/bin/bash
 
+./prepare
 ./configure \
     --prefix=$PREFIX \
     --without-x \
