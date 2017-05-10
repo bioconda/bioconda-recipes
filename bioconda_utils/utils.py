@@ -755,7 +755,8 @@ def modified_recipes(git_range, recipe_folder, config_file, full=False):
         [
             'git', 'diff', '--relative={}'.format(recipe_folder),
             '--name-only',
-            git_range
+            git_range,
+            "--"
         ] +
         [
             os.path.join(recipe_folder, '*'),
