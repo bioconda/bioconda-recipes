@@ -1,0 +1,66 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-mvtnorm
+  # Note that conda versions cannot contain -, so any -'s in the version have
+  # been replaced with _'s.
+  version: "1.0_6"
+
+source:
+  fn: mvtnorm_1.0-6.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/mvtnorm_1.0-6.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/mvtnorm/mvtnorm_1.0-6.tar.gz
+  md5: cb69426868fd3e330412b8491901d9d4
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+
+requirements:
+  build:
+    - r-base
+    - posix               # [win]
+    - {{native}}toolchain # [win]
+    - gcc                 # [not win]
+
+  run:
+    - r-base
+
+test:
+  commands:
+    - $R -e "library('mvtnorm')" # [not win]
+    - "\"%R%\" -e \"library('mvtnorm')\"" # [win]
+
+about:
+  home: http://mvtnorm.R-forge.R-project.org
+  license: GPL-2
+  summary: Computes multivariate normal and t probabilities, quantiles, random deviates and densities.
+  license_family: GPL2
+
+# The original CRAN metadata for this package was:
+
+# Package: mvtnorm
+# Title: Multivariate Normal and t Distributions
+# Version: 1.0-6
+# Date: 2017-03-01
+# Authors@R: c(person("Alan", "Genz", role = "aut"), person("Frank", "Bretz", role = "aut"), person("Tetsuhisa", "Miwa", role = "aut"), person("Xuefei", "Mi", role = "aut"), person("Friedrich", "Leisch", role = "ctb"), person("Fabian", "Scheipl", role = "ctb"), person("Bjoern", "Bornkamp", role = "ctb"), person("Martin", "Maechler", role = "ctb"), person("Torsten", "Hothorn", role = c("aut", "cre"), email = "Torsten.Hothorn@R-project.org"))
+# Description: Computes multivariate normal and t probabilities, quantiles, random deviates and densities.
+# Imports: stats, methods
+# Depends: R(>= 1.9.0)
+# License: GPL-2
+# URL: http://mvtnorm.R-forge.R-project.org
+# NeedsCompilation: yes
+# Packaged: 2017-03-02 13:15:25 UTC; hothorn
+# Author: Alan Genz [aut], Frank Bretz [aut], Tetsuhisa Miwa [aut], Xuefei Mi [aut], Friedrich Leisch [ctb], Fabian Scheipl [ctb], Bjoern Bornkamp [ctb], Martin Maechler [ctb], Torsten Hothorn [aut, cre]
+# Maintainer: Torsten Hothorn <Torsten.Hothorn@R-project.org>
+# Repository: CRAN
+# Date/Publication: 2017-03-02 16:14:20
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
