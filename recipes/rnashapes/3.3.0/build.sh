@@ -9,7 +9,7 @@ ls $PREFIX/bin/
 ls $PREFIX/lib/
 cp x86_*/* $PREFIX/bin/
 cp x86_* $PREFIX/bin/ -r
-cp ../lib/* $PREFIX/lib/
+cp ../lib/* $PREFIX/lib/ -r
 cp RNAshapes $PREFIX/bin/
 chmod +x $PREFIX/bin/*
 ls
