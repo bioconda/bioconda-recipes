@@ -1,6 +1,4 @@
 #!/bin/sh
 
 cd Misc/Applications/RNAshapes/
-./configure --prefix=$PREFIX
-make
-make install
+PREFIX=/tmp/ && make all
