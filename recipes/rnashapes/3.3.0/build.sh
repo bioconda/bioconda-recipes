@@ -1,3 +1,6 @@
 #!/bin/sh
-cp -r bin $PREFIX
-cp -r lib $PREFIX
+
+cd Misc/Applications/RNAshapes/
+./configure --prefix=$PREFIX
+make
+make install
