@@ -6,7 +6,7 @@ ls
 ls $PREFIX
 PREFIX=$PREFIX && make all 
 ls
-cp x86_*/* $PREFIX
+cp x86_*/* $PREFIX/bin/
 ls
 ls $PREFIX
 
