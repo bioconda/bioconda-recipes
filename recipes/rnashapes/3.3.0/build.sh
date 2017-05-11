@@ -9,6 +9,7 @@ ls
 cp x86_*/* $PREFIX/bin/
 cp x86_* $PREFIX/bin/ -r 
 cp RNAshapes $PREFIX/bin/
+chmod +x $PREFIX/bin/*
 ls
 ls $PREFIX
 
