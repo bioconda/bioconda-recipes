@@ -1,0 +1,55 @@
+{% set version = '0.10.11' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-rmysql
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: RMySQL_{{ version }}.tar.gz
+  url: https://cran.r-project.org/src/contrib/RMySQL_{{ version }}.tar.gz
+  sha256: da405e38d08bb728586c2b9c969f222b0b83fe1df33ad9308eba820b8f03ea88
+
+build:
+  number: 0
+  skip: True  # [win]
+
+#
+# Windows build not currently working
+#
+
+requirements:
+  build:
+    - r-base
+    - r-dbi
+    - posix                # [win]
+    - {{native}}toolchain  # [win]
+    - gcc                  # [not win]
+    - readline 6.2*        # [not win]
+    - mysql-connector-c    # [not win]
+    - icu 58*
+  run:
+    - r-base
+    - r-dbi
+    - libgcc               # [not win]
+    - readline 6.2*        # [not win]
+    - mysql-connector-c    # [not win]
+    - icu 58*
+
+test:
+  commands:
+    - $R -e "library('RMySQL')"  # [not win]
+    - "\"%R%\" -e \"library('RMySQL')\""  # [win]
+
+about:
+  home: https://cran.r-project.org/web/packages/RMySQL/index.html
+  license: GPL-2
+  summary: "A 'DBI' interface to 'MySQL' / 'MariaDB'"
+
+extra:
+  recipe-maintainers:
+    - chambm
+    - bgruening
+    - johanneskoester
