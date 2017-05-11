@@ -1,4 +1,12 @@
 #!/bin/sh
-
+ls $PREFIX
+ls
 cd Misc/Applications/RNAshapes/
-PREFIX=$PREFIX && make all
+ls
+ls $PREFIX
+PREFIX=$PREFIX && make all 
+ls
+cp x86_*/* $PREFIX
+ls
+ls $PREFIX
+
