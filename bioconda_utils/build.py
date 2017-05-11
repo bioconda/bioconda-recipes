@@ -171,7 +171,6 @@ def build_recipes(
     anaconda_upload=False,
     mulled_upload_target=None,
     check_channels=None,
-    quick=False,
 ):
     """
     Build one or many bioconda packages.
@@ -220,10 +219,6 @@ def build_recipes(
         `config['channels'][0]`). If this list is empty, then do not check any
         channels.
 
-    quick : bool
-        Speed up recipe filtering by only checking those that are reasonably
-        new.
-
     """
     orig_config = config
     config = utils.load_config(config)
@@ -253,23 +248,6 @@ def build_recipes(
         return True
 
     logger.debug('recipes: %s', recipes)
-    if quick:
-        if not isinstance(orig_config, str):
-            raise ValueError("Need a config filename (and not a dict) for "
-                             "quick filtering since we need to check that "
-                             "file in the master branch")
-        unblacklisted = [
-            os.path.join(recipe_folder, i)
-            for i in utils.newly_unblacklisted(orig_config, recipe_folder)
-        ]
-        logger.debug('Unblacklisted: %s', unblacklisted)
-        changed = [
-            os.path.join(recipe_folder, i) for i in
-            utils.changed_since_master(recipe_folder)
-        ]
-        logger.debug('Changed: %s', changed)
-        recipes = set(unblacklisted + changed).intersection(recipes)
-        logger.debug('Quick-filtered recipes: %s', recipes)
 
     logger.info('Filtering recipes')
     recipe_targets = dict(
@@ -278,7 +256,7 @@ def build_recipes(
     )
     recipes = list(recipe_targets.keys())
 
-    dag, name2recipes = utils.get_dag(recipes, blacklist=blacklist)
+    dag, name2recipes = utils.get_dag(recipes, config=orig_config, blacklist=blacklist)
     recipe2name = {}
     for k, v in name2recipes.items():
         for i in v:
