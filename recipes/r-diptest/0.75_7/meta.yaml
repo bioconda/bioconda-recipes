@@ -1,0 +1,56 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+{% set package = 'diptest' %}
+{% set version = '0.75-7' %}
+
+package:
+  name: "r-{{ package }}"
+  version: "{{ version | replace('-', '_') }}"
+
+source:
+  fn: "{{ package }}_{{ version | replace('-', '_') }}.tar.gz"
+  url:
+    - "https://cran.r-project.org/src/contrib/{{ package }}_{{ version }}.tar.gz"
+    - "http://cran.r-project.org/src/contrib/Archive/{{ package }}/{{ package }}_{{ version }}.tar.gz"
+  sha256: 462900100ca598ef21dbe566bf1ab2ce7c49cdeab6b7a600a50489b05f61b61b
+
+build:
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - posix               # [win]
+    - {{native}}toolchain # [win]
+    - gcc                 # [not win]
+
+  run:
+    - r-base
+
+test:
+  commands:
+    - $R -e "library('{{ package }}')" # [not win]
+    - "\"%R%\" -e \"library('{{ package }}')\"" # [win]
+
+about:
+  home: https://cran.r-project.org/web/packages/prabclus/index.html
+  license: GPL (>=2)
+  summary: Distance-based parametric bootstrap tests for clustering with spatial neighborhood information. Some distance measures, Clustering of presence-absence, abundance and multilocus genetical data for species delimitation, nearest neighbor based noise detection. Try package?prabclus for on overview.
+
+# Package: diptest
+# Version: 0.75-7
+# Date: 2015-06-07
+# Title: Hartigan's Dip Test Statistic for Unimodality - Corrected
+# Description: Compute Hartigan's dip test statistic for unimodality /
+#  multimodality and provide a test with simulation based p-values,  where
+#  the original public code has been corrected.
+# Maintainer: Martin Maechler <maechler@stat.math.ethz.ch>
+# BuildResaveData: no
+# Author: Martin Maechler (originally from Fortran and S-plus by Dario Ringach, NYU.edu)
+# License: GPL (>= 2)
+# NeedsCompilation: yes
+# Packaged: 2016-12-05 14:54:04 UTC; hornik
+# Repository: CRAN
+# Date/Publication: 2016-12-05 18:28:47
