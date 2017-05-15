@@ -1,0 +1,45 @@
+{% set version = "0.5.9" %}
+
+package:
+  name: hicup
+  version: {{ version }}
+
+build:
+  number: 0
+
+requirements:
+  run:
+    - perl
+    - bowtie2
+    - bowtie
+    - r
+    - samtools
+
+source:
+  fn: hicup_v{{ version }}.tar.gz
+  url: http://www.bioinformatics.babraham.ac.uk/projects/hicup/hicup_v{{ version }}.tar.gz
+  md5: 58702fb9c7f2f4887f4113bf284d1b98
+  patches:
+    - get_captured_reads.patch
+
+test:
+  commands:
+    - "hicup_mapper"
+    - "hicup_digester"
+    - "hicup_truncater"
+    - "hicup_deduplicator"
+    - "hicup_truncater"
+    - "hicup"
+    - "hicup2hicpipe"
+    - "hicup2gothic"
+    - "hicup2fithic"
+    - "hicup2homer"
+
+    # This one has a different error code
+    - "get_captured_reads || [[ $? == 255 ]]"
+
+
+about:
+  home: 'http://www.bioinformatics.babraham.ac.uk/projects/hicup/'
+  license: GPLv3
+  summary: 'A tool for mapping and performing quality control on Hi-C data'

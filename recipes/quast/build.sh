@@ -10,23 +10,20 @@ export CXXFLAGS="-DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
 export LDFLAGS="-L${BOOST_LIBRARY_DIR}"
 export CFLAGS="-DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
 
-
-sed -i 's|^CXXFLAGS.*||' libs/E-MEM-linux/Makefile
-sed -i 's|^CFLAGS.*||' libs/E-MEM-linux/Makefile
-sed -i 's|^LDFLAGS.*||' libs/E-MEM-linux/Makefile
-
-
 BINARY_HOME=$PREFIX/bin
 QUAST_HOME=$PREFIX/opt/quast-$PKG_VERSION
 
 mkdir -p $BINARY_HOME
 mkdir -p $QUAST_HOME
 
-cp -R $SRC_DIR/* $QUAST_HOME
+python "setup.py" install_full
 
-make CFLAGS="-Wall -Wextra -Wunused -mpopcnt -std=gnu++0x -fopenmp -I${PREFIX}/include" -C $PREFIX/opt/quast-4.1/libs/MUMmer3.23-linux
+cp -R $SRC_DIR/*quast.py $QUAST_HOME/
+cp -R $SRC_DIR/icarus.py $QUAST_HOME/
 
-make CFLAGS="-Wall -Wextra -Wunused -mpopcnt -std=gnu++0x -fopenmp -I${PREFIX}/include" -C $PREFIX/opt/quast-4.1/libs/E-MEM-linux
+lib_path=`python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"`
+
+ln -s $lib_path/quast_libs $QUAST_HOME/quast_libs
 
 #Linking to binfolder
 chmod +x $QUAST_HOME/quast.py

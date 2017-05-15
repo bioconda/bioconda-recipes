@@ -1,36 +1,40 @@
-{% set version = "1.3.1" %}
+{% set version = "1.4.1" %}
 
 package:
   name: samtools
   version: {{ version }}
 
 build:
-  number: 5
+  number: 0
   skip: False
 
 source:
   fn: samtools-{{ version }}.tar.bz2
   url: https://github.com/samtools/samtools/releases/download/{{ version }}/samtools-{{ version }}.tar.bz2
-  md5: a7471aa5a1eb7fc9cc4c6491d73c2d88
+  md5: 60186f7817813baf99abc4b802f61138
 
 requirements:
   build:
   - gcc  # [not osx]
   - llvm # [osx]
+    # ncurses not compatible with samtools, see note in build.sh
     #- ncurses {{CONDA_NCURSES}}*
   - zlib
+  - bzip2
   - curl
+  - xz
   run:
   - libgcc # [not osx]
-    # curses from default channel fails, see note in build.sh
     #- ncurses {{CONDA_NCURSES}}*
   - zlib
   - curl
+  - xz
 
 about:
   home: https://github.com/samtools/samtools
   license: MIT
   summary: Tools for dealing with SAM, BAM and CRAM files
+
 test:
   commands:
     - samtools --help

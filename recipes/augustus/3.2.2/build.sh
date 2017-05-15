@@ -24,3 +24,11 @@ sed -i 's/ perl -w$/ perl/' scripts/*
 mv bin/* $PREFIX/bin/
 mv scripts/* $PREFIX/bin/
 mv config/* $PREFIX/config/
+
+mkdir -p $PREFIX/etc/conda/activate.d/
+echo "export AUGUSTUS_CONFIG_PATH=$PREFIX/config/" > $PREFIX/etc/conda/activate.d/augustus-confdir.sh
+chmod a+x $PREFIX/etc/conda/activate.d/augustus-confdir.sh
+
+mkdir -p $PREFIX/etc/conda/deactivate.d/
+echo "unset AUGUSTUS_CONFIG_PATH" > $PREFIX/etc/conda/deactivate.d/augustus-confdir.sh
+chmod a+x $PREFIX/etc/conda/deactivate.d/augustus-confdir.sh
