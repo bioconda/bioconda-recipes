@@ -1,0 +1,40 @@
+{% set version = '1.1-0' %}
+
+package:
+  name: r-fastmatch
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: fastmatch_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/fastmatch_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/fastmatch/fastmatch_{{ version }}.tar.gz
+  sha256: 20b51aa4838dbe829e11e951444a9c77257dcaf85130807508f6d7e76797007d
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - gcc  # [linux]
+    - llvm  # [osx]
+  run:
+    - r-base
+    - libgcc  # [linux]
+
+test:
+  commands:
+    - $R -e "library('fastmatch')"
+
+about:
+  home: http://www.rforge.net/fastmatch
+  license: GPL-2
+  summary: Package providing a fast match() replacement for cases that require repeated look-ups.
+    It is slightly faster that R's built-in match() function on first match against
+    a table, but extremely fast on any subsequent lookup as it keeps the hash table
+    in memory.
+  license_family: GPL2
