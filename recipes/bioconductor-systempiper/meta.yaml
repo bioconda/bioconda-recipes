@@ -1,11 +1,19 @@
+{% set name = 'systemPipeR' %}
+{% set version = '1.9.0' %}
+
 package:
-  name: bioconductor-systempiper
-  version: 1.8.1
+  name: bioconductor-{{ name|lower }}
+  version: {{ version|replace("-", "_") }}
+
 source:
-  fn: systemPipeR_1.8.1.tar.gz
-  url: http://bioconductor.org/packages/release/bioc/src/contrib/systemPipeR_1.8.1.tar.gz
-  md5: e9b8c86f1ba8ebc82dc2e88a664ca6f9
+  fn: {{ name }}_{{ version }}.tar.gz
+  url:
+    - http://bioconductor.org/packages/release/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz
+  md5: 9790794a52e4ff0c6abd61d24f31b1eb
 build:
+  # r-batchjobs is set to skip in OSX, so this package cannot be built for OSX
+  skip: True # [osx]
   number: 0
   rpaths:
     - lib/R/lib/
@@ -53,7 +61,7 @@ requirements:
     - r-rjson
 test:
   commands:
-    - '$R -e "library(''systemPipeR'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
   home: http://bioconductor.org/packages/release/bioc/html/systemPipeR.html
   license: Artistic-2.0
