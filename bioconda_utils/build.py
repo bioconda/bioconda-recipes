@@ -142,7 +142,7 @@ def build(recipe,
         'TEST START via mulled-build %s, %s',
         recipe, utils.envstr(_env))
 
-    res = pkg_test.test_package(pkg_path, base_image=)
+    res = pkg_test.test_package(pkg_path, base_image=None)
 
     # TODO remove the second clause once new galaxy-lib has been released.
     if (res.returncode == 0) and ('Unexpected exit code' not in res.stdout):
