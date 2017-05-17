@@ -138,7 +138,7 @@ def test_package(path,
     cmd += shlex.split(mulled_args)
     logger.debug('mulled-build command: %s' % cmd)
 
-    env = {}
+    env = os.environ.copy()
     if base_image is not None:
         env["DEST_BASE_IMAGE"] = base_image
     return utils.run(cmd, env=env)
