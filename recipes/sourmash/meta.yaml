@@ -7,13 +7,11 @@ package:
   version: {{ version }}
 
 source:
-  fn: sourmash-1.0.tar.gz
+  fn: {{ name|lower }}-{{ version }}.tar.gz
   url: https://github.com/dib-lab/sourmash/archive/9ab243354e6f51b11d3fed89d3c07aa7b56cfcec.tar.gz
   sha256: {{ hash }}
 
 build:
-  # noarch_python: True
-  # preserve_egg_dir: True
   entry_points:
     - sourmash = sourmash_lib.__main__:main
   number: 0
@@ -22,6 +20,8 @@ requirements:
   build:
     - python
     - setuptools
+    - gcc  # [not osx]
+    - llvm  # [osx]
     - cython >=0.25.2
     - screed >=0.9
     - pyyaml >=3.11
@@ -32,7 +32,7 @@ requirements:
 
   run:
     - python
-    - libgcc
+    - libgcc  # [not osx]
     - cython >=0.25.2
     - screed >=0.9
     - pyyaml >=3.11
@@ -43,7 +43,6 @@ requirements:
     - khmer
 
 test:
-  # Python imports
   imports:
     - sourmash_lib
 
