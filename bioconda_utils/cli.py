@@ -55,7 +55,7 @@ def select_recipes(packages, git_range, recipe_folder, config_filename, config, 
         modified = utils.modified_recipes(git_range, recipe_folder, config_filename)
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
-            return
+            return []
 
         # Recipes with changed `meta.yaml` or `build.sh` files
         changed_recipes = [
