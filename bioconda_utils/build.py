@@ -276,7 +276,7 @@ def build_recipes(
         utils.filter_recipes(
             recipes, env_matrix, check_channels, force=force)
     )
-    recipes = list(recipe_targets.keys())
+    recipes = set(list(recipe_targets.keys()))
 
     dag, name2recipes = utils.get_dag(recipes, blacklist=blacklist)
     recipe2name = {}
