@@ -82,6 +82,14 @@ def get_meta(recipe, config):
     """
     Given a package name, find the current meta.yaml file, parse it, and return
     the dict.
+
+    Parameters
+    ----------
+    recipe : str
+        Path to recipe (directory containing the meta.yaml file)
+
+    config : str or dict
+        Config YAML or dict
     """
     cfg = utils.load_config(config)
     env_matrix = cfg['env_matrix']
@@ -89,17 +97,30 @@ def get_meta(recipe, config):
     # TODO: Currently just uses the first env. Should turn this into
     # a generator.
 
-    env = dict(next(iter(utils.EnvMatrix(yaml.load(open(env_matrix))))))
+    env = dict(next(iter(utils.EnvMatrix(cfg['env_matrix']))))
+
     pth = os.path.join(recipe, 'meta.yaml')
     jinja_env = jinja2.Environment()
     content = jinja_env.from_string(
         open(pth, 'r', encoding='utf-8').read()).render(env)
-    meta = yaml.load(content, yaml.RoundTripLoader)
+    meta = yaml.round_trip_load(content, preserve_quotes=True)
     return meta
 
 
 def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
                                             'defaults', 'r']):
+    """
+    Return channel info as a dataframe.
+
+    Parameters
+    ----------
+
+    cache : str
+        Filename of cached channel info
+
+    channels : list
+        Channels to include in the dataframe
+    """
     if cache is not None and os.path.exists(cache):
         df = pd.read_table(cache)
     else:
@@ -131,13 +152,13 @@ def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
     return df
 
 
-def lint(packages, config, df, exclude=None, registry=None):
+def lint(recipes, config, df, exclude=None, registry=None):
     """
     Parameters
     ----------
 
-    packages : list
-        List of packages to lint
+    recipes : list
+        List of recipes to lint
 
     config : str, dict
         Used to pass any necessary environment variables (CONDA_BOOST, etc) to
@@ -200,17 +221,19 @@ def lint(packages, config, df, exclude=None, registry=None):
 
     if exclude is not None:
         # exclude arg is used to skip test for *all* packages
-        to_skip += list(itertools.product(exclude, packages))
+        to_skip += list(itertools.product(exclude, recipes))
 
     for func, recipe in to_skip:
         skip_dict[recipe].append(func)
 
     hits = []
-    for recipe in packages:
-        # lint functions need a parsed meta.yaml so this can't be a lint
-        # function. TODO: do we need a way to skip this the same way we can
-        # skip lint functions? I can't think of a reason we'd want to keep an
-        # unparseable YAML.
+    for recipe in recipes:
+        # Since lint functions need a parsed meta.yaml, checking for parsing
+        # errors can't be a lint function.
+        #
+        # TODO: do we need a way to skip this the same way we can skip lint
+        # functions? I can't think of a reason we'd want to keep an unparseable
+        # YAML.
         try:
             meta = get_meta(recipe, config)
         except (
@@ -249,9 +272,33 @@ def lint(packages, config, df, exclude=None, registry=None):
 
 
 def markdown_report(report=None):
+    """
+    Return a rendered Markdown string.
+
+    Parameters
+    ----------
+    report : None or pandas.DataFrame
+        If None, linting assumed to be successful. If dataframe, it's provided
+        to the lint failure template.
+    """
     if report is None:
         tmpl = utils.jinja.get_template("lint_success.md")
         return tmpl.render()
     else:
         tmpl = utils.jinja.get_template("lint_failure.md")
         return tmpl.render(report=report)
+
+
+def bump_build_number(d):
+    """
+    Increase the build number of a recipe, adding the relevant keys if needed.
+
+    d : dict-like
+        Parsed meta.yaml, from get_meta()
+    """
+    if 'build' not in d:
+        d['build'] = {'number': 0}
+    elif 'number' not in d['build']:
+        d['build']['number'] = 0
+    d['build']['number'] += 1
+    return d

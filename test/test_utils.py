@@ -273,9 +273,9 @@ def test_get_deps():
                 - two
     """, from_string=True)
     r.write_recipes()
-    assert list(utils.get_deps(r.recipe_dirs['two'])) == ['one']
-    assert list(utils.get_deps(r.recipe_dirs['three'], build=True)) == ['one']
-    assert list(utils.get_deps(r.recipe_dirs['three'], build=False)) == ['two']
+    assert list(utils.get_deps(r.recipe_dirs['two'], config={})) == ['one']
+    assert list(utils.get_deps(r.recipe_dirs['three'], config={}, build=True)) == ['one']
+    assert list(utils.get_deps(r.recipe_dirs['three'], config={}, build=False)) == ['two']
 
 
 def test_env_matrix():
