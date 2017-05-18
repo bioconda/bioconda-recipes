@@ -12,7 +12,7 @@ weeder_exe = "weeder2"
 
 weeder_help = sp.check_output(
         os.path.join(weeder_dir, weeder_exe), 
-        stderr=sp.STDOUT)
+        stderr=sp.STDOUT).decode()
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", dest="fname")
 args, unknownargs = parser.parse_known_args()
