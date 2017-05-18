@@ -10,7 +10,7 @@ CARGO_URL=http://depot.galaxyproject.org/software/
 
 # Download and unpack
 TARBALL=${PKG_NAME}_${PKG_VERSION}_src_all.tar.gz
-wget ${CARGO_URL}/${PKG_NAME}/$TARBALL -P $TGT -q 
+curl -L ${CARGO_URL}/${PKG_NAME}/$TARBALL -o $TGT/$TARBALL
 
 # Extract FreqFiles directory
 (cd $TGT && tar xvzf $TARBALL FreqFiles)
