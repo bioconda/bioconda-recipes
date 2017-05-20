@@ -141,4 +141,4 @@ def test_package(path,
     env = os.environ.copy()
     if base_image is not None:
         env["DEST_BASE_IMAGE"] = base_image
-    return utils.run(cmd, env=env)
+    return utils.run(cmd, env=env, cwd='/tmp')
