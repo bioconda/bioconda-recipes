@@ -16,7 +16,7 @@ export CPPFLAGS="-I${PREFIX}/include"
     --with-openbabel-include=$PREFIX/include/openbabel-2.0/ \
     --with-openbabel-lib=$PREFIX/lib \
     --with-graphicsmagick-lib=$PREFIX/lib/ \
-    --with-graphicsmagick-include=$PREFIX/include/GraphicsMagick/ \
+    --with-graphicsmagick-include=$PREFIX/include/ \
     --prefix=$PREFIX \
     CXXFLAGS=-Wno-c++11-narrowing
 
