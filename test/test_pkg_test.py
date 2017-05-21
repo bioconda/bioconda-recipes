@@ -35,7 +35,7 @@ one:
       version: 0.1
     test:
       commands:
-        - "ls - la"
+        - "ls -la"
     extra:
       container:
         base: "debian:latest"
