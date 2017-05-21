@@ -33,9 +33,9 @@ if [ "$(uname)" == "Darwin" ]; then
 		CXXFLAGS="$CXXFLAGS";
 		LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
 
-    export CXXFLAGS="$CXXFLAGS -stdlib=libc++ -std=c++11 -I${PREFIX}/include "
-    export CXX_FLAGS="${CXX_FLAGS} -stdlib=libc++ -std=c++11 -I${PREFIX}/include "
-    export CMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++11 -I${PREFIX}/include "
+    export CXXFLAGS="$CXXFLAGS -stdlib=libc++ -std=c++11 -I${PREFIX}/include -DSINGLE_THREAD"
+    export CXX_FLAGS="${CXX_FLAGS} -stdlib=libc++ -std=c++11 -I${PREFIX}/include -DSINGLE_THREAD"
+    export CMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++11 -I${PREFIX}/include -DSINGLE_THREAD"
     export LDFLAGS="$LDFLAGS -stdlib=libc++"
     export LD_FLAGS="${LD_FLAGS} -stdlib=libc++"
     export CMAKE_LDFLAGS="${CMAKE_LDFLAGS} -stdlib=libc++"
