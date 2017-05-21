@@ -28,10 +28,10 @@ one:
 
 
 RECIPE_CUSTOM_BASE = dedent("""
-two:
+one:
   meta.yaml: |
     package:
-      name: two
+      name: one
       version: 0.1
     test:
       commands:
