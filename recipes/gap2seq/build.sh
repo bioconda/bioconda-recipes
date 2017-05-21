@@ -33,21 +33,15 @@ if [ "$(uname)" == "Darwin" ]; then
 		CXXFLAGS="$CXXFLAGS";
 		LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
 
-    export CXXFLAGS="$CXXFLAGS -stdlib=libc++"
-    export CXX_FLAGS="${CXX_FLAGS} -stdlib=libc++"
-    export CMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -stdlib=libc++"
+    export CXXFLAGS="$CXXFLAGS -stdlib=libc++ -std=c++11"
+    export CXX_FLAGS="${CXX_FLAGS} -stdlib=libc++ -std=c++11"
+    export CMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++11"
     export LDFLAGS="$LDFLAGS -stdlib=libc++"
     export LD_FLAGS="${LD_FLAGS} -stdlib=libc++"
     export CMAKE_LDFLAGS="${CMAKE_LDFLAGS} -stdlib=libc++"
 
     export CXX=clang++
     export CC=clang
-
-		echo "gap2seq build - Darwin detected - env is"
-		env
-		echo "gap2seq build - end of env"
-else
-		echo "gap2seq build - Darwin NOT detected - env not changed"
 fi
 
 
