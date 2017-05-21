@@ -77,5 +77,5 @@ def test_pkg_test_custom_base_image():
     """
     Running a mulled-build test with a custom base image.
     """
-    built_package = _build_pkg(RECIPE_CUSTOM_BASE)
+    build_package = _build_pkg(RECIPE_CUSTOM_BASE)
     res = pkg_test.test_package(build_package, base_image='debian:latest')
