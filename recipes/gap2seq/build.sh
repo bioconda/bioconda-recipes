@@ -1,8 +1,8 @@
 #!/bin/bash
 
-set -efu -o pipefail
+set -ef -o pipefail
 
-echo BUILDING GAP2SEQ
+echo BUILDING GAP2SEQ bldvar 1
 echo uname is:
 uname -a
 echo env is:
