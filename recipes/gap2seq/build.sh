@@ -9,6 +9,9 @@ echo env is:
 env
 echo ======================================== end of env =================================
 
+if [ -z "$CPPFLAGS" ]; then export CPPFLAGS=""; fi
+if [ -z "$LDFLAGS" ]; then export LDFLAGS=""; fi
+
 export CPPFLAGS="$CPPFLAGS -I${PREFIX}/include"
 export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
 
@@ -19,6 +22,13 @@ mkdir -p $PREFIX/bin
 
 if [ "$(uname)" == "Darwin" ]; then
     # c++11 compatibility
+
+		if [ -z "$CXXFLAGS" ]; then export CXXFLAGS=""; fi
+		if [ -z "${CXX_FLAGS}" ]; then export CXX_FLAGS=""; fi
+		if [ -z "${CMAKE_CXX_FLAGS}" ]; then export CMAKE_CXX_FLAGS=""; fi
+		if [ -z "${LDFLAGS}" ]; then export LDFLAGS=""; fi
+		if [ -z "${LD_FLAGS}" ]; then export LD_FLAGS=""; fi
+		if [ -z "${CMAKE_LD_FLAGS}" ]; then export CMAKE_LD_FLAGS=""; fi
 
     export CXXFLAGS="$CXXFLAGS -stdlib=libc++"
     export CXX_FLAGS="${CXX_FLAGS} -stdlib=libc++"
