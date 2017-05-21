@@ -9,6 +9,9 @@ echo env is:
 env
 echo ======================================== end of env =================================
 
+export CPPFLAGS="$CPPFLAGS -I${PREFIX}/include"
+export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
+
 mkdir -p build
 pushd build
 
@@ -17,17 +20,17 @@ mkdir -p $PREFIX/bin
 if [ "$(uname)" == "Darwin" ]; then
     # c++11 compatibility
 
-    export CXXFLAGS=' -stdlib=libc++'
-    export CXX_FLAGS=' -stdlib=libc++'
-    export CMAKE_CXX_FLAGS=' -stdlib=libc++'
-    export LDFLAGS=' -stdlib=libc++'
-    export LD_FLAGS=' -stdlib=libc++'
-    export CMAKE_LDFLAGS=' -stdlib=libc++'
-		echo gap2seq build - Darwin detected; env is
+    export CXXFLAGS="$CXXFLAGS -stdlib=libc++"
+    export CXX_FLAGS="${CXX_FLAGS} -stdlib=libc++"
+    export CMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -stdlib=libc++"
+    export LDFLAGS="$LDFLAGS -stdlib=libc++"
+    export LD_FLAGS="${LD_FLAGS} -stdlib=libc++"
+    export CMAKE_LDFLAGS="${CMAKE_LDFLAGS} -stdlib=libc++"
+		echo "gap2seq build - Darwin detected - env is"
 		env
-		echo gap2seq build - end of env
+		echo "gap2seq build - end of env"
 else
-		echo gap2seq build - Darwin NOT detected, env not changed
+		echo "gap2seq build - Darwin NOT detected - env not changed"
 fi
 
 
