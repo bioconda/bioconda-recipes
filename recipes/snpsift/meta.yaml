@@ -1,3 +1,8 @@
+{% set snpeff_ver = "v4_3m" %}
+# NOTE: if the version contains a trailing letter, use the <d>.<d>.1<l> format
+{% set version = "4.3.1m" %}
+{% set sha256 = "b218a3e673cf90c96b00e806a5ea491db48d0085c9a4eda4c57899e08da08154" %}
+
 about:
   home: 'http://snpeff.sourceforge.net/SnpSift.html'
   license: "LGPLv3"
@@ -5,23 +10,26 @@ about:
 
 package:
   name: snpsift
-  version: '4.3'
+  version: {{ version }}
 
 build:
-  number: 2
+  number: 0
   skip: False
 
 source:
-  fn: snpEff_v4_3_2.zip
-  md5: 275cf9a8cc08cebf55c03fdec01eb578
-  url: http://downloads.sourceforge.net/project/snpeff/snpEff_v4_3_core.zip
+  fn: snpEff_{{ snpeff_ver }}_core.zip
+  url: http://downloads.sourceforge.net/project/snpeff/snpEff_{{ snpeff_ver }}_core.zip
+  sha256: {{ sha256 }}
 
 requirements:
   run:
-      - java-jdk
+      - openjdk
       - python
 
 test:
     commands:
       - SnpSift 2>&1 > /dev/null | grep "SnpSift version 4.3"
       - echo | SnpSift filter "(CHROM == '2')" >/dev/null 2>&1
+
+extra:
+  notes: 'Note that the package version is slightly different from upstream, this is to make sure conda will order the package versions correctly.'
