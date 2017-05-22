@@ -18,9 +18,12 @@ export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
 mkdir -p build
 pushd build
 
+
 mkdir -p $PREFIX/bin
 
 if [ "$(uname)" == "Darwin" ]; then
+		ln -s ${PREFIX}/include/boost ../thirdparty/gatb-core/thirdparty/
+
     # c++11 compatibility
 
 		if [ -z "$CXXFLAGS" ]; then export CXXFLAGS=""; fi
@@ -40,12 +43,16 @@ if [ "$(uname)" == "Darwin" ]; then
     export LD_FLAGS="${LD_FLAGS} -stdlib=libc++"
     export CMAKE_LDFLAGS="${CMAKE_LDFLAGS} -stdlib=libc++"
 
+		export C_INCLUDE_PATH=${PREFIX}/include
+		export CPLUS_INCLUDE_PATH=${PREFIX}/include
+		export LD_LIBRARY_PATH=${PREFIX}/lib
+		export BOOST_ROOT=${PREFIX}
+
     export CXX=clang++
     export CC=clang
 fi
 
-
-cmake -DCMAKE_INSTALL_PREFIX=$PREFIX -DBoost_NO_BOOST_CMAKE=TRUE -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT:PATHNAME=$PREFIX -DBoost_LIBRARY_DIRS:FILEPATH=${PREFIX}/lib ${SRC_DIR}
+cmake -DCMAKE_INSTALL_PREFIX=$PREFIX ${SRC_DIR}
 make Gap2Seq GapCutter GapMerger
 chmod u+x Gap2Seq.sh
 echo copying files: Gap2Seq.sh Gap2Seq GapCutter GapMerger $PREFIX/bin
