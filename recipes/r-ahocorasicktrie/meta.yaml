@@ -1,19 +1,18 @@
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '0.1.0' %}
 
 package:
   name: r-ahocorasicktrie
-  version: "0.1.0"
+  version: {{ version|replace("-", "_") }}
 
 source:
-  fn: AhoCorasickTrie_0.1.0.tar.gz
+  fn: AhoCorasickTrie_{{ version }}.tar.gz
   url:
-    - http://cran.r-project.org/src/contrib/AhoCorasickTrie_0.1.0.tar.gz
-    - http://cran.r-project.org/src/contrib/Archive/AhoCorasickTrie/AhoCorasickTrie_0.1.0.tar.gz
+    - http://cran.r-project.org/src/contrib/AhoCorasickTrie_{{ version }}.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/AhoCorasickTrie/AhoCorasickTrie_{{ version }}.tar.gz
   sha1: b93e226259017fe247df804be0ea546882e15b5b
 
 build:
-  # number: 1
+  number: 1
   skip: True # [osx]
   rpaths:
     - lib/R/lib/
@@ -21,13 +20,15 @@ build:
 
 requirements:
   build:
-    - r
+    - r-base
     - r-rcpp
-    - gcc                 # [not win]
+    - gcc  # [linux]
+    - llvm  # [osx]
 
   run:
-    - r
+    - r-base
     - r-rcpp
+    - libgcc  # [linux]
 
 test:
   commands:
