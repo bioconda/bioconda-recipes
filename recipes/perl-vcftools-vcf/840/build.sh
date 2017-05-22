@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu
+set -euo pipefail
 
 mkdir -p perl-lib/lib
 cp perl/*.pm perl-lib/lib
