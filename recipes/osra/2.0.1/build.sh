@@ -17,7 +17,5 @@ export CPPFLAGS="-I${PREFIX}/include"
     --with-openbabel-lib=$PREFIX/lib \
     --with-graphicsmagick-lib=$PREFIX/lib/ \
     --with-graphicsmagick-include=$PREFIX/include/ \
-    --prefix=$PREFIX \
-    CXXFLAGS=-Wno-c++11-narrowing
-
+    --prefix=$PREFIX
 make all install
