@@ -1,5 +1,22 @@
 #!/bin/env bash
 
+wget https://sourceforge.net/projects/osra/files/gocr-patched/gocr-0.50pre-patched.tgz
+tar -xzf gocr-0.50pre-patched.tgz
+cd gocr-0.50pre-patched/
+make install
+cd ../
+
+
+wget https://sourceforge.net/projects/osra/files/openbabel-patched/openbabel-2.3.2-patched.tgz
+tar -xzf openbabel-2.3.2-patched.tgz
+cd openbabel-2.3.2-patched/
+mkdir build
+cd build
+cmake ../
+make -j2
+make install
+cd ../../
+
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
