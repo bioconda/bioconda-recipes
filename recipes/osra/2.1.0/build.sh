@@ -3,6 +3,8 @@
 wget https://sourceforge.net/projects/osra/files/gocr-patched/gocr-0.50pre-patched.tgz
 tar -xzf gocr-0.50pre-patched.tgz
 cd gocr-0.50pre-patched/
+./configure --prefix=$PREFIX
+make
 make install
 cd ../
 
