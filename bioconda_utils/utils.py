@@ -290,12 +290,25 @@ def get_dag(recipes, config, blacklist=None, restrict=True):
     if blacklist is None:
         blacklist = set()
 
-    # meta.yaml's package:name mapped to the recipe path
-    name2recipe = defaultdict(list)
+    # name2recipe is meta.yaml's package:name mapped to the recipe path.
+    #
+    # A name should map to exactly one recipe. It is possible for multiple
+    # names to map to the same recipe, if the package name somehow depends on
+    # the environment.
+    #
+    # Note that this may change once we support conda-build 3.
+    name2recipe = defaultdict(set)
     for meta, recipe in metadata:
         name = meta['package']['name']
         if name not in blacklist:
-            name2recipe[name].append(recipe)
+            name2recipe[name].update([recipe])
+
+    for k, v in name2recipe.items():
+        if len(v) != 1:
+            raise ValueError(
+                "Multiple recipes identified for the same package:\n"
+                "package={0}, recipes={0}"
+                .format(k, v))
 
     def get_inner_deps(dependencies):
         for dep in dependencies:
