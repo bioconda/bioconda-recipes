@@ -1,9 +1,6 @@
 {% set name = 'biganalytics' %}
 {% set version = '1.1.14' %}
 
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
-
 package:
   name: r-{{ name|lower }}
   version: {{ version|replace("-", "_") }}
@@ -13,24 +10,14 @@ source:
   url:
     - https://cran.r-project.org/src/contrib/{{ name }}_{{ version }}.tar.gz
     - https://cran.r-project.org/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
-
-
-  # You can add a hash for the file here, like md5 or sha1
+  sha1: 3bcfbee008276084cbb37a2b453963c61176a322
   # md5: 49448ba4863157652311cc5ea4fea3ea
-  # sha1: 3bcfbee008276084cbb37a2b453963c61176a322
-  # patches:
-   # List any patch files here
-   # - fix.patch
 
 build:
-  # If this is a new build for the same version, increment the build number.
   number: 0
-
-  # This is required to make R link correctly on Linux.
   rpaths:
     - lib/R/lib/
     - lib/
-
 
 requirements:
   build:
@@ -40,9 +27,7 @@ requirements:
     - r-biglm
     - r-bigmemory
     - r-foreach
-    - posix                # [win]
-    - {{native}}toolchain  # [win]
-    - gcc                  # [not win]
+    - gcc 
 
   run:
     - r-base
@@ -56,13 +41,6 @@ test:
   commands:
     # You can put additional test commands to be run here.
     - $R -e "library('biganalytics')"  # [not win]
-    - "\"%R%\" -e \"library('biganalytics')\""  # [win]
-
-  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
-  # in the recipe that will be run at test time.
-
-  # requires:
-    # Put any additional test requirements here.
 
 about:
   home: http://www.bigmemory.org
@@ -72,30 +50,3 @@ about:
     package may also be helpful. For linear algebra support, see 'bigalgebra'.  For
     mutex (locking) support for advanced shared-memory usage, see 'synchronicity'.
   license_family: LGPL
-
-# The original CRAN metadata for this package was:
-
-# Package: biganalytics
-# Version: 1.1.14
-# Date: 2016-02-17
-# Title: Utilities for 'big.matrix' Objects from Package 'bigmemory'
-# Author: John W. Emerson <jayemerson@gmail.com> and Michael J. Kane <kaneplusplus@gmail.com>
-# Maintainer: Michael J. Kane <bigmemoryauthors@gmail.com>
-# Contact: Jay and Mike <bigmemoryauthors@gmail.com>
-# Depends: methods, stats, utils, bigmemory (>= 4.0.0), foreach, biglm
-# LinkingTo: Rcpp, bigmemory, BH
-# Description: Extend the 'bigmemory' package with various analytics. Functions 'bigkmeans' and 'binit' may also be used with native R objects. For 'tapply'-like functions, the bigtabulate package may also be helpful. For linear algebra support, see 'bigalgebra'.  For mutex (locking) support for advanced shared-memory usage, see 'synchronicity'.
-# License: LGPL-3 | Apache License 2.0
-# Copyright: (C) 2013 John W. Emerson and Michael J. Kane
-# URL: http://www.bigmemory.org
-# LazyLoad: yes
-# Biarch: yes
-# RoxygenNote: 5.0.1
-# NeedsCompilation: yes
-# Packaged: 2016-02-17 22:46:28 UTC; vagrant
-# Repository: CRAN
-# Date/Publication: 2016-02-18 06:51:28
-
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
