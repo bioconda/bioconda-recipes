@@ -310,13 +310,6 @@ def get_dag(recipes, config, blacklist=None, restrict=True):
         if name not in blacklist:
             name2recipe[name].update([recipe])
 
-    for k, v in name2recipe.items():
-        if len(v) != 1:
-            raise ValueError(
-                "Multiple recipes identified for the same package:\n"
-                "package={0}, recipes={0}"
-                .format(k, v))
-
     def get_inner_deps(dependencies):
         for dep in dependencies:
             name = dep.split()[0]
