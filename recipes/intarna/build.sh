@@ -28,6 +28,5 @@ export LDFLAGS=${LDFLAGS}
             --disable-multithreading \
             ${extra_config_options} \
             
-make -j ${CPU_COUNT} && \
-make tests && \
+make
 make install
