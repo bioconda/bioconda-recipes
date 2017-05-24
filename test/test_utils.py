@@ -84,13 +84,16 @@ def single_build(request, recipes_fixture):
     env_matrix = list(utils.EnvMatrix(tmp_env_matrix()))[0]
     if request.param:
         docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
+        mulled_test = True
     else:
         docker_builder = None
+        mulled_test = False
     build.build(
         recipe=recipes_fixture.recipe_dirs['one'],
         recipe_folder='.',
         docker_builder=docker_builder,
         env=env_matrix,
+        mulled_test=mulled_test,
     )
     built_package = recipes_fixture.pkgs['one']
     yield built_package
@@ -107,12 +110,15 @@ def multi_build(request, recipes_fixture):
     """
     if request.param:
         docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
+        mulled_test = True
     else:
         docker_builder = None
+        mulled_test = False
     build.build_recipes(
         recipe_folder=recipes_fixture.basedir,
         docker_builder=docker_builder,
         config={},
+        mulled_test=mulled_test,
     )
     built_packages = recipes_fixture.pkgs
     yield built_packages
@@ -185,6 +191,7 @@ def test_single_build_only(single_build):
     assert os.path.exists(single_build)
 
 
+@pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')
 def test_single_build_with_post_test(single_build):
     pkg_test.test_package(single_build)
 

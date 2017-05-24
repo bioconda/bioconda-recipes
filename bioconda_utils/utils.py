@@ -90,22 +90,29 @@ def sandboxed_env(env):
         os.environ.update(orig)
 
 
-def load_meta(recipe, config):
+def load_all_meta(recipe, config):
     """
-    For each environment, yield the rendered meta.yaml
+    For each environment, yield the rendered meta.yaml.
     """
     cfg = load_config(config)
     env_matrix = EnvMatrix(cfg['env_matrix'])
     for env in env_matrix:
-        with temp_env(env):
-            # Disabling set_build_id prevents the creation of uniquely-named work
-            # directories just for checking the output file.
-            # It needs to be done within the context manager so that it sees the
-            # os.environ.
-            config_obj = api.Config(
-                no_download_source=True,
-                set_build_id=False)
-            yield api.render(recipe, config_obj)[0].meta
+        yield load_meta(recipe, env)
+
+
+def load_meta(recipe, env):
+    """
+    Load metadata for a specific environment.
+    """
+    with temp_env(env):
+        # Disabling set_build_id prevents the creation of uniquely-named work
+        # directories just for checking the output file.
+        # It needs to be done within the context manager so that it sees the
+        # os.environ.
+        config_obj = api.Config(
+            no_download_source=True,
+            set_build_id=False)
+        return api.render(recipe, config_obj)[0].meta
 
 
 @contextlib.contextmanager
@@ -233,7 +240,7 @@ def get_deps(recipe, config, build=True):
         If True yield build dependencies, if False yield run dependencies.
     """
     if isinstance(recipe, str):
-        metadata = load_meta(recipe, config)
+        metadata = load_all_meta(recipe, config)
 
         # TODO: This function is currently used only for creating DAGs, but it's
         # unclear how to manage different dependencies depending on the
@@ -285,7 +292,7 @@ def get_dag(recipes, config, blacklist=None, restrict=True):
     metadata = []
     for recipe in sorted(recipes):
         print(recipe)
-        for r in list(load_meta(recipe, config)):
+        for r in list(load_all_meta(recipe, config)):
             metadata.append((r, recipe))
     if blacklist is None:
         blacklist = set()
