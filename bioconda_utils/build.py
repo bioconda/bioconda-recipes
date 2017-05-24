@@ -144,20 +144,14 @@ def build(recipe,
 
     base_image = utils.load_meta(recipe, env).get('extra/container/base', None)
 
-    res = pkg_test.test_package(pkg_path, base_image=base_image)
+    try:
+        res = pkg_test.test_package(pkg_path, base_image=base_image)
 
-    # TODO remove the second clause once new galaxy-lib has been released.
-    if (res.returncode == 0) and ('Unexpected exit code' not in res.stdout):
         logger.info("TEST SUCCESS %s, %s", recipe, utils.envstr(_env))
-
-        mulled_image = None
-        if mulled_test:
-            mulled_image = pkg_test.get_image_name(pkg_path)
-
+        mulled_image = pkg_test.get_image_name(pkg_path)
         return BuildResult(True, mulled_image)
-    else:
+    except sp.CalledProcessError as e:
         logger.error('TEST FAILED: %s, %s', recipe, utils.envstr(_env))
-        logger.error('STDOUT+STDERR:\n%s', res.stdout)
         return BuildResult(False, None)
 
 
