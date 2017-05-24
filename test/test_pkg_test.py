@@ -15,6 +15,9 @@ from bioconda_utils import build
 #
 
 
+SKIP_OSX = os.environ.get('TRAVIS_OS_NAME') == 'osx'
+
+
 RECIPE_ONE = dedent("""
 one:
   meta.yaml: |
@@ -56,6 +59,7 @@ def _build_pkg(recipe):
     return built_package
 
 
+@pytest.mark.skipif(SKIP_OSX, reason='skipping on osx')
 def test_pkg_test():
     """
     Running a mulled-build test shouldn't cause any errors.
@@ -64,6 +68,7 @@ def test_pkg_test():
     res = pkg_test.test_package(built_package)
 
 
+@pytest.mark.skipif(SKIP_OSX, reason='skipping on osx')
 def test_pkg_test_mulled_build_error():
     """
     Make sure calling mulled-build with the wrong arg fails correctly.
@@ -73,6 +78,7 @@ def test_pkg_test_mulled_build_error():
         res = pkg_test.test_package(built_package, mulled_args='--wrong-arg')
 
 
+@pytest.mark.skipif(SKIP_OSX, reason='skipping on osx')
 def test_pkg_test_custom_base_image():
     """
     Running a mulled-build test with a custom base image.
