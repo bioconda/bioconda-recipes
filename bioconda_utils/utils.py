@@ -41,6 +41,8 @@ jinja = Environment(
 ENV_VAR_WHITELIST = [
     'CONDA_*',
     'PATH',
+    'LC_*',
+    'LANG',
 ]
 
 def allowed_env_var(s):
@@ -79,7 +81,8 @@ def sandboxed_env(env):
     env = dict(env)
     orig = os.environ.copy()
 
-    _env = {k: str(v) for k, v in env.items() if allowed_env_var(k)}
+    _env = {k: v for k, v in orig.items() if allowed_env_var(k)}
+    _env.update({k: str(v) for k, v in env.items() if allowed_env_var(k)})
 
     os.environ = _env
 
