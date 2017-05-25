@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CFLAGS="-I$PREFIX/include"
+export CFLAGS="-I$PREFIX/include -lrt"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
