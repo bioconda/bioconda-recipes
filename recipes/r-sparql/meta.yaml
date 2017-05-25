@@ -1,34 +1,62 @@
+{% set name = 'SPARQL' %}
+{% set version = '1.16' %}
+
 {% set posix = 'm2-' if win else '' %}
 {% set native = 'm2w64-' if win else '' %}
 
 package:
-  name: r-sparql
-  version: "1.16"
+  name: r-{{ name|lower }}
+  version: {{ version|replace("-", "_") }}
+
 source:
-  fn: SPARQL_1.16.tar.gz
+  fn: {{ name }}_{{ version }}.tar.gz
   url:
-    - http://cran.r-project.org/src/contrib/SPARQL_1.16.tar.gz
-    - http://cran.r-project.org/src/contrib/Archive/SPARQL/SPARQL_1.16.tar.gz
-  md5: c9c6ed3829ceaaf8f9b68bc165097ec1
+    - https://cran.r-project.org/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+
+
+  # You can add a hash for the file here, like md5 or sha1
+  # md5: 49448ba4863157652311cc5ea4fea3ea
+  # sha1: 3bcfbee008276084cbb37a2b453963c61176a322
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
 build:
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
   rpaths:
     - lib/R/lib/
     - lib/
+
+
 requirements:
   build:
-    - r
+    - r-base
     - r-rcurl
     - r-xml
+
   run:
-    - r
+    - r-base
     - r-rcurl
     - r-xml
+
 test:
   commands:
-    - $R -e "library('SPARQL')" # [not win]
-    - "\"%R%\" -e \"library('SPARQL')\"" # [win]
+    # You can put additional test commands to be run here.
+    - $R -e "library('SPARQL')"  # [not win]
+    - "\"%R%\" -e \"library('SPARQL')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
 about:
-  #home:
+  home: https://CRAN.R-project.org/package=SPARQL
   license: GPL-3
   summary: 'Use SPARQL to pose SELECT or UPDATE queries to an end-point. '
 

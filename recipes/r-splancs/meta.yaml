@@ -1,36 +1,61 @@
+{% set name = 'splancs' %}
+{% set version = '2.01-40' %}
+
 {% set posix = 'm2-' if win else '' %}
 {% set native = 'm2w64-' if win else '' %}
 
 package:
-  name: r-splancs
-  # Note that conda versions cannot contain -, so any -'s in the version have
-  # been replaced with _'s.
-  version: "2.01_38"
+  name: r-{{ name|lower }}
+  version: {{ version|replace("-", "_") }}
 
 source:
-  fn: splancs_2.01-38.tar.gz
+  fn: {{ name }}_{{ version }}.tar.gz
   url:
-    - http://cran.r-project.org/src/contrib/splancs_2.01-38.tar.gz
-    - http://cran.r-project.org/src/contrib/Archive/splancs/splancs_2.01-38.tar.gz
-  md5: e2ee3eab61569779c228243288029f67
+    - https://cran.r-project.org/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+
+
+  # You can add a hash for the file here, like md5 or sha1
+  # md5: 49448ba4863157652311cc5ea4fea3ea
+  # sha1: 3bcfbee008276084cbb37a2b453963c61176a322
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
 build:
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
   rpaths:
     - lib/R/lib/
     - lib/
+
+
 requirements:
   build:
-    - r
+    - r-base
     - r-sp >=0.9
-    - posix               # [win]
-    - {{native}}toolchain # [win]
-    - gcc                 # [not win]
+    - posix                # [win]
+    - {{native}}toolchain  # [win]
+    - gcc                  # [not win]
+
   run:
-    - r
+    - r-base
     - r-sp >=0.9
+
 test:
   commands:
-    - $R -e "library('splancs')" # [not win]
-    - "\"%R%\" -e \"library('splancs')\"" # [win]
+    # You can put additional test commands to be run here.
+    - $R -e "library('splancs')"  # [not win]
+    - "\"%R%\" -e \"library('splancs')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
 about:
   home: http://www.maths.lancs.ac.uk/~rowlings/Splancs/
   license: GPL (>= 2)
@@ -42,8 +67,8 @@ about:
 # The original CRAN metadata for this package was:
 
 # Package: splancs
-# Version: 2.01-38
-# Date: 2015-09-27
+# Version: 2.01-40
+# Date: 2017-04-14
 # Title: Spatial and Space-Time Point Pattern Analysis
 # Authors@R: c( person("Roger", "Bivand", role = c("cre"), email = "Roger.Bivand@nhh.no"), person("Barry", "Rowlingson", role = "aut"), person("Peter", "Diggle", role = "aut"), person("Giovanni", "Petris", role = "ctb"), person("Stephen", "Eglen", role = "ctb"))
 # Depends: R (>= 2.10.0), sp (>= 0.9)
@@ -52,11 +77,11 @@ about:
 # License: GPL (>= 2)
 # URL: http://www.maths.lancs.ac.uk/~rowlings/Splancs/
 # NeedsCompilation: yes
-# Packaged: 2015-09-28 17:57:23 UTC; rsb
+# Packaged: 2017-04-16 14:54:34 UTC; rsb
 # Author: Roger Bivand [cre], Barry Rowlingson [aut], Peter Diggle [aut], Giovanni Petris [ctb], Stephen Eglen [ctb]
 # Maintainer: Roger Bivand <Roger.Bivand@nhh.no>
 # Repository: CRAN
-# Date/Publication: 2015-09-29 01:08:31
+# Date/Publication: 2017-04-16 21:58:55 UTC
 
 # See
 # http://docs.continuum.io/conda/build.html for
