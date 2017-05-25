@@ -2,6 +2,7 @@
 
 export CFLAGS="-I$PREFIX/include -lrt"
 export LDFLAGS="-L$PREFIX/lib"
+export LDFLAGS="$LDFLAGS -lrt"
 export CPATH=${PREFIX}/include
 
 mkdir -p $PREFIX/bin
