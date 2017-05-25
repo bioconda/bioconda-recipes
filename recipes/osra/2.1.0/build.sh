@@ -14,7 +14,7 @@ tar -xzf openbabel-2.3.2-patched.tgz
 cd openbabel-2.3.2-patched/
 mkdir build
 cd build
-cmake ../
+cmake -DBUILD_GUI=OFF -DCMAKE_INSTALL_PREFIX=$PREFIX -DPYTHON_BINDINGS=OFF -DMINIMAL_BUILD=ON ../
 make -j2
 make install
 cd ../../
