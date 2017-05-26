@@ -1,6 +1,4 @@
 #!/bin/bash
-export LC_ALL=C
-export LANG=C
 mkdir -p $PREFIX/bin
 chmod +x proTRAC_$PKG_VERSION.pl
 
