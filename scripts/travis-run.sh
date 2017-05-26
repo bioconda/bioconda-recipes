@@ -93,7 +93,7 @@ then
 else
     UPLOAD_ARG=""
     LINT_COMMENT_ARG=""
-    if [[ TRAVIS_OS_NAME == "linux" && $TRAVIS_PULL_REQUEST != "false" && -n $GITHUB_TOKEN ]]
+    if [[ $TRAVIS_OS_NAME == "linux" && $TRAVIS_PULL_REQUEST != "false" && -n $GITHUB_TOKEN ]]
     then
         LINT_COMMENT_ARG="--push-comment --pull-request $TRAVIS_PULL_REQUEST"
     fi
