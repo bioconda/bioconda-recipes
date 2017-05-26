@@ -4,6 +4,9 @@
 git config --global user.email "you@example.com"
 git config --global user.name "Your Name"
 
+export USER='root'
+export HOME='/root'
+
 cpanm --installdeps .
 
 if [ -f Build.PL ]; then
