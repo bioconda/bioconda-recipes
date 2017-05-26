@@ -95,7 +95,7 @@ else
     LINT_COMMENT_ARG=""
     if [[ $TRAVIS_OS_NAME == "linux" && $TRAVIS_PULL_REQUEST != "false" && -n $GITHUB_TOKEN ]]
     then
-        LINT_COMMENT_ARG="--push-status --push-comment --pull-request $TRAVIS_PULL_REQUEST"
+        LINT_COMMENT_ARG="--push-comment --pull-request $TRAVIS_PULL_REQUEST"
     fi
     if [[ $SKIP_LINTING == "false"  ]]
     then
