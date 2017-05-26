@@ -95,7 +95,7 @@ else
     LINT_COMMENT_ARG=""
     if [[ $TRAVIS_PULL_REQUEST != "false" && -v GITHUB_TOKEN ]]
     then
-        LINT_COMMENT_ARG="--push-comment"
+        LINT_COMMENT_ARG="--push-comment --pull-request $TRAVIS_PULL_REQUEST"
     fi
     if [[ $SKIP_LINTING == "false"  ]]
     then
