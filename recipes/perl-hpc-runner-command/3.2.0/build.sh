@@ -6,6 +6,8 @@ git config --global user.name "Your Name"
 
 cpanm --installdeps .
 
+sed -i.bak 's|#!/usr/bin/env perl|#!/perl|g' script/hpcrunner.pl
+
 if [ -f Build.PL ]; then
     perl Build.PL
     perl ./Build
