@@ -45,6 +45,13 @@ ENV_VAR_WHITELIST = [
     'LANG',
 ]
 
+
+def get_free_space():
+    """Return free space in MB on disk"""
+    s = os.statvfs(os.getcwd())
+    return s.f_frsize * s.f_bavail / (1024 ** 2)
+
+
 def allowed_env_var(s):
     for pattern in ENV_VAR_WHITELIST:
         if fnmatch.fnmatch(s, pattern):
