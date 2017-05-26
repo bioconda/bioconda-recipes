@@ -1,6 +1,10 @@
 #!/bin/bash
 
 # If it has Build.PL use that, otherwise use Makefile.PL
+
+echo $HOME
+echo $USER
+
 cpanm --installdeps .
 
 if [ -f Build.PL ]; then
