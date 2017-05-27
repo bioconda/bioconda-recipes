@@ -149,7 +149,8 @@ def build(recipe,
         'TEST START via mulled-build %s, %s',
         recipe, utils.envstr(_env))
 
-    base_image = utils.load_meta(recipe, env).get('extra/container/base', None)
+    base_image = utils.get_meta_value(utils.load_meta(recipe, env),
+                                      'extra', 'container', 'base')
 
     try:
         res = pkg_test.test_package(pkg_path, base_image=base_image)

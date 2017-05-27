@@ -39,6 +39,7 @@ one:
     test:
       commands:
         - "ls -la"
+        - locale  # not present in default image
     extra:
       container:
         base: "debian:latest"

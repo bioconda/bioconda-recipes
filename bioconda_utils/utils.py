@@ -57,6 +57,20 @@ def allowed_env_var(s):
         if fnmatch.fnmatch(s, pattern):
             return True
 
+
+def get_meta_value(meta, *keys, default=None):
+    """
+    Return value from metadata.
+    Given keys can define a path in the document tree.
+    """
+    try:
+        for key in keys:
+            meta = meta[key]
+        return meta
+    except KeyError:
+        return default
+
+
 @contextlib.contextmanager
 def temp_env(env):
     """
