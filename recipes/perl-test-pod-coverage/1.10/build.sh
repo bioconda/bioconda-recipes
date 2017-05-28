@@ -2,9 +2,7 @@
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 
-set -x -e
 
-export HOME=/tmp 
 cpanm --installdeps .
 #cpanm --installdeps .
 
