@@ -93,7 +93,7 @@ then
 else
     UPLOAD_ARG=""
     LINT_COMMENT_ARG=""
-    if [[ $TRAVIS_OS_NAME == "linux" && $TRAVIS_PULL_REQUEST != "false" && -n $GITHUB_TOKEN ]]
+    if [[ $TRAVIS_OS_NAME == "linux" && $TRAVIS_PULL_REQUEST != "false" && -n "$GITHUB_TOKEN" ]]
     then
         LINT_COMMENT_ARG="--push-comment --pull-request $TRAVIS_PULL_REQUEST"
     fi
@@ -101,7 +101,6 @@ else
     then
         set -x; bioconda-utils lint recipes config.yml $RANGE_ARG $BIOCONDA_UTILS_LINT_ARGS $LINT_COMMENT_ARG; set +x
     fi
-
 fi
 
 
