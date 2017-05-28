@@ -2,8 +2,9 @@
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 
+set -x -e
 
-cpanm --installdeps .
+HOME=/tmp cpanm --installdeps .
 #cpanm --installdeps .
 
 if [ -f Build.PL ]; then
