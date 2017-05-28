@@ -6,10 +6,11 @@ set -x -e
 
 echo $HOME
 echo $USER
+echo $TMP
 
-export HOME=/tmp
+env |grep -i tmp
 
-HOME=/tmp cpanminus --installdeps .
+HOME=/tmp cpanm --installdeps .
 #cpanm --installdeps .
 
 if [ -f Build.PL ]; then
