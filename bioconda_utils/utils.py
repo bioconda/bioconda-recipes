@@ -646,12 +646,10 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         channel_packages[channel].update(get_channel_packages(channel=channel))
 
     def tobuild(recipe, env):
-        # TODO: get the modification time of recipe/meta.yaml. Only continue
-        # the slow steps below if it's newer than the last commit to master.
-        if force:
-            logger.debug(
-                'FILTER: building %s because force=True', recipe)
-            return True
+        # if force:
+        #     logger.debug(
+        #         'FILTER: building %s because force=True', recipe)
+        #     return True
 
         pkg = os.path.basename(built_package_path(recipe, env))
 
@@ -659,10 +657,11 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
             channel for channel, pkgs in channel_packages.items()
             if pkg in pkgs
         ]
-        if in_channels:
+        if in_channels and not force:
             logger.debug(
                 'FILTER: not building %s because '
-                'it is in channel(s): %s', pkg, in_channels)
+                'it is in channel(s) and it is not forced: %s', pkg,
+                in_channels)
             return False
 
         # with temp_env, MetaData will see everything in env added to
@@ -692,8 +691,8 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
             "This is a conda bug.".format(pkg))
 
         logger.debug(
-            'FILTER: building %s because it is not in channels '
-            'does not define skip, and force is not specified', pkg)
+            'FILTER: building %s because it is not in channels and '
+            'does not define skip', pkg)
         return True
 
     logger.debug('recipes: %s', recipes)
