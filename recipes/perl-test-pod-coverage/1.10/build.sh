@@ -4,13 +4,8 @@
 
 set -x -e
 
-echo $HOME
-echo $USER
-echo $TMP
-
-env |grep -i tmp
-
-HOME=/tmp cpanm --installdeps .
+export HOME=/tmp 
+cpanm --installdeps .
 #cpanm --installdeps .
 
 if [ -f Build.PL ]; then
