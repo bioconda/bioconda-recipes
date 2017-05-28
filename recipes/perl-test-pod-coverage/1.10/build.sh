@@ -5,7 +5,8 @@
 echo $HOME
 echo $USER
 
-cpanm --installdeps .
+HOME=/tmp cpanminus --installdeps .
+#cpanm --installdeps .
 
 if [ -f Build.PL ]; then
     perl Build.PL
