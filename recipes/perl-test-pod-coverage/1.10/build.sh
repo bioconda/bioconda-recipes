@@ -2,8 +2,12 @@
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 
+set -x -e
+
 echo $HOME
 echo $USER
+
+export HOME=/tmp
 
 HOME=/tmp cpanminus --installdeps .
 #cpanm --installdeps .
