@@ -12,8 +12,6 @@ ln -s $outdir/effectivet3 $PREFIX/bin
 chmod 0755 "${PREFIX}/bin/effectivet3"
 
 # Download the models too, put them in module sub-folder.
-# Expect ``sha256sum $FILE`` on Linux, or ``shasum -a 256 $FILE`` on macOS
-command -v sha256sum || alias sha256sum="shasum -a 256"
 
 # Original URL http://effectors.csb.univie.ac.at/sites/eff/files/others/TTSS_ANIMAL-1.0.1.jar
 curl -o TTSS_ANIMAL-1.0.1.jar https://depot.galaxyproject.org/software/TTSS_ANIMAL/TTSS_ANIMAL_1.0.1_src_all.jar
