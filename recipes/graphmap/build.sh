@@ -8,10 +8,10 @@ mkdir -p $PREFIX/bin
 
 
 cd $SRC_DIR/codebase
-wget -O seqlib.tar.gz https://github.com/isovic/seqlib/archive/1d23fd0.tar.gz
+wget -O seqlib.tar.gz https://github.com/isovic/seqlib/archive/55737bb85100af27c8ae761681e169792dcce115.tar.gz
 tar -xvf seqlib.tar.gz -C seqlib --strip-components 1
-wget -O argumentparser.tar.gz https://github.com/isovic/argumentparser/archive/72af976.tar.gz
-tar -xvf argumentparser.tar.gz -C argumentparser --strip-components 1
+wget -O argparser.tar.gz https://github.com/isovic/argparser/archive/72af9764acefbcc92ff76e3aba8a83d9a3e33671.tar.gz
+tar -xvf argparser.tar.gz -C argumentparser --strip-components 1
 
 cd $SRC_DIR
 
