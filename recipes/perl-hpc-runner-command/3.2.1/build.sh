@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# If it has Build.PL use that, otherwise use Makefile.PL
-git config --global user.email "you@example.com"
-git config --global user.name "Your Name"
-
 cpanm --installdeps .
 
 sed -i.bak 's|#!/usr/bin/env perl|#!perl|g' script/hpcrunner.pl
