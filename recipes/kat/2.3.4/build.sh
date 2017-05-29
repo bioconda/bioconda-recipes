@@ -2,10 +2,10 @@
 
 set -x -e
 
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-
+#export INCLUDE_PATH="${PREFIX}/include"
+#export LIBRARY_PATH="${PREFIX}/lib"
+#export LD_LIBRARY_PATH="${PREFIX}/lib"
+#
 export BOOST_INCLUDE_DIR=${PREFIX}/include
 export BOOST_LIBRARY_DIR=${PREFIX}/lib
 export LIBS='-lboost_system -lboost_program_options -lboost_filesystem -lboost_timer'
@@ -44,5 +44,3 @@ make install
 
 ldd `which kat`
 `which kat` --version
-
-exit 1
