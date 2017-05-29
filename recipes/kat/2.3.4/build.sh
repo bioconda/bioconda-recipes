@@ -44,3 +44,5 @@ make install
 
 ldd `which kat`
 `which kat` --version
+
+exit 1
