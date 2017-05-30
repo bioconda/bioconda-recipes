@@ -29,7 +29,12 @@ then
     RANGE="$TRAVIS_BRANCH HEAD"
     if [ $TRAVIS_PULL_REQUEST == "false" ]
     then
-        RANGE="${TRAVIS_COMMIT_RANGE/.../ }"
+        if [ -z "$TRAVIS_COMMIT_RANGE" ]
+        then
+            RANGE="HEAD~1 HEAD"
+        else
+            RANGE="${TRAVIS_COMMIT_RANGE/.../ }"
+        fi
     fi
 
     # If the environment vars changed (e.g., boost, R, perl) then there's no
