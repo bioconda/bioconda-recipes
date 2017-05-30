@@ -1,0 +1,37 @@
+package:
+  name: bison-aligner
+  version: "0.4.0"
+
+build:
+  number: 0
+  skip: False
+
+source:
+  fn: bison-0.4.0.tar.gz
+  sha256: 044c2254a21868979ee7a9b650809d6ec1274b5b1880745da845186adafd2920
+  url: https://github.com/dpryan79/bison/archive/0.4.0.tar.gz
+  patches: patch
+
+requirements:
+  build:
+    - zlib
+    - gcc # [not osx]
+    - llvm # [osx]
+    - openmpi
+    - htslib ==1.2.1
+  run:
+    - zlib
+    - libgcc # [not osx]
+    - openmpi
+    - htslib ==1.2.1
+    - bowtie2
+
+test:
+  commands:
+    - mpiexec bison_index ./ && mpiexec --oversubscribe -n 3 bison -p 1 --local --directional -g ./ -1 sample_1.fq.gz -2 sample_2.fq.gz
+    # bison_herd won't work, since the upstream MPI implementation isn't compiled to allow it
+
+about:
+  home: https://github.com/dpryan79/bison
+  license_file: LICENSE
+  summary: Bisulfite alignment on nodes of a cluster 
