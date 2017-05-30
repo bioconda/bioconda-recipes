@@ -41,6 +41,3 @@ cd tests
 cd ..
 
 make install
-
-ldd `which kat`
-`which kat` --version
