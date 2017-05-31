@@ -1,0 +1,19 @@
+Author: Clemens Blank <blankclemens@ugmail.com>
+Date:   Tue May 30 17:01:46 2017 +0200
+Subject: [PATCH] Fix stepback.R. Removes the "(intercept)" row so it won't look for a max value there.
+    
+diff --git R/stepback.R R/stepback.R
+index c17a53f..e9c8c0e 100755
+--- R/stepback.R
++++ R/stepback.R
+@@ -10,8 +10,8 @@ stepback <- function (y = y, d = d, alfa = 0.05, family = gaussian() , epsilon=0
+       }
+     }
+     while (max > alfa) {
+-        varout <- names(result$coefficients[, 4])[result$coefficients[, 
+-            4] == max][1]
++        varout <- names(result$coefficients[, 4][-1])[result$coefficients[, 
++            4][-1] == max][1]
+         pos <- position(matrix = d, vari = varout)
+         d <- d[, -pos]
+         if (length(result$coefficients[, 4][-1]) == 2) {
