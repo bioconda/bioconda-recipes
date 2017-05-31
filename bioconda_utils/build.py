@@ -149,8 +149,10 @@ def build(recipe,
         'TEST START via mulled-build %s, %s',
         recipe, utils.envstr(_env))
 
-    base_image = utils.get_meta_value(utils.load_meta(recipe, env),
-                                      'extra', 'container', 'base')
+    use_base_image = utils.get_meta_value(
+        utils.load_meta(recipe, env),
+        'extra', 'container', 'extended-base')
+    base_image = 'bioconda/extended-base-image' if use_base_image else None
 
     try:
         res = pkg_test.test_package(pkg_path, base_image=base_image)
