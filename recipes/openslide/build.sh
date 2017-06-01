@@ -15,6 +15,13 @@ sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoscan
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
 
 autoreconf -i
+
+if  [[ "$OSTYPE" == "darwin"* ]]; then
+  ./configure --prefix=${PREFIX} CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib -Wl,-rpath ${PREFIX}/lib" 
+else
+  ./configure --prefix=${PREFIX} CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" 
+fi
+
 ./configure --prefix=${PREFIX} CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" 
 make -j${CPU_COUNT}
 make install
