@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+ln -s $PREFIX/lib $PREFIX/lib64
+
 export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PREFIX/share/pkgconfig:/usr/lib64/pkgconfig:/usr/share/pkgconfig"
 
 # fix automake
@@ -22,7 +24,6 @@ else
   ./configure --prefix=${PREFIX} CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" 
 fi
 
-./configure --prefix=${PREFIX} CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" 
 make -j${CPU_COUNT}
 make install
 
