@@ -4,8 +4,8 @@ package:
 
 build:
   number: 0
-  skip: False
-  binary_relocation: False # [not osx]
+  skip: True # [osx]
+  binary_relocation: False
 
 source:
   fn: bison-0.4.0.tar.gz
@@ -16,22 +16,23 @@ source:
 requirements:
   build:
     - zlib
-    - gcc # [not osx]
-    - llvm # [osx]
+    - gcc
     - openmpi
     - htslib ==1.2.1
   run:
     - zlib
-    - libgcc # [not osx]
+    - libgcc
     - openmpi
     - htslib ==1.2.1
     - bowtie2
 
 test:
   commands:
-    - export OMPI_MCA_plm_rsh_agent="ssh" && mpiexec --allow-run-as-root bison_index ./ && mpiexec --allow-run-as-root --oversubscribe -n 3 bison -p 1 --local --directional -g ./ -1 sample_1.fq.gz -2 sample_2.fq.gz # [not osx]
-    - mpiexec --help && mpiexec bison_index ./ && mpiexec -n 3 bison -p 1 --local --directional -g ./ -1 sample_1.fq.gz -2 sample_2.fq.gz # [osx]
+    - export OMPI_MCA_plm_rsh_agent="ssh" && mpiexec --allow-run-as-root bison_index ./ && mpiexec --allow-run-as-root --oversubscribe -n 3 bison -p 1 --local --directional -g ./ -1 sample_1.fq.gz -2 sample_2.fq.gz
+    # The MPI implementation on OSX seems non-functional
     # bison_herd won't work, since the upstream MPI implementation isn't compiled to allow it
+  requires:
+    - ssh
 
 about:
   home: https://github.com/dpryan79/bison
