@@ -1,57 +1,50 @@
+{% set name = 'MBA' %}
+{% set version = '0.0-9' %}
+
 {% set posix = 'm2-' if win else '' %}
 {% set native = 'm2w64-' if win else '' %}
 
 package:
-  name: r-mba
-  version: "0.0_8"
+  name: r-{{ name|lower }}
+  version: {{ version|replace("-", "_") }}
+
 source:
-  fn: MBA_0.0-8.tar.gz
+  fn: {{ name }}_{{ version }}.tar.gz
   url:
-    - http://cran.r-project.org/src/contrib/MBA_0.0-8.tar.gz
-    - http://cran.r-project.org/src/contrib/Archive/MBA/MBA_0.0-8.tar.gz
-  md5: 9341f832a7db89f212ec776633d58b4b
+    - https://cran.r-project.org/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+  md5: 0ee16e7e563b6dcce89ca585a6c7bbfc
+
 build:
+  number: 0
+
   rpaths:
     - lib/R/lib/
     - lib/
+
 requirements:
   build:
-    - r
+    - r-base
     - r-bh
-    - r-sp
-    - posix               # [win]
-    - {{native}}toolchain # [win]
-    - gcc                 # [not win]
+    - posix                # [win]
+    - {{native}}toolchain  # [win]
+    - gcc                  # [not win]
+
   run:
-    - r
+    - r-base
     - r-bh
-    - r-sp
+
 test:
   commands:
-    - $R -e "library('MBA')" # [not win]
-    - "\"%R%\" -e \"library('MBA')\"" # [win]
+    - $R -e "library('MBA')"  # [not win]
+    - "\"%R%\" -e \"library('MBA')\""  # [win]
+
 about:
+  home: https://CRAN.R-project.org/package=MBA
   license: GPL (>= 2)
-  summary: Scattered data interpolation with Multilevel B-Splines
+  summary: "Functions to interpolate irregularly and regularly spaced data using Multilevel B-spline
+    Approximation (MBA). Functions call portions of the SINTEF Multilevel B-spline Library
+    written by \xD8yvind Hjelle which implements methods developed by Lee, Wolberg and
+    Shin (1997; <doi:10.1109/2945.620490>)."
+
   license_family: GPL3
-
-# The original CRAN metadata for this package was:
-
-# Package: MBA
-# Version: 0.0-8
-# Date: 2014-4-28
-# Title: Multilevel B-spline Approximation
-# Author: Andrew O. Finley <finleya@msu.edu>, Sudipto Banerjee <sudiptob@biostat.umn.edu>
-# Maintainer: Andrew O. Finley <finleya@msu.edu>
-# Depends: R (>= 2.8.0), sp
-# LinkingTo: BH
-# Description: Scattered data interpolation with Multilevel B-Splines
-# License: GPL (>= 2)
-# Repository: CRAN
-# Date/Publication: 2014-04-29 07:59:02
-# Packaged: 2014-04-29 01:42:39 UTC; andy
-# NeedsCompilation: yes
-
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
