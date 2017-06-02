@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export C_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
+
 $PYTHON setup.py install
 
 # Add more build steps here, if they are necessary.
