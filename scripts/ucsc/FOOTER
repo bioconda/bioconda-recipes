@@ -182,6 +182,25 @@ options:
    -xxx=XXX
 
 ================================================================
+========   bamToPsl   ====================================
+================================================================
+bamToPsl - Convert a bam file to a psl and optionally also a fasta file that contains the reads.
+usage:
+   bamToPsl [options] in.bam out.psl
+options:
+   -fasta=output.fa - output query sequences to specified file
+   -chromAlias=file - specify a two-column file: 1: alias, 2: other name
+          for target name translation from column 1 name to column 2 name
+          names not found are passed through intact
+   -nohead          - do not output the PSL header, default has header output
+   -allowDups       - for fasta output, allow duplicate query sequences output
+                    - default is to eliminate duplicate sequences
+                    - runs much faster without the duplicate check
+   -dots=N          - output progress dot(.) every N alignments processed
+
+note: a chromAlias file can be obtained from a UCSC database, e.g.:
+ hgsql -N -e 'select alias,chrom from chromAlias;' hg38 > hg38.chromAlias.tab
+================================================================
 ========   bedClip   ====================================
 ================================================================
 bedClip - Remove lines from bed file that refer to off-chromosome places.
@@ -416,6 +435,8 @@ options:
            expects white space separator.
    -extraIndex=fieldList - If set, make an index on each field in a comma separated list
            extraIndex=name and extraIndex=name,id are commonly used.
+   -sizesIs2Bit  -- If set, the chrom.sizes file is assumed to be a 2bit file.
+   -udcDir=/path/to/udcCacheDir  -- sets the UDC cache dir for caching of remote files.
 
 ================================================================
 ========   bedToExons   ====================================
@@ -523,13 +544,22 @@ options:
    -udcDir=/dir/to/cache - place to put cache for remote bigBed/bigWigs
 
 ================================================================
+========   bigMafToMaf   ====================================
+================================================================
+bigMafToMaf - convert bigMaf to maf file
+usage:
+   bigMafToMaf bigMaf.bb file.maf
+options:
+   -xxx=XXX
+
+================================================================
 ========   bigPslToPsl   ====================================
 ================================================================
-bigPslToPsl - convert bigPsl file to psle
+bigPslToPsl - convert bigPsl file to psl
 usage:
    bigPslToPsl bigPsl.bb output.psl
 options:
-   -xxx=XXX
+   -collapseStrand   if target strand is '+', don't output it
 
 ================================================================
 ========   bigWigAverageOverBed   ====================================
@@ -604,6 +634,8 @@ options:
    -threshold=N.N - clip values to this threshold
    -rootNames - if set just report the root (minus directory and suffix) of file
                 names when using listOfFiles
+   -ignoreMissing - if set do not correlate where either side is missing data
+                Normally missing data is treated as zeros
 
 ================================================================
 ========   bigWigInfo   ====================================
@@ -736,7 +768,7 @@ Output only results of last round from PSI BLAST
 ================================================================
 ========   blat   ====================================
 ================================================================
-blat - Standalone BLAT v. 36x1 fast sequence search command line tool
+blat - Standalone BLAT v. 36x2 fast sequence search command line tool
 usage:
    blat database query [-ooc=11.ooc] output.psl
 where:
@@ -1494,6 +1526,19 @@ options:
    -cdsUpper - cds is in upper case
 
 ================================================================
+========   fastqStatsAndSubsample   ====================================
+================================================================
+fastqStatsAndSubsample v2 - Go through a fastq file doing sanity checks and collecting stats
+and also producing a smaller fastq out of a sample of the data.  The fastq input may be
+compressed with gzip or bzip2.  Unfortunately the fastq input can't be in a pipe
+usage:
+   fastqStatsAndSubsample in.fastq out.stats out.fastq
+options:
+   -sampleSize=N - default 100000
+   -seed=N - Use given seed for random number generator.  Default 0.
+   -smallOk - Not an error if less than sampleSize reads.  out.fastq will be entire in.fastq
+
+================================================================
 ========   fastqToFa   ====================================
 ================================================================
 fastqToFa - Convert from fastq to fasta format.
@@ -1621,14 +1666,14 @@ genePredCheck - validate genePred files or tables
 usage:
    genePredCheck [options] fileTbl ..
 
-If fileTbl is an existing file, then it is check.  Otherwise, if -db
-is provided, then a table by this name is checked.
+If fileTbl is an existing file, then it is checked.  Otherwise, if -db
+is provided, then a table by this name in db is checked.
 
 options:
    -db=db - If specified, then this database is used to
-    get chromosome sizes, and perhaps the table to check.
-
-
+          get chromosome sizes, and perhaps the table to check.
+   -chromSizes=file.chrom.sizes - use chrom sizes from tab separated
+          file (name,size) instead of from chromInfo table in specified db.
 ================================================================
 ========   genePredFilter   ====================================
 ================================================================
@@ -1705,9 +1750,14 @@ options:
 ================================================================
 genePredToBigGenePred - converts genePred or genePredExt to bigGenePred input (bed format with extra fields)
 usage:
-  genePredToBigGenePred file.gp stdout | sort -k1,1 -k2,2n > file.bgpInput
+  genePredToBigGenePred [-known] [-score=scores] [-geneNames=geneNames] [-colors=colors] file.gp stdout | sort -k1,1 -k2,2n > file.bgpInput
 NOTE: to build bigBed:
    bedToBigBed -type=bed12+8 -tab -as=bigGenePred.as file.bgpInput chrom.sizes output.bb
+options:
+    -known                input file is a genePred in knownGene format
+    -score=scores         scores is two column file with id's mapping to scores
+    -geneNames=geneNames  geneNames is a three column file with id's mapping to two gene names
+    -colors=colors        colors is a four column file with id's mapping to r,g,b
 
 ================================================================
 ========   genePredToFakePsl   ====================================
@@ -1728,6 +1778,7 @@ options:
    -chromSize=sizefile	Read chrom sizes from file instead of database
              sizefile contains two white space separated fields per line:
 		chrom name and size
+   -qSizes=qSizesFile	Read in query sizes to fixup qSize and qStarts
 
 
 ================================================================
@@ -1780,6 +1831,29 @@ Options:
 
 
 ================================================================
+========   genePredToProt   ====================================
+================================================================
+genePredToProt - create protein sequences by translating gene annotations
+usage:
+   genePredToProt genePredFile genomeSeqs protFa
+
+This honors frame if genePred has frames, dropping partial codons.
+genomeSeqs is a 2bit or directory of nib files.
+
+options:
+  -cdsFa=fasta - output FASTA with CDS that was used to generate protein.
+                 This will not include dropped partial codons.
+  -cdsPsl=psl - output a PSL with alignment of the CDS region to the genome.
+  -protIdSuffix=str - add this string to the end of the name for protein FASTA
+  -cdsIdSuffix=str - add this string to the end of the name for CDS FASTA and PSL
+  -translateSeleno - assume internal TGA code for selenocysteine and translate to `U'.
+  -includeStop - If the CDS ends with a stop codon, represent it as a `*'
+  -starForInframeStops - use `*' instead of `X' for in-frame stop codons.
+                  This will result in selenocysteine's being `*', with only codons
+                  containing `N' being translated to `X'.  This doesn't include terminal
+                  stop
+
+================================================================
 ========   getRna   ====================================
 ================================================================
 getRna - Get mrna for GenBank or RefSeq sequences found in a database
@@ -1819,6 +1893,8 @@ options:
    -suffix=suf - append suffix to each id to avoid confusion with mRNAs
     use to define the genes.
    -peptides - out the translation of the CDS to a peptide sequence.
+    The newer program genePredToProt maybe produce better results in cases
+    were there are frame-shifting indels in the CDS.
    -exonIndices - output indices of exon boundaries after sequence name,
     e.g., "103 243 290" says positions 1-103 are from the first exon,
     positions 104-243 are from the second exon, etc. 
@@ -1836,7 +1912,7 @@ options:
 ================================================================
 ========   gfClient   ====================================
 ================================================================
-gfClient v. 36x1 - A client for the genomic finding program that produces a .psl file
+gfClient v. 36x2 - A client for the genomic finding program that produces a .psl file
 usage:
    gfClient host port seqDir in.fa out.psl
 where
@@ -1880,7 +1956,7 @@ options:
 ================================================================
 ========   gfServer   ====================================
 ================================================================
-gfServer v 36x1 - Make a server to quickly find where DNA occurs in genome
+gfServer v 36x2 - Make a server to quickly find where DNA occurs in genome
    To set up a server:
       gfServer start host port file(s)
       where the files are .nib or .2bit format files specified relative to the current directory
@@ -1938,8 +2014,13 @@ usage:
    gff3ToGenePred inGff3 outGp
 options:
   -warnAndContinue - on bad genePreds being created, put out warning but continue
-  -useName - rather than using 'id' as names, use the 'name' tag
-  -attrsOut=file - output attributes of mRNA to file
+  -useName - rather than using 'id' as name, use the 'name' tag
+  -rnaNameAttr=attr - If this attribute exists on an RNA record, use it as the genePred
+   name column
+  -geneNameAttr=attr - If this attribute exists on a gene record, use it as the genePred
+   name2 column
+  -attrsOut=file - output attributes of mRNA record to file.  These are per-genePred row,
+   not per-GFF3 record. Thery are derived from GFF3 attributes, not the attributes themselves.
   -unprocessedRootsOut=file - output GFF3 root records that were not used.  This will not be a
    valid GFF3 file.  It's expected that many non-root records will not be used and they are not
    reported.
@@ -1950,6 +2031,8 @@ options:
    value will allow an unlimited number of errors.  Default is 50.
   -honorStartStopCodons - only set CDS start/stop status to complete if there are
    corresponding start_stop codon records
+  -defaultCdsStatusToUnknown - default the CDS status to unknown rather
+   than complete.
   -allowMinimalGenes - normally this programs assumes that genes contains
    transcripts which contain exons.  If this option is specified, genes with exons
    as direct children of genes and stand alone genes with no exon or transcript
@@ -1980,7 +2063,7 @@ Input file must conform to the GFF3 specification:
 ================================================================
 gff3ToPsl - convert a GFF3 CIGAR file to a PSL file
 usage:
-   gff3ToPsl queryChromSizes targetChomSizes inGff3 out.psl
+   gff3ToPsl [options] queryChromSizes targetChomSizes inGff3 out.psl
 arguments:
    queryChromSizes file with query (main coordinates) chromosome sizes  .
                File formatted:  chromeName<tab>chromSize
@@ -1988,6 +2071,8 @@ arguments:
    inGff3     GFF3 formatted file with Gap attribute in match records
    out.psl    PSL formatted output
 options:
+   -dropQ     drop record when query not found in queryChromSizes
+   -dropT     drop record when target not found in targetChromSizes
 This converts:
 The first step is to parse GFF3 file, up to 50 errors are reported before
 aborting.  If the GFF3 files is successfully parse, it is converted to PSL
@@ -2527,7 +2612,7 @@ options:
 ========   liftUp   ====================================
 ================================================================
 liftUp - change coordinates of .psl, .agp, .gap, .gl, .out, .align, .gff, .gtf
-.bscore .tab .gdup .axt .chain .net, .gp, .genepred, .wab, .bed, or .bed8 files to
+.bscore .tab .gdup .axt .chain .net, .gp, .genepred, .wab, .bed, .bed3, or .bed8 files to
 parent coordinate system.
 
 usage:
@@ -2827,6 +2912,15 @@ Options:
   -stripDb - Strip names from start to first period.
 
 ================================================================
+========   mafToBigMaf   ====================================
+================================================================
+mafToBigMaf - Put ucsc standard maf file into bigMaf format
+usage:
+   mafToBigMaf referenceDb input.maf out.bed
+options:
+   -xxx=XXX
+
+================================================================
 ========   mafToPsl   ====================================
 ================================================================
 mafToPsl - Convert maf to psl format
@@ -2917,9 +3011,9 @@ Accession in PSL files are tried with and with out genbank versions.
 Options:
   -db=db - get PSLs and CDS from this database, psl specifies the table.
   -cdsDb=db - get CDS from this database, psl is a file.
-  -cdsFile=file - get CDS from this database, psl is a file.
-   File is table seperate with accession as the first column and
-   CDS the second
+  -cdsFile=file - get CDS from this file, psl is a file.
+   File is tab separate with name as the first column and
+   NCBI CDS the second
   -insertMergeSize=8 - Merge inserts (gaps) no larger than this many bases.
    A negative size disables merging of blocks.  This differs from specifying zero
    in that adjacent blocks will not be merged, allowing tracking of frame for
@@ -3446,6 +3540,8 @@ options:
     If specified, psl is check to have a valid target and target
     coordinates.
    -querySizes=sizesFile - file with query sizes.
+   -ignoreQUniq - ignore everything after the last `-' in the qName field, that
+    is sometimes used to generate a unique identifier
    -quiet - no write error message, just filter
 
 ================================================================
@@ -3831,7 +3927,6 @@ usage:
 options:
   -cds=file.cds
   -fa=file.fasta
-  -snakes
 NOTE: to build bigBed:
    bedToBigBed -type=bed12+12 -tab -as=bigPsl.as file.bigPslInput chrom.sizes output.bb
 
@@ -4091,7 +4186,8 @@ A stringified version of in.txt  will be printed to standard output.
 Options:
   -var=varname - create a variable with the specified name containing
                  the string.
-  -static - create the variable as a string array.
+  -static - create the variable but put static in front of it.
+  -array - create an array of strings, one for each line
 
 
 ================================================================
@@ -4210,6 +4306,36 @@ usage:
    toUpper inFile outFile
 equivalent to the unix commands: cat inFile | tr '[a-z]' '[A-Z]' > outFile
 ================================================================
+========   transMapPslToGenePred   ====================================
+================================================================
+transMapPslToGenePred - convert PSL alignments of mRNAs to gene annotations.
+
+usage:
+   mrnaToGene [options] sourceGenePred mappedPsl mappedGenePred
+
+Convert PSL alignments from transmap to genePred.  It specifically handles
+alignments where the source gene is an genomic annotations in genePred
+format, that are converted to PSL for mapping and using this program to
+create a new genePred.
+
+This is an alternative to mrnaToGene which determines CDS and frame from
+the original annotation, which may have been imported from GFF/GTF.  This
+was created because the genbankCds structure use by mrnaToGene doesn't
+handle partial start/stop codon or programmed frame shifts.  This requires
+handling the list of CDS regions and the /codon_start attribute,  At some
+point, this program may be extended to do handle genbank alignments correctly.
+
+Options:
+  -nonCodingGapFillMax=0 - fill gaps in non-coding regions up to this many bases
+   in length.
+  -codingGapFillMax=0 - fill gaps in coding regions up to this many bases
+   in length.  Only coding gaps that are a multiple of three will be fill,
+   with the max rounded down.
+  -noBlockMerge - don't do any block merging of genePred, even of adjacent blocks.
+   Mainly for debugging.
+
+
+================================================================
 ========   trfBig   ====================================
 ================================================================
 trfBig - Mask tandem repeats on a big sequence file.
@@ -4226,7 +4352,9 @@ masked, lowercase.
    -trf=trfExe explicitly specifies trf executable name
    -maxPeriod=N  Maximum period size of repeat (default 2000)
    -keep  don't delete tmp files
-
+   -l=<n> when used here, for new trf v4.09 option:
+          maximum TR length expected (in millions)
+          (eg, -l=3 for 3 million), Human genome hg38 would need -l=6
 ================================================================
 ========   twoBitDup   ====================================
 ================================================================
@@ -4234,9 +4362,14 @@ twoBitDup - check to see if a twobit file has any identical sequences in it
 usage:
    twoBitDup file.2bit
 options:
-   -keyList=file - file to write a key list, two columns: key and sequenceName
-   -udcDir=/dir/to/cache - place to put cache for remote bigBed/bigWigs
+  -keyList=file - file to write a key list, two columns: md5sum and sequenceName
+                   NOTE: use of keyList is very time expensive for 2bit files
+                   with a large number of sequences (> 5,000).  Better to
+                   use a cluster run with the doIdKeys.pl automation script.
+  -udcDir=/dir/to/cache - place to put cache for remote bigBed/bigWigs
 
+example: twoBitDup -keyList=stdout db.2bit \
+          | grep -v 'are identical' | sort > db.idKeys.txt
 ================================================================
 ========   twoBitInfo   ====================================
 ================================================================
