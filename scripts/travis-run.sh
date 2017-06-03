@@ -29,7 +29,12 @@ then
     RANGE="$TRAVIS_BRANCH HEAD"
     if [ $TRAVIS_PULL_REQUEST == "false" ]
     then
-        RANGE="${TRAVIS_COMMIT_RANGE/.../ }"
+        if [ -z "$TRAVIS_COMMIT_RANGE" ]
+        then
+            RANGE="HEAD~1 HEAD"
+        else
+            RANGE="${TRAVIS_COMMIT_RANGE/.../ }"
+        fi
     fi
 
     if [[ $TRAVIS_EVENT_TYPE == "cron" ]]
@@ -79,11 +84,15 @@ then
     fi
 else
     UPLOAD_ARG=""
+    LINT_COMMENT_ARG=""
+    if [[ $TRAVIS_OS_NAME == "linux" && $TRAVIS_PULL_REQUEST != "false" && -n "${GITHUB_TOKEN:-}" ]]
+    then
+        LINT_COMMENT_ARG="--push-comment --pull-request $TRAVIS_PULL_REQUEST"
+    fi
     if [[ $SKIP_LINTING == "false"  ]]
     then
-        set -x; bioconda-utils lint recipes config.yml $RANGE_ARG $BIOCONDA_UTILS_LINT_ARGS; set +x
+        set -x; bioconda-utils lint recipes config.yml $RANGE_ARG $BIOCONDA_UTILS_LINT_ARGS $LINT_COMMENT_ARG; set +x
     fi
-
 fi
 
 
