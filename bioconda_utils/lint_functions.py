@@ -31,6 +31,9 @@ def _get_deps(meta, section=None):
         If None, returns all dependencies. Otherwise can be a string or list of
         options [build, run, test] to return section-specific dependencies.
     """
+
+    get_name = lambda dep: dep.split()[0]
+
     reqs = meta.get('requirements')
     if reqs is None:
         return []
@@ -42,7 +45,7 @@ def _get_deps(meta, section=None):
     for s in sections:
         dep = reqs.get(s, [])
         if dep:
-            deps += dep
+            deps += [get_name(d) for d in dep]
     return deps
 
 

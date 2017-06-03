@@ -63,7 +63,7 @@ logger = logging.getLogger(__name__)
 
 # If conda_build_version is not provided, this is what is used by default.
 DEFAULT_CONDA_BUILD_VERSION = '2.0.7'
-DEFAULT_CONDA_VERSION = '4.2.15'
+DEFAULT_CONDA_VERSION = '4.3.21'
 
 
 # ----------------------------------------------------------------------------
@@ -84,7 +84,7 @@ BUILD_SCRIPT_TEMPLATE = \
 #!/bin/bash
 set -e
 
-conda install conda-build={self.conda_build_version} conda={self.conda_version}
+conda install conda-build={self.conda_build_version} conda={self.conda_version}  > /dev/null 2>&1
 
 # Add the host's mounted conda-bld dir so that we can use its contents as
 # dependencies for building this recipe.
@@ -94,13 +94,13 @@ conda install conda-build={self.conda_build_version} conda={self.conda_version}
 # a linux-64 directory within that directory, so we make sure it exists before
 # adding the channel.
 mkdir -p {self.container_staging}/linux-64
-conda config --add channels file://{self.container_staging}
+conda config --add channels file://{self.container_staging}  > /dev/null 2>&1
 
 # The actual building....
-conda build {self.conda_build_args} {self.container_recipe}
+conda build {self.conda_build_args} {self.container_recipe} 2>&1
 
 # Identify the output package
-OUTPUT=$(conda build {self.container_recipe} --output)
+OUTPUT=$(conda build {self.container_recipe} --output 2> /dev/null)
 
 # Some args to conda-build make it run and exit 0 without creating a package
 # (e.g., -h or --skip-existing), so check to see if there's anything to copy
@@ -116,7 +116,7 @@ if [[ -e $OUTPUT ]]; then
     HOST_USER={self.user_info[uid]}
     chown $HOST_USER:$HOST_USER {self.container_staging}/linux-64/$(basename $OUTPUT)
 
-    conda index {self.container_staging}/linux-64
+    conda index {self.container_staging}/linux-64 > /dev/null 2>&1
 fi
 """
 
