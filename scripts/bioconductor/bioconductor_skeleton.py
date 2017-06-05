@@ -54,12 +54,10 @@ base_url = 'http://bioconductor.org/packages/'
 #
 #   conda create -n rtest -c r r
 #   R -e "rownames(installed.packages())"
-BASE_R_PACKAGES = ["base", "boot", "class", "cluster", "codetools", "compiler",
-                   "datasets", "foreign", "graphics", "grDevices", "grid",
-                   "KernSmooth", "lattice", "MASS", "Matrix", "methods",
-                   "mgcv", "nlme", "nnet", "parallel", "rpart", "spatial",
-                   "splines", "stats", "stats4", "survival", "tcltk", "tools",
-                   "utils"]
+BASE_R_PACKAGES = ["base", "compiler", "datasets", "graphics", "grDevices",
+                   "grid", "methods", "parallel", "splines", "stats", "stats4",
+                   "tcltk", "tools", "utils"]
+
 
 # A list of packages, in recipe name format
 GCC_PACKAGES = ['r-rcpp']
@@ -345,14 +343,14 @@ class BioCProjectPage(object):
     @property
     def imports(self):
         try:
-            return self.description['imports'].split(', ')
+            return [i.strip() for i in self.description['imports'].replace(' ', '').split(',')]
         except KeyError:
             return []
 
     @property
     def depends(self):
         try:
-            return self.description['depends'].split(', ')
+            return [i.strip() for i in self.description['depends'].replace(' ', '').split(',')]
         except KeyError:
             return []
 
@@ -412,7 +410,6 @@ class BioCProjectPage(object):
                     versions[name] = version
             else:
                 versions[name] = version
-
 
         for name, version in sorted(versions.items()):
             # DESCRIPTION notes base R packages, but we don't need to specify
