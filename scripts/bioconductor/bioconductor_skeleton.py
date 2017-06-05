@@ -54,12 +54,10 @@ base_url = 'http://bioconductor.org/packages/'
 #
 #   conda create -n rtest -c r r
 #   R -e "rownames(installed.packages())"
-BASE_R_PACKAGES = ["base", "boot", "class", "cluster", "codetools", "compiler",
-                   "datasets", "foreign", "graphics", "grDevices", "grid",
-                   "KernSmooth", "lattice", "MASS", "Matrix", "methods",
-                   "mgcv", "nlme", "nnet", "parallel", "rpart", "spatial",
-                   "splines", "stats", "stats4", "survival", "tcltk", "tools",
-                   "utils"]
+BASE_R_PACKAGES = ["base", "compiler", "datasets", "graphics", "grDevices",
+                   "grid", "methods", "parallel", "splines", "stats", "stats4",
+                   "tcltk", "tools", "utils"]
+
 
 # A list of packages, in recipe name format
 GCC_PACKAGES = ['r-rcpp']
@@ -412,7 +410,6 @@ class BioCProjectPage(object):
                     versions[name] = version
             else:
                 versions[name] = version
-
 
         for name, version in sorted(versions.items()):
             # DESCRIPTION notes base R packages, but we don't need to specify
