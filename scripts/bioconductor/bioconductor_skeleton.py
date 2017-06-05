@@ -93,6 +93,12 @@ def bioconductor_tarball_url(package, pkg_version, bioc_version):
     )
 
 
+def bioconductor_data_url(package, pkg_version, bioc_version):
+    return  (
+    'http://bioconductor.org/packages/{bioc_version}'
+    '/data/annotation/src/contrib/{package}_{pkg_version}.tar.gz'.format(**locals())
+    )
+
 def find_best_bioc_version(package, version):
     """
     Given a package version number, identifies which BioC version[s] it is
@@ -101,17 +107,21 @@ def find_best_bioc_version(package, version):
     Returns None if no valid package found.
     """
     found_version = None
+
     for bioc_version in bioconductor_versions():
-        url = bioconductor_tarball_url(package, version, bioc_version)
-        if requests.head(url).status_code == 200:
-            logger.debug('success: %s', url)
-            logger.info(
-                'A working URL for %s==%s was identified for Bioconductor version %s: %s',
-                package, version, bioc_version, url)
-            found_version = bioc_version
+        for func in (bioconductor_tarball_url, bioconductor_data_url):
+            url = func(package, version, bioc_version)
+            if requests.head(url).status_code == 200:
+                logger.debug('success: %s', url)
+                logger.info(
+                    'A working URL for %s==%s was identified for Bioconductor version %s: %s',
+                    package, version, bioc_version, url)
+                found_version = bioc_version
+                break
+            else:
+                logger.debug('missing: %s', url)
+        if found_version is not None:
             break
-        else:
-            logger.debug('missing: %s', url)
     return found_version
 
 
@@ -144,9 +154,15 @@ class BioCProjectPage(object):
         # If no version specified, assume the latest
         if not self.bioc_version:
             self.bioc_version = latest_bioconductor_version()
+
         self.request = requests.get(
             os.path.join(base_url, self.bioc_version, 'bioc', 'html', package + '.html')
         )
+
+        if not self.request:
+            self.request = requests.get(
+                os.path.join(base_url, self.bioc_version, 'data', 'annotation', 'html', package + '.html')
+            )
 
         if not self.request:
             raise PageNotFoundError('Error {0.status_code} ({0.reason}) for page {0.url}'.format(self.request))
@@ -236,12 +252,20 @@ class BioCProjectPage(object):
 
 
     @property
+    def bioconductor_data_url(self):
+        """
+        Return the url to the tarball from the bioconductor site.
+        """
+        return bioconductor_data_url(self.package, self.version, self.bioc_version)
+
+
+    @property
     def tarball_url(self):
         if not self._tarball_url:
-            urls = [self.bioconductor_tarball_url, self.bioaRchive_url, self.cargoport_url]
+            urls = [self.bioconductor_tarball_url, self.bioconductor_data_url, self.bioaRchive_url, self.cargoport_url]
             for url in urls:
                 response = requests.head(url)
-                if response.status_code == 200:
+                if response and response.status_code == 200:
                     return url
 
             logger.error(
