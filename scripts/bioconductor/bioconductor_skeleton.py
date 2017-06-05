@@ -104,11 +104,14 @@ def find_best_bioc_version(package, version):
     for bioc_version in bioconductor_versions():
         url = bioconductor_tarball_url(package, version, bioc_version)
         if requests.head(url).status_code == 200:
+            logger.debug('success: %s', url)
             logger.info(
-                'A working URL for %s==%s was found for Bioconductor version %s: %s',
+                'A working URL for %s==%s was identified for Bioconductor version %s: %s',
                 package, version, bioc_version, url)
             found_version = bioc_version
             break
+        else:
+            logger.debug('missing: %s', url)
     return found_version
 
 
@@ -537,19 +540,22 @@ class BioCProjectPage(object):
 
 
 def write_recipe(package, recipe_dir, force=False, bioc_version=None,
-                 pkg_version=None):
+                 pkg_version=None, versioned=False):
     """
     Write the meta.yaml and build.sh files.
     """
     proj = BioCProjectPage(package, bioc_version, pkg_version)
     logger.debug('%s==%s, BioC==%s', proj.package, proj.version, proj.bioc_version)
     logger.info('Using tarball from %s', proj.tarball_url)
-    recipe_dir = os.path.join(recipe_dir, 'bioconductor-' + proj.package.lower())
+    if versioned:
+        recipe_dir = os.path.join(recipe_dir, 'bioconductor-' + proj.package.lower(), proj.version)
+    else:
+        recipe_dir = os.path.join(recipe_dir, 'bioconductor-' + proj.package.lower())
     if os.path.exists(recipe_dir) and not force:
         raise ValueError("{0} already exists, aborting".format(recipe_dir))
     else:
         if not os.path.exists(recipe_dir):
-            print('creating %s' % recipe_dir)
+            logger.info('creating %s' % recipe_dir)
             os.makedirs(recipe_dir)
 
     # If the version number has not changed but something else in the recipe
@@ -587,6 +593,7 @@ def write_recipe(package, recipe_dir, force=False, bioc_version=None,
             # """
             )
         )
+    logger.info('Wrote recipe in %s', recipe_dir)
 
 
 if __name__ == "__main__":
@@ -594,7 +601,10 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument('package', help='Bioconductor package name')
     ap.add_argument('--recipes', default='recipes',
-                    help='Recipe will be created in <recipe-dir>/<package>')
+                    help='Recipe will be created in RECIPES/<package>')
+    ap.add_argument('--versioned', action='store_true',
+                    help='''If specified, recipe will be created in
+                    RECIPES/<package>/<version>''')
     ap.add_argument('--force', action='store_true',
                     help='Overwrite the contents of an existing recipe')
     ap.add_argument('--pkg-version',
@@ -610,6 +620,6 @@ if __name__ == "__main__":
                     help='Log level')
     args = ap.parse_args()
     setup_logger(args.loglevel)
-
     write_recipe(args.package, args.recipes, args.force,
-                 bioc_version=args.bioc_version, pkg_version=args.pkg_version)
+                 bioc_version=args.bioc_version, pkg_version=args.pkg_version,
+                 versioned=args.versioned)
