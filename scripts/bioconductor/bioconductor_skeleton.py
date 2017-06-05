@@ -206,12 +206,8 @@ class BioCProjectPage(object):
     @property
     def cargoport_url(self):
         """
-        Returns the Galaxy cargo-port URL if one exists for this version of
-        this package, whether it exists or not. If none exists, a warning is
-        printed.
-
-        Note that to get the package version, we're still getting the
-        bioconductor tarball to extract the DESCRIPTION file.
+        Returns the Galaxy cargo-port URL for this version of this package,
+        whether it exists or not. If none exists, a warning is printed.
         """
         if not self._cargoport_url:
             url = (
