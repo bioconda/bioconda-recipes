@@ -1,0 +1,281 @@
+diff --git a/Barrier.cpp b/Barrier.cpp
+index db399e6..6fd2c02 100644
+--- a/Barrier.cpp
++++ b/Barrier.cpp
+@@ -12,7 +12,10 @@
+ #include "Neighbor.h"
+ #include "Utils.h"
+ #include "options.h"
+-#define INF 1000000
++
++extern "C" {
++#include "energy_const.h" /* defines INF */
++}
+ 
+ 
+ /**
+diff --git a/Energy.cpp b/Energy.cpp
+index 6cb9455..ae72679 100644
+--- a/Energy.cpp
++++ b/Energy.cpp
+@@ -2,9 +2,10 @@
+   Last changed Time-stamp: <2006-10-13 22:34:37 xtof>
+   $Id: Energy.cpp,v 1.12 2007/11/03 16:45:58 Kinwalker Exp $
+ */
++#include <cstdlib>
+ #include <iostream>
+ #include <string>
+-
++#include <cstring>
+ #include "Energy.h"
+ 
+ 
+@@ -13,8 +14,6 @@ extern "C" {
+ #include "fold_vars.h"
+ #include "utils.h"
+ #include "pair_mat.h"
+-extern int
+-energy_of_struct_pt (char *string, short * ptable, short *s, short *s1);
+ }
+ extern short * S;
+ extern short * S1;
+diff --git a/Makefile b/Makefile
+index b2276b2..2640e58 100644
+--- a/Makefile
++++ b/Makefile
+@@ -10,14 +10,16 @@ CC       = gcc
+ CXX      = g++
+ LL       = g++
+ DEFS     =
+-VRNADIR  = ${HOME}/C/ViennaRNA
+-INCL     = -I. -I$(VRNADIR)/H
++VRNA_INC = $(shell pkg-config --cflags RNAlib2)
++VRNA_LIB = $(shell pkg-config --libs RNAlib2)
++LDFLAGS  = 
++INCL     =  -I. $(VRNA_INC)
+ WARN     = -Wall -ansi -pedantic
+ OPTI     = -O3
+ #OPTI     = -O3 -p -g3
+ CFLAGS   = $(WARN) $(OPTI) $(DEFS) $(INCL)
+-LIBS     = -L$(VRNADIR)/lib -lRNA  -lm -lstdc++
+-CSRC     = options.c findpath.c
++LIBS     = ${VRNA_LIB}  -lm -lstdc++
++CSRC     = options.c
+ COBJ     = $(foreach file, $(CSRC:.c=.o), $(file))
+ CXXSRC   = Energy.cpp Node.cpp Util.cpp MorganHiggs.cpp main.cpp
+ CXXOBJ   = $(foreach file, $(CXXSRC:.cpp=.o), $(file))
+@@ -35,7 +37,7 @@ $(CXXOBJ): %.o: %.cpp
+ $(COBJ): %.o: %.c
+ 	$(CC) -c $(CFLAGS) $< -o $@
+ $(EXE): $(COBJ) $(CXXOBJ)
+-	$(LL) $(CFLAGS) -o $(EXE) $(COBJ) $(CXXOBJ) $(LIBS)
++	$(LL) $(LDFLAGS) $(CFLAGS) -o $(EXE) $(COBJ) $(CXXOBJ) $(LIBS)
+ clean:
+ 	rm -f $(COBJ) $(CXXOBJ) $(EXE)
+ backup: clean
+diff --git a/MorganHiggs.cpp b/MorganHiggs.cpp
+index d4c579f..083fc05 100644
+--- a/MorganHiggs.cpp
++++ b/MorganHiggs.cpp
+@@ -3,14 +3,18 @@
+   $Id: MorganHiggs.cpp,v 1.13 2007/10/21 21:01:35 Kinwalker Exp $
+ */
+ 
++#include <cstring>
+ #include "MorganHiggs.h"
+ #define BP_ADD_CONST 10000
+-#define INF 1000000
+ using std::cout;
+ using std::endl;
+ 
+ extern short * pair_table;
+ 
++extern "C" {
++#include "energy_const.h" /* defines INF */
++}
++
+ bool MHS_debug=false;
+ int min_stack_size=1;
+ 
+diff --git a/MorganHiggs.h b/MorganHiggs.h
+index 76a15f3..f069429 100644
+--- a/MorganHiggs.h
++++ b/MorganHiggs.h
+@@ -133,9 +133,9 @@ public:
+ 
+   void AddInside(std::pair<int,int> bp,char first,char second);
+ 
+-  void AddOutside(int first,int second,char first,char second);
++  void AddOutside(int first,int second,char cfirst,char csecond);
+ 
+-  void AddInside(int first,int second,char first,char second);
++  void AddInside(int first,int second,char cfirst,char csecond);
+ 
+ 
+  static  bool IsGCPair(char first,char second);
+diff --git a/Node.cpp b/Node.cpp
+index 94ce681..3f33123 100644
+--- a/Node.cpp
++++ b/Node.cpp
+@@ -2,12 +2,12 @@
+   Last changed Time-stamp: <2007-07-10 19:27:22 xtof>
+   $Id: Node.cpp,v 1.35 2007/11/03 16:45:58 Kinwalker Exp $
+ */
+-#include "Node.h"
+ 
+ #include <algorithm>
+ #include <iostream>
+ #include <iterator>
+ #include <utility>
++#include "Node.h"
+ 
+ #include "template_utils.c"
+ 
+@@ -16,7 +16,7 @@
+ #define EPSILON .00000000001
+ 
+ #define MIN_ENERGY_DIFF .01
+-#define INF 1000000
++
+ double BARRIER_TOO_HIGH=10000;//std::numeric_limits<int>::max();
+ // class variables
+ int Node::verbose;
+@@ -291,12 +291,13 @@ void Node::CalculateFoldingPath(Node* extremum,std::string integrated_structure)
+       int maxE_idx = -1;
+       int t = Node::transcribed;
+       std::vector<std::pair<double,std::string> > v;
+-
++      /* length of path always is the base pair distance + 1 */
++      p_len = bp_distance(const_cast<char*>(sequence.substr(0,t).c_str()),
++                          const_cast<char*>(Node::front_structure.c_str())) + 1;
+       p = get_path(const_cast<char*>(sequence.substr(0,t).c_str()),
+ 		   const_cast<char*>(Node::front_structure.c_str()),
+ 		   const_cast<char*>(integrated_structure.substr(0,t).c_str()),
+-		   Node::OptS->maxkeep,
+-		   &p_len);
++		   Node::OptS->maxkeep);
+       bool barrier_exceeded=false;
+       for (int i=0; i<p_len; i++) {
+ 	// memorize idx of structure with highest energy seen so far
+diff --git a/Node.h b/Node.h
+index b1d090c..43b2a3f 100644
+--- a/Node.h
++++ b/Node.h
+@@ -25,6 +25,7 @@
+ #include <iomanip>
+ #include <limits>
+ #include <string>
++#include <cstring>
+ #include <vector>
+ 
+ 
+@@ -33,12 +34,7 @@ extern "C" {
+   #include "fold.h"
+   #include "energy_const.h"
+   #include "utils.h"
+-  extern float fold(const char* sequence, char* structure);
+-  extern void export_fold_arrays(int **f5_p, int **c_p, int **fML_p,
+-				 int **fM1_p, int **indx_p, char **ptype_p);
+-  extern  char * backtrack_fold_from_pair(char* seq,int i,int  j);
+-  extern void   free_arrays(void); 
+-  extern int fold_constrained;
++  #include "fold_vars.h"
+ }
+ #include "Energy.h"
+ #include "MorganHiggs.h"
+diff --git a/Util.cpp b/Util.cpp
+index 75cdec5..592a303 100644
+--- a/Util.cpp
++++ b/Util.cpp
+@@ -5,6 +5,10 @@ extern short *pair_table;
+ /*@exits@*/
+ //extern void   nrerror(const char message[]);
+ 
++extern "C" {
++#include "utils.h"
++}
++
+ void Cout(std::string s){std::cout<<s;}
+ 
+   std::string Str(double x) 
+@@ -53,16 +57,6 @@ std::string PrintPairTable(){
+   return s;
+ }
+ 
+-void
+-PrettyPrint(char *fmt, ...)
+-{
+-  va_list args;
+-
+-  va_start(args, fmt);
+-  vfprintf(stdout, fmt, args);
+-  fflush(stdout);
+-  va_end(args);  
+-}
+ 
+ std::string PrintBasePair(std::pair<int,int> bp){
+   return "("+Str(bp.first)+","+Str(bp.second)+")";
+@@ -279,21 +273,6 @@ ConformationToStacks(std::vector<std::vector<std::pair<int,int> > > & stacks, st
+   }
+ }
+ 
+-void *MG_space(unsigned size) {
+-  void *pointer;
+-  
+-  if ( (pointer = (void *) calloc(1, (size_t) size)) == NULL) {
+-#ifdef EINVAL
+-    if (errno==EINVAL) {
+-      fprintf(stderr,"SPACE: requested size: %d\n", size);
+-       printf("SPACE allocation failure -> EINVAL");
+-    }
+-    if (errno==ENOMEM)
+-#endif
+-      printf("SPACE allocation failure -> no memory");
+-  }
+-  return  pointer;
+-}
+ 
+ #ifdef WITH_DMALLOC
+ #define MG_space(S) calloc(1,(S))
+@@ -310,7 +289,7 @@ void *MG_space(unsigned size) {
+    //   short *table;
+    
+    length = (short) strlen(structure);
+-   stack = (short *) MG_space(sizeof(short)*(length+1));
++   stack = (short *) space(sizeof(short)*(length+1));
+    //table = (short *) space(sizeof(short)*(length+2));
+    pair_table[0] = length;
+    
+diff --git a/Util.h b/Util.h
+index 5511ea0..a60f7c4 100644
+--- a/Util.h
++++ b/Util.h
+@@ -1,8 +1,11 @@
+ #include <string>
++#include <cstring>
+ #include <vector>
+ #include <sstream>
+ #include <cstdarg>
+ #include <iostream>
++#include <cstdlib>
++#include <algorithm>
+ 
+ void Cout(std::string s);
+ 
+diff --git a/findpath.c b/findpath.c
+index b8b4c36..e2a91bb 100644
+--- a/findpath.c
++++ b/findpath.c
+@@ -17,6 +17,7 @@
+ 
+ static char rcsid[] = "$Id: findpath.c,v 1.3 2007/10/21 21:01:35 Kinwalker Exp $";
+ 
++#if 0
+ extern int
+ energy_of_struct_pt (char *string, short * ptable, short *s, short *s1);
+ 
+@@ -425,3 +426,4 @@ int main(int argc, char *argv[]) {
+ }
+ 
+ #endif
++#endif
