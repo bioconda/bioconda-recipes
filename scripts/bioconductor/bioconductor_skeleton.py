@@ -199,16 +199,9 @@ class BioCProjectPage(object):
         """
         if self._bioarchive_url is None:
             url = 'https://bioarchive.galaxyproject.org/{0.package}_{0.version}.tar.gz'.format(self)
-            response = requests.get(url)
-            if response:
-                self._bioarchive_url
-            elif response.status_code == 404:
-                self._bioarchive_url = "missing"
-            else:
-                raise PageNotFoundError("Unexpected error: {0.status_code} ({0.reason})".format(response))
-            self._bioarchive_url = url
-        return self._bioarchive_url
-
+            response = requests.head(url)
+            if response.status_code == 200:
+                return url
 
     @property
     def cargoport_url(self):
