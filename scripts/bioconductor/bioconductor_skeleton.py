@@ -345,14 +345,14 @@ class BioCProjectPage(object):
     @property
     def imports(self):
         try:
-            return self.description['imports'].split(', ')
+            return [i.strip() for i in self.description['imports'].replace(' ', '').split(',')]
         except KeyError:
             return []
 
     @property
     def depends(self):
         try:
-            return self.description['depends'].split(', ')
+            return [i.strip() for i in self.description['depends'].replace(' ', '').split(',')]
         except KeyError:
             return []
 
