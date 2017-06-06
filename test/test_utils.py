@@ -464,7 +464,7 @@ def test_filter_recipes_extra_in_build_string():
     from conda_build.render import bldpkg_path
 
     metadata = MetaData(recipe, api.Config(**dict(CONDA_EXTRA='asdf')))
-    print(bldpkg_path(metadata))
+    print(api.get_output_file_path(recipe, metadata.config))
 
     os.environ['CONDA_EXTRA'] = 'asdf'
     pkg = utils.built_package_path(recipe)
