@@ -3,7 +3,7 @@
 make
 mv transterm 2ndscore calibrate.sh make_expterm.py mfold_rna.sh $PREFIX/bin
 
-mkdir -p $RREFIX/data
+mkdir -p $PREFIX/data
 mv expterm.dat $PREFIX/data
 
 mkdir -p $PREFIX/etc/conda/activate.d/
