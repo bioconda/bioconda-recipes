@@ -646,11 +646,6 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         channel_packages[channel].update(get_channel_packages(channel=channel))
 
     def tobuild(recipe, env):
-        # if force:
-        #     logger.debug(
-        #         'FILTER: building %s because force=True', recipe)
-        #     return True
-
         pkg = os.path.basename(built_package_path(recipe, env))
 
         in_channels = [

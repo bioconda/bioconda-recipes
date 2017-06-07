@@ -243,8 +243,9 @@ def test_conda_purge_cleans_up():
     def tmp_dir_exists(d):
         contents = os.listdir(d)
         for i in contents:
-            if i.startswith('tmp') and '_' in i:
+            if i.startswith('deleteme_'):
                 return True
+        return False
 
     bld = docker_utils.get_host_conda_bld(purge=False)
     assert tmp_dir_exists(bld)
@@ -461,13 +462,11 @@ def test_filter_recipes_extra_in_build_string():
     r.write_recipes()
     recipe = r.recipe_dirs['one']
 
-    from conda_build.render import bldpkg_path
+    env = {
+        'CONDA_EXTRA': 'asdf',
+    }
+    pkg = os.path.basename(utils.built_package_path(recipe, env))
 
-    metadata = MetaData(recipe, api.Config(**dict(CONDA_EXTRA='asdf')))
-    print(bldpkg_path(metadata, metadata.config))
-
-    os.environ['CONDA_EXTRA'] = 'asdf'
-    pkg = utils.built_package_path(recipe)
     assert os.path.basename(pkg) == 'one-0.1-asdf_0.tar.bz2'
 
 
