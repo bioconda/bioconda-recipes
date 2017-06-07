@@ -7,6 +7,7 @@ from functools import partial
 import shlex
 import logging
 from colorlog import ColoredFormatter
+from collections import defaultdict
 
 import yaml
 import argh
@@ -94,6 +95,46 @@ def select_recipes(packages, git_range, recipe_folder, config_filename, config, 
 #
 # A recipe is the path to the recipe of one version of a package, like
 # `recipes/bowtie` or `recipes/bowtie/1.0.1`.
+
+
+@arg('config', help='Path to yaml file specifying the configuration')
+@arg('--strict-version', action='store_true', help='Require version to strictly match.')
+@arg('--strict-build', action='store_true', help='Require version and build to strictly match.')
+def duplicates(config, strict_version=False, strict_build=False):
+    """
+    Detect packages in bioconda that have duplicates in the other defined
+    channels.
+    """
+    config_filename = config
+    config = utils.load_config(config)
+
+    if strict_version:
+        get_spec = lambda pkg: (pkg['name'], pkg['version'])
+        print('name', 'version', 'channels', sep='\t')
+    elif strict_build:
+        get_spec = lambda pkg: (pkg['name'], pkg['version'], pkg['build'])
+        print('name', 'version', 'build', 'channels', sep='\t')
+    else:
+        get_spec = lambda pkg: pkg['name']
+        print('name', 'channels', sep='\t')
+
+    def get_packages(channel):
+        return {get_spec(pkg)
+                for repodata in utils.get_channel_repodata(channel)
+                for pkg in repodata['packages'].values()}
+
+    channels = config['channels']
+
+    packages = get_packages(channels[0])
+
+    common = defaultdict(list)
+    for channel in channels[1:]:
+        pkgs = get_packages(channel)
+        for pkg in packages & pkgs:
+            common[pkg].append(channel)
+
+    for pkg, channels in common.items():
+        print(*pkg, *channels, sep='\t')
 
 
 @arg('recipe_folder', help='Path to top-level dir of recipes.')
@@ -382,4 +423,4 @@ def dependent(recipe_folder, restrict=False, dependencies=None, reverse_dependen
 
 
 def main():
-    argh.dispatch_commands([build, dag, dependent, lint])
+    argh.dispatch_commands([build, dag, dependent, lint, duplicates])
