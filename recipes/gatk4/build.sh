@@ -6,9 +6,8 @@ PACKAGE_HOME=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $PREFIX/bin
 mkdir -p $PACKAGE_HOME
 
-SCRIPT_HASH=addfbfd679dafaaf1d41a290b47bdca025d51e5d
-#GIT_URL=https://raw.githubusercontent.com/broadinstitute/gatk
-GIT_URL=https://raw.githubusercontent.com/chapmanb/gatk-1
+SCRIPT_HASH=b6fbcf5b973d42cc3ffb660bf0b9a4c52f87d1e8
+GIT_URL=https://raw.githubusercontent.com/broadinstitute/gatk
 wget --no-check-certificate $GIT_URL/$SCRIPT_HASH/gatk-launch
 wget --no-check-certificate $GIT_URL/$SCRIPT_HASH/settings.gradle
 sed -i.bak 's#!/usr/bin/env python#!/opt/anaconda1anaconda2anaconda3/bin/python#' gatk-launch
