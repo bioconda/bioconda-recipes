@@ -243,11 +243,11 @@ def test_conda_purge_cleans_up():
     def tmp_dir_exists(d):
         contents = os.listdir(d)
         for i in contents:
-            if i.startswith('tmp') and '_' in i:
+            if i.startswith('deleteme_'):
                 return True
+        return False
 
     bld = docker_utils.get_host_conda_bld(purge=False)
-    print(os.listdir(bld))
     assert tmp_dir_exists(bld)
     bld = docker_utils.get_host_conda_bld(purge=True)
     assert not tmp_dir_exists(bld)
