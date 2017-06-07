@@ -247,6 +247,7 @@ def test_conda_purge_cleans_up():
                 return True
 
     bld = docker_utils.get_host_conda_bld(purge=False)
+    print(os.listdir(bld))
     assert tmp_dir_exists(bld)
     bld = docker_utils.get_host_conda_bld(purge=True)
     assert not tmp_dir_exists(bld)
