@@ -461,13 +461,11 @@ def test_filter_recipes_extra_in_build_string():
     r.write_recipes()
     recipe = r.recipe_dirs['one']
 
-    from conda_build.render import bldpkg_path
+    env = {
+        'CONDA_EXTRA': 'asdf',
+    }
+    pkg = os.path.basename(utils.built_package_path(recipe, env))
 
-    metadata = MetaData(recipe, api.Config(**dict(CONDA_EXTRA='asdf')))
-    print(api.get_output_file_path(recipe, metadata.config))
-
-    os.environ['CONDA_EXTRA'] = 'asdf'
-    pkg = utils.built_package_path(recipe)
     assert os.path.basename(pkg) == 'one-0.1-asdf_0.tar.bz2'
 
 
