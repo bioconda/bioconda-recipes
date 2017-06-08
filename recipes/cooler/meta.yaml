@@ -11,9 +11,10 @@ source:
 
 build:
   number: 0
-  #noarch: python  # not supported by bioconda yet
   entry_points:
     - cooler = cooler.cli:cli
+  # click needs to be patched in order to properly detect unicode in py3k
+  skip: true  # [py3k]
 
 requirements:
   build:
@@ -44,10 +45,10 @@ test:
     - cooler.contrib
 
   commands:
-    - cooler --help
+    # click requires a unicode locale
+    - LANG=C.UTF-8 cooler --help
 
 about:
   home: https://github.com/mirnylab/cooler
   license: BSD
   summary: 'Sparse binary format for genomic interaction matrices'
-

@@ -11,6 +11,9 @@ build:
   entry_points:
     - pybel = pybel.cli:main
   number: 0
+  # tests fail on osx: https://travis-ci.org/bioconda/bioconda-recipes/jobs/235726973#L3656
+  # click needs to be patched in order to properly detect unicode in py3k
+  skip: true  # [osx or py3k]
 
 requirements:
   build:
@@ -46,8 +49,8 @@ test:
     - pybel.parser
     - pybel.parser.modifiers
   commands:
-    # pybel does not work under Python 3 on the docker image because the locale command is not installed
-    - pybel --help  # [py27]
+    # click requires a unicode locale
+    - LANG=C.UTF-8 pybel --help
 
 about:
   home: https://github.com/pybel/pybel
