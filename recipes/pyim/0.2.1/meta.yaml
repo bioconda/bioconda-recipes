@@ -1,0 +1,85 @@
+{% set version = "0.2.1" %}
+
+package:
+  name: pyim
+  version: {{ version }}
+
+source:
+  fn: pyim-{{ version }}.tar.gz
+  url: https://github.com/jrderuiter/pyim/archive/{{ version }}.tar.gz
+  sha256: 7348ddc1cb015d792ab84074bc3fd35320730a758fc9d9906e63ac87fdfc5e9c
+
+build:
+  number: 0
+  skip: True # [py27]
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    # Basic dependencies
+    - python
+    - setuptools
+    - pandas >=0.18
+    - pyfaidx >=0.4.8.1
+    - pysam >=0.9
+    - toolz >=0.8
+    - tqdm >=4.7
+    - intervaltree >=2.1
+    - cutadapt >=1.8
+    - natsort
+
+    # Fix htslib version for pysam
+    - htslib >=1.3,<1.4
+
+    # R dependencies
+    - r
+    - r-cimpl >=1.1
+    - rpy2 >=2.8.2
+
+  run:
+    # Basic dependencies
+    - python
+    - pandas >=0.18
+    - pyfaidx >=0.4.8.1
+    - pysam >=0.9
+    - toolz >=0.8
+    - tqdm >=4.7
+    - intervaltree
+    - cutadapt >=1.8
+    - natsort
+
+    # Fix htslib version for pysam
+    - htslib >=1.3,<1.4
+
+    # R dependencies
+    - r
+    - r-cimpl >=1.1
+    - rpy2 >=2.8.2
+
+    # External dependencies
+    - bowtie2
+
+test:
+    imports:
+      - pyim
+    commands:
+      - pyim-align --help > /dev/null
+      - pyim-annotate --help > /dev/null
+      - pyim-bed --help > /dev/null
+      - pyim-cis --help > /dev/null
+      - pyim-demultiplex --help > /dev/null
+      - pyim-merge --help > /dev/null
+      - pyim-split --help > /dev/null
+
+about:
+  home: http://www.github.com/jrderuiter/pyim
+  license: MIT License
+  summary: 'PyIM (Python Insertional Mutagenesis) is a python package for
+    analyzing insertional mutagenesis data from targeted sequencing of
+    transposon insertion sites. The package provides several command line
+    tools for identifying insertions, calling common insertion sites (CISs)
+    and annotating insertions/CISs directly from the command line. It
+    also aims to provides the basic building blocks for implementing
+    new pipelines, CIS callers, etc.'
