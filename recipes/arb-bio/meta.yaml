@@ -1,0 +1,71 @@
+{% set name = "ARB" %}
+{% set version = "6.0.6" %}
+{% set sha256 = "8b1fc3fd11bbb05aca4731ac8803c004a4f2b6b87c11b543660d07ea349a6c21" %}
+
+package:
+  name: {{ name|lower }}-bio
+  version: {{ version }}
+
+source:
+  fn: {{name | lower }}-{{ version }}-source.tgz
+  url: http://download.arb-home.de/release/{{ name|lower }}-{{ version }}/{{ name|lower }}-{{ version }}-source.tgz
+  sha256: {{ sha256 }}
+  patches:
+   # allow disabling build of bundled tools
+   - disable_pkgs.patch
+   # do not create links for mafft
+   - no_mafftlinks.patch
+   # allow linking with missing symbols on macos
+   - link_dyn.patch
+   - make.patch
+
+build:
+  number: 0
+  skip: True  # [win]
+
+requirements:
+  build:
+    - pkg-config
+    - toolchain
+    - openmotif-dev
+    - glib
+    - gettext
+    - pthread-stubs
+    - xorg-libxp
+    - xorg-libxmu
+    - xorg-libxi
+    - xorg-libxaw
+    - xorg-libxpm
+    - xorg-makedepend
+    - xerces-c
+    - libtiff
+    - libxslt
+
+  run:
+    - xorg-libxi
+    - xorg-libxmu
+    - xorg-libxp
+    - xorg-libxaw
+    - xorg-libxpm
+    - glib
+    - openmotif
+    - gnuplot
+    - muscle
+    - mafft
+    - raxml
+    - phylip
+    - fasttree
+    - sed
+    - xfig
+    - fig2dev
+
+test:
+  commands:
+    - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
+    - conda inspect objects -p $PREFIX $PKG_NAME  # [osx]
+
+about:
+  home: http://www.arb-home.de
+  license: ARB
+  licence_file: arb_LICENSE.txt
+  summary: ARB 6 Sequence Analysis Suite
