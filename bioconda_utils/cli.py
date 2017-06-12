@@ -100,7 +100,16 @@ def select_recipes(packages, git_range, recipe_folder, config_filename, config, 
 @arg('config', help='Path to yaml file specifying the configuration')
 @arg('--strict-version', action='store_true', help='Require version to strictly match.')
 @arg('--strict-build', action='store_true', help='Require version and build to strictly match.')
-def duplicates(config, strict_version=False, strict_build=False):
+@arg('--remove', action='store_true', help='Remove packages from anaconda.')
+@arg('--dryrun', '-n', action='store_true', help='Only print removal plan.')
+@arg('--url', action='store_true', help='Print anaconda urls.')
+def duplicates(
+    config,
+    strict_version=False,
+    strict_build=False,
+    dryrun=False,
+    remove=False,
+    url=False):
     """
     Detect packages in bioconda that have duplicates in the other defined
     channels.
@@ -108,33 +117,68 @@ def duplicates(config, strict_version=False, strict_build=False):
     config_filename = config
     config = utils.load_config(config)
 
+    channels = config['channels']
+    target_channel = channels[0]
+
     if strict_version:
         get_spec = lambda pkg: (pkg['name'], pkg['version'])
-        print('name', 'version', 'channels', sep='\t')
+        if not remove and not url:
+            print('name', 'version', 'channels', sep='\t')
     elif strict_build:
         get_spec = lambda pkg: (pkg['name'], pkg['version'], pkg['build'])
-        print('name', 'version', 'build', 'channels', sep='\t')
+        if not remove and not url:
+            print('name', 'version', 'build', 'channels', sep='\t')
     else:
         get_spec = lambda pkg: pkg['name']
-        print('name', 'channels', sep='\t')
+        if not remove and not url:
+            print('name', 'channels', sep='\t')
+
+    def remove_package(spec):
+        if not strict_build:
+            raise ValueError('Removing packages is only supported in case of '
+                             '--strict-build.')
+        fn = '{}-{}-{}.tar.bz2'.format(*spec)
+        name, version = spec[:2]
+        subcmd = ['remove', '-f',
+               '{channel}/{name}/{version}/{fn}'.format(
+               name=name, version=version, fn=fn, channel=target_channel)]
+        if dryrun:
+            print('anaconda', *subcmd)
+        else:
+            token = os.environ.get('ANACONDA_TOKEN')
+            if token is None:
+                token = []
+            else:
+                token = ['-t', token]
+            print(utils.run(['anaconda'] + token + subcmd).stdout)
 
     def get_packages(channel):
         return {get_spec(pkg)
                 for repodata in utils.get_channel_repodata(channel)
                 for pkg in repodata['packages'].values()}
 
-    channels = config['channels']
+    # packages in our channel
+    packages = get_packages(target_channel)
 
-    packages = get_packages(channels[0])
-
+    # packages in channels we depend on
     common = defaultdict(list)
     for channel in channels[1:]:
         pkgs = get_packages(channel)
         for pkg in packages & pkgs:
             common[pkg].append(channel)
 
-    for pkg, channels in common.items():
-        print(*pkg, *channels, sep='\t')
+    for pkg, _channels in sorted(common.items()):
+        if remove:
+            remove_package(pkg)
+        else:
+            if url:
+                if not strict_version and not strict_build:
+                    print('https://anaconda.org/{}/{}'.format(
+                          target_channel, pkg[0]))
+                print('https://anaconda.org/{}/{}/files?version={}'.format(
+                    target_channel, *pkg))
+            else:
+                print(*pkg, *_channels, sep='\t')
 
 
 @arg('recipe_folder', help='Path to top-level dir of recipes.')
