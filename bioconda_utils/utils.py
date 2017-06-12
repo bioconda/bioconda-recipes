@@ -133,10 +133,12 @@ def load_meta(recipe, env):
         # directories just for checking the output file.
         # It needs to be done within the context manager so that it sees the
         # os.environ.
-        config_obj = api.Config(
+        config = api.Config(
             no_download_source=True,
             set_build_id=False)
-        return api.render(recipe, config_obj)[0].meta
+        meta = MetaData(recipe, config=config)
+        meta.parse_again()
+        return meta.meta
 
 
 @contextlib.contextmanager
@@ -491,7 +493,9 @@ def built_package_path(recipe, env=None):
         config = api.Config(
             no_download_source=True,
             set_build_id=False)
-        path = api.get_output_file_path(recipe, config=config)
+        meta = MetaData(recipe, config=config)
+        meta.parse_again()
+        path = api.get_output_file_path(meta, config=config)
     return path
 
 
