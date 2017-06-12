@@ -211,7 +211,7 @@ def should_be_noarch(recipe, meta, df):
         ('python' in deps) and
         not _has_preprocessing_selector(meta)
     ) and (
-        'noarch' not in meta['build']
+        'noarch' not in meta.get('build', {})
     ):
         return {
             'should_be_noarch': True,
