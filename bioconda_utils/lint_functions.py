@@ -1,5 +1,6 @@
 import os
 import glob
+import re
 
 
 def _subset_df(recipe, meta, df):
@@ -47,6 +48,23 @@ def _get_deps(meta, section=None):
         if dep:
             deps += [get_name(d) for d in dep]
     return deps
+
+
+def _has_preprocessing_selector(recipe):
+    """
+    Does the package have any preprocessing selectors?
+
+    # [osx], # [not py27], etc.
+    """
+    # regex from
+    # https://github.com/conda/conda-build/blob/cce72a95c61b10abc908ab1acf1e07854a236a75/conda_build/metadata.py#L107
+    sel_pat = re.compile(r'(.+?)\s*(#.*)?\[([^\[\]]+)\](?(2).*)$')
+    for line in open(os.path.join(recipe, 'meta.yaml')):
+        line = line.rstrip()
+        if line.startswith('#'):
+            continue
+        if sel_pat.match(line):
+            return True
 
 
 def in_other_channels(recipe, meta, df):
@@ -185,6 +203,22 @@ def has_windows_bat_file(recipe, meta, df):
             'fix': 'remove windows .bat files'
         }
 
+
+def should_be_noarch(recipe, meta, df):
+    deps = _get_deps(meta)
+    if (
+        ('gcc' not in deps) and
+        ('python' in deps) and
+        not _has_preprocessing_selector(meta)
+    ) and (
+        'noarch' not in meta['build']
+    ):
+        return {
+            'should_be_noarch': True,
+            'fix': 'add "build: noarch" section',
+        }
+
+
 registry = (
     in_other_channels,
 
@@ -200,4 +234,5 @@ registry = (
     uses_perl_threaded,
     uses_setuptools,
     has_windows_bat_file,
+    should_be_noarch,
 )
