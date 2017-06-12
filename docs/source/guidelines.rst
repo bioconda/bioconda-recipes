@@ -117,9 +117,9 @@ dev suffixes, see `here
 "Noarch" packages
 ~~~~~~~~~~~~~~~~~
 A ``noarch`` package can be created for pure Python packages, data packages, or
-packages that do not have platform-depdendent compilation. A single ``noarch``
-package can be used across multiple platforms, which saves on build time and
-saves on storage space on the bioconda channel.
+packages that do not require compilation. This single ``noarch`` package can be
+used across multiple platforms, which saves on build time and saves on storage
+space on the bioconda channel.
 
 For pure Python packages, add ``noarch: python`` to the ``build`` section.
 
