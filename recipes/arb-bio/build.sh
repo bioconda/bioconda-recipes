@@ -1,10 +1,11 @@
 #!/bin/bash
+set -x
 
 #### "./configure" ####
 
 export ARBHOME=`pwd`
-export PATH=$ARBHOME/bin:$PATH
-export LD_LIBRARY_PATH=$ARBHOME/lib
+export PATH=$ARBHOME/bin:$PATH:.
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ARBHOME/lib
 
 export PKG_CONFIG_LIBDIR=$PREFIX/lib/pkgconfig:$PREFIX/share/pkgconfig
 export XLIBS=$(pkg-config --libs xpm xerces-c)
@@ -35,7 +36,7 @@ case `uname` in
 	echo LINK_STATIC := 0
 	SHARED_LIB_SUFFIX=dylib
 	LDFLAGS="$LDFLAGS -Wl,-rpath,$PREFIX/lib"
-	CFLAGS="$CLFLAGS -w"
+	CFLAGS="$CFLAGS -w"
 	;;
 esac >> config.makefile
 
@@ -72,7 +73,7 @@ case `uname` in
 	# "ID" of the lib and the path searched for by binaries. We need to
 	# change all these...
 
-	CHANGE_IDS=()
+	declare -a CHANGE_IDS
 	ARB_LIBS="$ARB_INST"/lib/*.$SHARED_LIB_SUFFIX
 	for lib in $ARB_LIBS; do
 	    old_id=`otool -D "$lib" | tail -n 1`
