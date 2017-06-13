@@ -8,6 +8,8 @@ set -o xtrace
 
 echo "Running test.sh on lung enhancers"
 
+cd ./bin/
+
 mkdir ../results/
 
 mkdir ../temp/
