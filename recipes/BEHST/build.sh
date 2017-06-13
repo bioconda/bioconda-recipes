@@ -8,14 +8,15 @@ set -o xtrace
 
 echo "Running build.sh"
 
-cd /BEHST/bin/
+echo $(pwd)
+echo $(ls)
+
+cd ./bin/
 
 mkdir ../results/
 
 mkdir ../temp/
 
-echo $(pwd)
-echo $(ls)
 
 sh project.sh ../data/pressto_LUNG_enhancers.bed DEFAULT_EQ DEFAULT_ET
 
