@@ -12,6 +12,8 @@ mkdir ../results/
 
 mkdir ../temp/
 
+echo $(pwd)
+
 sh project.sh ../data/pressto_LUNG_enhancers.bed DEFAULT_EQ DEFAULT_ET
 
 # sudo yum -y install python
