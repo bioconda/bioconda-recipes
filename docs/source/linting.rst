@@ -119,7 +119,7 @@ How to resolve: Add a hash in the `source section
 :ref:`hashes` for more info.
 
 `should_be_noarch`
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 Reason for failing: The package should be labelled as ``noarch``.
 
 Rationale: A ``noarch`` package should be created for pure Python packages, data packages, or
