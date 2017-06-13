@@ -6,8 +6,9 @@ mkdir -p $PREFIX/data
 mkdir -p $PREFIX/pipelines
 mkdir -p $PREFIX/scripts
 
-cp ./pipelines/GeneFamilyClassifier $PREFIX/bin
-ln -s $PREFIX/bin/GeneFamilyClassifier $PREFIX/pipelines/GeneFamilyClassifier
+cp ./pipelines/GeneFamilyAligner $PREFIX/bin
+chmod +x $PREFIX/bin/GeneFamilyAligner
+ln -s $PREFIX/bin/GeneFamilyAligner $PREFIX/pipelines/GeneFamilyAligner
 cp ./config/* $PREFIX/config
 cp ./data/* $PREFIX/data
 cp ./scripts/* $PREFIX/scripts
