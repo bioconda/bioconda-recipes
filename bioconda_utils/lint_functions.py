@@ -209,7 +209,7 @@ def should_be_noarch(recipe, meta, df):
     if (
         ('gcc' not in deps) and
         ('python' in deps) and
-        not _has_preprocessing_selector(meta)
+        not _has_preprocessing_selector(recipe)
     ) and (
         'noarch' not in meta.get('build', {})
     ):
