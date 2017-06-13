@@ -127,8 +127,9 @@ packages that do not require compilation. With this a single ``noarch`` package 
 used across multiple platforms, which saves on build time and saves on storage
 space on the bioconda channel.
 
-How to resolve: Add ``noarch: python`` to the ``build`` section. See `here
-<https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_ for
+How to resolve: For pure Python packages, add ``noarch: python`` to the ``build`` section.
+For other generic packages (like a data package), add ``noarch: generic`` to the ``build`` section.
+See `here <https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_ for
 more details.
 
 `uses_git_url`
