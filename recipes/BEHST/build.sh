@@ -8,6 +8,8 @@ set -o xtrace
 
 echo "Running build.sh"
 
+cd /BEHST/bin/
+
 mkdir ../results/
 
 mkdir ../temp/
