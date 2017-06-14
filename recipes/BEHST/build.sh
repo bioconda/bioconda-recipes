@@ -5,14 +5,13 @@
 set -o nounset -o pipefail -o errexit
 set -o xtrace
 
-echo $(pwd)
-echo $(ls)
+PREFIX=$HOME
 
-cd ./bin/
+cd $PREFIX/bin/
 
-mkdir ../results/
+mkdir $PREFIX/../results/
 
-mkdir ../temp/
+mkdir $PREFIX/../temp/
 
 
-sh project.sh ../data/pressto_LUNG_enhancers.bed DEFAULT_EQ DEFAULT_ET
+sh project.sh $PREFIX/../data/pressto_LUNG_enhancers.bed DEFAULT_EQ DEFAULT_ET

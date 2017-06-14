@@ -5,11 +5,13 @@
 set -o nounset -o pipefail -o errexit
 set -o xtrace
 
-cd ./bin/
+PREFIX=$HOME
 
-mkdir ../results/
+cd $PREFIX/bin/
 
-mkdir ../temp/
+mkdir $PREFIX/../results/
+
+mkdir $PREFIX/../temp/
 
 sh project.sh ../data/pressto_BLOOD_enhancers.bed DEFAULT_EQ DEFAULT_ET
 
