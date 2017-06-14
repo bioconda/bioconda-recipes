@@ -5,7 +5,7 @@
 set -o nounset -o pipefail -o errexit
 set -o xtrace
 
-PREFIX=$HOME
+PREFIX=.
 
 cd $PREFIX/bin/
 
