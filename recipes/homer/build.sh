@@ -27,9 +27,9 @@ ln -s $outdir/configureHomer.pl $PREFIX/bin/configureHomer.pl
 
 # Add helper script to configureHomer.pl so that configureHomer.pl
 # -install really installs in $outdir
-#configureHomer=$PREFIX/bin/configureHomer.pl
-#echo "#! /bin/bash" > $configureHomer;
-#echo 'DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )' >>  $configureHomer;
-#echo '$DIR/../share/'$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/configureHomer.pl '$@' >> $configureHomer;
-#chmod +x $configureHomer;
+configureHomer=$PREFIX/bin/configureHomer.pl
+echo "#! /bin/bash" > $configureHomer;
+echo 'DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )' >>  $configureHomer;
+echo '$DIR/../share/'$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/configureHomer.pl '$@' >> $configureHomer;
+chmod +x $configureHomer;
 
