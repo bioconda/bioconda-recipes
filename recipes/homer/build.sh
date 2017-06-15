@@ -31,5 +31,4 @@ configureHomer=$PREFIX/bin/configureHomer
 echo "#! /bin/bash" > $configureHomer;
 echo 'DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )' >>  $configureHomer;
 echo '$DIR/share/'$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/configureHomer.pl '$@' >> $configureHomer;
-chmod +x $configureHomer;
 
