@@ -246,25 +246,30 @@ class BioCProjectPage(object):
         """
         Return the url to the tarball from the bioconductor site.
         """
-        return bioconductor_tarball_url(self.package, self.version, self.bioc_version)
-
+        url = bioconductor_tarball_url(self.package, self.version, self.bioc_version)
+        response = requests.head(url)
+        if response and response.status_code == 200:
+            return url
 
     @property
     def bioconductor_data_url(self):
         """
         Return the url to the tarball from the bioconductor site.
         """
-        return bioconductor_data_url(self.package, self.version, self.bioc_version)
-
+        url = bioconductor_data_url(self.package, self.version, self.bioc_version)
+        response = requests.head(url)
+        if response and response.status_code == 200:
+            return url
 
     @property
     def tarball_url(self):
         if not self._tarball_url:
             urls = [self.bioconductor_tarball_url, self.bioconductor_data_url, self.bioaRchive_url, self.cargoport_url]
             for url in urls:
-                response = requests.head(url)
-                if response and response.status_code == 200:
-                    return url
+                if url is not None:
+                    response = requests.head(url)
+                    if response and response.status_code == 200:
+                        return url
 
             logger.error(
                 'No working URL for %s==%s in Bioconductor %s. '
@@ -489,7 +494,8 @@ class BioCProjectPage(object):
         """
         url = [
             u for u in
-            [self.bioconductor_tarball_url, self.bioaRchive_url, self.cargoport_url]
+            [self.bioconductor_tarball_url, self.bioconductor_data_url,
+             self.bioaRchive_url, self.cargoport_url]
             if u is not None
         ]
 
