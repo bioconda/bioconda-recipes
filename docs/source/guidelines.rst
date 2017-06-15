@@ -104,7 +104,7 @@ consider opening a pull request with `conda-forge
 The exception to this is with R packages. We are still coordinating with
 anaconda and conda-forge about the best place to keep general R packages. In
 the meantime, R packages that are not specific to bioinformatics and that
-aren't already in the `r` channel can be added to bioconda.
+aren't already in the `conda-forge` channel can be added to bioconda.
 
 If uploading of an unreleased version is necessary, please follow the
 versioning scheme of conda for pre- and post-releases (e.g. using a, b, rc, and
@@ -140,7 +140,6 @@ a recipe must have its dependencies in one of the following:
 - as-yet-unbuilt recipes in the repo but that will be included in the PR
 - `bioconda` channel
 - `conda-forge` channel
-- `r` channel
 - default Anaconda channel
 
 Otherwise, you will have to write the recipes for those dependencies and

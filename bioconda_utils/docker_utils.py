@@ -135,9 +135,8 @@ DOCKERFILE_TEMPLATE = \
 """
 FROM {self.image}
 COPY requirements.txt /tmp/requirements.txt
-RUN /opt/conda/bin/conda config --add channels conda-forge
 RUN /opt/conda/bin/conda config --add channels defaults
-RUN /opt/conda/bin/conda config --add channels r
+RUN /opt/conda/bin/conda config --add channels conda-forge
 RUN /opt/conda/bin/conda config --add channels bioconda
 RUN /opt/conda/bin/conda install --file /tmp/requirements.txt
 """

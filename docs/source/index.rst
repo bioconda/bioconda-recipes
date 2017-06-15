@@ -68,14 +68,15 @@ order** so that the priority is set correctly (that is, bioconda is highest
 priority).
 
 The `conda-forge` channel contains many general-purpose packages not already
-found in the `defaults` channel. The `r` channel contains common R packages
-used as dependencies for bioconda packages.
+found in the `defaults` channel. The `r` channel is only included due to backward compatibility.
+It is not mandatory, but without `r`-packages compiled against R 3.3.1 might not work.
+
 
 ::
 
-    conda config --add channels conda-forge
+    (conda config --add channels r)
     conda config --add channels defaults
-    conda config --add channels r
+    conda config --add channels conda-forge
     conda config --add channels bioconda
 
 

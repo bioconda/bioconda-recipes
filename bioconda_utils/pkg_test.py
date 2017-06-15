@@ -76,7 +76,7 @@ def get_image_name(path):
 
 def test_package(path,
                  name_override=None,
-                 channels=["r", "defaults", "conda-forge"],
+                 channels=["conda-forge", "defaults"],
                  mulled_args="",
                  base_image=None
     ):

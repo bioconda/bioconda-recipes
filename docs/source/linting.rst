@@ -40,7 +40,7 @@ Linting functions
 `in_other_channels`
 ~~~~~~~~~~~~~~~~~~
 Reason for failing: The package exists in another dependent channel (currently
-conda-forge, r, and defaults). This often happens when a general-use package
+conda-forge and defaults). This often happens when a general-use package
 was added to bioconda first but was subsequently added to one of the more
 general channels. In this case we'd prefer it to be in the general channel.
 

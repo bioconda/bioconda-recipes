@@ -108,7 +108,7 @@ def get_meta(recipe, config):
 
 
 def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
-                                            'defaults', 'r']):
+                                            'defaults']):
     """
     Return channel info as a dataframe.
 
