@@ -20,6 +20,7 @@ export ARB_BUILD_SKIP_PKGS="MAFFT MUSCLE RAXML PHYLIP FASTTREE"
 # ARB stores build settings in config.makefile. Create one from template:
 cp config.makefile.template config.makefile
 
+
 # Now add some target specific settings to config.makefile
 case `uname` in
     Linux)
@@ -28,6 +29,8 @@ case `uname` in
 	echo MACH := LINUX
 	echo LINK_STATIC := 0
 	SHARED_LIB_SUFFIX=so
+	# ARB needs perl in standard location
+	ln -s `which perl` /usr/bin/perl
 	;;
     Darwin)
 	echo DARWIN := 1
@@ -39,6 +42,13 @@ case `uname` in
 	CFLAGS="$CFLAGS -w"
 	;;
 esac >> config.makefile
+
+echo %%%%%%%%%% DEBUG %%%%%%%%%%
+ls -la SOURCE_TOOLS
+ls -la $ARBHOME/SOURCE_TOOLS/arb_compiler_version.pl
+which perl
+$ARBHOME/SOURCE_TOOLS/arb_compiler_version.pl $CXX
+$ARBHOME/SOURCE_TOOLS/arb_compiler_version.pl g++
 
 echo "PREFIX=$PREFIX"
 
