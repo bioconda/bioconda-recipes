@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [[ `uname` == 'Darwin' ]]; then
+    export MACOSX_DEPLOYMENT_TARGET=10.9
+fi
+
 # From setup.py: User must check GCC, if >= 4.6, use -Ofast, otherwise -O3.
 GCCVERSION=$( gcc -dumpversion )
 GCCVERSION_MAJOR=$(echo $GCCVERSION | awk 'BEGIN {FS="."}; {print $1}')
