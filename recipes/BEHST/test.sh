@@ -5,10 +5,12 @@
 set -o nounset -o pipefail -o errexit
 set -o xtrace
 
+PREFIX=.
+
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 echo "outdir: "$outdir
 
-PREFIX=.
+
 
 cd $PREFIX/bin/
 
