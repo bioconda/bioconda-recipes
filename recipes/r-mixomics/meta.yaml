@@ -3,24 +3,21 @@
 
 package:
   name: r-mixomics
-  # Note that conda versions cannot contain -, so any -'s in the version have
-  # been replaced with _'s.
   version: "6.1.1"
 
 source:
   fn: mixOmics_6.1.1.tar.gz
   url:
-    - http://cran.r-project.org/src/contrib/mixOmics_6.1.1.tar.gz
     - http://cran.r-project.org/src/contrib/Archive/mixOmics/mixOmics_6.1.1.tar.gz
+  sha256: 0a0b5cc2cb7ffcadcf2a5eab35c0f2d8cc9d1a60e7c83086a3909742c02bb471
 
 build:
   number: 0
-
-  # This is required to make R link correctly on Linux.
+  # rgl not available on OSX for conda-forge
+  skip: True  # [osx]
   rpaths:
     - lib/R/lib/
     - lib/
-
 
 requirements:
   build:
@@ -38,7 +35,6 @@ requirements:
     - r-rgl
     - r-tidyr
     - libglu # [linux]
-
   run:
     - r-base
     - r-mass
@@ -61,16 +57,11 @@ test:
     - $R -e "library('mixOmics')" # [not win]
     - "\"%R%\" -e \"library('mixOmics')\"" # [win]
 
-  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
-  # in the recipe that will be run at test time.
-
-  # requires:
-    # Put any additional test requirements here.
-
 about:
   home: http://www.mixOmics.org
   license: GPL (>= 2)
-  summary: 'Multivariate methods are well suited to large omics data sets where the number of
+  summary: |
+    Multivariate methods are well suited to large omics data sets where the number of
     variables (e.g. genes, proteins, metabolites) is much larger than the number of
     samples (patients, cells, mice). They have the appealing properties of reducing
     the dimension of the data by using instrumental variables (components), which are
@@ -89,6 +80,9 @@ about:
     Correlation Analysis, sparse Partial Least Squares and sparse Discriminant Analysis.
     Recently we implemented integrative methods to combine multiple data sets: horizontal
     integration with regularised Generalised Canonical Correlation Analysis and vertical
-    integration with multi-group Partial Least Squares.'
-
+    integration with multi-group Partial Least Squares.
   license_family: GPL3
+
+extra:
+    container:
+        extended-base: true
