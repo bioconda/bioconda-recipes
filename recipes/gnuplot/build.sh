@@ -13,5 +13,6 @@ LDFLAGS="-Wl,-rpath,$PREFIX/lib $LDFLAGS" LIBS="-liconv" ./configure --prefix=$P
 
 export GNUTERM=dumb
 make PREFIX=$PREFIX
-make check PREFIX=$PREFIX
+# too verbose
+#make check PREFIX=$PREFIX
 make install PREFIX=$PREFIX
