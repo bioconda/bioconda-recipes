@@ -234,5 +234,5 @@ registry = (
     uses_perl_threaded,
     uses_setuptools,
     has_windows_bat_file,
-    should_be_noarch,
+    # should_be_noarch,
 )
