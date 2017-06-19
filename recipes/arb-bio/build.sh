@@ -4,10 +4,10 @@ set -x
 #### "./configure" ####
 
 export ARBHOME=`pwd`
-export PATH=$ARBHOME/bin:$PATH:.
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ARBHOME/lib
+export PATH="$ARBHOME/bin:$PATH"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$ARBHOME/lib:$PREFIX/lib"
 
-export PKG_CONFIG_LIBDIR=$PREFIX/lib/pkgconfig:$PREFIX/share/pkgconfig
+export PKG_CONFIG_LIBDIR="$PREFIX/lib/pkgconfig:$PREFIX/share/pkgconfig"
 export XLIBS=$(pkg-config --libs xpm xerces-c)
 export XAW_LIBS=$(pkg-config --libs xaw7)
 export XML_INCLUDES=$(pkg-config --cflags xerces-c)
