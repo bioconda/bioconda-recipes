@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export R_LIBS_USER=':'
+
 if [ `uname` == Darwin ]; then
         export LDFLAGS=-L${PREFIX}/lib
 fi
