@@ -5,7 +5,8 @@ set -x
 
 export ARBHOME=`pwd`
 export PATH="$ARBHOME/bin:$PATH"
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$ARBHOME/lib:$PREFIX/lib"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$ARBHOME/lib"
+export LDFLAGS="$LDFLAGS -Wl,-rpath,$PREFIX/lib"
 
 export PKG_CONFIG_LIBDIR="$PREFIX/lib/pkgconfig:$PREFIX/share/pkgconfig"
 export XLIBS=$(pkg-config --libs xpm xerces-c)
@@ -20,7 +21,6 @@ export ARB_BUILD_SKIP_PKGS="MAFFT MUSCLE RAXML PHYLIP FASTTREE"
 # ARB stores build settings in config.makefile. Create one from template:
 cp config.makefile.template config.makefile
 
-
 # Now add some target specific settings to config.makefile
 case `uname` in
     Linux)
@@ -29,8 +29,6 @@ case `uname` in
 	echo MACH := LINUX
 	echo LINK_STATIC := 0
 	SHARED_LIB_SUFFIX=so
-	# ARB needs perl in standard location
-	ln -s `which perl` /usr/bin/perl
 	;;
     Darwin)
 	echo DARWIN := 1
@@ -38,28 +36,18 @@ case `uname` in
 	echo MACH := DARWIN
 	echo LINK_STATIC := 0
 	SHARED_LIB_SUFFIX=dylib
-	LDFLAGS="$LDFLAGS -Wl,-rpath,$PREFIX/lib"
-	CFLAGS="$CFLAGS -w"
+	export CFLAGS="$CFLAGS -w"
 	;;
 esac >> config.makefile
 
-echo %%%%%%%%%% DEBUG %%%%%%%%%%
-ls -la SOURCE_TOOLS
-ls -la $ARBHOME/SOURCE_TOOLS/arb_compiler_version.pl
-which perl
-$ARBHOME/SOURCE_TOOLS/arb_compiler_version.pl $CXX
-$ARBHOME/SOURCE_TOOLS/arb_compiler_version.pl g++
-
-echo "PREFIX=$PREFIX"
-
 #### "make" ####
 
-make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX -j$CPU_COUNT build | sed 's|'$PREFIX'|$PREFIX|g'
+make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX -j$CPU_COUNT build
 
 #### "make install" ####
 
 # create tarballs (picks the necessary files out of build tree)
-make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX tarfile_quick  | sed 's|'$PREFIX'|$PREFIX|g'
+make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX tarfile_quick
 
 # unpack tarballs at $PREFIX
 ARB_INST=$PREFIX/lib/arb
