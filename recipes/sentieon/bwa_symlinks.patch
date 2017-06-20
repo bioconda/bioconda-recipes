@@ -1,0 +1,31 @@
+--- bin/bwa.orig	2017-04-14 13:16:19.000000000 -0400
++++ bin/bwa	2017-04-14 13:31:17.742633472 -0400
+@@ -1,17 +1,20 @@
+-#!/bin/sh
++#!/bin/bash
+ OS=$(uname)
+ case "$OS" in
+ CYGWIN*) OS=Cygwin;;
+ esac
+ 
+-if [ ! ${0%%/*} ]; then
+-    bin_dir=$(dirname "$0")
+-else
+-    bin_dir=$(dirname "$(pwd)/$0")
+-fi
+-# remove trailing '/.'
+-bin_dir=${bin_dir%%/.*}
++# Find original directory of bash script, resovling symlinks
++# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
++SOURCE="${BASH_SOURCE[0]}"
++while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
++    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
++    SOURCE="$(readlink "$SOURCE")"
++    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
++done
++bin_dir="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+ install_dir=$(dirname "$bin_dir")
++
+ lib_dir=$install_dir/lib
+ libexec_dir=$install_dir/libexec
+ 

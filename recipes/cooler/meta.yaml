@@ -1,0 +1,54 @@
+{% set version = "0.7.4" %}
+
+package:
+  name: cooler
+  version: {{ version }}
+
+source:
+  fn: cooler-{{ version }}.tar.gz
+  url: https://pypi.python.org/packages/d7/b7/d39db1fd12d495ec3293b5e8694a49973f76a2489d1c0274d82de4a27c84/cooler-{{ version }}.tar.gz
+  md5: 266262d27e2ed371e2554ca2d6a93e4e
+
+build:
+  number: 0
+  entry_points:
+    - cooler = cooler.cli:cli
+  # click needs to be patched in order to properly detect unicode in py3k
+  skip: true  # [py3k]
+
+requirements:
+  build:
+    - python
+    - setuptools
+
+  run:
+    - zlib
+    - hdf5
+    - python
+    - six
+    - multiprocess
+    - numpy
+    - scipy
+    - pandas
+    - h5py
+    - dask
+    - click
+    - biopython
+    - pysam >0.8
+    - pyfaidx
+    - pairix
+
+test:
+  imports:
+    - cooler
+    - cooler.cli
+    - cooler.contrib
+
+  commands:
+    # click requires a unicode locale
+    - LANG=C.UTF-8 cooler --help
+
+about:
+  home: https://github.com/mirnylab/cooler
+  license: BSD
+  summary: 'Sparse binary format for genomic interaction matrices'

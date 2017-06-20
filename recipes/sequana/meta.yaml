@@ -1,6 +1,6 @@
-{% set version = "0.1.21" %}
 {% set name = "sequana" %}
-{% set md5 = "e19d1b27200976b899f91e0f85ef0d3f" %}
+{% set version = "0.3.0" %}
+{% set md5 = "7a6181f8199e9157bceae0178a69f69d" %}
 
 package:
   name: {{ name }}
@@ -10,12 +10,13 @@ source:
   fn: {{ name }}-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   md5: {{ md5 }}
-#  patches:
-   # List any patch files here
-   # - fix.patch
 
+
+# py36 requires pyvcf do be updated so for now, only 3.5
 build:
-  skip: True # [py27, py34]
+  skip: True # [py27]
+  preserve_egg_dir: True
+  number: 0
   entry_points:
     - sequana_gui=sequana.gui.sequana_gui:main
     - sequanix=sequana.gui.sequana_gui:main
@@ -29,53 +30,76 @@ build:
     - sequana_summary=sequana.scripts.summary:main
     - sequana_mapping=sequana.scripts.mapping:main
     - sequana_compressor=sequana.scripts.compressor:main
+    - sequana_report=sequana.scripts.reports:main
+    - sequana_fox=sequana.scripts.browser:main
 
+# matplotlib and qt cause trouble. Removed whihc prevent the
+# test or imports unfortunately
 
 requirements:
   build:
     - python
     - setuptools
-    - docutils
-    - colorlog
-
-  run:
-    - python
     - easydev >=0.9.34
-    - reports >=0.3.0
-    - matplotlib >=2.0.0
+    - reports >=0.3.1
     - pyvcf
     - pandas
     - cutadapt >=1.9.1
     - bioservices >=1.4.14
-    - biokit >=0.4.0
+    - biokit >=0.4.1
     - pysam
     - docutils
     - mock
-    - qtconsole
+    - psutil
+    - ruamel.yaml >=0.13.2
     - colorlog
-    - ruamel.yaml <=0.13.2
+    - qtconsole
+
+  run:
+    - python
+    - easydev >=0.9.34
+    - reports >=0.3.1
+    - pyvcf
+    - pandas
+    - cutadapt >=1.9.1
+    - bioservices >=1.4.14
+    - biokit >=0.4.1
+    - pysam
+    - docutils
+    - mock
+    - psutil
+    - ruamel.yaml >=0.13.2
+    - colorlog
     - snakemake
+    - qtconsole
+    - shustring
+    - numexpr
+    - xlrd
+    - pyyaml
+    - kraken # [not osx]
+    - snpeff
+    - krona
 
 test:
-  # Python imports
-  imports:
-    - sequana
-    - sequana.gui
-    - sequana.scripts
-    - sequana.sphinxext
-
-  commands:
-    # You can put test commands to be run here.  Use this to test that the
-    # entry points work.
-    - sequanix --help
-    - sequana_gui --help
-    - sequana_fastq_head --help
-    - sequana_fastq_count --help
-    - sequana --help
-    - sequana_coverage --help
-
-  # You can also put a file called run_test.py in the recipe that will be run
-  # at test time.
+  #imports:
+  #  - sequana
+  #  - sequana.modules_report
+  #  - sequana.pipelines
+  #  - sequana.plots
+  #  - sequana.scripts
+  #  - sequana.sphinxext
+  #  - sequana.utils
+  #commands:
+  #  - fastq_count --help 1>out 2>>err
+  #  - sequana_fastq_head --help
+  #  - sequana_fastq_count --help
+  #  - sequana --help
+  #  - sequana_taxonomy --help
+  #  - sequana_coverage --help
+  #  - sequana_summary --help
+  #  - sequana_mapping --help
+  #  - sequana_compressor --help
+  #  - sequana_report --help
 
 about:
   home: ['http://github.com/sequana/']

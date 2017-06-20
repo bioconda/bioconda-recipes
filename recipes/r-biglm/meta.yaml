@@ -1,0 +1,48 @@
+{% set version = '0.9-1' %}
+
+
+package:
+  name: r-biglm
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: biglm_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/biglm_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/biglm/biglm_{{ version }}.tar.gz
+
+
+  sha256: e189554913a3b162c8be04e7d0d8143eb4da0fcec56113cb1ce99f42fc22f0fc
+
+build:
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+  skip: True # [osx]
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: RSQLite, RODBC
+requirements:
+  build:
+    - r-base
+    - r-dbi
+    - gcc                  # [not win]
+
+  run:
+    - r-base
+    - r-dbi
+    - libgcc
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('biglm')"  # [not win]
+
+
+about:
+  home: https://CRAN.R-project.org/package=biglm
+  license: GPL
+  summary: Regression for data too large to fit in memory
+  license_family: GPL
