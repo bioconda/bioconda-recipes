@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ${PREFIX}/gzstream && make
+cd gzstream && make
 
 make
 make test
