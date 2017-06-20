@@ -14,9 +14,9 @@ export XAW_LIBS=$(pkg-config --libs xaw7)
 export XML_INCLUDES=$(pkg-config --cflags xerces-c)
 export XINCLUDES=$(pkg-config --cflags x11)
 
-# Suppress building tools bundled with ARB for which we have
+## Suppress building tools bundled with ARB for which we have
 # conda packages:
-export ARB_BUILD_SKIP_PKGS="MAFFT MUSCLE RAXML PHYLIP FASTTREE MrBAYES"
+export ARB_BUILD_SKIP_PKGS="MAFFT MUSCLE RAxML PHYLIP FASTTREE MrBAYES"
 
 # ARB stores build settings in config.makefile. Create one from template:
 cp config.makefile.template config.makefile
