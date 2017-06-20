@@ -6,6 +6,7 @@ export CPATH=${PREFIX}/include
 
 cd gzstream && make
 
+cd ..
 make
 make test
 make install
