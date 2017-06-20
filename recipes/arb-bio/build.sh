@@ -16,7 +16,7 @@ export XINCLUDES=$(pkg-config --cflags x11)
 
 # Suppress building tools bundled with ARB for which we have
 # conda packages:
-export ARB_BUILD_SKIP_PKGS="MAFFT MUSCLE RAXML PHYLIP FASTTREE"
+export ARB_BUILD_SKIP_PKGS="MAFFT MUSCLE RAXML PHYLIP FASTTREE MrBAYES"
 
 # ARB stores build settings in config.makefile. Create one from template:
 cp config.makefile.template config.makefile
