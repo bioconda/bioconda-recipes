@@ -209,6 +209,9 @@ def should_be_noarch(recipe, meta, df):
     if (
         ('gcc' not in deps) and
         ('python' in deps) and
+        # This will also exclude recipes with skip sections
+        # which is a good thing, because noarch also implies independence of
+        # the python version.
         not _has_preprocessing_selector(recipe)
     ) and (
         'noarch' not in meta.get('build', {})
@@ -216,6 +219,20 @@ def should_be_noarch(recipe, meta, df):
         return {
             'should_be_noarch': True,
             'fix': 'add "build: noarch" section',
+        }
+
+
+def should_not_be_noarch(recipe, meta, df):
+    deps = _get_deps(meta)
+    if (
+        ('gcc' in deps) or
+        meta.get('build', {}).get('skip', False)
+    ) and (
+        'noarch' in meta.get('build', {})
+    ):
+        return {
+            'should_not_be_noarch': True,
+            'fix': 'remove "build: noarch" section',
         }
 
 
@@ -235,4 +252,5 @@ registry = (
     uses_setuptools,
     has_windows_bat_file,
     # should_be_noarch,
+    should_not_be_noarch
 )

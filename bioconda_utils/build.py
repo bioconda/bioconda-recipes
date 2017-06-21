@@ -122,8 +122,11 @@ def build(recipe,
 
             # Temporarily reset os.environ to avoid leaking env vars to
             # conda-build, and explicitly provide `env` to `run()`
+            # we explicitly point to the meta.yaml, in order to keep
+            # conda-build from building all subdirectories
             with utils.sandboxed_env(_env):
-                cmd = CONDA_BUILD_CMD + build_args + channel_args + [recipe]
+                cmd = CONDA_BUILD_CMD + build_args + channel_args + \
+                      [os.path.join(recipe, 'meta.yaml')]
                 logger.debug('command: %s', cmd)
                 with utils.Progress():
                     p = utils.run(cmd, env=os.environ)
