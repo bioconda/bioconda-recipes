@@ -94,6 +94,17 @@ case `uname` in
 	    fi
 	done
 	;;
+    Linux)
+	ARB_BINS=`find $ARB_INST -type f -perm -a=x | \
+	    xargs file | grep ELF | cut -d : -f 1 | grep -v ' '`
+	echo "Patching rpath into binaries:"
+	for bin in $ARB_BINS; do
+	    if test -e "$bin"; then
+		echo -n "$bin ..."
+		patchelf --set-rpath \$ORIGIN/../lib "$bin"
+	    fi
+	done
+	;;
 esac
 
 # Create [de]activate scripts
@@ -102,7 +113,7 @@ esac
 mkdir -p "${PREFIX}/etc/conda/activate.d"
 cat >"${PREFIX}/etc/conda/activate.d/arbhome-activate.sh" <<EOF
 export ARBHOME_BACKUP="\$ARBHOME"
-export ARBHOME="$PREFIX/lib/arb"
+export ARBHOME=\$CONDA_PREFIX/lib/arb"
 EOF
 mkdir -p "${PREFIX}/etc/conda/deactivate.d"
 cat >"${PREFIX}/etc/conda/deactivate.d/arbhome-deactivate.sh" <<EOF
