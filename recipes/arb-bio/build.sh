@@ -36,6 +36,8 @@ case `uname` in
 	echo LINK_STATIC := 0
 	SHARED_LIB_SUFFIX=dylib
 	export CFLAGS="$CFLAGS -w"
+	# needed for ARB Perl Binding compilation using MakeMaker
+	export LDFLAGS="$LDFLAGS -Wl,-rpath,$PREFIX/lib"
 	;;
 esac >> config.makefile
 
