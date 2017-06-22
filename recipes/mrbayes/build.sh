@@ -9,12 +9,13 @@ autoconf
     --prefix=$PREFIX \
     --disable-debug \
     --with-beagle=$PREFIX \
-    --enable-mpi \
-    --program-suffix mpi
+    --enable-mpi
 
 make -j$CPU_COUNT
 make install
+make clean
 mv $PREFIX/bin/mb{,-mpi}
+
 
 # build version with Beagle only
 ./configure \
