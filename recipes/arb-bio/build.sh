@@ -1,6 +1,10 @@
 #!/bin/bash
 set -x
 
+# kill self after 30 minutes
+
+(sleep $(( 60 * 30 )); echo "Build script timeout reached"; kill $$) & 
+
 #### "./configure" ####
 
 export ARBHOME=`pwd`
