@@ -1,28 +1,19 @@
 #!/bin/bash
-
 set -x
-set +e
-
-# OS specific tests:
-case `uname` in
-    Darwin)
-	conda inspect objects -p $PREFIX $PKG_NAME  # [osx]
-	;;
-esac
-
-conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
 
 # Just check the main binary
 arb --help
 
-# Show ARBHOME (debug)
+# Check that ARBHOME exists:
+test -d $ARBHOME
 echo "ARBHOME=$ARBHOME"
 
-# Check some basic shell only ARB binaries
-echo 'arb_2_ascii $ARBHOME/demo.arb - | arb_2_bin - out.arb' | arb shell
+# Check that demo.arb exists
+test -r $ARBHOME/demo.arb
 
-# Check that conda environment is working (ARBHOME set)
-arb_2_ascii $ARBHOME/demo.arb - | arb_2_bin - out.arb
+# Check arb_2_ascii
+arb_2_ascii $ARBHOME/demo.arb - > ascii.arb
 
-# return false for now so the results aren't hidden by Bioconda toolchain
-false
+# Check arb_2_bin
+arb_2_bin ascii.arb demo.arb
+
