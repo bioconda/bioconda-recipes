@@ -1,15 +1,40 @@
 #!/bin/bash
 
-set -efu -o pipefail
+set -ef -o pipefail
+
+export CPPFLAGS="$CPPFLAGS -I${PREFIX}/include"
+export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
 
 mkdir -p build
 pushd build
 
 mkdir -p $PREFIX/bin
 
-cmake -DCMAKE_INSTALL_PREFIX=$PREFIX -DBoost_NO_BOOST_CMAKE=TRUE -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT:PATHNAME=$PREFIX -DBoost_LIBRARY_DIRS:FILEPATH=${PREFIX}/lib ${SRC_DIR}
+if [ "$(uname)" == "Darwin" ]; then
+		ln -s ${PREFIX}/include/boost ../thirdparty/gatb-core/thirdparty/
+
+    # c++11 compatibility
+
+		CXXFLAGS="$CXXFLAGS";
+		LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
+
+    export CXXFLAGS="$CXXFLAGS -stdlib=libc++ -std=c++11 -I${PREFIX}/include"
+    export CXX_FLAGS="${CXX_FLAGS} -stdlib=libc++ -std=c++11 -I${PREFIX}/include"
+    export CMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++11 -I${PREFIX}/include"
+    export LDFLAGS="$LDFLAGS -stdlib=libc++"
+    export LD_FLAGS="${LD_FLAGS} -stdlib=libc++"
+    export CMAKE_LDFLAGS="${CMAKE_LDFLAGS} -stdlib=libc++"
+
+		export C_INCLUDE_PATH=${PREFIX}/include
+		export CPLUS_INCLUDE_PATH=${PREFIX}/include
+		export BOOST_ROOT=${PREFIX}
+
+    export CXX=clang++
+    export CC=clang
+fi
+
+cmake -DCMAKE_INSTALL_PREFIX=$PREFIX ${SRC_DIR}
 make Gap2Seq GapCutter GapMerger
 chmod u+x Gap2Seq.sh
-echo copying files: Gap2Seq.sh Gap2Seq GapCutter GapMerger $PREFIX/bin
 cp Gap2Seq.sh Gap2Seq GapCutter GapMerger $PREFIX/bin
 popd

@@ -9,7 +9,7 @@ set +u
 [[ -z $DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK  ]] && DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK="false"
 set -u
 
-if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
+if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_BRANCH != "bulk" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
 then
     echo ""
     echo "Tests are skipped for pushes to the main bioconda-recipes repo."
@@ -29,15 +29,13 @@ then
     RANGE="$TRAVIS_BRANCH HEAD"
     if [ $TRAVIS_PULL_REQUEST == "false" ]
     then
-        RANGE="${TRAVIS_COMMIT_RANGE/.../ }"
+        if [ -z "$TRAVIS_COMMIT_RANGE" ]
+        then
+            RANGE="HEAD~1 HEAD"
+        else
+            RANGE="${TRAVIS_COMMIT_RANGE/.../ }"
+        fi
     fi
-
-    # If the environment vars changed (e.g., boost, R, perl) then there's no
-    # good way of knowing which recipes need rebuilding so we check them all.
-    set +e
-    git diff --exit-code --name-only $RANGE scripts/env_matrix.yml
-    ENV_CHANGE=$?
-    set -e
 
     if [[ $TRAVIS_EVENT_TYPE == "cron" ]]
     then
@@ -45,29 +43,27 @@ then
         SKIP_LINTING=true
         echo "considering all recipes because build is triggered via cron"
     else
-        if [[ $ENV_CHANGE -eq 1 ]]
+        if [[ $TRAVIS_BRANCH == "bulk" ]]
         then
-            if [[ $TRAVIS_BRANCH == "bulk" ]]
+            if [[ $TRAVIS_PULL_REQUEST != "false" ]]
             then
-                if [[ $TRAVIS_PULL_REQUEST != "false" ]]
-                then
-                    # pull request against bulk: only build additionally changed recipes
-                    RANGE_ARG="--git-range $RANGE"
-                else
-                    # push on bulk: consider all recipes affected by modified env matrix (the bulk update)!
-                    RANGE_ARG=""
-                    SKIP_LINTING=true
-                    echo "running bulk update"
-                fi
-            else
-                # not on bulk branch: ignore env matrix changes
+                # pull request against bulk: only build additionally changed recipes
                 RANGE_ARG="--git-range $RANGE"
+            else
+                # push on bulk: consider all recipes and do not lint (the bulk update)!
+                RANGE_ARG=""
+                SKIP_LINTING=true
+                echo "running bulk update"
             fi
         else
             # consider only recipes that (a) changed since the last build
             # on master, or (b) changed in this pull request compared to the target
             # branch.
-            RANGE_ARG="--git-range $RANGE"            
+            RANGE_ARG="--git-range $RANGE"
+	    if [[ $TRAVIS_PULL_REQUEST_BRANCH == "bulk" ]]
+            then
+	        SKIP_LINTING=true
+            fi
         fi
     fi
 fi
@@ -78,7 +74,7 @@ export PATH=/anaconda/bin:$PATH
 # for local testing.
 if [[ $TRAVIS_OS_NAME == "linux" && $TRAVIS == "true" ]]
 then
-    DOCKER_ARG="--docker"
+    DOCKER_ARG="--docker --mulled-test"
 fi
 
 # When building master or bulk, upload packages to anaconda and quay.io.
@@ -92,11 +88,15 @@ then
     fi
 else
     UPLOAD_ARG=""
+    LINT_COMMENT_ARG=""
+    if [[ $TRAVIS_OS_NAME == "linux" && $TRAVIS_PULL_REQUEST != "false" && -n "${GITHUB_TOKEN:-}" ]]
+    then
+        LINT_COMMENT_ARG="--push-comment --pull-request $TRAVIS_PULL_REQUEST"
+    fi
     if [[ $SKIP_LINTING == "false"  ]]
     then
-        set -x; bioconda-utils lint recipes config.yml $RANGE_ARG $BIOCONDA_UTILS_LINT_ARGS; set +x
+        set -x; bioconda-utils lint recipes config.yml $RANGE_ARG $BIOCONDA_UTILS_LINT_ARGS $LINT_COMMENT_ARG; set +x
     fi
-
 fi
 
 

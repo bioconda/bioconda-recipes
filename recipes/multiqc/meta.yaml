@@ -1,55 +1,64 @@
 package:
   name: multiqc
-  version: "0.9.1a0"
+  version: "1.0"
 
 source:
-  fn: multiqc-99da2ed.tar.gz
-  url: https://github.com/ewels/MultiQC/archive/99da2ed.tar.gz
-  md5: 273c00ebd0f81025101c6b59b1cc1f77
+  fn: v1.0.tar.gz
+  url: https://github.com/ewels/MultiQC/archive/v1.0.tar.gz
+  md5: 0ba67f2fcb20c6d42929069a0865731f
 
 build:
-  number: 3
+  number: 4
   preserve_egg_dir: True
-  # python 3 failing on
-  # FileNotFoundError: [Errno 2] No such file or directory: 'locale'
-  # https://travis-ci.org/bioconda/bioconda-recipes/jobs/191266605
-  skip: true # [not py27]
+  # click needs to be patched in order to properly detect unicode in py3k
+  skip: true  # [py3k]
 
 requirements:
   build:
     - python
-    - setuptools
-    - jinja2
-    - simplejson
-    - pyyaml
     - click
+    - future >0.14.0
+    - lzstring
+    - jinja2 >=2.9
     - matplotlib
+    - numpy
+    - pyyaml
+    - simplejson
+    - spectra
 
   run:
     - python
-    - jinja2
-    - simplejson
-    - pyyaml
     - click
+    - future >0.14.0
+    - lzstring
+    - jinja2 >=2.9
     - matplotlib
-    - git
+    - numpy
+    - pyyaml
+    - simplejson
+    - spectra
+    - libgcc  # [linux]
 
 test:
   # Python imports
   imports:
     - multiqc
     - multiqc.modules
+    - multiqc.modules.adapterRemoval
     - multiqc.modules.bamtools
     - multiqc.modules.bcftools
     - multiqc.modules.bismark
     - multiqc.modules.bowtie1
     - multiqc.modules.bowtie2
+    - multiqc.modules.busco
+    - multiqc.modules.clusterflow
     - multiqc.modules.custom_content
     - multiqc.modules.cutadapt
     - multiqc.modules.fastq_screen
     - multiqc.modules.fastqc
     - multiqc.modules.featureCounts
     - multiqc.modules.gatk
+    - multiqc.modules.goleft_indexcov
     - multiqc.modules.hicup
     - multiqc.modules.htseq
     - multiqc.modules.kallisto
@@ -60,6 +69,7 @@ test:
     - multiqc.modules.prokka
     - multiqc.modules.qualimap
     - multiqc.modules.quast
+    - multiqc.modules.rna_seqc
     - multiqc.modules.rseqc
     - multiqc.modules.salmon
     - multiqc.modules.samblaster
@@ -67,22 +77,28 @@ test:
     - multiqc.modules.skewer
     - multiqc.modules.slamdunk
     - multiqc.modules.snpeff
+    - multiqc.modules.sortmerna
     - multiqc.modules.star
     - multiqc.modules.tophat
     - multiqc.modules.trimmomatic
     - multiqc.plots
     - multiqc.templates
     - multiqc.templates.default
+    # Tests break:
+    #   AttributeError: module 'multiqc.utils.config' has no attribute 'data_tmp_dir'
+    # (fixed in v1.1dev for future releases)
+    # - multiqc.templates.default_dev
     - multiqc.templates.geo
+    - multiqc.templates.sections
     - multiqc.templates.simple
     - multiqc.utils
 
   commands:
-    - multiqc --version
+    # click requires a unicode locale
+    - LANG=C.UTF-8 multiqc --version
 
 about:
   home: http://multiqc.info
   license: GNU General Public License v3 (GPLv3)
   summary: 'Create aggregate bioinformatics analysis reports across many samples and tools'
   license_family: GPL3
-
