@@ -115,7 +115,7 @@ esac
 mkdir -p "${PREFIX}/etc/conda/activate.d"
 cat >"${PREFIX}/etc/conda/activate.d/arbhome-activate.sh" <<EOF
 export ARBHOME_BACKUP="\$ARBHOME"
-export ARBHOME=\$CONDA_PREFIX/lib/arb"
+export ARBHOME="\$CONDA_PREFIX/lib/arb"
 EOF
 mkdir -p "${PREFIX}/etc/conda/deactivate.d"
 cat >"${PREFIX}/etc/conda/deactivate.d/arbhome-deactivate.sh" <<EOF
