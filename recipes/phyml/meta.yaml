@@ -11,7 +11,10 @@ source:
   url: https://github.com/stephaneguindon/{{ name | lower }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
+    # remove broken include
     - no_malloc_h.patch
+    # don't update version to current date
+    - pin_version.patch
 
 build:
   number: 0
@@ -23,21 +26,26 @@ requirements:
     - autoconf
     - automake
     - pkg-config
-    - openmpi
+    - openmpi 2.*
     - beagle-lib
   run:
     - libgcc   # [linux]
-    - openmpi
+    - openmpi 2.*
     - beagle-lib
 test:
   requirements:
     - conda
   commands:
-    - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
-    - conda inspect objects -p $PREFIX $PKG_NAME  # [osx]
+    # conda isn't always installed in the test env, wrap with if to get failure
+    # only if conda is there and inspect fails
+    - if command -v conda; then conda inspect linkages -p $PREFIX $PKG_NAME; fi
+    - if command -v conda; then conda inspect objects -p $PREFIX $PKG_NAME; fi # [osx]
     - phyml --help | grep "PhyML {{ version }}"
-    - mprun phyml-mpi --help | grep "PhyML {{ version }}"
-    - phytime --help || echo "PhyTime {{ version }}"
+    # mpirun flags needed to work around docker image:
+    #   - runs as root (--allow-run-as-root)
+    #   - doesn't have rsh or ssh (-mca orte_rsh_agent /bin/true)
+    - mpirun -mca orte_rsh_agent true --allow-run-as-root phyml-mpi --help | grep "PhyML {{ version }}"
+    - phytime --help | grep "PhyTime {{ version }}"
 
 about:
   home: http://www.atgc-montpellier.fr/phyml/

@@ -9,20 +9,20 @@ sh autogen.sh
 #   - phyml (enable-phyml),
 #   - phyml-mpi (enable-mpi),
 #   - phytime
-#
-#   - phyml-beagle doesn't compile in this relase
-#   - phyrex crashes with segfault
+# but not
+#   - phyml-beagle -- doesn't compile in this relase
+#   - phyrex -- crashes with segfault
 
 for binary in mpi phyml phyrex phytime; do
     ./configure \
-	--verbose \
+	--disable-dependency-tracking \
 	--prefix $PREFIX \
 	--disable-debug \
-	--enable-$binary && \
-    make -j$CPU_COUNT && \
-    make check && \ 
+	--enable-$binary
+    make -j$CPU_COUNT
+    make check
     make install
     make clean
 done
-    
-    
+
+
