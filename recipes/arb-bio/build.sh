@@ -55,12 +55,12 @@ esac >> config.makefile
 
 #### "make" ####
 
-make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX -j$CPU_COUNT build
+make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX -j$CPU_COUNT build | sed 's|'$PREFIX'|$PREFIX|g'
 
 #### "make install" ####
 
 # create tarballs (picks the necessary files out of build tree)
-make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX tarfile_quick
+make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX tarfile_quick | sed 's|'$PREFIX'|$PREFIX|g'
 
 # unpack tarballs at $PREFIX
 ARB_INST=$PREFIX/lib/arb
