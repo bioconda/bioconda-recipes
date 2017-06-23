@@ -1,6 +1,18 @@
 #!/bin/bash
 set -x
 
+#### Watchdog
+
+# We need to kill ourselves before the timeout from Travis so that
+# we can exit 1 and have the log output printed.
+
+MAXTIME=25
+MAINPID=$$
+(sleep $(( 60 * $MAXTIME )); kill -SIGUSR1 $MAINPID; sleep 5) &
+WDPID=$!
+trap "exit 1" SIGUSR1
+trap "kill $WDPID" EXIT
+
 #### "./configure" ####
 
 export ARBHOME=`pwd`
@@ -121,3 +133,4 @@ mkdir -p "${PREFIX}/etc/conda/deactivate.d"
 cat >"${PREFIX}/etc/conda/deactivate.d/arbhome-deactivate.sh" <<EOF
 export ARBHOME="\$ARB_HOMEBACKUP"
 EOF
+
