@@ -47,7 +47,10 @@ requirements:
     - xerces-c
     - libtiff
     - libxslt
-    - perl
+    # perl 5.22.0.1-0 was compiled with gcc 4.9 and uses
+    # -fstack-protector-strong, which doesn't exist in conda gcc 4.8 and
+    # leads to compile failure
+    - perl !=5.22.0.1-0
     - lynx
     - time
     - sed >=4.4 # 4.2 links to broken gettext
@@ -71,8 +74,7 @@ requirements:
     - sed >=4.4
     - xfig
     - fig2dev
-    - perl
-    - conda # `test: requires:` seems to have no effect
+    - perl !=5.22.0.1-0
 
 test:
   requires:
@@ -80,8 +82,8 @@ test:
   files:
     - run_test.sh
   commands:
-    - conda inspect linkages -p $PREFIX $PKG_NAME  # [not win]
-    - conda inspect objects -p $PREFIX $PKG_NAME  # [osx]
+    - if command -v conda; then conda inspect linkages -p $PREFIX $PKG_NAME; fi  # [not win]
+    - if command -v conda; then conda inspect objects -p $PREFIX $PKG_NAME; fi   # [osx]
     - which arb
     - which arb_pt_server
     - bash run_test.sh
