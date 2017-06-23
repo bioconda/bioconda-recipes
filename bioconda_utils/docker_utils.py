@@ -103,7 +103,9 @@ conda config --add channels file://{self.container_staging}  > /dev/null 2>&1
 conda build {self.conda_build_args} {self.container_recipe}/meta.yaml 2>&1
 
 # Identify the output package
-OUTPUT=$(conda build {self.container_recipe}/meta.yaml --output 2> /dev/null)
+OUTPUT_DIR=$(dirname $(conda build {self.container_recipe}/meta.yaml --output 2> /dev/null))
+OUTPUT=$OUTPUT_DIR/{pkg}
+
 
 # Some args to conda-build make it run and exit 0 without creating a package
 # (e.g., -h or --skip-existing), so check to see if there's anything to copy
@@ -365,7 +367,7 @@ class RecipeBuilder(object):
         shutil.rmtree(build_dir)
         return p
 
-    def build_recipe(self, recipe_dir, build_args, env, noarch=False):
+    def build_recipe(self, recipe_dir, build_args, env, pkg, noarch=False):
         """
         Build a single recipe.
 
@@ -381,6 +383,8 @@ class RecipeBuilder(object):
 
         env : dict
             Environmental variables
+
+        pkg : filename of the desired package (e.g. obtained by utils.built_package_path)
 
         noarch: bool
             Has to be set to true if this is a noarch build
@@ -400,7 +404,7 @@ class RecipeBuilder(object):
         build_dir = os.path.realpath(tempfile.mkdtemp())
         with open(os.path.join(build_dir, 'build_script.bash'), 'w') as fout:
             fout.write(self.build_script_template.format(
-                self=self, arch='noarch' if noarch else 'linux-64'))
+                self=self, pkg=pkg, arch='noarch' if noarch else 'linux-64'))
         build_script = fout.name
         logger.debug('DOCKER: Container build script: \n%s', open(fout.name).read())
 

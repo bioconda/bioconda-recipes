@@ -207,8 +207,9 @@ def test_docker_builder_build(recipes_fixture):
     Tests just the build_recipe method of a RecipeBuilder object.
     """
     docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
+    pkg = os.path.basename(recipes_fixture.pkgs['one'])
     docker_builder.build_recipe(
-        recipes_fixture.recipe_dirs['one'], build_args='', env={})
+        recipes_fixture.recipe_dirs['one'], build_args='', pkg=pkg, env={})
     assert os.path.exists(recipes_fixture.pkgs['one'])
 
 

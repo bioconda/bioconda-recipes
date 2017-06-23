@@ -100,6 +100,9 @@ def build(recipe,
 
     CONDA_BUILD_CMD = ['conda', 'build']
 
+    pkg_path = utils.built_package_path(recipe, _env)
+    meta = utils.load_meta(recipe, _env)
+
     try:
         # Note we're not sending the contents of os.environ here. But we do
         # want to add TRAVIS* vars if that behavior is not disabled.
@@ -108,14 +111,15 @@ def build(recipe,
             response = docker_builder.build_recipe(
                 recipe_dir=os.path.abspath(recipe),
                 build_args=' '.join(channel_args + build_args),
-                env=_env
+                pkg=os.path.basename(pkg_path),
+                env=_env,
+                noarch=bool(utils.get_meta_value(meta, 'build', 'noarch'))
             )
 
-            pkg = utils.built_package_path(recipe, _env)
-            if not os.path.exists(pkg):
+            if not os.path.exists(pkg_path):
                 logger.error(
                     "BUILD FAILED: the built package %s "
-                    "cannot be found", pkg)
+                    "cannot be found", pkg_path)
                 return BuildResult(False, None)
             build_success = True
         else:
@@ -146,14 +150,12 @@ def build(recipe,
     if not mulled_test:
         return BuildResult(True, None)
 
-    pkg_path = utils.built_package_path(recipe, _env)
-
     logger.info(
         'TEST START via mulled-build %s, %s',
         recipe, utils.envstr(_env))
 
     use_base_image = utils.get_meta_value(
-        utils.load_meta(recipe, env),
+        meta,
         'extra', 'container', 'extended-base')
     base_image = 'bioconda/extended-base-image' if use_base_image else None
 
