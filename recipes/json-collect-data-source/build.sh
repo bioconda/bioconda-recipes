@@ -1,2 +1,2 @@
 #!/bin/bash
-python setup.py install
+cp *.py $PREFIX/bin/
