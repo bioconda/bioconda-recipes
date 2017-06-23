@@ -1,4 +1,4 @@
 #!/bin/bash
 
-mkdir -p "$PREFIX/bin"
-cp tadaridaC.r "$PREFIX/bin"
+mkdir -p "$PREFIX/"
+cp tadaridaC.r "$PREFIX/"
