@@ -43,6 +43,7 @@ ENV_VAR_WHITELIST = [
     'PATH',
     'LC_*',
     'LANG',
+    'MACOSX_DEPLOYMENT_TARGET'
 ]
 
 
