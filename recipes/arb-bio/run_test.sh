@@ -1,8 +1,19 @@
 #!/bin/bash
 set -x
+set -e
 
 # Just check the main binary
 arb --help
+
+# if we aren't in a conda env, ARBHOME won't be set. Get it.
+
+if [ -z "$CONDA_DEFAULT_ENV" ]; then
+    ARBHOME=$(echo 'echo THE_ARB_HOME $ARBHOME' | \
+		     arb shell | grep THE_ARB_HOME | cut -f2 -d' ')
+    export ARBHOME
+elif [ -z "$ARBHOME" ]; then
+    source activate $CONDA_DEFAULT_ENV
+fi
 
 # Check that ARBHOME exists:
 test -d $ARBHOME
