@@ -145,6 +145,12 @@ RUN /opt/conda/bin/conda config --add channels bioconda
 RUN /opt/conda/bin/conda install --file /tmp/requirements.txt
 """
 
+# To address issue #5027
+if 'http_proxy' in os.environ:
+    DOCKERFILE_TEMPLATE += 'ENV http_proxy {0}'.format(os.environ['http_proxy'])
+if 'https_proxy' in os.environ:
+    DOCKERFILE_TEMPLATE += 'ENV https_proxy {0}'.format(os.environ['https_proxy'])
+
 
 class DockerCalledProcessError(sp.CalledProcessError):
     pass
