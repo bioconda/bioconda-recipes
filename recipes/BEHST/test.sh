@@ -15,12 +15,8 @@ echo "PKG_BUILDNUM "$PKG_BUILDNUM
 echo "RECIPE_DIR "$RECIPE_DIR
 echo "SRC_DIR "$SRC_DIR
 
-cd $PREFIX
-cd ..
-ls
-cd ./work
-ls
-cd ./bin
+ls $SRC_DIR/bin
+cd $SRC_DIR/bin
 
 
 
