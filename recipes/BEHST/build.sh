@@ -11,7 +11,9 @@ echo "build.sh outdir: "$outdir
 echo "PREFIX: "$PREFIX
 
 cd $PREFIX
-cd ../work/bin/
+cd ..
+ls
+cd ./work/bin/
 
 
 ./download_behst_data.sh
