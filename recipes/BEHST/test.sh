@@ -8,8 +8,6 @@ set -o xtrace
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 echo "test.sh outdir: "$outdir
 
-PREFIX=.
-
 cd $PREFIX/bin/
 
 ./project.sh ../data/pressto_BLOOD_enhancers.bed DEFAULT_EQ DEFAULT_ET
