@@ -8,6 +8,8 @@ set -o xtrace
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 echo "build.sh outdir: "$outdir
 
+echo "PREFIX: "$PREFIX
+
 cd $PREFIX/bin/
 
 ./download_behst_data.sh
