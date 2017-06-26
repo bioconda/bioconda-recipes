@@ -7,4 +7,6 @@ set -o xtrace
 
 PREFIX=.
 
+cd $PREFIX/bin/
+
 ./download_behst_data.sh
