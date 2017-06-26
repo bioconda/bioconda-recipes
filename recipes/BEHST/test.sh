@@ -13,7 +13,10 @@ echo "PREFIX: "$PREFIX
 cd $PREFIX
 cd ..
 ls
-cd ./work/bin/
+cd ./work
+ls
+cd ./bin
+
 
 
 ./project.sh ../data/pressto_BLOOD_enhancers.bed DEFAULT_EQ DEFAULT_ET

@@ -13,7 +13,9 @@ echo "PREFIX: "$PREFIX
 cd $PREFIX
 cd ..
 ls
-cd ./work/bin/
+cd ./work
+ls
+cd ./bin
 
 
 ./download_behst_data.sh
