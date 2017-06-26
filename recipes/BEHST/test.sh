@@ -10,7 +10,8 @@ echo "test.sh outdir: "$outdir
 
 echo "PREFIX: "$PREFIX
 
-cd ../$PREFIX/work/bin/
+cd $PREFIX
+cd ../work/bin/
 
 ./project.sh ../data/pressto_BLOOD_enhancers.bed DEFAULT_EQ DEFAULT_ET
 
