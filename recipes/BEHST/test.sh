@@ -9,6 +9,9 @@ outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 echo "test.sh outdir: "$outdir
 
 echo "PREFIX: "$PREFIX
+echo "PKG_NAME "$PKG_NAME
+echo "PKG_VERSION "$PKG_VERSION
+echo "PKG_BUILDNUM "$PKG_BUILDNUM
 
 cd $PREFIX
 cd ..
