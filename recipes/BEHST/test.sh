@@ -5,7 +5,9 @@
 set -o nounset -o pipefail -o errexit
 set -o xtrace
 
-cd $SRC_DIR/bin
+#mkdir -p $PREFIX/bin
+#cp $SRC_DIR/bin/* $PREFIX/bin
+cd $PREFIX/bin
 
 ./project.sh ../data/pressto_BLOOD_enhancers.bed DEFAULT_EQ DEFAULT_ET
 

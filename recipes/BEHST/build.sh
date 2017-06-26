@@ -5,6 +5,8 @@
 set -o nounset -o pipefail -o errexit
 set -o xtrace
 
-cd $SRC_DIR/bin
+mkdir -p $PREFIX/bin
+cp $SRC_DIR/bin/* $PREFIX/bin
+cd $PREFIX/bin
 
 ./download_behst_data.sh
