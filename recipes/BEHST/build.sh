@@ -10,6 +10,6 @@ echo "build.sh outdir: "$outdir
 
 echo "PREFIX: "$PREFIX
 
-cd $PREFIX/work/bin/
+cd ../$PREFIX/work/bin/
 
 ./download_behst_data.sh
