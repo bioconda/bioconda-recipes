@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Eliminate deprecated use of 'defined @' syntax so
+# newer Perl versions will work.
+sed -i'' -e 's/defined @/@/g' ESTScan
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL

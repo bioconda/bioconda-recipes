@@ -29,15 +29,16 @@ ln -s $target/* $PREFIX/bin
 cd $target
 # Use external Bio::DB::HTS::Faidx instead of compiling interally
 # Compile in VEP causes issues linking to /lib64 outside of rpath
-vep_install -a a --NO_HTSLIB --NO_TEST --NO_BIOPERL
+vep_install -a a --NO_HTSLIB --NO_TEST --NO_BIOPERL --NO_UPDATE
 # Remove test data
 rm -rf t/
 
 # Install plugins
-curl -ks -o CADD.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/88/CADD.pm
-curl -ks -o dbNSFP.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/88/dbNSFP.pm
-curl -ks -o MaxEntScan.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/88/MaxEntScan.pm
-curl -ks -o GeneSplicer.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/88/GeneSplicer.pm
-curl -ks -o dbscSNV.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/88/dbscSNV.pm
+curl -ks -o CADD.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/89/CADD.pm
+curl -ks -o dbNSFP.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/89/dbNSFP.pm
+curl -ks -o MaxEntScan.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/89/MaxEntScan.pm
+curl -ks -o SpliceRegion.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/89/SpliceRegion.pm
+curl -ks -o GeneSplicer.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/89/GeneSplicer.pm
+curl -ks -o dbscSNV.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/89/dbscSNV.pm
 curl -ks -o LoF.pm https://raw.githubusercontent.com/konradjk/loftee/master/LoF.pm
 curl -ks -o splice_module.pl https://raw.githubusercontent.com/konradjk/loftee/master/splice_module.pl
