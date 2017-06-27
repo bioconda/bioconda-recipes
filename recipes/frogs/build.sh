@@ -1,4 +1,5 @@
 #!/bin/bash
 
-cp "./app/*" "${PREFIX}/bin/"
-cp "./libexec/*" "${PREFIX}/bin/"
+mv tools $PREFIX/tools
+mv app "${PREFIX}/bin"
+cp libexec/* "${PREFIX}/bin/"
