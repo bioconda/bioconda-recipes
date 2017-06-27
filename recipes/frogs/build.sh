@@ -1,5 +1,6 @@
 #!/bin/bash
 
-mv tools $PREFIX/tools
-mv app "${PREFIX}/bin"
-cp libexec/* "${PREFIX}/bin/"
+mv . $PREFIX
+mkdir $PREFIX/bin
+cd $PREFIX/app
+ln -s ./* ../bin/
