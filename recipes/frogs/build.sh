@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cp apps/* bin/
-cp libexec/* bin/
+cp "${PREFIX}/apps/*" "${PREFIX}/bin/"
+cp "${PREFIX}/libexec/*" "${PREFIX}/bin/"
