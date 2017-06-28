@@ -1,7 +1,8 @@
 #!/bin/bash
 
-export CPPFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+#export CPPFLAGS="-I$PREFIX/include"
+#export LDFLAGS="-L$PREFIX/lib"
+export CPATH=${PREFIX}/include
 
 mkdir -p "$PREFIX/libexec" "$PREFIX/bin"
 
