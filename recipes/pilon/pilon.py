@@ -11,7 +11,7 @@ import os
 import sys
 import subprocess
 from os import access, getenv, X_OK
-jar_file = 'pilon-1.20.jar'
+jar_file = 'pilon-1.22.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
@@ -88,4 +88,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

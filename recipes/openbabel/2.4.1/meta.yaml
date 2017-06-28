@@ -12,9 +12,13 @@ source:
         - fix_library_path_search.diff
         - fix_data_path.diff
         - fix_babel_test_paths.diff
+        - fix_libinchi_cmakelists.diff
+        - 372.patch
 
 build:
-    number: 0
+    # https://bugs.archlinux.org/task/52409
+    skip: true  # [not py2k and not py35]
+    number: 1
     detect_binary_files_with_prefix: true
 
 requirements:
@@ -35,12 +39,15 @@ requirements:
         - zlib
         - libxml2
         - cairo   # [linux]
+        - xorg-libxau
+        - xorg-libxdmcp
+        - xorg-libxext
+        - xorg-libxrender
 test:
   imports:
     - openbabel
     - pybel
   commands:
-    - python run_test.py
     - obabel --help
     - obabel -:'c1ccccc1' --gen3d -omol2
     - obabel -:'c1ccccc1' --gen3d -oinchi
