@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export CPPFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+
 mkdir -p "$PREFIX/libexec" "$PREFIX/bin"
 
 chmod u+x install_kraken.sh
