@@ -8,7 +8,7 @@ mkdir -p "$PREFIX/libexec" "$PREFIX/bin"
 export CXXFLAGS="-std=c++0x -Wall -fopenmp  -DGZSTREAM_NAMESPACE=gz -g -I."
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib -L. -lkraken -lz"
-
+export CPATH="${PREFIX}/include"
 
 chmod u+x install_kraken_conda.sh
 ./install_kraken_conda.sh "$PREFIX/libexec"
