@@ -21,15 +21,15 @@ do
     chmod +x $outdir/bin/$id;
     ln -s $outdir/bin/$id $PREFIX/bin/$id;
 done
-
 chmod +x $outdir/configureHomer.pl
-ln -s $outdir/configureHomer.pl $PREFIX/bin/configureHomer.pl 
 
-# Add helper script to configureHomer.pl so that configureHomer.pl
-# -install really installs in $outdir
-#configureHomer=$PREFIX/bin/configureHomer.pl
-#echo "#! /bin/bash" > $configureHomer;
-#echo 'DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )' >>  $configureHomer;
-#echo '$DIR/../share/'$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/configureHomer.pl '$@' >> $configureHomer;
-#chmod +x $configureHomer;
+
+# Add helper script to call configureHomer.pl so that configureHomer.pl
+# -install really installs in $outdir. It looks like this is for 
+# Linux platforms only.
+configureHomer=$PREFIX/bin/configureHomer
+echo "#! /bin/bash" > $configureHomer;
+echo 'DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )' >>  $configureHomer;
+echo '$DIR/../share/'$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM'/configureHomer.pl -install' >> $configureHomer;
+chmod +x $configureHomer
 

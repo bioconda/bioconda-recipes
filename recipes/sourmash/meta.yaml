@@ -1,0 +1,56 @@
+{% set name = "sourmash" %}
+{% set version = "2.0.0a1" %}
+{% set hash = "f0df1cfcad67351c53c9fa846c5a913f335eb4f1267d4faf6d362a46bc10c100" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name|lower }}-{{ version }}.tar.gz
+  url: https://github.com/dib-lab/sourmash/archive/9ab243354e6f51b11d3fed89d3c07aa7b56cfcec.tar.gz
+  sha256: {{ hash }}
+
+build:
+  entry_points:
+    - sourmash = sourmash_lib.__main__:main
+  number: 1
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - gcc  # [not osx]
+    - llvm  # [osx]
+    - cython >=0.25.2
+    - screed >=0.9
+    - pyyaml >=3.11
+    - ijson
+    - numpy
+    - matplotlib
+    - scipy
+
+  run:
+    - python
+    - libgcc  # [not osx]
+    - cython >=0.25.2
+    - screed >=0.9
+    - pyyaml >=3.11
+    - ijson
+    - numpy
+    - matplotlib
+    - scipy
+    - khmer >=2.1
+
+test:
+  imports:
+    - sourmash_lib
+
+  commands:
+    - sourmash --help
+
+about:
+  home: https://github.com/dib-lab/sourmash
+  license: BSD License
+  summary: 'tools for comparing DNA sequences with MinHash sketches'
+  license_family: BSD

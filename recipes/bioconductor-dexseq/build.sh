@@ -10,9 +10,6 @@ $R CMD INSTALL --build .
 
 python_scripts=$PREFIX/lib/R/library/DEXSeq/python_scripts
 
-sed -i "1i #!/usr/bin/env python" $python_scripts/dexseq_count.py
-sed -i "1i #!/usr/bin/env python" $python_scripts/dexseq_prepare_annotation.py
-
 chmod +x $python_scripts/dexseq_count.py
 chmod +x $python_scripts/dexseq_prepare_annotation.py
 

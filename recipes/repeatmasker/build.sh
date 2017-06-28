@@ -22,8 +22,8 @@ makeblastdb -dbtype prot -in ${RM_DIR}/Libraries/RepeatPeps.lib
 cat <<END >>${PREFIX}/bin/RepeatMasker
 #!/bin/bash
 
-REPEATMASKER_LOCATION=$(dirname $(which RepeatMasker))
-BASEDIR=\${CONDA_PREFIX:\${REPEATMASKER_LOCATION}}
+BINDIR=\$(dirname \$(which RepeatMasker))
+BASEDIR=\${BINDIR%/bin}
 REPEATMASKER_DIR=\${REPEATMASKER_DIR:-\${BASEDIR}/share/RepeatMasker}
 REPEATMASKER_MATRICES_DIR=\${REPEATMASKED_MATRICES_DIR:-\${BASEDIR}/share/RepeatMasker/Matrices}
 REPEATMASKER_LIB_DIR=\${REPEATMASKER_LIB_DIR:-\${BASEDIR}/share/RepeatMasker/Libraries}
