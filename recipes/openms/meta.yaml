@@ -1,0 +1,66 @@
+{% set name = "OpenMS" %}
+{% set version = "2.1.0" %}
+package:
+  name: {{ name|lower  }}
+  version: {{ version  }}
+
+source:
+  fn: OpenMS-{{ version }}_src_contrib_doc.tar.gz
+  url: https://github.com/OpenMS/OpenMS/releases/download/Release{{ version }}/OpenMS-{{ version }}_src_doc_contrib.tar.gz
+  sha256: 36765c3a4c7a3277d71b9278505bd32f26c7030ffa6681a76344ca0024edf6a2
+  
+build:
+    number: 1
+    string: boost1.62_{{PKG_BUILDNUM}}
+    skip: True  ## This package exceeds the travis build time, see the extra section.
+
+requirements:
+  build:
+    - gcc    # [linux]
+    - llvm   # [osx]
+    - cmake
+    - glib
+    - autoconf
+    - automake
+    - python
+    - zlib
+    - libtool
+    - xerces-c
+    - gsl
+    - boost  ==1.62.*
+    - eigen
+    - glpk  >=4.60
+    - bzip2
+    - qt
+    - libsvm >=3.21
+    - seqan-library ==1.4.2
+    - coinmp
+  run:
+    - python
+    - libgcc    # [linux]
+    - glib
+    - zlib
+    - xerces-c
+    - gsl
+    - boost  ==1.62.*
+    - eigen
+    - glpk  >=4.60
+    - bzip2
+    - qt
+    - libsvm >=3.21
+    - coinmp
+
+test:
+  commands:
+    - FileMerger --help
+
+about:
+  home: https://github.com/OpenMS/OpenMS
+  license: BSD
+  summary: OpenMS is an open-source software C++ library for LC-MS data management and analyses
+
+extra:
+    notes: |
+           This package exceeds the travis build time. Hence, this package was build by @bioconda/core locally via
+           simulate-travis.py and pushed directly. If you need an update for this package please make your changes,
+           create a PR and contact @bioconda/core.

@@ -1,0 +1,34 @@
+{% set name = "SparseAssembler" %}
+{% set version = "20160205" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 1
+  script: "mkdir -p $PREFIX/bin; g++ -O3 -o SparseAssembler *.cpp; mv SparseAssembler $PREFIX/bin"
+
+source:
+  fn: {{ name|lower }}_{{ version }}.tar.gz
+  url: https://github.com/yechengxi/SparseAssembler/archive/7ce06016160de6dc0e245530689cefed8d5db19f.tar.gz
+  md5: e9c6b25a8f9983badff01094615596f0
+
+requirements:
+  build:
+  - gcc # [not osx]
+  - llvm  # [osx]
+  - zlib
+
+  run:
+  - libgcc # [not osx]
+  - zlib
+
+test:
+  commands:
+    - SparseAssembler | grep "Error! Genome size not given." > /dev/null
+
+about:
+  home: https://github.com/yechengxi/SparseAssembler
+  summary: A sparse k-mer graph based, memory-efficient genome assembler
+

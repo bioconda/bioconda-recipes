@@ -1,0 +1,92 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-coloc
+  # Note that conda versions cannot contain -, so any -'s in the version have
+  # been replaced with _'s.
+  version: "2.3_1"
+
+source:
+  fn: coloc_2.3-1.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/coloc_2.3-1.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/coloc/coloc_2.3-1.tar.gz
+
+
+  # You can add a hash for the file here, like md5 or sha1
+  # md5: 49448ba4863157652311cc5ea4fea3ea
+  # sha1: 3bcfbee008276084cbb37a2b453963c61176a322
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # If this is a new build for the same version, increment the build
+  # number. If you do not include this key, it defaults to 0.
+  # number: 1
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: ggplot2, snpStats
+requirements:
+  build:
+    - r-base
+    - r-bma
+    - r-mass
+    - r-colorspace
+
+  run:
+    - r-base
+    - r-bma
+    - r-mass
+    - r-colorspace
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('coloc')" # [not win]
+    - "\"%R%\" -e \"library('coloc')\"" # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://github.com/chr1swallace/coloc
+  license: GPL
+  summary: Performs the colocalisation tests described in Plagnol et al (2009), Wallace et al
+    (2013) and Giambartolomei et al (2013).
+  license_family: GPL3
+
+# The original CRAN metadata for this package was:
+
+# Package: coloc
+# Type: Package
+# Depends: methods, colorspace, MASS, BMA
+# Suggests: ggplot2, snpStats
+# Title: Colocalisation tests of two genetic traits
+# Version: 2.3-1
+# Date: 2013-09-26
+# Authors@R: c(person("Chris", "Wallace", role=c("aut","cre"), email = "chris.wallace@cimr.cam.ac.uk"), person("Claudia","Giambartolomei", role="aut", email="claudia.giambartolomei.10@ucl.ac.uk"), person("Vincent","Plagnol", role="ctb", email="v.plagnol@ucl.ac.uk"))
+# Maintainer: Chris Wallace <chris.wallace@cimr.cam.ac.uk>
+# Description: Performs the colocalisation tests described in Plagnol et al (2009), Wallace et al (2013) and Giambartolomei et al (2013).
+# URL: https://github.com/chr1swallace/coloc
+# BugReports: https://github.com/chr1swallace/coloc/issues
+# License: GPL
+# LazyLoad: yes
+# Collate: 'AllClasses.R' 'bma.R' 'coloc-package.R' 'coloc.combine.R' 'coloc.test.R' 'pcs.R' 'private.R' 'claudia.R'
+# Packaged: 2013-09-27 09:09:10 UTC; chrisw
+# Author: Chris Wallace [aut, cre], Claudia Giambartolomei [aut], Vincent Plagnol [ctb]
+# NeedsCompilation: no
+# Repository: CRAN
+# Date/Publication: 2013-09-29 17:23:08
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml

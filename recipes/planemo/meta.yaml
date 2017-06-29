@@ -1,0 +1,73 @@
+{% set name = "planemo" %}
+{% set version = "0.40.1" %}
+{% set md5 = "f1d131763c3bd9ec70fce594db59d9e8" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  fn: planemo-{{ version }}.tar.gz
+  url: https://pypi.python.org/packages/6f/a5/5e6f0521c926e3b41a868043a9f2157f5c646a03ff79a33b89f3aa0b81e9/planemo-{{ version }}.tar.gz
+  md5: {{ md5 }}
+
+build:
+  preserve_egg_dir: true
+  skip: true # [py3k]
+  entry_points:
+    - planemo=planemo.cli:planemo
+  number: 0
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - six
+    - click
+    - pyaml
+    - bioblend >=0.8.0
+    - jinja2
+    - virtualenv
+    - galaxy-lib >=16.7.10
+    - aenum
+
+  run:
+    - python
+    - six
+    - glob2
+    - click
+    - pyaml
+    - bioblend >=0.8.0
+    - jinja2
+    - virtualenv
+    - galaxy-lib >=16.7.10
+    - aenum
+    - docutils
+
+test:
+  imports:
+    - planemo
+    - planemo.commands
+    - planemo.conda_verify
+    - planemo.cwl
+    - planemo.cwl.cwl2script
+    - planemo.database
+    - planemo.engine
+    - planemo.galaxy
+    - planemo.galaxy.test
+    - planemo.linters
+    - planemo.reports
+    - planemo.shed
+    - planemo.shed2tap
+    - planemo.test
+    - planemo.xml
+
+  commands:
+    # click requires a unicode locale
+    - LANG=C.UTF-8 planemo --help
+
+about:
+  home: https://github.com/galaxyproject/planemo
+  license: Academic Free License (AFL)
+  summary: 'Command-line utilities to assist in building tools for the Galaxy project (http://galaxyproject.org/).'
+  license_family: Apache

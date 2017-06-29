@@ -3,13 +3,17 @@ package:
   version: '0.7.3'
 
 source:
-  #hg_url: https://bitbucket.org/james_taylor/bx-python
   fn: bx-python-0.7.3.tar.gz
   url: https://pypi.python.org/packages/source/b/bx-python/bx-python-0.7.3.tar.gz
   md5: d8c50c01c9e421bae0bbdbfa00fef6e4
 
 build:
-  number: 0
+  number: 1
+  # On Python 2.7, setuptools import currently fails.
+  # It is unclear whether this is a bug in the setuptools package or the python package.
+  # I suggest to fix this when releasing the next bx-python version.
+  skip: True
+  # skip: True # [not py27]
 
 requirements:
   build:
@@ -17,12 +21,14 @@ requirements:
     - setuptools
     - cython
     - nose
-    - numpy
+    - numpy x.x
+    - gcc
 
   run:
     - python
     - setuptools
-    - numpy
+    - numpy x.x
+    - libgcc
 
 test:
   imports:
@@ -46,10 +52,6 @@ test:
     - bx.align.tools
     - bx
     - bx.intseq
-
-  requires:
-    # Put any additional test requirements here.  For example
-    - nose
 
 about:
   home: http://bitbucket.org/james_taylor/bx-python/wiki/Home

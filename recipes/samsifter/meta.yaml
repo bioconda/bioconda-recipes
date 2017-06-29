@@ -1,0 +1,90 @@
+package:
+  name: samsifter
+  version: "1.0.0"
+
+source:
+  fn: SamSifter-1.0.0.tar.gz
+  url: https://pypi.python.org/packages/source/S/SamSifter/SamSifter-1.0.0.tar.gz
+  md5: 883df68d2f989c4c431ebb253ca104f7
+
+build:
+  skip: True # [py27]
+  number: 2
+  entry_points:
+    - compile_stats=samsifter.stats.compile_stats:main
+    - count_taxon_reads=samsifter.tools.count_taxon_reads:main
+    - filter_read_conservation=samsifter.tools.filter_read_conservation:main
+    - filter_read_list=samsifter.tools.filter_read_list:main
+    - filter_ref_coverage=samsifter.tools.filter_ref_coverage:main
+    - filter_ref_identity=samsifter.tools.filter_ref_identity:main
+    - filter_ref_list=samsifter.tools.filter_ref_list:main
+    - filter_ref_pmds=samsifter.tools.filter_ref_pmds:main
+    - filter_taxon_list=samsifter.tools.filter_taxon_list:main
+    - filter_taxon_pmds=samsifter.tools.filter_taxon_pmds:main
+    - pmdtools_mod=pmdtools.pmdtools_mod:main
+    - summarize_stats=samsifter.stats.summarize_stats:main
+    - samsifter=samsifter.samsifter:main
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - matplotlib >=1.3.1
+    - pandas >=0.14.1
+    - numpy >=1.6.1
+    - pyqt 4.11.*
+    - glib
+    - xorg-libsm
+    - xorg-libxrender
+  run:
+    - python
+    - matplotlib >=1.3.1
+    - pandas >=0.14.1
+    - numpy >=1.6.1
+    - pyqt 4.11.*
+    # workaround for missing dependency of pandas
+    - libgcc
+    - glib
+    - xorg-libsm
+    - xorg-libxrender
+
+test:
+  # Python imports
+  imports:
+    - pmdtools
+    - samsifter
+    - samsifter.gui
+    - samsifter.models
+    - samsifter.resources
+    - samsifter.stats
+    - samsifter.tools
+    - samsifter.util
+    - samsifter.views
+
+  commands:
+    # You can put test commands to be run here.  Use this to test that the
+    # entry points work.
+
+    - compile_stats --help
+    - count_taxon_reads --help
+    - filter_read_conservation --help
+    - filter_read_list --help
+    - filter_ref_coverage --help
+    - filter_ref_identity --help
+    - filter_ref_list --help
+    - filter_ref_pmds --help
+    - filter_taxon_list --help
+    - filter_taxon_pmds --help
+    - pmdtools_mod --help
+    - summarize_stats --help
+    - samsifter --help
+
+about:
+  home: http://pypi.python.org/pypi/SamSifter/
+  license: GNU General Public License v3 (GPLv3)
+  summary: 'Workflow editor for metagenomic analysis'
+
+extra:
+  container:
+    # matplotlib needs opengl support
+    extended-base: true

@@ -1,0 +1,109 @@
+{% set name = "sequana" %}
+{% set version = "0.3.0" %}
+{% set md5 = "7a6181f8199e9157bceae0178a69f69d" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  md5: {{ md5 }}
+
+
+# py36 requires pyvcf do be updated so for now, only 3.5
+build:
+  skip: True # [py27]
+  preserve_egg_dir: True
+  number: 0
+  entry_points:
+    - sequana_gui=sequana.gui.sequana_gui:main
+    - sequanix=sequana.gui.sequana_gui:main
+    - fastq_head=sequana.scripts.fastq_head:main
+    - fastq_count=sequana.scripts.fastq_count:main
+    - sequana_fastq_head=sequana.scripts.fastq_head:main
+    - sequana_fastq_count=sequana.scripts.fastq_count:main
+    - sequana=sequana.scripts.main:main
+    - sequana_taxonomy=sequana.scripts.taxonomy:main
+    - sequana_coverage=sequana.scripts.coverage:main
+    - sequana_summary=sequana.scripts.summary:main
+    - sequana_mapping=sequana.scripts.mapping:main
+    - sequana_compressor=sequana.scripts.compressor:main
+    - sequana_report=sequana.scripts.reports:main
+    - sequana_fox=sequana.scripts.browser:main
+
+# matplotlib and qt cause trouble. Removed whihc prevent the
+# test or imports unfortunately
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - easydev >=0.9.34
+    - reports >=0.3.1
+    - pyvcf
+    - pandas
+    - cutadapt >=1.9.1
+    - bioservices >=1.4.14
+    - biokit >=0.4.1
+    - pysam
+    - docutils
+    - mock
+    - psutil
+    - ruamel.yaml >=0.13.2
+    - colorlog
+    - qtconsole
+
+  run:
+    - python
+    - easydev >=0.9.34
+    - reports >=0.3.1
+    - pyvcf
+    - pandas
+    - cutadapt >=1.9.1
+    - bioservices >=1.4.14
+    - biokit >=0.4.1
+    - pysam
+    - docutils
+    - mock
+    - psutil
+    - ruamel.yaml >=0.13.2
+    - colorlog
+    - snakemake
+    - qtconsole
+    - shustring
+    - numexpr
+    - xlrd
+    - pyyaml
+    - kraken # [not osx]
+    - snpeff
+    - krona
+
+test:
+  #imports:
+  #  - sequana
+  #  - sequana.modules_report
+  #  - sequana.pipelines
+  #  - sequana.plots
+  #  - sequana.scripts
+  #  - sequana.sphinxext
+  #  - sequana.utils
+  #commands:
+  #  - fastq_count --help 1>out 2>>err
+  #  - sequana_fastq_head --help
+  #  - sequana_fastq_count --help
+  #  - sequana --help
+  #  - sequana_taxonomy --help
+  #  - sequana_coverage --help
+  #  - sequana_summary --help
+  #  - sequana_mapping --help
+  #  - sequana_compressor --help
+  #  - sequana_report --help
+
+about:
+  home: ['http://github.com/sequana/']
+  license: "BSD 3-clause"
+  summary: 'A set of standalone application and pipelines dedicated to NGS (new generation sequencing) analysis'
+  license_family: BSD
+

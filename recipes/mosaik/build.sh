@@ -4,6 +4,7 @@
 cd $SRC_DIR/src
 
 export PRFX=$PREFIX
+export CPLUS_INCLUDE_PATH=$PREFIX/include
 make
 
 binaries="\

@@ -1,29 +1,48 @@
 package:
-  name: pysam
-  version: 0.8.4
+    name: pysam
+    version: 0.11.2.2
 
 source:
-  fn: pysam-0.8.4.tar.gz
-  url: https://pypi.python.org/packages/source/p/pysam/pysam-0.8.4.tar.gz
-  md5: 1357038e50e49b79ba02868ac2dbe2c1
+    fn: pysam-0.11.2.2.tar.gz
+    url: https://pypi.python.org/packages/a4/1b/b6dfd92aea876647d20d9a8bd8618e4f2af6300539426be83c8bb0912d6f/pysam-0.11.2.2.tar.gz
+    md5: 56230cd5f55b503845915b76c22d620a
+    patches:  # [osx]
+      - osx_rpath.patch [osx]
 
 build:
-  number: 0
+    number: 2
+    skip: False
+    binary_relocation: False # [linux]
+    string: "htslib{{CONDA_HTSLIB}}_{{PKG_BUILDNUM}}"
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - cython
+    build:
+        - gcc  # [linux]
+        - llvm # [osx]
+        - htslib {{CONDA_HTSLIB}}*
+        - samtools {{CONDA_HTSLIB}}*
+        - bcftools {{CONDA_HTSLIB}}*
+        - cython
+        - python
+        - setuptools
+        - zlib
+        - curl
 
-  run:
-    - python
+    run:
+        - libgcc # [linux]
+        - htslib {{CONDA_HTSLIB}}*
+        - samtools {{CONDA_HTSLIB}}*
+        - bcftools {{CONDA_HTSLIB}}*
+        - python
+        - zlib
+        - curl
 
 test:
-  imports:
-    - pysam
+
+    imports:
+        - pysam
 
 about:
-  home: https://github.com/pysam-developers/pysam
-  license: MIT
-  summary: Pysam is a python module for reading and manipulating Samfiles. It's a lightweight wrapper of the samtools C-API. Pysam also includes an interface for tabix.
+    home: https://github.com/pysam-developers/pysam
+    license: MIT
+    summary: "Pysam is a python module for reading and manipulating Samfiles. It is a lightweight wrapper of the samtools C-API. Pysam also includes an interface for tabix."

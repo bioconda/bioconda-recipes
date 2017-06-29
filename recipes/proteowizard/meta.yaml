@@ -1,0 +1,29 @@
+{% set version = "3_0_9992" %}
+
+package:
+  name: proteowizard
+  version: {{ version }}
+
+source:
+  url: http://teamcity.labkey.org/guestAuth/repository/download/bt81/365914:id/pwiz-src-{{ version }}.tar.bz2
+  sha1: 4bf02eb83755b3df822a2d35b39d577be84f8282
+
+build:
+  script: bash -c "./quickbuild.sh -j{{ CPU_COUNT }} address-model=64 runtime-link=shared executables && cp build-linux-x86_64/gcc-release-x86_64/* $PREFIX/bin"
+  skip: True # [osx]
+
+requirements:
+  build:
+    - gcc   # [linux]
+  run:
+    - libgcc # [linux]
+
+
+about:
+  home: https://proteowizard.sourceforge.net
+  license: Apache 2.0
+  summary: Tools for dealing with mass spectrometry files (e.g., mzML, mzXML, mzIdentML, MGF)
+
+test:
+  commands:
+    - msconvert --help

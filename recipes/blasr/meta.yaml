@@ -1,0 +1,48 @@
+{% set name = "blasr" %}
+{% set version = "5.3.f8bfa9c" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True # [not py27 or osx]
+
+source:
+  git_url: https://github.com/PacificBiosciences/blasr.git
+  git_rev: f8bfa9c5565ae01ea669af872edaae5e55471d98
+    
+requirements:
+  build:
+    - llvm # [osx]
+    - gcc # [linux]
+    - hdf5
+    - python
+    - pbbam
+    - blasr_libcpp
+
+  run:
+    - libgcc # [linux]
+    - hdf5
+    - pbbam
+    - blasr_libcpp
+
+test:
+  commands:
+    - blasr --version
+    - loadPulses 2>&1 | grep "loadPulses"
+    - pls2fasta 2>&1 | grep "pls2fasta"
+    - sawriter --help
+    - samtoh5 --help
+    - samtom4 --help
+    - samFilter --help
+    - sawriter --help
+    - sdpMatcher 2>&1 | grep "sdpMatcher"
+
+about:
+  home: https://github.com/PacificBiosciences/blasr
+  license: BSD-3-Clause-Clear
+  license_file: LICENSE
+  summary: BLASR - The PacBio long read aligner
+

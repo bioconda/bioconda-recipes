@@ -1,0 +1,49 @@
+{% set name = "lace" %}
+{% set version = "0.99" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  fn: {{ name|lower }}_{{ version }}.tar.gz
+  url: https://github.com/Oshlack/Lace/archive/v{{ version }}.tar.gz
+  md5: a5224cf2c45f51ce4eeaae6808c2a531
+  patches:
+    - lace.patch
+
+requirements:
+  build:
+  - gcc  # [not osx]
+  - llvm  # [osx]
+
+  run:
+  - libgcc  # [not osx]
+  - python
+  - pandas
+  - networkx
+  - numpy
+  - matplotlib
+  - blat
+
+test:
+  commands:
+    - Lace.py -h
+    - Lace_Checker.py -h
+    - Mobius.py -h
+    - STViewer.py -h
+    - BuildSuperTranscript.py
+
+about:
+  home: https://github.com/Oshlack/Lace
+  license: Unknown
+  summary: 'Building SuperTranscripts: A linear representation of transcriptome data'
+
+extra:
+  notes: "Prefix with 'Lace_' for the script name that is rather generic: 'Checker.py'."
+  container:
+    # needs libGL.so.1
+    extended-base: true

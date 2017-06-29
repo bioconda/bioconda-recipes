@@ -1,0 +1,47 @@
+{% set version="0.8.2" %}
+build:
+  number: 1
+  # OSX failing due to libary issues even though shipping with Salmon binary
+  # dyld: Library not loaded: /usr/local/opt/tbb/lib/libtbbmalloc_proxy.dylib
+  # https://travis-ci.org/bioconda/bioconda-recipes/jobs/211785820#L295
+  #skip: true # [osx]
+
+about:
+    home: https://github.com/COMBINE-lab/salmon
+    license: GPLv3
+    summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using lightweight alignments
+
+package:
+    name: salmon
+    version: {{ version }}
+
+source:
+  fn: Salmon-{{ version }}_src.tar.gz 
+  url: https://github.com/COMBINE-lab/salmon/archive/v{{ version }}.tar.gz
+  md5: ee512697bc44b13661a16d4e14cf0a00 
+
+requirements:
+  build:
+    - llvm # [osx]
+    - gcc ==4.8.5 # [linux]
+    - autoconf 2.69 pl5.*
+    - boost ==1.63.0
+    - icu 58.*
+    - cmake
+    - zlib
+    - bzip2
+    - unzip
+    - jemalloc ==4.5.0
+    - tbb
+  run:
+    - libgcc # [linux]
+    - boost ==1.63.0
+    - icu 58.*
+    - jemalloc ==4.5.0
+    - tbb
+    - zlib
+    - bzip2
+
+test:
+  commands:
+    - salmon --help

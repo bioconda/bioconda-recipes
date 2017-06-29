@@ -1,0 +1,47 @@
+{% set name = 'spam' %}
+{% set version = '1.4-0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-{{ name|lower }}
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: {{ name }}_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/spam/{{ name }}_{{ version }}.tar.gz
+  md5: 20fa12bcbb1dac81b7c5f03149f32c7a
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - posix                # [win]
+    - {{native}}toolchain  # [win]
+    - gcc                  # [not win]
+
+  run:
+    - r-base
+
+test:
+  commands:
+    - $R -e "library('spam')"  # [not win]
+    - "\"%R%\" -e \"library('spam')\""  # [win]
+
+about:
+  home: http://www.math.uzh.ch/furrer/software/spam/
+  license: LGPL-2
+  summary: 'Set of functions for sparse matrix algebra. Differences with SparseM/Matrix are:  (1)
+    we only support (essentially) one sparse matrix format,  (2) based on transparent
+    and simple structure(s),  (3) tailored for MCMC calculations within GMRF.  (4) S3
+    and S4 like-"compatible"  ...     and it is fast.'
+
+  license_family: LGPL

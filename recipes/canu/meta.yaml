@@ -1,0 +1,40 @@
+{% set name = "canu" %}
+{% set version = "1.5" %}
+{% set md5 = "65df275baa28ecf11b15dfd7343361e3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  # Canu currently needs to come from git to get its version string right
+  url: https://github.com/marbl/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  fn: {{ name|lower }}_{{ version }}.tar.gz
+  md5: {{ md5 }}
+
+build:
+    number: 1
+    skip: True  # [osx]
+    detect_binary_files_with_prefix: True
+
+requirements:
+    build:
+        - gcc  # [not osx]
+        - llvm  # [osx]
+        - perl
+    run:
+        - libgcc # [not osx]
+        - perl
+        - perl-filesys-df
+        - openjdk
+        - gnuplot >=5.0.5
+
+test:
+  commands:
+    - canu --version
+    - echo ">foo\nactgtg" > test.fasta && canu -p pun4 genomeSize=5.2m -pacbio-raw test.fasta
+
+about:
+  home: http://http://canu.readthedocs.org/
+  license: GPLv2 and others
+  summary: 'Canu is a fork of the Celera Assembler designed for high-noise single-molecule sequencing.'

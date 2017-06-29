@@ -2,6 +2,7 @@
 import os
 import re
 import sys
+import yaml
 from textwrap import dedent
 import tarfile
 from conda.fetch import download
@@ -47,9 +48,15 @@ def parse_footer(fn):
         yield block
 
 
-# This is the version of the last available tarball visible on
-# http://hgdownload.cse.ucsc.edu/admin/exe/
-VERSION = "324"
+# Identify version of the last available tarball visible on
+# http://hgdownload.cse.ucsc.edu/admin/exe and compute its md5sum; place them
+# in the ucsc_config.yaml file that looks like:
+#
+#   version: 332
+#   md5: 8c2663c7bd302a77cdf52b2e9e85e2cd
+ucsc_config = yaml.load(open('ucsc_config.yaml'))
+VERSION = ucsc_config['version']
+MD5 = ucsc_config['md5']
 
 # Download tarball if it doesn't exist. Always download FOOTER.
 tarball = (
@@ -219,6 +226,7 @@ for block in parse_footer('FOOTER'):
                 package=package,
                 summary=description,
                 version=VERSION,
+                md5=MD5,
             )
         )
 

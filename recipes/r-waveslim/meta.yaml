@@ -1,0 +1,71 @@
+{% set name = 'waveslim' %}
+{% set version = '1.7.5' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-{{ name|lower }}
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: {{ name }}_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+  md5: 1fbcd344932c28f407b02a01caa625c8
+
+build:
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - gcc
+
+  run:
+    - r-base
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('waveslim')"
+
+about:
+  home: http://waveslim.blogspot.com, http://www2.imperial.ac.uk/~bwhitche/book
+  license: BSD_3_clause + file LICENSE
+  summary: Basic wavelet routines for time series (1D), image (2D)  and array (3D) analysis.  The
+    code provided here is based on wavelet methodology developed in Percival and Walden
+    (2000); Gencay, Selcuk and Whitcher (2001); the dual-tree complex wavelet transform
+    (DTCWT) from Kingsbury (1999, 2001) as implemented by Selesnick; and Hilbert wavelet
+    pairs (Selesnick 2001, 2002).  All figures in chapters 4-7 of GSW (2001) are reproducible
+    using this  package and R code available at the book website(s) below.
+  license_family: BSD
+
+# The original CRAN metadata for this package was:
+
+# Package: waveslim
+# Version: 1.7.5
+# Date: 2014-12-21
+# Title: Basic wavelet routines for one-, two- and three-dimensional signal processing
+# Author: Brandon Whitcher
+# Maintainer: Brandon Whitcher <bwhitcher@gmail.com>
+# Depends: R (>= 2.11.0), graphics, grDevices, stats, utils
+# Suggests: fftw
+# Description: Basic wavelet routines for time series (1D), image (2D)  and array (3D) analysis.  The code provided here is based on wavelet methodology developed in Percival and Walden (2000); Gencay, Selcuk and Whitcher (2001); the dual-tree complex wavelet transform (DTCWT) from Kingsbury (1999, 2001) as implemented by Selesnick; and Hilbert wavelet pairs (Selesnick 2001, 2002).  All figures in chapters 4-7 of GSW (2001) are reproducible using this  package and R code available at the book website(s) below.
+# License: BSD_3_clause + file LICENSE
+# URL: http://waveslim.blogspot.com, http://www2.imperial.ac.uk/~bwhitche/book
+# NeedsCompilation: yes
+# Packaged: 2015-01-09 22:53:02 UTC; brandon
+# Repository: CRAN
+# Date/Publication: 2015-01-10 04:42:38
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml

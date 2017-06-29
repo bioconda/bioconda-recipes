@@ -1,0 +1,46 @@
+{% set name = "FragGeneScan" %}
+{% set version = "1.30" %}
+{% set sha256 = "f2d7f0dfa4a5f4bbea295ed865dcbfedf16c954ea1534c2a879ebdcfb8650d95" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: http://downloads.sourceforge.net/project/fraggenescan/{{ name }}{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - hmm_lib.c.patch
+    - util_lib.c.patch
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - gcc   # [not osx]
+    - llvm  # [osx]
+
+  run:
+    - perl
+    - libgcc  # [not osx]
+
+test:
+  commands:
+    - "FragGeneScan &> /dev/null || [[ \"$?\" == 1 ]]"
+    - "run_FragGeneScan.pl &> /dev/null || [[ \"$?\" == 1 ]]"
+
+about:
+  home: "https://sourceforge.net/projects/fraggenescan/"
+  license: "BSD"
+  summary: "FragGeneScan is an application for finding (fragmented) genes in short reads."
+  description: |
+     FragGeneScan is an application for finding (fragmented) genes in short
+     reads. It can also be applied to predict prokaryotic genes in incomplete
+     assemblies or complete genomes.
+
+extra:
+  maintainers:
+    - keuv-grvl
+  doi: 10.1093/nar/gkq747

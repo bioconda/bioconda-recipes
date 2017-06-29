@@ -1,23 +1,33 @@
+{% set version = "2.6.0" %}
+
 package:
     name: blast
-    version: 2.2.31
+    version: {{ version }}
+
 source:
-    fn: ncbi-blast-2.2.31+-src.tar.gz # [linux]
-    url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.2.31/ncbi-blast-2.2.31+-src.tar.gz # [linux]
-    md5: f32bd2d2c66205c53c6981f94e1a0d54 # [linux]
-    fn: ncbi-blast-2.2.31+-universal-macosx.tar.gz # [osx]
-    url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.2.31/ncbi-blast-2.2.31+-universal-macosx.tar.gz # [osx]
-    md5: 316555fef19749fe90455b7def03634e # [osx]
+    fn: ncbi-blast-{{ version }}+-src.tar.gz # [linux]
+    url: http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz # [linux]
+    md5: c8ce8055b10c4d774d995f88c7cc6225 # [linux]
+    fn: ncbi-blast-{{ version }}+-x64-macosx.tar.gz # [osx]
+    url: http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-x64-macosx.tar.gz # [osx]
+    md5: 7dc2ebc86b3a064bae6a3e378495d414 # [osx]
+
 build:
-    number: 1
+  number: 0
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+
 requirements:
   build:
-    - boost # [linux]
+    - boost {{CONDA_BOOST}}*  # [linux]
+    - gcc  # [linux]
   run:
-    - boost # [linux]
+    - boost {{CONDA_BOOST}}*  # [linux]
+    - libgcc  # [linux]
+
 test:
     commands:
         - blastn -help > /dev/null
+
 about:
     home: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs
     license: Public Domain

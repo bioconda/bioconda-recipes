@@ -1,19 +1,31 @@
+{% set version = "0.2.5b8" %}
+
 package:
   name: pindel
-  version: '0.2.5a7'
+  version: {{ version }}
+
 build:
-  number: 0
+  number: 2
+  skip: True # [osx]
+  string: "htslib{{CONDA_HTSLIB}}_{{PKG_BUILDNUM}}"
+
 source:
-  fn: pindel-0.2.5a7.tar.gz
-  url: https://github.com/genome/pindel/archive/bcbio.tar.gz
+  fn: pindel-{{ version }}.tar.gz
+  url: https://github.com/genome/pindel/archive/v{{ version }}.tar.gz
+  sha256: 7f21fda0b751d420831724d96e60873ce332139cfd24396e81c7f1ae2f707a19
 
 requirements:
   build:
+    - htslib {{CONDA_HTSLIB}}*
+    - gcc
   run:
+    - htslib {{CONDA_HTSLIB}}*
+    - libgcc
 
 test:
   commands:
-    - "pindel -h 2>&1 | grep 'Pindel version'"
+    - 'pindel -h 2>&1 | grep "Pindel version"'
+    - 'pindel2vcf  --help | grep Example:'
 
 about:
   home: http://gmt.genome.wustl.edu/packages/pindel/index.html

@@ -1,0 +1,45 @@
+package:
+    name: "ucsc-estorient"
+    version: "332"
+source:
+    url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v332.src.tgz"          # [linux]
+    fn: "userApps.src.tgz"                                                                     # [linux]
+    md5: "8c2663c7bd302a77cdf52b2e9e85e2cd"                                                    # [linux]
+    patches:                                                                                   # [linux]
+        - "include.patch"                                                                      # [linux]
+
+    url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/estOrient"                    # [osx]
+    fn: "estOrient"                                                                            # [osx]
+
+build:                                                                                       # [osx]
+    script: "mkdir -p $PREFIX/bin; cp estOrient $PREFIX/bin; chmod +x $PREFIX/bin/estOrient" # [osx]
+
+requirements:
+    build:
+        - libpng                                                    # [linux]
+        - mysql                                                     # [linux]
+        - zlib                                                      # [linux]
+        - openssl                                                   # [linux]
+        - gcc
+
+    run:                                                            # [linux]
+        - libpng                                                    # [linux]
+        - mysql                                                     # [linux]
+        - zlib                                                      # [linux]
+        - openssl                                                   # [linux]
+        - libgcc
+
+test:
+    commands:
+        # just check for existence, because the individual programs have no unified behavior
+        - which estOrient
+
+about:
+    home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
+    license: "varies; see http://genome.ucsc.edu/license"
+    summary: "
+Read ESTs from a database and determine orientation based on
+estOrientInfo table or direction in gbCdnaInfo table.  Update
+PSLs so that the strand reflects the direction of transcription.
+By default, PSLs where the direction can't be determined are dropped.
+"

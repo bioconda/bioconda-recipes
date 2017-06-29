@@ -1,0 +1,48 @@
+{% set name = 'changepoint' %}
+{% set version = '2.2.2' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-{{ name|lower }}
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: {{ name }}_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+  md5: 8c075b0803129f29429fe1c42b3925be
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - r-zoo >=0.9_1
+    - posix                # [win]
+    - {{native}}toolchain  # [win]
+    - gcc                  # [not win]
+
+  run:
+    - r-base
+    - r-zoo >=0.9_1
+
+test:
+  commands:
+    - $R -e "library('changepoint')"  # [not win]
+    - "\"%R%\" -e \"library('changepoint')\""  # [win]
+
+about:
+  home: https://github.com/rkillick/changepoint/
+  license: GPL
+  summary: Implements various mainstream and specialised changepoint methods for finding single
+    and multiple changepoints within data.  Many popular non-parametric and frequentist
+    methods are included.  The cpt.mean(), cpt.var(), cpt.meanvar() functions should
+    be your first point of call.
+  license_family: GPL

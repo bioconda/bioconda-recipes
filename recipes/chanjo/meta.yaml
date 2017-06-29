@@ -1,26 +1,30 @@
 package:
   name: chanjo
-  version: "3.1.1"
+  version: "3.3.0"
 
 source:
-  fn: chanjo-3.1.1.tar.gz
-  url: https://pypi.python.org/packages/source/c/chanjo/chanjo-3.1.1.tar.gz
-  md5: 23a691d5e6f23e99901d77493e8597e6
+  fn: chanjo-3.3.0.tar.gz
+  url: https://pypi.python.org/packages/source/c/chanjo/chanjo-3.3.0.tar.gz
+  md5: 7b7d67863c1cb74a731b1ddb79d5595a
+#  patches:
+   # List any patch files here
+   # - fix.patch
 
 build:
+  number: 0
   preserve_egg_dir: True
   entry_points:
     - chanjo = chanjo.__main__:root_command
-
-  # If this is a new build for the same version, increment the build
-  # number. If you do not include this key, it defaults to 0.
-  # number: 1
+  # path.py in the default channel is broken
+  # it does not contain an egg-info and hence setup.py cannot find it.
+  # Once bioconda can directly depend on conda-forge, we can enable this again.
+  skip: true
 
 requirements:
   build:
     - python
-    - click
     - setuptools
+    - click
     - toolz
     - path.py
     - pyyaml
@@ -29,7 +33,6 @@ requirements:
   run:
     - python
     - click
-    - setuptools
     - toolz
     - path.py
     - pyyaml
@@ -54,23 +57,10 @@ test:
     - chanjo.store
 
   commands:
-    # You can put test commands to be run here.  Use this to test that the
-    # entry points work.
-
-    - chanjo --help
-
-  # You can also put a file called run_test.py in the recipe that will be run
-  # at test time.
-
-  requires:
-    - pytest
+    # click requires a unicode locale
+    - LANG=C.UTF-8 chanjo --help
 
 about:
   home: http://www.chanjo.co/
-  license: MIT
-  license_file: LICENSE
+  license: MIT License
   summary: 'Coverage analysis tool for clinical sequencing'
-
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml

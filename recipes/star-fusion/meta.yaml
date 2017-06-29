@@ -1,10 +1,17 @@
+{% set version = "1.0.0" %}
+{% set sha256 = "ae9d6b34583ab758c746773b798783d3168206f82d3677627cb0242730a7e5a6" %}
+
 package:
   name: star-fusion
-  version: "0.5.3"
+  version: {{ version }}
 
 source:
-  fn: STAR-Fusion_v0.5.3.tar.gz
-  url: https://github.com/STAR-Fusion/STAR-Fusion/releases/download/v0.5.3/STAR-Fusion_v0.5.3.tar.gz
+  fn: STAR-Fusion_v{{ version }}.FULL.tar.gz
+  url: https://github.com/STAR-Fusion/STAR-Fusion/releases/download/v{{ version }}/STAR-Fusion-v{{ version }}.FULL.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
 
 requirements:
   run:
@@ -12,10 +19,16 @@ requirements:
       - perl
       - perl-set-intervaltree
       - perl-db-file
+      - perl-uri
+      - star
+      - gmap
+      - bowtie
 
 test:
   commands:
       - STAR-Fusion --help 2>&1 | grep Optional > /dev/null
+      - prep_genome_lib.pl -h 2>&1 | grep "STAR-Fusion" > /dev/null
+      - blast_and_promiscuity_filter.pl -h 2>&1 | grep Optional > /dev/null
 
 about:
   home: https://github.com/STAR-Fusion/STAR-Fusion

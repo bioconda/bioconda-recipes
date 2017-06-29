@@ -1,0 +1,23 @@
+--- seq2HLA.py	2015-06-09 11:15:04.000000000 -0500
++++ seq2HLA_conda.py	2016-12-20 13:49:30.028308000 -0600
+@@ -1,3 +1,7 @@
++#!/usr/bin/env python
++##Determine the real script path so it can find the references dir
++import sys,os
++sys.argv[0] = os.path.realpath(sys.argv[0])
+ ##########################################################################################################
+ #Title:
+ #seq2HLA - HLA typing from RNA-Seq sequence reads
+@@ -1265,7 +1269,11 @@
+ 			illuminaid=line.split("\t")[0].split('/')[0].split(' ')[0]#find exact id, which also appears in the mapping file
+ 			hlapseudoname = line.split("\t")[2]
+ 			if map[hlapseudoname].split(':')[0] in alleles:
+-				reads[illuminaid][map[hlapseudoname].split('*')[0]]+=1
++				try:
++					reads[illuminaid][map[hlapseudoname].split('*')[0]]+=1
++				except KeyError:
++					if not illuminaid.endswith('2'): #Not illuminaID/1 ID pattern
++						print >> sys.stderr, "KeyError: %s  HLA: %s" % (illuminaid,hlapseudoname)
+ 	count={}
+ 	count[locus1]=0
+ 	count[locus2]=0

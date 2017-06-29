@@ -1,6 +1,7 @@
 #!/bin/bash
+set -eu -o pipefail
 
-mkdir -p $PREFIX/bin
+make EXTRA_FLAGS="-I${PREFIX}/include -L${PREFIX}/lib"
 
 binaries="\
 bowtie2 \
