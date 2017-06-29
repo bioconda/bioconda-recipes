@@ -37,7 +37,13 @@ conda environment which must be a Python 3 environment.
 1. Install `conda <http://conda.pydata.org/miniconda.html>`_. The Python
    3 version is required.
 
-2. Install `Docker <https://www.docker.com/>`_. (optional, but allows you to
+2. Install `conda-build <https://conda.io/docs/building/recipe.html>`_. Note
+   that the installation must be done from the root condae nvironment.
+
+3. Install `bioconda-utils <https://github.com/bioconda/bioconda-utils>`_ to
+   be able to use the ``simulate-travis.py`` script.
+
+4. Install `Docker <https://www.docker.com/>`_. (optional, but allows you to
    simulate most closely the Travis-CI tests).
 
 Please note that it is also required to build *any* recipe prior to using the
