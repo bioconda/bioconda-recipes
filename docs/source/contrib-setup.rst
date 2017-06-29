@@ -38,7 +38,7 @@ conda environment which must be a Python 3 environment.
    3 version is required.
 
 2. Install `conda-build <https://conda.io/docs/building/recipe.html>`_. Note
-   that the installation must be done from the root condae nvironment.
+   that the installation must be done from the root conda environment.
 
 3. Install `bioconda-utils <https://github.com/bioconda/bioconda-utils>`_ to
    be able to use the ``simulate-travis.py`` script.
