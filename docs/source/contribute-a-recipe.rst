@@ -83,8 +83,8 @@ recipes to see what needs to be built and so it is the most comprehensive::
     If you haven't installed all the dependencies already, you can install them
     with `./simulate-travis.py --install-requirements`
 
-Same thing but using `--docker`. If you're on OSX and have docker installed,
-you can use this to test the recipe under Linux::
+Same thing but using `--docker`. If you're on OSX and have docker installed
+(and running!), you can use this to test the recipe under Linux::
 
     ./simulate-travis.py --docker
 
