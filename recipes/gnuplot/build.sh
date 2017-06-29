@@ -1,8 +1,18 @@
 #!/bin/bash
 
-./configure \
-    --prefix=$PREFIX \
+opts="
     --without-x \
-    --without-lua
+    --without-lua \
+    --without-latex \
+    --without-libcerf \
+    --with-qt=qt5
+    --with-readline=$PREFIX
+    "
 
-make && make install
+LDFLAGS="-Wl,-rpath,$PREFIX/lib $LDFLAGS" LIBS="-liconv" ./configure --prefix=$PREFIX $opts
+
+export GNUTERM=dumb
+make PREFIX=$PREFIX
+# too verbose
+#make check PREFIX=$PREFIX
+make install PREFIX=$PREFIX
