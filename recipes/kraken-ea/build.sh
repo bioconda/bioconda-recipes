@@ -15,7 +15,7 @@ chmod u+x install_kraken_conda.sh
 for bin in kraken kraken-build kraken-filter kraken-mpa-report kraken-report kraken-translate; do
     sed -i.bak 's|#!/usr/bin/perl|#!/usr/bin/env perl|' $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/$bin
     rm -f $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/$bin.bak
-    chmod +x "PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/$bin"
+    chmod +x "$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/$bin"
     ln -s "$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/$bin" "$PREFIX/bin/$bin"
 done
 
