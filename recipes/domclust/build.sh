@@ -9,8 +9,7 @@ cp -p Script/convgraph.pl $PREFIX/bin
 cp -p build_input/blast2homfile.pl $PREFIX/bin
 cp -p build_input/fasta2genefile.pl $PREFIX/bin
 
-# copy test data
-cp -p tst/test.gene $PREFIX/share
-cp -p tst/test.hom $PREFIX/share
-cp -p tst/test.out $PREFIX/share
+# test
+bin/domclust -h
+bin/domclust tst/test.hom tst/test.gene
 
