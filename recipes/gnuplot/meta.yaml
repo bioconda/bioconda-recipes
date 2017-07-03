@@ -6,7 +6,7 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
   string: "ncurses{{CONDA_NCURSES}}_{{PKG_BUILDNUM}}"
 
 source:
@@ -21,10 +21,13 @@ requirements:
     - pkg-config [osx]
     - libgd
     - ncurses {{CONDA_NCURSES}}*
+    - jpeg 9*
+
   run:
     - libgcc [not osx]
     - libgd
     - ncurses {{CONDA_NCURSES}}*
+    - jpeg 9*
 
 about:
   home: https://github.com/gnuplot/gnuplot
@@ -32,8 +35,7 @@ about:
   summary: Gnuplot, plotting from command line
 
 test:
-  files:
-    - test-data.txt
   commands:
-    - gnuplot -e "set terminal dumb; set style histogram; p 'test-data.txt'"
+    - seq 1 5 | awk "{print\$1 FS \$1}" > test-data.txt
+    - gnuplot -e "set terminal dumb; set style histogram; p \"test-data.txt\""
     - gnuplot -e "set terminal png"
