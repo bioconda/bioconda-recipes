@@ -31,8 +31,10 @@ requirements:
 test:
   commands:
     - canu --version
-    - cp $RECIPE_DIR/test.fasta .
-    # force run with 1G mem
+    # prepare test data
+    wget http://www.cbcb.umd.edu/software/PBcR/data/sampleData.tar.gz -O - | tar xz
+    perl -wnle "print qq[>\$.\\n\$_] if length>1000" sampleData/pacbio.filtered_subreads.fasta| head -n200 > test.fasta
+    # force run with minimum memory
     - canu -p ex1 genomeSize=10k maxMemory=1G merylMemory=1G cormhapMemory=1G obtovlMemory=1G utgovlMemory=1G corMemory=1G ovbMemory=1G ovsMemory=1G batMemory=1G gfaMemory=1G cnsMemory=1G -pacbio-raw test.fasta
 
 about:
