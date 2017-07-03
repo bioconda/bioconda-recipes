@@ -4,7 +4,6 @@ my $path;
 BEGIN {$path  = `which HLAProfiler.pl`;
        chomp $path;
        $path=~s/HLAProfiler.pl//}
-
 use lib $path;
 
 my @commands = ("HLAProfiler.pl -h >/dev/null");
