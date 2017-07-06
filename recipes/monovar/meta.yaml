@@ -9,6 +9,8 @@ package:
 source:
     git_url: https://bitbucket.org/hamimzafar/monovar.git
     git_rev: 7b47571d85a377c425feea86f6e591ee832fe342
+    patches: 
+        - samtools_from_conda.patch
 
 build:
     script: python setup.py install
@@ -22,11 +24,21 @@ requirements:
         - scipy==0.14.0
         - pysam==0.8.1
 
-test:
-    files:
-        - examples/
-    commands:
-        - samtools mpileup -BQ0 -d10000 -f ref.fa -q 40 -b filenames.txt | monovar.py -p 0.002 -a 0.2 -t 0.05 -m 2 -f ref.fa -b filenames.txt -o output.vcf
+    run:
+        - samtools ==0.1.19
+
+# MonoVar does not provide the ref.fa used to generate the provided example test bam files, so no testing is possible with this version.
+#test:
+#    source_files:
+#        - examples/filenames.txt
+#        - examples/data_files/1S110_sorted.bam
+#        - examples/data_files/1S110_sorted.bam.bai
+#        - examples/data_files/1S111_sorted.bam
+#        - examples/data_files/1S111_sorted.bam.bai
+#        - examples/data_files/1S112_sorted.bam
+#        - examples/data_files/1S112_sorted.bam.bai
+#    commands:
+#        - samtools mpileup -BQ0 -d10000 -f ref.fa -q 40 -b filenames.txt | monovar.py -p 0.002 -a 0.2 -t 0.05 -m 2 -f ref.fa -b filenames.txt -o output.vcf
 
 about:
     home: https://bitbucket.org/hamimzafar/monovar
