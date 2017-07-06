@@ -1,0 +1,42 @@
+{% set name = "mashtree" %}
+{% set version = "0.12" %}
+{% set hash = "67046890c108204744d9de81f7b1b477b3074d86b94b848e8796fb02d4aa562f" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/lskatz/mashtree/archive/v{{ version }}.tar.gz
+  fn: {{ name|lower }}_{{ version }}.tar.gz
+  sha256: {{ hash }}
+
+build:
+    number: 0
+
+requirements:
+    build:
+        - gcc  # [not osx]
+        - llvm  # [osx]
+        - perl
+        - perl-module-build
+        - perl-bioperl
+        - perl-dbd-sqlite
+
+    run:
+        - libgcc # [not osx]
+        - perl
+        - perl-bioperl
+        - perl-dbd-sqlite
+        - mash  >=v1.1
+        - sqlite
+
+test:
+  commands:
+    - mashtree.pl --help 2>&1  | grep 'Usage'
+    - mashtree_wrapper.pl --help 2>&1  | grep 'Usage'
+
+about:
+  home: https://github.com/lskatz/mashtree
+  license: GPL-3.0
+  summary: 'Create a tree using Mash distances'

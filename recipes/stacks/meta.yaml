@@ -1,30 +1,43 @@
 package:
   name: stacks
-  version: "1.44"
+  version: "1.46"
+
 build:
-  number: 0
+  number: 1
   skip: True # [osx]
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+
 source:
-  fn: stacks-1.44.tar.gz
-  md5: 10e1c2cb3ed10bebcb035619d94ae7d3
-  url: http://catchenlab.life.illinois.edu/stacks/source/stacks-1.44.tar.gz
+  fn: stacks-1.46.tar.gz
+  md5: 18b0568a4bba44fb4e5be0eb7ee2c08d
+  url: http://catchenlab.life.illinois.edu/stacks/source/stacks-1.46.tar.gz
+
+  # A patch to allow using gcc < 4.9 for compilation
+  # Should be removed when a newer gcc will be available in conda
+  patches:
+    - "gcc48.patch"
+
 requirements:
   build:
     - gcc # [linux]
     - zlib
     - sparsehash
+    - boost {{CONDA_BOOST}}*
   run:
-    - perl-threaded
+    - perl
     - velvet
     - libgcc # [linux]
     - zlib
     - sparsehash
+    - boost {{CONDA_BOOST}}*
+
 test:
   commands:
     - command -v cstacks
     - command -v pstacks
     - command -v process_radtags
     - command -v clone_filter
+
 about:
   home: http://catchenlab.life.illinois.edu/stacks/
   license: GPL
