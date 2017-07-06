@@ -1,26 +1,41 @@
-build:
-  number: 1
-  skip: True # [not linux]
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
-
 package:
   name: gap2seq
   version: "2.0"
+
+build:
+  number: 6
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+
 source:
   fn: Gap2Seq-2.0.tar.gz
   url: https://www.cs.helsinki.fi/u/lmsalmel/Gap2Seq/Gap2Seq-2.0.tar.gz
   md5: 67af9e2ac4171dbbeff569115705405c
+  patches: # [osx]
+    - 0001-use-boost-unordered-map-and-set-in-lieu-of-standard.patch # [osx]
+    - 0002-renamed-lock-to-Gap2Seq_lock-to-avoid-name-conflicts.patch # [osx]
 requirements:
   build:
-    - gcc >=4.7
-    - boost {{CONDA_BOOST}}*
+    # linux build
+    - gcc >=4.7 # [linux]
     - libgcc
+    - boost {{CONDA_BOOST}}* # [linux]
+    # osx build
+    - llvmdev ==3.9.1 # [osx]
+    - libcxx # [osx]
+    - boost ==1.63.0 # [osx]
+    # general build
     - zlib
     - cmake
     - make
   run:
+    # linux run
+    - libgcc # [linux]
+    - boost {{CONDA_BOOST}}* # [linux]
+    # osx run
+    - libcxx # [osx]
+    - boost ==1.63.0 # [osx]
+    # general run
     - zlib
-    - libgcc
 test:
   commands:
      - GapMerger 2>&1 | grep "USAGE for"  > /dev/null
@@ -33,3 +48,9 @@ about:
   license: GPLv3
   license_file: LICENCE
   summary: Gap2Seq is a tool for filling gaps between contigs in genome assemblies.
+
+extra:
+  notes: "Gap2Seq is only tested on Linux x86_64 by its author."
+  recipe-maintainers:
+    - notestaff
+

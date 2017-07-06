@@ -1,34 +1,51 @@
+{% set name = "sourmash" %}
+{% set version = "2.0.0a1" %}
+{% set hash = "cd9903832227ce70aa5eb92c40c514a3ed565eddec09b295d852f2e194d31052" %}
+
 package:
-  name: sourmash
-  version: "1.0"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: sourmash-1.0.tar.gz
-  url: https://pypi.python.org/packages/73/48/6b8d2d1f8930ad028d78a890d53ae752f2d1ac52f763975eefefd75c63fc/sourmash-1.0.tar.gz
-  md5: 25bb61cd9da7b9deba59b6bfe1944f0d
+  fn: {{ name|lower }}-{{ version }}.tar.gz
+  url: https://github.com/dib-lab/sourmash/archive/ea1310da4695ba29ff6a74e9855c0c35a9c6b6c1.tar.gz
+  sha256: {{ hash }}
+  patches:
+    - sourmash.patch
 
 build:
-  # noarch_python: True
-  # preserve_egg_dir: True
   entry_points:
     - sourmash = sourmash_lib.__main__:main
-  number: 0
+  number: 2
 
 requirements:
   build:
     - python
     - setuptools
+    - gcc  # [not osx]
+    - llvm  # [osx]
+    - cython >=0.25.2
     - screed >=0.9
     - pyyaml >=3.11
+    - ijson
+    - numpy
+    - matplotlib
+    - scipy
+    - khmer >=2.1
 
   run:
     - python
-    - libgcc    
+    - libgcc  # [not osx]
+    - cython >=0.25.2
     - screed >=0.9
     - pyyaml >=3.11
+    - ijson
+    - numpy
+    - matplotlib
+    - scipy
+    - khmer >=2.1
 
 test:
-  # Python imports
   imports:
     - sourmash_lib
 
@@ -38,5 +55,5 @@ test:
 about:
   home: https://github.com/dib-lab/sourmash
   license: BSD License
-  summary: 'tools for comparing DNA sequences with MinHash sketches'
+  summary: 'Compute and compare MinHash signatures for DNA data sets.'
   license_family: BSD

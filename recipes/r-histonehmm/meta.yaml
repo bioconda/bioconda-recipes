@@ -1,17 +1,19 @@
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set name = "r-histonehmm" %}
+{% set version = "1.6" %}
+{% set hash = "7b93557a41b5cc695e8f6cd41aefa2e7" %}
 
 package:
-  name: r-histonehmm
-  version: "1.6"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: histoneHMM_1.6.tar.gz
-  url: http://histonehmm.molgen.mpg.de/histoneHMM_1.6.tar.gz
-  md5: 7b93557a41b5cc695e8f6cd41aefa2e7
+  fn: {{ name|lower }}_{{ version }}.tar.gz
+  url: http://histonehmm.molgen.mpg.de/histoneHMM_{{ version }}.tar.gz
+  md5: {{ hash }}
   patches: loghmm.patch
 
 build:
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
@@ -25,8 +27,7 @@ requirements:
     - r-mvtnorm
     - r-optparse
     - bioconductor-biocstyle
-    - posix               # [win]
-    - gcc                 # [not win]
+    - gcc
 
   run:
     - r-base
@@ -36,12 +37,11 @@ requirements:
     - r-mvtnorm
     - r-optparse
     - bioconductor-biocstyle
-    - libgcc # [not win]
+    - libgcc
 
 test:
   commands:
-    - $R -e "library('histoneHMM')" # [not win]
-    - "\"%R%\" -e \"library('histoneHMM')\"" # [win]
+    - $R -e "library('histoneHMM')"
 
 about:
   home: http://histonehmm.molgen.mpg.de/
