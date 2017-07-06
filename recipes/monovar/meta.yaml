@@ -1,0 +1,34 @@
+{% set name = "MonoVar" %}
+# MonoVar doesn't have versions, so I'm just freezing the commit 7b47571d85a377c425feea86f6e591ee832fe342 as 1.0.0
+{% set version = "1.0.0" %}
+
+package:
+    name: {{ name|lower }}
+    version: {{ version }}
+
+source:
+    git_url: https://bitbucket.org/hamimzafar/monovar.git
+    git_rev: 7b47571d85a377c425feea86f6e591ee832fe342
+
+build:
+    script: python setup.py install
+    number: 1
+    skip: True # [not py27]
+
+requirements:
+    build:
+        - python=2.7
+        - numpy==1.8.1
+        - scipy==0.14.0
+        - pysam==0.8.1
+
+test:
+    files:
+        - examples/
+    commands:
+        - samtools mpileup -BQ0 -d10000 -f ref.fa -q 40 -b filenames.txt | monovar.py -p 0.002 -a 0.2 -t 0.05 -m 2 -f ref.fa -b filenames.txt -o output.vcf
+
+about:
+    home: https://bitbucket.org/hamimzafar/monovar
+    license: not-specified
+    summary: 'single cell joint genotyper'
