@@ -253,7 +253,11 @@ def setup_py_install_args(recipe, meta, df):
     ):
         return err
 
-    for line in open(os.path.join('recipe', 'build.sh')):
+    build_sh = os.path.join(recipe, 'build.sh')
+    if not os.path.exists(build_sh):
+        return
+
+    for line in open(build_sh):
         if (
             'setup.py install' in line and
             '--single-version-externally-managed' not in line
