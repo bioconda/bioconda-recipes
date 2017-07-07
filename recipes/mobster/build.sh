@@ -20,4 +20,4 @@ cp target/MobileInsertions-$PKG_VERSION.jar $outdir/
 
 # download MobsterToVCF
 cd $outdir
-curl -O https://github.com/jyhehir/mobster/raw/develop/resources/MobsterVCF/MobsterVCF-0.0.1-SNAPSHOT.jar
+curl -L -O https://github.com/jyhehir/mobster/raw/develop/resources/MobsterVCF/MobsterVCF-0.0.1-SNAPSHOT.jar
