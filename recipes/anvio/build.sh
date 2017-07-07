@@ -7,7 +7,9 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 
 # modify the requirements to allow cherrypy 8.x, since 8.9.1 is not in conda
-perl -i -pe 's/^cherrypy.+/cherrypy>=8.0,<=8.9.1/' requirements.txt
+cp requirements.txt requirements.orig.txt
+grep -v cherrypy requirements.orig.txt > requirements.txt
+echo "cherrypy>=8.0,<=8.9.1" >> requirements.txt
 
 $PYTHON setup.py install 
 
