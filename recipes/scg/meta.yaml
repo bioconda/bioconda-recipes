@@ -1,0 +1,44 @@
+{% set name = "scg" %}
+{% set version = "0.3.1" %}
+
+package:
+    name: {{ name|lower }}
+    version: {{ version }}
+
+source:
+    url: https://bitbucket.org/aroth85/scg/downloads/{{ name }}-{{ version }}.tar.gz
+    md5: 6f0fb91266de66d6a9d73fb741f49e13
+
+build:
+    script: python setup.py install
+    number: 1
+    skip: True # [not py27]
+
+requirements:
+    build:
+        - python
+        - setuptools
+        - pandas >=0.16
+        - numpy >=1.9.2
+        - scipy >=0.15
+        - pyyaml
+
+    run:
+        - python
+        - pandas >=0.16
+        - numpy >=1.9.2
+        - scipy >=0.15
+        - pyyaml
+
+test:
+    source_files:
+        - examples/congif.yaml
+        - examples/state_map.yaml
+    commands:
+        - scg run_doublet_model --config_file config.yaml --state_map_file state_map.yaml --out_dir OUT_DIR
+
+about:
+    home: https://bitbucket.org/aroth85/scg/wiki/Home
+    license: GPL-3
+    license_file: LICENSE.txt
+    summary: 'The single cell genotyper (SCG): "Roth A, McPherson A, Laks E, Biele J, Yap D, Wan A, et al. Clonal genotype and population structure inference from single-cell tumor sequencing. Nat Meth. 2016;13: 573–576. doi:10.1038/nmeth.3867"'
