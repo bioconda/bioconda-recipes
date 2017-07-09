@@ -1,0 +1,78 @@
+{% set version = '2.10' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-teachingdemos
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: TeachingDemos_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/TeachingDemos_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/TeachingDemos/TeachingDemos_{{ version }}.tar.gz
+
+
+  sha256: 2ef4c2e36ba13e32f66000e84281a3616584c86b255bca8643ff3fe4f78ed704
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: tkrplot, lattice, MASS, rgl, tcltk, tcltk2, png, ggplot2, logspline, maptools, R2wd, manipulate
+requirements:
+  build:
+    - r-base
+
+  run:
+    - r-base
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('TeachingDemos')"  # [not win]
+    - "\"%R%\" -e \"library('TeachingDemos')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=TeachingDemos
+  license: Artistic-2.0
+  summary: Demonstration functions that can be used in a classroom to demonstrate statistical
+    concepts, or on your own to better understand the concepts or the programming.
+  license_family: OTHER
+
+# The original CRAN metadata for this package was:
+
+# Package: TeachingDemos
+# Title: Demonstrations for Teaching and Learning
+# Version: 2.10
+# Author: Greg Snow
+# Description: Demonstration functions that can be used in a classroom to demonstrate statistical concepts, or on your own to better understand the concepts or the programming.
+# Maintainer: Greg Snow <538280@gmail.com>
+# License: Artistic-2.0
+# Date: 2016-02-08
+# Suggests: tkrplot, lattice, MASS, rgl, tcltk, tcltk2, png, ggplot2, logspline, maptools, R2wd, manipulate
+# LazyData: true
+# KeepSource: true
+# NeedsCompilation: no
+# Packaged: 2016-02-12 01:53:42 UTC; Family
+# Repository: CRAN
+# Date/Publication: 2016-02-12 07:40:49
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
