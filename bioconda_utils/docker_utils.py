@@ -302,15 +302,15 @@ class RecipeBuilder(object):
         # position of `{self.proxies}` in `dockerfile_template` should reflect
         # this.
         _proxies = []
-        http_proxy = set(
+        http_proxy = set([
             os.environ.get('http_proxy', None),
             os.environ.get('HTTP_PROXY', None)
-        ).difference([None])
+        ]).difference([None])
 
-        https_proxy = set(
+        https_proxy = set([
             os.environ.get('https_proxy', None),
             os.environ.get('HTTPS_PROXY', None)
-        ).difference([None])
+        ]).difference([None])
 
         if len(http_proxy) == 1:
             proxy = list(http_proxy)[0]
