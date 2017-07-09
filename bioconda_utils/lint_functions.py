@@ -236,6 +236,34 @@ def should_not_be_noarch(recipe, meta, df):
         }
 
 
+def setup_py_install_args(recipe, meta, df):
+    if 'setuptools' not in _get_deps(meta, 'build'):
+        return
+
+    err = {
+        'needs_setuptools_args': True,
+        'fix': ('add "--single-version-externally-managed --record=record.txt" '
+                'to setup.py command'),
+    }
+
+    script_line = meta.get('build', {}).get('script', '')
+    if (
+        'setup.py install' in script_line and
+        '--single-version-externally-managed' not in script_line
+    ):
+        return err
+
+    build_sh = os.path.join(recipe, 'build.sh')
+    if not os.path.exists(build_sh):
+        return
+
+    contents = open(build_sh).read()
+    if (
+        'setup.py install' in contents and
+        '--single-version-externally-managed' not in contents
+    ):
+        return err
+
 registry = (
     in_other_channels,
 
@@ -252,5 +280,6 @@ registry = (
     uses_setuptools,
     has_windows_bat_file,
     # should_be_noarch,
-    should_not_be_noarch
+    should_not_be_noarch,
+    setup_py_install_args,
 )

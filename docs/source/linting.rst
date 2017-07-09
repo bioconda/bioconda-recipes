@@ -201,6 +201,27 @@ clutter we try to remove them.
 
 How to resolve: Remove the ``.bat`` file from the recipe.
 
+`setup_py_install_args`
+~~~~~~~~~~~~~~~~~~~~~~~
+Reason for failing: The recipe has ``setuptools`` as a build dependency, but
+``build.sh`` needs to use certain arguments when running ``setup.py``.
+
+Rationale: When a package depends on setuptools, we have to disable some parts
+of setuptools during installation to make it work correctly with conda. In
+particular, it seems that packages depend on other packages that specify entry
+points (e.g., ``pyfaidx``) will cause errors about how ``setuptools`` is not
+allowed to install ``certifi`` in a conda package.
+
+How to resolve: Change the line in either in ``build.sh`` or the
+``build:script`` key in ``meta.yaml`` from::
+
+    $PYTHON setup.py install
+
+to::
+
+    $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+
+
 Developer docs
 --------------
 For developers adding new linting functions:
