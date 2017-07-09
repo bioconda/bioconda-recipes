@@ -55,6 +55,13 @@ not necessarily most complete, is to run conda-build directly::
 
     conda build <recipe-dir>
 
+.. note ::
+
+    All ``conda`` and ``simulate-travis.py`` must be run from the root
+    environment of ``conda``, not an environment within ``conda``, as they
+    import ``conda`` within Python which is only allowed in the root environment.
+
+
 To test the recipe in a way more representative of the travis-ci environment,
 use the `simulate-travis.py` script in the top-level directory of the repo.
 Currently, it is mandatory to build any recipe *before* using
@@ -71,8 +78,13 @@ recipes to see what needs to be built and so it is the most comprehensive::
 
     ./simulate-travis.py
 
-Same thing but using `--docker`. If you're on OSX and have docker installed,
-you can use this to test the recipe under Linux::
+.. note::
+
+    If you haven't installed all the dependencies already, you can install them
+    with `./simulate-travis.py --install-requirements`
+
+Same thing but using `--docker`. If you're on OSX and have docker installed
+(and running!), you can use this to test the recipe under Linux::
 
     ./simulate-travis.py --docker
 
