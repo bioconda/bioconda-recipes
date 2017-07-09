@@ -41,12 +41,36 @@ jinja = Environment(
 ENV_VAR_WHITELIST = [
     'CONDA_*',
     'PATH',
+    'LC_*',
+    'LANG',
+    'MACOSX_DEPLOYMENT_TARGET'
 ]
+
+
+def get_free_space():
+    """Return free space in MB on disk"""
+    s = os.statvfs(os.getcwd())
+    return s.f_frsize * s.f_bavail / (1024 ** 2)
+
 
 def allowed_env_var(s):
     for pattern in ENV_VAR_WHITELIST:
         if fnmatch.fnmatch(s, pattern):
             return True
+
+
+def get_meta_value(meta, *keys, default=None):
+    """
+    Return value from metadata.
+    Given keys can define a path in the document tree.
+    """
+    try:
+        for key in keys:
+            meta = meta[key]
+        return meta
+    except KeyError:
+        return default
+
 
 @contextlib.contextmanager
 def temp_env(env):
@@ -79,7 +103,8 @@ def sandboxed_env(env):
     env = dict(env)
     orig = os.environ.copy()
 
-    _env = {k: str(v) for k, v in env.items() if allowed_env_var(k)}
+    _env = {k: v for k, v in orig.items() if allowed_env_var(k)}
+    _env.update({k: str(v) for k, v in env.items() if allowed_env_var(k)})
 
     os.environ = _env
 
@@ -88,6 +113,33 @@ def sandboxed_env(env):
     finally:
         os.environ.clear()
         os.environ.update(orig)
+
+
+def load_all_meta(recipe, config):
+    """
+    For each environment, yield the rendered meta.yaml.
+    """
+    cfg = load_config(config)
+    env_matrix = EnvMatrix(cfg['env_matrix'])
+    for env in env_matrix:
+        yield load_meta(recipe, env)
+
+
+def load_meta(recipe, env):
+    """
+    Load metadata for a specific environment.
+    """
+    with temp_env(env):
+        # Disabling set_build_id prevents the creation of uniquely-named work
+        # directories just for checking the output file.
+        # It needs to be done within the context manager so that it sees the
+        # os.environ.
+        config = api.Config(
+            no_download_source=True,
+            set_build_id=False)
+        meta = MetaData(recipe, config=config)
+        meta.parse_again()
+        return meta.meta
 
 
 @contextlib.contextmanager
@@ -199,7 +251,7 @@ class EnvMatrix:
             yield env
 
 
-def get_deps(recipe, build=True):
+def get_deps(recipe, config, build=True):
     """
     Generator of dependencies for a single recipe
 
@@ -215,15 +267,26 @@ def get_deps(recipe, build=True):
         If True yield build dependencies, if False yield run dependencies.
     """
     if isinstance(recipe, str):
-        metadata = MetaData(recipe)
+        metadata = load_all_meta(recipe, config)
+
+        # TODO: This function is currently used only for creating DAGs, but it's
+        # unclear how to manage different dependencies depending on the
+        # particular environment. For now, just use the first environment.
+        metadata = list(metadata)
+        metadata = metadata[0]
     else:
         metadata = recipe
-    for dep in metadata.get_value(
-            "requirements/{}".format("build" if build else "run"), []):
+
+    reqs = metadata.get('requirements', {})
+    if build:
+        deps = reqs.get('build', [])
+    else:
+        deps = reqs.get('run', [])
+    for dep in deps:
         yield dep.split()[0]
 
 
-def get_dag(recipes, blacklist=None, restrict=True):
+def get_dag(recipes, config, blacklist=None, restrict=True):
     """
     Returns the DAG of recipe paths and a dictionary that maps package names to
     lists of recipe paths to all defined versions of the package.  defined
@@ -253,16 +316,26 @@ def get_dag(recipes, blacklist=None, restrict=True):
         values are lists and contain paths to all defined versions.
     """
     recipes = list(recipes)
-    metadata = [MetaData(recipe) for recipe in recipes]
+    metadata = []
+    for recipe in sorted(recipes):
+        print(recipe)
+        for r in list(load_all_meta(recipe, config)):
+            metadata.append((r, recipe))
     if blacklist is None:
         blacklist = set()
 
-    # meta.yaml's package:name mapped to the recipe path
-    name2recipe = defaultdict(list)
-    for meta, recipe in zip(metadata, recipes):
-        name = meta.get_value('package/name')
+    # name2recipe is meta.yaml's package:name mapped to the recipe path.
+    #
+    # A name should map to exactly one recipe. It is possible for multiple
+    # names to map to the same recipe, if the package name somehow depends on
+    # the environment.
+    #
+    # Note that this may change once we support conda-build 3.
+    name2recipe = defaultdict(set)
+    for meta, recipe in metadata:
+        name = meta['package']['name']
         if name not in blacklist:
-            name2recipe[name].append(recipe)
+            name2recipe[name].update([recipe])
 
     def get_inner_deps(dependencies):
         for dep in dependencies:
@@ -271,13 +344,13 @@ def get_dag(recipes, blacklist=None, restrict=True):
                 yield name
 
     dag = nx.DiGraph()
-    dag.add_nodes_from(meta.get_value("package/name") for meta in metadata)
-    for meta in metadata:
-        name = meta.get_value("package/name")
+    dag.add_nodes_from(meta['package']['name'] for meta, recipe in metadata)
+    for meta, recipe in metadata:
+        name = meta['package']['name']
         dag.add_edges_from((dep, name)
                            for dep in set(get_inner_deps(chain(
-                               get_deps(meta),
-                               get_deps(meta,
+                               get_deps(meta, config=config),
+                               get_deps(meta, config=config,
                                         build=False)))))
 
     return dag, name2recipe
@@ -421,8 +494,9 @@ def built_package_path(recipe, env=None):
         config = api.Config(
             no_download_source=True,
             set_build_id=False)
-        path = api.get_output_file_path(recipe, config=config)
-
+        meta = MetaData(recipe, config=config)
+        meta.parse_again()
+        path = api.get_output_file_path(meta, config=config)
     return path
 
 
@@ -577,23 +651,17 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         channel_packages[channel].update(get_channel_packages(channel=channel))
 
     def tobuild(recipe, env):
-        # TODO: get the modification time of recipe/meta.yaml. Only continue
-        # the slow steps below if it's newer than the last commit to master.
-        if force:
-            logger.debug(
-                'FILTER: building %s because force=True', recipe)
-            return True
-
         pkg = os.path.basename(built_package_path(recipe, env))
 
         in_channels = [
             channel for channel, pkgs in channel_packages.items()
             if pkg in pkgs
         ]
-        if in_channels:
+        if in_channels and not force:
             logger.debug(
                 'FILTER: not building %s because '
-                'it is in channel(s): %s', pkg, in_channels)
+                'it is in channel(s) and it is not forced: %s', pkg,
+                in_channels)
             return False
 
         # with temp_env, MetaData will see everything in env added to
@@ -609,13 +677,21 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
                 platform = 'darwin'
 
             with temp_os(platform):
-                skip = MetaData(recipe).skip()
+                meta = MetaData(recipe)
+                if meta.skip():
+                    logger.debug(
+                        'FILTER: not building %s because '
+                        'it defines skip for this env', pkg)
+                    return False
 
-        if skip:
-            logger.debug(
-                'FILTER: not building %s because '
-                'it defines skip for this env', pkg)
-            return False
+                # If on travis, handle noarch.
+                if os.environ.get('TRAVIS', None) == 'true':
+                    if meta.get_value('build/noarch'):
+                        if platform != 'linux':
+                            logger.debug('FILTER: only building %s on '
+                                         'linux because it defines noarch.',
+                                         pkg)
+                            return False
 
         assert not pkg.endswith("_.tar.bz2"), ("rendered path {} does not "
             "contain a build number and recipe does not "
@@ -623,8 +699,8 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
             "This is a conda bug.".format(pkg))
 
         logger.debug(
-            'FILTER: building %s because it is not in channels '
-            'does not define skip, and force is not specified', pkg)
+            'FILTER: building %s because it is not in channels and '
+            'does not define skip', pkg)
         return True
 
     logger.debug('recipes: %s', recipes)
@@ -691,6 +767,15 @@ def validate_config(config):
 
 
 def load_config(path):
+    """
+    Parses config file, building paths to relevant blacklists and loading any
+    specified env_matrix files.
+
+    Parameters
+    ----------
+    path : str
+        Path to YAML config file
+    """
     validate_config(path)
 
     if isinstance(path, dict):
@@ -727,9 +812,11 @@ def load_config(path):
     return default_config
 
 
-def modified_recipes(git_range, recipe_folder, config_file, full=False):
+def modified_recipes(git_range, recipe_folder, config_file):
     """
-    Returns recipes modified within the git range.
+    Returns files under the recipes dir that have been modified within the git
+    range. Includes meta.yaml files for recipes that have been unblacklisted in
+    the git range. Filenames are returned with the `recipe_folder` included.
 
     git_range : list or tuple of length 1 or 2
         For example, ['00232ffe', '10fab113'], or commonly ['master', 'HEAD']
@@ -739,9 +826,6 @@ def modified_recipes(git_range, recipe_folder, config_file, full=False):
 
     recipe_folder : str
         Top-level recipes dir in which to search for meta.yaml files.
-
-    full : bool
-        If True, include the recipe_folder in the path
     """
     orig_git_range = git_range[:]
     if len(git_range) == 2:
@@ -763,10 +847,10 @@ def modified_recipes(git_range, recipe_folder, config_file, full=False):
             os.path.join(recipe_folder, '*', '*')
         ]
     )
-    shell = False
 
-    # git expands globs only in versions >2, so if it's older than that we need
-    # to run the command using shell=True so that globs are expanded.
+    # In versions >2 git expands globs. But if it's older than that we need to
+    # run the command using shell=True to get the shell to expand globs.
+    shell = False
     p = run(['git', '--version'])
     matches = re.match(r'^git version (?P<version>[\d\.]*)(?:.*)$',p.stdout)
     git_version = matches.group("version")
@@ -795,9 +879,7 @@ def modified_recipes(git_range, recipe_folder, config_file, full=False):
     unblacklisted = [os.path.join(recipe_folder, i, 'meta.yaml') for i in unblacklisted]
     existing += unblacklisted
 
-    if full:
-        return existing
-    return [os.path.relpath(recipe_folder, m) for m in existing]
+    return existing
 
 
 class Progress:

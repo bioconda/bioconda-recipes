@@ -144,7 +144,6 @@ You should recommend to your users that they set up the same channel order as
 used by bioconda to ensure that all dependencies are correctly met, by doing
 the following::
 
-    conda config --add channels conda-forge
     conda config --add channels defaults
-    conda config --add channels r
+    conda config --add channels conda-forge
     conda config --add channels bioconda

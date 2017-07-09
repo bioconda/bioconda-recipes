@@ -7,6 +7,7 @@ from functools import partial
 import shlex
 import logging
 from colorlog import ColoredFormatter
+from collections import defaultdict
 
 import yaml
 import argh
@@ -49,12 +50,135 @@ def setup_logger(loglevel):
     l.setLevel(getattr(logging, loglevel.upper()))
     l.addHandler(log_stream_handler)
 
+
+def select_recipes(packages, git_range, recipe_folder, config_filename, config, force):
+    if git_range:
+        modified = utils.modified_recipes(git_range, recipe_folder, config_filename)
+        if not modified:
+            logger.info('No recipe modified according to git, exiting.')
+            return []
+
+        # Recipes with changed `meta.yaml` or `build.sh` files
+        changed_recipes = [
+            os.path.dirname(f) for f in modified
+            if os.path.basename(f) in ['meta.yaml', 'build.sh']
+            and os.path.exists(f)
+        ]
+        logger.info('Recipes to consider according to git: \n{}'.format('\n '.join(changed_recipes)))
+    else:
+        changed_recipes = []
+
+    blacklisted_recipes = utils.get_blacklist(config['blacklists'], recipe_folder)
+
+    selected_recipes = list(utils.get_recipes(recipe_folder, packages))
+    _recipes = []
+    for recipe in selected_recipes:
+        if force:
+            _recipes.append(recipe)
+            logger.debug('forced: %s', recipe)
+            continue
+        if recipe in blacklisted_recipes:
+            logger.debug('blacklisted: %s', recipe)
+            continue
+        if git_range:
+            if not recipe in changed_recipes:
+                continue
+        _recipes.append(recipe)
+        logger.debug(recipe)
+
+    logger.info('Recipes to lint:\n{}'.format('\n '.join(_recipes)))
+    return _recipes
+
 # NOTE:
 #
 # A package is the name of the software package, like `bowtie`.
 #
 # A recipe is the path to the recipe of one version of a package, like
 # `recipes/bowtie` or `recipes/bowtie/1.0.1`.
+
+
+@arg('config', help='Path to yaml file specifying the configuration')
+@arg('--strict-version', action='store_true', help='Require version to strictly match.')
+@arg('--strict-build', action='store_true', help='Require version and build to strictly match.')
+@arg('--remove', action='store_true', help='Remove packages from anaconda.')
+@arg('--dryrun', '-n', action='store_true', help='Only print removal plan.')
+@arg('--url', action='store_true', help='Print anaconda urls.')
+def duplicates(
+    config,
+    strict_version=False,
+    strict_build=False,
+    dryrun=False,
+    remove=False,
+    url=False):
+    """
+    Detect packages in bioconda that have duplicates in the other defined
+    channels.
+    """
+    config_filename = config
+    config = utils.load_config(config)
+
+    channels = config['channels']
+    target_channel = channels[0]
+
+    if strict_version:
+        get_spec = lambda pkg: (pkg['name'], pkg['version'])
+        if not remove and not url:
+            print('name', 'version', 'channels', sep='\t')
+    elif strict_build:
+        get_spec = lambda pkg: (pkg['name'], pkg['version'], pkg['build'])
+        if not remove and not url:
+            print('name', 'version', 'build', 'channels', sep='\t')
+    else:
+        get_spec = lambda pkg: pkg['name']
+        if not remove and not url:
+            print('name', 'channels', sep='\t')
+
+    def remove_package(spec):
+        if not strict_build:
+            raise ValueError('Removing packages is only supported in case of '
+                             '--strict-build.')
+        fn = '{}-{}-{}.tar.bz2'.format(*spec)
+        name, version = spec[:2]
+        subcmd = ['remove', '-f',
+               '{channel}/{name}/{version}/{fn}'.format(
+               name=name, version=version, fn=fn, channel=target_channel)]
+        if dryrun:
+            print('anaconda', *subcmd)
+        else:
+            token = os.environ.get('ANACONDA_TOKEN')
+            if token is None:
+                token = []
+            else:
+                token = ['-t', token]
+            print(utils.run(['anaconda'] + token + subcmd).stdout)
+
+    def get_packages(channel):
+        return {get_spec(pkg)
+                for repodata in utils.get_channel_repodata(channel)
+                for pkg in repodata['packages'].values()}
+
+    # packages in our channel
+    packages = get_packages(target_channel)
+
+    # packages in channels we depend on
+    common = defaultdict(list)
+    for channel in channels[1:]:
+        pkgs = get_packages(channel)
+        for pkg in packages & pkgs:
+            common[pkg].append(channel)
+
+    for pkg, _channels in sorted(common.items()):
+        if remove:
+            remove_package(pkg)
+        else:
+            if url:
+                if not strict_version and not strict_build:
+                    print('https://anaconda.org/{}/{}'.format(
+                          target_channel, pkg[0]))
+                print('https://anaconda.org/{}/{}/files?version={}'.format(
+                    target_channel, *pkg))
+            else:
+                print(*pkg, *_channels, sep='\t')
 
 
 @arg('recipe_folder', help='Path to top-level dir of recipes.')
@@ -73,6 +197,9 @@ def setup_logger(loglevel):
      multiple times.''')
 @arg('--exclude', nargs='+', help='''Exclude this linting function. Can be used
      multiple times.''')
+@arg('--force', action='store_true', help='''Force linting of packages. If
+     specified, --git-range will be ignored and only those packages matching
+     --packages globs will be linted.''')
 @arg('--push-status', action='store_true', help='''If set, the lint status will
      be sent to the current commit on github. Also needs --user and --repo to
      be set. Requires the env var GITHUB_TOKEN to be set. Note that pull
@@ -97,7 +224,7 @@ def setup_logger(loglevel):
      results as a TSV printed to stdout.''')
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
 def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
-         only=None, exclude=None, push_status=False, user='bioconda',
+         only=None, exclude=None, force=False, push_status=False, user='bioconda',
          commit=None, push_comment=False, pull_request=None,
          repo='bioconda-recipes', git_range=None, full_report=False,
          loglevel='info'):
@@ -122,20 +249,13 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
             sys.stderr.write('No valid linting functions selected, exiting.\n')
             sys.exit(1)
 
-    # returns recipe_folder/package
-    recipes = list(utils.get_recipes(recipe_folder, package=packages))
+    config_filename = config
+    config = utils.load_config(config)
 
-    if git_range:
-        # returns recipe_folder/package/meta.yaml
-        modified = utils.modified_recipes(git_range, recipe_folder, config, full=True)
-        if not modified:
-            logger.info('No recipe modified according to git, exiting.')
-            return
-        recipes = [os.path.dirname(f) for f in modified if os.path.basename(f) == 'meta.yaml' and os.path.exists(f)]
-        logger.info('Recipes to consider according to git: {}'.format('\n '.join(recipes)))
+    _recipes = select_recipes(packages, git_range, recipe_folder, config_filename, config, force)
 
     report = linting.lint(
-        recipes,
+        _recipes,
         config=config,
         df=df,
         exclude=exclude,
@@ -191,8 +311,9 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
      be built if not present in the channel.''')
 @arg('--testonly', help='Test packages instead of building')
 @arg('--force',
-     help='Force building the recipe even if it already exists in '
-     'the bioconda channel')
+     help='''Force building the recipe even if it already exists in the
+     bioconda channel. If --force is specified, --git-range is ignored and only
+     those packages matching --packages globs will be built.''')
 @arg('--docker', action='store_true',
      help='Build packages in docker container.')
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
@@ -208,8 +329,6 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
 @arg('--conda-build-version',
      help='''Version of conda-build to use if building
      in a docker container. Has no effect otherwise.''')
-@arg('--quick', help='''To speed up filtering, do not consider any recipes that
-     are > 2 days older than the latest commit to master branch.''')
 @arg('--anaconda-upload', action='store_true', help='''After building recipes, upload
      them to Anaconda. This requires $ANACONDA_TOKEN to be set.''')
 def build(recipe_folder,
@@ -224,7 +343,6 @@ def build(recipe_folder,
           build_script_template=None,
           pkg_dir=None,
           conda_build_version=docker_utils.DEFAULT_CONDA_BUILD_VERSION,
-          quick=False,
           anaconda_upload=False,
           mulled_upload_target=None,
     ):
@@ -256,8 +374,8 @@ def build(recipe_folder,
         docker_builder = None
 
     # handle git range
-    if git_range:
-        modified = utils.modified_recipes(git_range, recipe_folder, config, full=True)
+    if git_range and not force:
+        modified = utils.modified_recipes(git_range, recipe_folder, config)
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
             exit(0)
@@ -282,7 +400,6 @@ def build(recipe_folder,
         force=force,
         mulled_test=mulled_test,
         docker_builder=docker_builder,
-        quick=quick,
         anaconda_upload=anaconda_upload,
         mulled_upload_target=mulled_upload_target,
     )
@@ -350,4 +467,4 @@ def dependent(recipe_folder, restrict=False, dependencies=None, reverse_dependen
 
 
 def main():
-    argh.dispatch_commands([build, dag, dependent, lint])
+    argh.dispatch_commands([build, dag, dependent, lint, duplicates])

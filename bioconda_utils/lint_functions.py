@@ -1,5 +1,6 @@
 import os
 import glob
+import re
 
 
 def _subset_df(recipe, meta, df):
@@ -31,6 +32,9 @@ def _get_deps(meta, section=None):
         If None, returns all dependencies. Otherwise can be a string or list of
         options [build, run, test] to return section-specific dependencies.
     """
+
+    get_name = lambda dep: dep.split()[0]
+
     reqs = meta.get('requirements')
     if reqs is None:
         return []
@@ -42,8 +46,25 @@ def _get_deps(meta, section=None):
     for s in sections:
         dep = reqs.get(s, [])
         if dep:
-            deps += dep
+            deps += [get_name(d) for d in dep]
     return deps
+
+
+def _has_preprocessing_selector(recipe):
+    """
+    Does the package have any preprocessing selectors?
+
+    # [osx], # [not py27], etc.
+    """
+    # regex from
+    # https://github.com/conda/conda-build/blob/cce72a95c61b10abc908ab1acf1e07854a236a75/conda_build/metadata.py#L107
+    sel_pat = re.compile(r'(.+?)\s*(#.*)?\[([^\[\]]+)\](?(2).*)$')
+    for line in open(os.path.join(recipe, 'meta.yaml')):
+        line = line.rstrip()
+        if line.startswith('#'):
+            continue
+        if sel_pat.match(line):
+            return True
 
 
 def in_other_channels(recipe, meta, df):
@@ -182,6 +203,39 @@ def has_windows_bat_file(recipe, meta, df):
             'fix': 'remove windows .bat files'
         }
 
+
+def should_be_noarch(recipe, meta, df):
+    deps = _get_deps(meta)
+    if (
+        ('gcc' not in deps) and
+        ('python' in deps) and
+        # This will also exclude recipes with skip sections
+        # which is a good thing, because noarch also implies independence of
+        # the python version.
+        not _has_preprocessing_selector(recipe)
+    ) and (
+        'noarch' not in meta.get('build', {})
+    ):
+        return {
+            'should_be_noarch': True,
+            'fix': 'add "build: noarch" section',
+        }
+
+
+def should_not_be_noarch(recipe, meta, df):
+    deps = _get_deps(meta)
+    if (
+        ('gcc' in deps) or
+        meta.get('build', {}).get('skip', False)
+    ) and (
+        'noarch' in meta.get('build', {})
+    ):
+        return {
+            'should_not_be_noarch': True,
+            'fix': 'remove "build: noarch" section',
+        }
+
+
 registry = (
     in_other_channels,
 
@@ -197,4 +251,6 @@ registry = (
     uses_perl_threaded,
     uses_setuptools,
     has_windows_bat_file,
+    # should_be_noarch,
+    should_not_be_noarch
 )

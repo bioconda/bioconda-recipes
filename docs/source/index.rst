@@ -15,7 +15,13 @@ bioinformatics software. Bioconda consists of:
   <https://anaconda.org/bioconda/>`_ ready to use with ``conda install``
 - Over 130 contributors that add, modify, update and maintain the recipes
 
+Each package added to Bioconda also has a corresponding Docker  `BioContainer
+<https://biocontainers.pro>`_ automatically created and uploaded to Quay.io.
+
 **Browse packages in the bioconda channel:** :ref:`recipes`
+
+**Browse BioContainer packages:** `Biocontainers Registry UI
+<https://biocontainers.pro/registry/#/>`_
 
 The conda package manager has recently made installing software a vastly more
 streamlined process. Conda is a combination of other package managers you may
@@ -28,8 +34,6 @@ The main `defaults` channel has a large number of common packages. Users can
 add additional channels from which to install software packages not available
 in the defaults channel. Bioconda is one such channel specializing in
 bioinformatics software.
-
-
 
 
 .. _using-bioconda:
@@ -64,14 +68,15 @@ order** so that the priority is set correctly (that is, bioconda is highest
 priority).
 
 The `conda-forge` channel contains many general-purpose packages not already
-found in the `defaults` channel. The `r` channel contains common R packages
-used as dependencies for bioconda packages.
+found in the `defaults` channel. The `r` channel is only included due to backward compatibility.
+It is not mandatory, but without `r`-packages compiled against R 3.3.1 might not work.
+
 
 ::
 
-    conda config --add channels conda-forge
+    (conda config --add channels r)
     conda config --add channels defaults
-    conda config --add channels r
+    conda config --add channels conda-forge
     conda config --add channels bioconda
 
 

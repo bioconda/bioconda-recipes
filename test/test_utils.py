@@ -84,13 +84,16 @@ def single_build(request, recipes_fixture):
     env_matrix = list(utils.EnvMatrix(tmp_env_matrix()))[0]
     if request.param:
         docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
+        mulled_test = True
     else:
         docker_builder = None
+        mulled_test = False
     build.build(
         recipe=recipes_fixture.recipe_dirs['one'],
         recipe_folder='.',
         docker_builder=docker_builder,
         env=env_matrix,
+        mulled_test=mulled_test,
     )
     built_package = recipes_fixture.pkgs['one']
     yield built_package
@@ -107,12 +110,15 @@ def multi_build(request, recipes_fixture):
     """
     if request.param:
         docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
+        mulled_test = True
     else:
         docker_builder = None
+        mulled_test = False
     build.build_recipes(
         recipe_folder=recipes_fixture.basedir,
         docker_builder=docker_builder,
         config={},
+        mulled_test=mulled_test,
     )
     built_packages = recipes_fixture.pkgs
     yield built_packages
@@ -185,6 +191,7 @@ def test_single_build_only(single_build):
     assert os.path.exists(single_build)
 
 
+@pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')
 def test_single_build_with_post_test(single_build):
     pkg_test.test_package(single_build)
 
@@ -200,8 +207,9 @@ def test_docker_builder_build(recipes_fixture):
     Tests just the build_recipe method of a RecipeBuilder object.
     """
     docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
+    pkg = os.path.basename(recipes_fixture.pkgs['one'])
     docker_builder.build_recipe(
-        recipes_fixture.recipe_dirs['one'], build_args='', env={})
+        recipes_fixture.recipe_dirs['one'], build_args='', pkg=pkg, env={})
     assert os.path.exists(recipes_fixture.pkgs['one'])
 
 
@@ -235,9 +243,11 @@ def test_docker_build_image_fails():
 def test_conda_purge_cleans_up():
     def tmp_dir_exists(d):
         contents = os.listdir(d)
+        print("conda-bld/:", *contents)
         for i in contents:
-            if i.startswith('tmp') and '_' in i:
+            if i.startswith('deleteme_'):
                 return True
+        return False
 
     bld = docker_utils.get_host_conda_bld(purge=False)
     assert tmp_dir_exists(bld)
@@ -273,9 +283,9 @@ def test_get_deps():
                 - two
     """, from_string=True)
     r.write_recipes()
-    assert list(utils.get_deps(r.recipe_dirs['two'])) == ['one']
-    assert list(utils.get_deps(r.recipe_dirs['three'], build=True)) == ['one']
-    assert list(utils.get_deps(r.recipe_dirs['three'], build=False)) == ['two']
+    assert list(utils.get_deps(r.recipe_dirs['two'], config={})) == ['one']
+    assert list(utils.get_deps(r.recipe_dirs['three'], config={}, build=True)) == ['one']
+    assert list(utils.get_deps(r.recipe_dirs['three'], config={}, build=False)) == ['two']
 
 
 def test_env_matrix():
@@ -454,13 +464,11 @@ def test_filter_recipes_extra_in_build_string():
     r.write_recipes()
     recipe = r.recipe_dirs['one']
 
-    from conda_build.render import bldpkg_path
+    env = {
+        'CONDA_EXTRA': 'asdf',
+    }
+    pkg = os.path.basename(utils.built_package_path(recipe, env))
 
-    metadata = MetaData(recipe, api.Config(**dict(CONDA_EXTRA='asdf')))
-    print(bldpkg_path(metadata, metadata.config))
-
-    os.environ['CONDA_EXTRA'] = 'asdf'
-    pkg = utils.built_package_path(recipe)
     assert os.path.basename(pkg) == 'one-0.1-asdf_0.tar.bz2'
 
 
@@ -689,14 +697,34 @@ def test_rendering_sandboxing(caplog):
         'BUILDKITE_TOKEN': 'asdf',
     }
 
-    # recipe for "one" should fail because GITHUB_TOKEN is not a jinja var.
-    res = build.build(
-        recipe=r.recipe_dirs['one'],
-        recipe_folder='.',
-        env=env,
-        mulled_test=False
-    )
-    assert "Undefined Jinja2 variables remain (['GITHUB_TOKEN']).  Please enable source downloading and try again." in caplog.text
+    # If GITHUB_TOKEN is already set in the bash environment, then we get
+    # a message on stdout+stderr (this is the case on travis-ci).
+    #
+    # However if GITHUB_TOKEN is not already set in the bash env (e.g., when
+    # testing locally), then we get a SystemError.
+    #
+    # In both cases we're passing in the `env` dict, which does contain
+    # GITHUB_TOKEN.
+
+    if 'GITHUB_TOKEN' in os.environ:
+        res = build.build(
+            recipe=r.recipe_dirs['one'],
+            recipe_folder='.',
+            env=env,
+            mulled_test=False,
+        )
+        assert ("Undefined Jinja2 variables remain (['GITHUB_TOKEN']).  "
+                "Please enable source downloading and try again.") in caplog.text
+    else:
+        # recipe for "one" should fail because GITHUB_TOKEN is not a jinja var.
+        with pytest.raises(SystemExit) as excinfo:
+            res = build.build(
+                recipe=r.recipe_dirs['one'],
+                recipe_folder='.',
+                env=env,
+                mulled_test=False
+            )
+        assert "'GITHUB_TOKEN' is undefined" in str(excinfo.value)
 
     r = Recipes(
         """

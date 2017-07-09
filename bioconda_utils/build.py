@@ -18,6 +18,13 @@ BuildResult = namedtuple("BuildResult", ["success", "mulled_image"])
 def purge():
     utils.run(["conda", "build", "purge"])
 
+    free = utils.get_free_space()
+    if free < 10:
+        logger.info("CLEANING UP PACKAGE CACHE (free space: %iMB).", free)
+        utils.run(["conda", "clean" "--all"])
+        logger.info("CLEANED UP PACKAGE CACHE (free space: %iMB).",
+                    utils.get_free_space())
+
 
 def build(recipe,
           recipe_folder,
@@ -93,6 +100,9 @@ def build(recipe,
 
     CONDA_BUILD_CMD = ['conda', 'build']
 
+    pkg_path = utils.built_package_path(recipe, _env)
+    meta = utils.load_meta(recipe, _env)
+
     try:
         # Note we're not sending the contents of os.environ here. But we do
         # want to add TRAVIS* vars if that behavior is not disabled.
@@ -101,22 +111,26 @@ def build(recipe,
             response = docker_builder.build_recipe(
                 recipe_dir=os.path.abspath(recipe),
                 build_args=' '.join(channel_args + build_args),
-                env=_env
+                pkg=os.path.basename(pkg_path),
+                env=_env,
+                noarch=bool(utils.get_meta_value(meta, 'build', 'noarch'))
             )
 
-            pkg = utils.built_package_path(recipe, _env)
-            if not os.path.exists(pkg):
+            if not os.path.exists(pkg_path):
                 logger.error(
                     "BUILD FAILED: the built package %s "
-                    "cannot be found", pkg)
+                    "cannot be found", pkg_path)
                 return BuildResult(False, None)
             build_success = True
         else:
 
             # Temporarily reset os.environ to avoid leaking env vars to
             # conda-build, and explicitly provide `env` to `run()`
+            # we explicitly point to the meta.yaml, in order to keep
+            # conda-build from building all subdirectories
             with utils.sandboxed_env(_env):
-                cmd = CONDA_BUILD_CMD + build_args + channel_args + [recipe]
+                cmd = CONDA_BUILD_CMD + build_args + channel_args + \
+                      [os.path.join(recipe, 'meta.yaml')]
                 logger.debug('command: %s', cmd)
                 with utils.Progress():
                     p = utils.run(cmd, env=os.environ)
@@ -136,26 +150,23 @@ def build(recipe,
     if not mulled_test:
         return BuildResult(True, None)
 
-    pkg_path = utils.built_package_path(recipe, _env)
-
     logger.info(
         'TEST START via mulled-build %s, %s',
         recipe, utils.envstr(_env))
 
-    res = pkg_test.test_package(pkg_path)
+    use_base_image = utils.get_meta_value(
+        meta,
+        'extra', 'container', 'extended-base')
+    base_image = 'bioconda/extended-base-image' if use_base_image else None
 
-    # TODO remove the second clause once new galaxy-lib has been released.
-    if (res.returncode == 0) and ('Unexpected exit code' not in res.stdout):
+    try:
+        res = pkg_test.test_package(pkg_path, base_image=base_image)
+
         logger.info("TEST SUCCESS %s, %s", recipe, utils.envstr(_env))
-
-        mulled_image = None
-        if mulled_test:
-            mulled_image = pkg_test.get_image_name(pkg_path)
-
+        mulled_image = pkg_test.get_image_name(pkg_path)
         return BuildResult(True, mulled_image)
-    else:
+    except sp.CalledProcessError as e:
         logger.error('TEST FAILED: %s, %s', recipe, utils.envstr(_env))
-        logger.error('STDOUT+STDERR:\n%s', res.stdout)
         return BuildResult(False, None)
 
 
@@ -171,7 +182,6 @@ def build_recipes(
     anaconda_upload=False,
     mulled_upload_target=None,
     check_channels=None,
-    quick=False,
 ):
     """
     Build one or many bioconda packages.
@@ -220,10 +230,6 @@ def build_recipes(
         `config['channels'][0]`). If this list is empty, then do not check any
         channels.
 
-    quick : bool
-        Speed up recipe filtering by only checking those that are reasonably
-        new.
-
     """
     orig_config = config
     config = utils.load_config(config)
@@ -253,32 +259,15 @@ def build_recipes(
         return True
 
     logger.debug('recipes: %s', recipes)
-    if quick:
-        if not isinstance(orig_config, str):
-            raise ValueError("Need a config filename (and not a dict) for "
-                             "quick filtering since we need to check that "
-                             "file in the master branch")
-        unblacklisted = [
-            os.path.join(recipe_folder, i)
-            for i in utils.newly_unblacklisted(orig_config, recipe_folder)
-        ]
-        logger.debug('Unblacklisted: %s', unblacklisted)
-        changed = [
-            os.path.join(recipe_folder, i) for i in
-            utils.changed_since_master(recipe_folder)
-        ]
-        logger.debug('Changed: %s', changed)
-        recipes = set(unblacklisted + changed).intersection(recipes)
-        logger.debug('Quick-filtered recipes: %s', recipes)
 
     logger.info('Filtering recipes')
     recipe_targets = dict(
         utils.filter_recipes(
             recipes, env_matrix, check_channels, force=force)
     )
-    recipes = list(recipe_targets.keys())
+    recipes = set(list(recipe_targets.keys()))
 
-    dag, name2recipes = utils.get_dag(recipes, blacklist=blacklist)
+    dag, name2recipes = utils.get_dag(recipes, config=orig_config, blacklist=blacklist)
     recipe2name = {}
     for k, v in name2recipes.items():
         for i in v:

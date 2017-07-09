@@ -62,8 +62,8 @@ logger = logging.getLogger(__name__)
 
 
 # If conda_build_version is not provided, this is what is used by default.
-DEFAULT_CONDA_BUILD_VERSION = '2.0.7'
-DEFAULT_CONDA_VERSION = '4.2.15'
+DEFAULT_CONDA_BUILD_VERSION = '2.1.16'
+DEFAULT_CONDA_VERSION = '4.3.21'
 
 
 # ----------------------------------------------------------------------------
@@ -84,23 +84,28 @@ BUILD_SCRIPT_TEMPLATE = \
 #!/bin/bash
 set -e
 
-conda install conda-build={self.conda_build_version} conda={self.conda_version}
+conda install conda-build={self.conda_build_version} conda={self.conda_version}  > /dev/null 2>&1
 
 # Add the host's mounted conda-bld dir so that we can use its contents as
 # dependencies for building this recipe.
 #
 # Note that if the directory didn't exist on the host, then the staging area
 # will exist in the container but will be empty.  Channels expect at least
-# a linux-64 directory within that directory, so we make sure it exists before
-# adding the channel.
+# a linux-64 and noarch directory within that directory, so we make sure it
+# exists before adding the channel.
 mkdir -p {self.container_staging}/linux-64
-conda config --add channels file://{self.container_staging}
+mkdir -p {self.container_staging}/noarch
+conda config --add channels file://{self.container_staging}  > /dev/null 2>&1
 
-# The actual building....
-conda build {self.conda_build_args} {self.container_recipe}
+# The actual building...
+# we explicitly point to the meta.yaml, in order to keep
+# conda-build from building all subdirectories
+conda build {self.conda_build_args} {self.container_recipe}/meta.yaml 2>&1
 
 # Identify the output package
-OUTPUT=$(conda build {self.container_recipe} --output)
+OUTPUT_DIR=$(dirname $(conda build {self.container_recipe}/meta.yaml --output 2> /dev/null))
+OUTPUT=$OUTPUT_DIR/{pkg}
+
 
 # Some args to conda-build make it run and exit 0 without creating a package
 # (e.g., -h or --skip-existing), so check to see if there's anything to copy
@@ -108,15 +113,14 @@ OUTPUT=$(conda build {self.container_recipe} --output)
 if [[ -e $OUTPUT ]]; then
 
     # Copy over the recipe from where the container built it to the mounted
-    # conda-bld dir from the host. Since docker containers are Linux, we assume
-    # here that we want the linux-64 arch.
-    cp $OUTPUT {self.container_staging}/linux-64
+    # conda-bld dir from the host. The arch will be either linux-64 or noarch.
+    cp $OUTPUT {self.container_staging}/{arch}
 
     # Ensure permissions are correct on the host.
     HOST_USER={self.user_info[uid]}
-    chown $HOST_USER:$HOST_USER {self.container_staging}/linux-64/$(basename $OUTPUT)
+    chown $HOST_USER:$HOST_USER {self.container_staging}/{arch}/$(basename $OUTPUT)
 
-    conda index {self.container_staging}/linux-64
+    conda index {self.container_staging}/{arch} > /dev/null 2>&1
 fi
 """
 
@@ -135,9 +139,8 @@ DOCKERFILE_TEMPLATE = \
 """
 FROM {self.image}
 COPY requirements.txt /tmp/requirements.txt
-RUN /opt/conda/bin/conda config --add channels conda-forge
 RUN /opt/conda/bin/conda config --add channels defaults
-RUN /opt/conda/bin/conda config --add channels r
+RUN /opt/conda/bin/conda config --add channels conda-forge
 RUN /opt/conda/bin/conda config --add channels bioconda
 RUN /opt/conda/bin/conda install --file /tmp/requirements.txt
 """
@@ -364,7 +367,7 @@ class RecipeBuilder(object):
         shutil.rmtree(build_dir)
         return p
 
-    def build_recipe(self, recipe_dir, build_args, env):
+    def build_recipe(self, recipe_dir, build_args, env, pkg, noarch=False):
         """
         Build a single recipe.
 
@@ -381,6 +384,11 @@ class RecipeBuilder(object):
         env : dict
             Environmental variables
 
+        pkg : filename of the desired package (e.g. obtained by utils.built_package_path)
+
+        noarch: bool
+            Has to be set to true if this is a noarch build
+
         Note that the binds are set up automatically to match the expectations
         of the build script, and will use the currently-configured
         self.container_staging and self.container_recipe.
@@ -395,7 +403,8 @@ class RecipeBuilder(object):
         # Write build script to tempfile
         build_dir = os.path.realpath(tempfile.mkdtemp())
         with open(os.path.join(build_dir, 'build_script.bash'), 'w') as fout:
-            fout.write(self.build_script_template.format(self=self))
+            fout.write(self.build_script_template.format(
+                self=self, pkg=pkg, arch='noarch' if noarch else 'linux-64'))
         build_script = fout.name
         logger.debug('DOCKER: Container build script: \n%s', open(fout.name).read())
 

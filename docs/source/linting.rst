@@ -40,7 +40,7 @@ Linting functions
 `in_other_channels`
 ~~~~~~~~~~~~~~~~~~
 Reason for failing: The package exists in another dependent channel (currently
-conda-forge, r, and defaults). This often happens when a general-use package
+conda-forge and defaults). This often happens when a general-use package
 was added to bioconda first but was subsequently added to one of the more
 general channels. In this case we'd prefer it to be in the general channel.
 
@@ -117,6 +117,34 @@ corrupted.
 How to resolve: Add a hash in the `source section
 <https://conda.io/docs/building/meta-yaml.html#source-section>`_. See
 :ref:`hashes` for more info.
+
+`should_be_noarch`
+~~~~~~~~~~~~~~~~~~
+Reason for failing: The package should be labelled as ``noarch``.
+
+Rationale: A ``noarch`` package should be created for pure Python packages, data packages, or
+packages that do not require compilation. With this a single ``noarch`` package can be
+used across multiple platforms and (in case of Python) Python versions, which saves
+on build time and saves on storage space on the bioconda channel.
+
+How to resolve: For pure Python packages, add ``noarch: python`` to the ``build`` section.
+**Don't do this if your Python package has a command line interface**, as these are not
+independent of the Python version!
+For other generic packages (like a data package), add ``noarch: generic`` to the ``build`` section.
+See `here <https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_ for
+more details.
+
+`should_not_be_noarch`
+~~~~~~~~~~~~~~~~~~~~~~
+Reason for failing: The package should **not** be labelled as ``noarch``.
+
+Rationale: The package defines gcc as a dependency, or it contains a build/skip
+section. In both cases, this means that there should be platform specific
+versions of this package. This also holds for skipping Python versions, because
+``noarch: python`` also implies that the resulting package will work with **all**
+Python versions. This is typically not the case if you skip a Python version.
+
+How to resolve: Remove the ``noarch`` statement.
 
 `uses_git_url`
 ~~~~~~~~~~~~~~

@@ -15,9 +15,13 @@ bioconda recipe checklist
 - License allows redistribution and license is indicated in ``meta.yaml``
 - Package does not already exist in the `defaults`, `r`, or `conda-forge`
   channels with some exceptions (:ref:`details <channel-exceptions>`)
-- Package is appropriate for bioconda (:ref:`details <appropriate-for-bioconda>`)```
+- Package is appropriate for bioconda (:ref:`details <appropriate-for-bioconda>`)
 - If the recipe installs custom wrapper scripts, usage notes should be added to
   ``extra -> notes`` in the ``meta.yaml``.
+- **Update 12 Jun 2017**: If the recipe is a pure Python package, it is marked
+  as a `"noarch"
+  <https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_
+  package (:ref:`details <noarch>`).
 
 .. _stable-url:
 
@@ -100,12 +104,31 @@ consider opening a pull request with `conda-forge
 The exception to this is with R packages. We are still coordinating with
 anaconda and conda-forge about the best place to keep general R packages. In
 the meantime, R packages that are not specific to bioinformatics and that
-aren't already in the `r` channel can be added to bioconda.
+aren't already in the `conda-forge` channel can be added to bioconda.
 
 If uploading of an unreleased version is necessary, please follow the
 versioning scheme of conda for pre- and post-releases (e.g. using a, b, rc, and
 dev suffixes, see `here
 <https://github.com/conda/conda/blob/d1348cf3eca0f78093c7c46157989509572e9c25/conda/version.py#L30>`_).
+
+
+.. _noarch:
+
+"Noarch" packages
+~~~~~~~~~~~~~~~~~
+A ``noarch`` package can be created for pure Python packages, data packages, or
+packages that do not require compilation. This single ``noarch`` package can be
+used across multiple platforms, which saves on build time and saves on storage
+space on the bioconda channel.
+
+For pure Python packages, add ``noarch: python`` to the ``build`` section.
+
+For other generic packages (like a data package), add ``noarch: generic`` to
+the ``build`` section.
+
+See `here
+<https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_ for
+more details.
 
 Dependencies
 ~~~~~~~~~~~~
@@ -117,7 +140,6 @@ a recipe must have its dependencies in one of the following:
 - as-yet-unbuilt recipes in the repo but that will be included in the PR
 - `bioconda` channel
 - `conda-forge` channel
-- `r` channel
 - default Anaconda channel
 
 Otherwise, you will have to write the recipes for those dependencies and

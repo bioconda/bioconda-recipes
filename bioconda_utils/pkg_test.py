@@ -76,8 +76,9 @@ def get_image_name(path):
 
 def test_package(path,
                  name_override=None,
-                 channels=["r", "defaults", "conda-forge"],
-                 mulled_args=""
+                 channels=["conda-forge", "defaults"],
+                 mulled_args="",
+                 base_image=None
     ):
     """
     Tests a built package in a minimal docker container.
@@ -98,6 +99,9 @@ def test_package(path,
         Mechanism for passing arguments to the mulled-build command. They will
         be split with shlex.split and passed to the mulled-build command. E.g.,
         mulled_args="--dry-run --involucro-path /opt/involucro"
+
+    base_image : None | str
+        Specify custom base image. Busybox is used in the default case.
 
     """
 
@@ -133,4 +137,9 @@ def test_package(path,
     cmd += channel_args
     cmd += shlex.split(mulled_args)
     logger.debug('mulled-build command: %s' % cmd)
-    return utils.run(cmd)
+
+    env = os.environ.copy()
+    if base_image is not None:
+        env["DEST_BASE_IMAGE"] = base_image
+    with tempfile.TemporaryDirectory() as d:
+        return utils.run(cmd, env=env, cwd=d)
