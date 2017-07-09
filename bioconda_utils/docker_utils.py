@@ -135,21 +135,18 @@ fi
 #
 # It assumes that there will be a requirements.txt in the build directory
 # (the default is to use bioconda_utils-requirements.txt).
+
+
 DOCKERFILE_TEMPLATE = \
 """
 FROM {self.image}
 COPY requirements.txt /tmp/requirements.txt
+{self.proxies}
 RUN /opt/conda/bin/conda config --add channels defaults
 RUN /opt/conda/bin/conda config --add channels conda-forge
 RUN /opt/conda/bin/conda config --add channels bioconda
 RUN /opt/conda/bin/conda install --file /tmp/requirements.txt
 """
-
-# To address issue #5027
-if 'http_proxy' in os.environ:
-    DOCKERFILE_TEMPLATE += 'ENV http_proxy {0}'.format(os.environ['http_proxy'])
-if 'https_proxy' in os.environ:
-    DOCKERFILE_TEMPLATE += 'ENV https_proxy {0}'.format(os.environ['https_proxy'])
 
 
 class DockerCalledProcessError(sp.CalledProcessError):
@@ -294,6 +291,43 @@ class RecipeBuilder(object):
         self.conda_build_version = conda_build_version
         self.conda_version = conda_version
 
+        # To address issue #5027:
+        #
+        # https_proxy is the standard name, but conda looks for HTTPS_PROXY in all
+        # caps. So we look for both in the current environment. If both exist
+        # then ensure they have the same value; otherwise use whichever exists.
+        #
+        # Note that the proxy needs to be in the image when building it, and
+        # that the proxies need to be set before the conda install command. The
+        # position of `{self.proxies}` in `dockerfile_template` should reflect
+        # this.
+        _proxies = []
+        http_proxy = set(
+            os.environ.get('http_proxy', None),
+            os.environ.get('HTTP_PROXY', None)
+        ).difference([None])
+
+        https_proxy = set(
+            os.environ.get('https_proxy', None),
+            os.environ.get('HTTPS_PROXY', None)
+        ).difference([None])
+
+        if len(http_proxy) == 1:
+            proxy = list(http_proxy)[0]
+            _proxies.append('ENV http_proxy {0}'.format(proxy))
+            _proxies.append('ENV HTTP_PROXY {0}'.format(proxy))
+        elif len(http_proxy) > 1:
+            raise ValueError("http_proxy and HTTP_PROXY have different values")
+
+        if len(https_proxy) == 1:
+            proxy = list(https_proxy)[0]
+            _proxies.append('ENV https_proxy {0}'.format(proxy))
+            _proxies.append('ENV HTTPS_PROXY {0}'.format(proxy))
+        elif len(https_proxy) > 1:
+            raise ValueError("https_proxy and HTTPS_PROXY have different values")
+        self.proxies = '\n'.join(_proxies)
+
+        # find and store user info
         uid = os.getuid()
         usr = pwd.getpwuid(uid)
         self.user_info = dict(
@@ -301,9 +335,9 @@ class RecipeBuilder(object):
             gid=usr.pw_gid,
             groupname=grp.getgrgid(usr.pw_gid).gr_name,
             username=usr.pw_name)
+
         self.container_recipe = container_recipe
         self.container_staging = container_staging
-
         self.host_conda_bld = get_host_conda_bld()
 
         if use_host_conda_bld:
