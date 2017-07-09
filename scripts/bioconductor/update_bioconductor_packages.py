@@ -34,13 +34,14 @@ def bioc_name(recipe):
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument('--repository', default='recipes', help='Recipes directory')
+    ap.add_argument('--recipes', default='recipes', help='Recipes directory')
+    ap.add_argument('--config', default='recipes', help='Config YAML')
     args = ap.parse_args()
 
-    recipes = list(utils.get_recipes(args.repository, 'bioconductor-*'))
+    recipes = list(utils.get_recipes(args.recipes, 'bioconductor-*'))
     deps = itertools.chain(
-        itertools.chain(*(utils.get_deps(i, build=True) for i in recipes)),
-        itertools.chain(*(utils.get_deps(i, build=False) for i in recipes))
+        itertools.chain(*(utils.get_deps(i, build=True, config=args.config) for i in recipes)),
+        itertools.chain(*(utils.get_deps(i, build=False, config=args.config) for i in recipes))
     )
 
     deps = list(filter(lambda x: x.startswith(('r-', 'bioconductor-')), deps))
@@ -48,11 +49,11 @@ if __name__ == "__main__":
     bioconda_deps = list(
         filter(
             lambda x: os.path.isdir(x),
-            itertools.chain(*(utils.get_recipes(args.repository, i) for i in deps))
+            itertools.chain(*(utils.get_recipes(args.recipes, i) for i in deps))
         )
     )
 
-    dag, name2recipe = utils.get_dag(bioconda_deps)
+    dag, name2recipe = utils.get_dag(bioconda_deps, config=args.config)
 
     def version_sort(x):
         return version.VersionOrder(MetaData(x).meta['package']['version'])
