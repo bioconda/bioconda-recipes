@@ -697,14 +697,34 @@ def test_rendering_sandboxing(caplog):
         'BUILDKITE_TOKEN': 'asdf',
     }
 
-    # recipe for "one" should fail because GITHUB_TOKEN is not a jinja var.
-    res = build.build(
-        recipe=r.recipe_dirs['one'],
-        recipe_folder='.',
-        env=env,
-        mulled_test=False
-    )
-    assert "Undefined Jinja2 variables remain (['GITHUB_TOKEN']).  Please enable source downloading and try again." in caplog.text
+    # If GITHUB_TOKEN is already set in the bash environment, then we get
+    # a message on stdout+stderr (this is the case on travis-ci).
+    #
+    # However if GITHUB_TOKEN is not already set in the bash env (e.g., when
+    # testing locally), then we get a SystemError.
+    #
+    # In both cases we're passing in the `env` dict, which does contain
+    # GITHUB_TOKEN.
+
+    if 'GITHUB_TOKEN' in os.environ:
+        res = build.build(
+            recipe=r.recipe_dirs['one'],
+            recipe_folder='.',
+            env=env,
+            mulled_test=False,
+        )
+        assert ("Undefined Jinja2 variables remain (['GITHUB_TOKEN']).  "
+                "Please enable source downloading and try again.") in caplog.text
+    else:
+        # recipe for "one" should fail because GITHUB_TOKEN is not a jinja var.
+        with pytest.raises(SystemExit) as excinfo:
+            res = build.build(
+                recipe=r.recipe_dirs['one'],
+                recipe_folder='.',
+                env=env,
+                mulled_test=False
+            )
+        assert "'GITHUB_TOKEN' is undefined" in str(excinfo.value)
 
     r = Recipes(
         """
