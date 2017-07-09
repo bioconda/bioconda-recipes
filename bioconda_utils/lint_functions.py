@@ -257,12 +257,12 @@ def setup_py_install_args(recipe, meta, df):
     if not os.path.exists(build_sh):
         return
 
-    for line in open(build_sh):
-        if (
-            'setup.py install' in line and
-            '--single-version-externally-managed' not in line
-        ):
-            return err
+    contents = open(build_sh).read()
+    if (
+        'setup.py install' in contents and
+        '--single-version-externally-managed' not in contents
+    ):
+        return err
 
 registry = (
     in_other_channels,
