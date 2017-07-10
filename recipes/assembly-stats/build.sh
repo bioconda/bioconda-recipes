@@ -6,5 +6,5 @@ mkdir build
 cd build
 cmake  -D CMAKE_INSTALL_PREFIX=${PREFIX} ..
 make
-make test
-make install
+cp assembly-stats $PREFIX/bin
+
