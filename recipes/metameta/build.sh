@@ -8,3 +8,4 @@ sed -i "s|Snakefile|$PREFIX/opt/metameta/Snakefile|g" metameta
 
 cp -r * $PREFIX/opt/metameta/
 ln -s $PREFIX/opt/metameta/metameta $PREFIX/bin/
+
