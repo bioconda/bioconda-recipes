@@ -19,3 +19,5 @@ chmod +x $PREFIX/bin/pk_tools.py
 chmod +x $PREFIX/bin/secondary_elements.py
 chmod +x $PREFIX/bin/stems.py
 chmod +x $PREFIX/bin/user.py
+
+ln -s $PREFIX/bin/dotknot.py $PREFIX/bin/dotknot
