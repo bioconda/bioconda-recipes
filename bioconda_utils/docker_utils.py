@@ -391,6 +391,9 @@ class RecipeBuilder(object):
 
         cmd = [
             'docker', 'build',
+
+            # xref #5027
+            '--network', 'host',
             '-t', self.tag,
             build_dir
         ]
