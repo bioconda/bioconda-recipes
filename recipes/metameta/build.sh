@@ -1,4 +1,5 @@
 #!/bin/bash
+
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/opt/metameta/
 
@@ -6,4 +7,5 @@ mkdir -p $PREFIX/opt/metameta/
 sed -i "s|Snakefile|$PREFIX/opt/metameta/Snakefile|g" metameta
 
 cp -r * $PREFIX/opt/metameta/
-ln -s $PREFIX/opt/metameta/metameta $PREFIX/bin/ 
+ln -s $PREFIX/opt/metameta/metameta $PREFIX/bin/
+
