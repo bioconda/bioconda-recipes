@@ -7,4 +7,4 @@ export C_INCLUDE_PATH=${PREFIX}/include
 # support, from https://github.com/chapmanb/bcbio-conda/blob/master/pysam/build.sh
 sed -i'' -e 's/"-Wno-error=declaration-after-statement",//g' setup.py
 sed -i'' -e 's/"-Wno-error=declaration-after-statement"//g' setup.py
-$PYTHON setup.py install
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt
