@@ -11,9 +11,9 @@ bioinformatics software. Bioconda consists of:
 
 - a `repository of recipes <https://github.com/bioconda/bioconda-recipes>`_ hosted on GitHub
 - a `build system <https://github.com/bioconda/bioconda-utils>`_ that turns these recipes into conda packages
-- a `repository of >1500 bioinformatics packages
+- a `repository of >2400 bioinformatics packages
   <https://anaconda.org/bioconda/>`_ ready to use with ``conda install``
-- Over 130 contributors that add, modify, update and maintain the recipes
+- Over 250 contributors that add, modify, update and maintain the recipes
 
 Each package added to Bioconda also has a corresponding Docker  `BioContainer
 <https://biocontainers.pro>`_ automatically created and uploaded to Quay.io.
