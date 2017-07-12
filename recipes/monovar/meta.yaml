@@ -1,6 +1,6 @@
 {% set name = "MonoVar" %}
-# MonoVar doesn't have versions, so I'm just freezing the commit 7b47571d85a377c425feea86f6e591ee832fe342 as 'bioconda'
-{% set version = "bioconda" %}
+# MonoVar doesn't have versions, so I'm just freezing my cleaned up fork of the rep as 'v0.0.1'
+{% set version = "v0.0.1" %}
 
 package:
     name: {{ name|lower }}
@@ -8,7 +8,7 @@ package:
 
 source:
     url: https://bitbucket.org/dlaehnemann/monovar/get/{{ version }}.tar.gz
-    md5: 90b338e4f4021f9808f4fbc222adc2ed
+    md5: a5b49a53aa660ce084b1ef0f3d5bbb32
 
 build:
     script: build.sh 
@@ -29,20 +29,9 @@ requirements:
         - pysam ==0.8.3
         - samtools ==0.1.19
 
-# MonoVar does not provide the ref.fa used to generate the provided example test bam files, so testing files from samtools were included in the bioconda repo version
 test:
-    source_files:
-        - examples/filenames.txt
-        - examples/mpileup.ref.fa
-        - examples/mpileup.ref.fa.fai
-        - examples/data_files/mpileup.1.bam
-        - examples/data_files/mpileup.1.bam.bai
-        - examples/data_files/mpileup.2.bam
-        - examples/data_files/mpileup.2.bam.bai
-        - examples/data_files/mpileup.3.bam
-        - examples/data_files/mpileup.3.bam.bai
     commands:
-        - samtools mpileup -BQ0 -d10000 -f examples/mpileup.ref.fa -q 40 -b examples/filenames.txt | monovar -p 0.002 -a 0.2 -t 0.05 -m 2 -f examples/mpileup.ref.fa -b examples/filenames.txt -o output.vcf
+        - monovar 2>&1 | grep "Error: Reference genome file not provided. Use '-f' for reference genome file.\n"
 
 about:
     home: https://bitbucket.org/hamimzafar/monovar
