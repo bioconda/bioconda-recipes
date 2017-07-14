@@ -2,6 +2,7 @@ import pandas
 import yaml
 from helpers import Recipes
 from bioconda_utils import lint_functions
+from bioconda_utils import linting
 
 def run_lint(
     func_name,
@@ -57,6 +58,57 @@ def run_lint(
 
     for contents in should_fail:
         _run(contents, expect_pass=False)
+
+
+def test_lint_skip_in_recipe():
+
+    # should fail (note we're only linting `missing_home`)
+    r = Recipes(
+        '''
+        missing_home:
+          meta.yaml: |
+            package:
+              name: missing_home
+              version: "0.1"
+        ''', from_string=True)
+    r.write_recipes()
+    res = linting.lint(r.recipe_dirs.values(), config={}, df=None, registry=[lint_functions.missing_home])
+    assert res is not None
+
+
+    # should now pass with the extra:skip-lints (only linting for `missing_home`)
+    r = Recipes(
+        '''
+        missing_home:
+          meta.yaml: |
+            package:
+              name: missing_home
+              version: "0.1"
+            extra:
+              skip-lints:
+                - missing_home
+        ''', from_string=True)
+    r.write_recipes()
+    res = linting.lint(r.recipe_dirs.values(), config={}, df=None, registry=[lint_functions.missing_home])
+    assert res is None
+
+    # should pass; minimal recipe needs to skip these lints
+    r = Recipes(
+        '''
+        missing_home:
+          meta.yaml: |
+            package:
+              name: missing_home
+              version: "0.1"
+            extra:
+              skip-lints:
+                - missing_home
+                - missing_license
+                - no_tests
+        ''', from_string=True)
+    r.write_recipes()
+    res = linting.lint(r.recipe_dirs.values(), config={}, df=None)
+    assert res is not None
 
 
 def test_missing_home():

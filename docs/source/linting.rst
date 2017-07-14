@@ -10,6 +10,8 @@ is a list of the checks performed and how to fix them if they fail.
 
 Skipping a linting test
 -----------------------
+Skipping on a per-commit basis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 While only recommended in special cases, it is possible to skip specific
 linting tests on a commit by using special text in the commit message, ``[lint
 skip $FUNCTION for $RECIPE]`` where ``$FUNCTION`` is the name of the function to
@@ -33,6 +35,19 @@ a temporary environment variable ``LINT_SKIP``. The same example above could be
 tested locally like this without having to make a commit::
 
     LINT_SKIP="[lint skip uses_setuptools for recipes/mypackage]" ./simulate-travis.py
+
+Skipping persistently on a per-recipe basis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sometimes a recipe will always fail linting. For example, in rare cases the
+source for a recipe may only be available as a `git_url` or may require
+`setuptools` as a runtime dependency. In these cases, add an `extra:
+skip-lints` list to the ``meta.yaml`` indicating which lints should be
+skipped, for example::
+
+    extra:
+      skip-lints:
+        - uses_git_url
+        - uses_setuptools
 
 Linting functions
 -----------------
