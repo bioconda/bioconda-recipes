@@ -246,7 +246,14 @@ def lint(recipes, config, df, exclude=None, registry=None):
                  'severity': 'ERROR',
                  'info': result})
             continue
+
+        # skips defined in commit message
         skip_for_this_recipe = skip_dict[recipe]
+
+        # skips defined in meta.yaml
+        persistent = meta.get('extra', {}).get('skip-lints', [])
+        skip_for_this_recipe += persistent
+
         for func in registry:
             if func.__name__ in skip_for_this_recipe:
                 logger.info(

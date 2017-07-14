@@ -1,12 +1,21 @@
 import os
 import glob
 import re
+import pandas
+import numpy as np
 
 
 def _subset_df(recipe, meta, df):
     """
     Helper function to get the subset of `df` for this recipe.
     """
+    if df is None:
+        # TODO: this is just a mockup; is there a better way to get the set of
+        # expected columns from a channel dump?
+        return pandas.DataFrame(
+            np.nan, index=[],
+            columns=['channel', 'name', 'version', 'build_number'])
+
     name = meta['package']['name']
     version = meta['package']['version']
 
