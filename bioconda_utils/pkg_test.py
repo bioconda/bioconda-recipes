@@ -142,4 +142,7 @@ def test_package(path,
     if base_image is not None:
         env["DEST_BASE_IMAGE"] = base_image
     with tempfile.TemporaryDirectory() as d:
-        return utils.run(cmd, env=env, cwd=d)
+        with utils.Progress():
+            p = utils.run(cmd, env=env, cwd=d)
+
+    return p 
