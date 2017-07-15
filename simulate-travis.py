@@ -57,9 +57,27 @@ ap.add_argument('--config-from-github', action='store_true', help='''Download
 ap.add_argument('--disable-docker', action='store_true', help='''By default, if
                 the OS is linux then we use Docker. Use this argument to
                 disable this behavior''')
+ap.add_argument('--alternative-conda', help='''Path to alternative conda
+                installation. If alternative conda executable is located at
+                /opt/miniconda3/bin/conda, then pass /opt/miniconda3 for this
+                argument.''')
 args, extra = ap.parse_known_args()
 
 HERE = os.path.abspath(os.path.dirname(__file__))
+
+if args.alternative_conda:
+    os.environ['CONDARC'] = args.alternative_conda
+    os.environ['CONDA_ROOT'] = args.alternative_conda
+    os.environ['PATH'] = os.path.join(args.alternative_conda, 'bin') + ':' + os.environ['PATH']
+
+
+def bin_for(name='conda'):
+    if 'CONDARC' in os.environ and 'CONDA_ROOT' in os.environ:
+        if os.environ['CONDARC'] != os.environ['CONDA_ROOT']:
+            raise ValueError('$CONDARC and $CONDA_ROOT have different values')
+    if 'CONDARC' in os.environ:
+        return os.path.join(os.environ['CONDARC'], 'bin', name)
+    return name
 
 
 def _remote_or_local(fn, branch='master', remote=False):
@@ -101,22 +119,23 @@ if args.set_channel_order:
     # first, but when using `conda config --add` they should be added from
     # lowest to highest priority.
     for channel in channels[::-1]:
-        sp.run(['conda', 'config', '--add', 'channels', channel], check=True)
+        sp.run([bin_for('conda'), 'config', '--add', 'channels', channel], check=True)
     print("\nconda config is now:\n")
     sp.run(['conda', 'config', '--get'])
     sys.exit(0)
 
+
 if args.install_requirements:
     sp.run(
         [
-            'conda', 'install', '-y', '--file',
+            bin_for('conda'), 'install', '-y', '--file',
             'https://raw.githubusercontent.com/bioconda/bioconda-utils/'
             '{0}/bioconda_utils/bioconda_utils-requirements.txt'.format(env['BIOCONDA_UTILS_TAG'])
         ], check=True)
 
     sp.run(
         [
-            'pip', 'install',
+            bin_for('pip'), 'install',
             'git+https://github.com/bioconda/bioconda-utils.git@{0}'.format(env['BIOCONDA_UTILS_TAG'])
         ],
         check=True)
