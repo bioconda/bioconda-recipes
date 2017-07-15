@@ -60,10 +60,9 @@ def allowed_env_var(s):
 
 
 def bin_for(name='conda'):
-    if 'CONDARC' in os.environ:
-        return os.path.join(os.environ['CONDARC'], 'bin', name)
+    if 'CONDA_ROOT' in os.environ:
+        return os.path.join(os.environ['CONDA_ROOT'], 'bin', name)
     return name
-
 
 
 def get_meta_value(meta, *keys, default=None):
