@@ -143,14 +143,14 @@ def duplicates(
                '{channel}/{name}/{version}/{fn}'.format(
                name=name, version=version, fn=fn, channel=target_channel)]
         if dryrun:
-            print('anaconda', *subcmd)
+            print(utils.bin_for('anaconda'), *subcmd)
         else:
             token = os.environ.get('ANACONDA_TOKEN')
             if token is None:
                 token = []
             else:
                 token = ['-t', token]
-            print(utils.run(['anaconda'] + token + subcmd).stdout)
+            print(utils.run([utils.bin_for('anaconda')] + token + subcmd).stdout)
 
     def get_packages(channel):
         return {get_spec(pkg)

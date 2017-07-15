@@ -98,7 +98,7 @@ def build(recipe,
     logger.debug('build_args: %s', build_args)
     logger.debug('channel_args: %s', channel_args)
 
-    CONDA_BUILD_CMD = ['conda', 'build']
+    CONDA_BUILD_CMD = [utils.bin_for('conda'), 'build']
 
     pkg_path = utils.built_package_path(recipe, _env)
     meta = utils.load_meta(recipe, _env)

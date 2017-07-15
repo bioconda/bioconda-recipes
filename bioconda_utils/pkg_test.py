@@ -110,7 +110,7 @@ def test_package(path,
 
     conda_bld_dir = os.path.abspath(os.path.dirname(os.path.dirname(path)))
 
-    sp.check_call(['conda', 'index', os.path.dirname(path)])
+    sp.check_call([utils.bin_for('conda'), 'index', os.path.dirname(path)])
 
     spec = get_image_name(path)
 
