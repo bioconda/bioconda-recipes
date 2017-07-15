@@ -60,23 +60,28 @@ ap.add_argument('--disable-docker', action='store_true', help='''By default, if
 ap.add_argument('--alternative-conda', help='''Path to alternative conda
                 installation. If alternative conda executable is located at
                 /opt/miniconda3/bin/conda, then pass /opt/miniconda3 for this
-                argument.''')
+                argument. Setting this argument will also set the CONDARC env
+                var to "condarc" in this directory; in this example
+                /opt/miniconda3/condarc.''')
+ap.add_argument('--git-range', nargs='+', help='''Override the default
+                --git-range arguments to `bioconda-utils lint` and
+                `bioconda-utils build`.''')
 args, extra = ap.parse_known_args()
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 if args.alternative_conda:
-    os.environ['CONDARC'] = args.alternative_conda
+    os.environ['CONDARC'] = os.path.join(os.args.alternative_conda, 'condarc')
     os.environ['CONDA_ROOT'] = args.alternative_conda
     os.environ['PATH'] = os.path.join(args.alternative_conda, 'bin') + ':' + os.environ['PATH']
 
+if args.git_range:
+    os.environ['RANGE_ARG'] = '--git-range ' + ' '.join(args.git_range)
+
 
 def bin_for(name='conda'):
-    if 'CONDARC' in os.environ and 'CONDA_ROOT' in os.environ:
-        if os.environ['CONDARC'] != os.environ['CONDA_ROOT']:
-            raise ValueError('$CONDARC and $CONDA_ROOT have different values')
-    if 'CONDARC' in os.environ:
-        return os.path.join(os.environ['CONDARC'], 'bin', name)
+    if 'CONDA_ROOT' in os.environ:
+        return os.path.join(os.environ['CONDA_ROOT'], 'bin', name)
     return name
 
 
