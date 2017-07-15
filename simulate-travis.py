@@ -63,9 +63,6 @@ ap.add_argument('--alternative-conda', help='''Path to alternative conda
                 argument. Setting this argument will also set the CONDARC env
                 var to "condarc" in this directory; in this example
                 /opt/miniconda3/condarc.''')
-ap.add_argument('--git-range', nargs='+', help='''Override the default
-                --git-range arguments to `bioconda-utils lint` and
-                `bioconda-utils build`.''')
 args, extra = ap.parse_known_args()
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -74,9 +71,6 @@ if args.alternative_conda:
     os.environ['CONDARC'] = os.path.join(os.args.alternative_conda, 'condarc')
     os.environ['CONDA_ROOT'] = args.alternative_conda
     os.environ['PATH'] = os.path.join(args.alternative_conda, 'bin') + ':' + os.environ['PATH']
-
-if args.git_range:
-    os.environ['RANGE_ARG'] = '--git-range ' + ' '.join(args.git_range)
 
 
 def bin_for(name='conda'):
