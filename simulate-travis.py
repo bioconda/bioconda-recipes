@@ -6,6 +6,7 @@ import sys
 import ruamel_yaml as yaml
 import subprocess as sp
 import shlex
+import shutil
 import argparse
 import urllib.request
 
@@ -68,10 +69,7 @@ args, extra = ap.parse_known_args()
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-if args.alternative_conda:
-    os.environ['CONDARC'] = os.path.join(os.args.alternative_conda, 'condarc')
-    os.environ['CONDA_ROOT'] = args.alternative_conda
-    os.environ['PATH'] = os.path.join(args.alternative_conda, 'bin') + ':' + os.environ['PATH']
+
 class TmpDownload(object):
     """
     Context manager to download to a temp file and clean up afterwards
@@ -88,6 +86,11 @@ class TmpDownload(object):
 
 
 def bin_for(name='conda'):
+    """
+    If CONDA_ROOT is set, we explicitly look for a bin there rather than defer
+    to PATH. This should help keep the alternative conda installation truly
+    isolated from the rest of the system.
+    """
     if 'CONDA_ROOT' in os.environ:
         return os.path.join(os.environ['CONDA_ROOT'], 'bin', name)
     return name
@@ -104,7 +107,7 @@ def _remote_or_local(fn, branch='master', remote=False):
             '{branch}/{path}'.format(branch=branch, path=fn)
         )
         print('Using config file {}'.format(url))
-        with conda.fetch.TmpDownload(url) as f:
+        with TmpDownload(url) as f:
             cfg = yaml.load(open(f))
     else:
         cfg = yaml.load(open(os.path.join(HERE, fn)))
