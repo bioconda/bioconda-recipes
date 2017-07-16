@@ -145,7 +145,7 @@ elif local_config:
     os.environ['CONDA_ROOT'] = local_config['CONDA_ROOT']
     os.environ['PATH'] = os.path.join(local_config['CONDA_ROOT'], 'bin') + ':' + os.environ['PATH']
 
-print('Using conda at: {0}'.format(shutil.which('conda')))
+#print('Using conda at: {0}'.format(shutil.which('conda')))
 
 
 # Load the env vars configured in .travis.yaml into os.environ
