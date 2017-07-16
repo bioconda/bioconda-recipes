@@ -162,7 +162,7 @@ def _install_alternative_conda(install_path, force=False):
     Download and install minconda to `install_path`.
     """
     miniconda_version = eval(env['MINICONDA_VER'])
-    if sys.platform == 'linux':
+    if 'linux' in sys.platform:
         tag = 'Linux'
     elif sys.platform == 'darwin':
         tag = 'MacOSX'
