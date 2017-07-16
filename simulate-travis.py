@@ -26,24 +26,25 @@ or modify the log level:
 
     simulate-travis.py --packages mypackagename --loglevel=debug
 
-Notes
------
-
-Any environmental variables will be passed to `scripts/travis-run.sh` and will
-override any defaults detected in .travis.yml. Currently the only variables
-useful to modify are TRAVIS_OS_NAME and BIOCONDA_UTILS_TAG.  For example you
-can set TRAVIS_OS_NAME to "linux" while running on a Mac to build packages in
-a docker container:
-
-    TRAVIS_OS_NAME=linux ./simulate-travis.py
-
-Or specify a different commit of `bioconda_utils`:
-
-    BIOCONDA_UTILS_TAG=63543b34 ./simulate-travis.py
 
 """
 
 ap = argparse.ArgumentParser(usage=usage)
+ap.add_argument('--bootstrap', help='''Bootstrap a new conda installation to
+                use only for bioconda-utils at the specified path, install
+                bioconda-utils dependencies, and set channel order. Effectively
+                runs --install-alternative-conda DIR --install-requirements --
+                set-channel-order''')
+ap.add_argument('--install-alternative-conda', help='''Install a separate conda
+                environment to the specified location. This will download and
+                install Miniconda, and then create a config file in
+                ~/.config/bioconda/conf.yml that points to this installation so
+                that subsequent runs of simulate-travis.py will use that
+                installation with no additional configuration and without
+                modifying any existing conda installations.''')
+ap.add_argument('--force', action='store_true', help='''When installing conda
+                (--install-alternative-conda or --bootstrap), overwrite the
+                provided installation directory''')
 ap.add_argument('--install-requirements', action='store_true', help='''Install
                 the currently-configured version of bioconda-utils and its
                 dependencies, and then exit.''')
@@ -57,10 +58,11 @@ ap.add_argument('--disable-docker', action='store_true', help='''By default, if
                 the OS is linux then we use Docker. Use this argument to
                 disable this behavior''')
 ap.add_argument('--alternative-conda', help='''Path to alternative conda
-                installation. If alternative conda executable is located at
-                /opt/miniconda3/bin/conda, then pass /opt/miniconda3 for this
-                argument. Setting this argument will also set the CONDARC env
-                var to "condarc" in this directory; in this example
+                installation to override that installed and configured with
+                --install-alternative-conda. If alternative conda executable is
+                located at /opt/miniconda3/bin/conda, then pass /opt/miniconda3
+                for this argument. Setting this argument will also set the
+                CONDARC env var to "condarc" in this directory; in this example
                 /opt/miniconda3/condarc.''')
 args, extra = ap.parse_known_args()
 
