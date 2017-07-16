@@ -14,9 +14,9 @@ if sys.version_info.major == 3:
     PY3 = True
 
 if PY3:
-    from urllib.request import urlretrieve
+    from urllib.request import urlretrieve, urlcleanup
 else:
-    from urllib import urlretrieve
+    from urllib import urlretrieve, urlcleanup
 
 usage = """
 
@@ -89,7 +89,7 @@ class TmpDownload(object):
         return filename
 
     def __exit__(self, exc_type, exc_value, traceback):
-        urllib.request.urlcleanup()
+        urlcleanup()
 
 
 def bin_for(name='conda'):
