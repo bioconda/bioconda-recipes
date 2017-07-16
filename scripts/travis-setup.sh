@@ -22,7 +22,7 @@ done
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-sudo pip install ruamel.yaml
+sudo pip install pyyaml
 sudo $SCRIPT_DIR/../simulate-travis.py --bootstrap /anaconda
 sudo chown -R $USER /anaconda
 conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64

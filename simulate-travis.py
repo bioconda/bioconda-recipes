@@ -3,7 +3,7 @@
 import os
 import platform
 import sys
-import ruamel_yaml as yaml
+import yaml
 import subprocess as sp
 import shlex
 import shutil
