@@ -8,8 +8,15 @@ import subprocess as sp
 import shlex
 import shutil
 import argparse
-import urllib.request
 
+PY3 = False
+if sys.version_info.major == 3:
+    PY3 = True
+
+if PY3:
+    from urllib.request import urlretrieve
+else:
+    from urllib import urlretrieve
 
 usage = """
 
@@ -78,7 +85,7 @@ class TmpDownload(object):
         self.url = url
 
     def __enter__(self):
-        filename, headers = urllib.request.urlretrieve(self.url)
+        filename, headers = urlretrieve(self.url)
         return filename
 
     def __exit__(self, exc_type, exc_value, traceback):
