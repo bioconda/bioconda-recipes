@@ -7,8 +7,7 @@ import ruamel_yaml as yaml
 import subprocess as sp
 import shlex
 import argparse
-
-import conda.fetch
+import urllib.request
 
 
 usage = """
@@ -71,6 +70,19 @@ if args.alternative_conda:
     os.environ['CONDARC'] = os.path.join(os.args.alternative_conda, 'condarc')
     os.environ['CONDA_ROOT'] = args.alternative_conda
     os.environ['PATH'] = os.path.join(args.alternative_conda, 'bin') + ':' + os.environ['PATH']
+class TmpDownload(object):
+    """
+    Context manager to download to a temp file and clean up afterwards
+    """
+    def __init__(self, url):
+        self.url = url
+
+    def __enter__(self):
+        filename, headers = urllib.request.urlretrieve(self.url)
+        return filename
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        urllib.request.urlcleanup()
 
 
 def bin_for(name='conda'):
