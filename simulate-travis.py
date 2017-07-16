@@ -113,6 +113,32 @@ def _remote_or_local(fn, branch='master', remote=False):
 travis_config = _remote_or_local('.travis.yml', remote=args.config_from_github)
 bioconda_utils_config = _remote_or_local('config.yml', remote=args.config_from_github)
 
+# If the local config already exists then load it
+local_config_path = os.path.expanduser(os.path.join('~/.config/bioconda/conf.yml'))
+local_config = None
+if os.path.exists(local_config_path):
+    local_config = yaml.load(open(local_config_path))
+
+
+# If this script is being called from an existing conda environment, the
+# following changes to env vars will allow subsequent calls to conda etc use an
+# alternative installation of conda.
+#
+# If --alternative-conda was provided on the command line, prefer that
+if args.alternative_conda:
+    os.environ['CONDARC'] = os.path.join(os.args.alternative_conda, 'condarc')
+    os.environ['CONDA_ROOT'] = args.alternative_conda
+    os.environ['PATH'] = os.path.join(args.alternative_conda, 'bin') + ':' + os.environ['PATH']
+
+elif local_config:
+    os.environ['CONDARC'] = local_config['CONDARC']
+    os.environ['CONDA_ROOT'] = local_config['CONDA_ROOT']
+    os.environ['PATH'] = os.path.join(local_config['CONDA_ROOT'], 'bin') + ':' + os.environ['PATH']
+
+print('Using conda at: {0}'.format(shutil.which('conda')))
+
+
+# Load the env vars configured in .travis.yaml into os.environ
 env = {}
 for var in travis_config['env']['global']:
     if isinstance(var, dict) and list(var.keys()) == ['secure']:
