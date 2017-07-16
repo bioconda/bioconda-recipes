@@ -147,24 +147,41 @@ for var in travis_config['env']['global']:
     env[name] = value
 
 
-if args.set_channel_order:
-    channels = bioconda_utils_config['channels']
-    print("""
-          Warnings like "'conda-forge' already in 'channels' list, moving to the top"
-          are expected if channels have been added before, and can be safely ignored.
-          """)
+def _install_alternative_conda(install_path, force=False):
+    """
+    Download and install minconda to `install_path`.
+    """
+    miniconda_version = eval(env['MINICONDA_VER'])
+    if sys.platform == 'linux':
+        tag = 'Linux'
+    elif sys.platform == 'darwin':
+        tag = 'MacOSX'
+    else:
+        raise ValueError("platform {0} not supported".format(sys.platform))
+    url = 'https://repo.continuum.io/miniconda/Miniconda3-{miniconda_version}-{tag}-x86_64.sh'.format(**locals())
 
-    # The config (and .condarc) expect that higher-priority channels are listed
-    # first, but when using `conda config --add` they should be added from
-    # lowest to highest priority.
-    for channel in channels[::-1]:
-        sp.run([bin_for('conda'), 'config', '--add', 'channels', channel], check=True)
-    print("\nconda config is now:\n")
-    sp.run(['conda', 'config', '--get'])
-    sys.exit(0)
+    with TmpDownload(url) as f:
+        cmds = ['bash', f, '-b', '-p', install_path]
+        if force:
+            cmds.append('-f')
+        sp.check_call(cmds)
+
+    # write the local config file
+    d = {
+        'CONDA_ROOT': install_path,
+        'CONDARC': os.path.join(install_path, '.condarc')
+    }
+    config_dir = os.path.dirname(local_config_path)
+    if not os.path.exists(config_dir):
+        os.makedirs(config_dir)
+    with open(local_config_path, 'w') as fout:
+        yaml.dump(d, fout, default_flow_style=False)
 
 
-if args.install_requirements:
+def _install_requirements():
+    """
+    conda install and pip install bioconda dependencies
+    """
     sp.run(
         [
             bin_for('conda'), 'install', '-y', '--file',
@@ -178,6 +195,40 @@ if args.install_requirements:
             'git+https://github.com/bioconda/bioconda-utils.git@{0}'.format(env['BIOCONDA_UTILS_TAG'])
         ],
         check=True)
+
+
+def _set_channel_order():
+    channels = bioconda_utils_config['channels']
+    print("""
+          Warnings like "'conda-forge' already in 'channels' list, moving to the top"
+          are expected if channels have been added before, and can be safely ignored.
+          """)
+
+    # The config (and .condarc) expect that higher-priority channels are listed
+    # first, but when using `conda config --add` they should be added from
+    # lowest to highest priority.
+    for channel in channels[::-1]:
+        sp.run([bin_for('conda'), 'config', '--add', 'channels', channel], check=True)
+    print("\nconda config is now:\n")
+    sp.run(['conda', 'config', '--get'])
+
+
+if args.install_requirements:
+    _install_requirements()
+    sys.exit(0)
+
+if args.install_alternative_conda:
+    _install_alternative_conda(args.install_alternative_conda, force=args.force)
+    sys.exit(0)
+
+if args.set_channel_order:
+    _set_channel_order()
+    sys.exit(0)
+
+if args.bootstrap:
+    _install_alternative_conda(args.bootstrap, force=args.force)
+    _install_requirements()
+    _set_channel_order()
     sys.exit(0)
 
 # Only run if we're not on travis.
