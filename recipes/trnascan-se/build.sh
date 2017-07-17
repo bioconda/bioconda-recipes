@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-BINDIR=$PREFIX/bin
+BINDIR=${PREFIX}/bin
 mkdir -p $BINDIR
 
 LIBDIR=${PREFIX}/lib
@@ -22,10 +22,10 @@ perl ./Build install --installdirs site
 cd ..
 ## End build perl
 
-mv coves-SE covels-SE eufindtRNA trnascan-1.4 $PREFIX/bin
-mv tRNAscan-SE.src $PREFIX/bin/tRNAscan-SE
+mv coves-SE covels-SE eufindtRNA trnascan-1.4 ${PREFIX}/bin
+mv tRNAscan-SE.src ${PREFIX}/bin/tRNAscan-SE
 
-cd $PREFIX/bin
+cd ${PREFIX}/bin
 chmod +x coves-SE 
 chmod +x covels-SE 
 chmod +x eufindtRNA 
