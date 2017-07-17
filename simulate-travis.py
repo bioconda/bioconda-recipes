@@ -181,7 +181,7 @@ def _install_alternative_conda(install_path, force=False):
         yaml.dump(d, fout, default_flow_style=False)
 
     os.environ.update(d)
-    os.environ['PATH'] = os.path.join(install_path, 'bin') + ':' + osenviron['PATH']
+    os.environ['PATH'] = os.path.join(install_path, 'bin') + ':' + os.environ['PATH']
 
 
 def _install_requirements():
