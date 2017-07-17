@@ -6,7 +6,6 @@ import sys
 import yaml
 import subprocess as sp
 import shlex
-import shutil
 import argparse
 
 from urllib.request import urlretrieve, urlcleanup
@@ -138,8 +137,6 @@ elif local_config:
     os.environ['CONDA_ROOT'] = local_config['CONDA_ROOT']
     os.environ['PATH'] = os.path.join(local_config['CONDA_ROOT'], 'bin') + ':' + os.environ['PATH']
 
-print('Using conda at: {0}'.format(shutil.which('conda')))
-
 
 # Load the env vars configured in .travis.yaml into os.environ
 env = {}
@@ -154,7 +151,8 @@ def _install_alternative_conda(install_path, force=False):
     """
     Download and install minconda to `install_path`.
     """
-    miniconda_version = eval(env['MINICONDA_VER'])
+    # strips quotes however they were used in yaml
+    miniconda_version = shlex.split(env['MINICONDA_VER'])[0]
     if 'linux' in sys.platform:
         tag = 'Linux'
     elif sys.platform == 'darwin':
@@ -233,8 +231,8 @@ if args.set_channel_order:
 
 if args.bootstrap:
     _install_alternative_conda(args.bootstrap, force=args.force)
-    _install_requirements()
     _set_channel_order()
+    _install_requirements()
     sys.exit(0)
 
 # Only run if we're not on travis.
