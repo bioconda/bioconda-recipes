@@ -7,44 +7,48 @@ One-time setup
 
 Git and GitHub (one-time setup)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If you are a bioconda team member (having been added by posting in issue #1),
+then you have push access to the repo. In this case you can clone the
+bioconda-recipes repo::
 
-- Create a `fork <https://help.github.com/articles/fork-a-repo/>`_ of
-  `bioconda-recipes on GitHub <https://github.com/bioconda/bioconda-recipes>`_
-  and clone it locally. Even if you are a member of the bioconda team with push
-  access, using your own fork will allow testing of your recipes on travis-ci
-  using your own account's free resources without consuming resources allocated
-  by travis-ci to the `bioconda` group. This makes the tests go faster for
-  everyone::
+    git clone https://github.com/bioconda/bioconda-recipes.git
+
+You can now move on to installing requirements (next section).
+
+If you do not yet have push access, then fork the repo to your own account via
+the GitHub site and then clone it locally::
 
     git clone https://github.com/<USERNAME>/bioconda-recipes.git
 
-- Connect the fork to travis-ci, following steps 1 and 2 from the `travis-ci
-  docs
-  <https://docs.travis-ci.com/user/getting-started/#To-get-started-with-Travis-CI%3A>`_
-
-- Add the main bioconda-recipes repo as an upstream remote to more easily
-  update your branch with the upstream master branch::
+Then add the main bioconda-recipes repo as an upstream remote to more easily
+update your branch with the upstream master branch::
 
     git remote add upstream https://github.com/bioconda/bioconda-recipes.git
 
 
-Install conda and Docker (one-time setup)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Install Python requirements and Docker (one-time setup)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Currently, you need to install the requirements (see below) into the root
-conda environment which must be a Python 3 environment.
+1. Install Python 3 if you do not already have it.
 
-1. Install `conda <http://conda.pydata.org/miniconda.html>`_. The Python
-   3 version is required.
-
-2. Install `conda-build <https://conda.io/docs/building/recipe.html>`_. Note
-   that the installation must be done from the root `conda` environment, so you
-   will need to `source deactivate` your current environment. If you'd like to
-   read an extensive discussion about `conda` and root vs default environments,
-   check out `this discussion <https://github.com/conda/conda/issues/1145>`_
+2. Install the `pyyaml` package, ``pip install pyyaml``. You may need "sudo" if
+   you are using your system's default Python 3.
 
 3. Install `Docker <https://www.docker.com/>`_. (optional, but allows you to
    simulate most closely the Travis-CI tests).
+
+4. In the `bioconda-recipes` dir, run ``./simulate-travis.py --bootstrap
+   <PATH>`` where ``<PATH>`` is the path to where you want the isolated conda
+   to be installed. If this directory already exists, you can add the
+   ``--force`` argument to overwrite its contents.
+
+This last step does the following:
+
+- downloads and installs Miniconda to the specified path
+- adds a config file, ``~/.config/bioconda/conf.yml``, that records this
+  specified path for future invocations of ``simulate-travis.py``
+- sets the correct channel order
+- installs dependencies for bioconda-utils
 
 Please note that it is also required to build *any* recipe prior to using the
 `simulate-travis.py` command as explained :ref:`here <test-locally>`.

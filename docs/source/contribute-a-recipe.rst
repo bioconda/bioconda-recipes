@@ -14,13 +14,21 @@ Update repo and requirements
 .. code-block:: bash
 
     git checkout master
+
+    # if you cloned the original repo
+    git pull origin master
+
+    # if you're on a fork
     git pull upstream master
 
 2. Set up the channel order and install the versions of dependencies
    currently used in the master branch. The channel order should generally stay
    the same and the dependencies are not likely to change much, but this
    ensures that the local environment most closely resembles the build
-   environment on travis-ci:
+   environment on travis-ci. Note that if you installed with
+   ``simulate-travis.py --bootstrap``, the file ``~/.config/bioconda/conf.yml``
+   configures the path to the isolated conda environment, and that environment
+   will be the one affected by the following commands:
 
 .. code-block:: bash
 
@@ -31,8 +39,7 @@ Update repo and requirements
 Write a recipe
 ~~~~~~~~~~~~~~
 
-
-Check out a new branch in your fork (here the branch is arbitrarily named "my-recipe"):
+Check out a new branch (here the branch is arbitrarily named "my-recipe"):
 
 .. code-block:: bash
 
@@ -81,25 +88,18 @@ recipes to see what needs to be built and so it is the most comprehensive::
 .. note::
 
     If you haven't installed all the dependencies already, you can install them
-    with `./simulate-travis.py --install-requirements`
+    with `./simulate-travis.py --install-requirements`, or get completely set up
+    with `./simulate-travis.py --bootstrap
 
 Same thing but using `--docker`. If you're on OSX and have docker installed
 (and running!), you can use this to test the recipe under Linux::
 
     ./simulate-travis.py --docker
 
-Use the `--quick` option which will just check recipes that have changed since
-the last commit to master branch or that have been newly removed from any
-configured blacklists. This can help speed up the recipe filter stage which can
-take 5 mins to thoroughly check 1500+ recipes. Note that this will not find
-cases where a pinned version (e.g., `{ CONDA_BOOST }`) has been changed::
-
-    ./simulate-travis.py --docker --quick
-
-To specify exactly which packages you want to try building, use the
-`--packages` argument. Note that the arguments to `--packages` can be globs and
-are of package *names* rather than *paths* to recipe directories. For example,
-to consider all R and Bioconductor packages::
+To specify exactly which packages you want to try building, use the `--packages`
+argument. Note that the arguments to `--packages` can be globs and are of
+package *names* rather than *paths* to recipe directories. For example, to
+consider all R and Bioconductor packages::
 
     ./simulate-travis.py --docker --package r-* bioconductor-*
 
@@ -111,44 +111,36 @@ to consider all R and Bioconductor packages::
 
 Push changes, wait for tests to pass, submit pull request
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Before pushing your changes to your fork on github, it's best to merge any
-changes that have happened recently on the upstream master branch. See
-`sycncing a fork <https://help.github.com/articles/syncing-a-fork/>`_ for
-details, or:
+When tests are working locally, it's time to push to github. But before you do,
+it's best to merge any changes that have happened recently on the upstream
+master branch. See `sycncing a fork
+<https://help.github.com/articles/syncing-a-fork/>`_ for details, or:
 
 .. code-block:: bash
 
-    git fetch upstream
+    git pull origin master
 
-    # syncs the fork's master branch with upstream
-    git checkout master
-    git merge upstream/master
+If there are conflicts you will have to resolve them manually.
 
-    # merges those changes into the recipe's branch
-    git checkout my-recipe
-    git merge master
-
-
-Push your changes to your fork on github::
+Then push your changes to github::
 
     git push origin my-recipe
 
 
-and watch the Travis-CI logs by going to travis-ci.org and finding your fork of
-bioconda-recipes. Keep making changes on your fork and pushing them until the
-travis-ci builds pass.
-
-Open a `pull request <https://help.github.com/articles/about-pull-requests/>`_
+Tests will start to run on Travis-CI, but for individual pushes like this, the
+tests are configured to exit quickly without doing anything. When you are ready,
+open a `pull request <https://help.github.com/articles/about-pull-requests/>`_
 on the bioconda-recipes repo. If it's your first recipe or the recipe is doing
 something non-standard, please ask `@bioconda/core` for a review.
+
+At this point, Travis-CI will test your contribution in full.
 
 Use your new recipe
 ~~~~~~~~~~~~~~~~~~~
 
 When the PR is merged with the master branch, travis-ci will again do the
-builds but at the end will upload the packages to anaconda.org. Once the merge
-build completes, your new package is installable by anyone using::
+testing and builds but at the end will upload the packages to anaconda.org. Once
+the merge build completes, your new package is installable by anyone using::
 
     conda install my-package-name -c bioconda
 
