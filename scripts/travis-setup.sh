@@ -22,8 +22,9 @@ done
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-sudo pip install pyyaml
-sudo $SCRIPT_DIR/../simulate-travis.py --bootstrap /anaconda
+pip install pyyaml
+sudo mkdir /anaconda
 sudo chown -R $USER /anaconda
+$SCRIPT_DIR/../simulate-travis.py --bootstrap /anaconda
 conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
 conda config --add channels file://anaconda/conda-bld
