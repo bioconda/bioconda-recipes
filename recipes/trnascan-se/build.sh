@@ -7,7 +7,7 @@ make -j 1
 make install
 
 mv coves-SE covels-SE eufindtRNA trnascan-1.4 *.cm -t ${PREFIX}/bin
-mv tRNAscan-SE.src ${PREFIX}/bin/tRNAscan-SE
+#mv tRNAscan-SE.src ${PREFIX}/bin/tRNAscan-SE
 
 cd ${PREFIX}/bin
 chmod +x coves-SE 
