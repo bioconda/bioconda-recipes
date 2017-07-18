@@ -1,12 +1,16 @@
 #!/bin/bash
 
 export BINDIR=${PREFIX}/bin
-export LIBDIR=${PREFIX}/lib
+
+LIBDIR=${/usr/bin/env perl -V|grep -A1 @INC |tail -n+2}
+#export LIBDIR=${PREFIX}/lib
 
 make -j 1
 make install
 
 mv tRNAscan-SE coves-SE covels-SE eufindtRNA trnascan-1.4 *.cm -t ${PREFIX}/bin
+mv tRNAscanSE/*.pm -t $LIBDIR
+
 #mv tRNAscan-SE.src ${PREFIX}/bin/tRNAscan-SE
 
 cd ${PREFIX}/bin
