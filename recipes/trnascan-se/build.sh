@@ -6,7 +6,15 @@ export LIBDIR=${PREFIX}/lib
 make -j 1
 make install
 
+mv -t ${PREFIX}/bin coves-SE covels-SE eufindtRNA trnascan-1.4 *.cm
+mv tRNAscan-SE.src ${PREFIX}/bin/tRNAscan-SE
 
+cd ${PREFIX}/bin
+chmod +x coves-SE 
+chmod +x covels-SE 
+chmod +x eufindtRNA 
+chmod +x trnascan-1.4
+chmod +x tRNAscan-SE
 
 #mkdir -p $BINDIR
 #
