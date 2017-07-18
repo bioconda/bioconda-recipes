@@ -2,7 +2,7 @@
 
 export BINDIR=${PREFIX}/bin
 
-LIBDIR=${/usr/bin/env perl -V|grep -A1 @INC |tail -n+2}
+LIBDIR=$(/usr/bin/env perl -V|grep -A1 @INC |tail -n+2)
 #export LIBDIR=${PREFIX}/lib
 
 make -j 1
