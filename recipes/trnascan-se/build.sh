@@ -8,10 +8,10 @@ make -j 1
 make install
 
 mkdir -p ${PREFIX}/bin/tRNAscan-SE
-mkdir -p ${PREFIX}/lib/tRNAscan-SE
+mkdir -p ${PREFIX}/lib/tRNAscan-SE/tRNAscanSE
 
 mv -v tRNAscan-SE coves-SE covels-SE eufindtRNA trnascan-1.4 *.cm -t ${PREFIX}/bin/tRNAscan-SE
-mv -v tRNAscanSE/*.pm -t ${PREFIX}/lib/tRNAscan-SE
+mv -v tRNAscanSE/*.pm -t ${PREFIX}/lib/tRNAscan-SE/tRNAscanSE
 #mv tRNAscan-SE.src ${PREFIX}/bin/tRNAscan-SE
 
 cd  ${PREFIX}/bin/tRNAscan-SE
