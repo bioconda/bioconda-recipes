@@ -7,14 +7,18 @@ LIBDIR=$(/usr/bin/env perl -V|grep -A1 @INC |tail -n+2)
 make -j 1
 make install
 
-mkdir -p ${PREFIX}/bin
+mkdir -p ${PREFIX}/bin/tRNAscan-SE
+mkdir -p ${PREFIX}/lib/tRNAscan-SE
 
-mv -v tRNAscan-SE coves-SE covels-SE eufindtRNA trnascan-1.4 *.cm -t ${PREFIX}/bin
-mv -v tRNAscanSE/*.pm -t $LIBDIR/.
-
+mv -v tRNAscan-SE coves-SE covels-SE eufindtRNA trnascan-1.4 *.cm -t ${PREFIX}/bin/tRNAscan-SE
+mv -v tRNAscanSE/*.pm -t ${PREFIX}/lib/tRNAscan-SE
 #mv tRNAscan-SE.src ${PREFIX}/bin/tRNAscan-SE
 
-cd ${PREFIX}/bin
+cd  ${PREFIX}/bin/tRNAscan-SE
+sed -i "/^use Getopt::Long;/c\use Getopt::Long;\\nuse lib = ${PREFIX}/lib/tRNAscan-SE;" tRNAscan-SE
+sed -i "/^our \$bindir/c\our bindir = ${PREFIX}/bin/tRNAscan-SE;" tRNAscan-SE
+sed -i "/^our \$lib_dir/c\our lib_dir = ${PREFIX}/lib/tRNAscan-SE;" tRNAscan-SE
+
 chmod +x coves-SE 
 chmod +x covels-SE 
 chmod +x eufindtRNA 
