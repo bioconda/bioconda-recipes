@@ -7,17 +7,17 @@
 make -j 1
 #make install
 
-mkdir -p ${PREFIX}/bin/tRNAscan-SE
+mkdir -p ${PREFIX}/bin
 #kdir -p ${PREFIX}/bin/tRNAscan-SE/tRNAscanSE
 
-mv -v tRNAscan-SE coves-SE covels-SE eufindtRNA trnascan-1.4 *.cm -t ${PREFIX}/bin/tRNAscan-SE
-mv -v tRNAscanSE ${PREFIX}/bin/tRNAscan-SE/.
-mv tRNAscan-SE.src ${PREFIX}/bin/tRNAscan-SE/.
+mv -v tRNAscan-SE coves-SE covels-SE eufindtRNA trnascan-1.4 *.cm -t ${PREFIX}/bin
+mv -v tRNAscanSE ${PREFIX}/bin/.
+mv tRNAscan-SE.src ${PREFIX}/bin/.
 
-cd  ${PREFIX}/bin/tRNAscan-SE
-sed -i "/^use Getopt::Long;/c\use Getopt::Long;\\nuse lib ${PREFIX}/bin/tRNAscan-SE;" tRNAscan-SE
-sed -i "/^our \$bindir/c\our bindir = ${PREFIX}/bin/tRNAscan-SE;" tRNAscan-SE
-sed -i "/^our \$lib_dir/c\our lib_dir = ${PREFIX}/bin/tRNAscan-SE/tRNAscanSE;" tRNAscan-SE
+cd  ${PREFIX}/bin
+sed -i "/^use Getopt::Long;/c\use Getopt::Long;\\nuse lib ${PREFIX}/bin;" tRNAscan-SE
+sed -i "/^our \$bindir/c\our bindir = ${PREFIX}/bin;" tRNAscan-SE
+sed -i "/^our \$lib_dir/c\our lib_dir = ${PREFIX}/bin/tRNAscanSE;" tRNAscan-SE
 
 chmod +x coves-SE 
 chmod +x covels-SE 
