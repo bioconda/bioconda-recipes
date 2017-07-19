@@ -2,7 +2,7 @@
 
 #xport BINDIR=${PREFIX}/bin
 #export PERL5LIB=$PERL5LIB:${PREFIX}/lib
-#IBDIR=$(/usr/bin/env perl -V|grep -A1 @INC |tail -n+2)
+#LIBDIR=$(/usr/bin/env perl -V|grep -A1 @INC |tail -n+2)
 
 make -j 1
 make install
@@ -12,7 +12,7 @@ mkdir -p ${PREFIX}/bin/tRNAscan-SE
 
 mv -v tRNAscan-SE coves-SE covels-SE eufindtRNA trnascan-1.4 *.cm -t ${PREFIX}/bin/tRNAscan-SE
 mv -v tRNAscanSE ${PREFIX}/lib/tRNAscan-SE/.
-mv tRNAscan-SE.src ${PREFIX}/bin/tRNAscan-SE
+mv tRNAscan-SE.src ${PREFIX}/bin/tRNAscan-SE/.
 
 cd  ${PREFIX}/bin/tRNAscan-SE
 sed -i "/^use Getopt::Long;/c\use Getopt::Long;\\nuse lib ${PREFIX}/bin/tRNAscan-SE;" tRNAscan-SE
