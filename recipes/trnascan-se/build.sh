@@ -7,10 +7,10 @@ sed -i "/^MANDIR/c\MANDIR = ${PREFIX}\/man" Makefile
 make -j 1
 make install
 
-mkdir -p ${PREFIX}/bin
-mv tRNAscan-SE coves-SE covels-SE eufindtRNA trnascan-1.4 *.cm -t ${PREFIX}/bin
-mv tRNAscanSE ${PREFIX}/bin/.
-mv tRNAscan-SE.src ${PREFIX}/bin/.
+#mkdir -p ${PREFIX}/bin
+#mv tRNAscan-SE coves-SE covels-SE eufindtRNA trnascan-1.4 *.cm -t ${PREFIX}/bin
+#mv tRNAscanSE ${PREFIX}/bin/.
+#mv tRNAscan-SE.src ${PREFIX}/bin/.
 
 cd  ${PREFIX}/bin
 #sed -i "/^use Getopt::Long/c\use Getopt::Long;\\nuse lib ${PREFIX}\/bin\;" tRNAscan-SE
