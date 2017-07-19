@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sed -i "/^BINDIR/c\BINDIR = ${PREFIX}\/bin" Makefile
-sed -i "/^LIBDIR/c\LIBDIR = ${PREFIX}\/lib/tRNAscan-SE" Makefile
+sed -i "/^LIBDIR/c\LIBDIR = ${PREFIX}\/lib\/tRNAscan-SE" Makefile
 sed -i "/^MANDIR/c\MANDIR = ${PREFIX}\/man" Makefile
 
 make -j 1
