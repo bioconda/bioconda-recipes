@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sed -i "/^BINDIR/c\BINDIR = ${PREFIX}\/bin" Makefile
-sed -i "/^LIBDIR/c\BINDIR = ${PREFIX}\/bin/tRNAscan-SE" Makefile
+sed -i "/^LIBDIR/c\LIBDIR = ${PREFIX}\/bin/tRNAscan-SE" Makefile
 sed -i "/^MANDIR/c\MANDIR = ${PREFIX}\/man" Makefile
 
 make -j 1
@@ -17,8 +17,8 @@ cd  ${PREFIX}/bin
 #sed -i "/^our \$bindir/c\our bindir = ${PREFIX}\/bin\;" tRNAscan-SE
 #sed -i "/^our \$lib_dir/c\our lib_dir = ${PREFIX}\/bin\/tRNAscanSE\;" tRNAscan-SE
 
-chmod +x coves-SE
-chmod +x covels-SE
-chmod +x eufindtRNA
-chmod +x trnascan-1.4
-chmod +x tRNAscan-SE
+#chmod +x coves-SE
+#chmod +x covels-SE
+#chmod +x eufindtRNA
+#chmod +x trnascan-1.4
+#chmod +x tRNAscan-SE
