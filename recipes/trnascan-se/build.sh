@@ -1,23 +1,23 @@
 #!/bin/bash
 
-export BINDIR=${PREFIX}/bin
+#xport BINDIR=${PREFIX}/bin
 #export PERL5LIB=$PERL5LIB:${PREFIX}/lib
-LIBDIR=$(/usr/bin/env perl -V|grep -A1 @INC |tail -n+2)
+#IBDIR=$(/usr/bin/env perl -V|grep -A1 @INC |tail -n+2)
 
 make -j 1
 make install
 
 mkdir -p ${PREFIX}/bin/tRNAscan-SE
-mkdir -p ${PREFIX}/lib/tRNAscan-SE/tRNAscanSE
+#kdir -p ${PREFIX}/bin/tRNAscan-SE/tRNAscanSE
 
 mv -v tRNAscan-SE coves-SE covels-SE eufindtRNA trnascan-1.4 *.cm -t ${PREFIX}/bin/tRNAscan-SE
-mv -v tRNAscanSE/*.pm -t ${PREFIX}/lib/tRNAscan-SE/tRNAscanSE
-#mv tRNAscan-SE.src ${PREFIX}/bin/tRNAscan-SE
+mv -v tRNAscanSE ${PREFIX}/lib/tRNAscan-SE/.
+mv tRNAscan-SE.src ${PREFIX}/bin/tRNAscan-SE
 
 cd  ${PREFIX}/bin/tRNAscan-SE
-sed -i "/^use Getopt::Long;/c\use Getopt::Long;\\nuse lib = ${PREFIX}/lib/tRNAscan-SE;" tRNAscan-SE
+sed -i "/^use Getopt::Long;/c\use Getopt::Long;\\nuse lib ${PREFIX}/bin/tRNAscan-SE;" tRNAscan-SE
 sed -i "/^our \$bindir/c\our bindir = ${PREFIX}/bin/tRNAscan-SE;" tRNAscan-SE
-sed -i "/^our \$lib_dir/c\our lib_dir = ${PREFIX}/lib/tRNAscan-SE;" tRNAscan-SE
+sed -i "/^our \$lib_dir/c\our lib_dir = ${PREFIX}/bin/tRNAscan-SE/tRNAscanSE;" tRNAscan-SE
 
 chmod +x coves-SE 
 chmod +x covels-SE 
