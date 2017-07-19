@@ -1,0 +1,53 @@
+{% set name = 'biganalytics' %}
+{% set version = '1.1.14' %}
+
+package:
+  name: r-{{ name|lower }}
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: {{ name }}_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/{{ name }}_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+  md5: 48a16ee1d7018758ddbaebad2ed0e924
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  skip: True # [osx]
+
+requirements:
+  build:
+    - r-base ==3.3.1
+    - r-bh
+    - r-rcpp
+    - r-biglm
+    - r-bigmemory
+    - r-foreach
+    - gcc 
+
+  run:
+    - r-base 3.3.1
+    - r-bh
+    - r-rcpp
+    - r-biglm
+    - r-bigmemory
+    - r-foreach
+    - libgcc
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('biganalytics')"
+
+about:
+  home: http://www.bigmemory.org
+  license: LGPL-3 | Apache License 2.0
+  summary: Extend the 'bigmemory' package with various analytics. Functions 'bigkmeans' and 'binit'
+    may also be used with native R objects. For 'tapply'-like functions, the bigtabulate
+    package may also be helpful. For linear algebra support, see 'bigalgebra'.  For
+    mutex (locking) support for advanced shared-memory usage, see 'synchronicity'.
+  license_family: LGPL

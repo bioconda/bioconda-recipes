@@ -6,22 +6,11 @@ source:
   fn: SamSifter-1.0.0.tar.gz
   url: https://pypi.python.org/packages/source/S/SamSifter/SamSifter-1.0.0.tar.gz
   md5: 883df68d2f989c4c431ebb253ca104f7
-#  patches:
-   # List any patch files here
-   # - fix.patch
 
 build:
   skip: True # [py27]
-  # noarch_python: True
-  # preserve_egg_dir: True
+  number: 2
   entry_points:
-    # Put any entry points (scripts to be generated automatically) here. The
-    # syntax is module:function.  For example
-    #
-    # - samsifter = samsifter:main
-    #
-    # Would create an entry point called samsifter that calls samsifter.main()
-
     - compile_stats=samsifter.stats.compile_stats:main
     - count_taxon_reads=samsifter.tools.count_taxon_reads:main
     - filter_read_conservation=samsifter.tools.filter_read_conservation:main
@@ -36,10 +25,6 @@ build:
     - summarize_stats=samsifter.stats.summarize_stats:main
     - samsifter=samsifter.samsifter:main
 
-  # If this is a new build for the same version, increment the build
-  # number. If you do not include this key, it defaults to 0.
-  # number: 1
-
 requirements:
   build:
     - python
@@ -47,12 +32,21 @@ requirements:
     - matplotlib >=1.3.1
     - pandas >=0.14.1
     - numpy >=1.6.1
-
+    - pyqt 4.11.*
+    - glib
+    - xorg-libsm
+    - xorg-libxrender
   run:
     - python
     - matplotlib >=1.3.1
     - pandas >=0.14.1
     - numpy >=1.6.1
+    - pyqt 4.11.*
+    # workaround for missing dependency of pandas
+    - libgcc
+    - glib
+    - xorg-libsm
+    - xorg-libxrender
 
 test:
   # Python imports
@@ -85,18 +79,12 @@ test:
     - summarize_stats --help
     - samsifter --help
 
-  # You can also put a file called run_test.py in the recipe that will be run
-  # at test time.
-
-  # requires:
-    # Put any additional test requirements here.  For example
-    # - nose
-
 about:
   home: http://pypi.python.org/pypi/SamSifter/
   license: GNU General Public License v3 (GPLv3)
   summary: 'Workflow editor for metagenomic analysis'
 
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
+extra:
+  container:
+    # matplotlib needs opengl support
+    extended-base: true

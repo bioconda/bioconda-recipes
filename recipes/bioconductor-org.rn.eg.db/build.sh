@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # R refuses to build packages that mark themselves as

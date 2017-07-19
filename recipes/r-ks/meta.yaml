@@ -13,6 +13,7 @@ source:
 
 build:
   number: 0
+  skip: True # [osx]
   rpaths:
     - lib/R/lib/
     - lib/
@@ -27,6 +28,7 @@ requirements:
     - r-mvtnorm >=1.0_0
     - r-rgl >=0.66
     - gcc
+    - libglu # [linux]
 
   run:
     - r-base
@@ -36,10 +38,13 @@ requirements:
     - r-multicool
     - r-mvtnorm >=1.0_0
     - r-rgl >=0.66
+    - libglu # [linux]
+    - readline
 
 test:
   commands:
-    - $R -e "library('ks')"
+    # test in headless mode, because X11 is not available
+    - $R -e "options(rgl.useNULL=TRUE); library('ks')"
 
 about:
   home: http://www.mvstat.net/tduong
@@ -48,3 +53,7 @@ about:
     density derivatives, cumulative distributions, modal clustering, discriminant analysis,
     and two-sample hypothesis testing.   '
   license_family: GPL3
+
+extra:
+    container:
+        extended-base: true
