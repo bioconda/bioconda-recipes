@@ -10,7 +10,7 @@ mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/lib/tRNAscan-SE
 mkdir -p ${PREFIX}/man
 
-mv tRNAscan-SE coves-SE covels-SE eufindtRNA trnascan-1.4 *.cm -t ${PREFIX}/bin
+mv tRNAscan-SE coves-SE covels-SE eufindtRNA trnascan-1.4 -t ${PREFIX}/bin
 mv *.cm -t ${PREFIX}/lib/tRNAscan-SE
 mv tRNAscanSE ${PREFIX}/bin/.
 mv tRNAscan-SE.src ${PREFIX}/bin/.
