@@ -13,9 +13,9 @@ mv tRNAscanSE ${PREFIX}/bin/.
 mv tRNAscan-SE.src ${PREFIX}/bin/.
 
 cd  ${PREFIX}/bin
-#sed -i "/^use Getopt::Long/c\use Getopt::Long;\\nuse lib ${PREFIX}\/bin\;" tRNAscan-SE
-#sed -i "/^our \$bindir/c\our bindir = ${PREFIX}\/bin\;" tRNAscan-SE
-#sed -i "/^our \$lib_dir/c\our lib_dir = ${PREFIX}\/bin\/tRNAscanSE\;" tRNAscan-SE
+sed -i "/^use Getopt::Long/c\use Getopt::Long;\\nuse lib ${PREFIX}\/bin\;" tRNAscan-SE
+sed -i "/^our \$bindir/c\our bindir = ${PREFIX}\/bin\;" tRNAscan-SE
+sed -i "/^our \$lib_dir/c\our lib_dir = ${PREFIX}\/bin\/tRNAscanSE\;" tRNAscan-SE
 
 chmod +x coves-SE
 chmod +x covels-SE
