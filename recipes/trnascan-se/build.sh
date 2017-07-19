@@ -5,17 +5,21 @@ sed -i "/^LIBDIR/c\LIBDIR = ${PREFIX}\/lib\/tRNAscan-SE" Makefile
 sed -i "/^MANDIR/c\MANDIR = ${PREFIX}\/man" Makefile
 
 make -j 1
-#make install
 
 mkdir -p ${PREFIX}/bin
+mkdir -p ${PREFIX}/lib/tRNAscan-SE
+mkdir -p ${PREFIX}/man
+
 mv tRNAscan-SE coves-SE covels-SE eufindtRNA trnascan-1.4 *.cm -t ${PREFIX}/bin
+mv *.cm -t ${PREFIX}/lib/tRNAscan-SE
 mv tRNAscanSE ${PREFIX}/bin/.
 mv tRNAscan-SE.src ${PREFIX}/bin/.
 
 cd  ${PREFIX}/bin
-sed -i "/^use Getopt\:\:Long/c\use Getopt\:\:Long\;\\nuse lib ${PREFIX}\/bin\;" tRNAscan-SE
-sed -i "/^our \$bindir/c\our bindir = ${PREFIX}\/bin\;" tRNAscan-SE
-sed -i "/^our \$lib_dir/c\our lib_dir = ${PREFIX}\/bin\/tRNAscanSE\;" tRNAscan-SE
+export PREFIX=${PREFIX}
+perl -i~ -pe 'BEGIN{ $replace = shift } s/use Getopt::Long;/use Getopt::Long;\n$replace/g' "use lib ${PREFIX}/bin;" tRNAscan-SE
+#sed -i "/^our \$bindir/c\our bindir = ${PREFIX}\/bin\;" tRNAscan-SE
+#sed -i "/^our \$lib_dir/c\our lib_dir = ${PREFIX}\/bin\/tRNAscanSE\;" tRNAscan-SE
 
 chmod +x coves-SE
 chmod +x covels-SE
