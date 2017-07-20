@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 export C_INCLUDE_PATH=${PREFIX}/include
 
 # Remove gcc statements that do not work on older compilers for CentOS5
