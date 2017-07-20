@@ -1,5 +1,5 @@
 #!/bin/sh
 
-./configure --prefix=$PREFIX
+./configure --with-logp=table --prefix=$PREFIX
 make
 make install
