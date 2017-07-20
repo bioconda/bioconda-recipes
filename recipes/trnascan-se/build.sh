@@ -1,36 +1,26 @@
 #!/bin/bash
 
+sed -i "/^BINDIR/c\BINDIR = ${PREFIX}\/bin" Makefile
+sed -i "/^LIBDIR/c\LIBDIR = ${PREFIX}\/lib\/tRNAscan-SE" Makefile
+sed -i "/^MANDIR/c\MANDIR = ${PREFIX}\/man" Makefile
 
-BINDIR=$PREFIX/bin
-mkdir -p $BINDIR
+make -j 1
 
-LIBDIR=${PREFIX}/lib
+mkdir -p ${PREFIX}/bin
+mkdir -p ${PREFIX}/lib/tRNAscan-SE
+mkdir -p ${PREFIX}/man
 
-make all 
+mv tRNAscan-SE coves-SE covels-SE eufindtRNA* trnascan-1.4* mpcovels* -t ${PREFIX}/bin
+mv TPCsignal Dsignal *.cm gcode.* -t ${PREFIX}/lib/tRNAscan-SE
+mv tRNAscanSE ${PREFIX}/bin/.
+mv tRNAscan-SE.src ${PREFIX}/bin/.
 
-## Build Perl
+cd  ${PREFIX}/bin
+export PREFIX=${PREFIX}
+perl -i~ -pe 'BEGIN{ $replace = shift } s/use Getopt::Long;/use Getopt::Long;\n$replace/g' "use lib '${PREFIX}/bin';" tRNAscan-SE
 
-mkdir perl-build
-find . -name "*.pl" | xargs -I {} mv {} perl-build
-find . -name "*.pm" | xargs -I {} cp {} perl-build/lib
-cd perl-build
-cp ${RECIPE_DIR}/Build.PL ./
-perl ./Build.PL
-perl ./Build manifest
-perl ./Build install --installdirs site
-
-cd ..
-## End build perl
-
-mv coves-SE covels-SE eufindtRNA trnascan-1.4 $PREFIX/bin
-mv tRNAscan-SE.src $PREFIX/bin/tRNAscan-SE
-
-cd $PREFIX/bin
-chmod +x coves-SE 
-chmod +x covels-SE 
-chmod +x eufindtRNA 
+chmod +x coves-SE
+chmod +x covels-SE
+chmod +x eufindtRNA
 chmod +x trnascan-1.4
 chmod +x tRNAscan-SE
-
-
-
