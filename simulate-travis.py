@@ -3,13 +3,12 @@
 import os
 import platform
 import sys
-import ruamel_yaml as yaml
+import yaml
 import subprocess as sp
 import shlex
 import argparse
 
-import conda.fetch
-
+from urllib.request import urlretrieve, urlcleanup
 
 usage = """
 
@@ -27,24 +26,25 @@ or modify the log level:
 
     simulate-travis.py --packages mypackagename --loglevel=debug
 
-Notes
------
-
-Any environmental variables will be passed to `scripts/travis-run.sh` and will
-override any defaults detected in .travis.yml. Currently the only variables
-useful to modify are TRAVIS_OS_NAME and BIOCONDA_UTILS_TAG.  For example you
-can set TRAVIS_OS_NAME to "linux" while running on a Mac to build packages in
-a docker container:
-
-    TRAVIS_OS_NAME=linux ./simulate-travis.py
-
-Or specify a different commit of `bioconda_utils`:
-
-    BIOCONDA_UTILS_TAG=63543b34 ./simulate-travis.py
 
 """
 
 ap = argparse.ArgumentParser(usage=usage)
+ap.add_argument('--bootstrap', help='''Bootstrap a new conda installation to
+                use only for bioconda-utils at the specified path, install
+                bioconda-utils dependencies, and set channel order. Effectively
+                runs --install-alternative-conda DIR --install-requirements --
+                set-channel-order''')
+ap.add_argument('--install-alternative-conda', help='''Install a separate conda
+                environment to the specified location. This will download and
+                install Miniconda, and then create a config file in
+                ~/.config/bioconda/conf.yml that points to this installation so
+                that subsequent runs of simulate-travis.py will use that
+                installation with no additional configuration and without
+                modifying any existing conda installations.''')
+ap.add_argument('--force', action='store_true', help='''When installing conda
+                (--install-alternative-conda or --bootstrap), overwrite the
+                provided installation directory''')
 ap.add_argument('--install-requirements', action='store_true', help='''Install
                 the currently-configured version of bioconda-utils and its
                 dependencies, and then exit.''')
@@ -57,9 +57,42 @@ ap.add_argument('--config-from-github', action='store_true', help='''Download
 ap.add_argument('--disable-docker', action='store_true', help='''By default, if
                 the OS is linux then we use Docker. Use this argument to
                 disable this behavior''')
+ap.add_argument('--alternative-conda', help='''Path to alternative conda
+                installation to override that installed and configured with
+                --install-alternative-conda. If alternative conda executable is
+                located at /opt/miniconda3/bin/conda, then pass /opt/miniconda3
+                for this argument. Setting this argument will also set the
+                CONDARC env var to "condarc" in this directory; in this example
+                /opt/miniconda3/condarc.''')
 args, extra = ap.parse_known_args()
 
 HERE = os.path.abspath(os.path.dirname(__file__))
+
+
+class TmpDownload(object):
+    """
+    Context manager to download to a temp file and clean up afterwards
+    """
+    def __init__(self, url):
+        self.url = url
+
+    def __enter__(self):
+        filename, headers = urlretrieve(self.url)
+        return filename
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        urlcleanup()
+
+
+def bin_for(name='conda'):
+    """
+    If CONDA_ROOT is set, we explicitly look for a bin there rather than defer
+    to PATH. This should help keep the alternative conda installation truly
+    isolated from the rest of the system.
+    """
+    if 'CONDA_ROOT' in os.environ:
+        return os.path.join(os.environ['CONDA_ROOT'], 'bin', name)
+    return name
 
 
 def _remote_or_local(fn, branch='master', remote=False):
@@ -73,7 +106,7 @@ def _remote_or_local(fn, branch='master', remote=False):
             '{branch}/{path}'.format(branch=branch, path=fn)
         )
         print('Using config file {}'.format(url))
-        with conda.fetch.TmpDownload(url) as f:
+        with TmpDownload(url) as f:
             cfg = yaml.load(open(f))
     else:
         cfg = yaml.load(open(os.path.join(HERE, fn)))
@@ -82,6 +115,30 @@ def _remote_or_local(fn, branch='master', remote=False):
 travis_config = _remote_or_local('.travis.yml', remote=args.config_from_github)
 bioconda_utils_config = _remote_or_local('config.yml', remote=args.config_from_github)
 
+# If the local config already exists then load it
+local_config_path = os.path.expanduser(os.path.join('~/.config/bioconda/conf.yml'))
+local_config = None
+if os.path.exists(local_config_path):
+    local_config = yaml.load(open(local_config_path))
+
+
+# If this script is being called from an existing conda environment, the
+# following changes to env vars will allow subsequent calls to conda etc use an
+# alternative installation of conda.
+#
+# If --alternative-conda was provided on the command line, prefer that
+if args.alternative_conda:
+    os.environ['CONDARC'] = os.path.join(os.args.alternative_conda, 'condarc')
+    os.environ['CONDA_ROOT'] = args.alternative_conda
+    os.environ['PATH'] = os.path.join(args.alternative_conda, 'bin') + ':' + os.environ['PATH']
+
+elif local_config:
+    os.environ['CONDARC'] = local_config['CONDARC']
+    os.environ['CONDA_ROOT'] = local_config['CONDA_ROOT']
+    os.environ['PATH'] = os.path.join(local_config['CONDA_ROOT'], 'bin') + ':' + os.environ['PATH']
+
+
+# Load the env vars configured in .travis.yaml into os.environ
 env = {}
 for var in travis_config['env']['global']:
     if isinstance(var, dict) and list(var.keys()) == ['secure']:
@@ -90,7 +147,61 @@ for var in travis_config['env']['global']:
     env[name] = value
 
 
-if args.set_channel_order:
+def _install_alternative_conda(install_path, force=False):
+    """
+    Download and install minconda to `install_path`.
+    """
+    # strips quotes however they were used in yaml
+    miniconda_version = shlex.split(env['MINICONDA_VER'])[0]
+    if 'linux' in sys.platform:
+        tag = 'Linux'
+    elif sys.platform == 'darwin':
+        tag = 'MacOSX'
+    else:
+        raise ValueError("platform {0} not supported".format(sys.platform))
+    url = 'https://repo.continuum.io/miniconda/Miniconda3-{miniconda_version}-{tag}-x86_64.sh'.format(**locals())
+
+    with TmpDownload(url) as f:
+        cmds = ['bash', f, '-b', '-p', install_path]
+        if force:
+            cmds.append('-f')
+        sp.check_call(cmds)
+
+    # write the local config file
+    d = {
+        'CONDA_ROOT': install_path,
+        'CONDARC': os.path.join(install_path, '.condarc')
+    }
+    config_dir = os.path.dirname(local_config_path)
+    if not os.path.exists(config_dir):
+        os.makedirs(config_dir)
+    with open(local_config_path, 'w') as fout:
+        yaml.dump(d, fout, default_flow_style=False)
+
+    os.environ.update(d)
+    os.environ['PATH'] = os.path.join(install_path, 'bin') + ':' + os.environ['PATH']
+
+
+def _install_requirements():
+    """
+    conda install and pip install bioconda dependencies
+    """
+    sp.run(
+        [
+            bin_for('conda'), 'install', '-y', '--file',
+            'https://raw.githubusercontent.com/bioconda/bioconda-utils/'
+            '{0}/bioconda_utils/bioconda_utils-requirements.txt'.format(env['BIOCONDA_UTILS_TAG'])
+        ], check=True)
+
+    sp.run(
+        [
+            bin_for('pip'), 'install',
+            'git+https://github.com/bioconda/bioconda-utils.git@{0}'.format(env['BIOCONDA_UTILS_TAG'])
+        ],
+        check=True)
+
+
+def _set_channel_order():
     channels = bioconda_utils_config['channels']
     print("""
           Warnings like "'conda-forge' already in 'channels' list, moving to the top"
@@ -101,25 +212,27 @@ if args.set_channel_order:
     # first, but when using `conda config --add` they should be added from
     # lowest to highest priority.
     for channel in channels[::-1]:
-        sp.run(['conda', 'config', '--add', 'channels', channel], check=True)
+        sp.run([bin_for('conda'), 'config', '--add', 'channels', channel], check=True)
     print("\nconda config is now:\n")
     sp.run(['conda', 'config', '--get'])
-    sys.exit(0)
+
 
 if args.install_requirements:
-    sp.run(
-        [
-            'conda', 'install', '-y', '--file',
-            'https://raw.githubusercontent.com/bioconda/bioconda-utils/'
-            '{0}/bioconda_utils/bioconda_utils-requirements.txt'.format(env['BIOCONDA_UTILS_TAG'])
-        ], check=True)
+    _install_requirements()
+    sys.exit(0)
 
-    sp.run(
-        [
-            'pip', 'install',
-            'git+https://github.com/bioconda/bioconda-utils.git@{0}'.format(env['BIOCONDA_UTILS_TAG'])
-        ],
-        check=True)
+if args.install_alternative_conda:
+    _install_alternative_conda(args.install_alternative_conda, force=args.force)
+    sys.exit(0)
+
+if args.set_channel_order:
+    _set_channel_order()
+    sys.exit(0)
+
+if args.bootstrap:
+    _install_alternative_conda(args.bootstrap, force=args.force)
+    _set_channel_order()
+    _install_requirements()
     sys.exit(0)
 
 # Only run if we're not on travis.
