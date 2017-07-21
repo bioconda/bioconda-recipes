@@ -46,6 +46,11 @@ ENV_VAR_WHITELIST = [
     'MACOSX_DEPLOYMENT_TARGET'
 ]
 
+# Of those that make it through the whitelist, remove these specific ones
+ENV_VAR_BLACKLIST = [
+    'CONDA_PREFIX',
+]
+
 
 def get_free_space():
     """Return free space in MB on disk"""
@@ -56,6 +61,9 @@ def get_free_space():
 def allowed_env_var(s):
     for pattern in ENV_VAR_WHITELIST:
         if fnmatch.fnmatch(s, pattern):
+            for bpattern in ENV_VAR_BLACKLIST:
+                if fnmatch.fnmatch(s, bpattern):
+                    return False
             return True
 
 
