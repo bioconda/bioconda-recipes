@@ -10,10 +10,10 @@ mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/lib/tRNAscan-SE
 mkdir -p ${PREFIX}/man
 
-mv tRNAscan-SE coves-SE covels-SE eufindtRNA* trnascan-1.4* mpcovels* -t ${PREFIX}/bin
-mv TPCsignal Dsignal *.cm gcode.* -t ${PREFIX}/lib/tRNAscan-SE
-mv tRNAscanSE ${PREFIX}/bin/.
-mv tRNAscan-SE.src ${PREFIX}/bin/.
+mv -f tRNAscan-SE coves-SE covels-SE eufindtRNA* trnascan-1.4* mpcovels* -t ${PREFIX}/bin
+mv -f TPCsignal Dsignal *.cm gcode.* -t ${PREFIX}/lib/tRNAscan-SE
+mv -f tRNAscanSE ${PREFIX}/bin/.
+mv -f tRNAscan-SE.src ${PREFIX}/bin/.
 
 cd  ${PREFIX}/bin
 export PREFIX=${PREFIX}
