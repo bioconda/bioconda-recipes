@@ -33,8 +33,17 @@ test:
   imports:
     - pysamstats
   commands:
+    - python -m nose -v pysamstats
     - pysamstats --help
-    - nosetests -v
+    - pysamstats --type coverage fixture/test.bam > coverage.txt
+    - pysamstats --type coverage --output=coverage.txt fixture/test.bam
+    - pysamstats --type coverage --output=coverage.h5 --format=hdf5 fixture/test.bam
+    - pysamstats --type coverage --fields=pos,reads_all fixture/test.bam > coverage_fields.txt
+    - pysamstats --type coverage_binned --fasta=fixture/ref.fa fixture/test.bam > coverage_binned.txt
+    - pysamstats --type coverage_binned --fasta=fixture/ref.fa --output=coverage_binned.txt fixture/test.bam
+    - pysamstats --type coverage_binned --fasta=fixture/ref.fa --output=coverage_binned.h5 --format=hdf5 fixture/test.bam
+    - pysamstats --type=coverage --min-mapq=27 --min-baseq=17 --no-dup --no-del fixture/test.bam > coverage_filtered.txt
+    - pysamstats --type=coverage_binned --fasta=fixture/ref.fa --min-mapq=27 --no-dup fixture/test.bam > coverage_binned_filtered.txt
 
 about:
   home: https://github.com/alimanfoo/pysamstats
