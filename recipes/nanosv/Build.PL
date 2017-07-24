@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 use strict;
 use warnings;
 
@@ -8,15 +10,15 @@ our @files = ();
 find( \&wanted, ".");
 
 sub wanted {
-	my $file = $_;
+    my $file = $_;
 
-	return unless $file;
-	return unless -e $file;
+    return unless $file;
+    return unless -e $file;
 
-	#print "File $file\n";
-	if($file =~ m/.*\.pl$/){
-		push(@files, $file);
-	}
+    #print "File $file\n";
+    if($file =~ m/.*\.pl$/){
+        push(@files, $file);
+    }
 }
 
 foreach my $file (@files){
@@ -67,6 +69,3 @@ unless ( eval { Module::Build->VERSION(0.4004) } ) {
 my $build = Module::Build->new(%module_build_args);
 
 $build->create_build_script;
-
-
-
