@@ -16,25 +16,22 @@ This script simulates a travis-ci run on the local machine by using the current
 values in .travis.yml. It is intended to be run in the top-level directory of
 the bioconda-recipes repository.
 
-Any additional arguments to this script are interpreted as arguments to be
-passed to `bioconda-utils build`. For example, to build a single recipe (or
-glob of recipes):
+It is recommended to use the following command before building::
 
-    simulate-travis.py --packages mypackagename bioconductor-*
+    ./simulate-travis.py --bootstrap /tmp/anaconda --force
 
-or modify the log level:
-
-    simulate-travis.py --packages mypackagename --loglevel=debug
-
+This will build a new installation of conda in a temp directory, set the proper
+channel order, and install bioconda-utils and dependencies. This is exactly
+what is used on travis-ci to intialize the testing environment.
 
 """
 
 ap = argparse.ArgumentParser(usage=usage)
-ap.add_argument('--bootstrap', help='''Bootstrap a new conda installation to
-                use only for bioconda-utils at the specified path, install
-                bioconda-utils dependencies, and set channel order. Effectively
-                runs --install-alternative-conda DIR --install-requirements --
-                set-channel-order''')
+ap.add_argument('--bootstrap', help='''Bootstrap a new conda installation that
+                will be used only for bioconda-utils. At the provided path,
+                install conda, set channel order, and install bioconda-utils
+                dependencies.  Effectively runs --install-alternative-conda DIR
+                --set-channel-order --install-requirements''')
 ap.add_argument('--install-alternative-conda', help='''Install a separate conda
                 environment to the specified location. This will download and
                 install Miniconda, and then create a config file in
