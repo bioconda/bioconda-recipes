@@ -8,10 +8,15 @@ import subprocess as sp
 import shlex
 import argparse
 
-from urllib.request import urlretrieve, urlcleanup
+if sys.version_info.major == 3:
+    PY3 = True
+    from urllib.request import urlretrieve, urlcleanup
+
+else:
+    PY3 = True
+    from urllib import urlretrieve, urlcleanup
 
 usage = """
-
 This script simulates a travis-ci run on the local machine by using the current
 values in .travis.yml. It is intended to be run in the top-level directory of
 the bioconda-recipes repository.
@@ -183,19 +188,18 @@ def _install_requirements():
     """
     conda install and pip install bioconda dependencies
     """
-    sp.run(
+    sp.check_call(
         [
-            bin_for('conda'), 'install', '-y', '--file',
+            bin_for('conda'), 'install', '-n', 'root', '-y', '--file',
             'https://raw.githubusercontent.com/bioconda/bioconda-utils/'
             '{0}/bioconda_utils/bioconda_utils-requirements.txt'.format(env['BIOCONDA_UTILS_TAG'])
-        ], check=True)
+        ])
 
-    sp.run(
+    sp.check_call(
         [
             bin_for('pip'), 'install',
             'git+https://github.com/bioconda/bioconda-utils.git@{0}'.format(env['BIOCONDA_UTILS_TAG'])
-        ],
-        check=True)
+        ])
 
 
 def _set_channel_order():
@@ -209,9 +213,9 @@ def _set_channel_order():
     # first, but when using `conda config --add` they should be added from
     # lowest to highest priority.
     for channel in channels[::-1]:
-        sp.run([bin_for('conda'), 'config', '--add', 'channels', channel], check=True)
+        sp.check_call([bin_for('conda'), 'config', '--add', 'channels', channel])
     print("\nconda config is now:\n")
-    sp.run(['conda', 'config', '--get'])
+    sp.check_call(['conda', 'config', '--get'])
 
 
 if args.install_requirements:
@@ -270,6 +274,6 @@ if os.environ.get('TRAVIS', None) != 'true':
     # Override env with whatever's in the shell environment
     env.update(os.environ)
     try:
-        sp.run(['scripts/travis-run.sh'], env=env, universal_newlines=True, check=True)
+        sp.check_call(['scripts/travis-run.sh'], env=env, universal_newlines=True)
     except sp.CalledProcessError:
         sys.exit(1)
