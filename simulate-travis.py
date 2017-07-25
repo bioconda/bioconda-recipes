@@ -62,9 +62,12 @@ ap.add_argument('--install-alternative-conda', help='''Install a separate conda
                 so that subsequent runs of simulate-travis.py will use that
                 installation with no additional configuration and without
                 modifying any existing conda installations.''')
-ap.add_argument('--force', action='store_true', help='''When installing conda
-                (--install-alternative-conda or --bootstrap), overwrite the
-                provided installation directory''')
+ap.add_argument('--overwrite', action='store_true', help='''When installing conda
+                via --install-alternative-conda or --bootstrap, overwrite an
+                existing installation. NOTE: the most complete way would be to
+                manually delete the directory first, but for safety we do not
+                do that automatically. This argument just passes "-f" to the
+                miniconda installer. ''')
 ap.add_argument('--install-requirements', action='store_true', help='''Install
                 the currently-configured version of bioconda-utils and its
                 dependencies, and then exit.''')
@@ -181,7 +184,7 @@ def _install_alternative_conda(install_path, force=False):
 
     with TmpDownload(url) as f:
         cmds = ['bash', f, '-b', '-p', install_path]
-        if force:
+        if overwrite:
             cmds.append('-f')
         sp.check_call(cmds)
 
@@ -239,7 +242,7 @@ if args.install_requirements:
     sys.exit(0)
 
 if args.install_alternative_conda:
-    _install_alternative_conda(args.install_alternative_conda, force=args.force)
+    _install_alternative_conda(args.install_alternative_conda, overwrite=args.overwrite)
     sys.exit(0)
 
 if args.set_channel_order:
@@ -247,7 +250,7 @@ if args.set_channel_order:
     sys.exit(0)
 
 if args.bootstrap:
-    _install_alternative_conda(args.bootstrap, force=args.force)
+    _install_alternative_conda(args.bootstrap, overwrite=args.overwrite)
     _set_channel_order()
     _install_requirements()
     sys.exit(0)
