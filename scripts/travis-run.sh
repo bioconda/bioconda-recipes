@@ -60,9 +60,9 @@ then
             # on master, or (b) changed in this pull request compared to the target
             # branch.
             RANGE_ARG="--git-range $RANGE"
-	    if [[ $TRAVIS_PULL_REQUEST_BRANCH == "bulk" ]]
+        if [[ $TRAVIS_PULL_REQUEST_BRANCH == "bulk" ]]
             then
-	        SKIP_LINTING=true
+                SKIP_LINTING=true
             fi
         fi
     fi
