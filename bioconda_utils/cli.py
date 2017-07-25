@@ -354,24 +354,6 @@ def build(recipe_folder,
         logger.debug("Running setup: %s" % setup)
         for cmd in setup:
             utils.run(shlex.split(cmd))
-    if docker:
-        if build_script_template is not None:
-            build_script_template = open(build_script_template).read()
-        else:
-            build_script_template = docker_utils.BUILD_SCRIPT_TEMPLATE
-        if pkg_dir is None:
-            use_host_conda_bld = True
-        else:
-            use_host_conda_bld = False
-
-        docker_builder = docker_utils.RecipeBuilder(
-            build_script_template=build_script_template,
-            pkg_dir=pkg_dir,
-            use_host_conda_bld=use_host_conda_bld,
-            conda_build_version=conda_build_version,
-        )
-    else:
-        docker_builder = None
 
     # handle git range
     if git_range and not force:
@@ -391,6 +373,25 @@ def build(recipe_folder,
             )
         )
         logger.info('Recipes modified according to git: {}'.format(' '.join(packages)))
+
+    if docker:
+        if build_script_template is not None:
+            build_script_template = open(build_script_template).read()
+        else:
+            build_script_template = docker_utils.BUILD_SCRIPT_TEMPLATE
+        if pkg_dir is None:
+            use_host_conda_bld = True
+        else:
+            use_host_conda_bld = False
+
+        docker_builder = docker_utils.RecipeBuilder(
+            build_script_template=build_script_template,
+            pkg_dir=pkg_dir,
+            use_host_conda_bld=use_host_conda_bld,
+            conda_build_version=conda_build_version,
+        )
+    else:
+        docker_builder = None
 
     success = build_recipes(
         recipe_folder,
