@@ -2,13 +2,13 @@
 
 mkdir -p $PREFIX/bin
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  CPPFLAGS="-I$PREFIX/include ---stdlib=libstdc++ -prefix=$PREFIX --with-boost=$PREFIX/include"
+if [ "$build_os" == "Darwin" ]; then
+  export CPPFLAGS="-I$PREFIX/include  --prefix=$PREFIX --with-boost=$PREFIX/include --stdlib=libstdc++"
 else
-  CPPFLAGS="-I$PREFIX/include --prefix=$PREFIX --with-boost=$PREFIX/include"
+  export CPPFLAGS="-I$PREFIX/include --prefix=$PREFIX --with-boost=$PREFIX/include"
 fi
 
-./configure CPPFLAGS="${CPPFLAGS}" --enable-maxk=96
+./configure --enable-maxk=96
 make AM_CXXFLAGS=-Wall
 make install
 
