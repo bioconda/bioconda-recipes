@@ -71,8 +71,11 @@ ap.add_argument('--overwrite', action='store_true', help='''When installing cond
 ap.add_argument('--skip-linting', action='store_true', help='''Disable the
                 recipe linting that is performed by default.''')
 ap.add_argument('--install-requirements', action='store_true', help='''Install
-                the currently-configured version of bioconda-utils and its
-                dependencies, and then exit.''')
+                the version of bioconda-utils configured in .travis.yml and its
+                dependencies, and then exit. If ~/.config/bioconda/conf.yml
+                exists, then bioconda-utils and dependencies will be installed
+                in the root of the conda environment specified in that
+                file, unless overridden by --alternative-conda.''')
 ap.add_argument('--set-channel-order', action='store_true', help='''Set the
                 correct channel priorities, as specified in ./config.yml, in
                 the conda environment specified in
