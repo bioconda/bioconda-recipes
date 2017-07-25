@@ -91,6 +91,11 @@ ap.add_argument('--disable-docker', action='store_true', help='''By default, if
                 the OS is linux then we use Docker for building and independent
                 testing using mulled-build. Use this argument to disable this
                 behavior''')
+ap.add_argument('--disable-mulled', action='store_true', help='''By default, if
+                the OS is linux and --disable-docker has not been specified,
+                then we run independent mulled-build tests on
+                a successfully-built recipe. Use this argument to disable this
+                behavior''')
 ap.add_argument('--alternative-conda', help='''Path to alternative conda
                 installation to override that installed and configured with
                 --install-alternative-conda. If the conda executable you want
@@ -303,6 +308,8 @@ if os.environ.get('TRAVIS', None) != 'true':
         ('--docker' not in env['BIOCONDA_UTILS_BUILD_ARGS'])
     ):
         env['DOCKER_ARG'] = '--docker'
+        if not args.disable_mulled:
+            env['DOCKER_ARG'] += ' --mulled-test'
 
     # Override env with whatever's in the shell environment
     env.update(os.environ)
