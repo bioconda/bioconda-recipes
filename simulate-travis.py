@@ -173,7 +173,8 @@ for var in travis_config['env']['global']:
     env[name] = value
 
 
-def _install_alternative_conda(install_path, force=False):
+
+def _install_alternative_conda(install_path, overwrite=False):
     """
     Download and install minconda to `install_path`.
     """
