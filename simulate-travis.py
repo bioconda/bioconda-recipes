@@ -68,6 +68,8 @@ ap.add_argument('--overwrite', action='store_true', help='''When installing cond
                 manually delete the directory first, but for safety we do not
                 do that automatically. This argument just passes "-f" to the
                 miniconda installer. ''')
+ap.add_argument('--skip-linting', action='store_true', help='''Disable the
+                recipe linting that is performed by default.''')
 ap.add_argument('--install-requirements', action='store_true', help='''Install
                 the currently-configured version of bioconda-utils and its
                 dependencies, and then exit.''')
@@ -254,6 +256,9 @@ if args.bootstrap:
     _set_channel_order()
     _install_requirements()
     sys.exit(0)
+
+if args.skip_linting:
+    os.environ['SKIP_LINTING'] = 'true'
 
 # Only run if we're not on travis.
 if os.environ.get('TRAVIS', None) != 'true':
