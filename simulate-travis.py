@@ -223,6 +223,7 @@ def _install_requirements():
     """
     conda install and pip install bioconda dependencies
     """
+    _update_env()
     sp.check_call(
         [
             bin_for('conda'), 'install', '-n', 'root', '-y', '--file',
@@ -238,6 +239,7 @@ def _install_requirements():
 
 
 def _set_channel_order():
+    _update_env()
     channels = bioconda_utils_config['channels']
     print("""
           Warnings like "'conda-forge' already in 'channels' list, moving to the top"
@@ -276,6 +278,8 @@ if args.skip_linting:
 
 # Only run if we're not on travis.
 if os.environ.get('TRAVIS', None) != 'true':
+
+    _update_env()
 
     # SUBDAG is set by travis-ci according to the matrix in .travis.yml, so here we
     # force it to just use one. The default is to run two parallel jobs, but here
