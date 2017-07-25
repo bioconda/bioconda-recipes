@@ -188,7 +188,7 @@ def _install_alternative_conda(install_path, force=False):
     # write the local config file
     d = {
         'CONDA_ROOT': install_path,
-        'CONDARC': os.path.join(install_path, '.condarc')
+        'CONDARC': os.path.join(install_path, 'condarc')
     }
     config_dir = os.path.dirname(local_config_path)
     if not os.path.exists(config_dir):
