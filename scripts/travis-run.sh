@@ -7,6 +7,7 @@ set +u
 [[ -z $BIOCONDA_UTILS_LINT_ARGS ]] && BIOCONDA_UTILS_LINT_ARGS=""
 [[ -z $RANGE_ARG ]] && RANGE_ARG="--git-range master HEAD"
 [[ -z $DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK  ]] && DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK="false"
+[[ -z $SKIP_LINTING ]] && SKIP_LINTING=false
 set -u
 
 if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_BRANCH != "bulk" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
@@ -19,7 +20,6 @@ then
     exit 0
 fi
 
-SKIP_LINTING=false
 
 # determine recipes to build. If building locally, build anything that changed
 # since master. If on travis, only build the commit range included in the push
