@@ -3,7 +3,11 @@
 import os
 import platform
 import sys
-import yaml
+try:
+    import yaml
+except ImportError:
+    print('Please install pyyaml (try: pip install pyyaml)')
+    sys.exit(1)
 import subprocess as sp
 import shlex
 import argparse
