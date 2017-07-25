@@ -213,6 +213,7 @@ class RecipeBuilder(object):
         conda_build_version=DEFAULT_CONDA_BUILD_VERSION,
         conda_version=DEFAULT_CONDA_VERSION,
         pkg_dir=None,
+        keep_image=False,
     ):
         """
         Class to handle building a custom docker container that can be used for
@@ -281,6 +282,11 @@ class RecipeBuilder(object):
 
             In all cases, `pkg_dir` will be mounted to `container_staging` in
             the container.
+
+        keep_image : bool
+            By default, the built docker image will be removed when done,
+            freeing up storage space.  Set keep_image=True to disable this
+            behavior.
         """
         self.image = image
         self.tag = tag
@@ -290,6 +296,7 @@ class RecipeBuilder(object):
         self.dockerfile_template = dockerfile_template
         self.conda_build_version = conda_build_version
         self.conda_version = conda_version
+        self.keep_image = keep_image
 
         # To address issue #5027:
         #
@@ -354,7 +361,8 @@ class RecipeBuilder(object):
         self._build_image()
 
     def __del__(self):
-        self.cleanup()
+        if not self.keep_image:
+            self.cleanup()
 
     def _pull_image(self):
         """
