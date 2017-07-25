@@ -206,7 +206,6 @@ def _install_alternative_conda(install_path, overwrite=False):
         yaml.dump(d, fout, default_flow_style=False)
 
     os.environ.update(d)
-    os.environ['PATH'] = os.path.join(install_path, 'bin') + ':' + os.environ['PATH']
 
 
 def _install_requirements():
@@ -301,6 +300,12 @@ if os.environ.get('TRAVIS', None) != 'true':
 
     # Override env with whatever's in the shell environment
     env.update(os.environ)
+
+    # Only at the very end do we want to modify the path:
+    if 'CONDA_ROOT' in os.environ:
+        env['PATH'] = os.path.join(
+            os.environ['CONDA_ROOT'], 'bin') + ':' + env['PATH']
+
     try:
         sp.check_call(['scripts/travis-run.sh'], env=env, universal_newlines=True)
     except sp.CalledProcessError:
