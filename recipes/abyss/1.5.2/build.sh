@@ -3,12 +3,12 @@
 mkdir -p $PREFIX/bin
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  CPPFLAGS="-I$PREFIX/include --prefix=$PREFIX --with-boost=$PREFIX/include --stdlib=libstdc++"
+  CPPFLAGS="-I$PREFIX/include ---stdlib=libstdc++ -prefix=$PREFIX --with-boost=$PREFIX/include"
 else
   CPPFLAGS="-I$PREFIX/include --prefix=$PREFIX --with-boost=$PREFIX/include"
 fi
 
-./configure CPPFLAGS=${CPPFLAGS} --enable-maxk=96
+./configure CPPFLAGS="${CPPFLAGS}" --enable-maxk=96
 make AM_CXXFLAGS=-Wall
 make install
 
