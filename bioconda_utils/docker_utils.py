@@ -116,11 +116,13 @@ if [[ -e $OUTPUT ]]; then
     # conda-bld dir from the host. The arch will be either linux-64 or noarch.
     cp $OUTPUT {self.container_staging}/{arch}
 
+    conda index {self.container_staging}/{arch} > /dev/null 2>&1
+
     # Ensure permissions are correct on the host.
     HOST_USER={self.user_info[uid]}
     chown $HOST_USER:$HOST_USER {self.container_staging}/{arch}/$(basename $OUTPUT)
+    chown $HOST_USER:$HOST_USER {self.container_staging}/{arch}/{{repodata.json,repodata.json.bz2,.index.json}}
 
-    conda index {self.container_staging}/{arch} > /dev/null 2>&1
 fi
 """
 
