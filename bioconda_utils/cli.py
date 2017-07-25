@@ -2,14 +2,11 @@
 
 import sys
 import os
-import subprocess as sp
-from functools import partial
 import shlex
 import logging
 from colorlog import ColoredFormatter
 from collections import defaultdict
 
-import yaml
 import argh
 from argh import arg
 import networkx as nx
@@ -43,8 +40,6 @@ logger = logging.getLogger(__name__)
 
 
 def setup_logger(loglevel):
-    LEVEL = getattr(logging, loglevel.upper())
-    #logging.basicConfig(level=LEVEL, format='%(levelname)s:%(name)s:%(message)s')
     l = logging.getLogger('bioconda_utils')
     l.propagate = False
     l.setLevel(getattr(logging, loglevel.upper()))
@@ -61,8 +56,8 @@ def select_recipes(packages, git_range, recipe_folder, config_filename, config, 
         # Recipes with changed `meta.yaml` or `build.sh` files
         changed_recipes = [
             os.path.dirname(f) for f in modified
-            if os.path.basename(f) in ['meta.yaml', 'build.sh']
-            and os.path.exists(f)
+            if os.path.basename(f) in ['meta.yaml', 'build.sh'] and
+            os.path.exists(f)
         ]
         logger.info('Recipes to consider according to git: \n{}'.format('\n '.join(changed_recipes)))
     else:
@@ -81,7 +76,7 @@ def select_recipes(packages, git_range, recipe_folder, config_filename, config, 
             logger.debug('blacklisted: %s', recipe)
             continue
         if git_range:
-            if not recipe in changed_recipes:
+            if recipe not in changed_recipes:
                 continue
         _recipes.append(recipe)
         logger.debug(recipe)
@@ -109,12 +104,12 @@ def duplicates(
     strict_build=False,
     dryrun=False,
     remove=False,
-    url=False):
+    url=False
+):
     """
     Detect packages in bioconda that have duplicates in the other defined
     channels.
     """
-    config_filename = config
     config = utils.load_config(config)
 
     channels = config['channels']
@@ -139,9 +134,12 @@ def duplicates(
                              '--strict-build.')
         fn = '{}-{}-{}.tar.bz2'.format(*spec)
         name, version = spec[:2]
-        subcmd = ['remove', '-f',
-               '{channel}/{name}/{version}/{fn}'.format(
-               name=name, version=version, fn=fn, channel=target_channel)]
+        subcmd = [
+            'remove', '-f',
+            '{channel}/{name}/{version}/{fn}'.format(
+                name=name, version=version, fn=fn, channel=target_channel
+            )
+        ]
         if dryrun:
             print('anaconda', *subcmd)
         else:
@@ -296,7 +294,6 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
                 user, repo, pull_request, msg)
 
 
-
 @arg('recipe_folder', help='Path to top-level dir of recipes.')
 @arg('config', help='Path to yaml file specifying the configuration')
 @arg(
@@ -334,22 +331,23 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
 @arg('--keep-image', action='store_true', help='''After building recipes, the
      created Docker image is removed by default to save disk space. Use this
      argument to disable this behavior.''')
-def build(recipe_folder,
-          config,
-          packages="*",
-          git_range=None,
-          testonly=False,
-          force=False,
-          docker=None,
-          loglevel="info",
-          mulled_test=False,
-          build_script_template=None,
-          pkg_dir=None,
-          conda_build_version=docker_utils.DEFAULT_CONDA_BUILD_VERSION,
-          anaconda_upload=False,
-          mulled_upload_target=None,
-          keep_image=False,
-    ):
+def build(
+    recipe_folder,
+    config,
+    packages="*",
+    git_range=None,
+    testonly=False,
+    force=False,
+    docker=None,
+    loglevel="info",
+    mulled_test=False,
+    build_script_template=None,
+    pkg_dir=None,
+    conda_build_version=docker_utils.DEFAULT_CONDA_BUILD_VERSION,
+    anaconda_upload=False,
+    mulled_upload_target=None,
+    keep_image=False,
+):
     setup_logger(loglevel)
 
     cfg = utils.load_config(config)
@@ -371,8 +369,9 @@ def build(recipe_folder,
 
         packages = list(
             set(
-                [os.path.dirname(os.path.relpath(f, recipe_folder))
-                 for f in modified
+                [
+                    os.path.dirname(os.path.relpath(f, recipe_folder))
+                    for f in modified
                 ]
             )
         )

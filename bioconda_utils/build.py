@@ -7,7 +7,6 @@ from . import utils
 from . import docker_utils
 from . import pkg_test
 from . import upload
-from conda_build import api
 
 logger = logging.getLogger(__name__)
 
@@ -26,15 +25,16 @@ def purge():
                     utils.get_free_space())
 
 
-def build(recipe,
-          recipe_folder,
-          env,
-          testonly=False,
-          mulled_test=True,
-          force=False,
-          channels=None,
-          docker_builder=None,
-    ):
+def build(
+    recipe,
+    recipe_folder,
+    env,
+    testonly=False,
+    mulled_test=True,
+    force=False,
+    channels=None,
+    docker_builder=None,
+):
     """
     Build a single recipe for a single env
 
@@ -71,8 +71,8 @@ def build(recipe,
     # Clean provided env and exisiting os.environ to only allow whitelisted env
     # vars
     _env = {}
-    _env.update({k:str(v) for k, v in os.environ.items() if utils.allowed_env_var(k)})
-    _env.update({k:str(v) for k, v in dict(env).items() if utils.allowed_env_var(k)})
+    _env.update({k: str(v) for k, v in os.environ.items() if utils.allowed_env_var(k)})
+    _env.update({k: str(v) for k, v in dict(env).items() if utils.allowed_env_var(k)})
 
     logger.info(
         "BUILD START %s, env: %s",

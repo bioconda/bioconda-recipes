@@ -50,8 +50,6 @@ import subprocess as sp
 import tempfile
 import pwd
 import grp
-import argparse
-from io import BytesIO
 from textwrap import dedent
 import pkg_resources
 
@@ -460,7 +458,6 @@ class RecipeBuilder(object):
                 self=self, pkg=pkg, arch='noarch' if noarch else 'linux-64'))
         build_script = fout.name
         logger.debug('DOCKER: Container build script: \n%s', open(fout.name).read())
-
 
         # Build the args for env vars. Note can also write these to tempfile
         # and use --env-file arg, but using -e seems clearer in debug output.
