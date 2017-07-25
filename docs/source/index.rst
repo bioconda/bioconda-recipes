@@ -11,7 +11,7 @@ bioinformatics software. Bioconda consists of:
 
 - a `repository of recipes <https://github.com/bioconda/bioconda-recipes>`_ hosted on GitHub
 - a `build system <https://github.com/bioconda/bioconda-utils>`_ that turns these recipes into conda packages
-- a `repository of >2400 bioinformatics packages
+- a `repository of >2700 bioinformatics packages
   <https://anaconda.org/bioconda/>`_ ready to use with ``conda install``
 - Over 250 contributors that add, modify, update and maintain the recipes
 
@@ -68,8 +68,9 @@ order** so that the priority is set correctly (that is, bioconda is highest
 priority).
 
 The `conda-forge` channel contains many general-purpose packages not already
-found in the `defaults` channel. The `r` channel is only included due to backward compatibility.
-It is not mandatory, but without `r`-packages compiled against R 3.3.1 might not work.
+found in the `defaults` channel. The `r` channel is only included due to
+backward compatibility.  It is not mandatory, but without the `r` channel
+packages compiled against R 3.3.1 might not work.
 
 
 ::
@@ -128,7 +129,7 @@ Core
 
 Others
 ------
-Bioconda has over 120 contributors, see `here <https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
+Bioconda has over 250 contributors, see `here <https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
 
 ----
 
