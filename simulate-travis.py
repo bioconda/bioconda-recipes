@@ -70,6 +70,9 @@ ap.add_argument('--overwrite', action='store_true', help='''When installing cond
                 miniconda installer. ''')
 ap.add_argument('--skip-linting', action='store_true', help='''Disable the
                 recipe linting that is performed by default.''')
+ap.add_argument('--git-range', nargs='+', help='''Override the default
+                --git-range arguments to `bioconda-utils lint` and
+                `bioconda-utils build`.''')
 ap.add_argument('--install-requirements', action='store_true', help='''Install
                 the version of bioconda-utils configured in .travis.yml and its
                 dependencies, and then exit. If ~/.config/bioconda/conf.yml
@@ -172,6 +175,9 @@ for var in travis_config['env']['global']:
     name, value = var.split('=', 1)
     env[name] = value
 
+# Linting and building both pay attention to this env var.
+if args.git_range:
+    os.environ['RANGE_ARG'] = '--git-range ' + ' '.join(args.git_range)
 
 
 def _install_alternative_conda(install_path, overwrite=False):
