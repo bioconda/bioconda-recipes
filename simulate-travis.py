@@ -17,31 +17,45 @@ else:
     from urllib import urlretrieve, urlcleanup
 
 usage = """
-This script simulates a travis-ci run on the local machine by using the current
-values in .travis.yml. It is intended to be run in the top-level directory of
-the bioconda-recipes repository.
+This is the script used on travis-ci to set up the environment for testing. It
+is also used on a local machine to test recipes before submitting a pull
+request. Both Python 2 and Python 3 are supported, and the only dependency is
+PyYAML (pip install pyyaml).
 
-It is recommended to use the following command before building::
+Recommended usage is to run the following command in the top level of
+the bioconda-recipes repo before building::
 
-    ./simulate-travis.py --bootstrap /tmp/anaconda --force
+    ./simulate-travis.py --bootstrap /tmp/anaconda --overwrite
 
-This will build a new installation of conda in a temp directory, set the proper
-channel order, and install bioconda-utils and dependencies. This is exactly
-what is used on travis-ci to intialize the testing environment.
+This will:
+    - build a new installation of conda in /tmp/anaconda. This remains separate
+      from any system Python or conda installations you currently have.
+    - set the proper channel order in that installation
+    - install bioconda-utils dependencies in that installation
+    - create a file ~/.config/bioconda/conf.yml that stores the location of
+      this new installation
 
+Subsequent calls of simulate-travis.py will then use that stored
+configuration::
+
+    ./simulate-travis.py --git-range HEAD
+
+Additional arguments can be used for more fine-grained control over the
+isolated conda installation.
 """
 
 ap = argparse.ArgumentParser(usage=usage)
-ap.add_argument('--bootstrap', help='''Bootstrap a new conda installation that
-                will be used only for bioconda-utils. At the provided path,
-                install conda, set channel order, and install bioconda-utils
-                dependencies.  Effectively runs --install-alternative-conda DIR
-                --set-channel-order --install-requirements''')
+ap.add_argument('--bootstrap', help='''Bootstrap a new conda installation at
+                the provided path. Will be used only for bioconda-utils.
+                Installs conda, sets channel order, and installs bioconda-utils
+                dependencies to the new conda installation. Effectively runs
+                --install-alternative-conda DIR --set-channel-order
+                --install-requirements''')
 ap.add_argument('--install-alternative-conda', help='''Install a separate conda
-                environment to the specified location. This will download and
-                install Miniconda, and then create a config file in
-                ~/.config/bioconda/conf.yml that points to this installation so
-                that subsequent runs of simulate-travis.py will use that
+                environment to the specified location and then exit. This will
+                download and install Miniconda, and then create a config file
+                in ~/.config/bioconda/conf.yml that points to this installation
+                so that subsequent runs of simulate-travis.py will use that
                 installation with no additional configuration and without
                 modifying any existing conda installations.''')
 ap.add_argument('--force', action='store_true', help='''When installing conda
@@ -51,21 +65,24 @@ ap.add_argument('--install-requirements', action='store_true', help='''Install
                 the currently-configured version of bioconda-utils and its
                 dependencies, and then exit.''')
 ap.add_argument('--set-channel-order', action='store_true', help='''Set the
-                correct channel priorities, and then exit''')
+                correct channel priorities, as specified in ./config.yml, in
+                the conda environment specified in
+                ~/.config/bioconda/config.yml and then exit.''')
 ap.add_argument('--config-from-github', action='store_true', help='''Download
                 and use the config.yml and .travis.yml files from the master
                 branch of the github repo. Default is to use the files
                 currently on disk.''')
 ap.add_argument('--disable-docker', action='store_true', help='''By default, if
-                the OS is linux then we use Docker. Use this argument to
-                disable this behavior''')
+                the OS is linux then we use Docker for building and independent
+                testing using mulled-build. Use this argument to disable this
+                behavior''')
 ap.add_argument('--alternative-conda', help='''Path to alternative conda
                 installation to override that installed and configured with
-                --install-alternative-conda. If alternative conda executable is
-                located at /opt/miniconda3/bin/conda, then pass /opt/miniconda3
-                for this argument. Setting this argument will also set the
-                CONDARC env var to "condarc" in this directory; in this example
-                /opt/miniconda3/condarc.''')
+                --install-alternative-conda. If the conda executable you want
+                to use is located at /opt/miniconda3/bin/conda, then pass
+                /opt/miniconda3 for this argument. Setting this argument will
+                also set the CONDARC env var to "condarc" in this directory (so
+                in this example CONDARC=/opt/miniconda3/condarc).''')
 args, extra = ap.parse_known_args()
 
 HERE = os.path.abspath(os.path.dirname(__file__))
