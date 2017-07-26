@@ -252,7 +252,7 @@ def _set_channel_order():
     for channel in channels[::-1]:
         sp.check_call([bin_for('conda'), 'config', '--add', 'channels', channel])
     print("\nconda config is now:\n")
-    sp.check_call(['conda', 'config', '--get'])
+    sp.check_call([bin_for('conda'), 'config', '--get'])
 
 
 if args.install_requirements:
