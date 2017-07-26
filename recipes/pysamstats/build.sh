@@ -5,4 +5,3 @@ $PYTHON setup.py install
 # run tests here
 $PYTHON setup.py build_ext --inplace
 $PYTHON -m nose -v pysamstats
-pysamstats --help
