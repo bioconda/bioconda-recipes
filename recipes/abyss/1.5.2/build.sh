@@ -4,7 +4,7 @@ mkdir -p $PREFIX/bin
 
 if [[ $(uname) == "Darwin" ]]; then
 	echo "Configuring for OSX..."
-  	export CPPFLAGS="-I$PREFIX/include --stdlib=libstdc++"
+  	export CPPFLAGS="-I$PREFIX -I$PREFIX/include --stdlib=libstdc++"
 	export CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
 else
 	echo "Configuring for Linux..."
