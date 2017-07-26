@@ -5,6 +5,9 @@ One-time setup
 
 Git and GitHub (one-time setup)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If you are a bioconda team member (having been added by posting in issue #1),
+then you have push access to the repo. In this case you can clone the
+bioconda-recipes repo::
 
 Decide whether you'll work on a clone or a fork.
 
@@ -34,18 +37,18 @@ Clone the main repo::
 Using a fork
 ++++++++++++
 
-- Create a `fork <https://help.github.com/articles/fork-a-repo/>`_ of
-  `bioconda-recipes on GitHub <https://github.com/bioconda/bioconda-recipes>`_
-  and clone it locally::
+
+    git clone
+You can now move on to installing requirements (next section).
+
+If you do not yet have push access, then create a `fork
+<https://help.github.com/articles/fork-a-repo/>`_ of `bioconda-recipes on
+GitHub <https://github.com/bioconda/bioconda-recipes>`_ and clone it locally::
 
     git clone https://github.com/<USERNAME>/bioconda-recipes.git
 
-- Connect the fork to travis-ci, following steps 1 and 2 from the `travis-ci
-  docs
-  <https://docs.travis-ci.com/user/getting-started/#To-get-started-with-Travis-CI%3A>`_
-
-- Add the main bioconda-recipes repo as an upstream remote to more easily
-  update your branch with the upstream master branch::
+Then add the main bioconda-recipes repo as an upstream remote to more easily
+update your branch with the upstream master branch::
 
     git remote add upstream https://github.com/bioconda/bioconda-recipes.git
 

@@ -12,6 +12,11 @@ If you're using a fork (set up as :ref:`above <github-setup>`):
 .. code-block:: bash
 
     git checkout master
+
+    # if you cloned the original repo
+    git pull origin master
+
+    # if you're on a fork
     git pull upstream master
 
 If you're using a clone:
@@ -160,6 +165,8 @@ Make and push changes as needed to get the tests to pass. If it's your first
 recipe or the recipe is doing something non-standard, please
 ask `@bioconda/core` for a review. If you are a member of the bioconda team,
 feel free to merge your recipe once the tests pass.
+
+At this point, Travis-CI will test your contribution in full.
 
 Use your new recipe
 ~~~~~~~~~~~~~~~~~~~

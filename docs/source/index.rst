@@ -155,3 +155,4 @@ Contents:
     contributing
     linting
     faqs
+    changes
