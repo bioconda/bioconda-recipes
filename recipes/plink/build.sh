@@ -1,5 +1,6 @@
-cd 1.9/
+#!/bin/bash
 
+cd 1.9/
 mkdir -p ${PREFIX}/bin ${PREFIX}/share/doc
 
 for f in plink_common.h pigz.c dose2plink.c; do
