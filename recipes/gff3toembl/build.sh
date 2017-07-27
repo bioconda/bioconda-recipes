@@ -1,5 +1,7 @@
 #!/bin/bash
 
-mkdir -p "$PREFIX/home"
+mkdir -p "$PREFIX/bin/"
+
 mv * "$PREFIX/bin/"
-python setup.py install
+
+python $PREFIX/bin/setup.py install
