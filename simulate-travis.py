@@ -261,16 +261,50 @@ if args.install_requirements:
 
 if args.install_alternative_conda:
     _install_alternative_conda(args.install_alternative_conda, overwrite=args.overwrite)
+    print(
+        """
+        An alternative conda installation is now in {0}.
+
+        A config file at ~/.config/bioconda/conf.yml has been created to
+        store this information, so you can now run `./simulate-travis.py` with
+        no additional arguments to use this new conda installation.
+
+        You may want to consider running:
+
+          ./simulate-travis.py --install-requirements  --set-channel-order
+
+        to perform addtitional setup for bioconda, or
+
+          ./simulate-travis.py --bootstrap {0} --overwrite
+
+        to install and do additional setup in one step.
+        """.format(args.install_alternative_conda)
+    )
     sys.exit(0)
 
 if args.set_channel_order:
     _set_channel_order()
+    print(
+        """
+        Channel order has been set.
+        """
+    )
     sys.exit(0)
 
 if args.bootstrap:
     _install_alternative_conda(args.bootstrap, overwrite=args.overwrite)
     _set_channel_order()
     _install_requirements()
+    print(
+        """
+        An alternative conda installation is now in {0}, channels have been
+        set, and requirements for bioconda-utils have been installed there.
+
+        A config file at ~/.config/bioconda/conf.yml has been created to
+        store this information, so you can now run `./simulate-travis.py` with
+        no additional arguments to use this new conda installation.
+        """.format(args.bootstrap)
+    )
     sys.exit(0)
 
 if args.skip_linting:
@@ -318,7 +352,7 @@ if os.environ.get('TRAVIS', None) != 'true':
     # Override env with whatever's in the shell environment
     env.update(os.environ)
 
-    # Only at the very end do we want to modify the path:
+    # Only modify the path just before running travis-run.sh:
     if 'CONDA_ROOT' in os.environ:
         env['PATH'] = os.path.join(
             os.environ['CONDA_ROOT'], 'bin') + ':' + env['PATH']
