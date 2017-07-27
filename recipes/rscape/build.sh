@@ -1,3 +1,3 @@
 ./configure --prefix=$PREFIX
-make
+make V=1
 make install
