@@ -74,12 +74,13 @@ def get_image_name(path):
     return spec
 
 
-def test_package(path,
-                 name_override=None,
-                 channels=["conda-forge", "defaults"],
-                 mulled_args="",
-                 base_image=None
-    ):
+def test_package(
+    path,
+    name_override=None,
+    channels=["conda-forge", "defaults"],
+    mulled_args="",
+    base_image=None
+):
     """
     Tests a built package in a minimal docker container.
 
@@ -110,7 +111,7 @@ def test_package(path,
 
     conda_bld_dir = os.path.abspath(os.path.dirname(os.path.dirname(path)))
 
-    sp.check_call(['conda', 'index', os.path.dirname(path)])
+    sp.check_call([utils.bin_for('conda'), 'index', os.path.dirname(path)])
 
     spec = get_image_name(path)
 
@@ -120,7 +121,7 @@ def test_package(path,
     if isinstance(channels, str):
         channels = [channels]
     extra_channels.extend(channels)
-    channel_args = ['--extra-channels',','.join(extra_channels)]
+    channel_args = ['--extra-channels', ','.join(extra_channels)]
 
     tests = get_tests(path)
     logger.debug('Tests to run: %s', tests)
@@ -145,4 +146,4 @@ def test_package(path,
         with utils.Progress():
             p = utils.run(cmd, env=env, cwd=d)
 
-    return p 
+    return p

@@ -50,8 +50,6 @@ import subprocess as sp
 import tempfile
 import pwd
 import grp
-import argparse
-from io import BytesIO
 from textwrap import dedent
 import pkg_resources
 
@@ -116,11 +114,13 @@ if [[ -e $OUTPUT ]]; then
     # conda-bld dir from the host. The arch will be either linux-64 or noarch.
     cp $OUTPUT {self.container_staging}/{arch}
 
+    conda index {self.container_staging}/{arch} > /dev/null 2>&1
+
     # Ensure permissions are correct on the host.
     HOST_USER={self.user_info[uid]}
     chown $HOST_USER:$HOST_USER {self.container_staging}/{arch}/$(basename $OUTPUT)
+    chown $HOST_USER:$HOST_USER {self.container_staging}/{arch}/{{repodata.json,repodata.json.bz2,.index.json}}
 
-    conda index {self.container_staging}/{arch} > /dev/null 2>&1
 fi
 """
 
@@ -213,6 +213,7 @@ class RecipeBuilder(object):
         conda_build_version=DEFAULT_CONDA_BUILD_VERSION,
         conda_version=DEFAULT_CONDA_VERSION,
         pkg_dir=None,
+        keep_image=False,
     ):
         """
         Class to handle building a custom docker container that can be used for
@@ -281,6 +282,11 @@ class RecipeBuilder(object):
 
             In all cases, `pkg_dir` will be mounted to `container_staging` in
             the container.
+
+        keep_image : bool
+            By default, the built docker image will be removed when done,
+            freeing up storage space.  Set keep_image=True to disable this
+            behavior.
         """
         self.image = image
         self.tag = tag
@@ -290,6 +296,7 @@ class RecipeBuilder(object):
         self.dockerfile_template = dockerfile_template
         self.conda_build_version = conda_build_version
         self.conda_version = conda_version
+        self.keep_image = keep_image
 
         # To address issue #5027:
         #
@@ -354,7 +361,8 @@ class RecipeBuilder(object):
         self._build_image()
 
     def __del__(self):
-        self.cleanup()
+        if not self.keep_image:
+            self.cleanup()
 
     def _pull_image(self):
         """
@@ -450,7 +458,6 @@ class RecipeBuilder(object):
                 self=self, pkg=pkg, arch='noarch' if noarch else 'linux-64'))
         build_script = fout.name
         logger.debug('DOCKER: Container build script: \n%s', open(fout.name).read())
-
 
         # Build the args for env vars. Note can also write these to tempfile
         # and use --env-file arg, but using -e seems clearer in debug output.
