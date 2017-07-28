@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Mach-O format for custom stack size changed in Mountain Lion (10.8)
+MACOSX_DEPLOYMENT_TARGET=10.9
 BINARY=Trinity
 BINARY_HOME=$PREFIX/bin
 TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION

@@ -1,40 +1,48 @@
---- trinity-plugins/Makefile	2016-12-25 12:01:25.000000000 +0200
-+++ trinity-plugins/Makefile	2016-12-25 12:08:47.000000000 +0200
-@@ -22,26 +22,12 @@
+--- trinity-plugins/Makefile	2017-02-27 16:04:28.330363594 +0100
++++ trinity-plugins/Makefile	2017-02-27 22:28:09.040944472 +0100
+@@ -8,34 +8,15 @@
  
  
  
--trinity_essentials: jellyfish scaffold_iworm_contigs_target fastool_target parafly_target trimmomatic_target samtools
+-trinity_essentials: jellyfish seqtk_target parafly_target trimmomatic_target samtools_target
 -
 -trimmomatic_target:
 -	ln -sf ${TRIMMOMATIC_CODE} Trimmomatic
 -
 -
--samtools:
--	tar xvf samtools-0.1.19.tar.bz2
--	cd samtools-0.1.19 && $(MAKE) $(LTINFO)
--	mv samtools-0.1.19/samtools ./BIN/.
--
+-samtools_target:
+-	tar xvf samtools-1.3.1.tar.bz2
+-	cd samtools-1.3.1 && ./configure --without-curses --prefix=`pwd`
+-ifeq ($(OS),Darwin)
+-	sed -i.bak s/-rdynamic//g samtools-1.3.1/Makefile
+-endif
+-	cd samtools-1.3.1 && $(MAKE)
+-	mv samtools-1.3.1/samtools ./BIN/.
++trinity_essentials:  seqtk_target parafly_target
+ 
+ seqtk_target:
+ 	tar xvf seqtk-trinity.v0.0.2.tar.gz
+ 	cd seqtk-trinity-0.0.2 && $(MAKE)
+ 	mv seqtk-trinity-0.0.2/seqtk-trinity ./BIN/.
+ 
 -jellyfish:
 -	tar -zxvf ${JELLYFISH_CODE}.tar.gz && ln -sf ${JELLYFISH_CODE} tmp.jellyfish
 -	cd ./tmp.jellyfish/ && ./configure CC=gcc CXX=g++ --enable-static --disable-shared --prefix=`pwd` && $(MAKE) LDFLAGS="-lpthread -all-static" AM_CPPFLAGS="-Wall -Wnon-virtual-dtor -I"`pwd`"/include"
 -	mv tmp.jellyfish jellyfish
-+trinity_essentials:  scaffold_iworm_contigs_target fastool_target parafly_target
- 
- htslib_target:
- #	tar xjvf htslib-1.2.1.tar.bz2
- #	cd htslib-1.2.1 && ./configure && $(MAKE)
--	tar xvf ${HTSLIB_CODE} && cd htslib && $(MAKE)
-+	tar xvf ${HTSLIB_CODE} && sed -i 's/CPPFLAGS =/#CPPFLAGS =/' htslib/Makefile && cd htslib && $(MAKE)
- 
- scaffold_iworm_contigs_target: htslib_target
- 	cd scaffold_iworm_contigs && $(MAKE)
-@@ -52,7 +38,7 @@
- 
- 
+-
+-
  parafly_target:
 -	cd ${PARAFLY_CODE} && sh ./configure --prefix=`pwd` && $(MAKE) install
 +	cd ${PARAFLY_CODE} && sh ./configure --prefix=`pwd` CC=${PREFIX}/bin/gcc $(INCHWORM_CONFIGURE_FLAGS) CXX=${PREFIX}/bin/g++ CFLAGS="-fopenmp" CXXFLAGS="-fopenmp" && $(MAKE) install
  	ln -sf ${PARAFLY_CODE} parafly
  
  
+@@ -57,7 +38,7 @@
+ 	rm -rf ${JELLYFISH_CODE} ./jellyfish # has tar.gz
+ 	rm -rf ./seqtk-trinity-0.0.2
+ 	rm -rf ./samtools-1.3.1/
+-	cd scaffold_iworm_contigs && $(MAKE) clean
++	#cd scaffold_iworm_contigs && $(MAKE) clean
+ 	cd parafly-code && $(MAKE) clean
+ 	rm -f ./parafly # rm symlink
+ 	rm -f ./Trimmomatic # rm symlink
