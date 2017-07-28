@@ -16,16 +16,14 @@ import networkx as nx
 import requests
 from jsonschema import validate
 import datetime
-import tempfile
 from distutils.version import LooseVersion
 import time
 import threading
 
-from conda_build.exceptions import UnableToParse
 from conda_build import api
 from conda_build.metadata import MetaData
 import yaml
-from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2 import Environment, PackageLoader
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +63,12 @@ def allowed_env_var(s):
                 if fnmatch.fnmatch(s, bpattern):
                     return False
             return True
+
+
+def bin_for(name='conda'):
+    if 'CONDA_ROOT' in os.environ:
+        return os.path.join(os.environ['CONDA_ROOT'], 'bin', name)
+    return name
 
 
 def get_meta_value(meta, *keys, default=None):
@@ -608,7 +612,7 @@ def newly_unblacklisted(config_file, recipe_folder, git_range):
     current = get_blacklist(
         yaml.load(
             file_from_commit(git_range[1], config_file))['blacklists'],
-            recipe_folder)
+        recipe_folder)
     results = previous.difference(current)
     logger.info('Recipes newly unblacklisted:\n%s', '\n'.join(list(results)))
     return results
@@ -701,7 +705,8 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
                                          pkg)
                             return False
 
-        assert not pkg.endswith("_.tar.bz2"), ("rendered path {} does not "
+        assert not pkg.endswith("_.tar.bz2"), (
+            "rendered path {} does not "
             "contain a build number and recipe does not "
             "define skip for this environment. "
             "This is a conda bug.".format(pkg))
@@ -860,7 +865,7 @@ def modified_recipes(git_range, recipe_folder, config_file):
     # run the command using shell=True to get the shell to expand globs.
     shell = False
     p = run(['git', '--version'])
-    matches = re.match(r'^git version (?P<version>[\d\.]*)(?:.*)$',p.stdout)
+    matches = re.match(r'^git version (?P<version>[\d\.]*)(?:.*)$', p.stdout)
     git_version = matches.group("version")
     if git_version < LooseVersion('2'):
         logger.warn(

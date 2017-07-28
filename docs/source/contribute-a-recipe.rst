@@ -4,35 +4,60 @@ Contributing a recipe
 The following steps are done for each recipe or batch of recipes you'd like to
 contribute.
 
-Update repo and requirements
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Update repo
+~~~~~~~~~~~
 
-1. Before starting, it's best to update your fork with any changes made
-   recently to the upstream bioconda repo. Assuming you've set up your fork as
-   :ref:`above <github-setup>`:
+If you're using a fork (set up as :ref:`above <github-setup>`):
 
 .. code-block:: bash
 
     git checkout master
+
+    # if you cloned the original repo
+    git pull origin master
+
+    # if you're on a fork
     git pull upstream master
 
-2. Set up the channel order and install the versions of dependencies
-   currently used in the master branch. The channel order should generally stay
-   the same and the dependencies are not likely to change much, but this
-   ensures that the local environment most closely resembles the build
-   environment on travis-ci:
+If you're using a clone:
 
 .. code-block:: bash
 
-    ./simulate-travis.py --set-channel-order
-    ./simulate-travis.py --install-requirements
+    git checkout master
+    git pull origin master
 
+Build an isolated conda installation with dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In the top level of the bioconda-recipes repo, run:
+
+.. code-block:: bash
+
+    ./simulate-travis.py --bootstrap /tmp/miniconda --overwrite
+
+This does not need root access. It will create a conda installation in
+``/tmp/miniconda`` that is separate from any Python or conda you might already
+have on your system. It w`ill overwrite any existing installation there. It
+will set up the proper channel order and install ``bioconda-utils`` and its
+dependencies into that installation. Finally, it will write a config file at
+``~/.config/bioconda/config.yml`` to persistently store the location of this
+new installation so that subsequent calls to ``simulate-travis.py`` will use it
+with no further configuration.
+
+This operation runs relatively quickly, so you might consider running it every
+time you build and test a new recipe to ensure tests on travis-ci go as
+smoothly as possible.
+
+.. note::
+
+    If you are running into particularly difficult-to-troubleshoot issues, try
+    removing the installation directory completely and then re-installing using
+    the ``--bootstrap`` argument.
 
 Write a recipe
 ~~~~~~~~~~~~~~
 
-
-Check out a new branch in your fork (here the branch is arbitrarily named "my-recipe"):
+Check out a new branch (here the branch is arbitrarily named "my-recipe"):
 
 .. code-block:: bash
 
@@ -50,59 +75,70 @@ bioconda-specific policies.
 
 Test locally
 ~~~~~~~~~~~~
-To make sure your recipe works, there are several options. The quickest, but
-not necessarily most complete, is to run conda-build directly::
-
-    conda build <recipe-dir>
-
-.. note ::
-
-    All ``conda`` and ``simulate-travis.py`` must be run from the root
-    environment of ``conda``, not an environment within ``conda``, as they
-    import ``conda`` within Python which is only allowed in the root environment.
-
 
 To test the recipe in a way more representative of the travis-ci environment,
-use the `simulate-travis.py` script in the top-level directory of the repo.
-Currently, it is mandatory to build any recipe *before* using
-`simulate-travis.py` for the first time. `simulate-travis.py` reads the config
-files in the repo and sets things up as closely as possible to how the builds
-will be run on travis-ci. It should be run from the top-level dir of the repo.
-Any arguments are passed on to the `bioconda-utils build` command, so check
-`bioconda-utils build -h` for help and more options.
+use the ``simulate-travis.py`` script in the top-level directory of the repo.
 
-Some example commands:
-
-This tests everything, using the installed conda-build. It will check all
-recipes to see what needs to be built and so it is the most comprehensive::
-
-    ./simulate-travis.py
+``simulate-travis.py`` reads the config files in the repo and sets things up as
+closely as possible to how the builds will be run on travis-ci. It should be
+run from the top-level dir of the repo.  See ``simulate-travis.py -h`` for
+details; below are some example uses.
 
 .. note::
 
-    If you haven't installed all the dependencies already, you can install them
-    with `./simulate-travis.py --install-requirements`
+    Previously, it was mandatory to build any recipe *before* using
+    `simulate-travis.py` for the first time. Recent changes should have fixed
+    this, but if you see errors related to a directory not being found in the
+    docker container, try building any recipe locally with conda-build. If you used
+    using the ``--bootstrap`` method described above, make sure you call
+    conda-build from that path explicitly, e.g.::
 
-Same thing but using `--docker`. If you're on OSX and have docker installed
-(and running!), you can use this to test the recipe under Linux::
+        /tmp/miniconda/bin/conda-build recipes/snakemake
 
-    ./simulate-travis.py --docker
 
-Use the `--quick` option which will just check recipes that have changed since
-the last commit to master branch or that have been newly removed from any
-configured blacklists. This can help speed up the recipe filter stage which can
-take 5 mins to thoroughly check 1500+ recipes. Note that this will not find
-cases where a pinned version (e.g., `{ CONDA_BOOST }`) has been changed::
+Example commands
+++++++++++++++++
+The following commands assume you have run ``./simulate-travis.py --bootstrap
+/tmp/miniconda``.
 
-    ./simulate-travis.py --docker --quick
+Recommended usage: build and test recipes with commits that have changed since
+the master branch in a Docker container, and then run independent tests with
+``mulled-build``.  This most closely replicates the work performed on
+travis-ci::
+
+    ./simulate-travis.py
+
+Same as above, but also test recipes that have changes not yet committed to git::
+
+    ./simulate-travis.py --git-range HEAD
+
+Same as above, but disable the use of Docker when building packages and disable
+the stringent ``mulled-build`` tests. Therefore even if this command passes it
+still might fail on travis-ci, but it is useful for cases where Docker is
+unavailable::
+
+    ./simulate-travis.py --git-range HEAD --disable-docker
+
+By default, packages whose version and build number match an existing package
+in the bioconda channel will not be built.
 
 To specify exactly which packages you want to try building, use the
 `--packages` argument. Note that the arguments to `--packages` can be globs and
 are of package *names* rather than *paths* to recipe directories. For example,
 to consider all R and Bioconductor packages::
 
-    ./simulate-travis.py --docker --package r-* bioconductor-*
+    ./simulate-travis.py --packages r-* bioconductor-*
 
+However if those packages already exist in the bioconda channel, they will not
+be built. To force a package::
+
+    ./simulate-travis.py --packages snakemake --force
+
+To force **all** packages (warning, this will *rebuild all packages* and will
+consume lots of resources::
+
+    # You probably don't want to run this.
+    # ./simulate-travis.py --force
 
 .. seealso::
 
@@ -111,51 +147,37 @@ to consider all R and Bioconductor packages::
 
 Push changes, wait for tests to pass, submit pull request
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Before pushing your changes to your fork on github, it's best to merge any
-changes that have happened recently on the upstream master branch. See
-`sycncing a fork <https://help.github.com/articles/syncing-a-fork/>`_ for
-details, or:
-
-.. code-block:: bash
-
-    git fetch upstream
-
-    # syncs the fork's master branch with upstream
-    git checkout master
-    git merge upstream/master
-
-    # merges those changes into the recipe's branch
-    git checkout my-recipe
-    git merge master
-
-
-Push your changes to your fork on github::
+Push your changes to your fork or to the main repo (if using a clone) to GitHub::
 
     git push origin my-recipe
 
+If using a fork, watch the Travis-CI logs by going to travis-ci.org and finding
+your fork of bioconda-recipes. Keep making changes on your fork and pushing
+them until the travis-ci builds pass. When they pass, create a `pull request
+<https://help.github.com/articles/about-pull-requests/>`_ on the main bioconda
+repo for your changes.
 
-and watch the Travis-CI logs by going to travis-ci.org and finding your fork of
-bioconda-recipes. Keep making changes on your fork and pushing them until the
-travis-ci builds pass.
+If using a clone, you will have to open a pull request to get the tests to run.
+The travis-ci tests intentionally short-circuit when not on a pull request to
+save on resources.
 
-Open a `pull request <https://help.github.com/articles/about-pull-requests/>`_
-on the bioconda-recipes repo. If it's your first recipe or the recipe is doing
-something non-standard, please ask `@bioconda/core` for a review.
+Make and push changes as needed to get the tests to pass. If it's your first
+recipe or the recipe is doing something non-standard, please
+ask `@bioconda/core` for a review. If you are a member of the bioconda team,
+feel free to merge your recipe once the tests pass.
+
+At this point, Travis-CI will test your contribution in full.
 
 Use your new recipe
 ~~~~~~~~~~~~~~~~~~~
-
 When the PR is merged with the master branch, travis-ci will again do the
-builds but at the end will upload the packages to anaconda.org. Once the merge
-build completes, your new package is installable by anyone using::
+builds but at the end will upload the packages to anaconda.org. Once this
+completes, and as long as the channels are set up as described in
+:ref:`set-up-channels`, your new package is installable by anyone using::
 
-    conda install my-package-name -c bioconda
+    conda install -c conda-forge -c bioconda my-package-name
 
-You should recommend to your users that they set up the same channel order as
-used by bioconda to ensure that all dependencies are correctly met, by doing
-the following::
-
-    conda config --add channels defaults
-    conda config --add channels conda-forge
-    conda config --add channels bioconda
+It is recommended that users set up channels as described in
+:ref:`set-up-channels` to ensure that packages and dependencies are handled
+correctly, and that they create an isolated environment when installing using
+``conda create -n env-name-here``.
