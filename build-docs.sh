@@ -52,14 +52,6 @@ BUILD_DOCS_FROM_BRANCH="master"
 # ----------------------------------------------------------------------------
 
 # Stop early (and descriptively)
-if [[ $TRAVIS_BRANCH != $BUILD_DOCS_FROM_BRANCH ]]; then
-    echo "Not building docs because not on branch '$BUILD_DOCS_FROM_BRANCH'"
-    exit 0
-fi
-if [[ $TRAVIS_PULL_REQUEST != "false" ]]; then
-    echo "This is a pull request, so not building docs"
-    exit 0
-fi
 if [[ $TRAVIS_OS_NAME != "linux" ]]; then
     echo "OS is not Linux, so not building docs"
     exit 0
@@ -98,6 +90,15 @@ git add .nojekyll
 # committing with no changes results in exit 1, so check for that case first.
 if git diff --quiet; then
     echo "No changes to push -- exiting cleanly"
+    exit 0
+fi
+
+if [[ $TRAVIS_BRANCH != $BUILD_DOCS_FROM_BRANCH ]]; then
+    echo "Not pushing docs because not on branch '$BUILD_DOCS_FROM_BRANCH'"
+    exit 0
+fi
+if [[ $TRAVIS_PULL_REQUEST != "false" ]]; then
+    echo "This is a pull request, so not pushing docs"
     exit 0
 fi
 
