@@ -6,9 +6,15 @@ set +u
 [[ -z $BIOCONDA_UTILS_TEST_TYPE ]] && BIOCONDA_UTILS_TEST_TYPE="all"
 set -u
 
-if [ $BIOCONDA_UTILS_TEST_TYPE == 'pytest' ] || [ $BIOCONDA_UTILS_TEST_TYPE == 'all' ]; then
+if [ $BIOCONDA_UTILS_TEST_TYPE == 'pytest_docker' ] || [ $BIOCONDA_UTILS_TEST_TYPE == 'all' ]; then
 
-  py.test test/ -v
+  py.test test/ -v -k "docker"
+
+fi
+
+if [ $BIOCONDA_UTILS_TEST_TYPE == 'pytest_not_docker' ] || [ $BIOCONDA_UTILS_TEST_TYPE == 'all' ]; then
+
+  py.test test/ -v -k "not docker"
 
 fi
 
