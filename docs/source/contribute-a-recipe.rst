@@ -4,19 +4,14 @@ Contributing a recipe
 The following steps are done for each recipe or batch of recipes you'd like to
 contribute.
 
-Update repo
-~~~~~~~~~~~
+1. Update repo
+~~~~~~~~~~~~~~
 
 If you're using a fork (set up as :ref:`above <github-setup>`):
 
 .. code-block:: bash
 
     git checkout master
-
-    # if you cloned the original repo
-    git pull origin master
-
-    # if you're on a fork
     git pull upstream master
 
 If you're using a clone:
@@ -26,8 +21,8 @@ If you're using a clone:
     git checkout master
     git pull origin master
 
-Build an isolated conda installation with dependencies
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2. Build an isolated conda installation with dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In the top level of the bioconda-recipes repo, run:
 
@@ -35,27 +30,30 @@ In the top level of the bioconda-recipes repo, run:
 
     ./simulate-travis.py --bootstrap /tmp/miniconda --overwrite
 
-This does not need root access. It will create a conda installation in
-``/tmp/miniconda`` that is separate from any Python or conda you might already
-have on your system. It w`ill overwrite any existing installation there. It
-will set up the proper channel order and install ``bioconda-utils`` and its
-dependencies into that installation. Finally, it will write a config file at
-``~/.config/bioconda/config.yml`` to persistently store the location of this
-new installation so that subsequent calls to ``simulate-travis.py`` will use it
-with no further configuration.
+This will:
 
-This operation runs relatively quickly, so you might consider running it every
-time you build and test a new recipe to ensure tests on travis-ci go as
-smoothly as possible.
+- create a conda installation in ``/tmp/miniconda`` that is separate from any
+  Python or conda you might already have on your system. No root privileges are
+  needed.
+- set up the proper channel order
+- install ``bioconda-utils`` and its dependencies into that installation
+- write a config file at ``~/.config/bioconda/config.yml`` to persistently
+  store the location of this new installation so that subsequent calls to
+  ``simulate-travis.py`` will use it with no further configuration.
+
 
 .. note::
+
+    This operation runs relatively quickly, so you might consider running it every
+    time you build and test a new recipe to ensure tests on travis-ci go as
+    smoothly as possible.
 
     If you are running into particularly difficult-to-troubleshoot issues, try
     removing the installation directory completely and then re-installing using
     the ``--bootstrap`` argument.
 
-Write a recipe
-~~~~~~~~~~~~~~
+3. Write a recipe
+~~~~~~~~~~~~~~~~~
 
 Check out a new branch (here the branch is arbitrarily named "my-recipe"):
 
@@ -73,8 +71,8 @@ bioconda-specific policies.
 
 .. _test-locally:
 
-Test locally
-~~~~~~~~~~~~
+4. Test locally
+~~~~~~~~~~~~~~~
 
 To test the recipe in a way more representative of the travis-ci environment,
 use the ``simulate-travis.py`` script in the top-level directory of the repo.
@@ -145,8 +143,8 @@ consume lots of resources::
     See :ref:`reading-logs` for tips on finding the information you need from
     log files.
 
-Push changes, wait for tests to pass, submit pull request
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+5. Push changes, wait for tests to pass, submit pull request
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Push your changes to your fork or to the main repo (if using a clone) to GitHub::
 
     git push origin my-recipe
@@ -168,14 +166,14 @@ feel free to merge your recipe once the tests pass.
 
 At this point, Travis-CI will test your contribution in full.
 
-Use your new recipe
-~~~~~~~~~~~~~~~~~~~
+6. Use your new recipe
+~~~~~~~~~~~~~~~~~~~~~~
 When the PR is merged with the master branch, travis-ci will again do the
 builds but at the end will upload the packages to anaconda.org. Once this
 completes, and as long as the channels are set up as described in
 :ref:`set-up-channels`, your new package is installable by anyone using::
 
-    conda install -c conda-forge -c bioconda my-package-name
+    conda install my-package-name
 
 It is recommended that users set up channels as described in
 :ref:`set-up-channels` to ensure that packages and dependencies are handled

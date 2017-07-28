@@ -34,16 +34,16 @@ Clone the main repo::
 
     git clone https://github.com/bioconda/bioconda-recipes.git
 
+
+You can now move on to installing requirements (next section).
+
 Using a fork
 ++++++++++++
 
-
-    git clone
-You can now move on to installing requirements (next section).
-
 If you do not yet have push access, then create a `fork
 <https://help.github.com/articles/fork-a-repo/>`_ of `bioconda-recipes on
-GitHub <https://github.com/bioconda/bioconda-recipes>`_ and clone it locally::
+GitHub <https://github.com/bioconda/bioconda-recipes>`_. Then clone it
+locally::
 
     git clone https://github.com/<USERNAME>/bioconda-recipes.git
 
