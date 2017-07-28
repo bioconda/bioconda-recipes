@@ -52,14 +52,14 @@ BUILD_DOCS_FROM_BRANCH="master"
 # ----------------------------------------------------------------------------
 
 # Stop early (and descriptively)
-if [[ $TRAVIS_BRANCH != $BUILD_DOCS_FROM_BRANCH ]]; then
-    echo "Not building docs because not on branch '$BUILD_DOCS_FROM_BRANCH'"
-    exit 0
-fi
-if [[ $TRAVIS_PULL_REQUEST != "false" ]]; then
-    echo "This is a pull request, so not building docs"
-    exit 0
-fi
+# if [[ $TRAVIS_BRANCH != $BUILD_DOCS_FROM_BRANCH ]]; then
+#     echo "Not building docs because not on branch '$BUILD_DOCS_FROM_BRANCH'"
+#     exit 0
+# fi
+# if [[ $TRAVIS_PULL_REQUEST != "false" ]]; then
+#     echo "This is a pull request, so not building docs"
+#     exit 0
+# fi
 if [[ $TRAVIS_OS_NAME != "linux" ]]; then
     echo "OS is not Linux, so not building docs"
     exit 0
