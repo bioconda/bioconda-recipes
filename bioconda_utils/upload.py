@@ -4,6 +4,7 @@ import logging
 from . import utils
 logger = logging.getLogger(__name__)
 
+
 def anaconda_upload(package, token=None, label=None):
     """
     Upload a package to anaconda.

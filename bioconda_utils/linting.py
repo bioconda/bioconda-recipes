@@ -92,7 +92,6 @@ def get_meta(recipe, config):
         Config YAML or dict
     """
     cfg = utils.load_config(config)
-    env_matrix = cfg['env_matrix']
 
     # TODO: Currently just uses the first env. Should turn this into
     # a generator.
