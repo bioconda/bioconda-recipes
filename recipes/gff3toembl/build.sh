@@ -32,14 +32,8 @@ download () {
 
 download $GENOMETOOLS_DOWNLOAD_URL "genometools-${GENOMETOOLS_VERSION}.tgz"
 
-# Update dependencies
-if [ "$TRAVIS" = 'true' ]; then
-  echo "Using Travis's apt plugin"
-else
-  sudo apt-get update -q
-  sudo apt-get install -y -q g++ \
-  		             python-dev
-fi
+
+
 
 # Build all the things
 cd $build_dir
@@ -93,11 +87,5 @@ cd $start_dir
 
 set +x
 set +e
-
-
-
-
-
-
 
 $PYTHON setup.py install
