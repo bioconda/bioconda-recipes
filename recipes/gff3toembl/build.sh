@@ -17,20 +17,7 @@ fi
 cd build
 build_dir=$(pwd)
 
-# DOWNLOAD ALL THE THINGS
-download () {
-  url=$1
-  download_location=$2
-
-  if [ -e $download_location ]; then
-    echo "Skipping download of $url, $download_location already exists"
-  else
-    echo "Downloading $url to $download_location"
-    wget $url -O $download_location
-  fi
-}
-
-download $GENOMETOOLS_DOWNLOAD_URL "genometools-${GENOMETOOLS_VERSION}.tgz"
+wget $GENOMETOOLS_DOWNLOAD_URL -O "genometools-${GENOMETOOLS_VERSION}.tgz"
 
 
 
