@@ -15,7 +15,7 @@ if [[ -z "${OSX_ARCH}" ]]; then
 fi
 
 ZLIB="-L${PREFIX}/lib -lz"
-export LDFLAGS="-L${PREFIX}/lib -Wl,-rpath,\$ORIGIN/../lib"
+export LDFLAGS="-L${PREFIX}/lib"
 
 # Build using Makefile.std as recommended in the README
 ## NO OSX ARCH
