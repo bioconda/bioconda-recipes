@@ -77,7 +77,7 @@ def jvm_opts(argv):
 def main():
     java = java_executable()
     """
-    PeptideShaker updates files relative to the path of the jar file.
+    updates files relative to the path of the jar file.
     In a multiuser setting, the option --exec_dir="exec_dir"
     can be used as the location for the peptide-shaker distribution.
     If the exec_dir dies not exist,
