@@ -1,6 +1,10 @@
 #!/bin/bash
 
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt 
+# R refuses to build packages that mark themselves as Priority: Recommended
+mv DESCRIPTION DESCRIPTION.old
+grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
+
+$R CMD INSTALL --build .
 
 # Add more build steps here, if they are necessary.
 
