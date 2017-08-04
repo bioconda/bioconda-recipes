@@ -7,6 +7,20 @@
 
 #make -n > log.txt 
 #grep "lsupc++" log.txt
+
+#sed -i.bak 's/^\#include "md5.h"/#include <openssl\/md5.h>/' src/core/md5_fingerprint.c
+
+#sed -i.bak 's/^\#include "md5.h"/#include <openssl\/md5.h>/' src/extended/md5set.c
+
+#sed -i.bak 's/\(^\#include "extended\/reverse_api.h"\)/\1\nvoid md5 (const char *message, long len, char *output);/' src/extended/md5set.c
+
+#sed -i.bak 's/\(^struct GtR {\)/int luaopen_md5_core (lua_State *L);\n\1/' src/gtr.c
+
+
+
+
+
+
 make
 export prefix=$PREFIX
 make install 
