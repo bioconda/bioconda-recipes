@@ -1,9 +1,9 @@
 #!/bin/bash
 
 
-make cairo=no
+make 
 export prefix=$PREFIX
-make cairo=no install 
+make install 
 
 cd gtpython
 $PYTHON setup.py install
