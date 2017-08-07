@@ -11,14 +11,15 @@ except ImportError:
 import subprocess as sp
 import shlex
 import argparse
+import tempfile
 
 if sys.version_info.major == 3:
     PY3 = True
-    from urllib.request import urlretrieve, urlcleanup
+    from urllib.request import urlretrieve
 
 else:
     PY3 = True
-    from urllib import urlretrieve, urlcleanup
+    from urllib import urlretrieve
 
 usage = """
 This is the script used on travis-ci to set up the environment for testing. It
@@ -116,11 +117,12 @@ class TmpDownload(object):
         self.url = url
 
     def __enter__(self):
-        filename, headers = urlretrieve(self.url)
+        self.filename = tempfile.NamedTemporaryFile(prefix='Miniconda_', suffix='.sh').name
+        filename, headers = urlretrieve(self.url, filename=self.filename)
         return filename
 
     def __exit__(self, exc_type, exc_value, traceback):
-        urlcleanup()
+        os.unlink(self.filename)
 
 
 def bin_for(name='conda'):
