@@ -4,8 +4,14 @@
 
 package:
   name: {{ name|lower}}
-  version: {{ version }}
+  version: {{ version|replace('-','') }}
+
+source:
   url: https://github.com/HRGV/{{ name }}/archive/v{{ version }}.tar.gz
+  fn: v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - real_bin.patch
 
 build:
   number: 0
@@ -29,10 +35,9 @@ requirements:
 
 test:
   commands:
-    - phyloFlash.pl -check_env
-    - phyloFlash.pl --help
+    - phyloFlash.pl -check_env 2>&1 | grep "Please provide a path using -dbhome"
     - phyloFlash_makedb.pl --help
-    - phyloFlash_heatmap.R --help
+    - phyloFlash_heatmap.R --help | grep "Generates a heatmap plot"
 
 about:
   home: https://github.com/HRGV/phyloFlash
