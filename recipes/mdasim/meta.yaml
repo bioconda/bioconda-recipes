@@ -1,0 +1,37 @@
+{% set name = "mdasim" %}
+{% set version = "1.2" %}
+
+package:
+    name: {{ name|lower }}
+    version: {{ version }}
+
+source:
+    url: https://sourceforge.net/projects/mdasim/files/{{name}}{{version}}.tar.gz
+    md5: 9bfc68508863082b02714bf9d59f6245
+    patches:
+        - bugfix-and-openmpi.patch
+
+build:
+    script: make clean && make
+    number: 0
+
+requirements:
+    build:
+        - gcc # [not osx]
+        - llvm # [osx]
+        - openmpi >= 2.1.1
+    run:
+        - libgcc # [not osx]
+
+test:
+    source_files:
+        - examples/Staphylococcus_aureus_USA300_FPR3757.fa
+    commands:
+        - mdasim --help 
+        - mdasim -I=examples/Staphylococcus_aureus_USA300_FPR3757.fa -C=2 >/dev/null
+
+about:
+    home: https://sourceforge.net/projects/mdasim/
+    license: GPL-3
+    license_file: LICENSE.txt
+    summary: 'Tagliavi Z, Draghici S. MDAsim: A multiple displacement amplification simulator. 2012 IEEE International Conference on Bioinformatics and Biomedicine (BIBM). 2012. pp. 1–4. doi:10.1109/BIBM.2012.6392622'
