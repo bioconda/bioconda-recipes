@@ -70,9 +70,10 @@ def build(
 
     # Clean provided env and exisiting os.environ to only allow whitelisted env
     # vars
+    _docker = docker_builder is not None
     _env = {}
-    _env.update({k: str(v) for k, v in os.environ.items() if utils.allowed_env_var(k)})
-    _env.update({k: str(v) for k, v in dict(env).items() if utils.allowed_env_var(k)})
+    _env.update({k: str(v) for k, v in os.environ.items() if utils.allowed_env_var(k, _docker)})
+    _env.update({k: str(v) for k, v in dict(env).items() if utils.allowed_env_var(k, _docker)})
 
     logger.info(
         "BUILD START %s, env: %s",

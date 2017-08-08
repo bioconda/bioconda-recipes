@@ -49,6 +49,11 @@ ENV_VAR_BLACKLIST = [
     'CONDA_PREFIX',
 ]
 
+# Of those, also remove these when we're running in a docker container
+ENV_VAR_DOCKER_BLACKLIST = [
+    'PATH',
+]
+
 
 def get_free_space():
     """Return free space in MB on disk"""
@@ -56,12 +61,16 @@ def get_free_space():
     return s.f_frsize * s.f_bavail / (1024 ** 2)
 
 
-def allowed_env_var(s):
+def allowed_env_var(s, docker=False):
     for pattern in ENV_VAR_WHITELIST:
         if fnmatch.fnmatch(s, pattern):
             for bpattern in ENV_VAR_BLACKLIST:
                 if fnmatch.fnmatch(s, bpattern):
                     return False
+            if docker:
+                for dpattern in ENV_VAR_DOCKER_BLACKLIST:
+                    if fnmatch.fnmatch(s, dpattern):
+                        return False
             return True
 
 
