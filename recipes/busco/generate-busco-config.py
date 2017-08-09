@@ -4,8 +4,18 @@ import os
 import sys
 import argparse
 
-if sys.argv[1].lower() in ['-h', '--help', 'help']:
-    print('usage: %s > path-to-new-config-file.ini' % sys.argv[0])
+if (len(sys.argv) > 1) and sys.argv[1].lower() in ['-h', '--help', 'help']:
+    print(
+        '''
+        usage: %s > path-to-new-config-file.ini
+
+        BUSCO requires a config file with absolute paths to external
+        dependencies. When using this conda package, those dependencies are
+        installed in the same environment as BUSCO itself. This script replaces
+        the paths in the default BUSCO config file with the correct paths to
+        this conda environment's bin dir.
+        ''' % sys.argv[0]
+    )
 
 # directory where symlink lives
 bindir = os.path.dirname(os.path.abspath(__file__))
