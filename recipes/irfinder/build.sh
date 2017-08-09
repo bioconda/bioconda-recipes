@@ -1,10 +1,8 @@
 #!/bin/sh
 
-cd $SRC_DIR/src/irfinder && make && mv irfinder $SRC_DIR/bin
-cd $SRC_DIR/src/trim && make && mv trim $SRC_DIR/bin
-cd $SRC_DIR/src/winflat && make && mv winflat $SRC_DIR/bin
-
-cd $PREFIX
+cd $SRC_DIR/src/irfinder && make && mv irfinder $SRC_DIR/bin/util
+cd $SRC_DIR/src/trim && make && mv trim $SRC_DIR/bin/util
+cd $SRC_DIR/src/winflat && make && mv winflat $SRC_DIR/bin/util
 
 irfinder_home=$PREFIX/opt/irfinder-$PKG_VERSION
 mkdir -p $irfinder_home
