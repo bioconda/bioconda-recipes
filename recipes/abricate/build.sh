@@ -6,8 +6,7 @@ export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
 set -e
-
-perl ./bin/abricate --setupdb
+./bin/abricate --setupdb
 
 mkdir -p $PREFIX/bin
 cp -r * $PREFIX
