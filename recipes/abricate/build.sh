@@ -7,7 +7,7 @@ export CPATH=${PREFIX}/include
 
 set -e
 
-./bin/abricate --setupdb
+perl ./bin/abricate --setupdb
 
 mkdir -p $PREFIX/bin
 cp -r * $PREFIX
