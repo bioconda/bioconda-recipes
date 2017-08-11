@@ -11,3 +11,7 @@ make -j 2 prefix=${PREFIX} MARCH=core2 sysconfigdir=${PREFIX}/etc NO_GIT=1 \
  USE_SYSTEM_FFTW=1 USE_SYSTEM_GMP=1 USE_SYSTEM_LAPACK=1 LIBBLAS=-lopenblas \
  LIBBLASNAME=libopenblas.so LIBLAPACK=-lopenblas LIBLAPACKNAME=libopenblas.so \
  install
+
+mv --verbose "$PREFIX/bin/julia" "$PREFIX/bin/julia_"
+cp --verbose "$RECIPE_DIR/julia-wrapper.sh" "$PREFIX/bin/julia"
+chmod +x "$PREFIX/bin/julia"
