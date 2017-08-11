@@ -3,7 +3,6 @@
 snmf=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
 mkdir -p $snmf
 cp -r ./* $snmf/
-dpkg -i $snmf/libswitch-perl_2.17-2_all.deb
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $snmf/Snmf.pl
 rm -f $snmf/Snmf.bak
 chmod +x $snmf/snmf.sh
