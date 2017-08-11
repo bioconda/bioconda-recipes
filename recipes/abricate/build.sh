@@ -8,4 +8,4 @@ export CPATH=${PREFIX}/include
 mkdir -p $PREFIX/bin
 cp -r * $PREFIX
 
-$PREFIX/abricate --setupdb
+$PREFIX/bin/abricate --setupdb
