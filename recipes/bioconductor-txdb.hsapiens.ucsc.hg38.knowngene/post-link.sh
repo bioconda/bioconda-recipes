@@ -10,7 +10,7 @@ MD5="1d5e07631ea58e96b11905d39e76ca6e"
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
 # manner.
-STAGING=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG-BUILDNUM
+STAGING=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $STAGING
 TARBALL=$STAGING/$FN
 
