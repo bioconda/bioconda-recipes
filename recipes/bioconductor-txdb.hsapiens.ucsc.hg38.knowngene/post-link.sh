@@ -14,13 +14,21 @@ STAGING=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $STAGING
 TARBALL=$STAGING/$FN
 
+
 SUCCESS=0
 for URL in ${URLS[@]}; do
   wget -O- -q $URL > $TARBALL
-  if [[ $? == 0 ]]; then
+  [[ $? == 0 ]] || continue
+  if [[ $(uname -s) == "Linux" ]]; then
     if [[ $(md5sum -c <<<"$MD5  $TARBALL") ]]; then
       SUCCESS=1
       break
+    fi
+    else if [[ $(uname -s) == "Darwin" ]]; then
+      if [[ $(md5 $TARBALL) == "$MD5" ]]; then
+        SUCCESS=1
+        break
+      fi
     fi
   fi
 done
