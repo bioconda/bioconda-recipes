@@ -25,7 +25,7 @@ for URL in ${URLS[@]}; do
       break
     fi
   else if [[ $(uname -s) == "Darwin" ]]; then
-    if [[ $(md5 $TARBALL) == "$MD5" ]]; then
+    if [[ $(md5 $TARBALL | cut -f4 -d " ") == "$MD5" ]]; then
       SUCCESS=1
       break
     fi
