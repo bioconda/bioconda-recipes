@@ -24,13 +24,13 @@ for URL in ${URLS[@]}; do
       SUCCESS=1
       break
     fi
-    else if [[ $(uname -s) == "Darwin" ]]; then
-      if [[ $(md5 $TARBALL) == "$MD5" ]]; then
-        SUCCESS=1
-        break
-      fi
+  else if [[ $(uname -s) == "Darwin" ]]; then
+    if [[ $(md5 $TARBALL) == "$MD5" ]]; then
+      SUCCESS=1
+      break
     fi
   fi
+fi
 done
 
 if [[ $SUCCESS != 1 ]]; then
