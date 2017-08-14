@@ -4,11 +4,11 @@ snmf=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
 mkdir -p $snmf
 mkdir -p $PREFIX/bin
 cp -r ./* $PREFIX/bin
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $snmf/Snmf.pl
-rm -f $PREFIX/Snmf.bak
-chmod +x $PREFIX/snmf.sh
-chmod +x $PREFIX/plink
-chmod +x $PREFIX/install.command
-make $PREFIX/install.command
-chmod 777 $PREFIX/Snmf.pl
-mkdir -p $PREFIX/opt/var
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PPREFIX/bin/nmf.pl
+rm -f $PREFIX/bin/Snmf.bak
+chmod +x $PREFIX/bin/snmf.sh
+chmod +x $PREFIX/bin/plink
+chmod +x $PREFIX/bin/install.command
+make $PREFIX/bin/install.command
+chmod 777 $PREFIX/bin/Snmf.pl
+mkdir -p $PREFIX/bin/opt/var
