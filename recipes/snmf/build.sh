@@ -2,8 +2,7 @@
 snmf=$PREFIX/opt/snmf/
 mkdir -p $snmf
 mkdir -p $PREFIX/bin/
-cp -rf temp/*  $snmf/
-rm -rf temp/
+cp -rf ./*  $snmf/
 cp $snmf/sNMF_CL_v1.2.zip .
 unzip *.zip
 cp -rf sNMF_CL_v1.2/* .
