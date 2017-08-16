@@ -12,5 +12,9 @@ mkdir -p "${DESTDIR}"
 # - the build folder containing training data and scripts
 cp -av LICENSE* README* bin db "${DESTDIR}/"
 
+# copy one example for testing
+mkdir -p "${DESTDIR}/examples"
+cp -av examples/small.fna "${DESTDIR}/examples"
+
 # link the primary perl script
 ln -s "${DESTDIR}/bin/barrnap" "${PREFIX}/bin/barrnap"
