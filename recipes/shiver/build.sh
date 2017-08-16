@@ -11,5 +11,4 @@ cp ${SRC_DIR}/shiver_init.sh $PREFIX/bin
 cp ${SRC_DIR}/shiver_map_reads.sh $PREFIX/bin
 cp ${SRC_DIR}/shiver_reprocess_bam.sh $PREFIX/bin
 cp -r ${SRC_DIR}/tools $PREFIX/bin/shiver_tools
-cp ${SRC_DIR}/shiver_python2 $PREFIX/bin
 
