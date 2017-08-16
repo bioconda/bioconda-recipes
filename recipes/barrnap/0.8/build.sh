@@ -10,7 +10,7 @@ mkdir -p "${DESTDIR}"
 # - the nhmmer binaries (provided through hmmer package)
 # - the big examples / test cases
 # - the build folder containing training data and scripts
-cp -rav LICENSE* README* bin db "${DESTDIR}/"
+cp -av LICENSE* README* bin db "${DESTDIR}/"
 
 # copy one example for testing
 mkdir -p "${DESTDIR}/examples"
