@@ -115,7 +115,7 @@ def test_package(
 
     spec = get_image_name(path)
 
-    extra_channels = ['file:/{0}'.format(conda_bld_dir)]
+    extra_channels = ['file://{0}'.format(conda_bld_dir)]
     if channels is None:
         channels = []
     if isinstance(channels, str):
