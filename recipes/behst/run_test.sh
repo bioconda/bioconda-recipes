@@ -7,4 +7,4 @@ echo "[`date`] Downloading example data (log in /tmp/download.log)"
 download_behst_data.sh /tmp/behst --small &> /tmp/download.log || cat /tmp/download.log
 echo "[`date`] finished downloading example data"
 
-behst.py /tmp/behst/pressto_LUNG_enhancers.bed /tmp/behst
+behst /tmp/behst/pressto_LUNG_enhancers.bed /tmp/behst
