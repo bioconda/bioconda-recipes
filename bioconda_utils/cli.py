@@ -420,7 +420,7 @@ def build(
 @arg('--format', choices=['gml', 'dot', 'txt'], help='''Set format to print
      graph. "gml" and "dot" can be imported into graph visualization tools
      (graphviz, gephi, cytoscape). "txt" will print out recipes grouped by
-     independent subdags, largest subdag first, each in topographically sorted
+     independent subdags, largest subdag first, each in topologically sorted
      order. Singleton subdags (if not hidden with --hide-singletons) are
      reported as one large group at the end.''')
 @arg('--hide-singletons',
