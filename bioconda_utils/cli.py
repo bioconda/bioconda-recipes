@@ -455,8 +455,10 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
             print('\n'.join(recipes) + '\n')
         if not hide_singletons:
             print('# singletons')
-            for i in singletons:
-                print(i)
+            recipes = [recipe for package in singletons for recipe in
+                       name2recipes[package]]
+            print('\n'.join(recipes) + '\n')
+
 
 
 
