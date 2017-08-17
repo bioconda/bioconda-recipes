@@ -6,6 +6,7 @@ mkdir -p $PREFIX/bin/
 cp -rf ./* $snmf/
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $snmf/Snmf.pl
 rm -f $snmf/Snmf.bak
+chmod 777 $snmf
 chmod +x $snmf/snmf.sh
 chmod +x $snmf/plink
 chmod +x $snmf/Snmf.pl
