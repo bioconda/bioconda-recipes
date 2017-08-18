@@ -10,4 +10,4 @@ chmod +x $snmf/plink
 chmod +x $snmf/Snmf.pl
 ls -l
 sed '$ a\ > bash '$snmf'/snmf.sh vcf output logs best_k_output best_k_logfile kmin kmax groups threshold_group' $snmf/run.sh
-ln -rs $snmf/run.sh $PREFIX/bin/
+ln -s $snmf/run.sh $PREFIX/bin/
