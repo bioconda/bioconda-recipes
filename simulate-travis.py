@@ -97,6 +97,12 @@ ap.add_argument('--disable-mulled', action='store_true', help='''By default, if
                 then we run independent mulled-build tests on
                 a successfully-built recipe. Use this argument to disable this
                 behavior''')
+ap.add_argument('--disable-local', action='store_true', help='''If you are on
+                OSX, have docker-machine installed and docker is running, we
+                run building and testing for both OSX and Linux using docker
+                for the latter. You can disable the Linux build by specifying
+                 --disable-docker or disable the OSX build using this argument.
+                ''')
 ap.add_argument('--alternative-conda', help='''Path to alternative conda
                 installation to override that installed and configured with
                 --install-alternative-conda. If the conda executable you want
@@ -257,6 +263,58 @@ def _set_channel_order():
     sp.check_call([bin_for('conda'), 'config', '--get'])
 
 
+def _travis_run(env):
+    if (
+        (env['TRAVIS_OS_NAME'] == 'linux') &
+        (not args.disable_docker) &
+        ('--docker' not in env['BIOCONDA_UTILS_BUILD_ARGS'])
+    ):
+        env['DOCKER_ARG'] = '--docker'
+        if not args.disable_mulled:
+            env['DOCKER_ARG'] += ' --mulled-test'
+
+    # Override env with whatever's in the shell environment
+    env.update(os.environ)
+
+    # Only modify the path just before running travis-run.sh:
+    if 'CONDA_ROOT' in os.environ:
+        env['PATH'] = os.path.join(
+            os.environ['CONDA_ROOT'], 'bin') + ':' + env['PATH']
+
+    try:
+        sp.check_call(['scripts/travis-run.sh'], env=env, universal_newlines=True)
+    except sp.CalledProcessError:
+        sys.exit(1)
+
+
+def _docker_machine_run_travis(env):
+    try:
+        p = sp.check_output(['docker-machine', 'env'])
+        os.environb.update({
+            key.lstrip(b'export '): value.strip(b'"')
+            for key, value in [
+                    line.split(b'=')
+                    for line in p.splitlines()
+                    if line.startswith(b'export')
+            ]
+        })
+    except FileNotFoundError:
+        print('"docker-machine" is not installed. Linux tests will not be run.')
+        return
+    except sp.CalledProcessError:
+        print('Cannot connect to docker. Linux test will not be run.')
+        return
+    # On OSX, TMPDIR defaults to '/var/folders/...', but only '/Users'
+    # is mapped into the Linux VM running Docker. We need to change this
+    # so that the scripts to be run in the Docker are in a place available
+    # to the VM so they can be mapped into the Docker Container.
+    os.environb.update({b'TMPDIR': os.path.expanduser(b'~/.local/tmp')})
+    print('Running Linux tests using Docker.')
+    linux_env = dict(env)
+    linux_env['TRAVIS_OS_NAME'] = 'linux'
+    _travis_run(linux_env)
+
+
 if args.install_requirements:
     _install_requirements()
     sys.exit(0)
@@ -312,6 +370,10 @@ if args.bootstrap:
 if args.skip_linting:
     os.environ['SKIP_LINTING'] = 'true'
 
+if args.disable_local and args.disable_docker:
+    print("Both local and docker builds disabled. Doing nothing?!")
+    sys.exit(1)
+
 # Only run if we're not on travis.
 if os.environ.get('TRAVIS', None) != 'true':
 
@@ -342,24 +404,8 @@ if os.environ.get('TRAVIS', None) != 'true':
     env['BIOCONDA_UTILS_BUILD_ARGS'] += ' ' + ' '.join(extra)
     env['BIOCONDA_UTILS_BUILD_ARGS'] = ' '.join(shlex.split(env['BIOCONDA_UTILS_BUILD_ARGS']))
 
-    if (
-        (env['TRAVIS_OS_NAME'] == 'linux') &
-        (not args.disable_docker) &
-        ('--docker' not in env['BIOCONDA_UTILS_BUILD_ARGS'])
-    ):
-        env['DOCKER_ARG'] = '--docker'
-        if not args.disable_mulled:
-            env['DOCKER_ARG'] += ' --mulled-test'
+    if env['TRAVIS_OS_NAME'] == 'linux' or not args.disable_local:
+        _travis_run(env)
 
-    # Override env with whatever's in the shell environment
-    env.update(os.environ)
-
-    # Only modify the path just before running travis-run.sh:
-    if 'CONDA_ROOT' in os.environ:
-        env['PATH'] = os.path.join(
-            os.environ['CONDA_ROOT'], 'bin') + ':' + env['PATH']
-
-    try:
-        sp.check_call(['scripts/travis-run.sh'], env=env, universal_newlines=True)
-    except sp.CalledProcessError:
-        sys.exit(1)
+    if env['TRAVIS_OS_NAME'] == 'osx' and not args.disable_docker:
+        _docker_machine_run_travis(env)
