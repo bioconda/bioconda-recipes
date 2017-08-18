@@ -463,6 +463,7 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
 
 
 @arg('recipe_folder', help='Path to recipes directory')
+@arg('config', help='Path to yaml file specifying the configuration')
 @arg('--dependencies', nargs='+',
      help='''Return recipes in `recipe_folder` in the dependency chain for the
      packages listed here. Answers the question "what does PACKAGE need?"''')
@@ -475,7 +476,7 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
      effect if --reverse-dependencies, which always looks just in the recipe
      dir.''')
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
-def dependent(recipe_folder, restrict=False, dependencies=None, reverse_dependencies=None, loglevel='warning'):
+def dependent(recipe_folder, config, restrict=False, dependencies=None, reverse_dependencies=None, loglevel='warning'):
     """
     Print recipes dependent on a package
     """
@@ -485,7 +486,7 @@ def dependent(recipe_folder, restrict=False, dependencies=None, reverse_dependen
 
     setup_logger(loglevel)
 
-    d, n2r = utils.get_dag(utils.get_recipes(recipe_folder, "*"), restrict=restrict)
+    d, n2r = utils.get_dag(utils.get_recipes(recipe_folder, "*"), config, restrict=restrict)
 
     if reverse_dependencies is not None:
         func, packages = nx.algorithms.descendants, reverse_dependencies
