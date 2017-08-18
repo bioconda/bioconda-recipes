@@ -339,7 +339,6 @@ def get_dag(recipes, config, blacklist=None, restrict=True):
     recipes = list(recipes)
     metadata = []
     for recipe in sorted(recipes):
-        print(recipe)
         for r in list(load_all_meta(recipe, config)):
             metadata.append((r, recipe))
     if blacklist is None:

@@ -412,19 +412,25 @@ def build(
 
 
 @arg('recipe_folder', help='Path to recipes directory')
+@arg('config', help='Path to yaml file specifying the configuration')
 @arg('--packages',
      nargs="+",
      help='Glob for package[s] to show in DAG. Default is to show all '
      'packages. Can be specified more than once')
-@arg('--format', choices=['gml', 'dot'], help='Set format to print graph.')
+@arg('--format', choices=['gml', 'dot', 'txt'], help='''Set format to print
+     graph. "gml" and "dot" can be imported into graph visualization tools
+     (graphviz, gephi, cytoscape). "txt" will print out recipes grouped by
+     independent subdags, largest subdag first, each in topologically sorted
+     order. Singleton subdags (if not hidden with --hide-singletons) are
+     reported as one large group at the end.''')
 @arg('--hide-singletons',
      action='store_true',
      help='Hide singletons in the printed graph.')
-def dag(recipe_folder, packages="*", format='gml', hide_singletons=False):
+def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False):
     """
     Export the DAG of packages to a graph format file for visualization
     """
-    dag = utils.get_dag(utils.get_recipes(recipe_folder, packages))[0]
+    dag, name2recipes = utils.get_dag(utils.get_recipes(recipe_folder, packages), config)
     if hide_singletons:
         for node in nx.nodes(dag):
             if dag.degree(node) == 0:
@@ -433,6 +439,27 @@ def dag(recipe_folder, packages="*", format='gml', hide_singletons=False):
         nx.write_gml(dag, sys.stdout.buffer)
     elif format == 'dot':
         write_dot(dag, sys.stdout)
+    elif format == 'txt':
+        subdags = sorted(map(sorted, nx.connected_components(dag.to_undirected())))
+        subdags = sorted(subdags, key=len, reverse=True)
+        singletons = []
+        for i, s in enumerate(subdags):
+            if len(s) == 1:
+                singletons += s
+                continue
+            print("# subdag {0}".format(i))
+            subdag = dag.subgraph(s)
+            recipes = [
+                recipe for package in nx.topological_sort(subdag)
+                for recipe in name2recipes[package]]
+            print('\n'.join(recipes) + '\n')
+        if not hide_singletons:
+            print('# singletons')
+            recipes = [recipe for package in singletons for recipe in
+                       name2recipes[package]]
+            print('\n'.join(recipes) + '\n')
+
+
 
 
 @arg('recipe_folder', help='Path to recipes directory')
