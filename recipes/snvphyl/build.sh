@@ -35,6 +35,8 @@ export BCFTOOLS_PLUGINS=bcfplugins
 cpanm -i Switch -L . || :
 cpanm -i Test::JSON -L . || :
 cpanm -i String::Util -L . || :
+cpanm -i JSON::Any -L . || :
+export LANG=C
 export PERL5LIB=$DIR/lib/perl5
 
 
