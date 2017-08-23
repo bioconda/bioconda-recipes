@@ -11,7 +11,7 @@ cp requirements.txt requirements.orig.txt
 grep -v cherrypy requirements.orig.txt > requirements.txt
 echo "cherrypy>=8.0,<=8.9.1" >> requirements.txt
 
-$PYTHON setup.py install 
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
 # Add more build steps here, if they are necessary.
 

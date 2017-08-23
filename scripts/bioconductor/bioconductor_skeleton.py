@@ -601,12 +601,11 @@ def write_recipe(package, recipe_dir, force=False, bioc_version=None,
 
     with open(os.path.join(recipe_dir, 'build.sh'), 'w') as fout:
         fout.write(dedent(
-            """
+            '''\
             #!/bin/bash
             mv DESCRIPTION DESCRIPTION.old
             grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
-            $R CMD INSTALL --build .
-            # """
+            $R CMD INSTALL --build .'''
             )
         )
     logger.info('Wrote recipe in %s', recipe_dir)
