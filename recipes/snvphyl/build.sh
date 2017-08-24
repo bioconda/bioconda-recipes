@@ -1,16 +1,14 @@
 #!/bin/bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-
 
 #temporary cpan modules
 cpanm -i Switch -L . || :
+cpanm -i JSON::Any -L . || :
 cpanm -i Test::JSON -L . || :
 cpanm -i String::Util -L . || :
-cpanm -i JSON::Any -L . || :
+
 export LANG=C
-export PERL5LIB=$DIR/lib/perl5
+export PERL5LIB=`pwd`/lib/perl5
 
 
 # If it has Build.PL use that, otherwise use Makefile.PL
