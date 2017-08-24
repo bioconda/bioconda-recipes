@@ -10,10 +10,6 @@ import hashlib
 import os
 import re
 import bs4
-import urllib
-from urllib import request
-from urllib import parse
-from urllib import error
 from collections import OrderedDict
 import logging
 import requests
@@ -36,9 +32,7 @@ log_stream_handler.setFormatter(ColoredFormatter(
 logger = logging.getLogger(__name__)
 
 
-
 def setup_logger(loglevel):
-    LEVEL = getattr(logging, loglevel.upper())
     l = logging.getLogger(__name__)
     l.propagate = False
     l.setLevel(getattr(logging, loglevel.upper()))
@@ -59,13 +53,19 @@ BASE_R_PACKAGES = ["base", "compiler", "datasets", "graphics", "grDevices",
                    "tcltk", "tools", "utils"]
 
 
-# A list of packages, in recipe name format
+# A list of packages, in recipe name format. If a package depends on something
+# in this list, then we will add the gcc/llvm build-deps as appropriate to the
+# constructed recipe.
 GCC_PACKAGES = ['r-rcpp']
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 
 def bioconductor_versions():
+    """
+    Returns a list of available Bioconductor versions scraped from the
+    Bioconductor site.
+    """
     regex = re.compile('^/packages/(?P<version>\d+\.\d+)/$')
     url = 'https://www.bioconductor.org/about/release-announcements/#release-versions'
     response = requests.get(url)
@@ -81,26 +81,65 @@ def bioconductor_versions():
 
 
 def latest_bioconductor_version():
+    """
+    Latest Bioconductor version scraped from the Bioconductor site.
+    """
     return bioconductor_versions()[0]
 
 
 def bioconductor_tarball_url(package, pkg_version, bioc_version):
-    return  (
-    'http://bioconductor.org/packages/{bioc_version}'
-    '/bioc/src/contrib/{package}_{pkg_version}.tar.gz'.format(**locals())
+    """
+    Constructs a url for a package tarball
+
+    Parameters
+    ----------
+    package : str
+        Case-sensitive Bioconductor package name
+
+    pkg_version : str
+        Bioconductor package version
+
+    bioc_version : str
+        Bioconductor release version
+    """
+    return (
+        'http://bioconductor.org/packages/{bioc_version}'
+        '/bioc/src/contrib/{package}_{pkg_version}.tar.gz'.format(**locals())
     )
 
 
 def bioconductor_data_url(package, pkg_version, bioc_version):
-    return  (
-    'http://bioconductor.org/packages/{bioc_version}'
-    '/data/annotation/src/contrib/{package}_{pkg_version}.tar.gz'.format(**locals())
+    """
+    Constructs a url for an annotation package tarball
+
+    Parameters
+    ----------
+    package : str
+        Case-sensitive Bioconductor package name
+
+    pkg_version : str
+        Bioconductor package version
+
+    bioc_version : str
+        Bioconductor release version
+    """
+    return (
+        'http://bioconductor.org/packages/{bioc_version}'
+        '/data/annotation/src/contrib/{package}_{pkg_version}.tar.gz'.format(**locals())
     )
+
 
 def find_best_bioc_version(package, version):
     """
     Given a package version number, identifies which BioC version[s] it is
     in and returns the latest.
+    Parameters
+    ----------
+    package :
+        Case-sensitive Bioconductor package name
+
+    version :
+        Bioconductor package version
 
     Returns None if no valid package found.
     """
@@ -331,7 +370,7 @@ class BioCProjectPage(object):
 
         # On-spec config files need a "section", but the DESCRIPTION file
         # doesn't have one. So we just add a fake section, and let the
-        # configparser take care of the details of parsing.
+        # configparser module take care of the details of parsing.
         c.read_string('[top]\n' + d.decode('UTF-8'))
         e = c['top']
 
@@ -347,6 +386,9 @@ class BioCProjectPage(object):
 
     @property
     def imports(self):
+        """
+        List of "imports" from the DESCRIPTION file
+        """
         try:
             return [i.strip() for i in self.description['imports'].replace(' ', '').split(',')]
         except KeyError:
@@ -354,6 +396,9 @@ class BioCProjectPage(object):
 
     @property
     def depends(self):
+        """
+        List of "depends" from the DESCRIPTION file
+        """
         try:
             return [i.strip() for i in self.description['depends'].replace(' ', '').split(',')]
         except KeyError:
@@ -390,14 +435,13 @@ class BioCProjectPage(object):
 
     @property
     def dependencies(self):
+        """
+
+        """
         if self._dependencies:
             return self._dependencies
 
         results = []
-
-        # Some packages specify a minimum R version, which we'll need to keep
-        # track of
-        specific_r_version = False
 
         # Sometimes a version is specified only in the `depends` and not in the
         # `imports`. We keep the most specific version of each.
@@ -443,12 +487,17 @@ class BioCProjectPage(object):
                 # Had some issues with CONDA_R finding the right version if "r"
                 # had version restrictions. Since we're generally building
                 # up-to-date packages, we can just use "r".
+                #
 
                 # # "r >=2.5" rather than "r-r >=2.5"
                 # specific_r_version = True
                 # results.append(name.lower() + version)
                 # results.append('r')
+
+                # UPDATE: we're using `r-base` as the base R dependency, which
+                # is added below for all R packages, so pass for now.
                 pass
+
             else:
                 results.append(prefix + name.lower() + version)
 
@@ -488,7 +537,7 @@ class BioCProjectPage(object):
         for `# [linux]` and `# [osx]`.
 
         We do this with a unique placeholder (not a jinja or $-based
-        string.Template so as to avoid conflicting with the conda jinja
+        string.Template) so as to avoid conflicting with the conda jinja
         templating or the `$R` in the test commands, and replace the text once
         the yaml is written.
         """
@@ -585,16 +634,14 @@ def write_recipe(package, recipe_dir, force=False, bioc_version=None,
         # the dicts
         updated_version = updated_meta['package'].pop('version')
         current_version = current_meta['package'].pop('version')
-        updated_build_number = updated_meta['build'].pop('number')
+        # updated_build_number = updated_meta['build'].pop('number')
         current_build_number = current_meta['build'].pop('number')
 
         if (
-            (updated_version == current_version)
-            and
+            (updated_version == current_version) and
             (updated_meta != current_meta)
         ):
             proj.build_number = int(current_build_number) + 1
-
 
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
         fout.write(proj.meta_yaml)
