@@ -132,7 +132,8 @@ def bioconductor_data_url(package, pkg_version, bioc_version):
 def find_best_bioc_version(package, version):
     """
     Given a package version number, identifies which BioC version[s] it is
-    in and returns the latest.
+    in and returns the latest and whether it was identified as a data package.
+
     Parameters
     ----------
     package :
@@ -141,12 +142,17 @@ def find_best_bioc_version(package, version):
     version :
         Bioconductor package version
 
+    Returns
+    -------
+    Tuple of (str, bool), for (Bioc_version, is_data_package).
+
     Returns None if no valid package found.
     """
-    found_version = None
-
     for bioc_version in bioconductor_versions():
-        for func in (bioconductor_tarball_url, bioconductor_data_url):
+        for kind, func in zip(
+            ('package', 'data'),
+            (bioconductor_tarball_url, bioconductor_data_url)
+        ):
             url = func(package, version, bioc_version)
             if requests.head(url).status_code == 200:
                 logger.debug('success: %s', url)
@@ -154,15 +160,13 @@ def find_best_bioc_version(package, version):
                     'A working URL for %s==%s was identified for Bioconductor version %s: %s',
                     package, version, bioc_version, url)
                 found_version = bioc_version
-                break
+                return (found_version, kind == 'data')
             else:
                 logger.debug('missing: %s', url)
-        if found_version is not None:
-            break
-    return found_version
 
 
-class PageNotFoundError(Exception): pass
+class PageNotFoundError(Exception):
+    pass
 
 
 class BioCProjectPage(object):
@@ -186,7 +190,7 @@ class BioCProjectPage(object):
         self._bioarchive_url = None
         self._tarball_url = None
         self._bioconductor_tarball_url = None
-
+        self.is_data_package = False
 
         # If no version specified, assume the latest
         if not self.bioc_version:
@@ -237,12 +241,11 @@ class BioCProjectPage(object):
 
         self.depends_on_gcc = False
 
-
         # Used later to determine whether or not to auto-identify the best BioC
         # version
         self._auto = bioc_version is None
         if self._auto:
-            self.bioc_version = find_best_bioc_version(self.package, self.version)
+            self.bioc_version, self.is_data_package = find_best_bioc_version(self.package, self.version)
 
     @property
     def bioaRchive_url(self):
@@ -322,7 +325,6 @@ class BioCProjectPage(object):
             if self._tarball_url is None:
                 raise ValueError("No working URLs found for this version in any bioconductor version")
         return self._tarball_url
-
 
     @property
     def tarball_basename(self):
