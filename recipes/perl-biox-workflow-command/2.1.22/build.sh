@@ -3,6 +3,7 @@
 # If it has Build.PL use that, otherwise use Makefile.PL
 cpanm --installdeps .
 cpanm  Number::Bytes::Human
+cpanm File::Slurp
 
 if [ -f Build.PL ]; then
     perl Build.PL
