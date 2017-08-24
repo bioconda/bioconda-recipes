@@ -181,6 +181,7 @@ class BioCProjectPage(object):
         self.base_url = base_url
         self.package = package
         self._md5 = None
+        self._sha256 = None
         self._cached_tarball = None
         self._dependencies = None
         self.build_number = 0
@@ -523,6 +524,17 @@ class BioCProjectPage(object):
         return self._md5
 
     @property
+    def sha256(self):
+        """
+        Calculate the sha256 hash of the tarball so it can be filled into the
+        meta.yaml.
+        """
+        if self._sha256 is None:
+            self._sha256 = hashlib.sha256(
+                open(self.cached_tarball, 'rb').read()).hexdigest()
+        return self._sha256
+
+    @property
     def meta_yaml(self):
         """
         Build the meta.yaml string based on discovered values.
@@ -562,7 +574,7 @@ class BioCProjectPage(object):
                 'source', OrderedDict((
                     ('fn', self.tarball_basename),
                     ('url', url),
-                    ('md5', self.md5),
+                    ('sha256', self.sha256),
                 )),
             ),
             (
