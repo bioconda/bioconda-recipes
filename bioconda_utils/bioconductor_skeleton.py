@@ -743,32 +743,3 @@ def write_recipe(package, recipe_dir, force=False, bioc_version=None,
             fout.write(dedent(post_link_template))
 
     logger.info('Wrote recipe in %s', recipe_dir)
-
-
-if __name__ == "__main__":
-    import argparse
-    ap = argparse.ArgumentParser()
-    ap.add_argument('package', help='Bioconductor package name')
-    ap.add_argument('--recipes', default='recipes',
-                    help='Recipe will be created in RECIPES/<package>')
-    ap.add_argument('--versioned', action='store_true',
-                    help='''If specified, recipe will be created in
-                    RECIPES/<package>/<version>''')
-    ap.add_argument('--force', action='store_true',
-                    help='Overwrite the contents of an existing recipe')
-    ap.add_argument('--pkg-version',
-                    help='Package version to use instead of the current one')
-    ap.add_argument('--bioc-version',
-                    help="""Version of Bioconductor to target. If not
-                    specified, then automatically finds the latest version of
-                    Bioconductor with the specified version in --pkg-version,
-                    or if --pkg-version not specified, then finds the the
-                    latest package version in the latest Bioconductor
-                    version""")
-    ap.add_argument('--loglevel', default='debug',
-                    help='Log level')
-    args = ap.parse_args()
-    setup_logger(args.loglevel)
-    write_recipe(args.package, args.recipes, args.force,
-                 bioc_version=args.bioc_version, pkg_version=args.pkg_version,
-                 versioned=args.versioned)
