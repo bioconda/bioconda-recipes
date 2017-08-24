@@ -665,15 +665,83 @@ def write_recipe(package, recipe_dir, force=False, bioc_version=None,
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
         fout.write(proj.meta_yaml)
 
-    with open(os.path.join(recipe_dir, 'build.sh'), 'w') as fout:
-        fout.write(dedent(
+    if not proj.is_data_package:
+        with open(os.path.join(recipe_dir, 'build.sh'), 'w') as fout:
+            fout.write(dedent(
+                '''\
+                #!/bin/bash
+                mv DESCRIPTION DESCRIPTION.old
+                grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
+                $R CMD INSTALL --build .'''
+                )
+            )
+
+    else:
+        urls = [
+            '"{0}"'.format(u) for u in [
+                proj.bioconductor_tarball_url,
+                proj.bioconductor_data_url,
+                proj.bioaRchive_url,
+                proj.cargoport_url
+            ]
+            if u is not None
+        ]
+        urls = '  ' + '\n  '.join(urls)
+        post_link_template = dedent(
             '''\
             #!/bin/bash
-            mv DESCRIPTION DESCRIPTION.old
-            grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
-            $R CMD INSTALL --build .'''
-            )
+            FN="{proj.tarball_basename}"
+            URLS=(
+            '''.format(proj=proj))
+
+        post_link_template += urls
+        post_link_template += dedent(
+            '''
         )
+            MD5="{proj.md5}"
+            '''.format(proj=proj, urls=urls)
+        )
+        post_link_template += dedent(
+            """
+            # Use a staging area in the conda dir rather than temp dirs, both to avoid
+            # permission issues as well as to have things downloaded in a predictable
+            # manner.
+            STAGING=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+            mkdir -p $STAGING
+            TARBALL=$STAGING/$FN
+
+            SUCCESS=0
+            for URL in ${URLS[@]}; do
+              wget -O- -q $URL > $TARBALL
+              [[ $? == 0 ]] || continue
+
+              # Platform-specific md5sum checks.
+              if [[ $(uname -s) == "Linux" ]]; then
+                if [[ $(md5sum -c <<<"$MD5  $TARBALL") ]]; then
+                  SUCCESS=1
+                  break
+                fi
+              else if [[ $(uname -s) == "Darwin" ]]; then
+                if [[ $(md5 $TARBALL | cut -f4 -d " ") == "$MD5" ]]; then
+                  SUCCESS=1
+                  break
+                fi
+              fi
+            fi
+            done
+
+            if [[ $SUCCESS != 1 ]]; then
+              echo "ERROR: post-link.sh was unable to download any of the following URLs with the md5sum $MD5:"
+              printf '%s\\n' "${URLS[@]}"
+              exit 1
+            fi
+
+            # Install and clean up
+            R CMD INSTALL --build $TARBALL
+            rm $TARBALL""")
+        with open(os.path.join(recipe_dir, 'post-link.sh'), 'w') as fout:
+            fout.write(dedent(post_link_template))
+
     logger.info('Wrote recipe in %s', recipe_dir)
 
 
