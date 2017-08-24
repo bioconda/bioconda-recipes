@@ -563,6 +563,11 @@ class BioCProjectPage(object):
         ]
 
         DEPENDENCIES = sorted(self.dependencies)
+
+        additional_run_deps = []
+        if self.is_data_package:
+            additional_run_deps.append('wget')
+
         d = OrderedDict((
             (
                 'package', OrderedDict((
@@ -590,7 +595,7 @@ class BioCProjectPage(object):
                     # decoding unicode. Possible pyaml bug? Anyway, this fixes
                     # it.
                     ('build', DEPENDENCIES[:]),
-                    ('run', DEPENDENCIES[:]),
+                    ('run', DEPENDENCIES[:] + additional_run_deps),
                 )),
             ),
             (
