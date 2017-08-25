@@ -469,7 +469,7 @@ class BioCProjectPage(object):
             # Try finding the dependency on the bioconductor site; if it can't
             # be found then we assume it's in CRAN.
             try:
-                BioCProjectPage(name)
+                BioCProjectPage(name, bioc_version=self.bioc_version)
                 prefix = 'bioconductor-'
             except PageNotFoundError:
                 prefix = 'r-'
