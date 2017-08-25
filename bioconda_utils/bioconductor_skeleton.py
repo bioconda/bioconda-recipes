@@ -131,8 +131,8 @@ def bioconductor_data_url(package, pkg_version, bioc_version):
 
 def find_best_bioc_version(package, version):
     """
-    Given a package version number, identifies which BioC version[s] it is
-    in and returns the latest and whether it was identified as a data package.
+    Given a package version number, identifies which BioC version[s] it is in
+    and returns the latest.
 
     Parameters
     ----------
@@ -141,10 +141,6 @@ def find_best_bioc_version(package, version):
 
     version :
         Bioconductor package version
-
-    Returns
-    -------
-    Tuple of (str, bool), for (Bioc_version, is_data_package).
 
     Returns None if no valid package found.
     """
@@ -160,7 +156,7 @@ def find_best_bioc_version(package, version):
                     'A working URL for %s==%s was identified for Bioconductor version %s: %s',
                     package, version, bioc_version, url)
                 found_version = bioc_version
-                return (found_version, kind == 'data')
+                return found_version
             else:
                 logger.debug('missing: %s', url)
 
@@ -244,9 +240,9 @@ class BioCProjectPage(object):
 
         # Used later to determine whether or not to auto-identify the best BioC
         # version
-        self._auto = bioc_version is None
+        self._auto = self.bioc_version is None
         if self._auto:
-            self.bioc_version, self.is_data_package = find_best_bioc_version(self.package, self.version)
+            self.bioc_version = find_best_bioc_version(self.package, self.version)
 
     @property
     def bioaRchive_url(self):
@@ -302,6 +298,7 @@ class BioCProjectPage(object):
         url = bioconductor_data_url(self.package, self.version, self.bioc_version)
         response = requests.head(url)
         if response and response.status_code == 200:
+            self.is_data_package = True
             return url
 
     @property
@@ -472,7 +469,7 @@ class BioCProjectPage(object):
             # Try finding the dependency on the bioconductor site; if it can't
             # be found then we assume it's in CRAN.
             try:
-                BioCProjectPage(name)
+                BioCProjectPage(name, bioc_version=self.bioc_version)
                 prefix = 'bioconductor-'
             except PageNotFoundError:
                 prefix = 'r-'
