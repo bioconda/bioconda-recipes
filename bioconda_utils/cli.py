@@ -20,6 +20,7 @@ from . import docker_utils
 from . import lint_functions
 from . import linting
 from . import github_integration
+from . import bioconductor_skeleton as _bioconductor_skeleton
 
 
 log_stream_handler = logging.StreamHandler()
@@ -499,5 +500,38 @@ def dependent(recipe_folder, config, restrict=False, dependencies=None, reverse_
     print('\n'.join(sorted(pkgs)))
 
 
+@arg('package', help='Bioconductor package name')
+@arg('recipe_folder', help='Path to recipes directory')
+@arg('config', help='Path to yaml file specifying the configuration')
+@arg('--versioned', action='store_true',
+                help='''If specified, recipe will be created in
+                RECIPES/<package>/<version>''')
+@arg('--force', action='store_true',
+                help='Overwrite the contents of an existing recipe')
+@arg('--pkg-version',
+                help='Package version to use instead of the current one')
+@arg('--bioc-version',
+                help="""Version of Bioconductor to target. If not
+                specified, then automatically finds the latest version of
+                Bioconductor with the specified version in --pkg-version,
+                or if --pkg-version not specified, then finds the the
+                latest package version in the latest Bioconductor
+                version""")
+@arg('--loglevel', default='debug',
+                help='Log level')
+def bioconductor_skeleton(
+    recipe_folder, config, package, versioned=False, force=False,
+    pkg_version=None, bioc_version=None, loglevel='info'
+):
+    """
+    Build a Bioconductor recipe
+    """
+    setup_logger(loglevel)
+    _bioconductor_skeleton.write_recipe(
+        package, recipe_folder, force, bioc_version=bioc_version,
+        pkg_version=pkg_version, versioned=versioned
+    )
+
+
 def main():
-    argh.dispatch_commands([build, dag, dependent, lint, duplicates])
+    argh.dispatch_commands([build, dag, dependent, lint, duplicates, bioconductor_skeleton])
