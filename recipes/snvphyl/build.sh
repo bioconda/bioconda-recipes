@@ -1,12 +1,5 @@
 #!/bin/bash
 
-export LANG=C
-
-#temporary cpan modules
-cpanm -i String::Util -L . || :
-cpanm -i Switch -L . || :
-cpanm -v -i Test::JSON -L . || :
-export PERL5LIB=`pwd`/lib/perl5
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
