@@ -1,0 +1,717 @@
+From 86c0c4e80385ed45473852989ece9add22cd5802 Mon Sep 17 00:00:00 2001
+From: Ilya Shlyakhter <ilya_shl@alum.mit.edu>
+Date: Wed, 23 Aug 2017 22:46:47 -0400
+Subject: [PATCH] changed tools to python 3
+
+---
+ tools/AlignBaseFreqFiles.py                     |  6 +++---
+ tools/AlignMoreSeqsToPairWithMissingCoverage.py |  4 ++--
+ tools/AnalysePileup.py                          |  8 +++----
+ tools/AuxiliaryFunctions.py                     | 12 +++++------
+ tools/CallConsensus.py                          | 10 ++++-----
+ tools/CheckFastaFileEquality.py                 |  2 +-
+ tools/CompareTwoNumMappedBasesFiles.py          |  2 +-
+ tools/ConstructBestRef.py                       | 28 ++++++++++++-------------
+ tools/ConvertAlnToColourCodes.py                |  2 +-
+ tools/CorrectContigs.py                         |  8 +++----
+ tools/FillConsensusGaps.py                      |  4 ++--
+ tools/FindAlignmentCoordFromSeqCoord.py         |  2 +-
+ tools/FindClippingHotSpots.py                   |  6 +++---
+ tools/FindContaminantReadPairs.py               |  4 ++--
+ tools/FindNamedReadsInSortedFastq.py            |  2 +-
+ tools/FindNumMappedBases.py                     |  2 +-
+ tools/FindSeqsInFasta.py                        |  2 +-
+ tools/LinkIdentityToCoverage.py                 |  4 ++--
+ tools/MergeAlignments.py                        | 14 ++++++-------
+ tools/MergeBaseFreqsAndCoords.py                |  2 +-
+ tools/PrintSeqLengths.py                        |  2 +-
+ tools/RemoveBlankColumns.py                     |  4 ++--
+ tools/RemoveDivergentReads.py                   |  2 +-
+ tools/RemoveEmptySeqs.py                        |  2 +-
+ tools/RemoveTrailingWhitespace.py               |  2 +-
+ tools/SplitFasta.py                             |  4 ++--
+ tools/TranslateSeqForGlobalAln.py               |  2 +-
+ tools/UngapFasta.py                             |  2 +-
+ 28 files changed, 72 insertions(+), 72 deletions(-)
+
+diff --git a/tools/AlignBaseFreqFiles.py b/tools/AlignBaseFreqFiles.py
+index ceae230..cdec8f3 100755
+--- a/tools/AlignBaseFreqFiles.py
++++ b/tools/AlignBaseFreqFiles.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+@@ -147,7 +147,7 @@ def GetFreqs(BaseFreqsFile, RefSeq):
+         ':', RefBase, 'in', BaseFreqsFile, 'but', GaplessRefSeq[RefPos-1],
+         'in', args.alignment + '. Quitting.', file=sys.stderr)
+         quit(1)
+-      freqs = map(int, fields[2:])
++      freqs = list(map(int, fields[2:]))
+       assert len(freqs) == 6
+       FreqsInRef.append(freqs)
+       LastRefPos += 1
+@@ -205,7 +205,7 @@ NumPosWithHigherCovIn1 = 0
+ NumPosWithHigherCovIn2 = 0
+ 
+ # Record each row of the csv file
+-for PosMin1, (ref1freqs, ref2freqs) in enumerate(itertools.izip(ref1freqs,
++for PosMin1, (ref1freqs, ref2freqs) in enumerate(zip(ref1freqs,
+ ref2freqs)):
+   PosInRef1 = ref1PosConversions[PosMin1]
+   PosInRef2 = ref2PosConversions[PosMin1]
+diff --git a/tools/AlignMoreSeqsToPairWithMissingCoverage.py b/tools/AlignMoreSeqsToPairWithMissingCoverage.py
+index 9d21876..a461966 100755
+--- a/tools/AlignMoreSeqsToPairWithMissingCoverage.py
++++ b/tools/AlignMoreSeqsToPairWithMissingCoverage.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+@@ -94,7 +94,7 @@ if len(ConsensusAsString) != len(RefAsString):
+   exit(1)
+ NewConsensusAsString = ''
+ NewRefAsString = ''
+-for ConsensusBase, RefBase in itertools.izip(ConsensusAsString, RefAsString):
++for ConsensusBase, RefBase in zip(ConsensusAsString, RefAsString):
+   if RefBase == '-' and (ConsensusBase == '-' or ConsensusBase == '?'):
+     continue
+   else:
+diff --git a/tools/AnalysePileup.py b/tools/AnalysePileup.py
+index 49c1632..e3ff9ce 100755
+--- a/tools/AnalysePileup.py
++++ b/tools/AnalysePileup.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+@@ -51,7 +51,7 @@ def ReadReferenceFromFile(File):
+     print('Found', len(AllSequences), 'sequences in', ReferenceFile+\
+     '; expected 1.\nQuitting.', file=sys.stderr)
+     exit(1)
+-  return AllSequences.items(), ReferenceLength
++  return list(AllSequences.items()), ReferenceLength
+ 
+ # If a reference file was given, read it in; otherwise just check a directory
+ # was specified.
+@@ -102,7 +102,7 @@ IsInsertion, ReferenceLength):
+       BaseCounts[ReferenceBase] = NumBasesMatchingReference
+ 
+   # Warn about unexpected bases.
+-  for base in BaseCounts.keys():
++  for base in list(BaseCounts.keys()):
+     if not base in ExpectedBases:
+       warning = 'WARNING: unexpected base '+base+' occurs '+\
+       str(BaseCounts[base])+' times '
+@@ -284,7 +284,7 @@ with open(PileupFile, 'r') as f:
+     # Find the most common insertion size here.
+     MostCommonInsertionSize = 0
+     NumberOfReadsWithMostCommonInsertionSize = NumReadsWithoutInsertion
+-    for InsertionSize,AllInsertionsThatSize in insertions.items():
++    for InsertionSize,AllInsertionsThatSize in list(insertions.items()):
+       if len(AllInsertionsThatSize) > NumberOfReadsWithMostCommonInsertionSize:
+         MostCommonInsertionSize = InsertionSize
+         NumberOfReadsWithMostCommonInsertionSize = len(AllInsertionsThatSize)
+diff --git a/tools/AuxiliaryFunctions.py b/tools/AuxiliaryFunctions.py
+index 8646be2..677d5c0 100644
+--- a/tools/AuxiliaryFunctions.py
++++ b/tools/AuxiliaryFunctions.py
+@@ -1,4 +1,4 @@
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+@@ -33,7 +33,7 @@ acgt = ['A','C','G','T']
+ ReverseIUPACdict = {}
+ for UnambigLetter in acgt:
+   ReverseIUPACdict[UnambigLetter] = [UnambigLetter]
+-  for AmbigLetter,TargetLetters in IUPACdict.items():
++  for AmbigLetter,TargetLetters in list(IUPACdict.items()):
+     if UnambigLetter in TargetLetters:
+       ReverseIUPACdict[UnambigLetter].append(AmbigLetter)
+ 
+@@ -60,13 +60,13 @@ def InterpretIUPAC(MyDict):
+   for an ambiguity code key is divided equally between the letters involved in
+   the ambiguity code.'''
+ 
+-  keys = MyDict.keys()
++  keys = list(MyDict.keys())
+   UpdatedDict = {}
+   for UnambigLetter in acgt:
+     if UnambigLetter in keys:
+       UpdatedDict[UnambigLetter] = MyDict[UnambigLetter]
+ 
+-  for AmbigLetter,TargetLetters in IUPACdict.items():
++  for AmbigLetter,TargetLetters in list(IUPACdict.items()):
+     if AmbigLetter in keys:
+       WeightPerTargetLetter = float(MyDict[AmbigLetter])/len(TargetLetters)
+       for TargetLetter in TargetLetters:
+@@ -184,10 +184,10 @@ def ReadSequencesFromFile(DataFile,IsAlignment=True):
+ 
+ 
+   # Check all sequences have the same length, if they're supposed to
+-  FirstSequenceName, FirstSequence = AllSequences.items()[0]
++  FirstSequenceName, FirstSequence = list(AllSequences.items())[0]
+   SequenceLength = len(FirstSequence)
+   if IsAlignment:
+-    for SequenceName, Sequence in AllSequences.items():
++    for SequenceName, Sequence in list(AllSequences.items()):
+       if len(Sequence) != SequenceLength:
+         print(SequenceName, 'has length', len(Sequence), 'whereas', \
+         FirstSequenceName, 'has length', str(SequenceLength)+\
+diff --git a/tools/CallConsensus.py b/tools/CallConsensus.py
+index f8cea3d..278c092 100755
+--- a/tools/CallConsensus.py
++++ b/tools/CallConsensus.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ #
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+@@ -117,7 +117,7 @@ def CallAmbigBaseIfNeeded(bases, coverage):
+       except KeyError:
+         print('Unexpected set of bases', bases, 'found in', BaseFreqFile, \
+         ', not found amonst those for which we have ambiguity codes, namely:', \
+-        ' '.join(ReverseIUPACdict2.keys()) + '. Quitting.', file=sys.stderr)
++        ' '.join(list(ReverseIUPACdict2.keys())) + '. Quitting.', file=sys.stderr)
+         raise
+   if coverage < MinCovForUpper - 0.5:
+     return BaseHere.lower()
+@@ -133,7 +133,7 @@ def CallEnoughBases(BaseCounts, MinCoverage, coverage):
+   # Sort the counts from largest to smallest, and sort the associated bases into
+   # a matching order.
+   SortedBaseCounts, SortedExpectedBases = \
+-  zip(*sorted(zip(BaseCounts, ExpectedBasesNoN), reverse=True))
++  list(zip(*sorted(zip(BaseCounts, ExpectedBasesNoN), reverse=True)))
+ 
+   # Iterate through the counts, from largest to smallest, updating the total
+   # so far. We should stop once we reach the desired total, but not if the next
+@@ -194,7 +194,7 @@ with open(BaseFreqFile, 'r') as f:
+ 
+     # Convert to ints    
+     try:
+-      counts = map(int, counts)
++      counts = list(map(int, counts))
+     except ValueError:
+       print('Could not understand the base counts as ints on line', \
+       str(LineNumMin1+1), ',\n', line, 'in', BaseFreqFile + \
+@@ -246,7 +246,7 @@ consensus = PropagateNoCoverageChar(consensus)
+ if not args.ref_seq_missing:
+   NewConsensus = ''
+   NewRefSeq = ''
+-  for ConsensusBase, RefBase in itertools.izip(consensus, RefSeq):
++  for ConsensusBase, RefBase in zip(consensus, RefSeq):
+     if RefBase == GapChar and (ConsensusBase == '?' or ConsensusBase == \
+     GapChar):
+       continue
+diff --git a/tools/CheckFastaFileEquality.py b/tools/CheckFastaFileEquality.py
+index 3fdf304..8329a86 100755
+--- a/tools/CheckFastaFileEquality.py
++++ b/tools/CheckFastaFileEquality.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+diff --git a/tools/CompareTwoNumMappedBasesFiles.py b/tools/CompareTwoNumMappedBasesFiles.py
+index c98a83c..ae9d046 100755
+--- a/tools/CompareTwoNumMappedBasesFiles.py
++++ b/tools/CompareTwoNumMappedBasesFiles.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+diff --git a/tools/ConstructBestRef.py b/tools/ConstructBestRef.py
+index 4879acf..694cf26 100755
+--- a/tools/ConstructBestRef.py
++++ b/tools/ConstructBestRef.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251 
+@@ -202,7 +202,7 @@ ContigStartsAndEnds = {}
+ ContigLengths = {}
+ ContigGapFractions = {}
+ TotalGapsInContigs = 0
+-for ContigName,ContigSeq in ContigDict.items():
++for ContigName,ContigSeq in list(ContigDict.items()):
+   StartOfContig, EndOfContig = FindSeqStartAndEnd(ContigName, ContigSeq, \
+   AlignmentLength, AlignmentFile)
+   ContigStartsAndEnds[ContigName] = [StartOfContig,EndOfContig]
+@@ -214,7 +214,7 @@ for ContigName,ContigSeq in ContigDict.items():
+   float(NumInternalGaps)/(EndOfContig+1 - StartOfContig)
+ 
+ if args.summarise_contigs_1:
+-  for ContigName, length in ContigLengths.items():
++  for ContigName, length in list(ContigLengths.items()):
+     sys.stdout.write(str(length) + ' ' + str(ContigGapFractions[ContigName]))
+   exit(0)
+ 
+@@ -224,7 +224,7 @@ if args.summarise_contigs_1:
+ 
+ AllContigStarts = []
+ AllContigEnds = []
+-for [ContigStart,ContigEnd] in ContigStartsAndEnds.values():
++for [ContigStart,ContigEnd] in list(ContigStartsAndEnds.values()):
+   AllContigStarts.append(ContigStart)
+   AllContigEnds.append(ContigEnd)
+ StartOfFirstContig = min(AllContigStarts)
+@@ -242,14 +242,14 @@ EndOfLastContig = max(AllContigEnds)
+ FlattenedContigsSeq = GapChar * StartOfFirstContig
+ for position in range(StartOfFirstContig,EndOfLastContig+1):
+   DictOfBasesHere = {}
+-  for ContigName,ContigSeq in ContigDict.items():
++  for ContigName,ContigSeq in list(ContigDict.items()):
+     base = ContigSeq[position]
+     if base != GapChar:
+       DictOfBasesHere[ContigName] = ContigSeq[position]
+   if len(DictOfBasesHere) == 0:
+     BaseHere = GapChar
+   elif len(DictOfBasesHere) == 1:
+-    BaseHere = DictOfBasesHere.values()[0]
++    BaseHere = list(DictOfBasesHere.values())[0]
+   else:
+     LengthOfLongestContigWithBaseHere = 0
+     for ContigName in DictOfBasesHere:
+@@ -268,7 +268,7 @@ if args.contigs_length:
+ # counting the number of contigs with coverage there. Gaps inside contigs get
+ # counted as coverage; gaps between contigs get a count of 0.
+ ContigCoverageByPosition = [0 for n in range(0,AlignmentLength)]
+-for [start,end] in ContigStartsAndEnds.values():
++for [start,end] in list(ContigStartsAndEnds.values()):
+   for position in range(start,end+1):
+     ContigCoverageByPosition[position] += 1
+ 
+@@ -290,7 +290,7 @@ if ConsensusName != None:
+       if ContigCoverageByPosition[pos] < 2:
+         continue
+       ContigBases = []
+-      for ContigName, ContigSeq in ContigDict.items():
++      for ContigName, ContigSeq in list(ContigDict.items()):
+         StartOfContig, EndOfContig = ContigStartsAndEnds[ContigName]
+         if StartOfContig <= pos <= EndOfContig:
+           ContigBase = ContigSeq[pos]
+@@ -322,7 +322,7 @@ if ConsensusName != None:
+ 
+         # Find all bases (or gaps) inside a contig here.
+         ContigBases = []
+-        for ContigName, ContigSeq in ContigDict.items():
++        for ContigName, ContigSeq in list(ContigDict.items()):
+           StartOfContig, EndOfContig = ContigStartsAndEnds[ContigName]
+           if StartOfContig <= pos <= EndOfContig:
+             ContigBases.append(ContigSeq[pos])
+@@ -375,7 +375,7 @@ for position in range(0,AlignmentLength):
+     LengthOfDeletions += 1
+   if NumContigsHere == 1:
+     NoRefHasBaseHere = True
+-    for RefName,RefSeq in RefDict.items():
++    for RefName,RefSeq in list(RefDict.items()):
+       if RefSeq[position] != GapChar:
+         NoRefHasBaseHere = False
+         break
+@@ -394,7 +394,7 @@ if ExciseUniqueInsertions:
+ # contig coverage where the two are in agreement. Record the reference start and
+ # end.
+ ListOfRefsAndScores = []
+-for RefName,RefSeq in RefDict.items():
++for RefName,RefSeq in list(RefDict.items()):
+   NumBasesAgreeing = 0
+   OverlapLength = 0
+   StartOfRef, EndOfRef = FindSeqStartAndEnd(RefName, RefSeq, AlignmentLength,
+@@ -429,9 +429,9 @@ if args.print_best_score:
+   exit(0)
+ 
+ if args.summarise_contigs_2:
+-  ContigsWithBestRef = [RefDict[BestRefName]] + ContigDict.values()
++  ContigsWithBestRef = [RefDict[BestRefName]] + list(ContigDict.values())
+   NumSeqs = len(ContigsWithBestRef)
+-  for column in xrange(AlignmentLength-1,-1,-1):
++  for column in range(AlignmentLength-1,-1,-1):
+     if all(seq[column] == '-' for seq in ContigsWithBestRef):
+       for i in range(NumSeqs):
+         ContigsWithBestRef[i] = ContigsWithBestRef[i][:column] + \
+@@ -482,7 +482,7 @@ for position in range(0,AlignmentLength):
+ # Inserting line breaks: thanks Stackoverflow:
+ def insert_newlines(string, every=50):
+   lines = []
+-  for i in xrange(0, len(string), every):
++  for i in range(0, len(string), every):
+     lines.append(string[i:i+every])
+   return '\n'.join(lines)
+ 
+diff --git a/tools/ConvertAlnToColourCodes.py b/tools/ConvertAlnToColourCodes.py
+index 9908099..e1e3826 100755
+--- a/tools/ConvertAlnToColourCodes.py
++++ b/tools/ConvertAlnToColourCodes.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+diff --git a/tools/CorrectContigs.py b/tools/CorrectContigs.py
+index e1c660a..120aa67 100755
+--- a/tools/CorrectContigs.py
++++ b/tools/CorrectContigs.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk and Francois Blanquart who
+ ## wrote the original version of this script in R.
+@@ -131,7 +131,7 @@ if len(HitDict) == 0:
+   exit(1)
+ 
+ CorrectionsNeeded = False
+-for contig, hits in HitDict.items():
++for contig, hits in list(HitDict.items()):
+ 
+   # Where a contig has one hit contained entirely inside another, remove the
+   # sub-hit.
+@@ -204,7 +204,7 @@ for seq in SeqIO.parse(open(args.contigs),'fasta'):
+   ContigDict[seq.id] = seq
+ 
+ # Check we have a sequence for each hit
+-UnknownHits = [hit for hit in HitDict.keys() if not hit in ContigDict.keys()]
++UnknownHits = [hit for hit in list(HitDict.keys()) if not hit in list(ContigDict.keys())]
+ if len(UnknownHits) != 0:
+   print('The following hits in', args.BlastFile, 'do not have a corresponding',\
+   'sequence in', args.contigs +':\n', ' '.join(UnknownHits) + \
+@@ -212,7 +212,7 @@ if len(UnknownHits) != 0:
+   exit(1)
+ 
+ OutSeqs = []
+-for ContigName, hits in HitDict.items():
++for ContigName, hits in list(HitDict.items()):
+ 
+   seq = ContigDict[ContigName]
+   SeqLength = len(seq.seq)
+diff --git a/tools/FillConsensusGaps.py b/tools/FillConsensusGaps.py
+index b8c8bfc..b75e10d 100755
+--- a/tools/FillConsensusGaps.py
++++ b/tools/FillConsensusGaps.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+@@ -66,7 +66,7 @@ if len(ConsensusAsString) != len(RefAsString):
+ # The main bit.
+ NewConsensus = ''
+ ExpectedBases = ['A', 'C', 'G', 'T', '-']
+-for ConsensusBase, RefBase in itertools.izip(ConsensusAsString, RefAsString):
++for ConsensusBase, RefBase in zip(ConsensusAsString, RefAsString):
+   if ConsensusBase == '?' or ConsensusBase == 'N':
+     NewConsensus += RefBase
+   elif ConsensusBase in ExpectedBases:
+diff --git a/tools/FindAlignmentCoordFromSeqCoord.py b/tools/FindAlignmentCoordFromSeqCoord.py
+index bf207b7..1260cc5 100755
+--- a/tools/FindAlignmentCoordFromSeqCoord.py
++++ b/tools/FindAlignmentCoordFromSeqCoord.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+diff --git a/tools/FindClippingHotSpots.py b/tools/FindClippingHotSpots.py
+index 41cb666..1fe18e1 100755
+--- a/tools/FindClippingHotSpots.py
++++ b/tools/FindClippingHotSpots.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+@@ -98,14 +98,14 @@ if NumReads == 0:
+ ClipPositionCounts = collections.Counter(ClipPositions)
+ 
+ if args.min_read_count > 1:
+-  ClipPositionCounts = {key:value for key, value in ClipPositionCounts.items() \
++  ClipPositionCounts = {key:value for key, value in list(ClipPositionCounts.items()) \
+   if value >= args.min_read_count}
+ 
+ # Print the output
+ output = 'Reference position, Number of reads clipped, Percentage of spanning'+\
+ ' reads clipped'
+ 
+-for pos, count in sorted(ClipPositionCounts.items(), key=lambda x:x[1], \
++for pos, count in sorted(list(ClipPositionCounts.items()), key=lambda x:x[1], \
+ reverse=True):
+   # 100% of reads overhanging the start or end of the reference are clipped.
+   if pos == 0 or pos == RefLength:
+diff --git a/tools/FindContaminantReadPairs.py b/tools/FindContaminantReadPairs.py
+index e25559f..222f813 100755
+--- a/tools/FindContaminantReadPairs.py
++++ b/tools/FindContaminantReadPairs.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ #
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+@@ -83,7 +83,7 @@ HitsFor2reads = ReadBlastFile(BlastFileFor2reads)
+ 
+ # Find contaminant read pairs
+ ContaminantReadPairs = []
+-for ReadName, [read1Hit, read1Evalue] in HitsFor1reads.items():
++for ReadName, [read1Hit, read1Evalue] in list(HitsFor1reads.items()):
+ 
+   try:
+     [read2Hit,read2Evalue] = HitsFor2reads[ReadName]
+diff --git a/tools/FindNamedReadsInSortedFastq.py b/tools/FindNamedReadsInSortedFastq.py
+index f144551..6062d93 100755
+--- a/tools/FindNamedReadsInSortedFastq.py
++++ b/tools/FindNamedReadsInSortedFastq.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ #
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+diff --git a/tools/FindNumMappedBases.py b/tools/FindNumMappedBases.py
+index 22fc4b8..0f85b1b 100755
+--- a/tools/FindNumMappedBases.py
++++ b/tools/FindNumMappedBases.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+diff --git a/tools/FindSeqsInFasta.py b/tools/FindSeqsInFasta.py
+index 9490c22..5573d92 100755
+--- a/tools/FindSeqsInFasta.py
++++ b/tools/FindSeqsInFasta.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+diff --git a/tools/LinkIdentityToCoverage.py b/tools/LinkIdentityToCoverage.py
+index 9733663..a34fad8 100755
+--- a/tools/LinkIdentityToCoverage.py
++++ b/tools/LinkIdentityToCoverage.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+@@ -137,7 +137,7 @@ for pos in range(RefLength):
+ # position-that-has-that-coverage) by that total number of reads gives the mean
+ # identity for that coverage.
+ outstring = 'Coverage,Number of positions with that coverage,Mean identity'
+-for coverage, count in sorted(CoverageCounts.items(), key=lambda x: x[0]):
++for coverage, count in sorted(list(CoverageCounts.items()), key=lambda x: x[0]):
+   TotalNumReads = coverage * count
+   MeanIdentity = float(IdentityTotalsByCoverage[coverage]) / TotalNumReads
+   outstring += '\n' + str(coverage) + ',' + str(count) + ',' + str(MeanIdentity)
+diff --git a/tools/MergeAlignments.py b/tools/MergeAlignments.py
+index c633bc6..13bf359 100755
+--- a/tools/MergeAlignments.py
++++ b/tools/MergeAlignments.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251 
+@@ -82,8 +82,8 @@ for InputFile in [MainAlnFile, PairedAlnFile]:
+ 
+ # Read in the sequences from the main alignment file (into a dictionary)
+ MainAlnSeqDict, MainAlnSeqLength = ReadSequencesFromFile(MainAlnFile)
+-MainAlnSeqNames = MainAlnSeqDict.keys()
+-MainAlnSeqs     = MainAlnSeqDict.values()
++MainAlnSeqNames = list(MainAlnSeqDict.keys())
++MainAlnSeqs     = list(MainAlnSeqDict.values())
+ 
+ 
+ # Read in the sequences from the paired alignment file
+@@ -94,7 +94,7 @@ if len(PairedAlnSeqDict) != 2:
+   print('File', PairedAlnFile, 'contains', len(PairedAlnSeqDict),\
+   'sequences; two were expected.\nQuitting.', file=sys.stderr)
+   exit(1)
+-Seq1name, Seq2name = PairedAlnSeqDict.keys()
++Seq1name, Seq2name = list(PairedAlnSeqDict.keys())
+ 
+ # Check that one of the sequences is in the main alignment file (the 'Ref')
+ # and one is not (the 'SeqToAdd').
+@@ -179,7 +179,7 @@ for MainPosition,BaseInMainRef in enumerate(RefSeqFromMain):
+     EveryBaseHereIsAGap = False
+     if ExciseUniqueInsertionsOfRefInMainAlignment:
+       EveryBaseHereIsAGap = True
+-      for SeqName, seq in MainAlnSeqDict.items():
++      for SeqName, seq in list(MainAlnSeqDict.items()):
+         if SeqName == RefSeqName:
+           continue
+         elif seq[MainPosition] != GapChar:
+@@ -196,7 +196,7 @@ for MainPosition,BaseInMainRef in enumerate(RefSeqFromMain):
+     RefInMainHasUniqueInsertion = False
+     if ExciseUniqueInsertionsOfRefInMainAlignment:
+       RefInMainHasUniqueInsertion = True
+-      for SeqName, seq in MainAlnSeqDict.items():
++      for SeqName, seq in list(MainAlnSeqDict.items()):
+         if SeqName == RefSeqName:
+           continue
+         elif seq[MainPosition] != GapChar:
+@@ -223,7 +223,7 @@ FinalSeqToAdd = PropagateNoCoverageChar(SeqToAdd_WithGaps)
+ # Thanks Stackoverflow:
+ def insert_newlines(string, every=FastaSeqLineLength):
+     lines = []
+-    for i in xrange(0, len(string), every):
++    for i in range(0, len(string), every):
+         lines.append(string[i:i+every])
+     return '\n'.join(lines)
+ 
+diff --git a/tools/MergeBaseFreqsAndCoords.py b/tools/MergeBaseFreqsAndCoords.py
+index 970117c..fef45bb 100755
+--- a/tools/MergeBaseFreqsAndCoords.py
++++ b/tools/MergeBaseFreqsAndCoords.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+diff --git a/tools/PrintSeqLengths.py b/tools/PrintSeqLengths.py
+index 5f1f3dc..a22ffa1 100755
+--- a/tools/PrintSeqLengths.py
++++ b/tools/PrintSeqLengths.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+diff --git a/tools/RemoveBlankColumns.py b/tools/RemoveBlankColumns.py
+index beebfee..d2a62dd 100755
+--- a/tools/RemoveBlankColumns.py
++++ b/tools/RemoveBlankColumns.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+@@ -38,7 +38,7 @@ if args.q_mark:
+ 
+ alignment = AlignIO.read(args.FastaFile, "fasta")
+ AlignmentLength = alignment.get_alignment_length()
+-for column in reversed(xrange(AlignmentLength)):
++for column in reversed(range(AlignmentLength)):
+   RemoveThisCol = True
+   FirstBaseSeen = None
+   for base in alignment[:, column]:
+diff --git a/tools/RemoveDivergentReads.py b/tools/RemoveDivergentReads.py
+index 26c9daf..ac06a63 100755
+--- a/tools/RemoveDivergentReads.py
++++ b/tools/RemoveDivergentReads.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+diff --git a/tools/RemoveEmptySeqs.py b/tools/RemoveEmptySeqs.py
+index 0c49800..dad24a0 100755
+--- a/tools/RemoveEmptySeqs.py
++++ b/tools/RemoveEmptySeqs.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+diff --git a/tools/RemoveTrailingWhitespace.py b/tools/RemoveTrailingWhitespace.py
+index dd51ec5..3c01b65 100755
+--- a/tools/RemoveTrailingWhitespace.py
++++ b/tools/RemoveTrailingWhitespace.py
+@@ -26,4 +26,4 @@ args = parser.parse_args()
+ 
+ with open(args.InputFile, 'r') as f:
+   for line in f:
+-    print line.rstrip()
++    print(line.rstrip())
+diff --git a/tools/SplitFasta.py b/tools/SplitFasta.py
+index 1a654c4..f81ff79 100755
+--- a/tools/SplitFasta.py
++++ b/tools/SplitFasta.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+@@ -78,5 +78,5 @@ if SeqDict == {}:
+   exit(1)
+ 
+ # Write the files.
+-for FilenameSafeID, seq in SeqDict.items():
++for FilenameSafeID, seq in list(SeqDict.items()):
+   SeqIO.write(seq, FilenameFromSeqID(FilenameSafeID), "fasta")
+diff --git a/tools/TranslateSeqForGlobalAln.py b/tools/TranslateSeqForGlobalAln.py
+index 0a91b8f..ea09b62 100755
+--- a/tools/TranslateSeqForGlobalAln.py
++++ b/tools/TranslateSeqForGlobalAln.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+diff --git a/tools/UngapFasta.py b/tools/UngapFasta.py
+index 85ba54a..2dd68b1 100755
+--- a/tools/UngapFasta.py
++++ b/tools/UngapFasta.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python
+-from __future__ import print_function
++
+ 
+ ## Author: Chris Wymant, c.wymant@imperial.ac.uk
+ ## Acknowledgement: I wrote this while funded by ERC Advanced Grant PBDR-339251
+-- 
+2.13.3
+
