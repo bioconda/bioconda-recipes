@@ -2,7 +2,7 @@
 
 #downloading outside of meta.yaml because bioconda lint cannot handle multiple list till they more to verison 3 of bioconda
 
-curl -L -s http://gitlab-irida.corefacility.ca/analysis-pipelines/snvphyl-tools/repository/archive.tar.gz?ref=conda-dev > archive.tar.gz
+curl -L -s https://github.com/phac-nml/snvphyl-tools/archive/conda-dev4.tar.gz > archive.tar.gz
 tar -zxvf archive.tar.gz
 
 #copy over custom bcftools plugin
