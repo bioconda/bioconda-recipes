@@ -78,7 +78,7 @@ then
 fi
 
 # When building master or bulk, upload packages to anaconda and quay.io.
-if [[ ( $TRAVIS_BRANCH == "master" || $TRAVIS_BRANCH == "bulk" ) && "$TRAVIS_PULL_REQUEST" == "false" ]]
+if [[ ( $TRAVIS_BRANCH == "master" || $TRAVIS_BRANCH == "bulk" ) && "$TRAVIS_PULL_REQUEST" == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
 then
     if [[ $TRAVIS_OS_NAME == "linux" ]]
     then

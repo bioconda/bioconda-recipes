@@ -10,11 +10,6 @@ loggingConfiguration=/' rabix
 sed -i.bak 's#java#$env_prefix/bin/java#' rabix
 rm -f *.bak
 
-# Change defaults to enable running on single machine non-Docker environments
-# https://github.com/rabix/bunny/issues/258#issuecomment-302366409
-sed -i.bak 's/executor.set_permissions=true/executor.set_permissions=false/' config/core.properties
-sed -i.bak 's/resource.fitter.enabled=false/resource.fitter.enabled=true/' config/core.properties
-
 cp -R ./* $outdir/
 
 ln -s $outdir/rabix $PREFIX/bin
