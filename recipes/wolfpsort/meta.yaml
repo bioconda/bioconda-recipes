@@ -1,0 +1,42 @@
+package:
+  name: wolfpsort
+  version: 0.2
+
+source:
+  fn: wolfpsort-v0.2.tar.gz
+  url: https://github.com/fmaguire/WoLFPSort/archive/905486837d2ff18df16b3449cd03f5a4ed1425e8.tar.gz
+  sha256: ed3f392ac310bef9d8ab82684736f53d79247c051e67efae445ce3cad7a5d4c0
+
+about:
+  home: https://github.com/fmaguire/WoLFPSort
+  license: Custom
+  license_file: LICENSE
+  summary: 'Protein Subcellular Localization Prediction with WoLF PSORT'
+  notes: |
+    WoLF PSORT by Paul Horton was originally hosted at http://wolfpsort.org/
+    but the domain lapsed. The recipe fetches the code from an authorised
+    mirror of the code on GitHub.
+
+build:
+  number: 0
+  skip: True # [osx]
+
+requirements:
+  run:
+    - perl
+
+test:
+  files:
+    - four_human_proteins.fasta
+  commands:
+    # These are trivial tests,
+    - runWolfPsortSummary --help
+    - runWolfPsortHtmlTables --help
+    # Real test which will confirm the interal binaries etc are working:
+    - runWolfPsortSummary animal < four_human_proteins.fasta | grep -c "_HUMAN"
+    # Expected output is 4 matches, raw output should be::
+    # # k used for kNN is: 32
+    # sp|Q9BS26|ERP44_HUMAN extr 18, E.R. 5, plas 3, mito 2, lyso 2
+    # sp|Q9NSY1|BMP2K_HUMAN nucl 25, cyto_nucl 17, cyto 7
+    # sp|P06213|INSR_HUMAN extr_plas 11.5, plas 10.5, extr 9.5, pero 5, E.R. 4
+    # sp|P08100|OPSD_HUMAN plas 32
