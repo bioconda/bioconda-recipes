@@ -500,7 +500,8 @@ def dependent(recipe_folder, config, restrict=False, dependencies=None, reverse_
     print('\n'.join(sorted(pkgs)))
 
 
-@arg('package', help='Bioconductor package name')
+@arg('package', help='''Bioconductor package name. This is case-sensitive, and
+     must match the package name on the Bioconductor site.''')
 @arg('recipe_folder', help='Path to recipes directory')
 @arg('config', help='Path to yaml file specifying the configuration')
 @arg('--versioned', action='store_true',
@@ -524,7 +525,8 @@ def bioconductor_skeleton(
     pkg_version=None, bioc_version=None, loglevel='info'
 ):
     """
-    Build a Bioconductor recipe
+    Build a Bioconductor recipe. The recipe will be created in the `recipes`
+    directory and will be prefixed by "bioconductor-".
     """
     setup_logger(loglevel)
     _bioconductor_skeleton.write_recipe(

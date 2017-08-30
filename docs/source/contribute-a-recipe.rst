@@ -44,9 +44,22 @@ This will:
 
 .. note::
 
-    This operation runs relatively quickly, so you might consider running it every
-    time you build and test a new recipe to ensure tests on travis-ci go as
-    smoothly as possible.
+    If you plan on running `bioconda-utils` outside the context of
+    `simulate-travis.py` -- for example to build recipe skeletons, inspect the
+    DAG of recipes, or other maintenance and development work -- you need to
+    call it using its full path. If you used ``/tmp/miniconda`` as the
+    bootstrap path in the command above, then use
+    ``/tmp/miniconda/bin/bioconda-utils``.
+
+    This is by design: we want to keep all bioconda-related tools, which may
+    have specific dependencies that must exist in the root environment,
+    isolated from any environments you may have on your system.
+
+.. note::
+
+    The bootstrap operation runs relatively quickly, so you might consider
+    running it every time you build and test a new recipe to ensure tests on
+    travis-ci go as smoothly as possible.
 
     If you are running into particularly difficult-to-troubleshoot issues, try
     removing the installation directory completely and then re-installing using
