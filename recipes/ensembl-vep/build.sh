@@ -22,6 +22,7 @@ cp INSTALL.pl $target/vep_install
 cp filter_vep $target/filter_vep
 cp vep $target/vep
 cp haplo $target/haplo
+cp variant_recoder $target/variant_recoder
 cp -r modules $target/modules
 
 chmod 0755 $target/
