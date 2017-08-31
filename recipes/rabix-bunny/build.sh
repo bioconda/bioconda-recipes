@@ -12,7 +12,9 @@ rm -f *.bak
 
 # Change defaults to enable running on single machine non-Docker environments
 # https://github.com/rabix/bunny/issues/258#issuecomment-302366409
-sed -i.bak 's/executor.set_permissions=true/executor.set_permissions=false/' config/core.properties
+# Not working with Docker runs, so avoid doing. Need better way of managing
+# non-Docker environments in general.
+#sed -i.bak 's/executor.set_permissions=true/executor.set_permissions=false/' config/core.properties
 
 cp -R ./* $outdir/
 
