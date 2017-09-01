@@ -1,16 +1,30 @@
 package:
   name: genepop
-  version: "4.5.1"
+  version: "4.6"
+
 build:
   number: 0
-  skip: True # [osx]
+
 source:
+  # Sadly they reuse the same URL and filename for each release
+  # so the checksum is our fall back for coping with this.
   fn: sources.tar.gz
   url: http://kimura.univ-montp2.fr/~rousset/sources.tar.gz
+  sha256: 9a87c9f5401d9de5a9a675e8c4db64ae6f63e83e7924d678c7da12a2210c9475
+
 requirements:
   build:
+    - gcc # [linux]
+    - llvm # [osx]
   run:
+    - libgcc # [linux]
+
 about:
   home: http://kimura.univ-montp2.fr/~rousset/Genepop.htm
   license: CeCILL
   summary: The Genepop population genetics package.
+
+test:
+  commands:
+    # Expected output is the version and an error message
+    - echo does_not_exist.txt | Genepop | grep "Genepop version"

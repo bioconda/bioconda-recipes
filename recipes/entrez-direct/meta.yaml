@@ -1,21 +1,29 @@
+{% set version = "7.00" %}
+{% set sha256 = "6e655d05f1e2c23dc26fb78176307be045ef5db3ca30d518bdb969fc77fb3e3b"  %}
+
+
+
 package:
   name: entrez-direct
-  version: "5.80"
+  version: {{ version }}
 
 build:
-  number: 0
+  number: 1
 
 source:
   fn: edirect.tar.gz
-  url: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/2016-12-09/edirect.tar.gz
-  sha256: 0dfa43446d19c608fa322b33a3f07bdeebd7287f33d84e335c1b37509693835a
+  url: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.20170714/edirect.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+  - ftp-cp.patch
+  - xtract.patch
 
 requirements:
   build:
-  - perl-threaded
+  - perl
 
   run:
-  - perl-threaded
+  - perl
   - perl-lwp-protocol-https
 
 test:
@@ -32,9 +40,10 @@ test:
     - enotify --help
     - esummary --help
     - entrez-phrase-search --help
+    - xtract -version
 
 about:
-  home: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/2016-03-23/README
+  home: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/7.00.20170710/README
   license: PUBLIC DOMAIN
   summary: Entrez Direct (EDirect) is an advanced method for accessing the NCBI's set of interconnected databases (publication, sequence, structure, gene, variation, expression, etc.) from a UNIX terminal window. Functions take search terms from command-line arguments. Individual operations are combined to build multi-step queries. Record retrieval and formatting normally complete the process.
 

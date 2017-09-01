@@ -1,11 +1,13 @@
 package:
   name: r-spp
-  version: "1.13"
+  version: "1.14post"
 
 source:
-  fn: 1.13.tar.gz
-  url: https://github.com/hms-dbmi/spp/archive/1.13.tar.gz
-  md5: bdea5fbf5fbd09243f7ddd6cf8a062c8
+  fn: "1.14post.zip"
+  url: https://github.com/hms-dbmi/spp/archive/c6526d2bc8eeaaa889970cd2f8d30c998f3ea320.zip
+  sha256: 61f0d21f2c5127e570bf619445c89968009cfbd32b995984cf20788f986e666b 
+  patches: # [osx]
+    - Makevars.patch  # [osx]
 
 build:
   number: 0
@@ -18,23 +20,30 @@ build:
 
 requirements:
   build:
-    - r
+    - r-base
     - boost {{CONDA_BOOST}}*
     - r-catools
     - bioconductor-rsamtools
-    - gcc
+    - gcc # [linux]
+    - llvm # [osx]
+    - zlib
+    - bzip2
 
   run:
-    - r
+    - r-base
     - boost {{CONDA_BOOST}}*
     - r-catools
     - bioconductor-rsamtools
-    - libgcc
+    - libgcc # [linux]
+    - zlib
+    - bzip2
 
 test:
   commands:
-    - $R -e "library('spp')" # [not win]
+    - $R -e "library(spp)"
+    - $R -e "library(spp); read.bam.tags(system.file(\"extdata\", \"ex1.bam\", package=\"Rsamtools\"))"
 
 about:
   license: GPL
   summary: 'ChIP-seq peak caller'
+  home: http://compbio.med.harvard.edu/Supplements/ChIP-seq
