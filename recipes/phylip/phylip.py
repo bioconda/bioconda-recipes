@@ -20,11 +20,11 @@ def main():
         sys.exit(1)
 
     progname = sys.argv[1]
+    program = bindir+"/"+progname
 
     if progname == "test": # hidden test of conda phylip installation
         test(bindir)
     elif(os.path.isfile(program)):
-        program = bindir+"/"+progname
         subprocess.run(program, check=True)
     else:
         print("{prog} does not exist in Phylip".format(prog=progname))
