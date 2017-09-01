@@ -13,6 +13,9 @@ chmod 0755 "${PREFIX}/bin/runWolfPsortHtmlTables"
 # - runAddAlignmentToHtml
 # - wolfPredict
 # - WoLFPSORTpredictAndAlign
+#
+# We remove the SPARC binaries to avoid confusing patchelf.
+rm -rf bin/binByPlatform/binary-sparc
 cp bin/binByPlatform/binary-i386/* bin/
 mkdir -p ${PREFIX}/opt
 mv * ${PREFIX}/opt/
