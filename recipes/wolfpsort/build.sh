@@ -19,3 +19,6 @@ rm -rf bin/binByPlatform/binary-sparc
 cp bin/binByPlatform/binary-i386/* bin/
 mkdir -p ${PREFIX}/opt
 mv * ${PREFIX}/opt/
+
+# Copy the license back as the build will look for it in source folder...
+cp ${PREFIX}/opt/LICENSE .
