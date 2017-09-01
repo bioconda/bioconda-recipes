@@ -2,8 +2,8 @@
 
 # Setup the wrapper scripts under ${PREFIX}/bin/
 mkdir -p "${PREFIX}/bin"
-mv "${RECIPE_DIR}/runWolfPsortSummary.py" "${PREFIX}/bin/runWolfPsortSummary"
-mv "${RECIPE_DIR}/runWolfPsortHtmlTables.py" "${PREFIX}/bin/runWolfPsortHtmlTables"
+cp "${RECIPE_DIR}/chdir_wrapper.py" "${PREFIX}/bin/runWolfPsortSummary"
+cp "${RECIPE_DIR}/chdir_wrapper.py" "${PREFIX}/bin/runWolfPsortHtmlTables"
 chmod 0755 "${PREFIX}/bin/runWolfPsortSummary"
 chmod 0755 "${PREFIX}/bin/runWolfPsortHtmlTables"
 
