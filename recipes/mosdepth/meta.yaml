@@ -1,27 +1,39 @@
 {% set name = "mosdepth" %}
-{% set version = "0.1.1" %}
-{% set sha256hash = "4cc5aafd0a28a0203fb1aa12289f3a11a6f6301aa3681176d3719a23c33324d2" %}
+{% set version = "0.1.4a" %}
+{% set revision = "239076b" %}
+{% set sha256hash = "62b8be8c6276b46816e98fd74c30f31bf45a231ccfdcbe4e61fb75f286490083" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/brentp/mosdepth/releases/download/v{{ version }}/mosdepth
-  fn: {{ name }}
+  fn: {{ name }}-{{revision}}.tar.gz
+  url: https://github.com/brentp/mosdepth/archive/{{ revision }}.tar.gz
+  #url: https://github.com/brentp/mosdepth/releases/download/v{{ version }}/mosdepth
+  #fn: {{ name }}-{{ version }}
   sha256: {{ sha256hash }}
+  patches:
+    - install.diff
 
 build:
   number: 0
   skip: True  # [osx]
+  string: "htslib{{CONDA_HTSLIB}}_{{PKG_BUILDNUM}}"
 
 requirements:
+  build:
+    - gcc
+    - pcre
+    - htslib {{CONDA_HTSLIB}}*
   run:
-    - htslib
+    - libgcc
+    - pcre
+    - htslib {{CONDA_HTSLIB}}*
 
 test:
   commands:
-    - mosdepth -h 2>&1 | grep 'mosdepth'
+    - mosdepth -h
 
 about:
   home: https://github.com/brentp/mosdepth
