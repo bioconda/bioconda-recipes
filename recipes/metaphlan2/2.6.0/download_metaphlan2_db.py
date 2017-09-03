@@ -7,7 +7,7 @@ import urllib2
 import shutil
 
 
-METAPHLAN2_URL = 'https://bitbucket.org/biobakery/metaphlan2/get/2.6.0.tar.gz'
+METAPHLAN2_URL = 'https://depot.galaxyproject.org/software/metaphlan2/metaphlan2_2.6.0_src_all.tar.gz'
 
 
 def download_file(url):
@@ -61,3 +61,4 @@ if __name__ == "__main__":
     print(file_list)
 
     shutil.move("biobakery-metaphlan2-c43e40a443ed/db_v20", output)
+    shutil.rmtree("biobakery-metaphlan2-c43e40a443ed/")
