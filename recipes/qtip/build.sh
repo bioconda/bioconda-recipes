@@ -13,4 +13,5 @@ mkdir -p $PREFIX/bin
 mkdir -p $PACKAGE_HOME
 
 cp -r * $PACKAGE_HOME
-ln -s -r $PACKAGE_HOME/qtip $PREFIX/bin
+cd $PREFIX/bin
+ln -s $PACKAGE_HOME/qtip qtip
