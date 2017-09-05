@@ -16,6 +16,7 @@ chmod 0755 "${PREFIX}/bin/runWolfPsortHtmlTables"
 #
 # We remove the SPARC binaries to avoid confusing patchelf.
 rm -rf bin/binByPlatform/binary-sparc
+chmod 0755 bin/binByPlatform/binary-i386/*
 cp bin/binByPlatform/binary-i386/* bin/
 mkdir -p ${PREFIX}/opt
 mv * ${PREFIX}/opt/
