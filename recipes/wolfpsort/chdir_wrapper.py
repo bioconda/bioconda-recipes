@@ -19,6 +19,9 @@ os.chdir(tool_path)
 if not os.path.isfile(tool_name):
     os.chdir(saved_dir)
     sys.exit("Could not find wrapped tool %s in %s" % (tool_name, tool_path))
+if not os.access(tool_name, os.X_OK):
+    os.chdir(saved_dir)
+    sys.exit("Wrapped tool %s in %s not executable" % (tool_name, tool_path))
 args = ["./" + tool_name] + sys.argv[1:]
 return_code = subprocess.call(args)
 os.chdir(saved_dir)
