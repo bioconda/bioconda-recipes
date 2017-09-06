@@ -1,0 +1,41 @@
+{% set name = "connor" %}
+{% set version = "0.5" %}
+{% set sha256 = "42af5303035a3542ba3b7c392d0baa4a73f4b1c67732b4b960f759688d5132ca" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: v{{ version }}.tar.gz
+  url: https://github.com/umich-brcf-bioinf/Connor/archive/v{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record record.txt
+
+requirements:
+  build:
+    - python
+    - pysam 0.9.*
+    - setuptools
+  run:
+    - python
+    - pysam 0.9.*
+
+test:
+  commands:
+    - connor --help
+
+about:
+  home: https://github.com/umich-brcf-bioinf/Connor
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: 'A command-line tool to deduplicate bam files based on custom, inline barcoding.'
+
+extra:
+  recipe-maintainers:
+    - sebastian-luna-valero
