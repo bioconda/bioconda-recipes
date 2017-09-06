@@ -7,6 +7,13 @@ export LIBS="-pthread -lm ${PREFIX}/lib/libz.a -lm ${PREFIX}/lib/libjemalloc.a -
 
 ./configure
 
-make
+if [ $UNAME == "Darwin" ]
+then
+  echo "Mac"
+  make -f Makefile_mac
+else
+  echo "Linux"
+ make -f Makefile_linux
+fi
 cp build/hera $PREFIX/bin
 cp build/hera_build $PREFIX/bin
