@@ -1,12 +1,14 @@
-{% set version = "1.2.0" %}
+{% set name = "uropa" %}
+{% set version = "1.2.1" %}
 
 package:
-  name: uropa
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.molgen.mpg.de/loosolab/UROPA/archive/{{ version }}.tar.gz
-  md5: b6894ffb1c4616788a6a89d0541e5d19
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  fn: {{ name }}-{{ version }}.tar.gz
+  md5: 10e53bad46946c6c5f29a577de1220a7
 
 build:
   skip: True # [not py27]
@@ -14,6 +16,7 @@ build:
 requirements:
   build:
     - python
+    - setuptools
   run:
     - python
     - numpy
@@ -32,11 +35,20 @@ requirements:
 
 test:
   commands:
-    - "uropa.py -h > /dev/null"
-    - "summary.R -h > /dev/null"
-    - "reformat_output.R -h > /dev/null"
+    - "uropa -h"
+    - "uropa_summary.R -h"
+    - "uropa_reformat_output.R -h"
+    - "uropa2gtf.R -h"
 
 about:
   home: https://github.molgen.mpg.de/loosolab/UROPA
+  doc_url: http://uropa-manual.readthedocs.io
   license: MIT
-  summary: "UROPA (Universal RObust Peak Annotator) is a command line based tool, intended for genomic region annotation."
+  summary: |
+    UROPA (Universal RObust Peak Annotator) is a command line based tool, intended for genomic region annotation from e.g. peak calling.
+    It detects the most appropriate annotation by taking parameters such as feature type, anchor, direction and strand into account.
+    Furthermore, it allows filtering for GTF attribute values, e.g. protein_coding.
+
+extra:
+  recipe-maintainers:
+    - jenzopr
