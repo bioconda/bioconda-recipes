@@ -1,0 +1,3 @@
+
+
+$PYTHON setup.py install
