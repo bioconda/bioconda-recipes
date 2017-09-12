@@ -3,6 +3,9 @@
 cp -r bin $PREFIX
 cp -r lib $PREFIX
 
+mkdir -p $PREFIX/share/orthomcl/
+cp doc/OrthoMCLEngine/Main/orthomcl.config.template $PREFIX/share/orthomcl/
+
 chmod +x $PREFIX/bin/orthomclAdjustFasta
 chmod +x $PREFIX/bin/orthomclBlastParser
 chmod +x $PREFIX/bin/orthomclDropSchema
