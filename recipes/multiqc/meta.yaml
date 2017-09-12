@@ -1,17 +1,15 @@
 package:
   name: multiqc
-  version: "1.0"
+  version: "1.2"
 
 source:
-  fn: v1.0.tar.gz
-  url: https://github.com/ewels/MultiQC/archive/v1.0.tar.gz
-  md5: 0ba67f2fcb20c6d42929069a0865731f
+  fn: v1.2.tar.gz
+  url: https://github.com/ewels/MultiQC/archive/v1.2.tar.gz
+  md5: 55dac8b0dc055810ae09ec9b72e0603e
 
 build:
-  number: 4
+  number: 0
   preserve_egg_dir: True
-  # click needs to be patched in order to properly detect unicode in py3k
-  skip: true  # [py3k]
 
 requirements:
   build:
@@ -21,8 +19,10 @@ requirements:
     - lzstring
     - jinja2 >=2.9
     - matplotlib
+    - markdown
     - numpy
     - pyyaml
+    - requests
     - simplejson
     - spectra
 
@@ -33,8 +33,10 @@ requirements:
     - lzstring
     - jinja2 >=2.9
     - matplotlib
+    - markdown
     - numpy
     - pyyaml
+    - requests
     - simplejson
     - spectra
     - libgcc  # [linux]
@@ -45,28 +47,40 @@ test:
     - multiqc
     - multiqc.modules
     - multiqc.modules.adapterRemoval
+    - multiqc.modules.afterqc
     - multiqc.modules.bamtools
     - multiqc.modules.bcftools
+    - multiqc.modules.bcl2fastq
+    - multiqc.modules.biobloomtools
     - multiqc.modules.bismark
     - multiqc.modules.bowtie1
     - multiqc.modules.bowtie2
     - multiqc.modules.busco
     - multiqc.modules.clusterflow
+    - multiqc.modules.conpair
     - multiqc.modules.custom_content
     - multiqc.modules.cutadapt
+    - multiqc.modules.disambiguate
     - multiqc.modules.fastq_screen
     - multiqc.modules.fastqc
     - multiqc.modules.featureCounts
+    - multiqc.modules.flexbar
     - multiqc.modules.gatk
     - multiqc.modules.goleft_indexcov
     - multiqc.modules.hicup
+    - multiqc.modules.hisat2
+    - multiqc.modules.homer
     - multiqc.modules.htseq
+    - multiqc.modules.jellyfish
     - multiqc.modules.kallisto
+    - multiqc.modules.leehom
+    - multiqc.modules.macs2
     - multiqc.modules.methylQA
     - multiqc.modules.peddy
     - multiqc.modules.picard
     - multiqc.modules.preseq
     - multiqc.modules.prokka
+    - multiqc.modules.qorts
     - multiqc.modules.qualimap
     - multiqc.modules.quast
     - multiqc.modules.rna_seqc
@@ -79,14 +93,15 @@ test:
     - multiqc.modules.snpeff
     - multiqc.modules.sortmerna
     - multiqc.modules.star
+    - multiqc.modules.theta2
     - multiqc.modules.tophat
     - multiqc.modules.trimmomatic
+    - multiqc.modules.vcftools
     - multiqc.plots
     - multiqc.templates
     - multiqc.templates.default
-    # Tests break:
-    #   AttributeError: module 'multiqc.utils.config' has no attribute 'data_tmp_dir'
-    # (fixed in v1.1dev for future releases)
+    # Can be added back after v1.3 release - fixed here:
+    # https://github.com/ewels/MultiQC/commit/a2c704c92b2fee5db637348ff4ad0c150a30708d
     # - multiqc.templates.default_dev
     - multiqc.templates.geo
     - multiqc.templates.sections
@@ -95,10 +110,15 @@ test:
 
   commands:
     # click requires a unicode locale
-    - LANG=C.UTF-8 multiqc --version
+    - LC_ALL=C.UTF-8 LANG=C.UTF-8 multiqc --version # [linux]
+    - LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 multiqc --version # [osx]
 
 about:
   home: http://multiqc.info
   license: GNU General Public License v3 (GPLv3)
   summary: 'Create aggregate bioinformatics analysis reports across many samples and tools'
   license_family: GPL3
+
+extra:
+  container:
+    extended-base: true

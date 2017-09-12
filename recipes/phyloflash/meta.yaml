@@ -1,0 +1,51 @@
+{% set name = "phyloFlash" %}
+{% set version = "2.0-beta6" %}
+{% set sha256 = "137c90288b39fbfc1fee87fe606ab7ef10b673e0bccf1a0ff305b62e4291d68a" %}
+
+package:
+  name: {{ name|lower}}
+  version: {{ version|replace('-','') }}
+
+source:
+  url: https://github.com/HRGV/{{ name }}/archive/v{{ version }}.tar.gz
+  fn: v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - real_bin.patch
+
+build:
+  number: 0
+
+requirements:
+  build: []
+  run:
+    - perl >=5.13.2
+    - bbmap
+    - emirge
+    - pigz
+    - samtools
+    - vsearch
+    - bedtools
+    - mafft
+    - spades
+    - r-base
+    - r-ggdendro
+    - r-gtable
+    - r-reshape2
+    - r-ggplot2
+    - r-optparse
+
+test:
+  commands:
+    - phyloFlash.pl -check_env || true
+    - phyloFlash.pl -check_env 2>&1 | grep "Please provide a path using -dbhome"
+    - phyloFlash_makedb.pl --help
+    - phyloFlash_heatmap.R --help |tee | grep "Generates a heatmap plot"
+
+about:
+  home: https://github.com/HRGV/phyloFlash
+  license: GPLv3
+  license_family: GPL
+  summary: |
+    phyloFlash is a pipeline to rapidly reconstruct the SSU rRNAs and explore
+    phylogenetic composition of an illumina (meta)genomic dataset.
