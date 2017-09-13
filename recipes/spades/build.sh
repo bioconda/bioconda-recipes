@@ -1,8 +1,12 @@
 #!/bin/bash
-outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-mkdir -p $outdir
-mkdir -p $PREFIX/bin
 
-cp -r bin $outdir
-cp -r share $outdir
-ln -s $outdir/bin/* $PREFIX/bin
+set -e -o pipefail
+
+mkdir -p $PREFIX/bin
+mkdir build
+pushd build
+
+cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$PREFIX" ../src
+make 
+make install
+popd
