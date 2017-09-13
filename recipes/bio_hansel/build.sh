@@ -1,4 +1,3 @@
-#!/bin/env bash
+#!/bin/bash
 
-#Install Bio_Hansel
-pip install bio_hansel
+$PYTHON setup.py install
