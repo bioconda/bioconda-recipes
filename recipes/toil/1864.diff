@@ -1,0 +1,168 @@
+diff --git a/src/toil/batchSystems/abstractGridEngineBatchSystem.py b/src/toil/batchSystems/abstractGridEngineBatchSystem.py
+index 3853df8fe..13e31973c 100644
+--- a/src/toil/batchSystems/abstractGridEngineBatchSystem.py
++++ b/src/toil/batchSystems/abstractGridEngineBatchSystem.py
+@@ -24,11 +24,13 @@
+ 
+ # Python 3 compatibility imports
+ from six.moves.queue import Empty, Queue
++from future.utils import with_metaclass
+ 
+ from bd2k.util.objects import abstractclassmethod
+ 
+ from toil.batchSystems.abstractBatchSystem import BatchSystemSupport
+-from future.utils import with_metaclass
++from toil.batchSystems import registry
++from toil.cwl import cwltoil
+ 
+ logger = logging.getLogger(__name__)
+ 
+@@ -284,7 +286,6 @@ def __init__(self, config, maxCores, maxMemory, maxDisk):
+         # much smaller
+         self.maxCPU, self.maxMEM = self.obtainSystemConstants()
+ 
+-        self.nextJobID = 0
+         self.newJobsQueue = Queue()
+         self.updatedJobsQueue = Queue()
+         self.killQueue = Queue()
+@@ -293,6 +294,8 @@ def __init__(self, config, maxCores, maxMemory, maxDisk):
+         self.worker = self.Worker(self.newJobsQueue, self.updatedJobsQueue, self.killQueue,
+                               self.killedJobsQueue, self)
+         self.worker.start()
++        self.localBatch = registry.batchSystemFactoryFor(registry.defaultBatchSystem())()(config, maxCores,
++                                                                                          maxMemory, maxDisk)
+ 
+     def __des__(self):
+         # Closes the file handle associated with the results file.
+@@ -307,12 +310,17 @@ def supportsHotDeployment(cls):
+         return False
+ 
+     def issueBatchJob(self, jobNode):
+-        self.checkResourceRequest(jobNode.memory, jobNode.cores, jobNode.disk)
+-        jobID = self.nextJobID
+-        self.nextJobID += 1
+-        self.currentJobs.add(jobID)
+-        self.newJobsQueue.put((jobID, jobNode.cores, jobNode.memory, jobNode.command))
+-        logger.debug("Issued the job command: %s with job id: %s ", jobNode.command, str(jobID))
++        # Avoid submitting internal jobs to the batch queue, handle locally
++        if jobNode.jobName.startswith(cwltoil.CWL_INTERNAL_JOBS):
++            jobID = self.localBatch.issueBatchJob(jobNode)
++        else:
++            self.checkResourceRequest(jobNode.memory, jobNode.cores, jobNode.disk)
++            with self.localBatch.jobIndexLock:
++                jobID = self.localBatch.jobIndex
++                self.localBatch.jobIndex += 1
++            self.currentJobs.add(jobID)
++            self.newJobsQueue.put((jobID, jobNode.cores, jobNode.memory, jobNode.command))
++            logger.debug("Issued the job command: %s with job id: %s ", jobNode.command, str(jobID))
+         return jobID
+ 
+     def killBatchJobs(self, jobIDs):
+@@ -320,6 +328,7 @@ def killBatchJobs(self, jobIDs):
+         Kills the given jobs, represented as Job ids, then checks they are dead by checking
+         they are not in the list of issued jobs.
+         """
++        self.localBatch.killBatchJobs(jobIDs)
+         jobIDs = set(jobIDs)
+         logger.debug('Jobs to be killed: %r', jobIDs)
+         for jobID in jobIDs:
+@@ -339,25 +348,33 @@ def getIssuedBatchJobIDs(self):
+         """
+         Gets the list of issued jobs
+         """
+-        return list(self.currentJobs)
++        return list(self.localBatch.getIssuedBatchJobIDs()) + list(self.currentJobs)
+ 
+     def getRunningBatchJobIDs(self):
+-        return self.worker.getRunningJobIDs()
++        localIds = self.localBatch.getRunningBatchJobIDs()
++        batchIds = self.worker.getRunningJobIDs()
++        batchIds.update(localIds)
++        return batchIds
+ 
+     def getUpdatedBatchJob(self, maxWait):
+-        try:
+-            item = self.updatedJobsQueue.get(timeout=maxWait)
+-        except Empty:
+-            return None
+-        logger.debug('UpdatedJobsQueue Item: %s', item)
+-        jobID, retcode = item
+-        self.currentJobs.remove(jobID)
+-        return jobID, retcode, None
++        local_tuple = self.localBatch.getUpdatedBatchJob(0)
++        if local_tuple:
++            return local_tuple
++        else:
++            try:
++                item = self.updatedJobsQueue.get(timeout=maxWait)
++            except Empty:
++                return None
++            logger.debug('UpdatedJobsQueue Item: %s', item)
++            jobID, retcode = item
++            self.currentJobs.remove(jobID)
++            return jobID, retcode, None
+ 
+     def shutdown(self):
+         """
+         Signals worker to shutdown (via sentinel) then cleanly joins the thread
+         """
++        self.localBatch.shutdown()
+         newJobsQueue = self.newJobsQueue
+         self.newJobsQueue = None
+ 
+diff --git a/src/toil/cwl/cwltoil.py b/src/toil/cwl/cwltoil.py
+index 8a062317b..fcf395fa4 100755
+--- a/src/toil/cwl/cwltoil.py
++++ b/src/toil/cwl/cwltoil.py
+@@ -59,6 +59,10 @@
+ 
+ cwllogger = logging.getLogger("cwltool")
+ 
++# Define internal jobs we should avoid submitting to batch systems and logging
++CWL_INTERNAL_JOBS = ("CWLJob", "CWLJobWrapper", "CWLWorkflow", "CWLScatter", "CWLGather",
++                     "ResolveIndirect")
++
+ # The job object passed into CWLJob and CWLWorkflow
+ # is a dict mapping to tuple of (key, dict)
+ # the final dict is derived by evaluating each
+diff --git a/src/toil/leader.py b/src/toil/leader.py
+index 788de37e7..9bf8fdf4c 100644
+--- a/src/toil/leader.py
++++ b/src/toil/leader.py
+@@ -38,6 +38,7 @@
+ from bd2k.util.humanize import bytes2human
+ 
+ from toil import resolveEntryPoint
++from toil.cwl import cwltoil
+ from toil.jobStores.abstractJobStore import NoSuchJobException
+ from toil.provisioners.clusterScaler import ClusterScaler
+ from toil.serviceManager import ServiceManager
+@@ -152,10 +153,6 @@ def __init__(self, config, batchSystem, provisioner, jobStore, rootJob, jobCache
+         self.potentialDeadlockedJobs = set()
+         self.potentialDeadlockTime = 0
+ 
+-        # internal jobs we should not expose at top level debugging
+-        self.debugJobNames = ("CWLJob", "CWLWorkflow", "CWLScatter", "CWLGather",
+-                              "ResolveIndirect")
+-
+     def run(self):
+         """
+         This runs the leader process to issue and manage jobs.
+@@ -440,7 +437,7 @@ def innerLoop(self):
+                                 "for job %s", jobID)
+                 else:
+                     if result == 0:
+-                        cur_logger = (logger.debug if str(updatedJob.jobName).startswith(self.debugJobNames)
++                        cur_logger = (logger.debug if str(updatedJob.jobName).startswith(cwltoil.CWL_INTERNAL_JOBS)
+                                       else logger.info)
+                         cur_logger('Job ended successfully: %s', updatedJob)
+                     else:
+@@ -539,7 +536,7 @@ def issueJob(self, jobNode):
+             # len(jobBatchSystemIDToIssuedJob) should always be greater than or equal to preemptableJobsIssued,
+             # so increment this value after the job is added to the issuedJob dict
+             self.preemptableJobsIssued += 1
+-        cur_logger = (logger.debug if jobNode.jobName.startswith(self.debugJobNames)
++        cur_logger = (logger.debug if jobNode.jobName.startswith(cwltoil.CWL_INTERNAL_JOBS)
+                       else logger.info)
+         cur_logger("Issued job %s with job batch system ID: "
+                    "%s and cores: %s, disk: %s, and memory: %s",
