@@ -1,29 +1,37 @@
+{% set version = "3.11.0" %}
+
 package:
   name: spades
-  version: '3.10.1'
+  version: {{ version }}
 
 source:
-  fn: SPAdes-3.10.1-Linux.tar.gz                                              # [linux]
-  url: http://spades.bioinf.spbau.ru/release3.10.1/SPAdes-3.10.1-Linux.tar.gz  # [linux]
-  md5: fb58d48a0545211aab91f43b7d17ad1b # [linux]
-  fn: SPAdes-3.10.1-Darwin.tar.gz                                             # [osx]
-  url: http://spades.bioinf.spbau.ru/release3.10.1/SPAdes-3.10.1-Darwin.tar.gz # [osx]
-  md5: f23bbad7921cff2c283e6589ccee83a2 # [osx]
+  fn: SPAdes-{{ version }}.tar.gz
+  url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}.tar.gz
+  sha256: 308aa3e6c5fb00221a311a8d32c5e8030990356ae03002351eac10abb66bad1f
 
 build:
   number: 0
-  skip: True  # [not py2k and not py35]
 
 requirements:
   build:
+    - gcc  # [not osx]
+    - llvm  # [osx]
+    - cmake
+    - zlib
+    - bzip2
+
   run:
     - python
+    - libgcc  # [not osx]
+    - zlib
+    - bzip2
 
 test:
   commands:
+    - spades.py --version
     - spades.py --test
 
 about:
-  home: http://bioinf.spbau.ru/en/spades
+  home: http://cab.spbu.ru/software/spades/
   license: GPLv2
   summary: SPAdes (St. Petersburg genome assembler) is intended for both standard isolates and single-cell MDA bacteria assemblies.
