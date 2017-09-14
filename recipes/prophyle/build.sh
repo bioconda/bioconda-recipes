@@ -3,8 +3,8 @@
 set -e
 set -o pipefail
 
-ls
-find .
+#ls
+#find .
 
-make
+make -C prophyle
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
