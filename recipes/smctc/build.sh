@@ -1,3 +1,4 @@
 #!/bin/bash
 
-make
+make libraries
+cp lib/libsmctc.a ${PREFIX}lib
