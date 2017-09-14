@@ -5,7 +5,7 @@ export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 #explicititly set dictory for GHC download
 export STACK_ROOT="${PREFIX}/stack"
-stack setup
+stack setup --local-bin-path ${PREFIX}/bin
 stack update
 stack install --extra-include-dirs ${PREFIX}/include --local-bin-path ${PREFIX}/bin
 #cleanup
