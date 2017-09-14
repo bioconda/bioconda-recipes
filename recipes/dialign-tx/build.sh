@@ -2,7 +2,7 @@
 set -euo pipefail
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
-sed -i -e 's/-march=i686/-march=native/' ./source/Makefile
+sed -i.bak -e 's/-march=i686/-march=native/' ./source/Makefile
 cd ./source
 
 make
