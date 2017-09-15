@@ -4,4 +4,3 @@ autoreconf -fi
 make
 make install
 make check
-

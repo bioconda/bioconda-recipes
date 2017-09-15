@@ -1,27 +1,33 @@
 #!/bin/bash
-set -x
+
 # Compile binaries and move them to lib.
 make
 mv *.so $PREFIX/lib
 
 # Download submodules and move them to lib.
-wget --no-check-certificate 'https://github.com/NickSto/utillib/archive/v0.1.0.tar.gz'
-hash=`sha256sum v0.1.0.tar.gz | tr -s ' ' | cut -d ' ' -f 1`
-[ $hash == bffe515f7bd98661657c26003c41c1224f405c3a36ddabf5bf961fab86f9651a ]
-tar -zxvpf v0.1.0.tar.gz
-mv utillib-0.1.0 $PREFIX/lib/utillib
-rm v0.1.0.tar.gz
-wget --no-check-certificate 'https://github.com/NickSto/ET/archive/v0.1.0.tar.gz'
-hash=`sha256sum v0.1.0.tar.gz | tr -s ' ' | cut -d ' ' -f 1`
-[ $hash == 57c2050715bd7383dc35ed4e1ad7f9078749a6b2459fd1730b8928fd0cbb2c5c ]
-tar -zxvpf v0.1.0.tar.gz
-mv ET-0.1.0 $PREFIX/lib/ET
-rm v0.1.0.tar.gz
+## utillib
+utilver=0.1.0
+wget --no-check-certificate "https://github.com/NickSto/utillib/archive/v$utilver.tar.gz"
+hash=`sha256sum v$utilver.tar.gz | tr -s ' ' | cut -d ' ' -f 1`
+[ $hash = bffe515f7bd98661657c26003c41c1224f405c3a36ddabf5bf961fab86f9651a ]
+tar -zxvpf v$utilver.tar.gz
+mv utillib-$utilver $PREFIX/lib/utillib
+rm v$utilver.tar.gz
+## ET
+ETver=0.1.1
+wget --no-check-certificate "https://github.com/NickSto/ET/archive/v$ETver.tar.gz"
+hash=`sha256sum v$ETver.tar.gz | tr -s ' ' | cut -d ' ' -f 1`
+[ $hash = 552c371f0fe0000b6037038ad1aeae09111d066c362d45655e40381cb0c325e4 ]
+tar -zxvpf v$ETver.tar.gz
+mv ET-$ETver $PREFIX/lib/ET
+rm v$ETver.tar.gz
 
 # Move scripts to lib and link to them from bin.
 for script in *.awk *.sh *.py; do
   mv $script $PREFIX/lib
   ln -s ../lib/$script $PREFIX/bin
 done
+# Handle special cases.
 mv utils/outconv.py $PREFIX/lib
 ln -s ../lib/outconv.py $PREFIX/bin
+mv VERSION $PREFIX/lib

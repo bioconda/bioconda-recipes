@@ -10,8 +10,6 @@ source:
 build:
   number: 0
   preserve_egg_dir: True
-  # click needs to be patched in order to properly detect unicode in py3k
-  skip: true  # [py3k]
 
 requirements:
   build:
@@ -102,7 +100,9 @@ test:
     - multiqc.plots
     - multiqc.templates
     - multiqc.templates.default
-    - multiqc.templates.default_dev
+    # Can be added back after v1.3 release - fixed here:
+    # https://github.com/ewels/MultiQC/commit/a2c704c92b2fee5db637348ff4ad0c150a30708d
+    # - multiqc.templates.default_dev
     - multiqc.templates.geo
     - multiqc.templates.sections
     - multiqc.templates.simple
@@ -110,10 +110,15 @@ test:
 
   commands:
     # click requires a unicode locale
-    - LANG=C.UTF-8 multiqc --version
+    - LC_ALL=C.UTF-8 LANG=C.UTF-8 multiqc --version # [linux]
+    - LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 multiqc --version # [osx]
 
 about:
   home: http://multiqc.info
   license: GNU General Public License v3 (GPLv3)
   summary: 'Create aggregate bioinformatics analysis reports across many samples and tools'
   license_family: GPL3
+
+extra:
+  container:
+    extended-base: true
