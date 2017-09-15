@@ -7,4 +7,4 @@ set -o pipefail
 #find .
 
 make -C prophyle
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+PROPHYLE_PACKBIN=1 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
