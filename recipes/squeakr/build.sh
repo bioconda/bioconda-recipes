@@ -2,7 +2,6 @@
 
 mkdir -p $PREFIX/bin
 
-export CXXFLAGS="-stdlib=libc++"
 make
 
 cp squeakr-count  $PREFIX/bin
