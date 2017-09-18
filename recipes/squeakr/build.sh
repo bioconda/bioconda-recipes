@@ -2,13 +2,8 @@
 
 mkdir -p $PREFIX/bin
 
-if [ $UNAME == "Darwin" ]
-then
-    export CFLAGS="-stdlib=libc++"
-    make
-else
-    make
-fi
+export CXXFLAGS="-stdlib=libc++"
+make
 
 cp squeakr-count  $PREFIX/bin
 cp squeakr-inner-prod $PREFIX/bin
