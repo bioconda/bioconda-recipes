@@ -59,7 +59,10 @@ def check_all(recipe_folder, config, packages='*'):
             conda_forge_version = None
             in_conda_forge = False
 
-        if not result[3]:
+        if result[2] is None:
+            action = 'unavailable-in-pypi'
+
+        elif not result[3]:
             action = 'up-to-date'
 
         else:

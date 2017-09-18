@@ -21,7 +21,7 @@ from . import lint_functions
 from . import linting
 from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
-from . import check_for_pypi_updates
+from . import pypi
 
 
 log_stream_handler = logging.StreamHandler()
@@ -548,16 +548,36 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
     """
     Checks recipes to see if an updated version is available on PyPI.
 
-    Recipes are only checked if "pypi" is in the source URL of their meta.yaml.
+    Recipes are only checked if "pypi" is somewhere in the source URL of their
+    meta.yaml.
 
-    A TSV is reported to stdout, with columns "name", "bioconda_version",
-    "pypi_version", "needs_update". The last two columns will be None if
-    a recipe looks like it is from PyPI but no info from PyPI can be found
-    (e.g., for python-wget).
+    A TSV is reported to stdout, with columns:
+        name:
+            package name
 
+        bioconda_version:
+            latest existing recipe version
+
+        pypi_version:
+            latest version on PyPI. If None, a PyPI package could not be found.
+
+        needs_update:
+            True if PyPI version is later than bioconda_version
+
+        conda_forge_version:
+            latest version in the conda-forge channel. "None" if not available
+            in conda-forge.
+
+        action:
+            One of the following:
+                - unavailable (not found on PyPI, check name)
+                - up-to-date (no action needed)
+                - update-bioconda (simply need to re-run conda skeleton)
+                - remove-from-bioconda (conda-forge has later version)
+                - decide-where-to-update (both conda-forge and bioconda are out-of-date)
     """
     setup_logger(loglevel)
-    for result in check_for_pypi_updates.check_all(recipe_folder, config):
+    for result in pypi.check_all(recipe_folder, config):
         if only_out_of_date:
             if not result[3]:
                 continue
