@@ -1,33 +1,42 @@
-{% set version = "2.7.1" %}
+{% set version = "2.7.0" %}
+{% set sha256 = "fc338ccbf466bb3e2e042c973d17ec600fba9adf3b1292a496ad5023ed1c759a" %}
 
 package:
     name: blast
     version: {{ version }}
 
 source:
-    fn: ncbi-blast-{{ version }}+-src.tar.gz # [linux]
-    url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz # [linux]
-    sha256: 10a78d3007413a6d4c983d2acbf03ef84b622b82bd9a59c6bd9fbdde9d0298ca # [linux]
+    fn: ncbi-blast-{{ version }}+-src.tar.gz
+    url: http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
+    sha256: {{ sha256 }}
     patches:
-      - boost_106400.patch # [linux]
-    fn: ncbi-blast-{{ version }}+-x64-macosx.tar.gz # [osx]
-    url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-x64-macosx.tar.gz # [osx]
-    sha256: 1de96e0168771d02e1e4d5796e01c6f09073ce61f74aaba23c541750973554ea # [osx]
+      - boost_106400.patch
 
 build:
-  number: 0
+  number: 1
   string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
 
 requirements:
   build:
-    - boost {{CONDA_BOOST}}*  # [linux]
+    - boost {{CONDA_BOOST}}*
     - gcc  # [linux]
+    - zlib 1.2.8
+    - bzip2 1.0.6
+    - openssl 1.0.*
+    - pcre
+    - time
   run:
-    - boost {{CONDA_BOOST}}*  # [linux]
+    - boost {{CONDA_BOOST}}*
     - libgcc  # [linux]
+    - zlib 1.2.8
+    - bzip2 1.0.6
+    - openssl 1.0.*
+    - pcre
 
 test:
     commands:
+#        - conda inspect linkages $PKG_NAME
+#        - conda inspect objects $PKG_NAME
         - blastn -help
         - blastp -help
 about:
