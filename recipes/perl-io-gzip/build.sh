@@ -1,7 +1,4 @@
 #!/bin/bash
-
-# Make sure this goes in site
-perl Makefile.PL INSTALLDIRS=site
-make
-make test
-make install
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+cpanm -i .
