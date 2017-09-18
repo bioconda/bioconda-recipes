@@ -21,6 +21,7 @@ from . import lint_functions
 from . import linting
 from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
+from . import check_for_pypi_updates
 
 
 log_stream_handler = logging.StreamHandler()
@@ -535,5 +536,32 @@ def bioconductor_skeleton(
     )
 
 
+@arg('recipe_folder', help='Path to recipes directory')
+@arg('config', help='Path to yaml file specifying the configuration')
+@arg('--loglevel', default='debug', help='Log level')
+@arg('--packages',
+     nargs="+",
+     help='Glob for package[s] to show in DAG. Default is to show all '
+     'packages. Can be specified more than once')
+@arg('--only-out-of-date', help='Only report results for packages that need an update')
+def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of_date=False):
+    """
+    Checks recipes to see if an updated version is available on PyPI.
+
+    Recipes are only checked if "pypi" is in the source URL of their meta.yaml.
+
+    A TSV is reported to stdout, with columns "name", "bioconda_version",
+    "pypi_version", "needs_update". The last two columns will be None if
+    a recipe looks like it is from PyPI but no info from PyPI can be found
+    (e.g., for python-wget).
+
+    """
+    setup_logger(loglevel)
+    for result in check_for_pypi_updates.check_all(recipe_folder, config):
+        if only_out_of_date:
+            if not result[3]:
+                continue
+        print('\t'.join(map(str, result)))
+
 def main():
-    argh.dispatch_commands([build, dag, dependent, lint, duplicates, bioconductor_skeleton])
+    argh.dispatch_commands([build, dag, dependent, lint, duplicates, bioconductor_skeleton, pypi_check])
