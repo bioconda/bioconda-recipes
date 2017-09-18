@@ -19,6 +19,7 @@ def compare_recipe_to_pypi(recipe, env):
     meta = utils.load_meta(os.path.join(recipe, 'meta.yaml'), env)
     current = meta['package']['version']
     name = meta['package']['name']
+
     try:
         source_url = meta['source']['url']
     except KeyError:
@@ -33,38 +34,65 @@ def compare_recipe_to_pypi(recipe, env):
             if VersionOrder(latest) > VersionOrder(current):
                 needs_update = True
             return (name, current, latest, needs_update)
+
+        # We could do something like strip a leading `python-` off the name
+        # (e.g., for python-wget) but this won't work in all cases and there
+        # aren't that many of them anyway. So we just report that nothing was
+        # found.
         else:
             return (name, current, None, None)
 
 
 def check_all(recipe_folder, config, packages='*'):
+    """
+    Check all recipes against PyPI.
+
+    Also checks against conda-forge versions.
+
+    Returns an iterator of tuples (name, bioconda version, PyPI version,
+    out-of-date, conda-forge version, action).
+
+    Parameters
+    ----------
+
+    recipe_folder : str
+
+    config : dict or str
+
+    packages : str
+
+    """
+    # Identify the latest version available on conda-forge
     df = linting.channel_dataframe(channels=['conda-forge'])
     df['looseversion'] = df['version'].apply(VersionOrder)
     latest_conda_forge = df.groupby('name')['looseversion'].agg(max)
 
+    # Only consider the latest version we can find here
     recipes = list(utils.get_latest_recipes(recipe_folder, config, packages))
     config = utils.load_config(config)
     env = list(utils.EnvMatrix(config['env_matrix']))[0]
-    df = []
+
     for recipe in recipes:
         result = compare_recipe_to_pypi(recipe, env)
+
         if not result:
             continue
 
         result = list(result)
+
         try:
             conda_forge_version = latest_conda_forge[result[0]]
             in_conda_forge = True
+
         except KeyError:
             conda_forge_version = None
             in_conda_forge = False
 
+        # figure out what action to take
         if result[2] is None:
             action = 'unavailable-in-pypi'
-
         elif not result[3]:
             action = 'up-to-date'
-
         else:
             if in_conda_forge:
                 if str(conda_forge_version) == result[2]:
@@ -76,4 +104,3 @@ def check_all(recipe_folder, config, packages='*'):
 
         if result:
             yield result + [conda_forge_version, action]
-

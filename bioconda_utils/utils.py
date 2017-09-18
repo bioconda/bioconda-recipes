@@ -415,6 +415,8 @@ def get_latest_recipes(recipe_folder, config, package="*"):
     recipe_folder : str
         Top-level dir of the recipes
 
+    config : dict or filename
+
     package : str or iterable
         Pattern or patterns to restrict the results.
     """
@@ -436,8 +438,7 @@ def get_latest_recipes(recipe_folder, config, package="*"):
                 return VersionOrder(
                     load_meta(os.path.join(p, 'meta.yaml'), env)['package']['version']
                 )
-            sorted_versions = sorted(
-                group, key=get_version)
+            sorted_versions = sorted(group, key=get_version)
             if sorted_versions:
                 yield sorted_versions[-1]
 
