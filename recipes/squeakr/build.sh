@@ -2,7 +2,7 @@
 
 mkdir -p $PREFIX/bin
 
-make
+CFLAGS=-stdlib=libc++ make
 
 cp squeakr-count  $PREFIX/bin
 cp squeakr-inner-prod $PREFIX/bin
