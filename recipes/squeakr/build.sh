@@ -6,7 +6,7 @@ mkdir -p $PREFIX/bin
 
 BUILD_OS=$(uname -s)
 
-if [ ${BUILD_OS} == "Darwin" ]
+if [ ${BUILD_OS} == "Darwin" ]; then
    CXXFLAGS="-stdlib=libc++ -I ${PREFIX}/include" make
    else
    CXXFLAGS="-I ${PREFIX}/include" make
