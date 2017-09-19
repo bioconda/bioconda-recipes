@@ -7,9 +7,9 @@ mkdir -p $PREFIX/bin
 BUILD_OS=$(uname -s)
 
 if [ ${BUILD_OS} == "Darwin" ]; then
-   LDFLAGS="-stdlib=libc++" CXXFLAGS="-stdlib=libc++ -I ${PREFIX}/include" make
+   LDFLAGS="-stdlib=libc++" CXXFLAGS="-stdlib=libc++ -L ${PREFIX}/lib -I ${PREFIX}/include" make
    else
-   CXXFLAGS="-I ${PREFIX}/include" make
+   CXXFLAGS="-L ${PREFIX}/lib -I ${PREFIX}/include" make
 fi
 
 cp squeakr-count  $PREFIX/bin
