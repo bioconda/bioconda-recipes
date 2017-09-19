@@ -2,7 +2,7 @@
 
 mkdir -p $PREFIX/bin
 
-CXXFLAGS=-stdlib=libc++ make
+CXXFLAGS="-stdlib=libc++ -I ${PRFIX}/include" make
 
 cp squeakr-count  $PREFIX/bin
 cp squeakr-inner-prod $PREFIX/bin
