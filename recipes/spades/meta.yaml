@@ -5,26 +5,29 @@ package:
   version: {{ version }}
 
 source:
-  fn: SPAdes-{{ version }}.tar.gz
-  url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}.tar.gz
-  sha256: 308aa3e6c5fb00221a311a8d32c5e8030990356ae03002351eac10abb66bad1f
+  fn: SPAdes-{{ version }}-Darwin.tar.gz  # [osx]
+  url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}-Darwin.tar.gz  # [osx]
+  sha256: 9e6accf2258c379436e92f37f920e4dc8fa4a2da9a9813215709a9723bf15d87  # [osx]
+  fn: SPAdes-{{ version }}.tar.gz  # [linux]
+  url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}.tar.gz  # [linux]
+  sha256: 308aa3e6c5fb00221a311a8d32c5e8030990356ae03002351eac10abb66bad1f  # [linux]
 
 build:
-  number: 0
+  number: 1
+  string: py{{CONDA_PY}}_zlib{{CONDA_ZLIB}}_{{PKG_BUILDNUM}}  # [linux]
 
 requirements:
   build:
-    - gcc >=4.8.2  # [not osx]
-    - llvm  # [osx]
-    - cmake >=2.8.12
-    - zlib 1.2.8
-    - bzip2 1.0.*
+    - gcc >=4.8.2  # [linux]
+    - cmake >=2.8.12  # [linux]
+    - zlib {{CONDA_ZLIB}}*  # [linux]
+    - bzip2 1.0.*  # [linux]
 
   run:
     - python
-    - libgcc  # [not osx]
-    - zlib 1.2.8
-    - bzip2 1.0.*
+    - libgcc  # [linux]
+    - zlib {{CONDA_ZLIB}}*  # [linux]
+    - bzip2 1.0.*  # [linux]
 
 test:
   commands:
@@ -40,10 +43,14 @@ about:
   home: http://cab.spbu.ru/software/spades/
   license: GPLv2
   license_family: GPL
-  license_file: LICENSE
-  summary: 'SPAdes (St. Petersburg genome assembler) is intended for both standard isolates and single-cell MDA bacteria assemblies.'
-
+  license_file: LICENSE  # [linux]
+  license_file: share/spades/LICENSE  # [osx]
+  summary: |
+    SPAdes (St. Petersburg genome assembler) is intended for both standard isolates and single-cell MDA bacteria assemblies.
+  dev_url: https://github.com/ablab/spades
+  doc_url: http://cab.spbu.ru/files/release3.11.0/manual.html
 extra:
-  maintainers:
+  doi: 10.1089/cmb.2012.0021
+  recipe-maintainers:
     - druvus
     - notestaff
