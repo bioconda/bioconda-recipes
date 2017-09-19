@@ -7,5 +7,6 @@ export C_INCLUDE_PATH=$PREFIX/include
 sed -i -e '/install_requires = /,/install_requires.append(requirement)/d' setup.py
 sed -i -e '/install_requires=install_requires,/d' setup.py
 
-python setup.py install
+#python setup.py install
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
