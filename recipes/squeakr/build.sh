@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x -e
+
 mkdir -p $PREFIX/bin
 
 CXXFLAGS="-stdlib=libc++ -I ${PRFIX}/include" make
