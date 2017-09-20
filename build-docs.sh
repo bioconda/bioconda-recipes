@@ -57,15 +57,6 @@ if [[ $TRAVIS_OS_NAME != "linux" ]]; then
     exit 0
 fi
 
-# Decrypt and ssh-add key.
-ENCRYPTED_KEY_VAR="encrypted_${ENCRYPTION_LABEL}_key"
-ENCRYPTED_IV_VAR="encrypted_${ENCRYPTION_LABEL}_iv"
-ENCRYPTED_KEY=${!ENCRYPTED_KEY_VAR}
-ENCRYPTED_IV=${!ENCRYPTED_IV_VAR}
-openssl aes-256-cbc -K $ENCRYPTED_KEY -iv $ENCRYPTED_IV -in $ENCRYPTED_FILE -out key -d
-chmod 600 key
-eval `ssh-agent -s`
-ssh-add key
 
 # clone the branch to tmpdir, clean out contents
 rm -rf $STAGING
@@ -97,10 +88,26 @@ if [[ $TRAVIS_BRANCH != $BUILD_DOCS_FROM_BRANCH ]]; then
     echo "Not pushing docs because not on branch '$BUILD_DOCS_FROM_BRANCH'"
     exit 0
 fi
+
 if [[ $TRAVIS_PULL_REQUEST != "false" ]]; then
     echo "This is a pull request, so not pushing docs"
     exit 0
 fi
+
+if [[ $TRAVIS_REPO_SLUG != "bioconda/bioconda-utils" ]]; then
+    echo "On a fork of the main bioconda-utils repo, so not pushing docs"
+    exit 0
+fi
+
+# Decrypt and ssh-add key.
+ENCRYPTED_KEY_VAR="encrypted_${ENCRYPTION_LABEL}_key"
+ENCRYPTED_IV_VAR="encrypted_${ENCRYPTION_LABEL}_iv"
+ENCRYPTED_KEY=${!ENCRYPTED_KEY_VAR}
+ENCRYPTED_IV=${!ENCRYPTED_IV_VAR}
+openssl aes-256-cbc -K $ENCRYPTED_KEY -iv $ENCRYPTED_IV -in $ENCRYPTED_FILE -out key -d
+chmod 600 key
+eval `ssh-agent -s`
+ssh-add key
 
 # Add, commit, and push
 echo ".*" >> .gitignore
