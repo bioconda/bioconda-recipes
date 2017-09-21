@@ -22,7 +22,7 @@ done
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-pip install pyyaml
+pip install pyyaml pip
 sudo mkdir /anaconda
 sudo chown -R $USER /anaconda
 $SCRIPT_DIR/../simulate-travis.py --bootstrap /anaconda --overwrite
