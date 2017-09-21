@@ -1,2 +1,2 @@
 #!/bin/bash
-cpanm -i .
+echo "This should work now"
