@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
+
+# build parallel version of delly (using openmp).
+make PARALLEL=1 all
 mkdir -p $PREFIX/bin
-
-make STATIC=1 PARALLEL=1 -B src/delly
-cp src/delly $PREFIX/bin/delly
+cp src/delly src/dpe src/cov $PREFIX/bin

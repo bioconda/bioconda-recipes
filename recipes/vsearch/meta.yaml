@@ -1,20 +1,34 @@
+{% set name = "vsearch" %}
+{% set version = "2.4.3" %}
+{% set hash = "f7ffc2aec5d76bdaf1ffe7fb733102138214cec3e3846eb225455dcc3c088141" %}
+
 package:
-  name: vsearch
-  version: "2.0.3"
+  name: {{ name|lower }}
+  version: {{ version }}
+
 source:
-  git_url: https://github.com/torognes/vsearch.git
-  git_rev: v2.0.3
+  fn: {{ name|lower }}_{{ version }}.tar.gz
+  url: https://github.com/torognes/vsearch/archive/v{{ version }}.tar.gz
+  sha256: {{ hash }}
+
+build:
+  number: 0
+
 requirements:
   build:
     - automake
     - autoconf
     - m4
-    - gcc
-build:
-  skip: False
+    - gcc  # [linux]
+    - llvm  # [osx]
+    - perl 
+  run:
+    - libgcc  # [linux]
+
 test:
   commands:
-    - vsearch --version > /dev/null
+    - vsearch --version 
+
 about:
   home: https://github.com/torognes/vsearch
   license: "dual-licensed under GPLv3+ or BSD 2-clause"

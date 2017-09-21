@@ -16,27 +16,15 @@ export LC_ALL=C
 mkdir -p $PREFIX/bin
 
 sed -i.bak 's/print sys.hexversion>=0x02050000/print(sys.hexversion>=0x02050000)/' makefile
-rm *.bak
 
 make
 
-sed -i.bak 's/third_party/kmergenie/g' scripts/*
-sed -i.bak 's/third_party/kmergenie/g' kmergenie
-
-rm scripts/*.bak
-rm kmergenie.bak
+sed -i.bak 's/third_party\.//g' scripts/*
+sed -i.bak 's/third_party\.//g' kmergenie
+sed -i.bak 's/scripts\///g' kmergenie
 
 cp scripts/* $PREFIX/bin
+cp third_party/* $PREFIX/bin
 cp specialk $PREFIX/bin
-
-mkdir -p python-build/scripts
-cp kmergenie python-build/scripts
-cp wrapper.py python-build/scripts
-cp -rf third_party python-build/kmergenie
-
-cd python-build
-
-cp $RECIPE_DIR/setup.py ./
-
-python setup.py build
-python setup.py install
+cp kmergenie $PREFIX/bin
+cp wrapper.py $PREFIX/bin

@@ -6,28 +6,33 @@ about:
 
 package:
     name: meme
-    version: 4.11.1
+    version: 4.11.2
 
 build:
-    number: 1
-    skip: True  # [osx]
+    number: 0
+    skip: True  # [not py27]
     detect_binary_files_with_prefix: True
 
 requirements:
     build:
-        - gcc
+        - gcc # [not osx]
+        - llvm # [osx]
         - yaml
-        - python >=2.7,<3
+        - python
         - perl
-        - ghostscript   #[linux]
+        - ghostscript
         - zlib
         - libxslt
         - libxml2
         - expat
-        - perl-xml-parser #[linux]
+        - perl-xml-parser
         - perl-app-cpanminus
+        - perl-yaml
+        - perl-xml-simple
+        - perl-html-template
+        - perl-cgi
     run:
-        - gcc
+        - libgcc # [not osx]
         - yaml
         - expat
         - python
@@ -35,18 +40,22 @@ requirements:
         - zlib
         - libxslt
         - libxml2
-        - ghostscript   #[linux]
-        - perl-xml-parser #[linux]
+        - ghostscript
+        - perl-xml-parser
+        - perl-yaml
+        - perl-xml-simple
+        - perl-html-template
+        - perl-cgi
 source:
-    fn: meme_4.11.1.tar.gz
-    url: http://alternate.meme-suite.org/meme-software/4.11.1/meme_4.11.1.tar.gz
-    md5: 8d04213c4feddf31d4f620060fdc6b97
+    fn: meme_4.11.2.tar.gz
+    url: http://alternate.meme-suite.org/meme-software/4.11.2/meme_4.11.2.tar.gz
+    sha1: 317c230772b62ae3a44d2e7dcc2466eadedf6662
     patches:
         - mast.patch
 
-
 test:
     commands:
-        - "meme -h 2>&1 | grep fraction > /dev/null"
-        - "meme-chip 2>&1 | grep FIMO > /dev/null"
-        - "centrimo 2>&1 | grep maxreg > /dev/null"
+        - meme -version
+        - mast -version
+        - meme-chip 2>&1 | grep FIMO > /dev/null
+        - centrimo 2>&1 | grep maxreg > /dev/null

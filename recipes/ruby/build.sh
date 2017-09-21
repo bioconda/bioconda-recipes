@@ -1,7 +1,19 @@
 #!/bin/bash
 
-export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib"
+./configure \
+        --prefix=$PREFIX \
+        --enable-load-relative \
+        --disable-install-doc \
+        --enable-shared \
+        --enable-rpath \
+        --with-jemalloc \
+        --with-opt-dir=$PREFIX \
+        --with-libyaml-dir=$PREFIX \
+        --with-openssl-dir=$PREFIX \
+        --with-readline-dir=$PREFIX \
+        --with-zlib-dir=$PREFIX
+        # --with-static-linked-ext \
 
-./configure --prefix=$PREFIX --disable-install-doc --enable-load-relative --with-openssl-dir=$PREFIX CPPFLAGS="-fgnu89-inline"
 make
 make install
+

@@ -1,0 +1,93 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-idpmisc
+  # Note that conda versions cannot contain -, so any -'s in the version have
+  # been replaced with _'s.
+  version: "1.1.17"
+
+source:
+  fn: IDPmisc_1.1.17.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/IDPmisc_1.1.17.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/IDPmisc/IDPmisc_1.1.17.tar.gz
+
+
+  # You can add a hash for the file here, like md5 or sha1
+  md5: 217e100a5a61c9843a0ef56bf11e2fb9
+  
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # If this is a new build for the same version, increment the build
+  # number. If you do not include this key, it defaults to 0.
+  # number: 1
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: SwissAir(>= 1.1.3), PROcess
+requirements:
+  build:
+    - r-base
+    - r-lattice >=0.19_26
+    - posix               # [win]
+    - {{native}}toolchain # [win]
+    - gcc                 # [not win]
+
+  run:
+    - r-base
+    - r-lattice >=0.19_26
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('IDPmisc')" # [not win]
+    - "\"%R%\" -e \"library('IDPmisc')\"" # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  #home:
+  license: GPL (>= 3)
+  summary: 'The IDPmisc package contains different high-level graphics functions for displaying
+    large datasets, displaying circular data in a very flexible way, finding local maxima,
+    brewing color ramps, drawing nice arrows, zooming 2D-plots, creating figures with
+    differently colored margin and plot region.  In addition, the package contains auxiliary
+    functions for data manipulation like omitting observations with irregular values
+    or selecting data by logical vectors, which include NAs. Other functions are especially
+    useful in spectroscopy and analyses of environmental data: robust baseline fitting,
+    finding peaks in spectra.'
+
+  license_family: GPL3
+
+# The original CRAN metadata for this package was:
+
+# Package: IDPmisc
+# Type: Package
+# Title: Utilities of Institute of Data Analyses and Process Design (www.idp.zhaw.ch)
+# Version: 1.1.17
+# Date: 2012-11-01
+# Author: Rene Locher, Andreas Ruckstuhl et al.
+# Maintainer: Rene Locher <rene.locher@zhaw.ch>
+# Description: The IDPmisc package contains different high-level graphics functions for displaying large datasets, displaying circular data in a very flexible way, finding local maxima, brewing color ramps, drawing nice arrows, zooming 2D-plots, creating figures with differently colored margin and plot region.  In addition, the package contains auxiliary functions for data manipulation like omitting observations with irregular values or selecting data by logical vectors, which include NAs. Other functions are especially useful in spectroscopy and analyses of environmental data: robust baseline fitting, finding peaks in spectra.
+# Depends: R(>= 2.15.2), methods, grid(>= 2.13.1), lattice(>= 0.19-26),
+# Suggests: SwissAir(>= 1.1.3), PROcess
+# License: GPL (>= 3)
+# Packaged: 2012-11-01 18:46:42 UTC; User
+# Repository: CRAN
+# Date/Publication: 2012-11-02 09:14:18
+# NeedsCompilation: yes
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml

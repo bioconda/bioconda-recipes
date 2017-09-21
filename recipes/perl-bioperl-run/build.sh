@@ -11,6 +11,7 @@ if [ -f Build.PL ]; then
     # Don't run tests as we don't want to install all the binaries (including
     # those we can't include in BioBuilds) just to run the build system.
     #./Build test
+
     # Make sure this goes in site
     ./Build install --installdirs site
 elif [ -f Makefile.PL ]; then

@@ -1,0 +1,51 @@
+--- src/Makefile.unx.orig	2016-03-18 11:41:45.573050756 -0500
++++ src/Makefile.unx	2016-03-18 12:48:16.883050261 -0500
+@@ -51,6 +51,8 @@
+ #
+ # the following specifies the directory where the executables will be placed
+ EXEDIR  = ../exe
++DATADIR = ../fonts
++JAVADIR = ../java
+ #
+ # ----------------------------------------------------------------------------
+ #
+@@ -224,12 +226,15 @@
+ 	@echo "Installing PHYLIP v3.6 binaries in $(EXEDIR)"
+ 	@mkdir -p $(EXEDIR)
+ 	@cp $(PROGS) $(EXEDIR)
+-	@echo "Installing dynamic libraries in $(EXEDIR)"
+-	@cp $(DYLIBS) $(EXEDIR)
+-	@echo "Installing jar files in $(EXEDIR)"
+-	@cp $(JARS) $(EXEDIR)
+-	@echo "Installing font files in $(EXEDIR)"
+-	@cp font* $(EXEDIR)
++	@echo "Installing dynamic libraries in $(JAVADIR)"
++	@test -d $(JAVADIR) || mkdir -p $(JAVADIR)
++	@cp $(DYLIBS) $(JAVADIR)
++	@echo "Installing jar files in $(JAVADIR)"
++	@cp $(JARS) $(JAVADIR)
++	@echo "Installing font files in $(DATADIR)"
++	@test -d $(DATADIR) || mkdir -p $(DATADIR)
++	@cp font* $(DATADIR)
++	@cd $(DATADIR) && ln -s font1 fontfile
+ 	@echo "Finished installation."
+ 	@echo ""
+ 
+@@ -358,7 +363,7 @@
+ 	
+ # needed by java	
+ libdrawgram.so:   drawgram.o draw.o draw2.o phylip.o
+-	$(CC) $(CFLAGS) -o libdrawgram.so -shared -fPIC drawgram.c draw.c draw2.c phylip.c $(CLIBS)
++	$(CC) $(CFLAGS) -o libdrawgram.so -Wl,-soname,libdrawtree.so -shared -fPIC drawgram.c draw.c draw2.c phylip.c $(CLIBS)
+ 
+ drawtree.o:     drawtree.c draw.h phylip.h
+ 	$(CC) $(DFLAGS)  -shared -fPIC -c drawtree.c
+@@ -368,7 +373,7 @@
+ 
+ # needed by java	
+ libdrawtree.so:     drawtree.o draw.o draw2.o phylip.o
+-	$(CC) $(CFLAGS) -o libdrawtree.so  -shared -fPIC drawtree.c draw.c draw2.c phylip.c $(CLIBS)
++	$(CC) $(CFLAGS) -o libdrawtree.so -Wl,-soname,libdrawtree.so -shared -fPIC drawtree.c draw.c draw2.c phylip.c $(CLIBS)
+ 
+ factor.o:       factor.c phylip.h
+ 

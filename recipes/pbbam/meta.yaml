@@ -1,0 +1,41 @@
+{% set name = "pbbam" %}
+{% set version = "0.1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 1
+  skip: False
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+
+source:
+  git_url: https://github.com/PacificBiosciences/{{ name }}.git
+  git_rev: 928605a86ac024aced821fe4a4bce0b43d5ee680
+    
+requirements:
+  build:
+    - llvm # [osx]
+    - gcc # [linux]
+    - cmake
+    - boost {{CONDA_BOOST}}*
+    - zlib
+
+  run:
+    - libgcc # [linux]
+    - htslib
+    - zlib
+
+test:
+  commands:
+    - bam2sam --help
+    - pbindex --help
+    - pbindexdump --help
+    - pbmerge --help
+
+about:
+  home: https://github.com/PacificBiosciences/{{ name }}
+  license: BSD-3-Clause-Clear
+  summary: PacBio BAM C++ library, with SWIG bindings
+

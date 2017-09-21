@@ -52,6 +52,6 @@ if [ "$jvm_mem_opts" == "" ]; then
     jvm_mem_opts="$default_jvm_mem_opts"
 fi
 
-eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/ij-1.50e.jar:$PLUGINS_DIR/bUnwarpJ_-2.6.3.jar" "$bUnwarpJ"
+eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/ij-1.50e.jar:$PLUGINS_DIR/bUnwarpJ_-2.6.3.jar" "$bUnwarpJ" $pass_args
 
 exit

@@ -1,23 +1,111 @@
 #!/bin/bash
 set -euo pipefail
-export PATH=/anaconda/bin:$PATH
-if [[ $TRAVIS_OS_NAME = "linux" ]]
-then
-    docker run -e SUBDAG -e SUBDAGS -e TRAVIS_BRANCH -e TRAVIS_PULL_REQUEST -e ANACONDA_TOKEN -e BIOCONDA_UTILS_ARGS \
-               -v `pwd`:/bioconda-recipes condaforge/linux-anvil /bin/bash -c \
-               "set -euo pipefail; cd /bioconda-recipes; conda install --file scripts/requirements.txt; pip install git+https://github.com/bioconda/bioconda-utils.git@$BIOCONDA_UTILS_TAG; pip install git+https://github.com/bioconda/conda-build.git@fix-build-skip-existing; set -x; bioconda-utils build recipes config.yml $BIOCONDA_UTILS_ARGS; set +x"
+# Set some defaults
+set +u
+[[ -z $DOCKER_ARG ]] && DOCKER_ARG=""
+[[ -z $TRAVIS ]] && TRAVIS="false"
+[[ -z $BIOCONDA_UTILS_LINT_ARGS ]] && BIOCONDA_UTILS_LINT_ARGS=""
+[[ -z $RANGE_ARG ]] && RANGE_ARG="--git-range master HEAD"
+[[ -z $DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK  ]] && DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK="false"
+[[ -z $SKIP_LINTING ]] && SKIP_LINTING=false
+set -u
 
-    if [[ $SUBDAG = 0 ]]
+if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_BRANCH != "bulk" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
+then
+    echo ""
+    echo "Tests are skipped for pushes to the main bioconda-recipes repo."
+    echo "If you have opened a pull request, please see the full tests for that PR."
+    echo "See https://bioconda.github.io/build-system.html for details"
+    echo ""
+    exit 0
+fi
+
+
+# determine recipes to build. If building locally, build anything that changed
+# since master. If on travis, only build the commit range included in the push
+# or the pull request.
+if [[ $TRAVIS == "true" ]]
+then
+    RANGE="$TRAVIS_BRANCH HEAD"
+    if [ $TRAVIS_PULL_REQUEST == "false" ]
     then
-      if [[ $TRAVIS_BRANCH = "master" && "$TRAVIS_PULL_REQUEST" = false ]]
-      then
-        # build package documentation
-        scripts/build-docs.sh
-      fi
+        if [ -z "$TRAVIS_COMMIT_RANGE" ]
+        then
+            RANGE="HEAD~1 HEAD"
+        else
+            RANGE="${TRAVIS_COMMIT_RANGE/.../ }"
+        fi
+    fi
+
+    if [[ $TRAVIS_EVENT_TYPE == "cron" ]]
+    then
+        RANGE_ARG=""
+        SKIP_LINTING=true
+        echo "considering all recipes because build is triggered via cron"
+    else
+        if [[ $TRAVIS_BRANCH == "bulk" ]]
+        then
+            if [[ $TRAVIS_PULL_REQUEST != "false" ]]
+            then
+                # pull request against bulk: only build additionally changed recipes
+                RANGE_ARG="--git-range $RANGE"
+            else
+                # push on bulk: consider all recipes and do not lint (the bulk update)!
+                RANGE_ARG=""
+                SKIP_LINTING=true
+                echo "running bulk update"
+            fi
+        else
+            # consider only recipes that (a) changed since the last build
+            # on master, or (b) changed in this pull request compared to the target
+            # branch.
+            RANGE_ARG="--git-range $RANGE"
+        if [[ $TRAVIS_PULL_REQUEST_BRANCH == "bulk" ]]
+            then
+                SKIP_LINTING=true
+            fi
+        fi
+    fi
+fi
+
+export PATH=/anaconda/bin:$PATH
+
+# On travis we always run on docker for linux. This may not always be the case
+# for local testing.
+if [[ $TRAVIS_OS_NAME == "linux" && $TRAVIS == "true" ]]
+then
+    DOCKER_ARG="--docker --mulled-test"
+fi
+
+# When building master or bulk, upload packages to anaconda and quay.io.
+if [[ ( $TRAVIS_BRANCH == "master" || $TRAVIS_BRANCH == "bulk" ) && "$TRAVIS_PULL_REQUEST" == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
+then
+    if [[ $TRAVIS_OS_NAME == "linux" ]]
+    then
+        UPLOAD_ARG="--anaconda-upload --mulled-upload-target biocontainers"
+    else
+        UPLOAD_ARG="--anaconda-upload"
     fi
 else
-    # build packages
-    #scripts/build-packages.py --repository . --env-matrix scripts/env_matrix.yml
-    pip install git+https://github.com/bioconda/conda-build.git@fix-build-skip-existing
-    bioconda-utils build recipes config.yml $BIOCONDA_UTILS_ARGS
+    UPLOAD_ARG=""
+    LINT_COMMENT_ARG=""
+    if [[ $TRAVIS_OS_NAME == "linux" && $TRAVIS_PULL_REQUEST != "false" && -n "${GITHUB_TOKEN:-}" ]]
+    then
+        LINT_COMMENT_ARG="--push-comment --pull-request $TRAVIS_PULL_REQUEST"
+    fi
+    if [[ $SKIP_LINTING == "false"  ]]
+    then
+        set -x; bioconda-utils lint recipes config.yml $RANGE_ARG $BIOCONDA_UTILS_LINT_ARGS $LINT_COMMENT_ARG; set +x
+    fi
 fi
+
+
+if [[ $DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK == "true" ]]
+then
+    echo
+    echo "DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK is true."
+    echo "A comprehensive check will be performed to see what needs to be built."
+    RANGE_ARG=""
+fi
+set -x; bioconda-utils build recipes config.yml $UPLOAD_ARG $DOCKER_ARG $BIOCONDA_UTILS_BUILD_ARGS $RANGE_ARG; set +x;
+

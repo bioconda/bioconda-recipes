@@ -826,10 +826,10 @@ foreach $item (@items) {
     if(defined $actual_version) {
         print STDERR $actual_version;
         if($actual_version == $expected_version) {
-            print STDERR " (PASSED)\n";
+            print STDERR " $actual_version (PASSED)\n";
         }
         else {
-            print STDERR " (FAILED)\n";
+            print STDERR " $actual_version (FAILED)\n";
             die("$module: Expected version '$expected_version', " .
                 "but found '$actual_version'.")
         }
@@ -840,6 +840,6 @@ foreach $item (@items) {
             "but found none");
     }
     else {
-        print STDERR "<not available> (PASSED)\n";
+        print STDERR "<not checked> (PASSED)\n";
     }
 }

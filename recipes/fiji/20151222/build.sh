@@ -26,3 +26,7 @@ fi
 cp $RECIPE_DIR/bunwarpj.sh $outdir/bunwarpj
 ln -s $outdir/bunwarpj $PREFIX/bin
 chmod 0755 "${PREFIX}/bin/bunwarpj"
+chmod 0755 "${PREFIX}/bin/ImageJ"
+
+chmod +x "${PREFIX}/bin/ImageJ"
+chmod +x "${PREFIX}/bin/bunwarpj"

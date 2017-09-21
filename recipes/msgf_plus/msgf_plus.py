@@ -71,12 +71,16 @@ def main():
     jar_dir = real_dirname(sys.argv[0])
     (mem_opts, prop_opts, pass_args) = jvm_opts(sys.argv[1:])
 
-    if pass_args != [] and pass_args[0].startswith('eu'):
+    jar_path = os.path.join(jar_dir, jar_file)
+
+    if pass_args != [] and '-get_jar_path' in pass_args:
+        print(jar_path)
+        return
+
+    if pass_args != [] and pass_args[0].startswith('edu'):
         jar_arg = '-cp'
     else:
         jar_arg = '-jar'
-
-    jar_path = os.path.join(jar_dir, jar_file)
 
     java_args = [java]+ mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
 

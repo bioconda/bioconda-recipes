@@ -1,15 +1,12 @@
 #!/bin/bash
 
+mkdir $PREFIX/rMATS
+cp -R ./* $PREFIX/rMATS
 
-cp -R ./* $PREFIX/
+echo '#!/bin/bash' > $PREFIX/bin/RNASeq-MATS.py
+echo 'RMATS_INSTALL_DIR=$(dirname $(dirname "$0"))/rMATS' >> $PREFIX/bin/RNASeq-MATS.py
+echo 'python $RMATS_INSTALL_DIR/RNASeq-MATS.py "$@"' >> $PREFIX/bin/RNASeq-MATS.py
+chmod +x $PREFIX/bin/RNASeq-MATS.py
 
-echo '#!/usr/bin/env python' > $PREFIX/RNASeq-MATS.py
-cat ./RNASeq-MATS.py >> $PREFIX/RNASeq-MATS.py
-
-bash $PREFIX/test.bam.sh
-
-mv $PREFIX/RNASeq-MATS.py $PREFIX/bin/RNASeq-MATS.py
-
-rm -rf $PREFIX/testData $PREFIX/gtf
-rm $PREFIX/test.bam.sh
-rm $PREFIX/testRun.sh
+rm -rf $PREFIX/rMATS/testData $PREFIX/rMATS/gtf
+rm $PREFIX/rMATS/testRun.sh
