@@ -69,7 +69,6 @@ then
 fi
 
 export PATH=/anaconda/bin:$PATH
-conda install six
 
 # On travis we always run on docker for linux. This may not always be the case
 # for local testing.
