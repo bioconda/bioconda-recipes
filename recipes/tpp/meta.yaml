@@ -1,46 +1,41 @@
+{% set name = "TPP" %}
+{% set version = "5.0.0" %}
+{% set sha256 = "caed7a664be42fb9a168df699204816672e640569179cddaa42cf178d339534e" %}
+
 package:
-    name: tpp
-    version: "4.8.0"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-    fn: v4.8.0p7.tar.gz
-    url: https://github.com/iracooke/tpp/archive/v4.8.0p7.tar.gz
-    sha256: ca335910e65d0c4ba26d5a09de5c541d60261f82a67cf0c6b463c67d6ddad08e
+  url: https://downloads.sourceforge.net/project/sashimi/Trans-Proteomic%20Pipeline%20%28TPP%29/TPP%20v5.0%20%28Typhoon%29%20rev%200/TPP_5.0.0-src.tgz
+  fn: {{ name|lower }}_{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - tpp5.0.0.patch
 
 build:
     number: 0
-    # some dependencies are probably missing but without an OSX I can not debug it
-    skip: True  # [osx]
+    skip: true  # [osx]
+    skip: true  # [win]
     detect_binary_files_with_prefix: true
 
 requirements:
     build:
-        - gcc  # [linux]
-        - llvm   # [osx]
-        - libgd
-        - perl-threaded
+        - gcc <=4.9 # [linux]
+        - perl
         - perl-xml-parser
-        - perl-cgi
-        - libpng
-        - bzip2
         - zlib
-        - libxslt
-        - gnuplot
+        - bzip2
+        - libarchive
+        - boost ==1.57
+        - icu ==54.1
+        - fann
+        - expat
     run:
-        - libgcc  # [linux]
-        - libgd
-        - perl-threaded
+        - libgcc <=4.9 # [linux]
+        - perl
         - perl-xml-parser
-        - perl-cgi
-        - libpng
-        - bzip2
-        - zlib
-        - gnuplot
-        - libxslt
-
-test:
-    commands:
-        - ProteinProphet -h
+        - hardklor
 
 about:
     license: GPL v. 2.0 and LGPL

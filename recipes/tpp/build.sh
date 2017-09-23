@@ -1,54 +1,59 @@
 #!/bin/bash
 
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-export ZLIB_INCL="${PREFIX}/include"
-#export CFLAGS="-I$PREFIX/include"
+BUILD_DIR="${SRC_DIR}/build"
 
-cp $RECIPE_DIR/Makefile trans_proteomic_pipeline/src/Makefile
+export CXXFLAGS="${CXXFLAGS} -fPIC -w"
+export CFLAGS="-I$PREFIX/include"
+export CPATH=${PREFIX}/include
+export LDFLAGS="-L$PREFIX/lib -Wl,-rpath,$PREFIX/lib"
 
-# Always build PIC code for enable static linking into other shared libraries
-export CXXFLAGS="${CXXFLAGS} -fPIC"
+# TODO: mz5 support is nearly working but needs a few fixes in linking certain
+# targets
+#export HDF5_SUPPORT = 1
+#export MZ5_SUPPORT  = 1
 
-ls -l $PREFIX/include/
+echo "INSTALL_DIR  = ${PREFIX}"      >  site.mk
+echo "TPP_BASEURL  = /tpp"           >> site.mk
+echo "TPP_DATADIR  = ${PREFIX}/data" >> site.mk
 
-mkdir -p $PREFIX/web
-mkdir -p $PREFIX/cgi-bin
-mkdir -p $PREFIX/params
+# mz5 support is currently not working
 
-sed -i.bak s/endform/end_form/g trans_proteomic_pipeline/CGI/ProtXMLViewer.pl
+make --silent libgd
+make --silent gsl
+make --silent gzstream
+make --silent pwiz
+make --silent spare
 
-rm trans_proteomic_pipeline/extern/htmldoc.tgz
-rm -rf trans_proteomic_pipeline/extern/htmldoc
-cd trans_proteomic_pipeline/src/
+# These libs are provided by conda. libgd and gsl are also available in conda,
+# but trying to build using the conda versions causes issues
+#make --silent libarchive
+#make --silent boost
+#make --silent expat
+#make --silent fann
+#make --silent hdf5
 
-echo "TPP_ROOT=${PREFIX}/" >> Makefile.config.incl
-echo "TPP_WEB=${PREFIX}/web/" >> Makefile.config.incl
-echo "CGI_USERS_DIR=${PREFIX}/cgi-bin/" >> Makefile.config.incl
-echo "HTMLDOC_BIN=" >> Makefile.config.incl
-#echo "LINK=shared" >> Makefile.config.incl
-#echo "LIBEXT=so" >> Makefile.config.incl
+# we don't want/need these extra binaries, especially since some may conflict
+# with those provided by other conda packages
+rm -rf $BUILD_DIR/bin/*
 
-echo "GNUPLOT_BINARY=${PREFIX}/bin/gnuplot" >> Makefile.config.incl
-echo "XSLT_PROC=${PREFIX}/bin/xsltproc" >> Makefile.config.incl
+# These are the actual TPP targets that we want (we skip the Search target
+# because those search engines are packaged separately in conda)
+make --silent Quantitation
+make --silent Validation
+make --silent Visualization
+make --silent Parsers
 
-sed -i.bak 's/^HTMLDOC_/#HTMLDOC_/g' Makefile.incl
-sed -i.bak 's|^GD_INCL.*|GD_INCL= -I ${PREFIX}/include/|g' Makefile.incl
-sed -i.bak 's|--with-thread stage|--with-thread stage include="${INCLUDE_PATH}" cxxflags="${CXXFLAGS}"|g' Makefile.incl
+# we don't want/need these extra libraries, especially since some may conflict
+# with those provided by other conda packages
+rm -rf $BUILD_DIR/lib/*
 
-# needed to supress long outputs that forces travis to fails (4MB limit)
-sed -i.bak 's|make \$(HDF5_ENV)|make --silent \$(HDF5_ENV) 2>\&1 >/dev/null|g' Makefile.incl
+# build Mayu last because we actually do want to keep its libs
+make --silent mayu
 
-#sed -i.bak 's|^ZLIB_INCL=|ZLIB_INCL=${PREFIX}/include|g' Makefile.incl
-# skip make install-examples from hdf5
-sed -i.bak 's|HDF5_ENV); make install|HDF5_ENV); make install-recursive|g' Makefile.incl
-
-
-
-make #--silent 2>&1 >/dev/null
-make install #--silent 2>&1 >/dev/null
-
-# remove the webserver part to save space - could be included if needed
-rm -rf $PREFIX/html/
-rm -rf $PREFIX/cgi-bin/
+# Move everything to the final destination. This is done instead of 'make
+# install' because that command will try to build everything that we've
+# intentionally skipped
+cp -R $BUILD_DIR/bin    $PREFIX
+cp -R $BUILD_DIR/lib    $PREFIX
+cp -R $BUILD_DIR/conf   $PREFIX
+cp -R $BUILD_DIR/lic    $PREFIX
