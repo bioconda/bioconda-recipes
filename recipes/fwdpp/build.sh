@@ -1,10 +1,17 @@
 #!/bin/bash
 CPPFLAGS="-I$PREFIX/include $CPPFLAGS" LDFLAGS="-Wl,-rpath,$PREFIX/lib -L$PREFIX/lib $LDFLAGS" ./configure --prefix=$PREFIX
 make
-#LD_LIBRARY_PATH is used to link unit tests to libsequence runtime lib,
-#allowing us to run tests here.  Attempting to run tests from tests: 
-#block of yaml fails, presumably b/c pwd has changed by that point.
-export LD_LIBRARY_PATH=$PREFIX/lib
-make check
+cd testsuite
+# For time reasons, 
+# skip compiling & 
+# executing long-running
+# tests:
+TESTS="unit/fwdpp_unit_tests unit/sugar_unit_tests unit/extensions_unit_test integration/extensions_integration_tests"
+make $TESTS -j 3
+for i in $TESTS
+do
+    ./$i
+done
+cd ..
 make install
 
