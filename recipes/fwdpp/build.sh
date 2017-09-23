@@ -7,7 +7,7 @@ cd testsuite
 # executing long-running
 # tests:
 TESTS="unit/fwdpp_unit_tests unit/sugar_unit_tests unit/extensions_unit_test integration/extensions_integration_tests"
-make $TESTS -j 3
+make $TESTS
 for i in $TESTS
 do
     ./$i
