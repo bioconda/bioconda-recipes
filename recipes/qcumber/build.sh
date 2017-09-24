@@ -13,7 +13,7 @@ fi
 
 mkdir -p $CONDA_PREFIX/opt/qcumber/
 cp -r * $CONDA_PREFIX/opt/qcumber/
-sed -i.bak "1c\#!$PYTHON" $CONDA_PREFIX/opt/qcumber/QCumber-2
+#sed -i.bak "1c\#!$PYTHON" $CONDA_PREFIX/opt/qcumber/QCumber-2
 sed -i.bak "s#ADAPTER_PATH = \"\"#ADAPTER_PATH = \"$adapter_path\"#g" $CONDA_PREFIX/opt/qcumber/QCumber-2
 
 ln -s $CONDA_PREFIX/opt/qcumber/QCumber-2 $CONDA_PREFIX/bin/
