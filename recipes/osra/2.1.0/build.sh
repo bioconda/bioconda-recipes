@@ -1,5 +1,6 @@
 #!/bin/env bash
 export INCLUDE_PATH="${PREFIX}/include"
+export CPATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
