@@ -6,6 +6,7 @@ export CXXFLAGS="${CXXFLAGS} -fPIC -w"
 export CFLAGS="-I$PREFIX/include"
 export CPATH=${PREFIX}/include
 export LDFLAGS="-L$PREFIX/lib -Wl,-rpath,$PREFIX/lib"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PREFIX/lib
 
 # TODO: mz5 support is nearly working but needs a few fixes in linking certain
 # targets
@@ -19,17 +20,14 @@ echo "TPP_DATADIR  = ${PREFIX}/data" >> site.mk
 # mz5 support is currently not working
 
 make --silent libgd
+make --silent libarchive
+make --silent expat
+make --silent fann
 make --silent gsl
+make --silent boost
 make --silent gzstream
 make --silent pwiz
 make --silent spare
-
-# These libs are provided by conda. libgd and gsl are also available in conda,
-# but trying to build using the conda versions causes issues
-#make --silent libarchive
-#make --silent boost
-#make --silent expat
-#make --silent fann
 #make --silent hdf5
 
 # we don't want/need these extra binaries, especially since some may conflict
