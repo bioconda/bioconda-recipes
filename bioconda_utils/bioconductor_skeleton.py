@@ -108,7 +108,7 @@ def bioconductor_tarball_url(package, pkg_version, bioc_version):
     )
 
 
-def bioconductor_data_url(package, pkg_version, bioc_version):
+def bioconductor_annotation_data_url(package, pkg_version, bioc_version):
     """
     Constructs a url for an annotation package tarball
 
@@ -126,6 +126,27 @@ def bioconductor_data_url(package, pkg_version, bioc_version):
     return (
         'http://bioconductor.org/packages/{bioc_version}'
         '/data/annotation/src/contrib/{package}_{pkg_version}.tar.gz'.format(**locals())
+    )
+
+
+def bioconductor_experiment_data_url(package, pkg_version, bioc_version):
+    """
+    Constructs a url for an experiment data package tarball
+
+    Parameters
+    ----------
+    package : str
+        Case-sensitive Bioconductor package name
+
+    pkg_version : str
+        Bioconductor package version
+
+    bioc_version : str
+        Bioconductor release version
+    """
+    return (
+        'http://bioconductor.org/packages/{bioc_version}'
+        '/data/experiment/src/contrib/{package}_{pkg_version}.tar.gz'.format(**locals())
     )
 
 
@@ -147,7 +168,7 @@ def find_best_bioc_version(package, version):
     for bioc_version in bioconductor_versions():
         for kind, func in zip(
             ('package', 'data'),
-            (bioconductor_tarball_url, bioconductor_data_url)
+            (bioconductor_tarball_url, bioconductor_annotation_data_url, bioconductor_experiment_data_url)
         ):
             url = func(package, version, bioc_version)
             if requests.head(url).status_code == 200:
@@ -201,6 +222,11 @@ class BioCProjectPage(object):
             self.request = requests.get(
                 os.path.join(base_url, self.bioc_version, 'data', 'annotation', 'html', package + '.html')
             )
+        if not self.request:
+            self.request = requests.get(
+                os.path.join(base_url, self.bioc_version, 'data', 'experiment', 'html', package + '.html')
+            )
+
 
         if not self.request:
             raise PageNotFoundError('Error {0.status_code} ({0.reason}) for page {0.url}'.format(self.request))
@@ -291,11 +317,22 @@ class BioCProjectPage(object):
             return url
 
     @property
-    def bioconductor_data_url(self):
+    def bioconductor_annotation_data_url(self):
         """
         Return the url to the tarball from the bioconductor site.
         """
-        url = bioconductor_data_url(self.package, self.version, self.bioc_version)
+        url = bioconductor_annotation_data_url(self.package, self.version, self.bioc_version)
+        response = requests.head(url)
+        if response and response.status_code == 200:
+            self.is_data_package = True
+            return url
+
+    @property
+    def bioconductor_experiment_data_url(self):
+        """
+        Return the url to the tarball from the bioconductor site.
+        """
+        url = bioconductor_experiment_data_url(self.package, self.version, self.bioc_version)
         response = requests.head(url)
         if response and response.status_code == 200:
             self.is_data_package = True
@@ -304,7 +341,10 @@ class BioCProjectPage(object):
     @property
     def tarball_url(self):
         if not self._tarball_url:
-            urls = [self.bioconductor_tarball_url, self.bioconductor_data_url, self.bioaRchive_url, self.cargoport_url]
+            urls = [self.bioconductor_tarball_url,
+                    self.bioconductor_annotation_data_url,
+                    self.bioconductor_experiment_data_url, self.bioaRchive_url,
+                    self.cargoport_url]
             for url in urls:
                 if url is not None:
                     response = requests.head(url)
@@ -554,7 +594,9 @@ class BioCProjectPage(object):
         """
         url = [
             u for u in
-            [self.bioconductor_tarball_url, self.bioconductor_data_url,
+            [self.bioconductor_tarball_url,
+             self.bioconductor_annotation_data_url,
+             self.bioconductor_experiment_data_url,
              self.bioaRchive_url, self.cargoport_url]
             if u is not None
         ]
@@ -677,7 +719,8 @@ def write_recipe(package, recipe_dir, force=False, bioc_version=None,
         urls = [
             '"{0}"'.format(u) for u in [
                 proj.bioconductor_tarball_url,
-                proj.bioconductor_data_url,
+                proj.bioconductor_annotation_data_url,
+                proj.bioconductor_experiment_data_url,
                 proj.bioaRchive_url,
                 proj.cargoport_url
             ]
