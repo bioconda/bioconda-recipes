@@ -6,7 +6,6 @@ export CXXFLAGS="${CXXFLAGS} -fPIC -w"
 export CFLAGS="-I$PREFIX/include"
 export CPATH=${PREFIX}/include
 export LDFLAGS="-L$PREFIX/lib -Wl,-rpath,$PREFIX/lib"
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PREFIX/lib
 
 # TODO: mz5 support is nearly working but needs a few fixes in linking certain
 # targets
@@ -17,18 +16,8 @@ echo "INSTALL_DIR  = ${PREFIX}"      >  site.mk
 echo "TPP_BASEURL  = /tpp"           >> site.mk
 echo "TPP_DATADIR  = ${PREFIX}/data" >> site.mk
 
-# mz5 support is currently not working
-
-make --silent libgd
-make --silent libarchive
-make --silent expat
-make --silent fann
-make --silent gsl
-make --silent boost
-make --silent gzstream
-make --silent pwiz
-make --silent spare
-#make --silent hdf5
+# build bundled dependencies
+make --silent extern
 
 # we don't want/need these extra binaries, especially since some may conflict
 # with those provided by other conda packages
@@ -40,6 +29,7 @@ make --silent Quantitation
 make --silent Validation
 make --silent Visualization
 make --silent Parsers
+make --silent Util
 
 # we don't want/need these extra libraries, especially since some may conflict
 # with those provided by other conda packages
