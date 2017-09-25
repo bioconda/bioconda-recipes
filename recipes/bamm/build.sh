@@ -3,6 +3,6 @@ export CFLAGS="-I$PREFIX/include"
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
-export HTSLIB_LIBRARY_DIR=$PREFIX/lib
-export HTSLIB_INCLUDE_DIR=$PREFIX/include
-$PYTHON setup.py install
+$PYTHON setup.py install --with-libhts-lib $PREFIX/lib \
+ --with-libhts-inc $PREFIX/include --with-libcfu-inc $PREFIX/include \
+ --with-libcfu-lib $PREFIX/lib
