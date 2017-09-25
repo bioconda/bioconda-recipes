@@ -10,7 +10,6 @@
 #PeptideMapper
 #RTCalc
 #Sequest2XML
-#Tandem2XML
 #RTCatalogParser
 
 # These are tests using actual input files (although output is currently not
@@ -29,7 +28,6 @@ assert_lines test.pep.xml 1261
 
 xinteract -p0 -OAPtudF -Nfoo -dREV_ -Dtest.faa test.pep.xml
 assert_lines interact-foo.pep.xml 3532
-assert_size  interact-foo.pep.xml 283005
 
 DatabaseParser test.pep.xml > db.path
 assert_lines db.path 1
@@ -93,6 +91,9 @@ assert_lines digest.txt 7443
 
 PepXMLViewer.cgi -I test.pep.xml -B exportSpreadsheet 1
 assert_lines test.pep.xls 30
+
+Tandem2XML test.t.xml test.pep.xml
+assert_lines test.pep.xml 720
 
 echo "All tests ran successfully"
 

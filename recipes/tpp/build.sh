@@ -42,13 +42,21 @@ make --silent mayu
 # intentionally skipped
 
 mkdir -p $PREFIX/html
+mkdir -p $PREFIX/lib
+mkdir -p $PREFIX/cgi-bin
+
+chmod +x $BUILD_DIR/bin/*.pl
 
 cp -R $BUILD_DIR/bin          $PREFIX
 cp -R $BUILD_DIR/conf         $PREFIX
 cp -R $BUILD_DIR/lic          $PREFIX
 cp -R $BUILD_DIR/html/PepXML* $PREFIX/html
+cp -R $BUILD_DIR/lib/perl/*   $PREFIX/lib
 
 # Generally we don't want the CGI stuff, but these files are specifically
 # wanted by GalaxyP
+chmod +x $BUILD_DIR/cgi-bin/PepXMLViewer.cgi
+chmod +x $BUILD_DIR/cgi-bin/protxml2html.pl
 cp -R $BUILD_DIR/cgi-bin/PepXMLViewer.cgi $PREFIX/bin
+cp -R $BUILD_DIR/cgi-bin/PepXMLViewer.cgi $PREFIX/cgi-bin
 cp -R $BUILD_DIR/cgi-bin/protxml2html.pl  $PREFIX/bin
