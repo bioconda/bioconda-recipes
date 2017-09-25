@@ -1,0 +1,41 @@
+{% set name = "mosdepth" %}
+{% set version = "0.1.7" %}
+{% set revision = "46d7b84" %}
+{% set sha256hash = "d3bfbbec52109d783b5f94f8d4ed796465828692c6b67475afb5590b4cfc671d" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name }}-{{revision}}.tar.gz
+  url: https://github.com/brentp/mosdepth/archive/{{ revision }}.tar.gz
+  #url: https://github.com/brentp/mosdepth/releases/download/v{{ version }}/mosdepth
+  #fn: {{ name }}-{{ version }}
+  sha256: {{ sha256hash }}
+  patches:
+    - install.diff
+
+build:
+  number: 0
+  skip: True  # [osx]
+  string: "htslib{{CONDA_HTSLIB}}_{{PKG_BUILDNUM}}"
+
+requirements:
+  build:
+    - gcc
+    - pcre
+    - htslib {{CONDA_HTSLIB}}*
+  run:
+    - libgcc
+    - pcre
+    - htslib {{CONDA_HTSLIB}}*
+
+test:
+  commands:
+    - mosdepth -h
+
+about:
+  home: https://github.com/brentp/mosdepth
+  license: MIT
+  summary: 'Fast BAM/CRAM depth calculation for WGS, exome, or targetted sequencing.'
