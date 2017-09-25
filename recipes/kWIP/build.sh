@@ -1,7 +1,11 @@
 #!/bin/bash
-CC=${PREFIX}/bin/gcc
-CXX=${PREFIX}/bin/g++
-BINARY_HOME=$PREFIX/bin
+export CC=${PREFIX}/bin/gcc
+export CXX=${PREFIX}/bin/g++
+export BINARY_HOME=$PREFIX/bin
+
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+export CPATH=${PREFIX}/include
 
 cd $SRC_DIR
 mkdir build && cd build
