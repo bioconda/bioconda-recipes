@@ -7,7 +7,7 @@ export CFLAGS="-O3 -g ${CFLAGS}"
 export CXXFLAGS="-O3 -g ${CXXFLAGS}"
 
 ./configure --prefix="${PREFIX}"
-make
+( make > make.out ) || ( cat make.out && exit 1 )
 make check || ( cat test/test-suite.log && exit 1 )
 make install
 
