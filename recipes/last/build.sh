@@ -6,6 +6,9 @@ binaries="\
 lastal \
 lastdb \
 last-split \
+lastal8 \
+lastdb8 \
+last-split8 \
 last-pair-probs \
 last-merge-batches \
 "
