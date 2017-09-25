@@ -16,7 +16,8 @@ echo "INSTALL_DIR  = ${PREFIX}"      >  site.mk
 echo "TPP_BASEURL  = /tpp"           >> site.mk
 echo "TPP_DATADIR  = ${PREFIX}/data" >> site.mk
 
-# build bundled dependencies
+# mz5 support is currently not working
+
 make --silent extern
 
 # we don't want/need these extra binaries, especially since some may conflict
@@ -30,18 +31,22 @@ make --silent Validation
 make --silent Visualization
 make --silent Parsers
 make --silent Util
-
-# we don't want/need these extra libraries, especially since some may conflict
-# with those provided by other conda packages
-rm -rf $BUILD_DIR/lib/*
-
-# build Mayu last because we actually do want to keep its libs
+make --silent spectrast
+make --silent perl
 make --silent mayu
 
 # Move everything to the final destination. This is done instead of 'make
 # install' because that command will try to build everything that we've
 # intentionally skipped
-cp -R $BUILD_DIR/bin    $PREFIX
-cp -R $BUILD_DIR/lib    $PREFIX
-cp -R $BUILD_DIR/conf   $PREFIX
-cp -R $BUILD_DIR/lic    $PREFIX
+
+mkdir -p $PREFIX/html
+
+cp -R $BUILD_DIR/bin          $PREFIX
+cp -R $BUILD_DIR/conf         $PREFIX
+cp -R $BUILD_DIR/lic          $PREFIX
+cp -R $BUILD_DIR/html/PepXML* $PREFIX/html
+
+# Generally we don't want the CGI stuff, but these files are specifically
+# wanted by GalaxyP
+cp -R $BUILD_DIR/cgi-bin/PepXMLViewer.cgi $PREFIX/bin
+cp -R $BUILD_DIR/cgi-bin/protxml2html.pl  $PREFIX/bin
