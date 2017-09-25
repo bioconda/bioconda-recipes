@@ -20,7 +20,9 @@ last-map-probs \
 last-dotplot \
 "
 
-export CMAKE_CXX_FLAGS="-stdlib=libc++"
+if [[ $SUBDIR == osx* ]]; then
+	export CMAKE_CXX_FLAGS="-stdlib=libc++"
+fi
 
 for i in $scripts; do cp $SRC_DIR/scripts/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
 
