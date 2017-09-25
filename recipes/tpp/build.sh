@@ -16,7 +16,9 @@ echo "INSTALL_DIR  = ${PREFIX}"      >  site.mk
 echo "TPP_BASEURL  = /tpp"           >> site.mk
 echo "TPP_DATADIR  = ${PREFIX}/data" >> site.mk
 
-# mz5 support is currently not working
+# install the dependencies
+
+cpanm FindBin::libs
 
 make --silent extern
 
