@@ -6,7 +6,7 @@ export CPPFLAGS="-I${PREFIX}/include"
 
 stack setup
 stack update
-stack install --local-bin-path ${PREFIX}/bin
+stack install --extra-include-dirs ${PREFIX}/include --local-bin-path ${PREFIX}/bin
 mv ~/.local/bin/feht ${PREFIX}/bin/
 
 #Clean-up
