@@ -1,0 +1,59 @@
+{% set version="3.0_vngs.02" %}
+
+package:
+  name: gap2seq
+  version: {{ version }}
+
+build:
+  number: 0
+  string: py{{CONDA_PY}}_boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+
+source:
+  git_rev: v{{ version }}
+  git_url: https://github.com/broadinstitute/Gap2Seq.git
+
+requirements:
+  build:
+    # linux build
+    - gcc >=4.7 # [linux]
+    - libgcc # [linux]
+    - boost {{CONDA_BOOST}}* # [linux]
+    # osx build
+    - llvmdev ==3.9.1 # [osx]
+    - libcxx # [osx]
+    - boost ==1.63.0 # [osx]
+    # general build
+    - zlib
+    - cmake
+    - make
+    - htslib
+  run:
+    # linux run
+    - libgcc # [linux]
+    - boost {{CONDA_BOOST}}* # [linux]
+    # osx run
+    - libcxx # [osx]
+    - boost ==1.63.0 # [osx]
+    # general run
+    - zlib
+    - htslib
+    - python
+test:
+  commands:
+     - echo TESTING prefix is $PREFIX
+     - ls -alt $PREFIX/bin
+     - Gap2Seq --help
+
+about:
+  home: https://www.cs.helsinki.fi/u/lmsalmel/Gap2Seq/
+  license: GPLv3
+  license_file: LICENCE
+  summary: Gap2Seq is a tool for filling gaps between contigs in genome assemblies.
+  dev_url: https://github.com/rikuu/Gap2Seq
+
+extra:
+  notes: "Gap2Seq is only tested on Linux x86_64 by its author."
+  doi: 10.1371/journal.pone.0184608
+  recipe-maintainers:
+    - notestaff
+
