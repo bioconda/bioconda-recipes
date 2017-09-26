@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 
-. assert.sh
+#-- BEGIN set up testing environment ----------------------------------------#
+
+git clone https://github.com/jvolkening/conda_test_data
+cd conda_test_data
+git fetch --all --tags --prune
+git checkout bioconda-tpp-5.0.0-0
+
+. util/assert.sh
+cd channels/bioconda/tpp
+
+#-- END set up testing environment ------------------------------------------#
+
 
 # These commands aren't tested yet
 
@@ -12,10 +23,6 @@
 #Sequest2XML
 #RTCatalogParser
 
-# These are tests using actual input files (although output is currently not
-# tested, just the absence of failure)
-
-cd test_data
 
 Out2XML test 1
 assert_lines test.pep.xml 2484
