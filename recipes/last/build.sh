@@ -23,7 +23,7 @@ last-map-probs \
 last-dotplot \
 "
 
-if [[ $SUBDIR == osx* ]]; then
+if [[ $(uname) == "Darwin" ]]; then
 	export CMAKE_CXX_FLAGS="-stdlib=libc++"
 fi
 
