@@ -3,10 +3,10 @@
 mkdir -p ${PREFIX}/bin
 
 # decrease RAM needed
-sed -i 's/make -j8/make -j1/' INSTALL
+sed -i.bak 's/make -j8/make -j1/' INSTALL
 
 # remove tests because of too much RAM needed
-sed -i 's/. .\/simple_test\.sh/#. .\/simple_test\.sh/' INSTALL
+sed -i.bak 's/. .\/simple_test\.sh/#. .\/simple_test\.sh/' INSTALL
 
 # installation
 sh INSTALL
