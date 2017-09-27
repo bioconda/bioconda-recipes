@@ -1,7 +1,7 @@
 #!/bin/bash
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="-L${PREFIX}/lib"
+export LIBRARY_PATH="${PREFIX}/lib/x86_64-linux-gnu"
+export LD_LIBRARY_PATH="${PREFIX}/lib/x86_64-linux-gnu"
+export LDFLAGS="-L${PREFIX}/lib/x86_64-linux-gnu"
 export CPPFLAGS="-I${PREFIX}/include"
 
 stack setup
