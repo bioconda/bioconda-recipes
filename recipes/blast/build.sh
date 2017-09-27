@@ -20,12 +20,13 @@ cd $SRC_DIR/c++/
     --with-hard-runpath \
     --without-debug \
     --with-strip \
-    --without-downloaded-vdb \
+    --without-vdb \
     --with-z=$PREFIX \
     --with-bz2=$PREFIX \
-    --with-openssl=$PREFIX \
     --with-boost=$PREFIX \
-    --with-openssl=$PREFIX
+    --without-openssl \
+    --with-gnutls=$PREFIX \
+    --without-krb5
 
 projects="algo/blast/ app/ objmgr/ objtools/align_format/ objtools/blast/"
 
