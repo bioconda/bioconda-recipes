@@ -20,7 +20,7 @@ pushd build
 mkdir -p $PREFIX/bin
 
 if [ "$(uname)" == "Darwin" ]; then
-		ln -s ${PREFIX}/include/boost ${SRC_DIR}/thirdparty/gatb-core/thirdparty/
+		#ln -s ${PREFIX}/include/boost ${SRC_DIR}/thirdparty/gatb-core/thirdparty/
 
     # c++11 compatibility
 
