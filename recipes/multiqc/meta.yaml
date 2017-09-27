@@ -1,17 +1,15 @@
 package:
   name: multiqc
-  version: "1.1"
+  version: "1.2"
 
 source:
-  fn: v1.1.tar.gz
-  url: https://github.com/ewels/MultiQC/archive/v1.1.tar.gz
-  md5: e7d1b452ba5f89d568c4e68665ccd9f5
+  fn: v1.2.tar.gz
+  url: https://github.com/ewels/MultiQC/archive/v1.2.tar.gz
+  md5: 55dac8b0dc055810ae09ec9b72e0603e
 
 build:
   number: 0
   preserve_egg_dir: True
-  # click needs to be patched in order to properly detect unicode in py3k
-  skip: true  # [py3k]
 
 requirements:
   build:
@@ -21,10 +19,13 @@ requirements:
     - lzstring
     - jinja2 >=2.9
     - matplotlib
+    - markdown
     - numpy
     - pyyaml
+    - requests
     - simplejson
     - spectra
+    - networkx <2
 
   run:
     - python
@@ -33,10 +34,13 @@ requirements:
     - lzstring
     - jinja2 >=2.9
     - matplotlib
+    - markdown
     - numpy
     - pyyaml
+    - requests
     - simplejson
     - spectra
+    - networkx <2
     - libgcc  # [linux]
 
 test:
@@ -45,8 +49,10 @@ test:
     - multiqc
     - multiqc.modules
     - multiqc.modules.adapterRemoval
+    - multiqc.modules.afterqc
     - multiqc.modules.bamtools
     - multiqc.modules.bcftools
+    - multiqc.modules.bcl2fastq
     - multiqc.modules.biobloomtools
     - multiqc.modules.bismark
     - multiqc.modules.bowtie1
@@ -69,6 +75,7 @@ test:
     - multiqc.modules.htseq
     - multiqc.modules.jellyfish
     - multiqc.modules.kallisto
+    - multiqc.modules.leehom
     - multiqc.modules.macs2
     - multiqc.modules.methylQA
     - multiqc.modules.peddy
@@ -91,10 +98,13 @@ test:
     - multiqc.modules.theta2
     - multiqc.modules.tophat
     - multiqc.modules.trimmomatic
+    - multiqc.modules.vcftools
     - multiqc.plots
     - multiqc.templates
     - multiqc.templates.default
-    - multiqc.templates.default_dev
+    # Can be added back after v1.3 release - fixed here:
+    # https://github.com/ewels/MultiQC/commit/a2c704c92b2fee5db637348ff4ad0c150a30708d
+    # - multiqc.templates.default_dev
     - multiqc.templates.geo
     - multiqc.templates.sections
     - multiqc.templates.simple
@@ -102,10 +112,15 @@ test:
 
   commands:
     # click requires a unicode locale
-    - LANG=C.UTF-8 multiqc --version
+    - LC_ALL=C.UTF-8 LANG=C.UTF-8 multiqc --version # [linux]
+    - LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 multiqc --version # [osx]
 
 about:
   home: http://multiqc.info
   license: GNU General Public License v3 (GPLv3)
   summary: 'Create aggregate bioinformatics analysis reports across many samples and tools'
   license_family: GPL3
+
+extra:
+  container:
+    extended-base: true
