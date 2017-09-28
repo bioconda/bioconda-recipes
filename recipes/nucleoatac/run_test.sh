@@ -5,4 +5,7 @@ export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
-$PYTHON setup.py install
+nucleoatac run --help
+pyatac --help
+
+python -c "import pyatac.fragmentsizes"
