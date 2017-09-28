@@ -1,9 +1,10 @@
---- BlastAlign.bak	2014-04-08 12:23:29.000000000 +0200
-+++ BlastAlign	2017-04-12 14:26:23.706987674 +0200
+--- BlastAlign	2017-09-28 17:09:52.869023925 +0200
++++ BlastAlign.bak	2017-09-28 17:19:00.961531935 +0200
 @@ -1,5 +1,7 @@
 -#! /usr/bin/perl -w
+-use Getopt::Std; 	# read in data at command line using -i type options
 +#! /usr/bin/env perl
- use Getopt::Std; 	# read in data at command line using -i type options
++use Getopt::Std;    # read in data at command line using -i type options
 +use File::Basename;
 +use Cwd 'abs_path';
  
@@ -17,39 +18,1261 @@
  # e.g. 
  #$blastall = "/usr/software/blast/blast-2.2.6-ia32/blastall"; 
  #$formatdb = "/usr/software/blast/blast-2.2.6-ia32/formatdb";
-@@ -101,7 +104,7 @@
- 	if ($number_of_seqs > $max_number_seqs) { # Either too many sequences in input file or user wants to restrict the number. Will randomly select selected number and find reference from these only.
- 		find_ref_from_reduced();
- 		parse_blast_output_for_python();
--		$system_check = (system "python $python_script"); # Run python script BlastAlign.py with input file 'blast_out'
-+		$system_check = (system "python $script_path/$python_script"); # Run python script BlastAlign.py with input file 'blast_out'
- 			unless ($system_check eq 0) {
- 			print "\n****** Error message from BlastAlign: the auxiliary python program BlastAlign.py was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
- 			exit;
-@@ -125,7 +128,7 @@
- 			exit;
- 		}
- 		parse_blast_output_for_python();
--		$system_check = (system "python $python_script"); # Run python script BlastAlign.py with input file 'blast_out' and create new file called blast_out_python
-+		$system_check = (system "python $script_path/$python_script"); # Run python script BlastAlign.py with input file 'blast_out' and create new file called blast_out_python
- 		unless ($system_check eq 0) {
- 			print "\n****** Error message from BlastAlign: the auxiliary python program BlastAlign.py was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
- 			exit;
-@@ -616,7 +619,7 @@
- 	if (exists $parameters{"r"}) { # No landscape has been produced in first place, so just write it here
- 		@list_of_names = @array_of_matches_to_ref; # Replace old list of names with list in order to match to reference
- 		parse_blast_output(); # Produce file blast_out
--		system "python $python_script"; # Run python again to produce better landscape map
-+		system "python $script_path/$python_script"; # Run python again to produce better landscape map
- 	}
- 	else { # Need to overwrite original landscape map
- 		open INPUT_FILE_HANDLE, "<blast_out" or die print "Error message from BlastAlign: cannot open file to be passed to python to improve landscape map\n";
-@@ -640,7 +643,7 @@
- 			}	
- 		}
- 		close OUTPUT_FILE_HANDLE;
--		system "python $python_script"; # Run python again to produce better landscape map
-+		system "python $script_path/$python_script"; # Run python again to produce better landscape map
- 	}
+@@ -29,11 +32,11 @@
+ ####################################
+ # Switches are 
+ #  -i <name of input file> (obligatory);
+-# -m	<maximum percentage of gaps allowed in any one sequence in the final alignment> Optional but we find 0.5 the most useful; default = 0.95, i.e. only removing sequences with extremely short matches\n";
+-# -r	<name of reference sequence> Optional; default is to search for best candidate (if entered, the sequence will be extracted, written to a separate file, and blasted against the original input file)\n";
+-# -x	<names of comma-separated sequences to be excluded from this analysis> Optional\n";
+-# -n	<T/F> Retain original names in output files T(rue)/F(alse). Optional (default = T;) option F is to output the 15 character name abbreviations (stripped of potentially problematic characters) that is used in the program\n"; 
+-# -s	<Number of sequences to be used in initial search for reference sequence> Optional; default is to find the reference sequence by blasting all sequences against all sequences, only randomly subsampling when it thinks the blast output file might be too large (-s over-rides this)\n";
++# -m    <maximum percentage of gaps allowed in any one sequence in the final alignment> Optional but we find 0.5 the most useful; default = 0.95, i.e. only removing sequences with extremely short matches\n";
++# -r    <name of reference sequence> Optional; default is to search for best candidate (if entered, the sequence will be extracted, written to a separate file, and blasted against the original input file)\n";
++# -x    <names of comma-separated sequences to be excluded from this analysis> Optional\n";
++# -n    <T/F> Retain original names in output files T(rue)/F(alse). Optional (default = T;) option F is to output the 15 character name abbreviations (stripped of potentially problematic characters) that is used in the program\n"; 
++# -s    <Number of sequences to be used in initial search for reference sequence> Optional; default is to find the reference sequence by blasting all sequences against all sequences, only randomly subsampling when it thinks the blast output file might be too large (-s over-rides this)\n";
+ ####################################
+ 
+ print "\n************************  BlastAlign  ************************\n\n";
+@@ -43,45 +46,45 @@
+ getopts('i:m:r:x:n:s:',\%parameters);
+ 
+ unless (exists $parameters{"i"}) {
+-	print "\nUSAGE: MUST HAVE\tBlastAlign -i <name of input fasta file>\n\nOTHER OPTIONAL PARAMETERS ARE AS FOLLOWS\n";
+-	print "\t-m	<maximum percentage of gaps allowed in any one sequence in the final alignment> Optional but we find 0.5 the most useful; default = 95, i.e. only removing sequences with extremely short matches\n";
+-	print "\t-r	<name of reference sequence> Optional; default is to search for best candidate (if entered, the sequence will be extracted, written to a separate file, and blasted against the original input file)\n";
+-	print "\t-x	<names of comma-separated sequences to be excluded from this analysis> Optional\n";
+-	print "\t-n	<T/F> Retain original names in output files T(rue)/F(alse). Optional (default = T;) option F is to output the 15 character name abbreviations (stripped of potentially problematic characters) that is used in the program\n"; 
+-	print "\t-s	<Number of sequences to be used in initial search for reference sequence> Optional; default is to find the reference sequence by blasting all sequences against all sequences, only randomly subsampling when it thinks the blast output file might be too large (-s over-rides this)\n";
+-	exit;
++    print "\nUSAGE: MUST HAVE\tBlastAlign -i <name of input fasta file>\n\nOTHER OPTIONAL PARAMETERS ARE AS FOLLOWS\n";
++    print "\t-m <maximum percentage of gaps allowed in any one sequence in the final alignment> Optional but we find 0.5 the most useful; default = 95, i.e. only removing sequences with extremely short matches\n";
++    print "\t-r <name of reference sequence> Optional; default is to search for best candidate (if entered, the sequence will be extracted, written to a separate file, and blasted against the original input file)\n";
++    print "\t-x <names of comma-separated sequences to be excluded from this analysis> Optional\n";
++    print "\t-n <T/F> Retain original names in output files T(rue)/F(alse). Optional (default = T;) option F is to output the 15 character name abbreviations (stripped of potentially problematic characters) that is used in the program\n"; 
++    print "\t-s <Number of sequences to be used in initial search for reference sequence> Optional; default is to find the reference sequence by blasting all sequences against all sequences, only randomly subsampling when it thinks the blast output file might be too large (-s over-rides this)\n";
++    exit;
  }
+ # Set parameter values where they are specified by the user
+ $input_file = $parameters{"i"};
+ if (exists $parameters{"m"}) {
+-	$max_percentage = $parameters{"m"};
+-	print "\nWill exclude sequences where gaps make up more than $max_percentage% of the sequence in the final alignment\n\n";
++    $max_percentage = $parameters{"m"};
++    print "\nWill exclude sequences where gaps make up more than $max_percentage% of the sequence in the final alignment\n\n";
+ }
+ else {
+-	print "\nNote, will only exclude sequences where gaps make up more than $max_percentage% of the sequence in the final alignment. Reduce this to, for example, 50% by adding -m 50 \n\n";
++    print "\nNote, will only exclude sequences where gaps make up more than $max_percentage% of the sequence in the final alignment. Reduce this to, for example, 50% by adding -m 50 \n\n";
+ }
+ if (exists $parameters{"r"}) { # extracts this sequence and writes it to a second file
+-	$user_reference = $parameters{"r"};
+-	$user_reference =~ tr/ _\(\)\[\]\|\{\}\^\$\*\+\?\.!@£$%&"'`//d;
+-	$user_reference = substr($user_reference,0,15);
+-	print "\nWill use user-set $user_reference as the reference sequence\n\n";
++    $user_reference = $parameters{"r"};
++    $user_reference =~ tr/ _\(\)\[\]\|\{\}\^\$\*\+\?\.!@£$%&"'`//d;
++    $user_reference = substr($user_reference,0,15);
++    print "\nWill use user-set $user_reference as the reference sequence\n\n";
+ }
+ if (exists $parameters{"x"}) {
+-	$temp_remove = $parameters{"x"};
+-	$temp_remove = $parameters{"x"};
+-	$temp_remove =~ tr/ _\(\)\[\]\|\{\}\^\$\*\+\?\.!@£$%&"'`//d;
+-	@temp_remove = split /,/, $temp_remove;
+-	foreach (@temp_remove) {
+-		$remove_name = substr($_,0,15);
+-		push @remove, $remove_name;
+-	}
+-	print "\nExcluding the following sequences: @remove\n\n";
++    $temp_remove = $parameters{"x"};
++    $temp_remove = $parameters{"x"};
++    $temp_remove =~ tr/ _\(\)\[\]\|\{\}\^\$\*\+\?\.!@£$%&"'`//d;
++    @temp_remove = split /,/, $temp_remove;
++    foreach (@temp_remove) {
++        $remove_name = substr($_,0,15);
++        push @remove, $remove_name;
++    }
++    print "\nExcluding the following sequences: @remove\n\n";
+ }
+ if (exists $parameters{"n"}) {
+-	$keep_old_names = $parameters{"n"}; # default is to not abbreviate names.
++    $keep_old_names = $parameters{"n"}; # default is to not abbreviate names.
+ }
+ if (exists $parameters{"s"}) { # If selected, this option will determine the number of sequences to be analysed
+-	$selected_number_seqs = $parameters{"s"};
++    $selected_number_seqs = $parameters{"s"};
+ }
+ 
+ edit_input_file(); # get file in form that will not create problems for formatdb, blast or later petl parsing. Also initialising @array_of_final_strings
+@@ -89,58 +92,58 @@
+ print "Input file $parameters{'i'} has $number_of_seqs sequences and is $file_size bytes\n(maximum number of sequences that will be used to search for the reference sequence is $max_number_seqs)\n\n";
+ 
+ if ($user_reference) { # We know the reference sequence to use so do not need to blast everything against everything else - or worry about file size
+-	write_and_blast_ref_seq(); # extract & write reference sequence to a separate file. Then blast it against the original input file
+-	$reference = $user_reference; # Now can parse blast output in same manner as main program would do (see below)
+-	parse_blast();
++    write_and_blast_ref_seq(); # extract & write reference sequence to a separate file. Then blast it against the original input file
++    $reference = $user_reference; # Now can parse blast output in same manner as main program would do (see below)
++    parse_blast();
+ }
+ 
+ else { # need to find the ref seq. Two options: restricted or full search
+-	if ($selected_number_seqs) { # Will overide the default max number of seqs found by sub-routine "check_file_size"
+-		$max_number_seqs = $selected_number_seqs; # User wants to restrict the number of sequences to be used to find the ref seq
+-	}
+-	if ($number_of_seqs > $max_number_seqs) { # Either too many sequences in input file or user wants to restrict the number. Will randomly select selected number and find reference from these only.
+-		find_ref_from_reduced();
+-		parse_blast_output_for_python();
+-		$system_check = (system "python $python_script"); # Run python script BlastAlign.py with input file 'blast_out'
+-			unless ($system_check eq 0) {
+-			print "\n****** Error message from BlastAlign: the auxiliary python program BlastAlign.py was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
+-			exit;
+-		}
+-		parse_python_for_best_fid();
+-		print "Has randomly selected $max_number_seqs sequences from the input file and found best sequence to use as a reference from these. . . it is $reference\n\n";
+-		$user_reference = $reference; # reusing same sub-routine as when reference sequence is selected at the command line
+-		write_and_blast_ref_seq(); # extract & write reference sequence to a separate file. Then blast it against the original input file
+-		parse_blast();
+-	}
+-	else {  # Finding the best ref seq from amoung all the available sequences: blast the input file against itself and parse its output for python 
+-		$system_check = (system "$formatdb -i $blast_library -p F -o T");  # # Prepare database using following command line formatdb -i name_of_database_file -p F -o T (protein = false, output = true). Also checking that formatdb was found and worked
+-		unless ($system_check eq 0) {
+-			print "\n****** Error message from BlastAlign: the formatdb program was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
+-			exit;
+-		}
+-		$blast_output_file = "blast_out_raw";
+-		$system_check = (system "$blastall -p blastn -d $blast_library -i $blast_library -m 4 -b 2000 -o $blast_output_file -e $e_value -F F"); # -b increases maximum number of sequences in alignment from default of 250 -F switches off filter -m 4 gives flat query anchored alignment
+-		unless ($system_check eq 0) {
+-			print "\n****** Error message from BlastAlign: the blastall program was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
+-			exit;
+-		}
+-		parse_blast_output_for_python();
+-		$system_check = (system "python $python_script"); # Run python script BlastAlign.py with input file 'blast_out' and create new file called blast_out_python
+-		unless ($system_check eq 0) {
+-			print "\n****** Error message from BlastAlign: the auxiliary python program BlastAlign.py was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
+-			exit;
+-		}
+-		parse_python_for_best_fid();
+-		parse_blast();
+-		better_landscape_map(); # Run python again but placing sequences in order of similarity to the reference sequence. Note, the original order is just based on the order in the input fasta file
+-	}
++    if ($selected_number_seqs) { # Will overide the default max number of seqs found by sub-routine "check_file_size"
++        $max_number_seqs = $selected_number_seqs; # User wants to restrict the number of sequences to be used to find the ref seq
++    }
++    if ($number_of_seqs > $max_number_seqs) { # Either too many sequences in input file or user wants to restrict the number. Will randomly select selected number and find reference from these only.
++        find_ref_from_reduced();
++        parse_blast_output_for_python();        
++        $system_check = (system "python $script_path/$python_script"); # Run python script BlastAlign.py with input file 'blast_out'
++            unless ($system_check eq 0) {
++            print "\n****** Error message from BlastAlign: the auxiliary python program BlastAlign.py was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
++            exit;
++        }
++        parse_python_for_best_fid();
++        print "Has randomly selected $max_number_seqs sequences from the input file and found best sequence to use as a reference from these. . . it is $reference\n\n";
++        $user_reference = $reference; # reusing same sub-routine as when reference sequence is selected at the command line
++        write_and_blast_ref_seq(); # extract & write reference sequence to a separate file. Then blast it against the original input file
++        parse_blast();
++    }
++    else {  # Finding the best ref seq from amoung all the available sequences: blast the input file against itself and parse its output for python 
++        $system_check = (system "$formatdb -i $blast_library -p F -o T");  # # Prepare database using following command line formatdb -i name_of_database_file -p F -o T (protein = false, output = true). Also checking that formatdb was found and worked
++        unless ($system_check eq 0) {
++            print "\n****** Error message from BlastAlign: the formatdb program was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
++            exit;
++        }
++        $blast_output_file = "blast_out_raw";
++        $system_check = (system "$blastall -p blastn -d $blast_library -i $blast_library -m 4 -b 2000 -o $blast_output_file -e $e_value -F F"); # -b increases maximum number of sequences in alignment from default of 250 -F switches off filter -m 4 gives flat query anchored alignment
++        unless ($system_check eq 0) {
++            print "\n****** Error message from BlastAlign: the blastall program was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
++            exit;
++        }
++        parse_blast_output_for_python();        
++        $system_check = (system "python $script_path/$python_script"); # Run python script BlastAlign.py with input file 'blast_out' and create new file called blast_out_python
++        unless ($system_check eq 0) {
++            print "\n****** Error message from BlastAlign: the auxiliary python program BlastAlign.py was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
++            exit;
++        }
++        parse_python_for_best_fid();
++        parse_blast();
++        better_landscape_map(); # Run python again but placing sequences in order of similarity to the reference sequence. Note, the original order is just based on the order in the input fasta file
++    }
+ }
+ $block_end = "null"; # just defining debugging scalar again to avoid error message
+ print "\nBlastAlign finished: it has produced a multiple alignment of $ntax sequences and length $length by aligning to sequence $reference (percentage of gaps in each sequence is less than $max_percentage%)\n\n";
+ 
+ 
+ if (@problem_array) { # If the final lengths of sequences were not indentical this reminds the user, and tells them which sequences to inspect
+-	print "Warning from BlastAlign: you must now manually edit the alignment because there is a length problem around the following sequence(s) @problem_array\n\n";
++    print "Warning from BlastAlign: you must now manually edit the alignment because there is a length problem around the following sequence(s) @problem_array\n\n";
+ }
+ exit;
+ 
+@@ -148,559 +151,563 @@
+ # ******************** SUB-ROUTINES ***************
+ 
+ sub edit_input_file { # First part of this routine taken with thanks from Olaf R.P. Bininda-Emonds's script lineBreak.pl v1.0
+-	$blast_library = BlastAlign.".lib"; 
++    $blast_library = BlastAlign.".lib"; 
+ 
+-	open INPUT_FILE_HANDLE, "<$input_file" or die print "Error message from BlastAlign: could not open $input_file for first time\n";
+-	$macbreak = 0;
+-	my $first_line = <INPUT_FILE_HANDLE>;
+-	if ($first_line =~ /\r\n/) {
+-		print "DOS line breaks detected in input file; should be OK\n\n";
+-	}
+-	elsif ($first_line =~ /\r/) { # entire file will be in this line
+-		print "MAC OS9 line breaks detected in input file - will overwrite with UNIX ones\n\n";
+-		$first_line =~ s/\r/\n/g; # replace all mac with UNIX breaks
+-		$macbreak = 1;
+-	}
+-	close INPUT_FILE_HANDLE;
+-	if ($macbreak) {
+-		open OUTPUT_FILE_HANDLE, ">$input_file" or die print "Error message from BlastAlign: could not open input file to replace mac with UNIX breaks\n";
+-		print OUTPUT_FILE_HANDLE $first_line;
+-	}
+-	close OUTPUT_FILE_HANDLE;
+-	
+-	open OUTPUT_FILE_HANDLE , ">$blast_library" or die print "Error message from BlastAlign: could not open revised fasta file\n";
+-	close OUTPUT_FILE_HANDLE;
+-	open OUTPUT_FILE_HANDLE , ">>$blast_library" or die print "Error message from BlastAlign: could not open revised fasta file\n";
+-
+-	open INPUT_FILE_HANDLE, "<$input_file" or die print "Error message from BlastAlign: could not open $input_file for second time\n"; # Now going to rewrite file with UNIX line breaks
+-
+-	open OUTPUT_FILE_HANDLE , ">$blast_library" or die print "Error message from BlastAlign: could not open revised fasta file\n";
+-	close OUTPUT_FILE_HANDLE;
+-	open OUTPUT_FILE_HANDLE , ">>$blast_library" or die print "Error message from BlastAlign: could not open revised fasta file\n";
+-	$counter = 0;
+-	$counter2 = 0;
+-	$duplicate = "no";
+-	@keep_old_names = (); # Array to allow old unusable names to be used in the final output file if required (switch -n T)
+-	while (<INPUT_FILE_HANDLE>) {
+-		s/\r\n/\n/; # first replace any DOS with UNIX line breaks
+-		if (m/^\>/) { # Now abbreviating name if it is too long and removing symbols that may create problems later for any of the programs involved
+-			$old_name = $_;
+-			$new_name = $old_name;
+-			$new_name =~ tr/ _\t\(\)\[\]\|\{\}\^\$\*\+\?\.!@£$%&"'`//d;
+-			$name_length = length($new_name);
+-			if ($name_length > 16) {
+-				$new_name = substr($new_name,0,16); # Abbreviate name (15 characters plus the > symbol)
+-				$new_name = $new_name."\n"; # Need to add new line break
+-			}
+-			foreach $old_entry (@keep_old_names) {
+-				$previous_new_name = $old_entry->{"new_name"};
+-				if ($new_name eq $previous_new_name) {
+-					chomp($new_name); # Need to move position of new line
+-					$increment = $counter2 + 1;
+-					$new_name = $new_name.$increment ."\n"; # increment so all names are unique
+-					print "There is a problem caused by two taxa having the same name (possibly caused by the program having to abbreviate and strip awkward characters out of the name)\n\tChanging the second one to $new_name\n";
+-				}
+-			}
+-			push @keep_old_names, {"old_name" => $old_name, "new_name" => $new_name};
+-			unless ($counter == 0) {
+-				$new_name =~ s/\>/\n\>/; # Introduce new line breaks at start of name (except first) - am going to remove by chomping the line breaks ending a sequence
+-			}
+-			$counter2++; # Just for counting the sequences
+-			$final_name = $new_name;
+-			$final_name =~ s/\n//g;
+-			$final_name =~ s/^\>//;
+-			if (exists $parameters{"x"}) {
+-				foreach (@remove) {
+-					$remove = $_;
+-					if ($remove eq $final_name) {
+-						$duplicate = "yes";
+-						print "\tIgnoring sequence $remove as requested\n\n";
+-					}
+-				}
+-				unless ($duplicate eq "yes") { # We do not want this one
+-					print OUTPUT_FILE_HANDLE $new_name;
+-					push @array_of_final_strings, {"final_name" =>$final_name, "final_string" => ""};
+-				}
+-			}
+-			else {
+-				print OUTPUT_FILE_HANDLE $new_name;
+-				push @array_of_final_strings, {"final_name" =>$final_name, "final_string" => ""};
+-			}
+-		}
+-		else {
+-			$nucleotide_line = $_;
+-			$nucleotide_line =~ s/[^acgtrymwskdhbvn]//ig; # get rid of any spaces, gaps, metacharacters, or symbols that will create problems in the sequence. New line characters will be inserted later
+-			print OUTPUT_FILE_HANDLE $nucleotide_line;
+-		}
+-		$counter++;
+-	}
+-	close OUTPUT_FILE_HANDLE;
+-	$number_of_seqs = $counter2;
+-	return ($number_of_seqs, @array_of_final_strings);
++    open INPUT_FILE_HANDLE, "<$input_file" or die print "Error message from BlastAlign: could not open $input_file for first time\n";
++    $macbreak = 0;
++    my $first_line = <INPUT_FILE_HANDLE>;
++    if ($first_line =~ /\r\n/) {
++        print "DOS line breaks detected in input file; should be OK\n\n";
++    }
++    elsif ($first_line =~ /\r/) { # entire file will be in this line
++        print "MAC OS9 line breaks detected in input file - will overwrite with UNIX ones\n\n";
++        $first_line =~ s/\r/\n/g; # replace all mac with UNIX breaks
++        $macbreak = 1;
++    }
++    close INPUT_FILE_HANDLE;
++    if ($macbreak) {
++        open OUTPUT_FILE_HANDLE, ">$input_file" or die print "Error message from BlastAlign: could not open input file to replace mac with UNIX breaks\n";
++        print OUTPUT_FILE_HANDLE $first_line;
++    }
++    close OUTPUT_FILE_HANDLE;
++    
++    open OUTPUT_FILE_HANDLE , ">$blast_library" or die print "Error message from BlastAlign: could not open revised fasta file\n";
++    close OUTPUT_FILE_HANDLE;
++    open OUTPUT_FILE_HANDLE , ">>$blast_library" or die print "Error message from BlastAlign: could not open revised fasta file\n";
++
++    open INPUT_FILE_HANDLE, "<$input_file" or die print "Error message from BlastAlign: could not open $input_file for second time\n"; # Now going to rewrite file with UNIX line breaks
++
++    open OUTPUT_FILE_HANDLE , ">$blast_library" or die print "Error message from BlastAlign: could not open revised fasta file\n";
++    close OUTPUT_FILE_HANDLE;
++    open OUTPUT_FILE_HANDLE , ">>$blast_library" or die print "Error message from BlastAlign: could not open revised fasta file\n";
++    $counter = 0;
++    $counter2 = 0;
++    $duplicate = "no";
++    @keep_old_names = (); # Array to allow old unusable names to be used in the final output file if required (switch -n T)
++    while (<INPUT_FILE_HANDLE>) {
++        s/\r\n/\n/; # first replace any DOS with UNIX line breaks
++        if (m/^\>/) { # Now abbreviating name if it is too long and removing symbols that may create problems later for any of the programs involved
++            $old_name = $_;
++            $new_name = $old_name;
++            $new_name =~ tr/ _\t\(\)\[\]\|\{\}\^\$\*\+\?\.!@£$%&"'`//d;
++            $name_length = length($new_name);
++            if ($name_length > 16) {
++                $new_name = substr($new_name,0,16); # Abbreviate name (15 characters plus the > symbol)
++                $new_name = $new_name."\n"; # Need to add new line break
++            }
++            foreach $old_entry (@keep_old_names) {
++                $previous_new_name = $old_entry->{"new_name"};
++                if ($new_name eq $previous_new_name) {
++                    chomp($new_name); # Need to move position of new line
++                    $increment = $counter2 + 1;
++                    $new_name = $new_name.$increment ."\n"; # increment so all names are unique
++                    print "There is a problem caused by two taxa having the same name (possibly caused by the program having to abbreviate and strip awkward characters out of the name)\n\tChanging the second one to $new_name\n";
++                }
++            }
++            push @keep_old_names, {"old_name" => $old_name, "new_name" => $new_name};
++            unless ($counter == 0) {
++                $new_name =~ s/\>/\n\>/; # Introduce new line breaks at start of name (except first) - am going to remove by chomping the line breaks ending a sequence
++            }
++            $counter2++; # Just for counting the sequences
++            $final_name = $new_name;
++            $final_name =~ s/\n//g;
++            $final_name =~ s/^\>//;
++            if (exists $parameters{"x"}) {
++                foreach (@remove) {
++                    $remove = $_;
++                    if ($remove eq $final_name) {
++                        $duplicate = "yes";
++                        print "\tIgnoring sequence $remove as requested\n\n";
++                    }
++                }
++                unless ($duplicate eq "yes") { # We do not want this one
++                    print OUTPUT_FILE_HANDLE $new_name;
++                    push @array_of_final_strings, {"final_name" =>$final_name, "final_string" => ""};
++                }
++            }
++            else {
++                print OUTPUT_FILE_HANDLE $new_name;
++                push @array_of_final_strings, {"final_name" =>$final_name, "final_string" => ""};
++            }
++        }
++        else {
++            $nucleotide_line = $_;
++            $nucleotide_line =~ s/[^acgtrymwskdhbvn]//ig; # get rid of any spaces, gaps, metacharacters, or symbols that will create problems in the sequence. New line characters will be inserted later
++            print OUTPUT_FILE_HANDLE $nucleotide_line;
++        }
++        $counter++;
++    }
++    close OUTPUT_FILE_HANDLE;
++    $number_of_seqs = $counter2;
++    return ($number_of_seqs, @array_of_final_strings);
+ }
+ 
+ sub parse_blast_output_for_python {
+-	
+-	open OUTPUT_FILE_HANDLE , ">blast_out" or die print "Error message from BlastAlign: could not open output file blast_out\n";
+-	close OUTPUT_FILE_HANDLE;
+-	open OUTPUT_FILE_HANDLE , ">>blast_out" or die print "Error message from BlastAlign: could not open output file blast_out\n";
+-	
+-	open INPUT_FILE_HANDLE, "<blast_out_raw" or die print "Error message from BlastAlign: input file from blast called blast_out_raw not opened \n";
+-	while (<INPUT_FILE_HANDLE>) {
+-		chomp ($_);
+-		if (/Query=\s(\S+)/) { 
+-			$query_name = $1;
+-			push @list_of_names, $query_name;
+-		}
+-		elsif (/^QUERY\s+\d+\s*[acgtrymwskdhbvn-]{60}\s*(\d+)/ or /^\d+_0\s+\d+\s*[acgtrymwskdhbvn-]{60}\s*(\d+)/) { # IUB codes; former for BLASTN output prior to version 2.2.14, latter for version 2.2.14
+-			$landmark_ref = {"name" => "Query".$query_name, "landmark_position" => $1};
+-			push @array_of_landmark_refs, $landmark_ref;
+-		}
+-		elsif (/^(\S+)\s+\d+\s*[acgtrymwskdhbvn-]{60}\s+(\d+)$/) { # N.B. The, e.g. \S{55,} would mean that it returns only entries that have at least a 55bp match 
+-			$landmark_ref = {"name" => "Library".$1, "landmark_position" => $2};
+-			push @array_of_landmark_refs, $landmark_ref;	
+-		}
+-	}
+-	close INPUT_FILE_HANDLE;
+-	
+-	print OUTPUT_FILE_HANDLE "Sequences are as follows....\n";
+-	foreach (@list_of_names) {
+-		print OUTPUT_FILE_HANDLE "*", $_, "\n";
+-	}
+-	print OUTPUT_FILE_HANDLE "Name\tLandmark_position\n";
+-	foreach $landmark_ref (@array_of_landmark_refs) {
+-		$name = $landmark_ref -> {"name"}; # Dereference name
+-		$landmark_position = $landmark_ref -> {"landmark_position"}; # Dereference array
+-		print OUTPUT_FILE_HANDLE "$name\t$landmark_position\n";
+-	}
+-	close OUTPUT_FILE_HANDLE;
++    
++    open OUTPUT_FILE_HANDLE , ">blast_out" or die print "Error message from BlastAlign: could not open output file blast_out\n";
++    close OUTPUT_FILE_HANDLE;
++    open OUTPUT_FILE_HANDLE , ">>blast_out" or die print "Error message from BlastAlign: could not open output file blast_out\n";
++    
++    open INPUT_FILE_HANDLE, "<blast_out_raw" or die print "Error message from BlastAlign: input file from blast called blast_out_raw not opened \n";
++    while (<INPUT_FILE_HANDLE>) {
++        chomp ($_);
++        if (/Query=\s(\S+)/) { 
++            $query_name = $1;
++            push @list_of_names, $query_name;
++        }
++        elsif (/^QUERY\s+\d+\s*[acgtrymwskdhbvn-]{60}\s*(\d+)/ or /^\d+_0\s+\d+\s*[acgtrymwskdhbvn-]{60}\s*(\d+)/) { # IUB codes; former for BLASTN output prior to version 2.2.14, latter for version 2.2.14
++            $landmark_ref = {"name" => "Query".$query_name, "landmark_position" => $1};
++            push @array_of_landmark_refs, $landmark_ref;
++        }
++        elsif (/^(\S+)\s+\d+\s*[acgtrymwskdhbvn-]{60}\s+(\d+)$/) { # N.B. The, e.g. \S{55,} would mean that it returns only entries that have at least a 55bp match 
++            $landmark_ref = {"name" => "Library".$1, "landmark_position" => $2};
++            push @array_of_landmark_refs, $landmark_ref;    
++        }
++    }
++    close INPUT_FILE_HANDLE;
++    
++    print OUTPUT_FILE_HANDLE "Sequences are as follows....\n";
++    foreach (@list_of_names) {
++        print OUTPUT_FILE_HANDLE "*", $_, "\n";
++    }
++    print OUTPUT_FILE_HANDLE "Name\tLandmark_position\n";
++    foreach $landmark_ref (@array_of_landmark_refs) {
++        $name = $landmark_ref -> {"name"}; # Dereference name
++        $landmark_position = $landmark_ref -> {"landmark_position"}; # Dereference array
++        print OUTPUT_FILE_HANDLE "$name\t$landmark_position\n";
++    }
++    close OUTPUT_FILE_HANDLE;
+ }
+ 
+ # sub-routine to write user reference sequence to a separate file and to blast this against the input file
+ sub write_and_blast_ref_seq {
+-	
+-	open OUTPUT_FILE_HANDLE , ">blast_refseq" or die print "can't open ouput file! \n";
+-	close OUTPUT_FILE_HANDLE;
+-	open OUTPUT_FILE_HANDLE , ">>blast_refseq" or die print "can't open ouput file! \n";
+-	
+-	$found_ref = "F";
+-	open INPUT_FILE_HANDLE , "<$blast_library" or die print STDERR "Could not open revised fasta file to extract reference sequence\n";
+-	while (<INPUT_FILE_HANDLE>) {
+-		if (m/>$user_reference\n/) {
+-			print OUTPUT_FILE_HANDLE $_;
+-			$found_ref = "T";
+-		}
+-		elsif ($found_ref eq "T") {
+-			print OUTPUT_FILE_HANDLE $_;
+-			$found_ref = "F";
+-		}
+-	}
+-	close INPUT_FILE_HANDLE;
+-	
+-	$blast_output_file = "blast_out_raw";
+-	$system_check = (system "$formatdb -i $blast_library -p F -o T");
+-	unless ($system_check eq 0) {
+-		print "\n****** Error message from BlastAlign: the formatdb program was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
+-		exit;
+-	}
+-	$system_check = (system "$blastall -p blastn -d $blast_library -i blast_refseq -m 4 -b 2000 -o $blast_output_file -F F");
+-	unless ($system_check eq 0) {
+-		print "\n****** Error message from BlastAlign: the blastall program was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
+-		exit;
+-	}
++    
++    open OUTPUT_FILE_HANDLE , ">blast_refseq" or die print "can't open ouput file! \n";
++    close OUTPUT_FILE_HANDLE;
++    open OUTPUT_FILE_HANDLE , ">>blast_refseq" or die print "can't open ouput file! \n";
++    
++    $found_ref = "F";
++    open INPUT_FILE_HANDLE , "<$blast_library" or die print STDERR "Could not open revised fasta file to extract reference sequence\n";
++    while (<INPUT_FILE_HANDLE>) {
++        if (m/>$user_reference\n/) {
++            print OUTPUT_FILE_HANDLE $_;
++            $found_ref = "T";
++        }
++        elsif ($found_ref eq "T") {
++            print OUTPUT_FILE_HANDLE $_;
++            $found_ref = "F";
++        }
++    }
++    close INPUT_FILE_HANDLE;
++    
++    $blast_output_file = "blast_out_raw";
++    $system_check = (system "$formatdb -i $blast_library -p F -o T");
++    unless ($system_check eq 0) {
++        print "\n****** Error message from BlastAlign: the formatdb program was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
++        exit;
++    }
++    $system_check = (system "$blastall -p blastn -d $blast_library -i blast_refseq -m 4 -b 2000 -o $blast_output_file -F F");
++    unless ($system_check eq 0) {
++        print "\n****** Error message from BlastAlign: the blastall program was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
++        exit;
++    }
+ }
+-			
++            
+ # sub-routine to parse python output
+ sub parse_python_for_best_fid {
+-	
+-	open INPUT_FILE_HANDLE, "<blast_out_python" or die print "Error message from BlastAlign: input file from python not opened for sub-routine parse_python_for_best_fid\n";
+-	$line_counter = 1;
+-	while (<INPUT_FILE_HANDLE>) { # First list of hits per landmark and then list of landmarks. 
+-		chomp();
+-		if ($line_counter == 1) {
+-			$hits = $_; # Will only be one line
+-		}
+-		if ($line_counter > 1) {
+-			push @landmarks_from_python, $_;
+-		}
+-		$line_counter++;
+-	}
+-	close INPUT_FILE_HANDLE;
+-	@array_of_hits = split /\t/, $hits; # need to collect as string and then convert to array
+-	foreach (@landmarks_from_python) {# Inital check to see how often landmarks in the sequence were also hit by other sequences
+-		$landmark_counter = 0; # Need counter to find corresponding positions in the two arrays
+-		$total_hits = 0; # This is sum of hits for landmarks that were hit by the sequence concerned
+-		@split_lines = split /\t/, $_ ; # split each line up using tab
+-		foreach (@split_lines) { # Count total hits for landmarks that were hit by this sequence
+-			if ($landmark_counter >= 2) { # want to skip over first two (non-landmark) entries. Remember that there are two matching formatting tabs in the other array
+-				unless ($_ eq "*") {
+-					$total_hits = $total_hits + $array_of_hits[$landmark_counter]; 
+-				}
+-			}
+-			$landmark_counter++;
+-		}
+-		unless ($total_hits == 0) { # Allows non-matches to be excluded
+-			push @hit_array_of_hashes, {"fid" => $split_lines[0], "total_hits" => $total_hits}; # pass references to fid and its hit value to an array
+-			push @final_array_of_hits, $total_hits;
+-		}
+-	}
+-	@sorted_final_array_of_hits = sort {$a <=> $b} (@final_array_of_hits); # Sort into numerical order
+-
+-	foreach (@hit_array_of_hashes) {
+-		$fid = $_->{"fid"};
+-		$total_hits = $_->{"total_hits"};
+-		if ($total_hits == $sorted_final_array_of_hits[-1]) {
+-			$reference = $fid;
+-		}
+-	}
+-	return ($reference) or die print "Error message from BlastAlign: sub-routine parse_python_for_best_fid has not worked\n";
+-	@landmarks_from_python = ();
+-	@array_of_hits = (); # Need to clear for next time run similar sub-routine
++    
++    open INPUT_FILE_HANDLE, "<blast_out_python" or die print "Error message from BlastAlign: input file from python not opened for sub-routine parse_python_for_best_fid\n";
++    $line_counter = 1;
++    while (<INPUT_FILE_HANDLE>) { # First list of hits per landmark and then list of landmarks. 
++        chomp();
++        if ($line_counter == 1) {
++            $hits = $_; # Will only be one line
++        }
++        if ($line_counter > 1) {
++            push @landmarks_from_python, $_;
++        }
++        $line_counter++;
++    }
++    close INPUT_FILE_HANDLE;
++    @array_of_hits = split /\t/, $hits; # need to collect as string and then convert to array
++    foreach (@landmarks_from_python) {# Inital check to see how often landmarks in the sequence were also hit by other sequences
++        $landmark_counter = 0; # Need counter to find corresponding positions in the two arrays
++        $total_hits = 0; # This is sum of hits for landmarks that were hit by the sequence concerned
++        @split_lines = split /\t/, $_ ; # split each line up using tab
++        foreach (@split_lines) { # Count total hits for landmarks that were hit by this sequence
++            if ($landmark_counter >= 2) { # want to skip over first two (non-landmark) entries. Remember that there are two matching formatting tabs in the other array
++                unless ($_ eq "*") {
++                    $total_hits = $total_hits + $array_of_hits[$landmark_counter]; 
++                }
++            }
++            $landmark_counter++;
++        }
++        unless ($total_hits == 0) { # Allows non-matches to be excluded
++            push @hit_array_of_hashes, {"fid" => $split_lines[0], "total_hits" => $total_hits}; # pass references to fid and its hit value to an array
++            push @final_array_of_hits, $total_hits;
++        }
++    }
++    @sorted_final_array_of_hits = sort {$a <=> $b} (@final_array_of_hits); # Sort into numerical order
++
++    foreach (@hit_array_of_hashes) {
++        $fid = $_->{"fid"};
++        $total_hits = $_->{"total_hits"};
++        if ($total_hits == $sorted_final_array_of_hits[-1]) {
++            $reference = $fid;
++        }
++    }
++    return ($reference) or die print "Error message from BlastAlign: sub-routine parse_python_for_best_fid has not worked\n";
++    @landmarks_from_python = ();
++    @array_of_hits = (); # Need to clear for next time run similar sub-routine
+ }
+ 
+ sub parse_blast {
+-	
+-	$output_name = $input_file.".nxs";
+-	$output_name2 = $input_file.".phy";
+-	$query_name = "null";
+-	$last_block_correct = "no";
+-	$any_matches = "no"; # will check that finding matches between library and blast output; if not, can exit will useful error message.
+-
+-	open INPUT_FILE_HANDLE, "<blast_out_raw" or die print "Error message from BlastAlign: input file from blast called blast_out_raw not opened \n";
+-	while (<INPUT_FILE_HANDLE>) {
+-		chomp ($_);
+-		if (/^Query=\s+(\S+)$/) { 
+-			$query_name = $1;
+-		}
+-		elsif  (m/^(\S+)\s*(\d+\s*[acgtrymwskdhbvn-]+\s*)\d+$/ and !m/^QUERY/ and !m/^\d+_0/) { # Find library hit to the Query. Note sometimes spaces are missing
+-			$lib_string = $2; # getting start position as well as nucleotide sequence
+-			$lib_name = $1;
+-			push @temp_array_of_hashes, {"lib_name" =>$lib_name, "lib_string" => $lib_string};
+-		}
+-		elsif (m/^QUERY\s*\d+\s*[acgtrymwskdhbvn-]+\s*(\d+)$/ or m/^\d+_0\s*\d+\s*[acgtrymwskdhbvn-]+\s*(\d+)$/) {
+-			if ($query_name eq $reference) {  # Only look where query is the required sequence
+-				if ($last_block_correct eq "yes" ) { # Ignore the first hit - doing them one block "in arrears"
+-					$block_end = $1; 
+-					parse_block(); # Parsing previous block
+-					@temp_array_of_hashes = (); # Need to clear each time after parsing
+-				}
+-				else {
+-					$last_block_correct = "yes"; # True only for first block of query
+-					@temp_array_of_hashes = (); # just remove spurious entries from table of scores preceding the first block (only)
+-				}	
+-			}
+-			else {
+-				if ($last_block_correct eq "yes") {
+-					parse_block();  # This parses final block of previous correct query
+-				}
+-				$last_block_correct = "no"; # Do not want to parse any more blocks
+-				@temp_array_of_hashes = (); # This fills up from every block in the file otherwise
+-			}
+-		}
+-		elsif (eof and $last_block_correct eq "yes") {
+-			parse_block(); # need this if wish to incorporate the last block of the blast output file - parse_block otherwise only triggerred when encounters a following block 
+-		}
+-		#last if (m/^QUERY\s+1129\s+/); # for debugging
+-	}
+-	get_length();
+-	if ($keep_old_names eq "T") { # Default is to replace names in use with original ones (which may be too long, have problematic characters etc)
+-		use_old_names(); # Using old names as requested
+-	}
+-	unless ($any_matches eq "yes") {
+-		print "\n****** Error message from BlastAlign: failed to find any alignment. Examine file blast_out_raw; if matches are present there, it may be an unforeseen difficulty with the input file format. ******\n\n";
+-		exit;
+-	}
+-	sort_by_gaps();
+-	remove_frags(); 
+-	print_nexus();
+-	print_phylip();
+-	close INPUT_FILE_HANDLE;
++    
++    $output_name = $input_file.".nxs";
++    $output_name2 = $input_file.".phy";
++    $query_name = "null";
++    $last_block_correct = "no";
++    $any_matches = "no"; # will check that finding matches between library and blast output; if not, can exit will useful error message.
++
++    open INPUT_FILE_HANDLE, "<blast_out_raw" or die print "Error message from BlastAlign: input file from blast called blast_out_raw not opened \n";
++    while (<INPUT_FILE_HANDLE>) {
++        chomp ($_);
++        if (/^Query=\s+(\S+)$/) { 
++            $query_name = $1;
++        }
++        elsif  (m/^(\S+)\s*(\d+\s*[acgtrymwskdhbvn-]+\s*)\d+$/ and !m/^QUERY/ and !m/^\d+_0/) { # Find library hit to the Query. Note sometimes spaces are missing
++            $lib_string = $2; # getting start position as well as nucleotide sequence
++            $lib_name = $1;
++            push @temp_array_of_hashes, {"lib_name" =>$lib_name, "lib_string" => $lib_string};
++        }
++        elsif (m/^QUERY\s*\d+\s*[acgtrymwskdhbvn-]+\s*(\d+)$/ or m/^\d+_0\s*\d+\s*[acgtrymwskdhbvn-]+\s*(\d+)$/) {
++            if ($query_name eq $reference) {  # Only look where query is the required sequence
++                if ($last_block_correct eq "yes" ) { # Ignore the first hit - doing them one block "in arrears"
++                    $block_end = $1; 
++                    parse_block(); # Parsing previous block
++                    @temp_array_of_hashes = (); # Need to clear each time after parsing
++                }
++                else {
++                    $last_block_correct = "yes"; # True only for first block of query
++                    @temp_array_of_hashes = (); # just remove spurious entries from table of scores preceding the first block (only)
++                }   
++            }
++            else {
++                if ($last_block_correct eq "yes") {
++                    parse_block();  # This parses final block of previous correct query
++                }
++                $last_block_correct = "no"; # Do not want to parse any more blocks
++                @temp_array_of_hashes = (); # This fills up from every block in the file otherwise
++            }
++        }
++        elsif (eof and $last_block_correct eq "yes") {
++            parse_block(); # need this if wish to incorporate the last block of the blast output file - parse_block otherwise only triggerred when encounters a following block 
++        }
++        #last if (m/^QUERY\s+1129\s+/); # for debugging
++    }
++    get_length();
++    if ($keep_old_names eq "T") { # Default is to replace names in use with original ones (which may be too long, have problematic characters etc)
++        use_old_names(); # Using old names as requested
++    }
++    unless ($any_matches eq "yes") {
++        print "\n****** Error message from BlastAlign: failed to find any alignment. Examine file blast_out_raw; if matches are present there, it may be an unforeseen difficulty with the input file format. ******\n\n";
++        exit;
++    }
++    sort_by_gaps();
++    remove_frags(); 
++    print_nexus();
++    print_phylip();
++    close INPUT_FILE_HANDLE;
+ }
+ 
+ sub parse_block {
+-	$just_a_ref_self_match = "yes"; # Need to avoid inserting regions where only have self match of ref sequence
+-	$counter = 0;
+-	$last_lib_name = "null";
+-	$bit_to_keep = 0;
+-	foreach (@temp_array_of_hashes) {# First find reference sequence to determine length of string to cut from library matches - problems are that blocks may less than 60 and may get multiple self matches. Note, gets round multiple hits in different way to next loop
+-		$lib_name = $_->{"lib_name"};
+-		$lib_string = $_->{"lib_string"};
+-		if ($lib_name eq $reference) {# Get length of temporary string from first (=query) entry in the array
+-			$any_matches = "yes";
+-			$lib_string =~ m/(\d+\s*)([a-z-]+)\s*/;
+-			$temp_bit_to_cut = length $1; # Will line up other strings to first base
+-			$temp_bit_to_keep = length $2; # Length of string to keep (may include whitespaces in non-query sequences
+-			if ($lib_name eq $last_lib_name) { # Just a precaution; if get multiple self hits it will select the longest rather than the last
+-				if ($temp_bit_to_keep > $bit_to_keep) {
+-					$bit_to_cut = $temp_bit_to_cut;
+-					$bit_to_keep = $temp_bit_to_keep; #This is a better duplicate self-hit in query; modifying bit_to_cut and bit_to_keep\n";
+-				}
+-			}
+-			else { # For where we do not have multiple self hits with the reference sequence
+-				$bit_to_cut = $temp_bit_to_cut;
+-				$bit_to_keep = $temp_bit_to_keep;
+-			}
+-		}
+-		else {	
+-			$just_a_ref_self_match = "no"; # There is at least one library match to the ref sequence
+-		}
+-		$last_lib_name = $lib_name;
+-	}
+-	unless ($just_a_ref_self_match eq "yes") { # Do nothing if we only have a self-match. Now will cut from bit from library matches according to $bit_to_cut and keep $bit_to_keep
+-		$last_lib_name = "null"; # Need to set this to zero to avoid thinking have duplicate hits in the ref sequence
+-		foreach (@array_of_final_strings) { # Will be updating final strings
+-			$found_match = "no";
+-			$final_name = $_->{"final_name"};
+-			$final_string = $_->{"final_string"};
+-			foreach (@temp_array_of_hashes) { # Going through this a second time (first time was to get $bit_to_cut and keep $bit_to_keep)
+-				$lib_name = $_->{"lib_name"};
+-				$lib_string = $_->{"lib_string"};
+-				$lib_string = substr ($lib_string, $bit_to_cut,$bit_to_keep);
+-				$lib_string =~ s/\s/-/g; # change spaces for gaps. 
+-				$number_of_gaps = ($lib_string =~ tr/-/-/); # Need to count gaps so later can select best of duplicate matches			
+-				if ($lib_name eq $final_name) {
+-	 				if ($lib_name eq $last_lib_name) { # Catch duplicate entries
+-	 					if ($number_of_gaps < $last_number_of_gaps) { 
+-		 					$length_final_string = length $final_string;
+-		 					$length_to_cut = length $last_lib_string;
+-		 					$length_to_keep = $length_final_string - $length_to_cut;
+-		 					$final_string = substr ($final_string, 0, $length_to_keep); # Remove the last bit added
+-	 						$final_string = $final_string.$lib_string; # Add the new longer bit
+-	 					}
+-	  				}
+-	 				else {
+-	 				$found_match = "yes";
+-	 				$final_string = $final_string.$lib_string; # Add new string from block to final string
+-	 				}
+-	 			}
+-	 			$last_lib_name = $lib_name;
+-	 			$last_number_of_gaps = $number_of_gaps; # Keeping record of last entry in case of duplicates
+-	 			$last_lib_string = $lib_string;
+-			}
+-			if ($found_match eq "no") {
+-				for ($i = 1; $i <= $bit_to_keep; $i++) {
+-					$final_string = $final_string."-"; # Add gaps if no match
+-				}
+-			}
+-		$array_of_final_strings[$counter] = {"final_name" => $final_name, "final_string" => $final_string}; # Update final array of hashes
+-		$counter++;
+-		}
+-	}
++    $just_a_ref_self_match = "yes"; # Need to avoid inserting regions where only have self match of ref sequence
++    $counter = 0;
++    $last_lib_name = "null";
++    $bit_to_keep = 0;
++    foreach (@temp_array_of_hashes) {# First find reference sequence to determine length of string to cut from library matches - problems are that blocks may less than 60 and may get multiple self matches. Note, gets round multiple hits in different way to next loop
++        $lib_name = $_->{"lib_name"};
++        $lib_string = $_->{"lib_string"};
++        if ($lib_name eq $reference) {# Get length of temporary string from first (=query) entry in the array
++            $any_matches = "yes";
++            $lib_string =~ m/(\d+\s*)([a-z-]+)\s*/;
++            $temp_bit_to_cut = length $1; # Will line up other strings to first base
++            $temp_bit_to_keep = length $2; # Length of string to keep (may include whitespaces in non-query sequences
++            if ($lib_name eq $last_lib_name) { # Just a precaution; if get multiple self hits it will select the longest rather than the last
++                if ($temp_bit_to_keep > $bit_to_keep) {
++                    $bit_to_cut = $temp_bit_to_cut;
++                    $bit_to_keep = $temp_bit_to_keep; #This is a better duplicate self-hit in query; modifying bit_to_cut and bit_to_keep\n";
++                }
++            }
++            else { # For where we do not have multiple self hits with the reference sequence
++                $bit_to_cut = $temp_bit_to_cut;
++                $bit_to_keep = $temp_bit_to_keep;
++            }
++        }
++        else {  
++            $just_a_ref_self_match = "no"; # There is at least one library match to the ref sequence
++        }
++        $last_lib_name = $lib_name;
++    }
++    unless ($just_a_ref_self_match eq "yes") { # Do nothing if we only have a self-match. Now will cut from bit from library matches according to $bit_to_cut and keep $bit_to_keep
++        $last_lib_name = "null"; # Need to set this to zero to avoid thinking have duplicate hits in the ref sequence
++        foreach (@array_of_final_strings) { # Will be updating final strings
++            $found_match = "no";
++            $final_name = $_->{"final_name"};
++            $final_string = $_->{"final_string"};
++            foreach (@temp_array_of_hashes) { # Going through this a second time (first time was to get $bit_to_cut and keep $bit_to_keep)
++                $lib_name = $_->{"lib_name"};
++                $lib_string = $_->{"lib_string"};
++                $lib_string = substr ($lib_string, $bit_to_cut,$bit_to_keep);
++                $lib_string =~ s/\s/-/g; # change spaces for gaps. 
++                $number_of_gaps = ($lib_string =~ tr/-/-/); # Need to count gaps so later can select best of duplicate matches          
++                if ($lib_name eq $final_name) {
++                    if ($lib_name eq $last_lib_name) { # Catch duplicate entries
++                        if ($number_of_gaps < $last_number_of_gaps) { 
++                            $length_final_string = length $final_string;
++                            $length_to_cut = length $last_lib_string;
++                            $length_to_keep = $length_final_string - $length_to_cut;
++                            $final_string = substr ($final_string, 0, $length_to_keep); # Remove the last bit added
++                            $final_string = $final_string.$lib_string; # Add the new longer bit
++                        }
++                    }
++                    else {
++                    $found_match = "yes";
++                    $final_string = $final_string.$lib_string; # Add new string from block to final string
++                    }
++                }
++                $last_lib_name = $lib_name;
++                $last_number_of_gaps = $number_of_gaps; # Keeping record of last entry in case of duplicates
++                $last_lib_string = $lib_string;
++            }
++            if ($found_match eq "no") {
++                for ($i = 1; $i <= $bit_to_keep; $i++) {
++                    $final_string = $final_string."-"; # Add gaps if no match
++                }
++            }
++        $array_of_final_strings[$counter] = {"final_name" => $final_name, "final_string" => $final_string}; # Update final array of hashes
++        $counter++;
++        }
++    }
+ }
+ 
+ sub get_length {
+-	$counter = 0;
+-	foreach (@array_of_final_strings) {
+-		$final_string = $_->{"final_string"};
+-		$final_name = $_->{"final_name"};
+-		$length = length $final_string;
+-		unless ($counter == 0) { # Skip first entry as no previous one to compare with
+-			unless ($length == $last_length ) {
+-				print "Warning message from BlastAlign: the length of sequence $final_name differs from that of the proceeding sequence in the alignment\n\n";
+-				push @problem_array, $final_name; # Will print this array out at the end of the program
+-			}
+-		}
+-		$last_length = $length;
+-		$counter++;
+-	}
+-	return ($length) or die print "Sub-routine get_length has not worked\n"; # Arbitrary choice of last sequence to get length (should be same for all seqs)
++    $counter = 0;
++    foreach (@array_of_final_strings) {
++        $final_string = $_->{"final_string"};
++        $final_name = $_->{"final_name"};
++        $length = length $final_string;
++        unless ($counter == 0) { # Skip first entry as no previous one to compare with
++            unless ($length == $last_length ) {
++                print "Warning message from BlastAlign: the length of sequence $final_name differs from that of the proceeding sequence in the alignment\n\n";
++                push @problem_array, $final_name; # Will print this array out at the end of the program
++            }
++        }
++        $last_length = $length;
++        $counter++;
++    }
++    return ($length) or die print "Sub-routine get_length has not worked\n"; # Arbitrary choice of last sequence to get length (should be same for all seqs)
+ }
+ 
+ sub use_old_names {
+-	$counter = 0;
+-	foreach (@array_of_final_strings) {
+-		$final_name = $_->{"final_name"};
+-		$final_string = $_->{"final_string"};
+-		foreach (@keep_old_names) {
+-			$old_name = $_->{"old_name"};
+-			$new_name = $_->{"new_name"};
+-			chomp($old_name); # These still have line breaks in them
+-			chomp($new_name);
+-			$old_name =~ s/>//; # ..and the > symbol
+-			$new_name =~ s/>//; 
+-			if ($final_name eq $new_name) {
+-				$array_of_final_strings[$counter] = {"final_name" => $old_name, "final_string" => $final_string}; # Update final array of hashes with original name
+-			}
+-		}
+-	$counter++;
+-	}
+-	return (@array_of_final_strings) or die print "Sub-routine use_old_names has not worked\n";
++    $counter = 0;
++    foreach (@array_of_final_strings) {
++        $final_name = $_->{"final_name"};
++        $final_string = $_->{"final_string"};
++        foreach (@keep_old_names) {
++            $old_name = $_->{"old_name"};
++            $new_name = $_->{"new_name"};
++            chomp($old_name); # These still have line breaks in them
++            chomp($new_name);
++            $old_name =~ s/>//; # ..and the > symbol
++            $new_name =~ s/>//; 
++            if ($final_name eq $new_name) {
++                $array_of_final_strings[$counter] = {"final_name" => $old_name, "final_string" => $final_string}; # Update final array of hashes with original name
++            }
++        }
++    $counter++;
++    }
++    return (@array_of_final_strings) or die print "Sub-routine use_old_names has not worked\n";
+ }
+ 
+ sub sort_by_gaps {
+-	@temp_array = ();
+-	foreach (@array_of_final_strings) {
+-		$final_name = $_->{"final_name"};
+-		$final_string = $_->{"final_string"}; 
+-		$number_of_gaps = ($final_string =~ tr/-/-/);
+-		push @temp_array, {"final_name" => $final_name, "final_string" => $final_string, "num_gaps" => $number_of_gaps};
+-	}
+-	@array_of_final_strings = sort { $a->{num_gaps} <=> $b->{num_gaps} } @temp_array;
++    @temp_array = ();
++    foreach (@array_of_final_strings) {
++        $final_name = $_->{"final_name"};
++        $final_string = $_->{"final_string"}; 
++        $number_of_gaps = ($final_string =~ tr/-/-/);
++        push @temp_array, {"final_name" => $final_name, "final_string" => $final_string, "num_gaps" => $number_of_gaps};
++    }
++    @array_of_final_strings = sort { $a->{num_gaps} <=> $b->{num_gaps} } @temp_array;
+ }
+ 
+ sub remove_frags {
+-	@nexus_line_array = ();
+-	$ntax = ();
+-	$counter = 0;
+-	foreach (@array_of_final_strings) {
+-		$final_name = $_->{"final_name"};
+-		$final_string = $_->{"final_string"}; 
+-		$number_of_gaps = ($final_string =~ tr/-/-/);				
+-		$percentage_gaps = sprintf "%.1f", ($number_of_gaps / $length) * 100;
+-		if ($percentage_gaps < $max_percentage) {
+-			push @nexus_line_array, $final_name, "\t", $final_string, "\n";
+-			$counter++; # Need to count ntax value
+-		}
+-		else { # Ignoring sequences that have too many gaps in the final alignment
+-			print "Excluding $final_name which has a percentage of gaps in the final alignment of $percentage_gaps%\n";
+-		}
+-		$ntax = $counter;
+-	}
+-	return ($ntax, @nexus_line_array) or die print "Error message from BlastAlign: sub-routine remove_frags has not worked\n";
++    @nexus_line_array = ();
++    $ntax = ();
++    $counter = 0;
++    foreach (@array_of_final_strings) {
++        $final_name = $_->{"final_name"};
++        $final_string = $_->{"final_string"}; 
++        $number_of_gaps = ($final_string =~ tr/-/-/);
++        if ($length == 0) {
++            print "Unauthorized divison by 0 coming ... exiting BlastAlign : failed to align this file.";
++            exit;
++        }       
++        $percentage_gaps = sprintf "%.1f", ($number_of_gaps / $length) * 100;
++        if ($percentage_gaps < $max_percentage) {
++            push @nexus_line_array, $final_name, "\t", $final_string, "\n";
++            $counter++; # Need to count ntax value
++        }
++        else { # Ignoring sequences that have too many gaps in the final alignment
++            print "Excluding $final_name which has a percentage of gaps in the final alignment of $percentage_gaps%\n";
++        }
++        $ntax = $counter;
++    }
++    return ($ntax, @nexus_line_array) or die print "Error message from BlastAlign: sub-routine remove_frags has not worked\n";
+ }
+ 
+ sub print_nexus {
+ 
+-	open OUTPUT_FILE_HANDLE , ">$output_name" or die print "Error message from BlastAlign: cannot open nexus ouput file for multiple alignment\n";
+-	close OUTPUT_FILE_HANDLE;
+-	open OUTPUT_FILE_HANDLE, ">>$output_name" or die print "Error message from BlastAlign: cannot open nexus ouput file for multiple alignment\n";
+-	
+-	print OUTPUT_FILE_HANDLE "#NEXUS\n[Aligned to seq $reference by BlastAlign. We have excluded sequences with more than $max_percentage% gaps]\nBEGIN DATA;\ndimensions ntax=$ntax nchar=$length;\nformat gap=- datatype=DNA;\nmatrix\n";
+-	foreach (@nexus_line_array) { # Loop through final array of hashes for sequences
+-		print OUTPUT_FILE_HANDLE $_;
+-	}
+-	print OUTPUT_FILE_HANDLE ";\nend;";
+-	close OUTPUT_FILE_HANDLE;
++    open OUTPUT_FILE_HANDLE , ">$output_name" or die print "Error message from BlastAlign: cannot open nexus ouput file for multiple alignment\n";
++    close OUTPUT_FILE_HANDLE;
++    open OUTPUT_FILE_HANDLE, ">>$output_name" or die print "Error message from BlastAlign: cannot open nexus ouput file for multiple alignment\n";
++    
++    print OUTPUT_FILE_HANDLE "#NEXUS\n[Aligned to seq $reference by BlastAlign. We have excluded sequences with more than $max_percentage% gaps]\nBEGIN DATA;\ndimensions ntax=$ntax nchar=$length;\nformat gap=- datatype=DNA;\nmatrix\n";
++    foreach (@nexus_line_array) { # Loop through final array of hashes for sequences
++        print OUTPUT_FILE_HANDLE $_;
++    }
++    print OUTPUT_FILE_HANDLE ";\nend;";
++    close OUTPUT_FILE_HANDLE;
+ }
+ 
+ sub print_phylip {
+ 
+-	open OUTPUT_FILE_HANDLE, ">$output_name2" or die print "Error message from BlastAlign: cannot open phylip ouput file for multiple alignment\n";
+-	close OUTPUT_FILE_HANDLE;
+-	open OUTPUT_FILE_HANDLE, ">>$output_name2" or die print "Error message from BlastAlign: cannot open phylip ouput file for multiple alignment\n";
+-	
+-	print OUTPUT_FILE_HANDLE "$ntax $length\n";
+-	foreach (@nexus_line_array) {
+-		print OUTPUT_FILE_HANDLE $_;
+-	}
+-	close OUTPUT_FILE_HANDLE;
++    open OUTPUT_FILE_HANDLE, ">$output_name2" or die print "Error message from BlastAlign: cannot open phylip ouput file for multiple alignment\n";
++    close OUTPUT_FILE_HANDLE;
++    open OUTPUT_FILE_HANDLE, ">>$output_name2" or die print "Error message from BlastAlign: cannot open phylip ouput file for multiple alignment\n";
++    
++    print OUTPUT_FILE_HANDLE "$ntax $length\n";
++    foreach (@nexus_line_array) {
++        print OUTPUT_FILE_HANDLE $_;
++    }
++    close OUTPUT_FILE_HANDLE;
+ }
+ 
+ sub better_landscape_map { # Just going to reorder taxon list at start of file to be analysed by python to reflect order of similarity to reference sequence
+-	
+-	open INPUT_FILE_HANDLE, "<blast_out_raw" or die print "Error message from BlastAlign: cannot open blast output file called blast_out_raw to improve landscape map\n";
+-	while (<INPUT_FILE_HANDLE>) {
+-		if (/^Query=\s+(\S+)$/) { 
+-			$query_name = $1;
+-		}
+-		elsif  (m/^(\S+)\s{50,}\d+\s+\S+\s*$/ and $query_name eq $reference) { 	# Find matches to ref sequence
+-			$match_to_ref = $1;
+-			push @array_of_matches_to_ref, $match_to_ref;
+-		}
+-	}
+-	close INPUT_FILE_HANDLE;
+-	foreach $old_name (@list_of_names) { # Need to allow for some sequences not matching to reference
+-		$in_both = "no"; 
+-		foreach $new_name (@array_of_matches_to_ref) {
+-			if ($new_name eq $old_name) {
+-				$in_both = "yes"; 
+-			}
+-		}
+-		if ($in_both eq "no") {
+-			push @non_matches, $old_name; # Need to leave non-matches to reference sequence at end of list
+-		}
+-	}
+-	foreach (@non_matches) { # Now update non_matches into @array_of_matches_to_ref 
+-		push @array_of_matches_to_ref, $_;
+-	}
+-	if (exists $parameters{"r"}) { # No landscape has been produced in first place, so just write it here
+-		@list_of_names = @array_of_matches_to_ref; # Replace old list of names with list in order to match to reference
+-		parse_blast_output(); # Produce file blast_out
+-		system "python $python_script"; # Run python again to produce better landscape map
+-	}
+-	else { # Need to overwrite original landscape map
+-		open INPUT_FILE_HANDLE, "<blast_out" or die print "Error message from BlastAlign: cannot open file to be passed to python to improve landscape map\n";
+-		while (<INPUT_FILE_HANDLE>) { # Going to swap name order. Need temp array as am overwriting file
+-			push @temp_array_blast_out, $_;
+-		}
+-		close  INPUT_FILE_HANDLE;
+-		open OUTPUT_FILE_HANDLE, ">blast_out" or die print "Error message from BlastAlign: cannot open file for final landscape map\n"; # Overwriting blast_out
+-		close OUTPUT_FILE_HANDLE;
+-		open OUTPUT_FILE_HANDLE, ">>blast_out" or die print "Error message from BlastAlign: cannot open phylip ouput file for multiple alignment\n";
+-
+-		$counter = 0;
+-		foreach (@temp_array_blast_out) { # Swapping name order
+-			if (m/^\*(\S+)/) {
+-				s/\*\S+/\*$array_of_matches_to_ref[$counter]/;
+-				$counter++;
+-				print OUTPUT_FILE_HANDLE $_;
+-			}
+-			else {
+-				print OUTPUT_FILE_HANDLE $_;
+-			}	
+-		}
+-		close OUTPUT_FILE_HANDLE;
+-		system "python $python_script"; # Run python again to produce better landscape map
+-	}
++    
++    open INPUT_FILE_HANDLE, "<blast_out_raw" or die print "Error message from BlastAlign: cannot open blast output file called blast_out_raw to improve landscape map\n";
++    while (<INPUT_FILE_HANDLE>) {
++        if (/^Query=\s+(\S+)$/) { 
++            $query_name = $1;
++        }
++        elsif  (m/^(\S+)\s{50,}\d+\s+\S+\s*$/ and $query_name eq $reference) {  # Find matches to ref sequence
++            $match_to_ref = $1;
++            push @array_of_matches_to_ref, $match_to_ref;
++        }
++    }
++    close INPUT_FILE_HANDLE;
++    foreach $old_name (@list_of_names) { # Need to allow for some sequences not matching to reference
++        $in_both = "no"; 
++        foreach $new_name (@array_of_matches_to_ref) {
++            if ($new_name eq $old_name) {
++                $in_both = "yes"; 
++            }
++        }
++        if ($in_both eq "no") {
++            push @non_matches, $old_name; # Need to leave non-matches to reference sequence at end of list
++        }
++    }
++    foreach (@non_matches) { # Now update non_matches into @array_of_matches_to_ref 
++        push @array_of_matches_to_ref, $_;
++    }
++    if (exists $parameters{"r"}) { # No landscape has been produced in first place, so just write it here
++        @list_of_names = @array_of_matches_to_ref; # Replace old list of names with list in order to match to reference
++        parse_blast_output(); # Produce file blast_out
++        system "python $script_path/$python_script"; # Run python again to produce better landscape map
++    }
++    else { # Need to overwrite original landscape map
++        open INPUT_FILE_HANDLE, "<blast_out" or die print "Error message from BlastAlign: cannot open file to be passed to python to improve landscape map\n";
++        while (<INPUT_FILE_HANDLE>) { # Going to swap name order. Need temp array as am overwriting file
++            push @temp_array_blast_out, $_;
++        }
++        close  INPUT_FILE_HANDLE;
++        open OUTPUT_FILE_HANDLE, ">blast_out" or die print "Error message from BlastAlign: cannot open file for final landscape map\n"; # Overwriting blast_out
++        close OUTPUT_FILE_HANDLE;
++        open OUTPUT_FILE_HANDLE, ">>blast_out" or die print "Error message from BlastAlign: cannot open phylip ouput file for multiple alignment\n";
++
++        $counter = 0;
++        foreach (@temp_array_blast_out) { # Swapping name order
++            if (m/^\*(\S+)/) {
++                s/\*\S+/\*$array_of_matches_to_ref[$counter]/;
++                $counter++;
++                print OUTPUT_FILE_HANDLE $_;
++            }
++            else {
++                print OUTPUT_FILE_HANDLE $_;
++            }   
++        }
++        close OUTPUT_FILE_HANDLE;
++        system "python $script_path/$python_script"; # Run python again to produce better landscape map
++    }
+ }
+ 
+ sub fisher_yates_shuffle { # Sub-routine to shuffle array - thanks to Perl Monks website.
+-	$array_of_input_hashes = shift;
+-	for ($i = @$array_of_input_hashes; --$i; ) {
+-		$j = int rand ($i+1);
+-		next if $i == $j;
+-		@$array_of_input_hashes[$i,$j] = @$array_of_input_hashes[$j,$i];
+-	}
++    $array_of_input_hashes = shift;
++    for ($i = @$array_of_input_hashes; --$i; ) {
++        $j = int rand ($i+1);
++        next if $i == $j;
++        @$array_of_input_hashes[$i,$j] = @$array_of_input_hashes[$j,$i];
++    }
+ }
+ 
+ sub find_ref_from_reduced {
+-	$reduced_blast_library = BlastAlign_reduced.".lib";
+-	$blast_output_file = "blast_out_raw";
+-	open INPUT_FILE_HANDLE, "<$blast_library" or die print "Error message from BlastAlign: could not open $blast_library\n"; # Get seqs from full library file
+-	while (<INPUT_FILE_HANDLE>) {
+-		chomp($_);
+-		if (m/\>/) {
+-			$name = $_;
+-			$name =~ s/\>//;
+-		}
+-		else {
+-			$sequence = $_;
+-			push @array_of_input_hashes, {"name" =>$name, "sequence" => $sequence}; # This will only be used if file is large and we need to randomly select sequences
+-		}
+-	}
+-	close INPUT_FILE_HANDLE;
+-	$counter = 0;
+-	open OUTPUT_FILE_HANDLE, ">$reduced_blast_library"; # Going to produce new input file with smaller number of sequences
+-	close OUTPUT_FILE_HANDLE;
+-	open OUTPUT_FILE_HANDLE , ">>$reduced_blast_library";
+-	fisher_yates_shuffle( \@array_of_input_hashes);   # generate a random permutation of the sequences
+-	foreach (@array_of_input_hashes) {
+-		$name = $_->{"name"};
+-		$sequence = $_->{"sequence"};
+-		if ($counter < $max_number_seqs) {
+-			print OUTPUT_FILE_HANDLE "\>", $name, "\n", $sequence, "\n";
+-		}
+-		$counter++;
+-	}
+-	close OUTPUT_FILE_HANDLE;
+-	$system_check = (system "$formatdb -i $reduced_blast_library -p F -o T");
+-	unless ($system_check eq 0) {
+-		print "\n****** Error message from BlastAlign: the formatdb program was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
+-		exit;
+-	}
+-	$system_check = (system "$blastall -p blastn -d $reduced_blast_library -i $reduced_blast_library -m 4 -b 2000 -o $blast_output_file -F F");
+-	unless ($system_check eq 0) {
+-		print "\n****** Error message from BlastAlign: the blastall program was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
+-		exit;
+-	}
+-	@array_of_input_hashes = (); # Do not need this again
++    $reduced_blast_library = BlastAlign_reduced.".lib";
++    $blast_output_file = "blast_out_raw";
++    open INPUT_FILE_HANDLE, "<$blast_library" or die print "Error message from BlastAlign: could not open $blast_library\n"; # Get seqs from full library file
++    while (<INPUT_FILE_HANDLE>) {
++        chomp($_);
++        if (m/\>/) {
++            $name = $_;
++            $name =~ s/\>//;
++        }
++        else {
++            $sequence = $_;
++            push @array_of_input_hashes, {"name" =>$name, "sequence" => $sequence}; # This will only be used if file is large and we need to randomly select sequences
++        }
++    }
++    close INPUT_FILE_HANDLE;
++    $counter = 0;
++    open OUTPUT_FILE_HANDLE, ">$reduced_blast_library"; # Going to produce new input file with smaller number of sequences
++    close OUTPUT_FILE_HANDLE;
++    open OUTPUT_FILE_HANDLE , ">>$reduced_blast_library";
++    fisher_yates_shuffle( \@array_of_input_hashes);   # generate a random permutation of the sequences
++    foreach (@array_of_input_hashes) {
++        $name = $_->{"name"};
++        $sequence = $_->{"sequence"};
++        if ($counter < $max_number_seqs) {
++            print OUTPUT_FILE_HANDLE "\>", $name, "\n", $sequence, "\n";
++        }
++        $counter++;
++    }
++    close OUTPUT_FILE_HANDLE;
++    $system_check = (system "$formatdb -i $reduced_blast_library -p F -o T");
++    unless ($system_check eq 0) {
++        print "\n****** Error message from BlastAlign: the formatdb program was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
++        exit;
++    }
++    $system_check = (system "$blastall -p blastn -d $reduced_blast_library -i $reduced_blast_library -m 4 -b 2000 -o $blast_output_file -F F");
++    unless ($system_check eq 0) {
++        print "\n****** Error message from BlastAlign: the blastall program was not found or has not executed properly...exiting BlastAlign now. ******\n\n";
++        exit;
++    }
++    @array_of_input_hashes = (); # Do not need this again
+ }
+ 
+ sub check_file_size { # need to ensure blast output file will not be too large to open
+-	$file_size = (-s "$input_file"); # Approximate file size of blast output will be = length x (number of seqs) squared (but need to add on a bit extra for names etc)
+-	$max_number_seqs = 0.75*(sqrt ($max_file_size/($file_size/$number_of_seqs))); #mean seq length = $file_size/$number_of_seqs; 0.75 is to allow for  names etc
+-	$max_number_seqs = int ($max_number_seqs);
+-	return ($file_size,$max_number_seqs) or die print "Error message from BlastAlign: the sub-routine check_file_size has not worked\n"; 
++    $file_size = (-s "$input_file"); # Approximate file size of blast output will be = length x (number of seqs) squared (but need to add on a bit extra for names etc)
++    $max_number_seqs = 0.75*(sqrt ($max_file_size/($file_size/$number_of_seqs))); #mean seq length = $file_size/$number_of_seqs; 0.75 is to allow for  names etc
++    $max_number_seqs = int ($max_number_seqs);
++    return ($file_size,$max_number_seqs) or die print "Error message from BlastAlign: the sub-routine check_file_size has not worked\n"; 
+ }
+ #***********************************  END OF FILE **************************************************************
  
