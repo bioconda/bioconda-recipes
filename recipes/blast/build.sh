@@ -4,6 +4,16 @@ set -e -x -o pipefail
 
 cd $SRC_DIR/c++/
 
+export CFLAGS="$CFLAGS -O2"
+export CXXFLAGS="$CXXFLAGS -O2"
+export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+
+if test x"`uname`" = x"Linux"; then
+    # only add things needed; not supported by OSX ld
+    LDFLAGS="$LDFLAGS -Wl,-as-needed"
+fi
+
 # --with-hard-runpath is needed otherwise BLAST programs would search
 # libraries first in the directories defined by the LD_LIBRARY_PATH
 # environment variable, instead of using the rpath specified by conda
@@ -25,7 +35,9 @@ cd $SRC_DIR/c++/
     --with-bz2=$PREFIX \
     --with-boost=$PREFIX \
     --without-openssl \
+    --without-gcrypt \
     --with-gnutls=$PREFIX \
+    --with-nettle=$PREFIX \
     --without-krb5
 
 projects="algo/blast/ app/ objmgr/ objtools/align_format/ objtools/blast/"
