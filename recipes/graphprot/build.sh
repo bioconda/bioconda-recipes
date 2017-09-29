@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # set install paths
 BIN=${CONDA_PREFIX}/bin/
 LIBEXEC=${CONDA_PREFIX}/libexec/graphprot/
