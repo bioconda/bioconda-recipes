@@ -13,6 +13,7 @@ sh INSTALL
 
 # change run_discoSnp++.sh deps path
 sed -i.bak 's/\$EDIR\/bin/\$EDIR/' run_discoSnp++.sh
+sed -i.bak 's/scripts\//..\/scripts\//' run_discoSnp++.sh
 
 # copy binaries
 cp run_discoSnp++.sh ${PREFIX}/bin
