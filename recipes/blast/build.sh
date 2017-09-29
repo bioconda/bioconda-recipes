@@ -47,6 +47,7 @@ cd */build
 make -j${CPU_COUNT} -f Makefile.flat all_projects="$projects"
 
 mkdir -p $PREFIX/{bin,lib,include}
+rm $SRC_DIR/c++/ReleaseMT/bin/*_unit_test
 cp $SRC_DIR/c++/ReleaseMT/bin/* $PREFIX/bin/
 cp $SRC_DIR/c++/ReleaseMT/lib/* $PREFIX/lib/
 
