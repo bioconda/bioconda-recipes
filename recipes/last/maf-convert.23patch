@@ -20,7 +20,7 @@
  
  def pairOrDie(sLines, formatName):
      if len(sLines) != 2:
-@@ -33,7 +40,7 @@
+@@ -30,7 +37,7 @@
      return sum(k == "-" for k, v in groupby(row))
  
  def alignmentRowsFromColumns(columns):
@@ -29,16 +29,7 @@
  
  def symbolSize(symbol, letterSize):
      if symbol == "\\": return 1
-@@ -53,7 +60,7 @@
-         if k:
-             yield str(sum(1 for i in v))
-         else:
--            yield ":".join(imap(insertSizeText,
-+            yield ":".join(map(insertSizeText,
-                                 alignmentRowsFromColumns(v), letterSizes))
- 
- ##### Routines for reading MAF format: #####
-@@ -64,7 +71,7 @@
+@@ -71,7 +78,7 @@
              k, v = field.split("=")
              x = float(v)
              if k == "lambda":
@@ -47,7 +38,7 @@
              if k == "K":
                  opts.bitScoreB = math.log(x, 2)
          except ValueError:
-@@ -111,7 +118,7 @@
+@@ -118,7 +125,7 @@
          elif line[0] == "#":
              updateEvalueParameters(opts, line)
              if opts.isKeepComments:
@@ -56,7 +47,7 @@
      if sLines: yield aLine, sLines, qLines, pLines
  
  def isJoinable(opts, oldMaf, newMaf):
-@@ -154,7 +161,7 @@
+@@ -161,7 +168,7 @@
  
      head, body = ranges[0], ranges[1:]
  
@@ -65,7 +56,7 @@
      outWords.extend(head[:3])
      for i in body:
          outWords.extend(i)
-@@ -163,10 +170,10 @@
+@@ -170,10 +177,10 @@
      if score:
          outWords.append(score)
  
@@ -79,7 +70,7 @@
  
  def mafConvertToAxt(opts, lines):
      for maf in mafInput(opts, lines):
-@@ -193,11 +200,11 @@
+@@ -200,11 +207,11 @@
  
      letterSizes = [i[3] for i in sLines]
      rows = [i[6] for i in sLines]
@@ -93,7 +84,7 @@
  
  def mafConvertToTab(opts, lines):
      for maf in mafInput(opts, lines):
-@@ -219,7 +226,7 @@
+@@ -226,7 +233,7 @@
          letterSizeB, begB, endB, rowB = fieldsB[3:7]
  
          size = 0
@@ -102,7 +93,7 @@
              if x == "-":
                  if size:
                      yield size, begA, begB
-@@ -300,14 +307,14 @@
+@@ -307,14 +314,14 @@
          raise Exception("for non-translated PSL, the 1st strand in each alignment must be +")
  
      blockCount = len(blocks)
@@ -119,7 +110,7 @@
  
  def mafConvertToPsl(opts, lines):
      if opts.join:
-@@ -357,12 +364,12 @@
+@@ -364,12 +371,12 @@
              break
  
  def writeSamHeader(opts, fileNames):
@@ -134,7 +125,7 @@
  
      if opts.dictfile:
          if opts.dictfile == "-":
-@@ -372,7 +379,7 @@
+@@ -379,7 +386,7 @@
                  copyDictFile(f)
  
      if opts.readgroup:
@@ -143,7 +134,7 @@
  
  mapqMissing = "255"
  mapqMaximum = "254"
-@@ -450,7 +457,7 @@
+@@ -457,7 +464,7 @@
  
      pos = str(begA + 1)  # convert to 1-based coordinate
  
@@ -152,7 +143,7 @@
  
      revBegB = seqLenB - endB
      cigar = "".join(cigarParts(begB, iter(alignmentColumns), revBegB))
-@@ -461,7 +468,7 @@
+@@ -468,7 +475,7 @@
      if qLines:
          qFields = qLines[-1].split()
          if qFields[1] == seqNameB:
@@ -161,7 +152,7 @@
  
      # It's hard to get all the pair info, so this is very
      # incomplete, but hopefully good enough.
-@@ -487,7 +494,7 @@
+@@ -494,7 +501,7 @@
      if score: out.append(score)
      if evalue: out.append(evalue)
      if readGroup: out.append(readGroup)
@@ -170,7 +161,7 @@
  
  def mafConvertToSam(opts, lines):
      readGroup = ""
-@@ -536,9 +543,9 @@
+@@ -543,9 +550,9 @@
      coords = [i[4] for i in sLines]
      for chunkCols in chunker(alignmentColumns, lineSize):
          chunkRows = list(alignmentRowsFromColumns(chunkCols))
@@ -183,7 +174,7 @@
          yield chunkCols, chunkRows, begs, ends
  
  def writeBlast(opts, maf, oldQueryName):
-@@ -548,13 +555,13 @@
+@@ -555,13 +562,13 @@
      seqNameB, seqLenB, strandB, letterSizeB, begB, endB, rowB = fieldsB
  
      if seqNameB != oldQueryName:
@@ -204,7 +195,7 @@
  
      score, evalue = scoreAndEvalue(aLine)
  
-@@ -567,9 +574,9 @@
+@@ -574,9 +581,9 @@
      if evalue:
          scoreLine += ", Expect = %s" % evalue
  
@@ -217,7 +208,7 @@
  
      alnSize = len(alignmentColumns)
      matches = sum(x.upper() == y.upper() for x, y in alignmentColumns)
-@@ -579,19 +586,19 @@
+@@ -586,19 +593,19 @@
      if gaps:
          gapPercent = 100 * gaps // alnSize  # round down, like BLAST
          identLine += ", Gaps = %s/%s (%s%%)" % (gaps, alnSize, gapPercent)
@@ -245,7 +236,7 @@
  
  def mafConvertToBlast(opts, lines):
      oldQueryName = ""
-@@ -615,7 +622,7 @@
+@@ -622,7 +629,7 @@
      seqNameA, begA, endA, rowA = blastDataFromMafFields(fieldsA)
      seqNameB, begB, endB, rowB = blastDataFromMafFields(fieldsB)
  
@@ -254,7 +245,7 @@
      alnSize = len(alignmentColumns)
      matches = sum(x == y for x, y in alignmentColumns)
      matchPercent = "%.2f" % (100.0 * matches / alnSize)
-@@ -632,7 +639,7 @@
+@@ -639,7 +646,7 @@
              bitScore = opts.bitScoreA * float(score) - opts.bitScoreB
              out.append("%.3g" % bitScore)
  
@@ -263,7 +254,7 @@
  
  def mafConvertToBlastTab(opts, lines):
      for maf in mafInput(opts, lines):
-@@ -641,7 +648,7 @@
+@@ -648,7 +655,7 @@
  ##### Routines for converting to HTML format: #####
  
  def writeHtmlHeader():
@@ -272,7 +263,7 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
   "http://www.w3.org/TR/html4/strict.dtd">
  <html lang="en"><head>
-@@ -668,7 +675,7 @@
+@@ -675,7 +682,7 @@
  <pre class="key"><span class="e">  </span> prob &gt; 0.5  </pre>
  <pre class="key"><span class="f">  </span> prob &le; 0.5  </pre>
  </div>
@@ -281,7 +272,7 @@
  
  def probabilityClass(probabilityColumn):
      p = ord(min(probabilityColumn)) - 33
-@@ -706,21 +713,21 @@
+@@ -713,21 +720,21 @@
          scoreLine += " score=" + score
          if evalue:
              scoreLine += ", expect=" + evalue
@@ -309,7 +300,7 @@
      for chunk in blastChunker(sLines, opts.linesize, alignmentColumns):
          cols, rows, begs, ends = chunk
          begWidth = maxlen(begs)
-@@ -732,10 +739,10 @@
+@@ -739,10 +746,10 @@
              spans = [htmlSpan(r, i) for i in classRuns]
              spans = ''.join(spans)
              formatParams = nameWidth, n, begWidth, b, spans, endWidth, e
@@ -324,7 +315,7 @@
  
  def mafConvertToHtml(opts, lines):
      for maf in mafInput(opts, lines):
-@@ -792,7 +799,7 @@
+@@ -799,7 +806,7 @@
  
      if not opts.noheader:
          if isFormat(formatName, "html"):
@@ -333,10 +324,10 @@
  
  if __name__ == "__main__":
      signal.signal(signal.SIGPIPE, signal.SIG_DFL)  # avoid silly error message
-@@ -833,6 +840,6 @@
+@@ -839,6 +846,6 @@
+         op.error("need file (not pipe) with option -d")
  
      try: mafConvert(opts, args)
-     except KeyboardInterrupt: pass  # avoid silly error message
 -    except Exception, e:
 +    except Exception as e:
          prog = os.path.basename(sys.argv[0])
