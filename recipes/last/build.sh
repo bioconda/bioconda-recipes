@@ -29,7 +29,7 @@ fi
 
 if [[ "${PY_VER}" =~ 3 ]]
 then
-		for i in $scripts; do 2to3 -w -n $SRC_DIR/scripts/$i; done
+		2to3 -w -n `grep -l python $SRC_DIR/scripts/*`
 fi
 
 for i in $scripts; do cp $SRC_DIR/scripts/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
