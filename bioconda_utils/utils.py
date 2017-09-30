@@ -9,7 +9,7 @@ import sys
 import shutil
 import contextlib
 from collections import defaultdict, Iterable
-from itertools import product, chain
+from itertools import product, chain, groupby
 import logging
 import pkg_resources
 import networkx as nx
@@ -22,6 +22,7 @@ import threading
 
 from conda_build import api
 from conda_build.metadata import MetaData
+from conda.version import VersionOrder
 import yaml
 from jinja2 import Environment, PackageLoader
 
@@ -400,6 +401,46 @@ def get_recipes(recipe_folder, package="*"):
                        glob.glob(os.path.join(path, "meta.yaml")))
         yield from map(os.path.dirname,
                        glob.glob(os.path.join(path, "*", "meta.yaml")))
+
+
+def get_latest_recipes(recipe_folder, config, package="*"):
+    """
+    Generator of recipes.
+
+    Finds (possibly nested) directories containing a `meta.yaml` file and returns
+    the latest version of each recipe.
+
+    Parameters
+    ----------
+    recipe_folder : str
+        Top-level dir of the recipes
+
+    config : dict or filename
+
+    package : str or iterable
+        Pattern or patterns to restrict the results.
+    """
+
+    def toplevel(x):
+        return x.replace(
+            recipe_folder, '').strip(os.path.sep).split(os.path.sep)[0]
+
+    config = load_config(config)
+    env = list(EnvMatrix(config['env_matrix']))[0]
+    recipes = sorted(get_recipes(recipe_folder, package), key=toplevel)
+
+    for package, group in groupby(recipes, key=toplevel):
+        group = list(group)
+        if len(group) == 1:
+            yield group[0]
+        else:
+            def get_version(p):
+                return VersionOrder(
+                    load_meta(os.path.join(p, 'meta.yaml'), env)['package']['version']
+                )
+            sorted_versions = sorted(group, key=get_version)
+            if sorted_versions:
+                yield sorted_versions[-1]
 
 
 def get_channel_repodata(channel='bioconda', platform=None):
