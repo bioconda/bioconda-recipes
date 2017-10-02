@@ -595,12 +595,17 @@ class BioCProjectPage(object):
         """
 
         version_placeholder = '{{ version }}'
+        package_placeholder = '{{ name }}'
 
-        def sub_placeholder(x):
-            return x.replace(self.version, version_placeholder)
+        def sub_placeholders(x):
+            return (
+                x
+                .replace(self.version, version_placeholder)
+                .replace(self.package, package_placeholder)
+            )
 
         url = [
-           sub_placeholder(u) for u in
+           sub_placeholders(u) for u in
             [self.bioconductor_tarball_url,
              self.bioconductor_annotation_data_url,
              self.bioconductor_experiment_data_url,
@@ -617,13 +622,13 @@ class BioCProjectPage(object):
         d = OrderedDict((
             (
                 'package', OrderedDict((
-                    ('name', 'bioconductor-' + self.package.lower()),
-                    ('version', version_placeholder),
+                    ('name', 'bioconductor-{{ name|lower}}'),
+                    ('version', '{{ version }}'),
                 )),
             ),
             (
                 'source', OrderedDict((
-                    ('fn', self.tarball_basename.replace(self.version, '{{ version }}')),
+                    ('fn', '{{ name }}_{{ version }}.tar.gz'),
                     ('url', url),
                     ('sha256', self.sha256),
                 )),
@@ -666,7 +671,11 @@ class BioCProjectPage(object):
         rendered = pyaml.dumps(d).decode('utf-8')
         rendered = rendered.replace('GCC_PLACEHOLDER', 'gcc  # [linux]')
         rendered = rendered.replace('LLVM_PLACEHOLDER', 'llvm  # [osx]')
-        rendered = '{% set version="' + self.version + '" %}\n\n' + rendered
+        rendered = (
+            '{% set version="' + self.version + '" %}\n' +
+            '{% set name="' + self.package + '" %}\n\n' +
+            rendered
+        )
         tmp = tempfile.NamedTemporaryFile(delete=False).name
         with open(tmp, 'w') as fout:
             fout.write(rendered)
