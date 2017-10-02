@@ -676,7 +676,7 @@ class BioCProjectPage(object):
         rendered = rendered.replace('LLVM_PLACEHOLDER', 'llvm  # [osx]')
         rendered = (
             '{% set version="' + self.version + '" %}\n' +
-            '{% set name="' + self.package + '" %}\n\n' +
+            '{% set name="' + self.package + '" %}\n' +
             '{% set bioc="' + self.bioc_version + '" %}\n\n' +
             rendered
         )
