@@ -671,7 +671,7 @@ class BioCProjectPage(object):
             d['requirements']['build'].append('GCC_PLACEHOLDER')
             d['requirements']['build'].append('LLVM_PLACEHOLDER')
 
-        rendered = pyaml.dumps(d).decode('utf-8')
+        rendered = pyaml.dumps(d, width=1e6).decode('utf-8')
         rendered = rendered.replace('GCC_PLACEHOLDER', 'gcc  # [linux]')
         rendered = rendered.replace('LLVM_PLACEHOLDER', 'llvm  # [osx]')
         rendered = (
