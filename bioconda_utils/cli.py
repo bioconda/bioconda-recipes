@@ -531,7 +531,7 @@ def bioconductor_skeleton(
     """
     setup_logger(loglevel)
     _bioconductor_skeleton.write_recipe(
-        package, recipe_folder, force, bioc_version=bioc_version,
+        package, recipe_folder, config, force=force, bioc_version=bioc_version,
         pkg_version=pkg_version, versioned=versioned
     )
 
