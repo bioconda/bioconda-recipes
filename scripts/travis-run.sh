@@ -48,7 +48,7 @@ then
             if [[ $TRAVIS_PULL_REQUEST != "false" ]]
             then
                 # pull request against bulk: only build additionally changed recipes
-                RANGE_ARG="--git-range $RANGE"
+                RANGE_ARG="--git-range origin/$RANGE"
             else
                 # push on bulk: consider all recipes and do not lint (the bulk update)!
                 RANGE_ARG=""
