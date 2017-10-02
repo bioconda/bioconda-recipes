@@ -595,12 +595,14 @@ class BioCProjectPage(object):
 
         version_placeholder = '{{ version }}'
         package_placeholder = '{{ name }}'
+        bioc_placeholder = '{{ bioc }}'
 
         def sub_placeholders(x):
             return (
                 x
                 .replace(self.version, version_placeholder)
                 .replace(self.package, package_placeholder)
+                .replace(self.bioc_version, bioc_placeholder)
             )
 
         url = [
@@ -659,7 +661,7 @@ class BioCProjectPage(object):
             ),
             (
                 'about', OrderedDict((
-                    ('home', self.url),
+                    ('home', sub_placeholders(self.url)),
                     ('license', self.license),
                     ('summary', self.description['description']),
                 )),
@@ -675,6 +677,7 @@ class BioCProjectPage(object):
         rendered = (
             '{% set version="' + self.version + '" %}\n' +
             '{% set name="' + self.package + '" %}\n\n' +
+            '{% set bioc="' + self.bioc_version + '" %}\n\n' +
             rendered
         )
         tmp = tempfile.NamedTemporaryFile(delete=False).name
