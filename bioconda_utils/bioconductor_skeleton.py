@@ -228,7 +228,6 @@ class BioCProjectPage(object):
                 os.path.join(base_url, self.bioc_version, 'data', 'experiment', 'html', package + '.html')
             )
 
-
         if not self.request:
             raise PageNotFoundError('Error {0.status_code} ({0.reason}) for page {0.url}'.format(self.request))
 
@@ -605,11 +604,13 @@ class BioCProjectPage(object):
             )
 
         url = [
-           sub_placeholders(u) for u in
-            [self.bioconductor_tarball_url,
-             self.bioconductor_annotation_data_url,
-             self.bioconductor_experiment_data_url,
-             self.bioaRchive_url, self.cargoport_url]
+            sub_placeholders(u) for u in
+            [
+                self.bioconductor_tarball_url,
+                self.bioconductor_annotation_data_url,
+                self.bioconductor_experiment_data_url,
+                self.bioaRchive_url, self.cargoport_url
+            ]
             if u is not None
         ]
 
