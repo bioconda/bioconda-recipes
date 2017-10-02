@@ -652,9 +652,9 @@ class BioCProjectPage(object):
             ),
             (
                 'test', OrderedDict((
-                    ('commands',
-                     ['''$R -e "library('{package}')"'''.format(
-                         package=self.package)]),
+                    (
+                        'commands', ['''$R -e "library('{{ name }}')"''']
+                    ),
                 )),
             ),
             (
