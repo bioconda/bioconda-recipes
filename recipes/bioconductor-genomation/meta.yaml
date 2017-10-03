@@ -1,33 +1,36 @@
+{% set version="1.8.0" %}
+{% set name="genomation" %}
+{% set bioc="3.5" %}
+
 package:
-  name: bioconductor-genomation
-  version: "1.6.0"
-
+  name: 'bioconductor-{{ name|lower}}'
+  version: '{{ version }}'
 source:
-  fn: genomation_1.6.0.tar.gz
-  url: https://depot.galaxyproject.org/software/bioconductor-genomation/bioconductor-genomation_1.6.0_src_all.tar.gz
-  md5: ceb645ad51f99c5b9ef09491c942d06a
-
+  fn: '{{ name }}_{{ version }}.tar.gz'
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 546e2d9c9ac85e7c67f0d59ea24a56f9d4fa438e9ebc8e9df303ab7191b3e164
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-
 requirements:
   build:
     - bioconductor-biostrings
     - bioconductor-bsgenome
     - bioconductor-genomeinfodb
     - bioconductor-genomicalignments
-    - bioconductor-genomicranges >=1.23.26
+    - 'bioconductor-genomicranges >=1.23.26'
     - bioconductor-impute
     - bioconductor-iranges
-    - bioconductor-rsamtools
-    - bioconductor-seqpattern
+    - 'bioconductor-rsamtools >=1.25.2'
     - bioconductor-rtracklayer
-    - bioconductor-s4vectors >=0.9.25
-    - bioconductor-rhtslib
-    - r-base
+    - 'bioconductor-s4vectors >=0.9.25'
+    - bioconductor-seqpattern
+    - 'r-base >=3.0.0'
     - r-data.table
     - r-ggplot2
     - r-gridbase
@@ -36,8 +39,10 @@ requirements:
     - r-plyr
     - r-readr
     - r-reshape2
-    - r-rcpp
     - r-runit
+    # Previous version (1.6.0) had r-rcpp as dependency, 1.8.0 does not.
+    # Keeping just in case.
+    - r-rcpp
     - gcc  # [linux]
     - llvm  # [osx]
   run:
@@ -45,15 +50,14 @@ requirements:
     - bioconductor-bsgenome
     - bioconductor-genomeinfodb
     - bioconductor-genomicalignments
-    - bioconductor-genomicranges >=1.23.26
+    - 'bioconductor-genomicranges >=1.23.26'
     - bioconductor-impute
     - bioconductor-iranges
-    - bioconductor-rsamtools
-    - bioconductor-seqpattern
+    - 'bioconductor-rsamtools >=1.25.2'
     - bioconductor-rtracklayer
-    - bioconductor-s4vectors >=0.9.25
-    - bioconductor-rhtslib
-    - r-base
+    - 'bioconductor-s4vectors >=0.9.25'
+    - bioconductor-seqpattern
+    - 'r-base >=3.0.0'
     - r-data.table
     - r-ggplot2
     - r-gridbase
@@ -62,21 +66,15 @@ requirements:
     - r-plyr
     - r-readr
     - r-reshape2
-    - r-rcpp
     - r-runit
+    # Previous version (1.6.0) had r-rcpp as dependency, 1.8.0 does not.
+    # Keeping just in case.
+    - r-rcpp
     - libgcc # [linux]
-
 test:
   commands:
-    - '$R -e "library(''genomation'')"'
-
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/genomation.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'A package for summary and annotation of genomic intervals. Users can visualize
-    and quantify genomic intervals over pre-defined functional regions, such as promoters,
-    exons, introns, etc. The genomic intervals represent regions with a defined chromosome
-    position, which may be associated with a score, such as aligned reads from HT-seq
-    experiments, TF binding sites, methylation scores, etc. The package can use any
-    tabular genomic feature data as long as it has minimal information on the locations
-    of genomic intervals. In addition, It can use BAM or BigWig files as input.'
+  summary: 'A package for summary and annotation of genomic intervals. Users can visualize and quantify genomic intervals over pre-defined functional regions, such as promoters, exons, introns, etc. The genomic intervals represent regions with a defined chromosome position, which may be associated with a score, such as aligned reads from HT-seq experiments, TF binding sites, methylation scores, etc. The package can use any tabular genomic feature data as long as it has minimal information on the locations of genomic intervals. In addition, It can use BAM or BigWig files as input.'
