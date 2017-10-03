@@ -546,6 +546,11 @@ class BioCProjectPage(object):
         # Add R itself
         if not specific_r_version:
             results.append('r-base')
+
+        # Sometimes empty dependencies make it into the list from a trailing
+        # comma in DESCRIPTION; remove them here.
+        results = list(filter(lambda x: x != 'r-', results))
+
         self._dependencies = results
         return self._dependencies
 
