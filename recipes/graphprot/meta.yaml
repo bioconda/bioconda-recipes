@@ -1,0 +1,105 @@
+{% set version = "1.1.7" %}
+{% set sha256 = "663ae26b8f14bcce645a64c5f83e6a0b634bea8fda94f2cab21482b42cace1b0" %}
+
+package:
+  name: graphprot
+  version: {{ version }}
+
+source:
+  url: https://github.com/dmaticzka/GraphProt/archive/v{{ version }}.tar.gz
+  fn: GraphProt-v{{ version }}.tar.gz
+  sha256: "{{ sha256 }}"
+
+build:
+  number: 0
+  skip: True # [osx]
+  skip: True # [py2k]
+
+requirements:
+  build:
+    - gcc
+    - libgcc
+    - libcxx
+    - openmp
+    - zlib {{CONDA_ZLIB}}*
+    - make
+    - coreutils
+    - gawk
+    - pytest
+    - scripttest
+    - rnashapes <3
+    - python
+    - weblogo >=3
+    - libsvm
+    - perl-getopt-long
+    - r-plyr
+    - r-prroc
+  run:
+    - libgcc
+    - libcxx
+    - openmp
+    - zlib {{CONDA_ZLIB}}*
+    - make
+    - coreutils
+    - gawk
+    - rnashapes <3
+    - python
+    - weblogo >=3
+    - libsvm
+    - perl-getopt-long
+    - r-plyr
+    - r-prroc
+
+test:
+  source_files:
+    - tests/testclip.train.negatives.fa
+    - tests/testclip.train.positives.fa
+    - tests/test_data_full_A.train.fa
+    - tests/test_data_full_A.train.affys
+    - tests/CL_ls.params
+    - tests/CL_train.model
+    - tests/REG_ls.params
+  commands:
+    - ls -l
+    - pwd
+    # classification, linesearch
+    - GraphProt.pl
+        -mode classification -action ls --onlyseq
+        -fasta tests/testclip.train.positives.fa
+        -negfasta tests/testclip.train.negatives.fa
+    # classification, crossvalidation
+    - GraphProt.pl \
+        -mode classification -action cv --onlyseq
+        -fasta tests/testclip.train.positives.fa
+        -negfasta tests/testclip.train.negatives.fa
+        -params tests/CL_ls.params
+    # classification, train
+    - GraphProt.pl -mode classification -action train
+        -fasta tests/testclip.train.positives.fa
+        -negfasta tests/testclip.train.negatives.fa
+        -abstraction 1 -R 0 -D 0 -epochs 2 -lambda 0.1 -bitsize 10
+    # classification, motif
+    - GraphProt.pl -mode classification -action motif
+        -fasta tests/testclip.train.positives.fa
+        -model tests/CL_train.model
+        -abstraction 1 -R 0 -D 0 -epochs 2 -lambda 0.1 -bitsize 10
+    # regression, linesearch
+    - GraphProt.pl -mode regression -action ls --onlyseq
+        -fasta tests/test_data_full_A.train.fa
+        -affinities tests/test_data_full_A.train.affys
+        -abstraction 1 -R 0 -D 0 -epsilon 0.11 -c 11 -bitsize 10
+    # regression, crossvalidation
+    - GraphProt.pl -mode regression -action cv --onlyseq
+        -fasta tests/test_data_full_A.train.fa
+        -affinities tests/test_data_full_A.train.affys
+        -params tests/REG_ls.params
+    # regression, train
+    - GraphProt.pl -mode regression -action train
+        -fasta tests/test_data_full_A.train.fa
+        -affinities tests/test_data_full_A.train.affys
+        -abstraction 1 -R 0 -D 0 -epsilon 0.11 -c 11 -bitsize 10
+
+about:
+  home: https://github.com/dmaticzka/graphprot
+  license: MIT
+  summary: GraphProt is a tool for modelling binding preferences of RNA-binding proteins from high-throughput experiments such as CLIP-seq and RNAcompete.
