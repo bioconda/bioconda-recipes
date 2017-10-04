@@ -1,10 +1,12 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=$C_INCLUDE_PATH:${PREFIX}/include
-export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:${PREFIX}/include
-export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
+export C_INCLUDE_PATH=${PREFIX}/include:$C_INCLUDE_PATH
+export CPLUS_INCLUDE_PATH=${PREFIX}/include:$CPLUS_INCLUDE_PATH
+export LIBRARY_PATH=${PREFIX}/lib:$LIBRARY_PATH
 
-cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -DBOOST_ROOT=$PREFIX -DBoost_NO_SYSTEM_PATHS=ON .
+# DEBUG purpose to find boost related libs on travis
+ldd ${PREFIX}/lib/libboost_regex.so
+cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX .
 make
 make install
 
