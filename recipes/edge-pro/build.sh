@@ -1,8 +1,5 @@
 #!/bin/bash
-set -eu -o pipefail
-unset CFLAGS
-unset CXXFLAGS
-make SFLAGS=
-make install
+rm count
+make
 mkdir -p $PREFIX/bin
-cp bin/* $PREFIX/bin
+cp count edge.pl $PREFIX/bin/
