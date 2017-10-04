@@ -5,4 +5,5 @@ make
 cp bin/pairix $PREFIX/bin/pairix
 cp bin/pairs_merger $PREFIX/bin/pairs_merger
 cp bin/streamer_1d $PREFIX/bin/streamer_1d
+cp util/* $PREFIX/util/
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
