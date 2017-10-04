@@ -13,8 +13,7 @@ source:
   md5: {{ md5 }}
 
 build:
-    number: 1
-    skip: True  # [osx]
+    number: 2
     detect_binary_files_with_prefix: True
 
 requirements:
@@ -28,13 +27,29 @@ requirements:
         - perl-filesys-df
         - openjdk
         - gnuplot >=5.0.5
+        # gnuplot libs
+        - xorg-libsm
+        - xorg-libxext
+        - xorg-libxrender
+        - xorg-libxfixes
 
 test:
   commands:
     - canu --version
-    - echo ">foo\nactgtg" > test.fasta && canu -p pun4 genomeSize=5.2m -pacbio-raw test.fasta
+    # prepare test data
+    - perl -MFile::Fetch -we "File::Fetch->new(uri=>q[http://www.cbcb.umd.edu/software/PBcR/data/sampleData.tar.gz])->fetch()"
+    - gunzip sampleData.tar.gz && tar xf sampleData.tar
+    # canu needs >1000bp reads
+    - perl -wnle "print qq[>\$.\\n\$_] if length>1000" sampleData/pacbio.filtered_subreads.fasta| head -n200 > test.fasta
+    # force run with minimum memory
+    - canu -p ex1 genomeSize=10k maxMemory=1G merylMemory=1G cormhapMemory=1G obtovlMemory=1G utgovlMemory=1G corMemory=1G ovbMemory=1G ovsMemory=1G batMemory=1G gfaMemory=1G cnsMemory=1G -pacbio-raw test.fasta
 
 about:
   home: http://http://canu.readthedocs.org/
   license: GPLv2 and others
   summary: 'Canu is a fork of the Celera Assembler designed for high-noise single-molecule sequencing.'
+
+extra:
+  container:
+    # needed for libGL
+    extended-base: true
