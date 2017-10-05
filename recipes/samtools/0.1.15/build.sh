@@ -1,6 +1,8 @@
 #!/bin/sh
 sed -i.bak 's/-lcurses/-lncurses/' Makefile
-sed -i.bak 's/-lz/-lz -ltinfo/' Makefile
+if [ `uname` != Darwin ] ; then
+    sed -i.bak 's/-lz/-lz -ltinfo/' Makefile
+fi
 sed -i.bak 's/\(inline void __ks_insertsort\)/static \1/'  ksort.h
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 make
