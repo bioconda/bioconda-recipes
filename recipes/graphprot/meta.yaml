@@ -11,15 +11,12 @@ source:
   sha256: "{{ sha256 }}"
 
 build:
-  number: 0
+  number: 1
   skip: True # [osx]
-  skip: True # [py2k]
 
 requirements:
   build:
     - gcc
-    - libgcc
-    - libcxx
     - openmp
     - zlib {{CONDA_ZLIB}}*
     - make
@@ -28,7 +25,6 @@ requirements:
     - pytest
     - scripttest
     - rnashapes <3
-    - python
     - weblogo >=3
     - libsvm
     - perl-getopt-long
@@ -36,67 +32,64 @@ requirements:
     - r-prroc
   run:
     - libgcc
-    - libcxx
     - openmp
     - zlib {{CONDA_ZLIB}}*
     - make
     - coreutils
     - gawk
     - rnashapes <3
-    - python
     - weblogo >=3
     - libsvm
     - perl-getopt-long
     - r-plyr
     - r-prroc
+    - curl
 
 test:
-  source_files:
-    - tests/testclip.train.negatives.fa
-    - tests/testclip.train.positives.fa
-    - tests/test_data_full_A.train.fa
-    - tests/test_data_full_A.train.affys
-    - tests/CL_ls.params
-    - tests/CL_train.model
-    - tests/REG_ls.params
   commands:
-    - ls -l
-    - pwd
+    # get test files
+    - curl -O https://raw.githubusercontent.com/dmaticzka/GraphProt/v{{ version }}/tests/testclip.train.negatives.fa
+    - curl -O https://raw.githubusercontent.com/dmaticzka/GraphProt/v{{ version }}/tests/testclip.train.positives.fa
+    - curl -O https://raw.githubusercontent.com/dmaticzka/GraphProt/v{{ version }}/tests/test_data_full_A.train.fa
+    - curl -O https://raw.githubusercontent.com/dmaticzka/GraphProt/v{{ version }}/tests/test_data_full_A.train.affys
+    - curl -O https://raw.githubusercontent.com/dmaticzka/GraphProt/v{{ version }}/tests/CL_ls.params
+    - curl -O https://raw.githubusercontent.com/dmaticzka/GraphProt/v{{ version }}/tests/CL_train.model
+    - curl -O https://raw.githubusercontent.com/dmaticzka/GraphProt/v{{ version }}/tests/REG_ls.params
     # classification, linesearch
     - GraphProt.pl
-        -mode classification -action ls --onlyseq
-        -fasta tests/testclip.train.positives.fa
-        -negfasta tests/testclip.train.negatives.fa
+        -mode classification -action ls --onlyseq \
+        -fasta testclip.train.positives.fa \
+        -negfasta testclip.train.negatives.fa \
     # classification, crossvalidation
     - GraphProt.pl \
         -mode classification -action cv --onlyseq
-        -fasta tests/testclip.train.positives.fa
-        -negfasta tests/testclip.train.negatives.fa
-        -params tests/CL_ls.params
+        -fasta testclip.train.positives.fa
+        -negfasta testclip.train.negatives.fa
+        -params CL_ls.params
     # classification, train
     - GraphProt.pl -mode classification -action train
-        -fasta tests/testclip.train.positives.fa
-        -negfasta tests/testclip.train.negatives.fa
+        -fasta testclip.train.positives.fa
+        -negfasta testclip.train.negatives.fa
         -abstraction 1 -R 0 -D 0 -epochs 2 -lambda 0.1 -bitsize 10
     # classification, motif
     - GraphProt.pl -mode classification -action motif
-        -fasta tests/testclip.train.positives.fa
-        -model tests/CL_train.model
+        -fasta testclip.train.positives.fa
+        -model CL_train.model
         -abstraction 1 -R 0 -D 0 -epochs 2 -lambda 0.1 -bitsize 10
     # regression, linesearch
     - GraphProt.pl -mode regression -action ls --onlyseq
-        -fasta tests/test_data_full_A.train.fa
-        -affinities tests/test_data_full_A.train.affys
+        -fasta test_data_full_A.train.fa
+        -affinities test_data_full_A.train.affys
         -abstraction 1 -R 0 -D 0 -epsilon 0.11 -c 11 -bitsize 10
     # regression, crossvalidation
     - GraphProt.pl -mode regression -action cv --onlyseq
-        -fasta tests/test_data_full_A.train.fa
-        -affinities tests/test_data_full_A.train.affys
-        -params tests/REG_ls.params
+        -fasta test_data_full_A.train.fa
+        -affinities test_data_full_A.train.affys
+        -params REG_ls.params
     # regression, train
     - GraphProt.pl -mode regression -action train
-        -fasta tests/test_data_full_A.train.fa
-        -affinities tests/test_data_full_A.train.affys
+        -fasta test_data_full_A.train.fa
+        -affinities test_data_full_A.train.affys
         -abstraction 1 -R 0 -D 0 -epsilon 0.11 -c 11 -bitsize 10
 
 about:
