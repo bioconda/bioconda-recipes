@@ -64,7 +64,6 @@ fi
             --without-doc \
             --without-tutorial \
             --without-tutorial-pdf \
-            --without-rnalocmin \
             ${extra_config_options} \
             LIBS=${PY2LIB} \
             &&\
