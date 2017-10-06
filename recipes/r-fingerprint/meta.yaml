@@ -1,0 +1,91 @@
+{% set version = '3.5.6' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-fingerprint
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: fingerprint_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/fingerprint_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/fingerprint/fingerprint_{{ version }}.tar.gz
+
+
+  sha256: ba7777c3b4a4cbd9acb2fc660660e55f0d49287060d2c9e27d00f210118a2de2
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: RUnit
+requirements:
+  build:
+    - r-base
+    - posix                # [win]
+    - {{native}}toolchain  # [win]
+    - gcc                  # [not win]
+
+  run:
+    - r-base
+    - {{native}}gcc-libs   # [win]
+    - libgcc               # [not win]
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('fingerprint')"  # [not win]
+    - "\"%R%\" -e \"library('fingerprint')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=fingerprint
+  license: GPL
+  summary: Functions to manipulate binary fingerprints of arbitrary length. A fingerprint is
+    represented by an object of S4 class 'fingerprint' which is internally represented
+    a vector of integers, such that each element represents the position in the fingerprint
+    that is set to 1. The bitwise logical functions in R are overridden so that they
+    can be used directly with 'fingerprint' objects. A number of distance metrics are
+    also available (many contributed by Michael Fadock). Fingerprints  can be converted
+    to Euclidean vectors (i.e., points on the unit hypersphere) and can also be folded
+    using OR.  Arbitrary fingerprint formats can be handled via line handlers. Currently
+    handlers are provided for CDK, MOE and BCI fingerprint data.
+  license_family: GPL
+
+# The original CRAN metadata for this package was:
+
+# Package: fingerprint
+# Version: 3.5.6
+# Date: 2017-09-13
+# Title: Functions to Operate on Binary Fingerprint Data
+# Author: Rajarshi Guha <rajarshi.guha@gmail.com>
+# Maintainer: Rajarshi Guha <rajarshi.guha@gmail.com>
+# BugReports: https://github.com/rajarshi/cdkr/issues
+# Description: Functions to manipulate binary fingerprints of arbitrary length. A fingerprint is represented by an object of S4 class 'fingerprint' which is internally represented a vector of integers, such that each element represents the position in the fingerprint that is set to 1. The bitwise logical functions in R are overridden so that they can be used directly with 'fingerprint' objects. A number of distance metrics are also available (many contributed by Michael Fadock). Fingerprints  can be converted to Euclidean vectors (i.e., points on the unit hypersphere) and can also be folded using OR.  Arbitrary fingerprint formats can be handled via line handlers. Currently handlers are provided for CDK, MOE and BCI fingerprint data.
+# License: GPL
+# Depends: methods
+# LazyLoad: yes
+# Suggests: RUnit
+# NeedsCompilation: yes
+# Packaged: 2017-09-19 00:39:37 UTC; guhar
+# Repository: CRAN
+# Date/Publication: 2017-09-19 16:18:09 UTC
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
