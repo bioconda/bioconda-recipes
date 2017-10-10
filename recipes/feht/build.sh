@@ -1,4 +1,4 @@
 #!/bin/bash
 
-sudo mv feht /opt/feht
-sudo ln -s /opt/feht /usr/local/bin/feht
+cp feht /bin/feht
+chmod 755 /bin/feht
