@@ -1,10 +1,4 @@
 #!/bin/bash
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="-L${PREFIX}/lib"
 
-stack setup
-stack update
-stack install  --local-bin-path ${PREFIX}/bin
-#cleanup
-rm -r .stack-work
+sudo mv feht /opt/feht
+sudo ln -s /opt/feht /usr/local/bin/feht
