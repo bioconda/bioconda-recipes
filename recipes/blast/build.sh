@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e -x -o pipefail
-
 cd $SRC_DIR/c++/
 
 export CFLAGS="$CFLAGS -O2"
@@ -13,10 +11,6 @@ if test x"`uname`" = x"Linux"; then
     # only add things needed; not supported by OSX ld
     LDFLAGS="$LDFLAGS -Wl,-as-needed"
 fi
-
-# --with-hard-runpath is needed otherwise BLAST programs would search
-# libraries first in the directories defined by the LD_LIBRARY_PATH
-# environment variable, instead of using the rpath specified by conda
 
 ./configure \
     --with-dll \
