@@ -27,6 +27,11 @@ if [[ $(uname) == "Darwin" ]]; then
 	export CMAKE_CXX_FLAGS="-stdlib=libc++"
 fi
 
+if [[ "${PY_VER}" =~ 3 ]]
+then
+		2to3 -w -n `grep -l python $SRC_DIR/scripts/*`
+fi
+
 for i in $scripts; do cp $SRC_DIR/scripts/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
 
 chmod +x $SRC_DIR/build/*
