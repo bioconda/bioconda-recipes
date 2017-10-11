@@ -62,6 +62,8 @@ fi
             --with-kinwalker \
             --disable-lto \
             --without-doc \
+            --without-tutorial \
+            --without-tutorial-pdf \
             ${extra_config_options} \
             LIBS=${PY2LIB} \
             &&\
