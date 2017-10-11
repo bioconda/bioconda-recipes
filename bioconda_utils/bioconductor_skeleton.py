@@ -546,6 +546,11 @@ class BioCProjectPage(object):
         # Add R itself
         if not specific_r_version:
             results.append('r-base')
+
+        # Sometimes empty dependencies make it into the list from a trailing
+        # comma in DESCRIPTION; remove them here.
+        results = list(filter(lambda x: x != 'r-', results))
+
         self._dependencies = results
         return self._dependencies
 
@@ -595,12 +600,14 @@ class BioCProjectPage(object):
 
         version_placeholder = '{{ version }}'
         package_placeholder = '{{ name }}'
+        bioc_placeholder = '{{ bioc }}'
 
         def sub_placeholders(x):
             return (
                 x
                 .replace(self.version, version_placeholder)
                 .replace(self.package, package_placeholder)
+                .replace(self.bioc_version, bioc_placeholder)
             )
 
         url = [
@@ -652,14 +659,14 @@ class BioCProjectPage(object):
             ),
             (
                 'test', OrderedDict((
-                    ('commands',
-                     ['''$R -e "library('{package}')"'''.format(
-                         package=self.package)]),
+                    (
+                        'commands', ['''$R -e "library('{{ name }}')"''']
+                    ),
                 )),
             ),
             (
                 'about', OrderedDict((
-                    ('home', self.url),
+                    ('home', sub_placeholders(self.url)),
                     ('license', self.license),
                     ('summary', self.description['description']),
                 )),
@@ -669,12 +676,13 @@ class BioCProjectPage(object):
             d['requirements']['build'].append('GCC_PLACEHOLDER')
             d['requirements']['build'].append('LLVM_PLACEHOLDER')
 
-        rendered = pyaml.dumps(d).decode('utf-8')
+        rendered = pyaml.dumps(d, width=1e6).decode('utf-8')
         rendered = rendered.replace('GCC_PLACEHOLDER', 'gcc  # [linux]')
         rendered = rendered.replace('LLVM_PLACEHOLDER', 'llvm  # [osx]')
         rendered = (
             '{% set version="' + self.version + '" %}\n' +
-            '{% set name="' + self.package + '" %}\n\n' +
+            '{% set name="' + self.package + '" %}\n' +
+            '{% set bioc="' + self.bioc_version + '" %}\n\n' +
             rendered
         )
         tmp = tempfile.NamedTemporaryFile(delete=False).name
