@@ -1,14 +1,19 @@
-{% set version = "1.4.0" %}
+{% set version="1.4.0" %}
+{% set name="dada2" %}
+{% set bioc="3.5" %}
 
 package:
-  name: bioconductor-dada2
-  version: {{ version }}
+  name: 'bioconductor-{{ name|lower}}'
+  version: '{{ version }}'
 source:
-  fn: dada2-{{ version }}.tar.gz
-  url: https://github.com/benjjneb/dada2/archive/v{{ version }}.tar.gz
-  sha256: 5a590edd581a37a6b6b6c5f560b3456c0b81d7c319eaf10a76dcb8030277b5f7
+  fn: '{{ name }}_{{ version }}.tar.gz'
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 9a43ca64baa82d28a14e62189a5cdd29250d032e3b0307a23ee9af2e260a4db4
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
@@ -16,9 +21,9 @@ requirements:
   build:
     - 'bioconductor-biostrings >=2.32.1'
     - 'bioconductor-shortread >=1.24.0'
-    - r-base
+    - 'r-base >=3.2.0'
     - 'r-data.table >=1.9.4'
-    - 'r-ggplot2 >=1.0'
+    - 'r-ggplot2 >=2.1.0'
     - 'r-rcpp >=0.11.2'
     - 'r-rcppparallel >=4.3.0'
     - 'r-reshape2 >=1.4.1'
@@ -27,21 +32,16 @@ requirements:
   run:
     - 'bioconductor-biostrings >=2.32.1'
     - 'bioconductor-shortread >=1.24.0'
-    - r-base
+    - 'r-base >=3.2.0'
     - 'r-data.table >=1.9.4'
-    - 'r-ggplot2 >=1.0'
+    - 'r-ggplot2 >=2.1.0'
     - 'r-rcpp >=0.11.2'
     - 'r-rcppparallel >=4.3.0'
     - 'r-reshape2 >=1.4.1'
 test:
   commands:
-    - '$R -e "library(''dada2'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/dada2.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL-3
-  summary: 'The dada2 package provides "OTU picking" functionality, but instead of
-    picking OTUs the DADA2 algorithm exactly infers samples sequences. The dada2 pipeline
-    starts from demultiplexed fastq files, and outputs inferred sample sequences and
-    associated abundances after removing substitution and chimeric errors. Taxonomic
-    classification is also available via a native implementation of the RDP classifier
-    method.'
+  summary: 'The dada2 package infers exact sequence variants (SVs) from amplicon data, replacing the coarser and less accurate OTU clustering approach. The dada2 pipeline takes as input demultiplexed fastq files, and outputs the sequence variants and their sample-wise abundances after removing substitution and chimera errors. Taxonomic classification is available via a native implementation of the RDP naive Bayesian classifier.'

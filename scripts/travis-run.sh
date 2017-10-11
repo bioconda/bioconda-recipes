@@ -48,6 +48,7 @@ then
             if [[ $TRAVIS_PULL_REQUEST != "false" ]]
             then
                 # pull request against bulk: only build additionally changed recipes
+                git fetch origin $TRAVIS_BRANCH
                 RANGE_ARG="--git-range $RANGE"
             else
                 # push on bulk: consider all recipes and do not lint (the bulk update)!
