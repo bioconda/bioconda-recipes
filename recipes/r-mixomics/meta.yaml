@@ -1,24 +1,22 @@
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '6.2.0' %}
 
 package:
   name: r-mixomics
-  version: "6.1.1"
+  version: {{ version|replace("-", "_") }}
 
 source:
-  fn: mixOmics_6.1.1.tar.gz
+  fn: mixOmics_{{ version }}.tar.gz
   url:
-    - http://cran.r-project.org/src/contrib/Archive/mixOmics/mixOmics_6.1.1.tar.gz
-  sha256: 0a0b5cc2cb7ffcadcf2a5eab35c0f2d8cc9d1a60e7c83086a3909742c02bb471
+    - https://cran.r-project.org/src/contrib/mixOmics_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/mixOmics/mixOmics_{{ version }}.tar.gz
+  sha256: 96b240d0df267a5d6b0ab14ec131c8c8de4571de48a372754a9b79dabb36f5ed
 
 build:
   number: 0
-  # rgl not available on OSX for conda-forge
-  skip: True  # [osx]
+
   rpaths:
     - lib/R/lib/
     - lib/
-
 requirements:
   build:
     - r-base
@@ -34,7 +32,10 @@ requirements:
     - r-reshape2
     - r-rgl
     - r-tidyr
-    - libglu # [linux]
+
+    # prev version
+    # - libglu # [linux]
+
   run:
     - r-base
     - r-mass
@@ -49,19 +50,18 @@ requirements:
     - r-reshape2
     - r-rgl
     - r-tidyr
-    - libglu # [linux]
+
+    # prev version
+    # - libglu # [linux]
 
 test:
   commands:
-    # You can put additional test commands to be run here.
-    - $R -e "library('mixOmics')" # [not win]
-    - "\"%R%\" -e \"library('mixOmics')\"" # [win]
+    - $R -e "library('mixOmics')"
 
 about:
   home: http://www.mixOmics.org
   license: GPL (>= 2)
-  summary: |
-    Multivariate methods are well suited to large omics data sets where the number of
+  summary: 'Multivariate methods are well suited to large omics data sets where the number of
     variables (e.g. genes, proteins, metabolites) is much larger than the number of
     samples (patients, cells, mice). They have the appealing properties of reducing
     the dimension of the data by using instrumental variables (components), which are
@@ -76,13 +76,10 @@ about:
     technologies, such as omics data (transcriptomics, metabolomics, proteomics, metagenomics
     etc) but also beyond the realm of omics (e.g. spectral imaging). The methods implemented
     in mixOmics can also handle missing values without having to delete entire rows
-    with missing data. A non exhaustive list of methods include generalised Canonical
-    Correlation Analysis, sparse Partial Least Squares and sparse Discriminant Analysis.
-    Recently we implemented integrative methods to combine multiple data sets: horizontal
-    integration with regularised Generalised Canonical Correlation Analysis and vertical
-    integration with multi-group Partial Least Squares.
-  license_family: GPL3
+    with missing data. A non exhaustive list of methods include variants of generalised
+    Canonical Correlation Analysis, sparse Partial Least Squares and sparse Discriminant
+    Analysis. Recently we implemented integrative methods to combine multiple data sets:
+    N-integration with variants of Generalised Canonical Correlation Analysis and P-integration
+    with variants of multi-group Partial Least Squares.'
 
-extra:
-    container:
-        extended-base: true
+  license_family: GPL3
