@@ -1,4 +1,3 @@
 #!/bin/sh
 
-mkdir -p $PREFIX/bin
-cp gdc-client $PREFIX/bin
+python setup.py install --single-version-externally-managed --record record.txt

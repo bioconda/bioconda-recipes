@@ -6,14 +6,37 @@ package:
 
 build:
   number: 0
+  skip: true  # [py3k]
 
 # TODO compile from source to be able to support older systems.
 source:
-  fn: gdc-client-{{ version }}.zip
-  url: https://gdc.cancer.gov/system/files/authenticated%20user/0/gdc-client_v1.3.0_Ubuntu14.04_x64.zip  # [linux64]
-  url: https://gdc.cancer.gov/system/files/authenticated%20user/0/gdc-client_v1.3.0_OSX_x64.zip  # [osx]
-  sha256: 5e3c42d00c047d5035e48df91a622b2cd48c5465cb5940f13a80c4f075c6c624  # [linux64]
-  sha256: 5c6c24cd880df6413cc06caa3f253348037e34eceb023603555f198915b880de  # [osx]
+  fn: gdc-client-{{ version }}.tar-gz
+  url: https://github.com/NCI-GDC/gdc-client/archive/1.3.0.tar.gz
+  sha256: 2a847f7498491fe69f86f163b9adc6ba752e740f5f17791da8c17a336a84751f
+  patches:
+    - relax-pinnings.patch
+
+requirements:
+  build:
+    - python
+    - parcel >=0.2,<1
+    - lxml >=3,<4
+    - pyyaml >=3,<4
+    - jsonschema >=2,<3
+    - pyopenssl >=17,<18
+    - ngs-httpsclient >=0.4,<1
+    - pyasn1 >=0.2,<1
+    - zlib {{ CONDA_ZLIB }}*
+  run:
+    - python
+    - parcel >=0.2,<1
+    - lxml >=3,<4
+    - pyyaml >=3,<4
+    - jsonschema >=2,<3
+    - pyopenssl >=17,<18
+    - ngs-httpsclient >=0.4,<1
+    - pyasn1 >=0.2,<1
+    - zlib {{ CONDA_ZLIB }}*
 
 test:
   commands:
@@ -23,6 +46,3 @@ about:
   home: https://gdc.cancer.gov/access-data/gdc-data-transfer-tool
   license: Apache v2
   summary: GDC Data Transfer Tool
-
-extra:
-  notes: We use a precompiled version of GDC that needs at least Ubuntu 14.x in case of Linux.
