@@ -1,7 +1,7 @@
 #!/bin/sh
 
 cd src
-make
+make -f Makefile.nocuda
 cd -
 
-cp -v src/swift $PREFIX/bin/
+cp -v src/swift $PREFIX/bin/swiftlink
