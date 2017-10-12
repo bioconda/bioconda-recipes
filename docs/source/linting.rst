@@ -236,6 +236,52 @@ to::
 
     $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
+`*_not_pinned`
+~~~~~~~~~~~~~~
+
+Reason for failing: The recipe has dependencies that need to be pinned to
+a specific version all across bioconda.
+
+Rationale: Sometimes when a core dependency (like ``zlib``, which is used across
+many recipes) is updated it breaks backwards compatibility. In order to avoid
+this, for known-to-be-problematic dependencies we pin to a specific version
+across all recipes.
+
+How to resolve: Change the dependency line as follows. For each dependency
+failing the linting, specify a jinja-templated version by converting it to
+uppercase, prefixing it with ``CONDA_``, adding double braces, and adding a ``*``.
+
+Examples are much easier to understand:
+
+- ``zlib`` should become ``zlib {{ CONDA_ZLIB }}*``
+- ``ncurses`` should become ``ncurses {{ CONDA_NCURSES }}*``
+- ``htslib`` should become ``htslib {{ CONDA_HTSLIB }}*``
+- ``boost`` should become ``boost {{ CONDA_BOOST }}*``
+- ... and so on.
+
+Here is an example in the context of a ``meta.yaml`` file where ``zlib`` needs to be
+pinned:
+
+.. code-block:: yaml
+
+    # this will give a linting error because zlib is not pinned
+    build:
+      - zlib
+    run:
+      - zlib
+      - bedtools
+
+And here is the fixed version:
+
+.. code-block:: yaml
+
+    # fixed:
+    build:
+      - zlib {{ CONDA_ZLIB }}*
+    run:
+      - zlib {{ CONDA_ZLIB }}*
+      - bedtools
+
 
 Developer docs
 --------------

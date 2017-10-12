@@ -273,6 +273,30 @@ def setup_py_install_args(recipe, meta, df):
     ):
         return err
 
+
+def _pin(env_var, dep_name):
+    """
+    Generates a linting function that checks to make sure `dep_name` is pinned
+    to `env_var` using jinja templating.
+    """
+    def pin(recipe, meta, df):
+        # Note that we can't parse the meta.yaml using a normal YAML parser if it
+        # has jinja templating
+        for line in open(os.path.join(recipe, 'meta.yaml')):
+            line = line.strip()
+            if line.startswith('- {}'.format(dep_name)):
+                if env_var not in line: # and '{{' not in line and '}}' not in line:
+                    err = {
+                        '{}_not_pinned'.format(dep_name): True,
+                        'fix': (
+                            'pin {0} using jinja templating: {{{{ {1} }}}}'.format(dep_name, env_var))
+                    }
+                    return err
+
+    pin.__name__ = "{}_not_pinned".format(dep_name)
+    return pin
+
+
 registry = (
     in_other_channels,
 
@@ -288,7 +312,19 @@ registry = (
     uses_perl_threaded,
     uses_setuptools,
     has_windows_bat_file,
+
     # should_be_noarch,
+    #
     should_not_be_noarch,
     setup_py_install_args,
+    _pin('CONDA_ZLIB', 'zlib'),
+    _pin('CONDA_GMP', 'gmp'),
+    _pin('CONDA_BOOST', 'boost'),
+    _pin('CONDA_GSL', 'gsl'),
+    _pin('CONDA_HDF5', 'hdf5'),
+    _pin('CONDA_NCURSES', 'ncurses'),
+    _pin('CONDA_HTSLIB', 'htslib'),
+
+    # Pinning in env_matrix.yml is not consistent for bzip2.
+    # _pin('CONDA_BZIP2', 'bzip2'),
 )
