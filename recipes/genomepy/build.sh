@@ -1,6 +1,10 @@
 #!/bin/bash
 
+<<<<<<< HEAD
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt 
+=======
+$PYTHON setup.py install 
+>>>>>>> 42c7464aca1bb49b00776ae980dba1483ff739a9
 
 # Add more build steps here, if they are necessary.
 
