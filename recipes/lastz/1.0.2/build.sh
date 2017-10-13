@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 mkdir -p $PREFIX/bin
 
@@ -9,3 +9,4 @@ chmod +x  src/lastz_D
 
 mv src/lastz $PREFIX/bin
 mv src/lastz_D $PREFIX/bin
+
