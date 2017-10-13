@@ -1,0 +1,166 @@
+#!/usr/bin/env bash
+
+##############################################################################
+##
+##  sirius start up script for UN*X
+##
+##############################################################################
+
+# Attempt to set APP_HOME
+# Resolve links: $0 may be a link
+PRG="$0"
+# Need this for relative symlinks.
+while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+        PRG="$link"
+    else
+        PRG=`dirname "$PRG"`"/$link"
+    fi
+done
+SAVED="`pwd`"
+cd "`dirname \"$PRG\"`/.." >/dev/null
+APP_HOME="`pwd -P`"
+cd "$SAVED" >/dev/null
+
+APP_NAME="sirius"
+APP_BASE_NAME=`basename "$0"`
+
+export LD_LIBRARY_PATH="$GUROBI_HOME/lib:$APP_HOME/lib:$LD_LIBRARY_PATH"
+export DYLD_LIBRARY_PATH="$LD_LIBRARY_PATH"
+# Add default JVM options here. You can also use JAVA_OPTS and SIRIUS_OPTS to pass JVM options to this script.
+DEFAULT_JVM_OPTS="-Djava.library.path=\"$GUROBI_HOME/lib:$APP_HOME/lib\""
+
+# Use the maximum available, or set MAX_FD != -1 to use that value.
+MAX_FD="maximum"
+
+warn ( ) {
+    echo "$*"
+}
+
+die ( ) {
+    echo
+    echo "$*"
+    echo
+    exit 1
+}
+
+# OS specific support (must be 'true' or 'false').
+cygwin=false
+msys=false
+darwin=false
+nonstop=false
+case "`uname`" in
+  CYGWIN* )
+    cygwin=true
+    ;;
+  Darwin* )
+    darwin=true
+    ;;
+  MINGW* )
+    msys=true
+    ;;
+  NONSTOP* )
+    nonstop=true
+    ;;
+esac
+
+CLASSPATH="${GUROBI_HOME}/lib/gurobi.jar:$APP_HOME/lib/sirius_gui-3.5.1.jar:$APP_HOME/lib/trove4j-3.0.3.jar:$APP_HOME/lib/guava-18.0.jar:$APP_HOME/lib/sirius_cli-3.5.1.jar:$APP_HOME/lib/fingerblast-1.1.1.jar:$APP_HOME/lib/confidence_score-1.1.1.jar:$APP_HOME/lib/chemdb_rest-1.1.1.jar:$APP_HOME/lib/chemdb_file-1.1.1.jar:$APP_HOME/lib/chemical_db-1.1.1.jar:$APP_HOME/lib/canopus_predict-1.1.1.jar:$APP_HOME/lib/javax.json-api-1.0.jar:$APP_HOME/lib/javax.json-1.0.4.jar:$APP_HOME/lib/opencsv-2.3.jar:$APP_HOME/lib/swingx-all-1.6.5-1.jar:$APP_HOME/lib/cdk-silent-2.0.jar:$APP_HOME/lib/cdk-render-2.0.jar:$APP_HOME/lib/cdk-renderextra-2.0.jar:$APP_HOME/lib/cdk-renderawt-2.0.jar:$APP_HOME/lib/cdk-data-2.0.jar:$APP_HOME/lib/cdk-core-2.0.jar:$APP_HOME/lib/cdk-interfaces-2.0.jar:$APP_HOME/lib/cdk-inchi-2.0.jar:$APP_HOME/lib/cdk-smiles-2.0.jar:$APP_HOME/lib/cdk-io-2.0.jar:$APP_HOME/lib/cdk-ioformats-2.0.jar:$APP_HOME/lib/cdk-sdg-2.0.jar:$APP_HOME/lib/cdk-smarts-2.0.jar:$APP_HOME/lib/base64-2.3.8.jar:$APP_HOME/lib/glazedlists_java16-1.10.0.jar:$APP_HOME/lib/maven-artifact-3.5.0.jar:$APP_HOME/lib/jewelcli-0.8.9.jar:$APP_HOME/lib/sirius_api-3.5.1.jar:$APP_HOME/lib/slf4j-jdk14-1.7.21.jar:$APP_HOME/lib/gibbs_sampling-3.5.1.jar:$APP_HOME/lib/error-reporter-0.9.1.jar:$APP_HOME/lib/fingerid_kernel-1.1.1.jar:$APP_HOME/lib/classpath-explorer-1.0.jar:$APP_HOME/lib/gson-2.6.2.jar:$APP_HOME/lib/fingerprint_pvalues-1.1.1.jar:$APP_HOME/lib/chemdb_sql-1.1.1.jar:$APP_HOME/lib/chemistry_base-3.5.1.jar:$APP_HOME/lib/fingerid-1.1.1.jar:$APP_HOME/lib/fingerprinter-1.1.1.jar:$APP_HOME/lib/liblinear-1.95.jar:$APP_HOME/lib/libsvm-3.20.jar:$APP_HOME/lib/io-3.5.1.jar:$APP_HOME/lib/postgresql-9.3-1104-jdbc41.jar:$APP_HOME/lib/vecmath-1.5.2.jar:$APP_HOME/lib/cdk-standard-2.0.jar:$APP_HOME/lib/cdk-renderbasic-2.0.jar:$APP_HOME/lib/jni-inchi-0.8.jar:$APP_HOME/lib/beam-core-0.9.2.jar:$APP_HOME/lib/beam-func-0.9.2.jar:$APP_HOME/lib/cdk-valencycheck-2.0.jar:$APP_HOME/lib/cdk-atomtype-2.0.jar:$APP_HOME/lib/cdk-isomorphism-2.0.jar:$APP_HOME/lib/plexus-utils-3.0.24.jar:$APP_HOME/lib/commons-lang3-3.5.jar:$APP_HOME/lib/jjobs-core-0.9-SNAPSHOT.jar:$APP_HOME/lib/isotope_pattern_analysis-3.5.1.jar:$APP_HOME/lib/fragmentation_tree_construction-3.5.1.jar:$APP_HOME/lib/commons-logging-1.2.jar:$APP_HOME/lib/commons-codec-1.9.jar:$APP_HOME/lib/commons-email-1.4.jar:$APP_HOME/lib/oshi-core-3.4.3.jar:$APP_HOME/lib/mass_decomposer-3.5.1.jar:$APP_HOME/lib/GraphUtils-1.1.jar:$APP_HOME/lib/Recalibration-1.0.jar:$APP_HOME/lib/FTAlignmentTool-2.1.jar:$APP_HOME/lib/commons-math3-3.6.1.jar:$APP_HOME/lib/cdk-fingerprint-2.0.jar:$APP_HOME/lib/cdk-qsarmolecular-2.0.jar:$APP_HOME/lib/cdk-qsaratomic-2.0.jar:$APP_HOME/lib/json-1.0.jar:$APP_HOME/lib/fingerid_db-1.1.1.jar:$APP_HOME/lib/fingerworker-1.1.1.jar:$APP_HOME/lib/ejml-fdense-0.31.jar:$APP_HOME/lib/ejml-simple-0.31.jar:$APP_HOME/lib/jnati-deploy-0.4.jar:$APP_HOME/lib/glpk-java-1.7.0.jar:$APP_HOME/lib/gurobi-linux64-7.0.1.jar:$APP_HOME/lib/javax.mail-1.5.2.jar:$APP_HOME/lib/activation-1.1.1.jar:$APP_HOME/lib/jna-platform-4.4.0.jar:$APP_HOME/lib/threetenbp-1.3.4.jar:$APP_HOME/lib/java-utilities-1.0-SNAPSHOT.jar:$APP_HOME/lib/javatuples-1.3-SNAPSHOT.jar:$APP_HOME/lib/FastTreeAlign-2.1.jar:$APP_HOME/lib/jopt-simple-4.3.jar:$APP_HOME/lib/jama-1.0.3.jar:$APP_HOME/lib/xom-1.2.5.jar:$APP_HOME/lib/cdk-reaction-2.0.jar:$APP_HOME/lib/cdk-charges-2.0.jar:$APP_HOME/lib/cdk-qsar-2.0.jar:$APP_HOME/lib/cdk-dict-2.0.jar:$APP_HOME/lib/cdk-fragment-2.0.jar:$APP_HOME/lib/cdk-hash-2.0.jar:$APP_HOME/lib/cdk-forcefield-2.0.jar:$APP_HOME/lib/mysql-connector-java-5.1.34.jar:$APP_HOME/lib/geoip2-2.9.0.jar:$APP_HOME/lib/batik-awt-util-1.8.jar:$APP_HOME/lib/batik-svggen-1.8.jar:$APP_HOME/lib/batik-dom-1.8.jar:$APP_HOME/lib/ejml-core-0.31.jar:$APP_HOME/lib/ejml-ddense-0.31.jar:$APP_HOME/lib/jnati-core-0.4.jar:$APP_HOME/lib/log4j-1.2.14.jar:$APP_HOME/lib/jna-4.4.0.jar:$APP_HOME/lib/JavaPlot-1.0.jar:$APP_HOME/lib/xercesImpl-2.8.0.jar:$APP_HOME/lib/xalan-2.7.0.jar:$APP_HOME/lib/maxmind-db-1.2.2.jar:$APP_HOME/lib/jackson-databind-2.8.8.1.jar:$APP_HOME/lib/batik-util-1.8.jar:$APP_HOME/lib/batik-css-1.8.jar:$APP_HOME/lib/batik-ext-1.8.jar:$APP_HOME/lib/batik-xml-1.8.jar:$APP_HOME/lib/xml-apis-ext-1.3.04.jar:$APP_HOME/lib/slf4j-api-1.7.25.jar:$APP_HOME/lib/cdk-formula-2.0.jar:$APP_HOME/lib/httpclient-4.5.3.jar:$APP_HOME/lib/xml-apis-2.0.2.jar:$APP_HOME/lib/jackson-annotations-2.8.0.jar:$APP_HOME/lib/jackson-core-2.8.8.jar:$APP_HOME/lib/httpcore-4.4.6.jar"
+
+# Determine the Java command to use to start the JVM.
+if [ -n "$JAVA_HOME" ] ; then
+    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+        # IBM's JDK on AIX uses strange locations for the executables
+        JAVACMD="$JAVA_HOME/jre/sh/java"
+    else
+        JAVACMD="$JAVA_HOME/bin/java"
+    fi
+    if [ ! -x "$JAVACMD" ] ; then
+        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+else
+    JAVACMD="java"
+    which java >/dev/null 2>&1 || die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+fi
+
+# Increase the maximum file descriptors if we can.
+if [ "$cygwin" = "false" -a "$darwin" = "false" -a "$nonstop" = "false" ] ; then
+    MAX_FD_LIMIT=`ulimit -H -n`
+    if [ $? -eq 0 ] ; then
+        if [ "$MAX_FD" = "maximum" -o "$MAX_FD" = "max" ] ; then
+            MAX_FD="$MAX_FD_LIMIT"
+        fi
+        ulimit -n $MAX_FD
+        if [ $? -ne 0 ] ; then
+            warn "Could not set maximum file descriptor limit: $MAX_FD"
+        fi
+    else
+        warn "Could not query maximum file descriptor limit: $MAX_FD_LIMIT"
+    fi
+fi
+
+# For Darwin, add options to specify how the application appears in the dock
+if $darwin; then
+    GRADLE_OPTS="$GRADLE_OPTS \"-Xdock:name=$APP_NAME\" \"-Xdock:icon=$APP_HOME/media/gradle.icns\""
+fi
+
+# For Cygwin, switch paths to Windows format before running java
+if $cygwin ; then
+    APP_HOME=`cygpath --path --mixed "$APP_HOME"`
+    CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
+    JAVACMD=`cygpath --unix "$JAVACMD"`
+
+    # We build the pattern for arguments to be converted via cygpath
+    ROOTDIRSRAW=`find -L / -maxdepth 1 -mindepth 1 -type d 2>/dev/null`
+    SEP=""
+    for dir in $ROOTDIRSRAW ; do
+        ROOTDIRS="$ROOTDIRS$SEP$dir"
+        SEP="|"
+    done
+    OURCYGPATTERN="(^($ROOTDIRS))"
+    # Add a user-defined pattern to the cygpath arguments
+    if [ "$GRADLE_CYGPATTERN" != "" ] ; then
+        OURCYGPATTERN="$OURCYGPATTERN|($GRADLE_CYGPATTERN)"
+    fi
+    # Now convert the arguments - kludge to limit ourselves to /bin/sh
+    i=0
+    for arg in "$@" ; do
+        CHECK=`echo "$arg"|egrep -c "$OURCYGPATTERN" -`
+        CHECK2=`echo "$arg"|egrep -c "^-"`                                 ### Determine if an option
+
+        if [ $CHECK -ne 0 ] && [ $CHECK2 -eq 0 ] ; then                    ### Added a condition
+            eval `echo args$i`=`cygpath --path --ignore --mixed "$arg"`
+        else
+            eval `echo args$i`="\"$arg\""
+        fi
+        i=$((i+1))
+    done
+    case $i in
+        (0) set -- ;;
+        (1) set -- "$args0" ;;
+        (2) set -- "$args0" "$args1" ;;
+        (3) set -- "$args0" "$args1" "$args2" ;;
+        (4) set -- "$args0" "$args1" "$args2" "$args3" ;;
+        (5) set -- "$args0" "$args1" "$args2" "$args3" "$args4" ;;
+        (6) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" ;;
+        (7) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" ;;
+        (8) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" "$args7" ;;
+        (9) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" "$args7" "$args8" ;;
+    esac
+fi
+
+# Split up the JVM_OPTS And SIRIUS_OPTS values into an array, following the shell quoting and substitution rules
+function splitJvmOpts() {
+    JVM_OPTS=("$@")
+}
+eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $SIRIUS_OPTS
+
+
+exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" de.unijena.bioinf.sirius.cli.SiriusApplication "$@"
