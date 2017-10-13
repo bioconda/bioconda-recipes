@@ -60,6 +60,24 @@ def run_lint(
         _run(contents, expect_pass=False)
 
 
+def test_empty_build_section():
+    r = Recipes(
+        '''
+        empty_build_section:
+          meta.yaml: |
+            package:
+              name: empty_build_section
+              version: "0.1"
+            build:
+        ''', from_string=True)
+    r.write_recipes()
+    # access to contents of possibly empty build section can happen in
+    # `should_be_noarch` and `should_not_be_noarch`
+    registry = [lint_functions.should_be_noarch, lint_functions.should_not_be_noarch]
+    res = linting.lint(r.recipe_dirs.values(), config={}, df=None, registry=registry)
+    assert res is None
+
+
 def test_lint_skip_in_recipe():
 
     # should fail (note we're only linting `missing_home`)

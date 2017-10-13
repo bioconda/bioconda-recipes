@@ -5,6 +5,18 @@ import pandas
 import numpy as np
 
 
+def _get_not_none(meta, key, none_subst=dict):
+    """
+    Return meta[key] if key is in meta and its value is not None, otherwise
+    return none_subst().
+
+    Some recipes have an empty build section, so it'll be None and we can't
+    do a chained get.
+    """
+    ret = meta.get(key)
+    return ret if (ret is not None) else none_subst()
+
+
 def _subset_df(recipe, meta, df):
     """
     Helper function to get the subset of `df` for this recipe.
@@ -19,12 +31,9 @@ def _subset_df(recipe, meta, df):
     name = meta['package']['name']
     version = meta['package']['version']
 
-    # Some recipes have an empty build section, so it'll be None and we can't
-    # do a chained get.
     build_number = 0
-    build_section = meta.get('build')
-    if build_section:
-        build_number = int(build_section.get('number', 0))
+    build_section = _get_not_none(meta, 'build')
+    build_number = int(build_section.get('number', 0))
     return df[
         (df.name == name) &
         (df.version == version) &
@@ -223,7 +232,7 @@ def should_be_noarch(recipe, meta, df):
         # the python version.
         not _has_preprocessing_selector(recipe)
     ) and (
-        'noarch' not in meta.get('build', {})
+        'noarch' not in _get_not_none(meta, 'build')
     ):
         return {
             'should_be_noarch': True,
@@ -235,9 +244,9 @@ def should_not_be_noarch(recipe, meta, df):
     deps = _get_deps(meta)
     if (
         ('gcc' in deps) or
-        meta.get('build', {}).get('skip', False)
+        _get_not_none(meta, 'build').get('skip', False)
     ) and (
-        'noarch' in meta.get('build', {})
+        'noarch' in _get_not_none(meta, 'build')
     ):
         return {
             'should_not_be_noarch': True,
@@ -255,7 +264,7 @@ def setup_py_install_args(recipe, meta, df):
                 'to setup.py command'),
     }
 
-    script_line = meta.get('build', {}).get('script', '')
+    script_line = _get_not_none(meta, 'build').get('script', '')
     if (
         'setup.py install' in script_line and
         '--single-version-externally-managed' not in script_line
