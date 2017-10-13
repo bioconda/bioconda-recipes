@@ -7,4 +7,3 @@ echo "PATH is $PATH"
 # It is too big to be uploaded automatically.
 # test -d $PREFIX/annotations
 slncky --help > /dev/null 2>&1
-exit $?
