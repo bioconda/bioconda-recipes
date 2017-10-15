@@ -61,4 +61,10 @@ def anaconda_upload(package, token=None, label=None):
 
 
 def mulled_upload(image, quay_target):
-    return utils.run(['mulled-build', 'push', image, '-n', quay_target])
+    """
+    Upload the build Docker images to quay.io with 'mulled-build push'
+    """
+    cmd = ['mulled-build', 'push', image, '-n', quay_target]
+    if os.environ.get('QUAY_OAUTH_TOKEN', False):
+        cmd.extend(['--oauth-token', os.environ['QUAY_OAUTH_TOKEN']])
+    return utils.run(cmd)
