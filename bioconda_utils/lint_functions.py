@@ -288,19 +288,43 @@ def _pin(env_var, dep_name):
     Generates a linting function that checks to make sure `dep_name` is pinned
     to `env_var` using jinja templating.
     """
+    pin_pattern = re.compile(r"\{{\{{\s*{}\s*\}}\}}\*".format(env_var))
     def pin(recipe, meta, df):
         # Note that we can't parse the meta.yaml using a normal YAML parser if it
         # has jinja templating
+        in_requirements = False
+        section = None
+        not_pinned = set()
+        pinned = set()
         for line in open(os.path.join(recipe, 'meta.yaml')):
+            if line.startswith("requirements:"):
+                in_requirements = True
+            elif in_requirements and line.strip().startswith("run:"):
+                section = "run"
+            elif in_requirements and line.strip().startswith("build:"):
+                section = "build"
+            elif not line.startswith(" ") and not line.startswith("#"):
+                in_requirements = False
+                section = None
             line = line.strip()
-            if line.startswith('- {}'.format(dep_name)):
-                if env_var not in line: # and '{{' not in line and '}}' not in line:
-                    err = {
-                        '{}_not_pinned'.format(dep_name): True,
-                        'fix': (
-                            'pin {0} using jinja templating: {{{{ {1} }}}}'.format(dep_name, env_var))
-                    }
-                    return err
+            if in_requirements and line.startswith('- {}'.format(dep_name)):
+                if pin_pattern.search(line) is None:
+                    not_pinned.add(section)
+                else:
+                    pinned.add(section)
+
+        # two error cases: 1) run is not pinned
+        #                  2) build is not pinned and run is pinned
+        # Everything else is ok. E.g., if dependency is not in run, we don't
+        # need to pin build, because it is statically linked.
+        if "run" in not_pinned or ("run" in pinned and "build" in not_pinned):
+            err = {
+                '{}_not_pinned'.format(dep_name): True,
+                'fix': (
+                    'pin {0} using jinja templating: '
+                    '{{{{ {1} }}}}*'.format(dep_name, env_var))
+            }
+            return err
 
     pin.__name__ = "{}_not_pinned".format(dep_name)
     return pin
@@ -333,7 +357,5 @@ registry = (
     _pin('CONDA_HDF5', 'hdf5'),
     _pin('CONDA_NCURSES', 'ncurses'),
     _pin('CONDA_HTSLIB', 'htslib'),
-
-    # Pinning in env_matrix.yml is not consistent for bzip2.
-    # _pin('CONDA_BZIP2', 'bzip2'),
+    _pin('CONDA_BZIP2', 'bzip2'),
 )
