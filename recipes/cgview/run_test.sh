@@ -9,7 +9,7 @@ else
 fi 
 
 cgview_xml_builder > /dev/null 2>&1
-if [[ $? -eq 255 ]] && [[ $pass -eq 1 ]]
+if [[ $? -eq 127 ]] && [[ $pass -eq 1 ]]
 then
 	exit 0
 else
