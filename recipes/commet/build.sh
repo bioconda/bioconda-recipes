@@ -1,11 +1,9 @@
 #!/bin/bash
+
 mkdir -p ${PREFIX}/bin
 
 # installation
 make
-
-# change binary path
-sed -i.bak 's/\.\/bin/\.\//'g Commet.py
 
 # copy binaries and scripts
 cp Commet.py ${PREFIX}/bin

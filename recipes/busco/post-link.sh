@@ -7,4 +7,4 @@
 # stored in the share dir, replacing paths as necessary.
 SHARE=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $PREFIX/config
-generate-busco-config.py > $PREFIX/config/config.ini
+$PREFIX/bin/generate-busco-config.py > $PREFIX/config/config.ini
