@@ -5,4 +5,4 @@
 #ln -s $outdir/emapper.py $PREFIX/bin/emapper.py
 #ln -s $outdir/download_eggnog_data.py $PREFIX/bin/download_eggnog_data.py
 
-$PYTHON setup.py install
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt
