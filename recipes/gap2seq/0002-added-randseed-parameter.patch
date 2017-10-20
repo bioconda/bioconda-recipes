@@ -1,0 +1,101 @@
+From 9249a7d9d66a172191c7834f3660f8b226671c84 Mon Sep 17 00:00:00 2001
+From: Ilya Shlyakhter <ilya_shl@alum.mit.edu>
+Date: Sun, 17 Sep 2017 23:38:06 -0400
+Subject: [PATCH 2/2] added randseed parameter
+
+---
+ Gap2Seq.sh      | 8 +++++++-
+ src/Gap2Seq.cpp | 9 ++++++++-
+ 2 files changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/Gap2Seq.sh b/Gap2Seq.sh
+index 6cba7da..a88d8bf 100755
+--- a/Gap2Seq.sh
++++ b/Gap2Seq.sh
+@@ -25,6 +25,7 @@ usage() {
+   echo "-all-upper                   If specified, all filled bases are in upper case." 1>&2
+   echo "-best-only                   If specified, only paths that have optimal length are considered." 1>&2
+   echo "-unique                      If specified, only gaps with a unique path of best length are filled." 1>&2
++  echo "-randseed <int>              Random seed to use [default 0 (current time)]" 1>&2
+   exit 1
+ }
+ 
+@@ -41,6 +42,7 @@ maxmem=20
+ allupper=0
+ unique=0
+ bestonly=0
++randseed=0
+ 
+ while true; do
+   case $1 in
+@@ -96,6 +98,10 @@ while true; do
+       shift
+       unique=1 ;;
+ 
++    -randseed)
++      shift
++      randseed=$1 ;;
++
+     -*)
+       echo "$0: Unrecognized option $1" >&2
+       usage ;;
+@@ -128,7 +134,7 @@ gaps=tmp.gaps
+ contigs=tmp.contigs
+ gapfilled=tmp.fill
+ 
+-options="-scaffolds $gaps -filled $gapfilled -reads $reads -k $k -fuz $fuz -nb-cores $nb -solid $solid -max-mem $maxmem -dist-error $dist -verbose $verbose"
++options="-scaffolds $gaps -filled $gapfilled -reads $reads -k $k -fuz $fuz -nb-cores $nb -solid $solid -max-mem $maxmem -dist-error $dist -verbose $verbose -randseed $randseed"
+ 
+ if [[ $allupper = 1 ]]; then
+   options="$options -all-upper"
+diff --git a/src/Gap2Seq.cpp b/src/Gap2Seq.cpp
+index db59b82..c9c56f2 100755
+--- a/src/Gap2Seq.cpp
++++ b/src/Gap2Seq.cpp
+@@ -45,6 +45,7 @@ using namespace std;
+ #define DEFAULT_DIST_ERR "500"
+ #define DEFAULT_FUZ "10"
+ #define DEFAULT_MAX_MEMORY "20"  // Mmaximum memory usage of DP table per thread
++#define DEFAULT_RANDOM_SEED "0"
+ 
+ #define STATS_FILE "tmp.stats"
+ 
+@@ -70,6 +71,7 @@ static const char* STR_MAX_MEM = "-max-mem";
+ static const char* STR_SKIP_CONFIDENT = "-all-upper";
+ static const char* STR_BEST_ONLY = "-best-only";
+ static const char* STR_UNIQUE = "-unique";
++static const char* STR_RANDOM_SEED = "-randseed";
+ 
+ /*********************************************************************
+ Constructor for the tool.
+@@ -88,6 +90,8 @@ Gap2Seq::Gap2Seq ()  : Tool ("Gap2Seq")
+     getParser()->push_front (new OptionNoParam (STR_SKIP_CONFIDENT, "If specified, all filled bases are in upper case.",  false, false));
+     getParser()->push_front (new OptionNoParam (STR_BEST_ONLY, "If specified, only paths that have optimal length are considered.",  false, false));
+     getParser()->push_front (new OptionNoParam (STR_UNIQUE, "If specified, only gaps with a unique path of best length are filled.",  false, false));
++    getParser()->push_front (new OptionOneParam (STR_RANDOM_SEED, "Random seed (0 to use current time)",  false, DEFAULT_RANDOM_SEED));
++
+ }
+ 
+ #ifndef SINGLE_THREAD
+@@ -101,7 +105,9 @@ Main method for gap filling
+ void Gap2Seq::execute ()
+ {
+   // Initialize random number generation for choosing random paths
+-  srand(time(NULL));
++  int randseed_int = getInput()->getInt(STR_RANDOM_SEED);
++	unsigned int randseed = (randseed_int > 0) ? ((unsigned int)randseed_int) : ((unsigned int)time(NULL));
++  srand(randseed);
+ 
+   // Get the command line arguments
+   int k = getInput()->getInt(STR_KMER_LEN);
+@@ -128,6 +134,7 @@ void Gap2Seq::execute ()
+   std::cout << "Skip confident: " << skip_confident << std::endl;
+   std::cout << "Unique: " << unique_paths << std::endl;
+   std::cout << "All paths: " << all_paths << std::endl;
++  std::cout << "Random seed: " << randseed << std::endl;
+ 
+   // Create de bruijn graph
+   Graph graph;
+-- 
+2.11.1
+
