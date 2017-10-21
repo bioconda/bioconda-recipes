@@ -1,8 +1,10 @@
 #!/bin/bash
+#set -eu -o pipefail
+
 set -e
 
-gunzip $SRC_DIR/*asn2gb.gz
+gunzip -v *asn2gb.gz
 mkdir -p "$PREFIX/bin"
-cp "$SRC_DIR"/*.asn2gb "$PREFIX/bin/asn2gb"
-chmod +x "$PREFIX/bin/tbl2asn"
+cp *asn2gb $PREFIX/bin/asn2gb
+chmod +x $PREFIX/bin/asn2gb
 
