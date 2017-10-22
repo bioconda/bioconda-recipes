@@ -27,5 +27,7 @@ for script in *.awk *.sh *.py; do
   mv $script $PREFIX/lib
   ln -s ../lib/$script $PREFIX/bin
 done
+# Handle special cases.
 mv utils/outconv.py $PREFIX/lib
 ln -s ../lib/outconv.py $PREFIX/bin
+mv VERSION $PREFIX/lib
