@@ -1,11 +1,17 @@
+{% set name = "peddy" %}
+{% set version = "0.3.1" %}
+{% set sha256hash = "75afed995bb16dfa71ef261f2a4b63c147401e9882eb52d753836500fab4194e" %}
+
 package:
-  name: peddy
-  version: "0.2.9"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn: peddy-0.2.9.tar.gz
-  url: https://pypi.python.org/packages/52/da/6afa439499143ac509eb2eceb217e9d6c4665e0c3d0e5efc5c088edf34f5/peddy-0.2.9.tar.gz
-  md5: 7870c4eb11fc359c02df5b7f22b6b467
+  fn: peddy-{{ version }}.tar.gz
+  url: https://github.com/brentp/peddy/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256hash }}
+  patches:
+    - peddy-py.patch
 
 build:
   number: 0
@@ -17,29 +23,30 @@ requirements:
     - setuptools
     - networkx
     - cython
-    - cyvcf2
+    - cyvcf2 >=0.5.3
     - numpy
   run:
     - python
     - networkx
-    - cyvcf2
+    - cyvcf2 >=0.5.3
     - numpy
     - scikit-learn
     - toolshed
-    - matplotlib
+    - matplotlib >=1.5.0
+    - click
+    - coloredlogs
+    - seaborn
+    - pandas
 
 test:
   imports:
     - peddy
     - peddy.tests
     - toolshed
-  requires:
-    - nose
   commands:
-    - nosetests peddy
     - python -m peddy -h
 
 about:
   home: https://github.com/brentp/peddy
   license: MIT License
-  summary: 'pleasingly pythonic pedigree manipulation'
+  summary: 'genotype :: ped correspondence check, ancestry check, sex check. directly, quickly on VCF'
