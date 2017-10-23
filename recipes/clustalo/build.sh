@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export CPPFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+
 ./configure --prefix=$SRC_DIR
 make
 
