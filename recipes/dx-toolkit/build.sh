@@ -4,6 +4,6 @@ set -e -o pipefail
 
 export CPATH="${PREFIX}/include"
 export CPPFLAGS="-I${PREFIX}/include"
-export LDFLAGS="-L${PREFIX}/lib -Wl,-rpath,$PREFIX/lib -Wl,--no-as-needed"
+export LDFLAGS="-L${PREFIX}/lib -Wl,-rpath,$PREFIX/lib -Wl,--no-as-needed -lrt"
 
 make PREFIX="${PREFIX}" CPPFLAGS="${CPPFLAGS}" CFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}"
