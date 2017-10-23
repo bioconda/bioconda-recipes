@@ -88,6 +88,8 @@ def get_meta_value(meta, *keys, default=None):
     """
     try:
         for key in keys:
+            if not meta:
+                raise KeyError(key)
             meta = meta[key]
         return meta
     except KeyError:
