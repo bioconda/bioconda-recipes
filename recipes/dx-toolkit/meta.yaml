@@ -1,0 +1,66 @@
+{% set name = "dx-toolkit" %}
+{% set version = "0.237.0" %}
+{% set sha256 = "c47d79a9fe5a4dacd4451c88a4be1630a1d2cfc7a5750df525502c0ff9e1e1b5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name }}
+  url: https://wiki.dnanexus.com/images/files/{{ name }}-v{{ version }}-source.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  string: py{{CONDA_PY}}_boost{{CONDA_BOOST}}_bz2{{CONDA_BZIP2}}_zlib{{CONDA_ZLIB}}_{{PKG_BUILDNUM}}  # [linux]
+  skip: True # [not py27]
+
+requirements:
+  build:
+    - gcc  # [not osx]
+    - llvm  # [osx]
+    - autoconf
+    - automake
+    - flex
+    - bison
+    - python
+    - setuptools
+    - pip
+    - virtualenv
+    - cmake
+    - boost {{CONDA_BOOST}}*
+    - openssl
+    - bzip2 {{CONDA_BZIP2}}*
+    - zlib {{CONDA_ZLIB}}*
+    - curl
+    - futures
+    - requests
+
+  run:
+    - libgcc  # [linux]
+    - python
+    - boost {{CONDA_BOOST}}*
+    - openssl
+    - bzip2 {{CONDA_BZIP2}}*
+    - zlib {{CONDA_ZLIB}}*
+    - curl
+    - futures
+    - requests
+
+test:
+  commands:
+    - dx --help
+
+about:
+  home: https://wiki.dnanexus.com/Home
+  license: Apache-2.0
+  license_family: Apache
+  license_file: COPYING
+  summary: |
+    Command-line tools and SDK for accessing the DNANexus platform
+  dev_url: https://github.com/dnanexus/dx-toolkit
+
+extra:
+  recipe-maintainers:
+    - notestaff
