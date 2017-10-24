@@ -248,17 +248,24 @@ def lint(recipes, config, df, exclude=None, registry=None):
         logger.debug('lint {}'.format(recipe))
 
         # skips defined in commit message
-        skip_for_this_recipe = skip_dict[recipe]
+        skip_for_this_recipe = set(skip_dict[recipe])
 
         # skips defined in meta.yaml
         persistent = meta.get('extra', {}).get('skip-lints', [])
-        skip_for_this_recipe += persistent
+        skip_for_this_recipe.update(persistent)
 
         for func in registry:
             if func.__name__ in skip_for_this_recipe:
-                logger.info(
-                    'Commit message defines skip lint test %s for recipe %s'
-                    % (func.__name__, recipe))
+                skip_sources = [
+                    ('Commit message', skip_dict[recipe]),
+                    ('skip-lints', persistent),
+                ]
+                for source, skips in skip_sources:
+                    if func.__name__ not in skips:
+                        continue
+                    logger.info(
+                        '%s defines skip lint test %s for recipe %s'
+                        % (source, func.__name__, recipe))
                 continue
             result = func(recipe, meta, df)
             if result:
