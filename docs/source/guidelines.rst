@@ -222,11 +222,11 @@ skeleton. Note that if you set up your development environment using
 ``simulate-travis-py --bootstrap /tmp/miniconda`` then ``bioconda-utils`` is
 installed but by design is not added to your path in order to maintain
 separation from any of your existing environments. So you will need to call
-``/tmp/minoconda/bioconda-utils bioconductor-skeleton -h`` to view the help.
+``/tmp/miniconda/bin/bioconda-utils bioconductor-skeleton -h`` to view the help.
 
 For example, in the bioconda-recipes directory::
 
-    /tmp/miniconda/bioconda-utils bioconductor-skeleton recipes config.yml DESeq2
+    /tmp/miniconda/bin/bioconda-utils bioconductor-skeleton recipes config.yml DESeq2
 
 Note that the provided package name is a case-sensitive package available on
 Bioconductor. The output recipe name will have a ``bioconductor-`` prefix and
