@@ -1,0 +1,39 @@
+{% set version = '2.41-3' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+package:
+  name: r-survival
+  version: {{ version|replace("-", "_") }}
+source:
+  fn: survival_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/survival_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/survival/survival_{{ version }}.tar.gz
+  sha256: f3797c344de93abd2ba8c89568770a13524a8b2694144ae55adec46921c8961d
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  build:
+    - r-base
+    - r-matrix
+    - posix
+    - {{native}}toolchain
+    - gcc
+  run:
+    - r-base
+    - r-matrix{indent}libgcc
+test:
+  commands:
+    - $R -e "library('survival')"
+    - "\"%R%\" -e \"library('survival')\""
+about:
+  home: https://github.com/therneau/survival
+  license: LGPL (>= 2)
+  summary: Contains the core survival analysis routines, including definition of Surv objects,  Kaplan-Meier
+    and Aalen-Johansen (multi-state) curves, Cox models, and parametric accelerated
+    failure time models.
+  license_family: LGPL
