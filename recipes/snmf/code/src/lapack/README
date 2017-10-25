@@ -1,0 +1,117 @@
+#	readme for CLAPACK
+#	==================
+#	This directory contains the C version of LAPACK.
+#       Individual routines, as well as a tar file of the complete
+#       package, are available.
+#
+#       The information below describes how CLAPACK was created and how
+#       it may be used.
+#
+# ======================================================================
+#
+# The CLAPACK library was built using a Fortran to C conversion utility
+# called f2c.  The entire Fortran 77 LAPACK library is run through f2c to
+# obtain C code, and then modified to improve readability.  CLAPACK's goal
+# is to provide LAPACK for someone who does not have access to a Fortran
+# compiler.
+#
+# However, f2c is designed to create C code that is still callable from
+# Fortran, so all arguments must be passed using Fortran calling
+# conventions and data structures.  This requirement has several 
+# repercussions.  The first is that since many compilers require distinct
+# Fortran and C routine namespaces, an underscore (_) is appended to C
+# routine names which will be called from Fortran.  Therefore, f2c has added
+# this underscore to all the names in CLAPACK.  So, a call that in Fortran
+# would look like:
+#
+#    call dgetrf(...)
+#
+# becomes in C:
+#
+#    dgetrf_(...);
+#
+# Second, the user must pass ALL arguments by reference, i.e. as pointers,
+# since this is how Fortran works. This includes all scalar arguments
+# like M and N.  This restriction means that you cannot make a
+# call with numbers directly in the parameter sequence.  For example,
+# consider the LU factorization of a 5-by-5 matrix.  If the matrix to
+# be factored is called A, the Fortran call
+#
+#    call dgetrf(5, 5, A, 5, ipiv, info)
+#
+# becomes in C:
+#
+#    M = N = LDA = 5;
+#    dgetrf_(&M, &N, A, &LDA, ipiv, &info);
+#
+#
+# Some LAPACK routines take character string arguments. In all but the
+# testing and timing code, only the first character of the string is
+# signficant.  Therefore, the CLAPACK driver, computational, and auxiliary
+# routines only expect single character arguments.  For example, the Fortran
+# call
+#
+#    call dpotrf( 'Upper', n, a, lda, info )
+#
+# becomes in C:
+#
+#    char s = 'U';
+#    dpotrf_(&s, &n, a, &lda, &info);
+#
+# In a future release we hope to provide ``wrapper'' routines that will
+# remove the need for these unnecessary pointers, and automatically
+# allocate (``malloc'') any workspace that is required.
+#
+# As a final point, we must stress that there is a difference in the definition
+# of a two-dimensional array in Fortran and C.
+# A two-dimensional Fortran array declared as
+#
+#    DOUBLE PRECISION A(LDA, N)
+#
+# is a contiguous piece of LDA X N double-words of memory, stored in
+# column-major order: elements in a column are contiguous, and elements
+# within a row are separated by a stride of LDA double-words.
+#
+# In C, however, a two-dimensional array is in row-major order.  Further, the
+# rows of a two-dimensional C array need not be contiguous.  The array 
+#
+#    double A[LDA][N];
+#
+# actually has LDA pointers to rows of length N.  
+# These pointers can in principle be anywhere in memory. Passing such a
+# two-dimensional C array to a CLAPACK routine will almost surely give
+# erroneous results.
+#
+# Instead, you must use a one-dimensional C array of size LDA X N
+# double-words (or else malloc the same amount of space).
+# We recommend using the following code to get the array CLAPACK will be 
+# expecting:
+#
+#    double *A;
+#    A = malloc( LDA*N*sizeof(double) );
+#
+# Note that for best memory utilization, you would set LDA=M, the
+# actual number of rows of A.  If you now wish to operate on the
+# matrix A, remember that A is in column-major order.  As an example of
+# accessing Fortran-style arrays in C, the following code fragments show
+# how to initialize the array A declared above so that
+# all of column j has the value j:
+#
+#    double *ptr;
+#    ptr = A;
+#    for(j=0; j < N; j++)
+#    {
+#       for (i=0; i < M; i++) *ptr++ = j;
+#       ptr += (LDA - M);
+#    }
+#
+# or, you can use:
+#
+#    for(j=0; j < N; j++)
+#    {
+#       for (i=0; i < M; i++) A[j*LDA+i] = j;
+#    }
+#
+# Note that the loop over the row index i is the inner loop, since column 
+# entries are contiguous.
+
