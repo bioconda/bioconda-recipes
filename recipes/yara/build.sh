@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu -o pipefail
 
 BINARY_HOME=$PREFIX/bin
 PKG_HOME=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
