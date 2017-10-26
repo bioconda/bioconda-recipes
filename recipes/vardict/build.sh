@@ -14,3 +14,4 @@ ln -s $outdir/testsomatic.R $PREFIX/bin
 ln -s $outdir/teststrandbias.R $PREFIX/bin
 ln -s $outdir/var2vcf_valid.pl $PREFIX/bin
 ln -s $outdir/var2vcf_paired.pl $PREFIX/bin
+ln -s $outdir/vardict2mut.pl $PREFIX/bin
