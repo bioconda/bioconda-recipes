@@ -15,4 +15,3 @@ julia -e 'Pkg.add("Lumberjack")'
 rm -f "$PREFIX"/share/julia/site/lib/v*/*.ji
 rm -rf "$PREFIX"/share/julia/site/v*/METADATA
 rm -f "$PREFIX"/share/julia/site/v*/META_BRANCH
-
