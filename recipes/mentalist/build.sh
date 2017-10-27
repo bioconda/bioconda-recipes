@@ -1,7 +1,7 @@
 #!/bin/sh
 
-cp -r $SRC_DIR/src/mentalist $PREFIX/bin
 cp -r $SRC_DIR/src/*.jl $PREFIX/bin
+ln -s $PREFIX/bin/MentaLiST.jl $PREFIX/bin/mentalist
 chmod +x $PREFIX/bin/mentalist
 
 julia -e 'Pkg.init()'
