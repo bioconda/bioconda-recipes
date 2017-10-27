@@ -12,14 +12,10 @@ source:
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
   sha256: c7dc6abdefbb2ac9f16efc5217e5fd4a8b6d8de16bb83beed7685e58abc68d57
-build:
-  number: 0
-
-  # "configure: error: cannot run C compiled programs". Adding llvm does not
-  # solve the issue.
-  skip: True  # [osx]
   patches: # [osx]
     - rpath.patch  # [osx]
+build:
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
@@ -28,13 +24,11 @@ requirements:
     - bioconductor-graph
     - r-base
     - llvm  # [osx]
-    # prev version:
-    # - gcc  # [linux]
+    - gcc  # [linux]
   run:
     - bioconductor-graph
     - r-base
-    # prev version:
-    # - libgcc # [linux]
+    - libgcc # [linux]
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
