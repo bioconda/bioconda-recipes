@@ -3,7 +3,7 @@ outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 mkdir -p $PREFIX/bin
 
-cp * $outdir
+cp -r * $outdir
 # Remove test files
 rm -f $outdir/hg19_*.txt.gz
 rm -f $outdir/my.*
