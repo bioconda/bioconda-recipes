@@ -12,14 +12,10 @@ source:
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
   sha256: 1e1a19f6fcced74b58fb722e3cd719ca6bb1154b1d0d25cea1f012424d2ccedc
-build:
-  number: 0
-  # Previous version of recipe apparently did work on osx, but now getting
-  # errors like: "configure: error: cannot run C compiled programs."
-  skip: True  # [osx]
   patches: # [osx]
     - rpath.patch  # [osx]
-
+build:
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
@@ -27,14 +23,13 @@ requirements:
   build:
     - bioconductor-zlibbioc
     - r-base
-    # prev version:
-    # - libgcc  # [linux]
+    - gcc # [linux]
+    - llvm # [osx]
 
   run:
     - bioconductor-zlibbioc
     - r-base
-    # prev version:
-    # - libgcc # [linux]
+    - libgcc # [linux]
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
