@@ -1,0 +1,71 @@
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-genabel
+  version: "1.8_0"
+
+source:
+  fn: GenABEL_1.8-0.tar.gz
+  url:
+    - http://cran.r-project.org/src/contrib/GenABEL_1.8-0.tar.gz
+    - http://cran.r-project.org/src/contrib/Archive/GenABEL/GenABEL_1.8-0.tar.gz
+  md5: ea0525a99131c3e3924cdc8106694114
+
+build:
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: qvalue, genetics, haplo.stats, DatABEL (>= 0.9-0), hglm, MetABEL, PredictABEL, VariABEL, bigRR
+requirements:
+  build:
+    - r
+    - r-genabel.data
+    - r-mass
+    - posix               # [win]
+    - {{native}}toolchain # [win]
+    - gcc                 # [not win]
+
+  run:
+    - r
+    - r-genabel.data
+    - r-mass
+
+test:
+  commands:
+    - $R -e "library('GenABEL')" # [not win]
+    - "\"%R%\" -e \"library('GenABEL')\"" # [win]
+
+about:
+  home: http://www.genabel.org, http://forum.genabel.org, http://genabel.r-forge.r-project.org/
+  license: GPL (>= 2)
+  summary: 'a package for genome-wide association analysis between  quantitative or binary traits
+    and single-nucleotide polymorphisms (SNPs). '
+
+  license_family: GPL3
+
+# The original CRAN metadata for this package was:
+
+# Package: GenABEL
+# Type: Package
+# Title: genome-wide SNP association analysis
+# Version: 1.8-0
+# Date: 2013-12-09
+# Author: GenABEL project developers
+# Contact: GenABEL project developers <genabel.project at gmail.com>
+# Maintainer: Yurii Aulchenko <yurii@bionet.nsc.ru>
+# Depends: R (>= 2.15.0), methods, MASS, utils, GenABEL.data
+# Suggests: qvalue, genetics, haplo.stats, DatABEL (>= 0.9-0), hglm, MetABEL, PredictABEL, VariABEL, bigRR
+# Description: a package for genome-wide association analysis between  quantitative or binary traits and single-nucleotide polymorphisms (SNPs).
+# License: GPL (>= 2)
+# URL: http://www.genabel.org, http://forum.genabel.org, http://genabel.r-forge.r-project.org/
+# BugReports: http://r-forge.r-project.org/tracker/?group_id=505
+# Packaged: 2013-12-26 05:48:08 UTC; maksim
+# NeedsCompilation: yes
+# Repository: CRAN
+# Date/Publication: 2013-12-27 14:47:02
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
