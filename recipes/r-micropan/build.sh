@@ -1,3 +1,2 @@
-mv DESCRIPTION DESCRIPTION.old
-grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
+#!/bin/bash
 $R CMD INSTALL --build .
