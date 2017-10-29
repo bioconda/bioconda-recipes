@@ -1,10 +1,8 @@
 #!/bin/bash
 
-cd $SRC_DIR/bin
-
-binaries="\
-seqan_tcoffee \
-"
 mkdir -p $PREFIX/bin
-
-for i in $binaries; do cp $SRC_DIR/bin/$i $PREFIX/bin/$i && chmod a+x $PREFIX/bin/$i; done
+mkdir -p build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make seqan_tcoffee
+cp bin/seqan_tcoffee $PREFIX/bin
