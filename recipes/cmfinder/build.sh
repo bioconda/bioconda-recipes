@@ -1,4 +1,4 @@
 mkdir -p $PREFIX/bin
-./configure
-make -Wno-return-type
+./configure --disable-debugging
+make
 cp bin/* $PREFIX/bin/ 
