@@ -1,29 +1,39 @@
+{% set version="1.14.0" %}
+{% set name="flowCL" %}
+{% set bioc="3.5" %}
+
 package:
-  name: bioconductor-flowcl
-  version: 1.12.0
+  name: 'bioconductor-{{ name|lower}}'
+  version: '{{ version }}'
 source:
-  fn: flowCL_1.12.0.tar.gz
-  url: https://bioconductor.org/packages/release/bioc/src/contrib/flowCL_1.12.0.tar.gz
-  md5: 69d1d0781cd2736953dea840ad2e6283
+  fn: '{{ name }}_{{ version }}.tar.gz'
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: e29056cfcbc1820191545458e71645608aea9a2534df1d9c7ba20cb07728dfd1
 build:
-  skip: True # [osx]
   number: 0
+  # Skipped because dependency bioconductor-rgraphviz is skipped for osx
+  skip: True  # [osx]
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   build:
+    - bioconductor-graph
     - bioconductor-rgraphviz
-    - 'r >=3.0.2'
+    - 'r-base >=3.3'
     - r-sparql
   run:
+    - bioconductor-graph
     - bioconductor-rgraphviz
-    - 'r >=3.0.2'
+    - 'r-base >=3.3'
     - r-sparql
 test:
   commands:
-    - '$R -e "library(''flowCL'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/flowCL.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Semantic labelling of flow cytometric cell populations.'
