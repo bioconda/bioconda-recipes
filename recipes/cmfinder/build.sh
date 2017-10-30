@@ -1,4 +1,4 @@
 mkdir -p $PREFIX/bin
 ./configure
-make
+make -Wno-return-type
 cp bin/* $PREFIX/bin/ 
