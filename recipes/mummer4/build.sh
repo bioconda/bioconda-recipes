@@ -1,5 +1,5 @@
 #!/bin/bash
 
-./configure --prefix=$HOME
+./configure --prefix=$PREFIX
 make
 make install
