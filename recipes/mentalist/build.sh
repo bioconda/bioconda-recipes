@@ -1,6 +1,8 @@
 #!/bin/sh
 
 cp -r $SRC_DIR/src/*.jl $PREFIX/bin
+ln -s $PREFIX/bin/MentaLiST.jl $PREFIX/bin/mentalist
+chmod +x $PREFIX/bin/mentalist
 
 julia -e 'Pkg.init()'
 julia -e 'Pkg.add("Suppressor")'
@@ -13,5 +15,3 @@ julia -e 'Pkg.add("Lumberjack")'
 rm -f "$PREFIX"/share/julia/site/lib/v*/*.ji
 rm -rf "$PREFIX"/share/julia/site/v*/METADATA
 rm -f "$PREFIX"/share/julia/site/v*/META_BRANCH
-
-ln -s $PREFIX/bin/MentaLiST.jl $PREFIX/bin/mentalist
