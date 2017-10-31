@@ -1,4 +1,3 @@
 mkdir -p $PREFIX/bin
-./configure --disable-debugging 
-make 
+make
 cp bin/* $PREFIX/bin/ 
