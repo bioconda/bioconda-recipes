@@ -47,6 +47,7 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
     --without-caution \
     --without-dbapi \
     --without-lzo \
+    --with-hard-runpath \
     --with-runpath=$LIB_INSTALL_DIR \
     --without-debug \
     --with-strip \
