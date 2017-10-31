@@ -14,6 +14,30 @@ fi
 
 LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 
+# with/without options:
+#
+# dll: enable dynamic linking
+# mt: enable multi-threading
+# -autodep: no automatic dependency build (one time build)
+# -makefile-auto-update: no rebuild of makefile (one time build)
+# flat-makefile: use single makefile
+# -caution: disable configure script warnings
+# -dbapi: don't build database connectivity libs
+# -lzo: don't add lzo support
+# runpath: set runpath for installed $PREFIX location
+# hard-runpath: disable new dtags (disallow LD_LIBRARY_PATH override on Linux)
+# -debug: disable debug
+# strip: remove debugging symbols (size!)
+# -vdb: disable VDB/SRA toolkit
+# z: set zlib
+# bz2: set libbz2
+# boost: set boost
+# -openssl: disable openssl
+# -gcrypt: disable gcrypt (needed on OSX)
+# gnutls: set gnutls (preferred over openssl for -remote support)
+# nettle: set nettle
+# -krb5: disable kerberos (needed on OSX)
+
 ./configure \
     --with-dll \
     --with-mt \
