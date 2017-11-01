@@ -17,7 +17,7 @@ BINDIR=$PREFIX/bin
 mkdir -p $BINDIR
 
 ShortStack=$BINDIR/ShortStack
-echo "#! /bin/bash" > $ShortStack;
+echo "#!/bin/bash" > $ShortStack;
 echo 'DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )' >>  $ShortStack;
 echo '$DIR/../share/'$(basename $OUTDIR)/ShortStack '$@' >> $ShortStack;
 chmod +x $ShortStack
