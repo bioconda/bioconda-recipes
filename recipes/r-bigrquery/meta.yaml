@@ -1,0 +1,74 @@
+{% set version = '0.4.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-bigrquery
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: bigrquery_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/bigrquery_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/bigrquery/bigrquery_{{ version }}.tar.gz
+
+
+  sha256: 2168e9cdd76aa253f65ee3bf1670af7c4e19e52e3ef8c49c64a96241d12f111e
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - r-dbi
+    - r-assertthat
+    - r-httr
+    - r-jsonlite
+    - r-progress
+    - r-readr
+    - posix                # [win]
+    - {{native}}toolchain  # [win]
+    - gcc                  # [not win]
+
+  run:
+    - r-base
+    - r-dbi
+    - r-assertthat
+    - r-httr
+    - r-jsonlite
+    - r-progress
+    - r-readr
+    - {{native}}gcc-libs   # [win]
+    - libgcc               # [not win]
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('bigrquery')"  # [not win]
+    - "\"%R%\" -e \"library('bigrquery')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://github.com/rstats-db/bigrquery
+  license: GPL-3 | file LICENSE
+  summary: Easily talk to Google's 'BigQuery' database from R.
+  license_family: GPL3
+
+
+
