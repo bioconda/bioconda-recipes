@@ -10,6 +10,8 @@ is a list of the checks performed and how to fix them if they fail.
 
 Skipping a linting test
 -----------------------
+Skipping on a per-commit basis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 While only recommended in special cases, it is possible to skip specific
 linting tests on a commit by using special text in the commit message, ``[lint
 skip $FUNCTION for $RECIPE]`` where ``$FUNCTION`` is the name of the function to
@@ -34,13 +36,26 @@ tested locally like this without having to make a commit::
 
     LINT_SKIP="[lint skip uses_setuptools for recipes/mypackage]" ./simulate-travis.py
 
+Skipping persistently on a per-recipe basis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sometimes a recipe will always fail linting. For example, in rare cases the
+source for a recipe may only be available as a `git_url` or may require
+`setuptools` as a runtime dependency. In these cases, add an `extra:
+skip-lints` list to the ``meta.yaml`` indicating which lints should be
+skipped, for example::
+
+    extra:
+      skip-lints:
+        - uses_git_url
+        - uses_setuptools
+
 Linting functions
 -----------------
 
 `in_other_channels`
 ~~~~~~~~~~~~~~~~~~
 Reason for failing: The package exists in another dependent channel (currently
-conda-forge, r, and defaults). This often happens when a general-use package
+conda-forge and defaults). This often happens when a general-use package
 was added to bioconda first but was subsequently added to one of the more
 general channels. In this case we'd prefer it to be in the general channel.
 
@@ -118,6 +133,34 @@ How to resolve: Add a hash in the `source section
 <https://conda.io/docs/building/meta-yaml.html#source-section>`_. See
 :ref:`hashes` for more info.
 
+`should_be_noarch`
+~~~~~~~~~~~~~~~~~~
+Reason for failing: The package should be labelled as ``noarch``.
+
+Rationale: A ``noarch`` package should be created for pure Python packages, data packages, or
+packages that do not require compilation. With this a single ``noarch`` package can be
+used across multiple platforms and (in case of Python) Python versions, which saves
+on build time and saves on storage space on the bioconda channel.
+
+How to resolve: For pure Python packages, add ``noarch: python`` to the ``build`` section.
+**Don't do this if your Python package has a command line interface**, as these are not
+independent of the Python version!
+For other generic packages (like a data package), add ``noarch: generic`` to the ``build`` section.
+See `here <https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_ for
+more details.
+
+`should_not_be_noarch`
+~~~~~~~~~~~~~~~~~~~~~~
+Reason for failing: The package should **not** be labelled as ``noarch``.
+
+Rationale: The package defines gcc as a dependency, or it contains a build/skip
+section. In both cases, this means that there should be platform specific
+versions of this package. This also holds for skipping Python versions, because
+``noarch: python`` also implies that the resulting package will work with **all**
+Python versions. This is typically not the case if you skip a Python version.
+
+How to resolve: Remove the ``noarch`` statement.
+
 `uses_git_url`
 ~~~~~~~~~~~~~~
 Reason for failing: The source section uses a git URL.
@@ -172,6 +215,73 @@ bioconda does not support Windows, any ``*.bat`` files are unused and to reduce
 clutter we try to remove them.
 
 How to resolve: Remove the ``.bat`` file from the recipe.
+
+`setup_py_install_args`
+~~~~~~~~~~~~~~~~~~~~~~~
+Reason for failing: The recipe has ``setuptools`` as a build dependency, but
+``build.sh`` needs to use certain arguments when running ``setup.py``.
+
+Rationale: When a package depends on setuptools, we have to disable some parts
+of setuptools during installation to make it work correctly with conda. In
+particular, it seems that packages depend on other packages that specify entry
+points (e.g., ``pyfaidx``) will cause errors about how ``setuptools`` is not
+allowed to install ``certifi`` in a conda package.
+
+How to resolve: Change the line in either in ``build.sh`` or the
+``build:script`` key in ``meta.yaml`` from::
+
+    $PYTHON setup.py install
+
+to::
+
+    $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+
+`*_not_pinned`
+~~~~~~~~~~~~~~
+
+Reason for failing: The recipe has dependencies that need to be pinned to
+a specific version all across bioconda.
+
+Rationale: Sometimes when a core dependency (like ``zlib``, which is used across
+many recipes) is updated it breaks backwards compatibility. In order to avoid
+this, for known-to-be-problematic dependencies we pin to a specific version
+across all recipes.
+
+How to resolve: Change the dependency line as follows. For each dependency
+failing the linting, specify a jinja-templated version by converting it to
+uppercase, prefixing it with ``CONDA_``, adding double braces, and adding a ``*``.
+
+Examples are much easier to understand:
+
+- ``zlib`` should become ``zlib {{ CONDA_ZLIB }}*``
+- ``ncurses`` should become ``ncurses {{ CONDA_NCURSES }}*``
+- ``htslib`` should become ``htslib {{ CONDA_HTSLIB }}*``
+- ``boost`` should become ``boost {{ CONDA_BOOST }}*``
+- ... and so on.
+
+Here is an example in the context of a ``meta.yaml`` file where ``zlib`` needs to be
+pinned:
+
+.. code-block:: yaml
+
+    # this will give a linting error because zlib is not pinned
+    build:
+      - zlib
+    run:
+      - zlib
+      - bedtools
+
+And here is the fixed version:
+
+.. code-block:: yaml
+
+    # fixed:
+    build:
+      - zlib {{ CONDA_ZLIB }}*
+    run:
+      - zlib {{ CONDA_ZLIB }}*
+      - bedtools
+
 
 Developer docs
 --------------

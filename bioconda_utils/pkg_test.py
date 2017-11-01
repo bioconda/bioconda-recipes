@@ -74,11 +74,13 @@ def get_image_name(path):
     return spec
 
 
-def test_package(path,
-                 name_override=None,
-                 channels=["r", "defaults", "conda-forge"],
-                 mulled_args=""
-    ):
+def test_package(
+    path,
+    name_override=None,
+    channels=["conda-forge", "defaults"],
+    mulled_args="",
+    base_image=None
+):
     """
     Tests a built package in a minimal docker container.
 
@@ -99,6 +101,9 @@ def test_package(path,
         be split with shlex.split and passed to the mulled-build command. E.g.,
         mulled_args="--dry-run --involucro-path /opt/involucro"
 
+    base_image : None | str
+        Specify custom base image. Busybox is used in the default case.
+
     """
 
     assert path.endswith('.tar.bz2'), "Unrecognized path {0}".format(path)
@@ -106,17 +111,17 @@ def test_package(path,
 
     conda_bld_dir = os.path.abspath(os.path.dirname(os.path.dirname(path)))
 
-    sp.check_call(['conda', 'index', os.path.dirname(path)])
+    sp.check_call([utils.bin_for('conda'), 'index', os.path.dirname(path)])
 
     spec = get_image_name(path)
 
-    extra_channels = ['file:/{0}'.format(conda_bld_dir)]
+    extra_channels = ['file://{0}'.format(conda_bld_dir)]
     if channels is None:
         channels = []
     if isinstance(channels, str):
         channels = [channels]
     extra_channels.extend(channels)
-    channel_args = ['--extra-channels',','.join(extra_channels)]
+    channel_args = ['--extra-channels', ','.join(extra_channels)]
 
     tests = get_tests(path)
     logger.debug('Tests to run: %s', tests)
@@ -133,4 +138,12 @@ def test_package(path,
     cmd += channel_args
     cmd += shlex.split(mulled_args)
     logger.debug('mulled-build command: %s' % cmd)
-    return utils.run(cmd)
+
+    env = os.environ.copy()
+    if base_image is not None:
+        env["DEST_BASE_IMAGE"] = base_image
+    with tempfile.TemporaryDirectory() as d:
+        with utils.Progress():
+            p = utils.run(cmd, env=env, cwd=d)
+
+    return p

@@ -6,6 +6,8 @@ import tempfile
 import requests
 import uuid
 import contextlib
+import tarfile
+
 from bioconda_utils import utils
 from bioconda_utils import pkg_test
 from bioconda_utils import docker_utils
@@ -82,13 +84,16 @@ def single_build(request, recipes_fixture):
     env_matrix = list(utils.EnvMatrix(tmp_env_matrix()))[0]
     if request.param:
         docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
+        mulled_test = True
     else:
         docker_builder = None
+        mulled_test = False
     build.build(
         recipe=recipes_fixture.recipe_dirs['one'],
         recipe_folder='.',
         docker_builder=docker_builder,
         env=env_matrix,
+        mulled_test=mulled_test,
     )
     built_package = recipes_fixture.pkgs['one']
     yield built_package
@@ -105,12 +110,15 @@ def multi_build(request, recipes_fixture):
     """
     if request.param:
         docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
+        mulled_test = True
     else:
         docker_builder = None
+        mulled_test = False
     build.build_recipes(
         recipe_folder=recipes_fixture.basedir,
         docker_builder=docker_builder,
         config={},
+        mulled_test=mulled_test,
     )
     built_packages = recipes_fixture.pkgs
     yield built_packages
@@ -183,6 +191,7 @@ def test_single_build_only(single_build):
     assert os.path.exists(single_build)
 
 
+@pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')
 def test_single_build_with_post_test(single_build):
     pkg_test.test_package(single_build)
 
@@ -198,8 +207,9 @@ def test_docker_builder_build(recipes_fixture):
     Tests just the build_recipe method of a RecipeBuilder object.
     """
     docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
+    pkg = os.path.basename(recipes_fixture.pkgs['one'])
     docker_builder.build_recipe(
-        recipes_fixture.recipe_dirs['one'], build_args='', env={})
+        recipes_fixture.recipe_dirs['one'], build_args='', pkg=pkg, env={})
     assert os.path.exists(recipes_fixture.pkgs['one'])
 
 
@@ -233,9 +243,11 @@ def test_docker_build_image_fails():
 def test_conda_purge_cleans_up():
     def tmp_dir_exists(d):
         contents = os.listdir(d)
+        print("conda-bld/:", *contents)
         for i in contents:
-            if i.startswith('tmp') and '_' in i:
+            if i.startswith('deleteme_'):
                 return True
+        return False
 
     bld = docker_utils.get_host_conda_bld(purge=False)
     assert tmp_dir_exists(bld)
@@ -271,9 +283,9 @@ def test_get_deps():
                 - two
     """, from_string=True)
     r.write_recipes()
-    assert list(utils.get_deps(r.recipe_dirs['two'])) == ['one']
-    assert list(utils.get_deps(r.recipe_dirs['three'], build=True)) == ['one']
-    assert list(utils.get_deps(r.recipe_dirs['three'], build=False)) == ['two']
+    assert list(utils.get_deps(r.recipe_dirs['two'], config={})) == ['one']
+    assert list(utils.get_deps(r.recipe_dirs['three'], config={}, build=True)) == ['one']
+    assert list(utils.get_deps(r.recipe_dirs['three'], config={}, build=False)) == ['two']
 
 
 def test_env_matrix():
@@ -385,8 +397,11 @@ def test_filter_recipes_skip_py27_in_build_string():
             package:
               name: one
               version: "0.1"
-            build:
-              string: {{CONDA_PY}}_{{PKG_BUILDNUM}}
+            requirements:
+              build:
+                - python
+              run:
+                - python
         """, from_string=True)
     r.write_recipes()
     env_matrix = {
@@ -408,8 +423,12 @@ def test_filter_recipes_skip_py27_in_build_string():
               name: one
               version: "0.1"
             build:
-              string: {{CONDA_PY}}_{{PKG_BUILDNUM}}
               skip: True # [py27]
+            requirements:
+              build:
+                - python
+              run:
+                - python
         """, from_string=True)
     r.write_recipes()
     env_matrix = {
@@ -445,13 +464,11 @@ def test_filter_recipes_extra_in_build_string():
     r.write_recipes()
     recipe = r.recipe_dirs['one']
 
-    from conda_build.render import bldpkg_path
+    env = {
+        'CONDA_EXTRA': 'asdf',
+    }
+    pkg = os.path.basename(utils.built_package_path(recipe, env))
 
-    metadata = MetaData(recipe, api.Config(**dict(CONDA_EXTRA='asdf')))
-    print(bldpkg_path(metadata, metadata.config))
-
-    os.environ['CONDA_EXTRA'] = 'asdf'
-    pkg = utils.built_package_path(recipe)
     assert os.path.basename(pkg) == 'one-0.1-asdf_0.tar.bz2'
 
 
@@ -478,6 +495,36 @@ def test_filter_recipes_existing_package():
     }
     pkgs = utils.get_channel_packages('bioconda')
     pth = utils.built_package_path(recipes[0])
+    filtered = list(
+        utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
+    assert len(filtered) == 0
+
+
+def test_filter_recipes_custom_buildstring():
+    "use a known-to-exist package in bioconda"
+
+    # note that we need python as a run requirement in order to get the "pyXY"
+    # in the build string that matches the existing bioconda built package.
+    r = Recipes(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: pindel
+              version: "0.2.5b8"
+            build:
+              number: 2
+              skip: True  # [osx]
+              string: "htslib{{CONDA_HTSLIB}}_{{PKG_BUILDNUM}}"
+            requirements:
+              run:
+                - python
+        """, from_string=True)
+    r.write_recipes()
+    recipes = list(r.recipe_dirs.values())
+    env_matrix = {
+        'CONDA_HTSLIB': "1.4",
+    }
     filtered = list(
         utils.filter_recipes(recipes, env_matrix, channels=['bioconda']))
     assert len(filtered) == 0
@@ -629,6 +676,130 @@ def test_string_or_float_to_integer_python():
     assert f(27) == f('27') == f(2.7) == f('2.7') == 27
 
 
+def test_rendering_sandboxing(caplog):
+    r = Recipes(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: 0.1
+            extra:
+              var: {{ GITHUB_TOKEN }}
+    """, from_string=True)
+
+    r.write_recipes()
+    env = {
+        # First one is allowed, others are not
+        'CONDA_ARBITRARY_VAR': 'conda-val-here',
+        'TRAVIS_ARBITRARY_VAR': 'travis-val-here',
+        'GITHUB_TOKEN': 'asdf',
+        'BUILDKITE_TOKEN': 'asdf',
+    }
+
+    # If GITHUB_TOKEN is already set in the bash environment, then we get
+    # a message on stdout+stderr (this is the case on travis-ci).
+    #
+    # However if GITHUB_TOKEN is not already set in the bash env (e.g., when
+    # testing locally), then we get a SystemError.
+    #
+    # In both cases we're passing in the `env` dict, which does contain
+    # GITHUB_TOKEN.
+
+    if 'GITHUB_TOKEN' in os.environ:
+        res = build.build(
+            recipe=r.recipe_dirs['one'],
+            recipe_folder='.',
+            env=env,
+            mulled_test=False,
+        )
+        assert ("Undefined Jinja2 variables remain (['GITHUB_TOKEN']).  "
+                "Please enable source downloading and try again.") in caplog.text
+    else:
+        # recipe for "one" should fail because GITHUB_TOKEN is not a jinja var.
+        with pytest.raises(SystemExit) as excinfo:
+            res = build.build(
+                recipe=r.recipe_dirs['one'],
+                recipe_folder='.',
+                env=env,
+                mulled_test=False
+            )
+        assert "'GITHUB_TOKEN' is undefined" in str(excinfo.value)
+
+    r = Recipes(
+        """
+        two:
+          meta.yaml: |
+            package:
+              name: two
+              version: 0.1
+            extra:
+              var2: {{ CONDA_ARBITRARY_VAR }}
+
+    """, from_string=True)
+    r.write_recipes()
+    pkg = utils.built_package_path(r.recipe_dirs['two'], env=env)
+    ensure_missing(pkg)
+    res = build.build(
+        recipe=r.recipe_dirs['two'],
+        recipe_folder='.',
+        env=env,
+        mulled_test=False
+    )
+
+    t = tarfile.open(pkg)
+    tmp = tempfile.mkdtemp()
+    target = 'info/recipe/meta.yaml'
+    t.extract(target, path=tmp)
+    contents = yaml.load(open(os.path.join(tmp, target)).read())
+    assert contents['extra']['var2'] == 'conda-val-here', contents
+
+
+def test_sandboxed():
+    env = {
+        'CONDA_ARBITRARY_VAR': 'conda-val-here',
+        'TRAVIS_ARBITRARY_VAR': 'travis-val-here',
+        'GITHUB_TOKEN': 'asdf',
+        'BUILDKITE_TOKEN': 'asdf',
+    }
+    with utils.sandboxed_env(env):
+        print(os.environ)
+        assert os.environ['CONDA_ARBITRARY_VAR'] == 'conda-val-here'
+        assert 'TRAVIS_ARBITRARY_VAR' not in os.environ
+        assert 'GITHUB_TOKEN' not in os.environ
+        assert 'BUILDKITE_TOKEN' not in os.environ
+
+def test_env_sandboxing():
+    r = Recipes(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: 0.1
+          build.sh: |
+            #!/bin/bash
+            if [[ -z $GITHUB_TOKEN ]]
+            then
+                exit 0
+            else
+                echo "\$GITHUB_TOKEN has leaked into the build environment!"
+                exit 1
+            fi
+    """, from_string=True)
+    r.write_recipes()
+
+    build.build(
+        recipe=r.recipe_dirs['one'],
+        recipe_folder='.',
+        env={'GITHUB_TOKEN': 'token_here'},
+        mulled_test=False
+    )
+    pkg = utils.built_package_path(r.recipe_dirs['one'])
+    assert os.path.exists(pkg)
+    ensure_missing(pkg)
+
+
 def test_skip_dependencies():
     r = Recipes(
         """
@@ -703,3 +874,30 @@ def test_zero_packages():
     provided.
     """
     assert list(utils.filter_recipes([], {'CONDA_PY': [27, 35]})) == []
+
+
+@pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')
+def test_build_empty_extra_container():
+    r = Recipes(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: 0.1
+            extra:
+              container:
+                # empty
+        """, from_string=True)
+    r.write_recipes()
+
+    build_result = build.build(
+        recipe=r.recipe_dirs['one'],
+        recipe_folder='.',
+        env={},
+        mulled_test=True,
+    )
+    assert build_result.success
+    pkg = utils.built_package_path(r.recipe_dirs['one'])
+    assert os.path.exists(pkg)
+    ensure_missing(pkg)

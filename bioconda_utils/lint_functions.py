@@ -1,20 +1,39 @@
 import os
 import glob
+import re
+import pandas
+import numpy as np
+
+
+def _get_not_none(meta, key, none_subst=dict):
+    """
+    Return meta[key] if key is in meta and its value is not None, otherwise
+    return none_subst().
+
+    Some recipes have an empty build section, so it'll be None and we can't
+    do a chained get.
+    """
+    ret = meta.get(key)
+    return ret if (ret is not None) else none_subst()
 
 
 def _subset_df(recipe, meta, df):
     """
     Helper function to get the subset of `df` for this recipe.
     """
+    if df is None:
+        # TODO: this is just a mockup; is there a better way to get the set of
+        # expected columns from a channel dump?
+        return pandas.DataFrame(
+            np.nan, index=[],
+            columns=['channel', 'name', 'version', 'build_number'])
+
     name = meta['package']['name']
     version = meta['package']['version']
 
-    # Some recipes have an empty build section, so it'll be None and we can't
-    # do a chained get.
     build_number = 0
-    build_section = meta.get('build')
-    if build_section:
-        build_number = int(build_section.get('number', 0))
+    build_section = _get_not_none(meta, 'build')
+    build_number = int(build_section.get('number', 0))
     return df[
         (df.name == name) &
         (df.version == version) &
@@ -31,6 +50,9 @@ def _get_deps(meta, section=None):
         If None, returns all dependencies. Otherwise can be a string or list of
         options [build, run, test] to return section-specific dependencies.
     """
+
+    get_name = lambda dep: dep.split()[0]
+
     reqs = meta.get('requirements')
     if reqs is None:
         return []
@@ -42,8 +64,25 @@ def _get_deps(meta, section=None):
     for s in sections:
         dep = reqs.get(s, [])
         if dep:
-            deps += dep
+            deps += [get_name(d) for d in dep]
     return deps
+
+
+def _has_preprocessing_selector(recipe):
+    """
+    Does the package have any preprocessing selectors?
+
+    # [osx], # [not py27], etc.
+    """
+    # regex from
+    # https://github.com/conda/conda-build/blob/cce72a95c61b10abc908ab1acf1e07854a236a75/conda_build/metadata.py#L107
+    sel_pat = re.compile(r'(.+?)\s*(#.*)?\[([^\[\]]+)\](?(2).*)$')
+    for line in open(os.path.join(recipe, 'meta.yaml')):
+        line = line.rstrip()
+        if line.startswith('#'):
+            continue
+        if sel_pat.match(line):
+            return True
 
 
 def in_other_channels(recipe, meta, df):
@@ -182,6 +221,115 @@ def has_windows_bat_file(recipe, meta, df):
             'fix': 'remove windows .bat files'
         }
 
+
+def should_be_noarch(recipe, meta, df):
+    deps = _get_deps(meta)
+    if (
+        ('gcc' not in deps) and
+        ('python' in deps) and
+        # This will also exclude recipes with skip sections
+        # which is a good thing, because noarch also implies independence of
+        # the python version.
+        not _has_preprocessing_selector(recipe)
+    ) and (
+        'noarch' not in _get_not_none(meta, 'build')
+    ):
+        return {
+            'should_be_noarch': True,
+            'fix': 'add "build: noarch" section',
+        }
+
+
+def should_not_be_noarch(recipe, meta, df):
+    deps = _get_deps(meta)
+    if (
+        ('gcc' in deps) or
+        _get_not_none(meta, 'build').get('skip', False)
+    ) and (
+        'noarch' in _get_not_none(meta, 'build')
+    ):
+        return {
+            'should_not_be_noarch': True,
+            'fix': 'remove "build: noarch" section',
+        }
+
+
+def setup_py_install_args(recipe, meta, df):
+    if 'setuptools' not in _get_deps(meta, 'build'):
+        return
+
+    err = {
+        'needs_setuptools_args': True,
+        'fix': ('add "--single-version-externally-managed --record=record.txt" '
+                'to setup.py command'),
+    }
+
+    script_line = _get_not_none(meta, 'build').get('script', '')
+    if (
+        'setup.py install' in script_line and
+        '--single-version-externally-managed' not in script_line
+    ):
+        return err
+
+    build_sh = os.path.join(recipe, 'build.sh')
+    if not os.path.exists(build_sh):
+        return
+
+    contents = open(build_sh).read()
+    if (
+        'setup.py install' in contents and
+        '--single-version-externally-managed' not in contents
+    ):
+        return err
+
+
+def _pin(env_var, dep_name):
+    """
+    Generates a linting function that checks to make sure `dep_name` is pinned
+    to `env_var` using jinja templating.
+    """
+    pin_pattern = re.compile(r"\{{\{{\s*{}\s*\}}\}}\*".format(env_var))
+    def pin(recipe, meta, df):
+        # Note that we can't parse the meta.yaml using a normal YAML parser if it
+        # has jinja templating
+        in_requirements = False
+        section = None
+        not_pinned = set()
+        pinned = set()
+        for line in open(os.path.join(recipe, 'meta.yaml')):
+            if line.startswith("requirements:"):
+                in_requirements = True
+            elif in_requirements and line.strip().startswith("run:"):
+                section = "run"
+            elif in_requirements and line.strip().startswith("build:"):
+                section = "build"
+            elif not line.startswith(" ") and not line.startswith("#"):
+                in_requirements = False
+                section = None
+            line = line.strip()
+            if in_requirements and line.startswith('- {}'.format(dep_name)):
+                if pin_pattern.search(line) is None:
+                    not_pinned.add(section)
+                else:
+                    pinned.add(section)
+
+        # two error cases: 1) run is not pinned
+        #                  2) build is not pinned and run is pinned
+        # Everything else is ok. E.g., if dependency is not in run, we don't
+        # need to pin build, because it is statically linked.
+        if "run" in not_pinned or ("run" in pinned and "build" in not_pinned):
+            err = {
+                '{}_not_pinned'.format(dep_name): True,
+                'fix': (
+                    'pin {0} using jinja templating: '
+                    '{{{{ {1} }}}}*'.format(dep_name, env_var))
+            }
+            return err
+
+    pin.__name__ = "{}_not_pinned".format(dep_name)
+    return pin
+
+
 registry = (
     in_other_channels,
 
@@ -197,4 +345,17 @@ registry = (
     uses_perl_threaded,
     uses_setuptools,
     has_windows_bat_file,
+
+    # should_be_noarch,
+    #
+    should_not_be_noarch,
+    setup_py_install_args,
+    _pin('CONDA_ZLIB', 'zlib'),
+    _pin('CONDA_GMP', 'gmp'),
+    _pin('CONDA_BOOST', 'boost'),
+    _pin('CONDA_GSL', 'gsl'),
+    _pin('CONDA_HDF5', 'hdf5'),
+    _pin('CONDA_NCURSES', 'ncurses'),
+    _pin('CONDA_HTSLIB', 'htslib'),
+    _pin('CONDA_BZIP2', 'bzip2'),
 )

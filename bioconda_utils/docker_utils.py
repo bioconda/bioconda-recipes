@@ -50,10 +50,10 @@ import subprocess as sp
 import tempfile
 import pwd
 import grp
-import argparse
-from io import BytesIO
 from textwrap import dedent
 import pkg_resources
+import re
+from distutils.version import LooseVersion
 
 from . import utils
 
@@ -62,8 +62,8 @@ logger = logging.getLogger(__name__)
 
 
 # If conda_build_version is not provided, this is what is used by default.
-DEFAULT_CONDA_BUILD_VERSION = '2.0.7'
-DEFAULT_CONDA_VERSION = '4.2.15'
+DEFAULT_CONDA_BUILD_VERSION = '2.1.16'
+DEFAULT_CONDA_VERSION = '4.3.21'
 
 
 # ----------------------------------------------------------------------------
@@ -84,23 +84,28 @@ BUILD_SCRIPT_TEMPLATE = \
 #!/bin/bash
 set -e
 
-conda install conda-build={self.conda_build_version} conda={self.conda_version}
+conda install conda-build={self.conda_build_version} conda={self.conda_version}  > /dev/null 2>&1
 
 # Add the host's mounted conda-bld dir so that we can use its contents as
 # dependencies for building this recipe.
 #
 # Note that if the directory didn't exist on the host, then the staging area
 # will exist in the container but will be empty.  Channels expect at least
-# a linux-64 directory within that directory, so we make sure it exists before
-# adding the channel.
+# a linux-64 and noarch directory within that directory, so we make sure it
+# exists before adding the channel.
 mkdir -p {self.container_staging}/linux-64
-conda config --add channels file://{self.container_staging}
+mkdir -p {self.container_staging}/noarch
+conda config --add channels file://{self.container_staging}  > /dev/null 2>&1
 
-# The actual building....
-conda build {self.conda_build_args} {self.container_recipe}
+# The actual building...
+# we explicitly point to the meta.yaml, in order to keep
+# conda-build from building all subdirectories
+conda build {self.conda_build_args} {self.container_recipe}/meta.yaml 2>&1
 
 # Identify the output package
-OUTPUT=$(conda build {self.container_recipe} --output)
+OUTPUT_DIR=$(dirname $(conda build {self.container_recipe}/meta.yaml --output 2> /dev/null))
+OUTPUT=$OUTPUT_DIR/{pkg}
+
 
 # Some args to conda-build make it run and exit 0 without creating a package
 # (e.g., -h or --skip-existing), so check to see if there's anything to copy
@@ -108,15 +113,16 @@ OUTPUT=$(conda build {self.container_recipe} --output)
 if [[ -e $OUTPUT ]]; then
 
     # Copy over the recipe from where the container built it to the mounted
-    # conda-bld dir from the host. Since docker containers are Linux, we assume
-    # here that we want the linux-64 arch.
-    cp $OUTPUT {self.container_staging}/linux-64
+    # conda-bld dir from the host. The arch will be either linux-64 or noarch.
+    cp $OUTPUT {self.container_staging}/{arch}
+
+    conda index {self.container_staging}/{arch} > /dev/null 2>&1
 
     # Ensure permissions are correct on the host.
     HOST_USER={self.user_info[uid]}
-    chown $HOST_USER:$HOST_USER {self.container_staging}/linux-64/$(basename $OUTPUT)
+    chown $HOST_USER:$HOST_USER {self.container_staging}/{arch}/$(basename $OUTPUT)
+    chown $HOST_USER:$HOST_USER {self.container_staging}/{arch}/{{repodata.json,repodata.json.bz2,.index.json}}
 
-    conda index {self.container_staging}/linux-64
 fi
 """
 
@@ -131,13 +137,15 @@ fi
 #
 # It assumes that there will be a requirements.txt in the build directory
 # (the default is to use bioconda_utils-requirements.txt).
+
+
 DOCKERFILE_TEMPLATE = \
 """
 FROM {self.image}
 COPY requirements.txt /tmp/requirements.txt
-RUN /opt/conda/bin/conda config --add channels conda-forge
+{self.proxies}
 RUN /opt/conda/bin/conda config --add channels defaults
-RUN /opt/conda/bin/conda config --add channels r
+RUN /opt/conda/bin/conda config --add channels conda-forge
 RUN /opt/conda/bin/conda config --add channels bioconda
 RUN /opt/conda/bin/conda install --file /tmp/requirements.txt
 """
@@ -207,6 +215,7 @@ class RecipeBuilder(object):
         conda_build_version=DEFAULT_CONDA_BUILD_VERSION,
         conda_version=DEFAULT_CONDA_VERSION,
         pkg_dir=None,
+        keep_image=False,
     ):
         """
         Class to handle building a custom docker container that can be used for
@@ -275,6 +284,11 @@ class RecipeBuilder(object):
 
             In all cases, `pkg_dir` will be mounted to `container_staging` in
             the container.
+
+        keep_image : bool
+            By default, the built docker image will be removed when done,
+            freeing up storage space.  Set keep_image=True to disable this
+            behavior.
         """
         self.image = image
         self.tag = tag
@@ -284,7 +298,45 @@ class RecipeBuilder(object):
         self.dockerfile_template = dockerfile_template
         self.conda_build_version = conda_build_version
         self.conda_version = conda_version
+        self.keep_image = keep_image
 
+        # To address issue #5027:
+        #
+        # https_proxy is the standard name, but conda looks for HTTPS_PROXY in all
+        # caps. So we look for both in the current environment. If both exist
+        # then ensure they have the same value; otherwise use whichever exists.
+        #
+        # Note that the proxy needs to be in the image when building it, and
+        # that the proxies need to be set before the conda install command. The
+        # position of `{self.proxies}` in `dockerfile_template` should reflect
+        # this.
+        _proxies = []
+        http_proxy = set([
+            os.environ.get('http_proxy', None),
+            os.environ.get('HTTP_PROXY', None)
+        ]).difference([None])
+
+        https_proxy = set([
+            os.environ.get('https_proxy', None),
+            os.environ.get('HTTPS_PROXY', None)
+        ]).difference([None])
+
+        if len(http_proxy) == 1:
+            proxy = list(http_proxy)[0]
+            _proxies.append('ENV http_proxy {0}'.format(proxy))
+            _proxies.append('ENV HTTP_PROXY {0}'.format(proxy))
+        elif len(http_proxy) > 1:
+            raise ValueError("http_proxy and HTTP_PROXY have different values")
+
+        if len(https_proxy) == 1:
+            proxy = list(https_proxy)[0]
+            _proxies.append('ENV https_proxy {0}'.format(proxy))
+            _proxies.append('ENV HTTPS_PROXY {0}'.format(proxy))
+        elif len(https_proxy) > 1:
+            raise ValueError("https_proxy and HTTPS_PROXY have different values")
+        self.proxies = '\n'.join(_proxies)
+
+        # find and store user info
         uid = os.getuid()
         usr = pwd.getpwuid(uid)
         self.user_info = dict(
@@ -292,9 +344,9 @@ class RecipeBuilder(object):
             gid=usr.pw_gid,
             groupname=grp.getgrgid(usr.pw_gid).gr_name,
             username=usr.pw_name)
+
         self.container_recipe = container_recipe
         self.container_staging = container_staging
-
         self.host_conda_bld = get_host_conda_bld()
 
         if use_host_conda_bld:
@@ -311,7 +363,8 @@ class RecipeBuilder(object):
         self._build_image()
 
     def __del__(self):
-        self.cleanup()
+        if not self.keep_image:
+            self.cleanup()
 
     def _pull_image(self):
         """
@@ -346,11 +399,31 @@ class RecipeBuilder(object):
 
         logger.debug('Dockerfile:\n' + open(fout.name).read())
 
-        cmd = [
-            'docker', 'build',
-            '-t', self.tag,
-            build_dir
-        ]
+        # Check if the installed version of docker supports the --network flag
+        # (requires version >= 1.13.0)
+        # Parse output of `docker --version` since the format of the
+        #  `docker version` command (note the missing dashes) is not consistent
+        # between different docker versions. The --version string is the same
+        # for docker 1.6.2 and 1.12.6
+        s = sp.check_output(["docker", "--version"]).decode()
+        p = re.compile("\d+\.\d+\.\d+")  # three groups of at least on digit separated by dots
+        version_string = re.search(p, s).group(0)
+        if LooseVersion(version_string) >= LooseVersion("1.13.0"):
+            cmd = [
+                    'docker', 'build',
+                    # xref #5027
+                    '--network', 'host',
+                    '-t', self.tag,
+                    build_dir
+            ]
+        else:
+            # Network flag was added in 1.13.0, do not add it for lower versions. xref #5387
+            cmd = [
+                    'docker', 'build',
+                    '-t', self.tag,
+                    build_dir
+            ]
+
         try:
             with utils.Progress():
                 p = utils.run(cmd)
@@ -364,7 +437,7 @@ class RecipeBuilder(object):
         shutil.rmtree(build_dir)
         return p
 
-    def build_recipe(self, recipe_dir, build_args, env):
+    def build_recipe(self, recipe_dir, build_args, env, pkg, noarch=False):
         """
         Build a single recipe.
 
@@ -381,6 +454,11 @@ class RecipeBuilder(object):
         env : dict
             Environmental variables
 
+        pkg : filename of the desired package (e.g. obtained by utils.built_package_path)
+
+        noarch: bool
+            Has to be set to true if this is a noarch build
+
         Note that the binds are set up automatically to match the expectations
         of the build script, and will use the currently-configured
         self.container_staging and self.container_recipe.
@@ -395,10 +473,10 @@ class RecipeBuilder(object):
         # Write build script to tempfile
         build_dir = os.path.realpath(tempfile.mkdtemp())
         with open(os.path.join(build_dir, 'build_script.bash'), 'w') as fout:
-            fout.write(self.build_script_template.format(self=self))
+            fout.write(self.build_script_template.format(
+                self=self, pkg=pkg, arch='noarch' if noarch else 'linux-64'))
         build_script = fout.name
         logger.debug('DOCKER: Container build script: \n%s', open(fout.name).read())
-
 
         # Build the args for env vars. Note can also write these to tempfile
         # and use --env-file arg, but using -e seems clearer in debug output.

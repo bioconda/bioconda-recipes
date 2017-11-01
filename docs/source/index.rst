@@ -11,11 +11,17 @@ bioinformatics software. Bioconda consists of:
 
 - a `repository of recipes <https://github.com/bioconda/bioconda-recipes>`_ hosted on GitHub
 - a `build system <https://github.com/bioconda/bioconda-utils>`_ that turns these recipes into conda packages
-- a `repository of >1500 bioinformatics packages
+- a `repository of >2700 bioinformatics packages
   <https://anaconda.org/bioconda/>`_ ready to use with ``conda install``
-- Over 130 contributors that add, modify, update and maintain the recipes
+- Over 250 contributors that add, modify, update and maintain the recipes
+
+Each package added to Bioconda also has a corresponding Docker  `BioContainer
+<https://biocontainers.pro>`_ automatically created and uploaded to Quay.io.
 
 **Browse packages in the bioconda channel:** :ref:`recipes`
+
+**Browse BioContainer packages:** `Biocontainers Registry UI
+<https://biocontainers.pro/registry/#/>`_
 
 The conda package manager has recently made installing software a vastly more
 streamlined process. Conda is a combination of other package managers you may
@@ -28,8 +34,6 @@ The main `defaults` channel has a large number of common packages. Users can
 add additional channels from which to install software packages not available
 in the defaults channel. Bioconda is one such channel specializing in
 bioinformatics software.
-
-
 
 
 .. _using-bioconda:
@@ -64,14 +68,16 @@ order** so that the priority is set correctly (that is, bioconda is highest
 priority).
 
 The `conda-forge` channel contains many general-purpose packages not already
-found in the `defaults` channel. The `r` channel contains common R packages
-used as dependencies for bioconda packages.
+found in the `defaults` channel. The `r` channel is only included due to
+backward compatibility.  It is not mandatory, but without the `r` channel
+packages compiled against R 3.3.1 might not work.
+
 
 ::
 
-    conda config --add channels conda-forge
+    (conda config --add channels r)
     conda config --add channels defaults
-    conda config --add channels r
+    conda config --add channels conda-forge
     conda config --add channels bioconda
 
 
@@ -123,7 +129,7 @@ Core
 
 Others
 ------
-Bioconda has over 120 contributors, see `here <https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
+Bioconda has over 250 contributors, see `here <https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
 
 ----
 
@@ -149,3 +155,4 @@ Contents:
     contributing
     linting
     faqs
+    changes

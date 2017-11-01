@@ -7,7 +7,6 @@ from . import utils
 from . import docker_utils
 from . import pkg_test
 from . import upload
-from conda_build import api
 
 logger = logging.getLogger(__name__)
 
@@ -15,16 +14,27 @@ logger = logging.getLogger(__name__)
 BuildResult = namedtuple("BuildResult", ["success", "mulled_image"])
 
 
-def build(recipe,
-          recipe_folder,
-          env,
-          testonly=False,
-          mulled_test=True,
-          force=False,
-          channels=None,
-          docker_builder=None,
-          disable_travis_env_vars=False,
-    ):
+def purge():
+    utils.run(["conda", "build", "purge"])
+
+    free = utils.get_free_space()
+    if free < 10:
+        logger.info("CLEANING UP PACKAGE CACHE (free space: %iMB).", free)
+        utils.run(["conda", "clean" "--all"])
+        logger.info("CLEANED UP PACKAGE CACHE (free space: %iMB).",
+                    utils.get_free_space())
+
+
+def build(
+    recipe,
+    recipe_folder,
+    env,
+    testonly=False,
+    mulled_test=True,
+    force=False,
+    channels=None,
+    docker_builder=None,
+):
     """
     Build a single recipe for a single env
 
@@ -56,20 +66,26 @@ def build(recipe,
     docker_builder : docker_utils.RecipeBuilder object
         Use this docker builder to build the recipe, copying over the built
         recipe to the host's conda-bld directory.
-
-    disable_travis_env_vars : bool
-        By default, any env vars starting with TRAVIS are sent to the Docker
-        container. Use this to disable that behavior.
     """
-    env = dict(env)
+
+    # Clean provided env and exisiting os.environ to only allow whitelisted env
+    # vars
+    _docker = docker_builder is not None
+    _env = {}
+    _env.update({k: str(v) for k, v in os.environ.items() if utils.allowed_env_var(k, _docker)})
+    _env.update({k: str(v) for k, v in dict(env).items() if utils.allowed_env_var(k, _docker)})
+
     logger.info(
         "BUILD START %s, env: %s",
-        recipe, ';'.join(['='.join(map(str, i)) for i in sorted(env.items())])
+        recipe, ';'.join(['='.join(map(str, i)) for i in sorted(_env.items())])
     )
+
     # --no-build-id is needed for some very long package names that triggers the 89 character limits
     # this option can be removed as soon as all packages are rebuild with the 255 character limit
     # Moreover, --no-build-id will block us from using parallel builds in conda-build 2.x
-    build_args = ["--no-build-id"]
+    # build_args = ["--no-build-id"]
+
+    build_args = []
     if testonly:
         build_args.append("--test")
     else:
@@ -83,38 +99,39 @@ def build(recipe,
     logger.debug('build_args: %s', build_args)
     logger.debug('channel_args: %s', channel_args)
 
-    CONDA_BUILD_CMD = ['conda', 'build']
+    CONDA_BUILD_CMD = [utils.bin_for('conda'), 'build']
+
+    pkg_path = utils.built_package_path(recipe, _env)
+    meta = utils.load_meta(recipe, _env)
 
     try:
         # Note we're not sending the contents of os.environ here. But we do
         # want to add TRAVIS* vars if that behavior is not disabled.
         if docker_builder is not None:
 
-            # see https://github.com/bioconda/bioconda-recipes/issues/3271
-            docker_env = env.copy()
-            if not disable_travis_env_vars:
-                for k, v in os.environ.items():
-                    if k.startswith('TRAVIS'):
-                        docker_env[k] = v
-
             response = docker_builder.build_recipe(
                 recipe_dir=os.path.abspath(recipe),
                 build_args=' '.join(channel_args + build_args),
-                env=docker_env
+                pkg=os.path.basename(pkg_path),
+                env=_env,
+                noarch=bool(utils.get_meta_value(meta, 'build', 'noarch'))
             )
 
-            pkg = utils.built_package_path(recipe, env)
-            if not os.path.exists(pkg):
+            if not os.path.exists(pkg_path):
                 logger.error(
                     "BUILD FAILED: the built package %s "
-                    "cannot be found", pkg)
+                    "cannot be found", pkg_path)
                 return BuildResult(False, None)
             build_success = True
         else:
-            # Since we're calling out to shell and we want to send at least
-            # some env vars send them all via the temporarily-reset os.environ.
-            with utils.temp_env(env):
-                cmd = CONDA_BUILD_CMD + build_args + channel_args + [recipe]
+
+            # Temporarily reset os.environ to avoid leaking env vars to
+            # conda-build, and explicitly provide `env` to `run()`
+            # we explicitly point to the meta.yaml, in order to keep
+            # conda-build from building all subdirectories
+            with utils.sandboxed_env(_env):
+                cmd = CONDA_BUILD_CMD + build_args + channel_args + \
+                      [os.path.join(recipe, 'meta.yaml')]
                 logger.debug('command: %s', cmd)
                 with utils.Progress():
                     p = utils.run(cmd, env=os.environ)
@@ -123,7 +140,7 @@ def build(recipe,
 
         logger.info(
             'BUILD SUCCESS %s, %s',
-            utils.built_package_path(recipe, env), utils.envstr(env)
+            utils.built_package_path(recipe, _env), utils.envstr(_env)
         )
 
     except (docker_utils.DockerCalledProcessError, sp.CalledProcessError) as e:
@@ -134,26 +151,23 @@ def build(recipe,
     if not mulled_test:
         return BuildResult(True, None)
 
-    pkg_path = utils.built_package_path(recipe, env)
-
     logger.info(
         'TEST START via mulled-build %s, %s',
-        recipe, utils.envstr(env))
+        recipe, utils.envstr(_env))
 
-    res = pkg_test.test_package(pkg_path)
+    use_base_image = utils.get_meta_value(
+        meta,
+        'extra', 'container', 'extended-base')
+    base_image = 'bioconda/extended-base-image' if use_base_image else None
 
-    # TODO remove the second clause once new galaxy-lib has been released.
-    if (res.returncode == 0) and ('Unexpected exit code' not in res.stdout):
-        logger.info("TEST SUCCESS %s, %s", recipe, utils.envstr(env))
+    try:
+        res = pkg_test.test_package(pkg_path, base_image=base_image)
 
-        mulled_image = None
-        if mulled_test:
-            mulled_image = pkg_test.get_image_name(pkg_path)
-
+        logger.info("TEST SUCCESS %s, %s", recipe, utils.envstr(_env))
+        mulled_image = pkg_test.get_image_name(pkg_path)
         return BuildResult(True, mulled_image)
-    else:
-        logger.error('TEST FAILED: %s, %s', recipe, utils.envstr(env))
-        logger.error('STDOUT+STDERR:\n%s', res.stdout)
+    except sp.CalledProcessError as e:
+        logger.error('TEST FAILED: %s, %s', recipe, utils.envstr(_env))
         return BuildResult(False, None)
 
 
@@ -169,8 +183,6 @@ def build_recipes(
     anaconda_upload=False,
     mulled_upload_target=None,
     check_channels=None,
-    quick=False,
-    disable_travis_env_vars=False,
 ):
     """
     Build one or many bioconda packages.
@@ -219,13 +231,6 @@ def build_recipes(
         `config['channels'][0]`). If this list is empty, then do not check any
         channels.
 
-    quick : bool
-        Speed up recipe filtering by only checking those that are reasonably
-        new.
-
-    disable_travis_env_vars : bool
-        By default, any env vars starting with TRAVIS are sent to the Docker
-        container. Use this to disable that behavior.
     """
     orig_config = config
     config = utils.load_config(config)
@@ -255,32 +260,15 @@ def build_recipes(
         return True
 
     logger.debug('recipes: %s', recipes)
-    if quick:
-        if not isinstance(orig_config, str):
-            raise ValueError("Need a config filename (and not a dict) for "
-                             "quick filtering since we need to check that "
-                             "file in the master branch")
-        unblacklisted = [
-            os.path.join(recipe_folder, i)
-            for i in utils.newly_unblacklisted(orig_config, recipe_folder)
-        ]
-        logger.debug('Unblacklisted: %s', unblacklisted)
-        changed = [
-            os.path.join(recipe_folder, i) for i in
-            utils.changed_since_master(recipe_folder)
-        ]
-        logger.debug('Changed: %s', changed)
-        recipes = set(unblacklisted + changed).intersection(recipes)
-        logger.debug('Quick-filtered recipes: %s', recipes)
 
     logger.info('Filtering recipes')
     recipe_targets = dict(
         utils.filter_recipes(
             recipes, env_matrix, check_channels, force=force)
     )
-    recipes = list(recipe_targets.keys())
+    recipes = set(list(recipe_targets.keys()))
 
-    dag, name2recipes = utils.get_dag(recipes, blacklist=blacklist)
+    dag, name2recipes = utils.get_dag(recipes, config=orig_config, blacklist=blacklist)
     recipe2name = {}
     for k, v in name2recipes.items():
         for i in v:
@@ -378,6 +366,9 @@ def build_recipes(
                         failed_uploads.append(target.pkg)
                 if mulled_upload_target:
                     upload.mulled_upload(res.mulled_image, mulled_upload_target)
+
+            # remove traces of the build
+            purge()
 
         if recipe_success:
             built_recipes.append(recipe)
