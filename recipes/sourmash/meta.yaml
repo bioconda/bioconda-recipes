@@ -1,0 +1,59 @@
+{% set name = "sourmash" %}
+{% set version = "2.0.0a1" %}
+{% set hash = "b63aec73c38fb7a4ae225b05ae0a091027656f3a431c3947dd2d63afe1754d7b" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name|lower }}-{{ version }}.tar.gz
+  url: https://github.com/dib-lab/sourmash/archive/45c8f5ffbcca676dde1c7b5ba3f14276d5ba8c55.tar.gz
+  sha256: {{ hash }}
+  patches:
+    - sourmash.patch
+
+build:
+  entry_points:
+    - sourmash = sourmash_lib.__main__:main
+  number: 3
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - gcc  # [not osx]
+    - llvm  # [osx]
+    - cython >=0.25.2
+    - screed >=0.9
+    - pyyaml >=3.11
+    - ijson
+    - numpy
+    - matplotlib
+    - scipy
+    - khmer >=2.1
+
+  run:
+    - python
+    - libgcc  # [not osx]
+    - cython >=0.25.2
+    - screed >=0.9
+    - pyyaml >=3.11
+    - ijson
+    - numpy
+    - matplotlib
+    - scipy
+    - khmer >=2.1
+
+test:
+  imports:
+    - sourmash_lib
+
+  commands:
+    - sourmash --help
+
+about:
+  home: https://github.com/dib-lab/sourmash
+  license: BSD License
+  summary: 'Compute and compare MinHash signatures for DNA data sets.'
+  license_family: BSD

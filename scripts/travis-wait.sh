@@ -8,7 +8,7 @@ set -euo pipefail
 $@ & # send the long living command to background!
 
 minutes=0
-limit=50
+limit=119
 while kill -0 $! >/dev/null 2>&1; do
   echo -n -e " \b" # never leave evidences!
 

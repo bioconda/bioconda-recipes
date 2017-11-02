@@ -1,33 +1,40 @@
-about:
-    home: 'http://last.cbrc.jp/'
-    license: GPLv3
-    summary: "LAST finds similar regions between sequences, and aligns them. It is designed for comparing large datasets to each other (e.g. vertebrate genomes and/or large numbers of DNA reads)."
+{% set version = "876" %}
+
 package:
   name: last
-  version: '719'
+  version: {{ version }}
+
 source:
-  fn: last-719.zip
-  md5: 2fd486b6cf8738ba3121fc3a0256487d
-  url: http://last.cbrc.jp/last-719.zip
-  patches:
-    - maf-convert.23patch
+  fn: last-{{ version }}.zip
+  md5: 5b4998aed0b8dbcf7dd8df03ebcb02bc
+  url: http://last.cbrc.jp/last-{{ version }}.zip
 
 build:
-  number: 2
-  skip: False
+  number: 0
 
 requirements:
   build:
     - python
-    - gcc
+    - gcc  # [not osx]
+    - llvm  # [osx]
   run:
     - python
-    - libgcc
+    - libgcc  # [not osx]
+    - future
+
 test:
-    commands:
-        - "lastal -V &> /dev/null"
-        - "lastdb -V &> /dev/null"
-        - "last-split -V &> /dev/null"
-        - "last-pair-probs -V &> /dev/null"
-        - "last-merge-batches -V &> /dev/null"
-        - "maf-convert -h &> /dev/null"
+  commands:
+    - "lastal -V"
+    - "lastdb -V"
+    - "lastal8 -h"
+    - "lastdb8 -h"
+    - "last-split -V"
+    - "last-pair-probs -V"
+    - "last-merge-batches -V"
+    - "maf-convert -h"
+
+about:
+    home: 'http://last.cbrc.jp/'
+    license: GPLv3
+    summary: "LAST finds similar regions between sequences, and aligns them. It is designed for comparing large datasets to each other (e.g. vertebrate genomes and/or large numbers of DNA reads)."
+    

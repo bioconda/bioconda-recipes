@@ -1,0 +1,44 @@
+{% set name = "abyss" %}
+{% set version = "2.0.1" %}
+
+package:
+  name: {{ name|lower }}-k128
+  version: {{ version }}
+
+build:
+  skip: True # [osx]
+  number: 0
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+
+source:
+  fn: {{ name|lower }}-{{ version }}.tar.gz
+  url: http://www.bcgsc.ca/platform/bioinfo/software/{{ name|lower }}/releases/{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
+  md5: 596c56a476b26a294b46e6e36890c136
+
+requirements:
+  build:
+  - gcc # [not osx]
+  - llvm # [osx]
+  - boost {{CONDA_BOOST}}*
+  - google-sparsehash
+  - sqlite
+  - openmpi 
+
+  run:
+  - libgcc # [not osx]
+  - boost {{CONDA_BOOST}}*
+  - bwa
+  - pandoc
+  - sqlite
+  - openmpi
+
+test:
+  commands:
+    - ABYSS --version
+
+about:
+  home: http://www.bcgsc.ca/platform/bioinfo/software/abyss
+  license: GPL3
+  license_file: LICENSE
+  summary: Assembly By Short Sequences - a de novo, parallel, paired-end sequence assembler
+

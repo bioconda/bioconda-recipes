@@ -12,6 +12,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
+make clean
 make
 
 mkdir -p $PREFIX/bin
@@ -27,5 +28,5 @@ cd perl-build
 
 rm lib/setup.sh
 perl ./Build.PL
-./Build manifest
-./Build install --installdirs site
+perl ./Build manifest
+perl ./Build install --installdirs site
