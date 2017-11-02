@@ -6,7 +6,7 @@ Guidelines for ``bioconda`` recipes
 bioconda recipe checklist
 -------------------------
 - Source URL is stable (:ref:`details <stable-url>`)
-- md5 or sha256 hash included for source download (:ref:`details <hashes>`)
+- sha256 or md5 hash included for source download (:ref:`details <hashes>`)
 - Appropriate build number (:ref:`details <buildnum>`)
 - `.bat` file for Windows removed (:ref:`details <bat-files>`)
 - Remove unnecessary comments (:ref:`details <comments-in-meta>`)
@@ -37,12 +37,19 @@ TODO: additional info on the various R and bioconductor URLs
 
 Hashes
 ~~~~~~
-Use `md5sum` (Linux) or `md5` (OSX) on a file to compute its md5 hash, and copy
-this into the recipe. A quick way of doing this is:
+We support either sha256 or md5 checksums to verify the integrity of the source
+package. If a checksum is provided alongside the source package, then use that.
+Otherwise we prefer sha256 over md5.
+
+Use ``shasum -a 256 ...`` (or ``sha256sum``  or ``openssl sha256`` etc) on a
+file to compute its sha256 hash, and copy this into the recipe, for example:
 
 .. code-block:: bash
 
-    wget -O- $URL | md5sum
+    wget -O- $URL | shasum -a 256
+
+Likewise use `md5sum` (Linux) or `md5` (OSX) on a file to compute its md5 hash,
+and copy this into the recipe.
 
 .. _buildnum:
 
