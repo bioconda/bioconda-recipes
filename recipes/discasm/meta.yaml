@@ -1,8 +1,8 @@
 {% set version = "0.1.2" %}
 
 package:
-    name: discasm
-    version: {{ version }}
+  name: discasm
+  version: {{ version }}
 
 source:
   fn: DISCASM-v{{ version }}.tar.gz
@@ -10,29 +10,34 @@ source:
   md5: 571b2265018608298752f40f3f375b0f
 
 build:
-    number: 0
-    skip: true  # [osx or py3k]
-    # The reason for skipping osx is that trinity >=2.4 is not available in the osx channel
-    # The python code in DISCASM runs on python 2.7.
+  number: 0
+  skip: true  # [osx or py3k]
+  # The reason for skipping osx is that trinity >=2.4 is not available in the osx channel
+  # The python code in DISCASM runs on python 2.7.
 
 requirements:
-    build:
-    run:
-        - python
-        - perl
-        - star >=2.4
-        - trinity >=2.4
-        - oases >=0.2
+  build:
+  run:
+    - python
+    - perl
+    - star >=2.4
+    - trinity >=2.4
+    - oases >=0.2
+    # Need to add pysam, but first test without it to make sure tests fail.
 
 test:
-    commands:
-        - DISCASM --help > /dev/null 2>&1
-        # DISCASM requires the environment variable TRINITY_HOME to be set.
-        # If TRINITY_HOME is not set before it starts, it uses "which" to find
-        # Trinity and sets TRINITY_HOME to be the directory where Trinity resides.
+  commands:
+    - DISCASM --help > /dev/null 2>&1
+    # DISCASM requires the environment variable TRINITY_HOME to be set.
+    # If TRINITY_HOME is not set before it starts, it uses "which" to find
+    # Trinity and sets TRINITY_HOME to be the directory where Trinity resides.
+    - retrieve_SF_chimeric_and_unmapped_reads.py --help > /dev/null 2>&1
+    - retrieve_SF_chimeric_reads.py --help > /dev/null 2>&1
+    - "run_OASES_multiK.pl 2>&1 | grep \"usage:\" "
+    - "run_OASES.pl 2>&1 | grep \"usage:\" "
 
 about:
-    home: "https://github.com/DISCASM/DISCASM"
-    license: BSD-3-Clause
-    license_file: LICENSE
-    summary: "DISCASM aims to extract reads that map to reference genomes in a discordant fashion and optionally include reads that do not map to the genome at all, and perform a de novo transcriptome assembly of these reads. DISCASM relies on the output from STAR (as run via STAR-Fusion), and supports de novo transcriptome assembly using Trinity or Oases. - https://github.com/DISCASM/DISCASM/wiki"
+  home: "https://github.com/DISCASM/DISCASM"
+  license: BSD-3-Clause
+  license_file: LICENSE
+  summary: "DISCASM aims to extract reads that map to reference genomes in a discordant fashion and optionally include reads that do not map to the genome at all, and perform a de novo transcriptome assembly of these reads. DISCASM relies on the output from STAR (as run via STAR-Fusion), and supports de novo transcriptome assembly using Trinity or Oases. - https://github.com/DISCASM/DISCASM/wiki"

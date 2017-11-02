@@ -11,3 +11,8 @@ chmod a+x $DISCASM_INSTALL_DIR/DISCASM
 echo "#!/bin/bash" > $PREFIX/bin/DISCASM
 echo "$DISCASM_INSTALL_DIR/DISCASM \$@" >> $PREFIX/bin/DISCASM
 chmod +x $PREFIX/bin/DISCASM
+
+# We still need to make links to the executables in util, so that we can test that they work.
+cd $PREFIX/bin
+ln -s $DISCASM_INSTALL_DIR/util/*.pl .
+ln -s $DISCASM_INSTALL_DIR/util/*.py .
