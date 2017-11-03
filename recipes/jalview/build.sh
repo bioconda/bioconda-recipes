@@ -16,10 +16,10 @@ echo -e '#!/usr/bin/env bash\n\
 JALVIEWDIR=$JALVIEWDIR;\n\
 java -Djava.awt.headless=true -Djava.ext.dirs=\$JALVIEWDIR -cp \$JALVIEWDIR/jalview.jar jalview.bin.Jalview \${@};\n\
 ' | tr -d '\\' > $JALVIEWDIR/jalview.sh; 
-chmod 0755 $JALVIEWDIR/jalview.sh; 
+chmod +x $JALVIEWDIR/jalview.sh; 
 
 # link wrapper script
 mkdir -p $PREFIX/bin
-ln -s $JALVIEWDIR/jalview.sh $PREFIX/bin/jalview
-chmod 0755 $PREFIX/bin/jalview; 
+ln -s ../share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/jalview.sh $PREFIX/bin/jalview
+chmod +x $PREFIX/bin/jalview; 
 
