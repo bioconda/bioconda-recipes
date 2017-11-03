@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # compile jalview from source
-cd jalview
+#cd jalview
 ant makedist
 
 # create target directory
