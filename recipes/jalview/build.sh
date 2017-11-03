@@ -22,6 +22,6 @@ chmod +x $JALVIEWDIR/jalview.sh;
 
 # link wrapper script
 mkdir -p $PREFIX/bin
-ln -s ../share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/jalview.sh $PREFIX/bin/jalview
+ln -s $JALVIEWDIR/jalview.sh $PREFIX/bin/jalview
 chmod +x $PREFIX/bin/jalview; 
 
