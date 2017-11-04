@@ -535,7 +535,9 @@ class BioCProjectPage(object):
 
                 # # "r >=2.5" rather than "r-r >=2.5"
                 specific_r_version = True
-                results.append(name.lower() + '-base' + version)
+
+                # results.append(name.lower() + '-base' + version)
+                results.append('r-base')
 
             else:
                 results.append(prefix + name.lower() + version)
@@ -723,6 +725,8 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
         # the dicts
         updated_version = updated_meta['package']['version']
         current_version = current_meta['package']['version']
+
+
         # updated_build_number = updated_meta['build'].pop('number')
         current_build_number = current_meta['build'].pop('number', 0)
 
