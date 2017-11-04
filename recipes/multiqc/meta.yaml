@@ -14,6 +14,7 @@ build:
 requirements:
   build:
     - python
+    - setuptools
     - click
     - future >0.14.0
     - jinja2 >=2.9
@@ -29,6 +30,7 @@ requirements:
 
   run:
     - python
+    - setuptools
     - click
     - future >0.14.0
     - jinja2 >=2.9
@@ -115,9 +117,7 @@ test:
     - multiqc.utils
 
   commands:
-    # click requires a unicode locale
-    - LC_ALL=C.UTF-8 LANG=C.UTF-8 multiqc --version # [linux]
-    - LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 multiqc --version # [osx]
+    - multiqc --version
 
 about:
   home: http://multiqc.info
@@ -127,4 +127,8 @@ about:
 
 extra:
   container:
-    extended-base: true
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]
+  skip-lints:
+    - uses_setuptools # uses pkg_resources
