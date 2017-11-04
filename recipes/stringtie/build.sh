@@ -12,3 +12,4 @@ make release
 mkdir -p $PREFIX/bin
 mv stringtie $PREFIX/bin
 mv prepDE.py $PREFIX/bin
+chmod +x $PREFIX/bin/prepDE.py
