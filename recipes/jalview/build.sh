@@ -14,7 +14,7 @@ cp -R dist/* $JALVIEWDIR/.
 # create wrapper script
 echo -e '#!/usr/bin/env bash\n\
 JALVIEWDIR=`dirname "\$(readlink -f "´\$0")"`; # get path of this script file\n\
-JALVIEWDIR=`readlink -f \$JALVIEWDIR; # back to full abs path\n\
+JALVIEWDIR=`readlink -f \$JALVIEWDIR`; # back to full abs path\n\
 echo "JALVIEWDIR=\$JALVIEWDIR"; # debug\n\
 ls \$JALVIEWDIR; # debug\n\
 which jalview; # debug\n\
