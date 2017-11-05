@@ -22,7 +22,7 @@ while [ -h "\$SOURCE" ]; do # resolve \$SOURCE until the file is no longer a sym
     [[ \$SOURCE != /* ]] && SOURCE="\$DIR/\$SOURCE" # if \$SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located\
 done\
 DIR="\$( cd -P "\$( dirname "\$SOURCE" )" && pwd )"; # get final path of this script\
-JALVIEWDIR=\$DIR`; # set install path of jalview\n\
+JALVIEWDIR=\$DIR; # set install path of jalview\n\
 echo "JALVIEWDIR=\$JALVIEWDIR"; # debug\n\
 ls \$JALVIEWDIR; # debug\n\
 which jalview; # debug\n\
