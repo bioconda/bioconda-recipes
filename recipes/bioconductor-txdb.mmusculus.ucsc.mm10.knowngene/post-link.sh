@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="TxDb.Mmusculus.UCSC.mm10.knownGene_3.4.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.5/data/annotation/src/contrib/TxDb.Mmusculus.UCSC.mm10.knownGene_3.4.0.tar.gz"
+  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/TxDb.Mmusculus.UCSC.mm10.knownGene_3.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/TxDb.Mmusculus.UCSC.mm10.knownGene/TxDb.Mmusculus.UCSC.mm10.knownGene_3.4.0_src_all.tar.gz"
 )
     MD5="86b7dca1b7d0d957c1794d261fc5bb81"

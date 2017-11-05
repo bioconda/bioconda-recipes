@@ -1,10 +1,10 @@
 #!/bin/bash
-FN="HSMMSingleCell_0.110.0.tar.gz"
+FN="HSMMSingleCell_0.112.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.5/data/experiment/src/contrib/HSMMSingleCell_0.110.0.tar.gz"
-  "https://depot.galaxyproject.org/software/HSMMSingleCell/HSMMSingleCell_0.110.0_src_all.tar.gz"
+  "http://bioconductor.org/packages/3.6/data/experiment/src/contrib/HSMMSingleCell_0.112.0.tar.gz"
+  "https://depot.galaxyproject.org/software/HSMMSingleCell/HSMMSingleCell_0.112.0_src_all.tar.gz"
 )
-    MD5="9e2e48e26b05c6ba8b9cbb1cb224441a"
+    MD5="07190931796761fc34c6c1391a6d4cfc"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
