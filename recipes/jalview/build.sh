@@ -13,7 +13,7 @@ cp -R dist/* $JALVIEWDIR/.
 
 # create wrapper script
 echo -e '#!/usr/bin/env bash\n\
-JALVIEWDIR=$JALVIEWDIR;\n\
+JALVIEWDIR=`dirname "\$(readlink -f "´\$0")"`;\n\
 echo \$JALVIEWDIR;\n\
 echo `pwd`;\n\
 java -Djava.awt.headless=true -Djava.ext.dirs=\$JALVIEWDIR -cp \$JALVIEWDIR/jalview.jar jalview.bin.Jalview \${@};\n\
