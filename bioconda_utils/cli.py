@@ -71,7 +71,7 @@ def select_recipes(packages, git_range, recipe_folder, config_filename, config, 
     _recipes = []
     for recipe in selected_recipes:
         if recipe in blacklisted_recipes and recipe in changed_recipes:
-            logger.warning('%s is blackliested but also has changed. Consider '
+            logger.warning('%s is blacklisted but also has changed. Consider '
                            'removing from blacklist if you want to build it', recipe)
         if force:
             _recipes.append(recipe)
