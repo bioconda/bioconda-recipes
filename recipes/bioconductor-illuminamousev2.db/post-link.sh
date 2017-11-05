@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="illuminaMousev2.db_1.26.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.5/data/annotation/src/contrib/illuminaMousev2.db_1.26.0.tar.gz"
+  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/illuminaMousev2.db_1.26.0.tar.gz"
   "https://depot.galaxyproject.org/software/illuminaMousev2.db/illuminaMousev2.db_1.26.0_src_all.tar.gz"
 )
     MD5="fba228a71f264f976d8cdb035861974d"

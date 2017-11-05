@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="mgug4122a.db_3.2.3.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.5/data/annotation/src/contrib/mgug4122a.db_3.2.3.tar.gz"
+  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/mgug4122a.db_3.2.3.tar.gz"
   "https://depot.galaxyproject.org/software/mgug4122a.db/mgug4122a.db_3.2.3_src_all.tar.gz"
 )
     MD5="5fcdce909ac1c0ccbf06bf6411f6fe52"

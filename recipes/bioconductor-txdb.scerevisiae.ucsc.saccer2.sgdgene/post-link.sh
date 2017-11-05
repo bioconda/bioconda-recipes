@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="TxDb.Scerevisiae.UCSC.sacCer2.sgdGene_3.2.2.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.5/data/annotation/src/contrib/TxDb.Scerevisiae.UCSC.sacCer2.sgdGene_3.2.2.tar.gz"
+  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/TxDb.Scerevisiae.UCSC.sacCer2.sgdGene_3.2.2.tar.gz"
   "https://depot.galaxyproject.org/software/TxDb.Scerevisiae.UCSC.sacCer2.sgdGene/TxDb.Scerevisiae.UCSC.sacCer2.sgdGene_3.2.2_src_all.tar.gz"
 )
     MD5="8ce83ef2ba6cfc69f9b4435a0a047819"
