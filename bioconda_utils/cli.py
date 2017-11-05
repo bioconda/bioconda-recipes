@@ -70,7 +70,7 @@ def select_recipes(packages, git_range, recipe_folder, config_filename, config, 
     selected_recipes = list(utils.get_recipes(recipe_folder, packages))
     _recipes = []
     for recipe in selected_recipes:
-        if recipes in blacklisted_recipes and recipes in changed_recipes:
+        if recipe in blacklisted_recipes and recipe in changed_recipes:
             logger.warning('%s is blackliested but also has changed. Consider '
                            'removing from blacklist if you want to build it', recipe)
         if force:
