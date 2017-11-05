@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # compile jalview from source
-#cd jalview
 ant makedist
 
 # create target directory
@@ -23,12 +22,7 @@ while [ -h "\$SOURCE" ]; do # resolve \$SOURCE until the file is no longer a sym
 done\
 DIR="\$( cd -P "\$( dirname "\$SOURCE" )" && pwd )"; # get final path of this script\
 JALVIEWDIR=\$DIR; # set install path of jalview\n\
-echo "JALVIEWDIR=\$JALVIEWDIR"; # debug\n\
-ls \$JALVIEWDIR; # debug\n\
-which jalview; # debug\n\
-echo `pwd`; # debug\n\
-echo "java -Djava.awt.headless=true -Djava.ext.dirs=\$JALVIEWDIR -cp \$JALVIEWDIR/jalview.jar jalview.bin.Jalview \${@};"; # debug\n\
-java -Djava.awt.headless=true -Djava.ext.dirs=\$JALVIEWDIR -cp \$JALVIEWDIR/jalview.jar jalview.bin.Jalview \${@}; # forward call\n\
+java -Djava.ext.dirs=\$JALVIEWDIR -cp \$JALVIEWDIR/jalview.jar jalview.bin.Jalview \${@}; # forward call\n\
 ' | tr -d '\\' > $JALVIEWDIR/jalview.sh; 
 chmod +x $JALVIEWDIR/jalview.sh; 
 
