@@ -155,4 +155,5 @@ Contents:
     contributing
     linting
     faqs
+    build-system
     changes
