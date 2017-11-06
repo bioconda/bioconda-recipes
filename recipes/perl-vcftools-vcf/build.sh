@@ -6,4 +6,7 @@ cp src/perl/*.pm perl-lib/lib
 sed -i.bak 's/Vcf.pm.  Module/Vcf - Module/' perl-lib/lib/Vcf.pm
 cp $RECIPE_DIR/Build.PL perl-lib
 cd perl-lib
-HOME=/tmp cpanm -v -i .
+perl Build.PL
+perl ./Build
+perl ./Build test 
+perl ./Build install --installdirs site
