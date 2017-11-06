@@ -13,13 +13,9 @@ source:
     - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
   sha256: 892fe282336eaaea58ec449f019c3a0c79bf5c3d65477ff250a6bd15f2766ec8
 build:
-  number: 0
+  number: 1
   # Lines from prev version:
   string: r{{CONDA_R}}_gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}
-
-  # On osx, getting "configure: error: cannot run C compiled programs". Neither
-  # llvm nor gcc for osx solved the issue.
-  skip: True # [osx]
 
   rpaths:
     - lib/R/lib/
@@ -34,9 +30,8 @@ requirements:
     - r-base
     - r-lattice
     - gsl {{CONDA_GSL}}*
-    # From prev version:
-    # - gcc  # [linux]
-    #  llvm  # [osx]
+    - gcc  # [linux]
+    - llvm  # [osx]
   run:
     - 'bioconductor-biocgenerics >=0.1.0'
     - 'bioconductor-biostrings >=1.24.0'
@@ -46,8 +41,7 @@ requirements:
     - r-base
     - r-lattice
     - gsl {{CONDA_GSL}}*
-    # From prev version:
-    # - libgcc  # [linux]
+    - libgcc  # [linux]
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
