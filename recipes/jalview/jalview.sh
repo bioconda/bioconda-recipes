@@ -21,7 +21,7 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"; # get final path of this scrip
 # set install path of jalview
 JALVIEWDIR=$DIR; 
 
-CLASSPATH=`echo $JALVIEWDIR/*.jar | sed -e 's/r /r;/g'`
+CLASSPATH=`echo $JALVIEWDIR/*.jar | sed -e 's/r /r:/g'`
 
 # total physical memory in mb
 
