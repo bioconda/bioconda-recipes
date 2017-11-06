@@ -13,6 +13,7 @@ If you're using a fork (set up as :ref:`above <github-setup>`):
 
     git checkout master
     git pull upstream master
+    git push origin master
 
 If you're using a clone:
 
