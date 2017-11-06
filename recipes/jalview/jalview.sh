@@ -3,7 +3,7 @@
 ###############################
 # Wrapper for Jalview
 #
-# Note, in order to run commandline-only calls use at least the arguments
+# Note, in order to run commandline-only calls use 
 #   -nodisplay
 #
 ###############################
