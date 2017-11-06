@@ -3,8 +3,8 @@
 ###############################
 # Wrapper for Jalview
 #
-# Note, in order to run commandline-only calls use at least the arguments
-#   -Djava.awt.headless=true -nodisplay
+# Note, in order to run commandline-only calls use 
+#   -nodisplay
 #
 ###############################
 
@@ -21,6 +21,13 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"; # get final path of this scrip
 # set install path of jalview
 JALVIEWDIR=$DIR; 
 
-# forward call
-java -Djava.ext.dirs=$JALVIEWDIR -cp $JALVIEWDIR/jalview.jar jalview.bin.Jalview ${@}; 
+CLASSPATH=`echo $JALVIEWDIR/*.jar | sed -e 's/r /r:/g'`
+
+# total physical memory in mb
+
+MAXMEM=`python -c 'from psutil import virtual_memory;print ("-Xmx%iM" % (256 if (virtual_memory().total/(1024*1024)) < 1024 else ((virtual_memory().total/(1024*1024))-1024)))'`
+
+if [[ $( conda list openjdk | egrep -e 'openjdk:\W+9' ) ]]; then JAVA9MOD="--add-modules=java.se.ee"; fi;
+
+java $MAXMEM $JAVA9MOD -classpath $CLASSPATH jalview.bin.Jalview ${@}; 
 
