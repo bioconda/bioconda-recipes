@@ -21,6 +21,13 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"; # get final path of this scrip
 # set install path of jalview
 JALVIEWDIR=$DIR; 
 
-# forward call
-java -Djava.ext.dirs=$JALVIEWDIR -cp $JALVIEWDIR/jalview.jar jalview.bin.Jalview ${@}; 
+CLASSPATH=`echo $JALVIEWDIR/*.jar | sed -e 's/r /r;/g'`
+
+# total physical memory in mb
+
+MAXMEM=`python -c 'from psutil import virtual_memory;print ("-Xmx%iM" % (256 if (virtual_memory().total/(1024*1024)) < 1024 else ((virtual_memory().total/(1024*1024))-1024)))'`
+
+JAVA9MOD="--add-modules=java.se.ee"
+
+java $MAXMEM $JAVA9MOD -classpath $CLASSPATH jalview.bin.Jalview ${@}; 
 
