@@ -4,7 +4,7 @@
 # Wrapper for Jalview
 #
 # Note, in order to run commandline-only calls use at least the arguments
-#   -Djava.awt.headless=true -nodisplay
+#   -nodisplay
 #
 ###############################
 
