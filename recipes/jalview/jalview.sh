@@ -27,7 +27,7 @@ CLASSPATH=`echo $JALVIEWDIR/*.jar | sed -e 's/r /r:/g'`
 
 MAXMEM=`python -c 'from psutil import virtual_memory;print ("-Xmx%iM" % (256 if (virtual_memory().total/(1024*1024)) < 1024 else ((virtual_memory().total/(1024*1024))-1024)))'`
 
-JAVA9MOD="--add-modules=java.se.ee"
+if [[ $( conda list openjdk | egrep -e 'openjdk:\W+9' ) ]]; then JAVA9MOD="--add-modules=java.se.ee"; fi;
 
 java $MAXMEM $JAVA9MOD -classpath $CLASSPATH jalview.bin.Jalview ${@}; 
 
