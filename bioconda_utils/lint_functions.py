@@ -31,13 +31,9 @@ def _subset_df(recipe, meta, df):
     name = meta['package']['name']
     version = meta['package']['version']
 
-    build_number = 0
-    build_section = _get_not_none(meta, 'build')
-    build_number = int(build_section.get('number', 0))
     return df[
         (df.name == name) &
-        (df.version == version) &
-        (df.build_number == build_number)
+        (df.version == version)
     ]
 
 
@@ -103,7 +99,10 @@ def already_in_bioconda(recipe, meta, df):
     Does the package exist in bioconda?
     """
     results = _subset_df(recipe, meta, df)
-    channels = set(results.channel)
+    build_section = _get_not_none(meta, 'build')
+    build_number = int(build_section.get('number', 0))
+    build_results = results[results.build_number == build_number]
+    channels = set(build_results.channel)
     if 'bioconda' in channels:
         return {
             'already_in_bioconda': True,
