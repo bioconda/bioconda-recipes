@@ -2,15 +2,16 @@
 
 mkdir -p ${PREFIX}/bin
 
-# decrease RAM needed
-sed -i.bak 's/make -j/make -j1/' compile_all_tools.sh
-
 # installation
 /bin/bash compile_all_tools.sh
 
-# copy binaries
+
+# sed PATH_TOOLS
+sed -i.bak 's/PATH_TOOLS="\.\/tools\/"/PATH_TOOLS=""/' run_mapsembler2_pipeline.sh
+
+# copy run_mapsembler2_pipeline
 cp run_mapsembler2_pipeline.sh ${PREFIX}/bin
 chmod +x ${PREFIX}/bin/run_mapsembler2_pipeline.sh
 
-# copy directories
-cp -R tools ${PREFIX}
+#copy dependencies
+cp -R tools/* ${PREFIX}/bin
