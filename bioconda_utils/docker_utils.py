@@ -148,6 +148,9 @@ RUN /opt/conda/bin/conda config --add channels defaults
 RUN /opt/conda/bin/conda config --add channels conda-forge
 RUN /opt/conda/bin/conda config --add channels bioconda
 RUN /opt/conda/bin/conda install --file /tmp/requirements.txt
+
+/usr/bin/sudo -n yum install -y {self.yum_pkgs}
+
 """
 
 
