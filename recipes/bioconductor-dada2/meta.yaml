@@ -1,14 +1,17 @@
-{% set version = "1.6" %}
+{% set version = "1.6.0" %}
+{% set name="dada2" %}
+{% set bioc="3.6" %}
 
 package:
-  name: bioconductor-dada2
-  version: {{ version }}
+  name: 'bioconductor-{{ name|lower}}'
+  version: '{{ version }}'
 source:
-  fn: dada2-{{ version }}.tar.gz
-  url: https://github.com/benjjneb/dada2/archive/v1.6.tar.gz
-  sha256: 4270a5685ef445e3f012bfa081996ece0f6c8818f7473411a506bb4c532e0cac
+  fn: '{{ name }}_{{ version }}.tar.gz'
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+  sha256: 79b65f611f7a4da5b08c9d258ab69540139d8159b24481bbbc2e786604e48e51
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
@@ -18,7 +21,7 @@ requirements:
     - 'bioconductor-shortread >=1.24.0'
     - r-base
     - 'r-data.table >=1.9.4'
-    - 'r-ggplot2 >=1.0'
+    - 'r-ggplot2 >=2.1.0'
     - 'r-rcpp >=0.11.2'
     - 'r-rcppparallel >=4.3.0'
     - 'r-reshape2 >=1.4.1'
@@ -29,19 +32,14 @@ requirements:
     - 'bioconductor-shortread >=1.24.0'
     - r-base
     - 'r-data.table >=1.9.4'
-    - 'r-ggplot2 >=1.0'
+    - 'r-ggplot2 >=2.1.0'
     - 'r-rcpp >=0.11.2'
     - 'r-rcppparallel >=4.3.0'
     - 'r-reshape2 >=1.4.1'
 test:
   commands:
-    - '$R -e "library(''dada2'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/dada2.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL-3
-  summary: 'The dada2 package provides "OTU picking" functionality, but instead of
-    picking OTUs the DADA2 algorithm exactly infers samples sequences. The dada2 pipeline
-    starts from demultiplexed fastq files, and outputs inferred sample sequences and
-    associated abundances after removing substitution and chimeric errors. Taxonomic
-    classification is also available via a native implementation of the RDP classifier
-    method.'
+  summary: 'The dada2 package infers exact amplicon sequence variants (ASVs) from high-throughput amplicon sequencing data, replacing the coarser and less accurate OTU clustering approach. The dada2 pipeline takes as input demultiplexed fastq files, and outputs the sequence variants and their sample-wise abundances after removing substitution and chimera errors. Taxonomic classification is available via a native implementation of the RDP naive Bayesian classifier, and genus-species assignment by exact matching.'
