@@ -1,5 +1,11 @@
 #!/bin/sh
 
+export MPI_FLAGS=--allow-run-as-root
+
+if [ $(uname) == Linux ]; then
+    export MPI_FLAGS="$MPI_FLAGS;-mca;plm;isolated"
+fi
+
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
