@@ -158,7 +158,7 @@ def build(
     use_base_image = utils.get_meta_value(
         meta,
         'extra', 'container', 'extended-base')
-    base_image = 'bioconda/extended-base-image' if use_base_image else None
+    base_image = 'bioconda/extended-base-image:openssh' if use_base_image else None
 
     try:
         res = pkg_test.test_package(pkg_path, base_image=base_image)
