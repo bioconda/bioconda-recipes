@@ -149,7 +149,7 @@ RUN /opt/conda/bin/conda config --add channels conda-forge
 RUN /opt/conda/bin/conda config --add channels bioconda
 RUN /opt/conda/bin/conda install --file /tmp/requirements.txt
 
-/usr/bin/sudo -n yum install -y openssh-clients
+RUN /usr/bin/sudo -n yum install -y openssh-clients
 
 """
 
