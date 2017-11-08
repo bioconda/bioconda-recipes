@@ -21,3 +21,8 @@ make -j2
 make install
 # this is needed to make the python bindings work
 cp $PREFIX/lib64/* $PREFIX/lib -r
+
+extra:
+  container:
+	    # openmpi needs ssh/rsh
+	    extended-base: true
