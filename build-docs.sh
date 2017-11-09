@@ -57,7 +57,7 @@ if [[ $TRAVIS_OS_NAME != "linux" ]]; then
     exit 0
 fi
 
-if [[ $TRAVIS_REPO_SLUG == "bioconda/bioconda-utils" ]]; then
+if [[ $TRAVIS_PULL_REQUEST_SLUG == "bioconda/bioconda-utils" ]]; then
     # Decrypt and ssh-add key.
     ENCRYPTED_KEY_VAR="encrypted_${ENCRYPTION_LABEL}_key"
     ENCRYPTED_IV_VAR="encrypted_${ENCRYPTION_LABEL}_iv"
@@ -108,7 +108,7 @@ if [[ $TRAVIS_PULL_REQUEST != "false" ]]; then
     exit 0
 fi
 
-if [[ $TRAVIS_REPO_SLUG != "bioconda/bioconda-utils" ]]; then
+if [[ $TRAVIS_PULL_REQUEST_SLUG != "bioconda/bioconda-utils" ]]; then
     echo "On a fork of the main bioconda-utils repo, so not pushing docs"
     exit 0
 fi
