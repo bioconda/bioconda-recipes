@@ -4,6 +4,5 @@ mkdir -p $PREFIX/bin
 mkdir -p build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
-
-make seqan_tcoffee
-cp bin/seqan_tcoffee $PREFIX/bin
+make micro_razers
+cp bin/micro_razers $PREFIX/bin
