@@ -632,7 +632,7 @@ class BioCProjectPage(object):
         d = OrderedDict((
             (
                 'package', OrderedDict((
-                    ('name', 'bioconductor-{{ name|lower}}'),
+                    ('name', 'bioconductor-{{ name|lower }}'),
                     ('version', '{{ version }}'),
                 )),
             ),
@@ -682,9 +682,9 @@ class BioCProjectPage(object):
         rendered = rendered.replace('GCC_PLACEHOLDER', 'gcc  # [linux]')
         rendered = rendered.replace('LLVM_PLACEHOLDER', 'llvm  # [osx]')
         rendered = (
-            '{% set version="' + self.version + '" %}\n' +
-            '{% set name="' + self.package + '" %}\n' +
-            '{% set bioc="' + self.bioc_version + '" %}\n\n' +
+            '{% set version = "' + self.version + '" %}\n' +
+            '{% set name = "' + self.package + '" %}\n' +
+            '{% set bioc = "' + self.bioc_version + '" %}\n\n' +
             rendered
         )
         tmp = tempfile.NamedTemporaryFile(delete=False).name
