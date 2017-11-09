@@ -1,10 +1,10 @@
 #!/bin/bash
-FN="org.Ss.eg.db_3.4.2.tar.gz"
+FN="org.Ss.eg.db_3.5.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/org.Ss.eg.db_3.4.2.tar.gz"
-  "https://depot.galaxyproject.org/software/org.Ss.eg.db/org.Ss.eg.db_3.4.2_src_all.tar.gz"
+  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/org.Ss.eg.db_3.5.0.tar.gz"
+  "https://depot.galaxyproject.org/software/org.Ss.eg.db/org.Ss.eg.db_3.5.0_src_all.tar.gz"
 )
-    MD5="8ebb00578bd74a56133b083dfb2499a7"
+    MD5="da8874c9958f6a40c84afbc7718b701c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
