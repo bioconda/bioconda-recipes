@@ -1,21 +1,23 @@
-{% set version = "2.4.0" %}
-{% set commit = "3a7c0a82b9dbc4038a41457edc7354ea81422d58" %}
+{% set version="2.6.0" %}
+{% set name="BubbleTree" %}
+{% set bioc="3.5" %}
 
 package:
-  name: bioconductor-bubbletree
-  version: {{ version }}
+  name: 'bioconductor-{{ name|lower}}'
+  version: '{{ version }}'
 source:
-  fn: {{ commit }}.zip
-  url: https://github.com/Bioconductor-mirror/BubbleTree/archive/{{ commit }}.zip
-  sha256: 36791ce784e7df796599e09900f4bbc171579ae3fca1ba7ef21b0f89e5608ca9
-
+  fn: '{{ name }}_{{ version }}.tar.gz'
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 41bfb9129237503eb59579ace764d6a9708bdff6c0c00de80e35389e4f8e2195
 build:
   number: 0
-  skip: True # [osx]
+  # skip: True # [osx]  # from previous version of recipe
   rpaths:
     - lib/R/lib/
     - lib/
-
 requirements:
   build:
     - bioconductor-biobase
@@ -25,7 +27,7 @@ requirements:
     - bioconductor-genomicranges
     - bioconductor-iranges
     - bioconductor-limma
-    - r-base
+    - 'r-base >=3.3'
     - r-dplyr
     - r-e1071
     - r-ggplot2
@@ -34,9 +36,7 @@ requirements:
     - r-gtools
     - r-magrittr
     - r-plyr
-    - r-rainbow
     - r-rcolorbrewer
-    - r-scales
     - r-writexls
   run:
     - bioconductor-biobase
@@ -46,7 +46,7 @@ requirements:
     - bioconductor-genomicranges
     - bioconductor-iranges
     - bioconductor-limma
-    - r-base
+    - 'r-base >=3.3'
     - r-dplyr
     - r-e1071
     - r-ggplot2
@@ -55,20 +55,12 @@ requirements:
     - r-gtools
     - r-magrittr
     - r-plyr
-    - r-rainbow
     - r-rcolorbrewer
-    - r-scales
     - r-writexls
 test:
   commands:
-    # test in headless mode, because X11 is not available
-    - '$R -e "options(rgl.useNULL=TRUE); library(''BubbleTree'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/BubbleTree.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>= 3)'
-  summary: 'CNV analysis in groups of tumor samples (Publication Pending).'
-
-extra:
-  container:
-    # needed for libGL
-    extended-base: true
+  summary: 'CNV analysis in groups of tumor samples.'
