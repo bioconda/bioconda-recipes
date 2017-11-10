@@ -414,11 +414,6 @@ Other examples of interest
 Packaging is hard. Here are some examples, in no particular order, of how
 contributors have solved various problems:
 
-- `blast
-  <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/blast>`_
-  has an OS-specific installation -- OSX copies binaries while on Linux it is
-  compiled.
-
 - `graphviz
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/graphviz>`_
   has an OS-specific option to ``configure``
