@@ -61,11 +61,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-# If conda_build_version is not provided, this is what is used by default.
-DEFAULT_CONDA_BUILD_VERSION = '2.1.16'
-DEFAULT_CONDA_VERSION = '4.3.21'
-
-
 # ----------------------------------------------------------------------------
 # BUILD_SCRIPT_TEMPLATE
 # ----------------------------------------------------------------------------
@@ -83,8 +78,6 @@ BUILD_SCRIPT_TEMPLATE = \
 """
 #!/bin/bash
 set -e
-
-conda install conda-build={self.conda_build_version} conda={self.conda_version}  > /dev/null 2>&1
 
 # Add the host's mounted conda-bld dir so that we can use its contents as
 # dependencies for building this recipe.
@@ -131,28 +124,17 @@ fi
 # DOCKERFILE_TEMPLATE
 # ----------------------------------------------------------------------------
 #
-# This Docker file is used by RecipeBuilder and sent to docker build if no
-# other Dockerfile is provided to RecipeBuilder. It will be filled in using
-# DOCKERFILE.format(self=self).
+# This template can be used for last-minute changes to the docker image, such
+# as adding proxies.
 #
-# It assumes that there will be a requirements.txt in the build directory
-# (the default is to use bioconda_utils-requirements.txt).
-
+# The default image is created automatically on DockerHub using the Dockerfile
+# in the bioconda-utils repo.
 
 DOCKERFILE_TEMPLATE = \
 """
-FROM {self.image}
-COPY requirements.txt /tmp/requirements.txt
+FROM bioconda/bioconda-utils-build-env
 {self.proxies}
-RUN /opt/conda/bin/conda config --add channels defaults
-RUN /opt/conda/bin/conda config --add channels conda-forge
-RUN /opt/conda/bin/conda config --add channels bioconda
-RUN /opt/conda/bin/conda install --file /tmp/requirements.txt
-
-RUN /usr/bin/sudo -n yum install -y openssh-clients
-
 """
-
 
 class DockerCalledProcessError(sp.CalledProcessError):
     pass
@@ -210,13 +192,10 @@ class RecipeBuilder(object):
         tag='tmp-bioconda-builder',
         container_recipe='/opt/recipe',
         container_staging="/opt/host-conda-bld",
-        image='condaforge/linux-anvil',
         requirements=None,
         build_script_template=BUILD_SCRIPT_TEMPLATE,
         dockerfile_template=DOCKERFILE_TEMPLATE,
         use_host_conda_bld=False,
-        conda_build_version=DEFAULT_CONDA_BUILD_VERSION,
-        conda_version=DEFAULT_CONDA_VERSION,
         pkg_dir=None,
         keep_image=False,
     ):
@@ -239,10 +218,6 @@ class RecipeBuilder(object):
             the container can use previously-built packages as depdendencies.
             Upon successful building container-built packages will be copied
             over. Mounted as read-write.
-
-        image : str
-            Base image from which the new custom image will be built (used on
-            the `FROM:` line of the Dockerfile)
 
         requirements : None or str
             Path to a "requirements.txt" file which will be installed with
@@ -293,14 +268,11 @@ class RecipeBuilder(object):
             freeing up storage space.  Set keep_image=True to disable this
             behavior.
         """
-        self.image = image
         self.tag = tag
         self.requirements = requirements
         self.conda_build_args = ""
         self.build_script_template = build_script_template
         self.dockerfile_template = dockerfile_template
-        self.conda_build_version = conda_build_version
-        self.conda_version = conda_version
         self.keep_image = keep_image
 
         # To address issue #5027:
@@ -362,21 +334,11 @@ class RecipeBuilder(object):
                     os.makedirs(pkg_dir)
                 self.pkg_dir = pkg_dir
 
-        self._pull_image()
         self._build_image()
 
     def __del__(self):
         if not self.keep_image:
             self.cleanup()
-
-    def _pull_image(self):
-        """
-        Separate out the pull step to provide additional logging info
-        """
-        logger.info('DOCKER: Pulling docker image %s', self.image)
-        p = utils.run(['docker', 'pull', self.image])
-        logger.debug('DOCKER: stdout+stderr:\n%s', p.stdout)
-        logger.info('DOCKER: Done pulling image')
 
     def _build_image(self):
         """

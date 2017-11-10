@@ -860,7 +860,6 @@ def load_config(path):
         'env_matrix': {'CONDA_PY': 35},
         'blacklists': [],
         'channels': [],
-        'docker_image': 'condaforge/linux-anvil',
         'requirements': None,
         'upload_channel': 'bioconda'
     }
