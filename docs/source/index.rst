@@ -11,36 +11,39 @@ bioinformatics software. Bioconda consists of:
 
 - a `repository of recipes <https://github.com/bioconda/bioconda-recipes>`_ hosted on GitHub
 - a `build system <https://github.com/bioconda/bioconda-utils>`_ that turns these recipes into conda packages
-- a `repository of >2700 bioinformatics packages
+- a `repository of more than 3000 bioinformatics packages
   <https://anaconda.org/bioconda/>`_ ready to use with ``conda install``
 - Over 250 contributors that add, modify, update and maintain the recipes
 
-Each package added to Bioconda also has a corresponding Docker  `BioContainer
-<https://biocontainers.pro>`_ automatically created and uploaded to Quay.io.
-
-**Browse packages in the bioconda channel:** :ref:`recipes`
-
-**Browse BioContainer packages:** `Biocontainers Registry UI
-<https://biocontainers.pro/registry/#/>`_
-
-The conda package manager has recently made installing software a vastly more
+The conda package manager makes installing software a vastly more
 streamlined process. Conda is a combination of other package managers you may
 have encountered, such as pip, CPAN, CRAN, Bioconductor, apt-get, and homebrew.
 Conda is both language- and OS-agnostic, and can be used to install C/C++,
 Fortran, Go, R, Python, Java etc programs on Linux, Mac OSX, and Windows.
 
-Conda allows separation of packages into separate repositories, or `channels`.
+Conda allows separation of packages into repositories, or `channels`.
 The main `defaults` channel has a large number of common packages. Users can
 add additional channels from which to install software packages not available
 in the defaults channel. Bioconda is one such channel specializing in
 bioinformatics software.
 
+Bioconda has been acknowledged by NATURE in their
+`technology blog <http://blogs.nature.com/naturejobs/2017/11/03/techblog-bioconda-promises-to-ease-bioinformatics-software-installation-woes/>`_.
+
+Each package added to Bioconda also has a corresponding Docker  `BioContainer
+<https://biocontainers.pro>`_ automatically created and uploaded to Quay.io.
+
+**Browse packages in the Bioconda channel:** :ref:`recipes`
+
+**Browse BioContainer packages:** `Biocontainers Registry UI
+<https://biocontainers.pro/registry/#/>`_
+
 
 .. _using-bioconda:
 
-Using bioconda
+Using Bioconda
 ==============
-**bioconda supports only 64-bit Linux and Mac OSX**.
+**Bioconda supports only 64-bit Linux and Mac OSX**.
 
 
 1. Install conda
@@ -85,7 +88,7 @@ packages compiled against R 3.3.1 might not work.
 -------------------
 :ref:`Browse the packages <recipes>` to see what's available.
 
-bioconda is now enabled, so any packages on the bioconda channel can be installed into the current conda environment::
+Bioconda is now enabled, so any packages on the bioconda channel can be installed into the current conda environment::
 
     conda install bwa
 
@@ -112,7 +115,7 @@ pull requests.
 ------------------
 
 Consider `adding a badge <_static/badge-generator/>`_ to your posters and presentations to promote
-that a tool can be easily installed from bioconda.
+that a tool can be easily installed from Bioconda.
 
 
 Contributors
@@ -126,6 +129,9 @@ Core
 * `Brad Chapman <https://github.com/chapmanb>`_
 * `Chris Tomkins-Tinch <https://github.com/tomkinsc>`_
 * `Björn Grüning <https://github.com/bgruening>`_
+* `Andreas Sjödin <https://github.com/druvus>`_
+* `Jillian Rowe <https://github.com/jerowe>`_
+* `Renan Valieris <https://github.com/rvalieris>`_
 
 Others
 ------
