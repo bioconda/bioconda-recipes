@@ -1,8 +1,12 @@
-import os
+from functools import partial
 import glob
+import os
 import re
+
 import pandas
 import numpy as np
+
+from .utils import get_meta_value
 
 
 def _get_not_none(meta, key, none_subst=dict):
@@ -111,9 +115,7 @@ def already_in_bioconda(recipe, meta, df):
 
 
 def missing_home(recipe, meta, df):
-    try:
-        meta['about']['home']
-    except KeyError:
+    if not get_meta_value(meta, 'about', 'home'):
         return {
             'missing_home': True,
             'fix': 'add about:home',
@@ -121,9 +123,7 @@ def missing_home(recipe, meta, df):
 
 
 def missing_summary(recipe, meta, df):
-    try:
-        meta['about']['summary']
-    except KeyError:
+    if not get_meta_value(meta, 'about', 'summary'):
         return {
             'missing_summary': True,
             'fix': 'add about:summary',
@@ -131,9 +131,7 @@ def missing_summary(recipe, meta, df):
 
 
 def missing_license(recipe, meta, df):
-    try:
-        meta['about']['license']
-    except KeyError:
+    if not get_meta_value(meta, 'about', 'license'):
         return {
             'missing_license': True,
             'fix': 'add about:license'
@@ -142,7 +140,7 @@ def missing_license(recipe, meta, df):
 
 def missing_tests(recipe, meta, df):
     test_files = ['run_test.py', 'run_test.sh', 'run_test.pl']
-    if 'test' not in meta:
+    if not get_meta_value(meta, 'test'):
         if not any([os.path.exists(os.path.join(recipe, f)) for f in
                     test_files]):
             return {
@@ -160,13 +158,13 @@ def missing_hash(recipe, meta, df):
     except KeyError:
         return
 
-    if not any(
+    if not any(map(partial(get_meta_value, src),
         (
-            'md5' in src,
-            'sha1' in src,
-            'sha256' in src
+            'md5',
+            'sha1',
+            'sha256',
         )
-    ):
+    )):
         return {
             'missing_hash': True,
             'fix': 'add md5, sha1, or sha256 hash to "source" section',

@@ -139,13 +139,24 @@ def test_missing_home():
             about:
               home: "http://bioconda.github.io"
         ''',
-        should_fail='''
+        should_fail=[
+        '''
         missing_home:
           meta.yaml: |
             package:
               name: missing_home
               version: "0.1"
-        ''')
+        ''',
+        '''
+        missing_home:
+          meta.yaml: |
+            package:
+              name: missing_home
+              version: "0.1"
+            about:
+              home: ""
+        ''',
+        ])
 
 
 def test_missing_summary():
@@ -160,13 +171,24 @@ def test_missing_summary():
             about:
               summary: "tool description"
         ''',
-        should_fail='''
+        should_fail=[
+        '''
         missing_summary:
           meta.yaml: |
             package:
               name: missing_summary
               version: "0.1"
-        ''')
+        ''',
+        '''
+        missing_summary:
+          meta.yaml: |
+            package:
+              name: missing_summary
+              version: "0.1"
+            about:
+              summary: ""
+        ''',
+        ])
 
 
 def test_missing_license():
@@ -181,19 +203,31 @@ def test_missing_license():
             about:
               license: "MIT"
         ''',
-        should_fail='''
+        should_fail=[
+        '''
         missing_license:
           meta.yaml: |
             package:
               name: missing_license
               version: "0.1"
-        ''')
+        ''',
+        '''
+        missing_license:
+          meta.yaml: |
+            package:
+              name: missing_license
+              version: "0.1"
+            about:
+              license: ""
+        ''',
+        ])
 
 
 def test_missing_tests():
     run_lint(
         func=lint_functions.missing_tests,
-        should_pass=['''
+        should_pass=[
+        '''
         missing_tests:
           meta.yaml: |
             package:
@@ -218,21 +252,33 @@ def test_missing_tests():
               version: "0.1"
           run_test.py: ""
         ''',
-                    ],
-        should_fail='''
+        ],
+        should_fail=[
+        '''
         missing_tests:
           meta.yaml: |
             package:
               name: missing_tests
               version: "0.1"
           run_tst.sh: ""
-        ''')
+        ''',
+        '''
+        missing_tests:
+          meta.yaml: |
+            package:
+              name: missing_tests
+              version: "0.1"
+            test:
+              # empty test section
+        ''',
+        ])
 
 
 def test_missing_hash():
     run_lint(
         func=lint_functions.missing_hash,
-        should_pass=['''
+        should_pass=[
+        '''
         missing_hash:
           meta.yaml: |
             package:
@@ -246,8 +292,11 @@ def test_missing_hash():
         missing_hash:
           meta.yaml: |
             name: missing_hash
-            version: "0.1"'''],
-        should_fail='''
+            version: "0.1"
+        ''',
+        ],
+        should_fail=[
+        '''
         missing_hash:
           meta.yaml: |
             package:
@@ -255,7 +304,17 @@ def test_missing_hash():
               version: "0.1"
             source:
               fn: "a.txt"
-        ''')
+        ''',
+        '''
+        missing_hash:
+          meta.yaml: |
+            package:
+              name: missing_hash
+              version: "0.1"
+            source:
+              sha256: ""
+        ''',
+        ])
 
 
 def test_uses_git_url():
