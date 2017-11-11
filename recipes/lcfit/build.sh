@@ -6,6 +6,6 @@ make test
 
 cp lcfit_src/*.h ${PREFIX}/include
 cp lcfit_cpp_src/*.h ${PREFIX}/include
-cp -r _build/release/lcfit_src/liblcfit.so ${PREFIX}/lib
-cp -r _build/release/lcfit_cpp_src/liblcfit_cpp.so ${PREFIX}/lib
-cp -r _build/release/lcfit_cpp_src/liblcfit_cpp-static.a ${PREFIX}/lib
+cp _build/release/lcfit_src/liblcfit.so ${PREFIX}/lib
+cp _build/release/lcfit_cpp_src/liblcfit_cpp.so ${PREFIX}/lib
+cp _build/release/lcfit_cpp_src/liblcfit_cpp-static.a ${PREFIX}/lib
