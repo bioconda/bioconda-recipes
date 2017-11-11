@@ -2,10 +2,10 @@
 
 # Download submodules and move them to lib.
 ## kalign
-kalignver=0.1.3
+kalignver=0.2.0
 wget --no-check-certificate "https://github.com/makrutenko/kalign-dunovo/archive/v$kalignver.tar.gz"
 hash=`sha256sum v$kalignver.tar.gz | tr -s ' ' | cut -d ' ' -f 1`
-[ $hash = 712b149038a818d296d0bcc53e997487c768a151e46e500f1753ba6c3dd9852d ]
+[ $hash = 473dd562f520a218df2dd147c89940422344adad6d8824141bffe6466c6d40e7 ]
 tar -zxvpf v$kalignver.tar.gz
 rm -rf kalign
 mv kalign-dunovo-$kalignver kalign
