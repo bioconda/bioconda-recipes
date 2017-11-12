@@ -1,0 +1,61 @@
+{% set version = "1.12.0" %}
+{% set name = "birte" %}
+{% set bioc = "3.5" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name }}_{{ version }}.tar.gz'
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: d984819dce36cb8e126537a75e5fad6e2003ef6a5a06c17a4080d3efa6acdc57
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - bioconductor-biobase
+    - bioconductor-limma >=3.22.0
+    - bioconductor-nem
+    - r-base
+    - r-glmnet
+    - r-mass
+    - r-rcpp
+    - r-rcpparmadillo >=0.3.6.1
+    - gcc  # [linux]
+    - llvm  # [osx]
+    - lapack
+    - openblas
+  run:
+    - bioconductor-biobase
+    - bioconductor-limma >=3.22.0
+    - bioconductor-nem
+    - r-base
+    - r-glmnet
+    - r-mass
+    - r-rcpp
+    - r-rcpparmadillo >=0.3.6.1
+    - lapack
+    - openblas
+
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+
+about:
+  home: https://www.bioconductor.org/packages/release/bioc/html/birte.html
+  license: 'GPL (>= 2)'
+  summary: 'Expression levels of mRNA molecules are regulated by different processes, comprising inhibition or
+    activation by transcription factors and post-transcriptional degradation by microRNAs. biRte uses regulatory
+    networks of TFs, miRNAs and possibly other factors, together with mRNA, miRNA and other available expression
+    data to predict the relative influence of a regulator on the expression of its target genes. Inference is done
+    in a Bayesian modeling framework using Markov-Chain-Monte-Carlo. A special feature is the possibility for
+    follow-up network reverse engineering between active regulators.'
