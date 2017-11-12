@@ -328,9 +328,6 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
      packages should be stored on the host. Default is to use the host's
      conda-bld dir. If --docker is not specified, then this argument is
      ignored.''')
-@arg('--conda-build-version',
-     help='''Version of conda-build to use if building
-     in a docker container. Has no effect otherwise.''')
 @arg('--anaconda-upload', action='store_true', help='''After building recipes, upload
      them to Anaconda. This requires $ANACONDA_TOKEN to be set.''')
 @arg('--keep-image', action='store_true', help='''After building recipes, the
@@ -348,7 +345,6 @@ def build(
     mulled_test=False,
     build_script_template=None,
     pkg_dir=None,
-    conda_build_version=docker_utils.DEFAULT_CONDA_BUILD_VERSION,
     anaconda_upload=False,
     mulled_upload_target=None,
     keep_image=False,
@@ -396,7 +392,6 @@ def build(
             build_script_template=build_script_template,
             pkg_dir=pkg_dir,
             use_host_conda_bld=use_host_conda_bld,
-            conda_build_version=conda_build_version,
             keep_image=keep_image,
         )
     else:
