@@ -232,7 +232,7 @@ def test_docker_build_fails(recipes_fixture):
 def test_docker_build_image_fails():
     template = (
         """
-        FROM {self.image}
+        FROM bioconda/bioconda-utils-build-env
         RUN nonexistent command
         """)
     with pytest.raises(sp.CalledProcessError):
