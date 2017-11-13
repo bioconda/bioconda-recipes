@@ -17,12 +17,19 @@ install: scripts/travis-setup.sh
 
 jobs:
   include:
+    # in forks, master and bulk, we run osx and linux in parallel on each push
+    - stage: Linux+macOS
+      if: (type = push) AND ((branch IN (master, bulk)) OR (fork = true))
+      os:
+        - linux
+        - osx
+    # in pull requests, we first run linux and only if that succeeds, we run osx
     - stage: Linux
-      if: (branch IN (master, bulk)) OR (type = pull_request) OR (fork = true)
+      if: type = pull_request
       os: linux
       script: scripts/travis-run.sh
     - stage: macOS
-      if: (branch IN (master, bulk)) OR (type = pull_request) OR (fork = true)
+      if: type = pull_request
       os: osx
       script: scripts/travis-run.sh
 
