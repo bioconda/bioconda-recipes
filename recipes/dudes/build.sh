@@ -1,6 +1,2 @@
 #!/bin/bash
-
-mkdir -p $PREFIX/bin
-
-cp *.py $PREFIX/bin
-
+python setup.py install

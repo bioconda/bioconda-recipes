@@ -1,4 +1,5 @@
 #!/bin/bash
 
-cp -R bin $PREFIX/bin
-cp -R lib $PREFIX/lib
+mkdir -p ${PREFIX}/bin ${PREFIX}/lib
+cp bin/*  ${PREFIX}/bin
+cp lib/* ${PREFIX}/lib

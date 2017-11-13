@@ -6,9 +6,15 @@ mkdir -p $outdir
 mkdir -p $PREFIX/bin
 
 cd $SRC_DIR
-sbt assembly
 
+# Development version build
+sbt update
+sbt assembly
 cp target/scala-*/fgbio-*.jar $outdir/fgbio.jar
+
+# Release jar
+#cp fgbio*.jar $outdir/fgbio.jar
+
 cp $RECIPE_DIR/fgbio.py $outdir/fgbio
 chmod +x $outdir/fgbio
 ln -s $outdir/fgbio $PREFIX/bin/fgbio

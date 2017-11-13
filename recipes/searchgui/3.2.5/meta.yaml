@@ -1,0 +1,36 @@
+{% set name = "SearchGUI" %}
+{% set version = "3.2.5" %}
+# Do not forget to update the version string in the searchgui.py file
+
+about:
+    home: https://github.com/compomics/searchgui
+    license: Apache License, Version 2.0
+    summary: |
+        SearchGUI is a user-friendly open-source graphical user interface for configuring and running proteomics identification search engines, currently supporting X!Tandem, MS-GF+, MS Amanda, MyriMatch, Comet, Tide, Andromeda and OMSSA.
+package:
+    name: searchgui
+    version: {{ version }}
+build:
+  number: 0
+  skip: True    # [osx]
+source:
+    fn: {{ name }}-{{ version }}-mac_and_linux.tar.gz
+    url: http://genesis.ugent.be/maven2/eu/isas/searchgui/{{ name }}/{{ version }}/{{ name }}-{{ version }}-mac_and_linux.tar.gz
+requirements:
+  build:
+  run:
+    - openjdk >=6
+    - mono >=4.0.0
+    - python
+test:
+    commands:
+      - searchgui eu.isas.searchgui.cmd.FastaCLI
+      - searchgui eu.isas.searchgui.cmd.FastaCLI -Xms512m -Xmx1g
+extra:
+  notes: |
+    SearchGUI is Java program that comes with a custom wrapper shell script.
+    This shell wrapper is called "opsin" and is on $PATH by default. By default
+    "-Xms512m -Xmx1g" is set in the wrapper. If you want to overwrite it you can
+    specify these values directly after your binaries. If you have _JAVA_OPTIONS
+    set globally this will take precedence.
+    For example run it with "searchgui -Xms512m -Xmx1g"

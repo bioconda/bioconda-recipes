@@ -1,0 +1,42 @@
+{% set version="1.2.1" %}
+build:
+  number: 0
+  skip: True # [osx]
+
+package:
+  name: extract-sv-reads
+  version: {{ version }}
+source:
+  # Uses git_url to produce correct versions in binary
+  # https://github.com/bioconda/bioconda-recipes/issues/5990
+  git_url: https://github.com/hall-lab/extract_sv_reads.git
+  git_tag: cc0507aceb9c48df083c5ed034f5f246ea5ee1d7
+
+requirements:
+  build:
+    - gcc
+    - cmake
+    - perl
+    - curl
+    - bzip2 {{ CONDA_BZIP2 }}*
+    - xz {{ CONDA_XZ }}*
+  run:
+    - libgcc
+    - curl
+    - bzip2 {{ CONDA_BZIP2 }}*
+    - xz {{ CONDA_XZ }}*
+
+test:
+  commands:
+    - extract-sv-reads -h
+    - extract-sv-reads --version
+
+about:
+  home: https://github.com/hall-lab/extract_sv_reads
+  license: MIT
+  summary:  Tool for extracting splitter or discordant reads from a BAM or CRAM file.
+
+extra:
+  skip-lints:
+    - uses_git_url
+    - missing_hash

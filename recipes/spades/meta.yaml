@@ -1,27 +1,56 @@
+{% set version = "3.11.1" %}
+
 package:
   name: spades
-  version: '3.9.0'
+  version: {{ version }}
 
 source:
-  fn: SPAdes-3.9.0-Linux.tar.gz                                              # [linux]
-  url: http://spades.bioinf.spbau.ru/release3.9.0/SPAdes-3.9.0-Linux.tar.gz  # [linux]
-  fn: SPAdes-3.9.0-Darwin.tar.gz                                             # [osx]
-  url: http://spades.bioinf.spbau.ru/release3.9.0/SPAdes-3.9.0-Darwin.tar.gz # [osx]
+  fn: SPAdes-{{ version }}-Darwin.tar.gz  # [osx]
+  url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}-Darwin.tar.gz  # [osx]
+  sha256: c7e1bb6065e836c466007a235ffad907fb5f2b634fd2fe86535ed233408aa317  # [osx]
+  fn: SPAdes-{{ version }}.tar.gz  # [linux]
+  url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}.tar.gz  # [linux]
+  sha256: 3ab85d86bf7d595bd8adf11c971f5d258bbbd2574b7c1703b16d6639a725b474  # [linux]
 
 build:
-  number: 1
-  skip: False
+  number: 0
+  string: py{{CONDA_PY}}_zlib{{CONDA_ZLIB}}_{{PKG_BUILDNUM}}  # [linux]
 
 requirements:
   build:
+    - gcc >=4.8.2  # [linux]
+    - cmake >=2.8.12  # [linux]
+    - zlib {{CONDA_ZLIB}}*  # [linux]
+    - bzip2 1.0.*  # [linux]
+
   run:
     - python
+    - libgcc  # [linux]
+    - zlib {{CONDA_ZLIB}}*  # [linux]
+    - bzip2 1.0.*  # [linux]
 
 test:
   commands:
-    - spades.py --test
+    - spades.py --version
+    - rnaspades.py --version
+    - truspades.py --version
+    - dipspades.py --version
+    - metaspades.py --version
+    - plasmidspades.py --version
+    - spades.py --test && rm -rf spades_test
 
 about:
-  home: http://bioinf.spbau.ru/en/spades
+  home: http://cab.spbu.ru/software/spades/
   license: GPLv2
-  summary: SPAdes – St. Petersburg genome assembler – is intended for both standard isolates and single-cell MDA bacteria assemblies.
+  license_family: GPL
+  license_file: LICENSE  # [linux]
+  license_file: share/spades/LICENSE  # [osx]
+  summary: |
+    SPAdes (St. Petersburg genome assembler) is intended for both standard isolates and single-cell MDA bacteria assemblies.
+  dev_url: https://github.com/ablab/spades
+  doc_url: http://cab.spbu.ru/files/release3.11.0/manual.html
+extra:
+  doi: 10.1089/cmb.2012.0021
+  recipe-maintainers:
+    - druvus
+    - notestaff

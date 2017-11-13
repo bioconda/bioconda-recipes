@@ -1,80 +1,138 @@
 package:
   name: multiqc
-  version: "0.8"
+  version: "1.3"
 
 source:
-  fn: multiqc-0.8.tar.gz
-  url: https://pypi.python.org/packages/ab/e4/9a9eea1facbc3dcb7c90e38d3719eea43d4877aa54a887726982f1ba1671/multiqc-0.8.tar.gz
-  md5: a7740e00a2a0deb57a72fbdd209475fa
+  fn: v1.3.tar.gz
+  url: https://github.com/ewels/MultiQC/archive/v1.3.tar.gz
+  md5: 67c4aae8b85ae40fcb2e98319fb629ac
+  patches:
+    - setup.patch # [py3k]
 
 build:
-  number: 0
+  number: 2
   preserve_egg_dir: True
-  skip: False
 
 requirements:
   build:
     - python
     - setuptools
-    - jinja2
-    - simplejson
-    - pyyaml
     - click
+    - future >0.14.0
+    - jinja2 >=2.9
+    - lzstring
+    - markdown
     - matplotlib
+    - networkx <2
+    - numpy
+    - pyyaml
+    - requests
+    - simplejson
+    - spectra
 
   run:
     - python
     - setuptools
-    - jinja2
-    - simplejson
-    - pyyaml
     - click
+    - future >0.14.0
+    - jinja2 >=2.9
+    - libgcc  # [linux]
+    - lzstring
+    - markdown
     - matplotlib
+    - networkx <2
+    - numpy
+    - pyyaml
+    - requests
+    - simplejson
+    - spectra
+    - enum34 # [py27]
 
 test:
   # Python imports
   imports:
     - multiqc
     - multiqc.modules
+    - multiqc.modules.adapterRemoval
+    - multiqc.modules.afterqc
     - multiqc.modules.bamtools
+    - multiqc.modules.bbmap
     - multiqc.modules.bcftools
+    - multiqc.modules.bcl2fastq
+    - multiqc.modules.biobloomtools
     - multiqc.modules.bismark
     - multiqc.modules.bowtie1
     - multiqc.modules.bowtie2
+    - multiqc.modules.busco
+    - multiqc.modules.clusterflow
+    - multiqc.modules.conpair
+    - multiqc.modules.custom_content
     - multiqc.modules.cutadapt
+    - multiqc.modules.deeptools
+    - multiqc.modules.disambiguate
     - multiqc.modules.fastq_screen
     - multiqc.modules.fastqc
     - multiqc.modules.featureCounts
+    - multiqc.modules.flexbar
     - multiqc.modules.gatk
+    - multiqc.modules.goleft_indexcov
+    - multiqc.modules.hicexplorer
     - multiqc.modules.hicup
+    - multiqc.modules.hisat2
+    - multiqc.modules.homer
+    - multiqc.modules.htseq
+    - multiqc.modules.interop
+    - multiqc.modules.jellyfish
     - multiqc.modules.kallisto
+    - multiqc.modules.leehom
+    - multiqc.modules.macs2
     - multiqc.modules.methylQA
+    - multiqc.modules.peddy
     - multiqc.modules.picard
     - multiqc.modules.preseq
+    - multiqc.modules.prokka
+    - multiqc.modules.qorts
     - multiqc.modules.qualimap
     - multiqc.modules.quast
+    - multiqc.modules.rna_seqc
+    - multiqc.modules.rsem
     - multiqc.modules.rseqc
     - multiqc.modules.salmon
     - multiqc.modules.samblaster
     - multiqc.modules.samtools
     - multiqc.modules.skewer
+    - multiqc.modules.slamdunk
     - multiqc.modules.snpeff
+    - multiqc.modules.sortmerna
     - multiqc.modules.star
+    - multiqc.modules.supernova
+    - multiqc.modules.theta2
     - multiqc.modules.tophat
     - multiqc.modules.trimmomatic
+    - multiqc.modules.vcftools
     - multiqc.plots
     - multiqc.templates
     - multiqc.templates.default
     - multiqc.templates.default_dev
     - multiqc.templates.geo
+    - multiqc.templates.sections
     - multiqc.templates.simple
     - multiqc.utils
 
   commands:
     - multiqc --version
+    - multiqc .
 
 about:
   home: http://multiqc.info
   license: GNU General Public License v3 (GPLv3)
   summary: 'Create aggregate bioinformatics analysis reports across many samples and tools'
+  license_family: GPL3
 
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]
+  skip-lints:
+    - uses_setuptools # uses pkg_resources

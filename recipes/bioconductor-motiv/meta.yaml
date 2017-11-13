@@ -1,0 +1,51 @@
+{% set version="1.32.0" %}
+{% set name="MotIV" %}
+{% set bioc="3.5" %}
+
+package:
+  name: 'bioconductor-{{ name|lower}}'
+  version: '{{ version }}'
+source:
+  fn: '{{ name }}_{{ version }}.tar.gz'
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 892fe282336eaaea58ec449f019c3a0c79bf5c3d65477ff250a6bd15f2766ec8
+build:
+  number: 1
+  # Lines from prev version:
+  string: r{{CONDA_R}}_gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}
+
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  build:
+    - 'bioconductor-biocgenerics >=0.1.0'
+    - 'bioconductor-biostrings >=1.24.0'
+    - 'bioconductor-iranges >=1.13.5'
+    - bioconductor-rgadem
+    - bioconductor-s4vectors
+    - r-base
+    - r-lattice
+    - gsl {{CONDA_GSL}}*
+    - gcc  # [linux]
+    - llvm  # [osx]
+  run:
+    - 'bioconductor-biocgenerics >=0.1.0'
+    - 'bioconductor-biostrings >=1.24.0'
+    - 'bioconductor-iranges >=1.13.5'
+    - bioconductor-rgadem
+    - bioconductor-s4vectors
+    - r-base
+    - r-lattice
+    - gsl {{CONDA_GSL}}*
+    - libgcc  # [linux]
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'This package makes use of STAMP for comparing a set of motifs to a given database (e.g. JASPAR). It can also be used to visualize motifs, motif distributions, modules and filter motifs.'

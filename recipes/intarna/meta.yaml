@@ -1,29 +1,42 @@
 package:
   name: intarna
-  version: "1.2.5"
+  version: 2.1.0
 
 about:
   home: http://www.bioinf.uni-freiburg.de/Software
-  license: GPL
-  license_file: COPYING
-  summary: Efficient target prediction incorporating accessibility of interaction sites
+  license: MIT
+  summary: Efficient target prediction incorporating seeding and accessibility of interaction sites
 
 build:
-  number: 2
-  skip: True # [osx]
+  number: 0
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
 
 source:
-  fn: intarna-1.2.5.tar.gz
-  url: "http://www.bioinf.uni-freiburg.de/Software/IntaRNA/intarna-1.2.5.tar.gz"
-  sha256: 919a37b14774df6238ee6e7f9fe8879be7dcbabad2e5e765641a46092a48433b
+  fn: intarna-2.1.0.tar.gz
+  url: "https://github.com/BackofenLab/IntaRNA/releases/download/v2.1.0/intaRNA-2.1.0.tar.gz"
+  sha256: 82a5d07dfe803a75fbb8ee5bae7be1ee28e03ee89c42a068f89d0fa681738cf1
 
 requirements:
   build:
-    - viennarna <=1.8.5
+    # linux build
     - gcc # [linux]
+    - boost {{CONDA_BOOST}}* # [linux]
+    # osx build
+    - llvmdev ==3.9.1 # [osx]
+    - libcxx # [osx]
+    - boost ==1.63.0 # [osx]
+    # general requirements
+    - viennarna >=2.4.1,<3
+    - doxygen
   run:
     - libgcc # [linux]
+    - libcxx # [osx]
+    - boost {{CONDA_BOOST}}* # [linux]
+    - boost ==1.63.0 # [osx]
+    # for old interface wrapper
+    - perl
 
 test:
   commands:
     - IntaRNA -h
+    - IntaRNA -t CCCCCCCCGGGGGGGGGGGGGG -q CCCCCCC

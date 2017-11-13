@@ -1,10 +1,16 @@
+{% set version="1.58.1" %}
+{% set name="genefilter" %}
+{% set bioc="3.5" %}
+
 package:
-  name: bioconductor-genefilter
-  version: 1.54.2
+  name: 'bioconductor-{{ name|lower}}'
+  version: '{{ version }}'
 source:
-  fn: genefilter_1.54.2.tar.gz
-  url: http://bioconductor.org/packages/release/bioc/src/contrib/genefilter_1.54.2.tar.gz
-  md5: 2c34e32bdfa498eac9ffb0304df5df12
+  fn: '{{ name }}_{{ version }}.tar.gz'
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 2964ba6ec62b532808dc5e2e490daafb5744ba11eeea614af9e8a73f80d4cf18
 build:
   number: 0
   rpaths:
@@ -12,23 +18,25 @@ build:
     - lib/
 requirements:
   build:
+    - bioconductor-annotate
+    - bioconductor-annotationdbi
+    - bioconductor-biobase
+    - 'bioconductor-s4vectors >=0.9.42'
+    - r-base
+    - r-survival
     - gcc
-    - bioconductor-annotate
-    - bioconductor-annotationdbi
-    - bioconductor-biobase
-    - 'bioconductor-s4vectors >=0.9.42'
-    - r
   run:
-    - libgcc
     - bioconductor-annotate
     - bioconductor-annotationdbi
     - bioconductor-biobase
     - 'bioconductor-s4vectors >=0.9.42'
-    - r
+    - r-base
+    - r-survival
+    - libgcc  # [linux]
 test:
   commands:
-    - '$R -e "library(''genefilter'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/genefilter.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Some basic functions for filtering genes'

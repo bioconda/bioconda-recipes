@@ -1,0 +1,25 @@
+--- updateTaxonomy.sh	2017-02-15 11:18:15.000000000 -0500
++++ updateTaxonomy.sh	2017-02-15 11:45:09.000000000 -0500
+@@ -13,6 +13,13 @@
+     MD5=md5sum
+ fi
+ 
++# This would not resolve symlink:
++# ktPath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
++# Therefore this:
++# perl function to resolve symlinks that will function on Linux and OSX (since 'readlink -f' is different under OSX)
++readlink_f(){ perl -MCwd -e 'print Cwd::abs_path shift' "$1";}
++ktPath=$(dirname $(readlink_f $0))
++
+ makefileAcc2taxid="scripts/accession2taxid.make"
+ makefileTaxonomy="scripts/taxonomy.make"
+ 
+@@ -147,8 +154,6 @@
+ 	die "Cannot use --only-fetch with --only-build."
+ fi
+ 
+-ktPath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
+-
+ if [ "$taxonomyPath" == "" ]
+ then
+ 	taxonomyPath="$ktPath/taxonomy";

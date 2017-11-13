@@ -11,5 +11,8 @@ done
 SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 IGBLAST_DIR=$SCRIPT_DIR/../share/igblast
 
-export IGDATA=$IGBLAST_DIR
+# Set IGDATA only if user has not set it
+if [ -z ${IGDATA+x} ]; then
+  export IGDATA=$IGBLAST_DIR
+fi
 exec $IGBLAST_DIR/bin/igblastn "$@"
