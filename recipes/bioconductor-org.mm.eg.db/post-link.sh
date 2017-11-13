@@ -18,7 +18,7 @@ for URL in ${URLS[@]}; do
   wget -O- -q $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
-  # Platform-specific SHA256sum checks.
+  # Platform-specific md5sum checks.
   if [[ $(uname -s) == "Linux" ]]; then
     if [[ $(md5sum -c <<<"$MD5  $TARBALL") ]]; then
       SUCCESS=1
