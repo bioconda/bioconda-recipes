@@ -1,0 +1,49 @@
+{% set version = '0.9.8' %}
+
+package:
+  name: r-gwpcr
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: v{{ version }}.tar.gz
+  url: https://github.com/Cibiv/gwpcR/archive/v{{ version }}.tar.gz
+  sha256: 5ca5dc9fee79d6368a1bf6b3086cb8672d85e0ff478aba08edee9b0b66b2607b
+
+build:
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - r-data.table
+    - r-akima
+    - r-statmod
+    - gcc                  # [linux]
+    - llvm                 # [osx]
+
+  run:
+    - r-base
+    - r-data.table
+    - r-akima
+    - r-statmod
+    - libgcc               # [linux]
+
+test:
+  commands:
+    - $R -e "library('gwpcR')"  # [not win]
+    - "\"%R%\" -e \"library('gwpcR')\""  # [win]
+
+about:
+  home: https://bitbucket.org/florian_pflug/gwpcr
+  license: AGPLv3 | file COPYING (Restricts use)
+  summary: 'Implements the necessary distributions and parameter estimation
+            procedures for a model of amplification and high-troughput sequencing.
+            The model is based on a mechanistic model of PCR amplification as a
+            Galton-Watson branching process, and on Poissonan sampling to model
+            high-throughput sequencing.'
