@@ -15,7 +15,7 @@ if [[ $(uname) == "Darwin" ]]; then
     sed -i.bak 's/\$EDIR\/thirdparty\/dsk\/bin\/macosx\/dsk/\$EDIR\/dsk/' short_read_connector.sh
 else
     echo "Configuring for Linux..."
-    cp thirdparty/dsk/bin/macosx/dsk ${PREFIX}/bin
+    cp thirdparty/dsk/bin/linux/dsk ${PREFIX}/bin
     sed -i.bak 's/\$EDIR\/thirdparty\/dsk\/bin\/linux\/dsk/\$EDIR\/dsk/' short_read_connector.sh
 fi
 
