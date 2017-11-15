@@ -49,14 +49,14 @@ def parse_footer(fn):
 
 
 # Identify version of the last available tarball visible on
-# http://hgdownload.cse.ucsc.edu/admin/exe and compute its md5sum; place them
+# http://hgdownload.cse.ucsc.edu/admin/exe and compute its  sha256; place them
 # in the ucsc_config.yaml file that looks like:
 #
 #   version: 332
-#   md5: 8c2663c7bd302a77cdf52b2e9e85e2cd
+#   sha256: 8c2663c7bd302a77cdf52b2e9e85e2cd
 ucsc_config = yaml.load(open('ucsc_config.yaml'))
 VERSION = ucsc_config['version']
-MD5 = ucsc_config['md5']
+SHA256 = ucsc_config['sha256']
 
 # Download tarball if it doesn't exist. Always download FOOTER.
 tarball = (
@@ -104,11 +104,29 @@ problematic = {
 # the header and values are the dir in the source code.
 resolve_header_and_summary_conflicts = {
     'rmFaDups': 'rmFaDups',
+    'bedJoinTabOffset': 'bedJoinTabOffset',
+    'webSync': 'webSync',
 }
 
 # Some programs' descriptions do not meet the regex in FOOTER and therefore
 # must be manually assigned.
 manual_descriptions = {
+
+    'expMatrixToBarchartBed': dedent(
+        """
+        Generate a barChart bed6+5 file from a matrix, meta data, and
+        coordinates.
+        """),
+
+    'pslRc': 'reverse-complement psl',
+
+    'pslMapPostChain': dedent(
+        """
+        Post genomic pslMap (TransMap) chaining.  This takes transcripts
+        that have been mapped via genomic chains adds back in
+        blocks that didn't get include in genomic chains due
+        to complex rearrangements or other issues.
+        """),
 
     'estOrient': dedent(
         """
@@ -226,7 +244,7 @@ for block in parse_footer('FOOTER'):
                 package=package,
                 summary=description,
                 version=VERSION,
-                md5=MD5,
+                sha256=SHA256,
             )
         )
 
