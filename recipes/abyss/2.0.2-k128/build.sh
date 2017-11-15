@@ -1,9 +1,5 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
-sed -i.bak "1 s|/usr/bin/make|$PREFIX/bin/make|"  bin/abyss-pe
-rm bin/abyss-pe.bak
-
 if [[ $(uname) == "Darwin" ]]; then
 	echo "Configuring for OSX..."
 	export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include -I$PREFIX/include/boost --stdlib=libstdc++"
@@ -16,3 +12,13 @@ fi
 ./configure --prefix=$PREFIX --with-boost=$PREFIX/include --with-mpi=$PREFIX/include --enable-maxk=128
 make AM_CXXFLAGS=-Wall
 make install 
+
+WRAPPER_PATH="$PREFIX/bin/abyss-pe"
+WRAPPED_PATH="$PREFIX/bin/abyss-pe.Makefile"
+mv "$WRAPPER_PATH" "$WRAPPED_PATH"
+chmod a-x "$WRAPPED_PATH"
+cat >"${WRAPPER_PATH}" <<EOF
+#!/bin/bash
+$(sed 's|^#!/usr/bin/||;q' "$WRAPPED_PATH") '$WRAPPED_PATH' \$@
+EOF
+chmod u+x "$WRAPPER_PATH"
