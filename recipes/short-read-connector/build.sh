@@ -6,15 +6,15 @@ mkdir -p ${PREFIX}/bin
 sed -i.bak 's/make -j/make -j1/' INSTALL
 sed -i.bak 's/2> log_linker_err//' test/simple_test.sh
 
-# installation
-sh INSTALL
-
 # change run_discoSnp++.sh deps path
 sed -i.bak 's/\$EDIR\/bin/\$EDIR/' short_read_connector.sh
 
 # remove precompiled binary for dsk
 sed -i.bak 's/\$EDIR\/thirdparty\/dsk\/bin\/linux\/dsk/dsk/' short_read_connector.sh
 sed -i.bak 's/\$EDIR\/thirdparty\/dsk\/bin\/macosx\/dsk/dsk/' short_read_connector.sh
+
+# installation
+sh INSTALL
 
 # copy binaries
 cp short_read_connector.sh ${PREFIX}/bin
