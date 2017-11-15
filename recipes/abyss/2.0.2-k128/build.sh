@@ -13,12 +13,5 @@ fi
 make AM_CXXFLAGS=-Wall
 make install 
 
-WRAPPER_PATH="$PREFIX/bin/abyss-pe"
-WRAPPED_PATH="$PREFIX/bin/abyss-pe.Makefile"
-mv "$WRAPPER_PATH" "$WRAPPED_PATH"
-chmod a-x "$WRAPPED_PATH"
-cat >"${WRAPPER_PATH}" <<EOF
-#!/bin/bash
-$(sed 's|^#!/usr/bin/||;q' "$WRAPPED_PATH") '$WRAPPED_PATH' \$@
-EOF
-chmod u+x "$WRAPPER_PATH"
+$RECIPE_DIR/create-wrapper.sh "$PREFIX/bin/abyss-pe" "$PREFIX/bin/abyss-pe.Makefile"
+$RECIPE_DIR/create-wrapper.sh "$PREFIX/bin/abyss-bloom-dist.mk" "$PREFIX/bin/abyss-bloom-dist.mk.Makefile"
