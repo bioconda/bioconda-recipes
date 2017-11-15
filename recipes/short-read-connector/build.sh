@@ -2,6 +2,9 @@
 
 mkdir -p ${PREFIX}/bin
 
+# decrease RAM needed
+sed -i.bak 's/make -j/make -j1/' INSTALL
+
 # installation
 sh INSTALL
 
