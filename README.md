@@ -14,7 +14,7 @@ This repository hosts the corresponding recipes.
 
 ## User guide
 
-Please visit https://bioconda.github.io for details.
+Please visit https://bioconda.github.io for details. 
 
 ## Developer guide
 
