@@ -2,7 +2,7 @@
 
 ## Configure and make
 ./configure
-make -j${CPU_COUNT}
+make -j
 
 ## Install
 make install
