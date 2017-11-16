@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Configure and make
-./configure
+./configure --prefix=$PREFIX
 make -j
 
 ## Install
