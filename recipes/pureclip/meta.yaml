@@ -1,36 +1,29 @@
 {% set name = "PureCLIP" %}
 {% set version = "1.0.2" %}
-{% set sha256 = "dbb25d21694288944bfa449d80160d4920c7afa43d16b85141e26bdd5e83f0fd" %}
+{% set sha256_linux64_static = "cdae3df250fb7e8e29319249787d154d97c6ca7314628f357b8a3f7328da473e" %}
 
 package:
   name: {{ name | lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  url: https://github.com/skrakau/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  fn: {{ name | lower }}-{{ version }}-linux64-static.tgz # [linux]
+  url: https://github.com/skrakau/{{ name }}/releases/download/v{{ version }}/pureclip-{{ version }}-linux64-static.tgz # [linux]
+  sha256: {{ sha256_linux64_static }} # [linux]
 
 build:
+  skip: True # [osx]
   number: 0
 
 requirements:
-  build:
-    - gcc # [linux]
-    - llvm # [osx]
-    - gsl {{ CONDA_GSL }}*
-    - zlib {{ CONDA_ZLIB }}*
-    - cmake
-    - openmpi
   run:
-    - libgcc # [linux]
-    - gsl {{ CONDA_GSL }}*
-    - zlib {{ CONDA_ZLIB }}*
-    - openmpi
+    - meme
+    - bedtools
 
 test:
   commands:
     - pureclip --help
+    - winextract --help
 
 about:
   home: https://github.com/skrakau/PureCLIP

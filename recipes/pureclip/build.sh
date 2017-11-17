@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-mkdir build
-cd build
-cmake ../src
-make
-cp omniclip ${PREFIX}/bin
+cp pureclip ${PREFIX}/bin
+cp winextract ${PREFIX}/bin
+cp util/compute_CLmotif_scores.sh ${PREFIX}/bin
