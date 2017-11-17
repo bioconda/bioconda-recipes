@@ -546,3 +546,36 @@ conda-build test works but the mulled-build test fails try these steps:
 - Start up an interactive docker container, ``docker run -it $hash``. You can
   now try running the tests in the recipe that failed, or otherwise poke around
   in the running container to see what the problem was.
+
+
+Using the extended image
+~~~~~~~~~~~~~~~~~~~~~~~~
+For the vast majority of recipes, we use a minimal BusyBox container for
+testing and to upload to quay.io. This allows us to greatly reduce the size of
+images, but there are some packages that are not compatible with the minimal
+container. To support these cases, we offer the ability to in special cases use
+an "extended base" container. This container is maintained at
+https://github.com/bioconda/bioconda-extended-base-image and is automatically
+built by DockerHub when Dockerfile is updated in the GitHub repo.
+
+Please note that **this is not a general solution to packaging issues**, and
+should only be used as a last resort. Cases where the extended base has been
+needed are:
+
+- Unicode support is required (especially if a package uses the ``click``
+  Python package under Python 3; see for example comments `here
+  <https://github.com/bioconda/bioconda-recipes/pull/5541#issuecomment-323755800>`_
+  and `here
+  <https://github.com/bioconda/bioconda-recipes/pull/6094#issuecomment-332272936>`_).
+- ``libGL.so.1`` dependency
+- ``openssl`` dependency, e.g., through ``openmpi``
+
+To use the extended container, add the following to a recipe's ``meta.yaml``:
+
+.. code-block:: yaml
+
+    extra:
+      container:
+        extended-base: True
+
+
