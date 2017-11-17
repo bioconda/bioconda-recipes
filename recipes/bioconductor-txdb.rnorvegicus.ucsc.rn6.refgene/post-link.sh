@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="TxDb.Rnorvegicus.UCSC.rn6.refGene_3.4.1.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.5/data/annotation/src/contrib/TxDb.Rnorvegicus.UCSC.rn6.refGene_3.4.1.tar.gz"
+  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/TxDb.Rnorvegicus.UCSC.rn6.refGene_3.4.1.tar.gz"
   "https://depot.galaxyproject.org/software/TxDb.Rnorvegicus.UCSC.rn6.refGene/TxDb.Rnorvegicus.UCSC.rn6.refGene_3.4.1_src_all.tar.gz"
 )
     MD5="4128d06fb48a78aad08da3765fe55234"
