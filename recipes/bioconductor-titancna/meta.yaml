@@ -1,6 +1,6 @@
-{% set version = "1.16.0" %}
-{% set name = "TitanCNA" %}
-{% set bioc = "3.6" %}
+{% set version="1.15.0" %}
+{% set name="TitanCNA" %}
+{% set bioc="3.6" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,9 +8,11 @@ package:
 source:
   fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 460b44b40d5ab47156ec7cb4cac09650fb2ec00581198e7c3a1d375b0b00ae03
+    - https://github.com/gavinha/TitanCNA/archive/179aa80.tar.gz
+    # - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    # - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    # - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 7bc32ba29fa713f196ed7192d1ce784019bc9d7ec2cab1c495cef1992addc84b
 build:
   number: 0
   rpaths:
@@ -18,15 +20,20 @@ build:
     - lib/
 requirements:
   build:
-    - 'bioconductor-genomeinfodb >=1.8.7'
-    - 'bioconductor-genomicranges >=1.24.3'
-    - 'bioconductor-iranges >=2.6.1'
-    - 'bioconductor-rsamtools >=1.24.0'
-    - 'bioconductor-variantannotation >=1.18.7'
+    - perl # for adding in correct path references to scripts
+    - 'bioconductor-genomeinfodb >=1.4.0'
+    - 'bioconductor-genomicranges >=1.20.5'
+    - 'bioconductor-iranges >=2.2.4'
+    - 'bioconductor-rsamtools >=1.20.4'
     - r-base
-    - 'r-data.table >=1.10.4'
-    - 'r-dplyr >=0.5.0'
-    - 'r-foreach >=1.4.3'
+    - 'r-foreach >=1.4.2'
+    - r-data.table
+    - r-dplyr
+    - bioconductor-variantannotation
+    - r-optparse
+    - r-domc
+    - bioconductor-snpchip
+    - r-stringr
   run:
     - 'bioconductor-genomeinfodb >=1.8.7'
     - 'bioconductor-genomicranges >=1.24.3'
@@ -34,12 +41,19 @@ requirements:
     - 'bioconductor-rsamtools >=1.24.0'
     - 'bioconductor-variantannotation >=1.18.7'
     - r-base
-    - 'r-data.table >=1.10.4'
-    - 'r-dplyr >=0.5.0'
-    - 'r-foreach >=1.4.3'
+    - 'r-foreach >=1.4.2'
+    - r-data.table
+    - r-dplyr
+    - bioconductor-variantannotation
+    - r-optparse
+    - r-domc
+    - bioconductor-snpchip
+    - r-stringr
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
+    - titanCNA.R -h 2>&1 | grep Usage
+    - titanCNA_selectSolution.R -h 2>&1 | grep Usage
 about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
