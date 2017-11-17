@@ -1,7 +1,5 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
-
 if [[ $(uname) == "Darwin" ]]; then
 	echo "Configuring for OSX..."
   	export CPPFLAGS="${CPPFLAGS} -I$PREFIX/include -I$PREFIX/include/boost --stdlib=libstdc++"
@@ -11,7 +9,9 @@ else
   	export CPPFLAGS="-I$PREFIX/include" 
 fi
 
-./configure --prefix=$PREFIX --with-boost=$PREFIX/include --enable-maxk=96
+./configure --prefix=$PREFIX --with-boost=$PREFIX/include --with-mpi=$PREFIX/include --enable-maxk=96
 make AM_CXXFLAGS=-Wall
 make install
 
+$RECIPE_DIR/create-wrapper.sh "$PREFIX/bin/abyss-pe" "$PREFIX/bin/abyss-pe.Makefile"
+$RECIPE_DIR/create-wrapper.sh "$PREFIX/bin/abyss-bloom-dist.mk" "$PREFIX/bin/abyss-bloom-dist.mk.Makefile"

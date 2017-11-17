@@ -1,0 +1,45 @@
+{% set version = "0.1" %}
+
+package:
+  name: dupre
+  version: {{ version }}
+
+source:
+  fn: dupre-{{ version }}.tar.bz2
+  url: https://bitbucket.org/genomeinformatics/dupre/get/dupre-{{ version }}.tar.bz2
+  md5: 507a805c5bd9e7ecc8e65493ab29a6d1
+
+build:
+  number: 0
+  skip: True # [py27]
+  script: python setup.py install --single-version-externally-managed --record record.txt
+  entry_points:
+    - dupre = dupre.dupre:main
+    - bam2occupancy = dupre.bam2occupancy:main
+
+requirements:
+  build:
+    - python
+    - setuptools
+  run:
+    - pysam
+    - python
+    - pulp
+    - numpy
+    - h5py
+    - scipy
+  # optional
+    # - snakemake
+    # - seaborn
+    # - pandas
+
+test:
+  commands:
+    - dupre --version
+    - bam2occupancy -h
+
+about:
+  home: https://bitbucket.org/genomeinformatics/dupre/
+  license: MIT
+  summary: Duplicate rate estimation using linear programming and the hypergeometric distribution
+
