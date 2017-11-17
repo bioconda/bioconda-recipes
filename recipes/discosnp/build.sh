@@ -12,11 +12,13 @@ sed -i.bak 's/. .\/simple_test\.sh/#. .\/simple_test\.sh/' INSTALL
 sh INSTALL
 
 # change run_discoSnp++.sh deps path
-sed -i.bak 's/\$EDIR\/bin/\$EDIR/' run_discoSnp++.sh
-sed -i.bak 's/scripts\//..\/scripts\//' run_discoSnp++.sh
+sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnp++.sh
+sed -i.bak 's|scripts/|../scripts/|' run_discoSnp++.sh
 
-sed -i.bak 's/\$EDIR\/bin/\$EDIR/' run_discoSnpRad.sh
-sed -i.bak 's/scripts_RAD\//..\/scripts_RAD\//' run_discoSnpRad.sh
+sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnpRad.sh
+sed -i.bak 's|scripts_RAD/|../scripts_RAD/|' run_discoSnpRad.sh
+
+sed -i.bak 's|\${EDIR}/../build/bin/||' scripts_RAD/discoRAD_finalization.sh
 
 # copy binaries
 cp run_discoSnp++.sh ${PREFIX}/bin
@@ -30,6 +32,7 @@ cp build/ext/gatb-core/bin/dbgh5 ${PREFIX}/bin
 cp build/bin/read_file_names ${PREFIX}/bin
 cp build/bin/kissnp2 ${PREFIX}/bin
 cp build/bin/kissreads2 ${PREFIX}/bin
+cp build/bin/quick_hierarchical_clustering ${PREFIX}/bin
 
 # copy scripts directory
 cp -R scripts ${PREFIX}
