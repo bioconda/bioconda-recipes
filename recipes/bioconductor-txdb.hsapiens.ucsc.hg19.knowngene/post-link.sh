@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="TxDb.Hsapiens.UCSC.hg19.knownGene_3.2.2.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.5/data/annotation/src/contrib/TxDb.Hsapiens.UCSC.hg19.knownGene_3.2.2.tar.gz"
+  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/TxDb.Hsapiens.UCSC.hg19.knownGene_3.2.2.tar.gz"
   "https://depot.galaxyproject.org/software/TxDb.Hsapiens.UCSC.hg19.knownGene/TxDb.Hsapiens.UCSC.hg19.knownGene_3.2.2_src_all.tar.gz"
 )
     MD5="61be88a81433958571b57d0952be48a0"

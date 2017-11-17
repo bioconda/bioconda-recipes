@@ -1,10 +1,10 @@
 #!/bin/bash
-FN="TxDb.Drerio.UCSC.danRer10.refGene_3.4.0.tar.gz"
+FN="TxDb.Drerio.UCSC.danRer10.refGene_3.4.2.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.5/data/annotation/src/contrib/TxDb.Drerio.UCSC.danRer10.refGene_3.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/TxDb.Drerio.UCSC.danRer10.refGene/TxDb.Drerio.UCSC.danRer10.refGene_3.4.0_src_all.tar.gz"
+  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/TxDb.Drerio.UCSC.danRer10.refGene_3.4.2.tar.gz"
+  "https://depot.galaxyproject.org/software/TxDb.Drerio.UCSC.danRer10.refGene/TxDb.Drerio.UCSC.danRer10.refGene_3.4.2_src_all.tar.gz"
 )
-    MD5="98e1c76aec76584fa76f5a86272970db"
+    MD5="fc024ebcd884f44f52adeb552347ad0a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
