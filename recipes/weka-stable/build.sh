@@ -12,14 +12,14 @@ mkdir -p $PACKAGE_HOME
 cp -r COPYING README WekaManual.pdf changelogs data doc documentation.css documentation.html remoteExperimentServer.jar weka-src.jar weka.gif weka.ico weka.jar wekaexamples.zip $PACKAGE_HOME
 
 # Create wrapper
-SOURCE_FILE=$RECIPE_DIR/weka-dev.sh
-DEST_FILE=$PACKAGE_HOME/weka-dev
+SOURCE_FILE=$RECIPE_DIR/weka-stable.sh
+DEST_FILE=$PACKAGE_HOME/weka-stable
 
 echo "#!/bin/bash" > $DEST_FILE
 echo "PKG_NAME=$PKG_NAME" >> $DEST_FILE
 echo "PKG_VERSION=$PKG_VERSION" >> $DEST_FILE
 echo "PACKAGE_HOME=$PACKAGE_HOME" >> $DEST_FILE
-cat $RECIPE_DIR/weka-dev.sh >> $DEST_FILE
+cat $RECIPE_DIR/weka-stable.sh >> $DEST_FILE
 
 chmod +x $DEST_FILE
 ln -s $DEST_FILE $PREFIX/bin
