@@ -178,6 +178,10 @@ manual_descriptions = {
 # programs listed in FOOTER that should not be considered a "ucsc utility"
 SKIP = [
     'sizeof',
+    'calc',
+    'ave',
+    'gfClient',
+    'gfServer',
 ]
 
 # Some programs need to be built differently. It seems that a subset of
@@ -187,6 +191,7 @@ custom_build_scripts = {
     'fetchChromSizes': 'template-build-fetchChromSizes.sh',
     'pslCDnaFilter': 'template-build-with-stringify.sh',
     'pslMap': 'template-build-with-stringify.sh',
+    'overlapSelect': 'template-build-with-stringify.sh',
 }
 
 for block in parse_footer('FOOTER'):

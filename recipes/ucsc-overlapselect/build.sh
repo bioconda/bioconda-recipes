@@ -10,6 +10,7 @@ else
     (cd kent/src/htslib && make)
     (cd kent/src/jkOwnLib && make)
     (cd kent/src/hg/lib && make)
+    (cd kent/src/utils/stringify && make)
     (cd kent/src/hg/utils/overlapSelect && make)
     cp bin/overlapSelect "$PREFIX/bin"
 fi
