@@ -106,12 +106,12 @@ fi
 if [[ $TRAVIS_PULL_REQUEST != "false" ]]; then
     echo "This is a pull request, so not pushing docs"
     exit 0
-fi
 
-if [[ $TRAVIS_PULL_REQUEST_SLUG != "bioconda/bioconda-utils" ]]; then
+if [[ $TRAVIS_REPO_SLUG != "bioconda/bioconda-utils" ]]; then
     echo "On a fork of the main bioconda-utils repo, so not pushing docs"
     exit 0
 fi
+
 
 # Add, commit, and push
 echo ".*" >> .gitignore
