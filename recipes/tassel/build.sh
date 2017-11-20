@@ -1,12 +1,13 @@
-#!/bin/bash
-
 BINARY_HOME=$PREFIX/bin
 TASSEL_HOME=$PREFIX/opt/tassel
 
-# copy source to bin
+# Copy source to bin
 mkdir -p $BINARY_HOME
 mkdir -p $TASSEL_HOME
 cp -R $SRC_DIR/* $TASSEL_HOME/
+
+# Fix shabang lines
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $TASSEL_HOME/*.pl
 
 # Create custome (de)activate scripts to append or remove TASSEL's top level directory to the PATH
 mkdir -p "${PREFIX}/etc/conda/activate.d"
