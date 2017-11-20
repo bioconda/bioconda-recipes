@@ -124,4 +124,4 @@ git config user.email "${GITHUB_USERNAME}@users.noreply.github.com"
 git add -A .
 git commit --all -m "Updated docs to commit ${SHA}."
 echo "Pushing to $REPO:$BRANCH"
-git push $REPO $BRANCH
+git push $REPO $BRANCH &> /dev/null
