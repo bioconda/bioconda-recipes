@@ -57,7 +57,10 @@ if [[ $TRAVIS_OS_NAME != "linux" ]]; then
     exit 0
 fi
 
-if [[ $TRAVIS_PULL_REQUEST_SLUG == "bioconda/bioconda-utils" ]]; then
+
+if [[ $TRAVIS_REPO_SLUG == "bioconda/bioconda-utils" ]] \
+&& [[ $TRAVIS_PULL_REQUEST == "false" ]] \
+&& [[ $TRAVIS_BRANCH == $BUILD_DOCS_FROM_BRANCH ]]; then
     # Decrypt and ssh-add key.
     ENCRYPTED_KEY_VAR="encrypted_${ENCRYPTION_LABEL}_key"
     ENCRYPTED_IV_VAR="encrypted_${ENCRYPTION_LABEL}_iv"
