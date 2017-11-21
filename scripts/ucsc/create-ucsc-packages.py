@@ -192,8 +192,17 @@ custom_build_scripts = {
     'pslCDnaFilter': 'template-build-with-stringify.sh',
     'pslMap': 'template-build-with-stringify.sh',
     'overlapSelect': 'template-build-with-stringify.sh',
-    'expMatrixToBarchartBed': 'template-build-no-bin.sh',
+    'expMatrixToBarchartBed': 'template-build-cp.sh',
 }
+
+custom_tests = {
+    'expMatrixToBarchartBed': 'template-run_test-exit1.sh',
+}
+
+custom_meta = {
+    'expMatrixToBarchartBed': 'template-meta-with-python.yaml',
+}
+
 
 for block in parse_footer('FOOTER'):
     sys.stderr.write('.')
@@ -244,8 +253,11 @@ for block in parse_footer('FOOTER'):
 
     # Fill in templates and write them to recipe dir
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
+        _template = open(
+            custom_meta.get(program, 'template-meta.yaml')
+        ).read()
         fout.write(
-            meta_template.format(
+            _template.format(
                 program=program,
                 package=package,
                 summary=description,
@@ -267,8 +279,11 @@ for block in parse_footer('FOOTER'):
         )
 
     with open(os.path.join(recipe_dir, 'run_test.sh'), 'w') as fout:
+        _template = open(
+            custom_tests.get(program, 'template-run_test.sh')
+        ).read()
         fout.write(
-            test_template.format(
+            _template.format(
                 program=program
             )
         )
