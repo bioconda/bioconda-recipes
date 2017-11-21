@@ -1,6 +1,11 @@
 #!/bin/bash
 
-./configure --prefix=$PREFIX --with-boost=$PREFIX --with-mpi=$PREFIX --enable-maxk=96
+./configure \
+    --prefix="$PREFIX" \
+    --with-boost="$PREFIX" \
+    --with-mpi="$PREFIX" \
+    --with-sparsehash="$PREFIX"\
+    --enable-maxk=96
 make AM_CXXFLAGS=-Wall
 make install
 
