@@ -1,3 +1,4 @@
+BINARY_HOME=$PREFIX/bin
 TASSEL_HOME=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 
 # Download TASSEL4 from its public repo
@@ -12,13 +13,19 @@ cp -R * $TASSEL_HOME/
 # Fix shabang lines
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $TASSEL_HOME/*.pl
 
-# Create custom (de)activate scripts to append or remove TASSEL's top level directory to the PATH.  Its wrapper
-# programs have to be invoked in its top level directory to detect is runtime libraries correctly
-mkdir -p "${PREFIX}/etc/conda/activate.d"
-cat >"${PREFIX}/etc/conda/activate.d/tassel-activate.sh" <<EOF
-export PATH="\$CONDA_PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM:\$PATH"
+# Create wrapper script in bin to call TASSEL's launch scripts
+cat >"${BINARY_HOME}/run_pipeline.sh" <<EOF
+exec \$CONDA_PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/run_pipeline.pl "\$@"
 EOF
-mkdir -p "${PREFIX}/etc/conda/deactivate.d"
-cat >"${PREFIX}/etc/conda/deactivate.d/tassel-deactivate.sh" <<EOF
-export PATH="\$CONDA_PATH_BACKUP"
+
+cat >"${BINARY_HOME}/run_anything.sh" <<EOF
+exec \$CONDA_PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/run_anything.pl "\$@"
 EOF
+
+cat >"${BINARY_HOME}/start_tassel.sh" <<EOF
+exec \$CONDA_PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/start_tassel.pl "\$@"
+EOF
+
+chmod +x ${BINARY_HOME}/run_pipeline.sh
+chmod +x ${BINARY_HOME}/run_anything.sh
+chmod +x ${BINARY_HOME}/start_tassel.sh
