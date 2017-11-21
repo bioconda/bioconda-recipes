@@ -1,11 +1,12 @@
+#!/bin/bash
+
 mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/lib
-mkdir -p ${PREFIX}/include
 mkdir -p ${PREFIX}/include/pseudogenome/
 mkdir -p ${PREFIX}/include/readsset/
 mkdir -p ${PREFIX}/include/sais/
 mkdir -p ${PREFIX}/include/suffixarray/
-mkdir -p ${PREFIX}/include/est/
+mkdir -p ${PREFIX}/include/test/
 mkdir -p ${PREFIX}/include/index/
 
 # build binaries and lib
@@ -21,10 +22,10 @@ cp dist/pgsagen/*/PgSAgen ${PREFIX}/bin
 cp dist/pgsatest/*/PgSAtest ${PREFIX}/bin
 
 # copy .h into include
-cp src/*.h ${PREFIX}/include
+cp src/*.h ${PREFIX}/include/
 cp src/pseudogenome/*.h ${PREFIX}/include/pseudogenome/
 cp src/readsset/*.h ${PREFIX}/include/readsset/
 cp src/sais/*.h ${PREFIX}/include/sais/
 cp src/suffixarray/*.h ${PREFIX}/include/suffixarray/
-cp src/est/*.h ${PREFIX}/include/est/
+cp src/test/*.h ${PREFIX}/include/test/
 cp src/index/*.h ${PREFIX}/include/index/
