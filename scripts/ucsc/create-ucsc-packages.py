@@ -192,7 +192,7 @@ custom_build_scripts = {
     'pslCDnaFilter': 'template-build-with-stringify.sh',
     'pslMap': 'template-build-with-stringify.sh',
     'overlapSelect': 'template-build-with-stringify.sh',
-    'expMatrixToBarchardBed': 'template-build-no-bin.sh',
+    'expMatrixToBarchartBed': 'template-build-no-bin.sh',
 }
 
 for block in parse_footer('FOOTER'):
