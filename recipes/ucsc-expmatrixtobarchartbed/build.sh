@@ -11,6 +11,6 @@ else
     (cd kent/src/jkOwnLib && make)
     (cd kent/src/hg/lib && make)
     (cd kent/src/utils/expMatrixToBarchartBed && make)
-    cp expMatrixToBarchartBed "$PREFIX/bin"
+    cp kent/src/utils/expMatrixToBarchartBed/expMatrixToBarchartBed "$PREFIX/bin"
 fi
 chmod +x "$PREFIX/bin/expMatrixToBarchartBed"

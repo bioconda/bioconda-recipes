@@ -11,6 +11,6 @@ else
     (cd kent/src/jkOwnLib && make)
     (cd kent/src/hg/lib && make)
     (cd {program_source_dir} && make)
-    cp {program} "$PREFIX/bin"
+    cp {program_source_dir}/{program} "$PREFIX/bin"
 fi
 chmod +x "$PREFIX/bin/{program}"
