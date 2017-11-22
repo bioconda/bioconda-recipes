@@ -42,5 +42,11 @@ curl -ks -o MaxEntScan.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/
 curl -ks -o SpliceRegion.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/SpliceRegion.pm
 curl -ks -o GeneSplicer.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/GeneSplicer.pm
 curl -ks -o dbscSNV.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/dbscSNV.pm
-curl -ks -o LoF.pm https://raw.githubusercontent.com/konradjk/loftee/master/LoF.pm
-curl -ks -o splice_module.pl https://raw.githubusercontent.com/konradjk/loftee/master/splice_module.pl
+curl -L -ks -o loftee.tar.gz https://github.com/konradjk/loftee/archive/8de80a4.tar.gz
+tar -xzvpf loftee.tar.gz
+mv loftee-*/*.pl .
+mv loftee-*/*.pm .
+mv loftee-*/maxEntScan .
+mv loftee-*/splice_data .
+rm -f loftee.tar.gz
+rm -rf loftee-*
