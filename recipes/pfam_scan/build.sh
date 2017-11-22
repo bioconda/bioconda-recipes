@@ -9,8 +9,7 @@ cp -r * $outdir
 # Short wrapper script which sets PERL5LIB while running
 cat > $PREFIX/bin/pfam_scan.pl <<EOF
 #!/bin/bash
-export PERL5LIB=$outdir:$outdir/
-$outdir/pfam_scan.pl \$@
-unset PERL5LIB
+# Last line of script to ensure any failure return code is passed on:
+PERL5LIB=$outdir:$PERL5LIB $outdir/pfam_scan.pl \$@
 EOF
 chmod +x $PREFIX/bin/pfam_scan.pl
