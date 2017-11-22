@@ -1,16 +1,30 @@
 #!/bin/bash
 
 mkdir -p ${PREFIX}/bin
+mkdir -p ${PREFIX}/lib
+mkdir -p ${PREFIX}/pgsa_src
+
+# get src and compile libPgSA
+wget https://github.com/kowallus/PgSA/archive/0d7c97f22a07fce96e0638deb09d2a8c05ed3d8b.zip
+unzip 0d7c97f22a07fce96e0638deb09d2a8c05ed3d8b.zip
+cd PgSA-0d7c97f22a07fce96e0638deb09d2a8c05ed3d8b
 
 make build CONF=pgsalib
-make PGSA_PATH=$PREFIX
+cp dist/pgsalib/*/libPgSA.so ${PREFIX}/lib
 
-# change path to find dependencies
-sed -i.bak 's|(PGSA_PATH)dist/pgsalib/GNU-Linux-x86/|(PGSA_PATH)/bin/|' Makefile
-sed -i.bak 's|(PGSA_PATH)src|(PGSA_PATH)/include|' Makefile
+# return to working dir
+cd ..
 
-# change path for find dependencies
+# change path to find lib
+sed -i.bak 's|$(PGSA_PATH)dist/pgsalib/GNU-Linux-x86/|${PREFIX}/lib/|' Makefile
+
+# change path for dependencies
 sed -i.bak 's|$hgf/bin/||' HG-CoLoR
 
+# compilation
+ABSOLUTE_PGSA_PATH=`pwd`
+make PGSA_PATH=${ABSOLUTE_PGSA_PATH}/PgSA-0d7c97f22a07fce96e0638deb09d2a8c05ed3d8b/
+
+# copy binaries
 cp bin/* ${PREFIX}/bin
 cp HG-CoLoR ${PREFIX}/bin
