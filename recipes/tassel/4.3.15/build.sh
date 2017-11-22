@@ -2,8 +2,8 @@ BINARY_HOME=$PREFIX/bin
 TASSEL_HOME=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 
 # Download TASSEL4 from its public repo
-git clone git://git.code.sf.net/p/tassel/tassel4-standalone tassel-tassel4-standalone
-cd tassel-tassel4-standalone
+git clone git://git.code.sf.net/p/tassel/tassel4-standalone tassel4-standalone
+cd tassel4-standalone
 git checkout V$PKG_VERSION
 
 # Copy source to the conda environment
