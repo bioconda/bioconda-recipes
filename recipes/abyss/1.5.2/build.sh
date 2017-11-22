@@ -17,8 +17,7 @@ BOOST_INCLUDE="$PREFIX/include"
     --prefix="$PREFIX" \
     --with-boost="$BOOST_INCLUDE" \
     --with-mpi="$PREFIX" \
-    --with-sparsehash="$PREFIX" \
-    --enable-maxk=96
+    --with-sparsehash="$PREFIX"
 make AM_CXXFLAGS=-Wall
 make install
 

@@ -13,8 +13,7 @@ fi
     --prefix="$PREFIX" \
     --with-boost="$PREFIX" \
     --with-mpi="$PREFIX" \
-    --with-sparsehash="$PREFIX" \
-    --enable-maxk=96
+    --with-sparsehash="$PREFIX"
 make AM_CXXFLAGS=-Wall
 make install
 
