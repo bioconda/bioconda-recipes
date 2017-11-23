@@ -2,38 +2,37 @@
 {% set name = "vgraph" %}
 {% set version = "1.2.0" %}
 # held back until github archives work
-#{% set sha256 = "f727208daeb0a23e5248ddbe2fe2a3fdd8ca5e510cc4ce7aa6bbccb9b2bc5805" %}
+#{% set sha256 = "52a2c85165c75dd6052a07cc31dcf1b10ffde623b4e4423433a35bc726b005f0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  held back until github archives work
+  #held back until github archives work
   #fn: {{ name }}-{{ version }}.tar.gz
-  #url: http://github.com/pvanheus/{{ name }}/archive/v{{ version }}.tar.gz
+  #url: http://github.com/{{ github_author }}/{{ name }}/archive/v{{ version }}.tar.gz
   #sha256: {{ sha256 }}
   git_url: https://github.com/{{ github_author }}/{{ name }}.git
   git_rev: v{{ version }} 
+  patches:
+    - setup_py.patch
 
 build:
   number: 0
+  skip: True  # [py<35]
   script: python setup.py install --single-version-externally-managed --record record.txt
 
 requirements:
   build:
-    - python >3
+    - python
     - setuptools
     - setuptools_scm 1.15.0
     - setuptools_scm_git_archive 1.0
     - cython
     - pysam
-    - pytest
-    - pytest-runner
-    - coverage
   run:
-    - python >3
-    - cython
+    - python
     - pysam
 
 test:
