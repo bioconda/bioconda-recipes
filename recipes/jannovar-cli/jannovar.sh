@@ -53,7 +53,7 @@ if [ "$jvm_mem_opts" == "" ]; then
 fi
 
 pass_arr=($pass_args)
-if [[ ${pass_arr[0]:=} == org* ]]
+if [[ ${pass_arr[0]:=} == de* ]]
 then
     eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/jannovar-cli-$PKG_VERSION.jar" $pass_args
 else
