@@ -1,0 +1,70 @@
+{% set name = "vgraph" %}
+{% set version = "1.2.0" %}
+{% set sha256 = "2a3d6bb20ad583cbbe61a6420530dc457df0ccebea2932edfb51edfa26c932c8" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://github.com/bioinformed/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record record.txt
+
+requirements:
+  build:
+    - python >3
+    - setuptools
+    - setuptools_scm 1.15.0
+    - cython
+    - pysam
+    - pytest
+    - pytest-runner
+    - coverage
+  run:
+    - python >3
+    - pysam
+
+test:
+  # Some package might need a `test/commands` key to check CLI.
+  # List all the packages/modules that `run_test.py` imports.
+  commands:
+    - vgraph --help
+  imports:
+    - vgraph
+    - vgraph
+    - vgraph.bed
+    - vgraph.dbmatch
+    - vgraph.graph
+    - vgraph.intervals
+    - vgraph.iterstuff
+    - vgraph.lazy_fasta
+    - vgraph.linearmatch
+    - vgraph.lru_cache
+    - vgraph.match
+    - vgraph.norm
+    - vgraph.repmatch
+    - vgraph.smartfile
+    - vgraph.vgraph
+
+about:
+  home: https://github.com/bioinformed/vgraph
+  license: Apache-2.0
+  # It is strongly encouraged to include a license file in the package,
+  # (even if the license doesn't require it) using the license_file entry.
+  # See http://conda.pydata.org/docs/building/meta-yaml.html#license-file
+  license_file: LICENSE.txt
+  summary: 'A command line application and Python library to compare genetic variants using variant graphs.'
+
+  # The remaining entries in this section are optional, but recommended
+  description: |
+    vgraph is a command line application and Python library to compare genetic variants
+    using variant graphs. `vgraph` utilizes a graph representation of genomic variants in to
+    precisely compare complex variants that are refractory to comparison by conventional
+    comparison methods.
+  doc_url: https://github.com/bioinformed/vgraph
+  dev_url: https://github.com/bioinformed/vgraph
