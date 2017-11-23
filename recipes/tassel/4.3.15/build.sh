@@ -1,14 +1,9 @@
 BINARY_HOME=$PREFIX/bin
 TASSEL_HOME=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 
-# Download TASSEL4 from its public repo
-git clone git://git.code.sf.net/p/tassel/tassel4-standalone tassel4-standalone
-cd tassel4-standalone
-git checkout V$PKG_VERSION
-
 # Copy source to the conda environment
 mkdir -p $TASSEL_HOME
-cp -R * $TASSEL_HOME/
+cp -R $SRC_DIR/* $TASSEL_HOME/
 
 # Fix shabang lines
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $TASSEL_HOME/*.pl
