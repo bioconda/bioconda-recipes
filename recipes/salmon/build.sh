@@ -1,6 +1,11 @@
 #!/bin/bash
 set -eu -o pipefail
 
+if [[ "$(uname)" == Darwin ]]; then
+    CC=clang
+    CXX=clang++
+fi
+
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
