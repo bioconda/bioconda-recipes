@@ -1,6 +1,3 @@
-os:
-  - osx
-  - linux
 language: generic
 sudo: required
 
@@ -18,7 +15,25 @@ before_install:
 
 install: scripts/travis-setup.sh
 
-script: scripts/travis-run.sh
+jobs:
+  include:
+    # in forks, master and bulk, we run osx and linux in parallel on each push
+    - stage: Linux+macOS
+      if: (type = push) AND ((branch IN (master, bulk)) OR (fork = true))
+      os: linux
+      script: scripts/travis-run.sh
+    - os: osx
+      if: (type = push) AND ((branch IN (master, bulk)) OR (fork = true))
+      script: scripts/travis-run.sh
+    # in pull requests, we first run linux and only if that succeeds, we run osx
+    - stage: Linux
+      if: type = pull_request
+      os: linux
+      script: scripts/travis-run.sh
+    - stage: macOS
+      if: type = pull_request
+      os: osx
+      script: scripts/travis-run.sh
 
 env:
   global:
@@ -26,7 +41,7 @@ env:
     - BIOCONDA_UTILS_TAG=master
     - BIOCONDA_UTILS_BUILD_ARGS="--loglevel=info"
     - BIOCONDA_UTILS_LINT_ARGS=
-    - MINICONDA_VER="4.2.12"
+    - MINICONDA_VER="4.3.21"
   matrix:
     - SUBDAG=0
 
