@@ -290,7 +290,7 @@ class BioCProjectPage(object):
         """
         if not self._cargoport_url:
             url = (
-                'https://depot.galaxyproject.org/software/{0.package}/{0.package}_'
+                'https://depot.galaxyproject.org/software/bioconductor-{0.package}/bioconductor-{0.package}_'
                 '{0.version}_src_all.tar.gz'.format(self)
             )
             response = requests.get(url)
@@ -601,7 +601,7 @@ class BioCProjectPage(object):
         """
 
         version_placeholder = '{{ version }}'
-        package_placeholder = '{{ name }}'
+        package_placeholder = '{{ name|lower }}'
         bioc_placeholder = '{{ bioc }}'
 
         def sub_placeholders(x):
