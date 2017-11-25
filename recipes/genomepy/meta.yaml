@@ -1,48 +1,65 @@
+{% set version = "0.5.0" %}
+
 package:
   name: genomepy
-  version: "0.3.1"
+  version: {{ version }}
 
 source:
-  fn: genomepy-0.3.1.tar.gz
-  url: https://github.com/simonvh/genomepy/releases/download/0.3.1/genomepy-0.3.1.tar.gz
-  md5: 415f1a86fbbd0b819faaacf27e8a2e88
+  fn: genomepy-{{ version }}.tar.gz
+  url: https://github.com/simonvh/genomepy/releases/download/{{ version }}/genomepy-{{ version }}.tar.gz
+  sha256: 94ff24652af2d1013c514b72801ae1f1779cd347da08fb22d6bea8accaae6d07
 
 build:
   number: 0
-  # click needs to be patched in order to properly detect unicode in py3k
-  skip: true  # [py3k]
 
 requirements:
   build:
     - python
     - setuptools
-    - nose
+    - pytest
     - click
-    - pyfaidx
-    - norns >0.0.1
+    - pyfaidx >=0.5.1
+    - norns >0.1.1
     - xmltodict
     - bucketcache
     - msgpack-python
     - requests
+    - ucsc-bedtogenepred
+    - ucsc-gtftogenepred
+    - ucsc-genepredtobed
+    - ucsc-genepredtogtf
 
   run:
     - python
-    - nose
+    - pytest
     - click
-    - pyfaidx
-    - norns >0.0.1
+    - pyfaidx >=0.5.1
+    - norns >0.1.1
     - xmltodict
     - bucketcache
     - msgpack-python
     - requests
+    - ucsc-bedtogenepred
+    - ucsc-gtftogenepred
+    - ucsc-genepredtobed
+    - ucsc-genepredtogtf
 
 test:
   # Python imports
   imports:
     - genomepy
 
+  commands: 
+    - genomepy -h
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]
+
 about:
   home: https://github.com/simonvh/genomepy
   license: MIT License
-  summary: 'Easy install of genomes.'
+  summary: 'Download genomes the easy way.'
   license_family: MIT
