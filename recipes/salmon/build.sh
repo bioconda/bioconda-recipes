@@ -2,8 +2,8 @@
 set -eu -o pipefail
 
 if [[ "$(uname)" == Darwin ]]; then
-    CC=clang
-    CXX=clang++
+    export CC=clang
+    export CXX=clang++
 fi
 
 mkdir -p $PREFIX/bin
