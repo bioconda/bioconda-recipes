@@ -3,7 +3,10 @@ TASSEL_HOME=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 
 # Copy source to the conda environment
 mkdir -p $TASSEL_HOME
-cp -R $SRC_DIR/* $TASSEL_HOME//
+cp -R $SRC_DIR/* $TASSEL_HOME/
+
+# Convert CRLF in wrappers to LF
+sed -i $'s/.$//' $TASSEL_HOME/*.pl
 
 # Create symbolic links for TASSEL's wrappers
 ln -s $TASSEL_HOME/run_anything.pl $BINARY_HOME/
