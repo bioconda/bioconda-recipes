@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Hsapiens.UCSC.hg38_1.4.1.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.5/data/annotation/src/contrib/BSgenome.Hsapiens.UCSC.hg38_1.4.1.tar.gz"
+  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/BSgenome.Hsapiens.UCSC.hg38_1.4.1.tar.gz"
   "https://depot.galaxyproject.org/software/BSgenome.Hsapiens.UCSC.hg38/BSgenome.Hsapiens.UCSC.hg38_1.4.1_src_all.tar.gz"
 )
     MD5="1b95bfdc9763351b04611666cd624b30"
