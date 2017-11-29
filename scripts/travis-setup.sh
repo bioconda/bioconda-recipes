@@ -22,6 +22,7 @@ done
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+easy_install --user pip
 pip install pyyaml
 sudo mkdir /anaconda
 sudo chown -R $USER /anaconda
