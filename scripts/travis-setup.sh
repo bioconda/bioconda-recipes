@@ -22,6 +22,7 @@ done
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+compgen -c | grep '^\(py\|pip\|easy_\)' | sort
 pip install pyyaml
 sudo mkdir /anaconda
 sudo chown -R $USER /anaconda
