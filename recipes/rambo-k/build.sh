@@ -1,4 +1,4 @@
 mkdir -p $PREFIX/bin
-cp -R *.py *.jar $PREFIX/bin
+cp *.py *.jar $PREFIX/bin
 
 
