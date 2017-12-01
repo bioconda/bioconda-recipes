@@ -14,5 +14,5 @@ TEST_FILE="workflow.test.xml"
 sed -i "s#BASE_DIR#${OUT}/#" "${TEST_FILE}"
 
 # workflow test
-timeout 15s watchdog-cmd -mailWaitTime 0 -x "${TEST_FILE}" -p 8080 2>&1 1> /dev/null
+timeout 15s watchdog-cmd -mailWaitTime 0 -x "${TEST_FILE}" -p 8616 2>&1 1> /dev/null
 exit 0
