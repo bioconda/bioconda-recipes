@@ -11,7 +11,7 @@ timeout 15s watchdog-cmd --help 2>&1 1> /dev/null
 
 # prepare workflow test
 TEST_FILE="workflow.test.xml"
-sed -i "s#BASE_DIR#${OUT}/#" "${TEST_FILE}"
+sed -E -i "s#BASE_DIR#${OUT}/#" "${TEST_FILE}"
 
 # workflow test
 timeout 15s watchdog-cmd -mailWaitTime 0 -x "${TEST_FILE}" -p 8080 2>&1 1> /dev/null
