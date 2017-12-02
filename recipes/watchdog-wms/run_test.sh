@@ -6,13 +6,16 @@ set -eu -o pipefail
 VERSION="${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OUT="${PREFIX}/share/${VERSION}"
 
+# found at: http://stackoverflow.com/questions/601543/command-line-command-to-auto-kill-a-command-after-a-certain-amount-of-time
+function timeoutperl() { perl -e 'alarm shift; exec @ARGV' "$@"; }
+
 # basic test
-timeout 15s watchdog-cmd --help 2>&1 1> /dev/null
+timeoutperl 5 watchdog-cmd --help 2>&1 1> /dev/null;
 
 # prepare workflow test
 TEST_FILE="workflow.test.xml"
 sed -i "s#BASE_DIR#${OUT}/#" "${TEST_FILE}"
 
 # workflow test
-timeout 15s watchdog-cmd -mailWaitTime 0 -x "${TEST_FILE}" -p 8616 2>&1 1> /dev/null
+timeoutperl 10 watchdog-cmd -mailWaitTime 0 -x "${TEST_FILE}" -p 8616 2>&1 1> /dev/null
 exit 0
