@@ -7,16 +7,14 @@ VERSION="${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OUT="${PREFIX}/share/${VERSION}"
 PATH="$PATH:$OUT/core_lib/wrapper/"
 
-# found at: http://stackoverflow.com/questions/601543/command-line-command-to-auto-kill-a-command-after-a-certain-amount-of-time
-function timeoutperl() { perl -e 'alarm shift; exec @ARGV' "$@"; }
+function timeoutbash() { bash -c '(sleep 10; kill -9 $$ 2>/dev/null) & exec $@' $0 $@; }
 
 # basic test
-timeoutperl 5 watchdog-cmd --help 2>&1 1> /dev/null;
+timeoutbash watchdog-cmd --help 2>&1>/dev/null
 
 # prepare workflow test
 TEST_FILE="workflow.test.xml"
 sedinline "s#BASE_DIR#${OUT}/#" "${TEST_FILE}"
-
 # workflow test
-timeoutperl 10 watchdog-cmd -mailWaitTime 0 -x "${TEST_FILE}" -p 8616 2>&1 1> /dev/null
+timeoutbash watchdog-cmd -mailWaitTime 0 -x "${TEST_FILE}" -p 8616 2>&1>/dev/null
 exit 0
