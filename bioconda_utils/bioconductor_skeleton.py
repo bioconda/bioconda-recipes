@@ -792,7 +792,7 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
 
               # Platform-specific md5sum checks.
               if [[ $(uname -s) == "Linux" ]]; then
-                if [[ $(md5sum -c <<<"$MD5  $TARBALL") ]]; then
+                if md5sum -c <<<"$MD5  $TARBALL"; then
                   SUCCESS=1
                   break
                 fi
