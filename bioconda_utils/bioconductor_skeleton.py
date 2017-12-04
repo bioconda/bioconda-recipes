@@ -300,7 +300,7 @@ class BioCProjectPage(object):
                     'this is a new package or an updated version. Cargo Port '
                     'will archive a working URL upon merging', url
                 )
-            else:
+            elif response.status_code != 200:
                 raise PageNotFoundError("Unexpected error: {0.status_code} ({0.reason})".format(response))
 
             self._cargoport_url = url
