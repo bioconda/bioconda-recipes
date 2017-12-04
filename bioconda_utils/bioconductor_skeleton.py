@@ -391,7 +391,7 @@ class BioCProjectPage(object):
         with open(tmp, 'wb') as fout:
             logger.info('Downloading {0} to {1}'.format(self.tarball_url, fn))
             response = requests.get(self.tarball_url)
-            if response:
+            if response.status_code == 200:
                 fout.write(response.content)
             else:
                 raise PageNotFoundError('Unexpected error {0.status_code} ({0.reason})'.format(response))
