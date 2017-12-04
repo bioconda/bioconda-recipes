@@ -812,7 +812,7 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
             fi
 
             # Install and clean up
-            R CMD INSTALL --build $TARBALL
+            R CMD INSTALL --library=$PREFIX/lib/R/library --build $TARBALL
             rm $TARBALL""")
         with open(os.path.join(recipe_dir, 'post-link.sh'), 'w') as fout:
             fout.write(dedent(post_link_template))
