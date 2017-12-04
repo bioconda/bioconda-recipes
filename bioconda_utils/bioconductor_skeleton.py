@@ -313,7 +313,7 @@ class BioCProjectPage(object):
         """
         url = bioconductor_tarball_url(self.package, self.version, self.bioc_version)
         response = requests.head(url)
-        if response and response.status_code == 200:
+        if response.status_code == 200:
             return url
 
     @property
@@ -323,7 +323,7 @@ class BioCProjectPage(object):
         """
         url = bioconductor_annotation_data_url(self.package, self.version, self.bioc_version)
         response = requests.head(url)
-        if response and response.status_code == 200:
+        if response.status_code == 200:
             self.is_data_package = True
             return url
 
@@ -334,7 +334,7 @@ class BioCProjectPage(object):
         """
         url = bioconductor_experiment_data_url(self.package, self.version, self.bioc_version)
         response = requests.head(url)
-        if response and response.status_code == 200:
+        if response.status_code == 200:
             self.is_data_package = True
             return url
 
@@ -348,7 +348,7 @@ class BioCProjectPage(object):
             for url in urls:
                 if url is not None:
                     response = requests.head(url)
-                    if response and response.status_code == 200:
+                    if response.status_code == 200:
                         self._tarball_url = url
                         return url
 
