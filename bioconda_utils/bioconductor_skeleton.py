@@ -349,6 +349,7 @@ class BioCProjectPage(object):
                 if url is not None:
                     response = requests.head(url)
                     if response and response.status_code == 200:
+                        self._tarball_url = url
                         return url
 
             logger.error(
