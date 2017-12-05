@@ -1,7 +1,13 @@
 #!/bin/bash
 
 # If it has Build.PL use that, otherwise use Makefile.PL
-cpanm --installdeps .
+if [ `uname -s` == "Darwin" ]; then
+	export HOME='/Users/travis'
+	cpanm --installdeps .
+else
+	cpanm --installdeps .
+fi
+
 
 if [ -f Build.PL ]; then
     perl Build.PL
