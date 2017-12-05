@@ -28,6 +28,3 @@ if [ "$RET" == "INSTALLED" ]; then
 else 
 	echo "Javafx is not installed. No symlink to '${OUT}/watchdog-gui.sh' is created."
 fi
-
-# prepare test file
-sedinline "s#BASE_DIR#${OUT}/#" "workflow.test.xml"
