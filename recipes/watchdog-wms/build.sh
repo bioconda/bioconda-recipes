@@ -4,6 +4,7 @@ set -eu -o pipefail
 # create output folder name
 VERSION="${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OUT="${PREFIX}/share/${VERSION}"
+PATH="$PATH:$OUT/core_lib/wrapper/"
 
 # copy the files to /share/${VERSION}
 mkdir -p "${OUT}"
