@@ -776,10 +776,9 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
         post_link_template += urls
         post_link_template += dedent(
             '''
-        )
+            )
             MD5="{proj.md5}"
-            '''.format(proj=proj, urls=urls)
-        )
+            '''.format(proj=proj, urls=urls))
         post_link_template += dedent(
             """
             # Use a staging area in the conda dir rather than temp dirs, both to avoid
@@ -817,7 +816,7 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
 
             # Install and clean up
             R CMD INSTALL --library=$PREFIX/lib/R/library --build $TARBALL
-            rm $TARBALL""")
+            rm -r $STAGING""")
         with open(os.path.join(recipe_dir, 'post-link.sh'), 'w') as fout:
             fout.write(dedent(post_link_template))
         pre_unlink_template = "rm -r $PREFIX/lib/R/library/{0}\n".format(package)
