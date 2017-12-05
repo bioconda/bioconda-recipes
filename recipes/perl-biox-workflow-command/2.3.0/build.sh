@@ -2,8 +2,7 @@
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ `uname -s` == "Darwin" ]; then
-	export HOME='/Users/travis'
-	cpanm --installdeps .
+	HOME=/tmp cpanm --installdeps .
 else
 	cpanm --installdeps .
 fi
