@@ -1,8 +1,14 @@
 #!/bin/bash
 
+if [ "$(uname)" == "Darwin" ]; then
+    HOME=/tmp cpanm --installdeps .
+    HOME=/tmp cpanm --force -nq List::Util
+else
+    cpanm --installdeps .
+    cpanm --force -nq List::Util
+fi
+
 # If it has Build.PL use that, otherwise use Makefile.PL
-cpanm --force List::Util
-cpanm --installdeps .
 if [ -f Build.PL ]; then
     perl Build.PL
     ./Build
