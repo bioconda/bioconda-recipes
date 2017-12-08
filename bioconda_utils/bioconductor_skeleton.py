@@ -290,7 +290,7 @@ class BioCProjectPage(object):
         """
         if not self._cargoport_url:
             url = (
-                'https://depot.galaxyproject.org/software/{0.package}/{0.package}_'
+                'https://depot.galaxyproject.org/software/bioconductor-{0.package_lower}/bioconductor-{0.package_lower}_'
                 '{0.version}_src_all.tar.gz'.format(self)
             )
             response = requests.get(url)
@@ -300,7 +300,7 @@ class BioCProjectPage(object):
                     'this is a new package or an updated version. Cargo Port '
                     'will archive a working URL upon merging', url
                 )
-            else:
+            elif response.status_code != 200:
                 raise PageNotFoundError("Unexpected error: {0.status_code} ({0.reason})".format(response))
 
             self._cargoport_url = url
@@ -313,7 +313,7 @@ class BioCProjectPage(object):
         """
         url = bioconductor_tarball_url(self.package, self.version, self.bioc_version)
         response = requests.head(url)
-        if response and response.status_code == 200:
+        if response.status_code == 200:
             return url
 
     @property
@@ -323,7 +323,7 @@ class BioCProjectPage(object):
         """
         url = bioconductor_annotation_data_url(self.package, self.version, self.bioc_version)
         response = requests.head(url)
-        if response and response.status_code == 200:
+        if response.status_code == 200:
             self.is_data_package = True
             return url
 
@@ -334,7 +334,7 @@ class BioCProjectPage(object):
         """
         url = bioconductor_experiment_data_url(self.package, self.version, self.bioc_version)
         response = requests.head(url)
-        if response and response.status_code == 200:
+        if response.status_code == 200:
             self.is_data_package = True
             return url
 
@@ -348,7 +348,8 @@ class BioCProjectPage(object):
             for url in urls:
                 if url is not None:
                     response = requests.head(url)
-                    if response and response.status_code == 200:
+                    if response.status_code == 200:
+                        self._tarball_url = url
                         return url
 
             logger.error(
@@ -390,7 +391,7 @@ class BioCProjectPage(object):
         with open(tmp, 'wb') as fout:
             logger.info('Downloading {0} to {1}'.format(self.tarball_url, fn))
             response = requests.get(self.tarball_url)
-            if response:
+            if response.status_code == 200:
                 fout.write(response.content)
             else:
                 raise PageNotFoundError('Unexpected error {0.status_code} ({0.reason})'.format(response))
@@ -602,6 +603,7 @@ class BioCProjectPage(object):
 
         version_placeholder = '{{ version }}'
         package_placeholder = '{{ name }}'
+        package_lower_placeholder = '{{ name|lower }}'
         bioc_placeholder = '{{ bioc }}'
 
         def sub_placeholders(x):
@@ -609,6 +611,7 @@ class BioCProjectPage(object):
                 x
                 .replace(self.version, version_placeholder)
                 .replace(self.package, package_placeholder)
+                .replace(self.package_lower, package_lower_placeholder)
                 .replace(self.bioc_version, bioc_placeholder)
             )
 
