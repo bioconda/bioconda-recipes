@@ -3,8 +3,10 @@
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ "$(uname)" == "Darwin" ]; then
     HOME=/tmp cpanm --installdeps .
+    HOME=/tmp cpanm Devel::StackTrace
 else
     cpanm --installdeps .
+    cpanm Devel::StackTrace
 fi
 
 
