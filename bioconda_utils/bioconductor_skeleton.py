@@ -815,11 +815,12 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
             fi
 
             # Install and clean up
-            R CMD INSTALL --library=$PREFIX/lib/R/library --build $TARBALL
-            rm -r $STAGING""")
+            R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
+            rm $TARBALL
+            rmdir $STAGING""")
         with open(os.path.join(recipe_dir, 'post-link.sh'), 'w') as fout:
             fout.write(dedent(post_link_template))
-        pre_unlink_template = "rm -r $PREFIX/lib/R/library/{0}\n".format(package)
+        pre_unlink_template = "R CMD REMOVE --library=$PREFIX/lib/R/library/ {0}\n".format(package)
         with open(os.path.join(recipe_dir, 'pre-unlink.sh'), 'w') as fout:
             fout.write(pre_unlink_template)
 
