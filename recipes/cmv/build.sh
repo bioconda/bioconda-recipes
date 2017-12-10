@@ -8,12 +8,12 @@ then
     export STACK_ROOT="${SRC_DIR}/s"
     stack setup --local-bin-path ${SRC_DIR}/s
     stack update
-    stack install --extra-include-dirs ${PREFIX}/include --local-bin-path ${PREFIX}/bin
+    stack install --extra-include-dirs ${PREFIX}/include --extra-lib-dirs ${PREFIX}/lib --local-bin-path ${PREFIX}/bin
     rm -r "${SRC_DIR}/s"
 else
     stack setup
     stack update
-    stack install --extra-include-dirs ${PREFIX}/include --local-bin-path ${PREFIX}/bin
+    stack install --extra-include-dirs ${PREFIX}/include --extra-lib-dirs ${PREFIX}/lib --local-bin-path ${PREFIX}/bin
 fi
 #cleanup
 rm -r .stack-work
