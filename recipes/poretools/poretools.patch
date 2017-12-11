@@ -92,20 +92,39 @@ diff -Naur poretools-0.6.1a1.orig/poretools/squiggle.py poretools-0.6.1a1/poreto
 diff -Naur poretools-0.6.1a1.orig/poretools/times.py poretools-0.6.1a1/poretools/times.py
 --- poretools-0.6.1a1.orig/poretools/times.py	2017-05-31 14:36:46.000000000 -0400
 +++ poretools-0.6.1a1/poretools/times.py	2017-12-08 10:33:43.635313503 -0500
+@@ -1,5 +1,5 @@
+ import Fast5File
+-from time import strftime, localtime
++from time import strftime, localtime, gmtime
+ import sys
+ 
+ #logging
 @@ -28,7 +28,11 @@
  			else:
  				read_length = 0
  
 -			lt = localtime(start_time)
+-			print "\t".join([fast5.get_channel_number(),
 +			if args.utc:
 +				lt = gmtime(start_time)
 +			else:
 +				lt = localtime(start_time)
 +
- 			print "\t".join([fast5.get_channel_number(),
++			print "\t".join(str(column) for column in [fast5.get_channel_number(),
  				fast5.filename, 
- 				str(read_length),
-diff -Naur poretools-0.6.1a1.orig/poretools/yield_plot.py poretools-0.6.1a1/poretools/yield_plot.py
+-				str(read_length),
+-				str(fast5.get_exp_start_time()),
+-				str(start_time), \
+-				str(fast5.get_duration()),
+-				str(fast5.get_end_time()),
++				read_length,
++				fast5.get_exp_start_time(),
++				start_time, \
++				fast5.get_duration(),
++				fast5.get_end_time(),
+ 				strftime('%Y-%m-%dT%H:%M:%S%z', lt),
+ 				strftime('%d', lt),
+ 				strftime('%H', lt),
 --- poretools-0.6.1a1.orig/poretools/yield_plot.py	2017-05-31 14:36:46.000000000 -0400
 +++ poretools-0.6.1a1/poretools/yield_plot.py	2017-12-08 10:34:25.439543580 -0500
 @@ -50,6 +50,9 @@
