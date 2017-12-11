@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# 3.3.0 not strictly required but earlier versions not tested
 # Swap out strict requirements to allow builds and tests
 sed -i.bak 's/GenomicRanges (>= 1.24.0)/GenomicRanges (>= 1.22.4)/' DESCRIPTION
 sed -i.bak 's/IRanges (>= 2.6.0)/IRanges (>= 2.4.8)/' DESCRIPTION
