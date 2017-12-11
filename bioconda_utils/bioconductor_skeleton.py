@@ -198,6 +198,7 @@ class BioCProjectPage(object):
         """
         self.base_url = base_url
         self.package = package
+        self.package_lower = package.lower()
         self._md5 = None
         self._sha256 = None
         self._cached_tarball = None
