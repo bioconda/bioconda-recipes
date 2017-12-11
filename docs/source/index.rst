@@ -38,6 +38,13 @@ Each package added to Bioconda also has a corresponding Docker  `BioContainer
 **Browse BioContainer packages:** `Biocontainers Registry UI
 <https://biocontainers.pro/registry/#/>`_
 
+----
+
+Bioconda is a derivative mark of Anaconda :sup:`®`, a trademark of Anaconda,
+Inc registered in the U.S. and other countries.  Anaconda, Inc.
+grants permission of the derivative use but is not associated with Bioconda.
+
+The Bioconda channel is sponsored by `Anaconda, Inc <https://www.anaconda.com/>`_.
 
 .. _using-bioconda:
 
@@ -137,12 +144,6 @@ Others
 ------
 Bioconda has over 250 contributors, see `here <https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
 
-----
-
-Bioconda is a derivative mark of Anaconda :sup:`®`, a trademark of Continuum Analytics, Inc registered in the U.S. and other countries.
-Continuum Analytics, Inc. grants permission of the derivative use but is not associated with Bioconda.
-
-The Bioconda channel is sponsored by `Continuum Analytics <https://www.continuum.io/>`_.
 
 Contributor documentation
 -------------------------
