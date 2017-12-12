@@ -12,7 +12,7 @@ from argh import arg
 import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
 import pandas
-
+import bioconda_utils.skeleton_helper_cran
 
 from . import utils
 from .build import build_recipes
@@ -519,9 +519,11 @@ def dependent(recipe_folder, config, restrict=False, dependencies=None, reverse_
                 version""")
 @arg('--loglevel', default='debug',
                 help='Log level')
+@arg('--recursive', action='store_true',
+                    help='TODO')
 def bioconductor_skeleton(
     recipe_folder, config, package, versioned=False, force=False,
-    pkg_version=None, bioc_version=None, loglevel='info'
+    pkg_version=None, bioc_version=None, loglevel='info', recursive=False, seen_dependencies=[]
 ):
     """
     Build a Bioconductor recipe. The recipe will be created in the `recipes`
@@ -530,8 +532,11 @@ def bioconductor_skeleton(
     setup_logger(loglevel)
     _bioconductor_skeleton.write_recipe(
         package, recipe_folder, config, force=force, bioc_version=bioc_version,
-        pkg_version=pkg_version, versioned=versioned
+        pkg_version=pkg_version, versioned=versioned, recursive=recursive, seen_dependencies=seen_dependencies
     )
+    if recursive:
+        for package in os.listdir(recipe_folder):
+            bioconda_utils.skeleton_helper_cran.clean_skeleton_files(os.path.join(recipe_folder, package))
 
 
 @arg('recipe_folder', help='Path to recipes directory')

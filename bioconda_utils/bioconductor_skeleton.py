@@ -15,6 +15,7 @@ import logging
 import requests
 from colorlog import ColoredFormatter
 from . import utils
+import bioconda_utils.skeleton_helper_cran
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 
@@ -697,13 +698,25 @@ class BioCProjectPage(object):
 
 
 def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
-                 pkg_version=None, versioned=False):
+                 pkg_version=None, versioned=False, recursive=False, seen_dependencies=[]):
     """
     Write the meta.yaml and build.sh files.
     """
     config = utils.load_config(config)
     env = list(utils.EnvMatrix(config['env_matrix']))[0]
     proj = BioCProjectPage(package, bioc_version, pkg_version)
+    if recursive:
+        for dependency in proj.dependencies:
+            if dependency not in seen_dependencies:
+                seen_dependencies.append(dependency)
+                if dependency[:2] == 'r-':
+                    bioconda_utils.skeleton_helper_cran.write_recipe(dependency, recipe_dir=recipe_dir, config=config, force=force,
+                                                                     bioc_version=bioc_version, pkg_version=pkg_version, versioned=versioned, recursive=recursive, seen_dependencies=seen_dependencies)
+                else:
+                    write_recipe(dependency, recipe_dir=recipe_dir, config=config, force=force, bioc_version=bioc_version, pkg_version=pkg_version, versioned=versioned, recursive=recursive, seen_dependencies=seen_dependencies)
+
+
+
     logger.debug('%s==%s, BioC==%s', proj.package, proj.version, proj.bioc_version)
     logger.info('Using tarball from %s', proj.tarball_url)
     if versioned:
