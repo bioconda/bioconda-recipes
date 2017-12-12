@@ -7,7 +7,7 @@ VERSION="${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 OUT="${PREFIX}/share/${VERSION}"
 PATH="$PATH:$OUT/core_lib/wrapper/"
 
-function timeoutbash() { bash -c '(sleep 10; kill -9 $$ 2>/dev/null) & exec $@' $0 $@; }
+function timeoutbash() { bash -c '(sleep 180; kill -9 $$ 2>/dev/null) & exec $@' $0 $@; }
 
 # basic test
 timeoutbash watchdog-cmd --help 2>&1>/dev/null
