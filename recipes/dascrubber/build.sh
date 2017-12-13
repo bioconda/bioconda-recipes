@@ -11,7 +11,7 @@ binaries="\
  DASmap \
  DASrealign \
  REPqv \
- REPqv
+ REPtrim
 "
 
 for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
