@@ -1,0 +1,13 @@
+#!/bin/bash
+
+mkdir -p $PREFIX/bin
+mkdir -p $PREFIX/opt/seq-seq-pan/
+
+cp -r * $PREFIX/opt/seq-seq-pan/
+sed -i "s|\${BASH_SOURCE%/\*}|$PREFIX/opt/seq-seq-pan|g" $PREFIX/opt/seq-seq-pan/seq-seq-pan
+sed -i "s|\${BASH_SOURCE%/\*}|$PREFIX/opt/seq-seq-pan|g" $PREFIX/opt/seq-seq-pan/seq-seq-pan-consensus
+sed -i "s|\${BASH_SOURCE%/\*}|$PREFIX/opt/seq-seq-pan|g" $PREFIX/opt/seq-seq-pan/seq-seq-pan-wga
+
+ln -s $PREFIX/opt/seq-seq-pan/seq-seq-pan $PREFIX/bin
+ln -s $PREFIX/opt/seq-seq-pan/seq-seq-pan-consensus $PREFIX/bin
+ln -s $PREFIX/opt/seq-seq-pan/seq-seq-pan-wga $PREFIX/bin
