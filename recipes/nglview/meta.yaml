@@ -1,34 +1,46 @@
-{% set version = "0.6.3" %}
-{% set minimum_ipywidgets_version = "5.2.2" %}
-{% set md5 = "6e443876a9d6345cde17e52fb7be736f" %}
+# from: https://github.com/conda-forge/nglview-feedstock/blob/master/recipe/meta.yaml
+{% set name = "nglview" %}
+{% set version = "1.0" %}
+{% set sha256 = "" %}
+{% set minimum_ipywidgets_version = "7" %}
 
 package:
-  name: nglview
-  version: !!str {{ version }}
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/arose/nglview/archive/v{{ version }}.tar.gz
-  fn: v{{ version }}.tar.gz
-  md5: {{ md5 }}
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  script: python setup.py install --conda --single-version-externally-managed --record record.txt
 
 requirements:
   build:
     - python
-    - ipywidgets >={{ minimum_ipywidgets_version }}
-    - notebook
-
+    - setuptools
   run:
     - python
     - numpy
-    - ipywidgets {{minimum_ipywidgets_version }}
+    - libgcc    # [not osx]
+    - ipywidgets >={{ minimum_ipywidgets_version }}
     - notebook
 
 test:
   imports:
-    - nglview # [osx]
-    - notebook # need this line to avoid blank import on Linux
+    - nglview 
+    - notebook
 
 about:
-  home: https://github.com/arose/nglview 
+  home: http://github.com/arose/nglview
   license: MIT
-  summary: An IPython widget to interactively view molecular structures and trajectories. Utilizes the embeddable NGL Viewer for rendering.
+  license_file: LICENSE
+  summary: 'An IPython widget to interactively view molecular structures and trajectories. Utilizes the embeddable NGL Viewer for rendering.'
+  doc_url: https://arose.github.io/nglview/latest/ 
+  dev_url: https://github.com/arose/nglview
+
+extra:
+  recipe-maintainers:
+    - hainm

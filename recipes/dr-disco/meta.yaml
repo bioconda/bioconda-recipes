@@ -1,16 +1,20 @@
+{% set name = "dr-disco" %}
+{% set version = "0.14.0" %}
+{% set sha256 = "712af5b2dcb3b076c384ef181e837304baa79f53ee3c10ac6223bc269faf9595" %}
+
 package:
-  name: dr-disco
-  version: "0.6.0"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn: v0.6.0.tar.gz
-  url:  https://github.com/yhoogstrate/dr-disco/archive/v0.6.0.tar.gz
-  sha256: 9ada777754aea147524ab958102cb52d8531cd44d4a84377906a81d5ff424969
+  fn: v{{ version }}.tar.gz
+  url:  https://github.com/yhoogstrate/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  preserve_egg_dir: True
+  preserve_egg_dir: true
   number: 0
-  skip: True # [not py27]
+  skip: true  # [not py27]
 
 requirements:
   build:
@@ -20,6 +24,8 @@ requirements:
     - htslib ==1.3
     - pysam ==0.10.0
     - fuma ==3.0.5
+    - numpy
+    - scipy
 
   run:
     - python
@@ -28,16 +34,17 @@ requirements:
     - htslib ==1.3
     - pysam ==0.10.0
     - fuma ==3.0.5
+    - numpy
+    - scipy
 
 test:
-  # Python imports
   imports:
     - drdisco
 
   commands:
-    - dr-disco --help
-    - dr-disco --version
-    
+    # click requires a unicode locale
+    - LANG=C.UTF-8 dr-disco --version
+
     # This also tests appropriate loading of libs ~ small functional test
 #    - conda create -n curl curl && source activate curl && curl -L -o test_01.bam  http://github.com/yhoogstrate/dr-disco/raw/master/tests/detect-intronic/test_01.bam && dr-disco detect detect.test.bam test_01.bam
 #    - conda create -n curl curl && source activate curl && curl -L -o test_terg_01.filtered.bam http://github.com/yhoogstrate/dr-disco/raw/master/tests/fix-chimeric/test_terg_01.filtered.bam && dr-disco fix fix.test.bam test_terg_01.filtered.bam
