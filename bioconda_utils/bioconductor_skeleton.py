@@ -211,6 +211,8 @@ class BioCProjectPage(object):
         self._tarball_url = None
         self._bioconductor_tarball_url = None
         self.is_data_package = False
+        self.package_lower = package.lower()
+        self.name = []
 
         # If no version specified, assume the latest
         if not self.bioc_version:
@@ -282,6 +284,7 @@ class BioCProjectPage(object):
             response = requests.head(url)
             if response.status_code == 200:
                 return url
+
 
     @property
     def cargoport_url(self):
@@ -512,9 +515,11 @@ class BioCProjectPage(object):
             # be found then we assume it's in CRAN.
             try:
                 BioCProjectPage(name, bioc_version=self.bioc_version)
+                self.name.append(name)
                 prefix = 'bioconductor-'
             except PageNotFoundError:
                 prefix = 'r-'
+                self.name.append(name)
 
             logger.info('{0:>12} dependency: name="{1}" version="{2}"'.format(
                 {'r-': 'R', 'bioconductor-': 'BioConductor'}[prefix],
@@ -705,8 +710,11 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
     config = utils.load_config(config)
     env = list(utils.EnvMatrix(config['env_matrix']))[0]
     proj = BioCProjectPage(package, bioc_version, pkg_version)
+    print("WRITING: {}".format(package))
+    proj.dependencies
     if recursive:
-        for dependency in proj.dependencies:
+        print("proj.name: {}".format(proj.name))
+        for dependency in proj.name:
             if dependency not in seen_dependencies:
                 seen_dependencies.append(dependency)
                 if dependency[:2] == 'r-':
@@ -714,7 +722,8 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
                                                                      bioc_version=bioc_version, pkg_version=pkg_version, versioned=versioned, recursive=recursive, seen_dependencies=seen_dependencies)
                 else:
                     write_recipe(dependency, recipe_dir=recipe_dir, config=config, force=force, bioc_version=bioc_version, pkg_version=pkg_version, versioned=versioned, recursive=recursive, seen_dependencies=seen_dependencies)
-
+            else:
+                print("Seen {} before".format(dependency))
 
 
     logger.debug('%s==%s, BioC==%s', proj.package, proj.version, proj.bioc_version)

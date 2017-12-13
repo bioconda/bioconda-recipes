@@ -535,8 +535,10 @@ def bioconductor_skeleton(
         pkg_version=pkg_version, versioned=versioned, recursive=recursive, seen_dependencies=seen_dependencies
     )
     if recursive:
+        #print("osListDir: {}".format(os.listdir(recipe_folder)))
         for package in os.listdir(recipe_folder):
-            bioconda_utils.skeleton_helper_cran.clean_skeleton_files(os.path.join(recipe_folder, package))
+            if package[:2] == "r-":
+                bioconda_utils.skeleton_helper_cran.clean_skeleton_files(os.path.join(recipe_folder, package))
 
 
 @arg('recipe_folder', help='Path to recipes directory')
