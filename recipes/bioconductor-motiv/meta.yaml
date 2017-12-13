@@ -1,17 +1,22 @@
+{% set version = "1.34.0" %}
+{% set name = "MotIV" %}
+{% set bioc = "3.6" %}
+
 package:
-  name: bioconductor-motiv
-  version: 1.30.0
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: MotIV_1.30.0.tar.gz
-  url: https://bioarchive.galaxyproject.org/MotIV_1.30.0.tar.gz
-  md5: a5d51105c30360bcade445659e7172c3
+  fn: '{{ name }}_{{ version }}.tar.gz'
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 06be19672eea04d778970040805097e8cc6543acbea476c5f5bd2231f8fa7353
 build:
   number: 0
-  string: gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}
+  string: r{{CONDA_R}}_gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}
   rpaths:
     - lib/R/lib/
     - lib/
-
 requirements:
   build:
     - 'bioconductor-biocgenerics >=0.1.0'
@@ -19,23 +24,25 @@ requirements:
     - 'bioconductor-iranges >=1.13.5'
     - bioconductor-rgadem
     - bioconductor-s4vectors
-    - r
+    - r-base
+    - r-lattice
     - gsl {{CONDA_GSL}}*
-
+    - gcc  # [linux]
+    - llvm  # [osx]
   run:
     - 'bioconductor-biocgenerics >=0.1.0'
     - 'bioconductor-biostrings >=1.24.0'
     - 'bioconductor-iranges >=1.13.5'
     - bioconductor-rgadem
     - bioconductor-s4vectors
-    - r
+    - r-base
+    - r-lattice
     - gsl {{CONDA_GSL}}*
+    - libgcc  # [linux]
 test:
   commands:
-    - '$R -e "library(''MotIV'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/MotIV.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'This package makes use of STAMP for comparing a set of motifs to a given
-    database (e.g. JASPAR). It can also be used to visualize motifs, motif distributions,
-    modules and filter motifs.'
+  summary: 'This package makes use of STAMP for comparing a set of motifs to a given database (e.g. JASPAR). It can also be used to visualize motifs, motif distributions, modules and filter motifs.'

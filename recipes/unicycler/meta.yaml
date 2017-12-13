@@ -1,5 +1,5 @@
 {% set name = "unicycler" %}
-{% set version = "0.3.0b" %}
+{% set version = "0.4.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,34 +7,41 @@ package:
 
 build:
   number: 0
-  skip: True # [py27]
+  skip: True
+  # Build will be skipped for all platforms due to GCC 
+  # being out of date.  Offline builds only for now
 
 source:
   fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://github.com/rrwick/Unicycler/archive/906a3e7f314c7843bf0b4edf917593fc10baee4f.tar.gz
-  md5: 5f06d2bd8ef5065c8047421db8c7895f
+  url: https://github.com/rrwick/Unicycler/archive/v{{ version }}.tar.gz
+  sha256: 58dbeee3b829e00a6f53ea0a151fd6dc77f1a7c35fefa31602deb2f1f5f481ea
+  patches:
+    - Makefile.patch [linux]
+    - misc.py.patch
 
 requirements:
   build:
   - python
   - setuptools
-  - gcc 
+  - gcc >=4.9.4
 
   run:
   - python
-  - libgcc  
+  - libgcc
   - spades >=3.6.2
   - pilon
-  - java-jdk
+  - openjdk
   - bowtie2
   - samtools >=1.0
-  - blast 
+  - blast
   - freebayes
+  - racon
+  - miniasm
 
 test:
   commands:
-    - unicycler -h 
-    - unicycler_align -h 
+    - unicycler -h
+    - unicycler_align -h
     - unicycler_check -h
     - unicycler_polish -h
 

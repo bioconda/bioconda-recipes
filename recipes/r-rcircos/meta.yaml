@@ -1,38 +1,32 @@
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '1.2.0' %}
 
 package:
   name: r-rcircos
-  # Note that conda versions cannot contain -, so any -'s in the version have
-  # been replaced with _'s.
-  version: "1.2.0"
+  version: {{ version|replace("-", "_") }}
 
 source:
-  fn: RCircos_1.2.0.tar.gz
+  fn: RCircos_{{ version }}.tar.gz
   url:
-    - http://cran.r-project.org/src/contrib/RCircos_1.2.0.tar.gz
-    - http://cran.r-project.org/src/contrib/Archive/RCircos/RCircos_1.2.0.tar.gz
+    - https://cran.r-project.org/src/contrib/RCircos_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/RCircos/RCircos_{{ version }}.tar.gz
+  sha256: 7fd06e2efc33b5c30fc4ba3945b04021f255ba4ffcc394348df7488b9394444a
 
 build:
   number: 0
 
-  # This is required to make R link correctly on Linux.
   rpaths:
     - lib/R/lib/
     - lib/
-
 requirements:
   build:
-    - r
+    - r-base
 
   run:
-    - r
+    - r-base
 
 test:
   commands:
-    # You can put additional test commands to be run here.
-    - $R -e "library('RCircos')" # [not win]
-    - "\"%R%\" -e \"library('RCircos')\"" # [win]
+    - $R -e "library('RCircos')"
 
 about:
   home: http://bitbucket.org/henryhzhang/rcircos
