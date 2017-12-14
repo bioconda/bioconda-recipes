@@ -702,6 +702,28 @@ class BioCProjectPage(object):
         return fout.name
 
 
+def write_recipe_recursive(proj, seen_dependencies, recipe_dir, config, force, bioc_version,
+                           pkg_version, versioned, recursive):
+    logger.debug('list of dependencies: {}'.format(proj.raw_dependency_names))
+    for dependency, name in zip(proj.dependencies, proj.raw_dependency_names):
+        dependency_without_version = re.sub(r' >=.*$', '', dependency)
+        if dependency_without_version in seen_dependencies:
+            logger.debug("seen {} before".format(dependency_without_version))
+            continue
+
+        seen_dependencies.append(dependency_without_version)
+        if dependency_without_version[:2] == 'r-':
+            cran_skeleton.write_recipe(name, recipe_dir=recipe_dir, config=config,
+                                       force=force, bioc_version=bioc_version,
+                                       pkg_version=pkg_version, versioned=versioned,
+                                       recursive=recursive,
+                                       seen_dependencies=seen_dependencies)
+        else:
+            write_recipe(name, recipe_dir=recipe_dir, config=config, force=force, bioc_version=bioc_version,
+                         pkg_version=pkg_version, versioned=versioned, recursive=recursive,
+                         seen_dependencies=seen_dependencies)
+
+
 def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
                  pkg_version=None, versioned=False, recursive=False, seen_dependencies=[]):
     """
@@ -712,24 +734,8 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
     proj = BioCProjectPage(package, bioc_version, pkg_version)
     logger.info('Making recipe for: {}'.format(package))
     if recursive:
-        logger.debug('list of dependencies: {}'.format(proj.raw_dependency_names))
-        for dependency, name in zip(proj.dependencies, proj.raw_dependency_names):
-            dependency_without_version = re.sub(r' >=.*$', '', dependency)
-            if dependency_without_version in seen_dependencies:
-                logger.debug("seen {} before".format(dependency_without_version))
-                continue
-            seen_dependencies.append(dependency_without_version)
-            if dependency_without_version[:2] == 'r-':
-                cran_skeleton.write_recipe(name, recipe_dir=recipe_dir, config=config,
-                                                          force=force, bioc_version=bioc_version,
-                                                          pkg_version=pkg_version, versioned=versioned,
-                                                          recursive=recursive,
-                                                          seen_dependencies=seen_dependencies)
-            else:
-                write_recipe(name, recipe_dir=recipe_dir, config=config, force=force, bioc_version=bioc_version,
-                             pkg_version=pkg_version, versioned=versioned, recursive=recursive,
-                             seen_dependencies=seen_dependencies)
-
+        write_recipe_recursive(proj, seen_dependencies, recipe_dir, config, force, bioc_version,
+                               pkg_version, versioned, recursive)
 
     logger.debug('%s==%s, BioC==%s', proj.package, proj.version, proj.bioc_version)
     logger.info('Using tarball from %s', proj.tarball_url)
