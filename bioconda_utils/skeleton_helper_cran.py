@@ -17,7 +17,7 @@ gpl2_long = ("  license_family: GPL2\n  license_file: '{{ environ[\"PREFIX\"] }}
              "\\\R\\\share\\\licenses\\\GPL-2'  # [win]")
 
 gpl3_short = r"  license_family: GPL3"
-gpl3_long = ("  license_family: GPL3\n  license_file: '{{ environ[\"PREFIX\"] }}" +
+gpl3_long   = ("  license_family: GPL3\n  license_file: '{{ environ[\"PREFIX\"] }}" +
              "\/lib\/R\/share\/licenses\/GPL-3'  # [unix]\n  " +
              "license_file: '{{ environ[\"PREFIX\"] }}" +
              "\\\R\\\share\\\licenses\\\GPL-3'  # [win]")
@@ -27,14 +27,16 @@ win32_string = 'number: 0\n  skip: true  # [win32]'
 
 def write_recipe(package, recipe_dir='.', no_windows=True, config=None, force=False, bioc_version=None,
                  pkg_version=None, versioned=False, recursive=False, seen_dependencies=[]):
-
+        print("WRITING CRAN!!")
         if recursive:
+            print("ENTER RECURSIVE")
             sp.call(['conda skeleton cran ' + package + ' --output-dir ' + recipe_dir + " --recursive"], shell=True)
-            if package != "r-base": #TODO: This if statement should be deleted. Don't know what to do with r-base
-                clean_skeleton_files(recipe_dir + '/r-' + package.lower(), no_windows)
+            '''if package != "r-base": #TODO: This if statement should be deleted. Don't know what to do with r-base
+                print("ENTER CLEANING")
+                clean_skeleton_files(recipe_dir + '/r-' + package.lower(), no_windows)'''
         else:
             sp.call(['conda skeleton cran ' + package + ' --output-dir ' + recipe_dir], shell=True)
-            clean_skeleton_files(recipe_dir + '/r-' + package, no_windows)
+            #clean_skeleton_files(recipe_dir + '/r-' + package, no_windows)
 
 
 def clean_skeleton_files(package, no_windows=True):
