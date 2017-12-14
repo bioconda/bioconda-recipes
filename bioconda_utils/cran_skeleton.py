@@ -68,9 +68,12 @@ def clean_build_file(package, no_windows=False):
     path = package + '/build.sh'
     with open(path, 'r') as build:
         lines = list(build.readlines())
-        lines = filter_lines_regex(lines, r'^mv\s.*$', '')  # Remove lines with mv commands
-        lines = filter_lines_regex(lines, r'^grep\s.*$', '')  # Remove lines with grep commands
-        lines = filter_lines_regex(lines, r'^\s*#.*$', '')  # Removes the lines consisting of only comments
+        # Remove lines with mv commands
+        lines = filter_lines_regex(lines, r'^mv\s.*$', '')
+        # Remove lines with grep commands
+        lines = filter_lines_regex(lines, r'^grep\s.*$', '')
+        # Removes the lines consisting of only comments
+        lines = filter_lines_regex(lines, r'^\s*#.*$', '')
         lines = remove_empty_lines(lines)
 
     with open(path, 'w') as build:
@@ -83,7 +86,8 @@ def clean_bld_file(package, no_windows):
     path = package + '/bld.bat'
     with open(path, 'r') as bld:
         lines = list(bld.readlines())
-        lines = filter_lines_regex(lines, r'^@.*$', '')  # Removes the lines that start with @
+        # Removes the lines that start with @
+        lines = filter_lines_regex(lines, r'^@.*$', '')
         lines = remove_empty_lines(lines)
 
     with open(path, 'w') as bld:

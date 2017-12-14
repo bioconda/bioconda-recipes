@@ -15,7 +15,7 @@ import logging
 import requests
 from colorlog import ColoredFormatter
 from . import utils
-import bioconda_utils.cran_skeleton
+from . import cran_skeleton
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 
@@ -212,7 +212,7 @@ class BioCProjectPage(object):
         self._bioconductor_tarball_url = None
         self.is_data_package = False
         self.package_lower = package.lower()
-        self.raw_package_name = []
+        self.raw_dependency_names = []
 
         # If no version specified, assume the latest
         if not self.bioc_version:
@@ -540,12 +540,12 @@ class BioCProjectPage(object):
 
                 # # "r >=2.5" rather than "r-r >=2.5"
                 specific_r_version = True
-                self.raw_package_name.append("r-base")
+                self.raw_dependency_names.append("r-base")
                 results.append(name.lower() + '-base' + version)
 
             else:
                 results.append(prefix + name.lower() + version)
-                self.raw_package_name.append(name)
+                self.raw_dependency_names.append(name)
 
             if prefix + name.lower() in GCC_PACKAGES:
                 self.depends_on_gcc = True
@@ -553,12 +553,12 @@ class BioCProjectPage(object):
         # Add R itself
         if not specific_r_version:
             results.append('r-base')
-            self.raw_package_name.append('r-base')
+            self.raw_dependency_names.append('r-base')
 
         # Sometimes empty dependencies make it into the list from a trailing
         # comma in DESCRIPTION; remove them here.
         results = list(filter(lambda x: x != 'r-', results))
-        self.raw_package_name = list(filter(lambda x: x != "", self.raw_package_name))
+        self.raw_dependency_names = list(filter(lambda x: x != '', self.raw_dependency_names))
 
         self._dependencies = results
         return self._dependencies
@@ -710,26 +710,26 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
     config = utils.load_config(config)
     env = list(utils.EnvMatrix(config['env_matrix']))[0]
     proj = BioCProjectPage(package, bioc_version, pkg_version)
-    logger.info("Making recipe for: {}".format(package))
-    dependencies = proj.dependencies
+    logger.info('Making recipe for: {}'.format(package))
     if recursive:
-        logger.debug("list of dependencies: {}".format(proj.raw_package_name))
-        for dependency, name in zip(dependencies, proj.raw_package_name):
+        logger.debug('list of dependencies: {}'.format(proj.raw_dependency_names))
+        for dependency, name in zip(proj.dependencies, proj.raw_dependency_names):
             dependency_without_version = re.sub(r' >=.*$', '', dependency)
-            if dependency_without_version not in seen_dependencies:
-                seen_dependencies.append(dependency_without_version)
-                if dependency_without_version[:2] == 'r-':
-                    bioconda_utils.cran_skeleton.write_recipe(name, recipe_dir=recipe_dir, config=config,
-                                                              force=force, bioc_version=bioc_version,
-                                                              pkg_version=pkg_version, versioned=versioned,
-                                                              recursive=recursive,
-                                                              seen_dependencies=seen_dependencies)
-                else:
-                    write_recipe(name, recipe_dir=recipe_dir, config=config, force=force, bioc_version=bioc_version,
-                                 pkg_version=pkg_version, versioned=versioned, recursive=recursive,
-                                 seen_dependencies=seen_dependencies)
-            else:
+            if dependency_without_version in seen_dependencies:
                 logger.debug("seen {} before".format(dependency_without_version))
+                continue
+            seen_dependencies.append(dependency_without_version)
+            if dependency_without_version[:2] == 'r-':
+                cran_skeleton.write_recipe(name, recipe_dir=recipe_dir, config=config,
+                                                          force=force, bioc_version=bioc_version,
+                                                          pkg_version=pkg_version, versioned=versioned,
+                                                          recursive=recursive,
+                                                          seen_dependencies=seen_dependencies)
+            else:
+                write_recipe(name, recipe_dir=recipe_dir, config=config, force=force, bioc_version=bioc_version,
+                             pkg_version=pkg_version, versioned=versioned, recursive=recursive,
+                             seen_dependencies=seen_dependencies)
+
 
     logger.debug('%s==%s, BioC==%s', proj.package, proj.version, proj.bioc_version)
     logger.info('Using tarball from %s', proj.tarball_url)
