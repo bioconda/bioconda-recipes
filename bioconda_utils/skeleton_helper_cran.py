@@ -30,6 +30,8 @@ def write_recipe(package, recipe_dir='.', no_windows=True, config=None, force=Fa
 
         if recursive:
             sp.call(['conda skeleton cran ' + package + ' --output-dir ' + recipe_dir + " --recursive"], shell=True)
+            if package != "r-base": #TODO: This if statement should be deleted. Don't know what to do with r-base
+                clean_skeleton_files(recipe_dir + '/r-' + package.lower(), no_windows)
         else:
             sp.call(['conda skeleton cran ' + package + ' --output-dir ' + recipe_dir], shell=True)
             clean_skeleton_files(recipe_dir + '/r-' + package, no_windows)
@@ -56,7 +58,7 @@ def clean_yaml_file(package, no_windows):
             lines = filter_lines_regex(lines,r'number: 0',win32_string)  # Inserts the skip: true # [win32] after number: 0, to skip windows builds
         add_maintainers(lines)
 
-    with open(path + '.c', 'w') as yaml:
+    with open(path, 'w') as yaml:
         out = "".join(lines)
         out = out.replace('{indent}', '\n    - ')
         for wrong, correct in INVALID_NAME_MAP.items():

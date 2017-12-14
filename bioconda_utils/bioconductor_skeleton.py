@@ -515,11 +515,9 @@ class BioCProjectPage(object):
             # be found then we assume it's in CRAN.
             try:
                 BioCProjectPage(name, bioc_version=self.bioc_version)
-                self.name.append(name)
                 prefix = 'bioconductor-'
             except PageNotFoundError:
                 prefix = 'r-'
-                self.name.append(name)
 
             logger.info('{0:>12} dependency: name="{1}" version="{2}"'.format(
                 {'r-': 'R', 'bioconductor-': 'BioConductor'}[prefix],
@@ -542,12 +540,13 @@ class BioCProjectPage(object):
 
                 # # "r >=2.5" rather than "r-r >=2.5"
                 specific_r_version = True
-
+                self.name.append("r-base")
                 # results.append(name.lower() + '-base' + version)
                 results.append('r-base')
 
             else:
-                results.append(prefix + name.lower() + version)
+                results.append(prefix + name.lower())
+                self.name.append(name)
 
             if prefix + name.lower() in GCC_PACKAGES:
                 self.depends_on_gcc = True
@@ -711,19 +710,21 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
     env = list(utils.EnvMatrix(config['env_matrix']))[0]
     proj = BioCProjectPage(package, bioc_version, pkg_version)
     print("WRITING: {}".format(package))
-    proj.dependencies
+    dependencies = proj.dependencies
     if recursive:
         print("proj.name: {}".format(proj.name))
-        for dependency in proj.name:
+        for dependency, name in zip(dependencies, proj.name):
+            print("{0} : {1} HERE!!!".format(dependency,name))
             if dependency not in seen_dependencies:
                 seen_dependencies.append(dependency)
+                print("ADDING {} TO SEEN_DEPENDENCIES".format(dependency))
                 if dependency[:2] == 'r-':
-                    bioconda_utils.skeleton_helper_cran.write_recipe(dependency, recipe_dir=recipe_dir, config=config, force=force,
+                    bioconda_utils.skeleton_helper_cran.write_recipe(name, recipe_dir=recipe_dir, config=config, force=force,
                                                                      bioc_version=bioc_version, pkg_version=pkg_version, versioned=versioned, recursive=recursive, seen_dependencies=seen_dependencies)
                 else:
-                    write_recipe(dependency, recipe_dir=recipe_dir, config=config, force=force, bioc_version=bioc_version, pkg_version=pkg_version, versioned=versioned, recursive=recursive, seen_dependencies=seen_dependencies)
+                    write_recipe(name, recipe_dir=recipe_dir, config=config, force=force, bioc_version=bioc_version, pkg_version=pkg_version, versioned=versioned, recursive=recursive, seen_dependencies=seen_dependencies)
             else:
-                print("Seen {} before".format(dependency))
+                print("SEEN {} BEFORE !!!!!!".format(dependency))
 
 
     logger.debug('%s==%s, BioC==%s', proj.package, proj.version, proj.bioc_version)
