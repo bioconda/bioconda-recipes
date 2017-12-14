@@ -15,7 +15,7 @@ import logging
 import requests
 from colorlog import ColoredFormatter
 from . import utils
-import bioconda_utils.skeleton_helper_cran
+import bioconda_utils.cran_skeleton
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 
@@ -212,7 +212,7 @@ class BioCProjectPage(object):
         self._bioconductor_tarball_url = None
         self.is_data_package = False
         self.package_lower = package.lower()
-        self.name = []
+        self.raw_package_name = []
 
         # If no version specified, assume the latest
         if not self.bioc_version:
@@ -478,9 +478,6 @@ class BioCProjectPage(object):
                 raise ValueError("Found {0} toks: {1}".format(len(toks), toks))
         return results
 
-    def raw_package_names(self,raw_name, modified_name):
-        pass
-
     @property
     def dependencies(self):
         """
@@ -543,12 +540,12 @@ class BioCProjectPage(object):
 
                 # # "r >=2.5" rather than "r-r >=2.5"
                 specific_r_version = True
-                self.name.append("r-base")
+                self.raw_package_name.append("r-base")
                 results.append(name.lower() + '-base' + version)
 
             else:
                 results.append(prefix + name.lower() + version)
-                self.name.append(name)
+                self.raw_package_name.append(name)
 
             if prefix + name.lower() in GCC_PACKAGES:
                 self.depends_on_gcc = True
@@ -556,11 +553,12 @@ class BioCProjectPage(object):
         # Add R itself
         if not specific_r_version:
             results.append('r-base')
+            self.raw_package_name.append('r-base')
 
         # Sometimes empty dependencies make it into the list from a trailing
         # comma in DESCRIPTION; remove them here.
         results = list(filter(lambda x: x != 'r-', results))
-        self.name = list(filter(lambda x: x != "", self.name))
+        self.raw_package_name = list(filter(lambda x: x != "", self.raw_package_name))
 
         self._dependencies = results
         return self._dependencies
@@ -712,25 +710,26 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
     config = utils.load_config(config)
     env = list(utils.EnvMatrix(config['env_matrix']))[0]
     proj = BioCProjectPage(package, bioc_version, pkg_version)
-    print("WRITING: {}".format(package))
+    logger.info("Making recipe for: {}".format(package))
     dependencies = proj.dependencies
     if recursive:
-        print("proj.name: {}".format(proj.name))
-        for dependency, name in zip(dependencies, proj.name):
-            print("{0} : {1} HERE!!!".format(dependency,name))
-            dependency_without_version = re.sub(r' >=.*$','',dependency)
-            print("dependency_without_version:{}".format(dependency_without_version))
+        logger.debug("list of dependencies: {}".format(proj.raw_package_name))
+        for dependency, name in zip(dependencies, proj.raw_package_name):
+            dependency_without_version = re.sub(r' >=.*$', '', dependency)
             if dependency_without_version not in seen_dependencies:
                 seen_dependencies.append(dependency_without_version)
-                print("ADDING {} TO SEEN_DEPENDENCIES".format(dependency_without_version))
                 if dependency_without_version[:2] == 'r-':
-                    bioconda_utils.skeleton_helper_cran.write_recipe(name, recipe_dir=recipe_dir, config=config, force=force,
-                                                                     bioc_version=bioc_version, pkg_version=pkg_version, versioned=versioned, recursive=recursive, seen_dependencies=seen_dependencies)
+                    bioconda_utils.cran_skeleton.write_recipe(name, recipe_dir=recipe_dir, config=config,
+                                                              force=force, bioc_version=bioc_version,
+                                                              pkg_version=pkg_version, versioned=versioned,
+                                                              recursive=recursive,
+                                                              seen_dependencies=seen_dependencies)
                 else:
-                    write_recipe(name, recipe_dir=recipe_dir, config=config, force=force, bioc_version=bioc_version, pkg_version=pkg_version, versioned=versioned, recursive=recursive, seen_dependencies=seen_dependencies)
+                    write_recipe(name, recipe_dir=recipe_dir, config=config, force=force, bioc_version=bioc_version,
+                                 pkg_version=pkg_version, versioned=versioned, recursive=recursive,
+                                 seen_dependencies=seen_dependencies)
             else:
-                print("SEEN {} BEFORE !!!!!!".format(dependency_without_version))
-
+                logger.debug("seen {} before".format(dependency_without_version))
 
     logger.debug('%s==%s, BioC==%s', proj.package, proj.version, proj.bioc_version)
     logger.info('Using tarball from %s', proj.tarball_url)
@@ -756,7 +755,6 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
         # the dicts
         updated_version = updated_meta['package']['version']
         current_version = current_meta['package']['version']
-
 
         # updated_build_number = updated_meta['build'].pop('number')
         current_build_number = current_meta['build'].pop('number', 0)
