@@ -478,6 +478,9 @@ class BioCProjectPage(object):
                 raise ValueError("Found {0} toks: {1}".format(len(toks), toks))
         return results
 
+    def raw_package_names(self,raw_name, modified_name):
+        pass
+
     @property
     def dependencies(self):
         """
@@ -541,11 +544,10 @@ class BioCProjectPage(object):
                 # # "r >=2.5" rather than "r-r >=2.5"
                 specific_r_version = True
                 self.name.append("r-base")
-                # results.append(name.lower() + '-base' + version)
-                results.append('r-base')
+                results.append(name.lower() + '-base' + version)
 
             else:
-                results.append(prefix + name.lower())
+                results.append(prefix + name.lower() + version)
                 self.name.append(name)
 
             if prefix + name.lower() in GCC_PACKAGES:
@@ -558,6 +560,7 @@ class BioCProjectPage(object):
         # Sometimes empty dependencies make it into the list from a trailing
         # comma in DESCRIPTION; remove them here.
         results = list(filter(lambda x: x != 'r-', results))
+        self.name = list(filter(lambda x: x != "", self.name))
 
         self._dependencies = results
         return self._dependencies
@@ -715,16 +718,18 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
         print("proj.name: {}".format(proj.name))
         for dependency, name in zip(dependencies, proj.name):
             print("{0} : {1} HERE!!!".format(dependency,name))
-            if dependency not in seen_dependencies:
-                seen_dependencies.append(dependency)
-                print("ADDING {} TO SEEN_DEPENDENCIES".format(dependency))
-                if dependency[:2] == 'r-':
+            dependency_without_version = re.sub(r' >=.*$','',dependency)
+            print("dependency_without_version:{}".format(dependency_without_version))
+            if dependency_without_version not in seen_dependencies:
+                seen_dependencies.append(dependency_without_version)
+                print("ADDING {} TO SEEN_DEPENDENCIES".format(dependency_without_version))
+                if dependency_without_version[:2] == 'r-':
                     bioconda_utils.skeleton_helper_cran.write_recipe(name, recipe_dir=recipe_dir, config=config, force=force,
                                                                      bioc_version=bioc_version, pkg_version=pkg_version, versioned=versioned, recursive=recursive, seen_dependencies=seen_dependencies)
                 else:
                     write_recipe(name, recipe_dir=recipe_dir, config=config, force=force, bioc_version=bioc_version, pkg_version=pkg_version, versioned=versioned, recursive=recursive, seen_dependencies=seen_dependencies)
             else:
-                print("SEEN {} BEFORE !!!!!!".format(dependency))
+                print("SEEN {} BEFORE !!!!!!".format(dependency_without_version))
 
 
     logger.debug('%s==%s, BioC==%s', proj.package, proj.version, proj.bioc_version)
