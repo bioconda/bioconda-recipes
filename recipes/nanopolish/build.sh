@@ -3,7 +3,7 @@ export CFLAGS="-I$PREFIX/include -std=c99"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
-export HTS_LIB="-lbz2 -lxz -lcurl ${PREFIX}/lib/libhts.a"
+export HTS_LIB="-llzma -lcurl ${PREFIX}/lib/libhts.a"
 export HTS_INCLUDE=-I${PREFIX}/include
 export FAST5_INCLUDE=-I${PREFIX}/include/fast5
 
