@@ -1,6 +1,16 @@
 #!/bin/bash
 
 # If it has Build.PL use that, otherwise use Makefile.PL
+if [ "$(uname)" == "Darwin" ]; then
+    HOME=/tmp cpanm --installdeps .
+    HOME=/tmp cpanm  Text::WagnerFischer
+    HOME=/tmp cpanm  Devel::StackTrace 
+else
+    cpanm --installdeps .
+    cpanm  Text::WagnerFischer
+    cpanm  Devel::StackTrace 
+fi
+
 if [ -f Build.PL ]; then
     perl Build.PL
     perl ./Build
