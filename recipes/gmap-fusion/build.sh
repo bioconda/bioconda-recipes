@@ -8,7 +8,7 @@ chmod a+x $GMAP_FUSION_INSTALL_PATH/GMAP-fusion
 # The following shell script is built to invoke GMAP-fusion using its full
 # install path rather than creating a symlink to GMAP-fusion from $PREFIX/bin
 # because GMAP-fusion uses its own location to find other scripts and packages
-# which are included with it.
+# which are included with it. 
 echo "#!/bin/bash" > $PREFIX/bin/GMAP-fusion
 echo "$GMAP_FUSION_INSTALL_PATH/GMAP-fusion \$@" >> $PREFIX/bin/GMAP-fusion
 chmod +x $PREFIX/bin/GMAP-fusion
