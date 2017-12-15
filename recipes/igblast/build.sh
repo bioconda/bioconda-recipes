@@ -16,7 +16,7 @@ if [ $(uname) == Linux ]; then
     # provide this. See https://github.com/bioconda/bioconda-recipes/pull/3020
 
     cd c++
-    ./configure --prefix=$PREFIX --with-sqlite3=$PREFIX
+    ./configure --prefix=$PREFIX --with-sqlite3="$PREFIX" --with-lmdb="${PREFIX}"
     make -j2
     mv ReleaseMT/bin/{igblastn,igblastp} $SHARE_DIR/bin/
     mv ReleaseMT/bin/makeblastdb $PREFIX/bin/
