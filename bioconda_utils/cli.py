@@ -520,7 +520,8 @@ def dependent(recipe_folder, config, restrict=False, dependencies=None, reverse_
 @arg('--loglevel', default='debug',
                 help='Log level')
 @arg('--recursive', action='store_true',
-                    help='TODO')
+                    help="""Creates the recipes for all bioconductor and cran recipes of the specified packages
+                    and puts the in the recipes directory""")
 def bioconductor_skeleton(
     recipe_folder, config, package, versioned=False, force=False,
     pkg_version=None, bioc_version=None, loglevel='info', recursive=False, seen_dependencies=[]
