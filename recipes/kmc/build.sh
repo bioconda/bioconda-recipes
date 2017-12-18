@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export DISABLE_ASMLIB=true
 export CXX=g++
 export CPPFLAGS="-I${PREFIX}/include"
 export LDFLAGS="-L${PREFIX}/lib"
