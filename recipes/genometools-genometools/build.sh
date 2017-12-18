@@ -1,4 +1,10 @@
 #!/bin/bash
-make
+
+
+make 
 export prefix=$PREFIX
-make install
+make install 
+
+cd gtpython
+$PYTHON setup.py install
+

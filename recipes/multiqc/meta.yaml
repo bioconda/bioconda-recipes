@@ -1,65 +1,101 @@
 package:
   name: multiqc
-  version: "0.9.1a0"
+  version: "1.3"
 
 source:
-  fn: multiqc-99da2ed.tar.gz
-  url: https://github.com/ewels/MultiQC/archive/99da2ed.tar.gz
-  md5: 273c00ebd0f81025101c6b59b1cc1f77
+  fn: v1.3.tar.gz
+  url: https://github.com/ewels/MultiQC/archive/v1.3.tar.gz
+  md5: 67c4aae8b85ae40fcb2e98319fb629ac
+  patches:
+    - setup.patch # [py3k]
 
 build:
-  number: 3
+  number: 2
   preserve_egg_dir: True
-  # python 3 failing on
-  # FileNotFoundError: [Errno 2] No such file or directory: 'locale'
-  # https://travis-ci.org/bioconda/bioconda-recipes/jobs/191266605
-  skip: true # [not py27]
 
 requirements:
   build:
     - python
     - setuptools
-    - jinja2
-    - simplejson
-    - pyyaml
     - click
+    - future >0.14.0
+    - jinja2 >=2.9
+    - lzstring
+    - markdown
     - matplotlib
+    - networkx <2
+    - numpy
+    - pyyaml
+    - requests
+    - simplejson
+    - spectra
 
   run:
     - python
-    - jinja2
-    - simplejson
-    - pyyaml
+    - setuptools
     - click
+    - future >0.14.0
+    - jinja2 >=2.9
+    - libgcc  # [linux]
+    - lzstring
+    - markdown
     - matplotlib
-    - git
+    - networkx <2
+    - numpy
+    - pyyaml
+    - requests
+    - simplejson
+    - spectra
+    - enum34 # [py27]
 
 test:
   # Python imports
   imports:
     - multiqc
     - multiqc.modules
+    - multiqc.modules.adapterRemoval
+    - multiqc.modules.afterqc
     - multiqc.modules.bamtools
+    - multiqc.modules.bbmap
     - multiqc.modules.bcftools
+    - multiqc.modules.bcl2fastq
+    - multiqc.modules.biobloomtools
     - multiqc.modules.bismark
     - multiqc.modules.bowtie1
     - multiqc.modules.bowtie2
+    - multiqc.modules.busco
+    - multiqc.modules.clusterflow
+    - multiqc.modules.conpair
     - multiqc.modules.custom_content
     - multiqc.modules.cutadapt
+    - multiqc.modules.deeptools
+    - multiqc.modules.disambiguate
     - multiqc.modules.fastq_screen
     - multiqc.modules.fastqc
     - multiqc.modules.featureCounts
+    - multiqc.modules.flexbar
     - multiqc.modules.gatk
+    - multiqc.modules.goleft_indexcov
+    - multiqc.modules.hicexplorer
     - multiqc.modules.hicup
+    - multiqc.modules.hisat2
+    - multiqc.modules.homer
     - multiqc.modules.htseq
+    - multiqc.modules.interop
+    - multiqc.modules.jellyfish
     - multiqc.modules.kallisto
+    - multiqc.modules.leehom
+    - multiqc.modules.macs2
     - multiqc.modules.methylQA
     - multiqc.modules.peddy
     - multiqc.modules.picard
     - multiqc.modules.preseq
     - multiqc.modules.prokka
+    - multiqc.modules.qorts
     - multiqc.modules.qualimap
     - multiqc.modules.quast
+    - multiqc.modules.rna_seqc
+    - multiqc.modules.rsem
     - multiqc.modules.rseqc
     - multiqc.modules.salmon
     - multiqc.modules.samblaster
@@ -67,18 +103,25 @@ test:
     - multiqc.modules.skewer
     - multiqc.modules.slamdunk
     - multiqc.modules.snpeff
+    - multiqc.modules.sortmerna
     - multiqc.modules.star
+    - multiqc.modules.supernova
+    - multiqc.modules.theta2
     - multiqc.modules.tophat
     - multiqc.modules.trimmomatic
+    - multiqc.modules.vcftools
     - multiqc.plots
     - multiqc.templates
     - multiqc.templates.default
+    - multiqc.templates.default_dev
     - multiqc.templates.geo
+    - multiqc.templates.sections
     - multiqc.templates.simple
     - multiqc.utils
 
   commands:
     - multiqc --version
+    - multiqc .
 
 about:
   home: http://multiqc.info
@@ -86,3 +129,10 @@ about:
   summary: 'Create aggregate bioinformatics analysis reports across many samples and tools'
   license_family: GPL3
 
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]
+  skip-lints:
+    - uses_setuptools # uses pkg_resources

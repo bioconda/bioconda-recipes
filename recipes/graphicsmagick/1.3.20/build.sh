@@ -1,5 +1,5 @@
 #!/bin/env bash
 
-./configure --prefix=$PREFIX 
+./configure --prefix=$PREFIX --enable-shared
 make
 make install

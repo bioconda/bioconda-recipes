@@ -1,28 +1,32 @@
+{% set version="90.10" %}
+
 package:
   name: ensembl-vep
-  version: '88'
+  version: {{ version }}
 
 source:
-  fn: vep-88.0.tar.gz
-  url: https://github.com/Ensembl/ensembl-vep/archive/release/88.0.tar.gz
-  md5: 07992e6f2aa471e0723cda55d80945eb
+  fn: vep-{{ version }}.tar.gz
+  url: https://github.com/Ensembl/ensembl-vep/archive/release/{{ version }}.tar.gz
+  md5: 881b8ba34d5aa34f8b0c80f93e2ba50d
 
 build:
   number: 0
   skip: True # [osx]
+  string: "htslib{{CONDA_HTSLIB}}_{{PKG_BUILDNUM}}"
 
 requirements:
   build:
     - curl
+    - perl
     - perl-archive-zip
     - perl-lwp-simple
-    - perl >=5.2*
     - unzip
-    - zlib
+    - perl-dbi
   run:
-    - htslib
+    - perl
+    - htslib {{CONDA_HTSLIB}}*
     - perl-bioperl
-    - perl-bio-db-hts
+    - perl-bio-db-hts >=2.7
     - perl-cgi
     - perl-dbi
     - perl-dbd-mysql
@@ -31,9 +35,7 @@ requirements:
     - perl-perlio-gzip
     - perl-sereal
     - perl-set-intervaltree
-    - perl >=5.2*
     - unzip
-
 
 test:
   commands:
@@ -41,6 +43,7 @@ test:
      - vep_convert_cache --help
      - vep_install --help
      - haplo --help
+     - variant_recoder --help
 
 about:
   home: http://www.ensembl.org/info/docs/tools/vep/index.html
