@@ -1,0 +1,45 @@
+{% set name = "ngless" %}
+{% set version = "0.6.1" %}
+{% set md5 = "9e7657eee1af7da092255c43873c19da" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  fn: {{ version }}.tar.gz
+  url: https://github.com/luispedro/ngless/archive/v{{ version }}.tar.gz
+  md5: {{ md5 }}
+
+build:
+  number: 0
+  skip: True  #  [osx]
+
+requirements:
+  build:
+    - stack >=1.3.2
+    - bzip2 {{ CONDA_BZIP2 }}*
+    - gmp {{CONDA_GMP}}*
+    - zlib {{CONDA_ZLIB}}*
+    - perl
+    - wget
+    - xz 5.2.*
+    - gcc # necessary for megahit
+  run:
+    - python
+    - bzip2 {{ CONDA_BZIP2 }}*
+    - gmp {{CONDA_GMP}}*
+    - zlib {{CONDA_ZLIB}}*
+    - libgcc # for gomp (megahit)
+    - xz 5.2.*
+
+
+test:
+  commands:
+    - ngless --version
+    - ngless --check-install
+
+about:
+  home: http://ngless.embl.de
+  license: MIT
+  summary: A tool for metagenomics processing with a focus on metagenomics

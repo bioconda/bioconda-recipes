@@ -1,8 +1,15 @@
-mkdir -p $PREFIX/bin
+#!/bin/bash
 
-cp bin/exactSNP $PREFIX/bin
-cp bin/featureCounts $PREFIX/bin
-cp bin/subindel $PREFIX/bin
-cp bin/subjunc $PREFIX/bin
-cp bin/subread-align $PREFIX/bin
-cp bin/subread-buildindex $PREFIX/bin
+mkdir -p "${PREFIX}/bin"
+
+cd src
+MAKEFILE=Makefile.Linux
+if [ `uname` = "Darwin" ];
+then
+  MAKEFILE=Makefile.MacOS
+fi
+make -f $MAKEFILE
+cd ..
+cp bin/utilities/* $PREFIX/bin
+rm -r bin/utilities
+cp bin/* $PREFIX/bin
