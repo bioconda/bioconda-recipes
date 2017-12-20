@@ -3,7 +3,7 @@
 export DISABLE_ASMLIB=true
 export CXX=g++
 export CPPFLAGS="-I${PREFIX}/include"
-export LDFLAGS="-L${PREFIX}/lib"
+export LDFLAGS="-L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
 
 if [ "$(uname)" == "Darwin" ]; then
     Makefile=makefile_mac
