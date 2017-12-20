@@ -3,10 +3,18 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
-
-stack setup
-stack update
-stack install --extra-include-dirs ${PREFIX}/include --local-bin-path ${PREFIX}/bin
+if [ `uname` == Darwin ]
+then
+    export STACK_ROOT="${SRC_DIR}/s"
+    stack setup --ghc-build=nopie --extra-include-dirs ${PREFIX}/include --extra-lib-dirs [${PREFIX}/lib,/usr/lib] --local-bin-path ${SRC_DIR}/s
+    stack --ghc-build=nopie update
+    stack install --ghc-build=nopie --extra-include-dirs ${PREFIX}/include --extra-lib-dirs ${PREFIX}/lib --local-bin-path ${PREFIX}/bin
+    rm -r "${SRC_DIR}/s"
+else
+    stack setup
+    stack update
+    stack install --extra-include-dirs ${PREFIX}/include --extra-lib-dirs ${PREFIX}/lib --local-bin-path ${PREFIX}/bin
+fi
 #cleanup
 rm -r .stack-work
 
