@@ -6,7 +6,7 @@ cd orthofinder/
 
 cp orthofinder.py $PREFIX/bin/orthofinder
 
-cp config.json $PREFIX/bin/orthofinder
+cp config.json $PREFIX/bin/
 
 cp -r scripts $PREFIX/bin/
 
