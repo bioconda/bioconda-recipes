@@ -1,16 +1,6 @@
 #!/bin/bash
 
-export OPENSSL_PREFIX=${PREFIX}
-
-export PERL_MM_USE_DEFAULT=1
-
-if [ `uname -s` == "Darwin" ]; then
-    # Force use of conda's OpenSSL instead of the system one
-    export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib"
-else
-    # Force use of conda's OpenSSL instead of the system one
-    export LD_LIBRARY_PATH="${PREFIX}/lib"
-fi
+export OPENSSL_PREFIX=$PREFIX
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
