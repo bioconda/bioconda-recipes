@@ -1,6 +1,6 @@
 #!/bin/bash
 
-$PYTHON setup.py install
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
 binaries="\
 scripts/find_enrichment.py \
