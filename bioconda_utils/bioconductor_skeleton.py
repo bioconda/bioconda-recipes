@@ -747,17 +747,71 @@ def write_recipe_recursive(proj, seen_dependencies, recipe_dir, config, force,
 
 
 def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
-                 pkg_version=None, versioned=False, recursive=False, seen_dependencies=[]):
+                 pkg_version=None, versioned=False, recursive=False, seen_dependencies=None,
+                 skip_if_in_channels=None):
     """
-    Write the meta.yaml and build.sh files.
+    Write the meta.yaml and build.sh files. If the package is detected to be
+    a data package (bsed on the detected URL from Bioconductor), then also
+    create a post-link.sh and pre-unlink.sh script that will download and
+    install the package.
+
+    Parameters
+    ----------
+
+    package : str
+        Bioconductor package name (case-sensitive)
+
+    recipe_dir : str
+
+    config : str or dict
+
+    force : bool
+        If True, then recipes will get overwritten. If `recursive` is also
+        True, *all* recipes created will get overwritten.
+
+    bioc_version : str
+        Version of Bioconductor to target
+
+    pkg_version : str
+        Force a particular package version
+
+    versioned : bool
+        If True, then make a subdirectory for this version
+
+    recursive : bool
+        If True, then also build any R or Bioconductor packages in the same
+        recipe directory.
+
+    seen_dependencies : set
+        Dependencies to skip and will be updated with any packages built by
+        this function. Used internally when `recursive=True`.
+
+    skip_if_in_channels : list or None
+        List of channels whose existing packages will be automatically added to
+        `seen_dependencies`. Only has an effect if `recursive=True`.
     """
     config = utils.load_config(config)
     env = list(utils.EnvMatrix(config['env_matrix']))[0]
     proj = BioCProjectPage(package, bioc_version, pkg_version)
     logger.info('Making recipe for: {}'.format(package))
+
+    if seen_dependencies is None:
+        seen_dependencies = set()
+
     if recursive:
-        write_recipe_recursive(proj, seen_dependencies, recipe_dir, config, force, bioc_version,
-                               pkg_version, versioned, recursive)
+        # get a list of existing packages in channels
+        if skip_if_in_channels is not None:
+            for channel in skip_if_in_channels:
+                logger.info('Downloading channel repodata for %s', channel)
+                for repodata in utils.get_channel_repodata(channel):
+                    for pkg in repodata['packages'].values():
+                        name = pkg['name']
+                        if name.startswith(('r-', 'bioconductor-')):
+                            seen_dependencies.update([name])
+
+        write_recipe_recursive(proj, seen_dependencies, recipe_dir, config,
+                               force, bioc_version, pkg_version, versioned,
+                               recursive)
 
     logger.debug('%s==%s, BioC==%s', proj.package, proj.version, proj.bioc_version)
     logger.info('Using tarball from %s', proj.tarball_url)
