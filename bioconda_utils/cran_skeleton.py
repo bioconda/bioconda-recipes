@@ -1,15 +1,25 @@
-from optparse import OptionParser
+"""
+This module cleans up conda CRAN skeletons to make it compliant with
+conda-forge requirements.
+"""
+
 import subprocess as sp
 import re
 from itertools import zip_longest
 import argparse
-import yaml
+from conda_build.api import skeletonize
+from .utils import run, setup_logger
 
+logger = setup_logger(__name__, 'debug')
 
+# Some dependencies are listed in CRAN that are actually in Bioconductor. Use
+# this dict to map these to bioconductor package names.
 INVALID_NAME_MAP = {
     'r-edger': 'bioconductor-edger',
 }
 
+# Raw strings needed to support the awkward backslashes needed when adding the
+# command to yaml
 gpl2_short = r"  license_family: GPL2"
 gpl2_long = ("  license_family: GPL2\n  license_file: '{{ environ[\"PREFIX\"] }}" +
              "\/lib\/R\/share\/licenses\/GPL-2'  # [unix]\n  " +
@@ -34,46 +44,101 @@ def write_recipe(package, recipe_dir='.', no_windows=True, config=None, force=Fa
 
 
 def clean_skeleton_files(package, no_windows=True):
-    # Cleans the yaml and build files to make them conda-forge compatible.
+    """
+    Cleans output files created by `conda skeleton cran` to make them
+    conda-forge compatible.
 
+    Parameters
+    ----------
+    package : str
+        Package name. Can be case-sensitive CRAN name, or sanitized
+        "r-pkgname" conda package name.
+
+    no_windows : bool
+        If True, no bld.bat will be created and no `[win]` preprocess selectors
+        will be added to the yaml
+    """
     clean_yaml_file(package, no_windows)
     clean_build_file(package, no_windows)
     clean_bld_file(package, no_windows)
 
 
 def clean_yaml_file(package, no_windows):
-    path = package + '/meta.yaml'
+    """
+    Cleans the YAML file output by `conda skeleton cran` to make it conda-forge
+    compatible.
+
+    Parameters
+    ----------
+    package : str
+        Must be sanitized "r-pkgname" package name.
+
+    no_windows : bool
+        If True, then adds a "build: skip: True # [win32]" line to skip Windows
+        builds.
+    """
+    path = os.path.join(package, 'meta.yaml')
     with open(path, 'r') as yaml:
         lines = list(yaml.readlines())
-        lines = filter_lines_regex(lines, r'^\s*#.*$', '')  # Removes the lines consisting of only comments
+
+        # Remove lines consisting only of comments
+        lines = filter_lines_regex(lines, r'^\s*#.*$', '')
         lines = remove_empty_lines(lines)
-        lines = filter_lines_regex(lines, r' [+|] file LICEN[SC]E', '')  # remove file license
-        lines = filter_lines_regex(lines, gpl2_short, gpl2_long)  # add gpl 2
-        lines = filter_lines_regex(lines, gpl3_short, gpl3_long)  # add gpl 3
+
+        # Remove file license
+        lines = filter_lines_regex(lines, r' [+|] file LICEN[SC]E', '')
+
+        # Replace GPL2 or GPL3 string created by conda skeleton cran with long
+        # format
+        lines = filter_lines_regex(lines, gpl2_short, gpl2_long)
+        lines = filter_lines_regex(lines, gpl3_short, gpl3_long)
+
         if no_windows:
-            lines = filter_lines_regex(lines, r'number: 0', win32_string)  # Inserts the skip: true # [win32] after number: 0, to skip windows builds
+            # Inserts `skip: true # [win32]` after `number: 0` to skip windows
+            # builds
+            lines = filter_lines_regex(lines, r'number: 0', win32_string)
+
+        # Add contents of maintainers file to the end of the recipe
         add_maintainers(lines)
 
     with open(path, 'w') as yaml:
         out = "".join(lines)
         out = out.replace('{indent}', '\n    - ')
+
+        # Edit INVALID_NAME_MAP if additional fixes needed
         for wrong, correct in INVALID_NAME_MAP.items():
             out = out.replace(wrong, correct)
         yaml.write(out)
 
 
 def clean_build_file(package, no_windows=False):
-    # Clean build.sh file
+    """
+    Cleans build.sh file created by `conda skeleton cran` to be compatible with
+    conda-forge.
 
-    path = package + '/build.sh'
+    Parameters
+    ----------
+    package : str
+        Must be sanitized "r-pkgname" package name.
+
+    no_windows : bool
+        Included for consistency with other `clean_*` functions; does not have
+        any effect for this function.
+    """
+
+    path = os.path.join(package, 'build.sh')
     with open(path, 'r') as build:
         lines = list(build.readlines())
+
         # Remove lines with mv commands
         lines = filter_lines_regex(lines, r'^mv\s.*$', '')
+
         # Remove lines with grep commands
         lines = filter_lines_regex(lines, r'^grep\s.*$', '')
+
         # Removes the lines consisting of only comments
         lines = filter_lines_regex(lines, r'^\s*#.*$', '')
+
         lines = remove_empty_lines(lines)
 
     with open(path, 'w') as build:
@@ -81,11 +146,25 @@ def clean_build_file(package, no_windows=False):
 
 
 def clean_bld_file(package, no_windows):
-    # Clean bld.bat file
+    """
+    Cleans bld.bat file created by `conda skeleton cran` to be compatible with
+    conda-forge.
 
-    path = package + '/bld.bat'
+    Parameters
+    ----------
+    package : str
+        Must be sanitized "r-pkgname" package name.
+
+    no_windows : bool
+        Included for consistency with other `clean_*` functions; does not have
+        any effect for this function.
+    """
+    path = os.path.join(package, 'bld.bat')
+    if not os.path.exists(path):
+        return
     with open(path, 'r') as bld:
         lines = list(bld.readlines())
+
         # Removes the lines that start with @
         lines = filter_lines_regex(lines, r'^@.*$', '')
         lines = remove_empty_lines(lines)
@@ -95,16 +174,35 @@ def clean_bld_file(package, no_windows):
 
 
 def filter_lines_regex(lines, regex, substitute):
+    """
+    Substitutes `substitute` for every match to `regex` in each line of
+    `lines`.
+
+    Parameters
+    ----------
+
+    lines : iterable of strings
+
+    regex, substitute : str
+    """
     return [re.sub(regex, substitute, line) for line in lines]
 
 
 def remove_empty_lines(lines):
-    # Removes consecutive empty lines from a file
+    """
+    Removes consecutive empty lines in `lines`.
 
+    Parameters
+    ----------
+
+    lines: iterable of strings
+    """
     cleaned_lines = []
-
     for line, next_line in zip_longest(lines, lines[1:]):
-        if (line.isspace() and next_line is None) or (line.isspace() and next_line.isspace()):
+        if (
+            (line.isspace() and next_line is None) or
+            (line.isspace() and next_line.isspace())
+        ):
             pass
         else:
             cleaned_lines.append(line)
@@ -115,9 +213,12 @@ def remove_empty_lines(lines):
 
 
 def add_maintainers(lines):
+    """
+    Append the contents of "maintainers.yaml" to the end of a YAML file.
+    """
     HERE = os.path.abspath(os.path.dirname(__file__))
     maintainers_yaml = os.path.join(HERE, 'maintainers.yaml')
-    with open("maintainers.yaml", 'r') as yaml:
+    with open(maintainers_yaml, 'r') as yaml:
         extra_lines = list(yaml.readlines())
         lines.extend(extra_lines)
 
