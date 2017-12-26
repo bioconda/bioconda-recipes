@@ -480,28 +480,28 @@ def dependent(recipe_folder, config, restrict=False, dependencies=None, reverse_
      must match the package name on the Bioconductor site.''')
 @arg('recipe_folder', help='Path to recipes directory')
 @arg('config', help='Path to yaml file specifying the configuration')
-@arg('--versioned', action='store_true',
-                help='''If specified, recipe will be created in
-                RECIPES/<package>/<version>''')
-@arg('--force', action='store_true',
-                help='Overwrite the contents of an existing recipe')
-@arg('--pkg-version',
-                help='Package version to use instead of the current one')
-@arg('--bioc-version',
-                help="""Version of Bioconductor to target. If not
-                specified, then automatically finds the latest version of
-                Bioconductor with the specified version in --pkg-version,
-                or if --pkg-version not specified, then finds the the
-                latest package version in the latest Bioconductor
-                version""")
-@arg('--loglevel', default='debug',
-                help='Log level')
-@arg('--recursive', action='store_true',
-                    help="""Creates the recipes for all bioconductor and cran recipes of the specified packages
-                    and puts the in the recipes directory""")
+@arg('--versioned', action='store_true', help='''If specified, recipe will be
+     created in RECIPES/<package>/<version>''')
+@arg('--force', action='store_true', help='''Overwrite the contents of an
+     existing recipe. If --recursive is also used, then overwrite *all* recipes
+     created.''')
+@arg('--pkg-version', help='''Package version to use instead of the current
+     one''')
+@arg('--bioc-version', help="""Version of Bioconductor to target. If not
+     specified, then automatically finds the latest version of Bioconductor
+     with the specified version in --pkg-version, or if --pkg-version not
+     specified, then finds the the latest package version in the latest
+     Bioconductor version""")
+@arg('--loglevel',  help='Log level')
+@arg('--recursive', action='store_true', help="""Creates the recipes for all
+     Bioconductor and CRAN dependencies of the specified package.""")
+@arg('--skip-if-in-channels', nargs='+', help="""When --recursive is used, it will build
+     *all* recipes. Use this argument to skip recursive building for packages
+     that already exist in the packages listed here.""")
 def bioconductor_skeleton(
     recipe_folder, config, package, versioned=False, force=False,
-    pkg_version=None, bioc_version=None, loglevel='info', recursive=False, seen_dependencies=[]
+    pkg_version=None, bioc_version=None, loglevel='debug', recursive=False,
+    skip_if_in_channels=['conda-forge', 'bioconda']
 ):
     """
     Build a Bioconductor recipe. The recipe will be created in the `recipes`
@@ -511,13 +511,15 @@ def bioconductor_skeleton(
     seen_dependencies = set()
     written = _bioconductor_skeleton.write_recipe(
         package, recipe_folder, config, force=force, bioc_version=bioc_version,
-        pkg_version=pkg_version, versioned=versioned, recursive=recursive, seen_dependencies=seen_dependencies
-    )
-    if recursive:
-        #print("osListDir: {}".format(os.listdir(recipe_folder)))
-        for package in os.listdir(recipe_folder):
-            if package[:2] == "r-":
-                cran_skeleton.clean_skeleton_files(os.path.join(recipe_folder, package))
+        pkg_version=pkg_version, versioned=versioned, recursive=recursive,
+        seen_dependencies=seen_dependencies, skip_if_in_channels=skip_if_in_channels)
+
+    # E.g., r-probmetab has versioned 1.0 and 1.1 dirs in bioconda-recipes, and
+    # this fails to find the meta.yaml files.
+    # if recursive:
+    #     for package in os.listdir(recipe_folder):
+    #         if package[:2] == "r-":
+    #             cran_skeleton.clean_skeleton_files(os.path.join(recipe_folder, package))
 
 
 @arg('recipe_folder', help='Path to recipes directory')
