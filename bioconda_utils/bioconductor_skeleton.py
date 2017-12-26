@@ -208,7 +208,6 @@ class BioCProjectPage(object):
         self._bioconductor_tarball_url = None
         self.is_data_package = False
         self.package_lower = package.lower()
-        self.raw_dependency_names = []
 
         # If no version specified, assume the latest
         if not self.bioc_version:
@@ -280,7 +279,6 @@ class BioCProjectPage(object):
             response = requests.head(url)
             if response.status_code == 200:
                 return url
-
 
     @property
     def cargoport_url(self):
@@ -482,7 +480,7 @@ class BioCProjectPage(object):
         if self._dependencies:
             return self._dependencies
 
-        results = []
+        dependency_mapping = {}
 
         # Sometimes a version is specified only in the `depends` and not in the
         # `imports`. We keep the most specific version of each.
@@ -536,27 +534,25 @@ class BioCProjectPage(object):
 
                 # # "r >=2.5" rather than "r-r >=2.5"
                 specific_r_version = True
-                self.raw_dependency_names.append("r-base")
-                results.append(name.lower() + '-base' + version)
+                dependency_mapping[name.lower() + '-base' + version] = 'r-base'
 
             else:
-                results.append(prefix + name.lower() + version)
-                self.raw_dependency_names.append(name)
+                dependency_mapping[prefix + name.lower() + version] = name
 
             if prefix + name.lower() in GCC_PACKAGES:
                 self.depends_on_gcc = True
 
         # Add R itself
         if not specific_r_version:
-            results.append('r-base')
-            self.raw_dependency_names.append('r-base')
+            dependency_mapping['r-base'] = 'r-base'
 
         # Sometimes empty dependencies make it into the list from a trailing
         # comma in DESCRIPTION; remove them here.
-        results = list(filter(lambda x: x != 'r-', results))
-        self.raw_dependency_names = list(filter(lambda x: x != '', self.raw_dependency_names))
+        for k in dependency_mapping.keys():
+            if k == 'r-':
+                dependency_mapping.pop(k)
 
-        self._dependencies = results
+        self._dependencies = dependency_mapping
         return self._dependencies
 
     @property
@@ -698,26 +694,56 @@ class BioCProjectPage(object):
         return fout.name
 
 
-def write_recipe_recursive(proj, seen_dependencies, recipe_dir, config, force, bioc_version,
-                           pkg_version, versioned, recursive):
-    logger.debug('list of dependencies: {}'.format(proj.raw_dependency_names))
-    for dependency, name in zip(proj.dependencies, proj.raw_dependency_names):
-        dependency_without_version = re.sub(r' >=.*$', '', dependency)
-        if dependency_without_version in seen_dependencies:
-            logger.debug("seen {} before".format(dependency_without_version))
+def write_recipe_recursive(proj, seen_dependencies, recipe_dir, config, force,
+                           bioc_version, pkg_version, versioned, recursive):
+    """
+    Parameters
+    ----------
+
+    proj : BioCProjectPage object
+
+    seen_dependencies : list
+        Dependencies to ignore
+
+    recipe_dir : str
+        Path to recipe dir
+
+    config : str
+        Path to recipes config file
+
+    force : bool
+        If True, any recipes that already exist will be overwritten.
+    """
+    logger.debug('%s has dependencies: %s', proj.package, proj.dependencies)
+    for conda_name, cran_or_bioc_name in proj.dependencies.items():
+
+        # For now, this function is version-agnostic. so we strip out any
+        # version info when checking if we've seen this dep before.
+        conda_name_without_version = re.sub(r' >=.*$', '', conda_name)
+        if conda_name.startswith('r-base'):
             continue
 
-        seen_dependencies.append(dependency_without_version)
-        if dependency_without_version[:2] == 'r-':
-            cran_skeleton.write_recipe(name, recipe_dir=recipe_dir, config=config,
-                                       force=force, bioc_version=bioc_version,
-                                       pkg_version=pkg_version, versioned=versioned,
-                                       recursive=recursive,
-                                       seen_dependencies=seen_dependencies)
+        if conda_name_without_version in seen_dependencies:
+            logger.debug("{} already created or in existing channels, skipping".format(conda_name_without_version))
+            continue
+
+        seen_dependencies.update([conda_name_without_version])
+
+        if conda_name_without_version.startswith('r-'):
+            writer = cran_skeleton.write_recipe
         else:
-            write_recipe(name, recipe_dir=recipe_dir, config=config, force=force, bioc_version=bioc_version,
-                         pkg_version=pkg_version, versioned=versioned, recursive=recursive,
-                         seen_dependencies=seen_dependencies)
+            writer = write_recipe
+        writer(
+            package=cran_or_bioc_name,
+            recipe_dir=recipe_dir,
+            config=config,
+            force=force,
+            bioc_version=bioc_version,
+            pkg_version=pkg_version,
+            versioned=versioned,
+            recursive=recursive,
+            seen_dependencies=seen_dependencies,
+        )
 
 
 def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
