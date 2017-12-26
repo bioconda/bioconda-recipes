@@ -4,6 +4,8 @@ conda-forge requirements.
 """
 
 import subprocess as sp
+import os
+import logging
 import re
 from itertools import zip_longest
 import argparse
@@ -21,22 +23,51 @@ INVALID_NAME_MAP = {
 # Raw strings needed to support the awkward backslashes needed when adding the
 # command to yaml
 gpl2_short = r"  license_family: GPL2"
-gpl2_long = ("  license_family: GPL2\n  license_file: '{{ environ[\"PREFIX\"] }}" +
-             "\/lib\/R\/share\/licenses\/GPL-2'  # [unix]\n  " +
-             "license_file: '{{ environ[\"PREFIX\"] }}" +
-             "\\\R\\\share\\\licenses\\\GPL-2'  # [win]")
+gpl2_long = (
+    "  license_family: GPL2\n  license_file: '{{ environ[\"PREFIX\"] }}"
+    "\/lib\/R\/share\/licenses\/GPL-2'  # [unix]\n  "
+    "license_file: '{{ environ[\"PREFIX\"] }}"
+    "\\\R\\\share\\\licenses\\\GPL-2'  # [win]"
+)
 
 gpl3_short = r"  license_family: GPL3"
-gpl3_long = ("  license_family: GPL3\n  license_file: '{{ environ[\"PREFIX\"] }}" +
-             "\/lib\/R\/share\/licenses\/GPL-3'  # [unix]\n  " +
-             "license_file: '{{ environ[\"PREFIX\"] }}" +
-             "\\\R\\\share\\\licenses\\\GPL-3'  # [win]")
-
+gpl3_long = (
+    "  license_family: GPL3\n  license_file: '{{ environ[\"PREFIX\"] }}"
+    "\/lib\/R\/share\/licenses\/GPL-3'  # [unix]\n  "
+    "license_file: '{{ environ[\"PREFIX\"] }}"
+    "\\\R\\\share\\\licenses\\\GPL-3'  # [win]"
+)
 win32_string = 'number: 0\n  skip: true  # [win32]'
 
 
 def write_recipe(package, recipe_dir='.', no_windows=True, config=None, force=False, bioc_version=None,
                  pkg_version=None, versioned=False, recursive=False, seen_dependencies=[]):
+        """
+        Call out to to `conda skeleton cran`.
+
+        Kwargs are accepted for uniformity with
+        `bioconductor_skeleton.write_recipe`; the only one handled here is
+        `recursive`.
+
+        Parameters
+        ----------
+
+        package : str
+            Package name. Can be case-sensitive CRAN name, or sanitized
+            "r-pkgname" conda package name.
+
+        recipe_dir : str
+            Recipe will be created as a subdirectory in `recipe_dir`
+
+        recursive : bool
+            Add the `--recursive` argument to `conda skeleton cran` to
+            recursively build CRAN recipes.
+
+        force : bool
+            If True, then remove the directory `<recipe_dir>/<pkgname>`, where
+            `<pkgname>` the sanitized conda version of the package name,
+            regardless of which format was provided as `package`.
+        """
         if recursive:
             sp.call(['conda skeleton cran ' + package + ' --output-dir ' + recipe_dir + " --recursive"], shell=True)
         else:
