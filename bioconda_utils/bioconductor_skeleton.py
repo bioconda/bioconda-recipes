@@ -34,11 +34,6 @@ log_stream_handler.setFormatter(ColoredFormatter(
 logger = logging.getLogger(__name__)
 
 
-def setup_logger(loglevel):
-    l = logging.getLogger(__name__)
-    l.propagate = False
-    l.setLevel(getattr(logging, loglevel.upper()))
-    l.addHandler(log_stream_handler)
 
 base_url = 'http://bioconductor.org/packages/'
 

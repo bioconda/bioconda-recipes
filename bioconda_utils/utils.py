@@ -25,6 +25,20 @@ from conda_build.metadata import MetaData
 from conda.version import VersionOrder
 import yaml
 from jinja2 import Environment, PackageLoader
+from colorlog import ColoredFormatter
+
+log_stream_handler = logging.StreamHandler()
+log_stream_handler.setFormatter(ColoredFormatter(
+        "%(asctime)s %(log_color)sBIOCONDA %(levelname)s%(reset)s %(message)s",
+        datefmt="%H:%M:%S",
+        reset=True,
+        log_colors={
+            'DEBUG': 'cyan',
+            'INFO': 'green',
+            'WARNING': 'yellow',
+            'ERROR': 'red',
+            'CRITICAL': 'red',
+        }))
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +68,14 @@ ENV_VAR_BLACKLIST = [
 ENV_VAR_DOCKER_BLACKLIST = [
     'PATH',
 ]
+
+
+def setup_logger(name, loglevel):
+    l = logging.getLogger(name)
+    l.propagate = False
+    l.setLevel(getattr(logging, loglevel.upper()))
+    l.addHandler(log_stream_handler)
+    return l
 
 
 def get_free_space():

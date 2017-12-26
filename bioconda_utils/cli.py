@@ -4,7 +4,6 @@ import sys
 import os
 import shlex
 import logging
-from colorlog import ColoredFormatter
 from collections import defaultdict
 
 import argh
@@ -23,29 +22,7 @@ from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import pypi
 
-
-log_stream_handler = logging.StreamHandler()
-log_stream_handler.setFormatter(ColoredFormatter(
-        "%(asctime)s %(log_color)sBIOCONDA %(levelname)s%(reset)s %(message)s",
-        datefmt="%H:%M:%S",
-        reset=True,
-        log_colors={
-            'DEBUG': 'cyan',
-            'INFO': 'green',
-            'WARNING': 'yellow',
-            'ERROR': 'red',
-            'CRITICAL': 'red',
-        }))
-
-
 logger = logging.getLogger(__name__)
-
-
-def setup_logger(loglevel):
-    l = logging.getLogger('bioconda_utils')
-    l.propagate = False
-    l.setLevel(getattr(logging, loglevel.upper()))
-    l.addHandler(log_stream_handler)
 
 
 def select_recipes(packages, git_range, recipe_folder, config_filename, config, force):
@@ -237,7 +214,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
     If --push-status is not set, reports a TSV of linting results to stdout.
     Otherwise pushes a commit status to the specified commit on github.
     """
-    setup_logger(loglevel)
+    utils.setup_logger('bioconda_utils', loglevel)
 
     if list_funcs:
         print('\n'.join([i.__name__ for i in lint_functions.registry]))
@@ -349,7 +326,7 @@ def build(
     mulled_upload_target=None,
     keep_image=False,
 ):
-    setup_logger(loglevel)
+    utils.setup_logger('bioconda_utils', loglevel)
 
     cfg = utils.load_config(config)
     setup = cfg.get('setup', None)
@@ -484,7 +461,7 @@ def dependent(recipe_folder, config, restrict=False, dependencies=None, reverse_
         raise ValueError(
             '`dependencies` and `reverse_dependencies` are mutually exclusive')
 
-    setup_logger(loglevel)
+    utils.setup_logger('bioconda_utils', loglevel)
 
     d, n2r = utils.get_dag(utils.get_recipes(recipe_folder, "*"), config, restrict=restrict)
 
@@ -530,8 +507,9 @@ def bioconductor_skeleton(
     Build a Bioconductor recipe. The recipe will be created in the `recipes`
     directory and will be prefixed by "bioconductor-".
     """
-    setup_logger(loglevel)
-    _bioconductor_skeleton.write_recipe(
+    utils.setup_logger('bioconda_utils', loglevel)
+    seen_dependencies = set()
+    written = _bioconductor_skeleton.write_recipe(
         package, recipe_folder, config, force=force, bioc_version=bioc_version,
         pkg_version=pkg_version, versioned=versioned, recursive=recursive, seen_dependencies=seen_dependencies
     )
@@ -582,7 +560,7 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
                 - remove-from-bioconda (conda-forge has later version)
                 - decide-where-to-update (both conda-forge and bioconda are out-of-date)
     """
-    setup_logger(loglevel)
+    utils.setup_logger('bioconda_utils', loglevel)
     for result in pypi.check_all(recipe_folder, config):
         if only_out_of_date:
             if not result[3]:
