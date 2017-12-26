@@ -115,6 +115,8 @@ def remove_empty_lines(lines):
 
 
 def add_maintainers(lines):
+    HERE = os.path.abspath(os.path.dirname(__file__))
+    maintainers_yaml = os.path.join(HERE, 'maintainers.yaml')
     with open("maintainers.yaml", 'r') as yaml:
         extra_lines = list(yaml.readlines())
         lines.extend(extra_lines)
