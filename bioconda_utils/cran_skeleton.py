@@ -40,8 +40,9 @@ gpl3_long = (
 win32_string = 'number: 0\n  skip: true  # [win32]'
 
 
-def write_recipe(package, recipe_dir='.', no_windows=True, config=None, force=False, bioc_version=None,
-                 pkg_version=None, versioned=False, recursive=False, seen_dependencies=[]):
+
+def write_recipe(package, recipe_dir='.', recursive=False, force=False,
+                 **kwargs):
         """
         Call out to to `conda skeleton cran`.
 
@@ -68,10 +69,26 @@ def write_recipe(package, recipe_dir='.', no_windows=True, config=None, force=Fa
             `<pkgname>` the sanitized conda version of the package name,
             regardless of which format was provided as `package`.
         """
-        if recursive:
-            sp.call(['conda skeleton cran ' + package + ' --output-dir ' + recipe_dir + " --recursive"], shell=True)
+        logger.debug('Building skeleton for %s', package)
+        conda_version = package.startswith('r-')
+        if not conda_version:
+            outdir = os.path.join(
+                recipe_dir, 'r-' + package.lower())
         else:
-            sp.call(['conda skeleton cran ' + package + ' --output-dir ' + recipe_dir], shell=True)
+            outdir = os.path.join(
+                recipe_dir, package)
+        if os.path.exists(outdir):
+            if force:
+                logger.warning('Removing %s', outdir)
+                run(['rm', '-r', outdir])
+            else:
+                logger.warning('%s exists, skipping', outdir)
+                return
+
+        try:
+            skeletonize(package, repo='cran', output_dir=recipe_dir, version=None, recursive=recursive)
+        except NotImplementedError as e:
+            logger.error('%s had dependencies that specified versions: skipping.', package)
 
 
 def clean_skeleton_files(package, no_windows=True):
@@ -259,11 +276,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('package', help='name of the cran package')
     parser.add_argument('output_dir', help='output directory for the recipe')
-    parser.add_argument('--no-win', default=False, action="store_true",
+    parser.add_argument('--no-win', action="store_true",
                         help='runs the skeleton and removes windows specific information')
+    parser.add_argument('--force', action='store_true',
+                        help='If a directory exists for any recipe, overwrite it')
 
     args = parser.parse_args()
-    write_recipe(args.package, args.output_dir, no_windows=args.no_win)
+    write_recipe(args.package, args.output_dir, no_windows=args.no_win,
+                 force=args.force)
 
 
 if __name__ == '__main__':
