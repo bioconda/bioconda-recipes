@@ -11,7 +11,6 @@ from argh import arg
 import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
 import pandas
-from . import cran_skeleton
 
 from . import utils
 from .build import build_recipes
@@ -20,6 +19,7 @@ from . import lint_functions
 from . import linting
 from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
+from . import cran_skeleton
 from . import pypi
 
 logger = logging.getLogger(__name__)
@@ -437,8 +437,6 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
             print('\n'.join(recipes) + '\n')
 
 
-
-
 @arg('recipe_folder', help='Path to recipes directory')
 @arg('config', help='Path to yaml file specifying the configuration')
 @arg('--dependencies', nargs='+',
@@ -498,10 +496,14 @@ def dependent(recipe_folder, config, restrict=False, dependencies=None, reverse_
 @arg('--skip-if-in-channels', nargs='+', help="""When --recursive is used, it will build
      *all* recipes. Use this argument to skip recursive building for packages
      that already exist in the packages listed here.""")
+@arg('--no-windows', action='store_true', help="""After a CRAN skeleton is
+     created, any Windows-related lines will be removed and the bld.bat file
+     will be removed. Use this if you know the R packages will not be submitted
+     to conda-forge.""")
 def bioconductor_skeleton(
     recipe_folder, config, package, versioned=False, force=False,
     pkg_version=None, bioc_version=None, loglevel='debug', recursive=False,
-    skip_if_in_channels=['conda-forge', 'bioconda']
+    skip_if_in_channels=['conda-forge', 'bioconda'], no_windows=False,
 ):
     """
     Build a Bioconductor recipe. The recipe will be created in the `recipes`
@@ -512,7 +514,8 @@ def bioconductor_skeleton(
     written = _bioconductor_skeleton.write_recipe(
         package, recipe_folder, config, force=force, bioc_version=bioc_version,
         pkg_version=pkg_version, versioned=versioned, recursive=recursive,
-        seen_dependencies=seen_dependencies, skip_if_in_channels=skip_if_in_channels)
+        seen_dependencies=seen_dependencies,
+        skip_if_in_channels=skip_if_in_channels, no_windows=no_windows)
 
     # E.g., r-probmetab has versioned 1.0 and 1.1 dirs in bioconda-recipes, and
     # this fails to find the meta.yaml files.
