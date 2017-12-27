@@ -44,6 +44,14 @@ GCC_PACKAGES = ['r-rcpp']
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 
+class PackageNotFoundError(Exception):
+    pass
+
+
+class PageNotFoundError(Exception):
+    pass
+
+
 def bioconductor_versions():
     """
     Returns a list of available Bioconductor versions scraped from the
@@ -133,10 +141,57 @@ def bioconductor_experiment_data_url(package, pkg_version, bioc_version):
     )
 
 
+def bioarchive_url(package, pkg_version, bioc_version=None):
+    """
+    Constructs a url for the package as archived on bioaRchive
+
+    Parameters
+    ----------
+    package : str
+        Case-sensitive Bioconductor package name
+
+    pkg_version : str
+        Bioconductor package version
+
+    bioc_version : str
+        Bioconductor release version. Not used;, only included for API
+        compatibility with other url funcs
+    """
+    return (
+        'https://bioarchive.galaxyproject.org/{0}_{1}.tar.gz'
+        .format(package, pkg_version)
+    )
+
+
+def cargoport_url(package, pkg_version, bioc_version=None):
+    """
+    Constructs a url for the package as archived on the galaxy cargo-port
+
+    Parameters
+    ----------
+    package : str
+        Case-sensitive Bioconductor package name
+
+    pkg_version : str
+        Bioconductor package version
+
+    bioc_version : str
+        Bioconductor release version. Not used;, only included for API
+        compatibility with other url funcs
+    """
+    package = package.lower()
+    return (
+        'https://depot.galaxyproject.org/software/bioconductor-{0}/bioconductor-{0}_'
+        '{1}_src_all.tar.gz'.format(package, pkg_version)
+    )
+
+
 def find_best_bioc_version(package, version):
     """
     Given a package version number, identifies which BioC version[s] it is in
     and returns the latest.
+
+    If the package is not found, raises a PackageNotFound error.
 
     Parameters
     ----------
@@ -163,10 +218,9 @@ def find_best_bioc_version(package, version):
                 return found_version
             else:
                 logger.debug('missing: %s', url)
-
-
-class PageNotFoundError(Exception):
-    pass
+    raise PackageNotFoundError(
+        "Cannot find any Bioconductor versions for {0}=={1}".format(package, version)
+    )
 
 
 class BioCProjectPage(object):
@@ -197,98 +251,99 @@ class BioCProjectPage(object):
 
         # If no version specified, assume the latest
         if not self.bioc_version:
-            self.bioc_version = latest_bioconductor_version()
+            if not self.pkg_version:
+                self.bioc_version = latest_bioconductor_version()
+            else:
+                self.bioc_version = find_best_bioc_version(self.package, self.pkg_version)
 
-        self.request = requests.get(
-            os.path.join(base_url, self.bioc_version, 'bioc', 'html', package + '.html')
-        )
+        # If no version has been provided, the following code finds the latest
+        # version by finding and scraping the HTML page for the package's
+        # "Details" table.
 
-        if not self.request:
-            self.request = requests.get(
-                os.path.join(base_url, self.bioc_version, 'data', 'annotation', 'html', package + '.html')
-            )
-        if not self.request:
-            self.request = requests.get(
-                os.path.join(base_url, self.bioc_version, 'data', 'experiment', 'html', package + '.html')
-            )
-
-        if not self.request:
-            raise PageNotFoundError('Error {0.status_code} ({0.reason}) for page {0.url}'.format(self.request))
-
-        # Since we provide the "short link" we will get redirected. Using
-        # requests allows us to keep track of the final destination URL, which
-        # we need for reconstructing the tarball URL.
-        self.url = self.request.url
-
-        # The table at the bottom of the page has the info we want. An earlier
-        # draft of this script parsed the dependencies from the details table.
-        # That's still an option if we need a double-check on the DESCRIPTION
-        # fields.
-        soup = bs4.BeautifulSoup(
-            self.request.content,
-            'html.parser')
-        details_table = soup.find_all(attrs={'class': 'details'})[0]
-
-        # However, it is helpful to get the version info from this table. That
-        # way we can try getting the bioaRchive tarball and cache that.
-        for td in details_table.findAll('td'):
-            if td.getText() == 'Version':
-                version = td.findNext().getText()
-                break
-
-        if self.pkg_version is not None and version != self.pkg_version:
-            logger.warn(
-                "Latest version of %s is %s, but using specified version %s",
-                self.package, version, self.pkg_version
-            )
+        if self.pkg_version is not None:
             self.version = self.pkg_version
 
         else:
-            self.version = version
+
+            htmls = {
+                'regular_package': os.path.join(
+                    base_url, self.bioc_version, 'bioc', 'html', package
+                    + '.html'),
+                'annotation_package': os.path.join(
+                    base_url, self.bioc_version, 'data', 'annotation', 'html',
+                    package + '.html'),
+                'experiment_package': os.path.join(
+                    base_url, self.bioc_version, 'data', 'experiment', 'html',
+                    package + '.html'),
+            }
+            tried = []
+            for label, url in htmls.items():
+                request = requests.get(url)
+                tried.append(url)
+                if request:
+                    break
+
+            if not request:
+                raise PageNotFoundError(
+                    'Could not find HTML page for {0.package}. Tried: '
+                    '{1}'.format(self, ', '.join(tried)))
+
+            # Since we provide the "short link" we will get redirected. Using
+            # requests allows us to keep track of the final destination URL,
+            # which we need for reconstructing the tarball URL.
+            self.url = request.url
+
+            # The table at the bottom of the page has the info we want. An
+            # earlier draft of this script parsed the dependencies from the
+            # details table.  That's still an option if we need a double-check
+            # on the DESCRIPTION fields. For now, we're grabbing the version
+            # information from the table.
+            soup = bs4.BeautifulSoup(request.content, 'html.parser')
+            details_table = soup.find_all(attrs={'class': 'details'})[0]
+
+            parsed_html_version = None
+            for td in details_table.findAll('td'):
+                if td.getText() == 'Version':
+                    parsed_html_version = td.findNext().getText()
+                    break
+
+            if parsed_html_version is None:
+                raise ValueError(
+                    "Could not scrape latest version information from "
+                    "{0}".format(self.url))
+
+            self.version = parsed_html_version
 
         self.depends_on_gcc = False
 
-        # Used later to determine whether or not to auto-identify the best BioC
-        # version
-        self._auto = self.bioc_version is None
-        if self._auto:
-            self.bioc_version = find_best_bioc_version(self.package, self.version)
 
     @property
-    def bioaRchive_url(self):
+    def bioarchive_url(self):
         """
         Returns the bioaRchive URL if one exists for this version of this
         package, otherwise returns None.
         """
-        if self._bioarchive_url is None:
-            url = 'https://bioarchive.galaxyproject.org/{0.package}_{0.version}.tar.gz'.format(self)
-            response = requests.head(url)
-            if response.status_code == 200:
-                return url
+        url = bioarchive_url(self.package, self.version, self.bioc_version)
+        response = requests.head(url)
+        if response.status_code == 200:
+            return url
 
     @property
     def cargoport_url(self):
         """
-        Returns the Galaxy cargo-port URL for this version of this package,
-        whether it exists or not. If none exists, a warning is printed.
+        Returns the Galaxy cargo-port URL for this version of this package, if
+        it exists.
         """
-        if not self._cargoport_url:
-            url = (
-                'https://depot.galaxyproject.org/software/bioconductor-{0.package_lower}/bioconductor-{0.package_lower}_'
-                '{0.version}_src_all.tar.gz'.format(self)
-            )
-            response = requests.get(url)
-            if response.status_code == 404:
-                logger.warn(
-                    'Cargo Port URL (%s) does not exist. This is expected if '
-                    'this is a new package or an updated version. Cargo Port '
-                    'will archive a working URL upon merging', url
-                )
-            elif response.status_code != 200:
-                raise PageNotFoundError("Unexpected error: {0.status_code} ({0.reason})".format(response))
-
-            self._cargoport_url = url
-        return self._cargoport_url
+        url = cargoport_url(self.package, self.version, self.bioc_version)
+        response = requests.get(url)
+        if response.status_code == 404:
+            # This is expected if this is a new package or an updated version.
+            # Cargo Port will archive a working URL upon merging
+            return
+        elif response.status_code == 200:
+            return url
+        else:
+            raise PageNotFoundError("Unexpected error: {0.status_code} ({0.reason})".format(response))
 
     @property
     def bioconductor_tarball_url(self):
@@ -327,7 +382,8 @@ class BioCProjectPage(object):
         if not self._tarball_url:
             urls = [self.bioconductor_tarball_url,
                     self.bioconductor_annotation_data_url,
-                    self.bioconductor_experiment_data_url, self.bioaRchive_url,
+                    self.bioconductor_experiment_data_url,
+                    self.bioarchive_url,
                     self.cargoport_url]
             for url in urls:
                 if url is not None:
@@ -602,10 +658,16 @@ class BioCProjectPage(object):
         url = [
             sub_placeholders(u) for u in
             [
+                # keep the one that was found
                 self.bioconductor_tarball_url,
                 self.bioconductor_annotation_data_url,
                 self.bioconductor_experiment_data_url,
-                self.bioaRchive_url, self.cargoport_url
+
+                # use the built URL, regardless of whether it was found or not.
+                # bioaRchive and cargo-port cache packages but only after the
+                # first recipe is built.
+                bioarchive_url(self.package, self.pkg_version, self.bioc_version),
+                cargoport_url(self.package, self.pkg_version, self.bioc_version),
             ]
             if u is not None
         ]
@@ -853,7 +915,8 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
                 proj.bioconductor_tarball_url,
                 proj.bioconductor_annotation_data_url,
                 proj.bioconductor_experiment_data_url,
-                proj.bioaRchive_url,
+                bioarchive_url(proj.package, proj.pkg_version, proj.bioc_version),
+                cargoport_url(proj.package, proj.pkg_version, proj.bioc_version),
                 proj.cargoport_url
             ]
             if u is not None
