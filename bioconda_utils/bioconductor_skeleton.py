@@ -420,7 +420,7 @@ class BioCProjectPage(object):
         """
         if self._cached_tarball:
             return self._cached_tarball
-        cache_dir = os.path.join(HERE, 'cached_bioconductor_tarballs')
+        cache_dir = os.path.join(tempfile.gettempdir(), 'cached_bioconductor_tarballs')
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
         fn = os.path.join(cache_dir, self.tarball_basename)
