@@ -525,6 +525,22 @@ def bioconductor_skeleton(
     #             cran_skeleton.clean_skeleton_files(os.path.join(recipe_folder, package))
 
 
+@arg('recipe', help='''Path to recipe to be cleaned''')
+@arg('--no-windows', action='store_true', help="""After a CRAN skeleton is
+     created, any Windows-related lines will be removed and the bld.bat file
+     will be removed. Use this if you know the R packages will not be submitted
+     to conda-forge.""")
+def clean_cran_skeleton(recipe, no_windows):
+    """
+    Cleans skeletons created by `conada skeleton cran`.
+
+    Before submitting to conda-forge or Bioconda, recipes generated with `conda
+    skeleton cran` need to be cleaned up: comments removed, licenses fixed, and
+    other linting.
+    """
+    cran_skeleton.clean_skeleton_files(recipe, no_windows=no_windows)
+
+
 @arg('recipe_folder', help='Path to recipes directory')
 @arg('config', help='Path to yaml file specifying the configuration')
 @arg('--loglevel', default='debug', help='Log level')
@@ -571,6 +587,7 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
             if not result[3]:
                 continue
         print('\t'.join(map(str, result)))
+
 
 def main():
     argh.dispatch_commands([build, dag, dependent, lint, duplicates, bioconductor_skeleton, pypi_check])
