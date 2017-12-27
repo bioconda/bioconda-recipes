@@ -7,8 +7,6 @@ from bioconda_utils import utils
 
 import helpers
 
-utils.setup_logger('bioconda_utils', 'debug')
-
 env_matrix = helpers.tmp_env_matrix()
 config = {
     'env_matrix': env_matrix,

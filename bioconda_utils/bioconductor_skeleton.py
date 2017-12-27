@@ -19,7 +19,7 @@ from . import cran_skeleton
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 
-logger = utils.setup_logger(__name__, 'debug')
+logger = utils.setup_logger(__name__)
 
 base_url = 'http://bioconductor.org/packages/'
 

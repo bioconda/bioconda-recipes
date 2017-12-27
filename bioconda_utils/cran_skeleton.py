@@ -12,7 +12,7 @@ import argparse
 from conda_build.api import skeletonize
 from .utils import run, setup_logger
 
-logger = setup_logger(__name__, 'debug')
+logger = setup_logger(__name__)
 
 # Some dependencies are listed in CRAN that are actually in Bioconductor. Use
 # this dict to map these to bioconductor package names.

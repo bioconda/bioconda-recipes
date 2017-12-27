@@ -40,7 +40,15 @@ log_stream_handler.setFormatter(ColoredFormatter(
             'CRITICAL': 'red',
         }))
 
-logger = logging.getLogger(__name__)
+def setup_logger(name, loglevel=None):
+    l = logging.getLogger(name)
+    l.propagate = False
+    if loglevel:
+        l.setLevel(getattr(logging, loglevel.upper()))
+    l.addHandler(log_stream_handler)
+    return l
+
+logger = setup_logger(__name__)
 
 
 jinja = Environment(
@@ -69,13 +77,6 @@ ENV_VAR_DOCKER_BLACKLIST = [
     'PATH',
 ]
 
-
-def setup_logger(name, loglevel):
-    l = logging.getLogger(name)
-    l.propagate = False
-    l.setLevel(getattr(logging, loglevel.upper()))
-    l.addHandler(log_stream_handler)
-    return l
 
 
 def get_free_space():
