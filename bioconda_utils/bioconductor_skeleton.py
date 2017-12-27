@@ -19,21 +19,7 @@ from . import cran_skeleton
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 
-log_stream_handler = logging.StreamHandler()
-log_stream_handler.setFormatter(ColoredFormatter(
-        "%(asctime)s %(log_color)sBIOCONDA %(levelname)s%(reset)s %(message)s",
-        datefmt="%H:%M:%S",
-        reset=True,
-        log_colors={
-            'DEBUG': 'cyan',
-            'INFO': 'green',
-            'WARNING': 'yellow',
-            'ERROR': 'red',
-            'CRITICAL': 'red',
-        }))
-logger = logging.getLogger(__name__)
-
-
+logger = utils.setup_logger(__name__, 'debug')
 
 base_url = 'http://bioconductor.org/packages/'
 
