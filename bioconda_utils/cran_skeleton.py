@@ -42,7 +42,7 @@ win32_string = 'number: 0\n  skip: true  # [win32]'
 
 
 def write_recipe(package, recipe_dir='.', recursive=False, force=False,
-                 **kwargs):
+                 no_windows=False, **kwargs):
         """
         Call out to to `conda skeleton cran`.
 
@@ -68,6 +68,11 @@ def write_recipe(package, recipe_dir='.', recursive=False, force=False,
             If True, then remove the directory `<recipe_dir>/<pkgname>`, where
             `<pkgname>` the sanitized conda version of the package name,
             regardless of which format was provided as `package`.
+
+        no_windows : bool
+            If True, then after creating the skeleton the files are then
+            cleaned of any Windows-related lines and the bld.bat file is
+            removed from the recipe.
         """
         logger.debug('Building skeleton for %s', package)
         conda_version = package.startswith('r-')
@@ -207,11 +212,13 @@ def clean_bld_file(package, no_windows):
         Must be sanitized "r-pkgname" package name.
 
     no_windows : bool
-        Included for consistency with other `clean_*` functions; does not have
-        any effect for this function.
+        If True, then the bld.bat file will be removed.
     """
     path = os.path.join(package, 'bld.bat')
     if not os.path.exists(path):
+        return
+    if no_windows:
+        os.unlink(path)
         return
     with open(path, 'r') as bld:
         lines = list(bld.readlines())
