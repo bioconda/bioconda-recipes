@@ -485,6 +485,18 @@ class BioCProjectPage(object):
         except KeyError:
             return []
 
+
+    @property
+    def linkingto(self):
+        """
+        List of "linkingto" from the DESCRIPTION file
+        """
+        try:
+            return [i.strip() for i in self.description['linkingto'].replace(' ', '').split(',')]
+        except KeyError:
+            return []
+
+
     def _parse_dependencies(self, items):
         """
         The goal is to go from
@@ -529,7 +541,8 @@ class BioCProjectPage(object):
         version_specs = list(
             set(
                 self._parse_dependencies(self.imports) +
-                self._parse_dependencies(self.depends)
+                self._parse_dependencies(self.depends) +
+                self._parse_dependencies(self.linkingto)
             )
         )
         specific_r_version = False
@@ -581,7 +594,11 @@ class BioCProjectPage(object):
             else:
                 dependency_mapping[prefix + name.lower() + version] = name
 
-            if prefix + name.lower() in GCC_PACKAGES:
+            if (
+                (prefix + name.lower() in GCC_PACKAGES) or
+                (self.description.get('needscompilation', 'no') == 'yes') or
+                (self.description.get('linkingto', None) is not None)
+            ):
                 self.depends_on_gcc = True
 
         # Add R itself
