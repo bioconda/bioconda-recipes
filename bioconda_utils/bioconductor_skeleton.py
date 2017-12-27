@@ -589,7 +589,7 @@ class BioCProjectPage(object):
 
                 # # "r >=2.5" rather than "r-r >=2.5"
                 specific_r_version = True
-                dependency_mapping[name.lower() + '-base' + version] = 'r-base'
+                dependency_mapping[name.lower() + '-base'] = 'r-base'
 
             else:
                 dependency_mapping[prefix + name.lower() + version] = name
@@ -607,7 +607,7 @@ class BioCProjectPage(object):
 
         # Sometimes empty dependencies make it into the list from a trailing
         # comma in DESCRIPTION; remove them here.
-        for k in dependency_mapping.keys():
+
             if k == 'r-':
                 dependency_mapping.pop(k)
 
