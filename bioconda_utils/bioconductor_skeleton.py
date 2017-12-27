@@ -607,7 +607,7 @@ class BioCProjectPage(object):
 
         # Sometimes empty dependencies make it into the list from a trailing
         # comma in DESCRIPTION; remove them here.
-
+        for k in list(dependency_mapping.keys()):
             if k == 'r-':
                 dependency_mapping.pop(k)
 
