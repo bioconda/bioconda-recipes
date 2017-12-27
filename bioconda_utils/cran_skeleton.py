@@ -87,6 +87,9 @@ def write_recipe(package, recipe_dir='.', recursive=False, force=False,
 
         try:
             skeletonize(package, repo='cran', output_dir=recipe_dir, version=None, recursive=recursive)
+            clean_skeleton_files(
+                package=os.path.join(recipe_dir, 'r-' + package.lower()),
+                no_windows=no_windows)
         except NotImplementedError as e:
             logger.error('%s had dependencies that specified versions: skipping.', package)
 
