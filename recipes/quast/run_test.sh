@@ -1,2 +1,2 @@
-quast --test --force-nucmer --no-plots
-metaquast --test --force-nucmer --no-plots
+quast --test --force-nucmer
+metaquast --test --force-nucmer
