@@ -1,2 +1,2 @@
-quast --test --force-nucmer
-metaquast --test --force-nucmer
+quast --test
+metaquast --test
