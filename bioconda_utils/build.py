@@ -34,6 +34,7 @@ def build(
     force=False,
     channels=None,
     docker_builder=None,
+    _raise_error=False,
 ):
     """
     Build a single recipe for a single env
@@ -66,6 +67,10 @@ def build(
     docker_builder : docker_utils.RecipeBuilder object
         Use this docker builder to build the recipe, copying over the built
         recipe to the host's conda-bld directory.
+
+    _raise_error : bool
+        Instead of returning a failed build result, raise the error instead.
+        Used for testing.
     """
 
     # Clean provided env and exisiting os.environ to only allow whitelisted env
