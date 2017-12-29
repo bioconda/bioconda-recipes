@@ -14,7 +14,6 @@ config = {
 }
 
 
-
 def test_cran_write_recipe(tmpdir):
     cran_skeleton.write_recipe('locfit', recipe_dir=str(tmpdir), recursive=False)
     assert tmpdir.join('r-locfit', 'meta.yaml').exists()
@@ -63,7 +62,13 @@ def test_meta_contents(tmpdir):
 
     # note that the preprocessing selector is stripped off by yaml parsing, so
     # just check for gcc
-    assert 'gcc' in edger_meta['requirements']['build']
+    if sys.platform == 'linux':
+        assert 'gcc' in edger_meta['requirements']['build']
+    elif sys.platform == 'darwin':
+        assert 'llvm' in edger_meta['requirements']['build']
+    else:
+        raise ValueError('Unhandled platform: {}'.format(sys.platform))
+
 
     # bioconductor, bioarchive, and cargoport
     assert len(edger_meta['source']['url']) == 3
