@@ -18,6 +18,18 @@ config = {
 def test_cran_write_recipe(tmpdir):
     cran_skeleton.write_recipe('locfit', recipe_dir=str(tmpdir), recursive=False)
     assert tmpdir.join('r-locfit', 'meta.yaml').exists()
+    assert tmpdir.join('r-locfit', 'build.sh').exists()
+    assert tmpdir.join('r-locfit', 'bld.bat').exists()
+
+
+def test_cran_write_recipe_no_windows(tmpdir):
+    cran_skeleton.write_recipe('locfit', recipe_dir=str(tmpdir), recursive=False, no_windows=True)
+    assert tmpdir.join('r-locfit', 'meta.yaml').exists()
+    assert tmpdir.join('r-locfit', 'build.sh').exists()
+    assert not tmpdir.join('r-locfit', 'bld.bat').exists()
+    for line in tmpdir.join('r-locfit', 'meta.yaml').readlines():
+        if 'skip: True' in line:
+            assert '[win]' in line
 
 
 def test_bioc_write_recipe_skip_in_condaforge(tmpdir):
@@ -160,3 +172,16 @@ def test_nonexistent_pkg(tmpdir):
     with pytest.raises(bioconductor_skeleton.PackageNotFoundError):
         bioconductor_skeleton.write_recipe('DESeq', str(tmpdir), config, recursive=True, pkg_version='5000')
 
+
+def test_overwrite(tmpdir):
+    bioconductor_skeleton.write_recipe(
+        'edgeR', recipe_dir=str(tmpdir), config=config, recursive=False)
+
+    # Same thing with force=False returns ValueError
+    with pytest.raises(ValueError):
+        bioconductor_skeleton.write_recipe(
+            'edgeR', recipe_dir=str(tmpdir), config=config, recursive=False)
+
+    # But same thing with force=True is OK
+    bioconductor_skeleton.write_recipe(
+        'edgeR', recipe_dir=str(tmpdir), config=config, recursive=False, force=True)
