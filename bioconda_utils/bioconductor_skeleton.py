@@ -241,7 +241,7 @@ class BioCProjectPage(object):
         self._dependencies = None
         self.build_number = 0
         self.bioc_version = bioc_version
-        self.pkg_version = pkg_version
+        self._pkg_version = pkg_version
         self._cargoport_url = None
         self._bioarchive_url = None
         self._tarball_url = None
@@ -251,17 +251,17 @@ class BioCProjectPage(object):
 
         # If no version specified, assume the latest
         if not self.bioc_version:
-            if not self.pkg_version:
+            if not self._pkg_version:
                 self.bioc_version = latest_bioconductor_version()
             else:
-                self.bioc_version = find_best_bioc_version(self.package, self.pkg_version)
+                self.bioc_version = find_best_bioc_version(self.package, self._pkg_version)
 
         # If no version has been provided, the following code finds the latest
         # version by finding and scraping the HTML page for the package's
         # "Details" table.
 
-        if self.pkg_version is not None:
-            self.version = self.pkg_version
+        if self._pkg_version is not None:
+            self.version = self._pkg_version
 
         else:
 
@@ -683,8 +683,8 @@ class BioCProjectPage(object):
                 # use the built URL, regardless of whether it was found or not.
                 # bioaRchive and cargo-port cache packages but only after the
                 # first recipe is built.
-                bioarchive_url(self.package, self.pkg_version, self.bioc_version),
-                cargoport_url(self.package, self.pkg_version, self.bioc_version),
+                bioarchive_url(self.package, self.version, self.bioc_version),
+                cargoport_url(self.package, self.version, self.bioc_version),
             ]
             if u is not None
         ]
@@ -932,8 +932,8 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
                 proj.bioconductor_tarball_url,
                 proj.bioconductor_annotation_data_url,
                 proj.bioconductor_experiment_data_url,
-                bioarchive_url(proj.package, proj.pkg_version, proj.bioc_version),
-                cargoport_url(proj.package, proj.pkg_version, proj.bioc_version),
+                bioarchive_url(proj.package, proj.version, proj.bioc_version),
+                cargoport_url(proj.package, proj.version, proj.bioc_version),
                 proj.cargoport_url
             ]
             if u is not None
