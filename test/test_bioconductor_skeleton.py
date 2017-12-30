@@ -70,7 +70,6 @@ def test_meta_contents(tmpdir):
     else:
         raise ValueError('Unhandled platform: {}'.format(sys.platform))
 
-
     # bioconductor, bioarchive, and cargoport
     assert len(edger_meta['source']['url']) == 3
 
@@ -95,9 +94,11 @@ def test_pkg_version():
     b = bioconductor_skeleton.BioCProjectPage('DESeq2', pkg_version='1.14.1')
     assert b.version == '1.14.1'
     assert b.bioc_version == '3.4'
-    assert b.bioconductor_tarball_url == 'http://bioconductor.org/packages/3.4/bioc/src/contrib/DESeq2_1.14.1.tar.gz'
+    assert b.bioconductor_tarball_url == (
+        'http://bioconductor.org/packages/3.4/bioc/src/contrib/DESeq2_1.14.1.tar.gz')
     assert b.bioarchive_url is None
-    assert b.cargoport_url == 'https://depot.galaxyproject.org/software/bioconductor-deseq2/bioconductor-deseq2_1.14.1_src_all.tar.gz'
+    assert b.cargoport_url == (
+        'https://depot.galaxyproject.org/software/bioconductor-deseq2/bioconductor-deseq2_1.14.1_src_all.tar.gz')
 
     # bioc version specified, but not package version
     b = bioconductor_skeleton.BioCProjectPage('edgeR', bioc_version='3.5')
@@ -105,7 +106,8 @@ def test_pkg_version():
     assert b.bioc_version == '3.5'
     assert b.bioconductor_tarball_url == 'http://bioconductor.org/packages/3.5/bioc/src/contrib/edgeR_3.18.1.tar.gz'
     assert b.bioarchive_url is None
-    assert b.cargoport_url == 'https://depot.galaxyproject.org/software/bioconductor-edger/bioconductor-edger_3.18.1_src_all.tar.gz'
+    assert b.cargoport_url == (
+        'https://depot.galaxyproject.org/software/bioconductor-edger/bioconductor-edger_3.18.1_src_all.tar.gz')
 
 
 def test_bioarchive_exists_but_not_bioconductor():
@@ -113,18 +115,48 @@ def test_bioarchive_exists_but_not_bioconductor():
     BioCProjectPage init tries to find the package on the bioconductor site.
     Sometimes bioaRchive has cached the tarball but it no longer exists on the
     bioconductor site. In those cases, we're raising a PackageNotFoundError.
+
+    It's possible to build a recipe based on a package only found in
+    bioarchive, but I'm not sure we want to support that in an automated
+    fashion. In those cases it would be best to build the recipe manually.
     """
     with pytest.raises(bioconductor_skeleton.PackageNotFoundError):
-        b = bioconductor_skeleton.BioCProjectPage('BioBase', pkg_version='2.37.2')
+        bioconductor_skeleton.BioCProjectPage('BioBase', pkg_version='2.37.2')
+
+
+def test_bioarchive_exists():
+    # package found on both bioconductor and bioarchive.
+    b = bioconductor_skeleton.BioCProjectPage('DESeq', pkg_version='1.26.0')
+    assert b.bioarchive_url == 'https://bioarchive.galaxyproject.org/DESeq_1.26.0.tar.gz'
 
 
 def test_annotation_data(tmpdir):
     bioconductor_skeleton.write_recipe('AHCytoBands', str(tmpdir), config, recursive=True)
-
     meta = utils.load_meta(str(tmpdir.join('bioconductor-ahcytobands')), {})
     assert 'wget' in meta['requirements']['run']
     assert len(meta['source']['url']) == 3
-
     assert not tmpdir.join('bioconductor-ahcytobands', 'build.sh').exists()
     assert tmpdir.join('bioconductor-ahcytobands', 'post-link.sh').exists()
     assert tmpdir.join('bioconductor-ahcytobands', 'pre-unlink.sh').exists()
+
+
+def test_experiment_data(tmpdir):
+    bioconductor_skeleton.write_recipe('affydata', str(tmpdir), config, recursive=True)
+    meta = utils.load_meta(str(tmpdir.join('bioconductor-affydata')), {})
+    assert 'wget' in meta['requirements']['run']
+    assert len(meta['source']['url']) == 3
+    assert not tmpdir.join('bioconductor-affydata', 'build.sh').exists()
+    assert tmpdir.join('bioconductor-affydata', 'post-link.sh').exists()
+    assert tmpdir.join('bioconductor-affydata', 'pre-unlink.sh').exists()
+
+
+def test_nonexistent_pkg(tmpdir):
+
+    # no such package exists in the current bioconductor
+    with pytest.raises(bioconductor_skeleton.PageNotFoundError):
+        bioconductor_skeleton.write_recipe('nonexistent', str(tmpdir), config, recursive=True)
+
+    # package exists, but not this version
+    with pytest.raises(bioconductor_skeleton.PackageNotFoundError):
+        bioconductor_skeleton.write_recipe('DESeq', str(tmpdir), config, recursive=True, pkg_version='5000')
+
