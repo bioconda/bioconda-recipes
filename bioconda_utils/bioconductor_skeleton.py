@@ -15,29 +15,11 @@ import logging
 import requests
 from colorlog import ColoredFormatter
 from . import utils
+from . import cran_skeleton
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 
-log_stream_handler = logging.StreamHandler()
-log_stream_handler.setFormatter(ColoredFormatter(
-        "%(asctime)s %(log_color)sBIOCONDA %(levelname)s%(reset)s %(message)s",
-        datefmt="%H:%M:%S",
-        reset=True,
-        log_colors={
-            'DEBUG': 'cyan',
-            'INFO': 'green',
-            'WARNING': 'yellow',
-            'ERROR': 'red',
-            'CRITICAL': 'red',
-        }))
-logger = logging.getLogger(__name__)
-
-
-def setup_logger(loglevel):
-    l = logging.getLogger(__name__)
-    l.propagate = False
-    l.setLevel(getattr(logging, loglevel.upper()))
-    l.addHandler(log_stream_handler)
+logger = utils.setup_logger(__name__)
 
 base_url = 'http://bioconductor.org/packages/'
 
@@ -60,6 +42,14 @@ BASE_R_PACKAGES = ["base", "compiler", "datasets", "graphics", "grDevices",
 GCC_PACKAGES = ['r-rcpp']
 
 HERE = os.path.abspath(os.path.dirname(__file__))
+
+
+class PackageNotFoundError(Exception):
+    pass
+
+
+class PageNotFoundError(Exception):
+    pass
 
 
 def bioconductor_versions():
@@ -151,10 +141,57 @@ def bioconductor_experiment_data_url(package, pkg_version, bioc_version):
     )
 
 
+def bioarchive_url(package, pkg_version, bioc_version=None):
+    """
+    Constructs a url for the package as archived on bioaRchive
+
+    Parameters
+    ----------
+    package : str
+        Case-sensitive Bioconductor package name
+
+    pkg_version : str
+        Bioconductor package version
+
+    bioc_version : str
+        Bioconductor release version. Not used;, only included for API
+        compatibility with other url funcs
+    """
+    return (
+        'https://bioarchive.galaxyproject.org/{0}_{1}.tar.gz'
+        .format(package, pkg_version)
+    )
+
+
+def cargoport_url(package, pkg_version, bioc_version=None):
+    """
+    Constructs a url for the package as archived on the galaxy cargo-port
+
+    Parameters
+    ----------
+    package : str
+        Case-sensitive Bioconductor package name
+
+    pkg_version : str
+        Bioconductor package version
+
+    bioc_version : str
+        Bioconductor release version. Not used;, only included for API
+        compatibility with other url funcs
+    """
+    package = package.lower()
+    return (
+        'https://depot.galaxyproject.org/software/bioconductor-{0}/bioconductor-{0}_'
+        '{1}_src_all.tar.gz'.format(package, pkg_version)
+    )
+
+
 def find_best_bioc_version(package, version):
     """
     Given a package version number, identifies which BioC version[s] it is in
     and returns the latest.
+
+    If the package is not found, raises a PackageNotFound error.
 
     Parameters
     ----------
@@ -181,10 +218,9 @@ def find_best_bioc_version(package, version):
                 return found_version
             else:
                 logger.debug('missing: %s', url)
-
-
-class PageNotFoundError(Exception):
-    pass
+    raise PackageNotFoundError(
+        "Cannot find any Bioconductor versions for {0}=={1}".format(package, version)
+    )
 
 
 class BioCProjectPage(object):
@@ -205,107 +241,109 @@ class BioCProjectPage(object):
         self._dependencies = None
         self.build_number = 0
         self.bioc_version = bioc_version
-        self.pkg_version = pkg_version
+        self._pkg_version = pkg_version
         self._cargoport_url = None
         self._bioarchive_url = None
         self._tarball_url = None
         self._bioconductor_tarball_url = None
         self.is_data_package = False
+        self.package_lower = package.lower()
 
         # If no version specified, assume the latest
         if not self.bioc_version:
-            self.bioc_version = latest_bioconductor_version()
+            if not self._pkg_version:
+                self.bioc_version = latest_bioconductor_version()
+            else:
+                self.bioc_version = find_best_bioc_version(self.package, self._pkg_version)
 
-        self.request = requests.get(
-            os.path.join(base_url, self.bioc_version, 'bioc', 'html', package + '.html')
-        )
+        # If no version has been provided, the following code finds the latest
+        # version by finding and scraping the HTML page for the package's
+        # "Details" table.
 
-        if not self.request:
-            self.request = requests.get(
-                os.path.join(base_url, self.bioc_version, 'data', 'annotation', 'html', package + '.html')
-            )
-        if not self.request:
-            self.request = requests.get(
-                os.path.join(base_url, self.bioc_version, 'data', 'experiment', 'html', package + '.html')
-            )
-
-        if not self.request:
-            raise PageNotFoundError('Error {0.status_code} ({0.reason}) for page {0.url}'.format(self.request))
-
-        # Since we provide the "short link" we will get redirected. Using
-        # requests allows us to keep track of the final destination URL, which
-        # we need for reconstructing the tarball URL.
-        self.url = self.request.url
-
-        # The table at the bottom of the page has the info we want. An earlier
-        # draft of this script parsed the dependencies from the details table.
-        # That's still an option if we need a double-check on the DESCRIPTION
-        # fields.
-        soup = bs4.BeautifulSoup(
-            self.request.content,
-            'html.parser')
-        details_table = soup.find_all(attrs={'class': 'details'})[0]
-
-        # However, it is helpful to get the version info from this table. That
-        # way we can try getting the bioaRchive tarball and cache that.
-        for td in details_table.findAll('td'):
-            if td.getText() == 'Version':
-                version = td.findNext().getText()
-                break
-
-        if self.pkg_version is not None and version != self.pkg_version:
-            logger.warn(
-                "Latest version of %s is %s, but using specified version %s",
-                self.package, version, self.pkg_version
-            )
-            self.version = self.pkg_version
+        if self._pkg_version is not None:
+            self.version = self._pkg_version
 
         else:
-            self.version = version
+
+            htmls = {
+                'regular_package': os.path.join(
+                    base_url, self.bioc_version, 'bioc', 'html', package
+                    + '.html'),
+                'annotation_package': os.path.join(
+                    base_url, self.bioc_version, 'data', 'annotation', 'html',
+                    package + '.html'),
+                'experiment_package': os.path.join(
+                    base_url, self.bioc_version, 'data', 'experiment', 'html',
+                    package + '.html'),
+            }
+            tried = []
+            for label, url in htmls.items():
+                request = requests.get(url)
+                tried.append(url)
+                if request:
+                    break
+
+            if not request:
+                raise PageNotFoundError(
+                    'Could not find HTML page for {0.package}. Tried: '
+                    '{1}'.format(self, ', '.join(tried)))
+
+            # Since we provide the "short link" we will get redirected. Using
+            # requests allows us to keep track of the final destination URL,
+            # which we need for reconstructing the tarball URL.
+            self.url = request.url
+
+            # The table at the bottom of the page has the info we want. An
+            # earlier draft of this script parsed the dependencies from the
+            # details table.  That's still an option if we need a double-check
+            # on the DESCRIPTION fields. For now, we're grabbing the version
+            # information from the table.
+            soup = bs4.BeautifulSoup(request.content, 'html.parser')
+            details_table = soup.find_all(attrs={'class': 'details'})[0]
+
+            parsed_html_version = None
+            for td in details_table.findAll('td'):
+                if td.getText() == 'Version':
+                    parsed_html_version = td.findNext().getText()
+                    break
+
+            if parsed_html_version is None:
+                raise ValueError(
+                    "Could not scrape latest version information from "
+                    "{0}".format(self.url))
+
+            self.version = parsed_html_version
 
         self.depends_on_gcc = False
 
-        # Used later to determine whether or not to auto-identify the best BioC
-        # version
-        self._auto = self.bioc_version is None
-        if self._auto:
-            self.bioc_version = find_best_bioc_version(self.package, self.version)
 
     @property
-    def bioaRchive_url(self):
+    def bioarchive_url(self):
         """
         Returns the bioaRchive URL if one exists for this version of this
         package, otherwise returns None.
         """
-        if self._bioarchive_url is None:
-            url = 'https://bioarchive.galaxyproject.org/{0.package}_{0.version}.tar.gz'.format(self)
-            response = requests.head(url)
-            if response.status_code == 200:
-                return url
+        url = bioarchive_url(self.package, self.version, self.bioc_version)
+        response = requests.head(url)
+        if response.status_code == 200:
+            return url
 
     @property
     def cargoport_url(self):
         """
-        Returns the Galaxy cargo-port URL for this version of this package,
-        whether it exists or not. If none exists, a warning is printed.
+        Returns the Galaxy cargo-port URL for this version of this package, if
+        it exists.
         """
-        if not self._cargoport_url:
-            url = (
-                'https://depot.galaxyproject.org/software/bioconductor-{0.package_lower}/bioconductor-{0.package_lower}_'
-                '{0.version}_src_all.tar.gz'.format(self)
-            )
-            response = requests.get(url)
-            if response.status_code == 404:
-                logger.warn(
-                    'Cargo Port URL (%s) does not exist. This is expected if '
-                    'this is a new package or an updated version. Cargo Port '
-                    'will archive a working URL upon merging', url
-                )
-            elif response.status_code != 200:
-                raise PageNotFoundError("Unexpected error: {0.status_code} ({0.reason})".format(response))
-
-            self._cargoport_url = url
-        return self._cargoport_url
+        url = cargoport_url(self.package, self.version, self.bioc_version)
+        response = requests.get(url)
+        if response.status_code == 404:
+            # This is expected if this is a new package or an updated version.
+            # Cargo Port will archive a working URL upon merging
+            return
+        elif response.status_code == 200:
+            return url
+        else:
+            raise PageNotFoundError("Unexpected error: {0.status_code} ({0.reason})".format(response))
 
     @property
     def bioconductor_tarball_url(self):
@@ -344,7 +382,8 @@ class BioCProjectPage(object):
         if not self._tarball_url:
             urls = [self.bioconductor_tarball_url,
                     self.bioconductor_annotation_data_url,
-                    self.bioconductor_experiment_data_url, self.bioaRchive_url,
+                    self.bioconductor_experiment_data_url,
+                    self.bioarchive_url,
                     self.cargoport_url]
             for url in urls:
                 if url is not None:
@@ -381,7 +420,7 @@ class BioCProjectPage(object):
         """
         if self._cached_tarball:
             return self._cached_tarball
-        cache_dir = os.path.join(HERE, 'cached_bioconductor_tarballs')
+        cache_dir = os.path.join(tempfile.gettempdir(), 'cached_bioconductor_tarballs')
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
         fn = os.path.join(cache_dir, self.tarball_basename)
@@ -446,6 +485,18 @@ class BioCProjectPage(object):
         except KeyError:
             return []
 
+
+    @property
+    def linkingto(self):
+        """
+        List of "linkingto" from the DESCRIPTION file
+        """
+        try:
+            return [i.strip() for i in self.description['linkingto'].replace(' ', '').split(',')]
+        except KeyError:
+            return []
+
+
     def _parse_dependencies(self, items):
         """
         The goal is to go from
@@ -483,14 +534,15 @@ class BioCProjectPage(object):
         if self._dependencies:
             return self._dependencies
 
-        results = []
+        dependency_mapping = {}
 
         # Sometimes a version is specified only in the `depends` and not in the
         # `imports`. We keep the most specific version of each.
         version_specs = list(
             set(
                 self._parse_dependencies(self.imports) +
-                self._parse_dependencies(self.depends)
+                self._parse_dependencies(self.depends) +
+                self._parse_dependencies(self.linkingto)
             )
         )
         specific_r_version = False
@@ -537,25 +589,29 @@ class BioCProjectPage(object):
 
                 # # "r >=2.5" rather than "r-r >=2.5"
                 specific_r_version = True
-
-                # results.append(name.lower() + '-base' + version)
-                results.append('r-base')
+                dependency_mapping[name.lower() + '-base'] = 'r-base'
 
             else:
-                results.append(prefix + name.lower() + version)
+                dependency_mapping[prefix + name.lower() + version] = name
 
-            if prefix + name.lower() in GCC_PACKAGES:
+            if (
+                (prefix + name.lower() in GCC_PACKAGES) or
+                (self.description.get('needscompilation', 'no') == 'yes') or
+                (self.description.get('linkingto', None) is not None)
+            ):
                 self.depends_on_gcc = True
 
         # Add R itself
         if not specific_r_version:
-            results.append('r-base')
+            dependency_mapping['r-base'] = 'r-base'
 
         # Sometimes empty dependencies make it into the list from a trailing
         # comma in DESCRIPTION; remove them here.
-        results = list(filter(lambda x: x != 'r-', results))
+        for k in list(dependency_mapping.keys()):
+            if k == 'r-':
+                dependency_mapping.pop(k)
 
-        self._dependencies = results
+        self._dependencies = dependency_mapping
         return self._dependencies
 
     @property
@@ -619,10 +675,16 @@ class BioCProjectPage(object):
         url = [
             sub_placeholders(u) for u in
             [
+                # keep the one that was found
                 self.bioconductor_tarball_url,
                 self.bioconductor_annotation_data_url,
                 self.bioconductor_experiment_data_url,
-                self.bioaRchive_url, self.cargoport_url
+
+                # use the built URL, regardless of whether it was found or not.
+                # bioaRchive and cargo-port cache packages but only after the
+                # first recipe is built.
+                bioarchive_url(self.package, self.version, self.bioc_version),
+                cargoport_url(self.package, self.version, self.bioc_version),
             ]
             if u is not None
         ]
@@ -697,14 +759,125 @@ class BioCProjectPage(object):
         return fout.name
 
 
-def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
-                 pkg_version=None, versioned=False):
+def write_recipe_recursive(proj, seen_dependencies, recipe_dir, config, force,
+                           bioc_version, pkg_version, versioned, recursive):
     """
-    Write the meta.yaml and build.sh files.
+    Parameters
+    ----------
+
+    proj : BioCProjectPage object
+
+    seen_dependencies : list
+        Dependencies to ignore
+
+    recipe_dir : str
+        Path to recipe dir
+
+    config : str
+        Path to recipes config file
+
+    force : bool
+        If True, any recipes that already exist will be overwritten.
+    """
+    logger.debug('%s has dependencies: %s', proj.package, proj.dependencies)
+    for conda_name, cran_or_bioc_name in proj.dependencies.items():
+
+        # For now, this function is version-agnostic. so we strip out any
+        # version info when checking if we've seen this dep before.
+        conda_name_without_version = re.sub(r' >=.*$', '', conda_name)
+        if conda_name.startswith('r-base'):
+            continue
+
+        if conda_name_without_version in seen_dependencies:
+            logger.debug("{} already created or in existing channels, skipping".format(conda_name_without_version))
+            continue
+
+        seen_dependencies.update([conda_name_without_version])
+
+        if conda_name_without_version.startswith('r-'):
+            writer = cran_skeleton.write_recipe
+        else:
+            writer = write_recipe
+        writer(
+            package=cran_or_bioc_name,
+            recipe_dir=recipe_dir,
+            config=config,
+            force=force,
+            bioc_version=bioc_version,
+            pkg_version=pkg_version,
+            versioned=versioned,
+            recursive=recursive,
+            seen_dependencies=seen_dependencies,
+        )
+
+
+def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
+                 pkg_version=None, versioned=False, recursive=False, seen_dependencies=None,
+                 skip_if_in_channels=None):
+    """
+    Write the meta.yaml and build.sh files. If the package is detected to be
+    a data package (bsed on the detected URL from Bioconductor), then also
+    create a post-link.sh and pre-unlink.sh script that will download and
+    install the package.
+
+    Parameters
+    ----------
+
+    package : str
+        Bioconductor package name (case-sensitive)
+
+    recipe_dir : str
+
+    config : str or dict
+
+    force : bool
+        If True, then recipes will get overwritten. If `recursive` is also
+        True, *all* recipes created will get overwritten.
+
+    bioc_version : str
+        Version of Bioconductor to target
+
+    pkg_version : str
+        Force a particular package version
+
+    versioned : bool
+        If True, then make a subdirectory for this version
+
+    recursive : bool
+        If True, then also build any R or Bioconductor packages in the same
+        recipe directory.
+
+    seen_dependencies : set
+        Dependencies to skip and will be updated with any packages built by
+        this function. Used internally when `recursive=True`.
+
+    skip_if_in_channels : list or None
+        List of channels whose existing packages will be automatically added to
+        `seen_dependencies`. Only has an effect if `recursive=True`.
     """
     config = utils.load_config(config)
     env = list(utils.EnvMatrix(config['env_matrix']))[0]
     proj = BioCProjectPage(package, bioc_version, pkg_version)
+    logger.info('Making recipe for: {}'.format(package))
+
+    if seen_dependencies is None:
+        seen_dependencies = set()
+
+    if recursive:
+        # get a list of existing packages in channels
+        if skip_if_in_channels is not None:
+            for channel in skip_if_in_channels:
+                logger.info('Downloading channel repodata for %s', channel)
+                for repodata in utils.get_channel_repodata(channel):
+                    for pkg in repodata['packages'].values():
+                        name = pkg['name']
+                        if name.startswith(('r-', 'bioconductor-')):
+                            seen_dependencies.update([name])
+
+        write_recipe_recursive(proj, seen_dependencies, recipe_dir, config,
+                               force, bioc_version, pkg_version, versioned,
+                               recursive)
+
     logger.debug('%s==%s, BioC==%s', proj.package, proj.version, proj.bioc_version)
     logger.info('Using tarball from %s', proj.tarball_url)
     if versioned:
@@ -729,7 +902,6 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
         # the dicts
         updated_version = updated_meta['package']['version']
         current_version = current_meta['package']['version']
-
 
         # updated_build_number = updated_meta['build'].pop('number')
         current_build_number = current_meta['build'].pop('number', 0)
@@ -760,7 +932,8 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
                 proj.bioconductor_tarball_url,
                 proj.bioconductor_annotation_data_url,
                 proj.bioconductor_experiment_data_url,
-                proj.bioaRchive_url,
+                bioarchive_url(proj.package, proj.version, proj.bioc_version),
+                cargoport_url(proj.package, proj.version, proj.bioc_version),
                 proj.cargoport_url
             ]
             if u is not None

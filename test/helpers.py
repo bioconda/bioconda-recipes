@@ -37,7 +37,7 @@ def tmp_env_matrix():
             - "27"
             - "35"
             CONDA_BOOST: "1.60"
-            CONDA_R: "3.3.1"
+            CONDA_R: "3.4.1"
             CONDA_PERL: "5.22.0"
             CONDA_NPY: "110"
             CONDA_NCURSES: "5.9"

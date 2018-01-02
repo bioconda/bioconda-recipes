@@ -34,6 +34,7 @@ def build(
     force=False,
     channels=None,
     docker_builder=None,
+    _raise_error=False,
 ):
     """
     Build a single recipe for a single env
@@ -66,18 +67,23 @@ def build(
     docker_builder : docker_utils.RecipeBuilder object
         Use this docker builder to build the recipe, copying over the built
         recipe to the host's conda-bld directory.
+
+    _raise_error : bool
+        Instead of returning a failed build result, raise the error instead.
+        Used for testing.
     """
 
     # Clean provided env and exisiting os.environ to only allow whitelisted env
     # vars
     _docker = docker_builder is not None
-    _env = {}
-    _env.update({k: str(v) for k, v in os.environ.items() if utils.allowed_env_var(k, _docker)})
-    _env.update({k: str(v) for k, v in dict(env).items() if utils.allowed_env_var(k, _docker)})
+
+    whitelisted_env = {}
+    whitelisted_env.update({k: str(v) for k, v in os.environ.items() if utils.allowed_env_var(k, _docker)})
+    whitelisted_env.update({k: str(v) for k, v in dict(env).items() if utils.allowed_env_var(k, _docker)})
 
     logger.info(
         "BUILD START %s, env: %s",
-        recipe, ';'.join(['='.join(map(str, i)) for i in sorted(_env.items())])
+        recipe, ';'.join(['='.join(map(str, i)) for i in sorted(whitelisted_env.items())])
     )
 
     # --no-build-id is needed for some very long package names that triggers the 89 character limits
@@ -101,8 +107,8 @@ def build(
 
     CONDA_BUILD_CMD = [utils.bin_for('conda'), 'build']
 
-    pkg_path = utils.built_package_path(recipe, _env)
-    meta = utils.load_meta(recipe, _env)
+    pkg_path = utils.built_package_path(recipe, whitelisted_env)
+    meta = utils.load_meta(recipe, whitelisted_env)
 
     try:
         # Note we're not sending the contents of os.environ here. But we do
@@ -113,7 +119,7 @@ def build(
                 recipe_dir=os.path.abspath(recipe),
                 build_args=' '.join(channel_args + build_args),
                 pkg=os.path.basename(pkg_path),
-                env=_env,
+                env=whitelisted_env,
                 noarch=bool(utils.get_meta_value(meta, 'build', 'noarch'))
             )
 
@@ -129,7 +135,7 @@ def build(
             # conda-build, and explicitly provide `env` to `run()`
             # we explicitly point to the meta.yaml, in order to keep
             # conda-build from building all subdirectories
-            with utils.sandboxed_env(_env):
+            with utils.sandboxed_env(whitelisted_env):
                 cmd = CONDA_BUILD_CMD + build_args + channel_args + \
                       [os.path.join(recipe, 'meta.yaml')]
                 logger.debug('command: %s', cmd)
@@ -140,12 +146,14 @@ def build(
 
         logger.info(
             'BUILD SUCCESS %s, %s',
-            utils.built_package_path(recipe, _env), utils.envstr(_env)
+            utils.built_package_path(recipe, whitelisted_env), utils.envstr(whitelisted_env)
         )
 
     except (docker_utils.DockerCalledProcessError, sp.CalledProcessError) as e:
             logger.error(
-                'BUILD FAILED %s, %s', recipe, utils.envstr(env))
+                'BUILD FAILED %s, %s', recipe, utils.envstr(whitelisted_env))
+            if _raise_error:
+                raise e
             return BuildResult(False, None)
 
     if not mulled_test:
@@ -153,7 +161,7 @@ def build(
 
     logger.info(
         'TEST START via mulled-build %s, %s',
-        recipe, utils.envstr(_env))
+        recipe, utils.envstr(whitelisted_env))
 
     use_base_image = utils.get_meta_value(
         meta,
@@ -163,11 +171,11 @@ def build(
     try:
         res = pkg_test.test_package(pkg_path, base_image=base_image)
 
-        logger.info("TEST SUCCESS %s, %s", recipe, utils.envstr(_env))
+        logger.info("TEST SUCCESS %s, %s", recipe, utils.envstr(whitelisted_env))
         mulled_image = pkg_test.get_image_name(pkg_path)
         return BuildResult(True, mulled_image)
     except sp.CalledProcessError as e:
-        logger.error('TEST FAILED: %s, %s', recipe, utils.envstr(_env))
+        logger.error('TEST FAILED: %s, %s', recipe, utils.envstr(whitelisted_env))
         return BuildResult(False, None)
 
 

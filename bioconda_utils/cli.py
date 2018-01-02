@@ -4,7 +4,6 @@ import sys
 import os
 import shlex
 import logging
-from colorlog import ColoredFormatter
 from collections import defaultdict
 
 import argh
@@ -13,7 +12,6 @@ import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
 import pandas
 
-
 from . import utils
 from .build import build_recipes
 from . import docker_utils
@@ -21,31 +19,10 @@ from . import lint_functions
 from . import linting
 from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
+from . import cran_skeleton
 from . import pypi
 
-
-log_stream_handler = logging.StreamHandler()
-log_stream_handler.setFormatter(ColoredFormatter(
-        "%(asctime)s %(log_color)sBIOCONDA %(levelname)s%(reset)s %(message)s",
-        datefmt="%H:%M:%S",
-        reset=True,
-        log_colors={
-            'DEBUG': 'cyan',
-            'INFO': 'green',
-            'WARNING': 'yellow',
-            'ERROR': 'red',
-            'CRITICAL': 'red',
-        }))
-
-
 logger = logging.getLogger(__name__)
-
-
-def setup_logger(loglevel):
-    l = logging.getLogger('bioconda_utils')
-    l.propagate = False
-    l.setLevel(getattr(logging, loglevel.upper()))
-    l.addHandler(log_stream_handler)
 
 
 def select_recipes(packages, git_range, recipe_folder, config_filename, config, force):
@@ -237,7 +214,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
     If --push-status is not set, reports a TSV of linting results to stdout.
     Otherwise pushes a commit status to the specified commit on github.
     """
-    setup_logger(loglevel)
+    utils.setup_logger('bioconda_utils', loglevel)
 
     if list_funcs:
         print('\n'.join([i.__name__ for i in lint_functions.registry]))
@@ -349,7 +326,7 @@ def build(
     mulled_upload_target=None,
     keep_image=False,
 ):
-    setup_logger(loglevel)
+    utils.setup_logger('bioconda_utils', loglevel)
 
     cfg = utils.load_config(config)
     setup = cfg.get('setup', None)
@@ -460,8 +437,6 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
             print('\n'.join(recipes) + '\n')
 
 
-
-
 @arg('recipe_folder', help='Path to recipes directory')
 @arg('config', help='Path to yaml file specifying the configuration')
 @arg('--dependencies', nargs='+',
@@ -484,7 +459,7 @@ def dependent(recipe_folder, config, restrict=False, dependencies=None, reverse_
         raise ValueError(
             '`dependencies` and `reverse_dependencies` are mutually exclusive')
 
-    setup_logger(loglevel)
+    utils.setup_logger('bioconda_utils', loglevel)
 
     d, n2r = utils.get_dag(utils.get_recipes(recipe_folder, "*"), config, restrict=restrict)
 
@@ -503,35 +478,67 @@ def dependent(recipe_folder, config, restrict=False, dependencies=None, reverse_
      must match the package name on the Bioconductor site.''')
 @arg('recipe_folder', help='Path to recipes directory')
 @arg('config', help='Path to yaml file specifying the configuration')
-@arg('--versioned', action='store_true',
-                help='''If specified, recipe will be created in
-                RECIPES/<package>/<version>''')
-@arg('--force', action='store_true',
-                help='Overwrite the contents of an existing recipe')
-@arg('--pkg-version',
-                help='Package version to use instead of the current one')
-@arg('--bioc-version',
-                help="""Version of Bioconductor to target. If not
-                specified, then automatically finds the latest version of
-                Bioconductor with the specified version in --pkg-version,
-                or if --pkg-version not specified, then finds the the
-                latest package version in the latest Bioconductor
-                version""")
-@arg('--loglevel', default='debug',
-                help='Log level')
+@arg('--versioned', action='store_true', help='''If specified, recipe will be
+     created in RECIPES/<package>/<version>''')
+@arg('--force', action='store_true', help='''Overwrite the contents of an
+     existing recipe. If --recursive is also used, then overwrite *all* recipes
+     created.''')
+@arg('--pkg-version', help='''Package version to use instead of the current
+     one''')
+@arg('--bioc-version', help="""Version of Bioconductor to target. If not
+     specified, then automatically finds the latest version of Bioconductor
+     with the specified version in --pkg-version, or if --pkg-version not
+     specified, then finds the the latest package version in the latest
+     Bioconductor version""")
+@arg('--loglevel',  help='Log level')
+@arg('--recursive', action='store_true', help="""Creates the recipes for all
+     Bioconductor and CRAN dependencies of the specified package.""")
+@arg('--skip-if-in-channels', nargs='+', help="""When --recursive is used, it will build
+     *all* recipes. Use this argument to skip recursive building for packages
+     that already exist in the packages listed here.""")
+@arg('--no-windows', action='store_true', help="""After a CRAN skeleton is
+     created, any Windows-related lines will be removed and the bld.bat file
+     will be removed. Use this if you know the R packages will not be submitted
+     to conda-forge.""")
 def bioconductor_skeleton(
     recipe_folder, config, package, versioned=False, force=False,
-    pkg_version=None, bioc_version=None, loglevel='info'
+    pkg_version=None, bioc_version=None, loglevel='debug', recursive=False,
+    skip_if_in_channels=['conda-forge', 'bioconda'], no_windows=False,
 ):
     """
     Build a Bioconductor recipe. The recipe will be created in the `recipes`
     directory and will be prefixed by "bioconductor-".
     """
-    setup_logger(loglevel)
-    _bioconductor_skeleton.write_recipe(
+    utils.setup_logger('bioconda_utils', loglevel)
+    seen_dependencies = set()
+    written = _bioconductor_skeleton.write_recipe(
         package, recipe_folder, config, force=force, bioc_version=bioc_version,
-        pkg_version=pkg_version, versioned=versioned
-    )
+        pkg_version=pkg_version, versioned=versioned, recursive=recursive,
+        seen_dependencies=seen_dependencies,
+        skip_if_in_channels=skip_if_in_channels, no_windows=no_windows)
+
+    # E.g., r-probmetab has versioned 1.0 and 1.1 dirs in bioconda-recipes, and
+    # this fails to find the meta.yaml files.
+    # if recursive:
+    #     for package in os.listdir(recipe_folder):
+    #         if package[:2] == "r-":
+    #             cran_skeleton.clean_skeleton_files(os.path.join(recipe_folder, package))
+
+
+@arg('recipe', help='''Path to recipe to be cleaned''')
+@arg('--no-windows', action='store_true', help="""After a CRAN skeleton is
+     created, any Windows-related lines will be removed and the bld.bat file
+     will be removed. Use this if you know the R packages will not be submitted
+     to conda-forge.""")
+def clean_cran_skeleton(recipe, no_windows):
+    """
+    Cleans skeletons created by `conada skeleton cran`.
+
+    Before submitting to conda-forge or Bioconda, recipes generated with `conda
+    skeleton cran` need to be cleaned up: comments removed, licenses fixed, and
+    other linting.
+    """
+    cran_skeleton.clean_skeleton_files(recipe, no_windows=no_windows)
 
 
 @arg('recipe_folder', help='Path to recipes directory')
@@ -574,12 +581,13 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
                 - remove-from-bioconda (conda-forge has later version)
                 - decide-where-to-update (both conda-forge and bioconda are out-of-date)
     """
-    setup_logger(loglevel)
+    utils.setup_logger('bioconda_utils', loglevel)
     for result in pypi.check_all(recipe_folder, config):
         if only_out_of_date:
             if not result[3]:
                 continue
         print('\t'.join(map(str, result)))
+
 
 def main():
     argh.dispatch_commands([build, dag, dependent, lint, duplicates, bioconductor_skeleton, pypi_check])

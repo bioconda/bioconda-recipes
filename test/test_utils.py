@@ -676,7 +676,7 @@ def test_string_or_float_to_integer_python():
     assert f(27) == f('27') == f(2.7) == f('2.7') == 27
 
 
-def test_rendering_sandboxing(caplog):
+def test_rendering_sandboxing():
     r = Recipes(
         """
         one:
@@ -707,14 +707,16 @@ def test_rendering_sandboxing(caplog):
     # GITHUB_TOKEN.
 
     if 'GITHUB_TOKEN' in os.environ:
-        res = build.build(
-            recipe=r.recipe_dirs['one'],
-            recipe_folder='.',
-            env=env,
-            mulled_test=False,
-        )
+        with pytest.raises(sp.CalledProcessError) as excinfo:
+            res = build.build(
+                recipe=r.recipe_dirs['one'],
+                recipe_folder='.',
+                env=env,
+                mulled_test=False,
+                _raise_error=True,
+            )
         assert ("Undefined Jinja2 variables remain (['GITHUB_TOKEN']).  "
-                "Please enable source downloading and try again.") in caplog.text
+                "Please enable source downloading and try again.") in str(excinfo.value.stdout)
     else:
         # recipe for "one" should fail because GITHUB_TOKEN is not a jinja var.
         with pytest.raises(SystemExit) as excinfo:
