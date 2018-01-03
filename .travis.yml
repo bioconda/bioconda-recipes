@@ -4,6 +4,8 @@ sudo: required
 services:
   - docker
 
+osx_image: xcode7.3
+
 before_install:
     - set -e
     - |
@@ -19,11 +21,11 @@ jobs:
   include:
     # in forks, master and bulk, we run osx and linux in parallel on each push
     - stage: Linux+macOS
-      if: (type = push) AND ((branch IN (master, bulk)) OR (fork = true))
+      if: (type = push) AND ((branch IN (master, bulk)) OR (repo != bioconda/bioconda-recipes))
       os: linux
       script: scripts/travis-run.sh
     - os: osx
-      if: (type = push) AND ((branch IN (master, bulk)) OR (fork = true))
+      if: (type = push) AND ((branch IN (master, bulk)) OR (repo != bioconda/bioconda-recipes))
       script: scripts/travis-run.sh
     # in pull requests, we first run linux and only if that succeeds, we run osx
     - stage: Linux
