@@ -1,6 +1,7 @@
 #!/bin/bash
 
 mkdir -p "${PREFIX}/bin"
+mkdir -p "${PREFIX}/annotation"
 
 cd src
 MAKEFILE=Makefile.Linux
@@ -13,3 +14,4 @@ cd ..
 cp bin/utilities/* $PREFIX/bin
 rm -r bin/utilities
 cp bin/* $PREFIX/bin
+cp annotation/* $PREFIX/annotation
