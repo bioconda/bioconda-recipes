@@ -207,7 +207,8 @@ def uses_setuptools(recipe, meta, df):
     if 'setuptools' in _get_deps(meta, 'run'):
         return {
             'depends_on_setuptools': True,
-            'fix': 'setuptools might not be a run requirement,
+            'fix': ('setuptools might not be a run requirement (unless it uses '
+                    'pkg_resources or setuptools console scripts)'),
         }
 
 
