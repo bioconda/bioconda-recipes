@@ -341,7 +341,9 @@ registry = (
     uses_git_url,
     uses_javajdk,
     uses_perl_threaded,
-    uses_setuptools,
+    # removing setuptools from run requirements should be done cautiously:
+    # it breaks packages that use pkg_resources or setuptools console scripts!
+    # uses_setuptools,
     has_windows_bat_file,
 
     # should_be_noarch,
