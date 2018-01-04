@@ -203,7 +203,13 @@ packages but most of the time this is not needed within a conda package as
 a run dependency.
 
 How to resolve: Ensure that all dependencies are explicitly defined. Some
-packages do need setuptools, in which case this can be overridden.
+packages do need ``setuptools``, in which case this can be overridden.
+``setuptools`` may be required, e.g., if a package loads resources via
+``pkg_resources`` which is part of ``setuptools``. That dependency can also be
+introduced implicitly when ``setuptools``-created console scripts are used.
+To avoid this, make sure to carry ``console_scripts`` entry points from
+``setup.py`` over to ``meta.yaml`` to replace them with scripts created by
+``conda``/``conda-build`` which don't require ``pkg_resources``.
 
 `has_windows_bat_file`
 ~~~~~~~~~~~~~~~~~~~~~~
