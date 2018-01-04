@@ -68,8 +68,8 @@ a bioconda-specific patch is required. However it is almost always better to
 fix or update the recipe in the other channel. Note that the package in the
 bioconda channel will remain in order to maintain reproducibility.
 
-`already_in_bioconda`
-~~~~~~~~~~~~~~~~~~~~~
+`already_in_bioconda` (currently disabled)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: The current package version, build, and platform
 (linux/osx) already exists in the bioconda channel.
 
@@ -133,8 +133,8 @@ How to resolve: Add a hash in the `source section
 <https://conda.io/docs/building/meta-yaml.html#source-section>`_. See
 :ref:`hashes` for more info.
 
-`should_be_noarch`
-~~~~~~~~~~~~~~~~~~
+`should_be_noarch` (currently disabled)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: The package should be labelled as ``noarch``.
 
 Rationale: A ``noarch`` package should be created for pure Python packages, data packages, or
@@ -194,8 +194,8 @@ recipes is updated, it will fail this check.
 
 How to resolve: Change ``java-jdk`` to ``openjdk``.
 
-`uses_setuptools`
-~~~~~~~~~~~~~~~~~
+`uses_setuptools` (currently disabled)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: The recipe has ``setuptools`` as a run dependency.
 
 Rationale: ``setuptools`` is typically used to install dependencies for Python
@@ -203,7 +203,13 @@ packages but most of the time this is not needed within a conda package as
 a run dependency.
 
 How to resolve: Ensure that all dependencies are explicitly defined. Some
-packages do need setuptools, in which case this can be overridden.
+packages do need ``setuptools``, in which case this can be overridden.
+``setuptools`` may be required, e.g., if a package loads resources via
+``pkg_resources`` which is part of ``setuptools``. That dependency can also be
+introduced implicitly when ``setuptools``-created console scripts are used.
+To avoid this, make sure to carry ``console_scripts`` entry points from
+``setup.py`` over to ``meta.yaml`` to replace them with scripts created by
+``conda``/``conda-build`` which don't require ``pkg_resources``.
 
 `has_windows_bat_file`
 ~~~~~~~~~~~~~~~~~~~~~~
