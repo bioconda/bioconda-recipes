@@ -8,7 +8,8 @@ export CPPFLAGS="-I${PREFIX}/include"
 cd scripts && ./prepare_mkl.sh && cd ..
 mkdir build
 cd build
-cmake .. \
+
+cmake \
     -D CMAKE_INSTALL_PREFIX=${PREFIX} \
     -D CMAKE_INSTALL_RPATH:STRING=${PREFIX}/lib \
     -D CMAKE_BUILD_TYPE:STRING=Release \
