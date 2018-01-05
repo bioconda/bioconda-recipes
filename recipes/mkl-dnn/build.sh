@@ -12,7 +12,7 @@ cmake .. \
     -D CMAKE_INSTALL_PREFIX=${PREFIX} \
     -D CMAKE_INSTALL_RPATH:STRING=${PREFIX}/lib \
     -D CMAKE_BUILD_TYPE:STRING=Release \
-    -D BUILD_SHARED_LIBS=ON \
+    -D BUILD_SHARED_LIBS=ON
 
 
 make -j$CPU_COUNT > /dev/null
