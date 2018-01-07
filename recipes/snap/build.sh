@@ -3,6 +3,9 @@ make
 mkdir -p $PREFIX/bin
 mkdir -p ${PREFIX}/share/snap
 mkdir -p ${PREFIX}/share/snap/bin
+for perl_script in cds-trainer.pl hmm-assembler.pl noncoding-trainer.pl patch-hmm.pl zff2gff3.pl; do
+  sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${perl_script}
+done
 cp -p snap fathom forge hmm-info exonpairs cds-trainer.pl hmm-assembler.pl noncoding-trainer.pl patch-hmm.pl zff2gff3.pl $PREFIX/share/snap/bin
 cp -pr HMM ${PREFIX}/share/snap
 cp -pr DNA ${PREFIX}/share/snap
@@ -16,7 +19,7 @@ NAME=\`basename \$0\`
 ZOE=\$SNAPDIR
 export ZOE
 
-\${SNAPDIR}/bin/\$NAME \$@
+\${SNAPDIR}/bin/\$NAME "\$@"
 EOF
 chmod a+x ${PREFIX}/bin/snap
 
