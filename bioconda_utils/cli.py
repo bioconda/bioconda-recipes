@@ -586,4 +586,4 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
 
 
 def main():
-    argh.dispatch_commands([build, dag, dependent, lint, duplicates, bioconductor_skeleton, pypi_check])
+    argh.dispatch_commands([build, dag, dependent, lint, duplicates, bioconductor_skeleton, pypi_check, clean_cran_skeleton])
