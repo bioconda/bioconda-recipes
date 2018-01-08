@@ -493,7 +493,7 @@ def dependent(recipe_folder, config, restrict=False, dependencies=None, reverse_
 @arg('--loglevel',  help='Log level')
 @arg('--recursive', action='store_true', help="""Creates the recipes for all
      Bioconductor and CRAN dependencies of the specified package.""")
-@arg('--skip-if-in-channels', nargs='+', help="""When --recursive is used, it will build
+@arg('--skip-if-in-channels', nargs='*', help="""When --recursive is used, it will build
      *all* recipes. Use this argument to skip recursive building for packages
      that already exist in the packages listed here.""")
 def bioconductor_skeleton(
