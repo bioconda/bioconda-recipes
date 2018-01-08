@@ -522,17 +522,19 @@ def bioconductor_skeleton(
 
 
 @arg('recipe', help='''Path to recipe to be cleaned''')
-@arg('--no-windows', action='store_true', help="""After a CRAN skeleton is
-     created, any Windows-related lines will be removed and the bld.bat file
-     will be removed. Use this if you know the R packages will not be submitted
-     to conda-forge.""")
-def clean_cran_skeleton(recipe, no_windows):
+@arg('--no-windows', action='store_true', help="""Use this when submitting an
+     R package to Bioconda. After a CRAN skeleton is created, any
+     Windows-related lines will be removed and the bld.bat file will be
+     removed.""")
+def clean_cran_skeleton(recipe, no_windows=False):
     """
-    Cleans skeletons created by `conada skeleton cran`.
+    Cleans skeletons created by `conda skeleton cran`.
 
     Before submitting to conda-forge or Bioconda, recipes generated with `conda
     skeleton cran` need to be cleaned up: comments removed, licenses fixed, and
     other linting.
+
+    Use --no-windows for a Bioconda submission.
     """
     cran_skeleton.clean_skeleton_files(recipe, no_windows=no_windows)
 
