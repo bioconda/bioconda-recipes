@@ -503,10 +503,25 @@ def bioconductor_skeleton(
 ):
     """
     Build a Bioconductor recipe. The recipe will be created in the `recipes`
-    directory and will be prefixed by "bioconductor-".
+    directory and will be prefixed by "bioconductor-". If `--recursive` is set,
+    then any R dependency recipes will be prefixed by "r-".
+
+    These R recipes must be evaluated on a case-by-case basis to determine if
+    they are relevant to biology (in which case they should be submitted to
+    bioconda) or not (submit to conda-forge).
+
+    Biology-related:
+        `bioconda-utils clean-cran-skeleton <recipe> --no-windows`
+        and submit to Bioconda.
+
+    Not bio-related:
+        `bioconda-utils clean-cran-skeleton <recipe>`
+        and submit to conda-forge.
+
     """
     utils.setup_logger('bioconda_utils', loglevel)
     seen_dependencies = set()
+
     written = _bioconductor_skeleton.write_recipe(
         package, recipe_folder, config, force=force, bioc_version=bioc_version,
         pkg_version=pkg_version, versioned=versioned, recursive=recursive,
