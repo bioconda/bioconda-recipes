@@ -493,29 +493,40 @@ def dependent(recipe_folder, config, restrict=False, dependencies=None, reverse_
 @arg('--loglevel',  help='Log level')
 @arg('--recursive', action='store_true', help="""Creates the recipes for all
      Bioconductor and CRAN dependencies of the specified package.""")
-@arg('--skip-if-in-channels', nargs='+', help="""When --recursive is used, it will build
+@arg('--skip-if-in-channels', nargs='*', help="""When --recursive is used, it will build
      *all* recipes. Use this argument to skip recursive building for packages
      that already exist in the packages listed here.""")
-@arg('--no-windows', action='store_true', help="""After a CRAN skeleton is
-     created, any Windows-related lines will be removed and the bld.bat file
-     will be removed. Use this if you know the R packages will not be submitted
-     to conda-forge.""")
 def bioconductor_skeleton(
     recipe_folder, config, package, versioned=False, force=False,
     pkg_version=None, bioc_version=None, loglevel='debug', recursive=False,
-    skip_if_in_channels=['conda-forge', 'bioconda'], no_windows=False,
+    skip_if_in_channels=['conda-forge', 'bioconda'],
 ):
     """
     Build a Bioconductor recipe. The recipe will be created in the `recipes`
-    directory and will be prefixed by "bioconductor-".
+    directory and will be prefixed by "bioconductor-". If `--recursive` is set,
+    then any R dependency recipes will be prefixed by "r-".
+
+    These R recipes must be evaluated on a case-by-case basis to determine if
+    they are relevant to biology (in which case they should be submitted to
+    bioconda) or not (submit to conda-forge).
+
+    Biology-related:
+        `bioconda-utils clean-cran-skeleton <recipe> --no-windows`
+        and submit to Bioconda.
+
+    Not bio-related:
+        `bioconda-utils clean-cran-skeleton <recipe>`
+        and submit to conda-forge.
+
     """
     utils.setup_logger('bioconda_utils', loglevel)
     seen_dependencies = set()
+
     written = _bioconductor_skeleton.write_recipe(
         package, recipe_folder, config, force=force, bioc_version=bioc_version,
         pkg_version=pkg_version, versioned=versioned, recursive=recursive,
         seen_dependencies=seen_dependencies,
-        skip_if_in_channels=skip_if_in_channels, no_windows=no_windows)
+        skip_if_in_channels=skip_if_in_channels)
 
     # E.g., r-probmetab has versioned 1.0 and 1.1 dirs in bioconda-recipes, and
     # this fails to find the meta.yaml files.
@@ -526,17 +537,19 @@ def bioconductor_skeleton(
 
 
 @arg('recipe', help='''Path to recipe to be cleaned''')
-@arg('--no-windows', action='store_true', help="""After a CRAN skeleton is
-     created, any Windows-related lines will be removed and the bld.bat file
-     will be removed. Use this if you know the R packages will not be submitted
-     to conda-forge.""")
-def clean_cran_skeleton(recipe, no_windows):
+@arg('--no-windows', action='store_true', help="""Use this when submitting an
+     R package to Bioconda. After a CRAN skeleton is created, any
+     Windows-related lines will be removed and the bld.bat file will be
+     removed.""")
+def clean_cran_skeleton(recipe, no_windows=False):
     """
-    Cleans skeletons created by `conada skeleton cran`.
+    Cleans skeletons created by `conda skeleton cran`.
 
     Before submitting to conda-forge or Bioconda, recipes generated with `conda
     skeleton cran` need to be cleaned up: comments removed, licenses fixed, and
     other linting.
+
+    Use --no-windows for a Bioconda submission.
     """
     cran_skeleton.clean_skeleton_files(recipe, no_windows=no_windows)
 
@@ -590,4 +603,4 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
 
 
 def main():
-    argh.dispatch_commands([build, dag, dependent, lint, duplicates, bioconductor_skeleton, pypi_check])
+    argh.dispatch_commands([build, dag, dependent, lint, duplicates, bioconductor_skeleton, pypi_check, clean_cran_skeleton])
