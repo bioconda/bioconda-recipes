@@ -10,7 +10,6 @@ sed -i.bak 's#!/usr/bin/env python#!/opt/anaconda1anaconda2anaconda3/bin/python#
 chmod +x gatk-launch
 cp gatk-launch $PACKAGE_HOME
 cp gatk-*-local.jar $PACKAGE_HOME
-# Does not yet install spark jar to save space. Should add once being used
-#cp gatk-*-spark.jar $PACKAGE_HOME
+cp gatk-*-spark.jar $PACKAGE_HOME
 
 ln -s $PACKAGE_HOME/gatk-launch $PREFIX/bin
