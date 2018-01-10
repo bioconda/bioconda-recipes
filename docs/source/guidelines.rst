@@ -491,7 +491,7 @@ cluttering the output in the Travis-CI build environment.
 Link and unlink scripts (pre- and post- install hooks)
 ------------------------------------------------------
 It is possible to include `scripts
-<http://conda.pydata.org/docs/spec.html#link-and-unlink-scripts>`_ that are
+<https://conda.io/docs/user-guide/tasks/build-packages/link-scripts.html>`_ that are
 executed before or after installing a package, or before uninstalling
 a package. These scripts can be helpful for alerting the user that manual
 actions are required after adding or removing a package. For example,
