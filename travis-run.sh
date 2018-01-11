@@ -8,7 +8,7 @@ set -u
 
 if [ $BIOCONDA_UTILS_TEST_TYPE == 'pytest_docker' ] || [ $BIOCONDA_UTILS_TEST_TYPE == 'all' ]; then
 
-  py.test test/ -v -k "docker"
+  py.test test/ -v -k "docker" -s
 
 fi
 
