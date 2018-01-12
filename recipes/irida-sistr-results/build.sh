@@ -1,10 +1,8 @@
 #!/bin/sh
 
-# install dependencies through pip
-pip install -r requirements.txt
-
 # remove unnecessary files from package before installing
 rm ./.gitignore
+rm ./requirements.txt
 rm -r ./images/
 
 # install irida-sistr-results
