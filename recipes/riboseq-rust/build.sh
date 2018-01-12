@@ -1,6 +1,5 @@
 #!/bin/bash
-
-$PYTHON setup.py install
+cp * $PREFIX/bin
 
 # Add more build steps here, if they are necessary.
 
