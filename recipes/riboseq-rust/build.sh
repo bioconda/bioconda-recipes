@@ -1,8 +1,7 @@
 #!/bin/bash
+mkdir -p "$PREFIX/bin"
+for j in *.py; do
+	sed -i.bak '1 s|^.*$|#!/usr/bin/env python2|g' "${j}"
+done
+chmod 755 *.py
 cp * $PREFIX/bin
-
-# Add more build steps here, if they are necessary.
-
-# See
-# http://docs.continuum.io/conda/build.html
-# for a list of environment variables that are set during the build process.
