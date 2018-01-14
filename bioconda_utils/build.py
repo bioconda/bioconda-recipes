@@ -362,8 +362,8 @@ def build_recipes(
                 if mulled_test:
                     logger.info(
                         'TEST SKIP: '
-                        'skipping test for %s because it depends '
-                        'on conda or conda-build')
+                        'skipping mulled-build test for %s because it '
+                        'depends on conda or conda-build', recipe)
 
             res = build(
                 recipe=recipe,
