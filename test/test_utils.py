@@ -288,6 +288,30 @@ def test_get_deps():
     assert list(utils.get_deps(r.recipe_dirs['three'], config={}, build=False)) == ['two']
 
 
+def test_conda_as_dep():
+    r = Recipes(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: 0.1
+            requirements:
+              run:
+                - conda
+        """, from_string=True)
+    r.write_recipes()
+    build_result = build.build_recipes(
+        r.basedir,
+        config={},
+        packages="*",
+        testonly=False,
+        force=False,
+        mulled_test=True,
+    )
+    assert build_result
+
+
 def test_env_matrix():
     contents = {
         'CONDA_PY': [27, 35],

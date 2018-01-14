@@ -349,12 +349,28 @@ def build_recipes(
 
         for target in recipe_targets[recipe]:
 
+            # If a recipe depends on conda, it means it must be installed in
+            # the root env, which is not compatible with mulled-build tests. In
+            # that case, we temporarily disable the mulled-build tests for the
+            # recipe.
+            deps = []
+            deps += utils.get_deps(recipe, orig_config, build=True)
+            deps += utils.get_deps(recipe, orig_config, build=False)
+            keep_mulled_test = True
+            if 'conda' in deps or 'conda-build' in deps:
+                keep_mulled_test = False
+                if mulled_test:
+                    logger.info(
+                        'TEST SKIP: '
+                        'skipping mulled-build test for %s because it '
+                        'depends on conda or conda-build', recipe)
+
             res = build(
                 recipe=recipe,
                 recipe_folder=recipe_folder,
                 env=target.env,
                 testonly=testonly,
-                mulled_test=mulled_test,
+                mulled_test=mulled_test & keep_mulled_test,
                 force=force,
                 channels=config['channels'],
                 docker_builder=docker_builder,
