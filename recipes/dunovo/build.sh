@@ -1,26 +1,31 @@
 #!/bin/bash
 
+# Download submodules and move them to lib.
+get_submodule () {
+  read name version owner repo hash <<< "$@"
+  wget --no-check-certificate "https://github.com/$owner/$repo/archive/v$version.tar.gz"
+  downloaded_hash=`sha256sum v$version.tar.gz | tr -s ' ' | cut -d ' ' -f 1`
+  if ! [ "$hash" = "$downloaded_hash" ]; then
+    echo "Error: Hash does not match!" >&2
+    return 1
+  fi
+  tar -zxvpf v$version.tar.gz
+  rm -rf $name
+  if [ "$name" == kalign ]; then
+    mv $repo-$version $name
+  else
+    mv $repo-$version $PREFIX/lib/$name
+  fi
+  rm v$version.tar.gz
+}
+get_submodule kalign  0.2.0 makrutenko kalign-dunovo 473dd562f520a218df2dd147c89940422344adad6d8824141bffe6466c6d40e7
+get_submodule utillib 0.1.0 NickSto    utillib       bffe515f7bd98661657c26003c41c1224f405c3a36ddabf5bf961fab86f9651a
+get_submodule ET      0.2.2 NickSto    ET            11dc5cb02521a2260e6c88a83d489c72f819bd759aeff31d66aa40ca2f1358a6
+
 # Compile binaries and move them to lib.
 make
 mv *.so $PREFIX/lib
-
-# Download submodules and move them to lib.
-## utillib
-utilver=0.1.0
-wget --no-check-certificate "https://github.com/NickSto/utillib/archive/v$utilver.tar.gz"
-hash=`sha256sum v$utilver.tar.gz | tr -s ' ' | cut -d ' ' -f 1`
-[ $hash = bffe515f7bd98661657c26003c41c1224f405c3a36ddabf5bf961fab86f9651a ]
-tar -zxvpf v$utilver.tar.gz
-mv utillib-$utilver $PREFIX/lib/utillib
-rm v$utilver.tar.gz
-## ET
-ETver=0.1.1
-wget --no-check-certificate "https://github.com/NickSto/ET/archive/v$ETver.tar.gz"
-hash=`sha256sum v$ETver.tar.gz | tr -s ' ' | cut -d ' ' -f 1`
-[ $hash = 552c371f0fe0000b6037038ad1aeae09111d066c362d45655e40381cb0c325e4 ]
-tar -zxvpf v$ETver.tar.gz
-mv ET-$ETver $PREFIX/lib/ET
-rm v$ETver.tar.gz
+mv kalign $PREFIX/lib
 
 # Move scripts to lib and link to them from bin.
 for script in *.awk *.sh *.py; do

@@ -16,7 +16,8 @@ chmod +x $outdir/mobster-to-vcf.py
 ln -s $outdir/mobster-to-vcf.py $PREFIX/bin/mobster-to-vcf
 
 # copy jar
-cp target/MobileInsertions-$PKG_VERSION.jar $outdir/
+ver=( ${PKG_VERSION//./ } )
+cp target/MobileInsertions-${ver[0]}.${ver[1]}.${ver[2]}.jar $outdir/
 
 # download MobsterToVCF
 cd $outdir
