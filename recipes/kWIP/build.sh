@@ -1,7 +1,7 @@
 #!/bin/bash
 export CC=${PREFIX}/bin/gcc
 export CXX=${PREFIX}/bin/g++
-export BINARY_HOME=$PREFIX/bin
+export BINARY_HOME=$PREFIX
 
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
