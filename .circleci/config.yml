@@ -6,11 +6,19 @@ jobs:
     machine: true
     environment:
       - MINICONDA_VER: "4.3.21"
+      - BIOCONDA_UTILS_TAG: master
     steps:
+      - restore_cache:
+          keys:
+            - miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ arch }}
       - checkout
       - run: mkdir -p /tmp/workspace
       - run: pip install pyyaml
       - run: ./simulate-travis.py --bootstrap /tmp/workspace/miniconda --overwrite
+      - save_cache:
+          key: miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ arch }}
+          paths:
+            - /tmp/workspace/miniconda
       # store the miniconda installation in the common workspace
       - persist_to_workspace:
           root: /tmp/workspace
