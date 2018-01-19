@@ -1,23 +1,17 @@
 version: 2
 
-# setup common workspace that is reused among jobs
-common_workspace: &common_workspace
-    root: workspace
-    paths:
-      - miniconda
-
 jobs:
   # Setup Conda and bioconda-utils and store it in the common workspace
   setup:
     machine: true
     steps:
       - checkout
-      - run: mkdir -p workspace
+      - run: mkdir -p /tmp/workspace
       - run: pip install pyyaml
-      - run: ./simulate-travis.py --bootstrap workspace/miniconda --overwrite
+      - run: ./simulate-travis.py --bootstrap /tmp/workspace/miniconda --overwrite
       # store the miniconda installation in the common workspace
       - persist_to_workspace:
-          root: workspace
+          root: /tmp/workspace
           paths:
             - miniconda
 
@@ -26,7 +20,7 @@ jobs:
     machine: true
     steps:
       - attach_workspace:
-          at: workspace
+          at: /tmp/workspace
       - checkout
       - run: bioconda-utils lint recipes config.yml --git-range master HEAD
 
