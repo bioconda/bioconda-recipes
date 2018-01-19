@@ -35,65 +35,12 @@ requirements:
 
 test:
   commands:
-    - |
-      cat > test.sqt << EOF
-      H       SQTGenerator Crux
-      H       SQTGeneratorVersion 1.0
-      H       Comment Crux was written by...
-      H       Comment ref...
-      H       StartTime       Tue Dec  2 15:22:50 2008
-      H       EndTime
-      H       Database        test_crux_index/test-binary-fasta
-      H       DBSeqLength     ?
-      H       DBLocusCount    4
-      H       PrecursorMasses average
-      H       FragmentMasses  mono
-      H       Alg-PreMasTol   3.0
-      H       Alg-FragMassTol 0.50
-      H       Alg-XCorrMode   0
-      H       Comment preliminary algorithm sp
-      H       Comment final algorithm xcorr
-      H       StaticMod       C=160.139
-      H       Alg-DisplayTop  5
-      H       EnzymeSpec      tryptic
-      S       45894   45894   2       1       maccoss007      2038.59 9199.5  147.1   153628
-      M         1      27     2040.244        0.0000   1.5881  245.6   11     34          V.YKCAADKQDATVVELTNL.T      U
-      L       YCR102C
-      M         2      68     2038.265        0.0116   1.5698  208.4   11     36          S.TQSGIVAEQALLHSLNENL.S     U
-      L       YGR080W
-      M         3      34     2039.247        0.1582   1.3369  239.3   11     36          I.NEKTSPALVIPTPDAENEI.S     U
-      L       YLR035C
-      M         4     322     2040.365        0.1699   1.3183  160.0    9     36          I.LKESKSVQPGKAIPDIIES.P     U
-      L       YJL126W
-      M         5      74     2039.453        0.2288   1.2248  203.6   10     32          D.MISVDLKTPLVIFKCHH.G       U
-      L       YAL002W
-      M        65       1     2041.246        0.4179   0.9245  370.2   13     32          S.CCGLSLPGLHDLLRHYE.E       U
-      L       YLR403W
-      S       45904   45904   3       1       maccoss007      2834.54 10103.7 246.4   152668
-      M         1     237     2833.059        0.0000   1.9175  273.1   20     108             N.NSGSDTVDPLAGLNNLRNSIKSAGNGME.N        U
-      L       YDR505C
-      M         2     223     2834.278        0.1390   1.6510  274.8   18     96              G.HLSRISNIDDILISMRMDAFDSLIG.Y   U
-      L       YLR247C
-      M         3      52     2835.100        0.1503   1.6292  324.1   20     96        S.KSTTEPIQLNNKHDLHLGQELTEST.V U
-      L       YDR098C-B
-      L       YDR365W-B
-      L       YER138C
-      L       YGR027W-B
-      EOF
-      sqt2pin -o test.txt target decoy
-    - |
-      percolator -X test.xml --stdinput -V F1 -U << EOF
-      PSIMd	Label	ScanNr	F1	F2	F3	Peptide	Proteins
-      A1	1	1	200	300	400	K.IAMAPEPTIDE.T	ENSP101
-      A2	1	2	210	300	450	K.IAMAPEPTIDE.T	ENSP101
-      A3	1	3	150	300	340	K.IAMAPEPTIDE.T	ENSP101
-      A4	1	4	50	100	200	K.IAMAPEPTIDE.T	ENSP101
-      B1	-1	1	100	200	200	R.TRYIDENTIFY.S	decoy_ENSP101
-      B2	-1	2	120	210	230	R.TRYIDENTIFY.S	decoy_ENSP101
-      B3	-1	3	50	200	130	R.TRYIDENTIFY.S	decoy_ENSP101
-      B4	-1	4	400	250	430	R.TRYIDENTIFY.S	decoy_ENSP101
-      EOF
+    - sqt2pin -o test.txt $PREFIX/testdata/target.sqt $PREFIX/testdata/target.sqt
+    - percolator -X test.xml $PREFIX/testdata/percolatorTab 
 
+extra:
+  container:
+    extended-base: true  # Add UTF-8 for percolator converters
 
 about:
   home: https://github.com/percolator/percolator
