@@ -1,6 +1,7 @@
 #!/bin/sh
 
 cp -r $SRC_DIR/src/*.jl $PREFIX/bin
+cp -r $SRC_DIR/scripts $PREFIX
 ln -s $PREFIX/bin/MentaLiST.jl $PREFIX/bin/mentalist
 chmod +x $PREFIX/bin/mentalist
 
