@@ -9,9 +9,17 @@ jobs:
           keys:
             - miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ arch }}
       - checkout
-      - run: mkdir -p /tmp/workspace
-      - run: pip install pyyaml
-      - run: ./simulate-travis.py --bootstrap /tmp/workspace/miniconda --overwrite
+      - run:
+          name: setup
+          command: |
+            if [ -d /tmp/workspace/miniconda ]; then
+                # skip the following if cache was restored
+                exit 0
+            fi
+            mkdir -p /tmp/workspace
+            pip install pyyaml
+            ./simulate-travis.py --bootstrap /tmp/workspace/miniconda --overwrite
+            conda clean -y --all
       - save_cache:
           key: miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ arch }}
           paths:
