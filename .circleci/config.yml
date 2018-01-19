@@ -1,0 +1,46 @@
+version: 2
+
+common_args: &common_args
+  working_directory: /tmp
+
+common_workspace: &common_workspace
+    root: workspace
+    paths:
+      - miniconda
+
+jobs:
+  setup:
+    <<: *common_args
+    machine: true
+    steps:
+      - checkout
+      - run: mkdir -p workspace
+      - run: scripts/simulate-travis.py --bootstrap workspace/miniconda --overwrite
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - miniconda
+  lint:
+    <<: *common_args
+    machine: true
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - run: bioconda-utils lint recipes config.yml --git-range master HEAD
+
+workflows:
+  version: 2
+  bioconda-linux:
+    jobs:
+      - setup
+          context: linux-env
+      - lint
+          requires:
+            - setup
+          context: linux-env
+          filters:
+            branches:
+              ignore:
+                - master
+                - bulk
