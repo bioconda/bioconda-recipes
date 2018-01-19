@@ -4,15 +4,12 @@ variables:
   linux_cache: &linux_cache
     keys:
       - miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ arch }}
-  setup: &setup
-    |
-      echo 'export PATH="/tmp/workspace/miniconda/bin:$PATH"' >> $BASH_ENV
-      git fetch origin +master:master
+      
 
 
 jobs:
   # Setup Conda and bioconda-utils and store it in the common workspace
-  setup:
+  setup-linux:
     machine: true
     steps:
       - restore_cache:
@@ -20,37 +17,28 @@ jobs:
       - checkout
       - run:
           name: setup
-          command: |
-            if [ -d /tmp/workspace/miniconda ]; then
-                # skip the following if cache was restored
-                exit 0
-            fi
-            mkdir -p /tmp/workspace
-            pip install pyyaml
-            ./simulate-travis.py --bootstrap /tmp/workspace/miniconda --overwrite
-            conda clean -y --all
+          command: .circleci/setup-conda.sh
       - save_cache:
           key: miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ arch }}
           paths:
             - /tmp/workspace/miniconda
 
-  # Perform linting
   lint:
     machine: true
     steps:
       - restore_cache:
           <<: *linux_cache
       - checkout
-      - run: *setup
+      - run: .circleci/setup-env.sh
       - run: bioconda-utils lint recipes config.yml --git-range master HEAD
 
-  build:
+  test-linux:
     machine: true
     steps:
       - restore_cache:
           <<: *linux_cache
       - checkout
-      - run: *setup
+      - run: .circleci/setup-env.sh
       - run: bioconda-utils build recipes config.yml --git-range master HEAD --docker --mulled-test
 
 workflows:
@@ -61,7 +49,7 @@ workflows:
           context: org-global
       - lint:
           requires:
-            - setup
+            - setup-linux
           context: org-global
           filters:
             branches:
