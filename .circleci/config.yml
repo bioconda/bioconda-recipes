@@ -1,9 +1,5 @@
 version: 2
 
-# setup common args that are reused among jobs
-common_args: &common_args
-  working_directory: /tmp
-
 # setup common workspace that is reused among jobs
 common_workspace: &common_workspace
     root: workspace
@@ -13,7 +9,6 @@ common_workspace: &common_workspace
 jobs:
   # Setup Conda and bioconda-utils and store it in the common workspace
   setup:
-    <<: *common_args
     machine: true
     steps:
       - checkout
@@ -27,11 +22,10 @@ jobs:
 
   # Perform linting
   lint:
-    <<: *common_args
     machine: true
     steps:
       - attach_workspace:
-          at: /tmp/workspace
+          at: workspace
       - checkout
       - run: bioconda-utils lint recipes config.yml --git-range master HEAD
 
