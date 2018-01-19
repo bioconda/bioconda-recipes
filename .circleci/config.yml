@@ -25,17 +25,20 @@ jobs:
           paths:
             - /tmp/workspace/miniconda
       # store the miniconda installation in the common workspace
-      - persist_to_workspace:
-          root: /tmp/workspace
-          paths:
-            - miniconda
+      # - persist_to_workspace:
+      #     root: /tmp/workspace
+      #     paths:
+      #       - miniconda
 
   # Perform linting
   lint:
     machine: true
     steps:
-      - attach_workspace:
-          at: /tmp/workspace
+      - restore_cache:
+          keys:
+            - miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ arch }}
+      # - attach_workspace:
+      #     at: /tmp/workspace
       - checkout
       - run: echo 'export PATH="/tmp/workspace/miniconda/bin:$PATH"' >> $BASH_ENV
       - run: bioconda-utils lint recipes config.yml --git-range master HEAD
