@@ -5,8 +5,8 @@ $R CMD INSTALL --build .
 
 python_scripts=$PREFIX/lib/R/library/DEXSeq/python_scripts
 
-sed -i'' -e '1 i\'$'\n''#!/usr/bin/env python' $python_scripts/dexseq_count.py
-sed -i'' -e '1 i\'$'\n''#!/usr/bin/env python' $python_scripts/dexseq_prepare_annotation.py
+sed -i.bak '1 s|^.*$|#!/usr/bin/env python' $python_scripts/dexseq_count.py
+sed -i.bak '1 s|^.*$|#!/usr/bin/env python' $python_scripts/dexseq_prepare_annotation.py
 
 if [ "$PY3K" == 1 ]; then
     2to3 -w $python_scripts/dexseq_count.py
