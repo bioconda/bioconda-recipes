@@ -1,55 +1,83 @@
 version: 2
 
 variables:
-  linux_cache: &linux_cache
-    keys:
-      - miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ arch }}
-      
+  restore_cache: &restore_cache
+    restore_cache:
+      keys:
+        - miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ arch }}
+  save_cache: &save_cache
+    save_cache:
+      key: miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ arch }}
+      paths:
+        - /tmp/workspace/miniconda
+  setup: &setup
+    run: .circleci/setup.sh
+  macos: &macos
+    macos:
+      xcode: "6.4"
+  linux: &linux
+    machine: true
 
 
 jobs:
-  # Setup Conda and bioconda-utils and store it in the common workspace
-  setup-linux:
-    machine: true
-    steps:
-      - restore_cache:
-          <<: *linux_cache
-      - checkout
-      - run:
-          name: setup
-          command: .circleci/setup-conda.sh
-      - save_cache:
-          key: miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ arch }}
-          paths:
-            - /tmp/workspace/miniconda
-
   lint:
-    machine: true
+    <<: *linux
     steps:
-      - restore_cache:
-          <<: *linux_cache
+      - *restore_cache
       - checkout
-      - run: .circleci/setup-env.sh
+      - *setup
+      - *save_cache
       - run: bioconda-utils lint recipes config.yml --git-range master HEAD
 
+  # build and test on linux
   test-linux:
-    machine: true
+    <<: *linux
     steps:
-      - restore_cache:
-          <<: *linux_cache
+      - *restore_cache
       - checkout
-      - run: .circleci/setup-env.sh
+      - *setup
+      - *save_cache
       - run: bioconda-utils build recipes config.yml --git-range master HEAD --docker --mulled-test
+
+  # build and test on macos
+  test-macos:
+    <<: *macos
+    steps:
+      - *restore_cache
+      - checkout
+      - *setup
+      - *save_cache
+      - run: bioconda-utils build recipes config.yml --git-range master HEAD
+
+  # build, test and upload on linux
+  upload-linux:
+    <<: *linux
+    steps:
+      - *restore_cache
+      - checkout
+      - *setup
+      - *save_cache
+      # build only current commit (since we use squashed merging, this is safe
+      - run: bioconda-utils build recipes config.yml --git-range $CIRCLE_SHA1 --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+
+  # build, test and upload on macos
+  upload-macos:
+    <<: *macos
+    steps:
+      - *restore_cache
+      - checkout
+      - *setup
+      - *save_cache
+      # build only current commit (since we use squashed merging, this is safe
+      - run: bioconda-utils build recipes config.yml --git-range $CIRCLE_SHA1 --docker --anaconda-upload
+
 
 workflows:
   version: 2
-  bioconda-linux:
+  # workflow for testing pushes and PRs
+  bioconda-test:
     jobs:
-      - setup-linux:
-          context: org-global
       - lint:
-          requires:
-            - setup-linux
           context: org-global
           filters:
             branches:
@@ -65,4 +93,29 @@ workflows:
               ignore:
                 - master
                 - bulk
-
+      - test-macos:
+          requires:
+            - lint
+          context: org-global
+          filters:
+            branches:
+              ignore:
+                - master
+                - bulk
+  # workflow for uploading packages from master and bulk branch
+  bioconda-upload:
+    jobs:
+      - upload-linux:
+        context: org-global
+        filters:
+          branches:
+            only:
+              - master
+              - bulk
+      - upload-macos:
+          context: org-global
+          filters:
+            branches:
+              only:
+                - master
+                - bulk
