@@ -11,7 +11,9 @@ variables:
       paths:
         - /tmp/workspace/miniconda
   setup: &setup
-    run: .circleci/setup.sh
+    run: 
+      name: Setup bioconda-utils
+      command: .circleci/setup.sh
   macos: &macos
     macos:
       xcode: "9.0"
@@ -27,7 +29,9 @@ jobs:
       - checkout
       - *setup
       - *save_cache
-      - run: bioconda-utils lint recipes config.yml --git-range master HEAD
+      - run:
+          name: Linting
+          command: bioconda-utils lint recipes config.yml --git-range master HEAD
 
   # build and test on linux
   test-linux:
@@ -37,7 +41,9 @@ jobs:
       - checkout
       - *setup
       - *save_cache
-      - run: bioconda-utils build recipes config.yml --git-range master HEAD --docker --mulled-test
+      - run:
+          name: Building and testing
+          command: bioconda-utils build recipes config.yml --git-range master HEAD --docker --mulled-test
 
   # build and test on macos
   test-macos:
@@ -47,7 +53,9 @@ jobs:
       - checkout
       - *setup
       - *save_cache
-      - run: bioconda-utils build recipes config.yml --git-range master HEAD
+      - run:
+          name: Building and testing
+          command: bioconda-utils build recipes config.yml --git-range master HEAD
 
   # build, test and upload on linux
   upload-linux:
@@ -58,7 +66,9 @@ jobs:
       - *setup
       - *save_cache
       # build only current commit (since we use squashed merging, this is safe
-      - run: bioconda-utils build recipes config.yml --git-range $CIRCLE_SHA1 --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+      - run:
+          name: Building, testing, and uploading
+          command: bioconda-utils build recipes config.yml --git-range $CIRCLE_SHA1 --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
 
   # build, test and upload on macos
   upload-macos:
@@ -69,7 +79,9 @@ jobs:
       - *setup
       - *save_cache
       # build only current commit (since we use squashed merging, this is safe
-      - run: bioconda-utils build recipes config.yml --git-range $CIRCLE_SHA1 --docker --anaconda-upload
+      - run:
+          name: Building, testing and uploading
+          command: bioconda-utils build recipes config.yml --git-range $CIRCLE_SHA1 --docker --anaconda-upload
 
 
 workflows:
