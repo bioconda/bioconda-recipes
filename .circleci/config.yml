@@ -49,10 +49,11 @@ jobs:
   test-macos:
     <<: *macos
     steps:
-      - *restore_cache
       - checkout
+      # We cannot cache the miniconda installation on macos.
+      # The reason is that tar seems to have a bug when handling sym and hardlinks in the miniconda installation.
+      # The error is, e.g.: Cannot extract through symlink tmp/workspace/miniconda/LICENSE.rst
       - *setup
-      - *save_cache
       - run:
           name: Building and testing
           command: bioconda-utils build recipes config.yml --git-range master HEAD
@@ -74,10 +75,8 @@ jobs:
   upload-macos:
     <<: *macos
     steps:
-      - *restore_cache
       - checkout
       - *setup
-      - *save_cache
       # build only current commit (since we use squashed merging, this is safe
       - run:
           name: Building, testing and uploading
