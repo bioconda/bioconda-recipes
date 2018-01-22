@@ -18,13 +18,15 @@ variables:
     macos:
       xcode: "9.0"
   linux: &linux
-    machine: true
+    docker:
+      - image: circleci/python:3
 
 
 jobs:
   # When running CircleCI locally, we put everything in one job.
   build:
     docker:
+      # TODO use a prebuild image
       - image: circleci/python:3
     steps:
       - setup_remote_docker
@@ -55,6 +57,7 @@ jobs:
   test-linux:
     <<: *linux
     steps:
+      - setup_remote_docker
       - *restore_cache
       - checkout
       - *setup
@@ -80,6 +83,7 @@ jobs:
   upload-linux:
     <<: *linux
     steps:
+      - setup_remote_docker
       - *restore_cache
       - checkout
       - *setup
