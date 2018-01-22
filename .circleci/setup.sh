@@ -9,9 +9,9 @@ if [[ ! -d /tmp/workspace/miniconda ]]; then
     mkdir -p /tmp/workspace
 
     # step 1: download and install miniconda
-    if [[ $OSTYPE == "darwin" ]]; then
+    if [[ $OSTYPE == darwin* ]]; then
         tag="MacOS"
-    elif [[ $OSTYPE == "linux-gnu" ]]; then
+    elif [[ $OSTYPE == linux* ]]; then
 	tag="Linux"
     else
 	echo "Unsupported OS: $OSTYPE"
