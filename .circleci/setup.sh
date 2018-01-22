@@ -10,7 +10,7 @@ if [[ ! -d /tmp/workspace/miniconda ]]; then
 
     # step 1: download and install miniconda
     if [[ $OSTYPE == darwin* ]]; then
-        tag="MacOS"
+        tag="MacOSX"
     elif [[ $OSTYPE == linux* ]]; then
 	tag="Linux"
     else
