@@ -17,8 +17,7 @@ if [[ ! -d /tmp/workspace/miniconda ]]; then
 	echo "Unsupported OS: $OSTYPE"
 	exit 1
     fi
-    wget https://repo.continuum.io/miniconda/Miniconda3-$MINICONDA_VER-$tag-x86_64.sh -O miniconda.sh
-    bash miniconda.sh -b -p /tmp/workspace/miniconda
+    bash <(curl -s https://repo.continuum.io/miniconda/Miniconda3-$MINICONDA_VER-$tag-x86_64.sh) -b -p /tmp/workspace/miniconda
     source $BASH_ENV
 
     # step 2: setup channels
@@ -27,8 +26,7 @@ if [[ ! -d /tmp/workspace/miniconda ]]; then
     conda config --add channels bioconda
 
     # step 3: install bioconda-utils
-    wget https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements.txt
-    conda install --file bioconda_utils-requirements.txt
+    conda install -y --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements.txt
     # add github to known hosts such that pip does not ask
     mkdir -p ~/.ssh
     ssh-keyscan -H github.com >> ~/.ssh/known_hosts
