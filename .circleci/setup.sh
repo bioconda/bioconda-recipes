@@ -17,7 +17,8 @@ if [[ ! -d /tmp/workspace/miniconda ]]; then
 	echo "Unsupported OS: $OSTYPE"
 	exit 1
     fi
-    bash <(curl -L -s https://repo.continuum.io/miniconda/Miniconda3-$MINICONDA_VER-$tag-x86_64.sh) -b -p /tmp/workspace/miniconda
+    curl -L -o miniconda.sh https://repo.continuum.io/miniconda/Miniconda3-$MINICONDA_VER-$tag-x86_64.sh
+    bash miniconda.sh -b -p /tmp/workspace/miniconda
     source $BASH_ENV
 
     # step 2: setup channels
