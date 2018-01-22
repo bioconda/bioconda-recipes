@@ -22,6 +22,24 @@ variables:
 
 
 jobs:
+  # When running CircleCI locally, we put everything in one job.
+  build:
+    docker:
+      - image: circleci/python:3
+    steps:
+      - setup_remote_docker
+      - checkout
+      - *setup
+      - run:
+          name: Linting
+          command: bioconda-utils lint recipes config.yml --git-range master HEAD
+      - run:
+          name: Testing
+          # Currently, using --docker below causes a permission error on Fedora 27, 
+          # although it should be supported by the setup_remote_docker directive 
+          # above. A workaround or an upstream fix would be welcome.
+          command: bioconda-utils build recipes config.yml --git-range master HEAD
+
   lint:
     <<: *linux
     steps:

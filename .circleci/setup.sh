@@ -1,14 +1,40 @@
 #!/bin/bash
-
-if [ ! -d /tmp/workspace/miniconda ]; then
-    # setup conda and bioconda-utils if not loaded from cache
-    mkdir -p /tmp/workspace
-    pip install pyyaml
-    ./simulate-travis.py --bootstrap /tmp/workspace/miniconda --overwrite
-    conda clean -y --all
-fi
+set -eu
 
 # Set path
 echo 'export PATH="/tmp/workspace/miniconda/bin:$PATH"' >> $BASH_ENV
-# fetch the master branch for comparison
-git fetch origin +master:master
+
+if [[ ! -d /tmp/workspace/miniconda ]]; then
+    # setup conda and bioconda-utils if not loaded from cache
+    mkdir -p /tmp/workspace
+
+    # step 1: download and install miniconda
+    if [[ $OSTYPE == "darwin" ]]; then
+        tag="MacOS"
+    elif [[ $OSTYPE == "linux-gnu" ]]; then
+	tag="Linux"
+    fi
+    wget https://repo.continuum.io/miniconda/Miniconda3-$MINICONDA_VER-$tag-x86_64.sh -O miniconda.sh
+    bash miniconda.sh -b -p /tmp/workspace/miniconda
+    source $BASH_ENV
+
+    # step 2: setup channels
+    conda config --add channels defaults
+    conda config --add channels conda-forge
+    conda config --add channels bioconda
+
+    # step 3: install bioconda-utils
+    wget https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements.txt
+    conda install --file bioconda_utils-requirements.txt
+    # add github to known hosts such that pip does not ask
+    mkdir -p ~/.ssh
+    ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+    pip install git+https://github.com/bioconda/bioconda-utils.git@$BIOCONDA_UTILS_TAG
+
+    # step 4: cleanup
+    conda clean -y --all
+fi
+
+# Fetch the master branch for comparison (this can fail locally, if git remote 
+# is configured via ssh and this is executed in a container).
+git fetch origin +master:master || true
