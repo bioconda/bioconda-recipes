@@ -1,12 +1,14 @@
 #!/bin/bash
 set -eu
 
-# Set path
-echo 'export PATH="/tmp/workspace/miniconda/bin:$PATH"' >> $BASH_ENV
+WORKSPACE=`pwd`/workspace
 
-if [[ ! -d /tmp/workspace/miniconda ]]; then
+# Set path
+echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> $BASH_ENV
+
+if [[ ! -d $WORKSPACE/miniconda ]]; then
     # setup conda and bioconda-utils if not loaded from cache
-    mkdir -p /tmp/workspace
+    mkdir -p $WORKSPACE
 
     # step 1: download and install miniconda
     if [[ $OSTYPE == darwin* ]]; then
@@ -18,7 +20,7 @@ if [[ ! -d /tmp/workspace/miniconda ]]; then
 	exit 1
     fi
     curl -L -o miniconda.sh https://repo.continuum.io/miniconda/Miniconda3-$MINICONDA_VER-$tag-x86_64.sh
-    bash miniconda.sh -b -p /tmp/workspace/miniconda
+    bash miniconda.sh -b -p $WORKSPACE/miniconda
     source $BASH_ENV
 
     # step 2: setup channels
