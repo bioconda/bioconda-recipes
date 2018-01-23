@@ -20,7 +20,9 @@ variables:
   linux: &linux
     docker:
       - image: circleci/python:3
-
+  setup_docker: &setup_docker
+    setup_remote_docker:
+      docker_layer_caching: true
 
 jobs:
   # When running CircleCI locally, we put everything in one job.
@@ -40,7 +42,7 @@ jobs:
           # Currently, using --docker below causes a permission error on Fedora 27, 
           # although it should be supported by the setup_remote_docker directive 
           # above. A workaround or an upstream fix would be welcome.
-          command: bioconda-utils build recipes config.yml --git-range master HEAD
+          command: bioconda-utils build recipes config.yml --git-range master HEAD --docker
 
   lint:
     <<: *linux
@@ -57,8 +59,7 @@ jobs:
   test-linux:
     <<: *linux
     steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
+      - *setup_docker
       - *restore_cache
       - checkout
       - *setup
@@ -80,31 +81,31 @@ jobs:
           name: Building and testing
           command: bioconda-utils build recipes config.yml --git-range master HEAD
 
-  # build, test and upload on linux
-  upload-linux:
+  # nightly build, test and upload of unpublished recipes on linux
+  nightly-upload-linux:
     <<: *linux
     steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
+      - *setup_docker
       - *restore_cache
       - checkout
       - *setup
       - *save_cache
       # build only current commit (since we use squashed merging, this is safe
       - run:
-          name: Building, testing, and uploading
-          command: bioconda-utils build recipes config.yml --git-range $CIRCLE_SHA1 --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+          name: Building, testing, and uploading of all unpublished recipes
+          command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
 
-  # build, test and upload on macos
-  upload-macos:
+  # nightly build, test and upload of unpublished recipes on macos
+  nightly-upload-macos:
     <<: *macos
     steps:
       - checkout
       - *setup
       # build only current commit (since we use squashed merging, this is safe
       - run:
-          name: Building, testing and uploading
-          command: bioconda-utils build recipes config.yml --git-range $CIRCLE_SHA1 --docker --anaconda-upload
+          name: Building, testing and uploading of all unpublished recipes
+          command: bioconda-utils build recipes config.yml --docker --anaconda-upload
+
 
 
 workflows:
@@ -154,3 +155,16 @@ workflows:
               only:
                 - master
                 - bulk
+  bioconda-nightly-upload:
+     triggers:
+       - schedule:
+           cron: "0 0 * * *"
+           filters:
+             branches:
+               only:
+                 - master
+     jobs:
+       - nightly-upload-linux:
+           context: org-global
+       - nightly-upload-macos:
+           context: org-global
