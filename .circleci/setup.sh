@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-WORKSPACE=/workspace
+WORKSPACE=/tmp/workspace
 
 # Set path
 echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> $BASH_ENV
