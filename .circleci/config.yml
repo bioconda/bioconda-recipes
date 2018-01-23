@@ -80,6 +80,31 @@ jobs:
       - run:
           name: Building and testing
           command: bioconda-utils build recipes config.yml --git-range master HEAD
+  
+  # build, test and upload on linux
+  upload-linux:
+    <<: *linux
+    steps:
+      - *setup_docker
+      - *restore_cache
+      - checkout
+      - *setup
+      - *save_cache
+      # build only current commit (since we use squashed merging, this is safe)
+      - run:
+          name: Building, testing, and uploading of all unpublished recipes
+          command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers --git-range $CIRCLE_SHA1
+
+  # build, test and upload on macos
+  upload-macos:
+    <<: *macos
+    steps:
+      - checkout
+      - *setup
+      # build only current commit (since we use squashed merging, this is safe)
+      - run:
+          name: Building, testing and uploading of all unpublished recipes
+          command: bioconda-utils build recipes config.yml --anaconda-upload --git-range $CIRCLE_SHA1
 
   # nightly build, test and upload of unpublished recipes on linux
   nightly-upload-linux:
@@ -90,7 +115,6 @@ jobs:
       - checkout
       - *setup
       - *save_cache
-      # build only current commit (since we use squashed merging, this is safe
       - run:
           name: Building, testing, and uploading of all unpublished recipes
           command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
@@ -101,10 +125,9 @@ jobs:
     steps:
       - checkout
       - *setup
-      # build only current commit (since we use squashed merging, this is safe
       - run:
           name: Building, testing and uploading of all unpublished recipes
-          command: bioconda-utils build recipes config.yml --docker --anaconda-upload
+          command: bioconda-utils build recipes config.yml --anaconda-upload
 
 
 
