@@ -370,7 +370,14 @@ class RecipeBuilder(object):
         #  `docker version` command (note the missing dashes) is not consistent
         # between different docker versions. The --version string is the same
         # for docker 1.6.2 and 1.12.6
-        s = sp.check_output(["docker", "--version"]).decode()
+        try:
+            s = sp.check_output(["docker", "--version"]).decode()
+        except FileNotFoundError:
+            logger.error('DOCKER FAILED: Error checking docker version, is it installed?')
+            raise
+        except sp.CalledProcessError:
+            logger.error('DOCKER FAILED: Error checking docker version.')
+            raise
         p = re.compile("\d+\.\d+\.\d+")  # three groups of at least on digit separated by dots
         version_string = re.search(p, s).group(0)
         if LooseVersion(version_string) >= LooseVersion("1.13.0"):
