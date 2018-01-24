@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # compile jalview from source
-ant -DINSTALLATION="bioconda" -DJALVIEW_VERSION="$PKG_VERSION-$PKG_BUILDNUM" -Dgit.commit="" -Dgit.branch="" makedist
+ant -DINSTALLATION="bioconda (build $PKG_BUILDNUM)" -DJALVIEW_VERSION="$PKG_VERSION" -Dgit.commit="" -Dgit.branch="" makedist
 
 # create target directory
 JALVIEWDIR=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
