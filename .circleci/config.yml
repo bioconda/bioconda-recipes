@@ -86,7 +86,7 @@ jobs:
       - *save_cache
       # build only current commit (since we use squashed merging, this is safe)
       - run:
-          name: Building, testing, and uploading of all unpublished recipes
+          name: Building, testing, and uploading
           command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers --git-range $CIRCLE_SHA1
 
   # build, test and upload on macos
@@ -97,8 +97,33 @@ jobs:
       - *setup
       # build only current commit (since we use squashed merging, this is safe)
       - run:
-          name: Building, testing and uploading of all unpublished recipes
+          name: Building, testing and uploading
           command: bioconda-utils build recipes config.yml --anaconda-upload --git-range $CIRCLE_SHA1
+
+  # build, test and upload for bulk branch on linux
+  bulk-linux:
+    <<: *linux
+    steps:
+      - checkout
+      - *restore_cache
+      - *setup
+      - *save_cache
+      # build everything that differs compared to master
+      - run:
+          name: Building, testing, and uploading of all unpublished recipes
+          command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers --git-range master HEAD
+
+  # build, test and upload for bulk branch on macos
+  bulk-macos:
+    <<: *macos
+    steps:
+      - checkout
+      - *setup
+      # build everything that differs compared to master
+      - run:
+          name: Building, testing and uploading of all unpublished recipes
+          command: bioconda-utils build recipes config.yml --anaconda-upload --git-range master HEAD
+
 
   # nightly build, test and upload of unpublished recipes on linux
   nightly-upload-linux:
@@ -155,7 +180,7 @@ workflows:
                 - master
                 - bulk
   # workflow for uploading packages from master and bulk branch
-  bioconda-upload:
+  bioconda-upload-master:
     jobs:
       - upload-linux:
           context: org-global
@@ -163,14 +188,28 @@ workflows:
             branches:
               only:
                 - master
-                - bulk
       - upload-macos:
           context: org-global
           filters:
             branches:
               only:
                 - master
+  # workflow for bulk-updates
+  bioconda-upload-bulk:
+    jobs:
+      - bulk-linux:
+          context: org-global
+          filters:
+            branches:
+              only:
                 - bulk
+      - bulk-macos:
+          context: org-global
+          filters:
+            branches:
+              only:
+                - bulk
+  # nightly workflow to capture missed recipes
   bioconda-nightly-upload:
      triggers:
        - schedule:
