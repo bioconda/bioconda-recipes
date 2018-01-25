@@ -4,10 +4,10 @@ variables:
   restore_cache: &restore_cache
     restore_cache:
       keys:
-        - miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ arch }}
+        - miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
   save_cache: &save_cache
     save_cache:
-      key: miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ arch }}
+      key: miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
       paths:
         - /tmp/workspace/miniconda
   setup: &setup
@@ -47,8 +47,8 @@ jobs:
   lint:
     <<: *linux
     steps:
-      - *restore_cache
       - checkout
+      - *restore_cache
       - *setup
       - *save_cache
       - run:
@@ -60,8 +60,8 @@ jobs:
     <<: *linux
     steps:
       - *setup_docker
-      - *restore_cache
       - checkout
+      - *restore_cache
       - *setup
       - *save_cache
       - run:
@@ -86,8 +86,8 @@ jobs:
     <<: *linux
     steps:
       - *setup_docker
-      - *restore_cache
       - checkout
+      - *restore_cache
       - *setup
       - *save_cache
       # build only current commit (since we use squashed merging, this is safe)
@@ -111,8 +111,8 @@ jobs:
     <<: *linux
     steps:
       - *setup_docker
-      - *restore_cache
       - checkout
+      - *restore_cache
       - *setup
       - *save_cache
       - run:
