@@ -40,7 +40,7 @@ def anaconda_upload(package, token=None, label=None):
     logger.info("UPLOAD uploading package %s", package)
     try:
         cmds = ["anaconda", "-t", token, 'upload', package] + label_arg
-        p = utils.run(cmds)
+        p = utils.run(cmds, mask=[token])
         logger.info("UPLOAD SUCCESS: uploaded package %s", package)
         return True
 
@@ -53,8 +53,6 @@ def anaconda_upload(package, token=None, label=None):
                 "%s", e.stdout)
             return True
         else:
-            # to avoid broadcasting the token in logs
-            e.cmd = ' '.join(cmds).replace(token, '<token>')
             logger.error('UPLOAD ERROR: command: %s', e.cmd)
             logger.error('UPLOAD ERROR: stdout+stderr: %s', e.stdout)
             raise e
@@ -65,6 +63,9 @@ def mulled_upload(image, quay_target):
     Upload the build Docker images to quay.io with 'mulled-build push'
     """
     cmd = ['mulled-build', 'push', image, '-n', quay_target]
+    mask = []
     if os.environ.get('QUAY_OAUTH_TOKEN', False):
-        cmd.extend(['--oauth-token', os.environ['QUAY_OAUTH_TOKEN']])
-    return utils.run(cmd)
+        token = os.environ['QUAY_OAUTH_TOKEN']
+        cmd.extend(['--oauth-token', token])
+        mask = [token]
+    return utils.run(cmd, mask=mask)

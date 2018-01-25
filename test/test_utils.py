@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess as sp
 import pytest
 import yaml
@@ -25,7 +26,7 @@ from conda_build.metadata import MetaData
 # Label that will be used for uploading test packages to anaconda/binstar
 TEST_LABEL = 'bioconda-utils-test'
 
-SKIP_DOCKER_TESTS = os.environ.get('TRAVIS_OS_NAME') == 'osx'
+SKIP_DOCKER_TESTS = sys.platform.startswith('darwin')
 
 if SKIP_DOCKER_TESTS:
     PARAMS = [False]
@@ -155,11 +156,7 @@ def single_upload():
 
     pkg = utils.built_package_path(r.recipe_dirs[name])
 
-    with utils.temp_env(dict(
-        TRAVIS_BRANCH='master',
-        TRAVIS_PULL_REQUEST='false')
-    ):
-        upload.anaconda_upload(pkg, label=TEST_LABEL)
+    upload.anaconda_upload(pkg, label=TEST_LABEL)
 
     yield (name, pkg, r.recipe_dirs[name])
 
@@ -612,10 +609,9 @@ def test_built_package_path():
         """, from_string=True)
     r.write_recipes()
 
-    # assumes we're running on py35
     assert os.path.basename(
         utils.built_package_path(r.recipe_dirs['one'])
-    ) == 'one-0.1-py35_0.tar.bz2'
+    ) == 'one-0.1-py{ver.major}{ver.minor}_0.tar.bz2'.format(ver=sys.version_info)
 
     # resetting with a different CONDA_PY passed as env dict
     assert os.path.basename(
@@ -692,7 +688,7 @@ def test_pkgname_with_numpy_x_x():
     os.environ['CONDA_NPY'] = '1.9'
     assert os.path.basename(
         utils.built_package_path(r.recipe_dirs['one'], env=os.environ)
-    ) == 'one-0.1-np19py35_0.tar.bz2'
+    ) == 'one-0.1-np19py{ver.major}{ver.minor}_0.tar.bz2'.format(ver=sys.version_info)
 
 
 def test_string_or_float_to_integer_python():

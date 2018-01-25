@@ -391,7 +391,7 @@ class RecipeBuilder(object):
 
         try:
             with utils.Progress():
-                p = utils.run(cmd)
+                p = utils.run(cmd, mask=False)
         except sp.CalledProcessError as e:
             logger.error(
                 'DOCKER FAILED: Error building docker container %s. ',
@@ -467,9 +467,9 @@ class RecipeBuilder(object):
 
         logger.debug('DOCKER: cmd: %s', cmd)
         with utils.Progress():
-            p = utils.run(cmd)
+            p = utils.run(cmd, mask=False)
         return p
 
     def cleanup(self):
         cmd = ['docker', 'rmi', self.tag]
-        utils.run(cmd)
+        utils.run(cmd, mask=False)

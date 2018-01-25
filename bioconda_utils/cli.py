@@ -130,7 +130,7 @@ def duplicates(
                 token = []
             else:
                 token = ['-t', token]
-            print(utils.run([utils.bin_for('anaconda')] + token + subcmd).stdout)
+            print(utils.run([utils.bin_for('anaconda')] + token + subcmd, mask=[token]).stdout)
 
     def get_packages(channel):
         return {get_spec(pkg)
@@ -184,7 +184,7 @@ def duplicates(
      be sent to the current commit on github. Also needs --user and --repo to
      be set. Requires the env var GITHUB_TOKEN to be set. Note that pull
      requests from forks will not have access to encrypted variables on
-     travis-ci, so this feature may be of limited use.''')
+     ci, so this feature may be of limited use.''')
 @arg('--commit', help='Commit on github on which to update status')
 @arg('--push-comment', action='store_true', help='''If set, the lint status
      will be posted as a comment in the corresponding pull request (given by

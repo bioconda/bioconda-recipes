@@ -15,12 +15,12 @@ BuildResult = namedtuple("BuildResult", ["success", "mulled_image"])
 
 
 def purge():
-    utils.run(["conda", "build", "purge"])
+    utils.run(["conda", "build", "purge"], mask=False)
 
     free = utils.get_free_space()
     if free < 10:
         logger.info("CLEANING UP PACKAGE CACHE (free space: %iMB).", free)
-        utils.run(["conda", "clean", "--all"])
+        utils.run(["conda", "clean", "--all"], mask=False)
         logger.info("CLEANED UP PACKAGE CACHE (free space: %iMB).",
                     utils.get_free_space())
 
@@ -140,7 +140,7 @@ def build(
                       [os.path.join(recipe, 'meta.yaml')]
                 logger.debug('command: %s', cmd)
                 with utils.Progress():
-                    p = utils.run(cmd, env=os.environ)
+                    p = utils.run(cmd, env=os.environ, mask=False)
 
             build_success = True
 
