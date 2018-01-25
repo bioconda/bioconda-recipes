@@ -35,7 +35,11 @@ if [[ ! -d $WORKSPACE/miniconda ]]; then
     ssh-keyscan -H github.com >> ~/.ssh/known_hosts
     pip install git+https://github.com/bioconda/bioconda-utils.git@$BIOCONDA_UTILS_TAG
 
-    # step 4: cleanup
+    # step 4: configure local channel
+    conda index $WORKSPACE/miniconda/conda-bld/linux-64 $WORKSPACE/miniconda/conda-bld/osx-64 $WORKSPACE/miniconda/conda-bld/noarch
+    conda config --add channels file://$WORKSPACE/miniconda/conda-bld
+
+    # step 5: cleanup
     conda clean -y --all
 fi
 
