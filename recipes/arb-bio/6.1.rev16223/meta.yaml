@@ -1,0 +1,98 @@
+{% set name = "ARB" %}
+{% set cargo_version = "6.1.16228" %}
+{% set sha256 = "680a56cdfe8c867e1c1438f622f6f51329c5e4789496e1eb9ae0acfdf57a719e" %}
+
+# The commits 166224 to 16228 where made to branches. In spite of the version in the
+# file name, the real version is this one:
+{% set version = "6.1.rev16223" %}
+
+package:
+  name: {{ name|lower }}-bio
+  version: {{ version }}
+
+source:
+  fn: {{ name }}_{{ cargo_version }}_src_all.zip
+  url: https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ cargo_version }}_src_all.zip
+  sha256: {{ sha256 }}
+  patches:
+    # do not create links for mafft
+   - no_mafftlinks.patch
+   # allow linking with missing symbols on macos
+   - link_dyn.patch
+   - make.patch
+   # change all /usr/bin/xyz paths to /usr/bin/env xyz
+   - abs_path_fix.patch
+   # use sed, not gsed
+   - gsed.patch
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - ccache-toolchain
+    - gcc   # [linux]
+    - llvm  # [osx]
+    - pkg-config
+    - openmotif-dev
+    - glib 2.51.* # 2.50.2 links to broken gettext
+    - gettext !=0.19.8  # gettext 0.19.8 is broken
+    - pthread-stubs
+    - xorg-libxp
+    - xorg-libxmu
+    - xorg-libxi
+    - xorg-libxaw
+    - xorg-libxpm
+    - xorg-libxft
+    - xorg-makedepend
+    - xerces-c
+    - libtiff >=4.0.3,<4.0.8
+    - libxslt
+    # perl 5.22.0.1-0 and 5.22.2.1-0 want to use
+    # -fstack-protector-strong, which doesn't exist in conda gcc 4.8 and
+    # leads to compile failure
+    - perl 5.22.2.*
+    - lynx
+    - time
+    - sed >=4.4 # 4.2 links to broken gettext
+    - boost-cpp 1.64.*
+    - svn
+
+  run:
+    - libgcc   # [linux]
+    - gettext !=0.19.8  # gettext 0.19.8 is broken
+    - xorg-libxi
+    - xorg-libxmu
+    - xorg-libxp
+    - xorg-libxaw
+    - xorg-libxpm
+    - xorg-libxft
+    - glib 2.51.*
+    - openmotif
+    - gnuplot
+    - muscle
+    - mafft
+    - raxml
+    - mrbayes
+    - phylip
+    - phyml 3.2.0
+    - fasttree
+    - sed >=4.4
+    - xfig
+    - fig2dev
+    - perl 5.22.2.*
+
+test:
+  requires:
+    - conda
+  commands:
+    - if command -v conda; then conda inspect linkages -p $PREFIX $PKG_NAME; fi
+    - if command -v conda; then conda inspect objects -p $PREFIX $PKG_NAME; fi   # [osx]
+    - which arb
+    - which arb_pt_server
+
+about:
+  home: http://www.arb-home.de
+  license: ARB
+  licence_file: arb_LICENSE.txt
+  summary: ARB 6 Sequence Analysis Suite
