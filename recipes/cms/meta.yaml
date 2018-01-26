@@ -1,0 +1,119 @@
+package:
+  name: cms
+  version: "2.0.0b"
+
+about:
+  home: http://broad-cms.readthedocs.io/en/latest/
+  license: GPLv3
+  summary: "CMS (composite of multiple signals) is a suite of tools for resolving signatures of recent positive selection in population genetic data."
+
+source:
+  git_url: https://github.com/broadinstitute/cms.git
+  git_rev: ee7efbb5b18697fc9bf2e813fe76fbbc2439a0de
+  
+build:
+  number: 0
+
+requirements:
+  build:
+    - gcc   # [not osx]
+    - llvm  # [osx]
+    - pytest
+    - selscan ==1.1.0b
+
+  run:
+    - python ==3.5.0
+    - libgcc    # [not osx]
+    - alabaster ==0.7.8
+    - apipkg ==1.4
+    - babel ==2.3.3
+    - bcftools ==1.3.1
+    - boltons ==16.4.1
+    - cosi2 ==2.02
+    - coverage ==4.0.3
+    - curl
+    - cycler
+    - docopt ==0.6.2    
+    - execnet ==1.3.0
+    - flake8 ==2.6.2    
+    - htslib ==1.3.1
+    - peewee ==2.8.0
+    - pysam ==0.9.1
+    - python-dateutil ==2.3
+    - samtools ==1.3.1
+    - selscan ==1.1.0b
+    - biopython ==1.67
+    - cloog ==0.18.0
+    - docutils ==0.12
+    - ecdsa ==0.13
+    - gcc ==4.8.5
+    - gmp ==5.1.2
+    - imagesize ==0.7.1
+    - isl ==0.12.2
+    - jinja2 ==2.8
+    - libgcc ==4.8.5
+    - matplotlib ==1.5.1
+    - markupsafe ==0.23
+    - mccabe ==0.5.0
+    - mkl ==11.3.3
+    - mock ==2.0.0
+    - mpc ==1.0.1
+    - mpfr ==3.1.2
+    - ncurses ==5.9
+    - pandas ==0.18.1
+    - paramiko ==1.16.0
+    - pbr ==1.10.0
+    - peewee ==2.8.0
+    - pip ==8.1.2
+    - py ==1.4.31
+    - pycodestyle ==2.0.0
+    - pycrypto ==2.6.1
+    - pyflakes ==1.2.3
+    - pygments ==2.1.3
+    - pysam ==0.9.1
+    - pytest-cov ==2.2.1
+    - pytest-xdist ==1.14
+    - python-coveralls ==2.7.0
+    - python-dateutil ==2.3
+    - pytz ==2016.4
+    - readline ==6.2
+    - requests ==2.10.0
+    - scipy ==0.17.1
+    - setuptools ==23.0.0
+    - six ==1.10.0
+    - snakemake
+    - snowballstemmer ==1.2.1
+    - sphinx ==1.4.8
+    - sphinx-argparse ==0.1.15
+    - sphinx_rtd_theme ==0.1.9
+    - sqlite ==3.13.0
+    - tk ==8.5.18
+    - wheel ==0.29.0
+    - xz ==5.0.5
+    - zlib ==1.2.8
+
+
+test:
+  commands:
+    # preserve CONDA_DEFAULT_ENV to restore later
+    - "export CONDA_DEFAULT_ENV_BAK=$CONDA_DEFAULT_ENV"
+    # hack so _test env has the correct CONDA_DEFAULT_ENV (inspected by viral-ngs to determine tool install location)
+    - "export CONDA_DEFAULT_ENV=$(echo $CONDA_DEFAULT_ENV | perl -lape 's/_build$/_test/g')"
+
+    # test top-level scripts
+    - "cms_modeller.py -h &> /dev/null"
+    - "scans.py -h &> /dev/null"
+    - "likes_from_model.py -h &> /dev/null"
+    - "composite.py -h &> /dev/null"
+
+    # test helper programs
+    - "bootstrap_freq_popstats_regions &> /dev/null"
+    - "bootstrap_ld_popstats_regions &> /dev/null"
+    - "calc_fst_deldaf &> /dev/null"
+    - "combine_scores_multiplepops_region &> /dev/null"
+    - "combine_scores_multiplepops &> /dev/null"
+    - "combine_scores_poppair &> /dev/null"
+    - "write_xpehh_from_ihh &> /dev/null"
+
+    # restore CONDA_DEFAULT_ENV after tool install
+    - "export CONDA_DEFAULT_ENV=$CONDA_DEFAULT_ENV_BAK"
