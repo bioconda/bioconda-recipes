@@ -3,6 +3,8 @@ set -eu
 
 WORKSPACE=/tmp/workspace
 
+source .circleci/common.sh
+
 # Set path
 echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> $BASH_ENV
 
