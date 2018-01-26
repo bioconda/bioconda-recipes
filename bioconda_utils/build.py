@@ -370,7 +370,7 @@ def build_recipes(
                 recipe_folder=recipe_folder,
                 env=target.env,
                 testonly=testonly,
-                mulled_test=mulled_test & keep_mulled_test,
+                mulled_test=mulled_test and keep_mulled_test,
                 force=force,
                 channels=config['channels'],
                 docker_builder=docker_builder,
@@ -388,7 +388,7 @@ def build_recipes(
                 if anaconda_upload:
                     if not upload.anaconda_upload(target.pkg, label):
                         failed_uploads.append(target.pkg)
-                if mulled_upload_target:
+                if mulled_upload_target and keep_mulled_test:
                     upload.mulled_upload(res.mulled_image, mulled_upload_target)
 
             # remove traces of the build
