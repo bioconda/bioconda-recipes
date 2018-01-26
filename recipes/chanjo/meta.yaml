@@ -1,58 +1,52 @@
 {% set name = "chanjo" %}
-{% set version = "4.1.3" %}
-{% set md5 = "341a7e5ae38f5bf398902e6522abd44e" %}
+{% set version = "4.2.0" %}
+{% set sha256 = "e8e5ef00b2af05f3e73ee93965fa773b119554daae80eef48f8ceae23dee77ae" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name|lower }}-{{ version }}.tar.gz
-  url: https://pypi.python.org/packages/40/f1/4f137df766697f8b748a6404d96240765b3e851187f8062b64154d99e814/{{ name|lower }}-{{ version }}.tar.gz
-  md5: {{ md5 }} 
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
   preserve_egg_dir: True
   entry_points:
     - chanjo = chanjo.__main__:root_command
-  # path.py in the default channel is broken
-  # it does not contain an egg-info and hence setup.py cannot find it.
-  # Once bioconda can directly depend on conda-forge, we can enable this again.
-  skip: true
+  skip: True  # run requirement alchy not yet available
 
 requirements:
   build:
     - python
     - setuptools
-    - click
-    - toolz
-    - path.py
-    - pyyaml
-    - sqlalchemy >=0.8.2
 
   run:
     - python
     - click
     - toolz
     - path.py
-    - pyyaml
-    - sqlalchemy >=0.8.2
+    - ruamel.yaml
+    - alchy
     - sambamba
+    - setuptools
+    - coloredlogs
 
 test:
   imports:
     - chanjo
-    - chanjo.annotate
-    - chanjo.annotate.sambamba
-    - chanjo.bootstrap
     - chanjo.cli
-    - chanjo.config
-    - chanjo.demo
+    - chanjo.init
+    - chanjo.init.bootstrap
+    - chanjo.init.demo
     - chanjo.load
-    - chanjo.parse
-    - chanjo.parse.bed
-    - chanjo.parse.sambamba
+    - chanjo.load.parse
+    - chanjo.load.parse.bed
+    - chanjo.load.parse.sambamba
+    - chanjo.load.sambamba
+    - chanjo.sambamba
     - chanjo.sex
     - chanjo.store
 
@@ -69,3 +63,5 @@ extra:
     # click requires a unicode locale when used with Python 3
     # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
     extended-base: true  # [py3k]
+  skip-lints:
+    - uses_setuptools  # uses pkg_resources
