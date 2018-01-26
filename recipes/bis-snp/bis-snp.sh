@@ -1,7 +1,8 @@
 #!/bin/bash
-# Picard executable shell script
+# Bis-SNP executable shell script (modified from the Picard executable shell script)
 set -eu -o pipefail
 
+set -o pipefail
 export LC_ALL=en_US.UTF-8
 
 # Find original directory of bash script, resolving symlinks
@@ -44,12 +45,7 @@ for arg in "$@"; do
             jvm_mem_opts="$jvm_mem_opts $arg"
             ;;
          *)
-	    if [[ ${pass_args} == '' ]] #needed to avoid preceeding space on first arg e.g. ' MarkDuplicates'
-            then 
-                pass_args="$arg" 
-	    else
-                pass_args="$pass_args \"$arg\"" #quotes later arguments to avoid problem with ()s in MarkDuplicates regex arg
-            fi
+            pass_args="$pass_args $arg"
             ;;
     esac
 done
@@ -61,8 +57,8 @@ fi
 pass_arr=($pass_args)
 if [[ ${pass_arr[0]:=} == org* ]]
 then
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/picard.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/BisSNP.jar" $pass_args
 else
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/picard.jar" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/BisSNP.jar" $pass_args
 fi
 exit
