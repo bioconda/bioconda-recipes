@@ -1,0 +1,42 @@
+{% set version = "0.8.1" %}
+
+package:
+  name: bandage
+  version: {{ version }}
+
+source:
+  fn: bandage-{{ version }}.tar.gz
+  url: https://github.com/rrwick/Bandage/archive/v{{ version }}.tar.gz
+  sha256: f160b695e03f0b254ffdccfa35b45dc8a733e8161d9928441edb8b63c8e44452
+  patches:
+    - bandage.patch
+
+build:
+  number: 0
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - gcc  # [linux]
+    - llvm  # [osx]
+    - pkg-config  # [linux]
+    - qt 5.6.*
+
+  run:
+    - libgcc  # [linux]
+    - qt 5.6.*
+
+test:
+    commands:
+      - Bandage --version
+      - Bandage -h
+
+about:
+  home: https://github.com/rrwick/Bandage
+  license: GPL-3.0
+  summary: Bandage, a Bioinformatics Application for Navigating De novo Assembly Graphs Easily
+
+extra:
+  container:
+    # depends on libGL.so.1 from the system
+    extended-base: true
