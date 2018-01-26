@@ -16,7 +16,7 @@ QUAST_HOME=$PREFIX/opt/quast-$PKG_VERSION
 mkdir -p $BINARY_HOME
 mkdir -p $QUAST_HOME
 
-python "setup.py" install_full
+python "setup.py" install
 
 cp -R $SRC_DIR/*quast.py $QUAST_HOME/
 cp -R $SRC_DIR/icarus.py $QUAST_HOME/
