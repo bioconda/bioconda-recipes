@@ -9,6 +9,7 @@ source .circleci/common.sh
 
 # Set path
 echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> $BASH_ENV
+source $BASH_ENV
 
 if ! type bioconda-utils > /dev/null; then
     echo "Setting up bioconda-utils..."
@@ -27,7 +28,6 @@ if ! type bioconda-utils > /dev/null; then
     fi
     curl -L -o miniconda.sh https://repo.continuum.io/miniconda/Miniconda3-$MINICONDA_VER-$tag-x86_64.sh
     bash miniconda.sh -b -p $WORKSPACE/miniconda
-    source $BASH_ENV
 
     # step 2: setup channels
     conda config --add channels defaults
