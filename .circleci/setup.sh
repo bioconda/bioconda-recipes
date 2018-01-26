@@ -3,10 +3,16 @@ set -eu
 
 WORKSPACE=/tmp/workspace
 
+# Common definitions from latest bioconda-utils master have to be downloaded before setup.sh is executed.
+# This file can be used to set BIOCONDA_UTILS_TAG and MINICONDA_VER.
+source .circleci/common.sh
+
 # Set path
 echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> $BASH_ENV
 
-if [[ ! -d $WORKSPACE/miniconda ]]; then
+if ! type bioconda-utils > /dev/null; then
+    echo "Setting up bioconda-utils..."
+
     # setup conda and bioconda-utils if not loaded from cache
     mkdir -p $WORKSPACE
 
@@ -30,9 +36,6 @@ if [[ ! -d $WORKSPACE/miniconda ]]; then
 
     # step 3: install bioconda-utils
     conda install -y --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements.txt
-    # add github to known hosts such that pip does not ask
-    mkdir -p ~/.ssh
-    ssh-keyscan -H github.com >> ~/.ssh/known_hosts
     pip install git+https://github.com/bioconda/bioconda-utils.git@$BIOCONDA_UTILS_TAG
 
     # step 4: configure local channel

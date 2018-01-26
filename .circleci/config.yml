@@ -4,12 +4,16 @@ variables:
   restore_cache: &restore_cache
     restore_cache:
       keys:
-        - miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
+        - miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
   save_cache: &save_cache
     save_cache:
-      key: miniconda-{{ .Environment.MINICONDA_VER }}-{{ .Environment.BIOCONDA_UTILS_TAG }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
+      key: miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
       paths:
         - /tmp/workspace/miniconda
+  common: &common
+    run:
+      name: Download common definitions
+      command: curl -s https://raw.githubusercontent.com/bioconda/bioconda-utils/master/.circleci/common.sh > .circleci/common.sh
   setup: &setup
     run: 
       name: Setup bioconda-utils
@@ -24,11 +28,15 @@ jobs:
   # When running CircleCI locally, we put everything in one job.
   build:
     docker:
-      # TODO use a prebuild image
-      - image: circleci/python:3
+      - image: bioconda/bioconda-utils-build-env
     steps:
-      - setup_remote_docker
       - checkout
+      - run:
+          name: Setup ssh
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+      - *common
       - *setup
       - run:
           name: Linting
@@ -44,6 +52,7 @@ jobs:
     <<: *linux
     steps:
       - checkout
+      - *common
       - *restore_cache
       - *setup
       - *save_cache
@@ -56,6 +65,7 @@ jobs:
     <<: *linux
     steps:
       - checkout
+      - *common
       - *restore_cache
       - *setup
       - *save_cache
@@ -68,6 +78,7 @@ jobs:
     <<: *macos
     steps:
       - checkout
+      - *common
       # We cannot cache the miniconda installation on macos.
       # The reason is that tar seems to have a bug when handling sym and hardlinks in the miniconda installation.
       # The error is, e.g.: Cannot extract through symlink tmp/workspace/miniconda/LICENSE.rst
@@ -81,6 +92,7 @@ jobs:
     <<: *linux
     steps:
       - checkout
+      - *common
       - *restore_cache
       - *setup
       - *save_cache
@@ -94,6 +106,7 @@ jobs:
     <<: *macos
     steps:
       - checkout
+      - *common
       - *setup
       # build only current commit (since we use squashed merging, this is safe)
       - run:
@@ -105,6 +118,7 @@ jobs:
     <<: *linux
     steps:
       - checkout
+      - *common
       - *restore_cache
       - *setup
       - *save_cache
@@ -118,6 +132,7 @@ jobs:
     <<: *macos
     steps:
       - checkout
+      - *common
       - *setup
       # build everything that differs compared to master
       - run:
@@ -130,6 +145,7 @@ jobs:
     <<: *linux
     steps:
       - checkout
+      - *common
       - *restore_cache
       - *setup
       - *save_cache
@@ -142,6 +158,7 @@ jobs:
     <<: *macos
     steps:
       - checkout
+      - *common
       - *setup
       - run:
           name: Building, testing and uploading of all unpublished recipes
@@ -155,7 +172,6 @@ workflows:
   bioconda-test:
     jobs:
       - lint:
-          context: org-global
           filters:
             branches:
               ignore:
@@ -164,7 +180,6 @@ workflows:
       - test-linux:
           requires:
             - lint
-          context: org-global
           filters:
             branches:
               ignore:
@@ -173,7 +188,6 @@ workflows:
       - test-macos:
           requires:
             - lint
-          context: org-global
           filters:
             branches:
               ignore:
@@ -183,13 +197,11 @@ workflows:
   bioconda-upload-master:
     jobs:
       - upload-linux:
-          context: org-global
           filters:
             branches:
               only:
                 - master
       - upload-macos:
-          context: org-global
           filters:
             branches:
               only:
@@ -198,13 +210,11 @@ workflows:
   bioconda-upload-bulk:
     jobs:
       - bulk-linux:
-          context: org-global
           filters:
             branches:
               only:
                 - bulk
       - bulk-macos:
-          context: org-global
           filters:
             branches:
               only:
@@ -219,7 +229,5 @@ workflows:
                only:
                  - master
      jobs:
-       - nightly-upload-linux:
-           context: org-global
-       - nightly-upload-macos:
-           context: org-global
+       - nightly-upload-linux
+       - nightly-upload-macos
