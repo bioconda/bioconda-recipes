@@ -1,6 +1,10 @@
 #!/bin/bash
 
 # If it has Build.PL use that, otherwise use Makefile.PL
+set -e -x
+
+echo $PATH
+export PATH=/opt/rh/devtoolset-2/root/usr/bin/:$PATH
 
 cpanm -v Devel::StackTrace
 cpanm -v MooseX::Role::Parameterized
