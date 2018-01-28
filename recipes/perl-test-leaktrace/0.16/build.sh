@@ -2,9 +2,9 @@
 
 set -e -x
 
-which gcc
 echo $PATH
 
+which gcc
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
