@@ -3,6 +3,7 @@
 set -e -x
 
 echo $PATH
+export PATH=/opt/rh/devtoolset-2/root/usr/bin/:$PATH
 
 which gcc
 

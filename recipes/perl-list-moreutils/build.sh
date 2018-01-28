@@ -3,9 +3,7 @@
 # Make sure this goes in site
 set -x -e
 
-echo $PATH
-which gcc
-which cc
+export PATH=/opt/rh/devtoolset-2/root/usr/bin/:$PATH
 
 cpanm --installdeps .
 
