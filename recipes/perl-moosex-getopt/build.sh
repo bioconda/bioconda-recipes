@@ -8,8 +8,8 @@ export PATH=/opt/rh/devtoolset-2/root/usr/bin/:$PATH
 
 HOME=/tmp cpanm -v Devel::StackTrace
 HOME=/tmp cpanm -v MooseX::Role::Parameterized
+HOME=/tmp cpanm -v --installdeps .
 
-cpanm -v --installdeps .
 if [ -f Build.PL ]; then
     perl Build.PL
     perl ./Build
