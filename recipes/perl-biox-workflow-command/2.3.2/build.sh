@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# If it has Build.PL use that, otherwise use Makefile.PL
-cpanm --installdeps .
+export PATH=/opt/rh/devtoolset-2/root/usr/bin/:$PATH
+HOME=/tmp cpanm --installdeps .
 
 if [ -f Build.PL ]; then
     perl Build.PL
