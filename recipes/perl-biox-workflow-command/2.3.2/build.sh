@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# If it has Build.PL use that, otherwise use Makefile.PL
+export PATH=/opt/rh/devtoolset-2/root/usr/bin/:$PATH
 HOME=/tmp cpanm --installdeps .
 
 if [ -f Build.PL ]; then
