@@ -6,8 +6,8 @@ set -e -x
 echo $PATH
 export PATH=/opt/rh/devtoolset-2/root/usr/bin/:$PATH
 
-cpanm -v Devel::StackTrace
-cpanm -v MooseX::Role::Parameterized
+HOME=/tmp cpanm -v Devel::StackTrace
+HOME=/tmp cpanm -v MooseX::Role::Parameterized
 
 cpanm -v --installdeps .
 if [ -f Build.PL ]; then

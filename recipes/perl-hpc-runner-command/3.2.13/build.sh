@@ -1,6 +1,7 @@
 #!/bin/bash
 
-cpanm --installdeps .
+export PATH=/opt/rh/devtoolset-2/root/usr/bin/:$PATH
+HOME=/tmp cpanm --installdeps .
 
 sed -i.bak 's|#!/usr/bin/env perl|#!perl|g' script/hpcrunner.pl
 rm -rf script/hpcrunner.pl.bak
