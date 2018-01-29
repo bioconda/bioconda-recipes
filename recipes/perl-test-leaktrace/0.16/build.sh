@@ -1,10 +1,13 @@
 #!/bin/bash
 
-cpanm --installdeps .
+set -e -x
 
-sed -i.bak 's|#!/usr/bin/env perl|#!perl|g' script/hpcrunner.pl
-rm -rf script/hpcrunner.pl.bak
+echo $PATH
+export PATH=/opt/rh/devtoolset-2/root/usr/bin/:$PATH
 
+which gcc
+
+# If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
     perl ./Build
@@ -21,9 +24,3 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
-
-# Add more build steps here, if they are necessary.
-
-# See
-# http://docs.continuum.io/conda/build.html
-# for a list of environment variables that are set during the build process.
