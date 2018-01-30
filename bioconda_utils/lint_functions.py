@@ -295,18 +295,19 @@ def _pin(env_var, dep_name):
         not_pinned = set()
         pinned = set()
         for line in open(os.path.join(recipe, 'meta.yaml')):
+            line = line.rstrip("\n")
+            dedented_line = line.lstrip(' ')
             if line.startswith("requirements:"):
                 in_requirements = True
-            elif in_requirements and line.strip().startswith("run:"):
+            elif in_requirements and dedented_line.startswith("run:"):
                 section = "run"
-            elif in_requirements and line.strip().startswith("build:"):
+            elif in_requirements and dedented_line.startswith("build:"):
                 section = "build"
-            elif not line.startswith(" ") and not line.startswith("#"):
+            elif line and not line.startswith(" ") and not line.startswith("#"):
                 in_requirements = False
                 section = None
-            line = line.strip()
-            if in_requirements and line.startswith('- {}'.format(dep_name)):
-                if pin_pattern.search(line) is None:
+            if in_requirements and dedented_line.startswith('- {}'.format(dep_name)):
+                if pin_pattern.search(dedented_line) is None:
                     not_pinned.add(section)
                 else:
                     pinned.add(section)
