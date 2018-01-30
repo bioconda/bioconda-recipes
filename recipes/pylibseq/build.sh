@@ -6,4 +6,4 @@ export LDFLAGS="-L${PREFIX}/lib -ltbb"
 #packages to compile with GCC.
 #Conda setup will default to enforcing 
 #clang o/w.
-CC=gcc CXX=g++ $PYTHON setup.py install
+CC=gcc CXX=g++ $PYTHON setup.py install --gcc
