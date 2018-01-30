@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir -p "$PREFIX"
+mkdir -p "$PREFIX/bin"
 
-cp diagnosticTool_scripts/*.py $PREFIX/
-chmod u+x $PREFIX/*.py
+cp diagnosticTool_scripts/*.py $PREFIX/bin/
+chmod u+x $PREFIX/bin/*.py
