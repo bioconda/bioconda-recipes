@@ -1,0 +1,47 @@
+{% set version="2.0Beta2" %}
+{% set hash="31f2e8ceab9cc0b44e1a9fde7185351737dbfb31ab6b495978f8605e65f14a07" %}
+
+package:
+  name: stacks
+  version: {{ version }}
+
+build:
+  skip: True # [osx]
+  number: 0
+  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+
+source:
+  fn: stacks-{{ version }}.tar.gz
+  sha256: {{ hash }}
+  url: http://catchenlab.life.illinois.edu/stacks/source/stacks-{{ version }}.tar.gz
+
+  # A patch to allow using gcc < 4.9 for compilation
+  # Should be removed when a newer gcc will be available in conda
+  patches:
+    - "gcc48.patch"
+
+requirements:
+  build:
+    - gcc # [linux]
+    - zlib {{CONDA_ZLIB}}*
+    - sparsehash
+    - boost {{CONDA_BOOST}}*
+  run:
+    - perl
+    - velvet
+    - libgcc # [linux]
+    - zlib {{CONDA_ZLIB}}*
+    - sparsehash
+    - boost {{CONDA_BOOST}}*
+
+test:
+  commands:
+    - command -v cstacks
+    - command -v pstacks
+    - command -v process_radtags
+    - command -v clone_filter
+
+about:
+  home: http://catchenlab.life.illinois.edu/stacks/
+  license: GPL
+  summary: Stacks is a software pipeline for building loci from RAD-seq
