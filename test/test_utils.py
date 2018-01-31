@@ -8,6 +8,7 @@ import requests
 import uuid
 import contextlib
 import tarfile
+import logging
 
 from bioconda_utils import utils
 from bioconda_utils import pkg_test
@@ -885,9 +886,10 @@ class TestSubdags(object):
                 self._build(recipes_fixture)
 
     def test_subdags_more_than_recipes(self, caplog, recipes_fixture):
-        with utils.temp_env({'SUBDAGS': '5', 'SUBDAG': '4'}):
-            self._build(recipes_fixture)
-        assert 'Nothing to be done' in caplog.records[-1].getMessage()
+        with caplog.at_level(logging.INFO):
+            with utils.temp_env({'SUBDAGS': '5', 'SUBDAG': '4'}):
+                    self._build(recipes_fixture)
+            assert 'Nothing to be done' in caplog.records[-1].getMessage()
 
 
 def test_zero_packages():
