@@ -198,6 +198,7 @@ class RecipeBuilder(object):
         use_host_conda_bld=False,
         pkg_dir=None,
         keep_image=False,
+        image_build_dir=None,
     ):
         """
         Class to handle building a custom docker container that can be used for
@@ -267,6 +268,10 @@ class RecipeBuilder(object):
             By default, the built docker image will be removed when done,
             freeing up storage space.  Set keep_image=True to disable this
             behavior.
+
+        image_build_dir : str or None
+            If not None, use an existing directory as a docker image context
+            instead of a temporary one. For testing purposes only.
         """
         self.tag = tag
         self.requirements = requirements
@@ -334,20 +339,23 @@ class RecipeBuilder(object):
                     os.makedirs(pkg_dir)
                 self.pkg_dir = pkg_dir
 
-        self._build_image()
+        self._build_image(image_build_dir)
 
     def __del__(self):
         if not self.keep_image:
             self.cleanup()
 
-    def _build_image(self):
+    def _build_image(self, image_build_dir):
         """
         Builds a new image with requirements installed.
         """
 
-        # Create a temporary build directory since we'll be copying the
-        # requirements file over
-        build_dir = tempfile.mkdtemp()
+        if image_build_dir is None:
+            # Create a temporary build directory since we'll be copying the
+            # requirements file over
+            build_dir = tempfile.mkdtemp()
+        else:
+            build_dir = image_build_dir
 
         logger.info('DOCKER: Building image "%s" from %s', self.tag, build_dir)
         with open(os.path.join(build_dir, 'requirements.txt'), 'w') as fout:
@@ -406,7 +414,8 @@ class RecipeBuilder(object):
             raise e
 
         logger.info('DOCKER: Built docker image tag=%s', self.tag)
-        shutil.rmtree(build_dir)
+        if image_build_dir is None:
+            shutil.rmtree(build_dir)
         return p
 
     def build_recipe(self, recipe_dir, build_args, env, pkg, noarch=False):
