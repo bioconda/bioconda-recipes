@@ -13,6 +13,7 @@ cp bin/*.py $PREFIX/bin/
 cat > $PREFIX/bin/runDeepSig.sh <<EOF
 #!/bin/bash
 export DEEPSIG_ROOT=$PREFIX
+export KERAS_BACKEND=tensorflow
 PYTHONPATH=$PREFIX python $PREFIX/bin/deepsig.py "\$@"
 EOF
 chmod a+x $PREFIX/bin/runDeepSig.sh
