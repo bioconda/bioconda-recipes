@@ -11,7 +11,6 @@ chmod u+x $PREFIX/bin/*.py
 
 mkdir -p "$PREFIX/deepsiglib"
 cp deepsig/lib/python2.7/site-packages/deepsiglib/*.py $PREFIX/deepsiglib/
-patch -d $PREFIX/ -p1 < python3.patch
 
 mkdir -p "$PREFIX/models"
 cp -r models/ $PREFIX/models/
