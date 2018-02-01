@@ -1,0 +1,119 @@
+commit ee5c3b17bf4e7ff53cdcdf10fb2edbbdfb19766e
+Author: peterjc <p.j.a.cock@googlemail.com>
+Date:   Wed Jan 31 14:53:45 2018 +0000
+
+    Python 3 fixes
+
+diff --git a/deepsiglib/crf.py b/deepsiglib/crf.py
+index c6a4bea..fec16b1 100644
+--- a/deepsiglib/crf.py
++++ b/deepsiglib/crf.py
+@@ -4,6 +4,8 @@ Created on 31/gen/2011
+ @author: cas
+ '''
+ 
++from __future__	import print_function
++
+ import numpy
+ import multiprocessing
+ import copy
+@@ -167,7 +169,7 @@ class CRF(object):
+         try:
+             modelFile = open(modelFile).readlines()
+         except IOError:
+-            print "Error: Failed to open/reading crf model file"
++            print("Error: Failed to open/reading crf model file")
+             raise
+         curr = None
+ 
+@@ -278,7 +280,7 @@ class CRF(object):
+         try:
+             of = open(modelFile, 'w')
+         except IOError:
+-            print "Error opening/writing model file."
++            print("Error opening/writing model file.")
+             raise
+         of.write(str(self))
+         of.close()
+@@ -390,7 +392,7 @@ class CRF(object):
+             self.likelihood += res[0]
+             self.gradient += res[1]
+ 
+-        print "Current log-likelihood:", self.likelihood
++        print("Current log-likelihood:", self.likelihood)
+         return -self.likelihood, -1 * self.gradient
+ 
+     def doLLComputation(self, w):
+@@ -423,9 +425,9 @@ class CRF(object):
+ 
+         start = self.initWeights()
+         x, f, d = fmin_l_bfgs_b(self.computeLogLikelihood, start, m = 7, args = (processors,), maxfun = iterations, iprint = -1)
+-        print "Maximum log-likelihood :", -f
+-        print "Gradient vector norm   :", numpy.linalg.norm(d['grad'])
+-        print "Parameter vector norm  :", numpy.linalg.norm(x)
++        print("Maximum log-likelihood :", -f)
++        print("Gradient vector norm   :", numpy.linalg.norm(d['grad']))
++        print("Parameter vector norm  :", numpy.linalg.norm(x))
+         self.likelihood = f
+         self.setWeights(x)
+ 
+@@ -445,7 +447,7 @@ class CRF(object):
+                     ret = self[s].fw[j][i] * trans * int(j == len(self[s].fw) - 1)
+                 else:
+                     ret = self[s].fw[j - 1][i] * trans * self[t].scores[j] * self[t].bw[j][i]
+-        except IndexError, KeyError:
++        except (IndexError, KeyError):
+             pass
+         return ret
+ 
+@@ -675,8 +677,8 @@ class CRF(object):
+                         allowed.add(st)
+                         if j > 0:
+                             sc = self[prev].vt[j - 1][0] * p
+-                            #print self[prev].vt[j - 1]
+-                            #print sc
++                            #print(self[prev].vt[j - 1])
++                            #print(sc)
+                             if sc >= maxval:
+                                 maxval = sc
+                                 maxst = prev
+diff --git a/deepsiglib/helpers.py b/deepsiglib/helpers.py
+index 241f23f..475867f 100644
+--- a/deepsiglib/helpers.py
++++ b/deepsiglib/helpers.py
+@@ -5,6 +5,8 @@ Created on Tue Jun  6 10:33:28 2017
+ @author: cas
+ """
+ 
++from __future__ import print_function
++
+ import tempfile
+ import shutil
+ import os
+@@ -26,7 +28,7 @@ import crf
+ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+ 
+ def printDate(msg):
+-  print "[%s] %s" % (strftime("%a, %d %b %Y %H:%M:%S", localtime()), msg)
++  print("[%s] %s" % (strftime("%a, %d %b %Y %H:%M:%S", localtime()), msg))
+ 
+ def SetUpTemporaryEnvironment():
+   tempfile.tempdir = os.path.abspath(tempfile.mkdtemp(prefix="job.tmpd.",
+@@ -40,7 +42,7 @@ def DestroyTemporaryEnvironment():
+     printDate("Destroying job temporary enviroment [%s]" % tempfile.tempdir)
+ 
+ def getNewTmpFile(prefix, suffix):
+-  outTmpFile = tempfile.NamedTemporaryFile(mode   = 'write',
++  outTmpFile = tempfile.NamedTemporaryFile(mode   = 'w',
+                                            prefix = prefix,
+                                            suffix = suffix,
+                                            delete = False)
+@@ -146,7 +148,7 @@ def predictsp(X, cls, organism, cpu=1):
+     ofs = open(crf_datf, 'w')
+     for i in range(P.shape[0]):
+       for j in range(P.shape[1]):
+-        ofs.write(" ".join(map(str, list(P[i][j])) + ['G']) + '\n')
++        ofs.write(" ".join(str(_) for _ in list(P[i][j])) + 'G\n')
+       ofs.write('\n')
+     ofs.close()
+     C = []
