@@ -4,11 +4,11 @@
 if [ "$(uname)" == "Darwin" ]; then
     HOME=/tmp cpanm --installdeps .
     HOME=/tmp cpanm  Text::WagnerFischer
-    HOME=/tmp cpanm  Devel::StackTrace 
+    HOME=/tmp cpanm  Devel::StackTrace
 else
     cpanm --installdeps .
     cpanm  Text::WagnerFischer
-    cpanm  Devel::StackTrace 
+    cpanm  Devel::StackTrace
 fi
 
 if [ -f Build.PL ]; then
