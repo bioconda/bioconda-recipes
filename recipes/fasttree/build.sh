@@ -7,4 +7,5 @@ mkdir -p $PREFIX/bin
 chmod +x FastTree
 chmod +x FastTreeMP
 
+cp ./FastTree $PREFIX/bin/fasttree
 mv -v ./FastTree* $PREFIX/bin

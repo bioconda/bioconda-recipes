@@ -6,7 +6,11 @@ cd orthofinder/
 
 cp orthofinder.py $PREFIX/bin/orthofinder
 
-cp -r scripts $PREFIX/bin/
-ln -s ./scripts/trees_from_MSA.py $PREFIX/bin/trees_from_MSA
+cp config.json $PREFIX/bin/
 
-chmod a+x $PREFIX/bin/orthofinder $PREFIX/bin/scripts/trees_from_MSA.py
+cp -r scripts $PREFIX/bin/
+
+# The following script is not yet in 2.1.2 release, see https://github.com/davidemms/OrthoFinder/issues/125
+#cp -r tools/convert_tree_ids.py $PREFIX/bin/
+
+chmod a+x $PREFIX/bin/orthofinder

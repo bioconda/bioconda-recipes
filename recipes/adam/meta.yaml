@@ -1,0 +1,33 @@
+{% set version="0.23.0" %}
+
+about:
+  home: https://github.com/bigdatagenomics/adam
+  license: Apache 2
+  summary: Genomics analysis platform built on Apache Avro, Apache Spark and Parquet
+
+package:
+  name: adam
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: False
+
+source:
+  fn: adam-distribution-spark2_2.11-{{ version }}-bin.tar.gz
+  url: https://search.maven.org/remotecontent?filepath=org/bdgenomics/adam/adam-distribution-spark2_2.11/{{ version }}/adam-distribution-spark2_2.11-{{ version }}-bin.tar.gz
+  sha256: 08e43ab689977787635b1c92b056b387e3d19fd2ae173fbaf5cf3a7c948188a5
+  patches:
+    - adam-shell.patch
+    - adam-submit.patch
+
+requirements:
+  build:
+  run:
+    - openjdk >=8,<9
+    - pyspark
+
+test:
+  commands:
+    - adam-submit --help
+    - adam-submit transform --help
