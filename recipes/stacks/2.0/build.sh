@@ -11,7 +11,6 @@ export CFLAGS="-I${PREFIX}/include"    # for included htslib dependency
 sed -i "s|^CC *.*|CC = $CC|" htslib/Makefile
 sed -i "s|^AR *.*|AR = $AR|" htslib/Makefile
 sed -i "s|^RANLIB *.*|RANLIB = $RANLIB|" htslib/Makefile
-sed "s|^\(LIBS *=.*\)$|\1 -I$CONDA_PREFIX/include/ -L$CONDA_PREFIX/lib/ -lz -lgomp|" htslib/Makefile
 
 make
 make install
