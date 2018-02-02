@@ -5,7 +5,7 @@ export LDFLAGS="-L${CONDA_PREFIX}/lib" # for both stacks and included htslib dep
 export CPATH=${PREFIX}/include         # for included htslib dependency
 export CFLAGS="-I${PREFIX}/include"    # for included htslib dependency
 
-./configure --prefix=$PREFIX --enable-bam --includedir=${CONDA_PREFIX}/include/bam
+./configure --prefix=$PREFIX --enable-bam
 
 # Force included htslib library to use conda compiler toolsuite
 sed -i "s|^CC *.*|CC = $CC|" htslib/Makefile
