@@ -16,3 +16,4 @@ chmod +x $PREFIX/bin/metabat
 chmod +x $PREFIX/bin/metabat1
 chmod +x $PREFIX/bin/metabat2
 chmod +x $PREFIX/bin/runMetaBat.sh
+
