@@ -312,11 +312,12 @@ def _pin(env_var, dep_name):
                 else:
                     pinned.add(section)
 
-        # two error cases: 1) run is not pinned
+        # two error cases: 1) run is not pinned but in build
         #                  2) build is not pinned and run is pinned
         # Everything else is ok. E.g., if dependency is not in run, we don't
         # need to pin build, because it is statically linked.
-        if "run" in not_pinned or ("run" in pinned and "build" in not_pinned):
+        if (("run" in not_pinned and "build" in pinned.union(not_pinned)) or
+           ("run" in pinned and "build" in not_pinned)):
             err = {
                 '{}_not_pinned'.format(dep_name): True,
                 'fix': (
