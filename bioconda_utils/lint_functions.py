@@ -296,27 +296,29 @@ def _pin(env_var, dep_name):
         pinned = set()
         for line in open(os.path.join(recipe, 'meta.yaml')):
             line = line.rstrip("\n")
-            dedented_line = line.lstrip(' ')
             if line.startswith("requirements:"):
                 in_requirements = True
-            elif in_requirements and dedented_line.startswith("run:"):
-                section = "run"
-            elif in_requirements and dedented_line.startswith("build:"):
-                section = "build"
             elif line and not line.startswith(" ") and not line.startswith("#"):
                 in_requirements = False
                 section = None
-            if in_requirements and dedented_line.startswith('- {}'.format(dep_name)):
-                if pin_pattern.search(dedented_line) is None:
-                    not_pinned.add(section)
-                else:
-                    pinned.add(section)
+            if in_requirements:
+                dedented_line = line.lstrip(' ')
+                if dedented_line.startswith("run:"):
+                    section = "run"
+                elif dedented_line.startswith("build:"):
+                    section = "build"
+                elif dedented_line.startswith('- {}'.format(dep_name)):
+                    if pin_pattern.search(dedented_line) is None:
+                        not_pinned.add(section)
+                    else:
+                        pinned.add(section)
 
-        # two error cases: 1) run is not pinned
+        # two error cases: 1) run is not pinned but in build
         #                  2) build is not pinned and run is pinned
         # Everything else is ok. E.g., if dependency is not in run, we don't
         # need to pin build, because it is statically linked.
-        if "run" in not_pinned or ("run" in pinned and "build" in not_pinned):
+        if (("run" in not_pinned and "build" in pinned.union(not_pinned)) or
+           ("run" in pinned and "build" in not_pinned)):
             err = {
                 '{}_not_pinned'.format(dep_name): True,
                 'fix': (
