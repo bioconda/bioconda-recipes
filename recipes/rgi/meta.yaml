@@ -1,0 +1,51 @@
+{% set name = "rgi" %}
+{% set version = "4.0.0" %}
+{% set sha256 = "17abb2e89608b3d82a491d3b8e894456da6d3c955df6e1563ae9240b02b3d0d1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+
+  url: https://card.mcmaster.ca/download/1/software-v{{ version }}.tar.gz
+  fn: card-software.tar.bz2
+  sha256: {{ sha256 }}
+
+build:
+  skip: True # [py3k]
+  number: 0
+
+requirements:
+  build:
+    - python
+    - biopython
+    - six >=1.7.0
+    - gcc   # [not osx]
+    - llvm  # [osx]
+    - zlib
+  run:
+    - python
+    - blast
+    - biopython
+    - six >=1.7.0
+    - libgcc    # [not osx]
+    - zlib
+    - prodigal
+    - diamond >=0.8.24.86
+    
+test:
+  commands:
+    - rgi -h
+    - rgi_jsontab -h
+    - rgi_clean -h
+    - rgi_load -h
+    - rgi_jsonformat -h
+    - rgi --software_version
+    - rgi --data_version
+
+about:
+  home: https://card.mcmaster.ca
+  license: https://card.mcmaster.ca/about
+  summary: 'This tool provides a preliminary annotation of your DNA sequence(s) based upon the data available in The Comprehensive Antibiotic Resistance Database (CARD). Hits to genes tagged with Antibiotic Resistance ontology terms will be highlighted. As CARD expands to include more pathogens, genomes, plasmids, and ontology terms this tool will grow increasingly powerful in providing first-pass detection of antibiotic resistance associated genes. See license at CARD website'
+
