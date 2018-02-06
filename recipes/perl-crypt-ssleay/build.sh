@@ -4,18 +4,18 @@ export OPENSSL_PREFIX=$PREFIX
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
-    perl Build.PL
-    ./Build
-    ./Build test
+    #perl Build.PL
+    #./Build
+    #./Build test
     # Make sure this goes in site
-    ./Build install --installdirs site
-#elif [ -f Makefile.PL ]; then
+    #./Build install --installdirs site
+elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
-    #perl Makefile.PL INSTALLDIRS=site
+    perl Makefile.PL INSTALLDIRS=site
 
-    #make
-    #make test
-    #make install
+    make
+    make test
+    make install
 else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
