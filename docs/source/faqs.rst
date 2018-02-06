@@ -44,49 +44,32 @@ users can install them with `conda install`.
     has details on exactly what a package contains and how it is installed into
     an environment.
 
-Continuous integration (Travis-CI)
+Continuous integration (Circle CI)
 ----------------------------------
-We use the Travis-CI continuous integration service. Continuous integration
+We use the Circle CI continuous integration service. Continuous integration
 tests each small incremental change to code to ensure that everything is
-up-to-date and correct. Travis-CI graciously provides this service for free to
+up-to-date and correct. Circle CI graciously provides this service for free to
 open-source projects. It is connected to GitHub such that each time a pull
-request or merge occurs, a new Travis-CI build is created. For bioconda,
+request or merge occurs, a new Circle CI build is created. For bioconda,
 a "build" means identifying any recipes that need to built, running
 `conda-build` on them, and testing to make sure they work.
 
-How is Travis-CI set up and configured?
+How is Circle CI set up and configured?
 ---------------------------------------
 
-- `.travis.yml` is read by the Travis-CI worker.
+- `.circleci/config.yml` is read by the Circle CI worker.
 
-- The worker runs `scripts/travis-setup.sh`. This installs conda, adds
+- The worker runs `.circleci/setup.sh`. This installs conda, adds
   channels, and installs `bioconda-utils`
 
-- The worker runs `scripts/travis-run.sh`. If the system is Linux, then the
-  build is performed in a docker container (the one listed in `.travis.yml`).
-  If OSX, then the build is performed without docker.
+- The worker runs tests defined in `.circleci/config.yml`.
 
-
-There are some environmental variables that exist on Travis-CI. The
-`simulate-travis.py` script adds these so that a locally-run test behaves close
-as possible to the Travis-CI run.
-
-
-What does "SUBDAG" mean on Travis-CI?
--------------------------------------
-The test results page on travis-ci.org for a PR or merge shows 4 separate
-sub-tests. There are two for Linux and two for OSX.
-
-We have limited resources on Travis-CI on which to build packages. In an
-attempt to speed up builds, we split the full DAG of recipes that need to be
-built in to multiple independent sub-DAGs. These are named `SUBDAG 0` and
-`SUBDAG 1`. Each sub-DAG is considered an independent build and they are run in
-parallel. If you submit a single recipe, which sub-DAG it is built on is
-nondeterministic so if you don't see log output for the recipe in one sub-DAG,
-check the other.
-
-The `simulate-travis.py` script sets the number of sub-DAGs to 1 so that there
-is only a single process running the builds.
+A local version of the Circle CI tests can be executed via the
+:ref:`Circle CI client <circleci-client>`. Note that this version lacks some
+additional tests that are executed in the online version. Thus, it can be that
+a local test passes while the online test fails.
+Nevertheless, the local test should capture most problems, such that it is highly
+encouraged to first run a local test in order to save quota on Circle CI.
 
 How are environmental variables defined and used?
 -------------------------------------------------
@@ -125,11 +108,12 @@ What's the lifecycle of a bioconda package?
 -------------------------------------------
 
 - Submit a pull request with a new recipe or an updated recipe
-- Travis-CI automatically builds and tests the changed recipe[s] using
+- Circle CI automatically builds and tests the changed recipe[s] using
   conda-build. Test results are shown on the PR.
 - If tests fail, push changes to PR until they pass.
 - Once tests pass, merge into master branch
-- Travis-CI tests again, but this time after testing the built packages are uploaded to the bioconda channel on anaconda.org
+- Circle CI tests again, but this time after testing the built packages are
+  uploaded to the bioconda channel on anaconda.org.
 - Users can now install the package just like any other conda package with
   `conda install`.
 
@@ -137,3 +121,11 @@ Once uploaded to anaconda.org, it is our intention to never delete any old
 packages. Even if a recipe in the bioconda repo is updated to a new version,
 the old version will remain on anaconda.org. ContinuumIO has graciously agreed
 to sponsor the storage required by the bioconda channel.
+Nevertheless, it can sometimes happen that we have to mark packages as broken
+in order to avoid that they are accidentally pulled by the conda solver.
+In such a case it is only possible to install them by specifically considering
+the `broken` label, i.e.,
+
+.. code-block:: bash
+
+    conda install -c bioconda -c conda-forge -c defaults -c bioconda/label/broken my-package=<broken-version>

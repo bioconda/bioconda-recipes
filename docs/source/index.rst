@@ -44,7 +44,11 @@ Bioconda is a derivative mark of Anaconda :sup:`®`, a trademark of Anaconda,
 Inc registered in the U.S. and other countries.  Anaconda, Inc.
 grants permission of the derivative use but is not associated with Bioconda.
 
-The Bioconda channel is sponsored by `Anaconda, Inc <https://www.anaconda.com/>`_.
+The Bioconda channel is sponsored by `Anaconda, Inc <https://www.anaconda.com/>`_
+in the form of providing unlimited (in time and space) storage.
+Bioconda is supported by `Circle CI <https://circleci.com/>`_ via an open
+source plan including free Linux and MacOS builds.
+
 
 .. _using-bioconda:
 

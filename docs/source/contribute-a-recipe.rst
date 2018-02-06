@@ -88,101 +88,53 @@ bioconda-specific policies.
 4. Test locally
 ~~~~~~~~~~~~~~~
 
-To test the recipe in a way more representative of the travis-ci environment,
-use the ``simulate-travis.py`` script in the top-level directory of the repo.
+The simplest way to conduct local tests is to :ref:`setup the Circle CI client <circleci-client>`.
+Then, all that needs to be done is to execute
 
-``simulate-travis.py`` reads the config files in the repo and sets things up as
-closely as possible to how the builds will be run on travis-ci. It should be
-run from the top-level dir of the repo.  See ``simulate-travis.py -h`` for
-details; below are some example uses.
+.. code-block:: bash
 
-.. note::
+    circleci build
 
-    Previously, it was mandatory to build any recipe *before* using
-    `simulate-travis.py` for the first time. Recent changes should have fixed
-    this, but if you see errors related to a directory not being found in the
-    docker container, try building any recipe locally with conda-build. If you used
-    using the ``--bootstrap`` method described above, make sure you call
-    conda-build from that path explicitly, e.g.::
+in the root of your repository clone.
 
-        /tmp/miniconda/bin/conda-build recipes/snakemake
+Alternatively, you can manually run `conda build`, e.g.,
 
+.. code-block:: bash
 
-Example commands
-++++++++++++++++
-The following commands assume you have run ``./simulate-travis.py --bootstrap
-/tmp/miniconda``.
+    conda build recipes/my-recipe
 
-Recommended usage: build and test recipes with commits that have changed since
-the master branch in a Docker container, and then run independent tests with
-``mulled-build``.  This most closely replicates the work performed on
-travis-ci::
+In this case. make sure to have setup Bioconda properly, see :ref:`using-bioconda`.
+Also, you might need to manually specify environment variables that your recipe
+uses, e.g., `CONDA_BOOST`. You can look up the proper values for those variables
+under `scripts/env_matrix.yml` in the repository.
 
-    ./simulate-travis.py
-
-Same as above, but also test recipes that have changes not yet committed to git::
-
-    ./simulate-travis.py --git-range HEAD
-
-Same as above, but disable the use of Docker when building packages and disable
-the stringent ``mulled-build`` tests. Therefore even if this command passes it
-still might fail on travis-ci, but it is useful for cases where Docker is
-unavailable::
-
-    ./simulate-travis.py --git-range HEAD --disable-docker
-
-By default, packages whose version and build number match an existing package
-in the bioconda channel will not be built.
-
-To specify exactly which packages you want to try building, use the
-`--packages` argument. Note that the arguments to `--packages` can be globs and
-are of package *names* rather than *paths* to recipe directories. For example,
-to consider all R and Bioconductor packages::
-
-    ./simulate-travis.py --packages r-* bioconductor-*
-
-However if those packages already exist in the bioconda channel, they will not
-be built. To force a package::
-
-    ./simulate-travis.py --packages snakemake --force
-
-To force **all** packages (warning, this will *rebuild all packages* and will
-consume lots of resources::
-
-    # You probably don't want to run this.
-    # ./simulate-travis.py --force
-
-.. seealso::
-
-    See :ref:`reading-logs` for tips on finding the information you need from
-    log files.
 
 5. Push changes, wait for tests to pass, submit pull request
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Push your changes to your fork or to the main repo (if using a clone) to GitHub::
 
-    git push origin my-recipe
+    git push -u origin my-recipe
 
-If using a fork, watch the Travis-CI logs by going to travis-ci.org and finding
-your fork of bioconda-recipes. Keep making changes on your fork and pushing
-them until the travis-ci builds pass. When they pass, create a `pull request
+If using a fork, make sure to enable Circle CI for it under https://circleci.com/dashboard.
+
+You can view the test status next to your commits in Github.
+Make and push changes as needed to get the tests to pass.
+Once they pass, create a `pull request
 <https://help.github.com/articles/about-pull-requests/>`_ on the main bioconda
 repo for your changes.
+If
 
-If using a clone, you will have to open a pull request to get the tests to run.
-The travis-ci tests intentionally short-circuit when not on a pull request to
-save on resources.
+* it's your first recipe,
+* the recipe is doing something non-standard or
+* it adds a new package
 
-Make and push changes as needed to get the tests to pass. If it's your first
-recipe or the recipe is doing something non-standard, please
-ask `@bioconda/core` for a review. If you are a member of the bioconda team,
-feel free to merge your recipe once the tests pass.
-
-At this point, Travis-CI will test your contribution in full.
+please ask `@bioconda/core` for a review. If you are a member
+of the bioconda team and none of above criteria apply, feel free to merge your
+recipe once the tests pass.
 
 6. Use your new recipe
 ~~~~~~~~~~~~~~~~~~~~~~
-When the PR is merged with the master branch, travis-ci will again do the
+When the PR is merged with the master branch, Circle CI will again do the
 builds but at the end will upload the packages to anaconda.org. Once this
 completes, and as long as the channels are set up as described in
 :ref:`set-up-channels`, your new package is installable by anyone using::

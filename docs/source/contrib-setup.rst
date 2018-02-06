@@ -24,7 +24,7 @@ Choose a fork if:
 
 - you are not yet a member of the bioconda team
 - you expect to do lots of testing or lots of troubleshooting. This will allow
-  you to use your own quota on travis-ci, so your builds will likely happen
+  you to use your own quota on Circle CI, so your builds will likely happen
   faster and you won't be consuming limited bioconda quota.
 
 Using a clone
@@ -40,7 +40,7 @@ You can now move on to installing requirements (next section).
 Using a fork
 ++++++++++++
 
-If you do not yet have push access, then create a `fork
+If you do not have push access (see above), then create a `fork
 <https://help.github.com/articles/fork-a-repo/>`_ of `bioconda-recipes on
 GitHub <https://github.com/bioconda/bioconda-recipes>`_. Then clone it
 locally::
@@ -52,11 +52,13 @@ update your branch with the upstream master branch::
 
     git remote add upstream https://github.com/bioconda/bioconda-recipes.git
 
+.. _circleci-client:
 
-Install Docker (optional)
-~~~~~~~~~~~~~~~~~~~~~~~~~
-Installing `Docker <https://www.docker.com/>`_ is optional, but allows you to
-simulate most closely the Travis-CI tests.
+Install the Circle CI client (optional)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This is optional, but allows you to
+simulate most closely the online Circle CI tests.
+Instructions can be found `here <https://circleci.com/docs/2.0/local-jobs/#installing-the-cli-locally>`_.
 
 Request to be added to the bioconda team (optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
