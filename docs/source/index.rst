@@ -139,6 +139,7 @@ Core
 * `Andreas Sjödin <https://github.com/druvus>`_
 * `Jillian Rowe <https://github.com/jerowe>`_
 * `Renan Valieris <https://github.com/rvalieris>`_
+* `Marcel Bargull <https://github.com/mbargull>`_
 
 Others
 ------
