@@ -104,6 +104,8 @@ specifically:
 - These environment variables are then seen by conda-build and used to fill in
   the templated variables via jinja2.
 
+To find out against which version you can pin a package, e.g. x.y.* or x.* please use [ABI-Laboratory](https://abi-laboratory.pro/tracker/).
+
 What's the lifecycle of a bioconda package?
 -------------------------------------------
 
