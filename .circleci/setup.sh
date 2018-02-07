@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-WORKSPACE=/tmp/workspace
+WORKSPACE=`pwd`
 
 # Common definitions from latest bioconda-utils master have to be downloaded before setup.sh is executed.
 # This file can be used to set BIOCONDA_UTILS_TAG and MINICONDA_VER.
