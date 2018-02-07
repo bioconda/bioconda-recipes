@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess as sp
 import pytest
 import yaml
@@ -7,6 +8,8 @@ import requests
 import uuid
 import contextlib
 import tarfile
+import logging
+import shutil
 
 from bioconda_utils import utils
 from bioconda_utils import pkg_test
@@ -25,7 +28,7 @@ from conda_build.metadata import MetaData
 # Label that will be used for uploading test packages to anaconda/binstar
 TEST_LABEL = 'bioconda-utils-test'
 
-SKIP_DOCKER_TESTS = os.environ.get('TRAVIS_OS_NAME') == 'osx'
+SKIP_DOCKER_TESTS = sys.platform.startswith('darwin')
 
 if SKIP_DOCKER_TESTS:
     PARAMS = [False]
@@ -155,11 +158,7 @@ def single_upload():
 
     pkg = utils.built_package_path(r.recipe_dirs[name])
 
-    with utils.temp_env(dict(
-        TRAVIS_BRANCH='master',
-        TRAVIS_PULL_REQUEST='false')
-    ):
-        upload.anaconda_upload(pkg, label=TEST_LABEL)
+    upload.anaconda_upload(pkg, label=TEST_LABEL)
 
     yield (name, pkg, r.recipe_dirs[name])
 
@@ -232,7 +231,7 @@ def test_docker_build_fails(recipes_fixture):
 def test_docker_build_image_fails():
     template = (
         """
-        FROM {self.image}
+        FROM bioconda/bioconda-utils-build-env
         RUN nonexistent command
         """)
     with pytest.raises(sp.CalledProcessError):
@@ -286,6 +285,30 @@ def test_get_deps():
     assert list(utils.get_deps(r.recipe_dirs['two'], config={})) == ['one']
     assert list(utils.get_deps(r.recipe_dirs['three'], config={}, build=True)) == ['one']
     assert list(utils.get_deps(r.recipe_dirs['three'], config={}, build=False)) == ['two']
+
+
+def test_conda_as_dep():
+    r = Recipes(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: 0.1
+            requirements:
+              run:
+                - conda
+        """, from_string=True)
+    r.write_recipes()
+    build_result = build.build_recipes(
+        r.basedir,
+        config={},
+        packages="*",
+        testonly=False,
+        force=False,
+        mulled_test=True,
+    )
+    assert build_result
 
 
 def test_env_matrix():
@@ -588,10 +611,9 @@ def test_built_package_path():
         """, from_string=True)
     r.write_recipes()
 
-    # assumes we're running on py35
     assert os.path.basename(
         utils.built_package_path(r.recipe_dirs['one'])
-    ) == 'one-0.1-py35_0.tar.bz2'
+    ) == 'one-0.1-py{ver.major}{ver.minor}_0.tar.bz2'.format(ver=sys.version_info)
 
     # resetting with a different CONDA_PY passed as env dict
     assert os.path.basename(
@@ -668,7 +690,7 @@ def test_pkgname_with_numpy_x_x():
     os.environ['CONDA_NPY'] = '1.9'
     assert os.path.basename(
         utils.built_package_path(r.recipe_dirs['one'], env=os.environ)
-    ) == 'one-0.1-np19py35_0.tar.bz2'
+    ) == 'one-0.1-np19py{ver.major}{ver.minor}_0.tar.bz2'.format(ver=sys.version_info)
 
 
 def test_string_or_float_to_integer_python():
@@ -676,7 +698,7 @@ def test_string_or_float_to_integer_python():
     assert f(27) == f('27') == f(2.7) == f('2.7') == 27
 
 
-def test_rendering_sandboxing(caplog):
+def test_rendering_sandboxing():
     r = Recipes(
         """
         one:
@@ -707,14 +729,16 @@ def test_rendering_sandboxing(caplog):
     # GITHUB_TOKEN.
 
     if 'GITHUB_TOKEN' in os.environ:
-        res = build.build(
-            recipe=r.recipe_dirs['one'],
-            recipe_folder='.',
-            env=env,
-            mulled_test=False,
-        )
+        with pytest.raises(sp.CalledProcessError) as excinfo:
+            res = build.build(
+                recipe=r.recipe_dirs['one'],
+                recipe_folder='.',
+                env=env,
+                mulled_test=False,
+                _raise_error=True,
+            )
         assert ("Undefined Jinja2 variables remain (['GITHUB_TOKEN']).  "
-                "Please enable source downloading and try again.") in caplog.text
+                "Please enable source downloading and try again.") in str(excinfo.value.stdout)
     else:
         # recipe for "one" should fail because GITHUB_TOKEN is not a jinja var.
         with pytest.raises(SystemExit) as excinfo:
@@ -863,9 +887,10 @@ class TestSubdags(object):
                 self._build(recipes_fixture)
 
     def test_subdags_more_than_recipes(self, caplog, recipes_fixture):
-        with utils.temp_env({'SUBDAGS': '5', 'SUBDAG': '4'}):
-            self._build(recipes_fixture)
-        assert 'Nothing to be done' in caplog.records[-1].getMessage()
+        with caplog.at_level(logging.INFO):
+            with utils.temp_env({'SUBDAGS': '5', 'SUBDAG': '4'}):
+                    self._build(recipes_fixture)
+            assert 'Nothing to be done' in caplog.records[-1].getMessage()
 
 
 def test_zero_packages():
@@ -901,3 +926,45 @@ def test_build_empty_extra_container():
     pkg = utils.built_package_path(r.recipe_dirs['one'])
     assert os.path.exists(pkg)
     ensure_missing(pkg)
+
+
+@pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')
+def test_build_container_default_gcc(tmpdir):
+    r = Recipes(
+        """
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: 0.1
+            test:
+              commands:
+                - gcc --version
+                - 'gcc --version | grep "gcc (GCC) 4.8.2 20140120 (Red Hat 4.8.2-15)"'
+        """, from_string=True)
+    r.write_recipes()
+
+    # Tests with the repository's Dockerfile instead of already uploaded images.
+    # Copy repository to image build directory so everything is in docker context.
+    image_build_dir = os.path.join(tmpdir, "repo")
+    src_repo_dir = os.path.join(os.path.dirname(__file__), "..")
+    shutil.copytree(src_repo_dir, image_build_dir)
+    # Dockerfile will be recreated by RecipeBuilder => extract template and delete file
+    dockerfile = os.path.join(image_build_dir, "Dockerfile")
+    with open(dockerfile) as f:
+        dockerfile_template = f.read().replace("{", "{{").replace("}", "}}")
+    os.remove(dockerfile)
+
+    docker_builder = docker_utils.RecipeBuilder(
+        dockerfile_template=dockerfile_template,
+        use_host_conda_bld=True,
+        image_build_dir=image_build_dir,
+    )
+    build_result = build.build(
+        recipe=r.recipe_dirs['one'],
+        recipe_folder='.',
+        env={},
+        docker_builder=docker_builder,
+        mulled_test=False,
+    )
+    assert build_result.success

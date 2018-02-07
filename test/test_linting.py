@@ -662,6 +662,16 @@ def test_lint_pin():
                 - zlib  # build-only requirements are obviously statically linked, hence no pinning needed
               run:
                 - libgcc
+        ''',
+        '''
+        a:
+          meta.yaml: |
+            package:
+              name: a
+              version: '0.1'
+            requirements:
+              run:
+                - zlib  # run-only requirement doesn't need pinning; build is not influenced by it
         '''],
         should_fail=[
         '''
@@ -676,6 +686,20 @@ def test_lint_pin():
                 - zlib
               run:
                 - zlib {{CONDA_ZLIB}}*
+        ''',
+        '''
+        a:
+          meta.yaml: |
+            package:
+              name: a
+              version: '0.1'
+
+            requirements:
+              build:
+                - zlib
+   
+              run:  # ^-- DO NOT remove the preceding line; it's part of the test case!
+                - zlib 
         ''',
         '''
         a:

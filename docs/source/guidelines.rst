@@ -18,10 +18,11 @@ bioconda recipe checklist
 - Package is appropriate for bioconda (:ref:`details <appropriate-for-bioconda>`)
 - If the recipe installs custom wrapper scripts, usage notes should be added to
   ``extra -> notes`` in the ``meta.yaml``.
-- **Update 12 Jun 2017**: If the recipe is a pure Python package, it is marked
-  as a `"noarch"
+- **Update 7 Feb 2018**: Previously we had recommended that if the recipe is
+  a pure Python package, it should be marked as a `"noarch"
   <https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_
-  package (:ref:`details <noarch>`).
+  package (:ref:`details <noarch>`). However due to technical incompatibilies
+  we can't do this -- so please DO NOT use ``"noarch"`` for now.
 
 .. _stable-url:
 
@@ -123,19 +124,23 @@ dev suffixes, see `here
 
 "Noarch" packages
 ~~~~~~~~~~~~~~~~~
-A ``noarch`` package can be created for pure Python packages, data packages, or
-packages that do not require compilation. This single ``noarch`` package can be
-used across multiple platforms, which saves on build time and saves on storage
-space on the bioconda channel.
+**Update 7 Feb 2018** For now please DO NOT use ``noarch`` until technical
+compatibility issues are resolved.
 
-For pure Python packages, add ``noarch: python`` to the ``build`` section.
+.. Deprecated advice:
+.. A ``noarch`` package can be created for pure Python packages, data packages, or
+   packages that do not require compilation. This single ``noarch`` package can be
+   used across multiple platforms, which saves on build time and saves on storage
+   space on the bioconda channel.
 
-For other generic packages (like a data package), add ``noarch: generic`` to
-the ``build`` section.
+.. For pure Python packages, add ``noarch: python`` to the ``build`` section.
 
-See `here
-<https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_ for
-more details.
+.. For other generic packages (like a data package), add ``noarch: generic`` to
+   the ``build`` section.
+
+.. See `here
+   <https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_ for
+   more details.
 
 Dependencies
 ~~~~~~~~~~~~
@@ -491,7 +496,7 @@ cluttering the output in the Travis-CI build environment.
 Link and unlink scripts (pre- and post- install hooks)
 ------------------------------------------------------
 It is possible to include `scripts
-<http://conda.pydata.org/docs/spec.html#link-and-unlink-scripts>`_ that are
+<https://conda.io/docs/user-guide/tasks/build-packages/link-scripts.html>`_ that are
 executed before or after installing a package, or before uninstalling
 a package. These scripts can be helpful for alerting the user that manual
 actions are required after adding or removing a package. For example,

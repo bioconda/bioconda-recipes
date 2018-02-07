@@ -207,7 +207,8 @@ def uses_setuptools(recipe, meta, df):
     if 'setuptools' in _get_deps(meta, 'run'):
         return {
             'depends_on_setuptools': True,
-            'fix': 'setuptools may not be required',
+            'fix': ('setuptools might not be a run requirement (unless it uses '
+                    'pkg_resources or setuptools console scripts)'),
         }
 
 
@@ -294,27 +295,30 @@ def _pin(env_var, dep_name):
         not_pinned = set()
         pinned = set()
         for line in open(os.path.join(recipe, 'meta.yaml')):
+            line = line.rstrip("\n")
             if line.startswith("requirements:"):
                 in_requirements = True
-            elif in_requirements and line.strip().startswith("run:"):
-                section = "run"
-            elif in_requirements and line.strip().startswith("build:"):
-                section = "build"
-            elif not line.startswith(" ") and not line.startswith("#"):
+            elif line and not line.startswith(" ") and not line.startswith("#"):
                 in_requirements = False
                 section = None
-            line = line.strip()
-            if in_requirements and line.startswith('- {}'.format(dep_name)):
-                if pin_pattern.search(line) is None:
-                    not_pinned.add(section)
-                else:
-                    pinned.add(section)
+            if in_requirements:
+                dedented_line = line.lstrip(' ')
+                if dedented_line.startswith("run:"):
+                    section = "run"
+                elif dedented_line.startswith("build:"):
+                    section = "build"
+                elif dedented_line.startswith('- {}'.format(dep_name)):
+                    if pin_pattern.search(dedented_line) is None:
+                        not_pinned.add(section)
+                    else:
+                        pinned.add(section)
 
-        # two error cases: 1) run is not pinned
+        # two error cases: 1) run is not pinned but in build
         #                  2) build is not pinned and run is pinned
         # Everything else is ok. E.g., if dependency is not in run, we don't
         # need to pin build, because it is statically linked.
-        if "run" in not_pinned or ("run" in pinned and "build" in not_pinned):
+        if (("run" in not_pinned and "build" in pinned.union(not_pinned)) or
+           ("run" in pinned and "build" in not_pinned)):
             err = {
                 '{}_not_pinned'.format(dep_name): True,
                 'fix': (
@@ -340,7 +344,9 @@ registry = (
     uses_git_url,
     uses_javajdk,
     uses_perl_threaded,
-    uses_setuptools,
+    # removing setuptools from run requirements should be done cautiously:
+    # it breaks packages that use pkg_resources or setuptools console scripts!
+    # uses_setuptools,
     has_windows_bat_file,
 
     # should_be_noarch,

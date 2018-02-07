@@ -1,4 +1,4 @@
-import os
+import sys
 from textwrap import dedent
 import subprocess as sp
 
@@ -15,7 +15,7 @@ from bioconda_utils import build
 #
 
 
-SKIP_OSX = os.environ.get('TRAVIS_OS_NAME') == 'osx'
+SKIP_OSX = sys.platform.startswith('darwin')
 
 
 RECIPE_ONE = dedent("""

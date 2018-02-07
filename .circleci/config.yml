@@ -1,0 +1,95 @@
+version: 2
+
+variables:
+  restore_cache: &restore_cache
+    restore_cache:
+      keys:
+        - bioconda-utils-{{ .Environment.MINICONDA_VER }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
+  save_cache: &save_cache
+    save_cache:
+      key: bioconda-utils-{{ .Environment.MINICONDA_VER }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
+      paths:
+        - /tmp/workspace/miniconda
+  setup: &setup
+    run:
+      name: Setup dependencies
+      command: .circleci/setup.sh
+  run: &run
+    run:
+      name: Run tests
+      command: .circleci/run.sh
+  macos: &macos
+    macos:
+      xcode: "8.3.3"
+  linux: &linux
+    machine: true
+  install_bioconda_utils: &install_bioconda_utils
+    run:
+      name: Install bioconda-utils
+      command: python setup.py install
+
+    
+jobs:
+  test-linux:
+    <<: *linux
+    steps:
+      - checkout
+      - *restore_cache
+      - *setup
+      - *save_cache
+      - *install_bioconda_utils
+      - run:
+          name: Testing
+          # --tb=line is important because py.test otherwise exposes tokens in case of errors
+          command: py.test test/ -v --tb=line
+          no_output_timeout: 1200
+  test-macos:
+    <<: *macos
+    steps:
+      - checkout
+      - *setup
+      - *install_bioconda_utils
+      - run:
+          name: Testing
+          # --tb=line is important because py.test otherwise exposes tokens in case of errors
+          command: py.test test/ -v -k "not docker" --tb=line
+          no_output_timeout: 1200
+  build-docs:
+    <<: *linux
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - f8:26:86:86:f8:d3:a5:66:ea:7d:f6:42:2e:5c:7a:82
+      - checkout
+      - *restore_cache
+      - *setup
+      - *save_cache
+      - *install_bioconda_utils
+      - run:
+          name: Build and upload docs
+          command: .circleci/build-docs.sh
+
+
+
+workflows:
+  version: 2
+  # workflow for testing pushes and PRs
+  bioconda-utils-test:
+    jobs:
+      - test-linux:
+          context: org-global
+      - test-macos:
+          context: org-global
+      - build-docs:
+          context: org-global
+  bioconda-utils-nightly-docs:
+     triggers:
+       - schedule:
+           cron: "0 0 * * *"
+           filters:
+             branches:
+               only:
+                 - master
+     jobs:
+       - build-docs:
+           context: org-global

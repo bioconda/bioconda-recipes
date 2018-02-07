@@ -170,7 +170,7 @@ def lint(recipes, config, df, exclude=None, registry=None):
 
     exclude : list
         List of function names in `registry` to skip globally. When running on
-        travis, this will be merged with anything else detected from the commit
+        CI, this will be merged with anything else detected from the commit
         message or LINT_SKIP environment variable using the special string
         "[skip lint <function name> for <recipe name>]". While those other
         mechanisms define skipping on a recipe-specific basis, this argument
@@ -186,28 +186,15 @@ def lint(recipes, config, df, exclude=None, registry=None):
 
     skip_dict = defaultdict(list)
 
-    # We want to get the commit message of HEAD to see if we should skip any
-    # linting tests. However, for PRs, travis tests the merge from PR to
-    # master. This means that we can't rely on "TRAVIS_COMMIT_MESSAGE" env var
-    # since, for PRs, it will be "merge $hash into $hash".
-    #
-    # For PRs, we need TRAVIS_PULL_REQUEST_SHA
-    #
-    # If not on travis, then don't look for any commit messages.
     commit_message = ""
-
-    on_travis = os.environ.get('TRAVIS') == 'true'
-    pull_request = os.environ.get('TRAVIS_PULL_REQUEST', 'false') != 'false'
-
-    if not on_travis and 'LINT_SKIP' in os.environ:
+    if 'LINT_SKIP' in os.environ:
+        # Allow overwriting of commit message
         commit_message = os.environ['LINT_SKIP']
-
-    if on_travis and pull_request:
-        p = utils.run(
-            ['git', 'log', '--format=%B', '-n', '1',
-             os.environ['TRAVIS_PULL_REQUEST_SHA']]
-        )
-        commit_message = p.stdout
+    else:
+        # Obtain commit message from last commit.
+        commit_message = utils.run(
+            ['git', 'log', '--format=%B', '-n', '1'], mask=False
+        ).stdout
 
     # For example the following text in the commit message will skip
     # lint_functions.uses_setuptools for recipe argparse:

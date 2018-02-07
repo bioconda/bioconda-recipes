@@ -112,6 +112,8 @@ def test_package(
     conda_bld_dir = os.path.abspath(os.path.dirname(os.path.dirname(path)))
 
     sp.check_call([utils.bin_for('conda'), 'index', os.path.dirname(path)])
+    # always build noarch index to make conda happy
+    sp.check_call([utils.bin_for('conda'), 'index', os.path.join(conda_bld_dir, "noarch")])
 
     spec = get_image_name(path)
 
@@ -144,6 +146,6 @@ def test_package(
         env["DEST_BASE_IMAGE"] = base_image
     with tempfile.TemporaryDirectory() as d:
         with utils.Progress():
-            p = utils.run(cmd, env=env, cwd=d)
+            p = utils.run(cmd, env=env, cwd=d, mask=False)
 
     return p

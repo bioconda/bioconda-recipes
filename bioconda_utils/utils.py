@@ -25,8 +25,30 @@ from conda_build.metadata import MetaData
 from conda.version import VersionOrder
 import yaml
 from jinja2 import Environment, PackageLoader
+from colorlog import ColoredFormatter
 
-logger = logging.getLogger(__name__)
+log_stream_handler = logging.StreamHandler()
+log_stream_handler.setFormatter(ColoredFormatter(
+        "%(asctime)s %(log_color)sBIOCONDA %(levelname)s%(reset)s %(message)s",
+        datefmt="%H:%M:%S",
+        reset=True,
+        log_colors={
+            'DEBUG': 'cyan',
+            'INFO': 'green',
+            'WARNING': 'yellow',
+            'ERROR': 'red',
+            'CRITICAL': 'red',
+        }))
+
+def setup_logger(name, loglevel=None):
+    l = logging.getLogger(name)
+    l.propagate = False
+    if loglevel:
+        l.setLevel(getattr(logging, loglevel.upper()))
+    l.addHandler(log_stream_handler)
+    return l
+
+logger = setup_logger(__name__)
 
 
 jinja = Environment(
@@ -54,6 +76,7 @@ ENV_VAR_BLACKLIST = [
 ENV_VAR_DOCKER_BLACKLIST = [
     'PATH',
 ]
+
 
 
 def get_free_space():
@@ -179,7 +202,7 @@ def temp_os(platform):
         sys.platform = original
 
 
-def run(cmds, env=None, **kwargs):
+def run(cmds, env=None, mask=None, **kwargs):
     """
     Wrapper around subprocess.run()
 
@@ -198,8 +221,21 @@ def run(cmds, env=None, **kwargs):
         p.stdout = p.stdout.decode(errors='replace')
     except sp.CalledProcessError as e:
         e.stdout = e.stdout.decode(errors='replace')
+        # mask command arguments
+        def do_mask(arg):
+            if mask is None:
+                # caller has not considered masking, hide the entire command
+                # for security reasons
+                return '<hidden>'
+            elif mask == False:
+                # masking has been deactivated
+                return arg
+            for m in mask:
+                arg = arg.replace(m, '<hidden>')
+            return arg
+        e.cmd = [do_mask(c) for c in e.cmd]
         logger.error('COMMAND FAILED: %s', ' '.join(e.cmd))
-        logger.error('STDOUT+STDERR:\n%s', e.stdout)
+        logger.error('STDOUT+STDERR:\n%s', do_mask(e.stdout))
         raise e
     return p
 
@@ -732,12 +768,11 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
         with temp_env(env):
 
             # with temp_os, we can fool the MetaData if needed.
-            platform = os.environ.get('TRAVIS_OS_NAME', sys.platform)
-
-            # TRAVIS_OS_NAME uses 'osx', but sys.platform uses 'darwin', and
-            # that's what conda will be looking for.
-            if platform == 'osx':
+            platform = os.environ.get('OSTYPE', sys.platform)
+            if platform.startswith("darwin"):
                 platform = 'darwin'
+            elif platform == "linux-gnu":
+                platform = "linux"
 
             with temp_os(platform):
                 meta = MetaData(recipe)
@@ -747,8 +782,8 @@ def filter_recipes(recipes, env_matrix, channels=None, force=False):
                         'it defines skip for this env', pkg)
                     return False
 
-                # If on travis, handle noarch.
-                if os.environ.get('TRAVIS', None) == 'true':
+                # If on CI, handle noarch.
+                if os.environ.get('CI', None) == 'true':
                     if meta.get_value('build/noarch'):
                         if platform != 'linux':
                             logger.debug('FILTER: only building %s on '
@@ -860,7 +895,6 @@ def load_config(path):
         'env_matrix': {'CONDA_PY': 35},
         'blacklists': [],
         'channels': [],
-        'docker_image': 'condaforge/linux-anvil',
         'requirements': None,
         'upload_channel': 'bioconda'
     }

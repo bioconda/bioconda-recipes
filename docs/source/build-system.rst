@@ -100,3 +100,37 @@ indicated.
 As soon as the package is uploaded to anaconda.org, it is available for
 installing via ``conda``. As soon as the BusyBox container is uploaded to
 quay.io, it is available for use via ``docker pull``.
+
+The ``bulk`` branch
+-------------------
+
+Periodically, large-scale maintenance needs to be done on the channel. For
+example, when a new version of Bioconductor comes out, we need to update all
+``bioconductor-*`` packages and rebuild them. Or if we change the version of
+a pinned package in ``scripts/env.yaml``, then all packages depending
+on that package need to be rebuilt. While our build infrastructure will build
+recipes in the correct toplogically sorted order, if there are too many recipes
+then Travis-CI will timeout and the build will fail.
+
+Our solution to avoiding builds failing due to timeouts is the special ``bulk``
+branch. This branch is used by the bioconda core team for maintenance and
+behaves much like the ``master`` branch in that packages, once successfully
+built and tested, are immediately uploaded to anaconda.org. The major
+difference is that ``bulk`` does not go through the pull-request-and-review
+process in order for packages to be built and uploaded to the channel. As such,
+only bioconda core members are able to push to the ``bulk`` branch.
+
+The workflow is to first merge the latest master into ``bulk`` branch and
+resolve any conflicts. Then push (often a large number of) changes to the
+branch, without opening a PR. Unlike the ``master`` branch, which uses
+the shortcut of only checking for recipes in the channel if they have been changed
+according to ``git``, the ``bulk`` branch is configured to do the exhaustive
+check against the channel (which can take some time). Any existing recipe that
+does not exist in the channel will therefore be re-built. As packages build,
+they are uploaded; as they fail, the testing moves on to the next package.  The
+``bulk`` branch runs up until the Travis-CI timeout, at which time the entire
+build fails. But since individual packages were uploaded as they are
+successfully built, our work is saved and we can start the next build where we
+left off. Failing tests are fixed in another round of commits, and these
+changes are then pushed to ``bulk`` and the process repeats. Once ``bulk`` is
+fully successful, a PR is opened to merge the changes into master.

@@ -1,13 +1,11 @@
 # -*- coding: UTF-8 -*-
 
 from setuptools import setup
+import versioneer
 
-# load version info
-exec(open("bioconda_utils/version.py").read())
 
 setup(
     name='bioconda-utils',
-    version=__version__,
     author="Johannes Köster, Ryan Dale, The Bioconda Team",
     description="Utilities for building and managing conda packages",
     license="MIT",
@@ -34,5 +32,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
         "Programming Language :: Python :: 3"
-    ]
+    ],
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
 )

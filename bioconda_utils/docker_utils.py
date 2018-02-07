@@ -61,11 +61,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-# If conda_build_version is not provided, this is what is used by default.
-DEFAULT_CONDA_BUILD_VERSION = '2.1.16'
-DEFAULT_CONDA_VERSION = '4.3.21'
-
-
 # ----------------------------------------------------------------------------
 # BUILD_SCRIPT_TEMPLATE
 # ----------------------------------------------------------------------------
@@ -83,8 +78,6 @@ BUILD_SCRIPT_TEMPLATE = \
 """
 #!/bin/bash
 set -e
-
-conda install conda-build={self.conda_build_version} conda={self.conda_version}  > /dev/null 2>&1
 
 # Add the host's mounted conda-bld dir so that we can use its contents as
 # dependencies for building this recipe.
@@ -131,28 +124,17 @@ fi
 # DOCKERFILE_TEMPLATE
 # ----------------------------------------------------------------------------
 #
-# This Docker file is used by RecipeBuilder and sent to docker build if no
-# other Dockerfile is provided to RecipeBuilder. It will be filled in using
-# DOCKERFILE.format(self=self).
+# This template can be used for last-minute changes to the docker image, such
+# as adding proxies.
 #
-# It assumes that there will be a requirements.txt in the build directory
-# (the default is to use bioconda_utils-requirements.txt).
-
+# The default image is created automatically on DockerHub using the Dockerfile
+# in the bioconda-utils repo.
 
 DOCKERFILE_TEMPLATE = \
 """
-FROM {self.image}
-COPY requirements.txt /tmp/requirements.txt
+FROM bioconda/bioconda-utils-build-env
 {self.proxies}
-RUN /opt/conda/bin/conda config --add channels defaults
-RUN /opt/conda/bin/conda config --add channels conda-forge
-RUN /opt/conda/bin/conda config --add channels bioconda
-RUN /opt/conda/bin/conda install --file /tmp/requirements.txt
-
-RUN /usr/bin/sudo -n yum install -y openssh-clients
-
 """
-
 
 class DockerCalledProcessError(sp.CalledProcessError):
     pass
@@ -210,15 +192,13 @@ class RecipeBuilder(object):
         tag='tmp-bioconda-builder',
         container_recipe='/opt/recipe',
         container_staging="/opt/host-conda-bld",
-        image='condaforge/linux-anvil',
         requirements=None,
         build_script_template=BUILD_SCRIPT_TEMPLATE,
         dockerfile_template=DOCKERFILE_TEMPLATE,
         use_host_conda_bld=False,
-        conda_build_version=DEFAULT_CONDA_BUILD_VERSION,
-        conda_version=DEFAULT_CONDA_VERSION,
         pkg_dir=None,
         keep_image=False,
+        image_build_dir=None,
     ):
         """
         Class to handle building a custom docker container that can be used for
@@ -239,10 +219,6 @@ class RecipeBuilder(object):
             the container can use previously-built packages as depdendencies.
             Upon successful building container-built packages will be copied
             over. Mounted as read-write.
-
-        image : str
-            Base image from which the new custom image will be built (used on
-            the `FROM:` line of the Dockerfile)
 
         requirements : None or str
             Path to a "requirements.txt" file which will be installed with
@@ -292,15 +268,16 @@ class RecipeBuilder(object):
             By default, the built docker image will be removed when done,
             freeing up storage space.  Set keep_image=True to disable this
             behavior.
+
+        image_build_dir : str or None
+            If not None, use an existing directory as a docker image context
+            instead of a temporary one. For testing purposes only.
         """
-        self.image = image
         self.tag = tag
         self.requirements = requirements
         self.conda_build_args = ""
         self.build_script_template = build_script_template
         self.dockerfile_template = dockerfile_template
-        self.conda_build_version = conda_build_version
-        self.conda_version = conda_version
         self.keep_image = keep_image
 
         # To address issue #5027:
@@ -362,30 +339,23 @@ class RecipeBuilder(object):
                     os.makedirs(pkg_dir)
                 self.pkg_dir = pkg_dir
 
-        self._pull_image()
-        self._build_image()
+        self._build_image(image_build_dir)
 
     def __del__(self):
         if not self.keep_image:
             self.cleanup()
 
-    def _pull_image(self):
-        """
-        Separate out the pull step to provide additional logging info
-        """
-        logger.info('DOCKER: Pulling docker image %s', self.image)
-        p = utils.run(['docker', 'pull', self.image])
-        logger.debug('DOCKER: stdout+stderr:\n%s', p.stdout)
-        logger.info('DOCKER: Done pulling image')
-
-    def _build_image(self):
+    def _build_image(self, image_build_dir):
         """
         Builds a new image with requirements installed.
         """
 
-        # Create a temporary build directory since we'll be copying the
-        # requirements file over
-        build_dir = tempfile.mkdtemp()
+        if image_build_dir is None:
+            # Create a temporary build directory since we'll be copying the
+            # requirements file over
+            build_dir = tempfile.mkdtemp()
+        else:
+            build_dir = image_build_dir
 
         logger.info('DOCKER: Building image "%s" from %s', self.tag, build_dir)
         with open(os.path.join(build_dir, 'requirements.txt'), 'w') as fout:
@@ -408,7 +378,14 @@ class RecipeBuilder(object):
         #  `docker version` command (note the missing dashes) is not consistent
         # between different docker versions. The --version string is the same
         # for docker 1.6.2 and 1.12.6
-        s = sp.check_output(["docker", "--version"]).decode()
+        try:
+            s = sp.check_output(["docker", "--version"]).decode()
+        except FileNotFoundError:
+            logger.error('DOCKER FAILED: Error checking docker version, is it installed?')
+            raise
+        except sp.CalledProcessError:
+            logger.error('DOCKER FAILED: Error checking docker version.')
+            raise
         p = re.compile("\d+\.\d+\.\d+")  # three groups of at least on digit separated by dots
         version_string = re.search(p, s).group(0)
         if LooseVersion(version_string) >= LooseVersion("1.13.0"):
@@ -429,7 +406,7 @@ class RecipeBuilder(object):
 
         try:
             with utils.Progress():
-                p = utils.run(cmd)
+                p = utils.run(cmd, mask=False)
         except sp.CalledProcessError as e:
             logger.error(
                 'DOCKER FAILED: Error building docker container %s. ',
@@ -437,7 +414,8 @@ class RecipeBuilder(object):
             raise e
 
         logger.info('DOCKER: Built docker image tag=%s', self.tag)
-        shutil.rmtree(build_dir)
+        if image_build_dir is None:
+            shutil.rmtree(build_dir)
         return p
 
     def build_recipe(self, recipe_dir, build_args, env, pkg, noarch=False):
@@ -488,6 +466,9 @@ class RecipeBuilder(object):
             env_list.append('-e')
             env_list.append('{0}={1}'.format(k, v))
 
+        env_list.append('-e')
+        env_list.append('{0}={1}'.format('HOST_USER_ID',self.user_info['uid']))
+
         cmd = [
             'docker', 'run',
             '--net', 'host',
@@ -502,9 +483,9 @@ class RecipeBuilder(object):
 
         logger.debug('DOCKER: cmd: %s', cmd)
         with utils.Progress():
-            p = utils.run(cmd)
+            p = utils.run(cmd, mask=False)
         return p
 
     def cleanup(self):
         cmd = ['docker', 'rmi', self.tag]
-        utils.run(cmd)
+        utils.run(cmd, mask=False)
