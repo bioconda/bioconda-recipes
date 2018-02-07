@@ -56,9 +56,22 @@ update your branch with the upstream master branch::
 
 Install the Circle CI client (optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This is optional, but allows you to
-simulate most closely the online Circle CI tests.
-Instructions can be found `here <https://circleci.com/docs/2.0/local-jobs/#installing-the-cli-locally>`_.
+This is optional in the sense that you can still contribute without it, but
+installing the Circle CI client allows you to test your recipes before pushing
+them by simulating the online Circle CI tests locally. Resolving problems
+locally before pushing changes will conserve online build time and quota.
+
+Installation instructions can be found `here
+<https://circleci.com/docs/2.0/local-jobs/#installing-the-cli-locally>`_.
+
+.. note::
+
+    For contributors who have used ``simulate-travis.py`` for local testing:
+    our move from Travis-CI to Circle CI means that ``simulate-travis.py`` is
+    now deprecated.
+
+    Instead of ``simulate-travis.py``, please install the Circle CI client and
+    run ``circleci build``.
 
 Request to be added to the bioconda team (optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
