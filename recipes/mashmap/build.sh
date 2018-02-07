@@ -18,8 +18,8 @@ export CPATH=${PREFIX}/include
 
 mkdir -p $PREFIX/bin
 
-
-./bootstrap.sh
+autoreconf
+#./bootstrap.sh
 ./configure --prefix=$PREFIX --with-gsl=$PREFIX 
 make
 make install 
