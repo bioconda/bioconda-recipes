@@ -7,19 +7,19 @@ if [ -f Build.PL ]; then
     #./Build test
     # Make sure this goes in site
     #./Build install --installdirs site
-    echo 'A Build.PL is found...but MakeFile is better.'
+    echo 'A Build.PL is found...but MakeFile is better.';
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
-    perl Makefile.PL --incpath=$ENV{OPENSSL_INCLUDE} --libpath=$ENV{OPENSSL_LIB}
-    echo '* * * make...'
+    perl Makefile.PL
+    echo '* * * make...' ;
     make
-    echo '* * * make test...'
+    echo '* * * make test...';
     make test
-    echo '* * * make install...'
+    echo '* * * make install...';
     make install
-    echo 'End of makeFile...'
+    echo 'End of makeFile...';
 else
-    echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
+    echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.';
     exit 1
 fi
 
