@@ -14,8 +14,7 @@ download_manta(logger, only_clean=True)  # initializes manta_dirpath
 from os.path import isdir
 from shutil import rmtree
 from quast_libs.ra_utils.misc import manta_dirpath
-from quast_libs.gage import gage_dirpath
-for dirpath in (manta_dirpath, gage_dirpath):
+for dirpath in [manta_dirpath]:
     if isdir(dirpath):
         rmtree(dirpath, ignore_errors=True)
 '
