@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export OPENSSL_PREFIX=$PREFIX
-
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     #perl Build.PL
@@ -9,13 +7,17 @@ if [ -f Build.PL ]; then
     #./Build test
     # Make sure this goes in site
     #./Build install --installdirs site
+    echo 'A Build.PL is found...but MakeFile is better.'
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
-    perl Makefile.PL INSTALLDIRS=site
-
+    perl Makefile.PL --incpath=$ENV{OPENSSL_INCLUDE} --libpath=$ENV{OPENSSL_LIB}
+    echo '* * * make...'
     make
+    echo '* * * make test...'
     make test
+    echo '* * * make install...'
     make install
+    echo 'End of makeFile...'
 else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
