@@ -20,4 +20,4 @@ cp sources/glimmerhmm $PREFIX/bin/.
 cp train/trainGlimmerHMM $PREFIX/bin/.
 
 # copy the training data
-cp -R trained_dir $PREFIX/GlimmerHMM/trained_dir/
+cp -R trained_dir $PREFIX/GlimmerHMM/
