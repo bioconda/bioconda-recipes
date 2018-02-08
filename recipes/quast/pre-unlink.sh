@@ -21,4 +21,4 @@ download_manta(logger, only_clean=True)  # initializes manta_dirpath
 from quast_libs.ra_utils.misc import manta_dirpath
 if isdir(manta_dirpath):
     rmtree(manta_dirpath, ignore_errors=True)
-'
+' >> "$PREFIX/.messages.txt" 2>&1
