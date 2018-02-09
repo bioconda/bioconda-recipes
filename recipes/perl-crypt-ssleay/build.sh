@@ -1,5 +1,13 @@
 #!/bin/bash
 
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LD_LIBRARY_PATH="${PREFIX}/lib"
+
+export LDFLAGS="-L${PREFIX}/lib"
+export LD_RUN_PATH="${PREFIX}/lib"
+export CPPFLAGS="-I${PREFIX}/include"
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     #perl Build.PL
@@ -10,7 +18,15 @@ if [ -f Build.PL ]; then
     echo 'A Build.PL is found...but MakeFile is better.';
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
-    perl Makefile.PL
+    perl Makefile.PL INSTALLDIRS=site
+    sed -i.bak 's/-fstack-protector-strong//g' Makefile
+    sed -i.bak 's/-fstack-protector//g' Makefile
+    sed -i.bak 's|-L/usr/local/lib|-L${PREFIX}/lib|g' Makefile
+    sed -i.bak 's|LD_RUN_PATH = /usr/lib/../lib64|LD_RUN_PATH = ${PREFIX}/lib|g' Makefile
+    sed -i.bak 's|LD_RUN_PATH = /usr/lib64|LD_RUN_PATH = ${PREFIX}/lib|g' Makefile
+    sed -i.bak 's|-I/usr/local/include|-I${PREFIX}/include|g' Makefile
+    #Hack to get this built on OSX
+	sed -i.bak 's|cc -c|cc -c -I${PREFIX}/include|g' Makefile
     echo '* * * make...' ;
     make
     echo '* * * make test...';
