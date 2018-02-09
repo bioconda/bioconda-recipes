@@ -1,0 +1,1 @@
+cp mvp "$PREFIX/bin"
