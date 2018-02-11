@@ -4,12 +4,12 @@ variables:
   restore_cache: &restore_cache
     restore_cache:
       keys:
-        - miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
+        - miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
   save_cache: &save_cache
     save_cache:
-      key: miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
+      key: miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
       paths:
-        - /tmp/workspace/miniconda
+        - miniconda
   common: &common
     run:
       name: Download common definitions
@@ -39,6 +39,9 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+      - run: 
+          name: linking conda
+          command: ln -s /opt/conda $HOME/miniconda
       - *common
       - *setup
       - run:
@@ -82,10 +85,9 @@ jobs:
     steps:
       - checkout
       - *common
-      # We cannot cache the miniconda installation on macos.
-      # The reason is that tar seems to have a bug when handling sym and hardlinks in the miniconda installation.
-      # The error is, e.g.: Cannot extract through symlink tmp/workspace/miniconda/LICENSE.rst
+      - *restore_cache
       - *setup
+      - *save_cache
       - run:
           name: Building and testing
           command: bioconda-utils build recipes config.yml --git-range master HEAD
@@ -110,7 +112,9 @@ jobs:
     steps:
       - checkout
       - *common
+      - *restore_cache
       - *setup
+      - *save_cache
       # build only current commit (since we use squashed merging, this is safe)
       - run:
           name: Building, testing and uploading
@@ -136,7 +140,9 @@ jobs:
     steps:
       - checkout
       - *common
+      - *restore_cache
       - *setup
+      - *save_cache
       # build everything that differs compared to master
       - run:
           name: Building, testing and uploading of all unpublished recipes
@@ -162,7 +168,9 @@ jobs:
     steps:
       - checkout
       - *common
+      - *restore_cache
       - *setup
+      - *save_cache
       - run:
           name: Building, testing and uploading of all unpublished recipes
           command: bioconda-utils build recipes config.yml --anaconda-upload
