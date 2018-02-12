@@ -1,23 +1,31 @@
-{% set name = "ncfp" %}
-{% set version = "0.1.0" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "a3af0757660cc61d33a8a20fae9ed1e28d60441517a61312740410a4cc00d74b" %}
-
 package:
-  name: '{{ name|lower }}'
-  version: '{{ version }}'
+  name: ncfp
+  version: "0.1.0"
 
 source:
-  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  fn: ncfp-0.1.0.tar.gz
+  url: https://pypi.python.org/packages/aa/ae/399662df6cb31eb0b76f324557d9cb15657a2ca7753ee54aeb0d5153475f/ncfp-0.1.0.tar.gz
+  md5: 4ddd2be47b932f4043eb01df9ad5d471
+#  patches:
+   # List any patch files here
+   # - fix.patch
 
 build:
-  number: 0
-  entry_points:
-    - ncfp = ncbi_cds_from_protein.scripts.ncfp:run_main
+  # noarch: python
+  # preserve_egg_dir: True
   skip: True # [py27]
+  entry_points:
+    # Put any entry points (scripts to be generated automatically) here. The
+    # syntax is module:function.  For example
+    #
+    # - ncfp = ncfp:main
+    #
+    # Would create an entry point called ncfp that calls ncfp.main()
+    - ncfp = ncbi_cds_from_protein.scripts.ncfp:run_main
+
+  # If this is a new build for the same version, increment the build
+  # number. If you do not include this key, it defaults to 0.
+  # number: 1
 
 requirements:
   build:
@@ -25,24 +33,37 @@ requirements:
     - setuptools
     - biopython
     - tqdm
+
   run:
     - python
     - biopython
     - tqdm
 
 test:
+  # Python imports
   imports:
     - ncbi_cds_from_protein
     - ncbi_cds_from_protein.scripts
+
   commands:
+    # You can put test commands to be run here.  Use this to test that the
+    # entry points work.
+
     - ncfp --help
+
+  # You can also put a file called run_test.py in the recipe that will be run
+  # at test time.
+
+  # requires:
+    # Put any additional test requirements here.  For example
+    # - nose
 
 about:
   home: http://widdowquinn.github.io/ncfp/
   license: MIT License
+  summary: 'A program/module to find nt sequences that code for aa sequences'
   license_family: MIT
-  license_file: ''
-  summary: A program/module to find nt sequences that code for aa sequences
-  description: 'ncfp is a script and module that facilitates recovery of nucleotide sequences from NCBI that encode a set of input protein sequences'
-  doc_url: 'https://ncfp.readthedocs.io/en/latest/'
-  dev_url: 'https://github.com/widdowquinn/ncfp'
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
