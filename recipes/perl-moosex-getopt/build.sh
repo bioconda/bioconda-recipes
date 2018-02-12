@@ -1,13 +1,21 @@
 #!/bin/bash
 
 # If it has Build.PL use that, otherwise use Makefile.PL
-cpanm --installdep .
+set -e -x
+
+echo $PATH
+export PATH=/opt/rh/devtoolset-2/root/usr/bin/:$PATH
+
+HOME=/tmp cpanm -v Devel::StackTrace
+HOME=/tmp cpanm -v MooseX::Role::Parameterized
+HOME=/tmp cpanm -v --installdeps .
+
 if [ -f Build.PL ]; then
     perl Build.PL
-    ./Build
-    ./Build test
+    perl ./Build
+    perl ./Build test
     # Make sure this goes in site
-    ./Build install --installdirs site
+    perl ./Build install --installdirs site
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site
