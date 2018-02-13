@@ -1,12 +1,5 @@
 #!/bin/bash
 
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="-L${PREFIX}/lib"
-export CPPFLAGS="-I${PREFIX}/include"
-export CFLAGS="-I$PREFIX/include"
-export CPATH=${PREFIX}/include
-
 export PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig
 
 if [ `uname` == Darwin ]; then
