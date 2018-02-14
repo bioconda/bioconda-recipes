@@ -20,3 +20,7 @@ cmake .. -DOPENMS_CONTRIB_LIBS='../../contrib-build' -DCMAKE_INSTALL_PREFIX=$PRE
 
 make -j2 TOPP UTILS OpenMS
 make install
+
+mkdir -p $PREFIX/etc/conda/activate.d/ $PREFIX/etc/conda/deactivate.d/
+cp activate.sh $PREFIX/etc/conda/activate.d/openms.sh
+cp deactivate.sh $PREFIX/etc/conda/deactivate.d/openms.sh
