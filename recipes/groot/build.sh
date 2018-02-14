@@ -1,4 +1,9 @@
 #!/bin/bash
-chmod a+x groot*
 mkdir -p $PREFIX/bin
-cp groot* $PREFIX/bin/groot
+mkdir -p src/github.com/will-rowe/groot
+mv cmd src main.go  src/github.com/will-rowe/groot
+cd src/github.com/will-rowe/groot
+export GOPATH="$SRC_DIR/"
+
+go build -o groot main.go
+mv groot $PREFIX/bin
