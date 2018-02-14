@@ -30,9 +30,9 @@ if ! type bioconda-utils > /dev/null; then
     bash miniconda.sh -b -p $WORKSPACE/miniconda
 
     # step 2: setup channels
-    conda config --add channels defaults
-    conda config --add channels conda-forge
-    conda config --add channels bioconda
+    conda config --system --add channels defaults
+    conda config --system --add channels conda-forge
+    conda config --system --add channels bioconda
 
     # step 3: install bioconda-utils
     conda install -y git pip --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements.txt
@@ -40,7 +40,7 @@ if ! type bioconda-utils > /dev/null; then
 
     # step 4: configure local channel
     conda index $WORKSPACE/miniconda/conda-bld/linux-64 $WORKSPACE/miniconda/conda-bld/osx-64 $WORKSPACE/miniconda/conda-bld/noarch
-    conda config --add channels file://$WORKSPACE/miniconda/conda-bld
+    conda config --system --add channels file://$WORKSPACE/miniconda/conda-bld
 
     # step 5: cleanup
     conda clean -y --all
