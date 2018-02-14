@@ -8,8 +8,9 @@ WORKSPACE=`pwd`
 source .circleci/common.sh
 
 # Set path
-echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> $BASH_ENV
-source $BASH_ENV
+cat $BASH_ENV >> .setup_bash_env
+echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> .setup_bash_env
+source .setup_bash_env
 
 if ! type bioconda-utils > /dev/null; then
     echo "Setting up bioconda-utils..."
