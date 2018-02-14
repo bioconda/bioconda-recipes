@@ -1,0 +1,91 @@
+{% set version = '1.8.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-deconstructsigs
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: deconstructSigs_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/deconstructSigs_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/deconstructSigs/deconstructSigs_{{ version }}.tar.gz
+
+
+  sha256: 2ab8f6c0fd674bd270035ba2112f1a79d63de1155ba9698c4169c92196059d04
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: VariantAnnotation
+requirements:
+  build:
+    - bioconductor-bsgenome
+    - bioconductor-bsgenome.hsapiens.ucsc.hg19
+    - bioconductor-genomeinfodb
+    - r-base
+    - r-reshape2
+
+  run:
+    - bioconductor-bsgenome
+    - bioconductor-bsgenome.hsapiens.ucsc.hg19
+    - bioconductor-genomeinfodb
+    - r-base
+    - r-reshape2
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('deconstructSigs')"  # [not win]
+    - "\"%R%\" -e \"library('deconstructSigs')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https
+  license: GPL (>= 2)
+  summary: Takes sample information in the form of the fraction of mutations in each of 96 trinucleotide
+    contexts and identifies the weighted combination of published signatures that, when
+    summed, most closely reconstructs the mutational profile.
+  license_family: GPL3
+
+# The original CRAN metadata for this package was:
+
+# Package: deconstructSigs
+# Type: Package
+# Title: Identifies Signatures Present in a Tumor Sample
+# Version: 1.8.0
+# Date: 2016-07-26
+# Author: Rachel Rosenthal
+# Maintainer: Rachel Rosenthal <rachel.rosenthal.14@ucl.ac.uk>
+# Description: Takes sample information in the form of the fraction of mutations in each of 96 trinucleotide contexts and identifies the weighted combination of published signatures that, when summed, most closely reconstructs the mutational profile.
+# License: GPL (>= 2)
+# Imports: reshape2, BSgenome, BSgenome.Hsapiens.UCSC.hg19, GenomeInfoDb, grDevices, graphics, utils
+# Suggests: VariantAnnotation
+# LazyData: yes
+# URL: https://github.com/raerose01/deconstructSigs
+# BugReports: https://github.com/raerose01/deconstructSigs/issues
+# RoxygenNote: 5.0.1
+# NeedsCompilation: no
+# Packaged: 2016-07-29 12:30:13 UTC; rachel
+# Repository: CRAN
+# Date/Publication: 2016-07-29 18:27:06
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
