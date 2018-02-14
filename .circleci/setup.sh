@@ -7,6 +7,15 @@ WORKSPACE=`pwd`
 # This file can be used to set BIOCONDA_UTILS_TAG and MINICONDA_VER.
 source .circleci/common.sh
 
+# make sure the CircleCI config is up to date
+git remote add -t master upstream https://github.com/bioconda/bioconda-recipes.git
+git fetch upstream
+if ! git diff --quiet HEAD...upstream/master -- .circleci/; then
+    echo 'The CI configuration is out of date.'
+    echo 'Please merge in bioconda:master.'
+    exit 1
+fi
+
 # Set path
 cat >> $BASH_ENV << EOF
 if ! [[ "\$PATH" =~ (^|:)"$WORKSPACE/miniconda/bin"(|/)(:|\$) ]]; then
