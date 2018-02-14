@@ -30,10 +30,10 @@ if ! type bioconda-utils > /dev/null; then
     if [[ $OSTYPE == darwin* ]]; then
         tag="MacOSX"
     elif [[ $OSTYPE == linux* ]]; then
-	tag="Linux"
+        tag="Linux"
     else
-	echo "Unsupported OS: $OSTYPE"
-	exit 1
+        echo "Unsupported OS: $OSTYPE"
+        exit 1
     fi
     curl -L -o miniconda.sh https://repo.continuum.io/miniconda/Miniconda3-$MINICONDA_VER-$tag-x86_64.sh
     bash miniconda.sh -b -p $WORKSPACE/miniconda
