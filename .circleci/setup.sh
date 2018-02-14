@@ -17,11 +17,7 @@ if ! git diff --quiet HEAD...upstream/master -- .circleci/; then
 fi
 
 # Set path
-cat >> $BASH_ENV << EOF
-if ! [[ "\$PATH" =~ (^|:)"$WORKSPACE/miniconda/bin"(|/)(:|\$) ]]; then
-    export PATH=$WORKSPACE/miniconda/bin:\$PATH
-fi
-EOF
+echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> $BASH_ENV
 source $BASH_ENV
 
 if ! type bioconda-utils > /dev/null; then
