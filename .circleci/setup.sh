@@ -35,7 +35,7 @@ if ! type bioconda-utils > /dev/null; then
     conda config --add channels bioconda
 
     # step 3: install bioconda-utils
-    conda install -y --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements.txt
+    conda install -y git pip --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements.txt
     pip install git+https://github.com/bioconda/bioconda-utils.git@$BIOCONDA_UTILS_TAG
 
     # step 4: configure local channel
