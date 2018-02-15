@@ -8,7 +8,16 @@ WORKSPACE=`pwd`
 source .circleci/common.sh
 
 # make sure the CircleCI config is up to date
-git remote add -t master upstream https://github.com/bioconda/bioconda-recipes.git
+if UPSTREAM=$(git remote get-url upstream 2> /dev/null); then
+    if [[ "$UPSTREAM" != "https://github.com/bioconda/bioconda-recipes.git" ]]; then
+        echo 'The remote upstream of the repository'
+        echo 'must be set to:'
+        echo 'https://github.com/bioconda/bioconda-recipes.git'
+        exit 1
+    fi
+else
+    git remote add -t master upstream https://github.com/bioconda/bioconda-recipes.git
+fi
 git fetch upstream
 if ! git diff --quiet HEAD...upstream/master -- .circleci/; then
     echo 'The CI configuration is out of date.'
