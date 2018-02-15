@@ -7,6 +7,10 @@ WORKSPACE=`pwd`
 # This file can be used to set BIOCONDA_UTILS_TAG and MINICONDA_VER.
 source .circleci/common.sh
 
+# Set path
+echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> $BASH_ENV
+source $BASH_ENV
+
 # Make sure the CircleCI config is up to date.
 # add upstream as some semi-randomly named temporary remote to diff against
 UPSTREAM_REMOTE=__upstream__$(tr -dc a-z < /dev/urandom | head -c10)
@@ -19,9 +23,6 @@ if ! git diff --quiet HEAD...$UPSTREAM_REMOTE/master -- .circleci/; then
 fi
 git remote remove $UPSTREAM_REMOTE
 
-# Set path
-echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> $BASH_ENV
-source $BASH_ENV
 
 if ! type bioconda-utils > /dev/null; then
     echo "Setting up bioconda-utils..."
