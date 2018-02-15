@@ -7,6 +7,15 @@ WORKSPACE=`pwd`
 # This file can be used to set BIOCONDA_UTILS_TAG and MINICONDA_VER.
 source .circleci/common.sh
 
+# make sure the CircleCI config is up to date
+git remote add -t master upstream https://github.com/bioconda/bioconda-recipes.git
+git fetch upstream
+if ! git diff --quiet HEAD...upstream/master -- .circleci/; then
+    echo 'The CI configuration is out of date.'
+    echo 'Please merge in bioconda:master.'
+    exit 1
+fi
+
 # Set path
 echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> $BASH_ENV
 source $BASH_ENV
@@ -21,26 +30,26 @@ if ! type bioconda-utils > /dev/null; then
     if [[ $OSTYPE == darwin* ]]; then
         tag="MacOSX"
     elif [[ $OSTYPE == linux* ]]; then
-	tag="Linux"
+        tag="Linux"
     else
-	echo "Unsupported OS: $OSTYPE"
-	exit 1
+        echo "Unsupported OS: $OSTYPE"
+        exit 1
     fi
     curl -L -o miniconda.sh https://repo.continuum.io/miniconda/Miniconda3-$MINICONDA_VER-$tag-x86_64.sh
     bash miniconda.sh -b -p $WORKSPACE/miniconda
 
     # step 2: setup channels
-    conda config --add channels defaults
-    conda config --add channels conda-forge
-    conda config --add channels bioconda
+    conda config --system --add channels defaults
+    conda config --system --add channels conda-forge
+    conda config --system --add channels bioconda
 
     # step 3: install bioconda-utils
-    conda install -y --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements.txt
+    conda install -y git pip --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements.txt
     pip install git+https://github.com/bioconda/bioconda-utils.git@$BIOCONDA_UTILS_TAG
 
     # step 4: configure local channel
     conda index $WORKSPACE/miniconda/conda-bld/linux-64 $WORKSPACE/miniconda/conda-bld/osx-64 $WORKSPACE/miniconda/conda-bld/noarch
-    conda config --add channels file://$WORKSPACE/miniconda/conda-bld
+    conda config --system --add channels file://$WORKSPACE/miniconda/conda-bld
 
     # step 5: cleanup
     conda clean -y --all
