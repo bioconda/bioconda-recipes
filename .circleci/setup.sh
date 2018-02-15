@@ -7,23 +7,17 @@ WORKSPACE=`pwd`
 # This file can be used to set BIOCONDA_UTILS_TAG and MINICONDA_VER.
 source .circleci/common.sh
 
-# make sure the CircleCI config is up to date
-if UPSTREAM=$(git remote get-url upstream 2> /dev/null); then
-    if [[ "$UPSTREAM" != "https://github.com/bioconda/bioconda-recipes.git" ]]; then
-        echo 'The remote upstream of the repository'
-        echo 'must be set to:'
-        echo 'https://github.com/bioconda/bioconda-recipes.git'
-        exit 1
-    fi
-else
-    git remote add -t master upstream https://github.com/bioconda/bioconda-recipes.git
-fi
-git fetch upstream
-if ! git diff --quiet HEAD...upstream/master -- .circleci/; then
+# Make sure the CircleCI config is up to date.
+# add upstream as some semi-randomly named temporary remote to diff against
+UPSTREAM_REMOTE=__upstream__$(tr -dc a-z < /dev/urandom | head -c10)
+git remote add -t master $UPSTREAM_REMOTE https://github.com/bioconda/bioconda-recipes.git
+git fetch $UPSTREAM_REMOTE
+if ! git diff --quiet HEAD...$UPSTREAM_REMOTE/master -- .circleci/; then
     echo 'The CI configuration is out of date.'
     echo 'Please merge in bioconda:master.'
     exit 1
 fi
+git remote remove $UPSTREAM_REMOTE
 
 # Set path
 echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> $BASH_ENV
