@@ -66,6 +66,7 @@ fi
             ${extra_config_options} \
             LIBS=${PY2LIB} \
             &&\
+            cat configure.log &&\
 make -j${CPU_COUNT}
 
 ## Install
