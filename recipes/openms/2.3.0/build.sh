@@ -8,6 +8,11 @@ mkdir contrib-build
 cd contrib-build
 cmake -DBUILD_TYPE=WILDMAGIC ../contrib
 
+
+mkdir -p $PREFIX/etc/conda/activate.d/ $PREFIX/etc/conda/deactivate.d/
+cp $RECIPE_DIR/activate.sh $PREFIX/etc/conda/activate.d/openms.sh
+cp $RECIPE_DIR/deactivate.sh $PREFIX/etc/conda/deactivate.d/openms.sh
+
 cd ..
 mkdir build
 cd build
