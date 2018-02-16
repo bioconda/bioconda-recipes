@@ -26,6 +26,23 @@ variables:
       LANG: en_US.UTF-8
   linux: &linux
     machine: true
+  skip_fork: &skip_fork
+    run:
+      name: Check for fork
+      command: |
+        [[ $CIRCLE_PROJECT_USERNAME == bioconda ]] || (
+            echo "Skipping build for fork '$CIRCLE_PROJECT_USERNAME'"
+            circleci step halt
+        )
+  fail_fork: &fail_fork
+    run:
+      name: Check for fork
+      command: |
+        [[ $CIRCLE_PROJECT_USERNAME == bioconda ]] || (
+            echo "Aborting build for fork '$CIRCLE_PROJECT_USERNAME'"
+            echo "Please use a branch other than 'master' or 'bulk' on your fork"
+            exit 1
+        )
 
 jobs:
   # When running CircleCI locally, we put everything in one job.
@@ -40,8 +57,15 @@ jobs:
             mkdir -p ~/.ssh
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
       - run: 
-          name: linking conda
-          command: ln -s /opt/conda $HOME/miniconda
+          name: Setup base system
+          command: |
+            cat >> $BASH_ENV <<EOF
+            if [[ \$- == *u* ]] ; then
+                set +u ; . /tmp/repo/docker-entrypoint-source ; set -u
+            else
+                . /tmp/repo/docker-entrypoint-source
+            fi
+            EOF
       - *common
       - *setup
       - run:
@@ -96,6 +120,7 @@ jobs:
   upload-linux:
     <<: *linux
     steps:
+      - *fail_fork
       - checkout
       - *common
       - *restore_cache
@@ -110,6 +135,7 @@ jobs:
   upload-macos:
     <<: *macos
     steps:
+      - *fail_fork
       - checkout
       - *common
       - *restore_cache
@@ -124,6 +150,7 @@ jobs:
   bulk-linux:
     <<: *linux
     steps:
+      - *fail_fork
       - checkout
       - *common
       - *restore_cache
@@ -138,6 +165,7 @@ jobs:
   bulk-macos:
     <<: *macos
     steps:
+      - *fail_fork
       - checkout
       - *common
       - *restore_cache
@@ -153,6 +181,7 @@ jobs:
   nightly-upload-linux:
     <<: *linux
     steps:
+      - *skip_fork
       - checkout
       - *common
       - *restore_cache
@@ -166,6 +195,7 @@ jobs:
   nightly-upload-macos:
     <<: *macos
     steps:
+      - *skip_fork
       - checkout
       - *common
       - *restore_cache
