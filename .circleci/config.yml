@@ -58,7 +58,14 @@ jobs:
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
       - run: 
           name: Setup base system
-          command: echo '. /tmp/repo/docker-entrypoint-source' >> $BASH_ENV
+          command: |
+            cat >> $BASH_ENV <<EOF
+            if [[ \$- == *u* ]] ; then
+                set +u ; . /tmp/repo/docker-entrypoint-source ; set -u
+            else
+                . /tmp/repo/docker-entrypoint-source
+            fi
+            EOF
       - *common
       - *setup
       - run:
