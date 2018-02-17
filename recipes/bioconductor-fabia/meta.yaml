@@ -12,6 +12,8 @@ source:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
   sha256: 073c3529e4812745fb69dfca6b32c498d02be65b586fe7af17e7f1f6847593b0
+  patches:
+    - drop-lgfortran.patch
 
 build:
   number: 0
@@ -21,13 +23,15 @@ build:
 
 requirements:
   build:
+    - autoconf
     - bioconductor-biobase
     - r-base
-    - gcc
+    - gcc  # [not osx]
+    - llvm  # [osx]
   run:
     - bioconductor-biobase
     - r-base
-    - libgcc
+    - libgcc  # [not osx]
 
 test:
   commands:
