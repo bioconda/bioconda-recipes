@@ -7,7 +7,7 @@ export GCCPATH=`which gcc`
 
 stack setup
 stack update
-stack install --with-gcc="$GCCPATH"--extra-include-dirs ${PREFIX}/include --local-bin-path ${PREFIX}/bin
+stack install --with-gcc="$GCCPATH" --extra-include-dirs ${PREFIX}/include --extra-lib-dirs ${PREFIX}/lib --local-bin-path ${PREFIX}/bin
 #cleanup
 rm -r .stack-work
 
