@@ -1,8 +1,6 @@
 #!/bin/bash
 export LIBRARY_PATH="${PREFIX}/lib:/lib64/"
 export LD_LIBRARY_PATH="${PREFIX}/lib:/lib64/"
-export LDFLAGS="-L${PREFIX}/lib -pthread -lpthread"
-export CPPFLAGS="-I${PREFIX}/include"
 
 stack setup
 stack update
