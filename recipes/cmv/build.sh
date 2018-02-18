@@ -1,7 +1,7 @@
 #!/bin/bash
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="-L${PREFIX}/lib -pthread"
+export LDFLAGS="-L${PREFIX}/lib -lpthread"
 export CPPFLAGS="-I${PREFIX}/include"
 
 stack setup
