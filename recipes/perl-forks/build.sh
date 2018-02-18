@@ -13,7 +13,7 @@ elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
     perl Makefile.PL # INSTALLDIRS=site
     cat Makefile | grep fstack
-    sed -i 's/-fstack-protector-strong/-fstack-protector/g' Makefile
+    # sed -i 's/-fstack-protector-strong/-fstack-protector/g' Makefile
     make
     make test
     make install
