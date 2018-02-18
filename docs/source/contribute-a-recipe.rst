@@ -93,6 +93,10 @@ Then, all that needs to be done is to execute
 
 .. code-block:: bash
 
+    # Ensure the build container is up-to-date
+    docker pull bioconda/bioconda-utils-build-env
+
+    # Run the build locally
     circleci build
 
 in the root of your repository clone.
