@@ -59,6 +59,7 @@ fi
 ## Configure and make
 ./configure --prefix=$PREFIX \
             --with-kinwalker \
+            --disable-check-perl\
             --disable-lto \
             --without-doc \
             --without-tutorial \
