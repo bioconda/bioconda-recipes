@@ -149,6 +149,19 @@ manual_descriptions = {
         criteria.  Selection is based on blocks or exons rather than entire
         range.
         """),
+    
+    'paraNodeStop': dedent(
+        """
+        Couldn't open -verbose=2 , No such file or directory
+        """),
+
+    'parasol': dedent(
+        """
+        Parasol is the name given to the overall system for managing jobs on
+        a computer cluster and to this specific command.  This command is
+        intended primarily for system administrators.  The 'para' command
+        is the primary command for users.
+        """),
 
     'pslCDnaFilter': dedent(
         """
