@@ -1,22 +1,26 @@
+{% set version = "1.0.5.0" %}
+
 package:
   name: somatic-sniper
-  version: '1.0.5.0'
+  version: {{ version }}
 
 source:
-  fn: v1.0.5.0.tar.gz
-  url: https://github.com/genome/somatic-sniper/archive/v1.0.5.0.tar.gz
+  fn: somatic-sniper_{{ version }}.tar.gz
+  url: https://github.com/genome/somatic-sniper/archive/v{{ version }}.tar.gz
+  sha256: fc41e90237b059fcc591e404830c4b1be678642dd5afd76ce545b97b4b7b3de1
 
 build:
-  number: 1
-  skip: False
+  number: 3
 
 requirements:
   build:
     - cmake
-    - gcc
+    - gcc  # [not osx]
+    - llvm  # [osx]
     - zlib {{CONDA_ZLIB}}*
   run:
     - zlib {{CONDA_ZLIB}}*
+    - libgcc  # [not osx]
 
 test:
   commands:
@@ -25,4 +29,5 @@ test:
 about:
   home: https://github.com/genome/somatic-sniper/
   license: MIT
+  license_file: docs/copyright
   summary: A tool to call somatic single nucleotide variants.
