@@ -1,5 +1,5 @@
 #!/bin/bash
-#!/usr/bin/env python2.7
+
 set -euo pipefail
 
 # download script dumps progress to stdout, causing too-large log output on
