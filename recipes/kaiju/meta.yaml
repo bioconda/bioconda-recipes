@@ -1,12 +1,13 @@
+{% set version = "1.6.1" %}
+
 package:
   name: kaiju
-  version: 1.5.0
+  version: {{ version }}
 
 source:
-    fn: v1.5.0.tar.gz
-    url: https://github.com/bioinformatics-centre/kaiju/archive/v1.5.0.tar.gz
-    md5: e8effb834a7d1e2863880c60d481ecf2
-
+    fn: v{{ version }}.tar.gz
+    url: https://github.com/bioinformatics-centre/kaiju/archive/v{{ version }}.tar.gz
+    sha256: ee6c319ab3e58db846139810705bfe33306618d78d75d715fac623f302be9e72
 
 build:
   number: 0  
@@ -16,16 +17,17 @@ build:
 requirements:
   build:
     - gcc
+    - zlib {{ CONDA_ZLIB }}*
+
   run:
     - libgcc
     - perl
     - gnu-wget >=1.16
+    - zlib {{ CONDA_ZLIB }}*
 
 test:
   commands:
-    - kaiju 2>&1 | head -n 1 | grep -q '^Error:'; echo $?
-
-#Tool always outputs error code one so created a workaround
+    - kaiju 2>&1 | grep "Kaiju {{ version }}"
 
 about:
   home: http://kaiju.binf.ku.dk/
