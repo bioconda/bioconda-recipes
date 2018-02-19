@@ -1,7 +1,8 @@
-{% set version="2.0Beta8" %}
-{% set hash="1660bb4569dd6e427d5617977ef953d38f169b050ba475903a6419b82c055080" %}
-# `gxx_*`/`gcc_*` below should be replaced by `compiler("cxx")` with conda-build 3
+{% set version="2.0Beta8c" %}
+{% set hash="506ff10e93595237e9e74460d2d1113a367adf0ca320879fce0ba65481a34a38" %}
+# `gxx_*`/`gcc_*`/`clang_*` below should be replaced by `compiler("cxx")` with conda-build 3
 {% set gxx_version = "7.2.0" %}
+{% set clang_version = "4.0.1" %}
 
 
 package:
@@ -9,9 +10,7 @@ package:
   version: {{ version }}
 
 build:
-  skip: True # [not linux]
-  number: 1
-
+  number: 0
 
 source:
   fn: stacks-{{ version }}.tar.gz
@@ -20,8 +19,10 @@ source:
 
 requirements:
   build:
-    - gcc_linux-64 {{ gxx_version }}  # [linux64]
-    - gxx_linux-64 {{ gxx_version }}  # [linux64]
+    - gcc_linux-64 {{ gxx_version }}   # [linux64]
+    - gxx_linux-64 {{ gxx_version }}   # [linux64]
+    - clangxx_osx-64 {{clang_version}} # [osx]
+    - clang_osx-64 {{clang_version}}   # [osx]
     - zlib {{CONDA_ZLIB}}*
     - openmp
 
@@ -29,6 +30,7 @@ requirements:
     - perl
     - velvet
     - libgcc >={{ gxx_version }}  # [linux]
+    - libcxx >= {{clang_version}} # [osx]
     - zlib {{CONDA_ZLIB}}*
     - openmp
 
@@ -50,7 +52,7 @@ test:
     - command -v denovo_map.pl
     - command -v exec_velvet.pl
     - command -v export_sql.pl
-#    - extract_interpop_chars.pl
+#    - command -v extract_interpop_chars.pl
     - command -v index_radtags.pl
     - command -v integrate_alignments.py
     - command -v load_radtags.pl
