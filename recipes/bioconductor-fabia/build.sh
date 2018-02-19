@@ -10,4 +10,4 @@ if [[ "$(uname)" == "Darwin" ]]; then
 fi
 autoconf
 
-$R CMD INSTALL --build .
+$R CMD INSTALL --build . || (echo "error code: $?" ; cat config.log ; exit 1)
