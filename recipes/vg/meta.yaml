@@ -1,4 +1,6 @@
 {% set version = "1.6.0" %}
+{% set gxx_version = "7.2.0" %}
+{% set clang_version = "4.0.1" %}
 
 package:
   name: vg
@@ -17,10 +19,10 @@ source:
 requirements:
   build:
     # TODO use jinja functions once conda-build 3 is enabled
-    - gcc_linux-64  # [linux64]
-    - gxx_linux-64  # [linux64]
-    - gcc_linux-32  # [linux32]
-    - gxx_linux-32  # [linux32]
+    - gcc_linux-64 {{ gxx_version }}  # [linux64]
+    - gxx_linux-64 {{ gxx_version }}  # [linux64]
+    - clangxx_osx-64 {{ clang_version }}  # [osx]
+    - clang_osx-64 {{ clang_version }}    # [osx]
     - cmake
     - zlib {{ CONDA_ZLIB }}*
     - bzip2 {{ CONDA_BZIP2 }}*
@@ -37,7 +39,9 @@ requirements:
   run:
     - zlib {{ CONDA_ZLIB }}*
     - bzip2 {{ CONDA_BZIP2 }}*
-    - libgcc
+    # TODO use jinja functions once conda-build 3 is enabled
+    - libgcc >={{ gxx_version }}  # [not osx]
+    - libcxx >={{ clang_version }}  # [osx]
 
 test:
   commands:
