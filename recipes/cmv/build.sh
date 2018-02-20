@@ -5,7 +5,7 @@ export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 if [ `uname` == Darwin ]
 then
-    export DYLD_LIBRARY_PATH="${PREFIX}/lib:/usr/lib:/usr/lib64"
+    export DYLD_LIBRARY_PATH="/System/Library/Frameworks/ImageIO.framework/Versions/A/ImageIO:${PREFIX}/lib:/usr/lib:/usr/lib64"
     export STACK_ROOT="${SRC_DIR}/s"
     stack setup --local-bin-path ${SRC_DIR}/s
     stack update
