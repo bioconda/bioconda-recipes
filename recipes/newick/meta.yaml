@@ -1,0 +1,43 @@
+{% set name = "newick" %}
+{% set version = "0.8.0" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "148371c1cce64093b3055e408f1b85576744ebc1085b9fa693e20f54d754b164" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - python
+    - setuptools
+  run:
+    - python
+
+about:
+  home: https://github.com/glottobank/python-newick
+  license: MIT License
+  license_family: MIT
+  license_file: ''
+  summary: A python module to read and write the Newick format
+  description: "# python-newick\n\n[![Build Status](https://travis-ci.org/glottobank/python-newick.svg?branch=master)](https://travis-ci.org/glottobank/python-newick)\n[![codecov.io](https://codecov.io/github/glottobank/python-newick/coverage.svg?branch=master)](https://codecov.io/github/glottobank/python-newick?branch=master)\n\
+    \npython package to read and write the \n[Newick format](https://en.wikipedia.org/wiki/Newick_format).\n\n\n## Reading Newick\n\n- From a string:\n```python\n>>> from newick import loads\n>>> trees\
+    \ = loads('(A,B,(C,D)E)F;')\n>>> trees[0].name\nu'F'\n>>> [n.name for n in trees[0].descendants]\n[u'A', u'B', u'E']\n```\n\n- From  a `file`-like object:\n```python\n>>> import io\n>>> from newick\
+    \ import load\n>>> with io.open('fname', encoding='utf8') as fp:\n...     trees = load(fp)\n```\n\n- From a file name:\n```python\n>>> from newick import read\n>>> trees = read('fname')\n```\n\n## Writing\
+    \ Newick\n\nIn parallel to the read operations there are three functions to serialize a single `Node` object or a `list` of `Node`\nobjects to Newick format:\n- `dumps(trees) -> str`\n- `dump(trees,\
+    \ fp)`\n- `write(trees, 'fname')`\n\nA tree may be assembled using the factory methods of the `Node` class:\n- `Node.__init__`\n- `Node.create`\n- `Node.add_descendant`"
+  doc_url: ''
+  dev_url: ''
+
+extra:
+  recipe-maintainers: ''
