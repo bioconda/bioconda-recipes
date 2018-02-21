@@ -23,5 +23,5 @@ make
 cd ..
 # Problem with ncurses from default channel we now get in bioconda so skip tview
 # https://github.com/samtools/samtools/issues/577
-./configure --prefix=$PREFIX --enable-libcurl --enable-plugins --with-plugin-path=$PREFIX/htslib-$PKG_VERSION LDFLAGS='-Wl,--add-needed'
+./configure --prefix=$PREFIX --enable-libcurl --enable-plugins --with-plugin-path=$PWD/htslib-$PKG_VERSION LDFLAGS='-Wl,--add-needed'
 make install prefix=$PREFIX LIBS+=-lcrypto LIBS+=-lcurl
