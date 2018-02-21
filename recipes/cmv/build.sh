@@ -7,9 +7,9 @@ if [ `uname` == Darwin ]
 then
     #export DYLD_LIBRARY_PATH="/System/Library/Frameworks/ImageIO.framework/Versions/A/ImageIO:${PREFIX}/lib:/usr/lib:/usr/lib64"
     export STACK_ROOT="${SRC_DIR}/s"
-    stack setup --local-bin-path ${SRC_DIR}/s
+    stack setup --extra-include-dirs ${PREFIX}/include --local-bin-path ${SRC_DIR}/s
     stack update
-    stack install --local-bin-path ${PREFIX}/bin
+    stack install --extra-include-dirs ${PREFIX}/include --local-bin-path ${PREFIX}/bin
     rm -r "${SRC_DIR}/s"
 else
   stack setup --local-bin-path ${PREFIX}/bin
