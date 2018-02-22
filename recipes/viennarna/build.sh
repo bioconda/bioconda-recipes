@@ -69,7 +69,7 @@ fi
             CFLAGS="-fPIC -O3 -g" \
             &&\
             cat config.log &&\
-make -V 1 -j${CPU_COUNT} 
+make V=1 -j${CPU_COUNT} 
 
 ## Install
 make install
