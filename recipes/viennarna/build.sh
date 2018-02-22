@@ -69,6 +69,7 @@ autoreconf -f -i
             --without-tutorial-pdf \
             ${extra_config_options} \
             LIBS=${PY2LIB} \
+            CFLAGS="-fPIC -O3 -g" \
             &&\
             cat config.log &&\
 make -j${CPU_COUNT}
