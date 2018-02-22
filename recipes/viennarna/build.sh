@@ -62,6 +62,7 @@ autoreconf -f -i
 
 ./configure --prefix=$PREFIX \
             --with-kinwalker \
+            --enable-shared \
             --disable-lto \
             --without-doc \
             --without-tutorial \
