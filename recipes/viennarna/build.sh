@@ -58,11 +58,8 @@ fi
 
 ## Configure and make
 
-autoreconf -f -i
-
 ./configure --prefix=$PREFIX \
             --with-kinwalker \
-            --enable-shared \
             --disable-lto \
             --without-doc \
             --without-tutorial \
@@ -72,7 +69,7 @@ autoreconf -f -i
             CFLAGS="-fPIC -O3 -g" \
             &&\
             cat config.log &&\
-make -j${CPU_COUNT}
+make -V 1 -j${CPU_COUNT} 
 
 ## Install
 make install
