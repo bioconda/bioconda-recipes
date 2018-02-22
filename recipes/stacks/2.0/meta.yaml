@@ -1,14 +1,16 @@
-{% set version="2.0Beta7c" %}
-{% set hash="c9d98d861cdf4c8d37c11c5966d192209271c88bc7aa6ff3b76478cace9b994d" %}
+{% set version="2.0Beta8c" %}
+{% set hash="506ff10e93595237e9e74460d2d1113a367adf0ca320879fce0ba65481a34a38" %}
+# `gxx_*`/`gcc_*`/`clang_*` below should be replaced by `compiler("cxx")` with conda-build 3
+{% set gxx_version = "7.2.0" %}
+{% set clang_version = "4.0.1" %}
+
 
 package:
   name: stacks
   version: {{ version }}
 
 build:
-  skip: True # [not linux]
   number: 0
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
 
 source:
   fn: stacks-{{ version }}.tar.gz
@@ -17,18 +19,22 @@ source:
 
 requirements:
   build:
-    - gcc_linux-64 # [linux64]
-    - gxx_linux-64 # [linux64]
-    - gcc_linux-32 # [linux32]
-    - gxx_linux-32 # [linux32]
+    - gcc_linux-64 {{ gxx_version }}  # [linux64]
+    - gxx_linux-64 {{ gxx_version }}  # [linux64]
+    - clangxx_osx-64 {{ clang_version }} # [osx]
+    - clang_osx-64 {{ clang_version }}   # [osx]
     - zlib {{CONDA_ZLIB}}*
-    - boost {{CONDA_BOOST}}*
+    - openmp  # [linux]
+    - llvm-openmp  # [osx]
+
   run:
     - perl
     - velvet
-    - libgcc # [linux]
+    - libgcc >={{ gxx_version }}  # [linux]
+    - libcxx >={{ clang_version }} # [osx]
     - zlib {{CONDA_ZLIB}}*
-    - boost {{CONDA_BOOST}}*
+    - openmp  # [linux]
+    - llvm-openmp  # [osx]
 
 test:
   commands:
@@ -48,7 +54,7 @@ test:
     - command -v denovo_map.pl
     - command -v exec_velvet.pl
     - command -v export_sql.pl
-#    - extract_interpop_chars.pl
+#    - command -v extract_interpop_chars.pl
     - command -v index_radtags.pl
     - command -v integrate_alignments.py
     - command -v load_radtags.pl

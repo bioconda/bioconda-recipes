@@ -1,36 +1,37 @@
+{% set version = "1.84" %}
+{% set sha256 = "823ec3cbb428309d6a9e56f362a9300693ce3215b7fede109adb7be361fff177" %}
+
 package:
   name: perl-net-ssleay
-  version: "1.74"
+  version: {{ version }}
 
 source:
-  fn: Net-SSLeay-1.74.tar.gz
-  url: https://cpan.metacpan.org/authors/id/M/MI/MIKEM/Net-SSLeay-1.74.tar.gz
+  fn: Net-SSLeay-{{ version }}.tar.gz
+  url: https://cpan.metacpan.org/authors/id/M/MI/MIKEM/Net-SSLeay-1.84.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
 
 requirements:
   build:
-    - perl-threaded
-    - gcc
+    - perl
+    - perl-mime-base64
+    - perl-extutils-makemaker
     - openssl
-    - zlib
+    - zlib {{CONDA_ZLIB}}*
 
   run:
-    - perl-threaded
+    - perl
+    - perl-mime-base64
     - openssl
-    - zlib
-    - libgcc
+    - zlib {{CONDA_ZLIB}}*
 
 test:
-  # Perl 'use' tests: relying on "run_test.pl" due to version differences
-  # between the top-level and sub- packages.
-
-  # Additional tests to ensure basic functionality
-  commands:
-    - perl -e 'use Net::SSLeay qw(get_https); get_https("www.google.com", 443, "/");'
+  imports:
+    - Net::SSLeay
 
 about:
-  home: http://metacpan.org/pod/Net-SSLeay
+  home: http://metacpan.org/pod/Net::SSLeay
   license: perl_5
   summary: 'Perl extension for using OpenSSL'
