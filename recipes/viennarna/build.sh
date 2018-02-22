@@ -57,6 +57,9 @@ else ## linux
 fi
 
 ## Configure and make
+
+autoreconf -f -i
+
 ./configure --prefix=$PREFIX \
             --with-kinwalker \
             --disable-lto \
