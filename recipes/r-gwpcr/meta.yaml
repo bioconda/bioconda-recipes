@@ -1,0 +1,56 @@
+{% set version = '0.9.9' %}
+
+package:
+  name: r-gwpcr
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: v{{ version }}.tar.gz
+  url: https://github.com/Cibiv/gwpcR/archive/v{{ version }}.tar.gz
+  sha256: 0e86efa786ec66c9b601a7e31da1625c5969f37047a724d4845e3140638919b2
+
+build:
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - r-data.table
+    - r-akima
+    - r-statmod
+    - gcc                  # [linux]
+    - llvm                 # [osx]
+
+  run:
+    - r-base
+    - r-data.table
+    - r-akima
+    - r-statmod
+    - libgcc               # [linux]
+
+# test:
+#   requires:
+#     - r-testthat
+#   source_files:
+#     - tests
+#   commands:
+#     - $R -e "library('testthat'); test_dir('tests/testthat');"
+
+test:
+  commands:
+    - $R -e "library('gwpcR');"
+
+about:
+  home: http://www.cibiv.at/~pflug_/trumicount
+  license: AGPLv3
+  summary: 'Implements the necessary distributions and parameter estimation
+            procedures for a model of amplification and high-troughput sequencing.
+            The model is based on a mechanistic model of PCR amplification as a
+            Galton-Watson branching process, and on Poissonan sampling to model
+            high-throughput sequencing.'

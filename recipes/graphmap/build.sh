@@ -6,13 +6,12 @@ export CPATH=${PREFIX}/include
 
 mkdir -p $PREFIX/bin
 
-
 cd $SRC_DIR/codebase
-wget -O seqlib.tar.gz https://github.com/isovic/seqlib/archive/d980be7.tar.gz
+wget --no-check-certificate -O seqlib.tar.gz https://github.com/isovic/seqlib/archive/d980be7.tar.gz
 tar -xvf seqlib.tar.gz -C seqlib --strip-components 1
-wget -O argumentparser.tar.gz https://github.com/isovic/argumentparser/archive/72af976.tar.gz
+wget --no-check-certificate -O argumentparser.tar.gz https://github.com/isovic/argumentparser/archive/72af976.tar.gz
 tar -xvf argumentparser.tar.gz -C argumentparser --strip-components 1
-wget -O gindex.tar.gz https://github.com/isovic/gindex/archive/b1fb5ad.tar.gz
+wget --no-check-certificate -O gindex.tar.gz https://github.com/isovic/gindex/archive/b1fb5ad.tar.gz
 tar -xvf gindex.tar.gz -C gindex --strip-components 1
 
 cd $SRC_DIR
