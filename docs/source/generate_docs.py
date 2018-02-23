@@ -8,6 +8,7 @@ from sphinx.util import logging as sphinx_logging
 from sphinx.util import status_iterator
 from sphinx.util.template import SphinxRenderer
 from sphinx.util.rst import escape as rst_escape
+from sphinx.util.osutil import ensuredir
 from sphinx.jinja2glue import BuiltinTemplateLoader
 from distutils.version import LooseVersion
 
@@ -27,10 +28,6 @@ except Exception:
 BASE_DIR = op.dirname(op.abspath(__file__))
 RECIPE_DIR = op.join(op.dirname(BASE_DIR), 'bioconda-recipes', 'recipes')
 OUTPUT_DIR = op.join(BASE_DIR, 'recipes')
-
-# jinja2 template for the DataTable of recipes
-RECIPES_TEMPLATE = "recipes.rst_t"
-README_TEMPLATE = "readme.rst_t"
 
 
 def parse_pkgname(p):
@@ -60,6 +57,19 @@ class Renderer(object):
 
         return template.render(**context)
 
+    def render_to_file(self, file_name, template_name, context):
+        content = self.render(template_name, context)
+        # skip if exists and unchanged:
+        if os.path.exists(file_name):
+            with open(file_name, encoding="utf-8") as f:
+                if f.read() == content:
+                    return False  # unchanged
+        ensuredir(op.dirname(file_name))
+
+        with open(file_name, "wb") as f:
+            f.write(content.encode("utf-8"))
+        return True
+
 
 def generate_recipes(app):
     """
@@ -68,7 +78,6 @@ def generate_recipes(app):
     """
 
     renderer = Renderer(app)
-    render = renderer.render
 
     logger.info('Loading packages...')
     repodata = defaultdict(lambda: defaultdict(list))
@@ -88,6 +97,7 @@ def generate_recipes(app):
     recipes = []
 
     recipe_dirs = os.listdir(RECIPE_DIR)
+    recipe_dirs = recipe_dirs[1:101]
     for folder in status_iterator(recipe_dirs, 'Generating package READMEs...',
                                   "purple", len(recipe_dirs), app.verbosity):
         # Subfolders correspond to different versions
@@ -157,38 +167,19 @@ def generate_recipes(app):
             t['Version'] = version
             recipes.append(t)
 
-        readme = render(README_TEMPLATE, template_options)
+        renderer.render_to_file(
+            op.join(OUTPUT_DIR, folder, 'README.rst'),
+            'readme.rst_t',
+            template_options)
 
-        # Write to file
-        try:
-            os.makedirs(op.join(OUTPUT_DIR, folder))  # exist_ok=True on Python 3
-        except OSError:
-            pass
-        output_file = op.join(OUTPUT_DIR, folder, 'README.rst')
-
-        # avoid re-writing the same contents, which invalidates the
-        # sphinx-build cache
-        if os.path.exists(output_file):
-            if open(output_file, encoding='utf-8').read() == readme:
-                continue
-
-        with open(output_file, 'wb') as ofh:
-            ofh.write(readme.encode('utf-8'))
-
-    # render the recipes datatable page
-    recipes_contents = render(RECIPES_TEMPLATE, {
+    updated = renderer.render_to_file("source/recipes.rst", "recipes.rst_t", {
         'recipes': recipes,
 
         # order of columns in the table; must be keys in template_options
         'keys': ['Package', 'Version', 'License', 'Linux', 'OSX']
     })
-    recipes_rst = 'source/recipes.rst'
-    if not (
-        os.path.exists(recipes_rst)
-        and (open(recipes_rst).read() == recipes_contents)
-    ):
-        with open(recipes_rst, 'w') as fout:
-            fout.write(recipes_contents)
+    if updated:
+        logger.info("Updated source/recipes.rst")
 
 
 def setup(app):
