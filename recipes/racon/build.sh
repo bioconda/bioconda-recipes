@@ -3,8 +3,7 @@
 mkdir -p $PREFIX/bin
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake -DCMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=${PREFIX} ..
 make
-
-mv bin/racon $PREFIX/bin
+make install 
 
