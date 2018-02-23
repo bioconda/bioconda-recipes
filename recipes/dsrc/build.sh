@@ -4,9 +4,7 @@
 
 
 unamestr=`uname `
-if [[ "$unamestr" == 'Mac' ]]; then
-   cp Makefile.osx Makefile
-fi
+if [[ "$unamestr" == 'Linux' ]]; then
 
 
 # The CFLAGS are not available in the Makefile, so let us add it
@@ -26,6 +24,7 @@ export CFLAGS=" -I${PREFIX}/include -L${PREFIX}/lib "
 export CC=${PREFIX}/bin/gcc
 export CXX=${PREFIX}/bin/g++
 
+fi
 
 make
 make bin
