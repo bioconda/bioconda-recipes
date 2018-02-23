@@ -10,8 +10,8 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
-export CXXFLAGS="-pthread"
-export CFLAGS+="-pthread"
+#export CXXFLAGS="-pthread"
+#export CFLAGS+="-pthread"
 
 make
 PREFIX=$PREFIX/bin make install
