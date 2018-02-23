@@ -24,7 +24,13 @@ if [[ "$unamestr" == 'Linux' ]]; then
   export CXX=${PREFIX}/bin/g++
 else
 
-  export CFLAGS=" -I${PREFIX}/include -L${PREFIX}/lib -L/usr/local/include"
+  export BOOST_INCLUDE_DIR=${PREFIX}/include
+  export BOOST_LIBRARY_DIR=${PREFIX}/lib
+  export CXXFLAGS="-DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
+  export LDFLAGS="-L${BOOST_LIBRARY_DIR}"
+ 
+  export CFLAGS=" -I${PREFIX}/include -L${PREFIX}/lib "
+
   export CC=clang
   export CXX=clang++
 
