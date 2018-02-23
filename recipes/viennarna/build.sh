@@ -66,7 +66,6 @@ fi
             --without-tutorial-pdf \
             ${extra_config_options} \
             LIBS=${PY2LIB} \
-            CFLAGS="-fPIC -O3 -g" \
             &&\
             cat config.log &&\
 make V=1 -j${CPU_COUNT} 
