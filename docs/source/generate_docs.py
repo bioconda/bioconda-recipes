@@ -93,7 +93,6 @@ def generate_recipes(app):
     #   },
     #}
 
-    summaries = []
     recipes = []
 
     recipe_dirs = os.listdir(RECIPE_DIR)
@@ -134,29 +133,21 @@ def generate_recipes(app):
         # Format the README
         notes = metadata.get_section('extra').get('notes', '')
         if notes:
-            if isinstance(notes,list): notes = "\n".join(notes)
+            if isinstance(notes, list): notes = "\n".join(notes)
             notes = 'Notes\n-----\n\n' + notes
         summary = metadata.get_section('about').get('summary', '')
-        summaries.append(summary)
         template_options = {
-            'title': metadata.name(),
-            'title_underline': '=' * len(metadata.name()),
+            'title': name,
+            'title_underline': '=' * len(name),
             'summary': summary,
             'home': metadata.get_section('about').get('home', ''),
             'versions': ', '.join(versions_in_channel),
             'license': metadata.get_section('about').get('license', ''),
             'recipe': ('https://github.com/bioconda/bioconda-recipes/tree/master/recipes/' +
                 op.dirname(op.relpath(metadata.meta_path, RECIPE_DIR))),
-            'notes': notes
+            'notes': notes,
+            'Package': '<a href="recipes/{0}/README.html">{0}</a>'.format(name)
         }
-
-        # Add additional keys to template_options for use in the recipes
-        # datatable.
-
-
-        template_options['Package'] = (
-            '<a href="recipes/{0}/README.html">{0}</a>'.format(name)
-        )
 
         for version in versions_in_channel:
             t = template_options.copy()
@@ -174,7 +165,6 @@ def generate_recipes(app):
 
     updated = renderer.render_to_file("source/recipes.rst", "recipes.rst_t", {
         'recipes': recipes,
-
         # order of columns in the table; must be keys in template_options
         'keys': ['Package', 'Version', 'License', 'Linux', 'OSX']
     })
