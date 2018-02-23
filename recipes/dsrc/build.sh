@@ -25,7 +25,8 @@ if [[ "$unamestr" == 'Linux' ]]; then
 else
 
   export CFLAGS=" -I${PREFIX}/include -L${PREFIX}/lib -L/usr/local/include"
-
+  export CC=clang
+  export CXX=clang++
 
 fi
 
