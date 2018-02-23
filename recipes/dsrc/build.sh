@@ -3,6 +3,12 @@
 #yum install glibc-static -y
 
 
+unamestr=`uname `
+if [[ "$unamestr" == 'Mac' ]]; then
+   cp Makefile.osx Makefile
+fi
+
+
 # The CFLAGS are not available in the Makefile, so let us add it
 sed -i -e  "s/\$(CXXFLAGS)/\$(CXXFLAGS) \$(CFLAGS)/g" src/Makefile
 
