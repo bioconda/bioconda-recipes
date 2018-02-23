@@ -5,7 +5,6 @@ then
     export LD_LIBRARY_PATH="${PREFIX}/lib:/lib:/usr/lib"
     export STACK_ROOT="${SRC_DIR}/s"
     stack setup --resolver lts-9.21 --local-bin-path ${SRC_DIR}/s
-    stack update
     stack install --resolver lts-9.21 --local-bin-path ${PREFIX}/bin
     rm -r "${SRC_DIR}/s"
 else
