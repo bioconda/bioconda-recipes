@@ -32,9 +32,6 @@ STAGING=/tmp/${GITHUB_USERNAME}-docs
 # Build docs only if travis-ci is testing this branch:
 BUILD_DOCS_FROM_BRANCH="master"
 
-# use two cores during the documentation build
-SPHINXOPTS="-j2"
-
 # ----------------------------------------------------------------------------
 #
 # END repository-specific configuration. The code below is generic; to use for
@@ -61,7 +58,7 @@ rm -r *
 
 # build docs and copy over to tmpdir
 cd ${DOCSOURCE}
-make clean html 2>&1 | grep -v "WARNING: nonlocal image URL found:"
+make clean html SPHINXOPTS="-j2" 2>&1 | grep -v "WARNING: nonlocal image URL found:"
 cp -r ${DOCHTML}/* $STAGING
 
 # commit and push
