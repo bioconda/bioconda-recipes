@@ -32,6 +32,9 @@ STAGING=/tmp/${GITHUB_USERNAME}-docs
 # Build docs only if travis-ci is testing this branch:
 BUILD_DOCS_FROM_BRANCH="master"
 
+# use two cores during the documentation build
+SPHINXOPTS="-j2"
+
 # ----------------------------------------------------------------------------
 #
 # END repository-specific configuration. The code below is generic; to use for
