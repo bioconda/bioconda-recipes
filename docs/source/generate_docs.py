@@ -223,3 +223,8 @@ def generate_recipes(app):
 
 def setup(app):
     app.connect('builder-inited', generate_recipes)
+    return {
+        'version': "0.0.0",
+        'parallel_read_safe': True,
+        'parallel_write_safe': True
+    }
