@@ -161,11 +161,11 @@ def generate_recipes(app):
 
         for version, version_info in sorted(versions_in_channel.items()):
             t = template_options.copy()
-            if 'linux' in version_info:
-                t['Linux'] = '<i class="fa fa-linux"></i>'
-            if 'osx' in version_info:
-                t['OSX'] = '<i class="fa fa-apple"></i>'
-            t['Version'] = version
+            t.update({
+                'Linux': '<i class="fa fa-linux"></i>' if 'linux' in version_info else '',
+                'OSX': '<i class="fa fa-apple"></i>' if 'osx' in version_info else '',
+                'Version': version
+            })
             recipes.append(t)
 
         renderer.render_to_file(
