@@ -129,8 +129,7 @@ def generate_readme(folder, repodata, renderer):
         'name': name,
         'about': metadata.get_section('about'),
         'extra': metadata.get_section('extra'),
-        'versions': ', '.join(sorted(versions_in_channel.keys())),
-        'license': metadata.get_section('about').get('license', ''),
+        'versions': versions_in_channel,
         'gh_recipes': 'https://github.com/bioconda/bioconda-recipes/tree/master/recipes/',
         'recipe_path': op.dirname(op.relpath(metadata.meta_path, RECIPE_DIR)),
         'Package': '<a href="recipes/{0}/README.html">{0}</a>'.format(name)
