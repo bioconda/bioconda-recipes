@@ -65,6 +65,7 @@ class Renderer(object):
         template_loader.init(app.builder)
         template_env = SandboxedEnvironment(loader=template_loader)
         template_env.filters['escape'] = rst_escape
+        template_env.filters['underline'] = lambda x: x + '\n' + '=' * len(x)
         self.env = template_env
         self.templates = {}
 
@@ -90,8 +91,66 @@ class Renderer(object):
             f.write(content.encode("utf-8"))
         return True
 
-def generate_readme():
-    pass
+
+def generate_readme(folder, repodata, renderer):
+    # Subfolders correspond to different versions
+    versions = []
+    for sf in os.listdir(op.join(RECIPE_DIR, folder)):
+        if not op.isdir(op.join(RECIPE_DIR, folder, sf)):
+            # Not a folder
+            continue
+        try:
+            LooseVersion(sf)
+        except ValueError:
+            logger.error("'{}' does not look like a proper version!"
+                         "".format(sf))
+            continue
+        versions.append(sf)
+
+    # Read the meta.yaml file(s)
+    recipe = op.join(RECIPE_DIR, folder, "meta.yaml")
+    if op.exists(recipe):
+        metadata = MetaData(recipe)
+        if metadata.version() not in versions:
+            versions.insert(0, metadata.version())
+    else:
+        if versions:
+            recipe = op.join(RECIPE_DIR, folder, versions[0], "meta.yaml")
+            metadata = MetaData(recipe)
+        else:
+            # ignore non-recipe folders
+            return
+
+    name = metadata.name()
+    versions_in_channel = repodata.get_versions(name)
+
+    # Format the README
+    template_options = {
+        'name': name,
+        'about': metadata.get_section('about'),
+        'extra': metadata.get_section('extra'),
+        'versions': ', '.join(sorted(versions_in_channel.keys())),
+        'license': metadata.get_section('about').get('license', ''),
+        'gh_recipes': 'https://github.com/bioconda/bioconda-recipes/tree/master/recipes/',
+        'recipe_path': op.dirname(op.relpath(metadata.meta_path, RECIPE_DIR)),
+        'Package': '<a href="recipes/{0}/README.html">{0}</a>'.format(name)
+    }
+
+    renderer.render_to_file(
+        op.join(OUTPUT_DIR, folder, 'README.rst'),
+        'readme.rst_t',
+        template_options)
+
+    recipes = []
+    for version, version_info in sorted(versions_in_channel.items()):
+        t = template_options.copy()
+        t.update({
+            'Linux': '<i class="fa fa-linux"></i>' if 'linux' in version_info else '',
+            'OSX': '<i class="fa fa-apple"></i>' if 'osx' in version_info else '',
+            'Version': version
+        })
+        recipes.append(t)
+    return recipes
 
 
 def generate_recipes(app):
@@ -99,79 +158,14 @@ def generate_recipes(app):
     Go through every folder in the `bioconda-recipes/recipes` dir
     and generate a README.rst file.
     """
-
     renderer = Renderer(app)
     repodata = RepoData()
-
     recipes = []
-
     recipe_dirs = os.listdir(RECIPE_DIR)
     recipe_dirs = recipe_dirs[1:101]
     for folder in status_iterator(recipe_dirs, 'Generating package READMEs...',
                                   "purple", len(recipe_dirs), app.verbosity):
-        # Subfolders correspond to different versions
-        versions = []
-        for sf in os.listdir(op.join(RECIPE_DIR, folder)):
-            if not op.isdir(op.join(RECIPE_DIR, folder, sf)):
-                # Not a folder
-                continue
-            try:
-                LooseVersion(sf)
-            except ValueError:
-                logger.error("'{}' does not look like a proper version!"
-                             "".format(sf))
-                continue
-            versions.append(sf)
-
-        # Read the meta.yaml file(s)
-        recipe = op.join(RECIPE_DIR, folder, "meta.yaml")
-        if op.exists(recipe):
-            metadata = MetaData(recipe)
-            if metadata.version() not in versions:
-                versions.insert(0, metadata.version())
-        else:
-            if versions:
-                recipe = op.join(RECIPE_DIR, folder, versions[0], "meta.yaml")
-                metadata = MetaData(recipe)
-            else:
-                # ignore non-recipe folders
-                continue
-
-        name = metadata.name()
-        versions_in_channel = repodata.get_versions(name)
-
-        # Format the README
-        notes = metadata.get_section('extra').get('notes', '')
-        if notes:
-            if isinstance(notes, list): notes = "\n".join(notes)
-            notes = 'Notes\n-----\n\n' + notes
-        summary = metadata.get_section('about').get('summary', '')
-        template_options = {
-            'title': name,
-            'title_underline': '=' * len(name),
-            'summary': summary,
-            'home': metadata.get_section('about').get('home', ''),
-            'versions': ', '.join(sorted(versions_in_channel.keys())),
-            'license': metadata.get_section('about').get('license', ''),
-            'recipe': ('https://github.com/bioconda/bioconda-recipes/tree/master/recipes/' +
-                op.dirname(op.relpath(metadata.meta_path, RECIPE_DIR))),
-            'notes': notes,
-            'Package': '<a href="recipes/{0}/README.html">{0}</a>'.format(name)
-        }
-
-        for version, version_info in sorted(versions_in_channel.items()):
-            t = template_options.copy()
-            t.update({
-                'Linux': '<i class="fa fa-linux"></i>' if 'linux' in version_info else '',
-                'OSX': '<i class="fa fa-apple"></i>' if 'osx' in version_info else '',
-                'Version': version
-            })
-            recipes.append(t)
-
-        renderer.render_to_file(
-            op.join(OUTPUT_DIR, folder, 'README.rst'),
-            'readme.rst_t',
-            template_options)
+        recipes.extend(generate_readme(folder, repodata, renderer))
 
     updated = renderer.render_to_file("source/recipes.rst", "recipes.rst_t", {
         'recipes': recipes,
