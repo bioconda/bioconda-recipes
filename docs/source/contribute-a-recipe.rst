@@ -22,51 +22,8 @@ If you're using a clone:
     git checkout master
     git pull origin master
 
-2. Build an isolated conda installation with dependencies
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In the top level of the bioconda-recipes repo, run:
-
-.. code-block:: bash
-
-    ./simulate-travis.py --bootstrap /tmp/miniconda --overwrite
-
-This will:
-
-- create a conda installation in ``/tmp/miniconda`` that is separate from any
-  Python or conda you might already have on your system. No root privileges are
-  needed.
-- set up the proper channel order
-- install ``bioconda-utils`` and its dependencies into that installation
-- write a config file at ``~/.config/bioconda/config.yml`` to persistently
-  store the location of this new installation so that subsequent calls to
-  ``simulate-travis.py`` will use it with no further configuration.
-
-
-.. note::
-
-    If you plan on running `bioconda-utils` outside the context of
-    `simulate-travis.py` -- for example to build recipe skeletons, inspect the
-    DAG of recipes, or other maintenance and development work -- you need to
-    call it using its full path. If you used ``/tmp/miniconda`` as the
-    bootstrap path in the command above, then use
-    ``/tmp/miniconda/bin/bioconda-utils``.
-
-    This is by design: we want to keep all bioconda-related tools, which may
-    have specific dependencies that must exist in the root environment,
-    isolated from any environments you may have on your system.
-
-.. note::
-
-    The bootstrap operation runs relatively quickly, so you might consider
-    running it every time you build and test a new recipe to ensure tests on
-    travis-ci go as smoothly as possible.
-
-    If you are running into particularly difficult-to-troubleshoot issues, try
-    removing the installation directory completely and then re-installing using
-    the ``--bootstrap`` argument.
-
-3. Write a recipe
+2. Write a recipe
 ~~~~~~~~~~~~~~~~~
 
 Check out a new branch (here the branch is arbitrarily named "my-recipe"):
@@ -85,7 +42,7 @@ bioconda-specific policies.
 
 .. _test-locally:
 
-4. Test locally
+3. Test locally
 ~~~~~~~~~~~~~~~
 
 The simplest way to conduct local tests is to :ref:`setup the Circle CI client <circleci-client>`.
@@ -93,6 +50,10 @@ Then, all that needs to be done is to execute
 
 .. code-block:: bash
 
+    # Ensure the build container is up-to-date
+    docker pull bioconda/bioconda-utils-build-env
+
+    # Run the build locally
     circleci build
 
 in the root of your repository clone.
@@ -109,7 +70,7 @@ uses, e.g., `CONDA_BOOST`. You can look up the proper values for those variables
 under `scripts/env_matrix.yml` in the repository.
 
 
-5. Push changes, wait for tests to pass, submit pull request
+4. Push changes, wait for tests to pass, submit pull request
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Push your changes to your fork or to the main repo (if using a clone) to GitHub::
 

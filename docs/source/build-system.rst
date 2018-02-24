@@ -10,9 +10,8 @@ are also with the ``bioconda-recipes`` repo. This document serves as
 a high-level overview; the code remains the authoritative source on exactly
 what happens during a build.
 
-
 Why so complicated? We have to work within the constraints of conda-build,
-Docker, and Travis-CI, while simultaneously supporting the same build system on
+Docker, and CircleCI, while simultaneously supporting the same build system on
 a local machine so contributors can test. We also have isolated bioconda-utils
 from bioconda-recipes to better facilitate testing of the infrastructure, and
 to (one day!) make it general enough that others can use the framework for
@@ -20,32 +19,48 @@ their own specific channels. So there are a lot of moving parts that have to be
 coordinated, resulting in a complex system. That said, we do have some room to
 simplify, and do so where we can.
 
-
+Stages of a bioconda build
+--------------------------
 A GitHub pull request, or any pushed changes to a GitHub pull request, triggers
-a new build on Travis-CI. Each build on Travis-CI starts with a fresh VM, so we
+a new build on CircleCI. One build can contain mulitple recipes, limited only
+by the time limit imposed by CircleCI (they have generously given us an
+extended build time).  Each build on CircleCI starts with a fresh VM, so we
 need to create the entire bioconda-build system environment from scratch for
 each build.
 
-One build can contain mulitple recipes, limited only by the time limit imposed
-by Travis-CI (they have generously given us an extended build time). Each build
-has the following stages; the relevant files in the relevant repos are
-indicated.
+When testing locally with ``circleci build``, we use the
+`bioconda/bioconda-utils-build-env` Docker container to avoid changing the
+local system. This container is defined by `this Dockerfile
+<https://github.com/bioconda/bioconda-utils/blob/master/Dockerfile>`_.
 
-- Install necessary packages on the VM
-    - ``bioconda-recipes: .travis.yml``: configures setup script and env vars
-    - ``bioconda-recipes: scripts/travis-setup.sh``: the actual setup script;
-      ends with adding local channel so that subsequent packages can use
-      previously built packages as dependencies
-    - ``bioconda-recipes: simulate-travis.py``: called by the setup script;
-      this installs miniconda and configures bioconda and conda-forge channels
 
-- Start a build
-    - ``bioconda-recipes: scripts/travis-run.sh``: handles different ways
-      a build could be triggered on travis-ci and handles them appropriately
-    - ``bioconda-recipes: .travis.yml``: env vars defined here
+Otherwise, when running on CircleCI, a new Linux or MacOS VM is created for
+each build.
 
-- Run linting on those changed recipes
-  - ``bioconda-utils: bioconda_utils/cli.py``, ``bioconda_utils/linting.py``
+The steps are orchestrated by the `circleci config file
+<https://github.com/bioconda/bioconda-recipes/blob/master/.circleci/config.yml>`_.
+
+
+Configure the environment
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Configure the CI environment:
+    - ``bioconda-recipes: .circleci/config.yml`` is the primary configuration
+      file for the steps that are run. See https://circleci.com/docs/2.0/ for
+      the configuration documentation.
+    - ``bioconda-common: common.sh`` defines the versions of Miniconda and
+      bioconda-utils to use.
+    - ``bioconda-recipes: .circleci/setup.sh`` installs Miniconda and
+      bioconda-utils, sets the correct channel order
+
+- Run linting on changed recipes
+  - This is triggered by the ``bioconda-recipes: .circleci/config.yml`` "lint"
+    job, which runs ``bioconda-utils: bioconda_utils/cli.py`` and
+    ``bioconda_utils/linting.py``
+
+- Build recipes
+  - Triggered by the ``bioconda-recipes: .circleci/config.yaml`` "test-linux"
+    job, which runs ``bioconda-utils build``. This performs the next steps.
 
 - Filter recipes to only focus on recipes that satisfy the following criteria:
     - changed recently (we use a ``git diff`` command to identify these

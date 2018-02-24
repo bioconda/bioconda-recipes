@@ -230,15 +230,9 @@ R (Bioconductor)
 ----------------
 
 Use the ``bioconda-utils bioconductor-skeleton`` tool to build a Bioconductor
-skeleton. Note that if you set up your development environment using
-``simulate-travis.py --bootstrap /tmp/miniconda`` then ``bioconda-utils`` is
-installed but by design is not added to your path in order to maintain
-separation from any of your existing environments. So you will need to call
-``/tmp/miniconda/bin/bioconda-utils bioconductor-skeleton -h`` to view the help.
+skeleton::
 
-For example, in the bioconda-recipes directory::
-
-    /tmp/miniconda/bin/bioconda-utils bioconductor-skeleton recipes config.yml DESeq2
+    bioconda-utils bioconductor-skeleton recipes config.yml DESeq2
 
 Note that the provided package name is a case-sensitive package available on
 Bioconductor. The output recipe name will have a ``bioconductor-`` prefix and
@@ -482,7 +476,7 @@ An adequate test must be included in the recipe. An "adequate" test
 depends on the recipe, but must be able to detect a successful
 installation. While many packages may ship their own test suite (unit
 tests or otherwise), including these in the recipe is not recommended
-since it may timeout the build system on Travis-CI. We especially want to avoid
+since it may timeout the build system on CircleCI. We especially want to avoid
 including any kind of test data in the repository.
 
 Note that a test must return an exit code of 0. The test can be in the ``test``
@@ -491,7 +485,7 @@ docs <http://conda.pydata.org/docs/building/meta-yaml.html#test-section>`_ for
 testing).
 
 It is recommended to pipe unneeded stdout/stderr to /dev/null to avoid
-cluttering the output in the Travis-CI build environment.
+cluttering the output in the CircleCI build environment.
 
 Link and unlink scripts (pre- and post- install hooks)
 ------------------------------------------------------
