@@ -64,7 +64,7 @@ class Renderer(object):
         template_loader = BuiltinTemplateLoader()
         template_loader.init(app.builder)
         template_env = SandboxedEnvironment(loader=template_loader)
-        template_env.filters['escape'] = rst_escape
+        template_env.filters['escape'] = lambda x: rst_escape(x) if x else x
         template_env.filters['underline'] = lambda x: x + '\n' + '=' * len(x)
         self.env = template_env
         self.templates = {}
