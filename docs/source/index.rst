@@ -89,7 +89,6 @@ packages compiled against R 3.3.1 might not work.
 
 ::
 
-    (conda config --add channels r)
     conda config --add channels defaults
     conda config --add channels conda-forge
     conda config --add channels bioconda
@@ -106,7 +105,6 @@ Bioconda is now enabled, so any packages on the bioconda channel can be installe
 Or a new environment can be created::
 
     conda create -n aligners bwa bowtie hisat star
-
 
 
 4. Join the team

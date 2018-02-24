@@ -5,7 +5,7 @@ In order to ensure high-quality packages, we now perform routine checks on each
 recipe (called `linting
 <http://stackoverflow.com/questions/8503559/what-is-linting>`_). By default,
 linting is performed on any recipes that have changed relative to the master
-branch. The travis-ci build will fail if any of the linting checks fail. Below
+branch. The CircleCI build will fail if any of the linting checks fail. Below
 is a list of the checks performed and how to fix them if they fail.
 
 Skipping a linting test
@@ -21,7 +21,7 @@ should be skipped.
 For example, if the linter reports a ``uses_setuptools`` issue for
 ``recipes/mypackage``, but you are certain the package really needs
 setuptools, you can add ``[lint skip uses_setuptools for recipes/mypackage]``
-to the commit message and this linting test will be skipped on Travis-CI.
+to the commit message and this linting test will be skipped on CircleCI.
 Multiple tests can be skipped by adding additional special text. For example,
 ``[lint skip uses_setuptools for recipes/pkg1] [lint skip in_other_channels for
 recipes/pkg2/0.3.5]``. Note in the latter case that the second recipe has
@@ -30,11 +30,11 @@ a subdirectory for an older version.
 Technically we check for the regular expression ``\[\s*lint skip (?P<func>\w+)
 for (?P<recipe>.*?)\s*\]`` in the commit message of the HEAD commit. However,
 often we want to test changes locally without committing.  When running
-``simulate-travis.py`` locally for testing, you can add the same special text to
-a temporary environment variable ``LINT_SKIP``. The same example above could be
-tested locally like this without having to make a commit::
+locally for testing, you can add the same special text to a temporary
+environment variable ``LINT_SKIP``. The same example above could be tested
+locally like this without having to make a commit::
 
-    LINT_SKIP="[lint skip uses_setuptools for recipes/mypackage]" ./simulate-travis.py
+    LINT_SKIP="[lint skip uses_setuptools for recipes/mypackage]" circleci build
 
 Skipping persistently on a per-recipe basis
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
