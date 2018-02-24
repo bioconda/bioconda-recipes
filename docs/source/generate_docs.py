@@ -6,8 +6,9 @@ from jinja2.sandbox import SandboxedEnvironment
 from bioconda_utils import utils
 from sphinx.util import logging as sphinx_logging
 from sphinx.util import status_iterator
-from sphinx.util.template import SphinxRenderer
+from sphinx.util.parallel import ParallelTasks, parallel_available, make_chunks
 from sphinx.util.rst import escape as rst_escape
+from sphinx.util.template import SphinxRenderer
 from sphinx.util.osutil import ensuredir
 from sphinx.jinja2glue import BuiltinTemplateLoader
 from distutils.version import LooseVersion
@@ -178,9 +179,38 @@ def generate_recipes(app):
     repodata = RepoData()
     recipes = []
     recipe_dirs = os.listdir(RECIPE_DIR)
-    for folder in status_iterator(recipe_dirs, 'Generating package READMEs...',
-                                  "purple", len(recipe_dirs), app.verbosity):
-        recipes.extend(generate_readme(folder, repodata, renderer))
+
+    if parallel_available and len(recipe_dirs) > 5:
+        nproc = app.parallel
+    else:
+        nproc = 1
+
+    if nproc == 1:
+        for folder in status_iterator(
+                recipe_dirs,
+                'Generating package READMEs...',
+                "purple", len(recipe_dirs), app.verbosity):
+            recipes.extend(generate_readme(folder, repodata, renderer))
+    else:
+        tasks = ParallelTasks(nproc)
+        chunks = make_chunks(recipe_dirs, nproc)
+
+        def process_chunk(chunk):
+            _recipes = []
+            for folder in chunk:
+                _recipes.extend(generate_readme(folder, repodata, renderer))
+            return _recipes
+
+        def merge_chunk(chunk, res):
+            recipes.extend(res)
+
+        for chunk in status_iterator(
+                chunks,
+                'Generating package READMEs with {} threads...'.format(nproc),
+                "purple", len(chunks), app.verbosity):
+            tasks.add_task(process_chunk, chunk, merge_chunk)
+        logger.info("waiting for workers...")
+        tasks.join()
 
     updated = renderer.render_to_file("source/recipes.rst", "recipes.rst_t", {
         'recipes': recipes,
