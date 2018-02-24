@@ -30,13 +30,33 @@ RECIPE_DIR = op.join(op.dirname(BASE_DIR), 'bioconda-recipes', 'recipes')
 OUTPUT_DIR = op.join(BASE_DIR, 'recipes')
 
 
-def parse_pkgname(p):
-    p = p.replace('.tar.bz2', '')
-    toks = p.split('-')
-    build_string = toks.pop()
-    version = toks.pop()
-    name = '-'.join(toks)
-    return dict(name=name, version=version, build_string=build_string)
+class RepoData(object):
+    def __init__(self):
+        logger.info('Loading packages...')
+        repodata = defaultdict(lambda: defaultdict(list))
+        for platform in ['linux', 'osx']:
+            for pkg in utils.get_channel_packages(channel='bioconda',
+                                                  platform=platform):
+                name, version, _ = self.parse_pkgname(pkg)
+                repodata[name][version].append(platform)
+        self.repodata = repodata
+        # e.g., repodata = {
+        #   'package1': {
+        #       '0.1': ['linux'],
+        #       '0.2': ['linux', 'osx'],
+        #   },
+        # }
+
+    def parse_pkgname(self, p):
+        p = p.replace('.tar.bz2', '')
+        toks = p.split('-')
+        build_string = toks.pop()
+        version = toks.pop()
+        name = '-'.join(toks)
+        return name, version, build_string
+
+    def get_versions(self, p):
+        return self.repodata[p]
 
 
 class Renderer(object):
@@ -70,6 +90,9 @@ class Renderer(object):
             f.write(content.encode("utf-8"))
         return True
 
+def generate_readme():
+    pass
+
 
 def generate_recipes(app):
     """
@@ -78,20 +101,7 @@ def generate_recipes(app):
     """
 
     renderer = Renderer(app)
-
-    logger.info('Loading packages...')
-    repodata = defaultdict(lambda: defaultdict(list))
-    for platform in ['linux', 'osx']:
-        for pkg in utils.get_channel_packages(channel='bioconda', platform=platform):
-            d = parse_pkgname(pkg)
-            repodata[d['name']][d['version']].append(platform)
-
-    # e.g., repodata = {
-    #   'package1': {
-    #       '0.1': ['linux'],
-    #       '0.2': ['linux', 'osx'],
-    #   },
-    #}
+    repodata = RepoData()
 
     recipes = []
 
@@ -128,7 +138,7 @@ def generate_recipes(app):
                 continue
 
         name = metadata.name()
-        versions_in_channel = sorted(repodata[name].keys())
+        versions_in_channel = repodata.get_versions(name)
 
         # Format the README
         notes = metadata.get_section('extra').get('notes', '')
@@ -141,7 +151,7 @@ def generate_recipes(app):
             'title_underline': '=' * len(name),
             'summary': summary,
             'home': metadata.get_section('about').get('home', ''),
-            'versions': ', '.join(versions_in_channel),
+            'versions': ', '.join(sorted(versions_in_channel.keys())),
             'license': metadata.get_section('about').get('license', ''),
             'recipe': ('https://github.com/bioconda/bioconda-recipes/tree/master/recipes/' +
                 op.dirname(op.relpath(metadata.meta_path, RECIPE_DIR))),
@@ -149,11 +159,11 @@ def generate_recipes(app):
             'Package': '<a href="recipes/{0}/README.html">{0}</a>'.format(name)
         }
 
-        for version in versions_in_channel:
+        for version, version_info in sorted(versions_in_channel.items()):
             t = template_options.copy()
-            if 'linux' in repodata[name][version]:
+            if 'linux' in version_info:
                 t['Linux'] = '<i class="fa fa-linux"></i>'
-            if 'osx' in repodata[name][version]:
+            if 'osx' in version_info:
                 t['OSX'] = '<i class="fa fa-apple"></i>'
             t['Version'] = version
             recipes.append(t)
