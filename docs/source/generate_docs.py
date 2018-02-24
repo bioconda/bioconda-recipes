@@ -59,13 +59,30 @@ class RepoData(object):
         return self.repodata[p]
 
 
+def as_extlink_filter(text):
+    if isinstance(text, list):
+        return [as_extlink_filter(text_item) for text_item in text]
+    return "{0}: :{0}:`{1}`".format(*text.split(":"))
+
+
+def underline_filter(text):
+    return text + "\n" + "=" * len(text)
+
+
+def escape_filter(text):
+    if text:
+        return rst_escape(text)
+    return text
+
+
 class Renderer(object):
     def __init__(self, app):
         template_loader = BuiltinTemplateLoader()
         template_loader.init(app.builder)
         template_env = SandboxedEnvironment(loader=template_loader)
-        template_env.filters['escape'] = lambda x: rst_escape(x) if x else x
-        template_env.filters['underline'] = lambda x: x + '\n' + '=' * len(x)
+        template_env.filters['escape'] = escape_filter
+        template_env.filters['underline'] = underline_filter
+        template_env.filters['as_extlink'] = as_extlink_filter
         self.env = template_env
         self.templates = {}
 
@@ -161,7 +178,6 @@ def generate_recipes(app):
     repodata = RepoData()
     recipes = []
     recipe_dirs = os.listdir(RECIPE_DIR)
-    recipe_dirs = recipe_dirs[1:101]
     for folder in status_iterator(recipe_dirs, 'Generating package READMEs...',
                                   "purple", len(recipe_dirs), app.verbosity):
         recipes.extend(generate_readme(folder, repodata, renderer))
