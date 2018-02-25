@@ -1,18 +1,17 @@
 import os
 import os.path as op
 from collections import defaultdict
-from jinja2 import Template
 from jinja2.sandbox import SandboxedEnvironment
 from bioconda_utils import utils
 from sphinx.util import logging as sphinx_logging
 from sphinx.util import status_iterator
 from sphinx.util.parallel import ParallelTasks, parallel_available, make_chunks
 from sphinx.util.rst import escape as rst_escape
-from sphinx.util.template import SphinxRenderer
 from sphinx.util.osutil import ensuredir
 from sphinx.jinja2glue import BuiltinTemplateLoader
 from distutils.version import LooseVersion
 
+# Aquire a logger
 try:
     logger = sphinx_logging.getLogger(__name__)
 except AttributeError:  # not running within sphinx
@@ -32,13 +31,14 @@ OUTPUT_DIR = op.join(BASE_DIR, 'recipes')
 
 
 class RepoData(object):
+    """Load and parse packages (not recipes) available via channel"""
     def __init__(self):
         logger.info('Loading packages...')
         repodata = defaultdict(lambda: defaultdict(list))
         for platform in ['linux', 'osx']:
             for pkg in utils.get_channel_packages(channel='bioconda',
                                                   platform=platform):
-                name, version, _ = self.parse_pkgname(pkg)
+                name, version, _ = self._parse_pkgname(pkg)
                 repodata[name][version].append(platform)
         self.repodata = repodata
         # e.g., repodata = {
@@ -48,7 +48,7 @@ class RepoData(object):
         #   },
         # }
 
-    def parse_pkgname(self, p):
+    def _parse_pkgname(self, p):
         p = p.replace('.tar.bz2', '')
         toks = p.split('-')
         build_string = toks.pop()
@@ -57,26 +57,63 @@ class RepoData(object):
         return name, version, build_string
 
     def get_versions(self, p):
+        """Get versions available for package
+
+        Args:
+          p: package name
+
+        Returns:
+          Dictionary mapping version numbers to list of architectures
+        """
         return self.repodata[p]
 
 
 def as_extlink_filter(text):
+    """Jinja2 filter converting identifier (list) to extlink format
+
+    Args:
+      text: may be string or list of strings
+
+    >>> as_extlink_filter("biotools:abyss")
+    "biotools: :biotool:`abyss`"
+
+    >>> as_extlink_filter(["biotools:abyss", "doi:123")
+    "biotools: :biotool:`abyss`, doi: :doi:`123`"
+    """
     if isinstance(text, list):
         return [as_extlink_filter(text_item) for text_item in text]
     return "{0}: :{0}:`{1}`".format(*text.split(":"))
 
 
 def underline_filter(text):
+    """Jinja2 filter adding =-underline to row of text
+
+    >>> underline_filter("headline")
+    "headline\n========"
+    """
     return text + "\n" + "=" * len(text)
 
 
 def escape_filter(text):
+    """Jinja2 filter escaping RST symbols in text
+
+    >>> excape_filter("running `cmd.sh`")
+    "running \`cmd.sh\`"
+    """
     if text:
         return rst_escape(text)
     return text
 
 
 class Renderer(object):
+    """Jinja2 template renderer
+
+    - Loads and caches templates from paths configured in conf.py
+    - Makes additional jinja filters available:
+      - underline -- turn text into a RSt level 1 headline
+      - escape -- escape RST special characters
+      - as_extlink -- convert (list of) identifiers to extlink references
+    """
     def __init__(self, app):
         template_loader = BuiltinTemplateLoader()
         template_loader.init(app.builder)
@@ -88,6 +125,12 @@ class Renderer(object):
         self.templates = {}
 
     def render(self, template_name, context):
+        """Render a template file to string
+
+        Args:
+          template_name: Name of template file
+          context: dictionary to pass to jinja
+        """
         try:
             template = self.templates[template_name]
         except KeyError:
@@ -97,6 +140,19 @@ class Renderer(object):
         return template.render(**context)
 
     def render_to_file(self, file_name, template_name, context):
+        """Render a template file to a file
+
+        Ensures that target directories exist and only writes
+        the file if the content has changed.
+
+        Args:
+          file_name: Target file name
+          template_name: Name of template file
+          context: dictionary to pass to jinja
+
+        Returns:
+          True if a file was written
+        """
         content = self.render(template_name, context)
         # skip if exists and unchanged:
         if os.path.exists(file_name):
@@ -111,6 +167,18 @@ class Renderer(object):
 
 
 def generate_readme(folder, repodata, renderer):
+    """Generates README.rst for the recipe in folder
+
+    Args:
+      folder: Toplevel folder name in recipes directory
+      repodata: RepoData object
+      renderer: Renderer object
+
+    Returns:
+      List of template_options for each concurrent version for
+      which meta.yaml files exist in the recipe folder and its
+      subfolders
+    """
     # Subfolders correspond to different versions
     versions = []
     for sf in os.listdir(op.join(RECIPE_DIR, folder)):
@@ -172,8 +240,9 @@ def generate_readme(folder, repodata, renderer):
 
 def generate_recipes(app):
     """
-    Go through every folder in the `bioconda-recipes/recipes` dir
-    and generate a README.rst file.
+    Go through every folder in the `bioconda-recipes/recipes` dir,
+    have a README.rst file generated and generate a recipes.rst from
+    the collected data.
     """
     renderer = Renderer(app)
     repodata = RepoData()
@@ -223,3 +292,8 @@ def generate_recipes(app):
 
 def setup(app):
     app.connect('builder-inited', generate_recipes)
+    return {
+        'version': "0.0.0",
+        'parallel_read_safe': True,
+        'parallel_write_safe': True
+    }

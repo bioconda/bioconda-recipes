@@ -320,5 +320,5 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 # We are using the `extlinks` extension to render links for identifiers:
 extlinks = {
    'biotools': ('https://bio.tools/%s', ''),
-   'doi': ('https://dx.doi.org/%s', ''),
+   'doi': ('https://doi.org/%s', ''),
 }
