@@ -8,7 +8,7 @@ then
   export CPPFLAGS="-I${PREFIX}/include"
   echo "${PREFIX}"
   echo "${SRC_DIR}/s"
-  stack setup --extra-lib-dirs "${PREFIX}/lib" --extra-include-dirs "${PREFIX}/include" --local-bin-path "${SRC_DIR}/s"
+  stack setup --extra-lib-dirs "${PREFIX}/lib" --extra-include-dirs "${PREFIX}/include" --local-bin-path "${PREFIX}/bin"
   stack path
   stack update
   stack install --extra-lib-dirs "${PREFIX}/lib" --extra-include-dirs "${PREFIX}/include" --local-bin-path "${PREFIX}/bin"
