@@ -4,8 +4,6 @@ if [ `uname` == Darwin ]
 then
   export LD_LIBRARY_PATH="${PREFIX}/lib"
   export STACK_ROOT="${SRC_DIR}/s"
-  export LDFLAGS="-L${PREFIX}/lib"
-  export CPPFLAGS="-I${PREFIX}/include"
   echo ${PREFIX}
   echo ${SRC_DIR}/s
   ls -l
@@ -14,10 +12,10 @@ then
   mkdir $LOCALBIN
   export LOCALWORK="${SRC_DIR}/s/wo"
   mkdir $LOCALWORK
-  stack setup --stack-root ${SRC_DIR}/s --work-dir wo --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include --local-bin-path $LOCALBIN
-  stack exec env --stack-root ${SRC_DIR}/s --work-dir wo --local-bin-path $LOCALBIN
-  stack update --stack-root ${SRC_DIR}/s --work-dir wo --local-bin-path $LOCALBIN
-  stack install --cabal-verbose --stack-root ${SRC_DIR}/s --work-dir wo --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include --local-bin-path $LOCALBIN
+  stack setup --stack-root ${SRC_DIR}/s --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include --local-bin-path $LOCALBIN
+  stack exec env --stack-root ${SRC_DIR}/s --local-bin-path $LOCALBIN
+  stack update --stack-root ${SRC_DIR}/s --local-bin-path $LOCALBIN
+  stack install --cabal-verbose --stack-root ${SRC_DIR}/s --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include --local-bin-path $LOCALBIN
   cp -p $LOCALBIN/CMCV ${PREFIX}/bin
   cp -p $LOCALBIN/CMCWStoCMCV ${PREFIX}/bin
   cp -p $LOCALBIN/CMCtoHMMC ${PREFIX}/bin
