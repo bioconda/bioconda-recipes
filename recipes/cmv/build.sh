@@ -14,7 +14,6 @@ then
   export PATH="$LOCALBIN:$PATH"
   stack setup --stack-root ${SRC_DIR}/s --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include --local-bin-path $LOCALBIN
   stack exec env --stack-root ${SRC_DIR}/s --local-bin-path $LOCALBIN
-  stack path --stack-root ${SRC_DIR}/s --local-bin-path $LOCALBIN
   stack update --stack-root ${SRC_DIR}/s --local-bin-path $LOCALBIN
   stack install --stack-root ${SRC_DIR}/s --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include --local-bin-path ${PREFIX}/bin
   #cp -p $LOCALBIN/* "${PREFIX}/bin"
