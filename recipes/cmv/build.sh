@@ -11,11 +11,12 @@ then
   mkdir ${SRC_DIR}/s
   export LOCALBIN="${SRC_DIR}/s/bin"
   mkdir $LOCALBIN
-  export PATH="$LOCALBIN:$PATH"
-  stack setup --stack-root ${SRC_DIR}/s --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include --local-bin-path $LOCALBIN
-  stack exec env --stack-root ${SRC_DIR}/s --local-bin-path $LOCALBIN
-  stack update --stack-root ${SRC_DIR}/s --local-bin-path $LOCALBIN
-  stack install --stack-root ${SRC_DIR}/s --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include --local-bin-path $LOCALBIN
+  export LOCALWORK="${SRC_DIR}/s/work"
+  mkdir $LOCALWORK
+  stack setup --stack-root ${SRC_DIR}/s --work-dir $LOCALWORK --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include --local-bin-path $LOCALBIN
+  stack exec env --stack-root ${SRC_DIR}/s --work-dir $LOCALWORK --local-bin-path $LOCALBIN
+  stack update --stack-root ${SRC_DIR}/s --work-dir $LOCALWORK --local-bin-path $LOCALBIN
+  stack install --stack-root ${SRC_DIR}/s --work-dir $LOCALWORK --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include --local-bin-path $LOCALBIN
   cp -p $LOCALBIN/CMCV ${PREFIX}/bin
   cp -p $LOCALBIN/CMCWStoCMCV ${PREFIX}/bin
   cp -p $LOCALBIN/CMCtoHMMC ${PREFIX}/bin
