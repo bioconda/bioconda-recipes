@@ -15,8 +15,15 @@ then
   stack setup --stack-root ${SRC_DIR}/s --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include --local-bin-path $LOCALBIN
   stack exec env --stack-root ${SRC_DIR}/s --local-bin-path $LOCALBIN
   stack update --stack-root ${SRC_DIR}/s --local-bin-path $LOCALBIN
-  stack install --stack-root ${SRC_DIR}/s --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include --local-bin-path ${PREFIX}/bin
-  #cp -p $LOCALBIN/* "${PREFIX}/bin"
+  stack install --stack-root ${SRC_DIR}/s --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include --local-bin-path $LOCALBIN
+  cp -p $LOCALBIN/CMCV ${PREFIX}/bin
+  cp -p $LOCALBIN/CMCWStoCMCV ${PREFIX}/bin
+  cp -p $LOCALBIN/CMCtoHMMC ${PREFIX}/bin
+  cp -p $LOCALBIN/CMV ${PREFIX}/bin
+  cp -p $LOCALBIN/CMVJson ${PREFIX}/bin
+  cp -p $LOCALBIN/HMMCV ${PREFIX}/bin
+  cp -p $LOCALBIN/HMMCtoCMC ${PREFIX}/bin
+  cp -p $LOCALBIN/HMMV ${PREFIX}/bin
   rm -r ${SRC_DIR}/s
 else
   export LIBRARY_PATH="${PREFIX}/lib:/usr/lib:/usr/lib64"
