@@ -12,7 +12,8 @@ then
   export LOCALBIN="${SRC_DIR}/s/bin"
   mkdir $LOCALBIN
   export PATH="$LOCALBIN:$PATH"
-  stack setup --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include --local-bin-path $LOCALBIN
+  stack setup --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include
+  stack exec env 
   stack path
   stack update
   stack install --extra-lib-dirs ${PREFIX}/lib --extra-include-dirs ${PREFIX}/include --local-bin-path ${PREFIX}/bin
