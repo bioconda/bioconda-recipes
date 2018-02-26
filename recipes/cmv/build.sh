@@ -8,11 +8,15 @@ then
   export CPPFLAGS="-I${PREFIX}/include"
   echo "${PREFIX}"
   echo "${SRC_DIR}/s"
-  stack setup --extra-lib-dirs "${PREFIX}/lib" --extra-include-dirs "${PREFIX}/include" --local-bin-path "${PREFIX}/bin"
+  export LOCALBIN="${SRC_DIR}/s/bin"
+  mkdir "$LOCALBIN"
+  export PATH="$LOCALBIN:$PATH"
+  stack setup --extra-lib-dirs "${PREFIX}/lib" --extra-include-dirs "${PREFIX}/include" --local-bin-path "$LOCALBIN"
   stack path
   stack update
-  stack install --extra-lib-dirs "${PREFIX}/lib" --extra-include-dirs "${PREFIX}/include" --local-bin-path "${PREFIX}/bin"
-  rm -r "${SRC_DIR}/s"
+  stack install --extra-lib-dirs "${PREFIX}/lib" --extra-include-dirs "${PREFIX}/include" --local-bin-path "$LOCALBIN"
+  cp -p $LOCALBIN/* "${PREFIX}/bin"
+  rm -r "${SRC_DIR}/s" 
 else
   export LIBRARY_PATH="${PREFIX}/lib:/usr/lib:/usr/lib64"
   export LD_LIBRARY_PATH="${PREFIX}/lib:/usr/lib:/usr/lib64"
