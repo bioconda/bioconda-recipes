@@ -1,37 +1,56 @@
-{% set name = "chewBBACA" %}
-{% set version = "1.0" %}
+{% set name='chewBBACA' %}
+{% set version='2.0.6' %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+    name: {{ name|lower }}
+    version: {{ version }}
 
 source:
-  url: https://github.com/B-UMMI/chewBBACA/archive/{{ version }}.tar.gz
-  sha256: c4a34c3ecd780cacfdabbb116cba36ced11cba36fefdf4ca9bea9ecd3c918d71
+    fn: {{ name }}-{{ version }}.tar.gz
+    url: https://pypi.python.org/packages/a8/ac/d099d8004dd855763d9834a3171a58fa543bd0c45f86f530971294fed719/{{ name }}-{{ version }}.tar.gz
+    md5: 975cb3798b65b8ae5f3190279129b30f
 
 build:
-  skip: True  # [osx or py3k]
-  number: 0
+    skip: True # [ py27 ]
+    entry_points:
+        - chewBBACA.py = CHEWBBACA.chewBBACA:main
+    build: 0
 
 requirements:
-  build:
-    - python
-
-  run:
-    - python
-    - numpy 1.13.1
-    - scipy >=0.13.3
-    - plotly 1.12.*
-    - biopython 1.70
-    - prodigal >=2.6.0
-    - blast >=2.5.0
+    build:
+        - python
+        - setuptools
+        - numpy >=1.14.0
+        - scipy >=0.13.3
+        - biopython >=1.70
+        - plotly >=1.12.9
+        - sparqlwrapper >=1.7.6
+    run:
+        - python
+        - numpy >=1.14.0
+        - scipy >=0.13.3
+        - biopython >=1.70
+        - plotly >=1.12.9
+        - sparqlwrapper >=1.7.6
+        - blast >=2.5.0
+        - prodigal >=2.6.0
+        - clustalw >=2.1
+        - mafft
 
 test:
-  commands:
-    - chewBBACA.py -h
+    imports:
+        - CHEWBBACA
+        - CHEWBBACA.SchemaEvaluator
+        - CHEWBBACA.allelecall
+        - CHEWBBACA.createschema
+        - CHEWBBACA.utils
+
+    commands:
+        - chewBBACA.py --help
 
 about:
   home: https://github.com/B-UMMI/chewBBACA
   license: GPL-3.0
-  license_file: LICENSE
-  summary: Whole genome and core genome MultiLocus Sequence Typing.
+  summary: 'A complete suite for gene-by-gene schema creation and strain identification'
+  license_family: GPL3
+  description: 'chewBBACA is a comprehensive pipeline including a set of functions for the creation and validation of whole genome and core genome MultiLocus Sequence Typing (wg/cgMLST) schemas, providing an allele calling algorithm based on Blast Score Ratio that can be run in multiprocessor settings and a set of functions to visualize and validate allele variation in the loci.'
