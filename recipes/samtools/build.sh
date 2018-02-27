@@ -18,11 +18,13 @@ export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
 cd htslib*
-./configure --prefix=$PREFIX --enable-libcurl CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" || (cat config.log ; false)
-cat config.log
+./configure --prefix=$PREFIX --enable-libcurl CFLAGS="-I$PREFIX/include" LDFLAGS="$LDFLAGS"
 make
 cd ..
 # Problem with ncurses from default channel we now get in bioconda so skip tview
 # https://github.com/samtools/samtools/issues/577
-./configure --prefix=$PREFIX --enable-libcurl --enable-plugins --with-plugin-path=$PWD/htslib-$PKG_VERSION LDFLAGS='-Wl,--add-needed' || (cat config.log ; false)
+if [[ "$(uname)" == "Linux" ]] ; then
+    export LDFLAGS="$LDFLAGS -Wl,--add-needed"
+fi
+./configure --prefix=$PREFIX --enable-libcurl --enable-plugins --with-plugin-path=$PWD/htslib-$PKG_VERSION LDFLAGS="$LDFLAGS" || (cat config.log ; false)
 make install prefix=$PREFIX LIBS+=-lcrypto LIBS+=-lcurl
