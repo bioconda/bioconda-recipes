@@ -31,10 +31,11 @@ perl vep_install.pl -a a --NO_HTSLIB --CURL
 # Remove test data
 rm -rf t/
 # Install plugins
-wget --no-check-certificate https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/87/CADD.pm
-wget --no-check-certificate https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/87/dbNSFP.pm
-wget --no-check-certificate https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/87/MaxEntScan.pm
-wget --no-check-certificate https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/87/GeneSplicer.pm
-wget --no-check-certificate https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/87/dbscSNV.pm
-wget --no-check-certificate https://raw.githubusercontent.com/konradjk/loftee/master/LoF.pm
-wget --no-check-certificate https://raw.githubusercontent.com/konradjk/loftee/master/splice_module.pl
+WGET="wget --ca-certificate=$PREFIX/ssl/cert.pem"
+$WGET https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/87/CADD.pm
+$WGET https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/87/dbNSFP.pm
+$WGET https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/87/MaxEntScan.pm
+$WGET https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/87/GeneSplicer.pm
+$WGET https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/87/dbscSNV.pm
+$WGET https://raw.githubusercontent.com/konradjk/loftee/v0.3-beta/LoF.pm
+$WGET https://raw.githubusercontent.com/konradjk/loftee/v0.3-beta/splice_module.pl
