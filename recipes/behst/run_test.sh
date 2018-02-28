@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -euo pipefail
 
 # download script dumps progress to stdout, causing too-large log output on
