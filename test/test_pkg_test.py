@@ -86,3 +86,26 @@ def test_pkg_test_custom_base_image():
     """
     build_package = _build_pkg(RECIPE_CUSTOM_BASE)
     res = pkg_test.test_package(build_package, base_image='debian:latest')
+
+
+@pytest.mark.skipif(SKIP_OSX, reason="skipping on osx")
+def test_pkg_test_conda_image():
+    """
+    Running a mulled-build test with a non-default conda image.
+    """
+    recipe = dedent("""
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: 0.1
+            test:
+              commands:
+                - cat "$PREFIX/conda-version.txt"
+                - grep -F 4.3.11 "$PREFIX/conda-version.txt"
+          post-link.sh: |
+            #!/bin/bash
+            /opt/conda/bin/conda --version >"$PREFIX/conda-version.txt"
+    """)
+    build_package = _build_pkg(recipe)
+    pkg_test.test_package(build_package, conda_image="continuumio/miniconda3:4.3.11")

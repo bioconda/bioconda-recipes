@@ -11,6 +11,11 @@ from conda_build.metadata import MetaData
 
 logger = logging.getLogger(__name__)
 
+# Use Miniconda 4.3.27 for now to avoid running into an issue in
+# 'conda >4.4.7,<4.4.11': https://github.com/conda/conda/issues/6811
+# TODO: Make this configurable in bioconda_utils.build and bioconda_utils.cli.
+MULLED_CONDA_IMAGE = "continuumio/miniconda3:4.3.27"
+
 
 def get_tests(path):
     "Extract tests from a built package"
@@ -79,7 +84,8 @@ def test_package(
     name_override=None,
     channels=["conda-forge", "defaults"],
     mulled_args="",
-    base_image=None
+    base_image=None,
+    conda_image=MULLED_CONDA_IMAGE,
 ):
     """
     Tests a built package in a minimal docker container.
@@ -104,6 +110,8 @@ def test_package(
     base_image : None | str
         Specify custom base image. Busybox is used in the default case.
 
+    conda_image : None | str
+        Specify conda image to install the package with.
     """
 
     assert path.endswith('.tar.bz2'), "Unrecognized path {0}".format(path)
@@ -144,6 +152,7 @@ def test_package(
     env = os.environ.copy()
     if base_image is not None:
         env["DEST_BASE_IMAGE"] = base_image
+    env["CONDA_IMAGE"] = conda_image
     with tempfile.TemporaryDirectory() as d:
         with utils.Progress():
             p = utils.run(cmd, env=env, cwd=d, mask=False)
