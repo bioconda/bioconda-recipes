@@ -50,8 +50,8 @@ def get_tests(path):
     tests = ' && '.join(tests)
     tests = tests.replace('$R ', 'Rscript ')
     # this is specific to involucro, the way how we build our containers
-    tests = tests.replace('$PREFIX', '/usr/local/')
-    tests = tests.replace('${PREFIX}', '/usr/local/')
+    tests = tests.replace('$PREFIX', '/usr/local')
+    tests = tests.replace('${PREFIX}', '/usr/local')
 
     return tests
 
