@@ -46,7 +46,8 @@ one:
 """)
 
 
-def _build_pkg(recipe):
+# Skip mulled_test on default since we already run pkg_test.test_package for every test case.
+def _build_pkg(recipe, mulled_test=False):
     r = Recipes(recipe, from_string=True)
     r.write_recipes()
     env_matrix = list(utils.EnvMatrix(tmp_env_matrix()))[0]
@@ -56,7 +57,9 @@ def _build_pkg(recipe):
     build.build(
         recipe=r.recipe_dirs['one'],
         recipe_folder='.',
-        env=env_matrix)
+        env=env_matrix,
+        mulled_test=mulled_test,
+    )
     return built_package
 
 
