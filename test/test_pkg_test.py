@@ -107,11 +107,11 @@ def test_pkg_test_conda_image():
               version: 0.1
             test:
               commands:
-                - '[ "${PREFIX%%/}" != "/usr/local" ] || cat "/usr/local/conda-version"'
-                - '[ "${PREFIX%%/}" != "/usr/local" ] || grep -F 4.3.11 "/usr/local/conda-version"'
+                - '[ "${PREFIX}" != "/usr/local" ] || cat "/usr/local/conda-version"'
+                - '[ "${PREFIX}" != "/usr/local" ] || grep -F 4.3.11 "/usr/local/conda-version"'
           post-link.sh: |
             #!/bin/bash
-            if [ "${PREFIX%%/}" == "/usr/local" ] ; then
+            if [ "${PREFIX}" == "/usr/local" ] ; then
                 /opt/conda/bin/conda --version >"/usr/local/conda-version"
             fi
     """)
