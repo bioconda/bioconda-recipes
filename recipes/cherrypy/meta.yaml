@@ -1,0 +1,56 @@
+{% set name = "CherryPy" %}
+{% set version = "8.9.1" %}
+{% set bundle = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash = "dfad2f34e929836d016ae79f9e27aff250a8a71df200bf87c3e9b23541e091c5" %}
+{% set build = 0 %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name }}-{{ version }}.{{ bundle }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ bundle }}
+  {{ hash_type }}: {{ hash }}
+
+build:
+  number: {{ build }}
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - setuptools_scm
+
+  run:
+    - python
+    - six
+
+test:
+  imports:
+    - cherrypy
+    - cherrypy.lib
+    - cherrypy.process
+    - cherrypy.scaffold
+    - cherrypy.test
+    - cherrypy.tutorial
+    - cherrypy.wsgiserver
+
+  commands:
+    - cherryd -h
+
+about:
+  home: http://www.cherrypy.org
+  license: BSD 3-Clause
+  license_file: LICENSE.md
+  license_family: BSD
+  summary: 'Object-Oriented HTTP framework'
+  dev_url: https://github.com/cherrypy/cherrypy
+  doc_url: http://docs.cherrypy.org/en/latest/
+
+extra:
+  recipe-maintainers:
+    - pmlandwehr
+    - jmeppley
