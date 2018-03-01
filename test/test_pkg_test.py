@@ -96,6 +96,9 @@ def test_pkg_test_conda_image():
     """
     Running a mulled-build test with a non-default conda image.
     """
+    # Inspects the installing conda version by writing $PREFIX/conda-version as
+    # a post-link step -- but only if we are actually doing mulled tests, i.e.,
+    # when $PREFIX == /usr/local.
     recipe = dedent("""
         one:
           meta.yaml: |
@@ -104,11 +107,13 @@ def test_pkg_test_conda_image():
               version: 0.1
             test:
               commands:
-                - cat "$PREFIX/conda-version.txt"
-                - grep -F 4.3.11 "$PREFIX/conda-version.txt"
+                - '[ "${PREFIX%%/}" != "/usr/local" ] || cat "/usr/local/conda-version"'
+                - '[ "${PREFIX%%/}" != "/usr/local" ] || grep -F 4.3.11 "/usr/local/conda-version"'
           post-link.sh: |
             #!/bin/bash
-            /opt/conda/bin/conda --version >"$PREFIX/conda-version.txt"
+            if [ "${PREFIX%%/}" == "/usr/local" ] ; then
+                /opt/conda/bin/conda --version >"/usr/local/conda-version"
+            fi
     """)
     build_package = _build_pkg(recipe)
     pkg_test.test_package(build_package, conda_image="continuumio/miniconda3:4.3.11")
