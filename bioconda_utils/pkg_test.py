@@ -111,7 +111,8 @@ def test_package(
         Specify custom base image. Busybox is used in the default case.
 
     conda_image : None | str
-        Specify conda image to install the package with.
+        Conda Docker image to install the package with during the mulled based
+        tests.
     """
 
     assert path.endswith('.tar.bz2'), "Unrecognized path {0}".format(path)
