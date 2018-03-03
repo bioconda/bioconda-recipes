@@ -1,8 +1,9 @@
 #!/bin/bash
 
 mkdir -p $PREFIX/bin
-
-make -j
-
-mv bin/racon $PREFIX/bin
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=${PREFIX} ..
+make
+make install 
 
