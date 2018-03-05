@@ -1,0 +1,35 @@
+{% set version = "2.2.2" %}
+{% set sha256 = "980b9591b61c60042c4a39b9e31ccaad8d17ff179d44d347997825da3fdf47fd" %}
+
+package:
+  name: adapterremoval
+  version: {{ version }}
+
+source:
+  fn: v{{ version }}.tar.gz
+  url: https://github.com/MikkelSchubert/adapterremoval/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+
+requirements:
+  build:
+    - gcc   # [not osx]
+    - llvm  # [osx]
+    - zlib {{CONDA_ZLIB}}*
+    - bzip2
+  run:
+    - zlib {{CONDA_ZLIB}}*
+    - bzip2
+    - libgcc  # [not osx]
+    - perl
+
+test:
+  commands:
+    - bwa 2>&1 | grep "index sequences in the"
+
+about:
+  home: https://github.com/MikkelSchubert/adapterremoval
+  license: GPL3
+summary: The AdapterRemoval v2 tool for merging and clipping reads.
