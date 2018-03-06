@@ -4,10 +4,26 @@ variables:
   restore_cache: &restore_cache
     restore_cache:
       keys:
-        - bioconda-utils-{{ .Environment.MINICONDA_VER }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
+        - {{
+            [
+              "bioconda-utils",
+              .Environment.MINICONDA_VER,
+              checksum ".circleci/setup.sh",
+              checksum "bioconda_utils/bioconda_utils-requirements.txt",
+              arch
+            ] | join("-")
+          }}
   save_cache: &save_cache
     save_cache:
-      key: bioconda-utils-{{ .Environment.MINICONDA_VER }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
+      key: {{
+             [
+               "bioconda-utils",
+               .Environment.MINICONDA_VER,
+               checksum ".circleci/setup.sh",
+               checksum "bioconda_utils/bioconda_utils-requirements.txt",
+               arch
+             ] | join("-")
+           }}
       paths:
         - /tmp/workspace/miniconda
   setup: &setup
