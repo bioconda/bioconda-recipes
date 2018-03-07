@@ -50,6 +50,8 @@ export CFLAGS="-I${PREFIX}/include"
 ### Prepare Samtools/Htslib 
 ########################################################
 
+sed -i.bak 's/-lcurses/lncurses/g' sam/Makefile
+
 #sed -i.bak 's/^CPPFLAGS =$//g' samtools-1.3/Makefile
 #sed -i.bak 's/^LDFLAGS  =$//g' samtools-1.3/Makefile
 
