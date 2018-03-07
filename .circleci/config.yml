@@ -4,12 +4,26 @@ variables:
   restore_cache: &restore_cache
     restore_cache:
       keys:
-        - bioconda-utils-{{ .Environment.MINICONDA_VER }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
+        - bioconda-utils-{{
+            checksum ".circleci/common.sh" }}-{{
+            checksum ".circleci/setup.sh" }}-{{
+            checksum ".circleci/config.yml" }}-{{
+            checksum "bioconda_utils/bioconda_utils-requirements.txt" }}-{{
+            arch }}
   save_cache: &save_cache
     save_cache:
-      key: bioconda-utils-{{ .Environment.MINICONDA_VER }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
+      key: bioconda-utils-{{
+             checksum ".circleci/common.sh" }}-{{
+             checksum ".circleci/setup.sh" }}-{{
+             checksum ".circleci/config.yml" }}-{{
+             checksum "bioconda_utils/bioconda_utils-requirements.txt" }}-{{
+             arch }}
       paths:
-        - /tmp/workspace/miniconda
+        - miniconda
+  common: &common
+    run:
+      name: Download common definitions
+      command: curl -s https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh > .circleci/common.sh
   setup: &setup
     run:
       name: Setup dependencies
@@ -34,6 +48,7 @@ jobs:
     <<: *linux
     steps:
       - checkout
+      - *common
       - *restore_cache
       - *setup
       - *save_cache
@@ -47,7 +62,10 @@ jobs:
     <<: *macos
     steps:
       - checkout
+      - *common
+      - *restore_cache
       - *setup
+      - *save_cache
       - *install_bioconda_utils
       - run:
           name: Testing
@@ -61,6 +79,7 @@ jobs:
           fingerprints:
             - f8:26:86:86:f8:d3:a5:66:ea:7d:f6:42:2e:5c:7a:82
       - checkout
+      - *common
       - *restore_cache
       - *setup
       - *save_cache
