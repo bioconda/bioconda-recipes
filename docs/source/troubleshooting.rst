@@ -95,6 +95,7 @@ edited. See the `samtools` recipe for an example of this. It may take some
 tinkering to get the recipe to build; if it doesn't seem to work then please
 submit an issue or notify `@bioconda/core` for advice.
 
+.. _perl-or-python-not-found:
 
 ``/usr/bin/perl`` or ``/usr/bin/python`` not found
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

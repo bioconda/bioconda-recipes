@@ -23,6 +23,8 @@ bioconda recipe checklist
   <https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_
   package (:ref:`details <noarch>`). However due to technical incompatibilies
   we can't do this -- so please DO NOT use ``"noarch"`` for now.
+- **Update 7 Mar 2018**: When patching a recipe, please provide details on how
+  you tried to address the problem upstream (:ref:`details <patching>`)
 
 .. _stable-url:
 
@@ -159,6 +161,23 @@ include them in the PR. One shortcut is to use `anaconda search -t conda
 <dependency name>` to look for other packages built by others. Inspecting those
 recipes can give some clues into building a version of the dependency for
 bioconda.
+
+.. _patching:
+
+Patching
+~~~~~~~~
+Some recipes require small patches to get the tests to pass, for example,
+fixing hard-coded shebang lines (as described at
+:ref:`perl-or-python-not-found`). Other patches are more extensive. When
+patching a recipe, please first make an effort to fix the issue upstream and
+document that effort in your pull request by either linking to the relevant
+upstream PR or indicating that you have contacted the author. The goal is not
+to block merging your PR until upstream is fixed, but rather to make sure
+upstream authors know there's an issue that other users (including non-bioconda
+users) might be having. Ideally, upstream would fix the issue quickly and the
+PR could be modified, but it's fine to merge with the patches and if/when
+upstream fixes, a separate bioconda PR could be opened that pulls in those
+upstream changes.
 
 
 Python
