@@ -50,7 +50,7 @@ export CFLAGS="-I${PREFIX}/include"
 ### Prepare Samtools/Htslib 
 ########################################################
 
-sed -i.bak 's/-lcurses/lncurses/g' sam/Makefile
+sed -i.bak 's/-lcurses/-lncurses/g' sam/Makefile
 
 #sed -i.bak 's/^CPPFLAGS =$//g' samtools-1.3/Makefile
 #sed -i.bak 's/^LDFLAGS  =$//g' samtools-1.3/Makefile
@@ -65,6 +65,11 @@ sed -i.bak 's/-lcurses/lncurses/g' sam/Makefile
 # https://sourceforge.net/p/samtools/mailman/message/34699333/
 #sed -i.bak 's/ -rdynamic//g' samtools-1.3/Makefile
 #sed -i.bak 's/ -rdynamic//g' samtools-1.3/htslib-1.3/configure
+
+if [[ "$(uname)" == "Linux" ]] ; then
+    export LDFLAGS="$LDFLAGS -Wl,--add-needed"
+fi
+
 
 ########################################################
 ### Build rsem
