@@ -1,12 +1,16 @@
 #!/bin/bash
-
-export MACHTYPE=x86_64
-export BINDIR=$(pwd)/bin
-mkdir -p $BINDIR
-(cd kent/src/lib && make)
-(cd kent/src/jkOwnLib && make)
-(cd kent/src/hg/lib && make)
-(cd kent/src/utils/chopFaLines && make)
-mkdir -p $PREFIX/bin
-cp bin/chopFaLines $PREFIX/bin
-chmod +x $PREFIX/bin/chopFaLines
+mkdir -p "$PREFIX/bin"
+if [ "$(uname)" == "Darwin" ]; then
+    cp chopFaLines "$PREFIX/bin"
+else
+    export MACHTYPE=x86_64
+    export BINDIR=$(pwd)/bin
+    mkdir -p "$BINDIR"
+    (cd kent/src/lib && make)
+    (cd kent/src/htslib && make)
+    (cd kent/src/jkOwnLib && make)
+    (cd kent/src/hg/lib && make)
+    (cd kent/src/utils/chopFaLines && make)
+    cp bin/chopFaLines "$PREFIX/bin"
+fi
+chmod +x "$PREFIX/bin/chopFaLines"

@@ -1,32 +1,35 @@
+{% set version = "1.16" %}
+
 package:
   name: cutadapt
-  version: '1.14'
+  version: {{ version }}
+
+source:
+  fn: cutadapt-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/c/cutadapt/cutadapt-{{ version }}.tar.gz
+  sha256: 9432045dcf59802ef9bb2d1f7232e8a015eb9b984e7c7ff35a6c8a57681e7a79
+
+build:
+  number: 1
+  script: pip install --no-deps .
+
+requirements:
+  build:
+    - pip
+    - python
+    - xopen >=0.3.2
+  run:
+    - python
+    - xopen >=0.3.2
+    - pigz
+
+test:
+  imports:
+    - cutadapt
+  commands:
+    - cutadapt --version
 
 about:
   home: https://cutadapt.readthedocs.io/
   license: MIT License
   summary: 'trim adapters from high-throughput sequencing reads'
-
-source:
-  fn: cutadapt-1.14.tar.gz
-  url: https://pypi.python.org/packages/16/e3/06b45eea35359833e7c6fac824b604f1551c2fc7ba0f2bd318d8dd883eb9/cutadapt-1.14.tar.gz
-  md5: 57403c3794aa940699df3032a5e9b208
-
-build:
-  number: 0
-  script: $PYTHON setup.py install
-
-requirements:
-  build:
-    - python
-    - xopen >=0.1.1
-  run:
-    - python
-    - xopen >=0.1.1
-
-test:
-  imports:
-    - cutadapt
-    - cutadapt.scripts
-  commands:
-    - cutadapt --version

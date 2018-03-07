@@ -1,12 +1,16 @@
 #!/bin/bash
-
-export MACHTYPE=x86_64
-export BINDIR=$(pwd)/bin
-mkdir -p $BINDIR
-(cd kent/src/lib && make)
-(cd kent/src/jkOwnLib && make)
-(cd kent/src/hg/lib && make)
-(cd kent/src/hg/makeDb/schema/dbSnoop && make)
-mkdir -p $PREFIX/bin
-cp bin/dbSnoop $PREFIX/bin
-chmod +x $PREFIX/bin/dbSnoop
+mkdir -p "$PREFIX/bin"
+if [ "$(uname)" == "Darwin" ]; then
+    cp dbSnoop "$PREFIX/bin"
+else
+    export MACHTYPE=x86_64
+    export BINDIR=$(pwd)/bin
+    mkdir -p "$BINDIR"
+    (cd kent/src/lib && make)
+    (cd kent/src/htslib && make)
+    (cd kent/src/jkOwnLib && make)
+    (cd kent/src/hg/lib && make)
+    (cd kent/src/hg/makeDb/schema/dbSnoop && make)
+    cp bin/dbSnoop "$PREFIX/bin"
+fi
+chmod +x "$PREFIX/bin/dbSnoop"

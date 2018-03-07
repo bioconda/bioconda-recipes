@@ -1,11 +1,11 @@
 package:
   name: multiqc
-  version: "1.2"
+  version: "1.5a"
 
 source:
-  fn: v1.2.tar.gz
-  url: https://github.com/ewels/MultiQC/archive/v1.2.tar.gz
-  md5: 55dac8b0dc055810ae09ec9b72e0603e
+  fn: multiqc-ec54507.tar.gz
+  url: https://github.com/ewels/MultiQC/archive/ec54507.tar.gz
+  sha256: a44de98dca99b3ff6f6904f51baa1917a9646e9d3058962bc1afe6e17cf495bb
 
 build:
   number: 0
@@ -14,34 +14,35 @@ build:
 requirements:
   build:
     - python
+    - setuptools
     - click
     - future >0.14.0
-    - lzstring
     - jinja2 >=2.9
-    - matplotlib
+    - lzstring
     - markdown
+    - matplotlib
     - numpy
     - pyyaml
     - requests
     - simplejson
-    - spectra
-    - networkx <2
+    - spectra >=0.0.10
 
   run:
     - python
+    - setuptools
     - click
     - future >0.14.0
-    - lzstring
     - jinja2 >=2.9
-    - matplotlib
+    - libgcc  # [linux]
+    - lzstring
     - markdown
+    - matplotlib
     - numpy
     - pyyaml
     - requests
     - simplejson
-    - spectra
-    - networkx <2
-    - libgcc  # [linux]
+    - spectra >=0.0.10
+    - enum34 # [py27]
 
 test:
   # Python imports
@@ -51,6 +52,7 @@ test:
     - multiqc.modules.adapterRemoval
     - multiqc.modules.afterqc
     - multiqc.modules.bamtools
+    - multiqc.modules.bbmap
     - multiqc.modules.bcftools
     - multiqc.modules.bcl2fastq
     - multiqc.modules.biobloomtools
@@ -62,6 +64,7 @@ test:
     - multiqc.modules.conpair
     - multiqc.modules.custom_content
     - multiqc.modules.cutadapt
+    - multiqc.modules.deeptools
     - multiqc.modules.disambiguate
     - multiqc.modules.fastq_screen
     - multiqc.modules.fastqc
@@ -69,10 +72,12 @@ test:
     - multiqc.modules.flexbar
     - multiqc.modules.gatk
     - multiqc.modules.goleft_indexcov
+    - multiqc.modules.hicexplorer
     - multiqc.modules.hicup
     - multiqc.modules.hisat2
     - multiqc.modules.homer
     - multiqc.modules.htseq
+    - multiqc.modules.interop
     - multiqc.modules.jellyfish
     - multiqc.modules.kallisto
     - multiqc.modules.leehom
@@ -86,34 +91,35 @@ test:
     - multiqc.modules.qualimap
     - multiqc.modules.quast
     - multiqc.modules.rna_seqc
+    - multiqc.modules.rsem
     - multiqc.modules.rseqc
     - multiqc.modules.salmon
     - multiqc.modules.samblaster
     - multiqc.modules.samtools
+    - multiqc.modules.sargasso
     - multiqc.modules.skewer
     - multiqc.modules.slamdunk
     - multiqc.modules.snpeff
     - multiqc.modules.sortmerna
     - multiqc.modules.star
+    - multiqc.modules.supernova
     - multiqc.modules.theta2
     - multiqc.modules.tophat
     - multiqc.modules.trimmomatic
     - multiqc.modules.vcftools
+    - multiqc.modules.verifybamid
     - multiqc.plots
     - multiqc.templates
     - multiqc.templates.default
-    # Can be added back after v1.3 release - fixed here:
-    # https://github.com/ewels/MultiQC/commit/a2c704c92b2fee5db637348ff4ad0c150a30708d
-    # - multiqc.templates.default_dev
+    - multiqc.templates.default_dev
     - multiqc.templates.geo
     - multiqc.templates.sections
     - multiqc.templates.simple
     - multiqc.utils
 
   commands:
-    # click requires a unicode locale
-    - LC_ALL=C.UTF-8 LANG=C.UTF-8 multiqc --version # [linux]
-    - LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 multiqc --version # [osx]
+    - multiqc --version
+    - multiqc .
 
 about:
   home: http://multiqc.info
@@ -123,4 +129,8 @@ about:
 
 extra:
   container:
-    extended-base: true
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]
+  skip-lints:
+    - uses_setuptools # uses pkg_resources

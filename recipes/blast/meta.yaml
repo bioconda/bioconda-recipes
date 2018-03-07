@@ -1,36 +1,56 @@
-{% set version = "2.7.0" %}
+{% set version = "2.7.1" %}
+{% set sha256 = "10a78d3007413a6d4c983d2acbf03ef84b622b82bd9a59c6bd9fbdde9d0298ca" %}
 
 package:
-    name: blast
-    version: {{ version }}
+  name: blast
+  version: {{ version }}
 
 source:
-    fn: ncbi-blast-{{ version }}+-src.tar.gz # [linux]
-    url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz # [linux]
-    sha256: fc338ccbf466bb3e2e042c973d17ec600fba9adf3b1292a496ad5023ed1c759a # [linux]
-    patches:
-      - boost_106400.patch # [linux]
-    fn: ncbi-blast-{{ version }}+-x64-macosx.tar.gz # [osx]
-    url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-x64-macosx.tar.gz # [osx]
-    sha256: c295aa858638a8194d6b4abbefedaa2759e67ee2932e3553ffbc4afa138b20ee # [osx]
+  fn: ncbi-blast-{{ version }}+-src.tar.gz
+  url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - boost_106400.patch
 
 build:
-  number: 0
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+  number: 2
+  string: boost{{ CONDA_BOOST }}_{{ PKG_BUILDNUM }}
 
 requirements:
   build:
-    - boost {{CONDA_BOOST}}*  # [linux]
     - gcc  # [linux]
+    - boost {{ CONDA_BOOST }}*
+    - zlib {{ CONDA_ZLIB }}*
+    - bzip2 {{ CONDA_BZIP2 }}*
+    - gnutls
+    - nettle 3.3|3.3.*
+    - pcre
+    - time
   run:
-    - boost {{CONDA_BOOST}}*  # [linux]
     - libgcc  # [linux]
+    - boost {{ CONDA_BOOST }}*
+    - zlib {{ CONDA_ZLIB }}*
+    - bzip2 {{ CONDA_BZIP2 }}*
+    - gnutls
+    - nettle 3.3|3.3.*
+    - pcre
+    - perl
+    - perl-list-moreutils
+    - perl-archive-tar 
 
 test:
-    commands:
-        - blastn -help
-        - blastp -help
+  files:
+    - test.fa
+    - testdatabase.fa
+  commands:
+    - blastn -help
+    - blastp -help
+    - makeblastdb -help
+    # test that BLAST ignores LD_LIBRARY_PATH
+    - touch libstdc++.so.6; LD_LIBRARY_PATH=. makeblastdb -help && rm libstdc++.so.6
+    - update_blastdb.pl --help
+
 about:
-    home: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs
-    license: Public Domain
-    summary: BLAST+ is a new suite of BLAST tools that utilizes the NCBI C++ Toolkit.
+  home: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs
+  license: Public Domain
+  summary: BLAST+ is a new suite of BLAST tools that utilizes the NCBI C++ Toolkit.

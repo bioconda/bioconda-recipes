@@ -13,7 +13,7 @@ import shutil
 from os import access
 from os import getenv
 from os import X_OK
-jar_file = 'embl-api-validator-1.1.171.jar'
+jar_file = 'embl-api-validator-1.1.180.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 

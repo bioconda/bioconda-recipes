@@ -1,0 +1,57 @@
+From 4fe9c4b1d7628012fc6f4edce6b15ddb62f020df Mon Sep 17 00:00:00 2001
+From: Alexey Gurevich <alexeigurevich@gmail.com>
+Date: Fri, 29 Dec 2017 18:14:15 +0300
+Subject: [PATCH] Temp: disable and exclude genemark from installation
+
+---
+ MANIFEST.in            | 2 ++
+ quast_libs/genemark.py | 2 +-
+ setup.py               | 6 +++---
+ 3 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/MANIFEST.in b/MANIFEST.in
+index 9e46ac7..045fade 100644
+--- a/MANIFEST.in
++++ b/MANIFEST.in
+@@ -20,6 +20,8 @@ global-exclude make.*
+ 
+ recursive-exclude quast_libs/blast *
+ recursive-exclude quast_libs/manta/build *
++recursive-exclude quast_libs/genemark *
++recursive-exclude quast_libs/genemark-es *
+ 
+ # include this file, to ensure we can recreate source distributions
+ include MANIFEST.in
+diff --git a/quast_libs/genemark.py b/quast_libs/genemark.py
+index b560ecd..dbe5447 100644
+--- a/quast_libs/genemark.py
++++ b/quast_libs/genemark.py
+@@ -21,7 +21,7 @@ from quast_libs.qutils import is_python2
+ 
+ logger = get_logger(qconfig.LOGGER_DEFAULT_NAME)
+ 
+-LICENSE_LIMITATIONS_MODE = False
++LICENSE_LIMITATIONS_MODE = True
+ OUTPUT_FASTA = False  # whether output only .gff or with corresponding .fasta files
+ 
+ 
+diff --git a/setup.py b/setup.py
+index 3b51479..ff4f83f 100755
+--- a/setup.py
++++ b/setup.py
+@@ -225,9 +225,9 @@ The tool accepts multiple assemblies, thus is suitable for comparison.''',
+             ] +
+             find_package_files('html_saver') +
+             nucmer_files +
+-            find_package_files('genemark/' + qconfig.platform_name) +
+-            find_package_files('genemark-es/' + qconfig.platform_name) +
+-            find_package_files('genemark-es/lib') +
++            # find_package_files('genemark/' + qconfig.platform_name) +
++            # find_package_files('genemark-es/' + qconfig.platform_name) +
++            # find_package_files('genemark-es/lib') +
+             find_package_files('glimmer') +
+             find_package_files('gage') +
+             bwa_files +
+-- 
+2.7.2
+
