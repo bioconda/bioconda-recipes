@@ -40,7 +40,7 @@ if [[ ! -d $WORKSPACE/miniconda ]]; then
 
     # Add local channel as highest priority
     conda index $WORKSPACE/miniconda/conda-bld/linux-64 $WORKSPACE/miniconda/conda-bld/osx-64 $WORKSPACE/miniconda/conda-bld/noarch
-    conda config --system --add channels file://anaconda/conda-bld
+    conda config --system --add channels file://$WORKSPACE/miniconda/conda-bld
 
     pip install -r pip-test-requirements.txt
     pip install -r pip-requirements.txt
