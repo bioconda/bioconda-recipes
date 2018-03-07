@@ -1,0 +1,2 @@
+./configure
+sudo make install
