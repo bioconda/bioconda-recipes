@@ -1,0 +1,1 @@
+./configure && sudo make install
