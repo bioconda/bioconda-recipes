@@ -50,21 +50,11 @@ export CFLAGS="-I${PREFIX}/include"
 ### Prepare Samtools/Htslib 
 ########################################################
 
-sed -i.bak 's/-lcurses/-lncurses/g' sam/Makefile
+sed -i.bak -e '/^DFLAGS=/ s/-D_CURSES_LIB=1/-D_CURSES_LIB=0/g' sam/Makefile
+sed -i.bak -e '/^LIBCURSES=/ s/LIBCURSES/#LIBCURSES/' sam/Makefile
 
-#sed -i.bak 's/^CPPFLAGS =$//g' samtools-1.3/Makefile
-#sed -i.bak 's/^LDFLAGS  =$//g' samtools-1.3/Makefile
-
-#sed -i.bak 's/^CPPFLAGS =$//g' samtools-1.3/htslib-1.3/Makefile
-#sed -i.bak 's/^LDFLAGS  =$//g' samtools-1.3/htslib-1.3/Makefile
-
-# varfilter.py in install fails because we don't install Python
-#sed -i.bak 's#misc/varfilter.py##g' samtools-1.3/Makefile
-
-# Remove rdynamic which can cause build issues on OSX
-# https://sourceforge.net/p/samtools/mailman/message/34699333/
-#sed -i.bak 's/ -rdynamic//g' samtools-1.3/Makefile
-#sed -i.bak 's/ -rdynamic//g' samtools-1.3/htslib-1.3/configure
+sed -i.bak 's/^CPPFLAGS =$//g' sam/Makefile
+sed -i.bak 's/^LDFLAGS  =$//g' sam/Makefile
 
 if [[ "$(uname)" == "Linux" ]] ; then
     export LDFLAGS="$LDFLAGS -Wl,--add-needed"
