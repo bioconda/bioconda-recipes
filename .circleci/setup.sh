@@ -3,8 +3,8 @@ set -eu
 
 WORKSPACE=$(pwd)
 
-# Common definitions from latest bioconda-utils master have to be downloaded before setup.sh is executed.
-# This file can be used to set BIOCONDA_UTILS_TAG and MINICONDA_VER.
+# Common definitions from latest bioconda-common master have to be downloaded before setup.sh is executed.
+# This file can be used to set MINICONDA_VER.
 source .circleci/common.sh
 
 # Set path
@@ -12,7 +12,7 @@ echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> $BASH_ENV
 source $BASH_ENV
 
 if [[ ! -d $WORKSPACE/miniconda ]]; then
-    # setup conda and bioconda-utils if not loaded from cache
+    # setup conda and dependencies if not loaded from cache
     mkdir -p $WORKSPACE
 
     # step 1: download and install miniconda
