@@ -1,14 +1,19 @@
+{% set name = "dsrc" %}
+{% set version = "2014.12.17" %}
+{% set md5 = "0a75deb6db948f9179df0756c259b870" %}
+
 package:
-  name: dsrc
-  version: 2014.12.17
+  name: {{ name }}
+  version: {{ version }}
 
 source:
   fn: v2.0.2.tar.gz
   url: https://github.com/lrog/dsrc/archive/v2.0.2.tar.gz
+  md5: {{ md5 }}
 
 build:
   skip: True # [osx]
-  number: 2
+  number: 3
   string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
 
 requirements:
@@ -16,18 +21,17 @@ requirements:
     - gcc   # [linux]
     - llvm  # [osx]
     - zlib {{CONDA_ZLIB}}*
-    - boost {{CONDA_BOOST}}* # [linux]
+    - boost {{CONDA_BOOST}}*
   run:
     - libgcc # [linux]
     - zlib {{CONDA_ZLIB}}*
-    - boost {{CONDA_BOOST}}*  # [linux]
+    - boost {{CONDA_BOOST}}*
 
-# dsrc -h returns an error so we need some data to test.
-tests:
+test:
   commands:
-    - dsrc -h
+    - dsrc -h 2>&1 | grep usage
 
 about:
   home: https://github.com/lrog/dsrc
-  summary: high-performance compression of sequencing reads stored in FASTQ format
-  license: GNU GPL 2
+  summary: DSRC is a toolkit designed for efficient high-performance compression of sequencing reads stored in FASTQ format
+  license: GPL2
