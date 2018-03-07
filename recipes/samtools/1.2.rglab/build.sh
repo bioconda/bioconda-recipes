@@ -3,7 +3,9 @@
 sed -i.bak 's/^CPPFLAGS =$//g' Makefile
 sed -i.bak 's/^LDFLAGS  =$//g' Makefile
 sed -i.bak 's|^INCLUDES=.*|INCLUDES = -I. -I$(HTSDIR) -I'$PREFIX'/include|' Makefile
-sed -i.bak -e 's/-lcurses/-lncurses/' Makefile
+#sed -i.bak -e 's/-lcurses/-lncurses/' Makefile
+sed -i.bak -e '/^DFLAGS=/ s/-D_CURSES_LIB=1/-D_CURSES_LIB=0/g' Makefile
+sed -i.bak -e '/^LIBCURSES=/ s/LIBCURSES/#LIBCURSES/' Makefile
 
 sed -i.bak 's/^CPPFLAGS =$//g' htslib-1.2.1/Makefile
 sed -i.bak 's/^LDFLAGS  =$//g' htslib-1.2.1/Makefile
