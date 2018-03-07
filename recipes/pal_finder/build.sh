@@ -8,7 +8,7 @@ files="config.txt COPYING.txt pal_finder_v${PKG_VERSION}.pl README.txt simple.re
 for f in $files ; do
     cp ./$f $outdir/
 done
-sed -i 's,^#!/usr/bin/perl,#!/usr/bin/env perl,g' $outdir/pal_finder_v${PKG_VERSION}.pl
+sed -i.bak -e 's,^#!/usr/bin/perl,#!/usr/bin/env perl,g' $outdir/pal_finder_v${PKG_VERSION}.pl
 chmod +x $outdir/pal_finder_v${PKG_VERSION}.pl
 
 mkdir -p $PREFIX/bin
