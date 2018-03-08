@@ -3,7 +3,9 @@
 if [ `uname` == Darwin ]
 then
   export LD_LIBRARY_PATH="${PREFIX}/lib"
-  export STACK_ROOT="${SRC_DIR}/s"
+  mkdir -p ${SRC_DIR}/home
+  export HOME=${SRC_DIR}/home
+  export STACK_ROOT="$HOME/s"
   echo ${PREFIX}
   echo ${SRC_DIR}/s
   ls -l
@@ -24,7 +26,7 @@ then
   cp -p $LOCALBIN/HMMCV ${PREFIX}/bin
   cp -p $LOCALBIN/HMMCtoCMC ${PREFIX}/bin
   cp -p $LOCALBIN/HMMV ${PREFIX}/bin
-  rm -r ${SRC_DIR}/s
+  rm -r $STACK_ROOT
 else
   export LIBRARY_PATH="${PREFIX}/lib:/usr/lib:/usr/lib64"
   export LD_LIBRARY_PATH="${PREFIX}/lib:/usr/lib:/usr/lib64"
