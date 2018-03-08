@@ -1,0 +1,22 @@
+diff --git a/src/intersection.c b/src/intersection.c
+index 56599bb..443418e 100755
+--- a/src/intersection.c
++++ b/src/intersection.c
+@@ -137,7 +137,7 @@ uint32_t* intersection_uint32_SIMD(uint32_t* list_a, uint32_t* list_b) {
+         //[ copy out common elements
+         __m128i p = _mm_shuffle_epi8(v_a, shuffle_mask[mask]);
+         _mm_storeu_si128((__m128i*)&C[count], p);
+-        count += _mm_popcnt_u32(mask);
++        count += __builtin_popcount(mask);
+         //]
+     }
+ 
+@@ -244,7 +244,7 @@ uint64_t is_intersecting_uint64_SIMD(uint64_t* list_a, uint64_t* list_b, uint64_
+         // Convert the 128-bit mask to the 4-bit mask
+         const int mask = _mm_movemask_ps(_mm_castsi128_ps(cmp_mask));
+ 
+-        nb += _mm_popcnt_u64(mask)/* / sizeof(uint64_t)*/;
++        nb += __builtin_popcountll(mask)/* / sizeof(uint64_t)*/;
+         if (nb > nb_inter_max) return nb;
+     }
+ 
