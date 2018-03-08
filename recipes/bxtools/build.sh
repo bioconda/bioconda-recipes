@@ -8,4 +8,4 @@ export LIBS=-lpthread
 ./configure --prefix=$PREFIX
 make
 mkdir -p $PREFIX/bin
-cp src/variant $PREFIX/bin
+cp src/bxtools $PREFIX/bin
