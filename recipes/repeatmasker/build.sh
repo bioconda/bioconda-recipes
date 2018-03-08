@@ -1,5 +1,9 @@
+tar zxf ${SRC_DIR}/RepeatMasker-open-4-0-7.tar.gz.odd
+cd RepeatMasker
+patch -N <${RECIPE_DIR}/patch1
+
 RM_DIR=${PREFIX}/share/RepeatMasker
-RM_OTHER_PROGRAMS="DateRepeats ProcessRepeats RepeatProteinMask DupMasker util/queryRepeatDatabase.pl util/queryTaxonomyDatabase.pl util/rmOutToGFF3.pl util/rmToUCSCTables.pl util/buildRMLibFromEMBL.pl"
+RM_OTHER_PROGRAMS="DateRepeats DupMasker ProcessRepeats RepeatProteinMask util/queryRepeatDatabase.pl util/queryTaxonomyDatabase.pl util/rmOutToGFF3.pl util/calcDivergenceFromAlign.pl util/createRepeatLandscape.pl util/dupliconToSVG.pl util/getRepeatMaskerBatch.pl util/rmOut2Fasta.pl util/trfMask util/rmToUCSCTables.pl"
 RM_PROGRAMS="RepeatMasker $RM_OTHER_PROGRAMS"
 
 mkdir -p ${PREFIX}/bin
@@ -14,9 +18,9 @@ cp ${RECIPE_DIR}/RepeatMaskerConfig.pm ${RM_DIR}/RepeatMaskerConfig.pm
 # users will have to provide their own library and point to it using the REPEATMASKER_LIB_DIR environment variable
 
 
-${RM_DIR}/util/buildRMLibFromEMBL.pl ${RM_DIR}/Libraries/RepeatMaskerLib.embl > ${RM_DIR}/Libraries/RepeatMasker.lib 2>/dev/null
-makeblastdb -dbtype nucl -in ${RM_DIR}/Libraries/RepeatMasker.lib
-makeblastdb -dbtype prot -in ${RM_DIR}/Libraries/RepeatPeps.lib
+#${RM_DIR}/util/buildRMLibFromEMBL.pl ${RM_DIR}/Libraries/RepeatMaskerLib.embl > ${RM_DIR}/Libraries/RepeatMasker.lib 2>/dev/null
+#makeblastdb -dbtype nucl -in ${RM_DIR}/Libraries/RepeatMasker.lib
+#makeblastdb -dbtype prot -in ${RM_DIR}/Libraries/RepeatPeps.lib
 
 
 cat <<END >>${PREFIX}/bin/RepeatMasker
@@ -30,7 +34,7 @@ REPEATMASKER_LIB_DIR=\${REPEATMASKER_LIB_DIR:-\${BASEDIR}/share/RepeatMasker/Lib
 TRF_DIR=${PREFIX}/bin
 RMBLAST_DIR=${PREFIX}/bin
 HMMER_DIR=${PREFIX}/bin
-export REPEATMASKER_DIR REPEATMASKER_LIB_DIR REPEATMASKER_MATRICES_DIR TRF_DIR RMBLAST_DIR HMMER_DIR
+export REPEATMASKER_DIR REPEATMASKER_LIB_DIR REPEATMASKER_MATRICES_DIR TRF_DIR RMBLAST_DIR HMMER_DIR REPEATMASKER_CACHE_DIR
 
 NAME=\$(basename \$0)
 
