@@ -9,5 +9,5 @@ export BOOST_ROOT="${CONDA_PREFIX}"
   --disable-program
 
 make -j
-make check -j
+make check
 make install
