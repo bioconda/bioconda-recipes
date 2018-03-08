@@ -2,15 +2,12 @@
 
 export BOOST_ROOT="${CONDA_PREFIX}"
 
-#libtoolize --copy --force
-#sh autogen.sh
-
 ./configure \
-  --prefix=$PREFIX \
+  --prefix=${PREFIX} \
   --disable-perl \
   --disable-doxygen-doc \
-  --disable-program \
-  --disable-tests 
+  --disable-program
 
 make -j
+make check -j
 make install
