@@ -1,7 +1,3 @@
-tar zxf ${SRC_DIR}/RepeatMasker-open-4-0-7.tar.gz.odd
-cd RepeatMasker
-patch -N <${RECIPE_DIR}/patch1
-
 RM_DIR=${PREFIX}/share/RepeatMasker
 RM_OTHER_PROGRAMS="DateRepeats DupMasker ProcessRepeats RepeatProteinMask util/queryRepeatDatabase.pl util/queryTaxonomyDatabase.pl util/rmOutToGFF3.pl util/calcDivergenceFromAlign.pl util/createRepeatLandscape.pl util/dupliconToSVG.pl util/getRepeatMaskerBatch.pl util/rmOut2Fasta.pl util/trfMask util/rmToUCSCTables.pl"
 RM_PROGRAMS="RepeatMasker $RM_OTHER_PROGRAMS"
@@ -45,3 +41,7 @@ chmod a+x ${PREFIX}/bin/RepeatMasker
 for name in ${RM_OTHER_PROGRAMS} ; do
   ln -s ${PREFIX}/bin/RepeatMasker ${PREFIX}/bin/$(basename $name)
 done
+
+if [ -f ${RM_DIR}/conda_build.sh ] ; then
+  rm ${RM_DIR}/conda_build.sh
+fi
