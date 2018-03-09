@@ -4,7 +4,6 @@ export MACHTYPE=$(uname -m)
 export BINDIR=$(pwd)/bin
 mkdir -p "$BINDIR"
 (cd src/lib && make)
-(cd src/htslib && make)
 (cd src/jkOwnLib && make)
 (cd src/hg/lib && make)
 (cd src/hg/utils/gtfToGenePred && make)
