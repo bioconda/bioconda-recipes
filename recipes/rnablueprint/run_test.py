@@ -3,3 +3,4 @@
 
 import RNAblueprint
 dg=RNAblueprint.DependencyGraphMT(['(((((....)))))'])
+dg.sample()
