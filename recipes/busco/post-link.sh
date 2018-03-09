@@ -8,11 +8,3 @@
 SHARE="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 mkdir -p "$PREFIX/config"
 sed "s|^path = .*\$|path = $PREFIX/bin/|" "$SHARE/config.ini.default" > "$PREFIX/config/config.ini"
-
-platform=`uname`
-if [[ "$platform" == 'Darwin' ]]; then
-    echo "
-    BUSCO is installed, but because you are on macOS, it has been
-    installed without Augustus. Some features may not be available.
-    " > $PREFIX/.messages.txt
-fi
