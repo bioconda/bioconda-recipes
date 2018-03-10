@@ -46,7 +46,8 @@ one:
 """)
 
 
-def _build_pkg(recipe):
+# Skip mulled_test on default since we already run pkg_test.test_package for every test case.
+def _build_pkg(recipe, mulled_test=False):
     r = Recipes(recipe, from_string=True)
     r.write_recipes()
     env_matrix = list(utils.EnvMatrix(tmp_env_matrix()))[0]
@@ -56,7 +57,9 @@ def _build_pkg(recipe):
     build.build(
         recipe=r.recipe_dirs['one'],
         recipe_folder='.',
-        env=env_matrix)
+        env=env_matrix,
+        mulled_test=mulled_test,
+    )
     return built_package
 
 
@@ -86,3 +89,31 @@ def test_pkg_test_custom_base_image():
     """
     build_package = _build_pkg(RECIPE_CUSTOM_BASE)
     res = pkg_test.test_package(build_package, base_image='debian:latest')
+
+
+@pytest.mark.skipif(SKIP_OSX, reason="skipping on osx")
+def test_pkg_test_conda_image():
+    """
+    Running a mulled-build test with a non-default conda image.
+    """
+    # Inspects the installing conda version by writing $PREFIX/conda-version as
+    # a post-link step -- but only if we are actually doing mulled tests, i.e.,
+    # when $PREFIX == /usr/local.
+    recipe = dedent("""
+        one:
+          meta.yaml: |
+            package:
+              name: one
+              version: 0.1
+            test:
+              commands:
+                - '[ "${PREFIX}" != /usr/local ] || cat /usr/local/conda-version'
+                - '[ "${PREFIX}" != /usr/local ] || grep -F ''conda 4.3.11'' /usr/local/conda-version'
+          post-link.sh: |
+            #!/bin/bash
+            if [ "${PREFIX}" == /usr/local ] ; then
+                /opt/conda/bin/conda --version > /usr/local/conda-version
+            fi
+    """)
+    build_package = _build_pkg(recipe)
+    pkg_test.test_package(build_package, conda_image="continuumio/miniconda3:4.3.11")
