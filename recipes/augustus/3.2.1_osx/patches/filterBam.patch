@@ -1,0 +1,146 @@
+From 2af9c2187abb15e5b1d4903e55352d6a21641fdd Mon Sep 17 00:00:00 2001
+From: Camille Scott <camille.scott.w@gmail.com>
+Date: Fri, 9 Mar 2018 18:20:28 -0800
+Subject: [PATCH 1/4] Patch filterBam
+
+---
+ auxprogs/filterBam/Makefile | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/auxprogs/filterBam/Makefile b/auxprogs/filterBam/Makefile
+index ac69dd4..dbb6ad8 100644
+--- a/auxprogs/filterBam/Makefile
++++ b/auxprogs/filterBam/Makefile
+@@ -3,6 +3,13 @@
+ # 	Created: 28-February-2012
+ #	Last modified: 15-October-2015
+ 
++INCLUDES =  ${PREFIX}/include/bamtools/
++LIBS = ${PREFIX}/lib/libbamtools.a -lz
++SOURCES = bam2hints.cc
++OBJECTS = $(SOURCES:.cc=.o)
++CFLAGS = -Wall -g -p -O0
++CXXFLAGS += -Wall -O2 # -g -p -g -ggdb 
++
+ all: 
+ 	(cd src;make CXX=$(BAMTOOLS_CXX) CC=$(BAMTOOLS_CC) BAMTOOLS=$(BAMTOOLS))
+ 
+-- 
+2.14.3 (Apple Git-98)
+
+
+From 9cccd5bbffddadd9be9413f7a790ec7f4cbdca46 Mon Sep 17 00:00:00 2001
+From: Camille Scott <camille.scott.w@gmail.com>
+Date: Fri, 9 Mar 2018 18:22:47 -0800
+Subject: [PATCH 2/4] patch filterbam src Makefile
+
+---
+ auxprogs/filterBam/src/Makefile | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/auxprogs/filterBam/src/Makefile b/auxprogs/filterBam/src/Makefile
+index f96e240..a166157 100644
+--- a/auxprogs/filterBam/src/Makefile
++++ b/auxprogs/filterBam/src/Makefile
+@@ -7,11 +7,12 @@
+ SOURCES = filterBam.cc MatePairs.cc getReferenceName.cc initOptions.cc SingleAlignment.cc \
+ 			printElapsedTime.cc sumMandIOperations.cc sumDandIOperations.cc PairednessCoverage.cc
+ PROGRAM = filterBam
++BAMTOOLS = ${PREFIX}/include/bamtools
+ OBJECTS = $(SOURCES:.cc=.o)
+-BAMTOOLS = /usr/local/bamtools
+-INCLUDES = -I$(BAMTOOLS)/include -Iheaders -I./bamtools
+-LIBS = $(BAMTOOLS)/lib/libbamtools.a -lz
+-CFLAGS = -std=c++0x
++INCLUDES =  -I${PREFIX}/include/bamtools/ -Iheaders -I./bamtools
++
++LIBS = ${PREFIX}/lib/libbamtools.a -lz
++CFLAGS += -std=c++11 -Wall -O2 # -g -p -g -ggdb
+ VPATH = functions 
+ INSTDIR = ../bin
+ 
+-- 
+2.14.3 (Apple Git-98)
+
+
+From df0e8f3894aabbac32032b1cf0cb196f55c0b387 Mon Sep 17 00:00:00 2001
+From: Camille Scott <camille.scott.w@gmail.com>
+Date: Fri, 9 Mar 2018 19:44:43 -0800
+Subject: [PATCH 3/4] Remove BAMTOOLS references in filterBam Makefile
+
+---
+ auxprogs/filterBam/Makefile     | 2 +-
+ auxprogs/filterBam/src/Makefile | 8 --------
+ 2 files changed, 1 insertion(+), 9 deletions(-)
+
+diff --git a/auxprogs/filterBam/Makefile b/auxprogs/filterBam/Makefile
+index dbb6ad8..bbdb60d 100644
+--- a/auxprogs/filterBam/Makefile
++++ b/auxprogs/filterBam/Makefile
+@@ -11,7 +11,7 @@ CFLAGS = -Wall -g -p -O0
+ CXXFLAGS += -Wall -O2 # -g -p -g -ggdb 
+ 
+ all: 
+-	(cd src;make CXX=$(BAMTOOLS_CXX) CC=$(BAMTOOLS_CC) BAMTOOLS=$(BAMTOOLS))
++	(cd src;make CXX=$(BAMTOOLS_CXX) CC=$(BAMTOOLS_CC))
+ 
+ clean:
+ 	(cd src; make clean; cd ../bin; rm -f filterBam; cd ../../../bin; rm -f filterBam)
+diff --git a/auxprogs/filterBam/src/Makefile b/auxprogs/filterBam/src/Makefile
+index a166157..d3118c2 100644
+--- a/auxprogs/filterBam/src/Makefile
++++ b/auxprogs/filterBam/src/Makefile
+@@ -7,7 +7,6 @@
+ SOURCES = filterBam.cc MatePairs.cc getReferenceName.cc initOptions.cc SingleAlignment.cc \
+ 			printElapsedTime.cc sumMandIOperations.cc sumDandIOperations.cc PairednessCoverage.cc
+ PROGRAM = filterBam
+-BAMTOOLS = ${PREFIX}/include/bamtools
+ OBJECTS = $(SOURCES:.cc=.o)
+ INCLUDES =  -I${PREFIX}/include/bamtools/ -Iheaders -I./bamtools
+ 
+@@ -23,13 +22,6 @@ BIN : $(PROGRAM) CHECKBAM
+ 	mv filterBam $(INSTDIR);
+ 	cp $(INSTDIR)/filterBam ../../../bin/filterBam
+ 
+-CHECKBAM: 
+-	@if [ -z "${BAMTOOLS}" ]; then \
+-		echo '[Makefile]: $${BAMTOOLS} has not been set.'; \
+-		exit 101; \
+-	elif [ "${BAMTOOLS}" ]; then \
+-		echo "filterBam compiled with BAMTOOLS=${BAMTOOLS}"; \
+-	fi
+ 
+ $(PROGRAM) : $(OBJECTS) 
+ 	$(CXX) $(CFLAGS) $^ -o $@ $(LIBS) 
+-- 
+2.14.3 (Apple Git-98)
+
+
+From 3b98e77b1e01697145795d4f3cb0fc5b0c72be26 Mon Sep 17 00:00:00 2001
+From: Camille Scott <camille.scott.w@gmail.com>
+Date: Fri, 9 Mar 2018 22:44:14 -0800
+Subject: [PATCH 4/4] Remove CHECKBAM refs from filterBam src Makefile
+
+---
+ auxprogs/filterBam/src/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/auxprogs/filterBam/src/Makefile b/auxprogs/filterBam/src/Makefile
+index d3118c2..56aa395 100644
+--- a/auxprogs/filterBam/src/Makefile
++++ b/auxprogs/filterBam/src/Makefile
+@@ -15,9 +15,9 @@ CFLAGS += -std=c++11 -Wall -O2 # -g -p -g -ggdb
+ VPATH = functions 
+ INSTDIR = ../bin
+ 
+-all : $(PROGRAM) $(OBJECTS) CHECKBAM BIN
++all : $(PROGRAM) $(OBJECTS) BIN
+ 
+-BIN : $(PROGRAM) CHECKBAM
++BIN : $(PROGRAM) 
+ 	mkdir -p $(INSTDIR);\
+ 	mv filterBam $(INSTDIR);
+ 	cp $(INSTDIR)/filterBam ../../../bin/filterBam
+-- 
+2.14.3 (Apple Git-98)
+
