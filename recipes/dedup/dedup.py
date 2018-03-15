@@ -12,7 +12,7 @@ import sys
 from os import access
 from os import getenv
 from os import X_OK
-jar_file = 'DeDup.jar'
+jar_file = 'DeDup-0.12.3.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
