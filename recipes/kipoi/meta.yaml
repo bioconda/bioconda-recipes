@@ -1,0 +1,89 @@
+{% set name = "kipoi" %}
+{% set version = "0.2.8" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "8cde375de1ce3930645ea8915dceea5617fc741d3934af2e584e6878876cff19" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  entry_points:
+    - kipoi = kipoi.__main__:main
+  script: pip install 'related>=0.6.0' enum34 epc && git lfs install && python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - git-lfs
+    - python
+    - pip
+    - setuptools
+    - pyyaml
+    - future
+    - numpy
+    - pandas
+    - tqdm
+#    - related >=0.6.0
+#    - enum34
+    - colorlog
+    - cookiecutter
+    - h5py
+  run:
+    - git-lfs
+    - python
+    - pyyaml
+    - future
+    - numpy
+    - pandas
+    - tqdm
+#    - related >=0.6.0
+#    - enum34
+    - colorlog
+    - cookiecutter
+    - h5py
+
+test:
+  imports:
+    - kipoi
+    - kipoi.cli
+    - kipoi.external
+    - kipoi.external.related
+    - kipoi.external.torch
+    - kipoi.postprocessing
+    - kipoi.postprocessing.variant_effects
+    - kipoi.postprocessing.variant_effects.utils
+  commands:
+    - kipoi --help
+  requires:
+    - bumpversion
+    - cython
+#    - epc
+    - jedi
+    - keras
+    - pytest >=3.3.1
+    - pytest-cov
+    - pytest-pep8
+    - pytest-xdist
+    - scikit-learn
+    - tensorflow
+    - wheel
+
+about:
+  home: https://github.com/kipoi/kipoi
+  license: MIT license
+  license_family: MIT
+  license_file: ''
+  summary: 'Kipoi: model zoo for genomics'
+  description: 'Kipoi: model zoo for genomics. http://kipoi.org/'
+  doc_url: ''
+  dev_url: ''
+
+extra:
+  recipe-maintainers: ''
