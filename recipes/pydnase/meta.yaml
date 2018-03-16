@@ -1,0 +1,50 @@
+{% set name = "pydnase" %}
+{% set version = "0.2.6" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "65dc623bc687013162989e90e550ec4372a07e0952f78aee75093883a88fb8f8" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - numpy
+    - matplotlib <2.0.0
+    - pysam >=0.8.1
+    - clint >=0.3.2
+  run:
+    - python
+    - numpy
+    - matplotlib <2.0.0
+    - pysam >=0.8.1
+    - clint >=0.3.2
+    - samtools
+    - bedtools
+    - pybedtools
+
+test:
+  imports:
+    - pyDNase
+    - pyDNase.footprinting
+
+about:
+  home: http://jpiper.github.io/pyDNase
+  license: MIT
+  license_family: MIT
+  license_file: ''
+  summary: DNase-seq analysis library
+  description: 'A suite of tools for analysing DNase-seq data.'
+  doc_url: 'http://pythonhosted.org/pyDNase/index.html'
