@@ -1,8 +1,8 @@
 diff --git a/NGLess/Interpretation/Count.hs b/NGLess/Interpretation/Count.hs
-index 3633399..09f4b65 100644
+index 9627b09..32de03e 100644
 --- a/NGLess/Interpretation/Count.hs
 +++ b/NGLess/Interpretation/Count.hs
-@@ -16,11 +16,12 @@ module Interpretation.Count
+@@ -17,11 +17,12 @@ module Interpretation.Count
      , loadAnnotator
      , loadFunctionalMap
      , performCount
@@ -16,7 +16,7 @@ index 3633399..09f4b65 100644
  import qualified Data.ByteString.Char8 as B8
  import qualified Data.ByteString.Builder as BB
  import qualified Data.ByteString.Lazy as BL
-@@ -28,6 +29,7 @@ import qualified Data.Text as T
+@@ -29,6 +30,7 @@ import qualified Data.Text as T
  import qualified Data.Text.Encoding as T
  
  import qualified Data.Vector as V
@@ -24,7 +24,7 @@ index 3633399..09f4b65 100644
  import qualified Data.Vector.Unboxed as VU
  import qualified Data.Vector.Unboxed.Mutable as VUM
  import qualified Data.Vector.Algorithms.Intro as VA
-@@ -37,6 +39,7 @@ import qualified Data.Map.Strict as M
+@@ -38,6 +40,7 @@ import qualified Data.Map.Strict as M
  import qualified Data.Set as S
  
  import qualified Data.Conduit as C
@@ -32,7 +32,7 @@ index 3633399..09f4b65 100644
  import qualified Data.Conduit.Combinators as CC
  import qualified Data.Conduit.Binary as CB
  import qualified Data.Conduit.List as CL
-@@ -74,7 +77,6 @@ import Utils.Vector
+@@ -75,7 +78,6 @@ import Utils.Vector
  import Utils.Conduit
  import Utils.Suggestion
  import qualified Utils.IntGroups as IG
@@ -40,7 +40,7 @@ index 3633399..09f4b65 100644
  
  #ifndef WINDOWS
  import Data.Double.Conversion.ByteString (toShortest)
-@@ -129,10 +131,37 @@ data CountOpts =
+@@ -130,10 +132,37 @@ data CountOpts =
  data AnnotationMode = AnnotateSeqName | AnnotateGFF FilePath | AnnotateFunctionalMap FilePath
      deriving (Eq, Show)
  
@@ -80,7 +80,7 @@ index 3633399..09f4b65 100644
  instance NFData Annotator where
      rnf (SeqNameAnnotator m) = rnf m
      rnf (GFFAnnotator amap headers szmap) = amap `seq` rnf headers `seq` rnf szmap -- amap is already strict
-@@ -148,9 +177,9 @@ annotateReadGroup opts ann samlines = add1 . listNub <$> case ann of
+@@ -149,9 +178,9 @@ annotateReadGroup opts ann samlines = add1 . listNub <$> case ann of
          -- this is because "unmatched" is -1
          add1 [] = [0]
          add1 vs = (+ 1) <$> vs
@@ -92,7 +92,7 @@ index 3633399..09f4b65 100644
                      Nothing -> throwDataError ("Unknown sequence id: " ++ show rname)
                      ix -> return ix
          getID _ _ = Right Nothing
-@@ -165,7 +194,7 @@ annSizeOf (GFFAnnotator _ _ szmap) name = case M.lookup name szmap of
+@@ -166,7 +195,7 @@ annSizeOf (GFFAnnotator _ _ szmap) name = case M.lookup name szmap of
      Just s -> return s
      Nothing -> throwShouldNotOccur ("Header does not exist in sizes: "++show name)
  annSizeOf (GeneMapAnnotator _ ix) name = annSizeOfInRSVector name ix
@@ -101,7 +101,7 @@ index 3633399..09f4b65 100644
  
  
  annEnumerate :: Annotator -> [(B.ByteString, Int)]
-@@ -173,12 +202,12 @@ annEnumerate (SeqNameAnnotator Nothing)   = error "Using unfinished annotator"
+@@ -174,12 +203,12 @@ annEnumerate (SeqNameAnnotator Nothing)   = error "Using unfinished annotator"
  annEnumerate (SeqNameAnnotator (Just ix)) = ("-1",0):enumerateRSVector ix
  annEnumerate (GeneMapAnnotator _ ix)      = ("-1",0):enumerateRSVector ix
  annEnumerate (GFFAnnotator _ headers _)   = zip ("-1":headers) [0..]
@@ -117,7 +117,7 @@ index 3633399..09f4b65 100644
  annSize ann = length (annEnumerate ann)
  
  
-@@ -302,8 +331,8 @@ performCount1Pass MMDist1 mcounts = loop []
+@@ -303,8 +332,8 @@ performCount1Pass MMDist1 mcounts = loop []
                                  else acc
  
  -- | Equivalent to Python's enumerate
@@ -128,7 +128,7 @@ index 3633399..09f4b65 100644
      where
          loop !n = C.await >>= \case
                                  Nothing -> return ()
-@@ -323,25 +352,24 @@ annSamHeaderParser :: Int -> [Annotator] -> CountOpts -> C.Sink ByteLine NGLessI
+@@ -324,25 +353,24 @@ annSamHeaderParser :: Int -> [Annotator] -> CountOpts -> C.Sink ByteLine NGLessI
  annSamHeaderParser mapthreads anns opts = lineGroups =$= sequenceSinks (map annSamHeaderParser1 anns)
      where
          annSamHeaderParser1 (SeqNameAnnotator Nothing) = do
@@ -165,7 +165,7 @@ index 3633399..09f4b65 100644
          flattenVs :: VU.Unbox a => V.Vector [a] -> VU.Vector a
          flattenVs chunks = VU.unfoldr getNext (0,[])
              where
-@@ -350,21 +378,21 @@ annSamHeaderParser mapthreads anns opts = lineGroups =$= sequenceSinks (map annS
+@@ -351,21 +379,21 @@ annSamHeaderParser mapthreads anns opts = lineGroups =$= sequenceSinks (map annS
                      | vi >= V.length chunks = Nothing
                      | otherwise = getNext (vi + 1, chunks V.! vi)
  
@@ -195,7 +195,7 @@ index 3633399..09f4b65 100644
                      Nothing -> throwDataError ("Could not parse sequence length in header (line: " ++ show n ++ ")")
                  _ -> throwDataError ("SAM file does not contain the right number of tokens (line: " ++ show n ++ ")")
  
-@@ -539,14 +567,14 @@ loadFunctionalMap fname columns = do
+@@ -540,14 +568,14 @@ loadFunctionalMap fname columns = do
          anns <- C.runConduit $
                      CB.sourceFile fname
                      .| CB.lines
@@ -212,7 +212,7 @@ index 3633399..09f4b65 100644
                              .| asyncMapEitherC mapthreads (V.mapM (selectColumns cis)) -- after this we have vectors of (<gene name>, [<feature-name>])
                              .| sequenceSinks
                                  [finishFunctionalMap <$> CL.fold (V.foldl' (inserts1 c)) (LoadFunctionalMapState 0 M.empty M.empty) | c <- [0 .. length cis - 1]])
-@@ -555,7 +583,7 @@ loadFunctionalMap fname columns = do
+@@ -556,7 +584,7 @@ loadFunctionalMap fname columns = do
      where
          finishFunctionalMap (LoadFunctionalMapState _ gmap namemap) = GeneMapAnnotator
                                                                              (reindex gmap namemap)
@@ -223,7 +223,7 @@ index 3633399..09f4b65 100644
              where
 diff --git a/NGLess/Interpretation/Count/RefSeqInfoVector.h b/NGLess/Interpretation/Count/RefSeqInfoVector.h
 deleted file mode 100644
-index 162a142..0000000
+index efc8c11..0000000
 --- a/NGLess/Interpretation/Count/RefSeqInfoVector.h
 +++ /dev/null
 @@ -1,71 +0,0 @@
@@ -280,7 +280,7 @@ index 162a142..0000000
 -    RefSeqInfoVector() { }
 -    ~RefSeqInfoVector() { }
 -    void insert(std::string f, double v) {
--        data_.push_back(RefSeqInfo(strdup(f.c_str()), v));
+-        data_.push_back(RefSeqInfo(pool_.strdup(f.c_str()), v));
 -    }
 -   RefSeqInfo& at(int ix) { return data_.at(ix); }
 -   int find(const char* f) {
@@ -473,7 +473,7 @@ index dcbf222..19e0dd2 100644
 -    RSV.retrieveName names ix @?= "NA"
 +    rsiName (names V.! ix) @?= "NA"
 diff --git a/package.yaml b/package.yaml
-index 04b2a09..0161e53 100644
+index d269ffb..d7ca058 100644
 --- a/package.yaml
 +++ b/package.yaml
 @@ -49,8 +49,6 @@ dependencies:
