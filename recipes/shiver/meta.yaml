@@ -1,0 +1,48 @@
+{% set version = "1.2.1" %}
+
+package:
+  name: shiver
+  version: {{ version }}
+
+source:
+  fn: shiver-{{ version }}.tar.gz
+  url: https://github.com/ChrisHIV/shiver/archive/v{{ version }}.tar.gz
+  sha256: 4670bb0c3ee68d8bd492a2b024a255fd31d974f47fd9b691c6158c3f67ed2658
+  patches:
+    - 0001-changed-tools-to-shiver_tools.patch
+    - 0002-changed-python2-to-python.patch
+    # regarding fastaq see comments in build.sh
+    - 0003-added-fastaq-installation-on-demand.patch  # [py27]
+    - 0004-fixed-pyfastaq-installation.patch  # [py27]
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - python
+  run:
+    - python
+    - smalt
+    - trimmomatic
+    - samtools
+    - biopython
+    - mafft
+    - picard
+    - blast >=2.2.28
+    - pyfastaq  # [not py27]
+
+test:
+  # Python imports
+  commands:
+    - shiver_init.sh 2>&1 | grep "Arguments"
+
+about:
+  home: https://github.com/ChrisHIV/shiver
+  license: GNU General Public License v3 (GPLv3)
+  summary: 'SHIVER - Sequences from HIV Easily Reconstructed'
+  license_family: Public-Domain
+
+extra:
+  recipe-maintainers:
+    - notestaff

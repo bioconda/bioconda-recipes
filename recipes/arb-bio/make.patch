@@ -1,0 +1,36 @@
+--- /Users/epruesse/miniconda3/conda-bld/arb-bio_1490314300622/work/arbsrc_15220/Makefile.orig	2017-03-23 18:26:58.000000000 -0600
++++ /Users/epruesse/miniconda3/conda-bld/arb-bio_1490314300622/work/arbsrc_15220/Makefile	2017-03-23 19:01:36.000000000 -0600
+@@ -175,11 +175,17 @@
+
+ #----------------------
+
+-ifeq ($(DARWIN),1)
+-	LINK_STATIC=1# link static
+-else
+-	LINK_STATIC=0# link dynamically
+-#	LINK_STATIC=1# link static (testing only)
++ifndef LINK_STATIC
++	ifeq ($(DARWIN),1)
++		LINK_STATIC=1# link static
++	else
++		LINK_STATIC=0# link dynamically
++	endif
++endif
++ifeq ($(LINK_STATIC),1)
++$(warning Linking statically)
++else
++$(warning Linking dynamically)
+ endif
+
+ shared_cflags :=# flags for shared lib compilation
+@@ -526,6 +532,10 @@
+	cxxflags += $(CPPFLAGS)
+ endif
+
++cflags += $(CFLAGS)
++clflags += $(LDFLAGS)
++cxxflags += $(CXXFLAGS)
++
+ ifeq ('$(USE_GCC_47_OR_HIGHER)','yes')
+ cxxflags += -std=gnu++11# see also TEMPLATES/cxxforward.h@USE_Cxx11
+ else

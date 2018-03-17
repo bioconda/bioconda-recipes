@@ -1,10 +1,16 @@
+{% set version = "1.6.0" %}
+{% set name = "lpsymphony" %}
+{% set bioc = "3.6" %}
+
 package:
-  name: bioconductor-lpsymphony
-  version: 1.2.0
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: lpsymphony_1.2.0.tar.gz
-  url: https://bioarchive.galaxyproject.org/lpsymphony_1.2.0.tar.gz
-  md5: 043beed308f85f461dfd2760ade9362c
+  fn: '{{ name }}_{{ version }}.tar.gz'
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 542788a46197349824865aa423c7884f1fd77d7c9713015c4b5c2bd4019ea6e9
 build:
   number: 0
   rpaths:
@@ -12,20 +18,15 @@ build:
     - lib/
 requirements:
   build:
-    - gcc
-    - r
+    - gcc # [linux]
+    - llvm # [osx]
+    - r-base
   run:
-    - r
+    - r-base
 test:
   commands:
-    - '$R -e "library(''lpsymphony'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/lpsymphony.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: EPL
-  summary: 'This package was derived from Rsymphony_0.1-17 from CRAN. These packages
-    provide an R interface to SYMPHONY, an open-source linear programming solver written
-    in C++. The main difference between this package and Rsymphony is that it includes
-    the solver source code (SYMPHONY version 5.6), while Rsymphony expects to find
-    header and library files on the users'' system. Thus the intention of lpsymphony
-    is to provide an easy to install interface to SYMPHONY. For Windows, precompiled
-    DLLs are included in this package.'
+  summary: 'This package was derived from Rsymphony_0.1-17 from CRAN. These packages provide an R interface to SYMPHONY, an open-source linear programming solver written in C++. The main difference between this package and Rsymphony is that it includes the solver source code (SYMPHONY version 5.6), while Rsymphony expects to find header and library files on the users'' system. Thus the intention of lpsymphony is to provide an easy to install interface to SYMPHONY. For Windows, precompiled DLLs are included in this package.'

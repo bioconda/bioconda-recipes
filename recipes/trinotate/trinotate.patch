@@ -1,85 +1,46 @@
---- Trinotate	2016-04-11 14:04:52.000000000 +0000
-+++ Trinotate	2016-06-30 09:07:17.294307778 +0000
-@@ -10,7 +10,7 @@
-    usage: $0 <sqlite.db> <command> <input> [...]
+--- Trinotate	2017-07-24 13:53:21.120002438 +0200
++++ Trinotate	2017-07-24 13:56:46.825089493 +0200
+@@ -75,19 +75,19 @@
  
- 
--     <commands>: 
-+     <commands>:
- 
-          * Initial import of transcriptome and protein data:
- 
-@@ -27,7 +27,7 @@
- 
-              LOAD_swissprot_blastx <file>
-              LOAD_rnammer <file>
--             
-+
- 
-           * Load custom blast results using any searchable database
- 
-@@ -57,8 +57,8 @@
-     die $usage . "\n\nMissing parameter.\n\n";
- }
- 
--my %commands = map { + $_ => 1 } qw(LOAD_swissprot_blastp LOAD_swissprot_blastx 
--                                    LOAD_pfam LOAD_tmhmm LOAD_signalp LOAD_rnammer 
-+my %commands = map { + $_ => 1 } qw(LOAD_swissprot_blastp LOAD_swissprot_blastx
-+                                    LOAD_pfam LOAD_tmhmm LOAD_signalp LOAD_rnammer
-                                     LOAD_custom_blast
-                                     report init);
- 
-@@ -73,23 +73,23 @@
-     @ARGV = (""); # to avoid error messages inusing $ARGV[0] below
- }
- 
--my %command_to_params = ( 
-+my %command_to_params = (
+ my %command_to_params = ( 
                            # protein-based
 -                          'LOAD_swissprot_blastp' => "$loaders_dir/Trinotate_BLAST_loader.pl --sqlite $sqlite_db --outfmt6 $ARGV[0] --prog blastp --dbtype Swissprot",
 -                          'LOAD_trembl_blastp' => "$loaders_dir/Trinotate_BLAST_loader.pl --sqlite $sqlite_db --outfmt6 $ARGV[0] --prog blastp --dbtype TrEMBL",
 -                          'LOAD_pfam'  => "$loaders_dir/Trinotate_PFAM_loader.pl --sqlite $sqlite_db --pfam $ARGV[0]",
 -                          'LOAD_tmhmm' => "$loaders_dir/Trinotate_TMHMM_loader.pl --sqlite $sqlite_db --tmhmm $ARGV[0]",
 -                          'LOAD_signalp' => "$loaders_dir/Trinotate_SIGNALP_loader.pl --sqlite $sqlite_db --signalp $ARGV[0]",
--                          
 +                          'LOAD_swissprot_blastp' => "Trinotate_BLAST_loader.pl --sqlite $sqlite_db --outfmt6 $ARGV[0] --prog blastp --dbtype Swissprot",
 +                          'LOAD_trembl_blastp' => "Trinotate_BLAST_loader.pl --sqlite $sqlite_db --outfmt6 $ARGV[0] --prog blastp --dbtype TrEMBL",
 +                          'LOAD_pfam'  => "Trinotate_PFAM_loader.pl --sqlite $sqlite_db --pfam $ARGV[0]",
 +                          'LOAD_tmhmm' => "Trinotate_TMHMM_loader.pl --sqlite $sqlite_db --tmhmm $ARGV[0]",
 +                          'LOAD_signalp' => "Trinotate_SIGNALP_loader.pl --sqlite $sqlite_db --signalp $ARGV[0]",
-+
+                           
                            # transcript-based
 -                          'LOAD_swissprot_blastx' => "$loaders_dir/Trinotate_BLAST_loader.pl --sqlite $sqlite_db --outfmt6 $ARGV[0] --prog blastx --dbtype Swissprot",
 -                          'LOAD_trembl_blastx' => "$loaders_dir/Trinotate_BLAST_loader.pl --sqlite $sqlite_db --outfmt6 $ARGV[0] --prog blastx --dbtype TrEMBL",
 -                          'LOAD_rnammer' => "$loaders_dir/Trinotate_RNAMMER_loader.pl --sqlite $sqlite_db --rnammer $ARGV[0]",
--                          
 +                          'LOAD_swissprot_blastx' => "Trinotate_BLAST_loader.pl --sqlite $sqlite_db --outfmt6 $ARGV[0] --prog blastx --dbtype Swissprot",
 +                          'LOAD_trembl_blastx' => "Trinotate_BLAST_loader.pl --sqlite $sqlite_db --outfmt6 $ARGV[0] --prog blastx --dbtype TrEMBL",
 +                          'LOAD_rnammer' => "Trinotate_RNAMMER_loader.pl --sqlite $sqlite_db --rnammer $ARGV[0]",
-+
+                           
                            # custom blast searches
 -                          'LOAD_custom_blast' => "$loaders_dir/Trinotate_BLAST_loader.pl --sqlite $sqlite_db @ARGV",
--    
--    
 +                          'LOAD_custom_blast' => "Trinotate_BLAST_loader.pl --sqlite $sqlite_db @ARGV",
-+
-+
+     
+     
      );
- 
- 
 @@ -99,13 +99,13 @@
  }
  elsif ($command eq "report") {
      ## generate Trinotate report.
--    my $cmd = "$FindBin::Bin/util/Trinotate_report_writer.pl --sqlite $sqlite_db @ARGV";
+-    my $cmd = "$FindBin::RealBin/util/Trinotate_report_writer.pl --sqlite $sqlite_db @ARGV";
 +    my $cmd = "Trinotate_report_writer.pl --sqlite $sqlite_db @ARGV";
      &process_cmd($cmd);
--    
-+
+     
  }
  elsif ($command eq "init") {
      # populate sequence and gene/trans/orf data
--    my $cmd = "$FindBin::Bin/util/trinotateSeqLoader/TrinotateSeqLoader.pl --sqlite $sqlite_db @ARGV --bulk_load";
+-    my $cmd = "$FindBin::RealBin/util/trinotateSeqLoader/TrinotateSeqLoader.pl --sqlite $sqlite_db @ARGV --bulk_load";
 +    my $cmd = "TrinotateSeqLoader.pl --sqlite $sqlite_db @ARGV --bulk_load";
      &process_cmd($cmd);
  }

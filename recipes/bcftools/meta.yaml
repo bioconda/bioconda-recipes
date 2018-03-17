@@ -1,4 +1,4 @@
-{% set version="1.4.1" %}
+{% set version="1.7" %}
 about:
   home: https://github.com/samtools/bcftools
   license: MIT
@@ -16,25 +16,30 @@ package:
   version: {{ version }}
 requirements:
   build:
-  - gcc  # [not osx]
-  - llvm # [osx]
-  - gcc
-  - zlib
-  - bzip2
-  - curl
-  - xz
+    - gcc  # [not osx]
+    - llvm # [osx]
+    - bzip2 {{CONDA_BZIP2}}*
+    - curl
+    - xz {{CONDA_XZ}}*
+    - zlib {{CONDA_ZLIB}}*
   run:
-  - libgcc # [not osx]
-  - zlib
-  - bzip2
-  - curl
-  - xz
+    - libgcc # [not osx]
+    - bzip2 {{CONDA_BZIP2}}*
+    - curl
+    # Currently removed due to size and dependency issues
+    #- matplotlib # for plot-vcfstats
+    #- texlive-core # for plot-vcfstats
+    - xz {{CONDA_XZ}}*
+    - zlib {{CONDA_ZLIB}}*
+
 source:
   fn: bcftools-{{ version }}.tar.bz2
   url: https://github.com/samtools/bcftools/releases/download/{{ version }}/bcftools-{{ version }}.tar.bz2
-  md5: 103729569ca3e265b13d2fed5775016e
+  sha256: dd4f63d91b0dffb0f0ce88ac75c2387251930c8063f7799611265083f8d302d1
+
 test:
   commands:
     - bcftools -h
     - bcftools --version
     - bcftools plugin -lv
+    #- plot-vcfstats -h 2>&1 | grep -q "Plots output of "

@@ -1,17 +1,18 @@
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set name = "r-histonehmm" %}
+{% set version = "1.7" %}
+{% set hash = "7e19dd8e88d2b88be4dd1bafb3c162d6f5ff45e493caf0f797b9c94e7f72656b" %}
 
 package:
-  name: r-histonehmm
-  version: "1.6"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: histoneHMM_1.6.tar.gz
-  url: http://histonehmm.molgen.mpg.de/histoneHMM_1.6.tar.gz
-  md5: 7b93557a41b5cc695e8f6cd41aefa2e7
-  patches: loghmm.patch
+  url: https://github.com/matthiasheinig/histoneHMM/archive/a02036a0f541f2c870a880f954c8e2a9432d1433.zip
+  sha256: {{ hash }}
+#  patches: loghmm.patch
 
 build:
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
@@ -25,8 +26,7 @@ requirements:
     - r-mvtnorm
     - r-optparse
     - bioconductor-biocstyle
-    - posix               # [win]
-    - gcc                 # [not win]
+    - gcc
 
   run:
     - r-base
@@ -36,15 +36,15 @@ requirements:
     - r-mvtnorm
     - r-optparse
     - bioconductor-biocstyle
-    - libgcc # [not win]
+    - libgcc
 
 test:
   commands:
-    - $R -e "library('histoneHMM')" # [not win]
-    - "\"%R%\" -e \"library('histoneHMM')\"" # [win]
+    - $R -e "library('histoneHMM')"
 
 about:
   home: http://histonehmm.molgen.mpg.de/
+  dev_url: https://github.com/matthiasheinig/histoneHMM
   license: GPL
   summary: histoneHMM is a software to analyse ChIP-seq data of histone modifications
     with broad genomic footprints like H3K27me3. It allows for calling modified regions

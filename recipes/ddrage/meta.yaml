@@ -1,18 +1,21 @@
 package:
   name: ddrage
-  version: "1.1.4"
+  version: "1.4.0"
 
 source:
-  fn: ddrage-1.1.4.tar.gz
-  url: https://pypi.python.org/packages/46/e2/fb9f89336197106198c0ac659e39b0530eaee13f1ac31ab885262f35f0e2/ddrage-1.1.4.tar.gz
-  md5: 73e90e01ccbbb0f046a5dc664f8a50d6
+  fn: ddrage-1.4.0.tar.gz
+  url: https://bitbucket.org/genomeinformatics/rage/get/1.4.0.tar.gz
+  md5: 500839e1b75e5263afb9005cfb6628ed
 
 build:
   skip: True # [py2k or py34]
   entry_points:
     - rage = ddrage.__main__:main
+    - ddrage = ddrage.__main__:main
     - randomize_fastq = ddrage.tools.randomize_fastq:main
     - learn_qmodel = ddrage.tools.learn_qmodel:main
+    - visualize_bbd = ddrage.tools.bbd_visualization:main_standalone
+    - remove_annotation = ddrage.tools.remove_annotation:main
   number: 0
 
 requirements:
@@ -24,6 +27,7 @@ requirements:
     - matplotlib
     - scipy
     - pyyaml
+    - libgcc
 
   run:
     - python
@@ -32,6 +36,10 @@ requirements:
     - matplotlib
     - scipy
     - pyyaml
+    - libgcc
+    - dinopy
+    - seaborn
+    
 
 test:
   imports:
@@ -40,12 +48,19 @@ test:
     - ddrage.tools
 
   commands:
-    - rage -v
+    - ddrage --help
     - randomize_fastq --help
     - learn_qmodel --help
+    # - visualize_bbd --help  # adding bokeh as a hard dependency made the build stall.
+    - remove_annotation --help
 
 about:
   home: https://bitbucket.org/genomeinformatics/rage
   license: MIT License
   summary: 'Simulator for ddRADseq (double digest restriction site associdated DNA squencing) datasets. Generates reads (FASTQ format) that can be analyzed and validated using a ground truth file (YAML).'
   license_family: MIT
+
+extra:
+  container:
+    # needs libGL.so.1
+    extended-base: true

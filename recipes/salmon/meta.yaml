@@ -1,4 +1,6 @@
-{% set version="0.8.2" %}
+{% set version="0.9.1" %}
+{% set llvm_version = "4.0.0" %}
+
 build:
   number: 1
   # OSX failing due to libary issues even though shipping with Salmon binary
@@ -18,29 +20,32 @@ package:
 source:
   fn: Salmon-{{ version }}_src.tar.gz 
   url: https://github.com/COMBINE-lab/salmon/archive/v{{ version }}.tar.gz
-  md5: ee512697bc44b13661a16d4e14cf0a00 
+  md5: 1277b8ed65d2c6982ed176a496a2a1e3
 
 requirements:
   build:
     - llvm # [osx]
+    - clangdev =={{ llvm_version }}  # [osx]
+    - libcxx =={{ llvm_version }}  # [osx]
     - gcc ==4.8.5 # [linux]
     - autoconf 2.69 pl5.*
-    - boost ==1.63.0
+    - boost {{CONDA_BOOST}}*
     - icu 58.*
     - cmake
-    - zlib
-    - bzip2
+    - zlib {{CONDA_ZLIB}}*
+    - bzip2 {{CONDA_BZIP2}}*
     - unzip
     - jemalloc ==4.5.0
     - tbb
   run:
     - libgcc # [linux]
-    - boost ==1.63.0
+    - libcxx =={{ llvm_version }}  # [osx]
+    - boost {{CONDA_BOOST}}*
     - icu 58.*
     - jemalloc ==4.5.0
     - tbb
-    - zlib
-    - bzip2
+    - zlib {{CONDA_ZLIB}}*
+    - bzip2 {{CONDA_BZIP2}}*
 
 test:
   commands:

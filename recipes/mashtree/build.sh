@@ -14,7 +14,7 @@ mkdir -p $PREFIX/bin
 
 mkdir -p perl-build
 mv bin/*pl perl-build
-mv lib/perl5/ perl-build/lib
+mv lib/ perl-build/lib
 cp ${RECIPE_DIR}/Build.PL perl-build
 
 cd perl-build

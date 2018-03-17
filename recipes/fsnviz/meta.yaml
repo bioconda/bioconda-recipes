@@ -1,4 +1,4 @@
-{% set version = "0.2.0" %}
+{% set version = "0.3.0" %}
 
 package:
   name: fsnviz
@@ -6,11 +6,12 @@ package:
 
 source:
   fn: FsnViz-{{ version }}.tar.gz
-  url: https://pypi.python.org/packages/a8/e9/535bde7ffdf5c0678d0b75d0667dc846bbf95c27f6f540eb69b7240b901c/FsnViz-{{ version }}.tar.gz
-  md5: 20a051a88d1631e76536828b8b69cac4
+  url: https://pypi.python.org/packages/81/75/e018e3420d1240964aea84425899af3b06799ccc54376acd865aa3f9a90b/FsnViz-{{ version }}.tar.gz
+  md5: ac9d72772afe24f2ad07236b3ac11261
 
 build:
-  skip: True # [py2k or py34]
+  # FsnViz does not support Python 2
+  skip: True  # [py2k]
   number: 0
   entry_points:
     - fsnviz=fsnviz.cli:main
@@ -31,8 +32,18 @@ requirements:
     - jinja2 ==2.9.5
     - circos >=0.69.2
 
+test:
+  commands:
+    - fsnviz --help
+
 about:
   home: https://github.com/bow/fsnviz
   license: BSD
   summary: 'Tool for plotting gene fusion events detected by various tools using Circos.'
   license_family: BSD
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true

@@ -1,0 +1,638 @@
+diff -ru arbsrc_15220.orig/BINDINGS/PERL/Makefile arbsrc_15220/BINDINGS/PERL/Makefile
+--- arbsrc_15220.orig/BINDINGS/PERL/Makefile	2016-05-02 05:19:11.000000000 -0600
++++ arbsrc_15220/BINDINGS/PERL/Makefile	2017-06-16 13:22:09.000000000 -0600
+@@ -123,8 +123,8 @@
+ MAKE_APERL_FILE = Makefile.aperl
+ PERLMAINCC = $(CC)
+ PERL_INC = /usr/lib/perl/5.10/CORE
+-PERL = /usr/bin/perl
+-FULLPERL = /usr/bin/perl
++PERL = /usr/bin/env perl
++FULLPERL = /usr/bin/env perl
+ ABSPERL = $(PERL)
+ PERLRUN = $(PERL)
+ FULLPERLRUN = $(FULLPERL)
+@@ -854,7 +854,7 @@
+ 
+ # --- MakeMaker makeaperl section ---
+ MAP_TARGET    = perl
+-FULLPERL      = /usr/bin/perl
++FULLPERL      = /usr/bin/env perl
+ 
+ $(MAP_TARGET) :: static $(MAKE_APERL_FILE)
+ 	$(MAKE) $(USEMAKEFILE) $(MAKE_APERL_FILE) $@
+diff -ru arbsrc_15220.orig/CONVERTALN/show_error_list.pl arbsrc_15220/CONVERTALN/show_error_list.pl
+--- arbsrc_15220.orig/CONVERTALN/show_error_list.pl	2016-05-02 05:19:20.000000000 -0600
++++ arbsrc_15220/CONVERTALN/show_error_list.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/CORE/arb_diff.cxx arbsrc_15220/CORE/arb_diff.cxx
+--- arbsrc_15220.orig/CORE/arb_diff.cxx	2016-08-22 04:27:44.000000000 -0600
++++ arbsrc_15220/CORE/arb_diff.cxx	2017-06-16 13:25:32.000000000 -0600
+@@ -243,7 +243,7 @@
+     if      (!GB_is_regularfile(file1)) error = GBS_global_string("No such file '%s'", file1);
+     else if (!GB_is_regularfile(file2)) error = GBS_global_string("No such file '%s'", file2);
+     else {
+-        char *cmd     = GBS_global_string_copy("/usr/bin/diff --unified %s %s", file1, file2);
++        char *cmd     = GBS_global_string_copy("/usr/bin/env diff --unified %s %s", file1, file2);
+         FILE *diffout = popen(cmd, "r");
+ 
+         if (diffout) {
+diff -ru arbsrc_15220.orig/GDEHELP/cleanmenu.pl arbsrc_15220/GDEHELP/cleanmenu.pl
+--- arbsrc_15220.orig/GDEHELP/cleanmenu.pl	2016-05-02 05:19:20.000000000 -0600
++++ arbsrc_15220/GDEHELP/cleanmenu.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/GDEHELP/pp.pl arbsrc_15220/GDEHELP/pp.pl
+--- arbsrc_15220.orig/GDEHELP/pp.pl	2016-05-02 05:19:20.000000000 -0600
++++ arbsrc_15220/GDEHELP/pp.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ # ============================================================ #
+ #                                                              #
+ #   File      : pp.pl                                          #
+diff -ru arbsrc_15220.orig/HELP_SOURCE/generate_index.pl arbsrc_15220/HELP_SOURCE/generate_index.pl
+--- arbsrc_15220.orig/HELP_SOURCE/generate_index.pl	2016-08-22 04:27:41.000000000 -0600
++++ arbsrc_15220/HELP_SOURCE/generate_index.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/HELP_SOURCE/genhelp/postprocess_genhelp.pl arbsrc_15220/HELP_SOURCE/genhelp/postprocess_genhelp.pl
+--- arbsrc_15220.orig/HELP_SOURCE/genhelp/postprocess_genhelp.pl	2016-05-02 05:19:17.000000000 -0600
++++ arbsrc_15220/HELP_SOURCE/genhelp/postprocess_genhelp.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ #
+ # The main intention of this script is to make unchangable help files
+ # delivered with some of the integrated software compatible with
+diff -ru arbsrc_15220.orig/HELP_SOURCE/quietly.pl arbsrc_15220/HELP_SOURCE/quietly.pl
+--- arbsrc_15220.orig/HELP_SOURCE/quietly.pl	2016-05-02 05:19:18.000000000 -0600
++++ arbsrc_15220/HELP_SOURCE/quietly.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/Makefile arbsrc_15220/Makefile
+--- arbsrc_15220.orig/Makefile	2016-08-22 04:27:52.000000000 -0600
++++ arbsrc_15220/Makefile	2017-06-16 13:26:49.000000000 -0600
+@@ -499,9 +499,9 @@
+ #---------------------- system dependent commands
+ 
+ ifeq ($(DARWIN),1)
+-	TIME:=gtime
++	TIME:=/usr/bin/env time
+ else
+-	TIME:=/usr/bin/time
++	TIME:=/usr/bin/env time
+ endif
+ 
+ #---------------------- SSE vectorizer
+diff -ru arbsrc_15220.orig/PERL2ARB/test.pl arbsrc_15220/PERL2ARB/test.pl
+--- arbsrc_15220.orig/PERL2ARB/test.pl	2016-05-02 05:19:20.000000000 -0600
++++ arbsrc_15220/PERL2ARB/test.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ # Before `make install' is performed this script should be runnable with
+ # `make test'. After `make install' it should work as `perl test.pl'
+diff -ru arbsrc_15220.orig/PERL_SCRIPTS/ARBTOOLS/IFTHELP/embl_gen_long_features.pl arbsrc_15220/PERL_SCRIPTS/ARBTOOLS/IFTHELP/embl_gen_long_features.pl
+--- arbsrc_15220.orig/PERL_SCRIPTS/ARBTOOLS/IFTHELP/embl_gen_long_features.pl	2016-05-02 05:19:18.000000000 -0600
++++ arbsrc_15220/PERL_SCRIPTS/ARBTOOLS/IFTHELP/embl_gen_long_features.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ #  =============================================================== #
+ #                                                                  #
+ #    File      : embl_gen_long_features.pl                         #
+diff -ru arbsrc_15220.orig/PERL_SCRIPTS/ARBTOOLS/IFTHELP/format_dssp.pl arbsrc_15220/PERL_SCRIPTS/ARBTOOLS/IFTHELP/format_dssp.pl
+--- arbsrc_15220.orig/PERL_SCRIPTS/ARBTOOLS/IFTHELP/format_dssp.pl	2016-05-02 05:19:18.000000000 -0600
++++ arbsrc_15220/PERL_SCRIPTS/ARBTOOLS/IFTHELP/format_dssp.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use warnings;
+ use strict;
+diff -ru arbsrc_15220.orig/PERL_SCRIPTS/ARBTOOLS/IFTHELP/genbank_gen_long_features.pl arbsrc_15220/PERL_SCRIPTS/ARBTOOLS/IFTHELP/genbank_gen_long_features.pl
+--- arbsrc_15220.orig/PERL_SCRIPTS/ARBTOOLS/IFTHELP/genbank_gen_long_features.pl	2016-05-02 05:19:18.000000000 -0600
++++ arbsrc_15220/PERL_SCRIPTS/ARBTOOLS/IFTHELP/genbank_gen_long_features.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ # ================================================================ #
+ #                                                                  #
+ #   File      : genbank_gen_long_features.pl                       #
+diff -ru arbsrc_15220.orig/PERL_SCRIPTS/ARBTOOLS/import_from_table.pl arbsrc_15220/PERL_SCRIPTS/ARBTOOLS/import_from_table.pl
+--- arbsrc_15220.orig/PERL_SCRIPTS/ARBTOOLS/import_from_table.pl	2016-08-22 04:27:47.000000000 -0600
++++ arbsrc_15220/PERL_SCRIPTS/ARBTOOLS/import_from_table.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ # =============================================================== #
+ #                                                                 #
+ #   File      : import_from_table.pl                              #
+diff -ru arbsrc_15220.orig/PERL_SCRIPTS/ARBTOOLS/raxml2arb.pl arbsrc_15220/PERL_SCRIPTS/ARBTOOLS/raxml2arb.pl
+--- arbsrc_15220.orig/PERL_SCRIPTS/ARBTOOLS/raxml2arb.pl	2016-08-22 04:27:47.000000000 -0600
++++ arbsrc_15220/PERL_SCRIPTS/ARBTOOLS/raxml2arb.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ # =============================================================== #
+ #                                                                 #
+ #   File      : raxml2arb.pl                                      #
+diff -ru arbsrc_15220.orig/PERL_SCRIPTS/BIOPERL/beautifyNewick.pl arbsrc_15220/PERL_SCRIPTS/BIOPERL/beautifyNewick.pl
+--- arbsrc_15220.orig/PERL_SCRIPTS/BIOPERL/beautifyNewick.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/PERL_SCRIPTS/BIOPERL/beautifyNewick.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ # ============================================================ #
+ #                                                              #
+ #   File      : beautifyNewick.pl                              #
+diff -ru arbsrc_15220.orig/PERL_SCRIPTS/GENERAL/listDiff.pl arbsrc_15220/PERL_SCRIPTS/GENERAL/listDiff.pl
+--- arbsrc_15220.orig/PERL_SCRIPTS/GENERAL/listDiff.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/PERL_SCRIPTS/GENERAL/listDiff.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/PERL_SCRIPTS/GENOME/collect_gene_info.pl arbsrc_15220/PERL_SCRIPTS/GENOME/collect_gene_info.pl
+--- arbsrc_15220.orig/PERL_SCRIPTS/GENOME/collect_gene_info.pl	2016-05-02 05:19:18.000000000 -0600
++++ arbsrc_15220/PERL_SCRIPTS/GENOME/collect_gene_info.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/PERL_SCRIPTS/GENOME/import_proteomdata.pl arbsrc_15220/PERL_SCRIPTS/GENOME/import_proteomdata.pl
+--- arbsrc_15220.orig/PERL_SCRIPTS/GENOME/import_proteomdata.pl	2016-05-02 05:19:18.000000000 -0600
++++ arbsrc_15220/PERL_SCRIPTS/GENOME/import_proteomdata.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/PERL_SCRIPTS/MACROS/with_all_marked.pl arbsrc_15220/PERL_SCRIPTS/MACROS/with_all_marked.pl
+--- arbsrc_15220.orig/PERL_SCRIPTS/MACROS/with_all_marked.pl	2016-05-02 05:19:18.000000000 -0600
++++ arbsrc_15220/PERL_SCRIPTS/MACROS/with_all_marked.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ use strict;
+ use warnings;
+ 
+diff -ru arbsrc_15220.orig/PERL_SCRIPTS/SAI/SAI_demo.pl arbsrc_15220/PERL_SCRIPTS/SAI/SAI_demo.pl
+--- arbsrc_15220.orig/PERL_SCRIPTS/SAI/SAI_demo.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/PERL_SCRIPTS/SAI/SAI_demo.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/PERL_SCRIPTS/SPECIES/listMarkedSpecies.pl arbsrc_15220/PERL_SCRIPTS/SPECIES/listMarkedSpecies.pl
+--- arbsrc_15220.orig/PERL_SCRIPTS/SPECIES/listMarkedSpecies.pl	2016-05-02 05:19:18.000000000 -0600
++++ arbsrc_15220/PERL_SCRIPTS/SPECIES/listMarkedSpecies.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ # =============================================================== #
+ #                                                                 #
+ #   File      : markedSpecies.pl                                  #
+diff -ru arbsrc_15220.orig/PERL_SCRIPTS/SPECIES/markSpecies.pl arbsrc_15220/PERL_SCRIPTS/SPECIES/markSpecies.pl
+--- arbsrc_15220.orig/PERL_SCRIPTS/SPECIES/markSpecies.pl	2016-08-22 04:27:47.000000000 -0600
++++ arbsrc_15220/PERL_SCRIPTS/SPECIES/markSpecies.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#! /usr/bin/perl
++#! /usr/bin/env perl
+ 
+ #############################################################################
+ # Harald Meier (meierh@in.tum.de); 2006 LRR, Technische Universität München #
+diff -ru arbsrc_15220.orig/SH/dszmconnect.pl arbsrc_15220/SH/dszmconnect.pl
+--- arbsrc_15220.orig/SH/dszmconnect.pl	2016-05-02 05:19:20.000000000 -0600
++++ arbsrc_15220/SH/dszmconnect.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl -w
++#!/usr/bin/env perl
+ # switches for stringent coding and debugging
+ 
+ # This program is an adapter between the ARB program package and the DSZM website.
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/arb_cleanup_patches.pl arbsrc_15220/SOURCE_TOOLS/arb_cleanup_patches.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/arb_cleanup_patches.pl	2016-08-22 04:27:48.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/arb_cleanup_patches.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ 
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/arb_compiler_version.pl arbsrc_15220/SOURCE_TOOLS/arb_compiler_version.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/arb_compiler_version.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/arb_compiler_version.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/binuptodate.pl arbsrc_15220/SOURCE_TOOLS/binuptodate.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/binuptodate.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/binuptodate.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/build_info.pl arbsrc_15220/SOURCE_TOOLS/build_info.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/build_info.pl	2016-08-22 04:27:48.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/build_info.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/check_ressources.pl arbsrc_15220/SOURCE_TOOLS/check_ressources.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/check_ressources.pl	2016-08-22 04:27:48.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/check_ressources.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/check_same_compiler_version.pl arbsrc_15220/SOURCE_TOOLS/check_same_compiler_version.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/check_same_compiler_version.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/check_same_compiler_version.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/deadcode.pl arbsrc_15220/SOURCE_TOOLS/deadcode.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/deadcode.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/deadcode.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/dependency_graphs.pl arbsrc_15220/SOURCE_TOOLS/dependency_graphs.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/dependency_graphs.pl	2016-08-22 04:27:48.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/dependency_graphs.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ my $ARBHOME = $ENV{ARBHOME};
+ if (not -d $ARBHOME) {
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/diff2grep.pl arbsrc_15220/SOURCE_TOOLS/diff2grep.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/diff2grep.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/diff2grep.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/find_newest_source.pl arbsrc_15220/SOURCE_TOOLS/find_newest_source.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/find_newest_source.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/find_newest_source.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/fix_depends.pl arbsrc_15220/SOURCE_TOOLS/fix_depends.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/fix_depends.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/fix_depends.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl -w
++#!/usr/bin/env perl
+ # 
+ # This script parses and fixes dependency lines in Makefiles:
+ # 1. Searches for a line containing '# DO NOT DELETE'
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/gen_dep.pl arbsrc_15220/SOURCE_TOOLS/gen_dep.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/gen_dep.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/gen_dep.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/grepx.pl arbsrc_15220/SOURCE_TOOLS/grepx.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/grepx.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/grepx.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ # ======================================================================== #
+ #                                                                          #
+ #   File      : grepx.pl                                                   #
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/needed_libs.pl arbsrc_15220/SOURCE_TOOLS/needed_libs.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/needed_libs.pl	2016-08-22 04:27:48.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/needed_libs.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/postcompile.pl arbsrc_15220/SOURCE_TOOLS/postcompile.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/postcompile.pl	2016-08-22 04:27:48.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/postcompile.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ # ================================================================= #
+ #                                                                   #
+ #   File      : postcompile.pl                                      #
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/profile_annotate.pl arbsrc_15220/SOURCE_TOOLS/profile_annotate.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/profile_annotate.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/profile_annotate.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/release/release_tool.pl arbsrc_15220/SOURCE_TOOLS/release/release_tool.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/release/release_tool.pl	2016-08-22 04:27:48.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/release/release_tool.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/remake_after_change.pl arbsrc_15220/SOURCE_TOOLS/remake_after_change.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/remake_after_change.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/remake_after_change.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/requireVersion.pl arbsrc_15220/SOURCE_TOOLS/requireVersion.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/requireVersion.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/requireVersion.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/svn_apply_ignores.pl arbsrc_15220/SOURCE_TOOLS/svn_apply_ignores.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/svn_apply_ignores.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/svn_apply_ignores.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ # ============================================================ #
+ #                                                              #
+ #   File      : svn_apply_ignores.pl                           #
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/svn_undo_depends.pl arbsrc_15220/SOURCE_TOOLS/svn_undo_depends.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/svn_undo_depends.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/svn_undo_depends.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ # ============================================================ #
+ #                                                              #
+ #   File      : svn_undo_depends.pl                            #
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/tabBrake.pl arbsrc_15220/SOURCE_TOOLS/tabBrake.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/tabBrake.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/tabBrake.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ #
+ # checks files for TABs and raises error if TABs found
+ # (TABs are evil, cause they have no default width)
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/touch_modified.pl arbsrc_15220/SOURCE_TOOLS/touch_modified.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/touch_modified.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/touch_modified.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/update_config_makefile.pl arbsrc_15220/SOURCE_TOOLS/update_config_makefile.pl
+--- arbsrc_15220.orig/SOURCE_TOOLS/update_config_makefile.pl	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/update_config_makefile.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/SOURCE_TOOLS/valgrind2grep arbsrc_15220/SOURCE_TOOLS/valgrind2grep
+--- arbsrc_15220.orig/SOURCE_TOOLS/valgrind2grep	2016-08-22 04:27:48.000000000 -0600
++++ arbsrc_15220/SOURCE_TOOLS/valgrind2grep	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use warnings;
+ use strict;
+diff -ru arbsrc_15220.orig/TEMPLATES/arb_backtrace.h arbsrc_15220/TEMPLATES/arb_backtrace.h
+--- arbsrc_15220.orig/TEMPLATES/arb_backtrace.h	2016-05-02 05:19:11.000000000 -0600
++++ arbsrc_15220/TEMPLATES/arb_backtrace.h	2017-06-16 13:30:10.000000000 -0600
+@@ -79,7 +79,7 @@
+         static bool filtfailed = false;
+         if (!filtfailed) {
+             // @@@ Warning: this branch ignores parameter 'out'
+-            FILE *filt = popen("/usr/bin/c++filt", "w");
++            FILE *filt = popen("/usr/bin/env c++filt", "w");
+             if (filt) {
+                 filtfailed   = !trace.dump(filt, message);
+                 int exitcode = pclose(filt);
+diff -ru arbsrc_15220.orig/UNIT_TESTER/gcov2msg.pl arbsrc_15220/UNIT_TESTER/gcov2msg.pl
+--- arbsrc_15220.orig/UNIT_TESTER/gcov2msg.pl	2016-05-02 05:19:20.000000000 -0600
++++ arbsrc_15220/UNIT_TESTER/gcov2msg.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/UNIT_TESTER/log_result.pl arbsrc_15220/UNIT_TESTER/log_result.pl
+--- arbsrc_15220.orig/UNIT_TESTER/log_result.pl	2016-08-22 04:27:47.000000000 -0600
++++ arbsrc_15220/UNIT_TESTER/log_result.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ use strict;
+ use warnings;
+ 
+diff -ru arbsrc_15220.orig/UNIT_TESTER/reporter.pl arbsrc_15220/UNIT_TESTER/reporter.pl
+--- arbsrc_15220.orig/UNIT_TESTER/reporter.pl	2016-08-22 04:27:47.000000000 -0600
++++ arbsrc_15220/UNIT_TESTER/reporter.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/UNIT_TESTER/run/general/pp.amc arbsrc_15220/UNIT_TESTER/run/general/pp.amc
+--- arbsrc_15220.orig/UNIT_TESTER/run/general/pp.amc	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/UNIT_TESTER/run/general/pp.amc	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ use strict;
+ use warnings;
+ 
+diff -ru arbsrc_15220.orig/UNIT_TESTER/run/general/pp_exp.amc arbsrc_15220/UNIT_TESTER/run/general/pp_exp.amc
+--- arbsrc_15220.orig/UNIT_TESTER/run/general/pp_exp.amc	2016-05-02 05:19:19.000000000 -0600
++++ arbsrc_15220/UNIT_TESTER/run/general/pp_exp.amc	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ use strict;
+ use warnings;
+ 
+diff -ru arbsrc_15220.orig/UNIT_TESTER/sym2testcode.pl arbsrc_15220/UNIT_TESTER/sym2testcode.pl
+--- arbsrc_15220.orig/UNIT_TESTER/sym2testcode.pl	2016-08-22 04:27:47.000000000 -0600
++++ arbsrc_15220/UNIT_TESTER/sym2testcode.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/lib/macro.head arbsrc_15220/lib/macro.head
+--- arbsrc_15220.orig/lib/macro.head	2016-05-02 05:19:17.000000000 -0600
++++ arbsrc_15220/lib/macro.head	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ use strict;
+ use warnings;
+ 
+diff -ru arbsrc_15220.orig/lib/macros/ARB/SEQ_DATA/dashes2dots_at_sequenceends_of_marked.amc arbsrc_15220/lib/macros/ARB/SEQ_DATA/dashes2dots_at_sequenceends_of_marked.amc
+--- arbsrc_15220.orig/lib/macros/ARB/SEQ_DATA/dashes2dots_at_sequenceends_of_marked.amc	2016-08-22 04:27:38.000000000 -0600
++++ arbsrc_15220/lib/macros/ARB/SEQ_DATA/dashes2dots_at_sequenceends_of_marked.amc	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl -w
++#!/usr/bin/env perl
+ use lib "$ENV{'ARBHOME'}/lib/";
+ use ARB;
+ 
+diff -ru arbsrc_15220.orig/lib/macros/_dolog.amc arbsrc_15220/lib/macros/_dolog.amc
+--- arbsrc_15220.orig/lib/macros/_dolog.amc	2016-05-02 05:19:12.000000000 -0600
++++ arbsrc_15220/lib/macros/_dolog.amc	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ #
+ # auto-record ARB-session
+ # (for debugging purposes; user could as well record ARB crashes)
+diff -ru arbsrc_15220.orig/lib/macros/replamb.amc arbsrc_15220/lib/macros/replamb.amc
+--- arbsrc_15220.orig/lib/macros/replamb.amc	2016-05-02 05:19:12.000000000 -0600
++++ arbsrc_15220/lib/macros/replamb.amc	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl -w
++#!/usr/bin/env perl
+ use lib "$ENV{'ARBHOME'}/lib/";
+ use ARB;
+ 
+diff -ru arbsrc_15220.orig/lib/macros/test.amc arbsrc_15220/lib/macros/test.amc
+--- arbsrc_15220.orig/lib/macros/test.amc	2016-05-02 05:19:12.000000000 -0600
++++ arbsrc_15220/lib/macros/test.amc	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl -w
++#!/usr/bin/env perl
+ use lib "$ENV{'ARBHOME'}/lib/";
+ use ARB;
+ 
+diff -ru arbsrc_15220.orig/lib/macros/testwl.amc arbsrc_15220/lib/macros/testwl.amc
+--- arbsrc_15220.orig/lib/macros/testwl.amc	2016-05-02 05:19:12.000000000 -0600
++++ arbsrc_15220/lib/macros/testwl.amc	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl -w
++#!/usr/bin/env perl
+ use lib "$ENV{'ARBHOME'}/lib/";
+ use ARB;
+ 
+diff -ru arbsrc_15220.orig/lib/macros/toggle_color.amc arbsrc_15220/lib/macros/toggle_color.amc
+--- arbsrc_15220.orig/lib/macros/toggle_color.amc	2016-05-02 05:19:12.000000000 -0600
++++ arbsrc_15220/lib/macros/toggle_color.amc	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl -w
++#!/usr/bin/env perl
+ use lib "$ENV{'ARBHOME'}/lib/";
+ use ARB;
+ 
+diff -ru arbsrc_15220.orig/lib/macros/xopen.amc arbsrc_15220/lib/macros/xopen.amc
+--- arbsrc_15220.orig/lib/macros/xopen.amc	2016-05-02 05:19:12.000000000 -0600
++++ arbsrc_15220/lib/macros/xopen.amc	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl -w
++#!/usr/bin/env perl
+ use lib "$ENV{'ARBHOME'}/lib/";
+ use ARB;
+ 
+diff -ru arbsrc_15220.orig/lib/motifHack/convert_xpm.pl arbsrc_15220/lib/motifHack/convert_xpm.pl
+--- arbsrc_15220.orig/lib/motifHack/convert_xpm.pl	2016-08-22 04:27:37.000000000 -0600
++++ arbsrc_15220/lib/motifHack/convert_xpm.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ # ============================================================= #
+ #                                                               #
+ #   File      : convert_xpm.pl                                  #
+diff -ru arbsrc_15220.orig/util/arb_check_build_env.pl arbsrc_15220/util/arb_check_build_env.pl
+--- arbsrc_15220.orig/util/arb_check_build_env.pl	2016-05-02 05:19:10.000000000 -0600
++++ arbsrc_15220/util/arb_check_build_env.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ #
+ # This script checks whether all tools needed for ARB compilation are found in path.
+ 
+diff -ru arbsrc_15220.orig/util/arb_srclst.pl arbsrc_15220/util/arb_srclst.pl
+--- arbsrc_15220.orig/util/arb_srclst.pl	2016-08-22 04:27:42.000000000 -0600
++++ arbsrc_15220/util/arb_srclst.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;
+diff -ru arbsrc_15220.orig/util/arb_tgz2version.pl arbsrc_15220/util/arb_tgz2version.pl
+--- arbsrc_15220.orig/util/arb_tgz2version.pl	2016-05-02 05:19:10.000000000 -0600
++++ arbsrc_15220/util/arb_tgz2version.pl	2017-06-16 13:22:09.000000000 -0600
+@@ -1,4 +1,4 @@
+-#!/usr/bin/perl
++#!/usr/bin/env perl
+ 
+ use strict;
+ use warnings;

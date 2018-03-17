@@ -1,6 +1,6 @@
 {% set name = "sequana" %}
-{% set version = "0.2.1" %}
-{% set md5 = "a3c70cdc783f16a270bb45cfaac0fc09" %}
+{% set version = "0.7.0" %}
+{% set md5 = "19d32438cf30584c68f834f10d6eac5c" %}
 
 package:
   name: {{ name }}
@@ -12,9 +12,8 @@ source:
   md5: {{ md5 }}
 
 
-# py36 requires pyvcf do be updated so for now, only 3.5
 build:
-  skip: True # [not py35]
+  skip: True # [py27]
   preserve_egg_dir: True
   number: 0
   entry_points:
@@ -31,76 +30,87 @@ build:
     - sequana_mapping=sequana.scripts.mapping:main
     - sequana_compressor=sequana.scripts.compressor:main
     - sequana_report=sequana.scripts.reports:main
-    - sequana_fox=sequana.scripts.browser:main
 
-# matplotlib and qt cause trouble. Removed whihc prevent the
-# test or imports unfortunately
 
 requirements:
   build:
     - python
     - setuptools
-    - easydev >=0.9.34
-    - reports >=0.3.1
-    - pyvcf
-    - pandas
-    - cutadapt >=1.9.1
-    - bioservices >=1.4.14
-    - biokit >=0.4.1
-    - pysam
-    - docutils
-    - mock
-    - psutil
-    - ruamel.yaml >=0.13.2
-    - colorlog
-    - qtconsole
 
   run:
     - python
-    - easydev >=0.9.34
-    - reports >=0.3.1
-    - pyvcf
-    - pandas
-    - cutadapt >=1.9.1
+    - atropos ==1.1.16
+    - bcftools
+    - bedtools
     - bioservices >=1.4.14
     - biokit >=0.4.1
-    - pysam
-    - docutils
-    - mock
-    - psutil
-    - ruamel.yaml >=0.13.2
+    - bleach
+    - bowtie
+    - bowtie2
+    #- busco ==3.0.2
+    - bwa
+    # - canu
     - colorlog
-    - snakemake
-    - qtconsole
-    - shustring
-    - numexpr
-    - xlrd
-    - pyyaml
-    - kraken
-    - snpeff
+    - cutadapt
+    - easydev >=0.9.36
+    - fastq-screen
+    - fastqc ==0.11.5
+    - freebayes
+    - graphviz
+    - khmer
+    - kraken # [not osx]
     - krona
+    - mock
+    - multiqc ==1.0
+    - numexpr
+    - pandas
+    - pigz
+    #- prokka
+    - psutil
+    - pyyaml
+    - pyvcf
+    - pysam
+    - ruamel.yaml ==0.12.13
+    - qtconsole
+    - reports >=0.3.1
+    - sambamba
+    - samtools
+    - snakemake ==4.0.0
+    - snpeff
+    - spades
+    - shustring
+    - subread
+    - xlrd
 
+#
 test:
-  #imports:
-  #  - sequana
-  #  - sequana.modules_report
-  #  - sequana.pipelines
-  #  - sequana.plots
-  #  - sequana.scripts
-  #  - sequana.sphinxext
-  #  - sequana.utils
+  imports:
+    - sequana
+    - sequana.modules_report
+    - sequana.pipelines
+    - sequana.plots
+    - sequana.scripts
+    - sequana.sphinxext
+    - sequana.utils
+  commands:
+    - fastq_count --help 1>out 2>err
+    - sequana_fastq_head --help
+    - sequana_fastq_count --help
+    - sequana --help
+    - sequana_taxonomy --help 1>out 2>err
+    - sequana_coverage --help 1>out 2>err
+  #  - sequanix
+    - sequana_mapping --help 1>out 2>err
+    - sequana_compressor --help
 
-  # commands:
-  #  - fastq_count --help
-  #  - sequana_fastq_head --help
-  #  - sequana_fastq_count --help
-  #  - sequana --help
-  #  - sequana_taxonomy --help
-  #  - sequana_coverage --help
-  #  - sequana_summary --help
-  #  - sequana_mapping --help
-  #  - sequana_compressor --help
-  #  - sequana_report --help
+# commands:
+#    - MPLBACKEND=agg bioconvert --help
+#    - MPLBACKEND=agg bioconvert_init --help
+
+extra:
+    container:
+        # needs libGL.so.1
+        extended-base: true
 
 about:
   home: ['http://github.com/sequana/']

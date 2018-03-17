@@ -16,7 +16,7 @@ from os import access, getenv, path, X_OK
 JAR_NAME = 'fgbio.jar'
 
 # Default options passed to the `java` executable.
-DEFAULT_JVM_MEM_OPTS = ['-Xms512m', '-Xmx1g']
+DEFAULT_JVM_MEM_OPTS = ['-Xms512m', '-Xmx4g']
 
 
 def real_dirname(in_path):

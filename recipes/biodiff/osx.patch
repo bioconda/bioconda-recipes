@@ -1,0 +1,38 @@
+From 0d17c8355bbf19fd6667f9132a4fd21cc1a6aef1 Mon Sep 17 00:00:00 2001
+From: Afif Elghraoui <afif@ghraoui.name>
+Date: Thu, 8 Feb 2018 20:06:14 -0500
+Subject: [PATCH] compatibility with FreeBSD userland
+
+---
+ biodiff | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/biodiff b/biodiff
+index 2885b9e..b04c3fb 100755
+--- a/biodiff
++++ b/biodiff
+@@ -3,12 +3,20 @@
+ set -e
+ 
+ VERSION=0.2.2
++platform="$(uname)"
++
++if [ "${platform}" = "Darwin" ] || [ "${platform}" = "FreeBSD" ]
++then
++    MKTEMP="mktemp"
++else
++    MKTEMP="mktemp -p /tmp"
++fi
+ 
+ reference="$1"
+ query="$2"
+ 
+ unset tmpdir
+-tmpdir=$(mktemp -p /tmp -d biodiff.XXXXXX)
++tmpdir=$(${MKTEMP} -d biodiff.XXXXXX)
+ refdir="$tmpdir/ref"
+ qrydir="$tmpdir/qry"
+ 
+-- 
+2.11.0
+

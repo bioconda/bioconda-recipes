@@ -1,17 +1,19 @@
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '1.61' %}
 
 package:
   name: r-wgcna
-  version: "1.51"
+  version: {{ version|replace("-", "_") }}
 
 source:
-  fn: WGCNA_1.51.tar.gz
+  fn: WGCNA_{{ version }}.tar.gz
   url:
-    - http://cran.r-project.org/src/contrib/WGCNA_1.51.tar.gz
-    - http://cran.r-project.org/src/contrib/Archive/WGCNA/WGCNA_1.51.tar.gz
+    - https://cran.r-project.org/src/contrib/WGCNA_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/WGCNA/WGCNA_{{ version }}.tar.gz
+  sha256: d14080a9d900076f8bc9ecc50a35d8dba4ebc8281fcc437386260535c6142cef
 
 build:
+  number: 0
+
   rpaths:
     - lib/R/lib/
     - lib/
@@ -22,6 +24,7 @@ requirements:
     - bioconductor-annotationdbi
     - bioconductor-go.db
     - r-hmisc
+    - r-rcpp >=0.11.0
     - r-doparallel
     - r-dynamictreecut >=1.62
     - r-fastcluster
@@ -29,16 +32,17 @@ requirements:
     - bioconductor-impute
     - r-matrixstats >=0.8.1
     - bioconductor-preprocesscore
+    - r-robust
     - r-survival
-    - posix               # [win]
-    - {{native}}toolchain # [win]
-    - gcc                 # [not win]
+    - gcc  # [linux]
+    - llvm # [osx]
 
   run:
     - r-base
     - bioconductor-annotationdbi
     - bioconductor-go.db
     - r-hmisc
+    - r-rcpp >=0.11.0
     - r-doparallel
     - r-dynamictreecut >=1.62
     - r-fastcluster
@@ -46,12 +50,13 @@ requirements:
     - bioconductor-impute
     - r-matrixstats >=0.8.1
     - bioconductor-preprocesscore
+    - r-robust
     - r-survival
+    - libgcc # [linux]
 
 test:
   commands:
-    - $R -e "library('WGCNA')" # [not win]
-    - "\"%R%\" -e \"library('WGCNA')\"" # [win]
+    - $R -e "library('WGCNA')"
 
 about:
   home: http://www.genetics.ucla.edu/labs/horvath/CoexpressionNetwork/Rpackages/WGCNA/
@@ -62,27 +67,3 @@ about:
     to sample traits. Also includes a number of utility functions for data manipulation
     and visualization.
   license_family: GPL3
-
-# The original CRAN metadata for this package was:
-
-# Package: WGCNA
-# Version: 1.51
-# Date: 2016-03-08
-# Title: Weighted Correlation Network Analysis
-# Author: Peter Langfelder <Peter.Langfelder@gmail.com> and Steve Horvath <SHorvath@mednet.ucla.edu> with contributions by Chaochao Cai, Jun Dong, Jeremy Miller, Lin Song, Andy Yip, and Bin Zhang
-# Maintainer: Peter Langfelder <Peter.Langfelder@gmail.com>
-# Depends: R (>= 3.0), dynamicTreeCut (>= 1.62), fastcluster
-# Imports: stats, grDevices, utils, matrixStats (>= 0.8.1), Hmisc, impute, splines, foreach, doParallel, preprocessCore, survival, parallel, GO.db, AnnotationDbi
-# Suggests: org.Hs.eg.db, org.Mm.eg.db, infotheo, entropy, minet
-# ZipData: no
-# License: GPL (>= 2)
-# Description: Functions necessary to perform Weighted Correlation Network Analysis on high-dimensional data. Includes functions for rudimentary data cleaning, construction of correlation networks, module identification, summarization, and relating of variables and modules to sample traits. Also includes a number of utility functions for data manipulation and visualization.
-# URL: http://www.genetics.ucla.edu/labs/horvath/CoexpressionNetwork/Rpackages/WGCNA/
-# NeedsCompilation: yes
-# Packaged: 2016-03-14 22:18:51 UTC; plangfelder
-# Repository: CRAN
-# Date/Publication: 2016-03-15 00:24:08
-
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml

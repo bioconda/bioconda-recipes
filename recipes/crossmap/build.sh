@@ -1,3 +1,3 @@
 #!/bin/bash
-rm -rf lib/psyco_full.py
-$PYTHON setup.py install
+rm -f lib/psyco_full.py
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt

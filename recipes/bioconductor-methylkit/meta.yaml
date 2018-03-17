@@ -1,20 +1,21 @@
+{% set version = "1.4.0" %}
+{% set name = "methylKit" %}
+{% set bioc = "3.6" %}
+
 package:
-  name: bioconductor-methylkit
-  version: 1.0.0
-
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: methylKit_1.0.0.tar.gz
-  url: https://bioarchive.galaxyproject.org/methylKit_1.0.0.tar.gz
-  md5: 3612ce6bf0b748d8869a4a16c57265dc
-  patches: # [osx]
-    - rpath.patch # [osx]
-
+  fn: '{{ name }}_{{ version }}.tar.gz'
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: b60bc07554e124e9edf9b6087f1fe38f32ce8c4c5384d82cb0e26599abe0a340
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-
 requirements:
   build:
     - bioconductor-fastseg
@@ -23,19 +24,18 @@ requirements:
     - bioconductor-iranges
     - bioconductor-limma
     - bioconductor-qvalue
+    - bioconductor-rhtslib  # not in DESCRIPTION
     - bioconductor-rsamtools
     - bioconductor-rtracklayer
-    - bioconductor-s4vectors
-    - bioconductor-rhtslib
-    - bioconductor-zlibbioc
-    - r
+    - 'bioconductor-s4vectors >=0.13.13'
+    - r-base
     - 'r-data.table >=1.9.6'
     - r-emdbook
     - r-gtools
+    - r-kernsmooth
     - r-mclust
     - r-r.utils
     - r-rcpp
-    - r-kernsmooth
     - gcc  # [linux]
     - llvm  # [osx]
   run:
@@ -45,29 +45,22 @@ requirements:
     - bioconductor-iranges
     - bioconductor-limma
     - bioconductor-qvalue
+    - bioconductor-rhtslib  # not in DESCRIPTION
     - bioconductor-rsamtools
     - bioconductor-rtracklayer
-    - bioconductor-s4vectors
-    - bioconductor-rhtslib
-    - bioconductor-zlibbioc
-    - r
+    - 'bioconductor-s4vectors >=0.13.13'
+    - r-base
     - 'r-data.table >=1.9.6'
     - r-emdbook
     - r-gtools
+    - r-kernsmooth
     - r-mclust
     - r-r.utils
     - r-rcpp
-    - r-kernsmooth
-    - libgcc
 test:
   commands:
-    - '$R -e "library(''methylKit'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/methylKit.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'methylKit is an R package for DNA methylation analysis and annotation
-    from high-throughput bisulfite sequencing. The package is designed to deal with
-    sequencing data from RRBS and its variants, but also target-capture methods and
-    whole genome bisulfite sequencing. It also has functions to analyze base-pair
-    resolution 5hmC data from experimental protocols such as oxBS-Seq and TAB-Seq.
-    Perl is needed to read SAM files only.'
+  summary: 'methylKit is an R package for DNA methylation analysis and annotation from high-throughput bisulfite sequencing. The package is designed to deal with sequencing data from RRBS and its variants, but also target-capture methods and whole genome bisulfite sequencing. It also has functions to analyze base-pair resolution 5hmC data from experimental protocols such as oxBS-Seq and TAB-Seq. Perl is needed to read SAM files only.'

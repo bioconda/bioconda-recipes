@@ -1,44 +1,48 @@
 package:
   name: multiqc
-  version: "1.0"
+  version: "1.5"
 
 source:
-  fn: v1.0.tar.gz
-  url: https://github.com/ewels/MultiQC/archive/v1.0.tar.gz
-  md5: 0ba67f2fcb20c6d42929069a0865731f
+  fn: v1.5.tar.gz
+  url: https://github.com/ewels/MultiQC/archive/v1.5.tar.gz
+  sha256: bc01b5c7306bd75fbe8c1236dad3af0f8160698a62bbcc73c91a49058e31ab75
 
 build:
   number: 0
   preserve_egg_dir: True
-  # python 3 failing on
-  # FileNotFoundError: [Errno 2] No such file or directory: 'locale'
-  # https://travis-ci.org/bioconda/bioconda-recipes/jobs/191266605
-  skip: true # [not py27]
 
 requirements:
   build:
     - python
+    - setuptools
     - click
     - future >0.14.0
     - lzstring
     - jinja2 >=2.9
-    - matplotlib
+    - matplotlib <=2.1.0
+    - markdown
     - numpy
     - pyyaml
+    - requests
     - simplejson
-    - spectra
+    - spectra >=0.0.10
 
   run:
     - python
+    - setuptools
     - click
     - future >0.14.0
-    - lzstring
     - jinja2 >=2.9
-    - matplotlib
+    - libgcc  # [linux]
+    - lzstring
+    - markdown
+    - matplotlib <=2.1.0
     - numpy
     - pyyaml
+    - requests
     - simplejson
-    - spectra
+    - spectra >=0.0.10
+    - enum34 # [py27]
 
 test:
   # Python imports
@@ -46,49 +50,70 @@ test:
     - multiqc
     - multiqc.modules
     - multiqc.modules.adapterRemoval
+    - multiqc.modules.afterqc
     - multiqc.modules.bamtools
+    - multiqc.modules.bbmap
     - multiqc.modules.bcftools
+    - multiqc.modules.bcl2fastq
+    - multiqc.modules.biobloomtools
     - multiqc.modules.bismark
     - multiqc.modules.bowtie1
     - multiqc.modules.bowtie2
     - multiqc.modules.busco
+    - multiqc.modules.clipandmerge
     - multiqc.modules.clusterflow
+    - multiqc.modules.conpair
     - multiqc.modules.custom_content
     - multiqc.modules.cutadapt
+    - multiqc.modules.dedup
+    - multiqc.modules.deeptools
+    - multiqc.modules.disambiguate
     - multiqc.modules.fastq_screen
     - multiqc.modules.fastqc
     - multiqc.modules.featureCounts
+    - multiqc.modules.flexbar
     - multiqc.modules.gatk
     - multiqc.modules.goleft_indexcov
+    - multiqc.modules.hicexplorer
     - multiqc.modules.hicup
+    - multiqc.modules.hisat2
+    - multiqc.modules.homer
     - multiqc.modules.htseq
+    - multiqc.modules.interop
+    - multiqc.modules.jellyfish
     - multiqc.modules.kallisto
+    - multiqc.modules.leehom
+    - multiqc.modules.macs2
     - multiqc.modules.methylQA
     - multiqc.modules.peddy
     - multiqc.modules.picard
     - multiqc.modules.preseq
     - multiqc.modules.prokka
+    - multiqc.modules.qorts
     - multiqc.modules.qualimap
     - multiqc.modules.quast
     - multiqc.modules.rna_seqc
+    - multiqc.modules.rsem
     - multiqc.modules.rseqc
     - multiqc.modules.salmon
     - multiqc.modules.samblaster
     - multiqc.modules.samtools
+    - multiqc.modules.sargasso
     - multiqc.modules.skewer
     - multiqc.modules.slamdunk
     - multiqc.modules.snpeff
     - multiqc.modules.sortmerna
     - multiqc.modules.star
+    - multiqc.modules.supernova
+    - multiqc.modules.theta2
     - multiqc.modules.tophat
     - multiqc.modules.trimmomatic
+    - multiqc.modules.vcftools
+    - multiqc.modules.verifybamid
     - multiqc.plots
     - multiqc.templates
     - multiqc.templates.default
-    # Tests break:
-    #   AttributeError: module 'multiqc.utils.config' has no attribute 'data_tmp_dir'
-    # (fixed in dev for future releases)
-    # - multiqc.templates.default_dev
+    - multiqc.templates.default_dev
     - multiqc.templates.geo
     - multiqc.templates.sections
     - multiqc.templates.simple
@@ -96,6 +121,7 @@ test:
 
   commands:
     - multiqc --version
+    - multiqc .
 
 about:
   home: http://multiqc.info
@@ -103,3 +129,10 @@ about:
   summary: 'Create aggregate bioinformatics analysis reports across many samples and tools'
   license_family: GPL3
 
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]
+  skip-lints:
+    - uses_setuptools # uses pkg_resources

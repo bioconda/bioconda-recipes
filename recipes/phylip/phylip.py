@@ -20,12 +20,12 @@ def main():
         sys.exit(1)
 
     progname = sys.argv[1]
+    program = bindir+"/"+progname
 
     if progname == "test": # hidden test of conda phylip installation
         test(bindir)
     elif(os.path.isfile(program)):
-        program = bindir+"/"+progname
-        subprocess.run(program, check=True)
+        subprocess.check_call(program)
     else:
         print("{prog} does not exist in Phylip".format(prog=progname))
         usage()
@@ -97,7 +97,8 @@ def testprog(prog, bindir, params):
     program = bindir+"/"+prog
     outfile = open(prog+".out",'wt')
     try:
-        subprocess.run(program, universal_newlines=True,input=params,stdout=outfile, check=True)
+        process = subprocess.Popen(program, stdin=subprocess.PIPE, stdout=outfile, stderr=subprocess.STDOUT, universal_newlines=True)
+        process.communicate(input=params)
     except subprocess.CalledProcessError as e:
         print(e)
         subprocess.call(["cat", prog+".out"])

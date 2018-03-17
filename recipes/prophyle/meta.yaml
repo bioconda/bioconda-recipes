@@ -1,5 +1,5 @@
-{% set version = "0.1.0.38" %}
-{% set sha256 = "eee1d2d88fba130acd48b39810f97bc1d95b14a1a3bb206938508897468a802e" %}
+{% set version = "0.3.1.0" %}
+{% set sha256 = "af85fa131530a30becc6e31bf248fd02c2ded05ec2445c30768553e60f846552" %}
 
 package:
   name: prophyle
@@ -7,39 +7,77 @@ package:
 
 source:
   fn: prophyle-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/p/prophyle/prophyle-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/p/prophyle/prophyle-{{version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 2
   skip: True # [py27]
-  script: python setup.py install
+  script:
+  entry_points:
+    - prophyle = prophyle.prophyle:main
+    - prophyle_analyze.py = prophyle.prophyle_analyze:main
+    - prophyle_assignment.py = prophyle.prophyle_assignment:main
+    - prophyle_ncbi_tree.py = prophyle.prophyle_ncbi_tree:main
+    - prophyle_otu_table.py = prophyle.prophyle_otu_table:main
+    - prophyle_paired_end.py = prophyle.prophyle_paired_end:main
+    - prophyle_plot_tree.py = prophyle.prophyle_plot_tree:main
+    - prophyle_propagation_makefile.py = prophyle.prophyle_propagation_makefile:main
+    - prophyle_propagation_postprocessing.py = prophyle.prophyle_propagation_postprocessing:main
+    - prophyle_propagation_preprocessing.py = prophyle.prophyle_propagation_preprocessing:main
+    - prophyle_split_allseq.py = prophyle.prophyle_split_allseq:main
 
 requirements:
   build:
+    - gcc  # [linux]
+    - llvm # [osx]
     - python
     - samtools
     - ete3
     - bitarray
     - scipy
     - wheel
-    - zlib
+    - zlib {{CONDA_ZLIB }}*
     - psutil
+    - pysam
   run:
+    - libgcc # [linux]
     - python
     - samtools
     - ete3
     - bitarray
     - scipy
     - wheel
-    - zlib
+    - zlib {{ CONDA_ZLIB }}*
     - psutil
+    - pysam
 
 test:
-    commands:
-      - prophyle -h
+  imports:
+    - prophyle
+  commands:
+    - prophyle --help
+    - prophyle download --help
+    - prophyle index --help
+    - prophyle classify --help
+    - prophyle analyze --help
+    - prophyle compress --help
+    - prophyle decompress --help
+    - prophyle compile --help
+
+    - prophyle_analyze.py --help
+    - prophyle_assignment.py --help
+    - prophyle_ncbi_tree.py --help
+    - prophyle_otu_table.py --help
+    - prophyle_paired_end.py --help
+    - prophyle_plot_tree.py --help
+    - prophyle_propagation_makefile.py --help
+    - prophyle_propagation_postprocessing.py --help || true # todo: once fixed, remove '|| true'
+    - prophyle_propagation_preprocessing.py --help
+    - prophyle_split_allseq.py --help
 
 about:
   home: https://github.com/karel-brinda/prophyle
   license: MIT
-  summary: 'ProPhyle is a metagenomic classifier based on BWT-index and phylogenetic trees. Its indexing strategy uses bottom-up propagation of k-mers in the tree, assembling contigs at each node and matching using a standard full-text search.'
+  summary: ProPhyle is an accurate, resource-frugal and deterministic phylogeny-based metagenomic classifier.
+

@@ -1,28 +1,43 @@
---- Makefile	2017-02-05 22:49:13.000000000 +0100
-+++ Makefile	2017-02-05 22:51:07.000000000 +0100
-@@ -35,11 +35,11 @@
+--- Makefile    2018-03-03 21:35:11.450748318 +0000
++++ Makefile    2018-03-12 22:26:32.603369889 +0000
+@@ -8,7 +8,7 @@
+ #
+
+ #Basic flags every build needs
+-LIBS=-lz
++LIBS=-lcrypto -lz -llzma -lbz2 -lcurl
+ CXXFLAGS ?= -g -O3
+ CXXFLAGS += -std=c++11 -fopenmp -fsigned-char
+ CFLAGS ?= -O3 -std=c99
+@@ -46,19 +46,8 @@
+     EIGEN_CHECK=
  endif
- 
- # Bulild and link the libhts submodule
--HTS_LIB=./htslib/libhts.a
--HTS_INCLUDE=-I./htslib
-+
-+
- 
+
+-# Default to build and link the libhts submodule
+-ifeq ($(HTS), install)
+-    HTS_LIB=./htslib/libhts.a
+-    HTS_INCLUDE=-I./htslib
+-else
+-    # Use system-wide htslib
+-    HTS_LIB=
+-    HTS_INCLUDE=
+-    LIBS += -lhts
+-endif
+-
  # Include the header-only fast5 library
--FAST5_INCLUDE=-I./fast5/src
-+
- 
- # Include the src subdirectories
- NP_INCLUDE=$(addprefix -I./, $(SUBDIRS))
---- src/nanopolish_methyltrain.cpp	2017-02-05 22:48:52.000000000 +0100
-+++ src//nanopolish_methyltrain.cpp	2017-02-05 22:49:43.000000000 +0100
+-FAST5_INCLUDE=-I./fast5/include
++#FAST5_INCLUDE=-I./fast5/include
+
+ # Include the header-only eigen library
+ EIGEN_INCLUDE=-I./eigen/
+--- src/nanopolish_methyltrain.cpp    2018-03-03 21:35:35.230748318 +0000
++++ src/nanopolish_methyltrain.cpp    2018-03-03 21:35:58.920748318 +0000
 @@ -42,7 +42,7 @@
  #include "logger.hpp"
- 
+
  #include "nanopolish_scorereads.h"
--#include "../eigen/Eigen/Dense"
+-#include "Eigen/Dense"
 +#include <eigen3/Eigen/Dense>
- 
+
  extern float g_p_skip, g_p_skip_self, g_p_bad, g_p_bad_self;
- 
+

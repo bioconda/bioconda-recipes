@@ -8,7 +8,8 @@ source:
   md5: 79ba80aeef411b89802e2b3e597b3c37
 
 build:
-  skip: True # [py2k or py34]
+  # FsnViz does not support Python 2
+  skip: True  # [py2k]
   number: 0
   entry_points:
     - fsnviz=fsnviz.main:cli
@@ -17,20 +18,30 @@ requirements:
   build:
     - python
     - setuptools
-    - click >=6.6
+    - click ==6.6
     - crimson >=0.3.0
     - jinja2 ==2.8
     - circos ==0.69.2
 
   run:
     - python
-    - click >=6.6
+    - click ==6.6
     - crimson >=0.3.0
     - jinja2 ==2.8
     - circos ==0.69.2
+
+test:
+  commands:
+    - fsnviz --help
 
 about:
   home: https://github.com/bow/fsnviz
   license: BSD
   summary: 'Tool for plotting gene fusion events detected by various tools using Circos.'
   license_family: BSD
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true

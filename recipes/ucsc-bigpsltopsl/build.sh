@@ -1,12 +1,16 @@
 #!/bin/bash
-
-export MACHTYPE=x86_64
-export BINDIR=$(pwd)/bin
-mkdir -p $BINDIR
-(cd kent/src/lib && make)
-(cd kent/src/jkOwnLib && make)
-(cd kent/src/hg/lib && make)
-(cd kent/src/hg/utils/bigPslToPsl && make)
-mkdir -p $PREFIX/bin
-cp bin/bigPslToPsl $PREFIX/bin
-chmod +x $PREFIX/bin/bigPslToPsl
+mkdir -p "$PREFIX/bin"
+if [ "$(uname)" == "Darwin" ]; then
+    cp bigPslToPsl "$PREFIX/bin"
+else
+    export MACHTYPE=x86_64
+    export BINDIR=$(pwd)/bin
+    mkdir -p "$BINDIR"
+    (cd kent/src/lib && make)
+    (cd kent/src/htslib && make)
+    (cd kent/src/jkOwnLib && make)
+    (cd kent/src/hg/lib && make)
+    (cd kent/src/hg/utils/bigPslToPsl && make)
+    cp bin/bigPslToPsl "$PREFIX/bin"
+fi
+chmod +x "$PREFIX/bin/bigPslToPsl"
