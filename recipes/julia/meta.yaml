@@ -1,0 +1,34 @@
+{% set name = "julia" %}
+{% set version = "0.6.2" %}
+{% set sha256 = "dc6ec0b13551ce78083a5849268b20684421d46a7ec46b17ec1fab88a5078580" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: julia-0.6.2-linux-x86_64.tar.gz                       # [linux64]
+  url: https://julialang-s3.julialang.org/bin/linux/x64/0.6/julia-0.6.2-linux-x86_64.tar.gz # [linux64]
+  sha256: {{ sha256 }}
+
+build:
+  rpaths:
+    - lib/julia
+    - lib
+
+# requirements:
+#   build:
+#     - toolchain
+#     - patchelf #[linux]
+
+test:
+  commands:
+    - which julia
+    - julia --version
+    - julia -e 'Base.runtests("all"); Base.runtests("pkg libgit2-online")'
+  requires:
+    - perl
+
+about:
+  home: http://julialang.org
+  license_file: LICENSE.md
