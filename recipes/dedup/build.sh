@@ -8,3 +8,5 @@ cp $RECIPE_DIR/dedup.py $outdir/dedup
 ls -l $outdir
 ln -s $outdir/dedup $PREFIX/bin
 chmod 0755 "${PREFIX}/bin/dedup
+ls -l $outdir
+ls -l ${PREFIX}/bin/dedup
