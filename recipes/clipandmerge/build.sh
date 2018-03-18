@@ -7,4 +7,4 @@ cp -R * $outdir/
 cp $RECIPE_DIR/clipandmerge.py $outdir/ClipAndMerge
 ls -l $outdir
 ln -s $outdir/ClipAndMerge $PREFIX/bin
-chmod 0755 "${PREFIX}/bin/ClipAndMerge
+chmod 0755 ${PREFIX}/bin/ClipAndMerge
