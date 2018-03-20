@@ -95,8 +95,8 @@ recipe once the tests pass.
 
 .. note::
 
-    If you are first time user, you can't ask people specifically for a review (e.g. link @bioconda/core). 
-    In this case, either ask to be added to the status of contributor (and then ask for a review by linking @bioconda/core) or just wait.
+    If you are a first time user, you can't ask people specifically for a review (e.g. link @bioconda/core). 
+    In this case, either ask to be added to the status of contributor [here](https://github.com/bioconda/bioconda-recipes/issues/1) (and then ask for a review by linking @bioconda/core) or just wait.
 
 6. Use your new recipe
 ~~~~~~~~~~~~~~~~~~~~~~
