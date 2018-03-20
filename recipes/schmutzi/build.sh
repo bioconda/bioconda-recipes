@@ -4,6 +4,10 @@
 
 export CC=${PREFIX}/bin/gcc
 export CXX=${PREFIX}/bin/g++
+export INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LD_LIBRARY_PATH="${PREFIX}/lib"
+
 BINARY_HOME=$PREFIX/BIN
 SCHMUTZI_HOME=$PREFIX/opt/schmutzi-$PKG_VERSION
 
