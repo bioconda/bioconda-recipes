@@ -58,11 +58,11 @@ Then, all that needs to be done is to execute
 
 in the root of your repository clone.
 
-Alternatively, you can manually run `conda build`, e.g.,
+Alternatively, you can manually run `conda-build`, e.g.,
 
 .. code-block:: bash
 
-    conda build recipes/my-recipe
+    conda-build recipes/my-recipe
 
 In this case. make sure to have setup Bioconda properly, see :ref:`using-bioconda`.
 Also, you might need to manually specify environment variables that your recipe
