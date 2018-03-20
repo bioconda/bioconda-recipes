@@ -1,0 +1,61 @@
+{% set version = "1.5.4" %}
+package:
+  name: schmutzi
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  url: https://bioinf.eva.mpg.de/schmutzi/schmutzi.tar.gz
+  md5: 989938ec492477cca296c6e994b87d90
+  patches:
+    - Makefile.patch
+
+requirements:
+  build:
+    - gcc  # [linux]
+    - gxx_linux-64 # [linux]
+    - clangxx # [osx]
+    - libgcc
+    - zlib {{CONDA_ZLIB}}*
+    - wget
+    - perl {{CONDA_PERL}}* 
+    - cmake
+    - r-base
+
+  run:
+    - zlib {{CONDA_ZLIB}}*
+    - libgcc
+    - perl {{CONDA_PERL}}*
+    - r-base 
+    - r-fitdistrplus
+
+test:
+  commands:
+    - contDeam > /dev/null
+    - endoCaller > /dev/null
+    - mtCont  > /dev/null
+    - approxDist.R > /dev/null
+    - schmutzi.pl > /dev/null
+    - bam2prof > /dev/null
+    - insertSize > /dev/null
+    - log2freq > /dev/null
+    - logs2pos > /dev/null
+    - mitoConsPDF.R > /dev/null
+    - mas2freq > /dev/null
+    - mas2log > /dev/null
+    - posteriorDeam.R  > /dev/null
+    - contOut2ContEst.pl > /dev/null
+    - log2fasta > /dev/null
+
+
+about:
+  home: https://github.com/grenaud/schmutzi
+  license: unknown
+  summary: Maximum a posteriori estimate of contamination for ancient samples.
+
+extra:
+  skip-lints:
+    - uses_git_url
+    - missing_hash
