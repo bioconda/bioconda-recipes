@@ -58,11 +58,11 @@ Then, all that needs to be done is to execute
 
 in the root of your repository clone.
 
-Alternatively, you can manually run `conda build`, e.g.,
+Alternatively, you can manually run `conda-build`, e.g.,
 
 .. code-block:: bash
 
-    conda build recipes/my-recipe
+    conda-build recipes/my-recipe
 
 In this case. make sure to have setup Bioconda properly, see :ref:`using-bioconda`.
 Also, you might need to manually specify environment variables that your recipe
@@ -92,6 +92,11 @@ If
 please ask `@bioconda/core` for a review. If you are a member
 of the bioconda team and none of above criteria apply, feel free to merge your
 recipe once the tests pass.
+
+.. note::
+
+    If you are a first time user, you can't ask people specifically for a review (e.g. link @bioconda/core). 
+    In this case, either ask to be added to the status of contributor [here](https://github.com/bioconda/bioconda-recipes/issues/1) (and then ask for a review by linking @bioconda/core) or just wait.
 
 6. Use your new recipe
 ~~~~~~~~~~~~~~~~~~~~~~
