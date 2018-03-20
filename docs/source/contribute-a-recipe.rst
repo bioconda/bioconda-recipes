@@ -93,6 +93,11 @@ please ask `@bioconda/core` for a review. If you are a member
 of the bioconda team and none of above criteria apply, feel free to merge your
 recipe once the tests pass.
 
+.. note::
+
+    If you are first time user, you can't ask people specifically for a review (e.g. link @bioconda/core). 
+    In this case, either ask to be added to the status of contributor (and then ask for a review by linking @bioconda/core) or just wait.
+
 6. Use your new recipe
 ~~~~~~~~~~~~~~~~~~~~~~
 When the PR is merged with the master branch, Circle CI will again do the
