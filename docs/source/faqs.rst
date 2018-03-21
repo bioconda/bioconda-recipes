@@ -131,3 +131,19 @@ the `broken` label, i.e.,
 .. code-block:: bash
 
     conda install -c bioconda -c conda-forge -c defaults -c bioconda/label/broken my-package=<broken-version>
+
+
+.. _circlecimacos:
+
+CircleCI macOS plans
+--------------------
+In the past we had recommended enabling CircleCI for your fork to help conserve
+the bioconda team's build time quota. However this did not work very well:
+macOS builds on CircleCI require an extra macOS plan, which is not free to
+users. The result was that contributors' pull requests would fail tests simply
+due to not having a paid macOS plan. Luckily, CircleCI has generously provided
+macOS builds to the bioconda team.
+
+To ensure that CircleCI uses the bioconda team account, please **disable**
+CircleCI on your fork (look for the big red "Stop Building" button at
+https://circleci.com/dashboard under the settings for your fork.
