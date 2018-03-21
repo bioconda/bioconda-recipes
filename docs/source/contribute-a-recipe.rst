@@ -76,7 +76,11 @@ Push your changes to your fork or to the main repo (if using a clone) to GitHub:
 
     git push -u origin my-recipe
 
-If using a fork, make sure to enable Circle CI for it under https://circleci.com/dashboard.
+**Update March 2018:** If using a fork, please do not enable Circle CI for it.
+If you have enabled CircleCI to build your fork in the past, please disable it
+under https://circleci.com/dashboard (look for the big red "Stop Building"
+button). See :ref:`circlecimacos` for more details.
+
 
 You can view the test status next to your commits in Github.
 Make and push changes as needed to get the tests to pass.
