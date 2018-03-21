@@ -8,7 +8,7 @@ cp -R * $outdir/
 
 #Download JAR file for RealignSAMFile
 cd $outdir/
-wget https://github.com/apeltzer/CircularMapper/releases/download/v1.93.4/realign-1.93.4.jar
+wget https://github.com/apeltzer/CircularMapper/releases/download/v1.93.4/realign-1.93.4.jar --no-check-certificate 
 sha256sum realign-1.93.4.jar | grep 1fe5ec912b012dc0dcd13f280834bcc0b3f8a62a5518b6eed3b126ea05293670
 
 #Install CircularGenerator
