@@ -6,4 +6,4 @@ export CXXFLAGS="${CXXFLAGS} -std=c++11"
 make
 make install
 # copy missing scripts
-cp -rp scripts/{convert_stacks.pl,extract_interpop_chars.pl} $PREFIX/bin/
+cp -p scripts/{convert_stacks.pl,extract_interpop_chars.pl} $PREFIX/bin/
