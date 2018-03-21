@@ -1,0 +1,57 @@
+{% set name = "marge" %}
+{% set version = "v1.0" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "c2ca04978683cacd54534e5f825d6161727df1f3a737b35563974ef8596b701d" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ version }}.{{ file_ext }}'
+  url: https://github.com/suwangbio/MARGE_py3/archive/{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  skip: True # [py27]
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - numpy
+    - scipy
+    - scikit-learn
+    - twobitreader
+    - pytables
+  run:
+    - python
+    - numpy
+    - scipy
+    - scikit-learn
+    - twobitreader
+    - pytables
+    - snakemake 3.4.*
+    - hdf5 1.8.*
+    - ucsc-bedclip
+    - ucsc-bigwigaverageoverbed
+    - ucsc-bigwigsummary
+    - ucsc-bigwigtobedgraph
+ 
+test:
+  imports:
+    - marge
+
+  commands:
+    - marge
+
+about:
+  home: http://cistrome.org/MARGE
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Model-based Analysis of Regulation of Gene Expression"
+
