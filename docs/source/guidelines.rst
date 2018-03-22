@@ -197,6 +197,9 @@ Python
     is that cb3-created meta.yaml will have no build dependencies from cb2's
     point of view.
 
+    The easiest fix is to change ``host:`` to ``build:`` in the resulting
+    recipe.
+
 If a Python package is available on PyPI, use ``conda skeleton pypi
 <packagename>`` to create a recipe, then remove the ``bld.bat`` and any extra
 comments in ``meta.yaml`` and ``build.sh``. The test that is automatically
