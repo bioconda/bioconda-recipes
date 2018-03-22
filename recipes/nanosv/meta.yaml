@@ -1,35 +1,51 @@
 {% set name = "nanosv" %}
-{% set version = "0.0.1" %}
-{% set hash = "0bdedc9af34d356f0173bd85ffbcde1aa7b97fc8c644d4a2014e47b1290aa652" %}
+{% set version = "1.1.2" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "ba51c4ce9604bd63d72fb237c8c662cd5b64e0d5ac8fbd06aa82d2e30fcc59f4" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  url: https://github.com/mroosmalen/nanosv/archive/57d1f824a64c113e11041ae33f56cd21c61b5fae.tar.gz
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  sha256: {{ hash }}
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-    number: 0
+  number: 0
+  entry_points:
+    - NanoSV=nanosv.NanoSV:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
-    build:
-        - gcc  # [not osx]
-        - llvm  # [osx]
-        - perl
-        - perl-module-build
-
-    run:
-        - libgcc # [not osx]
-        - perl
+  host:
+    - python
+    - setuptools
+    - pysam
+    - pyvcf
+    - configparser
+  run:
+    - python
+    - pysam
+    - pyvcf
+    - configparser
 
 test:
+  imports:
+    - nanosv
+    - nanosv.classes
+    - nanosv.utils
   commands:
-    - nanosv.pl -h 
+    - NanoSV --help
 
 about:
   home: https://github.com/mroosmalen/nanosv
-  license: MIT
-  summary: 'SV caller for nanopore data'
+  license: MIT License
+  license_family: MIT
+  license_file: ''
+  summary: Structural variation detection tool for Oxford Nanopore data.
+
+extra:
+  recipe-maintainers: 'wdecoster'
