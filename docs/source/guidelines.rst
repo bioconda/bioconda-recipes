@@ -186,7 +186,8 @@ Python
 .. note::
 
     We are moving towards supporting conda-build-3 which has many nice features
-    we can take advantage of. In the meantime, however, we need to use conda-build 3.
+    we can take advantage of. In the meantime, however, we need to use
+    conda-build 2.
 
     If you have conda-build 3 installed locally and use ``conda skeleton``,
     **the resulting meta.yaml will be incompatible with our conda-build
