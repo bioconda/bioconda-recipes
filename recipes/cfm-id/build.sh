@@ -1,10 +1,10 @@
 #!/bin/bash
 
-cd "source"
 mkdir build
 cd build
 
-cmake .. -DLPSOLVE_INCLUDE_DIR="${PREFIX}/include" -DLPSOLVE_LIBRARY_DIR="${PREFIX}/include" -DBoost_INCLUDE_DIR="${PREFIX}/include"
+cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DLPSOLVE_INCLUDE_DIR="${PREFIX}/include" -DLPSOLVE_LIBRARY_DIR="${PREFIX}/include" -DBoost_INCLUDE_DIR="${PREFIX}/include" -DBOOST_LIBRARYDIR="${PREFIX}/include"
+
 make
 make install
 
