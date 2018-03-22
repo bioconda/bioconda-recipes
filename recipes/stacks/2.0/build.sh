@@ -1,15 +1,9 @@
 #!/bin/bash
 
-# Using --libdir doesn't work.
-export LDFLAGS="-L${CONDA_PREFIX}/lib" # for both stacks and included htslib dependency
-export CPATH=${CONDA_PREFIX}/include         # for included htslib dependency
+export CXXFLAGS="${CXXFLAGS} -std=c++11"
 
 ./configure --prefix=$PREFIX --enable-bam
-
-# Force included htslib library to use conda compiler toolsuite
-sed -i "s|^CC *.*|CC = $CC|" htslib/Makefile
-sed -i "s|^AR *.*|AR = $AR|" htslib/Makefile
-sed -i "s|^RANLIB *.*|RANLIB = $RANLIB|" htslib/Makefile
-
 make
 make install
+# copy missing scripts
+cp -p scripts/{convert_stacks.pl,extract_interpop_chars.pl} $PREFIX/bin/
