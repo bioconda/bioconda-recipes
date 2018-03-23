@@ -4,16 +4,16 @@ variables:
   restore_cache: &restore_cache
     restore_cache:
       keys:
-        - miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
+        - miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
   save_cache: &save_cache
     save_cache:
-      key: miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ arch }}
+      key: miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
       paths:
-        - /tmp/workspace/miniconda
+        - miniconda
   common: &common
     run:
       name: Download common definitions
-      command: curl -s https://raw.githubusercontent.com/bioconda/bioconda-utils/master/.circleci/common.sh > .circleci/common.sh
+      command: curl -s https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh > .circleci/common.sh
   setup: &setup
     run: 
       name: Setup bioconda-utils
@@ -26,6 +26,23 @@ variables:
       LANG: en_US.UTF-8
   linux: &linux
     machine: true
+  skip_fork: &skip_fork
+    run:
+      name: Check for fork
+      command: |
+        [[ $CIRCLE_PROJECT_USERNAME == bioconda ]] || (
+            echo "Skipping build for fork '$CIRCLE_PROJECT_USERNAME'"
+            circleci step halt
+        )
+  fail_fork: &fail_fork
+    run:
+      name: Check for fork
+      command: |
+        [[ $CIRCLE_PROJECT_USERNAME == bioconda ]] || (
+            echo "Aborting build for fork '$CIRCLE_PROJECT_USERNAME'"
+            echo "Please use a branch other than 'master' or 'bulk' on your fork"
+            exit 1
+        )
 
 jobs:
   # When running CircleCI locally, we put everything in one job.
@@ -39,6 +56,16 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+      - run: 
+          name: Setup base system
+          command: |
+            cat >> $BASH_ENV <<EOF
+            if [[ \$- == *u* ]] ; then
+                set +u ; . /tmp/repo/docker-entrypoint-source ; set -u
+            else
+                . /tmp/repo/docker-entrypoint-source
+            fi
+            EOF
       - *common
       - *setup
       - run:
@@ -82,10 +109,9 @@ jobs:
     steps:
       - checkout
       - *common
-      # We cannot cache the miniconda installation on macos.
-      # The reason is that tar seems to have a bug when handling sym and hardlinks in the miniconda installation.
-      # The error is, e.g.: Cannot extract through symlink tmp/workspace/miniconda/LICENSE.rst
+      - *restore_cache
       - *setup
+      - *save_cache
       - run:
           name: Building and testing
           command: bioconda-utils build recipes config.yml --git-range master HEAD
@@ -94,6 +120,7 @@ jobs:
   upload-linux:
     <<: *linux
     steps:
+      - *fail_fork
       - checkout
       - *common
       - *restore_cache
@@ -108,9 +135,12 @@ jobs:
   upload-macos:
     <<: *macos
     steps:
+      - *fail_fork
       - checkout
       - *common
+      - *restore_cache
       - *setup
+      - *save_cache
       # build only current commit (since we use squashed merging, this is safe)
       - run:
           name: Building, testing and uploading
@@ -120,6 +150,7 @@ jobs:
   bulk-linux:
     <<: *linux
     steps:
+      - *fail_fork
       - checkout
       - *common
       - *restore_cache
@@ -134,9 +165,12 @@ jobs:
   bulk-macos:
     <<: *macos
     steps:
+      - *fail_fork
       - checkout
       - *common
+      - *restore_cache
       - *setup
+      - *save_cache
       # build everything that differs compared to master
       - run:
           name: Building, testing and uploading of all unpublished recipes
@@ -147,6 +181,7 @@ jobs:
   nightly-upload-linux:
     <<: *linux
     steps:
+      - *skip_fork
       - checkout
       - *common
       - *restore_cache
@@ -160,9 +195,12 @@ jobs:
   nightly-upload-macos:
     <<: *macos
     steps:
+      - *skip_fork
       - checkout
       - *common
+      - *restore_cache
       - *setup
+      - *save_cache
       - run:
           name: Building, testing and uploading of all unpublished recipes
           command: bioconda-utils build recipes config.yml --anaconda-upload

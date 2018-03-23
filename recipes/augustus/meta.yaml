@@ -8,7 +8,7 @@ package:
 
 source:
   fn: {{ name }}-{{ version }}.tar.gz
-  url: http://bioinf.uni-greifswald.de/augustus/binaries/old/augustus-3.2.3.tar.gz
+  url: http://bioinf.uni-greifswald.de/augustus/binaries/old/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
       - patches/bam2hints.Makefile.patch
@@ -17,9 +17,8 @@ source:
       - patches/compileSpliceCands.Makefile.patch
 
 build:
-  number: 2
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
-  skip: True # [osx]
+  number: 4
+  string: boost{{CONDA_BOOST}}_bamtools{{CONDA_BAMTOOLS}}_{{PKG_BUILDNUM}}
 
 requirements:
   build:
@@ -27,8 +26,8 @@ requirements:
       - llvm # [osx]
       - zlib {{CONDA_ZLIB}}*
       - libgcc
-      - bamtools
-      - gsl
+      - bamtools {{ CONDA_BAMTOOLS }}*
+      - gsl {{ CONDA_GSL }}*
       - lp_solve
       - perl
       - perl-module-build
@@ -36,9 +35,9 @@ requirements:
   run:
       - libgcc # [not osx]
       - zlib {{CONDA_ZLIB}}*
-      - bamtools
+      - bamtools {{ CONDA_BAMTOOLS }}*
       - boost {{CONDA_BOOST}}*
-      - gsl
+      - gsl {{ CONDA_GSL }}*
       - lp_solve
       - perl
       - perl-app-cpanminus
@@ -64,6 +63,7 @@ test:
     - exonerate2hints.pl --help
     - echo "hello" | exoniphyDb2hints.pl
     - echo "hello" | extractTranscriptEnds.pl | grep ">seq1"
+    - filterBam --help 2>&1 | grep "filterBam --in in.bam --out out.bam"
     - filterGenesIn_mRNAname.pl --help
     - filterGenesOut_mRNAname.pl --help
     - filterGenes.pl --help 2>&1 | grep "usage:filterGenes.pl namefile dbfile"
