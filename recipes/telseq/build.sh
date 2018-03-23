@@ -1,7 +1,7 @@
 #!/bin/bash
 
-cd ./telseq-*/src
+cd $SRC_DIR/src
 ./autogen.sh
-./configure
+./configure --prefix=$PREFIX
 make
 make install
