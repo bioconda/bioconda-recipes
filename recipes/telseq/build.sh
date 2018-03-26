@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
+
 export CC=gcc
 export CXX=g++
 
