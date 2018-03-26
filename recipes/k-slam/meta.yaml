@@ -1,0 +1,34 @@
+{% set version = "1.0" %}
+{% set name = "k-slam" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 1
+  skip: True # [osx]
+
+source:
+  fn: k-slam-{{ version }}.tar.gz
+  url: https://github.com/aindj/k-SLAM/archive/{{ version }}.tar.gz
+  sha256: bbe707a5654acb9bf795000254672ae3fa79e024d1359ba66507e63f0f7dfb57
+
+requirements:
+  build:
+  - gcc
+  # llvm not used because the Makefile sets -fopenmp
+  - boost {{CONDA_BOOST}}* 
+
+  run:
+  - libgcc
+  - boost {{CONDA_BOOST}}*
+
+about:
+  home: https://github.com/aindj/k-SLAM
+  license: GPL-3.0
+  summary: k-SLAM is a program for alignment based metagenomic analysis of large sets of high-throughput sequence data.
+
+test:
+  commands:
+    - SLAM --help | grep "Align paired reads"
