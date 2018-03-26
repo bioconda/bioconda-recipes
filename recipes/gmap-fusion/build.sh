@@ -2,7 +2,7 @@
 GMAP_FUSION_DIR="$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 GMAP_FUSION_INSTALL_PATH="$PREFIX/share/$GMAP_FUSION_DIR"
 mkdir -p $GMAP_FUSION_INSTALL_PATH
-cp -R $SRC_DIR/GMAP-fusion $SRC_DIR/PerlLib $SRC_DIR/FusionFilter $SRC_DIR/testing $SRC_DIR/util $GMAP_FUSION_INSTALL_PATH
+cp -R $SRC_DIR/GMAP-fusion $SRC_DIR/PerlLib $SRC_DIR/FusionFilter $SRC_DIR/DISCASM $SRC_DIR/testing $SRC_DIR/util $GMAP_FUSION_INSTALL_PATH
 chmod a+x $GMAP_FUSION_INSTALL_PATH/GMAP-fusion
 
 # The following shell script is built to invoke GMAP-fusion using its full
