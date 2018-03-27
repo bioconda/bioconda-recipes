@@ -60,6 +60,7 @@ fi
 ./configure --prefix=$PREFIX \
             --without-perl \
             --with-kinwalker \
+            --with-cluster \
             --disable-lto \
             --without-doc \
             --without-tutorial \
