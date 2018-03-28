@@ -1,4 +1,4 @@
 #!/bin/bash
-
 mkdir -p $PREFIX/bin
-cp drax $PREFIX/bin/
+chmod a+rwx drax
+mv drax $PREFIX/bin/
