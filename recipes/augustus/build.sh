@@ -16,10 +16,10 @@ mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/scripts
 mkdir -p $PREFIX/config
 
-## enable augustus CGP mode
+## enable augustus CGP mode and sqlite database support
 
 mv common.mk common.mk.orig
-sed 's/# COMPGENEPRED = true/COMPGENPRED = true/' < common.mk.orig > common.mk
+sed 's/# COMPGENEPRED = true/COMPGENPRED = true/' < common.mk.orig | sed 's/# SQLITE = true/SQLITE = true/' > common.mk
 
 ## Make the software
 
