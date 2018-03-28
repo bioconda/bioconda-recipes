@@ -1,3 +1,4 @@
 #!/bin/bash
 
-cp drax $PREFIX/
+mkdir -p $PREFIX/bin
+cp drax $PREFIX/bin/
