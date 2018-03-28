@@ -16,6 +16,11 @@ mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/scripts
 mkdir -p $PREFIX/config
 
+## enable augustus CGP mode
+
+mv common.mk common.mk.orig
+sed 's/# COMPGENEPRED = true/COMPGENPRED = true/' < common.mk.orig > common.mk
+
 ## Make the software
 
 make
@@ -31,8 +36,8 @@ perl ./Build manifest
 perl ./Build install --installdirs site
 
 cd ..
-## End build perl
 
+## End build perl
 
 mv bin/* $PREFIX/bin/
 mv scripts/* $PREFIX/bin/
@@ -48,4 +53,3 @@ mkdir -p $PREFIX/etc/conda/deactivate.d/
 echo "unset AUGUSTUS_CONFIG_PATH" > $PREFIX/etc/conda/deactivate.d/augustus-confdir.sh
 chmod a+x $PREFIX/etc/conda/deactivate.d/augustus-confdir.sh
 
-#exit 1
