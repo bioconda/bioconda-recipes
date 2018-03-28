@@ -14,6 +14,6 @@ chmod a-x "$2"
 
 cat >"$1" <<EOF
 #!/bin/bash
-exec $(sed 's|^#!/\(usr/\)\?bin/||;q' "$2") '$2' "\$@"
+exec $(sed -E 's|^#!(/\usr)?\/bin/||;q' "$2") '$2' "\$@"
 EOF
 chmod u+x "$1"
