@@ -22,7 +22,8 @@ if [ "$(uname)" == Darwin ] ; then
   # SQLITE disabled due to compile issue, see: https://svn.boost.org/trac10/ticket/13501
   make CC="${CC}" CXX="${CXX}" COMPGENPRED=true
 else
-  make CC="${CC}" CXX="${CXX}" COMPGENPRED=true SQLITE=true
+  # TODO: use 'CC="${CC}" CXX="${CXX}"' when switching to newer compilers
+  make CC=gcc CXX=g++ COMPGENPRED=true SQLITE=true
 fi
 
 ## Build Perl
@@ -52,4 +53,3 @@ chmod a+x $PREFIX/etc/conda/activate.d/augustus-confdir.sh
 mkdir -p $PREFIX/etc/conda/deactivate.d/
 echo "unset AUGUSTUS_CONFIG_PATH" > $PREFIX/etc/conda/deactivate.d/augustus-confdir.sh
 chmod a+x $PREFIX/etc/conda/deactivate.d/augustus-confdir.sh
-
