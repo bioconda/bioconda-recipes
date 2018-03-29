@@ -22,6 +22,8 @@ mv common.mk common.mk.orig
 sed 's/# COMPGENEPRED = true/COMPGENPRED = true/' < common.mk.orig | sed 's/# SQLITE = true/SQLITE = true/' > common.mk
 
 ## Make the software
+sed -i.bak 's/\<CC\>/CXX/g' auxprogs/homGeneMapping/src/Makefile
+sed -i.bak 's/\<CC\>/CXX/g' auxprogs/joingenes/Makefile
 if [ "$(uname)" == Linux ] ; then
     # TODO: remove this when switching to newer compilers
     export CC=gcc
