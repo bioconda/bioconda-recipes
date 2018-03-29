@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #build
+make build_3rdparty
 make build_tools_release
 
 #deploy
