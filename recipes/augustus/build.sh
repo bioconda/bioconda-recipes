@@ -23,7 +23,7 @@ sed 's/# COMPGENEPRED = true/COMPGENPRED = true/' < common.mk.orig | sed 's/# SQ
 
 ## Make the software
 
-make
+make CC="${CC}" CXX="${CXX}"
 
 ## Build Perl
 
