@@ -22,7 +22,11 @@ mv common.mk common.mk.orig
 sed 's/# COMPGENEPRED = true/COMPGENPRED = true/' < common.mk.orig | sed 's/# SQLITE = true/SQLITE = true/' > common.mk
 
 ## Make the software
-
+if [ "$(uname)" == Linux ] ; then
+    # TODO: remove this when switching to newer compilers
+    export CC=gcc
+    export CXX=g++
+fi
 make CC="${CC}" CXX="${CXX}"
 
 ## Build Perl
