@@ -16,20 +16,14 @@ mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/scripts
 mkdir -p $PREFIX/config
 
-## enable augustus CGP mode and sqlite database support
-
-mv common.mk common.mk.orig
-sed 's/# COMPGENEPRED = true/COMPGENPRED = true/' < common.mk.orig | sed 's/# SQLITE = true/SQLITE = true/' > common.mk
-
 ## Make the software
-sed -i.bak 's/\<CC\>/CXX/g' auxprogs/homGeneMapping/src/Makefile
-sed -i.bak 's/\<CC\>/CXX/g' auxprogs/joingenes/Makefile
-if [ "$(uname)" == Linux ] ; then
-    # TODO: remove this when switching to newer compilers
-    export CC=gcc
-    export CXX=g++
+
+if [ "$(uname)" == Darwin ] ; then
+  # SQLITE disabled due to compile issue, see: https://svn.boost.org/trac10/ticket/13501
+  make CC="${CC}" CXX="${CXX}" COMPGENPRED=true
+else
+  make CC="${CC}" CXX="${CXX}" COMPGENPRED=true SQLITE=true
 fi
-make CC="${CC}" CXX="${CXX}"
 
 ## Build Perl
 
