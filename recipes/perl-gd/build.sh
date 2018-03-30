@@ -24,7 +24,13 @@ if [ -f Build.PL ]; then
     ./Build install --installdirs site
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
-    perl Makefile.PL INSTALLDIRS=site
+    perl Makefile.PL INSTALLDIRS=site \
+        --options "JPEG,PNG,FT" \
+        --lib_jpeg_path $PREFIX \
+        --lib_ft_path $PREFIX \
+        --lib_png_path $PREFIX \
+        --lib_zlib_path $PREFIX
+
     make
     # disable non-portable test7
     sed -i.bak1 "s|IMAGE_TESTS => 7|IMAGE_TESTS => 6|1" ./t/GD.t
@@ -35,9 +41,3 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
-
-# Add more build steps here, if they are necessary.
-
-# See
-# http://docs.continuum.io/conda/build.html
-# for a list of environment variables that are set during the build process.
