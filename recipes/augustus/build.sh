@@ -18,8 +18,8 @@ mkdir -p $PREFIX/config
 
 ## Make the software
 
-sed -i.bak 's/\<CC\>/CXX/g' auxprogs/homGeneMapping/src/Makefile
-sed -i.bak 's/\<CC\>/CXX/g' auxprogs/joingenes/Makefile
+sed -i.bak -e 's/^CC *=/CXX=/' -e 's/\$(CC)/$(CXX)/g' auxprogs/homGeneMapping/src/Makefile
+sed -i.bak -e 's/^CC *=/CXX=/' -e 's/\$(CC)/$(CXX)/g' auxprogs/joingenes/Makefile
 # TODO: don't set CC/CXX here when switching to newer compilers
 CC=gcc
 CXX=g++
