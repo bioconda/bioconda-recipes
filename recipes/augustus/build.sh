@@ -20,12 +20,14 @@ mkdir -p $PREFIX/config
 
 sed -i.bak 's/\<CC\>/CXX/g' auxprogs/homGeneMapping/src/Makefile
 sed -i.bak 's/\<CC\>/CXX/g' auxprogs/joingenes/Makefile
+# TODO: don't set CC/CXX here when switching to newer compilers
+CC=gcc
+CXX=g++
 if [ "$(uname)" == Darwin ] ; then
   # SQLITE disabled due to compile issue, see: https://svn.boost.org/trac10/ticket/13501
   make CC="${CC}" CXX="${CXX}" COMPGENPRED=true
 else
-  # TODO: use 'CC="${CC}" CXX="${CXX}"' when switching to newer compilers
-  make CC=gcc CXX=g++ COMPGENPRED=true SQLITE=true
+  make CC="${CC}" CXX="${CXX}" COMPGENPRED=true SQLITE=true
 fi
 
 ## Build Perl
