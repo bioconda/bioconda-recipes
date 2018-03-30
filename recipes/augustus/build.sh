@@ -18,6 +18,8 @@ mkdir -p $PREFIX/config
 
 ## Make the software
 
+sed -i.bak 's/\<CC\>/CXX/g' auxprogs/homGeneMapping/src/Makefile
+sed -i.bak 's/\<CC\>/CXX/g' auxprogs/joingenes/Makefile
 if [ "$(uname)" == Darwin ] ; then
   # SQLITE disabled due to compile issue, see: https://svn.boost.org/trac10/ticket/13501
   make CC="${CC}" CXX="${CXX}" COMPGENPRED=true
