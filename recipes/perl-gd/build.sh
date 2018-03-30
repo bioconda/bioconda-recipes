@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' Build.PL
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' Makefile.PL
 
 # ensure script fail on command fail
 set -e -o pipefail
