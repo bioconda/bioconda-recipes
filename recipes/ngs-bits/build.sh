@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #build
-make build_3rdparty
+CPLUS_INCLUDE_PATH=$PREFIX/include
 make build_tools_release
 
 #deploy
