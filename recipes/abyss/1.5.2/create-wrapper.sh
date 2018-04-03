@@ -16,7 +16,7 @@ interpreter="$(sed -nE '1 s|^#! *(/usr)?/bin/||p;q' "$2")"
 [ -n "${interpreter}" ]
 cat >"$1" <<EOF
 #!/bin/bash
-exec '${PREFIX}/'${interpreter} '$2' "\$@"
+exec ${interpreter} '$2' "\$@"
 EOF
 
 chmod u+x "$1"
