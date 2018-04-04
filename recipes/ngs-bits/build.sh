@@ -12,9 +12,8 @@ rm -rf bin/out bin/cpp*-TEST bin/tools-TEST
 
 #deploy (lib)
 mkdir -p $PREFIX/lib
-cp -r bin/libcpp* $PREFIX/lib/
-rm -rf bin/libcpp*
+mv bin/libcpp* $PREFIX/lib/
 
 #deploy (bin)
 mkdir -p $PREFIX/bin
-cp -r bin/* $PREFIX/bin/
+mv bin/* $PREFIX/bin/
