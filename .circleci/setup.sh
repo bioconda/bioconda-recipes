@@ -1,7 +1,11 @@
 #!/bin/bash
 set -eu
 
-WORKSPACE=`pwd`
+set +u
+[[ -z $WORKSPACE ]] && WORKSPACE=`pwd`
+[[ -z $BASH_ENV ]] && BASH_ENV=`tempfile`
+[[ -z $BOOTSTRAP ]] && BOOTSTRAP=false
+set -u
 
 # Common definitions from latest bioconda-utils master have to be downloaded before setup.sh is executed.
 # This file can be used to set BIOCONDA_UTILS_TAG and MINICONDA_VER.
@@ -30,7 +34,7 @@ if [[ $OSTYPE == linux* && ${CIRCLE_JOB-} != build ]]; then
     docker tag continuumio/miniconda3:4.3.27 continuumio/miniconda3:latest
 fi
 
-if ! type bioconda-utils > /dev/null; then
+if ! type bioconda-utils > /dev/null || [[ $BOOTSTRAP == "true" ]]; then
     echo "Setting up bioconda-utils..."
 
     # setup conda and bioconda-utils if not loaded from cache
