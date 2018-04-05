@@ -67,6 +67,7 @@ if ! type bioconda-utils > /dev/null || [[ $BOOTSTRAP == "true" ]]; then
 
     # step 5: cleanup
     $WORKSPACE/miniconda/bin/conda clean -y --all
+    rm miniconda.sh
 fi
 
 # Fetch the master branch for comparison (this can fail locally, if git remote 
