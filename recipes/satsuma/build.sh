@@ -1,5 +1,5 @@
 #!/bin/bash
 cmake -D CMAKE_INSTALL_PREFIX:PATH=$PREFIX .
-make 
-make test
-make install
+make
+mkdir -p $PREFIX/bin
+cp bin/* $PREFIX/bin
