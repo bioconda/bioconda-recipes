@@ -50,7 +50,8 @@ bioconda-specific policies.
 There are currently two options for local testing: 1) using the Circle CI
 client and 2) setting up a separate Miniconda installation and running
 bioconda-utils. The first is probably more straightforward; the second is more
-stringent and allows the full customization of the bioconda-utils calls.
+stringent, can be used for testing on MacOS, and allows the full customization
+of the bioconda-utils calls.
 
 The simplest way to conduct local tests is to :ref:`setup the Circle CI client
 <circleci-client>`. Then run the following commands:
