@@ -63,12 +63,13 @@ The simplest way to conduct local tests is to :ref:`setup the Circle CI client
     # Run the build locally
     circleci build
 
-in the root of your repository clone. This command effectively runs ``conda
-build`` on all recipes recently changed. It does so in an environment with
-properly configured channels and environment variables in ``scripts/env.yaml``
-exported into the build environment. The latter allows ``conda build`` to fill
-in variables in recipes like ``CONDA_BOOST`` that otherwise wouldn't work with
-a simple ``conda build`` directly from the command line.
+in the root of your repository clone. This command effectively runs the recipe
+linting and then  ``conda build`` on all recipes recently changed. It does so
+in an environment with properly configured channels and environment variables
+in ``scripts/env.yaml`` exported into the build environment. The latter allows
+``conda build`` to fill in variables in recipes like ``CONDA_BOOST`` that
+otherwise wouldn't work with a simple ``conda build`` directly from the command
+line.
 
 However, due to technical limitations of the Circle CI client, the above test
 does **not** run the more stringent ``mulled-build`` tests. To do so, use the
@@ -78,6 +79,11 @@ following commands:
 
     ./bootstrap.py /tmp/miniconda
     source ~/.config/bioconda/activate
+
+    # optional linting
+    bioconda-utils lint recipes config.yml --git-range master
+
+    # build and test
     bioconda-utils build recipes config.yml --docker --mulled-test --git-range master
 
 The above commands do the following:
@@ -89,6 +95,15 @@ The above commands do the following:
 - source that new file to specifically activate the root environment of that
   new installation
 - run bioconda-utils in that new installation
+
+If you do not have access to Docker, you can still run the basic test by
+excluding the ``--docker`` and ``--mulled-test`` arguments in the last command:
+
+.. code-block:: bash
+
+    ./bootstrap.py /tmp/miniconda
+    source ~/.config/bioconda/activate
+    bioconda-utils build recipes config.yml --git-range master
 
 
 4. Push changes, wait for tests to pass, submit pull request
