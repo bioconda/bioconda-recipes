@@ -129,7 +129,7 @@ catch issues that the default conda test cannot. However the extra layer of
 abstraction makes it difficult to troubleshoot problems with the recipe. If the
 conda-build test works but the mulled-build test fails try these steps:
 
-- Run the test locally with ``circleci build``.
+- Run the test using the ``bootstrap.py`` method described in :ref:`test-locally`.
 - Look carefully at the output from ``mulled-build`` to look for Docker hashes,
   and cross-reference with the output of ``docker images | head`` to figure out
   the hash of the container used.

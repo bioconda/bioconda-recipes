@@ -45,8 +45,15 @@ bioconda-specific policies.
 3. Test locally
 ~~~~~~~~~~~~~~~
 
-The simplest way to conduct local tests is to :ref:`setup the Circle CI client <circleci-client>`.
-Then, all that needs to be done is to execute
+*Updated April 2018 to describe the bootstrap.py method*
+
+There are currently two options for local testing: 1) using the Circle CI
+client and 2) setting up a separate Miniconda installation and running
+bioconda-utils. The first is probably more straightforward; the second is more
+stringent and allows the full customization of the bioconda-utils calls.
+
+The simplest way to conduct local tests is to :ref:`setup the Circle CI client
+<circleci-client>`. Then run the following commands:
 
 .. code-block:: bash
 
@@ -56,18 +63,32 @@ Then, all that needs to be done is to execute
     # Run the build locally
     circleci build
 
-in the root of your repository clone.
+in the root of your repository clone. This command effectively runs ``conda
+build`` on all recipes recently changed. It does so in an environment with
+properly configured channels and environment variables in ``scripts/env.yaml``
+exported into the build environment. The latter allows ``conda build`` to fill
+in variables in recipes like ``CONDA_BOOST`` that otherwise wouldn't work with
+a simple ``conda build`` directly from the command line.
 
-Alternatively, you can manually run `conda-build`, e.g.,
+However, due to technical limitations of the Circle CI client, the above test
+does **not** run the more stringent ``mulled-build`` tests. To do so, use the
+following commands:
 
 .. code-block:: bash
 
-    conda-build recipes/my-recipe
+    ./bootstrap.py /tmp/miniconda
+    source ~/.config/bioconda/activate
+    bioconda-utils build recipes config.yml --docker --mulled-test --git-range master
 
-In this case. make sure to have setup Bioconda properly, see :ref:`using-bioconda`.
-Also, you might need to manually specify environment variables that your recipe
-uses, e.g., `CONDA_BOOST`. You can look up the proper values for those variables
-under `scripts/env_matrix.yml` in the repository.
+The above commands do the following:
+
+- install a separate miniconda installation in a temporary directory, set up
+  bioconda channels, install bioconda-utils dependencies into the root
+  environment of that installation, and write the file
+  ``~/.config/bioconda/activate``
+- source that new file to specifically activate the root environment of that
+  new installation
+- run bioconda-utils in that new installation
 
 
 4. Push changes, wait for tests to pass, submit pull request
@@ -76,11 +97,12 @@ Push your changes to your fork or to the main repo (if using a clone) to GitHub:
 
     git push -u origin my-recipe
 
-**Update March 2018:** If using a fork, please do not enable Circle CI for it.
-If you have enabled CircleCI to build your fork in the past, please disable it
-under https://circleci.com/dashboard (look for the big red "Stop Building"
-button). See :ref:`circlecimacos` for more details.
+.. note::
 
+    **Update March 2018:** If using a fork, please do not enable Circle CI for it.
+    If you have enabled CircleCI to build your fork in the past, please disable it
+    under https://circleci.com/dashboard (look for the big red "Stop Building"
+    button). See :ref:`circlecimacos` for more details.
 
 You can view the test status next to your commits in Github.
 Make and push changes as needed to get the tests to pass.
