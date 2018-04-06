@@ -82,7 +82,7 @@ def as_extlink_filter(text):
     """
     if isinstance(text, list):
         return [as_extlink_filter(text_item) for text_item in text]
-    elif is instance(text, str):
+    elif isinstance(text, str):
         return "{0}: :{0}:`{1}`".format(*text.split(":"))
     else:
         raise ValueError("Expected list or string for {0}".format(text))
