@@ -77,12 +77,16 @@ def as_extlink_filter(text):
     >>> as_extlink_filter("biotools:abyss")
     "biotools: :biotool:`abyss`"
 
-    >>> as_extlink_filter(["biotools:abyss", "doi:123")
+    >>> as_extlink_filter(["biotools:abyss", "doi:123"])
     "biotools: :biotool:`abyss`, doi: :doi:`123`"
     """
     if isinstance(text, list):
         return [as_extlink_filter(text_item) for text_item in text]
-    return "{0}: :{0}:`{1}`".format(*text.split(":"))
+    elif isinstance(text, str):
+        return "{0}: :{0}:`{1}`".format(*text.split(":"))
+    else:
+        raise ValueError("Expected list or string for {0}".format(text))
+
 
 
 def underline_filter(text):
