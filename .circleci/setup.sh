@@ -1,10 +1,19 @@
 #!/bin/bash
-set -eu
+set -e
 
-set +u
 [[ -z $WORKSPACE ]] && WORKSPACE=`pwd`
-[[ -z $BASH_ENV ]] && BASH_ENV=`tempfile`
 [[ -z $BOOTSTRAP ]] && BOOTSTRAP=false
+if [[ -z $BASH_ENV ]]; then
+    if [[ $OSTYPE == darwin* ]]; then
+        BASH_ENV=`mktemp`
+    elif [[ $OSTYPE == linux* ]]; then
+        BASH_ENV=`tempfile`
+    else
+        echo "Unsupported OS: $OSTYPE"
+        exit 1
+    fi
+fi
+
 set -u
 
 # Common definitions from latest bioconda-utils master have to be downloaded before setup.sh is executed.
