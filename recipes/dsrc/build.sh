@@ -1,31 +1,21 @@
 #!/bin/sh
 
-#yum install glibc-static -y
-
-
-# The CFLAGS are not available in the Maefile, so let us add it
-#sed -i -e  "s/\$(CXXFLAGS)/\$(CXXFLAGS) \$(CFLAGS)/g" src/Makefile
-
-# There seem to be a missing library for the linkage (lrt)
-#sed -i -e "s/-lpthread/-lpthread -lrt/g" Makefile
-
 # The static boost_thread library cannot be found during the linkage. Let us
 # comment the -static flag
-#sed -i -e "s/CXXFLAGS += -static/#CXXFLAGS += -static/g" Makefile
+sed -i -e "s/CXXFLAGS += -static/#CXXFLAGS += -static/g" Makefile
+
+# Append to CXXFLAGS instead of overiding it
+sed -i -e "s/CXXFLAGS =/CXXFLAGS +=/g" Makefile
 
 # Tell the compiler where to find boost
-#export CFLAGS=" -I${PREFIX}/include -L${PREFIX}/lib "
-# -L${CONDA_PREFIX}/lib -I${CONDA_PREFIX}"
+export CXXFLAGS=" -I${PREFIX}/include -L${PREFIX}/lib "
 
-#export CC=${PREFIX}/bin/gcc
-#export CXX=${PREFIX}/bin/g++
+#CXX=${PREFIX}/bin/g++
 
-
-#make
 if [ "$(uname)" == "Darwin" ]; then
-    make -f Makefile.osx bin
+    make -f Makefile.osx bin #CXX=$CXX
 else
-    make bin
+    make bin #CXX=$CXX
 fi
-cp bin/dsrc $PREFIX/bin
 
+cp bin/dsrc $PREFIX/bin
