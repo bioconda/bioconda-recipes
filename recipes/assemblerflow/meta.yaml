@@ -1,0 +1,53 @@
+{% set name = "assemblerflow" %}
+{% set version = "1.0.1" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "0ececf9f224eff53e18df4a33d6486668bd73a62d99477338acc41889108e543" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  entry_points:
+    - assemblerflow = assemblerflow.assemblerflow:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - argparse
+    - jinja2
+  run:
+    - python
+    - argparse
+    - jinja2
+    - nextflow >=0.27
+
+test:
+  imports:
+    - assemblerflow
+    - assemblerflow.generator
+    - assemblerflow.templates
+  commands:
+    - assemblerflow --help
+
+about:
+  home: https://github.com/ODiogoSilva/assemblerflow
+  license: GPL3
+  license_family: GPL3
+  license_file: ''
+  summary: Nextflow assembler of bacterial genomic pipelines
+  description: ''
+  doc_url: ''
+  dev_url: ''
+
+extra:
+  recipe-maintainers: ''
