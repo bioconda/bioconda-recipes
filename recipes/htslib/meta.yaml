@@ -5,7 +5,7 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
 
 source:
   fn: htslib-{{ version }}.tar.bz2
@@ -26,6 +26,11 @@ requirements:
     - bzip2 {{ CONDA_BZIP2 }}*
     - xz {{ CONDA_XZ }}*
     - libdeflate
+
+test:
+  commands:  # We want to make sure that libdeflate is actually linked via HTSLib
+    - "otool -L $PREFIX/bin/bgzip | grep deflate"  # [osx]
+    - "ldd $PREFIX/bin/bgzip | grep deflate"  # [not osx]
 
 about:
   home: https://github.com/samtools/htslib
