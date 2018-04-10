@@ -1,8 +1,7 @@
 #!/bin/bash
 
 cd ext/htslib
-touch configure
-chmod +x configure
+autoconf
 cd ../..
 
 
