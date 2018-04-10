@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd ext/htslib
-autoconf
+autoreconf
 cd ../..
 
 
