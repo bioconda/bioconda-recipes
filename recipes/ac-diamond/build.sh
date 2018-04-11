@@ -1,4 +1,3 @@
-cd src
-./install-boost
+cd src/
 make
 make install
