@@ -1,0 +1,39 @@
+{% set version = "0.4.1" %}
+{% set name = "libfid" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://bibiserv.cebitec.uni-bielefeld.de/applications/libfid/resources/downloads/libfid-0.4.1.tar.gz
+  sha256: 61d2b70249099ccf9f673e2d30b92adedc1e426a1f3bfa37f4f5a82284ba9fa6
+
+requirements:
+  build:
+    - gcc # [linux]
+    - llvm # [osx]
+
+  run:
+    - libgcc # [linux]
+
+
+test:
+  commands:
+    - test -f $PREFIX/lib/libfid.so # [unix]
+    - test -f $PREFIX/include/libfid/libfid.h # [unix]
+    - conda inspect linkages -p $PREFIX $PKG_NAME # [not win]
+    - conda inspect objects -p $PREFIX $PKG_NAME # [osx]
+
+about:
+  home: http://bibiserv.cebitec.uni-bielefeld.de/libfid
+  license: GPL3
+  summary: A portable software library for accessing indexed data through a simple C interface. It implements, among others, functions for reading indexed data from files, and for performing common operations such as fast string matching. Easy alphabet handling for mapping between printable and binary alphabets is integrated from ground up. Currently, the enhanced suffix array is the only full-text index data structure supported.
+
+extra:
+  indentifiers:
+    - biotools:libfid
