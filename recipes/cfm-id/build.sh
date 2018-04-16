@@ -13,5 +13,3 @@ cmake .. -DCMAKE_INSTALL_PREFIX=$PREFIX -DLPSOLVE_INCLUDE_DIR="${PREFIX}/include
 
 make
 make install
-
-cp cmfid ${PREFIX}/bin/cmfid
