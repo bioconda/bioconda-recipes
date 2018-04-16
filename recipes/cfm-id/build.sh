@@ -6,6 +6,9 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
+mkdir -p $PREFIX/include/rdkit/External/INCHI-API
+cp $PREFIX/include/rdkit/GraphMol/inchi.h $PREFIX/include/rdkit/External/INCHI-API
+
 mkdir build
 cd build
 
