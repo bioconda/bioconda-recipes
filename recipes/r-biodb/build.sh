@@ -1,2 +1,7 @@
 #!/bin/bash
-make install
+export HOME=$(pwd)
+mkdir "$HOME/.R"
+cat >$HOME/.R/Makevars <<EOF
+CXX=clang++
+EOF
+$R CMD INSTALL --build .
