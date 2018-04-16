@@ -3,16 +3,7 @@ set -e
 
 [[ -z $WORKSPACE ]] && WORKSPACE=`pwd`
 [[ -z $BOOTSTRAP ]] && BOOTSTRAP=false
-if [[ -z $BASH_ENV ]]; then
-    if [[ $OSTYPE == darwin* ]]; then
-        BASH_ENV=`mktemp`
-    elif [[ $OSTYPE == linux* ]]; then
-        BASH_ENV=`tempfile`
-    else
-        echo "Unsupported OS: $OSTYPE"
-        exit 1
-    fi
-fi
+[[ -z $BASH_ENV ]] && BASH_ENV=`mktemp`
 
 set -u
 
