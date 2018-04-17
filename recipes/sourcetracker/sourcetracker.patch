@@ -1,0 +1,39 @@
+diff -rupN sourcetracker-1.0.1/example.r sourcetracker-1.0.1-exec/example.r
+--- sourcetracker-1.0.1/example.r	2016-03-30 21:44:36.000000000 +0200
++++ sourcetracker-1.0.1-exec/example.r	2018-04-10 15:29:35.422869405 +0200
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ # This runs SourceTracker on the original "contamination" data set
+ # (data included in 'data' folder)
+ 
+@@ -33,7 +34,13 @@ if(is.element('Description',colnames(met
+ 
+ 
+ # load SourceTracker package
+-source('src/SourceTracker.r')
++envvars <- as.list(Sys.getenv())
++if(is.element('SOURCETRACKER_PATH', names(envvars))){
++    sourcefile <- sprintf('%s/src/SourceTracker.r',envvars[['SOURCETRACKER_PATH']])
++    source(sourcefile)
++} else {
++    stop("Please add SOURCETRACKER_PATH environment variable pointing to the SourceTracker top-level directory (containing 'sourcetracker_for_qiime.r')")
++}
+ 
+ # tune the alpha values using cross-validation (this is slow!)
+ # tune.results <- tune.st(otus[train.ix,], envs[train.ix])
+diff -rupN sourcetracker-1.0.1/sourcetracker_for_qiime.r sourcetracker-1.0.1-exec/sourcetracker_for_qiime.r
+--- sourcetracker-1.0.1/sourcetracker_for_qiime.r	2016-03-30 21:44:36.000000000 +0200
++++ sourcetracker-1.0.1-exec/sourcetracker_for_qiime.r	2018-04-10 15:04:52.696684293 +0200
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ # USAGE
+ # get help:
+ # Rscript sourcetracker_for_qiime.r-h 
+diff -rupN sourcetracker-1.0.1/src/SourceTracker.r sourcetracker-1.0.1-exec/src/SourceTracker.r
+--- sourcetracker-1.0.1/src/SourceTracker.r	2016-03-30 21:44:36.000000000 +0200
++++ sourcetracker-1.0.1-exec/src/SourceTracker.r	2018-04-10 15:04:39.768456681 +0200
+@@ -1,3 +1,4 @@
++#!/usr/bin/env Rscript
+ # File: SourceTracker.r
+ # Author: Dan Knights
+ # Contact: danknights@gmail.com
