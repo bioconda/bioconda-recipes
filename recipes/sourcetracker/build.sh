@@ -1,7 +1,7 @@
 #!/bin/bash
 
 chmod +x *.r src/*.r
-cp -r sourcetracker_for_qiime.r src "$CONDA_PREFIX/bin"
+cp -r sourcetracker_for_qiime.r src "$PREFIX/bin"
 
 mkdir -p $PREFIX/etc/conda/activate.d/
 echo '#!/bin/bash
