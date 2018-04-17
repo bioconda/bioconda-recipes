@@ -1,3 +1,3 @@
 cd src/
 make
-make install
+cp ../bin/ac-diamond $PREFIX/bin
