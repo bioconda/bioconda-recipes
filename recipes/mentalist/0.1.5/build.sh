@@ -10,6 +10,8 @@ cp -r $SRC_DIR/src/*.jl $PREFIX/bin
 ln -s $PREFIX/bin/MentaLiST.jl $PREFIX/bin/mentalist
 chmod +x $PREFIX/bin/mentalist
 
+cp -r $SRC_DIR/scripts $PREFIX
+
 julia -e 'Pkg.init()'
 julia -e 'Pkg.add("Suppressor")'
 julia -e 'Pkg.add("ArgParse")'
