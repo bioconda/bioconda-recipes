@@ -1,0 +1,56 @@
+{% set name = "solvebio" %}
+{% set version = "2.4.6" %}
+{% set hash_value = "d13601932b38d0fc71bc574af1c0b42cab82aaa6cd20248b7c154490dbeaf9cb" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: '{{ hash_value }}'
+
+build:
+  number: 0
+  entry_points:
+    - solvebio = solvebio.cli.main:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - six
+    - pyprind
+    - pycurl >=7.0.0
+    - requests >=2.0.0
+  run:
+    - python
+    - six
+    - pyprind
+    - pycurl >=7.0.0
+    - requests >=2.0.0
+      # For dash, if enabled along with dash-auth
+      # - flask
+      # - flask-seasurf
+
+test:
+  imports:
+    - solvebio
+    - solvebio.cli
+    - solvebio.contrib
+      # Requires dash-auth, not yet packaged in conda
+      #- solvebio.contrib.dash
+      #- solvebio.contrib.dash.tests
+    - solvebio.contrib.vcf_parser
+    - solvebio.resource
+    - solvebio.test
+    - solvebio.utils
+  commands:
+    - solvebio --help
+
+about:
+  home: https://github.com/solvebio/solvebio-python
+  license: MIT
+  summary: The SolveBio Python client
