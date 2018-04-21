@@ -1,0 +1,87 @@
+{% set version = '1.3-5' %}
+
+package:
+  name: r-flexclust
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: flexclust_1.3-5.tar.gz
+  url:
+    - {{ cran_mirror }}/src/contrib/flexclust_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/flexclust/flexclust_{{ version }}.tar.gz
+  sha256: dbf49969c93a7b314d9dc3299a0764ed9a804ba7dcbdc08a1235f244f4b85059
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: ellipse, clue, cluster, seriation
+requirements:
+  build:
+    - {{ compiler('c') }}          # [not win]
+
+
+  host:
+    - r-base
+    - r-lattice
+    - r-modeltools
+
+  run:
+    - r-base
+    - r-lattice
+    - r-modeltools
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('flexclust')"           # [not win]
+    - "\"%R%\" -e \"library('flexclust')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=flexclust
+  license: GPL-2
+  summary: The main function kcca implements a general framework for k-centroids cluster analysis
+    supporting arbitrary distance measures and centroid computation. Further cluster
+    methods include hard competitive learning, neural gas, and QT clustering. There
+    are numerous visualization methods for cluster results (neighborhood graphs, convex
+    cluster hulls, barcharts of centroids, ...), and bootstrap methods for the analysis
+    of cluster stability.
+  license_family: GPL2
+
+# The original CRAN metadata for this package was:
+
+# Package: flexclust
+# Version: 1.3-5
+# Date: 2018-02-14
+# Authors@R: c(person(given="Friedrich", family="Leisch", email="Friedrich.Leisch@R-project.org", role=c("aut", "cre")), person(given="Evgenia", family="Dimitriadou", role="ctb"))
+# Title: Flexible Cluster Algorithms
+# Depends: R (>= 2.14.0), graphics, grid, lattice, modeltools
+# Imports: methods, parallel, stats, stats4
+# Suggests: ellipse, clue, cluster, seriation
+# Description: The main function kcca implements a general framework for k-centroids cluster analysis supporting arbitrary distance measures and centroid computation. Further cluster methods include hard competitive learning, neural gas, and QT clustering. There are numerous visualization methods for cluster results (neighborhood graphs, convex cluster hulls, barcharts of centroids, ...), and bootstrap methods for the analysis of cluster stability.
+# License: GPL-2
+# Encoding: UTF-8
+# Packaged: 2018-02-14 12:30:29 UTC; ripley
+# Author: Friedrich Leisch [aut, cre], Evgenia Dimitriadou [ctb]
+# Maintainer: ORPHANED
+# NeedsCompilation: yes
+# X-CRAN-Comment: Orphaned and corrected on 2018-02-14 as check errors were not corrected despite reminders. . Included incorrect formula for Canberra distance, no registration, missing imports.
+# Repository: CRAN
+# Date/Publication: 2018-02-14 14:38:52
+# X-CRAN-Original-Maintainer: Friedrich Leisch <Friedrich.Leisch@R-project.org>
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
