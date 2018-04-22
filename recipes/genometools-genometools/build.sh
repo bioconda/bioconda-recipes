@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -e -o pipefail -x
 
 make 
 export prefix=$PREFIX
