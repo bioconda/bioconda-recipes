@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e -o pipefile -x
+set -e -o pipefail -x
 
 make cairo=no verbose=yes
 export prefix=$PREFIX
