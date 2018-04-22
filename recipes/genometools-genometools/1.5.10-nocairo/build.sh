@@ -2,9 +2,9 @@
 
 set -e -o pipefail -x
 
-make cairo=no verbose=yes
+make cairo=no
 export prefix=$PREFIX
-make cairo=no verbose=yes install 
+make cairo=no install 
 
 cd gtpython
 $PYTHON setup.py install
