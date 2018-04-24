@@ -20,6 +20,7 @@ except AttributeError:  # not running within sphinx
 
 try:
     from conda_build.metadata import MetaData
+    from conda_build.exceptions import UnableToParse
 except Exception:
     logging.exception("Failed to import MetaData")
     raise
@@ -80,13 +81,15 @@ def as_extlink_filter(text):
     >>> as_extlink_filter(["biotools:abyss", "doi:123"])
     "biotools: :biotool:`abyss`, doi: :doi:`123`"
     """
-    if isinstance(text, list):
-        return [as_extlink_filter(text_item) for text_item in text]
-    elif isinstance(text, str):
-        return "{0}: :{0}:`{1}`".format(*text.split(":"))
-    else:
-        raise ValueError("Expected list or string for {0}".format(text))
+    def fmt(text):
+        assert isinstance(text, str), "identifier has to be a string"
+        text = text.split(":", 1)
+        assert len(text) == 2, "identifier needs at least one colon"
+        return "{0}: :{0}:`{1}`".format(*text)
 
+    assert isinstance(text, list), "identifiers have to be given as list"
+ 
+    return list(map(fmt, text))
 
 
 def underline_filter(text):
@@ -198,18 +201,23 @@ def generate_readme(folder, repodata, renderer):
         versions.append(sf)
 
     # Read the meta.yaml file(s)
-    recipe = op.join(RECIPE_DIR, folder, "meta.yaml")
-    if op.exists(recipe):
-        metadata = MetaData(recipe)
-        if metadata.version() not in versions:
-            versions.insert(0, metadata.version())
-    else:
-        if versions:
-            recipe = op.join(RECIPE_DIR, folder, versions[0], "meta.yaml")
+    try:
+        recipe = op.join(RECIPE_DIR, folder, "meta.yaml")
+        if op.exists(recipe):
             metadata = MetaData(recipe)
+            if metadata.version() not in versions:
+                versions.insert(0, metadata.version())
         else:
-            # ignore non-recipe folders
-            return
+            if versions:
+                recipe = op.join(RECIPE_DIR, folder, versions[0], "meta.yaml")
+                metadata = MetaData(recipe)
+            else:
+                # ignore non-recipe folders
+                return
+    except UnableToParse as e:
+        logger.error("Failed to parse recipe {}".format(recipe))
+        raise e
+
 
     name = metadata.name()
     versions_in_channel = repodata.get_versions(name)

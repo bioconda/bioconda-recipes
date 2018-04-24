@@ -281,6 +281,24 @@ def setup_py_install_args(recipe, meta, df):
         return err
 
 
+def invalid_identifiers(recipe, meta, df):
+    try:
+        identifiers = meta['extra']['identifiers']
+        if not isinstance(identifiers, list):
+            return { 'invalid_identifiers': True,
+                     'fix': 'extra:identifiers must hold a list of identifiers' }
+        if not all(isinstance(i, str) for i in identifiers):
+            return { 'invalid_identifiers': True,
+                     'fix': 'each identifier must be a string' }
+        if not all((':' in i) for i in identifiers):
+            return { 'invalid_identifiers': True,
+                     'fix': 'each identifier must be of the form '
+                            'type:identifier (e.g., doi:123)' }
+    except KeyError:
+        # no identifier section
+        return
+
+
 def _pin(env_var, dep_name):
     """
     Generates a linting function that checks to make sure `dep_name` is pinned
@@ -353,6 +371,7 @@ registry = (
     #
     should_not_be_noarch,
     setup_py_install_args,
+    invalid_identifiers,
     _pin('CONDA_ZLIB', 'zlib'),
     _pin('CONDA_GMP', 'gmp'),
     _pin('CONDA_BOOST', 'boost'),

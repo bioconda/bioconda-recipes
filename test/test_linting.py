@@ -697,9 +697,9 @@ def test_lint_pin():
             requirements:
               build:
                 - zlib
-   
+
               run:  # ^-- DO NOT remove the preceding line; it's part of the test case!
-                - zlib 
+                - zlib
         ''',
         '''
         a:
@@ -806,4 +806,49 @@ def test_setup_py_install_args():
               script: $PYTHON setup.py install
         ''',
         ]
+    )
+
+def test_invalid_identifiers():
+    run_lint(
+        func=lint_functions.invalid_identifiers,
+        should_pass=['''
+        a:
+            meta.yaml: |
+              package:
+                name: a
+                version: 0.1
+              extra:
+                identifiers:
+                  - doi:10.1093/bioinformatics/btr010
+        '''],
+        should_fail=['''
+        a:
+            meta.yaml: |
+              package:
+                name: a
+                version: 0.1
+              extra:
+                identifiers:
+                  - doi: 10.1093/bioinformatics/btr010
+        ''',
+        '''
+        a:
+            meta.yaml: |
+              package:
+                name: a
+                version: 0.1
+              extra:
+                identifiers:
+                  doi: 10.1093/bioinformatics/btr010
+        ''',
+        '''
+        a:
+            meta.yaml: |
+              package:
+                name: a
+                version: 0.1
+              extra:
+                identifiers:
+                  doi:10.1093/bioinformatics/btr010
+        ''']
     )
