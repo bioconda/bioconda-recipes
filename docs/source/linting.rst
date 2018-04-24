@@ -242,6 +242,27 @@ to::
 
     $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
+`invalid_identifiers`
+~~~~~~~~~~~~~~~~~~~~~
+Reason for failing: The recipes has an `extra -> identifiers` section with an
+invalid format.
+
+Rationale: The identifiers section has to be machine readable.
+
+How to resolve: Ensure that the section is of the following format:
+
+```
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/bts480
+    - biotools:Snakemake
+```
+
+In particular, ensure that each identifier starts with a type
+(`doi`, `biotools`, ...), followed by a colon and the identifier.
+Whitespace is not allowed.
+
+
 `*_not_pinned`
 ~~~~~~~~~~~~~~
 
