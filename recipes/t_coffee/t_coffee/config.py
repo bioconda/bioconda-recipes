@@ -21,10 +21,10 @@ def get_tcoffee_environ():
     env = os.environ.copy()
     if 'TMP_4_TCOFFEE' not in env:
         env['TMP_4_TCOFFEE'] = tempfile.mkdtemp()
+    if 'PLUGINS_4_TCOFFEE' not in env:
+        env['PLUGINS_4_TCOFFEE'] = tcoffee_plugins_dir
     if 'MAFFT_BINARIES' not in env:
         env['MAFFT_BINARIES'] = tcoffee_plugins_dir
-    elif tcoffee_plugins_dir not in env['MAFFT_BINARIES']:
-        env['MAFFT_BINARIES'] = env['MAFFT_BINARIES'] + ':' + tcoffee_plugins_dir
     if 'PERL5LIB' not in env:
         env['PERL5LIB'] = tcoffee_perl_dir
     elif tcoffee_perl_dir not in env['PERL5LIB']:
