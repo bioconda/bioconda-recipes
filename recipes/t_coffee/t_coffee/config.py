@@ -1,11 +1,18 @@
 import os
 import os.path as op
+import sys
 import tempfile
 
 tcoffee_install_dir = op.normpath(op.join(op.dirname(__file__), '..', '..', '..', '{{TCOFFEE_FOLDER_NAME}}'))
 tcoffee_bin_dir = op.join(tcoffee_install_dir, 'bin')
 tcoffee_exe_file = op.join(tcoffee_bin_dir, 't_coffee')
-tcoffee_plugins_dir = op.join(tcoffee_install_dir, 'plugins', 'linux')
+if sys.platform.startswith('linux'):
+    platform = 'linux'
+elif sys.platform == 'darwin':
+    platform = 'macosx'
+else:
+    raise Exception("Unsupported platform '%s'" % sys.platform)
+tcoffee_plugins_dir = op.join(tcoffee_install_dir, 'plugins', platform)
 tcoffee_perl_dir = op.join(tcoffee_install_dir, 'perl', 'lib', 'perl5')
 tcoffee_default_email = 'username@example.org'
 
