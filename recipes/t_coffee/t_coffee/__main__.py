@@ -25,6 +25,7 @@ def main():
     print("Result: {}".format(result))
     print("Error message: {}".format(error_message))
     print("*" * 80 + "\n")
+    return child_process.returncode
 
 
 if __name__ == '__main__':
