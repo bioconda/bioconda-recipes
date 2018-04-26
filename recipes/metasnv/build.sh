@@ -11,6 +11,9 @@ cp -pr src $odir
 cp -pr metaSNV.py $odir
 cp -pr metaSNV_post.py $odir
 
+# The scripts find their resources relative to themselves so they cannot be
+# installed directly to bin/
+
 cat >$PREFIX/bin/metaSNV_post.py <<EOF
 #!/usr/bin/env bash
 
