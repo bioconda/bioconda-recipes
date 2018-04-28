@@ -1,10 +1,10 @@
 #!/bin/bash
-set -eu
+set -e
 
-set +u
 [[ -z $WORKSPACE ]] && WORKSPACE=`pwd`
-[[ -z $BASH_ENV ]] && BASH_ENV=`tempfile`
 [[ -z $BOOTSTRAP ]] && BOOTSTRAP=false
+[[ -z $BASH_ENV ]] && BASH_ENV=`mktemp`
+
 set -u
 
 # Common definitions from latest bioconda-utils master have to be downloaded before setup.sh is executed.
