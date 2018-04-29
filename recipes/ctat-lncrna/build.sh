@@ -7,7 +7,7 @@ ctat_lncrna_INSTALL_PATH="$PREFIX/share/$ctat_lncrna_DIR_NAME"
 mkdir -p $PREFIX/bin
 mkdir -p $ctat_lncrna_INSTALL_PATH
 #copy to INSTALL_PATH
-cp -R $SRC_DIR/LICENSE.txt $SRC_DIR/lncrna $SRC_DIR/SciEDPipeR $ctat_lncrna_INSTALL_PATH
+cp -R $SRC_DIR/lncrna $SRC_DIR/SciEDPipeR $ctat_lncrna_INSTALL_PATH
 #change permissions on lncrna
 chmod a+x $ctat_lncrna_INSTALL_PATH/lncrna
 cd $PREFIX/bin 
