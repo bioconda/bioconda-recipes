@@ -12,4 +12,4 @@ for bin in livekraken livekraken-build livekraken-filter livekraken-mpa-report l
     rm -rf "$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/libexec/${bin}.bak"
 done
 
-cp "visualisation/livekraken_sankey_diagram.py" "$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin"
+cp "visualisation/livekraken_sankey_diagram.py" "$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin/"
