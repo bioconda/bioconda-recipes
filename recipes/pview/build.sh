@@ -1,5 +1,5 @@
 #! /bin/bash
-
+cd src
 if [ `uname` == Darwin ]; then
     qmake -nocache -spec macx-g++
 else
