@@ -9,3 +9,4 @@ export CPATH=${PREFIX}/include
 make -j 2
 make install
 cp src/plotting_funcs.R ${PREFIX}/bin
+chmod +x ${PREFIX}/bin/plotting_funcs.R
