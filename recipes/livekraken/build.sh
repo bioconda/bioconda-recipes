@@ -1,6 +1,5 @@
 #!/bin/bash
 
-mkdir -p "$PREFIX/libexec" "$PREFIX/bin"
 mkdir -p "$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/libexec" "$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/bin"
 
 chmod u+x install_kraken.sh
