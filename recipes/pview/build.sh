@@ -1,6 +1,6 @@
 #! /bin/bash
 
-if ['uname' == Darwin]; then
+if [ `uname` == Darwin ]; then
     qmake -nocache -spec macx-g++
 else
     qmake -nocache
