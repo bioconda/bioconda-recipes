@@ -5,3 +5,7 @@ mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 
 $R CMD INSTALL --build .
+
+if [ $unamestr == 'Darwin' ];
+then
+    export DYLD_LIBRARY_PATH=$PREFIX/lib
