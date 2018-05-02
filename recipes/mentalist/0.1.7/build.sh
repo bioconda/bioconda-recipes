@@ -5,8 +5,8 @@
 [[ -z $REQUESTS_CA_BUNDLE && ${REQUESTS_CA_BUNDLE+x} ]] && unset REQUESTS_CA_BUNDLE
 [[ -z $SSL_CERT_FILE && ${SSL_CERT_FILE+x} ]] && unset SSL_CERT_FILE
 
-
 cp -r $SRC_DIR/src/*.jl $PREFIX/bin
+cp -r $SRC_DIR/scripts $PREFIX
 ln -s $PREFIX/bin/MentaLiST.jl $PREFIX/bin/mentalist
 chmod +x $PREFIX/bin/mentalist
 
