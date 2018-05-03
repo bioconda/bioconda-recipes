@@ -1,4 +1,4 @@
-{% set version = "1.4.0" %}
+{% set version = "1.5.4" %}
 {% set name = "RCAS" %}
 {% set bioc = "3.6" %}
 
@@ -6,11 +6,10 @@ package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
+  fn: '{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: b923d4abb58875f949c3e30b6d731432f1f986c56fda5a38dce126b27d112108
+    - https://github.com/BIMSBbioinfo/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: c1b62b863311a0974ac5287dc9031f448e12efbbc09f462bcd658bee3d14897e
 build:
   number: 0
   rpaths:
@@ -25,7 +24,7 @@ requirements:
     - bioconductor-bsgenome.hsapiens.ucsc.hg19
     - 'bioconductor-genomation >=1.5.5'
     - 'bioconductor-genomeinfodb >=1.12.0'
-    - bioconductor-genomicfeatures
+    - 'bioconductor-genomicfeatures >=1.30.0'
     - bioconductor-genomicranges
     - bioconductor-motifrg
     - bioconductor-org.hs.eg.db
@@ -46,7 +45,7 @@ requirements:
     - r-plotrix
     - r-proxy
     - 'r-rmarkdown >=0.9.5'
-    - r-rsqlite
+    - 'r-rsqlite >=2.0'
   run:
     - bioconductor-annotationdbi
     - bioconductor-biocgenerics
@@ -55,7 +54,7 @@ requirements:
     - bioconductor-bsgenome.hsapiens.ucsc.hg19
     - 'bioconductor-genomation >=1.5.5'
     - 'bioconductor-genomeinfodb >=1.12.0'
-    - bioconductor-genomicfeatures
+    - 'bioconductor-genomicfeatures >=1.30.0'
     - bioconductor-genomicranges
     - bioconductor-motifrg
     - bioconductor-org.hs.eg.db
@@ -76,11 +75,15 @@ requirements:
     - r-plotrix
     - r-proxy
     - 'r-rmarkdown >=0.9.5'
-    - r-rsqlite
+    - 'r-rsqlite >=2.0'
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - '$R -e "library(''{{ name }}''); runReport()" 2>&1 | grep testdata.RCAS.report.html > /dev/null'
 about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'RCAS is an automated system that provides dynamic genome annotations for custom input files that contain transcriptomic regions. Such transcriptomic regions could be, for instance, peak regions detected by CLIP-Seq analysis that detect protein-RNA interactions, RNA modifications (alias the epitranscriptome), CAGE-tag locations, or any other collection of target regions at the level of the transcriptome. RCAS is designed as a reporting tool for the functional analysis of RNA-binding sites detected by high-throughput experiments. It takes as input a BED format file containing the genomic coordinates of the RNA binding sites and a GTF file that contains the genomic annotation features usually provided by publicly available databases such as Ensembl and UCSC. RCAS performs overlap operations between the genomic coordinates of the RNA binding sites and the genomic annotation features and produces in-depth annotation summaries such as the distribution of binding sites with respect to gene features (exons, introns, 5''/3'' UTR regions, exon-intron boundaries, promoter regions, and whole transcripts). Moreover, by detecting the collection of targeted transcripts, RCAS can carry out functional annotation tables for enriched gene sets (annotated by the Molecular Signatures Database) and GO terms. As one of the most important questions that arise during protein-RNA interaction analysis; RCAS has a module for detecting sequence motifs enriched in the targeted regions of the transcriptome. A full interactive report in HTML format can be generated that contains interactive figures and tables that are ready for publication purposes.'
+
+extra:
+  identifiers:
+    - biotools:rcas
