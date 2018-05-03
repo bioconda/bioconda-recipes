@@ -1,1 +1,1 @@
-pip3 install ANNOgesic
+pip install ANNOgesic
