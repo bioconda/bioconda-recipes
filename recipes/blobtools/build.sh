@@ -17,6 +17,7 @@ sed -i "s~SAMTOOLS = os.path.abspath(os.path.join(MAINDIR, 'samtools/bin/samtool
 
 cd ..
 
+sed -i -e '4d;16,29d;50d' setup.py
 $PYTHON setup.py install --single-version-externally-managed --record=/tmp/record.txt
 
 echo '#!/usr/bin/env bash' > $PREFIX/bin/blobtools
