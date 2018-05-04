@@ -399,6 +399,25 @@ some ideas on what to try:
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/soapdenovo>`_
   have many fixes to makefiles
 
+Haskell
+-------
+
+Bioconda has a small number of haskell tools. Most often they are built with
+``stack`` (which is available on `conda-forge
+<https://github.com/conda-forge/stack-feedstock>`__). `NGLess
+<https://github.com/bioconda/bioconda-recipes/blob/master/recipes/ngless/build.sh>`__
+provides an example of how to call ``stack``. Here are a few notes:
+
+- ``LD_LIBRARY_PATH``/``LIBRARY_PATH`` are set to include both
+  ``${PREFIX}/lib`` and the system paths (otherwise, ``stack setup`` will
+  fail).
+- Create a directory (called ``fake-home`` in this example) and set it as
+  ``$HOME``, further setting ``$STACK_ROOT`` to use a subdirectory of this
+  ``$HOME``.
+
+Mac OS X support is generally missing (any help is appreciated, see `#6607
+<https://github.com/bioconda/bioconda-recipes/issues/6607>`__).
+
 General command-line tools
 --------------------------
 If a command-line tool is installed, it should be tested. If it has a
