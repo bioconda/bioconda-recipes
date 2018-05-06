@@ -6,8 +6,10 @@ export LD_LIBRARY_PATH=${PREFIX}/lib
 if [ $unamestr == 'Darwin' ];
 then
     export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib"
-    MACOSX_DEPLOYMENT_TARGET=10.9
-    LDFLAGS="$LDFLAGS -undefined dynamic_lookup -bundle"
+#    LDFLAGS="$LDFLAGS -undefined dynamic_lookup -bundle"
+    LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
+    CXX=clang++;
+    CC=clang;
 fi
 
 # R refuses to build packages that mark themselves as Priority: Recommended
