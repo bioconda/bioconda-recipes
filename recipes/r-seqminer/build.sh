@@ -1,17 +1,14 @@
 #!/bin/bash
 
-# R refuses to build packages that mark themselves as Priority: Recommended
-
 unamestr=`uname`
-if [ $unamestr == 'Linux' ];
+export LD_LIBRARY_PATH=${PREFIX}/lib
+
+if [ $unamestr == 'Darwin' ];
 then
-    mv DESCRIPTION DESCRIPTION.old
-    grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
-    $R CMD INSTALL --build .
-elif [ $unamestr == 'Darwin' ];
-then
-    export DYLD_LIBRARY_PATH=${PREFIX}/lib
-    mv DESCRIPTION DESCRIPTION.old
-    grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
-    $R CMD INSTALL --build .
+    export LDFLAGS="$LDFLAGS -undefined dynamic_lookup -bundle"
 fi
+
+# R refuses to build packages that mark themselves as Priority: Recommended
+mv DESCRIPTION DESCRIPTION.old
+grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
+$R CMD INSTALL --build .
