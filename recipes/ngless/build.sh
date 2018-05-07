@@ -14,7 +14,7 @@ mkdir -p fake-home
 export HOME=$PWD/fake-home
 export STACK_ROOT="$HOME/.stack"
 stack setup --local-bin-path ${PREFIX}/bin
-make install prefix=$PREFIX
+make install WGET="wget --no-check-certificate" prefix=$PREFIX
 
 #cleanup
 rm -r .stack-work
