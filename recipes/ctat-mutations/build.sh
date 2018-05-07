@@ -2,7 +2,7 @@
 # ctat_mutations_DIR_NAME="$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
 # The above is an error. The following is correct.
 ctat_mutations_DIR_NAME="$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM"
-ctat_mutations_INSTALL_PATH="$PREFIX/share/$ctat_lncrna_DIR_NAME"
+ctat_mutations_INSTALL_PATH="$PREFIX/share/$ctat_mutations_DIR_NAME"
 # Make the install directory and move the ctat-mutations files to that location.
 mkdir -p $PREFIX/bin
 mkdir -p $ctat_mutations_INSTALL_PATH
