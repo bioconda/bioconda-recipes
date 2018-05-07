@@ -22,7 +22,7 @@ cat <<EOF >${bindir}/erds_pipeline
 set -eu -o pipefail
 export LC_ALL=en_US.UTF-8
 
-perl ${outdir}/erds_pipeline.pl $@
+perl ${outdir}/erds_pipeline.pl \$@
 EOF
 
 cat ${bindir}/erds_pipeline
