@@ -4,7 +4,7 @@ FusionInspector_INSTALL_PATH="$PREFIX/share/$FusionInspector_DIR_NAME"
 # Make the install directory and move the FusionInspector files to that location.
 mkdir -p $FusionInspector_INSTALL_PATH
 # Split the copy into two commands for readability.
-cp -R $SRC_DIR/FusionInspector $SRC_DIR/PerlLib $SRC_DIR/SciEDPipeR $SRC_DIR/FusionAnnotator $FusionInspector_INSTALL_PATH
+cp -R $SRC_DIR/FusionInspector $SRC_DIR/PerlLib $SRC_DIR/PyLib $SRC_DIR/FusionAnnotator $FusionInspector_INSTALL_PATH
 cp -R $SRC_DIR/FusionFilter $SRC_DIR/plugins $SRC_DIR/test $SRC_DIR/util $FusionInspector_INSTALL_PATH
 chmod a+x $FusionInspector_INSTALL_PATH/FusionInspector
 
@@ -34,8 +34,8 @@ TRINITY_HOME=$(cd $(dirname ${TrinityFile}) && pwd)
 # It is also needed in order to set the TRINITY_HOME environment variable.
 echo "#!/bin/bash" > $PREFIX/bin/FusionInspector
 echo "# The FusionInspector Releases 1.1.0 and earlier require TRINITY_HOME to be defined." >> $PREFIX/bin/FusionInspector
-# There is another release in the works that will not have this requirement,
-# but it is not out yet.
+# Later releases will look for TRINITY executable in the PATH, but for now I am leaving this
+# definition of TRINITY_HOME here, since it works.
 # Define TRINITY_HOME before invoking FusionInspector.
 echo "export TRINITY_HOME=\"${TRINITY_HOME}\"" >> $PREFIX/bin/FusionInspector
 echo "$FusionInspector_INSTALL_PATH/FusionInspector \$@" >> $PREFIX/bin/FusionInspector
