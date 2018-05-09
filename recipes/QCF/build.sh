@@ -2,4 +2,5 @@
 
 cd $SRC_DIR
 make
-make install
+cp qcf ${PREFIX}/bin/qcf
+chmod +x ${PREFIX}/bin/qcf
