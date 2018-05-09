@@ -1,55 +1,69 @@
-{% set version = "0.7.4" %}
+{% set name = "bx-python" %}
+{% set version = "0.8.1" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "057b560c669527a784197a2f8005689d331f62f4765ae4d14bc2217e82dcd8af" %}
 
 package:
-  name: bx-python
-  version: {{ version }}
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  url: https://github.com/bxlab/bx-python/archive/v{{ version }}.tar.gz
-  sha256: 1066d1e56d062d0661f23c19942eb757bd7ab7cb8bc7d89a72fdc3931c995cb4
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
 
 build:
   number: 0
-  skip: True # [not py27]
+  script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
   build:
-    - python
-    - setuptools
-    - cython
-    - nose
-    - numpy x.x
     - gcc
-
-  run:
     - python
-    - numpy x.x
+    - zlib {{CONDA_ZLIB}}*
+    - setuptools
+    - python-lzo
+    - numpy
+    - six
+  run:
     - libgcc
+    - python
+    - python-lzo
+    - numpy
+    - six
 
 test:
   imports:
-    - bx.align.sitemask
-    - bx.tabular
-    - bx.intervals
+    - bx
     - bx.align
-    - bx.bbi
-    - bx.bbi.bigwig_file
-    - bx.cookbook
+    - bx.align.sitemask
+    - bx.align.tools
     - bx.arrays
-    - bx.motif.io
-    - bx.seq
+    - bx.bbi
+    - bx.cookbook
+    - bx.intervals
     - bx.intervals.operations
-    - bx.pwm
+    - bx.intseq
     - bx.misc
     - bx.motif
-    - bx.phylo
+    - bx.motif.io
     - bx.motif.logo
+    - bx.phylo
+    - bx.pwm
+    - bx.seq
+    - bx.tabular
     - bx_extras
-    - bx.align.tools
-    - bx
-    - bx.intseq
+  requires:
+    - nose
 
 about:
   home: https://github.com/bxlab/bx-python
-  license: MIT
-  summary: Toolkit to enable rapid implementation of genome scale analyses.
+  license: MIT License
+  license_family: MIT
+  license_file: 'LICENSE'
+  summary: Tools for manipulating biological data, particularly multiple sequence alignments
+
+extra:
+  container:
+      extended-base: true
