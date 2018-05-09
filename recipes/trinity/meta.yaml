@@ -1,25 +1,15 @@
-{% set name = "trinity" %}
-{% set version = "2.4.0" %}
+build:
+  number: 1
+# OSX build skipped because of this error: https://gist.github.com/pvanheus/2fbce93b326a3edb1a57aaebc8ca749e
+  skip: True # [osx]
+
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
-
-build:
-  number: 5
-  skip: True  # [osx]
-
-source:
-  url: https://github.com/trinityrnaseq/trinityrnaseq/archive/Trinity-v{{ version }}.tar.gz
-  md5: 397cc93d75701ec681ea7af1a7837ed8
-  patches:
-    - makefile.clean.patch
-    - trinity-plugins.makefile.clean.patch
+  name: trinity
+  version: '2.5.1'
 
 requirements:
   build:
-    - autoconf
-    - automake
     - collectl
     - fastool
     - gcc
@@ -31,7 +21,7 @@ requirements:
     - samtools >=1.3
     - slclust
     - trimmomatic >=0.36
-    - zlib
+    - zlib {{CONDA_ZLIB}}*
 
   run:
     - bowtie
@@ -47,22 +37,32 @@ requirements:
     - samtools >=1.3
     - slclust
     - trimmomatic >=0.36
-    - zlib
+    - zlib {{CONDA_ZLIB}}*
+
+source:
+  fn: Trinity-v2.5.1.tar.gz
+  url: https://github.com/trinityrnaseq/trinityrnaseq/archive/Trinity-v2.5.1.tar.gz
+  sha256: bf14f96981bb028d7960dec895a1bcbda1fadbbe562a913b188559fd74b90457
+  patches:
+    - makefile.clean.patch
+    - trinity-plugins.makefile.clean.patch
 
 test:
-    commands:
-        - "Trinity --cite"
-        - "align_and_estimate_abundance.pl --help &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "abundance_estimates_to_matrix.pl --help &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "run_DE_analysis.pl -h &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "analyze_diff_expr.pl -h &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "PtR --help &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "TrinityStats.pl 2>&1 | grep \"usage:\" "
-        - "define_clusters_by_cutting_tree.pl 2>&1 | grep \"define K clusters via k-means algorithm\" "
-        - "contig_ExN50_statistic.pl 2>&1 | grep \"usage:\" &> /dev/null"
-        - seqtk-trinity rename
+  commands:
+      - "Trinity --cite &> /dev/null"
+      - "align_and_estimate_abundance.pl --help &> /dev/null || [[ \"$?\" == 255 ]]"
+      - "abundance_estimates_to_matrix.pl --help &> /dev/null || [[ \"$?\" == 255 ]]"
+      - "run_DE_analysis.pl -h &> /dev/null || [[ \"$?\" == 255 ]]"
+      - "analyze_diff_expr.pl -h &> /dev/null || [[ \"$?\" == 255 ]]"
+      - "PtR --help &> /dev/null || [[ \"$?\" == 255 ]]"
+      - "TrinityStats.pl 2>&1 | grep \"usage:\" &> /dev/null"
+      - "define_clusters_by_cutting_tree.pl 2>&1 | grep \"define K clusters via k-means algorithm\" &> /dev/null"
 
 about:
   home: https://github.com/trinityrnaseq/trinityrnaseq/
   license: 'BSD-3-Clause'
   summary: 'Trinity RNA-Seq de novo transcriptome assembly'
+
+extra:
+  identifiers:
+    - biotools:trinity

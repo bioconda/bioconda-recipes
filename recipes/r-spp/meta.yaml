@@ -1,19 +1,17 @@
 package:
   name: r-spp
-  version: "1.14post"
+  version: "1.15.2"
 
 source:
-  fn: "1.14post.zip"
-  url: https://github.com/hms-dbmi/spp/archive/c6526d2bc8eeaaa889970cd2f8d30c998f3ea320.zip
-  sha256: 61f0d21f2c5127e570bf619445c89968009cfbd32b995984cf20788f986e666b 
+  url: https://github.com/hms-dbmi/spp/archive/1.15.2.tar.gz 
+  sha256: bf0d6f42d9461aeb7a20b1ddb12b57bc42d11732ca6f69ec3eb2157364cefd5b
   patches: # [osx]
     - Makevars.patch  # [osx]
 
 build:
   number: 0
   string: r_{{CONDA_R}}_boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
-
-  # This is required to make R link correctly on Linux.
+  skip: True  # [osx]
   rpaths:
     - lib/R/lib/
     - lib/
@@ -21,22 +19,23 @@ build:
 requirements:
   build:
     - r-base
+    - r-rcpp
     - boost {{CONDA_BOOST}}*
     - r-catools
     - bioconductor-rsamtools
-    - gcc # [linux]
-    - llvm # [osx]
-    - zlib
-    - bzip2
+    - gcc
+    - zlib {{CONDA_ZLIB}}*
+    - bzip2 {{CONDA_BZIP2}}*
 
   run:
     - r-base
+    - r-rcpp
     - boost {{CONDA_BOOST}}*
     - r-catools
     - bioconductor-rsamtools
-    - libgcc # [linux]
-    - zlib
-    - bzip2
+    - libgcc
+    - zlib {{CONDA_ZLIB}}*
+    - bzip2 {{CONDA_BZIP2}}*
 
 test:
   commands:
@@ -47,3 +46,8 @@ about:
   license: GPL
   summary: 'ChIP-seq peak caller'
   home: http://compbio.med.harvard.edu/Supplements/ChIP-seq
+
+extra:
+  identifiers:
+    - biotools:spp
+    - doi:10.1038/nbt.1508

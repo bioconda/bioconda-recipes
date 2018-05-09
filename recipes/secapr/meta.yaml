@@ -1,27 +1,28 @@
-# build with: conda build --python 2.7 .
+{% set version = "1.1.4" %}
 
 package:
   name: secapr
-  version: '1.0.2'
+  version: {{ version }}
 
-about:
-  home: 'https://github.com/AntonelliLab/seqcap_processor'
-  license: MIT
-  summary: 'Process sequence-capture FASTQ files into alignments for phylogenetic analyses. Integrates allele phasing, producing haplotype alignments.'
 source:
-  url: https://github.com/AntonelliLab/seqcap_processor/archive/v1.0.2.tar.gz
-  sha256: ada58295f1d02ca2da0b57a49d74770afcb3ac3137c25c32ecf19bb44937dbfa
+  fn: secapr_{{ version }}.tar.gz
+  url: https://github.com/AntonelliLab/seqcap_processor/archive/v{{ version }}.tar.gz
+  sha256: dc28263f0f8567cc7946b5cb4657ccf13af15e158c5df814162e8dab2bd6f52b
 
 build:
   skip: True  # [not py27]
   number: 0
-  script: $PYTHON setup.py install
+  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+  entry_points:
+    - secapr = secapr.__main__:main
 
 requirements:
   build:
     - python
+    - setuptools
     - biopython
     - pandas
+
   run:
     - python
     - biopython
@@ -40,9 +41,16 @@ requirements:
     - abyss
     - fastqc
     - pandas
+    - numpy 
 
 test:
   imports:
     - secapr
   commands:
     - secapr --version
+
+about:
+  home: 'https://github.com/AntonelliLab/seqcap_processor'
+  license: MIT
+  license_file: LICENSE
+  summary: 'Process sequence-capture FASTQ files into alignments for phylogenetic analyses. Integrates allele phasing, producing haplotype alignments.'

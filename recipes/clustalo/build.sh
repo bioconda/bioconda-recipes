@@ -3,7 +3,7 @@
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
-./configure --prefix=$SRC_DIR
+./configure --prefix=$SRC_DIR OPENMP_CFLAGS='-fopenmp' CFLAGS='-DHAVE_OPENMP'
 make
 
 mkdir -p $PREFIX/bin

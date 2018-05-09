@@ -1,6 +1,6 @@
 {% set name = "quast" %}
-{% set version = "4.6.0" %}
-{% set hash = "6ad4ef33b5f11e1d2efd3e15a285d0c8" %}
+{% set version = "4.6.3" %}
+{% set hash = "177d3c5ad03ef13089aaf348e3250177" %}
 
 package:
   name: {{ name|lower }}
@@ -8,12 +8,18 @@ package:
 
 build:
   number: 1
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+  string: py{{ CONDA_PY }}_boost{{ CONDA_BOOST }}_{{ PKG_BUILDNUM }}
+  # skip Python 3 builds due to test failures in vendored libs
+  skip: True  # [py3k]
 
 source:
   fn: {{ name|lower }}-{{ version }}.tar.gz
   url: http://downloads.sourceforge.net/project/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
   md5: {{ hash }}
+  patches:
+    - gnuplot-issue_disable-mummer-plots.patch
+    - genemark-issue_disable-and-exclude-from-package.patch
+    - add-gage-to-regular-install.patch
 
 requirements:
   build:
@@ -21,10 +27,12 @@ requirements:
     - boost {{CONDA_BOOST}}*
     - perl
     - python
+    - setuptools
     - matplotlib
     - openjdk
     - joblib
     - simplejson
+    - blast
 
   run:
     - boost {{CONDA_BOOST}}*
@@ -35,28 +43,24 @@ requirements:
     - openjdk
     - joblib
     - simplejson
-    - barrnap
-    - bedtools
-    - busco
-    - bwa
-    #- genemark
-    #- genemark-es
-    - glimmer
-    - gnuplot
-    - krona
-    #- lap
-    - minimap2
-    - sambamba
+    - blast
 
 test:
+  source_files:
+    - test_data
   commands:
     - quast --version
-    - quast --test
     - metaquast --version
-    - metaquast --test
 
 about:
   home: https://sourceforge.net/projects/{{ name|lower }}/
-  license: GPL2
+  license: Custom
   license_file: LICENSE.txt
   summary: Quality Assessment Tool for Genome Assemblies
+
+extra:
+  notes: |
+    - drawing MUMmer plots is disabled due to issues with gnuplot
+    - GeneMark gene prediction software is disabled due to licensing issues
+  identifiers:
+    - biotools:quast
