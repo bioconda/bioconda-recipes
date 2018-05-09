@@ -6,7 +6,6 @@ export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I$PREFIX/include"
 
 make
-make install
 
 cp *.py ${PREFIX}/bin/
 cp *.sh ${PREFIX}/bin/
