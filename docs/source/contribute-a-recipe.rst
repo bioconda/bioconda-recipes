@@ -53,6 +53,10 @@ bioconda-utils. The first is probably more straightforward; the second is more
 stringent, can be used for testing on MacOS, and allows the full customization
 of the bioconda-utils calls.
 
+.. _cci_clent:
+
+Circle CI client method
++++++++++++++++++++++++
 The simplest way to conduct local tests is to :ref:`setup the Circle CI client
 <circleci-client>`. Then run the following commands:
 
@@ -72,8 +76,13 @@ in ``scripts/env.yaml`` exported into the build environment. The latter allows
 otherwise wouldn't work with a simple ``conda build`` directly from the command
 line.
 
-However, due to technical limitations of the Circle CI client, the above test
-does **not** run the more stringent ``mulled-build`` tests. To do so, use the
+
+.. _bootstrap:
+
+"Bootstrap" method
+++++++++++++++++++
+Due to technical limitations of the Circle CI client, the above test does
+**not** run the more stringent ``mulled-build`` tests. To do so, use the
 following commands:
 
 .. code-block:: bash
@@ -98,11 +107,12 @@ The above commands do the following:
 - run bioconda-utils in that new installation
 
 If you do not have access to Docker, you can still run the basic test by
-excluding the ``--docker`` and ``--mulled-test`` arguments in the last command:
+telling the bootstrap setup to not use docker, and by excluding the
+``--docker`` and ``--mulled-test`` arguments in the last command:
 
 .. code-block:: bash
 
-    ./bootstrap.py /tmp/miniconda
+    ./bootstrap.py --no-docker /tmp/miniconda
     source ~/.config/bioconda/activate
     bioconda-utils build recipes config.yml --git-range master
 
