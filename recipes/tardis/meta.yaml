@@ -1,0 +1,64 @@
+{% set name = "tardis" %}
+{% set version = "0.5.13" %}
+{% set sha256 = "e3df48b18d2d4b64805c5ba53a8275454ce130dcee32094ae16cf86c4d59f60a" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://github.com/AgResearch/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  skip: True  # [not py27]
+  number: 0
+  entry_points:
+    - tardis = tardis.run:tardis_main
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - setuptools_scm
+    - setuptools_scm_git_archive
+    - make
+    - gcc  # [not osx]
+    - llvm # [osx]
+    - zlib {{CONDA_ZLIB}}*
+
+  run:
+    - python
+    - pytoml
+    - libgcc # [not osx]
+    - zlib {{CONDA_ZLIB}}*
+
+test:
+  imports:
+    - tardis
+  commands:
+    - tardis -h
+    - kseq_split -h
+    - kseq_count -h
+
+about:
+  home: https://github.com/AgResearch/{{ name }}
+  license: GPL-2.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: 'Pre-processor for bioinformatics cluster job submission'
+  description: |
+    Tardis is a pre-processor which reconditions (precompiles) a marked-up unix
+    shell command to generate a sequence of conditioned commands which it then
+    launches on a cluster.  The mark-up is added by the user to indicate the
+    input(s) and output(s) of the command.  Tardis splits input files into
+    conditioned input chunks and will uncondition (join together) the output
+    chunks to obtain the final outputs, with the sequence of conditioned commands
+    referring to conditioned input and output filenames.
+  dev_url: https://github.com/AgResearch/{{ name }}
+
+extra:
+  recipe-maintainers:
+    - afmcc
+    - tesujimath
