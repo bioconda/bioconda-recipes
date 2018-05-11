@@ -1,7 +1,9 @@
 sh autogen.sh
 
-./configure \
-    --prefix=$PREFIX
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
 
-make
+./configure --prefix=$PREFIX 
+
+make -j $CPU_COUNT
 make install
