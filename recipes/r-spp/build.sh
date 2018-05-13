@@ -1,11 +1,9 @@
 #!/bin/bash
-
-if [ `uname` == Darwin ]; then
-        export LDFLAGS=-L${PREFIX}/lib
-fi
 export BOOST_ROOT=${PREFIX}
-# R refuses to build packages that mark themselves as Priority: Recommended
-mv DESCRIPTION DESCRIPTION.old
-grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
-
-$R CMD INSTALL --build .
+if [[ $(uname) == "Darwin" ]]; then
+    export LDFLAGS=-L${PREFIX}/lib
+    autoreconf -i
+    $R CMD INSTALL --build . --configure-args="CFLAGS=-ferror-limit=0 CXXFLAGS=-ferror-limit=0"
+else
+    $R CMD INSTALL --build .
+fi

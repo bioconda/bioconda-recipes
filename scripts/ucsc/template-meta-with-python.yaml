@@ -1,0 +1,49 @@
+{{% set package = "{package}" %}}
+{{% set program = "{program}" %}}
+{{% set version = "{version}" %}}
+{{% set sha256 = "{sha256}" %}}
+
+package:
+  name: "{{{{ package }}}}"
+  version: "{{{{ version }}}}"
+
+source:
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{{{{ version }}}}.src.tgz"                      # [linux]
+  fn: "userApps.src.tgz"                                                                     # [linux]
+  sha256: "{{{{ sha256 }}}}"                                                    # [linux]
+  patches:                                                                                   # [linux]
+    - "include.patch"                                                                        # [linux]
+
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/{{{{ program }}}}"                    # [osx]
+  fn: "{{{{ program }}}}"                                                                            # [osx]
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - gcc                                                       # [linux]
+    - libpng                                                    # [linux]
+    - libuuid                                                   # [linux]
+    - mysql-connector-c                                         # [linux]
+    - openssl                                                   # [linux]
+    - zlib                                                      # [linux]
+
+  run:
+    - libgcc                                                    # [linux]
+    - libpng                                                    # [linux]
+    - libuuid                                                   # [linux]
+    - mysql-connector-c                                         # [linux]
+    - openssl                                                   # [linux]
+    - python                                                    # [linux]
+    - zlib                                                      # [linux]
+
+test:
+  commands:
+    # just check for existence, because the individual packages have no unified behavior
+    - which {{{{ program }}}}
+
+about:
+  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "varies; see http://genome.ucsc.edu/license"
+  summary: "{summary}"

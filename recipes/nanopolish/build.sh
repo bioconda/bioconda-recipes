@@ -1,5 +1,5 @@
 #!/bin/bash
-export CFLAGS="-I$PREFIX/include"
+export CFLAGS="-I$PREFIX/include -std=c99"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
@@ -9,7 +9,7 @@ export FAST5_INCLUDE=-I${PREFIX}/include/fast5
 
 mkdir -p $PREFIX/bin
 
-make HDF5= EIGEN=
+make HDF5= EIGEN= FAST5= HTS=
 cp nanopolish $PREFIX/bin
 cp scripts/nanopolish_makerange.py $PREFIX/bin
 cp scripts/nanopolish_merge.py $PREFIX/bin

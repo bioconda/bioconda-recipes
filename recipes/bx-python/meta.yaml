@@ -1,59 +1,69 @@
+{% set name = "bx-python" %}
+{% set version = "0.8.1" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "057b560c669527a784197a2f8005689d331f62f4765ae4d14bc2217e82dcd8af" %}
+
 package:
-  name: bx-python
-  version: '0.7.3'
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  fn: bx-python-0.7.3.tar.gz
-  url: https://pypi.python.org/packages/source/b/bx-python/bx-python-0.7.3.tar.gz
-  md5: d8c50c01c9e421bae0bbdbfa00fef6e4
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 1
-  # On Python 2.7, setuptools import currently fails.
-  # It is unclear whether this is a bug in the setuptools package or the python package.
-  # I suggest to fix this when releasing the next bx-python version.
-  skip: True
-  # skip: True # [not py27]
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
   build:
-    - python
-    - setuptools
-    - cython
-    - nose
-    - numpy x.x
     - gcc
-
-  run:
     - python
+    - zlib {{CONDA_ZLIB}}*
     - setuptools
-    - numpy x.x
+    - python-lzo
+    - numpy
+    - six
+  run:
     - libgcc
+    - python
+    - python-lzo
+    - numpy
+    - six
 
 test:
   imports:
-    - bx.align.sitemask
-    - bx.tabular
-    - bx.intervals
+    - bx
     - bx.align
-    - bx.bbi
-    - bx.bbi.bigwig_file
-    - bx.cookbook
+    - bx.align.sitemask
+    - bx.align.tools
     - bx.arrays
-    - bx.motif.io
-    - bx.seq
+    - bx.bbi
+    - bx.cookbook
+    - bx.intervals
     - bx.intervals.operations
-    - bx.pwm
+    - bx.intseq
     - bx.misc
     - bx.motif
-    - bx.phylo
+    - bx.motif.io
     - bx.motif.logo
+    - bx.phylo
+    - bx.pwm
+    - bx.seq
+    - bx.tabular
     - bx_extras
-    - bx.align.tools
-    - bx
-    - bx.intseq
+  requires:
+    - nose
 
 about:
-  home: http://bitbucket.org/james_taylor/bx-python/wiki/Home
-  license: MIT
-  summary: Toolkit to enable rapid implementation of genome scale analyses.
+  home: https://github.com/bxlab/bx-python
+  license: MIT License
+  license_family: MIT
+  license_file: 'LICENSE'
+  summary: Tools for manipulating biological data, particularly multiple sequence alignments
+
+extra:
+  container:
+      extended-base: true

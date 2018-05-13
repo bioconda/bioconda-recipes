@@ -1,6 +1,7 @@
 #!/bin/bash
 export C_INCLUDE_PATH=$PREFIX/include
 target=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+version=92
 mkdir -p $target
 mkdir -p $PREFIX/bin
 
@@ -21,6 +22,7 @@ cp INSTALL.pl $target/vep_install
 cp filter_vep $target/filter_vep
 cp vep $target/vep
 cp haplo $target/haplo
+cp variant_recoder $target/variant_recoder
 cp -r modules $target/modules
 
 chmod 0755 $target/
@@ -34,11 +36,17 @@ vep_install -a a --NO_HTSLIB --NO_TEST --NO_BIOPERL --NO_UPDATE
 rm -rf t/
 
 # Install plugins
-curl -ks -o CADD.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/89/CADD.pm
-curl -ks -o dbNSFP.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/89/dbNSFP.pm
-curl -ks -o MaxEntScan.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/89/MaxEntScan.pm
-curl -ks -o SpliceRegion.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/89/SpliceRegion.pm
-curl -ks -o GeneSplicer.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/89/GeneSplicer.pm
-curl -ks -o dbscSNV.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/89/dbscSNV.pm
-curl -ks -o LoF.pm https://raw.githubusercontent.com/konradjk/loftee/master/LoF.pm
-curl -ks -o splice_module.pl https://raw.githubusercontent.com/konradjk/loftee/master/splice_module.pl
+curl -ks -o CADD.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/CADD.pm
+curl -ks -o dbNSFP.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/dbNSFP.pm
+curl -ks -o MaxEntScan.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/MaxEntScan.pm
+curl -ks -o SpliceRegion.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/SpliceRegion.pm
+curl -ks -o GeneSplicer.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/GeneSplicer.pm
+curl -ks -o dbscSNV.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/dbscSNV.pm
+curl -L -ks -o loftee.tar.gz https://github.com/konradjk/loftee/archive/27b0040.tar.gz
+tar -xzvpf loftee.tar.gz
+mv loftee-*/*.pl .
+mv loftee-*/*.pm .
+mv loftee-*/maxEntScan .
+mv loftee-*/splice_data .
+rm -f loftee.tar.gz
+rm -rf loftee-*

@@ -1,5 +1,5 @@
 #!/bin/bash
 
-chmod a+x gsort_*
+chmod a+x gsort_binary
 mkdir -p $PREFIX/bin
-cp gsort_* $PREFIX/bin/gsort
+cp gsort_binary $PREFIX/bin/gsort
