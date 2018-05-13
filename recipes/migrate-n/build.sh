@@ -4,7 +4,7 @@
 cd src
 
 ./configure
-sed -i 's/#include <xlocale.h>//' data.c
+sed -i.bak 's/#include <xlocale.h>//' data.c
 make
 
 mkdir -p $PREFIX/bin
