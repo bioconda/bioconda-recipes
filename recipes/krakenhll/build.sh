@@ -8,7 +8,7 @@ chmod u+x install_krakenhll.sh
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/libexec/krakenhll-extract-reads
 
 
-for bin in krakenhll krakenhll-build krakenhll-download krakenhll-extract-reads krakenhll-filter krakenhll-mpa-report krakenhll-report krakenhll-translate; do
+for bin in krakenhll krakenhll-build krakenhll-download krakenhll-extract-reads krakenhll-filter krakenhll-mpa-report krakenhll-report krakenhll-translate read_merger.pl; do
     chmod +x "$PREFIX/libexec/$bin"
     ln -s "$PREFIX/libexec/$bin" "$PREFIX/bin/$bin"
     # Change from double quotes to single in case of special chars
