@@ -1,21 +1,21 @@
 {% set name = "bio_hansel" %}
-{% set version = "1.3.1" %}
+{% set version = "2.0.0" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "7fcff8cd4f3bed321c23567ac3363241288e3d1e57fb647a188b75d2fa421e18" %}
-
+{% set hash_value = "057f1a41d896c6db48cad1127d9f13eb730240b55f5c1024e55309caa8d20faa" %}
 
 package:
-  name: bio_hansel
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: '{{ name }}-{{ version }}.tar.gz'
-  url: https://github.com/phac-nml/{{ name }}/archive/{{ version }}.tar.gz
-  '{{ hash_type }}': '{{ hash_value }}'
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name | replace("_", "-") }}/{{ name }}-{{ version }}.tar.gz
+  {{ hash_type }}: {{ hash_value }}
 
 build:
   number: 0
   skip: True # [not py3k]
+  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
   build:
@@ -28,12 +28,11 @@ requirements:
     
   run:
     - python
-    - blast >=2.6
-    - jellyfish >=2.0
     - numpy >=1.12.1
     - pandas >=0.20.1
     - attrs ==17.2.0
     - pyahocorasick >=1.1.6
+    - libgcc >=5.2.0 # [linux]
     
 test:
   commands:
