@@ -1,4 +1,4 @@
-cp IBM ${PREFIX} -r
+mv IBM ${PREFIX} 
 mkdir build
 cd build
 cmake \
