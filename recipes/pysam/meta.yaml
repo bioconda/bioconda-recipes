@@ -1,11 +1,10 @@
 package:
     name: pysam
-    version: 0.14.1
+    version: 0.15
 
 source:
-    fn: v0.14.1.tar.gz
-    url: https://github.com/pysam-developers/pysam/archive/v0.14.1.tar.gz
-    md5: ad88fa5bbcc0fdf4a936734691d9c9d1
+  fn: kab18.zip
+  url: https://github.com/kyleabeauchamp/pysam/archive/kab18.zip
 
 build:
     number: 0
@@ -17,27 +16,36 @@ extra:
   skip-lints:
     - setup_py_install_args
     - missing_hash
+    - htslib_not_pinned
 
 requirements:
+  # Note that because pysam bundles its own versions of samtools+bcftools
+  # pysam doesn't technically require samtools and bcftools pinned
+  # However, to avoid the confusion of having multiple versions in an env
+  # We have pinned them all
+  # You can manually unpin them using the conda nodeps or force options in an env
+  # HTSLib is required, however.
     build:
         - gcc  # [linux]
         - llvm # [osx]
-        - htslib {{CONDA_HTSLIB}}*
-        - samtools {{CONDA_HTSLIB}}*
-        - bcftools {{CONDA_HTSLIB}}*
+        - htslib 1.8
+        - samtools 1.8
+        - bcftools 1.8
         - cython
         - python
         - setuptools
         - zlib {{CONDA_ZLIB}}*
+        - libdeflate
         - curl
 
     run:
         - libgcc # [linux]
-        - htslib {{CONDA_HTSLIB}}*
-        - samtools {{CONDA_HTSLIB}}*
-        - bcftools {{CONDA_HTSLIB}}*
+        - htslib 1.8
+        - samtools 1.8
+        - bcftools 1.8
         - python
         - zlib {{CONDA_ZLIB}}*
+        - libdeflate
         - curl
 
 test:
