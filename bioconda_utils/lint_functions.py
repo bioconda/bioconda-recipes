@@ -348,6 +348,13 @@ def _pin(env_var, dep_name):
     pin.__name__ = "{}_not_pinned".format(dep_name)
     return pin
 
+def bioconductor_37(recipe, meta, df):
+    for line in open(os.path.join(recipe, 'meta.yaml')):
+        if ('{% set bioc = "3.7" %}' in line) or ('{% set bioc = "release" %}' in line):
+            return {
+                'bioconductor_37': True,
+                'fix': 'Need to wait until R 3.5 conda package is available',
+            }
 
 registry = (
     in_other_channels,
@@ -380,4 +387,5 @@ registry = (
     _pin('CONDA_NCURSES', 'ncurses'),
     _pin('CONDA_HTSLIB', 'htslib'),
     _pin('CONDA_BZIP2', 'bzip2'),
+    bioconductor_37,
 )
