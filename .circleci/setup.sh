@@ -17,7 +17,7 @@ source $BASH_ENV
 
 # Make sure the CircleCI config is up to date.
 # add upstream as some semi-randomly named temporary remote to diff against
-UPSTREAM_REMOTE=__upstream__$(mktemp XXXXXXXXXX)
+UPSTREAM_REMOTE=__upstream__$(mktemp -u XXXXXXXXXX)
 git remote add -t master $UPSTREAM_REMOTE https://github.com/bioconda/bioconda-recipes.git
 git fetch $UPSTREAM_REMOTE
 if ! git diff --quiet HEAD...$UPSTREAM_REMOTE/master -- .circleci/; then
