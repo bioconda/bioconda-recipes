@@ -1,0 +1,36 @@
+--- Makefile	2018-04-22 10:21:13.000000000 +0400
++++ Makefile	2018-04-22 10:40:26.000000000 +0400
+@@ -30,15 +30,17 @@
+ MAJOR_REVISON := 1
+ MINOR_REVISON := 1
+ 
+-CC              = clang++
+ PREFIX          = /usr/local
+ BIN_PREFIX      = $(PREFIX)/bin
+ INCLUDE_PREFIX  = $(PREFIX)/include
+ LIB_PREFIX      = $(PREFIX)/lib
+ 
+-CFLAGS          = -std=c++11 -O3 -Wall -Wsign-compare
+-LDFLAGS         =
+-LIBS            = -lhts -lz -lbz2 -llzma
++CFLAGS          += -std=c++11 -O3 -Wall -Wsign-compare
++LDFLAGS         +=
++LIBS            += -lhts -lz -lbz2 -llzma
++
++CFLAGS += -I$(INCLUDE_PREFIX)
++LDFLAGS += -L$(LIB_PREFIX)
+ 
+ STATIC_LIBS = \
+ $(LIB_PREFIX)/libhts.a \
+@@ -94,11 +96,6 @@
+ 	override PHENIQS_VERSION := $(PHENIQS_VERSION).$(PHENIQS_GIT_VERSION)
+ endif
+ 
+-ifdef PREFIX
+-	CFLAGS += -I$(INCLUDE_PREFIX)
+-	LDFLAGS += -L$(LIB_PREFIX)
+-endif
+-
+ all: $(PHENIQS_SOURCES) configuration.h version.h $(PHENIQS_OBJECTS)
+ 	$(CC) $(PHENIQS_OBJECTS) $(LDFLAGS) -pthread $(LIBS) -o $(PHENIQS_EXECUTABLE)
+ 
