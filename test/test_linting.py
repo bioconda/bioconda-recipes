@@ -45,7 +45,16 @@ def run_lint(
         assert len(r.recipe_dirs) == 1
         name = list(r.recipe_dirs.keys())[0]
         recipe, meta, df = r.recipe_dirs[name], r.recipes[name]['meta.yaml'], should_pass_df
-        meta = yaml.load(meta)
+
+        try:
+            meta = yaml.load(meta)
+        except yaml.scanner.ScannerError:
+            # jinja2 variables in the recipe will cause this error. In such
+            # a case we provide an empty dict for the parsed meta yaml; the
+            # test will have to manage the environment appropriately and use
+            # utils.load_meta as needed to check the parsed recipe.
+            meta = {}
+
         if expect_pass:
             assert func(recipe, meta, df) is None, "lint did not pass"
         else:
@@ -850,5 +859,35 @@ def test_invalid_identifiers():
               extra:
                 identifiers:
                   doi:10.1093/bioinformatics/btr010
+        ''']
+    )
+
+
+def test_bioconductor_37():
+    run_lint(
+        func=lint_functions.bioconductor_37,
+        should_pass=['''
+        a:
+            meta.yaml: |
+              {% set bioc = "3.6" %}
+              package:
+                name: a
+                version: 0.1
+        '''],
+        should_fail=['''
+        a:
+            meta.yaml: |
+              {% set bioc = "3.7" %}
+              package:
+                name: a
+                version: 0.1
+        ''',
+        '''
+        a:
+            meta.yaml: |
+              {% set bioc = "release" %}
+              package:
+                name: a
+                version: 0.1
         ''']
     )
