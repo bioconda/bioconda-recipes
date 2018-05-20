@@ -3,16 +3,8 @@ set -e
 
 [[ -z $WORKSPACE ]] && WORKSPACE=`pwd`
 [[ -z $BOOTSTRAP ]] && BOOTSTRAP=false
-if [[ -z $BASH_ENV ]]; then
-    if [[ $OSTYPE == darwin* ]]; then
-        BASH_ENV=`mktemp`
-    elif [[ $OSTYPE == linux* ]]; then
-        BASH_ENV=`tempfile`
-    else
-        echo "Unsupported OS: $OSTYPE"
-        exit 1
-    fi
-fi
+[[ -z $BASH_ENV ]] && BASH_ENV=`mktemp`
+[[ -z $USE_DOCKER ]] && USE_DOCKER=true
 
 set -u
 
@@ -38,7 +30,7 @@ git remote remove $UPSTREAM_REMOTE
 
 
 # TODO: remove this workaround
-if [[ $OSTYPE == linux* && ${CIRCLE_JOB-} != build ]]; then
+if [[ $OSTYPE == linux* && ${CIRCLE_JOB-} != build ]] && [[ $USE_DOCKER == "true" ]]; then
     docker pull continuumio/miniconda3:4.3.27
     docker tag continuumio/miniconda3:4.3.27 continuumio/miniconda3:latest
 fi
