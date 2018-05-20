@@ -55,20 +55,8 @@ jobs:
       - *install_bioconda_utils
       - run:
           name: Testing
-          command: py.test --duration=0 test/ -v --tb=native -m 'not long_running'
-          no_output_timeout: 1200
-  test-linux (long_running):
-    <<: *linux
-    steps:
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - *install_bioconda_utils
-      - run:
-          name: Testing
-          command: py.test --duration=0 test/ -v --tb=native -m 'long_running'
+          # --tb=line is important because py.test otherwise exposes tokens in case of errors
+          command: py.test test/ -v --tb=line
           no_output_timeout: 1200
   test-macos:
     <<: *macos
@@ -81,7 +69,8 @@ jobs:
       - *install_bioconda_utils
       - run:
           name: Testing
-          command: py.test --duration=0 test/ -v -k "not docker" --tb=native
+          # --tb=line is important because py.test otherwise exposes tokens in case of errors
+          command: py.test test/ -v -k "not docker" --tb=line
           no_output_timeout: 1200
   build-docs:
     <<: *linux
@@ -107,8 +96,6 @@ workflows:
   bioconda-utils-test:
     jobs:
       - test-linux:
-          context: org-global
-      - test-linux (long_running):
           context: org-global
       - test-macos:
           context: org-global
