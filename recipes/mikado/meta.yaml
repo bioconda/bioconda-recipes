@@ -1,8 +1,8 @@
 {% set name = "mikado" %}
-{% set version = "1.0.2" %}
+{% set version = "1.2.2" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "2e668e098d465ef1bff837e152732b49bbb61f74cc5fbb938be9d72281bd710a" %}
+{% set hash_value = "c74191949345b93547db6ecb08d5ec7e0151fc125912181728e4ea451e02f3b8" %}
 
 package:
   name: '{{ name|lower }}'
@@ -10,16 +10,16 @@ package:
 
 source:
   fn: '{{ version }}.{{ file_ext }}'
-  url: https://github.com/lucventurini/mikado/archive/{{version}}.tar.gz
+  url: 'https://github.com/lucventurini/{{name}}/archive/{{version}}.{{file_ext}}'
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
+  skip: True # [py27 or osx or py33]
   number: 0
   entry_points:
     - mikado = Mikado:main
     - daijin = Mikado.daijin:main
-  skip: True # [py27 or osx or py33 or py36]
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
   build:
@@ -28,7 +28,7 @@ requirements:
     - wheel >=0.28.0
     - pyyaml
     - jsonschema
-    - cython >=0.25
+    - cython >=0.28.2
     - numpy
     - networkx >=1.10
     - sqlalchemy >=1
@@ -40,19 +40,21 @@ requirements:
     - scikit-learn >=0.17.0
     - scipy >=0.15.0
     - frozendict
-    - libmagic >=5.32
-    - python-magic >=0.4.15
+    - libmagic
+    - python-magic
     - drmaa
     - snakemake
     - docutils !=0.13.1
     - tabulate
+    - simplejson
     - ujson
+    - typing
   run:
     - python
     - wheel >=0.28.0
     - pyyaml
     - jsonschema
-    - cython >=0.25
+    - cython >=0.28.2
     - numpy
     - networkx >=1.10
     - sqlalchemy >=1
@@ -64,14 +66,16 @@ requirements:
     - scikit-learn >=0.17.0
     - scipy >=0.15.0
     - frozendict
-    - libmagic >=5.32
-    - python-magic >=0.4.15
+    - libmagic
+    - python-magic
     - drmaa
     - snakemake
+    - simplejson
     - docutils !=0.13.1
     - tabulate
-    - portcullis
     - ujson
+    - portcullis
+    - typing
 
 test:
   imports:
@@ -93,27 +97,13 @@ test:
     - Mikado.utilities
     - nose
   commands:
-    - mikado --help 
-    - daijin --help 
-    - python -c "import Mikado; Mikado.test()" 
+    - mikado --help
+    - daijin --help
+    - python -c "import Mikado; Mikado.test()"
 
 about:
   home: https://github.com/lucventurini/mikado
   license: GNU Lesser General Public License v3 or later (LGPLv3+)
   license_family: LGPL
-  license_file: ''
   summary: A Python3 annotation program to select the best gene model in each locus
-  description: "Mikado is a lightweight Python3 pipeline whose purpose is to facilitate the identification\nof expressed loci from RNA-Seq data * and to select the best models in each locus.\n\nThe logic\
-    \ of the pipeline is as follows:\n\n1. In a first step, the annotation (provided in GTF/GFF3 format) is parsed to locate *superloci* of overlapping features on the **same strand**.\n2. The superloci\
-    \ are divided into different *subloci*, each of which is defined as follows:\n\n    * For multiexonic transcripts, to belong to the same sublocus they must share at least a splicing junction (i.e. an\
-    \ intron)\n    * For monoexonic transcripts, they must overlap for at least one base pair\n    * All subloci must contain either only multiexonic or only monoexonic transcripts\n3. In each sublocus,\
-    \ the pipeline selects the best transcript according to a user-defined prioritization scheme.\n4. The resulting *monosubloci* are merged together, if applicable, into *monosubloci_holders*\n5. The best\
-    \ non-overlapping transcripts are selected, in order to define the *loci* contained inside the superlocus.\n\n    * At this stage, monoexonic and multiexonic transcript are checked for overlaps\n  \
-    \  * Moreover, two multiexonic transcripts are considered to belong to the same locus if they share a splice *site* (not junction)\n    \n6. Once the loci have been defined, the program backtracks and\
-    \ looks for transcripts which can be assigned unambiguously to a single locus and constitute valid alternative splicing isoforms of the main transcripts. \n\nThe criteria used to select the \"*best*\"\
-    \ transcript are left to the user's discretion, using specific configuration files."
-  doc_url: 'http://mikado.readthedocs.io/en/latest/'
-  dev_url: 'https://github.com/lucventurini/mikado'
 
-extra:
-  recipe-maintainers: 'Luca Venturini'
