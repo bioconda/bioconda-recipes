@@ -32,8 +32,8 @@ if [[ ! -d $WORKSPACE/miniconda ]]; then
     conda config --system --add channels conda-forge
     conda config --system --add channels bioconda
 
-    # step 3: install bioconda-utils
-    conda install -y --file bioconda_utils/bioconda_utils-requirements.txt
+    # step 3: install bioconda-utils and test requirements
+    conda install -y --file bioconda_utils/bioconda_utils-requirements.txt --file test-requirements.txt
 
     # step 4: cleanup
     conda clean -y --all
@@ -41,8 +41,6 @@ if [[ ! -d $WORKSPACE/miniconda ]]; then
     # Add local channel as highest priority
     conda index $WORKSPACE/miniconda/conda-bld/linux-64 $WORKSPACE/miniconda/conda-bld/osx-64 $WORKSPACE/miniconda/conda-bld/noarch
     conda config --system --add channels file://$WORKSPACE/miniconda/conda-bld
-
-    conda install -y --file test-requirements.txt
 fi
 
 conda config --get

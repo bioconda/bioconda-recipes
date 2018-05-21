@@ -3,6 +3,7 @@ import tempfile
 import tarfile
 import os
 import shlex
+from shutil import which
 import logging
 
 from . import utils
@@ -148,6 +149,13 @@ def test_package(
         cmd += ['--name-override', name_override]
     cmd += channel_args
     cmd += shlex.split(mulled_args)
+
+    # galaxy-lib always downloads involucro, unless it's in cwd or its path is explicitly given.
+    # TODO: This should go into galaxy-lib. Once it is fixed upstream, remove this here.
+    involucro_path = which('involucro')
+    if involucro_path:
+        cmd += ['--involucro-path', involucro_path]
+
     logger.debug('mulled-build command: %s' % cmd)
 
     env = os.environ.copy()

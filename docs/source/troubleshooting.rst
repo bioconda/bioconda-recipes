@@ -1,11 +1,29 @@
 Troubleshooting failed recipes
 ------------------------------
 
+.. _cb3-recipes-in-cb2:
+
+Recipes built with conda-build 3
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If you have conda-build 3 installed locally and use ``conda skeleton``, **the
+resulting meta.yaml will be incompatible with our conda-build
+2 infrastructure**.
+
+We are moving towards supporting conda-build-3 which has many nice features we
+can take advantage of. In the meantime, however, we need to use conda-build 2.
+
+
+In particular, conda-build 3 uses the ``host:`` key instead of the ``build:``
+key for dependencies. Conda-build 2 ignores that key. The result is that
+cb3-created meta.yaml will have no build dependencies from cb2's point of view.
+
+The easiest fix is to change ``host:`` to ``build:`` in the resulting recipe.
+
 .. _reading-logs:
 
 Reading bioconda-utils logs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-For failed recipes, Usually the easiest thing to do is find the first `BIOCONDA
+For failed recipes, usually the easiest thing to do is find the first `BIOCONDA
 ERROR`, and start reading the output below that line. The stdout and stderr for
 that failed build will end with the next `BIOCONDA` log line, likely
 a `BIOCONDA BUILD START` or `BIOCONDA BUILD SUMMARY` line.

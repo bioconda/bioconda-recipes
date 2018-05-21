@@ -185,21 +185,8 @@ Python
 
 .. note::
 
-    We are moving towards supporting conda-build-3 which has many nice features
-    we can take advantage of. In the meantime, however, we need to use
-    conda-build 2.
-
     If you have conda-build 3 installed locally and use ``conda skeleton``,
-    **the resulting meta.yaml will be incompatible with our conda-build
-    2 infrastructure**.
-
-    In particular, conda-build 3 uses the ``host:`` key instead of the
-    ``build:`` key for dependencies. Conda-build 2 ignores that key. The result
-    is that cb3-created meta.yaml will have no build dependencies from cb2's
-    point of view.
-
-    The easiest fix is to change ``host:`` to ``build:`` in the resulting
-    recipe.
+    please see :ref:`cb3-recipes-in-cb2`.
 
 If a Python package is available on PyPI, use ``conda skeleton pypi
 <packagename>`` to create a recipe, then remove the ``bld.bat`` and any extra
@@ -244,6 +231,12 @@ in the meta.yaml`
 
 R (CRAN)
 --------
+
+.. note::
+
+    If you have conda-build 3 installed locally and use ``conda skeleton``,
+    please see :ref:`cb3-recipes-in-cb2`.
+
 Use ``conda skeleton cran <packagename>`` where ``packagename`` is a
 package available on CRAN and is *case-sensitive*. Either run that command
 in the ``recipes`` dir or move the recipe it creates to ``recipes``. The
@@ -268,7 +261,10 @@ R (Bioconductor)
 ----------------
 
 Use the ``bioconda-utils bioconductor-skeleton`` tool to build a Bioconductor
-skeleton::
+skeleton. After using the :ref:`bootstrap` method to set up a testing
+environment and activating that environment (which will ensure the correct
+versions of bioconda-utils and conda-build), from the top level of the
+``bioconda-recipes`` repository run::
 
     bioconda-utils bioconductor-skeleton recipes config.yml DESeq2
 
