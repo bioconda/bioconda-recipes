@@ -17,9 +17,13 @@ $PYTHON setup.py install --single-version-externally-managed --record=/tmp/recor
 echo "
 #!/usr/bin/env bash
 
-if [ ! -f \"$blobtools/data/nodesDB.txt\" ] && [ $# -ne 1 ]; then
+if [ ! $1 = '-h' ]; then
+
+if [ ! -f \"$blobtools/data/nodesDB.txt\" ]; then
 echo \"Building blobtools nodesDB...\"
 blobtools-build_nodesdb
+fi
+
 fi
  
 $PYTHON $blobtools/lib/blobtools.py \"\$@\"
