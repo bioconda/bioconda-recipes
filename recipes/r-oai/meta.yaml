@@ -1,8 +1,5 @@
 {% set version = '0.2.2' %}
 
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
-
 package:
   name: r-oai
   version: {{ version|replace("-", "_") }}
@@ -17,7 +14,6 @@ source:
 
 
 build:
-  merge_build_host: True  # [win]
   number: 0
 
 
@@ -27,13 +23,7 @@ build:
 
 requirements:
   build:
-    - {{ compiler('c') }}        
-    - {{ compiler('cxx') }}      
-    - {{native}}toolchain        
-    - {{posix}}filesystem        
-    - {{posix}}make
-
-  host:
+    - gcc
     - r-base
     - r-httr >=1.2.0
     - r-plyr >=1.8.4
@@ -43,7 +33,7 @@ requirements:
 
   run:
     - r-base
-    - {{native}}gcc-libs        
+    - libgcc        
     - r-httr >=1.2.0
     - r-plyr >=1.8.4
     - r-stringr >=1.1.0
@@ -53,7 +43,6 @@ requirements:
 test:
   commands:
     - $R -e "library('oai')"           
-    - "\"%R%\" -e \"library('oai')\""  
 
 
 about:
