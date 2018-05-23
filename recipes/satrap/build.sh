@@ -2,19 +2,19 @@
 
 make
 
-path = 'bin/' 
+path='bin/' 
 
 if [ "$(uname)" == "Darwin" ]; then
-    path = 'bin/MAC_OSX_bin/'
+    path='bin/MAC_OSX_bin/'
 fi
-
-binaries = '2csfastq_1csfastq \
+cd $path
+binaries="2csfastq_1csfastq \
             cd-hit-est \
             cs2bs_assembly \
             csfasta_to_fastq \
             fasta_remove \
             pass \
             rename_fastq_tag \
-            satrap'
+            satrap"
 
-for i in $path$binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
+for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
