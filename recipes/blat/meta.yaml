@@ -1,25 +1,35 @@
+{% set version = "36" %}
+{% set sha256 = "4b0fff006c86dceb7428922bfb4f8625d78fd362d205df68e4ebba04742d2c71" %}
+
 package:
   name: blat
-  version: 35
+  version: {{ version }}
 
 source:
-  fn: blatSrc35.zip
-  url: https://users.soe.ucsc.edu/~kent/src/blatSrc35.zip
-  md5: 16e546b8843b85e0b0f2fa603cd78724
+  fn: blatSrc{{ version }}.zip
+  url: http://hgwdev.cse.ucsc.edu/~kent/src/blatSrc{{ version }}.zip
+  sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
     - libpng
-    - zlib
+    - zlib {{CONDA_ZLIB}}*
   run:
     - libpng
-    - zlib
+    - zlib {{CONDA_ZLIB}}*
+
+test:
+  commands:
+    - 'blat | grep -q "^blat - Standalone BLAT"'
+
 about:
   home: https://genome.ucsc.edu/FAQ/FAQblat.html
   license: Free for academic, nonprofit and personal use
   summary: BLAT is a bioinformatics software tool which performs rapid mRNA/DNA and cross-species protein alignments.
 
-# vim:set ts=8 sw=2
+extra:
+  identifiers:
+    - biotools:blat

@@ -8,7 +8,7 @@ source:
   md5: 2e375405c9ebb977adf87c145ca698bb
 
 build:
-  number: 2
+  number: 5
   skip: True # [osx]
   entry_points:
     - t_coffee = t_coffee.__main__:main
@@ -18,20 +18,22 @@ requirements:
     - curl
     - openssl
     - python
-    - zlib
+    - zlib {{CONDA_ZLIB}}*
   run:
     - curl
+    - libgcc  # [not osx]
     - openssl
-    - perl-threaded
+    - perl
     - python
-    - zlib
+    - zlib {{CONDA_ZLIB}}*
 
 test:
   imports:
     - t_coffee
   commands:
-    - t_coffee
-    - t_coffee --help
+    - HOME=/tmp t_coffee
+    - HOME=/tmp t_coffee --help
+    - HOME=/tmp t_coffee 2>&1 |grep "mafft is  Installed" >/dev/null
 
 about:
     home: http://www.tcoffee.org/Projects/tcoffee/

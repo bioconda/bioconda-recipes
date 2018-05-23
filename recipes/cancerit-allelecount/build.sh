@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-wget -O htslib-1.2.1.tar.bz2 https://github.com/samtools/htslib/releases/download/1.2.1/htslib-1.2.1.tar.bz2
+wget --ca-certificate=$PREFIX/ssl/cert.pem -O htslib-1.2.1.tar.bz2 https://github.com/samtools/htslib/releases/download/1.2.1/htslib-1.2.1.tar.bz2
 tar -xjvpf htslib-1.2.1.tar.bz2
 cd htslib-1.2.1
 patch -p0 < $SRC_DIR/patches/htslibcramindex.diff

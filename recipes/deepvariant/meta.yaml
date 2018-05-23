@@ -1,4 +1,4 @@
-{% set version="0.4.1" %}
+{% set version="0.6.0" %}
 # When updating, also need to update model reference in post-link.sh
 
 package:
@@ -9,14 +9,14 @@ package:
 # - Uses pre-built binaries, building problematic due to clif dependency
 # - Need recent kernel with GLIBC > 2.23 due to pre-built htslib
 # - Build patches __main__.py in zip files to generalize python dependency
-# - Requires numpy 1.13, want to sync with CONDA_NPY
+# - Requires numpy 1.14, want to sync with CONDA_NPY
 # - Uses python wrappers that don't expose all underlying options
 # - Ships with pre-built model. Longer term will need way to fetch models on demand.
 
 source:
   fn: deepvariant-{{ version }}.zip
-  url: https://github.com/google/deepvariant/releases/download/v0.4.1/deepvariant.zip
-  md5: 0e3e34e4f5cbfb6d0f3007656a6a2632
+  url: https://github.com/google/deepvariant/releases/download/v{{ version }}/deepvariant.zip
+  md5: e7615109b4d1afe8527605eeaf3f927e
 
 build:
   number: 0
@@ -27,6 +27,7 @@ requirements:
     - python
     - unzip
     - zip
+    - zlib {{CONDA_ZLIB}}*
     - curl
     # Needed for non-binary build
     # - google-cloud-sdk
@@ -38,21 +39,21 @@ requirements:
     - zlib {{ CONDA_ZLIB }}*
     - boost {{ CONDA_BOOST }}*
     - htslib {{ CONDA_HTSLIB }}*
-    - numpy 1.13.*
+    - numpy
     - curl
     - tensorflow
     - contextlib2
     - enum34
     - intervaltree
     - mock
-    - numpy
+    - numpy 1.14.*
     - requests
     - scipy
     - oauth2client
     - six
     - crcmod
     - parallel
-    
+
 test:
   commands:
     # Pre-built binaries need GLIBC 2.16 and 2.23 (htslib) so fail
