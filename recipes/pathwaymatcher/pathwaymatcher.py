@@ -77,10 +77,9 @@ def jvm_opts(argv):
 def main():
     java = java_executable()
     """
-    SearchGui updates files relative to the path of the jar file.
     In a multiuser setting, the option --exec_dir="exec_dir"
-    can be used as the location for the peptide-shaker distribution.
-    If the exec_dir dies not exist,
+    can be used as the location for the PathwayMatcher distribution.
+    If the exec_dir does not exist,
     we copy the jar file, lib, and resources to the exec_dir directory.
     """
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
