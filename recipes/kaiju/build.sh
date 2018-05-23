@@ -21,3 +21,4 @@ cp mkbwt $PREFIX/bin
 cp mkfmi $PREFIX/bin
 cp convert_mar_to_kaiju.py $PREFIX/bin
 cp taxonlist.tsv $PREFIX/bin
+cp convert_mar_to_kaiju.py $PREFIX/bin
