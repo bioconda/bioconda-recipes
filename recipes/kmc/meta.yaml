@@ -9,16 +9,19 @@ source:
   # Therefore, we fetch statically-linked binaries.
   fn: KMC{{ version }}.linux.tar.gz  # [linux]
   url: https://github.com/refresh-bio/KMC/releases/download/v{{ version }}/KMC{{ version }}.linux.tar.gz  # [linux]
-  sha256: 7abe221aad70daf01893de017a287c342fd29ba24e69b2dac6502d321cf170cb
+  sha256: 7abe221aad70daf01893de017a287c342fd29ba24e69b2dac6502d321cf170cb  # [linux]
+  fn: KMC{{ version }}.mac.tar.gz  # [osx]
+  url: https://github.com/refresh-bio/KMC/releases/download/v{{ version }}/KMC{{ version }}.mac.tar.gz  # [osx]
+  sha256: e2d1ab572d828a227b65fd386a2953dfdbecb9be0d9f352bd83665fa19f0bc91  # [osx]
 
 build:
   number: 0
 
 test:
   commands:
-    - kmc 2>&1 | grep "K-Mer Counter (KMC) ver. {{ version }}" > /dev/null
-    - kmc_dump 2>&1 | grep "KMC dump ver. {{ version }}" > /dev/null
-    - kmc_tools 2>&1 | grep "kmc_tools ver." > /dev/null
+    - (kmc 2>&1; true) | grep -q "K-Mer Counter (KMC) ver. {{ version }}"
+    - (kmc_dump 2>&1; true) | grep -q "KMC dump ver. {{ version }}"
+    - (kmc_tools 2>&1; true) | grep -q "kmc_tools ver. {{ version }}"
 
 about:
   home: http://sun.aei.polsl.pl/kmc/
@@ -26,4 +29,6 @@ about:
   summary: K-mer Counter is a utility designed for counting k-mers (sequences of consecutive k symbols) in a set of reads from genome sequencing projects.
 
 extra:
-  
+  identifiers:
+    - biotools:KMC
+    - doi:10.1093/bioinformatics/btx304
