@@ -26,8 +26,21 @@ cat <<END >>${PREFIX}/bin/RepeatMasker
 BINDIR=\$(dirname \$(which RepeatMasker))
 BASEDIR=\${BINDIR%/bin}
 REPEATMASKER_DIR=\${REPEATMASKER_DIR:-\${BASEDIR}/share/RepeatMasker}
-REPEATMASKER_MATRICES_DIR=\${REPEATMASKED_MATRICES_DIR:-\${BASEDIR}/share/RepeatMasker/Matrices}
-REPEATMASKER_LIB_DIR=\${REPEATMASKER_LIB_DIR:-\${BASEDIR}/share/RepeatMasker/Libraries}
+if [[ -z "\$REPEATMASKER_MATRICES_DIR" || "\$REPEATMASKER_MATRICES_DIR" == "NULL" ]] ; then
+  REPEATMASKER_MATRICES_DIR=\${BASEDIR}/share/RepeatMasker/Matrices
+fi
+if [[ -z "\$REPEATMASKER_LIB_DIR" || "\$REPEATMASKER_LIB_DIR" == "NULL" ]] ; then
+  REPEATMASKER_LIB_DIR=\${BASEDIR}/share/RepeatMasker/Libraries
+fi
+
+if [[ -n "\$REPEATMASKER_REPBASE_FILE" && "\$REPEATMASKER_REPBASE_FILE" != "NULL" ]] ; then
+  if [[ ! -f \$REPEATMASKER_REPBASE_FILE || ! -d \$REPEATMASKER_LIB_DIR || ! -w \$REPEATMASKER_LIB_DIR ]] ; then
+    echo "If REPEATMASKER_REPBASE_FILE environment variable is specified it must point to a file and the library dir (\$REPEATMASKER_LIB_DIR) must be a writeable directory" >&2
+    exit 1
+  fi
+  cp \$REPEATMASKER_REPBASE_FILE \$REPEATMASKER_LIB_DIR
+fi
+
 TRF_DIR=${PREFIX}/bin
 RMBLAST_DIR=${PREFIX}/bin
 HMMER_DIR=${PREFIX}/bin
