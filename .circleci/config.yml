@@ -2,20 +2,24 @@ version: 2
 
 variables:
   restore_cache: &restore_cache
-    restore_cache:
-      keys:
-        - miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
+    # TODO remove this temporal override before merging the PR into master
+    run: { command: echo 'ignoring cache' }
+    #restore_cache:
+    #  keys:
+    #    - miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
   save_cache: &save_cache
-    save_cache:
-      key: miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
-      paths:
-        - miniconda
+    # TODO remove this temporal override before merging the PR into master
+    run: { command: echo 'ignoring cache' }
+    #save_cache:
+    #  key: miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
+    #  paths:
+    #    - miniconda
   common: &common
     run:
       name: Download common definitions
       command: |
         curl -s https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh > .circleci/common.sh
-        # TODO remove this temporal override before merging the PR into master (2)
+        # TODO remove this temporal override before merging the PR into master
         echo -e 'MINICONDA_VER=4.4.10\nBIOCONDA_UTILS_TAG=cb3-migration' > .circleci/common.sh
   setup: &setup
     run: 
@@ -161,7 +165,10 @@ jobs:
       - *save_cache
       - run:
           name: Building, testing, and uploading of all unpublished recipes
-          command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+          # TODO Reenable uploads once we make sure not to upload duplicate
+          #      packages, i.e., only upload when we increase the build number.
+          command: bioconda-utils build recipes config.yml --docker --mulled-test
+          #command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
 
   # build, test and upload for bulk branch on macos
   bulk-macos:
@@ -175,7 +182,10 @@ jobs:
       - *save_cache
       - run:
           name: Building, testing and uploading of all unpublished recipes
-          command: bioconda-utils build recipes config.yml --anaconda-upload
+          # TODO Reenable uploads once we make sure not to upload duplicate
+          #      packages, i.e., only upload when we increase the build number.
+          command: bioconda-utils build recipes config.yml
+          #command: bioconda-utils build recipes config.yml --anaconda-upload
 
 
   # nightly build, test and upload of unpublished recipes on linux
