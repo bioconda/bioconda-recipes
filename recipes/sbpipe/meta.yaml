@@ -1,0 +1,48 @@
+{% set name = "sbpipe" %}
+{% set version = "4.18.0" %}
+{% set file_ext = "tar.gz" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  sha256: 5ae5fe0332ea76567f9f5405abda27f2631146ff6c735ac809127939f61c9fac
+
+build:
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+  entry_points:
+    - sbpipe = sbpipe:main
+    - sbpipe_move_datasets = sbpipe.sbpipe_move_datasets:main
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - pyyaml
+    - colorlog
+  run:
+    - python
+    - pyyaml
+    - colorlog
+    - r-sbpiper 1.8.*
+
+test:
+  imports:
+    - sbpipe
+  commands:
+    - sbpipe --help
+    - sbpipe_move_datasets --help
+
+about:
+  home: http://sbpipe.readthedocs.io
+  license: MIT
+  summary: SBpipe is a collection of pipelines for systems modelling of biological networks. It allows mathematical modellers to automatically repeat the tasks of model simulation and parameter estimation, and extract robustness information from these repeat sequences in a solid and consistent manner, facilitating model development and analysis. SBpipe can run models implemented in COPASI, Python or coded in any other programming language using Python as a wrapper module. Pipelines can run on multicore computers, Sun Grid Engine (SGE), Load Sharing Facility (LSF) clusters, or via Snakemake.
+
+extra:
+  recipe-maintainers: 'Piero Dalle Pezze'
+  identifiers:
+    - doi:10.1186/s12918-017-0423-3
