@@ -1,5 +1,6 @@
-{% set version="0.9.1" %}
-{% set llvm_version = "4.0.0" %}
+{% set version="0.10.0" %}
+{% set gxx_version = "7.2.0" %}
+{% set llvm_version = "4.0.1" %}
 
 build:
   number: 1
@@ -20,14 +21,15 @@ package:
 source:
   fn: Salmon-{{ version }}_src.tar.gz 
   url: https://github.com/COMBINE-lab/salmon/archive/v{{ version }}.tar.gz
-  md5: 1277b8ed65d2c6982ed176a496a2a1e3
+  md5: e384f6ef97b0a67648265fe8f7b030be
 
 requirements:
   build:
     - llvm # [osx]
     - clangdev =={{ llvm_version }}  # [osx]
     - libcxx =={{ llvm_version }}  # [osx]
-    - gcc ==4.8.5 # [linux]
+    - gcc_linux-64 {{ gxx_version }} # [linux]
+    - gxx_linux-64 {{ gxx_version }} # [linux]
     - autoconf 2.69 pl5.*
     - boost {{CONDA_BOOST}}*
     - icu 58.*
@@ -38,8 +40,8 @@ requirements:
     - jemalloc ==4.5.0
     - tbb
   run:
-    - libgcc # [linux]
-    - libcxx =={{ llvm_version }}  # [osx]
+    - libgcc >={{ gxx_version }}  # [linux]
+    - libcxx >={{ clang_version }} # [osx]
     - boost {{CONDA_BOOST}}*
     - icu 58.*
     - jemalloc ==4.5.0
