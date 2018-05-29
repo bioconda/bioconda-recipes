@@ -1,0 +1,107 @@
+{% set version = '0.9.9' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-rgbif
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: rgbif_{{ version }}.tar.gz
+  url:
+    - {{ cran_mirror }}/src/contrib/rgbif_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/rgbif/rgbif_{{ version }}.tar.gz
+  sha256: 574532f2919f74a47586e788d0ca8b4d9abd6ff2f438a7eafd03fe171688f285
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: roxygen2 (>= 6.0.1), testthat, knitr, reshape2, maps, sp, rgeos
+requirements:
+  build:
+
+  host:
+    - r-base
+    - r-crul >=0.3.4
+    - r-data.table
+    - r-geoaxe
+    - r-ggplot2
+    - r-jsonlite >=0.9.16
+    - r-magrittr
+    - r-oai >=0.2.2
+    - r-tibble
+    - r-whisker
+    - r-wicket >=0.2.0
+    - r-xml2
+
+  run:
+    - r-base
+    - r-crul >=0.3.4
+    - r-data.table
+    - r-geoaxe
+    - r-ggplot2
+    - r-jsonlite >=0.9.16
+    - r-magrittr
+    - r-oai >=0.2.2
+    - r-tibble
+    - r-whisker
+    - r-wicket >=0.2.0
+    - r-xml2
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('rgbif')"           # [not win]
+    - "\"%R%\" -e \"library('rgbif')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://github.com/ropensci/rgbif
+  license: MIT + file LICENSE
+  summary: A programmatic interface to the Web Service methods provided by the Global Biodiversity
+    Information Facility ('GBIF'; <https://www.gbif.org/developer/summary>). 'GBIF'
+    is a database of species occurrence records from sources all over the globe. 'rgbif'
+    includes functions for searching for taxonomic names, retrieving information on
+    data providers, getting species occurrence records, and getting counts of occurrence
+    records.
+  license_family: MIT
+
+# The original CRAN metadata for this package was:
+
+# Package: rgbif
+# Title: Interface to the Global 'Biodiversity' Information Facility API
+# Description: A programmatic interface to the Web Service methods provided by the Global Biodiversity Information Facility ('GBIF'; <https://www.gbif.org/developer/summary>). 'GBIF' is a database of species occurrence records from sources all over the globe. 'rgbif' includes functions for searching for taxonomic names, retrieving information on data providers, getting species occurrence records, and getting counts of occurrence records.
+# Version: 0.9.9
+# License: MIT + file LICENSE
+# Authors@R: c( person("Scott", "Chamberlain", role = c("aut", "cre"), email = "myrmecocystus@gmail.com"), person("Vijay", "Barve", role = "ctb"), person("Dan", "Mcglinn", role = "ctb") )
+# URL: https://github.com/ropensci/rgbif
+# BugReports: https://github.com/ropensci/rgbif/issues
+# LazyData: true
+# LazyLoad: true
+# VignetteBuilder: knitr
+# Imports: xml2, ggplot2, crul (>= 0.3.4), data.table, whisker, magrittr, jsonlite (>= 0.9.16), oai (>= 0.2.2), geoaxe, tibble, wicket (>= 0.2.0)
+# Suggests: roxygen2 (>= 6.0.1), testthat, knitr, reshape2, maps, sp, rgeos
+# RoxygenNote: 6.0.1
+# NeedsCompilation: no
+# Packaged: 2017-11-10 23:16:02 UTC; sacmac
+# Author: Scott Chamberlain [aut, cre], Vijay Barve [ctb], Dan Mcglinn [ctb]
+# Maintainer: Scott Chamberlain <myrmecocystus@gmail.com>
+# Repository: CRAN
+# Date/Publication: 2017-11-12 17:09:22 UTC
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
