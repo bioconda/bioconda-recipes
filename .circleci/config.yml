@@ -2,18 +2,25 @@ version: 2
 
 variables:
   restore_cache: &restore_cache
-    restore_cache:
-      keys:
-        - miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
+    # TODO remove this temporal override before merging the PR into master
+    run: { command: echo 'ignoring cache' }
+    #restore_cache:
+    #  keys:
+    #    - miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
   save_cache: &save_cache
-    save_cache:
-      key: miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
-      paths:
-        - miniconda
+    # TODO remove this temporal override before merging the PR into master
+    run: { command: echo 'ignoring cache' }
+    #save_cache:
+    #  key: miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
+    #  paths:
+    #    - miniconda
   common: &common
     run:
       name: Download common definitions
-      command: curl -s https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh > .circleci/common.sh
+      command: |
+        curl -s https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh > .circleci/common.sh
+        # TODO remove this temporal override before merging the PR into master
+        echo -e 'MINICONDA_VER=4.4.10\nBIOCONDA_UTILS_TAG=cb3-migration' > .circleci/common.sh
   setup: &setup
     run: 
       name: Setup bioconda-utils
@@ -156,10 +163,9 @@ jobs:
       - *restore_cache
       - *setup
       - *save_cache
-      # build everything that differs compared to master
       - run:
           name: Building, testing, and uploading of all unpublished recipes
-          command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers --git-range master HEAD
+          command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
 
   # build, test and upload for bulk branch on macos
   bulk-macos:
@@ -171,10 +177,9 @@ jobs:
       - *restore_cache
       - *setup
       - *save_cache
-      # build everything that differs compared to master
       - run:
           name: Building, testing and uploading of all unpublished recipes
-          command: bioconda-utils build recipes config.yml --anaconda-upload --git-range master HEAD
+          command: bioconda-utils build recipes config.yml --anaconda-upload
 
 
   # nightly build, test and upload of unpublished recipes on linux
