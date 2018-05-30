@@ -1,3 +1,3 @@
 #!/bin/bash
 # export CPATH=${PREFIX}/include
-$PYTHON setup.py install --single-version-externally-managed
+$PYTHON setup.py install --single-version-externally-managed  --record=record.txt
