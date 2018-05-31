@@ -1,8 +1,8 @@
 {% set name = "mikado" %}
-{% set version = "1.2.1" %}
+{% set version = "1.2.2" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "fc2f77fefe40053222e0253970083d15c2f9d5e8718965a2251862d15fbf26be" %}
+{% set hash_value = "c74191949345b93547db6ecb08d5ec7e0151fc125912181728e4ea451e02f3b8" %}
 
 package:
   name: '{{ name|lower }}'
@@ -10,20 +10,20 @@ package:
 
 source:
   fn: '{{ version }}.{{ file_ext }}'
-  url: https://github.com/lucventurini/mikado/archive/1.2.1.tar.gz
+  url: 'https://github.com/lucventurini/{{name}}/archive/{{version}}.{{file_ext}}'
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  skip: True # [py27, py34, win]
+  skip: True # [py27 or osx or py33]
   number: 0
   entry_points:
     - mikado = Mikado:main
     - daijin = Mikado.daijin:main
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
   build:
-    - python >=3.5
+    - python
     - setuptools
     - wheel >=0.28.0
     - pyyaml
@@ -48,8 +48,9 @@ requirements:
     - tabulate
     - simplejson
     - ujson
+    - typing
   run:
-    - python >=3.5
+    - python
     - wheel >=0.28.0
     - pyyaml
     - jsonschema
@@ -74,6 +75,7 @@ requirements:
     - tabulate
     - ujson
     - portcullis
+    - typing
 
 test:
   imports:

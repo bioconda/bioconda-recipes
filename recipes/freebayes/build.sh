@@ -51,7 +51,7 @@ fi
 
 # Copy executables.
 mkdir -p $PREFIX/bin
-cp -r bin/* $PREFIX/bin
+cp -r bin/* $PREFIX/bin/
 
 sed -i.bak 's/..\/vcflib\/scripts\///g; s/..\/vcflib\/bin\///g' scripts/freebayes-parallel
 cp scripts/freebayes-parallel $PREFIX/bin
