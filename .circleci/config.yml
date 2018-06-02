@@ -108,7 +108,7 @@ jobs:
       - *save_cache
       - run:
           name: Building and testing
-          command: bioconda-utils build recipes config.yml --git-range master HEAD --docker --mulled-test
+          command: bioconda-utils build recipes config.yml --git-range master HEAD --docker --mulled-test --prelint
 
   # build and test on macos
   test-macos:
@@ -121,7 +121,7 @@ jobs:
       - *save_cache
       - run:
           name: Building and testing
-          command: bioconda-utils build recipes config.yml --git-range master HEAD
+          command: bioconda-utils build recipes config.yml --git-range master HEAD --prelint
   
   # build, test and upload on linux
   upload-linux:
@@ -136,7 +136,7 @@ jobs:
       # build only current commit (since we use squashed merging, this is safe)
       - run:
           name: Building, testing, and uploading
-          command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1
+          command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1 --prelint
 
   # build, test and upload on macos
   upload-macos:
@@ -151,7 +151,7 @@ jobs:
       # build only current commit (since we use squashed merging, this is safe)
       - run:
           name: Building, testing and uploading
-          command: bioconda-utils build recipes config.yml --anaconda-upload --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1
+          command: bioconda-utils build recipes config.yml --anaconda-upload --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1 --prelint
 
   # build, test and upload for bulk branch on linux
   bulk-linux:
@@ -194,7 +194,7 @@ jobs:
       - *save_cache
       - run:
           name: Building, testing, and uploading of all unpublished recipes
-          command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+          command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers --prelint
 
   # nightly build, test and upload of unpublished recipes on macos
   nightly-upload-macos:
@@ -208,7 +208,7 @@ jobs:
       - *save_cache
       - run:
           name: Building, testing and uploading of all unpublished recipes
-          command: bioconda-utils build recipes config.yml --anaconda-upload
+          command: bioconda-utils build recipes config.yml --anaconda-upload --prelint
 
 
 
@@ -217,15 +217,19 @@ workflows:
   # workflow for testing pushes and PRs
   bioconda-test:
     jobs:
-      - lint:
-          filters:
-            branches:
-              ignore:
-                - master
-                - bulk
+      # Linting is now performed just before a recipe is built with
+      # bioconda-utils build --prelint.
+      # TODO: remove this section if --prelint ends up working well.
+      # - lint:
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - master
+      #           - bulk
       - test-linux:
-          requires:
-            - lint
+          # TODO: remove if --prelint ends up working well
+          # requires:
+          #   - lint
           filters:
             branches:
               ignore:
@@ -233,7 +237,8 @@ workflows:
                 - bulk
       - test-macos:
           requires:
-            - lint
+            # TODO: remove if --prelint ends up working well
+            # - lint
             - test-linux
           filters:
             branches:
