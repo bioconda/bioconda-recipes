@@ -1,0 +1,52 @@
+{% set version = "2.63" %}
+package:
+  name: r-ngsplot
+  version: {{ version }}
+
+source:
+  url: https://github.com/shenlab-sinai/ngsplot/archive/{{ version }}.tar.gz
+  md5: bf0d6f42d9461aeb7a20b1ddb12b57bc42d11732ca6f69ec3eb2157364cefd5b
+
+build:
+  number: 0
+  string: r_{{CONDA_R}}_boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+  skip: True  # [osx]
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - r-base
+    - r-rcpp
+    - boost {{CONDA_BOOST}}*
+    - r-catools
+    - bioconductor-rsamtools
+    - gcc
+    - zlib {{CONDA_ZLIB}}*
+    - bzip2 {{CONDA_BZIP2}}*
+
+  run:
+    - r-base
+    - r-rcpp
+    - boost {{CONDA_BOOST}}*
+    - r-catools
+    - bioconductor-rsamtools
+    - libgcc
+    - zlib {{CONDA_ZLIB}}*
+    - bzip2 {{CONDA_BZIP2}}*
+
+test:
+  commands:
+    - $R -e "library(spp)"
+    - $R -e "library(spp); read.bam.tags(system.file(\"extdata\", \"ex1.bam\", package=\"Rsamtools\"))"
+
+about:
+  license: GPL
+  summary: 'ChIP-seq peak caller'
+  home: http://compbio.med.harvard.edu/Supplements/ChIP-seq
+
+extra:
+  identifiers:
+    - biotools:spp
+    - doi:10.1038/nbt.1508
