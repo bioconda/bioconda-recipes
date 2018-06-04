@@ -3,7 +3,7 @@
 #to fix problems with zlib
 export C_INCLUDE_PATH=$C_INCLUDE_PATH:${PREFIX}/include
 export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:${PREFIX}/include
-export LIBRARY_PATH=$LIBRARY_PATH:${PREFIX}/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${PREFIX}/lib
 export JAVA_HOME=${PREFIX}/jre
 
 # skip ruby tests
