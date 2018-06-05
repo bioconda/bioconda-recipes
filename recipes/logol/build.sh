@@ -15,6 +15,7 @@ mkdir -p test/results
 sed -i 's;externalinterfacewithspacer/2,;;g' prolog/logol.pl
 sed -i 's;getPosition_pos/3,;;g' prolog/logol.pl
 sed -i 's;externalinterface/2,;;g' prolog/logol.pl
+sed -i 's;#!/usr/bin/ruby;#!/usr/bin/env ruby;g' tools/cassiopeeSearch.rb
 
 #sed -i 's;INFO;DEBUG;g' log4j.properties
 #ant -f build.xml setup compile_swi_exe create-jar
