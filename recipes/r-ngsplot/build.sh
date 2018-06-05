@@ -1,9 +1,11 @@
 #!/bin/bash
-export BOOST_ROOT=${PREFIX}
-if [[ $(uname) == "Darwin" ]]; then
-    export LDFLAGS=-L${PREFIX}/lib
-    autoreconf -i
-    $R CMD INSTALL --build . --configure-args="CFLAGS=-ferror-limit=0 CXXFLAGS=-ferror-limit=0"
-else
-    $R CMD INSTALL --build .
-fi
+outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+mkdir -p $outdir
+mkdir -p $PREFIX/bin
+cp -R * $outdir 
+#Set up links for 
+for f in $outdir/*; do
+    ln -s $outdir/* $PREFIX/bin
+    fbname=$(basename "$f")
+    chmod 0755 ${PREFIX}/bin/$fbname
+done

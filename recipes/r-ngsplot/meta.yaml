@@ -5,41 +5,31 @@ package:
 
 source:
   url: https://github.com/shenlab-sinai/ngsplot/archive/{{ version }}.tar.gz
-  md5: bf0d6f42d9461aeb7a20b1ddb12b57bc42d11732ca6f69ec3eb2157364cefd5b
+  md5: 811815e5f5ef7bdc1cb028ecd59fb2a7
 
 build:
   number: 0
-  string: r_{{CONDA_R}}_boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
-  skip: True  # [osx]
+  skip: True 
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
-  build:
-    - r-base
-    - r-rcpp
-    - boost {{CONDA_BOOST}}*
-    - r-catools
-    - bioconductor-rsamtools
-    - gcc
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{CONDA_BZIP2}}*
 
   run:
     - r-base
-    - r-rcpp
-    - boost {{CONDA_BOOST}}*
     - r-catools
+    - r-domc
     - bioconductor-rsamtools
-    - libgcc
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{CONDA_BZIP2}}*
+    - bioconductor-bsgenome
+    - bioconductor-shortread
 
 test:
   commands:
-    - ngsplotdb list
-    - ngs.plot.r 2>&1 | true 
+    - ngsplotdb.py list | true
+    - ngs.plot.r 2>&1 | true
+    - replot.r 2>&1 | true
+    - plotCorrGram.r 2>&1 | true
 
 about:
   license: GPL-2.0
