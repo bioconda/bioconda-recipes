@@ -1,0 +1,1 @@
+ngsplotdb.py remove hg19
