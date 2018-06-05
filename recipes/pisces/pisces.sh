@@ -1,9 +1,9 @@
 #!/bin/bash
-# EvaluateCNV wrapper script for external dotnet installation
+# Pisces executable shell script
+# Requires external dotnet install
+set -eu -o pipefail
 
-set -o pipefail
-
-# Find original directory of bash script, resovling symlinks
+# Find original directory of bash script, resolving symlinks
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -13,8 +13,4 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-ENV_PREFIX="$(dirname $(dirname $(dirname $(dirname $DIR))))"
-# Use mono installed with Anaconda
-#mono="$ENV_PREFIX/bin/mono"
-
-exec dotnet ${DIR}/EvaluateCNV.dll "$@"
+dotnet $DIR/Pisces.dll $@
