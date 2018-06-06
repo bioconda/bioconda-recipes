@@ -8,3 +8,6 @@ for f in ${outdir}/bin/*; do
     ln -s ${f} ${PREFIX}/bin
     fbname=$(basename "$f")
 done
+
+#Setting environment variable NGSPLOT as requested by authors readme
+export NGSPLOT=${outdir}
