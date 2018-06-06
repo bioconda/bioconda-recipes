@@ -1,5 +1,12 @@
 #!/bin/bash
 
+#NCBI VDB MUST BE BUILT AT THE SAME TIME. COMPILING SRA TOOLS REQUIRES NCBI-SDK (SEPARATE BIOCONDA PACKAGE), NCBI-VDB SOURCES and NCBI-VDB BUILD FOLDER
+
+####
+# downloading ncbi-vdb
+#### 
+
+export ROOT=$PREFIX
 NCBI_VDB_VERSION=2.9.0-1
 NGS_VDB_SHA256=b4099e2fc3349eaf487219fbe798b22124949c89ffa1e7e6fbaa73a5178c8aff
 
@@ -14,10 +21,15 @@ tar xzf ncbi-vdb-${NCBI_VDB_VERSION}.tar.gz -C ncbi-vdb
 
 SRC_VDB=$SRC_DIR/ncbi-vdb/ncbi-vdb-${NCBI_VDB_VERSION}
 
+####
+# building ncbi-vdb
+#### 
+
 
 if [[ $OSTYPE == darwin* ]]; then
      export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
 fi
+
 
 cd $SRC_VDB
 ./configure --prefix=$PREFIX/ --build-prefix=$PREFIX/share/ncbi --with-ngs-sdk-prefix=$PREFIX
@@ -25,6 +37,11 @@ cd $SRC_VDB
 make install
 
 cd $SRC_DIR
+
+####
+# building sra-tools
+#### 
+
 
 ./configure --prefix=$PREFIX --build-prefix=$PREFIX/share/ncbi/ --with-ngs-sdk-prefix=$PREFIX --with-ncbi-vdb-sources=$SRC_VDB --with-ncbi-vdb-build=$PREFIX/share/ncbi
 
