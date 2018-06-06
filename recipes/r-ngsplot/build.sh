@@ -4,8 +4,7 @@ mkdir -p $outdir
 mkdir -p $PREFIX/bin
 cp -R * $outdir 
 #Set up links for 
-for f in $outdir/*; do
-    ln -s $outdir/* $PREFIX/bin
+for f in ${outdir}/bin/*; do
+    ln -s ${f} ${PREFIX}/bin
     fbname=$(basename "$f")
-    chmod 0755 ${PREFIX}/bin/$fbname
 done
