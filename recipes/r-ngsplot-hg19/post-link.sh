@@ -14,7 +14,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  wget -O- -q ${URL} > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
@@ -33,7 +33,7 @@ fi
 done
 
 if [[ $SUCCESS != 1 ]]; then
-  echo "ERROR: post-link.sh was unable to download any of the following URLs with the md5sum $MD5:" > "${PREFIX}/.messages.txt" 2>&1
+  echo "ERROR: post-link.sh was unable to download any of the following URLs with the md5sum $MD5:" >> "${PREFIX}/.messages.txt" 2>&1
   printf '%s\n' "${URLS[@]}" > "${PREFIX}/.messages.txt" 2>&1
   exit 1
 fi
