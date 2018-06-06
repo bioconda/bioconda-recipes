@@ -3,7 +3,7 @@ FN="ngsplotdb_hg19_75_3.00.tar.gz"
 URLS=(
   "https://drive.google.com/uc?export=download&id=0B5hDZ2BucCI6SURYWW5XdUxnbW8"
 )
-sha256="a3ad6daceec383f88faf3d3ee899f2bef37b3be2658ee9afa01e86404c0c92bd"
+md5="172a6a93de3d1ae8a3ad6d6d79e911f7"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
