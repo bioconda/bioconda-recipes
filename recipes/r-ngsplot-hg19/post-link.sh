@@ -33,8 +33,8 @@ fi
 done
 
 if [[ $SUCCESS != 1 ]]; then
-  echo "ERROR: post-link.sh was unable to download any of the following URLs with the md5sum $MD5:"
-  printf '%s\n' "${URLS[@]}"
+  echo "ERROR: post-link.sh was unable to download any of the following URLs with the md5sum $MD5:" > "${PREFIX}/.messages.txt" 2>&1
+  printf '%s\n' "${URLS[@]}" > "${PREFIX}/.messages.txt" 2>&1
   exit 1
 fi
 
