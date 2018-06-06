@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="ngsplotdb_hg19_75_3.00.tar.gz"
 URLS=(
-  "https://doc-0g-a0-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/jiksn2m41cm3dbspq0nqt102h6m6eo1o/1528221600000/01382619737792242945/*/0B5hDZ2BucCI6SURYWW5XdUxnbW8?e=download"
+  "https://drive.google.com/uc?export=download&id=0B5hDZ2BucCI6SURYWW5XdUxnbW8"
 )
 sha256="a3ad6daceec383f88faf3d3ee899f2bef37b3be2658ee9afa01e86404c0c92bd"
 
