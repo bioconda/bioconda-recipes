@@ -39,6 +39,6 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 # Install and clean up
-ngsplotdb.py install ngsplotdb_hg19_75_3.00.tar.gz
+ngsplotdb.py install "${TARBALL}" > "${PREFIX}/.messages.txt" 2>&1
 rm $TARBALL
 rmdir $STAGING
