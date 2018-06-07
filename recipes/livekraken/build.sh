@@ -15,4 +15,3 @@ for bin in livekraken livekraken-build livekraken-filter livekraken-mpa-report l
 done
 
 cp "visualisation/livekraken_sankey_diagram.py" "$PREFIX/bin/"
-ln -s "${outdir}/libexec/classify" "$PREFIX/bin/classify"
