@@ -1,2 +1,2 @@
 #!/bin/bash
-pip install ./atactk
+pip install .
