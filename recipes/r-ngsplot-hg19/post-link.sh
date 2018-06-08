@@ -34,11 +34,11 @@ done
 
 if [[ $SUCCESS != 1 ]]; then
   echo "ERROR: post-link.sh was unable to download any of the following URLs with the md5sum $MD5:" >> "${PREFIX}/.messages.txt" 2>&1
-  printf '%s\n' "${URLS[@]}" > "${PREFIX}/.messages.txt" 2>&1
+  printf '%s\n' "${URLS[@]}" >> "${PREFIX}/.messages.txt" 2>&1
   exit 1
 fi
 
 # Install and clean up
-ngsplotdb.py install "${TARBALL}" > "${PREFIX}/.messages.txt" 2>&1
+ngsplotdb.py install "${TARBALL}" >> "${PREFIX}/.messages.txt" 2>&1
 rm $TARBALL
 rmdir $STAGING
