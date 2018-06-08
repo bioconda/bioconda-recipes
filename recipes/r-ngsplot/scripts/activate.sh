@@ -1,3 +1,0 @@
-#!/bin/bash
-export NGSPLOT=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-export _CONDA_SET_NGSPLOT_ENV=1
