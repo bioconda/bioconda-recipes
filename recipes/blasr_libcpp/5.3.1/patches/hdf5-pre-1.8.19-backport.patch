@@ -1,0 +1,471 @@
+From e819fc55e55c8768937d4bbe82b27550865d3bda Mon Sep 17 00:00:00 2001
+From: David Seifert <dseifert@pacificbiosciences.com>
+Date: Sat, 2 Jun 2018 13:20:28 -0700
+Subject: [PATCH] Pre HDF5 1.8.19/1.10 compatibility patch
+
+* This partially reverts commit c8b77dd327380c6f12f001e11ec4b3f3a5ea2f08.
+---
+ hdf/BufferedHDF2DArray.cpp      |  2 +-
+ hdf/BufferedHDF2DArray.hpp      |  6 +++---
+ hdf/BufferedHDF2DArrayImpl.hpp  |  4 ++--
+ hdf/BufferedHDFArray.hpp        |  4 ++--
+ hdf/BufferedHDFArrayImpl.hpp    | 12 ++++++------
+ hdf/HDFArray.hpp                |  2 +-
+ hdf/HDFAtom.cpp                 |  4 ++--
+ hdf/HDFAtom.hpp                 | 23 ++++++++++++-----------
+ hdf/HDFAttributable.cpp         | 19 ++++---------------
+ hdf/HDFAttributable.hpp         |  6 ++++--
+ hdf/HDFCmpRefAlignmentGroup.hpp |  2 +-
+ hdf/HDFData.cpp                 |  8 ++++----
+ hdf/HDFData.hpp                 | 10 +++++-----
+ hdf/HDFGroup.cpp                |  4 ++--
+ hdf/HDFGroup.hpp                |  4 ++--
+ 15 files changed, 51 insertions(+), 59 deletions(-)
+
+diff --git a/hdf/BufferedHDF2DArray.cpp b/hdf/BufferedHDF2DArray.cpp
+index 018f80d..4489d7b 100644
+--- a/hdf/BufferedHDF2DArray.cpp
++++ b/hdf/BufferedHDF2DArray.cpp
+@@ -29,7 +29,7 @@
+ 
+  */
+ 
+-DSLength GetDatasetNDim(H5::Group &parentGroup, std::string datasetName)
++DSLength GetDatasetNDim(H5::CommonFG &parentGroup, std::string datasetName)
+ {
+     HDFData tmpDataset;
+     tmpDataset.InitializeDataset(parentGroup, datasetName);
+diff --git a/hdf/BufferedHDF2DArray.hpp b/hdf/BufferedHDF2DArray.hpp
+index d5830cc..db414f7 100644
+--- a/hdf/BufferedHDF2DArray.hpp
++++ b/hdf/BufferedHDF2DArray.hpp
+@@ -53,7 +53,7 @@ private:
+     DSLength rowLength, colLength;
+ 
+ public:
+-    BufferedHDF2DArray(H5::Group *_container, std::string _datasetName);
++    BufferedHDF2DArray(H5::CommonFG *_container, std::string _datasetName);
+ 
+     BufferedHDF2DArray();
+ 
+@@ -93,7 +93,7 @@ public:
+     void Read(DSLength startX, DSLength endX, DSLength startY, DSLength endY, H5::DataType typeID,
+               T *dest);
+ 
+-    void Create(H5::Group *_container, std::string _datasetName, DSLength _rowLength);
++    void Create(H5::CommonFG *_container, std::string _datasetName, DSLength _rowLength);
+ 
+     void TypedCreate(H5::DataSpace &fileSpace, H5::DSetCreatPropList &cparms);
+ 
+@@ -113,7 +113,7 @@ public:
+     void Flush(DSLength destRow = static_cast<DSLength>(-1));
+ };
+ 
+-DSLength GetDatasetNDim(H5::Group &parentGroup, std::string datasetName);
++DSLength GetDatasetNDim(H5::CommonFG &parentGroup, std::string datasetName);
+ 
+ #define DECLARE_TYPED_WRITE_ROW(T, Pred)                                                       \
+     template <>                                                                                \
+diff --git a/hdf/BufferedHDF2DArrayImpl.hpp b/hdf/BufferedHDF2DArrayImpl.hpp
+index a2e5f16..bdce255 100644
+--- a/hdf/BufferedHDF2DArrayImpl.hpp
++++ b/hdf/BufferedHDF2DArrayImpl.hpp
+@@ -7,7 +7,7 @@
+ #include <pbdata/utils.hpp>
+ 
+ template <typename T>
+-BufferedHDF2DArray<T>::BufferedHDF2DArray(H5::Group *_container, std::string _datasetName)
++BufferedHDF2DArray<T>::BufferedHDF2DArray(H5::CommonFG *_container, std::string _datasetName)
+     : HDFData(_container, _datasetName)
+ {
+ }
+@@ -191,7 +191,7 @@ void BufferedHDF2DArray<T>::Read(DSLength startX, DSLength endX, DSLength startY
+ }
+ 
+ template <typename T>
+-void BufferedHDF2DArray<T>::Create(H5::Group *_container, std::string _datasetName,
++void BufferedHDF2DArray<T>::Create(H5::CommonFG *_container, std::string _datasetName,
+                                    DSLength _rowLength)
+ {
+     container = _container;
+diff --git a/hdf/BufferedHDFArray.hpp b/hdf/BufferedHDFArray.hpp
+index 644b13a..011c2ad 100644
+--- a/hdf/BufferedHDFArray.hpp
++++ b/hdf/BufferedHDFArray.hpp
+@@ -52,7 +52,7 @@ public:
+      */
+     BufferedHDFArray(int pBufferSize = 32768);
+ 
+-    BufferedHDFArray(H5::Group *_container, std::string _datasetName);
++    BufferedHDFArray(H5::CommonFG *_container, std::string _datasetName);
+ 
+     ~BufferedHDFArray();
+ 
+@@ -72,7 +72,7 @@ public:
+ 
+     void Create(HDFGroup &parentGroup, std::string _datasetName);
+ 
+-    void Create(H5::Group *_container, std::string _datasetName);
++    void Create(H5::CommonFG *_container, std::string _datasetName);
+ 
+     /*
+      * Initialize for reading.
+diff --git a/hdf/BufferedHDFArrayImpl.hpp b/hdf/BufferedHDFArrayImpl.hpp
+index 471292f..11632dc 100644
+--- a/hdf/BufferedHDFArrayImpl.hpp
++++ b/hdf/BufferedHDFArrayImpl.hpp
+@@ -20,7 +20,7 @@ BufferedHDFArray<T>::BufferedHDFArray(int pBufferSize) : HDFData()
+ }
+ 
+ template <typename T>
+-BufferedHDFArray<T>::BufferedHDFArray(H5::Group *_container, std::string _datasetName)
++BufferedHDFArray<T>::BufferedHDFArray(H5::CommonFG *_container, std::string _datasetName)
+     : HDFData(_container, _datasetName)
+ {
+     // no-op
+@@ -145,7 +145,7 @@ void BufferedHDFArray<T>::Flush(bool append, DSLength writePos)
+         TypedWrite(this->writeBuffer, memorySpace, extendedSpace);
+     } catch (H5::DataSetIException e) {
+         std::cout << "ERROR! Could not write HDF5 data." << std::endl;
+-        e.printErrorStack();
++        e.printError();
+         std::exit(EXIT_FAILURE);
+     }
+     memorySpace.close();
+@@ -190,7 +190,7 @@ void BufferedHDFArray<T>::Create(HDFGroup &parentGroup, std::string _datasetName
+ }
+ 
+ template <typename T>
+-void BufferedHDFArray<T>::Create(H5::Group *_container, std::string _datasetName)
++void BufferedHDFArray<T>::Create(H5::CommonFG *_container, std::string _datasetName)
+ {
+     //
+     // Initialize where the dataset will go.
+@@ -297,7 +297,7 @@ int BufferedHDFArray<T>::UpdateH5Dataspace()
+     try {
+         dataspace = dataset.getSpace();
+     } catch (H5::DataSetIException &e) {
+-        e.printErrorStack();
++        e.printError();
+         return 0;
+     }
+     maxDims = MAX_DIMS;
+@@ -333,7 +333,7 @@ int BufferedHDFArray<T>::UpdateH5Dataspace()
+         fullSourceSpace = H5::DataSpace(1, dimSize);
+         dataspace.close();
+     } catch (H5::Exception &e) {
+-        e.printErrorStack();
++        e.printError();
+         return 0;
+     }
+     return 1;
+@@ -356,7 +356,7 @@ int BufferedHDFArray<T>::Resize(const DSLength newArrayLength)
+         dataset.extend(fileArraySize);
+         fileSpace.close();
+     } catch (H5::DataSetIException &e) {
+-        e.printErrorStack();
++        e.printError();
+         return 0;
+     }
+     return 1;
+diff --git a/hdf/HDFArray.hpp b/hdf/HDFArray.hpp
+index 7ec33b5..b946f34 100644
+--- a/hdf/HDFArray.hpp
++++ b/hdf/HDFArray.hpp
+@@ -35,7 +35,7 @@ class HDFArray : public BufferedHDFArray<T>
+ {
+ public:
+     HDFArray() : BufferedHDFArray<T>() {}
+-    HDFArray(H5::Group* _container, std::string _datasetName)
++    HDFArray(H5::CommonFG* _container, std::string _datasetName)
+         : BufferedHDFArray<T>(_container, _datasetName)
+     {
+     }
+diff --git a/hdf/HDFAtom.cpp b/hdf/HDFAtom.cpp
+index 77c31a4..f586065 100644
+--- a/hdf/HDFAtom.cpp
++++ b/hdf/HDFAtom.cpp
+@@ -1,7 +1,7 @@
+ #include <hdf/HDFAtom.hpp>
+ 
+ template <>
+-void HDFAtom<std::string>::Create(H5::H5Object &object, const std::string &atomName)
++void HDFAtom<std::string>::Create(H5::H5Location &object, const std::string &atomName)
+ {
+     H5::StrType strType(0, H5T_VARIABLE);
+     hsize_t defaultDims[] = {1};
+@@ -11,7 +11,7 @@ void HDFAtom<std::string>::Create(H5::H5Object &object, const std::string &atomN
+ 
+ #define DEFINE_TYPED_CREATE_ATOM(T, predtype)                                               \
+     template <>                                                                             \
+-    void HDFAtom<T>::TypedCreate(H5::H5Object &object, const std::string &atomName,         \
++    void HDFAtom<T>::TypedCreate(H5::H5Location &object, const std::string &atomName,       \
+                                  H5::DataSpace &defaultDataSpace)                           \
+     {                                                                                       \
+         attribute = object.createAttribute(atomName.c_str(), (predtype), defaultDataSpace); \
+diff --git a/hdf/HDFAtom.hpp b/hdf/HDFAtom.hpp
+index ddebacd..84d1510 100644
+--- a/hdf/HDFAtom.hpp
++++ b/hdf/HDFAtom.hpp
+@@ -26,9 +26,9 @@ public:
+         }
+     }
+ 
+-    H5::H5Object *GetObject() { return NULL; }
++    H5::H5Location *GetObject() { return NULL; }
+ 
+-    int Initialize(H5::H5Object &object, const std::string &attributeName)
++    int Initialize(H5::H5Location &object, const std::string &attributeName)
+     {
+         attribute = object.openAttribute(attributeName.c_str());
+         isInitialized = true;
+@@ -71,14 +71,14 @@ public:
+     // This handles creation of all non-std::string types.  A specialization
+     // for std::strings is provided below.
+     //
+-    void Create(H5::H5Object &object, const std::string &atomName)
++    void Create(H5::H5Location &object, const std::string &atomName)
+     {
+         hsize_t defaultDims[] = {1};
+         H5::DataSpace defaultDataSpace(1, defaultDims);
+         TypedCreate(object, atomName, defaultDataSpace);
+     }
+ 
+-    void Create(H5::H5Object &object, const std::string &name, const std::string &value)
++    void Create(H5::H5Location &object, const std::string &name, const std::string &value)
+     {
+         H5::StrType strType(0, value.size());
+         attribute = object.createAttribute(name.c_str(), strType, H5::DataSpace(0, NULL));
+@@ -86,7 +86,7 @@ public:
+         attribute.write(strType, value.c_str());
+     }
+ 
+-    void Create(H5::H5Object &object, const std::string &name, std::vector<int> &vect)
++    void Create(H5::H5Location &object, const std::string &name, std::vector<int> &vect)
+     {
+         hsize_t length = vect.size();
+         H5::ArrayType arrayDataType(H5::PredType::NATIVE_INT, 1, &length);
+@@ -95,7 +95,8 @@ public:
+         attribute.write(H5::PredType::NATIVE_INT, &((vect)[0]));
+     }
+ 
+-    void Create(H5::H5Object &object, const std::string &name, const std::vector<std::string> &vect)
++    void Create(H5::H5Location &object, const std::string &name,
++                const std::vector<std::string> &vect)
+     {
+         hsize_t length = vect.size();
+         H5::StrType strType(0, H5T_VARIABLE);
+@@ -104,7 +105,7 @@ public:
+         attribute.write(strType, &((vect)[0]));
+     }
+ 
+-    void TypedCreate(H5::H5Object &object, const std::string &atomName, H5::DataSpace &dataSpace)
++    void TypedCreate(H5::H5Location &object, const std::string &atomName, H5::DataSpace &dataSpace)
+     {
+         (void)(object);
+         (void)(atomName);
+@@ -132,11 +133,11 @@ public:
+ //
+ 
+ template <>
+-void HDFAtom<std::string>::Create(H5::H5Object &object, const std::string &atomName);
++void HDFAtom<std::string>::Create(H5::H5Location &object, const std::string &atomName);
+ 
+-#define DECLARE_TYPED_CREATE_ATOM(T, predtype)                                      \
+-    template <>                                                                     \
+-    void HDFAtom<T>::TypedCreate(H5::H5Object &object, const std::string &atomName, \
++#define DECLARE_TYPED_CREATE_ATOM(T, predtype)                                        \
++    template <>                                                                       \
++    void HDFAtom<T>::TypedCreate(H5::H5Location &object, const std::string &atomName, \
+                                  H5::DataSpace &defaultDataSpace);
+ 
+ DECLARE_TYPED_CREATE_ATOM(int, H5::PredType::NATIVE_INT)
+diff --git a/hdf/HDFAttributable.cpp b/hdf/HDFAttributable.cpp
+index 2490af7..b9d2188 100644
+--- a/hdf/HDFAttributable.cpp
++++ b/hdf/HDFAttributable.cpp
+@@ -4,24 +4,13 @@
+ 
+ using namespace H5;
+ 
+-// This template is required in order to juggle between HDF5 1.8 and 1.10.
+-//
+-// HDF5 1.8 has for attr_operator_t
+-//
+-//   typedef void(* H5::attr_operator_t)(H5Location &loc, const H5std_string attr_name, void *operator_data)
+-//
+-// whereas HDF5 1.10 has for attr_operator_t
+-//
+-//   typedef void(* H5::attr_operator_t)(H5Object &loc, const H5std_string attr_name, void *operator_data)
+-
+-template <typename T>
+-void CallStoreAttributeName(T &obj, std::string attrName, void *attrList)
++void CallStoreAttributeName(H5Location &obj, std::string attrName, void *attrList)
+ {
+     (void)(obj);
+     ((std::vector<std::string> *)attrList)->push_back(std::string(attrName));
+ }
+ 
+-void HDFAttributable::StoreAttributeNames(H5Object &thisobject,
++void HDFAttributable::StoreAttributeNames(H5Location &thisobject,
+                                           const std::vector<std::string> &attributeNames)
+ {
+     int nAttr = thisobject.getNumAttrs();
+@@ -32,14 +21,14 @@ void HDFAttributable::StoreAttributeNames(H5Object &thisobject,
+     thisobject.iterateAttrs(&CallStoreAttributeName, bounds, (void *)&attributeNames);
+ }
+ 
+-H5Object *HDFAttributable::GetObject() { return NULL; }
++H5Location *HDFAttributable::GetObject() { return NULL; }
+ 
+ int HDFAttributable::ContainsAttribute(const std::string &attributeName)
+ {
+     size_t i;
+     std::vector<std::string> tmpAttributeNames;
+     try {
+-        H5Object *obj = GetObject();
++        H5Location *obj = GetObject();
+         assert(obj != NULL);
+         StoreAttributeNames(*obj, tmpAttributeNames);
+         for (i = 0; i < tmpAttributeNames.size(); i++) {
+diff --git a/hdf/HDFAttributable.hpp b/hdf/HDFAttributable.hpp
+index 130db6e..314cd0f 100644
+--- a/hdf/HDFAttributable.hpp
++++ b/hdf/HDFAttributable.hpp
+@@ -6,15 +6,17 @@
+ 
+ #include <H5Cpp.h>
+ 
++void CallStoreAttributeName(H5::H5Location &obj, std::string attrName, void *attrListPtr);
++
+ class HDFAttributable
+ {
+ public:
+     std::vector<std::string> attributeNameList;
+ 
+-    void StoreAttributeNames(H5::H5Object &thisobject,
++    void StoreAttributeNames(H5::H5Location &thisobject,
+                              const std::vector<std::string> &attributeNames);
+ 
+-    virtual H5::H5Object *GetObject();
++    virtual H5::H5Location *GetObject();
+ 
+     int ContainsAttribute(const std::string &attributeName);
+ };
+diff --git a/hdf/HDFCmpRefAlignmentGroup.hpp b/hdf/HDFCmpRefAlignmentGroup.hpp
+index 0ab712c..bec67ae 100644
+--- a/hdf/HDFCmpRefAlignmentGroup.hpp
++++ b/hdf/HDFCmpRefAlignmentGroup.hpp
+@@ -30,7 +30,7 @@ public:
+     // /ref00001/rg8953-0
+     // /ref00001/rg2453-1
+ 
+-    int Initialize(H5::Group& group, std::string _refGroupName)
++    int Initialize(H5::CommonFG& group, std::string _refGroupName)
+     {
+         refGroupName = _refGroupName;
+         refGroup.Initialize(group, _refGroupName);
+diff --git a/hdf/HDFData.cpp b/hdf/HDFData.cpp
+index 41e0871..12a6cee 100644
+--- a/hdf/HDFData.cpp
++++ b/hdf/HDFData.cpp
+@@ -2,9 +2,9 @@
+ 
+ using namespace H5;
+ 
+-H5Object *HDFData::GetObject() { return &dataset; }
++H5Location *HDFData::GetObject() { return &dataset; }
+ 
+-HDFData::HDFData(Group *_container, const std::string &_datasetName)
++HDFData::HDFData(CommonFG *_container, const std::string &_datasetName)
+ {
+     container = _container;
+     datasetName = _datasetName;
+@@ -32,7 +32,7 @@ int HDFData::Initialize(HDFGroup &parentGroup, const std::string &datasetName)
+     std::exit(EXIT_FAILURE);
+ }
+ 
+-int HDFData::BaseInitializeDataset(Group &hdfFile, const std::string &_datasetName)
++int HDFData::BaseInitializeDataset(CommonFG &hdfFile, const std::string &_datasetName)
+ {
+     dataset = hdfFile.openDataSet(_datasetName.c_str());
+     isInitialized = true;
+@@ -45,7 +45,7 @@ int HDFData::InitializeDataset(HDFGroup &group, const std::string &_datasetName)
+     return InitializeDataset(group.group, _datasetName);
+ }
+ 
+-int HDFData::InitializeDataset(Group &hdfFile, const std::string &_datasetName)
++int HDFData::InitializeDataset(CommonFG &hdfFile, const std::string &_datasetName)
+ {
+     try {
+         datasetName = _datasetName;
+diff --git a/hdf/HDFData.hpp b/hdf/HDFData.hpp
+index b2d37a2..8d43d71 100644
+--- a/hdf/HDFData.hpp
++++ b/hdf/HDFData.hpp
+@@ -17,13 +17,13 @@ public:
+     H5::DataSpace sourceSpace, destSpace;
+     H5::DataSpace fullSourceSpace;
+     bool fileDataSpaceInitialized;
+-    H5::Group *container;
++    H5::CommonFG *container;
+     std::string datasetName;
+     bool isInitialized;
+ 
+-    H5::H5Object *GetObject();
++    H5::H5Location *GetObject();
+ 
+-    HDFData(H5::Group *_container, const std::string &_datasetName);
++    HDFData(H5::CommonFG *_container, const std::string &_datasetName);
+ 
+     HDFData();
+ 
+@@ -43,11 +43,11 @@ public:
+     //
+     virtual int Initialize(HDFGroup &parentGroup, const std::string &datasetName);
+ 
+-    int BaseInitializeDataset(H5::Group &hdfFile, const std::string &_datasetName);
++    int BaseInitializeDataset(H5::CommonFG &hdfFile, const std::string &_datasetName);
+ 
+     int InitializeDataset(HDFGroup &group, const std::string &_datasetName);
+ 
+-    int InitializeDataset(H5::Group &hdfFile, const std::string &_datasetName);
++    int InitializeDataset(H5::CommonFG &hdfFile, const std::string &_datasetName);
+ 
+     void Close();
+ };
+diff --git a/hdf/HDFGroup.cpp b/hdf/HDFGroup.cpp
+index 0d53563..bb693cf 100644
+--- a/hdf/HDFGroup.cpp
++++ b/hdf/HDFGroup.cpp
+@@ -10,9 +10,9 @@ void HDFGroup::AddGroup(std::string groupName)
+     return;
+ }
+ 
+-H5Object *HDFGroup::GetObject() { return &group; }
++H5Location *HDFGroup::GetObject() { return &group; }
+ 
+-int HDFGroup::Initialize(Group &fg, std::string groupName)
++int HDFGroup::Initialize(CommonFG &fg, std::string groupName)
+ {
+     try {
+         group = fg.openGroup(groupName.c_str());
+diff --git a/hdf/HDFGroup.hpp b/hdf/HDFGroup.hpp
+index 0919475..0b891a7 100644
+--- a/hdf/HDFGroup.hpp
++++ b/hdf/HDFGroup.hpp
+@@ -23,9 +23,9 @@ public:
+ 
+     void AddGroup(std::string groupName);
+ 
+-    H5::H5Object* GetObject();
++    H5::H5Location* GetObject();
+ 
+-    int Initialize(H5::Group& fg, std::string groupName);
++    int Initialize(H5::CommonFG& fg, std::string groupName);
+ 
+     int Initialize(HDFGroup& parentGroup, std::string groupName);
+ 
+-- 
+1.8.3.1
+
