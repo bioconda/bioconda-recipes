@@ -6,7 +6,6 @@ cp -R {bin,database,example,galaxy,lib,LICENSE} ${outdir}/
 #Set up links for 
 for f in ${outdir}/bin/*; do
     ln -s ${f} ${PREFIX}/bin
-    fbname=$(basename "$f")
 done
 
 #Activate/Deactivate dir
