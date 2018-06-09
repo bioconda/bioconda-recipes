@@ -9,7 +9,7 @@ cmake \
 -DCONCERT_LIB_DIR=${PREFIX}/IBM/concert/lib/x86-64_linux/static_pic \
 -DCONCERT_INC_DIR=${PREFIX}/IBM/concert/include/ ..
 
-make clean all && make -j4
+make
 
 chmod +x heinz
 mv heinz ${PREFIX}/bin
