@@ -38,6 +38,10 @@ ap = argparse.ArgumentParser(usage)
 ap.add_argument('bootstrap', help='''Location to which a new Miniconda
                 installation plus bioconda-utils should be installed. This will
                 be separate from any existing conda installations.''')
+ap.add_argument('--no-docker', action='store_true', help='''By default we
+                expect Docker to be present. Use this arg to disable that
+                behavior. This will reduce functionality, but is useful if
+                you're unable to install docker.''')
 args = ap.parse_args()
 
 # This is the "common" step in the CircleCI config which gets the versions of
@@ -92,7 +96,11 @@ def _write_custom_activate(install_path):
             fout.write(line + '\n')
 
 
-env = {'WORKSPACE': args.bootstrap, 'BOOTSTRAP': "true"}
+use_docker = "true"
+if args.no_docker:
+    use_docker = "false"
+
+env = {'WORKSPACE': args.bootstrap, 'BOOTSTRAP': "true", 'USE_DOCKER': use_docker}
 sp.check_call(['.circleci/setup.sh'], env=env)
 _write_custom_activate(args.bootstrap)
 

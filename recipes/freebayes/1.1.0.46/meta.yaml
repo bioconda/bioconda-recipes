@@ -1,0 +1,47 @@
+package:
+  name: freebayes
+  version: '1.1.0.46'
+
+source:
+  git_url: https://github.com/ekg/freebayes.git
+  git_tag: 8d2b3a060da473e1f4f89be04edfce5cba63f1d3
+  patches:
+    - qcfail.diff
+
+build:
+  number: 3
+  skip: true  # [osx]
+  string: "htslib{{ CONDA_HTSLIB }}_{{ PKG_BUILDNUM }}"
+
+requirements:
+  build:
+    - cmake
+    - zlib {{ CONDA_ZLIB }}*
+    - bzip2 {{ CONDA_BZIP2 }}*
+    - python
+    - gcc   # [not osx]
+    - llvm  # [osx]
+  run:
+    - zlib {{ CONDA_ZLIB }}*
+    - bzip2 {{ CONDA_BZIP2 }}*
+    - python
+    - libgcc    # [not osx]
+    - htslib {{ CONDA_HTSLIB }}*
+    - parallel
+
+test:
+  commands:
+    - freebayes --version
+    - vcfstreamsort -h
+
+about:
+  home: https://github.com/ekg/freebayes
+  license: MIT
+  summary: Bayesian haplotype-based polymorphism discovery and genotyping
+
+extra:
+  skip-lints:
+    - uses_git_url
+    - missing_hash
+  identifiers:
+    - biotools:freebayes

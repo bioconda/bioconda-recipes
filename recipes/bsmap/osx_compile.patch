@@ -1,0 +1,114 @@
+--- main.cpp.old	2018-05-09 22:54:44.815386038 +0000
++++ main.cpp	2018-05-09 22:54:50.300392782 +0000
+@@ -36,7 +36,7 @@
+ ofstream fout;
+ FILE *pout;
+ ReadClass read_a, read_b;
+-RefSeq ref;
++RefSeq ref1;
+ 
+ bit32_t n_aligned=0, n_unique=0, n_multiple=0;   //number of reads aligned
+ bit32_t n_aligned_pairs=0, n_unique_pairs=0, n_multiple_pairs=0;  //number of pairs aligned
+@@ -67,7 +67,7 @@
+ 		a.ImportBatchReads(read_a.num, read_a.mreads);
+ 		pthread_mutex_unlock(&mutex_fin);
+ 		if(!n) break;
+-		a.Do_Batch(ref);
++		a.Do_Batch(ref1);
+ 		pthread_mutex_lock(&mutex_fout);
+ 		if(param.stdout) cout<<a._str_align; 
+ 		else if(param.pipe_out) {fwrite(a._str_align.c_str(),1,a._str_align.size(),pout); fflush(pout);}
+@@ -103,7 +103,7 @@
+ 		a.ImportBatchReads(n1, read_a.mreads, read_b.mreads);
+ 		pthread_mutex_unlock(&mutex_fin);
+ 		if(!n1||(n1!=n2)) break;
+-		a.Do_Batch(ref);
++		a.Do_Batch(ref1);
+ 		pthread_mutex_lock(&mutex_fout);
+ 		if(param.stdout) cout<<a._str_align; 
+ 		else if(param.pipe_out) {fwrite(a._str_align.c_str(),1,a._str_align.size(),pout); fflush(pout);}
+@@ -131,24 +131,24 @@
+ 	for(int i=0; i<param.num_procs; i++) pthread_join(pthread_ids[i], NULL);
+ };
+ 
+-void* wrapper_CalKmerFreq0(void*) {ref.t_CalKmerFreq(0); return NULL;}
+-void* wrapper_CalKmerFreq1(void*) {ref.t_CalKmerFreq(1); return NULL;}
+-void* wrapper_FillIndex0(void*) {ref.t_FillIndex(0); return NULL;}
+-void* wrapper_FillIndex1(void*) {ref.t_FillIndex(1); return NULL;}
++void* wrapper_CalKmerFreq0(void*) {ref1.t_CalKmerFreq(0); return NULL;}
++void* wrapper_CalKmerFreq1(void*) {ref1.t_CalKmerFreq(1); return NULL;}
++void* wrapper_FillIndex0(void*) {ref1.t_FillIndex(0); return NULL;}
++void* wrapper_FillIndex1(void*) {ref1.t_FillIndex(1); return NULL;}
+ 
+ void Do_Formatdb() {
+-	if(param.RRBS_flag) ref.CreateIndex();
++	if(param.RRBS_flag) ref1.CreateIndex();
+ 	else {
+ 		pthread_t t0, t1;
+-		ref.InitialIndex();
++		ref1.InitialIndex();
+ 		pthread_create(&t0, NULL, wrapper_CalKmerFreq0, NULL);
+ 		pthread_create(&t1, NULL, wrapper_CalKmerFreq1, NULL);
+ 		pthread_join(t0, NULL); pthread_join(t1, NULL);
+-		ref.AllocIndex();
++		ref1.AllocIndex();
+ 		pthread_create(&t0, NULL, wrapper_FillIndex0, NULL);
+ 		pthread_create(&t1, NULL, wrapper_FillIndex1, NULL);
+ 		pthread_join(t0, NULL); pthread_join(t1, NULL);
+-		ref.FinishIndex();
++		ref1.FinishIndex();
+ 	}
+ 	message<<"[bsmap] @"<<Curr_Time()<<" \tcreate seed table. "<<Cal_AllTime()<<" secs passed\n"; info(1);
+ };
+@@ -484,8 +484,8 @@
+ 		}
+ 
+ 		if(param.out_sam&&param.sam_header) {
+-			for(bit32_t i=0;i<ref.total_num;i++){
+-				sprintf(_ch,"@SQ\tSN:%s\tLN:%u\n",ref.title[i<<1].name.c_str(),ref.title[i<<1].size);
++			for(bit32_t i=0;i<ref1.total_num;i++){
++				sprintf(_ch,"@SQ\tSN:%s\tLN:%u\n",ref1.title[i<<1].name.c_str(),ref1.title[i<<1].size);
+ 				_str.append(_ch);
+ 			}
+ 			sprintf(_ch,"@PG\tID:BSMAP\tVN:%s\tCL:\"%s\"\n",version,command_line.c_str()); _str.append(_ch);
+@@ -555,8 +555,8 @@
+                                                 		
+ 		if(param.out_sam&&param.sam_header) {
+     		char _ch[1000];
+-	    	for(bit32_t i=0;i<ref.total_num;i++) {
+-	    	    sprintf(_ch,"@SQ\tSN:%s\tLN:%u\n",ref.title[i<<1].name.c_str(),ref.title[i<<1].size);
++	    	for(bit32_t i=0;i<ref1.total_num;i++) {
++	    	    sprintf(_ch,"@SQ\tSN:%s\tLN:%u\n",ref1.title[i<<1].name.c_str(),ref1.title[i<<1].size);
+ 	    	    _str.append(_ch);
+ 	    	}
+ 			sprintf(_ch,"@PG\tID:BSMAP\tVN:%s\tCL:\"%s\"\n",version,command_line.c_str()); _str.append(_ch);
+@@ -602,8 +602,8 @@
+ 	if(param.gz_ref) gzfin_db.open(ref_file.c_str());
+ 	else fin_db.open(ref_file.c_str());
+ 
+-	ref.Run_ConvertBinseq(fin_db, gzfin_db);
+-	message<<"[bsmap] @"<<Curr_Time()<<" \t"<<ref.total_num<<" reference seqs loaded, total size "<<ref.sum_length<<" bp. "<<Cal_AllTime()<<" secs passed"<<endl;
++	ref1.Run_ConvertBinseq(fin_db, gzfin_db);
++	message<<"[bsmap] @"<<Curr_Time()<<" \t"<<ref1.total_num<<" reference seqs loaded, total size "<<ref1.sum_length<<" bp. "<<Cal_AllTime()<<" secs passed"<<endl;
+ 	info(1);			
+ 	Do_Formatdb(); ref_time=Cal_AllTime(); read_time=0;
+ 	RunProcess(); 
+@@ -626,6 +626,6 @@
+ 		}
+ 	}
+ 	info(1);
+-    ref.ReleaseIndex();
++    ref1.ReleaseIndex();
+ 	return 0;
+ }
+--- samtools/ksort.h.old	2018-05-09 22:47:47.589873164 +0000
++++ samtools/ksort.h	2018-05-09 22:50:44.751090940 +0000
+@@ -141,7 +141,7 @@
+ 			tmp = *l; *l = l[i]; l[i] = tmp; ks_heapadjust_##name(0, i, l); \
+ 		}																\
+ 	}																	\
+-	inline void __ks_insertsort_##name(type_t *s, type_t *t)			\
++	static inline void __ks_insertsort_##name(type_t *s, type_t *t)			\
+ 	{																	\
+ 		type_t *i, *j, swap_tmp;										\
+ 		for (i = s + 1; i < t; ++i)										\
