@@ -20,7 +20,7 @@ make
 mkdir -p $PREFIX/bin
 mkdir -p $SCHMUTZI_HOME
 
-cp -R $SRC_DIR/* $SCHMUTZI_HOME
+cp -R $SRC_DIR/schmutzi-$PKG_VERSION/* $SCHMUTZI_HOME
 cd $SCHMUTZI_HOME && chmod +x contDeam endoCaller log2fasta mtCont approxDist.R schmutzi.pl mtCont bam2prof insertSize log2freq logs2pos mitoConsPDF.R mas2freq mas2log posteriorDeam.R contOut2ContEst.pl
 
 #Link binaries appropriately
