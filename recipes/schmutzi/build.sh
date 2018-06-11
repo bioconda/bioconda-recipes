@@ -11,6 +11,9 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 BINARY_HOME=$PREFIX/BIN
 SCHMUTZI_HOME=$PREFIX/opt/schmutzi-$PKG_VERSION
 
+#Patch the CXX calls in Makefile
+sed -Ei.bak "s/CXX.*/CXX=$CXX/g" ${SCHMUTZI_HOME}/Makefile
+
 make
 
 #Now copy over data to bin
