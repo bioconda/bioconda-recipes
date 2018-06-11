@@ -9,7 +9,6 @@ source:
 
 build:
   number: 0
-  skip: True 
   rpaths:
     - lib/R/lib/
     - lib/
@@ -23,13 +22,12 @@ requirements:
     - bioconductor-rsamtools
     - bioconductor-bsgenome
     - bioconductor-shortread
+    - python <3.0a0
 
 test:
   commands:
-    - ngsplotdb.py list | true
-    - ngs.plot.r 2>&1 | true
-    - replot.r 2>&1 | true
-    - plotCorrGram.r 2>&1 | true
+    - (ngsplotdb.py list 2>&1 | grep -qF "your ngs.plot database may be corrupted." || ngsplotdb.py list)
+    - (ngs.plot.r | grep -qF "Visit https://github.com/shenlab-sinai/ngsplot/wiki/ProgramArguments101 for details" || ngs.plot.r)
 
 about:
   license: GPL-2.0
