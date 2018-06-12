@@ -1,7 +1,5 @@
 #!/bin/bash
-# snpSift executable shell script, adapted from VarScan shell script
-jar_name="SnpSift.jar"
-
+# rdp_classifier executable shell script, adapted from trimmomatic shell script
 set -eu -o pipefail
 
 set -o pipefail
@@ -21,7 +19,7 @@ JAR_DIR=$DIR
 
 java=java
 
-if [ -z "${JAVA_HOME:=}" ]; then
+if [ -n "${JAVA_HOME:=}" ]; then
   if [ -e "$JAVA_HOME/bin/java" ]; then
       java="$JAVA_HOME/bin/java"
   fi
@@ -57,8 +55,8 @@ fi
 pass_arr=($pass_args)
 if [[ ${pass_arr[0]:=} == org* ]]
 then
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/$jar_name" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/rdp_classifier.jar" $pass_args
 else
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/$jar_name" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/rdp_classifier.jar" $pass_args
 fi
 exit
