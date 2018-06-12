@@ -12,7 +12,7 @@ BINARY_HOME=$PREFIX/BIN
 SCHMUTZI_HOME=$PREFIX/opt/schmutzi-$PKG_VERSION
 
 #Patch the CXX calls in Makefile
-sed -Ei.bak "s|^CXX *.*$|CXX="${CXX}"|g" ${SRC_DIR}/schmutzi-${PKG_VERSION}/Makefile
+sed -Ei.bak "s|^CXX *.*$|CXX="${CXX}"|g" ${SRC_DIR}/Makefile
 
 cd ${SRC_DIR}/schmutzi-${PKG_VERSION}
 
