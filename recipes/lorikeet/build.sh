@@ -1,9 +1,10 @@
 #!/bin/sh
 
+cd conda-build
 mkdir lib_compile/scala-2.11.8
 rm -rf lib_compile/scala-2.10.2
 for name in scala-compiler.jar scala-library.jar scala-reflect.jar ; do
-  wget -O lib_compile/scala-2.11.8/$name  https://github.com/AbeelLab/atk/raw/master/lib_compile/scala-2.11.8/$name
+  cp ../scala/$name lib_compile/scala-2.11.8/$name
 done
 
 ant dist
