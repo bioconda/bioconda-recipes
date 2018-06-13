@@ -1,5 +1,5 @@
 #!/bin/sh
-make INCLUDES="-I. -I$PREFIX/include -I$PREFIX/include/ncurses" LIBCURSES="-L$PREFIX/lib -lncurses"
+make INCLUDES="-I. -I$PREFIX/include -I$PREFIX/include/ncurses" LIBCURSES="-L$PREFIX/lib -lncurses -ltinfo"
 mkdir -p $PREFIX/bin
 mv samtools $PREFIX/bin
 mv bcftools/bcftools $PREFIX/bin

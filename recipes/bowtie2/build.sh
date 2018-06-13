@@ -1,7 +1,10 @@
 #!/bin/bash
-set -eu -o pipefail
+CPPFLAGS="$CPPFLAGS -I${PREFIX}/include"
+export CPPFLAGS
+LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
+export LDFLAGS
 
-make EXTRA_FLAGS="-I${PREFIX}/include -L${PREFIX}/lib"
+make
 
 binaries="\
 bowtie2 \
@@ -19,10 +22,16 @@ pythonfiles="bowtie2-build bowtie2-inspect"
 
 PY3_BUILD="${PY_VER%.*}"
 
-if [ $PY3_BUILD -eq 3 ]
-then
-    for i in $pythonfiles; do 2to3 --write $i; done
+if [ $PY3_BUILD -eq 3 ]; then
+    for i in $pythonfiles; do
+	2to3 --write $i
+    done
 fi
 
-for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
-for d in $directories; do cp -r $d $PREFIX/bin; done
+for i in $binaries; do
+    cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i
+done
+
+for d in $directories; do
+    cp -r $d $PREFIX/bin
+done

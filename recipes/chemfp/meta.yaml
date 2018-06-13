@@ -1,15 +1,24 @@
+{% set version="1.4" %}
+ 
 package:
   name: chemfp
-  version: "1.3"
+  version: {{ version }}
 
 source:
-  fn: chemfp-1.3.tar.gz
-  url: http://dalkescientific.com/releases/chemfp-1.3.tar.gz
-  sha256: 86f77a0ae85004dc6329d8dd74dc7c81c7a2abf7a7f4023845f01b4b6953d65b
+  fn: chemfp-{{ version }}.tar.gz
+  url: http://dalkescientific.com/releases/chemfp-{{ version }}.tar.gz
+  sha256: acab336971f0cf5650ca91e36ae74c7ed9d1bc3a93528e2041ccbcc17c3400ab
 
 build:
-  number: 1
+  number: 0
   skip: True    # [osx or py3k]
+  entry_points:
+    - ob2fps=chemfp.commandline.ob2fps:run
+    - oe2fps=chemfp.commandline.oe2fps:run
+    - rdkit2fps=chemfp.commandline.rdkit2fps:run
+    - sdf2fps=chemfp.commandline.sdf2fps:run
+    - simsearch=chemfp.commandline.simsearch:run
+    - fpcat=chemfp.commandline.fpcat:run
 
 requirements:
   build:
@@ -18,7 +27,6 @@ requirements:
     - python
     - openbabel
     - rdkit
-
   run:
     - python
     - openbabel
@@ -32,9 +40,16 @@ test:
     - chemfp.futures
     - chemfp.progressbar
 
+  commands:
+    - ob2fps --help
+    - rdkit2fps --help
+    - sdf2fps --help
+    - simsearch --help
+    - fpcat --help
+
 about:
   home: https://chemfp.com
-  license: MIT License
+  license: MIT
   summary: |
     chemfp is a set of command-lines tools for generating cheminformatics fingerprints and searching those
     fingerprints by Tanimoto similarity, as well as a Python library which can be used to build new tools.

@@ -1,0 +1,42 @@
+{% set name = "tRNAscan-SE" %}
+{% set version = "1.3.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 3
+
+source:
+  fn: {{ name|lower }}_{{ version }}.tar.gz
+  url: http://trna.ucsc.edu/software/tRNAscan-SE-1.3.1.tar.gz
+  sha256: 862924d869453d1c111ba02f47d4cd86c7d6896ff5ec9e975f1858682282f316
+  patches:
+    - patches/checkversion.pl.patch
+    - patches/fasta2gsi.pl.patch
+    - patches/instman.pl.patch
+    - patches/sstofa.pl.patch
+    - patches/tRNAscan-SE.src.patch
+    - patches/Makefile.patch
+
+requirements:
+  build:
+    - gcc  # [not osx]
+    - llvm  # [osx]
+    - zlib {{ CONDA_ZLIB }}*
+    - perl
+
+  run:
+    - libgcc  # [not osx]
+    - zlib {{ CONDA_ZLIB }}*
+    - perl
+
+test:
+  commands:
+    - tRNAscan-SE -h > /dev/null
+
+about:
+  home: http://eddylab.org/software.html
+  license: GPLv2
+  summary: tRNA detection in large-scale genome sequence

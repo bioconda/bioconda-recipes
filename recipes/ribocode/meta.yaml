@@ -1,11 +1,13 @@
+{% set version = "1.2.10" %}
+
 package:
   name: ribocode
-  version: 1.2.6
+  version: {{ version }}
 
 source:
-  fn: RiboCode-1.2.6.tar.gz
-  url: https://pypi.python.org/packages/c6/4b/902412b7c9683bcb9096e9359d17c6c0538b084a0c3167603ed69278aeb6/RiboCode-1.2.6.tar.gz
-  md5: e05ef843da351c4588e02bad3d5c3d65
+  fn: RiboCode-{{ version }}.tar.gz
+  url: https://github.com/xryanglab/RiboCode/files/1865164/RiboCode-1.2.10.tar.gz
+  md5: 7de8c656b243a506a9c7de2105020902
 
 requirements:
   build:
@@ -13,11 +15,11 @@ requirements:
     - numpy 
     - pysam >0.8.4
     - matplotlib
-    - scipy
     - pyfasta
     - biopython
     - h5py
     - htseq
+    - future
   run:
     - python
     - numpy 
@@ -28,23 +30,28 @@ requirements:
     - biopython
     - h5py
     - htseq
+    - future
 test:
   imports:
     - RiboCode
   commands:
     - RiboCode --help
+    - RiboCode_onestep --help
     - prepare_transcripts --help
+    - metaplots --help
+    - plot_orf_density --help
+    - ORFcount --help
+    - GTFupdate --help
 
 build:
-  skip: True # [not py27]
   entry_points:
     - RiboCode=RiboCode.RiboCode:main
+    - RiboCode_onestep=RiboCode.RiboCode_onestep:main
     - prepare_transcripts=RiboCode.prepare_transcripts:main
     - metaplots=RiboCode.metaplots:main
     - plot_orf_density=RiboCode.plot_orf_density:main
     - ORFcount=RiboCode.RPF_count_ORF:main
-  script:
-    python setup.py install
+    - GTFupdate=RiboCode.GTF_update:main
 
 about:
   home: https://github.com/xzt41/RiboCode

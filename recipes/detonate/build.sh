@@ -11,7 +11,7 @@ export CFLAGS="$CPPFLAGS"
 
 export CFLAGS_EXTRA="${LDFLAGS} ${CPPFLAGS}"
 
-find -name Makefile | xargs -I {} sed -i.bak 's/-lcurses/-lncurses/g' {}
+find -name Makefile | xargs -I {} sed -i.bak 's/-lcurses/-lncurses -ltinfo/g' {}
 
 make
 

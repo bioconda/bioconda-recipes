@@ -1,6 +1,8 @@
---- Makefile	2017-04-11 09:46:02.426758432 +0200
-+++ Makefile.fixed	2017-03-07 10:33:54.833014372 +0100
-@@ -9,8 +9,8 @@
+diff --git a/delly/Makefile b/bioconda-recipes/recipes/delly/Makefile
+index a294d80..534ca64 100644
+--- a/delly/Makefile
++++ b/bioconda-recipes/recipes/delly/Makefile
+@@ -9,8 +9,8 @@ BOOST_ROOT ?= ${PWD}/src/modular-boost
  
  # Flags
  CXX=g++
@@ -11,34 +13,30 @@
  
  # Additional flags for release/debug
  ifeq (${PARALLEL}, 1)
-@@ -23,7 +23,7 @@
+@@ -23,7 +23,7 @@ endif
  ifeq (${STATIC}, 1)
- 	LDFLAGS += -static -static-libgcc -pthread -lhts -lz
+ 	LDFLAGS += -static -static-libgcc -pthread -lhts -lz -llzma -lbz2
  else
--	LDFLAGS += -lhts -lz -Wl,-rpath,${SEQTK_ROOT},-rpath,${BOOST_ROOT}/stage/lib
-+	LDFLAGS += -lhts -lz
+-	LDFLAGS += -lhts -lz -llzma -lbz2 -Wl,-rpath,${SEQTK_ROOT},-rpath,${BOOST_ROOT}/stage/lib
++	LDFLAGS += -lhts -lz -llzma -lbz2
  endif
  ifeq (${DEBUG}, 1)
  	CXXFLAGS += -g -O0 -fno-inline -DDEBUG
-@@ -41,7 +41,7 @@
+@@ -41,7 +41,7 @@ BOOSTSOURCES = $(wildcard src/modular-boost/libs/iostreams/include/boost/iostrea
  DELLYSOURCES = $(wildcard src/*.h) $(wildcard src/*.cpp)
  
  # Targets
--TARGETS = .htslib .bcftools .boost src/delly src/cov src/dpe
-+TARGETS = src/delly src/cov src/dpe
+-TARGETS = .htslib .bcftools .boost src/delly src/dpe
++TARGETS = src/delly src/dpe
  
  all:   	$(TARGETS)
  
-@@ -54,16 +54,16 @@
+@@ -54,13 +54,13 @@ all:   	$(TARGETS)
  .boost: $(BOOSTSOURCES)
  	cd src/modular-boost && ./bootstrap.sh --prefix=${PWD}/src/modular-boost --without-icu --with-libraries=iostreams,filesystem,system,program_options,date_time && ./b2 && ./b2 headers && cd ../../ && touch .boost
  
 -src/delly: .htslib .bcftools .boost $(DELLYSOURCES)
 +src/delly: $(DELLYSOURCES)
- 	$(CXX) $(CXXFLAGS) $@.cpp -o $@ $(LDFLAGS)
- 
--src/cov: .htslib .bcftools .boost $(DELLYSOURCES)
-+src/cov: $(DELLYSOURCES)
  	$(CXX) $(CXXFLAGS) $@.cpp -o $@ $(LDFLAGS)
  
 -src/dpe: .htslib .bcftools .boost $(DELLYSOURCES)

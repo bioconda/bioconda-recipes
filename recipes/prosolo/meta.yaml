@@ -1,4 +1,4 @@
-{% set version = "0.2.0" %}
+{% set version = "0.4.0" %}
 
 package:
   name: prosolo
@@ -6,28 +6,37 @@ package:
 
 build:
   # only on OSX, `cargo install` fails with: `thread 'main' panicked at 'assertion failed: src_path.is_absolute()', src/tools/cargo/src/cargo/core/manifest.rs:311`
-  # looks like a `cargo` bug, that may go away with newer `rust` versions; check osx with rust>1.19 when available
+  # looks like a `cargo` bug, that may go away with newer `rust` versions; check osx with rust>1.21 when available
   skip: True # [not linux64]
-  number: 0
+  number: 2
   string: "gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}"
 
 source:
   url: https://github.com/PROSIC/prosolo/archive/v{{ version }}.tar.gz
   fn: prosolo-{{ version }}.tar.gz
-  md5: f70464c825e1b8e20da7d4382dd53f65
-  
+  md5: 6b91b9a3dfb915891fb9df702249ff99
 
 requirements:
   build:
     - gcc # [not osx]
     - llvm # [osx]
-    - rust >=1.18
+    - rust >=1.21
     - gsl {{CONDA_GSL}}*
-    - zlib
+    - openblas
+    - zlib {{ CONDA_ZLIB }}*
+    # new cram dependencies for rust-htslib 0.16.0
+    - bzip2 {{ CONDA_BZIP2 }}*  # [linux]
+    - xz {{CONDA_XZ}}*
+    - clangdev
   run:
     - gsl {{CONDA_GSL}}*
+    - openblas
     - libgcc # [not osx]
-    - zlib
+    - zlib {{ CONDA_ZLIB }}*
+    # new cram dependencies for rust-htslib 0.16.0
+    - bzip2 {{ CONDA_BZIP2 }}*  # [linux]
+    - xz {{CONDA_XZ}}*
+    - clangdev
 
 test:
   commands:
