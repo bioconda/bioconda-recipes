@@ -14,6 +14,7 @@ mkdir -p $PREFIX/bin
 
 make
 cp bin/lumpy $PREFIX/bin
+cp bin/lumpy_filter $PREFIX/bin
 cp scripts/lumpyexpress $PREFIX/bin
 
 cp scripts/cnvanator_to_bedpes.py $PREFIX/bin

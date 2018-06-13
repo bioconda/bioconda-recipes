@@ -1,18 +1,18 @@
 {% set name = "mashmap" %}
-{% set version = "1.0" %}
+{% set version = "2.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
   string: gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}
 
 source:
   fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://github.com/marbl/MashMap/archive/v1.0.tar.gz
-  md5: 215cf5117e52ca0d074979ba9e839b5a
+  url: https://github.com/marbl/MashMap/archive/v{{ version }}.tar.gz
+  sha256: 9a952548bb7c6a44804be336133361d8fbae1c970d886da9423bdfc0587f846c
 
 requirements:
   build:
@@ -20,21 +20,23 @@ requirements:
   - llvm  # [osx]
   - autoconf
   - automake 
+  - m4
   - perl
-  - zlib
+  - zlib {{ CONDA_ZLIB }}*
   - gsl {{ CONDA_GSL }}*
+  - openblas
 
   run:
   - libgcc  # [not osx]
-  - zlib
+  - zlib  {{ CONDA_ZLIB }}*
   - gsl {{ CONDA_GSL }}*
-
+  - openblas
 test:
   commands:
-    - mashmap -h 2>&1 | grep 'Approximate'
+    - mashmap -h 2>&1 | grep 'reference_files'
 
 about:
   home: https://github.com/marbl/MashMap
   license: Custom
   license_file: LICENSE.txt
-  summary: 'A fast and approximate long read mapper'
+  summary: 'A fast approximate aligner for long DNA sequences'

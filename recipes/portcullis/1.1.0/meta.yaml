@@ -1,0 +1,51 @@
+{% set name = "portcullis" %}
+{% set version = "1.1.0" %}
+{% set sha256 = "872c0dbd7515229ecc22c9bdcd72eb78dfe93a3c0bfd14af52c448c142fe892a" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+   fn: portcullis-{{version}}.tar.gz
+   url: https://github.com/maplesond/portcullis/archive/Release-{{version}}.tar.gz
+   sha256: {{ sha256 }}
+
+about:
+  home: https://github.com/maplesond/portcullis
+  license: GPL3
+  license_file: COPYING
+  summary: 'Splice junction analysis and filtering from BAM files'
+
+build:
+  number: 0
+  skip: True # [osx or py27]
+
+requirements:
+  build:
+      # - gcc will wait on new conda gcc for this
+      - llvm  # [osx]
+      - libgcc  # [not osx]
+      - python
+      - zlib {{CONDA_ZLIB}}*
+      - autoconf
+      - automake
+      - libtool
+      - perl
+      - setuptools
+      - tabulate
+      - numpy
+      - pandas
+      - samtools
+  run:
+      - python
+      - libgcc  # [not osx]
+      - zlib {{CONDA_ZLIB}}*
+      - tabulate
+      - numpy
+      - pandas
+      - samtools
+
+test:
+  commands:
+    - portcullis --version

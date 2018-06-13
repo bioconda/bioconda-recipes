@@ -1,10 +1,11 @@
 #!/bin/bash
-FN="org.Ce.eg.db_3.4.1.tar.gz"
+FN="org.Ce.eg.db_3.5.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.5/data/annotation/src/contrib/org.Ce.eg.db_3.4.1.tar.gz"
-  "https://depot.galaxyproject.org/software/org.Ce.eg.db/org.Ce.eg.db_3.4.1_src_all.tar.gz"
+  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/org.Ce.eg.db_3.5.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/org.Ce.eg.db_3.5.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-org.ce.eg.db/bioconductor-org.ce.eg.db_3.5.0_src_all.tar.gz"
 )
-    MD5="2f073d0ee9590a04341e67fceea71965"
+MD5="c33ea27e95df69fd1dd64d3ba1672d20"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -20,7 +21,7 @@ for URL in ${URLS[@]}; do
 
   # Platform-specific md5sum checks.
   if [[ $(uname -s) == "Linux" ]]; then
-    if [[ $(md5sum -c <<<"$MD5  $TARBALL") ]]; then
+    if md5sum -c <<<"$MD5  $TARBALL"; then
       SUCCESS=1
       break
     fi
@@ -40,5 +41,6 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 # Install and clean up
-R CMD INSTALL --build $TARBALL
+R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
 rm $TARBALL
+rmdir $STAGING

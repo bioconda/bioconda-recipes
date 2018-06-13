@@ -31,3 +31,6 @@ ln -s "$QUAST_HOME/quast.py" "$BINARY_HOME/quast"
 
 chmod +x $QUAST_HOME/metaquast.py
 ln -s "$QUAST_HOME/metaquast.py" "$BINARY_HOME/metaquast"
+
+cp $RECIPE_DIR/quast-download-* $PREFIX/bin
+chmod +x $PREFIX/bin/quast-download-*
