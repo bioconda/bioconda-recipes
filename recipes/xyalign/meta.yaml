@@ -1,17 +1,26 @@
+{% set name = "xyalign" %}
+{% set version = "1.1.1" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "257034e66906db09ca98f36645f61c3b2fc9c235fffa0751535a1c0ec44e64d5" %}
+
 package:
-  name: xyalign
-  version: "1.0.0"
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  fn: xyalign-1.0.0.tar.gz
-  url: https://pypi.python.org/packages/ca/5f/3508044d4c18caa8773049162baa78dc994b69fc25a2b953a3224289cc71/XYalign-1.0.0.tar.gz
-  md5: b9315052f9a68ae73608aeeddac45c6d
+  fn: '{{ name }}-{{ version }}.tar.gz'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  '{{ hash_type }}': '{{ hash_value }}'
 
 build:
   number: 0
   skip: True # [not py27]
   entry_points:
     - xyalign = xyalign.xyalign:main
+    - explore_thresholds = xyalign.explore_thresholds:main
+    - plot_count_stats = xyalign.plot_count_stats:main
+    - plot_window_differences = xyalign.plot_window_differences:main
+    - compare_vcfs = xyalign.compare_vcfs:main
   script: python setup.py install  --single-version-externally-managed --record=record.txt
 
 requirements:
@@ -46,6 +55,10 @@ test:
     - xyalign.test
   commands:
     - xyalign --help
+    - explore_thresholds --help
+    - plot_count_stats --help
+    - plot_window_differences --help
+    - compare_vcfs --help
   requires:
     - pytest
     - pytest-runner
