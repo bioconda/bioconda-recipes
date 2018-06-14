@@ -1,0 +1,50 @@
+{% set name = "sloika" %}
+{% set version = "2.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  fn: {{ name|lower }}_{{ version }}.tgz
+  url: https://github.com/nanoporetech/{{ name|lower }}/archive/release-{{ version }}.tar.gz
+  md5: b72ef9fc00601a2c57f5e827d3803f26
+
+build:
+  number: 0
+  skip: True # [py2k]
+
+requirements:
+  build:
+    - gcc # [linux]
+    - llvm # [osx]
+    - python
+    - cython
+    - numpy x.x
+    - h5py >=2.2.1,<=2.6.0
+    - theano 0.8.2
+    - biopython >=1.63
+    - hdf5 {{ CONDA_HDF5 }}*
+
+  run:
+    - libgcc # [linux]
+    - numpy x.x
+    - h5py >=2.2.1,<=2.6.0
+    - theano 0.8.2
+    - biopython >=1.63
+    - hdf5 {{ CONDA_HDF5 }}*
+
+test:
+  commands:
+    - basecall_network.py --help
+    - chunkify.py --help
+    - train_network.py --help
+    - validate_network.py --help
+    - verify_network.py --help
+
+about:
+  home: https://github.com/nanoporetech/sloika
+  license: Mozilla Public License 2.0 (MPL 2.0)
+  license_file: LICENSE.md
+  license_family: OTHER
+  summary: Sloika is Oxford Nanopore Technologies' software for training neural network models for base calling

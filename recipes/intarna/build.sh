@@ -33,7 +33,8 @@ fi
             --with-boost=$PREFIX \
             $CONFIGURE_MULTITHREADING \
             --disable-log-coloring \
-            ${extra_config_options} \
+            --with-boost-libdir=$PREFIX/lib \
+            ${extra_config_options}
             
 make
 make install
