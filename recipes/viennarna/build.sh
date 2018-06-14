@@ -9,13 +9,6 @@ if [ `uname` == Darwin ] ; then
                           LDFLAGS=-Wl,-headerpad_max_install_names"
 fi
 
-if [[ "${PY_VER}" =~ ^3 ]]
-then
-    extra_config_options="--with-python3 --without-python $extra_config_options"
-else
-    extra_config_options=" --without-python3 --with-python $extra_config_options"
-fi
-
 ## Configure and make
 ./configure --prefix=$PREFIX \
             --without-perl \
