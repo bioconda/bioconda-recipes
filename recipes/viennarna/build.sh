@@ -11,7 +11,6 @@ fi
 
 ## Configure and make
 ./configure --prefix=$PREFIX \
-            --without-perl \
             --with-kinwalker \
             --with-cluster \
             --disable-lto \
