@@ -6,21 +6,23 @@ package:
   version: '{{ version }}'
 
 source:
-  fn: v{{ version }}.tar.gz
+
   url: https://github.com/exhuma/python-cluster/archive/v{{ version }}.tar.gz
   sha256: '{{ sha256 }}'
 
 build:
-  number: 0
+  noarch: python
+  number: 2
   script:
     - sed -i.bak "s/name='cluster'/name='python-cluster'/g" setup.py
     - cat setup.py
-    - $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+    - python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
+  host:
     - setuptools
     - python
+    - pip
 
   run:
     - python
