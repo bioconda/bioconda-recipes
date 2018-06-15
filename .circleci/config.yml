@@ -136,14 +136,7 @@ jobs:
       # build only current commit (since we use squashed merging, this is safe)
       - run:
           name: Building, testing, and uploading
-          command: |
-            msg=`git log --format=%B -n 1 $CIRCLE_SHA1`
-            range='--git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1'
-            if [[ $msg = *"[bulk]"* ]]
-            then
-                range=''
-            fi
-            bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers --prelint $range
+          command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers --prelint --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1
 
   # build, test and upload on macos
   upload-macos:
@@ -158,14 +151,7 @@ jobs:
       # build only current commit (since we use squashed merging, this is safe)
       - run:
           name: Building, testing and uploading
-          command: |
-            msg=`git log --format=%B -n 1 $CIRCLE_SHA1`
-            range='--git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1'
-            if [[ $msg = *"[bulk]"* ]]
-            then
-                range=''
-            fi
-            bioconda-utils build recipes config.yml --anaconda-upload --prelint $range
+          command: bioconda-utils build recipes config.yml --anaconda-upload --prelint --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1
 
   # build, test and upload for bulk branch on linux
   bulk-linux:
