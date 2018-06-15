@@ -5,24 +5,23 @@
 
 package:
   name: megahit
-  version: '{{version}}'
+  version: {{ version }}
 
 source:
-  fn: v{{version}}.tar.gz
   sha256: '{{sha256}}'
   url: https://github.com/voutcn/megahit/archive/v{{version}}.tar.gz
 
 build:
-  number: 0
+  number: 3
 
 requirements:
   build:
-        # megahit requires openpm, which is not available in clang < 3.7
-    - gcc
-    - zlib {{CONDA_ZLIB}}*
+    # megahit requires openpm, which is not available in clang < 3.7
+    - {{ compiler('c') }}
+  host:
+    - zlib
   run:
-    - libgcc     # for gomp
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
     - python
 
 test:
@@ -31,8 +30,7 @@ test:
       # binaries actually work.
       # The output has to be removed to prevent permission failure during
       # cleanup after mulled-build.
-    - megahit --12 $PREFIX/share/megahit/example/readsInterleaved1.fa.gz && rm -r
-      megahit_out
+    - megahit --12 $PREFIX/share/megahit/example/readsInterleaved1.fa.gz && rm -r megahit_out
 
 
 about:
