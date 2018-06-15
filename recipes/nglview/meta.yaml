@@ -9,28 +9,28 @@ package:
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 1
-  script: python setup.py install --conda --single-version-externally-managed --record record.txt
+  noarch: python
+  number: 2
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
+  host:
     - python
+    - pip
     - setuptools
   run:
     - python
     - numpy
-    - libgcc    # [not osx]
     - ipywidgets >={{ minimum_ipywidgets_version }}
     - notebook
 
 test:
   imports:
-    - nglview 
+    - nglview
     - notebook
 
 about:
@@ -38,7 +38,7 @@ about:
   license: MIT
   license_file: LICENSE
   summary: 'An IPython widget to interactively view molecular structures and trajectories. Utilizes the embeddable NGL Viewer for rendering.'
-  doc_url: https://arose.github.io/nglview/latest/ 
+  doc_url: https://arose.github.io/nglview/latest/
   dev_url: https://github.com/arose/nglview
 
 extra:
