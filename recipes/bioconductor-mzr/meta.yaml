@@ -5,19 +5,23 @@
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
+
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
   sha256: 0c61b01e17d652eecd9dd4c20fcfdc59ace4dc4c30723de6d8e277a7c1b86ff4
+
 build:
-  number: 1
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
+
 requirements:
   build:
+    - {{ compiler('cxx') }}
+  host:
     - bioconductor-biobase
     - bioconductor-biocgenerics >=0.13.6
     - bioconductor-protgenerics >=1.9.1
@@ -25,19 +29,19 @@ requirements:
     - r-ncdf4  # not in DESCRIPTION
     - r-base
     - 'r-rcpp >=0.10.1'
+    - boost
     - libnetcdf 4.4.*
-    - boost {{CONDA_BOOST}}*
-    - gcc  
   run:
     - bioconductor-biobase
     - bioconductor-biocgenerics >=0.13.6
     - bioconductor-protgenerics >=1.9.1
     - bioconductor-zlibbioc  # not in DESCRIPTION
     - r-ncdf4  # not in DESCRIPTION
+    - boost
     - libnetcdf 4.4.*
-    - boost {{CONDA_BOOST}}*
     - r-base
-    - 'r-rcpp >=0.10.1'
+    - r-rcpp >=0.10.1
+
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
