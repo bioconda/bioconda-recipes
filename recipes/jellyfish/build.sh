@@ -11,5 +11,6 @@ pushd $SRC_DIR
 
 autoreconf -fi -Im4
 ./configure --prefix=$PREFIX
+cat Makefile
 make
 make install
