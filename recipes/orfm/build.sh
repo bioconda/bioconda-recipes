@@ -12,10 +12,10 @@ sed -E -i.bak \
     Makefile.am
 rm Makefile.am.bak
 autoreconf --install
-./configure
-make \
+./configure \
     CC="${CC}" \
     CFLAGS="${CFLAGS}" \
     CPPFLAGS="${CPPFLAGS}" \
-    LDFLAGS="${LDFLAGS}" \
+    LDFLAGS="${LDFLAGS}"
+make
 mv orfm  $PREFIX/bin
