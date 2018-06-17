@@ -1,8 +1,6 @@
 #!/bin/bash
 
-pushd $SRC_DIR
-
-autoreconf -i
+autoreconf -fi -Im4
 ./configure --prefix=$PREFIX
 make
 make install
