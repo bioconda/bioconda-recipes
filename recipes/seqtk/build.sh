@@ -7,6 +7,6 @@ export CFLAGS="-I$PREFIX/include -g -Wall -O2 -Wno-unused-function"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
-make all
+make -e all
 mkdir -p $PREFIX/bin
 cp -f seqtk $PREFIX/bin/
