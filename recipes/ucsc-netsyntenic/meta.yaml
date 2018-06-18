@@ -1,19 +1,16 @@
-{% set package = "ucsc-netsyntenic" %}
-{% set program = "netSyntenic" %}
 {% set version = "357" %}
-{% set sha256 = "0cec445f47c319e407d2cf866fb2f6ec0c9b72a2b10a0f75142ebc01ca4aca87" %}
 
 package:
-  name: "{{ package }}"
-  version: "{{ version }}"
+  name: ucsc-netsyntenic
+  version: '{{version}}'
 
 source:
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{{ version }}.src.tgz"                      # [linux]
-  sha256: "{{ sha256 }}"                                                    # [linux]
+  sha256: 20d873a767e4b3e42c61ca5ac3abecc7d77d3e6f0359ae3f65cfc29180e7d30b  # [osx]
+  url: http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/netSyntenic  # [osx]
+  url: http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{{version}}.src.tgz                # [linux]
+  sha256: 0cec445f47c319e407d2cf866fb2f6ec0c9b72a2b10a0f75142ebc01ca4aca87                                                      # [linux]
   patches:                                                                                   # [linux]
-    - "include.patch"                                                                        # [linux]
-
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/{{ program }}"                    # [osx]
+    - include.patch                                                                          # [linux]
 
 build:
   number: 2
@@ -24,17 +21,16 @@ build:
   # (for architecture x86_64) because larger updated load commands do not fit
   # (the program must be relinked, and you may need to use -headerpad or
   # -headerpad_max_install_names)
-  skip: True  # [osx]
+  skip: true  # [osx]
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - '{{ compiler("c") }}'
     - libpng                                                    # [linux]
     - libuuid                                                   # [linux]
     - mysql-connector-c                                         # [linux]
     - openssl                                                   # [linux]
     - zlib
-
   run:
     - libpng                                                    # [linux]
     - libuuid                                                   # [linux]
@@ -45,9 +41,9 @@ requirements:
 test:
   commands:
     # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    - which netSyntenic
 
 about:
-  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "varies; see http://genome.ucsc.edu/license"
-  summary: "Add synteny info to net."
+  home: http://hgdownload.cse.ucsc.edu/admin/exe/
+  license: varies; see http://genome.ucsc.edu/license
+  summary: Add synteny info to net.
