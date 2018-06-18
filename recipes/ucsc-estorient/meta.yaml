@@ -1,32 +1,28 @@
-{% set package = "ucsc-estorient" %}
-{% set program = "estOrient" %}
 {% set version = "357" %}
-{% set sha256 = "0cec445f47c319e407d2cf866fb2f6ec0c9b72a2b10a0f75142ebc01ca4aca87" %}
 
 package:
-  name: "{{ package }}"
-  version: "{{ version }}"
+  name: ucsc-estorient
+  version: '{{version}}'
 
 source:
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{{ version }}.src.tgz"                      # [linux]
-  sha256: "{{ sha256 }}"                                                    # [linux]
+  sha256: ac7bb6c75f362ac7f1ff4f627879539276ab872bb0cc47153dfde56c39995332  # [osx]
+  url: http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/estOrient  # [osx]
+  url: http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{{version}}.src.tgz                # [linux]
+  sha256: 0cec445f47c319e407d2cf866fb2f6ec0c9b72a2b10a0f75142ebc01ca4aca87                                                      # [linux]
   patches:                                                                                   # [linux]
-    - "include.patch"                                                                        # [linux]
-
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/{{ program }}"                    # [osx]
+    - include.patch                                                                          # [linux]
 
 build:
   number: 2
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - '{{ compiler("c") }}'
     - libpng                                                    # [linux]
     - libuuid                                                   # [linux]
     - mysql-connector-c                                         # [linux]
     - openssl                                                   # [linux]
     - zlib
-
   run:
     - libpng                                                    # [linux]
     - libuuid                                                   # [linux]
@@ -37,14 +33,10 @@ requirements:
 test:
   commands:
     # just check for existence, because the individual packages have no unified behavior
-    - which {{ program }}
+    - which estOrient
 
 about:
-  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
-  license: "varies; see http://genome.ucsc.edu/license"
-  summary: "
-Read ESTs from a database and determine orientation based on
-estOrientInfo table or direction in gbCdnaInfo table.  Update
-PSLs so that the strand reflects the direction of transcription.
-By default, PSLs where the direction can't be determined are dropped.
-"
+  home: http://hgdownload.cse.ucsc.edu/admin/exe/
+  license: varies; see http://genome.ucsc.edu/license
+  summary: " Read ESTs from a database and determine orientation based on estOrientInfo table or direction in gbCdnaInfo table.  Update PSLs so that the strand reflects the direction of transcription. By\
+    \ default, PSLs where the direction can't be determined are dropped. "
