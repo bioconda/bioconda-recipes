@@ -5,7 +5,7 @@ import sys
 import yaml
 from textwrap import dedent
 import tarfile
-from conda.fetch import download
+import urllib.request
 
 # e.g., "========   addCols   ===================================="
 re_header = re.compile(r'^=+\s+(?P<program>\w+)\s+=+$')
@@ -63,10 +63,14 @@ tarball = (
     'http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{0}.src.tgz'
     .format(VERSION))
 if not os.path.exists(os.path.basename(tarball)):
-    download(tarball, os.path.basename(tarball))
-download(
-    'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/FOOTER',
-    'FOOTER')
+    f = urllib.request.urlopen(tarball)
+    of = open(os.path.basename(tarball), "wb")
+    of.write(f.read())
+    of.close()
+f = urllib.request.urlopen('http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/FOOTER')
+of = open("FOOTER", "wb")
+of.write(f.read())
+of.close()
 
 # Different programs are built under different subdirectories in the source. So
 # get a directory listing of the tarball
@@ -103,9 +107,11 @@ problematic = {
 # Mismatches between the header and the summary; keys are the program name in
 # the header and values are the dir in the source code.
 resolve_header_and_summary_conflicts = {
+    'cpg_lh': 'cpglh',
     'rmFaDups': 'rmFaDups',
     'bedJoinTabOffset': 'bedJoinTabOffset',
     'webSync': 'webSync',
+    'paraNodeStop': 'paraNodeStop'
 }
 
 # Some programs' descriptions do not meet the regex in FOOTER and therefore
@@ -173,6 +179,19 @@ manual_descriptions = {
         """
         transform a psl format file to a bed format file.
         """),  # note for those keeping track, s/tranform/transform
+
+    'paraNodeStop': dedent(
+        """
+        Shut down parasol node daemons on a list of machines
+        """),
+
+    'parasol': dedent(
+        """
+        Parasol is the name given to the overall system for managing jobs on
+        a computer cluster and to this specific command.  This command is
+        intended primarily for system administrators.  The 'para' command
+        is the primary command for users.
+        """),
 }
 
 # programs listed in FOOTER that should not be considered a "ucsc utility"

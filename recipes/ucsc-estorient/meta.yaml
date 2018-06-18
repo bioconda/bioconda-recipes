@@ -14,26 +14,25 @@ source:
     - "include.patch"                                                                        # [linux]
 
   url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/{{ program }}"                    # [osx]
-  sha256: "ac7bb6c75f362ac7f1ff4f627879539276ab872bb0cc47153dfde56c39995332"  # [osx]
 
 build:
   number: 2
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('c') }}                                       # [linux]
     - libpng                                                    # [linux]
     - libuuid                                                   # [linux]
     - mysql-connector-c                                         # [linux]
     - openssl                                                   # [linux]
-    - zlib
+    - zlib {{CONDA_ZLIB}}*                                      # [linux]
 
   run:
     - libpng                                                    # [linux]
     - libuuid                                                   # [linux]
     - mysql-connector-c                                         # [linux]
     - openssl                                                   # [linux]
-    - zlib
+    - zlib {{CONDA_ZLIB}}*                                      # [linux]
 
 test:
   commands:
@@ -49,3 +48,7 @@ estOrientInfo table or direction in gbCdnaInfo table.  Update
 PSLs so that the strand reflects the direction of transcription.
 By default, PSLs where the direction can't be determined are dropped.
 "
+
+extra:
+  skip-lints:
+    - missing_hash

@@ -14,26 +14,25 @@ source:
     - "include.patch"                                                                        # [linux]
 
   url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/{{ program }}"                    # [osx]
-  sha256: "136a66f85b6d20c929d2e66dbb6a0bc2259f4a2ba2f2b393e4417413c2cf2bcf"  # [osx]
 
 build:
   number: 2
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('c') }}                                       # [linux]
     - libpng                                                    # [linux]
     - libuuid                                                   # [linux]
     - mysql-connector-c                                         # [linux]
     - openssl                                                   # [linux]
-    - zlib
+    - zlib {{CONDA_ZLIB}}*                                      # [linux]
 
   run:
     - libpng                                                    # [linux]
     - libuuid                                                   # [linux]
     - mysql-connector-c                                         # [linux]
     - openssl                                                   # [linux]
-    - zlib
+    - zlib {{CONDA_ZLIB}}*                                      # [linux]
 
 test:
   commands:
@@ -44,3 +43,7 @@ about:
   home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
   license: "varies; see http://genome.ucsc.edu/license"
   summary: "Given a bed, spit out promoter, first exon, or all introns."
+
+extra:
+  skip-lints:
+    - missing_hash

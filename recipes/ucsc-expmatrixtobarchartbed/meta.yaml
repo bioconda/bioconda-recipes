@@ -12,9 +12,7 @@ source:
   sha256: "{{ sha256 }}"                                                    # [linux]
   patches:                                                                                   # [linux]
     - "include.patch"                                                                        # [linux]
-    - "2to3.patch"                                                                           # [linux]
 
-  sha256: "8591f13a19ee8b01e56c1206a475dc062d452c04b92dc04cb4a6f5545b87bb22"  # [osx]
   url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/{{ program }}"                    # [osx]
 
 build:
@@ -22,13 +20,12 @@ build:
 
 requirements:
   build:
-    - {{ compiler('c') }}
-  host:
+    - {{ compiler('c') }}                                       # [linux]
     - libpng                                                    # [linux]
     - libuuid                                                   # [linux]
     - mysql-connector-c                                         # [linux]
     - openssl                                                   # [linux]
-    - zlib
+    - zlib {{CONDA_ZLIB}}*                                                     # [linux]
 
   run:
     - libpng                                                    # [linux]
@@ -36,7 +33,7 @@ requirements:
     - mysql-connector-c                                         # [linux]
     - openssl                                                   # [linux]
     - python                                                    # [linux]
-    - zlib
+    - zlib {{CONDA_ZLIB}}*                                                     # [linux]
 
 test:
   commands:
@@ -50,3 +47,7 @@ about:
 Generate a barChart bed6+5 file from a matrix, meta data, and
 coordinates.
 "
+
+extra:
+  skip-lints:
+    - missing_hash

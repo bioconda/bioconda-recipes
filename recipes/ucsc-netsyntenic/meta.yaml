@@ -14,34 +14,25 @@ source:
     - "include.patch"                                                                        # [linux]
 
   url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/{{ program }}"                    # [osx]
-  sha256: "20d873a767e4b3e42c61ca5ac3abecc7d77d3e6f0359ae3f65cfc29180e7d30b"  # [osx]
 
 build:
   number: 2
-  # Skipping OSX because of the following error:
-  # /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/install_name_tool:
-  # changing install names or rpaths can't be redone for:
-  # /anaconda/conda-bld/ucsc-netsyntenic_1511103948404/_b_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/bin/netSyntenic
-  # (for architecture x86_64) because larger updated load commands do not fit
-  # (the program must be relinked, and you may need to use -headerpad or
-  # -headerpad_max_install_names)
-  skip: True  # [osx]
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('c') }}                                       # [linux]
     - libpng                                                    # [linux]
     - libuuid                                                   # [linux]
     - mysql-connector-c                                         # [linux]
     - openssl                                                   # [linux]
-    - zlib
+    - zlib {{CONDA_ZLIB}}*                                      # [linux]
 
   run:
     - libpng                                                    # [linux]
     - libuuid                                                   # [linux]
     - mysql-connector-c                                         # [linux]
     - openssl                                                   # [linux]
-    - zlib
+    - zlib {{CONDA_ZLIB}}*                                      # [linux]
 
 test:
   commands:
@@ -52,3 +43,7 @@ about:
   home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
   license: "varies; see http://genome.ucsc.edu/license"
   summary: "Add synteny info to net."
+
+extra:
+  skip-lints:
+    - missing_hash

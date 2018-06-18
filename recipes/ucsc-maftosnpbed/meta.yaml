@@ -14,26 +14,25 @@ source:
     - "include.patch"                                                                        # [linux]
 
   url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/{{ program }}"                    # [osx]
-  sha256: "ab18a5f557649bdcb0dfc0a08b180e7cb1c21b9f237ea991770fc8614c79cbcd"  # [osx]
 
 build:
   number: 2
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('c') }}                                       # [linux]
     - libpng                                                    # [linux]
     - libuuid                                                   # [linux]
     - mysql-connector-c                                         # [linux]
     - openssl                                                   # [linux]
-    - zlib
+    - zlib {{CONDA_ZLIB}}*                                      # [linux]
 
   run:
     - libpng                                                    # [linux]
     - libuuid                                                   # [linux]
     - mysql-connector-c                                         # [linux]
     - openssl                                                   # [linux]
-    - zlib
+    - zlib {{CONDA_ZLIB}}*                                      # [linux]
 
 test:
   commands:
@@ -44,3 +43,7 @@ about:
   home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
   license: "varies; see http://genome.ucsc.edu/license"
   summary: "finds SNPs in MAF and builds a bed with their functional consequence"
+
+extra:
+  skip-lints:
+    - missing_hash

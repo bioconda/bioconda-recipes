@@ -14,26 +14,25 @@ source:
     - "include.patch"                                                                        # [linux]
 
   url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/{{ program }}"                    # [osx]
-  sha256: "68d36b10f32bb571731b01769f643ccc92eb9b7b37a4495a33d93e976cd2faa9"  # [osx]
 
 build:
   number: 2
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('c') }}                                       # [linux]
     - libpng                                                    # [linux]
     - libuuid                                                   # [linux]
     - mysql-connector-c                                         # [linux]
     - openssl                                                   # [linux]
-    - zlib
+    - zlib {{CONDA_ZLIB}}*                                      # [linux]
 
   run:
     - libpng                                                    # [linux]
     - libuuid                                                   # [linux]
     - mysql-connector-c                                         # [linux]
     - openssl                                                   # [linux]
-    - zlib                                                      # [linux]
+    - zlib {{CONDA_ZLIB}}*                                      # [linux]
 
 test:
   commands:
@@ -44,3 +43,7 @@ about:
   home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
   license: "varies; see http://genome.ucsc.edu/license"
   summary: "get overlapping records from an MAF using an index table"
+
+extra:
+  skip-lints:
+    - missing_hash
