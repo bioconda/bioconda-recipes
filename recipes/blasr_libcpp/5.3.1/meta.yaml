@@ -1,0 +1,50 @@
+{% set name = "blasr_libcpp" %}
+{% set version = "5.3.1" %}
+{% set sha256 = "45a673255bfe7e29ed1f5bdb6410aa45cb6b907400d038c3da9daf1058b09156" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  fn: {{ name }}-{{ version }}.tar.gz
+  url: https://github.com/PacificBiosciences/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patches/hdf5-pre-1.8.19-backport.patch # libblasr was ported to the new 1.8.19/1.10 C++ API
+
+about:
+  home: https://github.com/PacificBiosciences/blasr_libcpp
+  license: BSD-3
+  summary: blasr_libcpp is a support library used by blasr and other PacBio tools
+
+extra:
+  recipe-maintainers:
+    - pb-dseifert
+    - mhsieh
+    - ylipacbio
+
+build:
+  number: 2
+
+requirements:
+  build:
+    - gcc    # [not osx]
+    - llvm   # [osx]
+    - hdf5 {{ CONDA_HDF5 }}*
+    - zlib {{ CONDA_ZLIB }}*
+    - pbbam 0.18.0*
+    - boost
+    - pkg-config
+    - meson
+    - ninja
+
+  run:
+    - libgcc # [not osx]
+    - hdf5 {{ CONDA_HDF5 }}*
+    - pbbam 0.18.0*
+
+test:
+  commands:
+    - test -f ${PREFIX}/lib/libblasr.so # [not osx]
+    - test -f ${PREFIX}/lib/libblasr.dylib # [osx]

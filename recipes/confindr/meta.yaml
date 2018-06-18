@@ -1,0 +1,58 @@
+{% set name = "confindr" %}
+{% set version = "0.3.2" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "dae78a22b32cec2893553f624931b663c60d6362618b5db7d5d335d02a39e735" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  skip: True # [py27]
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - biopython
+    - pysam
+    - pytest
+    - bbmap
+    - jellyfish
+    - blast
+    - mash >=2
+    - samtools
+  run:
+    - python
+    - biopython
+    - pysam
+    - pytest
+    - bbmap
+    - jellyfish
+    - blast
+    - mash >=2
+    - samtools
+
+test:
+  imports:
+    - confindr
+    - confindr_wrappers
+  commands:
+    - confindr.py --version
+
+about:
+  home: https://github.com/lowandrew/ConFindr
+  license: MIT
+  license_family: MIT
+  summary: 'Detect intra- and inter-species bacterial contamination in NGS reads'
+  doc_url: 'https://lowandrew.github.io/ConFindr/'
+  dev_url: 'https://github.com/lowandrew/ConFindr'
+
+extra:
+  recipe-maintainers: 'Andrew Low'
