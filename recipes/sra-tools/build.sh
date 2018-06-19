@@ -1,69 +1,44 @@
 #!/bin/bash
 
-NGS_SDK_VERSION=1.3.0
-NCBI_VDB_VERSION=2.8.2-2
+#NCBI VDB MUST BE BUILT AT THE SAME TIME. COMPILING SRA TOOLS REQUIRES NCBI-SDK (SEPARATE BIOCONDA PACKAGE), NCBI-VDB SOURCES and NCBI-VDB BUILD FOLDER
 
-NGS_SDK_SHA256=803c650a6de5bb38231d9ced7587f3ab788b415cac04b0ef4152546b18713ef2
-NGS_VDB_SHA256=7866f7abf00e35faaa58eb3cdc14785e6d42bde515de4bb3388757eb0c8f3c95
+####
+# downloading ncbi-vdb
+####
+
+export ROOT=$PREFIX
+NCBI_VDB_VERSION=$PKG_VERSION-1
+NGS_VDB_SHA256=b4099e2fc3349eaf487219fbe798b22124949c89ffa1e7e6fbaa73a5178c8aff
+
+curl -L https://github.com/ncbi/ncbi-vdb/archive/${NCBI_VDB_VERSION}.tar.gz > ncbi-vdb-${NCBI_VDB_VERSION}.tar.gz
 
 
-curl -L https://github.com/ncbi/ngs/archive/${NGS_SDK_VERSION}.tar.gz \
-	> ngs-sdk-${NGS_SDK_VERSION}.tar.gz
-curl -L https://github.com/ncbi/ncbi-vdb/archive/${NCBI_VDB_VERSION}.tar.gz \
-	> ncbi-vdb-${NCBI_VDB_VERSION}.tar.gz
-
-[[ $NGS_SDK_SHA256 == $(cat ngs-sdk-${NGS_SDK_VERSION}.tar.gz |shasum -a 256| cut -f1 -d ' ') ]] && echo "NGS SDK Download success" || exit 1
 [[ $NGS_VDB_SHA256 == $(cat ncbi-vdb-${NCBI_VDB_VERSION}.tar.gz |shasum -a 256| cut -f1 -d ' ') ]] && echo "NCBI VDB Download success" || exit 1
 
-mkdir -p ngs-sdk
 mkdir -p ncbi-vdb
 
-tar xzf ngs-sdk-${NGS_SDK_VERSION}.tar.gz -C ngs-sdk
 tar xzf ncbi-vdb-${NCBI_VDB_VERSION}.tar.gz -C ncbi-vdb
 
-SRC_SDK=$SRC_DIR/ngs-sdk/ngs-${NGS_SDK_VERSION}
 SRC_VDB=$SRC_DIR/ncbi-vdb/ncbi-vdb-${NCBI_VDB_VERSION}
+BUILD_OUTDIR=$SRC_DIR/ncbi-outdir
 
+####
+# building ncbi-vdb
+####
 
 if [[ $OSTYPE == darwin* ]]; then
      export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
 fi
 
-####
-# build ngs-sdk
-####
-
-cd $SRC_SDK
-# First configure fails
-# See: https://github.com/ncbi/ngs/issues/1
-export ROOT=$PREFIX
-mkdir -p $PREFIX/usr/include
-./configure --prefix=$PREFIX/ --build=$PREFIX/share/ncbi
-make -C ngs-sdk
-
-./configure --prefix=$PREFIX/ --build=$PREFIX/share/ncbi
-make -C ngs-sdk install
-
-####
-# build ncbi-vdb
-####
-
 cd $SRC_VDB
-./configure --prefix=$PREFIX/ \
-	    --build=$PREFIX/share/ncbi \
-            --with-ngs-sdk-prefix=$PREFIX
-make install
+./configure --prefix=$PREFIX --build-prefix=$BUILD_OUTDIR --with-ngs-sdk-prefix=$PREFIX
+make
 
 ####
-# build sra-tools
+# building sra-tools
 ####
 
 cd $SRC_DIR
-export VDB_SRCDIR=$SRC_VDB
-./configure --prefix=$PREFIX \
-	--build=$PREFIX/share/ncbi/ \
-	--with-ncbi-vdb-sources=$SRC_VDB \
-	--with-ncbi-vdb-build=$PREFIX/share/ncbi \
-	--with-ngs-sdk-prefix=$PREFIX
-
+./configure --prefix=$PREFIX --build-prefix=$BUILD_OUTDIR --with-ngs-sdk-prefix=$PREFIX --with-ncbi-vdb-sources=$SRC_VDB --with-ncbi-vdb-build=$BUILD_OUTDIR
+make
 make install
