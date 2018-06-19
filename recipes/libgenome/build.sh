@@ -1,6 +1,6 @@
 #!/bin/bash
-pwd
-ls -l
+
+cd trunk
 ./autogen.sh
 ./configure --prefix=$PREFIX
 make
