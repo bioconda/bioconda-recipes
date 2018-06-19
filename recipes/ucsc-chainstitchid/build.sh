@@ -5,7 +5,6 @@ if [ "$(uname)" == "Darwin" ]; then
 else
     export MACHTYPE=x86_64
     export BINDIR=$(pwd)/bin
-    export C_INCLUDE_PATH="$BUILD_PREFIX/include"
     mkdir -p "$BINDIR"
     (cd kent/src/lib && make)
     (cd kent/src/htslib && make)

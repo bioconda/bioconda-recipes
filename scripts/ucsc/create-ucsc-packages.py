@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os
 import re
 import sys
@@ -91,17 +91,13 @@ def program_subdir(program, names):
     return top.replace('./userApps/', '')
 
 
-meta_template = open('template-meta.yaml').read()
-build_template = open('template-build.sh').read()
-test_template = open('template-run_test.sh').read()
-
 # relative to where this file lives
 recipes_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'recipes')
 
 # Mismatches between what is parsed from FOOTER and where a program lives in
 # the source
 problematic = {
-    'LiftSpec': 'liftSpec',
+#    'LiftSpec': 'liftSpec',
 }
 
 # Mismatches between the header and the summary; keys are the program name in
@@ -111,7 +107,6 @@ resolve_header_and_summary_conflicts = {
     'rmFaDups': 'rmFaDups',
     'bedJoinTabOffset': 'bedJoinTabOffset',
     'webSync': 'webSync',
-    'paraNodeStop': 'paraNodeStop'
 }
 
 # Some programs' descriptions do not meet the regex in FOOTER and therefore
@@ -212,14 +207,30 @@ custom_build_scripts = {
     'pslMap': 'template-build-with-stringify.sh',
     'overlapSelect': 'template-build-with-stringify.sh',
     'expMatrixToBarchartBed': 'template-build-cp.sh',
+    'gensub2': 'template-build-parasol.sh',
+    'para': 'template-build-parasol.sh',
+    'paraHub': 'template-build-parasol.sh',
+    'paraHubStop': 'template-build-parasol.sh',
+    'paraNode': 'template-build-parasol.sh',
+    'paraNodeStart': 'template-build-parasol.sh',
+    'paraNodeStop': 'template-build-parasol.sh',
+    'paraNodeStatus': 'template-build-parasol.sh',
+    'parasol': 'template-build-parasol.sh',
+    'paraTestJob': 'template-build-parasol.sh',
+    'bedJoinTabOffset': 'template-build-cp-short.sh',
+    'webSync': 'template-build-cp-short.sh',
 }
 
 custom_tests = {
     'expMatrixToBarchartBed': 'template-run_test-exit1.sh',
+    'bedJoinTabOffset': 'template-run_test-exit1.sh',
+    'webSync': 'template-run_test-exit1.sh',
 }
 
 custom_meta = {
     'expMatrixToBarchartBed': 'template-meta-with-python.yaml',
+    'bedJoinTabOffset': 'template-meta-with-python.yaml',
+    'webSync': 'template-meta-with-python.yaml',
 }
 
 
@@ -260,8 +271,6 @@ for block in parse_footer('FOOTER'):
     # conda package names must be lowercase
     package = 'ucsc-' + program.lower()
     recipe_dir = os.path.join(recipes_dir, package)
-    if not os.path.exists(recipe_dir):
-        os.makedirs(recipe_dir)
 
     # Identify the subdirectory we need to go to in the build script. In some
     # cases it may not exist, in which case we expect a custom build script.
@@ -269,6 +278,9 @@ for block in parse_footer('FOOTER'):
     if subdir is None and program not in custom_build_scripts:
         sys.stderr.write(" Skipping {0} ".format(program))
         continue
+
+    if not os.path.exists(recipe_dir):
+        os.makedirs(recipe_dir)
 
     # Fill in templates and write them to recipe dir
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:

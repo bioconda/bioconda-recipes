@@ -5,13 +5,12 @@ if [ "$(uname)" == "Darwin" ]; then
 else
     export MACHTYPE=x86_64
     export BINDIR=$(pwd)/bin
-    export C_INCLUDE_PATH="$BUILD_PREFIX/include"
     mkdir -p "$BINDIR"
     (cd kent/src/lib && make)
     (cd kent/src/htslib && make)
     (cd kent/src/jkOwnLib && make)
     (cd kent/src/hg/lib && make)
-    (cd kent/src/parasol/paraNodeStart && make)
-    cp bin/paraNodeStart "$PREFIX/bin"
+    (cd kent/src/parasol && make)
+    cp kent/src/parasol/bin/paraNodeStart "$PREFIX/bin"
 fi
 chmod +x "$PREFIX/bin/paraNodeStart"
