@@ -1,7 +1,9 @@
 #!/bin/sh
 
 export CXX=${PREFIX}/bin/g++
-
+export CPPFLAGS="-I$PREFIX/include"
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
 
 cd source
 make boost-fix=1
