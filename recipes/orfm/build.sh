@@ -1,10 +1,5 @@
 #!/bin/bash
 
-cd $SRC_DIR/ext
-wget -O seqtk.tar.gz https://github.com/lh3/seqtk/archive/d3b53c9.tar.gz
-tar -xvf seqtk.tar.gz -C seqtk --strip-components 1
-cd ..
-
 mkdir -p $PREFIX/bin
 sed -E -i.bak \
     -e 's/^(CFLAGS|LDFLAGS)=/\1+=/' \
@@ -13,9 +8,10 @@ sed -E -i.bak \
 rm Makefile.am.bak
 autoreconf --install
 ./configure \
-    CC="${CC}" \
-    CFLAGS="${CFLAGS}" \
-    CPPFLAGS="${CPPFLAGS}" \
-    LDFLAGS="${LDFLAGS}"
+  --prefix=$PREFIX
+  CC="${CC}" \
+  CFLAGS="${CFLAGS}" \
+  CPPFLAGS="${CPPFLAGS}" \
+  LDFLAGS="${LDFLAGS}"
 make
-mv orfm  $PREFIX/bin
+make install
