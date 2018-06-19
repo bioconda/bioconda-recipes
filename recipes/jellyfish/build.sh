@@ -1,6 +1,6 @@
 #!/bin/bash
 
-autoreconf -fi -Im4
+autoreconf -fi
 ./configure --prefix=$PREFIX
 make
 make install
