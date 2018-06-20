@@ -2,6 +2,7 @@
 set -eu -o pipefail
 
 export CPPFLAGS=-I$PREFIX/include
+export CFLAGS=-I$PREFIX/include
 export LDFLAGS=-L$PREFIX/lib
 export LIBS=-lpthread
 
