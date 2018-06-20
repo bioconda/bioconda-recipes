@@ -11,7 +11,7 @@ patch -p 0 -u < $RECIPE_DIR/patch.2
 
 cd trunk
 ./autogen.sh
-./configure --prefix=$PREFIX --with-boost=$CONDA_PREFIX
+./configure --prefix=$PREFIX 
 make
 make install
 
