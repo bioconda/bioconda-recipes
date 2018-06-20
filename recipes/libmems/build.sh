@@ -10,8 +10,8 @@ echo RECIPE_DIR is $RECIPE_DIR
 sed -i.bak $'s/\r$//' libMems/ProgressiveAligner.cpp
 sed -i.bak $'s/\r$//' libMems/AbstractMatch.h
 ls -lrt libMems
-patch -p 1 < $RECIPE_DIR/libMems.1.patch
-patch -p 1 < $RECIPE_DIR/libMems.2.patch
+patch -p 1 < $RECIPE_DIR/patch.1
+patch -p 1 < $RECIPE_DIR/patch.1
 
 ./autogen.sh
 ./configure --prefix=$PREFIX --with-boost=$CONDA_PREFIX
