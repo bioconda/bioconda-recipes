@@ -1,15 +1,11 @@
 #!/bin/bash -x
 
-pwd
-ls 
-ls trunk
-
 # Some patches are required, but the source has DOS line endings which 
 # require the --binary argument to patch, which is not provided through conda 
 # Best option seems to be to convert line endings then apply patches here
 
-sed -i.bak $'s/\r$//' trunk/ProgressiveAligner.cpp
-sed -i.bak $'s/\r$//' trunk/AbstractMatch.h
+sed -i.bak $'s/\r$//' trunk/libMems/ProgressiveAligner.cpp
+sed -i.bak $'s/\r$//' trunk/libMems/AbstractMatch.h
 ls -lrt libMems
 patch -p 1 < $RECIPE_DIR/patch.1
 patch -p 1 < $RECIPE_DIR/patch.1
