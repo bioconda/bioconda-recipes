@@ -46,9 +46,9 @@ args = ap.parse_args()
 
 # This is the "common" step in the CircleCI config which gets the versions of
 # Miniconda and bioconda-utils that we're using.
-urlretrieve(
-    'https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh',
-    filename='.circleci/common.sh')
+#urlretrieve(
+#    'https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh',
+#    filename='.circleci/common.sh')
 
 
 local_config_path = os.path.expanduser('~/.config/bioconda/activate')
