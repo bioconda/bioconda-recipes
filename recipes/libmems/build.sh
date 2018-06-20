@@ -1,11 +1,13 @@
 #!/bin/bash -x
 
 pwd
-echo RECIPE_DIR is $RECIPE_DIR
+ls 
+ls trunk
 
 # Some patches are required, but the source has DOS line endings which 
 # require the --binary argument to patch, which is not provided through conda 
 # Best option seems to be to convert line endings then apply patches here
+
 sed -i.bak $'s/\r$//' trunk/ProgressiveAligner.cpp
 sed -i.bak $'s/\r$//' trunk/AbstractMatch.h
 ls -lrt libMems
