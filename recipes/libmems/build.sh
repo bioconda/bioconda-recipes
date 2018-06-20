@@ -10,6 +10,7 @@ patch -p 0 -u < $RECIPE_DIR/patch.1
 patch -p 0 -u < $RECIPE_DIR/patch.2
 
 echo $PKG_CONFIG_PATH
+ls $PKG_CONFIG_PATH
 pkg-config --libs libGenome-1.3
 pkg-config --libs libMUSCLE-3.7
 
