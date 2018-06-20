@@ -7,7 +7,7 @@
 sed -i.bak $'s/\r$//' trunk/libMems/ProgressiveAligner.cpp
 sed -i.bak $'s/\r$//' trunk/libMems/AbstractMatch.h
 patch -p 0 -u < $RECIPE_DIR/patch.1
-patch -p 0 -u < $RECIPE_DIR/patch.1
+patch -p 0 -u < $RECIPE_DIR/patch.2
 
 cd trunk
 ./autogen.sh
