@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+
 ## Choose extra configure options depending on the operating system
 ## (mac or linux)
 ##
