@@ -17,6 +17,4 @@ cd trunk
 make
 make install
 
-# let's see if boost -mt libs are listed in the pkgconfig file...
-cat $PREFIX/lib/pkgconfig/libMems-1.6.pc && exit 1
 
