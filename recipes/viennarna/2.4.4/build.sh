@@ -1,5 +1,9 @@
 #!/bin/bash
 
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+export CPATH=${PREFIX}/include
+
 ## Choose extra configure options depending on the operating system
 ## (mac or linux)
 ##
