@@ -1,34 +1,35 @@
-{% set version = "0.6" %}
+{% set version = "0.7.2" %}
+{% set sha256 = "2cb0df4fddc5c7d533587cc82df69fd512b427ca900f2954b97bcf877925262e" %}
 package:
   name: pypiper
-  version: {{ version }}
+  version: '{{version}}'
 
 source:
-  fn: v{{ version }}.tar.gz
-  url: https://github.com/epigen/pypiper/archive/v{{ version }}.tar.gz
-  sha256: e86297aa2288f3296afc1f2ee9a7bcc40d81fa713adfdc8f641e686980d19e13
+  url: https://github.com/epigen/pypiper/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
 
 build:
-  number: 0
-  skip: True # [not py27]
-  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+  number: 2
+  skip: true # [not py27]
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - python
+    - pip
     - setuptools
-    - gcc # [not osx]
-    - llvm # [osx]
-
   run:
     - python
-    - libgcc # [not osx]
 
 test:
-    imports:
-      - pypiper
+  imports:
+    - pypiper
 
 about:
   home: http://pypiper.readthedocs.io/en/latest/
-  summary: Pypiper is a lightweight python toolkit that helps you write slick pipelines in python.
-  license: None
+  summary: Pypiper is a lightweight python toolkit that helps you write slick pipelines
+    in python.
+  license: BSD-2-Clause
+  license_family: BSD

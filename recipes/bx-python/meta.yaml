@@ -9,25 +9,25 @@ package:
   version: '{{ version }}'
 
 source:
-  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  number: 1
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:
-    - gcc
+    - {{ compiler('c') }}
+  host:
     - python
-    - zlib {{CONDA_ZLIB}}*
+    - pip
+    - zlib
     - setuptools
     - python-lzo
     - numpy
     - six
   run:
-    - libgcc
     - python
     - python-lzo
     - numpy
@@ -66,4 +66,4 @@ about:
 
 extra:
   container:
-      extended-base: true
+    extended-base: true
