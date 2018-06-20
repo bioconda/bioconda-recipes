@@ -1,6 +1,5 @@
 #!/bin/bash -x
 
-cd trunk
 pwd
 echo RECIPE_DIR is $RECIPE_DIR
 
@@ -13,6 +12,7 @@ ls -lrt libMems
 patch -p 1 < $RECIPE_DIR/patch.1
 patch -p 1 < $RECIPE_DIR/patch.1
 
+cd trunk
 ./autogen.sh
 ./configure --prefix=$PREFIX --with-boost=$CONDA_PREFIX
 make
