@@ -2,8 +2,7 @@
 
 mkdir -p $PREFIX/bin
 
-# sed on OSX has a different -i option
-sed "1d" Makefile > Makefile
+sed -i.bak "1d" Makefile
 export LIBRARY_PATH="$PREFIX/lib"
 export C_INCLUDE_PATH="$PREFIX/include"
 make
