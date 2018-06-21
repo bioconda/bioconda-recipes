@@ -1,9 +1,7 @@
 #!/bin/bash
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+export CPATH=${PREFIX}/include
 
-mkdir -p $PREFIX/bin
-
-sed -i.bak "1d" Makefile
-export LIBRARY_PATH="$PREFIX/lib"
-export C_INCLUDE_PATH="$PREFIX/include"
 make
-mv trimadap-mt  $PREFIX/bin
+mv trimadap-mt $PREFIX/bin
