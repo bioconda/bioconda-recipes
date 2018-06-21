@@ -22,8 +22,11 @@ UPSTREAM_REMOTE=__upstream__$(tr -dc a-z < /dev/urandom | head -c10)
 git remote add -t master $UPSTREAM_REMOTE https://github.com/bioconda/bioconda-recipes.git
 git fetch $UPSTREAM_REMOTE
 if ! git diff --quiet HEAD...$UPSTREAM_REMOTE/master -- .circleci/; then
-    echo 'The CI configuration is out of date.'
-    echo 'Please merge in bioconda:master.'
+    echo 'Your bioconda-recipes CI configuration is out of date.'
+    echo 'Please update it to the latest version of the upstream master branch.'
+    echo 'You can do this, e.g., by running:'
+    echo '  git fetch https://github.com/bioconda/bioconda-recipes.git master'
+    echo '  git merge FETCH_HEAD'
     exit 1
 fi
 git remote remove $UPSTREAM_REMOTE
