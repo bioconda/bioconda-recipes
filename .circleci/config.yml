@@ -212,19 +212,17 @@ workflows:
   # workflow for testing pushes and PRs
   bioconda-test:
     jobs:
-      # Linting is now performed just before a recipe is built with
+      # Linting is now also performed just before a recipe is built with
       # bioconda-utils build --prelint.
-      # TODO: remove this section if --prelint ends up working well.
-      # - lint:
-      #     filters:
-      #       branches:
-      #         ignore:
-      #           - master
-      #           - bulk
+      - lint:
+          filters:
+            branches:
+              ignore:
+                - master
+                - bulk
       - test-linux:
-          # TODO: remove if --prelint ends up working well
-          # requires:
-          #   - lint
+          requires:
+            - lint
           filters:
             branches:
               ignore:
@@ -232,8 +230,7 @@ workflows:
                 - bulk
       - test-macos:
           requires:
-            # TODO: remove if --prelint ends up working well
-            # - lint
+            - lint
             - test-linux
           filters:
             branches:
