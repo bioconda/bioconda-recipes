@@ -1,24 +1,28 @@
+{% set version = "1.5.9" %}
+{% set sha256 = "d1d140da6ee73cf74c557e275d7052d1c1e3d0ae81e94b14621d5bea59cc5ac7" %}
+
 package:
   name: yaggo
-  version: "1.5.9"
-
-build:
-  number: 0
+  version: {{ version }}
 
 source:
-  fn: yaggo
-  url: https://github.com/gmarcais/yaggo/releases/download/v1.5.9/yaggo
+  url: https://github.com/gmarcais/yaggo/releases/download/v{{ version }}/yaggo
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
 
 requirements:
-  build:
   run:
-    - ruby
+    # artificial version constraint to avoid the outdated bioconda::ruby
+    - ruby >2.2.3
 
 test:
   commands:
-    - yaggo -h 2>&1 | grep Usage > /dev/null
+    - (yaggo -h 2>&1 | grep -qF Usage || (yaggo -h && false))
 
 about:
   home: https://github.com/gmarcais/yaggo
-  license: GPLv3
+  license: GPL-3.0
+  license_family: GPL
   summary: Yaggo is a tool to generate command line parsers for C++. Yaggo stands for "Yet Another GenGetOpt" and is inspired by GNU Gengetopt.

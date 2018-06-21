@@ -5,5 +5,5 @@ export LIBRARY_PATH=${PREFIX}/lib
 
 mkdir -p build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} ..
+cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib ..
 make install
