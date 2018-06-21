@@ -8,7 +8,7 @@ for dir in $(ld --verbose|grep SEARCH_DIR|sed -e 's/SEARCH_DIR("//g' -e 's/");//
                 >&2 echo ======================================
                 >&2 echo ${ret}
         fi
-done;
+done; 
 
 ./autogen.sh
 ./configure --prefix=$PREFIX 
