@@ -29,12 +29,6 @@ fi
 git remote remove $UPSTREAM_REMOTE
 
 
-# TODO: remove this workaround
-if [[ $OSTYPE == linux* && ${CIRCLE_JOB-} != build ]] && [[ $USE_DOCKER == "true" ]]; then
-    docker pull continuumio/miniconda3:4.3.27
-    docker tag continuumio/miniconda3:4.3.27 continuumio/miniconda3:latest
-fi
-
 if ! type bioconda-utils > /dev/null || [[ $BOOTSTRAP == "true" ]]; then
     echo "Setting up bioconda-utils..."
 
