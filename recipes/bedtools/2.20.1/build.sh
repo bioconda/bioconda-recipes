@@ -4,4 +4,6 @@ export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
-make install prefix=$PREFIX
+make
+mkdir -p $PREFIX/bin
+mv bin/* $PREFIX/bin/
