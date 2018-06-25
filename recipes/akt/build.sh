@@ -4,4 +4,5 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 else
     make
 fi
-cp akt $PREFIX/bin
+mkdir -p "${PREFIX}/bin"
+cp ./akt "${PREFIX}/bin"
