@@ -10,23 +10,18 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
 
 source:
-  fn: stacks-{{ version }}.tar.gz
   sha256: {{ hash }}
   url: http://catchenlab.life.illinois.edu/stacks/source/stacks-{{ version }}.tar.gz
 
 requirements:
   build:
-    - gcc_linux-64 {{ gxx_version }}  # [linux64]
-    - gxx_linux-64 {{ gxx_version }}  # [linux64]
-    - clangxx_osx-64 {{ clang_version }} # [osx]
-    - clang_osx-64 {{ clang_version }}   # [osx]
-    - zlib {{CONDA_ZLIB}}*
+    - {{ compiler('c') }}
+  host:
+    - zlib
     - openmp  # [linux]
-    - llvm-openmp  # [osx]
-
   run:
     - perl
     - perl-bioperl-core
@@ -36,11 +31,9 @@ requirements:
     - python <3
     - velvet
     - samtools
-    - libgcc >={{ gxx_version }}  # [linux]
     - libcxx >={{ clang_version }} # [osx]
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
     - openmp  # [linux]
-    - llvm-openmp  # [osx]
 
 test:
   commands:
