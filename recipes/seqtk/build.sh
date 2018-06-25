@@ -4,4 +4,5 @@ mkdir -p "${PREFIX}/bin"
 make \
   CC="${CC}" \
   CFLAGS="${CFLAGS}" \
-  BINDIR="${PREFIX}/bin"
+  BINDIR="${PREFIX}/bin" \
+  install
