@@ -8,7 +8,7 @@ cd src
 if [ `uname` = "Darwin" ];
 then
   MAKEFILE=Makefile.MacOS
-  sed -i.bak "371" $MAKEFILE
+  sed -i.bak "31d" $MAKEFILE
 else
   MAKEFILE=Makefile.Linux
   sed -i.bak "37d" $MAKEFILE
