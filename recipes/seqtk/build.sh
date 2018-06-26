@@ -1,14 +1,8 @@
- #!/bin/bash
+#!/bin/bash
 
-export LDFLAGS="-L$PREFIX/lib"
-  
-sed -i.bak 's/\$(CFLAGS)/$(CPPFLAGS) $(CFLAGS) $(LDFLAGS)/' Makefile
-sed -i.bak 's/^CC=gcc$//' Makefile
-sed -i.bak 's/^CFLAGS=.*//' Makefile
-sed -i.bak 's/^BIND.*//' Makefile
+export C_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
 
-mkdir -p "${PREFIX}/bin"
-make CC="${CC}" CPPFLAGS="${CPPFLAGS}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" BINDIR="${PREFIX}/bin" all
-
-mv -f seqtk $PREFIX/bin
-
+make all
+mkdir -p $PREFIX/bin
+cp -f seqtk $PREFIX/bin/
