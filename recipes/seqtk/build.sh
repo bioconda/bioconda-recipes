@@ -10,4 +10,6 @@ sed -i.bak 's/^BIND.*//' Makefile
 mkdir -p "${PREFIX}/bin"
 make CC="${CC}" CPPFLAGS="${CPPFLAGS}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" BINDIR="${PREFIX}/bin" all
 
-cp -f seqtk "${PREFIX}/bin"
+echo "this compiled"
+
+#cp -f seqtk "${PREFIX}/bin"
