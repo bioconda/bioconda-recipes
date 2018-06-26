@@ -1,8 +1,11 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-
-make all
-mkdir -p $PREFIX/bin
-cp -f seqtk $PREFIX/bin/
+sed -i.bak 's/\$(CFLAGS)/$(CPPFLAGS) $(CFLAGS) $(LDFLAGS)/' Makefile
+mkdir -p "${PREFIX}/bin"
+make \
+  CC="${CC}" \
+  CPPFLAGS="${CPPFLAGS}" \
+  CFLAGS="${CFLAGS}" \
+  LDFLAGS="${CFLAGS}" \
+  BINDIR="${PREFIX}/bin" \
+  install
