@@ -1,22 +1,25 @@
+{% set name = "xyalign" %}
+{% set version = "1.1.4" %}
+
 package:
-  name: xyalign
-  version: "1.0.0"
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  fn: xyalign-1.0.0.tar.gz
-  url: https://pypi.python.org/packages/ca/5f/3508044d4c18caa8773049162baa78dc994b69fc25a2b953a3224289cc71/XYalign-1.0.0.tar.gz
-  md5: b9315052f9a68ae73608aeeddac45c6d
+  url: https://pypi.io/packages/source/x/xyalign/XYalign-{{ version }}.tar.gz
+  sha256: 719eb9331efade6d487f750b131d404121e1b6a0cb5e7382ade7105eaf26c12d
 
 build:
-  number: 0
+  number: 2
   skip: True # [not py27]
   entry_points:
     - xyalign = xyalign.xyalign:main
-  script: python setup.py install  --single-version-externally-managed --record=record.txt
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
+  host:
     - python
+    - pip
     - setuptools
     - pytest-runner
     - matplotlib
@@ -46,6 +49,10 @@ test:
     - xyalign.test
   commands:
     - xyalign --help
+    - explore_thresholds --help
+    - plot_count_stats --help
+    - plot_window_differences --help
+    - compare_vcfs --help
   requires:
     - pytest
     - pytest-runner

@@ -1,0 +1,48 @@
+{% set package = "ucsc-bedgraphtobigwig" %}
+{% set program = "bedGraphToBigWig" %}
+{% set version = "308" %}
+{% set sha256 = "a4475cca1868a8aaa77fd5f64a22a66ace9f068a3e4766c870bec0344e32f02f" %}
+
+package:
+  name: "{{ package }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://github.com/ucscGenomeBrowser/kent/archive/v{{ version }}_base.tar.gz"
+  sha256: "{{ sha256 }}"
+  patches:
+    - "include.patch"
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - zlib
+
+  run:
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - zlib
+
+test:
+  commands:
+    # just check for existence, because the individual packages have no unified behavior
+    - which {{ program }}
+
+about:
+  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "varies; see http://genome.ucsc.edu/license"
+  summary: "Convert a bedGraph file to bigWig format."
+
+extra:
+  identifiers:
+    - biotools:bedgraphtobigwig
+    - doi:10.1093/bioinformatics/btq351
