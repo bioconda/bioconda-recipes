@@ -6,11 +6,9 @@ package:
   version: {{ version }}
 
 build:
-  number: 3
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+  number: 5
 
 source:
-  fn: {{ name|lower }}-{{ version }}.tar.gz
   url: http://www.bcgsc.ca/platform/bioinfo/software/{{ name|lower }}/releases/{{ version }}/{{ name|lower }}-{{ version }}.tar.gz
   sha256: d87b76edeac3a6fb48f24a1d63f243d8278a324c9a5eb29027b640f7089422df
   patches:
@@ -18,26 +16,24 @@ source:
 
 requirements:
   build:
-  - gcc # [not osx]
-  - llvm # [osx]
-  - boost {{CONDA_BOOST}}*
-  - sparsehash
-  - sqlite
-  - openmpi
-
+    - {{ compiler('cxx') }}
+  host:
+    - boost
+    - sparsehash
+    - sqlite
+    - openmpi
   run:
-  - bwa
-  - libgcc # [not osx]
-  - pandoc
-  - sqlite
-  - openmpi
-  - make
+    - bwa
+    - pandoc
+    - sqlite
+    - openmpi
+    - make
 
 test:
   commands:
-    - ABYSS-P --version
-    - ABYSS --version
-    - abyss-pe help
+    - ABYSS-P --version | grep -q "{{ version }}"
+    - ABYSS --version | grep -q "{{ version }}"
+    - abyss-pe help | grep -q "Assemble reads into contigs and scaffolds"
 
 about:
   home: http://www.bcgsc.ca/platform/bioinfo/software/abyss

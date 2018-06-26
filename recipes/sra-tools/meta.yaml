@@ -1,36 +1,30 @@
-{% set SRA_TOOLS_VERSION = "2.8.2" %}
-{% set SRA_TOOLS_SHA256 = "d04e5fd735c3987c3497369844e20c1ae38a88867c36154798f072f19a8792fa" %}
+{% set version = "2.9.1" %}
 
 package:
   name: sra-tools
-  version: {{ SRA_TOOLS_VERSION }}
+  version: '{{version}}'
+
+source:
+  - url: https://github.com/ncbi/sra-tools/archive/{{version}}.tar.gz
+    sha256: 61f35be7e26cb538a93b8e7e0afd6bc593e97333638dc0de176a6a828b9b504e
+    folder: sra-tools
+  - url: https://github.com/ncbi/ncbi-vdb/archive/{{version}}.tar.gz
+    sha256: ef55c5dac0e9f0f05cfff6c9e56061b72aa034153895990bf2b7daaba8f06739
+    folder: ncbi-vdb
+  - url: https://github.com/ncbi/ngs/archive/{{version}}.tar.gz
+    sha256: c24c93bd70ed198a44c6b9dba0d6704edc90f228f832f2fef21fa5342303fc50
+    folder: ngs
 
 build:
   number: 0
 
-source:
-  fn: sra-tools-{{ SRA_TOOLS_VERSION }}.tar.gz
-  url: https://github.com/ncbi/sra-tools/archive/{{ SRA_TOOLS_VERSION }}-3.tar.gz
-  sha256: {{ SRA_TOOLS_SHA256 }}
-
-extra:
-  notes: "This package includes ncbi-vdb and ngs-sdk. After installation, you should run the configuration tool: ./vdb-config -i. This tool will setup your download/cache area for downloaded files and references."
-
 requirements:
   build:
-    - gcc # [not osx]
-    - llvm # [osx]
+    - '{{ compiler("c") }}'
+  host:
+    - ncbi-ngs-sdk
     - perl
-    - libiconv
-    - libxml2
-  run:
-    #
 
-about:
-  home: https://github.com/ncbi/sra-tools
-  license: Public Domain
-  summary: The SRA Toolkit and SDK from NCBI is a collection of tools and
-           libraries for using data in the INSDC Sequence Read Archives.
 test:
   commands:
     # "Frequently Used Tools"
@@ -41,3 +35,13 @@ test:
     - vdb-config --help > /dev/null
     - vdb-decrypt --help > /dev/null
     - fastq-dump -N 1 -X 1 SRR000001 && grep '@SRR000001.1' SRR000001.fastq
+
+about:
+  home: https://github.com/ncbi/sra-tools
+  license: Public Domain
+  summary: The SRA Toolkit and SDK from NCBI is a collection of tools and libraries
+    for using data in the INSDC Sequence Read Archives.
+
+extra:
+  notes: 'After installation, you should run the configuration tool: ./vdb-config
+    -i. This tool will setup your download/cache area for downloaded files and references.'

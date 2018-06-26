@@ -1,25 +1,25 @@
-{% set version = "4.7.0" %}
+{% set version = "5.1.5" %}
 
 package:
   name: snakemake
   version: {{ version }}
 
 source:
-  fn: snakemake-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/s/snakemake/snakemake-{{ version }}.tar.gz
-  sha256: a1c3245f47489219d212980f649ce435bc29b39638dade379e85f65a11c7e082
+  sha256: 9e5d8ab6cba6c1e7cb2c6f4118dc6052b07480c90c9a68781d8482d151ebec2f
 
 build:
   number: 0
   skip: True # [py27]
-  script: python setup.py install --single-version-externally-managed --record record.txt
+  script: python -m pip install --no-deps --ignore-installed .
   entry_points:
     - snakemake = snakemake:main
     - snakemake-bash-completion = snakemake:bash_completion
 
 requirements:
-  build:
+  host:
     - python
+    - pip
     - setuptools
     - wrapt
     - requests
@@ -52,15 +52,24 @@ requirements:
     - google-cloud-storage
     - boto3
     - aioeasywebdav
+    - jsonschema
+    - jinja2
+    - pygraphviz
+    - networkx >=2.0
 
 test:
-    imports:
-      - snakemake
-    commands:
-      - snakemake --version
-      - snakemake --version | grep "{{ version }}"
+  imports:
+    - snakemake
+  commands:
+    - snakemake --version
+    - snakemake --version | grep "{{ version }}"
 
 about:
   home: https://snakemake.readthedocs.io
   license: MIT
   summary: Snakemake is a workflow management system that aims to reduce the complexity of creating workflows by providing a fast and comfortable execution environment, together with a clean and modern specification language in python style. Snakemake workflows are essentially Python scripts extended by declarative code to define rules. Rules describe how to create output files from input files.
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/bts480
+    - biotools:Snakemake

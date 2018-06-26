@@ -7,13 +7,12 @@ package:
   version: {{ version }}
 
 build:
-  number: 1
-  string: py{{ CONDA_PY }}_boost{{ CONDA_BOOST }}_{{ PKG_BUILDNUM }}
+  number: 2
   # skip Python 3 builds due to test failures in vendored libs
   skip: True  # [py3k]
+  noarch: generic
 
 source:
-  fn: {{ name|lower }}-{{ version }}.tar.gz
   url: http://downloads.sourceforge.net/project/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
   md5: {{ hash }}
   patches:
@@ -23,8 +22,9 @@ source:
 
 requirements:
   build:
-    - gcc
-    - boost {{CONDA_BOOST}}*
+    - {{ compiler('c') }}
+  host:
+    - boost
     - perl
     - python
     - setuptools
@@ -33,12 +33,10 @@ requirements:
     - joblib
     - simplejson
     - blast
-
   run:
-    - boost {{CONDA_BOOST}}*
+    - boost
     - perl
     - python
-    - libgcc
     - matplotlib
     - openjdk
     - joblib
@@ -62,3 +60,5 @@ extra:
   notes: |
     - drawing MUMmer plots is disabled due to issues with gnuplot
     - GeneMark gene prediction software is disabled due to licensing issues
+  identifiers:
+    - biotools:quast
