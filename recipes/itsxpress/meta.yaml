@@ -1,0 +1,51 @@
+{% set name = "itsxpress" %}
+{% set version = "1.5.3" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "ca1cf8d02ca6819eeb67fc3daeef45d806e3f3464d29cc1641395d69bae95874" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  entry_points:
+    - itsxpress=itsxpress.main:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+  skip: True # [py27]
+
+requirements:
+  build:
+    - python
+    - setuptools
+  run:
+    - python
+    - biopython >=1.60
+    - hmmer
+    - bbmap
+    - vsearch
+
+test:
+  imports:
+    - itsxpress
+  commands:
+    - itsxpress --help
+  requires:
+    - nose
+
+about:
+  home: http://github.com/usda-ars-gbru/itsxpress
+  license: 'License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication'
+  license_family: 'PUBLIC-DOMAIN'
+  license_file: ''
+  summary: 'ITSxpress: Software to rapidly trim the Internally transcribed spacer (ITS) region of FASTQ files'
+
+
+extra:
+  recipe-maintainers: 'Adam R. Rivers'
