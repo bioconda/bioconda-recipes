@@ -17,12 +17,5 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
-<<<<<<< HEAD
 
-# Add more build steps here, if they are necessary.
 
-# See
-# http://docs.continuum.io/conda/build.html
-# for a list of environment variables that are set during the build process.
-=======
->>>>>>> 1c702e100f6c480078e7f1c21ab26af12bd930ee
