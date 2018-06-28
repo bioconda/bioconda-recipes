@@ -95,79 +95,16 @@ about:
   license_family: GPL3
   license_file: ''
   summary: Python implementation of the SCENIC pipeline for transcription factor inference from single-cell transcriptomics experiments.
-  description: 'pySCENIC\n========\n\n|buildstatus|_ |pypipackage|_ |docstatus|_\n\npySCENIC is a lightning-fast python implementation of the SCENIC_ pipeline (Single-Cell rEgulatory Network Inference and\n\
+  description: "pySCENIC is a lightning-fast python implementation of the SCENIC_ pipeline (Single-Cell rEgulatory Network Inference and\n\
     Clustering) which enables biologists to infer transcription factors, gene regulatory networks and cell types from\nsingle-cell RNA-seq data.\n\nThe pioneering work was done in R and results were published\
     \ in Nature Methods [1]_.\n\npySCENIC can be run on a single desktop machine but easily scales to multi-core clusters to analyze thousands of cells\nin no time. The latter is achieved via the dask_\
     \ framework for distributed computing [2]_.\n\nThe pipeline has three steps:\n\n1. First transcription factors (TFs) and their target genes, together defining a regulon, are derived using gene inference\
     \ methods which solely rely on correlations between expression of genes across cells. The arboreto_ package is used for this step.\n2. These regulons are refined by pruning targets that do not have\
     \ an enrichment for a corresponding motif of the TF effectively separating direct from indirect targets based on the presence of cis-regulatory footprints.\n3. Finally, the original cells are differentiated\
     \ and clustered on the activity of these discovered regulons.\n\n\n.. note::\n    The most impactfull speed improvement is introduced by the arboreto_ package in step 1. This package provides an alternative\
-    \ to GENIE3 [3]_ called GRNBoost2. This package can be controlled from within pySCENIC.\n\n\n.. sidebar:: **Quick Start**\n\n    * `Installation`_\n    * `Tutorial`_\n    * `Command Line Interface`_\n\
-    \    * See notebooks_\n    * Report an issue_\n    * Releases at PyPI_\n\nFeatures\n--------\n\nAll the functionality of the original R implementation is available and in addition:\n\n1. You can leverage\
-    \ multi-core and multi-node clusters using dask_ and its distributed_ scheduler.\n2. We implemented a version of the recovery of input genes that takes into account weights associated with these genes.\n\
-    3. Regulons, i.e. the regulatory network that connects a TF with its target genes, with targets that are repressed are now also derived and used for cell enrichment analysis.\n\nInstallation\n------------\n\
-    \nThe lastest stable release of the **package** itself can be installed via :code:`pip install pyscenic`.\n\n\n.. caution::\n    pySCENIC needs a python 3.5 or greater interpreter.\n\n\nYou can also\
-    \ install the bleeding edge (i.e. less stable) version of the package directly from the source:\n\n.. code-block:: bash\n\n    git clone https://github.com/aertslab/pySCENIC.git\n    cd pySCENIC/\n\
-    \    pip install .\n\nTo successfully use this pipeline you also need **auxilliary datasets**:\n\n1. *Databases ranking the whole genome* of your species of interest based on regulatory features (i.e.\
-    \ transcription factors). Ranking databases are typically stored in the feather_ format and can be downloaded from cisTargetDBs_.\n2. *Motif annotation* database providing the missing link between an\
-    \ enriched motif and the transcription factor that binds this motif. This pipeline needs a TSV text file where every line represents a particular annotation.\n\n=======================  ==========================\n\
-    \  Annotations             Species\n=======================  ==========================\n`HGNC annotations`_       Homo sapiens\n`MGI annotations`_        Mus musculus\n`Flybase annotations`_    Drosophila\
-    \ melanogaster\n=======================  ==========================\n\n.. _`HGNC annotations`: https://resources.aertslab.org/cistarget/motif2tf/motifs-v9-nr.hgnc-m0.001-o0.0.tbl\n.. _`MGI annotations`:\
-    \ https://resources.aertslab.org/cistarget/motif2tf/motifs-v9-nr.mgi-m0.001-o0.0.tbl\n.. _`Flybase annotations`: https://resources.aertslab.org/cistarget/motif2tf/motifs-v8-nr.flybase-m0.001-o0.0.tbl\n\
-    \n\n.. caution::\n    These ranking databases are 1.1 Gb each so downloading them might take a while. An annotations file is typically 100Mb in size.\n\nTutorial\n--------\n\nFor this tutorial 3,005\
-    \ single cell transcriptomes taken from the mouse brain (somatosensory cortex and\nhippocampal regions) are used as an example [4]_. The analysis is done in a Jupyter_ notebook.\n\n.. caution::\n  \
-    \  If you run this from a python script instead of a Jupyter_ notebook, please enclose the code in\n    a :code:`if __name__ == '__main__':` construct.\n\n\nFirst we import the necessary modules and\
-    \ declare some constants:\n\n.. code-block:: python\n\n    import os\n    import glob\n    import pickle\n    import pandas as pd\n    import numpy as np\n\n    from dask.diagnostics import ProgressBar\n\
-    \n    from arboreto.utils import load_tf_names\n    from arboreto.algo import grnboost2\n\n    from pyscenic.rnkdb import FeatherRankingDatabase as RankingDatabase\n    from pyscenic.utils import modules_from_adjacencies,\
-    \ load_motifs\n    from pyscenic.prune import prune, prune2df, df2regulons\n    from pyscenic.aucell import aucell\n\n    import seaborn as sns\n\n    DATA_FOLDER=\"~/tmp\"\n    RESOURCES_FOLDER=\"\
-    ~/resources\"\n    DATABASE_FOLDER = \"~/databases/\"\n    SCHEDULER=\"123.122.8.24:8786\"\n    DATABASES_GLOB = os.path.join(DATABASE_FOLDER, \"mm9-*.feather\")\n    MOTIF_ANNOTATIONS_FNAME = os.path.join(RESOURCES_FOLDER,\
-    \ \"motifs-v9-nr.mgi-m0.001-o0.0.tbl\")\n    MM_TFS_FNAME = os.path.join(RESOURCES_FOLDER, 'mm_tfs.txt')\n    SC_EXP_FNAME = os.path.join(RESOURCES_FOLDER, \"GSE60361_C1-3005-Expression.txt\")\n   \
-    \ REGULONS_FNAME = os.path.join(DATA_FOLDER, \"regulons.p\")\n    MOTIFS_FNAME = os.path.join(DATA_FOLDER, \"motifs.csv\")\n\n\nPreliminary work\n~~~~~~~~~~~~~~~~\n\nThe scRNA-Seq data is downloaded\
-    \ from GEO: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE60361 and loaded into memory:\n\n.. code-block:: python\n\n    ex_matrix = pd.read_csv(SC_EXP_FNAME, sep='\\t', header=0, index_col=0).T\n\
-    \    ex_matrix.shape\n\n::\n\n    (3005, 19970)\n\nand the list of Transcription Factors (TF) for *Mus musculus* are read from file.\nThe list of known TFs for Mm was prepared from TFCat (cf. notebooks_\
-    \ section).\n\n.. code-block:: python\n\n    tf_names = load_tf_names(MM_TFS_FNAME)\n\n\nFinally the ranking databases are loaded:\n\n.. code-block:: python\n\n    db_fnames = glob.glob(DATABASES_GLOB)\n\
-    \    def name(fname):\n        return os.path.basename(fname).split(\".\")[0]\n    dbs = [RankingDatabase(fname=fname, name=name(fname)) for fname in db_fnames]\n    dbs\n\n::\n\n        [FeatherRankingDatabase(name=\"\
-    mm9-tss-centered-10kb-10species\"),\n         FeatherRankingDatabase(name=\"mm9-500bp-upstream-7species\"),\n         FeatherRankingDatabase(name=\"mm9-500bp-upstream-10species\"),\n         FeatherRankingDatabase(name=\"\
-    mm9-tss-centered-5kb-10species\"),\n         FeatherRankingDatabase(name=\"mm9-tss-centered-10kb-7species\"),\n         FeatherRankingDatabase(name=\"mm9-tss-centered-5kb-7species\")]\n\nPhase I: Inference\
-    \ of co-expression modules\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\nIn the initial phase of the pySCENIC pipeline the single cell expression profiles are used to infer \nco-expression modules\
-    \ from.\n\nRun GENIE3 or GRNBoost from arboreto_ to infer co-expression modules\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nThe arboreto package is used for this phase\
-    \ of the pipeline. For this notebook only a sample of 1,000 cells is used\nfor the co-expression module inference is used.\n\n.. code-block:: python\n\n    adjacencies = grnboost2(ex_matrix, tf_names=tf_names,\
-    \ verbose=True)\n\nDerive potential regulons from these co-expression modules\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nRegulons are derived from adjacencies based on three methods.\n\
-    \nThe first method to create the TF-modules is to select the best targets for each transcription factor:\n\n1. Targets with importance > the 50th percentile.\n2. Targets with importance > the 75th percentile\n\
-    3. Targets with importance > the 90th percentile.\n\nThe second method is to select the top targets for a given TF:\n\n1. Top 50 targets (targets with highest weight)\n\nThe alternative way to create\
-    \ the TF-modules is to select the best regulators for each gene (this is actually how GENIE3 internally works). Then, these targets can be assigned back to each TF to form the TF-modules. In this way\
-    \ we will create three more gene-sets:\n\n1. Targets for which the TF is within its top 5 regulators\n2. Targets for which the TF is within its top 10 regulators\n3. Targets for which the TF is within\
-    \ its top 50 regulators\n\nA distinction is made between modules which contain targets that are being activated and genes that are being repressed. Relationship between TF and its target, i.e. activator\
-    \ or repressor, is derived using the original expression profiles. The Pearson product-moment correlation coefficient is used to derive this information.\n\nIn addition, the transcription factor is\
-    \ added to the module and modules that have less than 20 genes are removed.\n\n.. code-block:: python\n\n    modules = list(modules_from_adjacencies(adjacencies, ex_matrix))\n\n\nPhase II: Prune modules\
-    \ for targets with cis regulatory footprints (aka RcisTarget)\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n.. code-block:: python\n\n    # Calculate a list\
-    \ of enriched motifs and the corresponding target genes for all modules.\n    with ProgressBar():\n        df = prune2df(dbs, modules, MOTIF_ANNOTATIONS_FNAME)\n\n    # Create regulons from this table\
-    \ of enriched motifs.\n    regulons = df2regulons(df)\n\n    # Save the enriched motifs and the discovered regulons to disk.\n    df.to_csv(MOTIFS_FNAME)\n    with open(REGULONS_FNAME, \"wb\") as f:\n\
-    \        pickle.dump(regulons, f)\n\nDirectly calculating regulons without the intermediate dataframe of enriched features is also possible:\n\n.. code-block:: python\n\n    regulons = prune(dbs, modules,\
-    \ MOTIF_ANNOTATIONS_FNAME)\n\n\nClusters can be leveraged in the following way:\n\n.. code-block:: python\n\n    # The clusters can be leveraged via the dask framework:\n    df = prune2df(dbs, modules,\
-    \ MOTIF_ANNOTATIONS_FNAME, client_or_address=SCHEDULER)\n\n    # or alternatively:\n    regulons = prune(dbs, modules, MOTIF_ANNOTATIONS_FNAME, client_or_address=SCHEDULER)\n\n.. caution::\n    The\
-    \ nodes of the clusters need to have access to a shared network drive on which the ranking databases are stored.\n\nReloading the enriched motifs and regulons from file should be done as follows:\n\n\
-    .. code-block:: python\n\n    df = load_motifs(MOTIFS_FNAME)\n    with open(REGULONS_FNAME, \"rb\") as f:\n        regulons = pickle.load(f)\n\nPhase III: Cellular regulon enrichment matrix (aka AUCell)\n\
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\nWe characterize the different cells in a single-cell transcriptomics experiment via the enrichment of the previously discovered\nregulons.\
-    \ Enrichment of a regulon is measured as the Area Under the recovery Curve (AUC) of the genes that define this regulon.\n\n.. code-block:: python\n\n    auc_mtx = aucell(ex_matrix, regulons, num_workers=4)\n\
-    \    sns.clustermap(auc_mtx, figsize=(8,8))\n\nCommand Line Interface\n----------------------\n\nA command line version of the tool is included. This tool is available after proper installation of the\
-    \ package via :code:`pip`.\n\n.. code-block:: bash\n\n    { ~ }  \xBB pyscenic                                            ~\n    usage: pySCENIC [-h] {grnboost,ctx,aucell} ...\n\n    Single-CEll regulatory\
-    \ Network Inference and Clustering\n\n    positional arguments:\n      {grnboost,ctx,aucell}\n                            sub-command help\n        grnboost            Derive co-expression modules from\
-    \ expression matrix.\n        ctx                 Find enriched motifs for a gene signature and\n                            optionally prune targets from this signature based on\n                 \
-    \           cis-regulatory cues.\n        aucell              Find enrichment of regulons across single cells.\n\n    optional arguments:\n      -h, --help            show this help message and exit\n\
-    \n    Arguments can be read from file using a @args.txt construct.\n\nWebsite\n-------\n\nFor more information, please visit LCB_ and SCENIC_.\n\nLicense\n-------\n\nGNU General Public License v3\n\n\
-    \nAcknowledgments\n---------------\n\nWe are grateful to all providers of TF-annotated position weight matrices, in particular Martha Bulyk (UNIPROBE), Wyeth Wasserman and Albin Sandelin (JASPAR), BioBase\
-    \ (TRANSFAC), Scot Wolfe and Michael Brodsky (FlyFactorSurvey) and Timothy Hughes (cisBP).\n\nReferences\n----------\n\n.. [1] Aibar, S. et al. SCENIC: single-cell regulatory network inference and clustering.\
-    \ Nat Meth 14, 1083\u20131086 (2017).\n.. [2] Rocklin, M. Dask: parallel computation with blocked algorithms and task scheduling. conference.scipy.org\n.. [3] Huynh-Thu, V. A. et al. Inferring regulatory\
-    \ networks from expression data using tree-based methods. PLoS ONE 5, (2010).\n.. [4] Zeisel, A. et al. Cell types in the mouse cortex and hippocampus revealed by single-cell RNA-seq. Science 347, 1138\u2013\
-    1142 (2015).\n.. _dask: https://dask.pydata.org/en/latest/\n.. _distributed: https://distributed.readthedocs.io/en/latest/\n.. _LCB: https://aertslab.org\n.. _feather: https://github.com/wesm/feather\n\
-    .. _arboreto: https://arboreto.readthedocs.io\n.. _notebooks: https://github.com/aertslab/pySCENIC/tree/master/notebooks\n.. _issue: https://github.com/aertslab/pySCENIC/issues/new\n.. _SCENIC: http://scenic.aertslab.org\n\
-    .. _PyPI: https://pypi.python.org/pypi/pyscenic\n.. _Jupyter: http://jupyter.org\n.. _cisTargetDBs: https://resources.aertslab.org/cistarget/\n\n.. |buildstatus| image:: https://travis-ci.org/aertslab/pySCENIC.svg?branch=master\n\
-    .. _buildstatus: https://travis-ci.org/aertslab/pySCENIC\n\n.. |pypipackage| image:: https://badge.fury.io/py/pyscenic.svg\n.. _pypipackage: https://badge.fury.io/py/pyscenic\n\n.. |docstatus| image::\
-    \ https://readthedocs.org/projects/pyscenic/badge/?version=latest\n.. _docstatus: http://pyscenic.readthedocs.io/en/latest/?badge=latest\n\n.. |bioconda| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square\n\
-    .. _bioconda: https://anaconda.org/bioconda/pyscenic\n\n\n\n'
-  doc_url: ''
-  dev_url: ''
+    \ to GENIE3 [3]_ called GRNBoost2. This package can be controlled from within pySCENIC.\n\n\n"
+  doc_url: 'https://github.com/aertslab/pySCENIC/blob/master/docs/index.rst'
+  dev_url: 'https://github.com/aertslab/pySCENIC/'
 
 extra:
   recipe-maintainers: 
