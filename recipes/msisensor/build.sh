@@ -13,6 +13,9 @@ echo "********************************"
 echo "* DONE LOOKING FOR zlib.h FILE *"
 echo "********************************"
 
+# TESTING. ZLIB VERSION SHOULD NOT BE HARDCODED!
+export PATH="/opt/conda/pkgs/zlib-1.2.11-0/include:$PATH"
+
 export SAMTOOLS_ROOT=samtools-0.1.19
 
 make
