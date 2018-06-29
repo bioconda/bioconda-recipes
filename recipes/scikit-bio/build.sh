@@ -1,3 +1,3 @@
 #!/bin/bash
 
-$PYTHON setup.py install
+python -m pip install --no-deps --ignore-installed .
