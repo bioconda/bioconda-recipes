@@ -1,5 +1,7 @@
 # Portable sha1 sums across linux and os x
 sed -i.bak -e "s/shasum/openssl sha1 -r/g" plink_first_compile
+# Fixing the url to Zlib version 1.2.8
+sed -i.bak -e "s|net/zlib|net/fossils/zlib|g" plink_first_compile
 # Remove "make plink" so we can call it with overrides
 sed -i.bak -e "s/make plink//g" plink_first_compile
 # This downloads and builds a local zlib-1.2.8
