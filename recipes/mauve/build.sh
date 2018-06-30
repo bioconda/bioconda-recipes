@@ -14,5 +14,7 @@ ls -l ${mauve_dir}
 cp -v Mauve ${mauve_dir}/Mauve
 echo ==============
 ls -l ${mauve_dir}
-ln -s ${muave_dir}/Mauve $PREFIX/bin/Mauve
+ln -s Mauve $PREFIX/bin/Mauve
+echo ==============
+ls -l ${mauve_dir}
 
