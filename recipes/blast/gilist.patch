@@ -1,0 +1,23 @@
+--- c++/src/objtools/blast/seqdb_reader/seqdbimpl.cpp	2017-05-22 15:48:20.000000000 +0000
++++ c++/src/objtools/blast/seqdb_reader/seqdbimpl.cpp.new	2018-06-30 21:24:37.267425365 +0000
+@@ -1765,6 +1765,9 @@
+ 
+ CSeqDBIdSet CSeqDBImpl::GetIdSet()
+ {
++
++    CFastMutexGuard guard(m_MutexForIdSet);
++
+     if (m_IdSet.Blank()) {
+         if (! m_UserGiList.Empty()) {
+             // Note: this returns a 'blank' IdSet list for positive
+--- c++/src/objtools/blast/seqdb_reader/seqdbimpl.hpp	2017-05-22 15:48:20.000000000 +0000
++++ c++/src/objtools/blast/seqdb_reader/seqdbimpl.hpp.new	2018-06-30 21:25:57.702531187 +0000
+@@ -1050,6 +1050,8 @@
+ private:
+     CLASS_MARKER_FIELD("IMPL")
+ 
++    CFastMutex m_MutexForIdSet;
++
+     /// Adjust string length to offset of first embedded NUL byte.
+     ///
+     /// This is a work-around for bad data in the database; probably
