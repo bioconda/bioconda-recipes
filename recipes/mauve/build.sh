@@ -11,10 +11,10 @@ mkdir -v ${mauve_dir}/ext
 cp -vR ext/* ${mauve_dir}/ext/
 echo ==============
 ls -l ${mauve_dir}
-cp -v Mauve ${mauve_dir}/Mauve
+cp -v linux_x64/Mauve ${mauve_dir}/Mauve
 echo ==============
 ls -l ${mauve_dir}
-ln -s Mauve $PREFIX/bin/Mauve
+ln -s ${mauve_dir}/Mauve $PREFIX/bin/Mauve
 echo ==============
 ls -l ${mauve_dir}
 
