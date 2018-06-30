@@ -2,6 +2,7 @@
 
 ant jar
 mauve_dir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+mkdir -p ${mauve_dir}
 cp -v Mauve.jar ${mauve_dir}/Mauve.jar
 echo 'mauve_dir:'
 echo ==============
