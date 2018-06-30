@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="GenomeInfoDbData_1.0.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/GenomeInfoDbData_1.0.0.tar.gz"
+  "https://bioconductor.org/packages/3.6/data/annotation/src/contrib/GenomeInfoDbData_1.0.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-genomeinfodbdata/bioconductor-genomeinfodbdata_1.0.0_src_all.tar.gz"
 )
 MD5="3926f72117c49fbee36ab8e9c0b34885"
