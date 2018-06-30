@@ -2,10 +2,13 @@
 
 cd $SRC_DIR/c++/
 
-export CFLAGS="$CFLAGS -O2"
 export CXXFLAGS="$CXXFLAGS -O2"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
+export CFLAGS="$CFLAGS -O2 -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export LIBRARY_PATH="${PREFIX}/lib"
+export LD_LIBRARY_PATH="${PREFIX}/lib"
+export CPATH=${PREFIX}/include
 
 if test x"`uname`" = x"Linux"; then
     # only add things needed; not supported by OSX ld
@@ -78,5 +81,5 @@ mkdir -p $PREFIX/bin $LIB_INSTALL_DIR
 cp $SRC_DIR/c++/ReleaseMT/bin/* $PREFIX/bin/
 cp $SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
 
-chmod +x $PREFIX/bin/*
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/update_blastdb.pl
+chmod +x ${PREFIX}/bin/*
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' ${PREFIX}/bin/update_blastdb.pl
