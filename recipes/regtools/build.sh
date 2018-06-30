@@ -6,8 +6,10 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 export CPATH=${PREFIX}/include
 
-cmake -D CMAKE_INSTALL_PREFIX:PATH=$PREFIX .
-make -j 2
+mkdir build
+cd build
+cmake -D CMAKE_INSTALL_PREFIX:PATH=${PREFIX} -D CMAKE_INSTALL_RPATH:STRING=${PREFIX}/lib ..
+make -j 4
 
 cp regtools ${PREFIX}/bin
 chmod +x ${PREFIX}/bin/regtools
