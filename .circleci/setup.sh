@@ -28,7 +28,7 @@ if ! git diff --quiet HEAD...$UPSTREAM_REMOTE/master -- .circleci/; then
     echo '  git merge FETCH_HEAD'
     exit 1
 fi
-git remote remove $UPSTREAM_REMOTE
+git remote rm $UPSTREAM_REMOTE
 
 
 if ! type bioconda-utils > /dev/null || [[ $BOOTSTRAP == "true" ]]; then
