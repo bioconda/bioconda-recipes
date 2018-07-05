@@ -5,9 +5,9 @@ export LDFLAGS="-L$PREFIX/lib"
 
 if [ "$(uname)" == "Darwin" ]; then
     # clang doesn't accept -fopenmp and there's no clear way around that
-    ./configure --prefix=$SRC_DIR
+    ./configure --prefix=$PREFIX
 else
-    ./configure --prefix=$SRC_DIR OPENMP_CFLAGS='-fopenmp' CFLAGS='-DHAVE_OPENMP'
+    ./configure --prefix=$PREFIX OPENMP_CFLAGS='-fopenmp' CFLAGS='-DHAVE_OPENMP'
 fi
 make
 
