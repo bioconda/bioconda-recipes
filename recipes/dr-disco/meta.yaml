@@ -1,41 +1,35 @@
-{% set name = "dr-disco" %}
-{% set version = "0.14.0" %}
-{% set sha256 = "712af5b2dcb3b076c384ef181e837304baa79f53ee3c10ac6223bc269faf9595" %}
+{% set version = "0.16.3" %}
+{% set sha256 = "7149a1f329c51156cdbed59616e4bf6da9910dc35b8328d94e6623e9e3423c5f" %}
+
+
 
 package:
-  name: {{ name }}
-  version: {{ version }}
+  name: dr-disco
+  version: '{{version}}'
 
 source:
-  fn: v{{ version }}.tar.gz
-  url:  https://github.com/yhoogstrate/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://github.com/yhoogstrate/dr-disco/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
 
 build:
-  preserve_egg_dir: true
+  noarch: python
   number: 0
-  skip: true  # [not py27]
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
-    - python
-    - click
-    - htseq ==0.6.1.post1
-    - htslib ==1.3
-    - pysam ==0.10.0
-    - fuma ==3.0.5
+  host:
+    - python <3
+    - pip
     - numpy
     - scipy
-
   run:
-    - python
-    - click
-    - htseq ==0.6.1.post1
-    - htslib ==1.3
-    - pysam ==0.10.0
-    - fuma ==3.0.5
-    - numpy
+    - python <3
     - scipy
+    - pysam
+    - click
+    - fuma
+    - HTSeq
+    - pyfaidx
 
 test:
   imports:
@@ -45,11 +39,13 @@ test:
     # click requires a unicode locale
     - LANG=C.UTF-8 dr-disco --version
 
-    # This also tests appropriate loading of libs ~ small functional test
+  # This also tests appropriate loading of libs ~ small functional test
 #    - conda create -n curl curl && source activate curl && curl -L -o test_01.bam  http://github.com/yhoogstrate/dr-disco/raw/master/tests/detect-intronic/test_01.bam && dr-disco detect detect.test.bam test_01.bam
 #    - conda create -n curl curl && source activate curl && curl -L -o test_terg_01.filtered.bam http://github.com/yhoogstrate/dr-disco/raw/master/tests/fix-chimeric/test_terg_01.filtered.bam && dr-disco fix fix.test.bam test_terg_01.filtered.bam
 
 about:
-  home: https://github.com/yhoogstrate/dr-disco/
-  license:  GNU General Public License v3 or later (GPLv3+)
-  summary: 'Dr. Disco: fusion gene and genomic breakpoint detection in random hexamer RNA-seq data'
+  home: https://github.com/yhoogstrate/dr-disco
+  license: GPL-3.0+
+  license_family: GPL
+  summary: 'Dr. Disco: fusion gene and genomic breakpoint detection in random hexamer
+    RNA-seq data'

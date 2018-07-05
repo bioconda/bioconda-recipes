@@ -1,51 +1,46 @@
-{% set version="0.9.1" %}
+{% set version="0.10.2" %}
 {% set llvm_version = "4.0.0" %}
 
 build:
-  number: 1
+  number: 3
   # OSX failing due to libary issues even though shipping with Salmon binary
   # dyld: Library not loaded: /usr/local/opt/tbb/lib/libtbbmalloc_proxy.dylib
   # https://travis-ci.org/bioconda/bioconda-recipes/jobs/211785820#L295
   #skip: true # [osx]
 
 about:
-    home: https://github.com/COMBINE-lab/salmon
-    license: GPLv3
-    summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using lightweight alignments
+  home: https://github.com/COMBINE-lab/salmon
+  license: GPLv3
+  summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using lightweight alignments
 
 package:
-    name: salmon
-    version: {{ version }}
+  name: salmon
+  version: {{ version }}
 
 source:
-  fn: Salmon-{{ version }}_src.tar.gz 
   url: https://github.com/COMBINE-lab/salmon/archive/v{{ version }}.tar.gz
-  md5: 1277b8ed65d2c6982ed176a496a2a1e3
+  md5: 2b94de9ca8d995e7323a829e8a46071c
 
 requirements:
   build:
-    - llvm # [osx]
-    - clangdev =={{ llvm_version }}  # [osx]
-    - libcxx =={{ llvm_version }}  # [osx]
-    - gcc ==4.8.5 # [linux]
-    - autoconf 2.69 pl5.*
-    - boost {{CONDA_BOOST}}*
-    - icu 58.*
+    - {{ compiler('cxx') }}
+    - autoconf
     - cmake
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{CONDA_BZIP2}}*
+  host:
+    - boost
+    - icu
+    - zlib
+    - bzip2
     - unzip
-    - jemalloc ==4.5.0
+    - jemalloc >=5.1.0
     - tbb
   run:
-    - libgcc # [linux]
-    - libcxx =={{ llvm_version }}  # [osx]
-    - boost {{CONDA_BOOST}}*
-    - icu 58.*
-    - jemalloc ==4.5.0
+    - boost
+    - icu
+    - jemalloc >=5.1.0
     - tbb
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{CONDA_BZIP2}}*
+    - zlib
+    - bzip2
 
 test:
   commands:
