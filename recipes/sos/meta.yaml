@@ -1,0 +1,64 @@
+{% set name = "sos" %}
+{% set version = "0.9.15.2" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "d83a8f679e05f214441ae5c3aa9d1206ee321906ea257368c0d0493245ed54ba" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  linux-64: python 
+  number: 0
+  skip: True  # [not py36]
+  script: python -m pip install --no-deps --ignore-installed . --verbose
+
+requirements:
+  host:
+    - python
+    - pip
+
+  run:
+    - python
+    - setuptools
+    - psutil
+    - tqdm
+    - fasteners
+    - pyyaml
+    - pygments
+    - networkx
+    - pydot
+    - pydotplus
+    - pexpect
+    - billiard
+    - jinja2
+    - nbformat
+    - sos-pbs
+    - sos-rq
+    - sos-bioinfo
+    - xxhash
+
+test:
+  imports:
+    - sos
+    - sos.docker
+  commands:
+    - sos --help
+    - sos-runner --help
+
+about:
+  home: https://github.com/vatlab/SoS
+  license: GNU General Public License (GPL)
+  license_family: LGPL
+  summary: 'Script of Scripts (SoS): an interactive, cross-platform, and cross-language workflow system for reproducible data analysis'
+  description: '' 
+  doc_url: http://vatlab.github.io/SoS
+
+extra:
+  recipe-maintainers:
+    - vibbits
