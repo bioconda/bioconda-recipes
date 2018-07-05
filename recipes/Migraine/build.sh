@@ -1,5 +1,4 @@
 #!/bin/bash
 
-${CXX} -O3 -o migraine *.cpp
-
-cp migraine $PREFIX/bin
+mkdir -p ${PREFIX}/bin
+${CXX} -O3 -o ${PREFIX}/bin/migraine *.cpp
