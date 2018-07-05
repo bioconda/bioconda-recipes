@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e -u -x
+
 ./configure --prefix=$PREFIX
 make -j4
 make install
