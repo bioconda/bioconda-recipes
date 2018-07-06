@@ -7,7 +7,7 @@ mkdir -p $PREFIX/bin
 
 cd $SRC_DIR
 
-cp * $outdir
+cp grid.sh GRiD*.R README.md update_database.sh bowtie.txt check_R_libraries.R $outdir
 cp -R blast_database $outdir
 cp -R PathoScope $outdir
 chmod +x $outdir/*.sh
