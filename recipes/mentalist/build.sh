@@ -19,3 +19,7 @@ julia -e 'Pkg.add("Lumberjack")'
 julia -e 'Pkg.add("FastaIO")'
 julia -e 'Pkg.add("JLD")'
 julia -e 'Pkg.add("DataStructures")'
+
+rm -f "$PREFIX"/share/julia/site/lib/v*/*.ji
+rm -rf "$PREFIX"/share/julia/site/v*/METADATA
+rm -f "$PREFIX"/share/julia/site/v*/META_BRANCH
