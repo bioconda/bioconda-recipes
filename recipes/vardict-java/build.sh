@@ -6,7 +6,7 @@ mkdir -p $outdir/lib
 mkdir -p $PREFIX/bin
 
 # Compile
-./gradlew clean installDist
+TERM=xterm ./gradlew clean installDist
 
 # Copy into prefix
 cp build/install/VarDict/lib/*.jar $outdir/lib
