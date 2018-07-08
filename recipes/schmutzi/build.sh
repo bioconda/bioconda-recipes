@@ -1,36 +1,31 @@
 #!/bin/bash
+export CPP_INCLUDE_PATH=${PREFIX}/include
+export CXX_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
 
-#Building according to instructions at Schmutzi repository
+# Build libgab
+git clone https://github.com/grenaud/libgab
+cd libgab
+make BAMTOOLSINC=${PREFIX}/include/bamtools BAMTOOLSLIB=${PREFIX}/lib
+cd ..
 
-BINARY_HOME=$PREFIX/BIN
-SCHMUTZI_HOME=$PREFIX/opt/schmutzi-$PKG_VERSION
-
-cd ${SRC_DIR}
-#patch ${SRCDIR}/schmutzi-${PKG_VERSION}/Makefile ${RECIPE_DIR}/makefile_patch.txt 
+# schmutzi uses non-standard bamtools functions that aren't part of the normal library
+git clone https://github.com/pezmaster31/bamtools
+mkdir bamtools/build
+cd bamtools/build
+cmake ..
+make
+cd ../../
 
 make
 
-#Now copy over data to bin
-mkdir -p $PREFIX/bin
-mkdir -p $SCHMUTZI_HOME
+# Fix shebangs
+sed -i.bak "s:usr/bin/perl:usr/bin/env perl:" *.pl
 
-cp -R $SRC_DIR/schmutzi-$PKG_VERSION/* $SCHMUTZI_HOME
-cd $SCHMUTZI_HOME && chmod +x contDeam endoCaller log2fasta mtCont approxDist.R schmutzi.pl mtCont bam2prof insertSize log2freq logs2pos mitoConsPDF.R mas2freq mas2log posteriorDeam.R contOut2ContEst.pl
-
-#Link binaries appropriately
-cd $BINARY_HOME
-ln -s $SCHMUTZI_HOME/contDeam contDeam
-ln -s $SCHMUTZI_HOME/endCaller endoCaller
-ln -s $SCHMUTZI_HOME/mtCont mtCont
-ln -s $SCHMUTZI_HOME/approxDist.R approxDist.R 
-ln -s $SCHMUTZI_HOME/schmutzi.pl schmutzi.pl
-ln -s $SCHMUTZI_HOME/bam2prof bam2prof
-ln -s $SCHMUTZI_HOME/insertSize insertSize
-ln -s $SCHMUTZI_HOME/log2freq log2freq
-ln -s $SCHMUTZI_HOME/logs2pos logs2pos
-ln -s $SCHMUTZI_HOME/log2fasta log2fasta
-ln -s $SCHMUTZI_HOME/mitoConsPDF.R mitoConsPDF.R 
-ln -s $SCHMUTZI_HOME/mas2freq mas2freq
-ln -s $SCHMUTZI_HOME/mas2log mas2log
-ln -s $SCHMUTZI_HOME/posteriorDeam.R posteriorDeam.R 
-ln -s $SCHMUTZI_HOME/contOut2ContEst.pl contOut2ContEst.pl
+# There's no "make install"
+binaries=(addXACircular contDeam endoCaller log2fasta mtCont approxDist.R schmutzi.pl mtCont bam2prof insertSize log2freq logs2pos mitoConsPDF.R msa2freq msa2log posteriorDeam.R contOut2ContEst.pl)
+for binary in ${binaries[@]}; do
+    cp ${binary} ${PREFIX}/bin/
+    chmod 0755 ${PREFIX}/bin/${binary}
+done

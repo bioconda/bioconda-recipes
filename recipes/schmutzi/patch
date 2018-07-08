@@ -1,0 +1,40 @@
+--- Makefile	2017-11-07 17:11:06.000000000 +0100
++++ Makefile	2017-11-07 17:11:06.000000000 +0100
+@@ -1,33 +1,16 @@
+-CXX      = /usr/bin/g++ #-g -pg
+-BAMTOOLS= bamtools/
++BAMTOOLS= bamtools/src
+ LIBGAB   = libgab/
+ 
+-CXXFLAGS  = -lm -O3 -Wall -I${LIBGAB} -I${LIBGAB}/gzstream/ -I${BAMTOOLS}/include/  -I${BAMTOOLS}/src/ -c
+-LDLIBS   +=    ${BAMTOOLS}/build/src/utils/CMakeFiles/BamTools-utils.dir/*cpp.o  ${BAMTOOLS}/build/src/api/libbamtools.a -lpthread -lm -lz
++CXXFLAGS  = -lm -O3 -Wall -I${LIBGAB} -I${LIBGAB}/gzstream -I${PREFIX}/include/bamtools -Ibamtools/src -c
++LDLIBS   += bamtools/build/src/utils/CMakeFiles/BamTools-utils.dir/*cpp.o ${PREFIX}/lib/libbamtools.a -lpthread -lm -lz
+ 
+ 
+ 
+-all: endoCaller  mtCont damage2profile log2freq log2fasta contDeam msa2freq bam2prof insertSize splitEndoVsCont/poshap2splitbam logs2pos countRecords libgab/utils.o bamtools/build/src/api/libbamtools.a jointFreqDeaminated jointFreqDeaminatedDouble msa2log log2ConsensusLog logdiff logmask filterlog msa2singlefreq subSampleBAM addXACircular
++all: endoCaller  mtCont damage2profile log2freq log2fasta contDeam msa2freq bam2prof insertSize splitEndoVsCont/poshap2splitbam logs2pos countRecords jointFreqDeaminated jointFreqDeaminatedDouble msa2log log2ConsensusLog logdiff logmask filterlog msa2singlefreq subSampleBAM addXACircular
+ 
+ splitEndoVsCont/poshap2splitbam:
+ 	make -C splitEndoVsCont/
+ 
+-libgab/utils.h:
+-	rm -rf libgab/
+-	git clone --recursive https://github.com/grenaud/libgab.git
+-
+-
+-libgab/utils.o: bamtools/build/src/api/libbamtools.a   libgab/utils.h
+-	make -C libgab
+-
+-bamtools/src/api/BamAlignment.h:
+-	rm -rf bamtools/
+-	git clone --recursive https://github.com/pezmaster31/bamtools.git
+-
+-bamtools/build/src/api/libbamtools.a: bamtools/src/api/BamAlignment.h
+-	cd bamtools/ && mkdir -p build/  && cd build/ && cmake .. && make && cd ../..
+-
+-
+ miscfunc.o:	libgab/utils.o miscfunc.cpp
+ 	${CXX} ${CXXFLAGS} miscfunc.cpp
+ 
