@@ -1,0 +1,35 @@
+{% set version = "2.3.1" %}
+
+package:
+  name: spaln
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  fn: spaln-{{ version }}.tar.gz
+  url: https://github.com/ogotoh/spaln/archive/a552a0cbe85f7c14a49b37fc211c9f5e4581787e.tar.gz
+  sha256: 8728902895abcdc704fa129888ca779eb1c3fa2b4e2ea78ae5e200ead2dbe2a1
+
+requirements:
+  build:
+    - gcc   # [not osx]
+    - llvm  # [osx]
+
+  run:
+    - libgcc    # [not osx]
+    - perl
+
+test:
+  commands:
+    - makdbs 2>&1 | grep -q Usage
+    - makmdm | grep -q Pam
+    - sortgrcd 2>&1 | grep -q Usage
+    - spaln 2>&1 | grep -q Usage
+
+about:
+  home: https://github.com/ogotoh/spaln
+  license: GPLv2
+  license_file: LICENSE
+  summary: Genome mapping and spliced alignment of cDNA or amino acid sequences
