@@ -16,17 +16,20 @@ source:
 requirements:
   build:
     - ant
-    - conda-forge::openjdk
+    - openjdk
   host:
     - mauvealigner
   run:
-    - conda-forge::openjdk
-    - freetype
+    - openjdk
     - mauvealigner
+  test:
+    - openjdk
+    - xvfbwrapper
 
 test:
   commands: 
   - test -e $PREFIX/bin/Mauve
+  - JAR=$(find $PREFIX -name Mauve.jar); xvfb-run java -cp ${JAR} org.gel.mauve.contigs.ContigOrderer --help 2>&1 | grep draft
 
 about:
   home: http://darlinglab.org/mauve/
