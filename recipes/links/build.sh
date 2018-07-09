@@ -16,6 +16,6 @@ g++ -Wall -shared BloomFilter_wrap.o -o BloomFilter.so -O3
 #Installing included perl module 
 h2xs -n BloomFilter -O  -F -'I ../../../'
 cd BloomFilter
-perl Makefile.PL
+perl Makefile.PL PREFIX=${PREFIX}
 make
 make install
