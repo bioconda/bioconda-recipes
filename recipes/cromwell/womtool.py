@@ -15,7 +15,7 @@ from os import access, getenv, path, X_OK
 
 # Expected name of the VarScan JAR file.
 JAR_NAME = 'womtool.jar'
-PKG_NAME = 'womtool'
+PKG_NAME = 'cromwell'
 
 # Default options passed to the `java` executable.
 DEFAULT_JVM_MEM_OPTS = ['-Xms512m', '-Xmx1g']
