@@ -1,7 +1,5 @@
 #!/bin/bash
 
-mkdir -p ${PREFIX}/bin
-
 cp ssake/SSAKE ${PREFIX}/bin
 cp ssake/tools/*.pl ${PREFIX}/bin
 cp ssake/tools/*.py ${PREFIX}/bin
