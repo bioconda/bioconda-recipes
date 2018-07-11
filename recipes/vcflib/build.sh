@@ -5,7 +5,7 @@ export CPLUS_INCLUDE_PATH=$PREFIX/include
 
 #export CFLAGS="-I$PREFIX/include"
 #export LDFLAGS="-L$PREFIX/lib"
-export INCLUDES="-Ihtslib -I$PREFIX/include"
+export INCLUDES="-Ihtslib -I$PREFIX/include -Itabixpp/htslib -I\$(INC_DIR) -L. -Ltabixpp/htslib"
 export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
 
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
@@ -16,9 +16,6 @@ fi
 # Uses newline trick for OSX from: http://stackoverflow.com/a/24299845/252589
 sed -i.bak 's/SUBDIRS=./SUBDIRS=.\'$'\n''LOBJS=tabix.o/' tabixpp/Makefile
 sed -i.bak 's/-ltabix//' Makefile
-
-#sed -i.bak 's/-Ihtslib/-Ihtslib "$CFLAGS"/' tabixpp/Makefile
-#sed -i.bak 's/^LIBPATH.*/LIBPATH=-L. -Lhtslib "$LDFLAGS"/' tabixpp/Makefile
 
 make -e
 
