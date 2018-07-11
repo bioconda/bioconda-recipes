@@ -3,7 +3,6 @@
 export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=$PREFIX/include
 
-#export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib -L\$(LIB_DIR) -lvcflib -lhts -lpthread -lz -lm -llzma -lbz2"
 export INCLUDES="-Ihtslib -I$PREFIX/include -Itabixpp/htslib -I\$(INC_DIR) -L. -Ltabixpp/htslib"
 export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
