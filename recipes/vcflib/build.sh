@@ -16,6 +16,7 @@ fi
 # Uses newline trick for OSX from: http://stackoverflow.com/a/24299845/252589
 sed -i.bak 's/SUBDIRS=./SUBDIRS=.\'$'\n''LOBJS=tabix.o/' tabixpp/Makefile
 sed -i.bak 's/-ltabix//' Makefile
+sed -i.bak 's/make/make -e/' Makefile
 
 make -e
 
