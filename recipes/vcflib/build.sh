@@ -5,6 +5,8 @@ export CPLUS_INCLUDE_PATH=$PREFIX/include
 
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
+export INCLUDES="-Ihtslib -I$PREFIX/include"
+
 
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
 if [ "$(uname)" == "Darwin" ]; then
@@ -15,10 +17,10 @@ fi
 sed -i.bak 's/SUBDIRS=./SUBDIRS=.\'$'\n''LOBJS=tabix.o/' tabixpp/Makefile
 sed -i.bak 's/-ltabix//' Makefile
 
-sed -i.bak 's/-Ihtslib/-Ihtslib "$CFLAGS"/' tabixpp/Makefile
-sed -i.bak 's/-Lhtslib/-Lhtslib "$LDFLAGS"/' tabixpp/Makefile
+#sed -i.bak 's/-Ihtslib/-Ihtslib "$CFLAGS"/' tabixpp/Makefile
+#sed -i.bak 's/^LIBPATH.*/LIBPATH=-L. -Lhtslib "$LDFLAGS"/' tabixpp/Makefile
 
-make
+make -e
 
 mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin
