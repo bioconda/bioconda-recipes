@@ -15,8 +15,8 @@ fi
 sed -i.bak 's/SUBDIRS=./SUBDIRS=.\'$'\n''LOBJS=tabix.o/' tabixpp/Makefile
 sed -i.bak 's/-ltabix//' Makefile
 
-sed -i.bak 's/-Ihtslib/-Ihtslib -I"$PREFIX"\/include/' tabixpp/Makefile
-sed -i.bak 's/-Lhtslib/-Lhtslib -L"$PREFIX"\/lib/' tabixpp/Makefile
+sed -i.bak 's/-Ihtslib/-Ihtslib "$CFLAGS"/' tabixpp/Makefile
+sed -i.bak 's/-Lhtslib/-Lhtslib "$LDFLAGS"/' tabixpp/Makefile
 
 make
 
