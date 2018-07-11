@@ -7,6 +7,7 @@ export CPLUS_INCLUDE_PATH=$PREFIX/include
 #export LDFLAGS="-L$PREFIX/lib"
 export INCLUDES="-Ihtslib -I$PREFIX/include -Itabixpp/htslib -I\$(INC_DIR) -L. -Ltabixpp/htslib"
 export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
+export CXXFLAGS = -O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
 
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
 if [ "$(uname)" == "Darwin" ]; then
