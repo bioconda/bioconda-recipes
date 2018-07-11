@@ -36,8 +36,9 @@ else
     exit 1
 fi
 
-# Add more build steps here, if they are necessary.
-
-# See
-# http://docs.continuum.io/conda/build.html
-# for a list of environment variables that are set during the build process.
+# https://github.com/conda/conda-build/issues/2824
+for i in $(ls bdf_scripts); do
+	chmod u+w $PREFIX/bin/$i
+done
+# yes there's a readme installed in the bin dir, idk why
+[ -e $PREFIX/bin/README ] && rm -f $PREFIX/bin/README
