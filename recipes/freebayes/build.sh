@@ -22,13 +22,6 @@ export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
-
-# Make bamtools.
-#mkdir -p bamtools/build
-#cd bamtools/build
-#cmake ..
-#cd ../..
-
 # Make autoversion.
 cd src
 make autoversion
