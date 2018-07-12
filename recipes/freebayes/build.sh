@@ -5,9 +5,6 @@ if [ "$(uname)" == "Darwin" ]; then
     sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/g' vcflib/smithwaterman/Makefile
     export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
 
-    # Patch vcflib: fix for missing <thread> include.
-    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' vcflib/intervaltree/Makefile
-    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' vcflib/Makefile
 fi
 
 # Patch vcflib.
@@ -21,6 +18,7 @@ export CFLAGS="-I$PREFIX/include"
 export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
+export CXXFLAGS="${CXXFLAGS} -std=c++0x"
 
 # Make autoversion.
 cd src
