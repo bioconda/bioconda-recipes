@@ -18,7 +18,6 @@ export CFLAGS="-I$PREFIX/include"
 export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
-export CXXFLAGS="${CXXFLAGS} -std=c++0x"
 
 # Make autoversion.
 cd src
