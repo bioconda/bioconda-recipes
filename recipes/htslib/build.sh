@@ -1,4 +1,4 @@
 #!/bin/bash
 
-./configure CFLAGS="-DHAVE_LIBDEFLATE" CPPFLAGS="-DHAVE_LIBDEFLATE -I$PREFIX/include" --prefix=$PREFIX --enable-libcurl CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
-make install prefix=$PREFIX
+./configure --prefix=${PREFIX} --enable-libcurl --with-libdeflate --enable-plugins --enable-gcs --enable-s3
+make install
