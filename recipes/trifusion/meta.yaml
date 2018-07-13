@@ -1,0 +1,112 @@
+{% set name = "trifusion" %}
+{% set version = "1.0.1rc2" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "362816316dcc99cce3d583a1caa1e606f6478c3eec68dc8a1086077ceae9b4c6" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  entry_points:
+    - orthomcl_pipeline = trifusion.orthomcl_pipeline:main
+    - TriSeq = trifusion.TriSeq:main
+    - TriStats = trifusion.TriStats:main
+    - TriFusion = trifusion.TriFusion:gui_exec
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - seaborn
+    - configparser
+    - pandas
+    - matplotlib
+    - numpy
+    - psutil
+    - scipy
+  run:
+    - python
+    - seaborn
+    - configparser
+    - pandas
+    - matplotlib
+    - numpy
+    - psutil
+    - scipy
+
+test:
+  imports:
+    - trifusion
+    - trifusion.base
+    - trifusion.data
+    - trifusion.data.backgrounds
+    - trifusion.data.resources
+    - trifusion.data.resources.theme
+    - trifusion.data.screens
+    - trifusion.ortho
+    - trifusion.process
+    - trifusion.progressbar
+  commands:
+    - orthomcl_pipeline --help
+    - TriSeq --help
+    - TriStats --help
+    - TriFusion --help
+
+about:
+  home: https://github.com/ODiogoSilva/TriFusion
+  license: GNU General Public License v3 (GPLv3)
+  license_family: GPL3
+  license_file: ''
+  summary: Streamlining phylogenomic data gathering, processing and visualization
+  description: "## TriFusion\n\n##### Making life easier for phylogenomic data gathering, processing and visualization\n\nWebsite: http://odiogosilva.github.io/TriFusion/\n\n:loudspeaker: ANNOUNCING: [TriFusion\
+    \ 1.0.0 is live!](https://github.com/ODiogoSilva/TriFusion/releases/tag/1.0.0rc1) :tada: :balloon:\n\n<img src=\"https://raw.githubusercontent.com/ODiogoSilva/TriFusion-tutorials/master/tutorials/images/trifusion_home_screen.png\"\
+    />\n\n[![Build Status](https://travis-ci.org/ODiogoSilva/TriFusion.svg?branch=master)](https://travis-ci.org/ODiogoSilva/TriFusion)\n[![Documentation Status](https://readthedocs.org/projects/trifusion/badge/?version=latest)](http://trifusion.readthedocs.io/en/latest/?badge=latest)\n\
+    [![Codacy Badge](https://api.codacy.com/project/badge/Grade/817a7c37a240473195a5b9e31442121d)](https://www.codacy.com/app/o.diogosilva/TriFusion?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ODiogoSilva/TriFusion&amp;utm_campaign=Badge_Grade)\n\
+    [![codecov](https://codecov.io/gh/ODiogoSilva/TriFusion/branch/master/graph/badge.svg)](https://codecov.io/gh/ODiogoSilva/TriFusion)\n[![PyPI](https://img.shields.io/pypi/pyversions/trifusion.svg)](https://pypi.python.org/pypi/trifusion)\n\
+    [![PyPI](https://img.shields.io/pypi/v/trifusion.svg)](https://pypi.python.org/pypi/trifusion)\n[![AUR](https://img.shields.io/aur/version/trifusion.svg)](https://aur.archlinux.org/packages/trifusion/)\n\
+    [![Join the chat at https://gitter.im/TriFusion-dev/Lobby](https://badges.gitter.im/TriFusion-dev/Lobby.svg)](https://gitter.im/TriFusion-dev/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)\n\
+    [![DOI](https://zenodo.org/badge/16738401.svg)](https://zenodo.org/badge/latestdoi/16738401)\n\n\n\n<img align=\"right\" height=\"128\" src=\"https://github.com/ODiogoSilva/TriFusion/blob/43a41005ee8b1f69d7ae04684b0a0e595c527b4f/trifusion/data/backgrounds/trifusion-icon-256.png?raw=true\"\
+    />\n\n## What is TriFusion?\n\nTriFusion is a modern GUI and command line application designed to make the life of anyone with **proteome** and/or **alignment sequence data** easier and more pleasurable.\
+    \ Regardless of your experience in bioinformatics, TriFusion is easy to use and offers a wide array of powerfull features to help you deal with your data. At the same time, it was developed to handle\
+    \ the enormous amount of data that is generated nowadays.\n\nTriFusion is an open source, cross-platform application written in [Python 2.7](https://www.python.org/) and using the [Kivy](https://github.com/kivy/kivy)\
+    \ framework to build the graphical interface.\n\n## What can TriFusion do for you?\n\nHere is an overview of what it can do for you across its three main modules.\n\n### Orthology - Search and explore\
+    \ orthologs across proteomes\n\n - **Searches for ortholog sequences** across multiple species.\n - Filters ortholog sequences according to the **gene copy number** and/or **number of taxa** present.\n\
+    \ - **Graphical visualization** of ortholog data.\n - Exports your orthologs as **protein or nucleotide sequences**.\n\n[Find out more](http://odiogosilva.github.io/TriFusion/content/features.html#orto-main)\n\
+    \n### Process - Blazing fast processing of alignment files\n\n - **Conversion** or **concatenation** of alignment files into several popular formats ([check supported formats](https://github.com/ODiogoSilva/TriFusion/wiki/Supported-Process-formats)).\n\
+    \ - **Collapse** identical sequences into the same haplotype.\n - Create **consensus** sequences for each alignment with several options on how to handle sequence variation.\n - **Filter** either alignments\
+    \ (according to whether they contain or exclude certain taxa, to a minimum proportion of taxa, and/or variable sites) or alignment columns (according to codon position, missing data and gaps).\n - **Code\
+    \ indel patterns** of your alignments into a binary matrix that is appended to the alignment.\n - **Revert concatenated alignments** or export sub-regions into individual files\n - Set **gene and codon\
+    \ partitions** as well as **substitution models** (Nexus format)\n - Create **file/taxa groups** to quickly perform operations on different sets of data.\n - It's **fast** and **memory efficient**.\
+    \ Converting 3,093 files with 376 taxa can be performed in just 30 seconds and using less than 90Mb of RAM memory ([check the benchmarks table](https://github.com/ODiogoSilva/TriFusion/wiki/Benchmarks)).\n\
+    \n[Find out more](http://odiogosilva.github.io/TriFusion/content/features.html#process-main)\n\n### Statistics - Effortless visual exploration of your data\n\n- Provides instant information on overall\
+    \ and per gene **summary statistcs**.\n- TriFusion offers **dozens of graphical and statistical options** to explore your data:\n     - General information plots.\n     - Polymorphism and sequence variation\
+    \ plots.\n     - Missing data plots.\n     - Outlier plots.\n- Publication ready figures\n\n[Find out more](http://odiogosilva.github.io/TriFusion/content/features.html#stats-main)\n\n## Installation\n\
+    \n### Executables binaries (GUI version only)\n\nThe latest stable release of TriFusion can be installed as a standalone application using one of the following installers. This **only includes the GUI\
+    \ component** of TriFusion. If you also want the command line version, see [Installation from source](#installation-from-source).\n\n#### Linux\n\n- Debian package based ([See list](https://en.wikipedia.org/wiki/Category:Debian-based_distributions)):\
+    \ [TriFusion-1.0.0rc1.deb](https://github.com/ODiogoSilva/TriFusion/releases/download/1.0.0rc1/TriFusion-v1.0.0rc1.deb)\n\n- RPM package based ([See list](https://en.wikipedia.org/wiki/Category:RPM-based_Linux_distributions)):\
+    \ [TriFusion-1.0.0rc1.rpm](https://github.com/ODiogoSilva/TriFusion/releases/download/1.0.0rc1/TriFusion-v1.0.0rc1.rpm)\n\n- ArchLinux/Manjaro ([See list](https://wiki.archlinux.org/index.php/Arch_based_distributions)):\
+    \ [TriFusion-1.0.0.tar.xz](https://aur.archlinux.org/packages/trifusion-bin/) is available on AUR.\n\n#### MacOS\n\n- [TriFusion-1.0.0rc1.app.zip](https://github.com/ODiogoSilva/TriFusion/releases/download/1.0.0rc1/TriFusion-v1.0.0rc1.app.zip)\n\
+    \n#### Windows\n\n- [TriFusion-1.0.0rc1 64bit installer](https://github.com/ODiogoSilva/TriFusion/releases/download/1.0.0rc1/TriFusion-v1.0.0rc1-Win64.msi)\n- [TriFusion-1.0.0rc1 32bit installer](https://github.com/ODiogoSilva/TriFusion/releases/download/1.0.0rc1/TriFusion-v1.0.0rc1-Win32.msi)\n\
+    \n##### Note for Windows 8.x and 10 users:\n\nExecuting the TriFusion installer may generate a warning from SmartScreen. To continue with the installation, click the \"More info\" label and then \"\
+    Run anyway\".\n\n### Installation from source\n\nTriFusion is on [PyPi](https://pypi.python.org/pypi/trifusion/) and can be easily installed with `pip`.\n\n```\n# Install locally, without sudo permissions,\
+    \ using the --user flag\npip install trifusion --user\n```\n\nNote that TriFusion is a python2 application, so make sure that your `pip` is from the correct python version. If python3 is the default\
+    \ installation on your machine, you may need to run `pip2` instead.\n\n**By itself, this command will only install the command line version of TriFusion. If you want to install the complete TriFusion\
+    \ package with the GUI libraries, [follow these instructions according to your operating system](https://github.com/ODiogoSilva/TriFusion/wiki/Install-from-source).**\n\n___\n\nIf you are unconvinced\
+    \ that a terminal version would be useful/pratical, check out how easy and fast it is to use TriFusion to process 614 Fasta alignments into phylip and nexus output formats :-):\n\n<img src=\"https://github.com/ODiogoSilva/TriFusion-tutorials/blob/master/tutorials/gifs/terminal_demo.gif\"\
+    />\n\n## How to use\n\nTutorials on how to use TriFusion for its many tasks can be perused [here](http://trifusion.readthedocs.io/en/latest/).\n\n## Documentation\n\nYou can download TriFusion User\
+    \ Guide [here](https://github.com/ODiogoSilva/TriFusion/raw/master/docs/manual.pdf).\n\n## Citation\n\nWhen using OrthoMCL to find ortholog clusters, please cite the original software:\n\nFischer, S.,\
+    \ Brunk, B. P., Chen, F., Gao, X., Harb, O. S., Iodice, J. B., Shanmugam, D., Roos, D. S. and Stoeckert, C. J. Using OrthoMCL to Assign Proteins to OrthoMCL-DB Groups or to Cluster Proteomes Into New\
+    \ Ortholog Groups Current Protocols in Bioinformatics. 2011 35:6.12.1-6.12.19.\n\nWe're working on a manuscript for TriFusion now.\n"
+
+extra:
+  recipe-maintainers: ''
+  identifiers:
+    - biotools:TriFusion
