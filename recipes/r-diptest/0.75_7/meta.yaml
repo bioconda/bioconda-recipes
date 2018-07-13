@@ -1,5 +1,3 @@
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
 {% set package = 'diptest' %}
 {% set version = '0.75-7' %}
 
@@ -8,32 +6,30 @@ package:
   version: "{{ version | replace('-', '_') }}"
 
 source:
-  fn: "{{ package }}_{{ version | replace('-', '_') }}.tar.gz"
   url:
     - "https://cran.r-project.org/src/contrib/{{ package }}_{{ version }}.tar.gz"
     - "http://cran.r-project.org/src/contrib/Archive/{{ package }}/{{ package }}_{{ version }}.tar.gz"
   sha256: 462900100ca598ef21dbe566bf1ab2ce7c49cdeab6b7a600a50489b05f61b61b
 
 build:
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{ compiler('c') }}
+
+  host:
     - r-base
-    - posix               # [win]
-    - {{native}}toolchain # [win]
-    - gcc                 # [not win]
 
   run:
     - r-base
-    - libgcc              # [not win]
 
 test:
   commands:
-    - $R -e "library('{{ package }}')" # [not win]
-    - "\"%R%\" -e \"library('{{ package }}')\"" # [win]
+    - $R -e "library('{{ package }}')"
 
 about:
   home: "https://CRAN.R-project.org/package={{ package }}"
