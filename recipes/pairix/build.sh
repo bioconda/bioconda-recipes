@@ -1,8 +1,6 @@
 #!/bin/bash
 
 # Install both the pairix binaries and the Python extension module
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
 make
 cp bin/pairix $PREFIX/bin/pairix
 cp bin/pairs_merger $PREFIX/bin/pairs_merger

@@ -1,2 +1,3 @@
 #!/bin/bash
-$PYTHON setup.py install --single-version-externally-managed --record=rec.txt
+CRISPRESSO_DEPENDENCIES_FOLDER=$CONDA_ROOT/share
+$PYTHON setup.py install

@@ -3,12 +3,7 @@
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
-if [ "$(uname)" == "Darwin" ]; then
-    # clang doesn't accept -fopenmp and there's no clear way around that
-    ./configure --prefix=$PREFIX
-else
-    ./configure --prefix=$PREFIX OPENMP_CFLAGS='-fopenmp' CFLAGS='-DHAVE_OPENMP'
-fi
+./configure --prefix=$SRC_DIR OPENMP_CFLAGS='-fopenmp' CFLAGS='-DHAVE_OPENMP'
 make
 
 mkdir -p $PREFIX/bin

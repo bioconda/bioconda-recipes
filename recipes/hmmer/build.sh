@@ -1,8 +1,10 @@
 #!/bin/sh
 
-set -e -u -x
+#strictly use anaconda build environment
+CC=${PREFIX}/bin/gcc
+CXX=${PREFIX}/bin/g++
 
+# Fix broken configure option
 ./configure --prefix=$PREFIX
 make -j4
 make install
-(cd "${SRC_DIR}/easel" && make install)

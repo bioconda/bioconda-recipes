@@ -1,4 +1,6 @@
 #!/bin/bash
 
-mkdir -p ${PREFIX}/bin
-${CXX} -O3 -o ${PREFIX}/bin/migraine *.cpp
+g++ -O3 -o migraine *.cpp
+
+cp migraine $PREFIX/bin
+chmod +x $PREFIX/bin/migraine

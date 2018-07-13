@@ -1,7 +1,6 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
+export C_INCLUDE_PATH=$PREFIX/include
 
-./configure --prefix=${PREFIX}
+./configure --prefix=$PREFIX
 make && make install

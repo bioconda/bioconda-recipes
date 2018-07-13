@@ -1,4 +1,4 @@
 #!/bin/bash
 make
-mkdir -p $PREFIX/bin
+mkdir $PREFIX/bin
 cp blockbuster.x $PREFIX/bin

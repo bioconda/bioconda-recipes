@@ -1,6 +1,10 @@
 #!/bin/bash
 
-mkdir -p ${PREFIX}/bin
-sed -i.bak "s:/usr/bin/perl:/usr/bin/env perl:" *.pl
-chmod 0755 *.pl
-cp *.pl ${PREFIX}/bin/
+binaries="\
+prinseq-lite.pl \
+prinseq-graphs.pl \
+prinseq-graphs-noPCA.pl \
+"
+
+mkdir -p $PREFIX/bin
+for i in $binaries; do cp $SRC_DIR/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done

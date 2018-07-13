@@ -1,32 +1,22 @@
 #!/bin/bash
 
-# This package doesn't follow POSIX folder nomenclature
-# The package also includes a bin/ folder which is in fact used as a repository
-# for other python scripts that are imported by the main 'motus' script
-# The 'motus' script searches for ./bin and ./db_mOTU relative to its location
+# Execute tool with dummy file to trigger the creation of motus_data folder
+touch dummy.fq
+chmod +x mOTUs.pl
+perl ./mOTUs.pl dummy.fq 2> /dev/null || true
 
-# For these reasons data is bundled to a custom directory and a tiny wrapper
-# is added below that simply calls motus in the custom location
+# Check files
+if [ ! -f motus_data/bin/2bwt-builder -o ! -f motus_data/bin/fastq_trim_filter_v5_EMBL -o ! -f motus_data/bin/fastx_quality_stats -o ! -f motus_data/bin/msamtools -o ! -f motus_data/bin/soap2.21 ]
+then
+   echo "Binaries not found" 
+   exit 1
+fi
 
-share=share/motus-${PKG_VERSION}/
-pkgdir=$PREFIX/$share
+# Remove blob from the script
+sed -i "/__DATA__/q" mOTUs.pl
 
-mkdir -p "$pkgdir"
-# custom python scripts from the tool
-cp -pr bin "$pkgdir"
-# main script
-cp -pr motus "$pkgdir"
-cp -pr LICENSE* "$pkgdir"
-
-# accessory files (setup.py and test.py) to download the tool's database db_mOTU
-# and test.py that checks if all dependencies are in order and the tool runs as expected
-# These are called in post-link.sh
-cp -pr ./*.py "$pkgdir"
-
-cat > "$PREFIX/bin/motus" <<EOF
-#!/usr/bin/env bash
-BINDIR="\$(cd "\$(dirname "\${0}")" && pwd -P)"
-exec python \$BINDIR/../$share/motus "\$@"
-EOF
-
-chmod +x "$PREFIX/bin/motus"
+# Creates a symbolic link from opt/ to bin/ because of the motus_data folder which contains some binaries (from blob text in the file)
+mkdir -p $PREFIX/bin
+mkdir -p $PREFIX/opt/motus/
+cp -r mOTUs.pl motus_data $PREFIX/opt/motus/
+ln -s $PREFIX/opt/motus/mOTUs.pl $PREFIX/bin/
