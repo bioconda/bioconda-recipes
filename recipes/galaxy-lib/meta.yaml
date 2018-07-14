@@ -1,28 +1,30 @@
-{% set version = "18.5.5" %}
+{% set version = "18.5.13" %}
+{% set sha256 = "be2279e50a1534b8c8611748d5c19cb76f100c5cc70a689b6055067715105bb1" %}
 
 package:
   name: galaxy-lib
-  version: {{ version }}
+  version: '{{version}}'
 
 source:
-  fn: galaxy-lib-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/g/galaxy-lib/galaxy-lib-{{ version }}.tar.gz
-  sha256: 952c0d8011d929bab264b5b7a0b784f54ab83a2620d8f039fa54a8f71055fb5b
+  url: https://pypi.io/packages/source/g/galaxy-lib/galaxy-lib-{{version}}.tar.gz
+  sha256: '{{sha256}}'
 
 build:
-  preserve_egg_dir: True
-  number: 0
+  noarch: python
+  preserve_egg_dir: true
+  number: 2
   entry_points:
     - mulled-build=galaxy.tools.deps.mulled.mulled_build:main
     - mulled-build-channel=galaxy.tools.deps.mulled.mulled_build_channel:main
     - mulled-build-tool=galaxy.tools.deps.mulled.mulled_build_tool:main
     - mulled-build-files=galaxy.tools.deps.mulled.mulled_build_files:main
     - mulled-search=galaxy.tools.deps.mulled.mulled_search:main
-  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
+  host:
     - python
+    - pip
     - setuptools
   run:
     - python
@@ -67,5 +69,6 @@ test:
 about:
   home: https://github.com/galaxyproject/galaxy-lib
   license: Academic Free License (AFL)
-  summary: 'Subset of Galaxy (http://galaxyproject.org/) core code base designed to be used a library.'
+  summary: Subset of Galaxy (http://galaxyproject.org/) core code base designed to
+    be used a library.
   license_family: Apache

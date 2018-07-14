@@ -8,32 +8,33 @@ package:
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name | replace("_", "-") }}/{{ name }}-{{ version }}.tar.gz
   {{ hash_type }}: {{ hash_value }}
 
 build:
-  number: 0
+  number: 1
   skip: True # [not py3k]
-  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
+  host:
     - python
+    - pip
     - setuptools
     - numpy >=1.12.1
     - pandas >=0.20.1
-    - attrs ==17.2.0
+    - attrs
     - pyahocorasick >=1.1.6
-    
+
   run:
     - python
     - numpy >=1.12.1
     - pandas >=0.20.1
-    - attrs ==17.2.0
+    - attrs
     - pyahocorasick >=1.1.6
-    - libgcc >=5.2.0 # [linux]
-    
+
 test:
   commands:
     #Using hansel -V as verification that the tool has been installed.
