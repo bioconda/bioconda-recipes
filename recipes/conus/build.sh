@@ -1,6 +1,5 @@
 ./configure
 make 
-make install
 
 binaries="ambtest \
             conus_compare \
@@ -14,4 +13,4 @@ binaries="ambtest \
             weedamb \
             "
 
-for i in $binaries; do cp bin/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
+for i in $binaries; do cp src/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
