@@ -2,6 +2,8 @@
 
 mkdir -p $PREFIX/bin
 
-bash install_dDocent_requirements $PREFIX/bin
+#bash install_dDocent_requirements $PREFIX/bin
+
+cp dDocent $PREFIX/bin/dDocent
 
 chmod +x $PREFIX/bin/dDocent
