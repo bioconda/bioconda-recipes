@@ -8,6 +8,8 @@ make
 
 cp rainbow $PREFIX/bin
 
+chmod +x select_*
+
 cp select_all_rbcontig.pl $PREFIX/bin
 cp select_best_rbcontig.pl $PREFIX/bin
 cp select_sec_rbcontig.pl $PREFIX/bin
