@@ -6,7 +6,9 @@ mkdir -p $PREFIX/bin
 
 TRIM=$(readlink -f trimmomatic | sed 's/\/trimmomatic//' )
 
-cp $TRIM/trimmomatic.jar $PREFIX/bin/trimmomatic.jar
+ls -a $TRIM
+
+cp $TRIM/trim*.jar $PREFIX/bin/trimmomatic.jar
 cp $TRIM/adapters/* $PREFIX/bin/
 
 cp dDocent $PREFIX/bin/
