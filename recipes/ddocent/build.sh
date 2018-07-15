@@ -4,7 +4,7 @@ mkdir -p $PREFIX/bin
 
 #bash install_dDocent_requirements $PREFIX/bin
 
-TRIM=$(readlink -f trimmomatic | sed 's/\/trimmomatic//' )
+TRIM=$PREFIX/share
 
 ls -a $TRIM
 
