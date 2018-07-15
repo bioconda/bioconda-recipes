@@ -2,6 +2,8 @@
 
 mkdir -p $PREFIX/bin
 
+ls -l 
+
 make
 
 cp rainbow $PREFIX/bin
