@@ -1,7 +1,7 @@
 #!/bin/bash
 
 mkdir -p $PREFIX/bin
-pwd
+
 make
 
 cp rainbow $PREFIX/bin
