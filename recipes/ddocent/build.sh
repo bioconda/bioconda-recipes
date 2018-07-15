@@ -4,6 +4,10 @@ mkdir -p $PREFIX/bin
 
 #bash install_dDocent_requirements $PREFIX/bin
 
-cp dDocent $PREFIX/bin/dDocent
+TRIM=$(readlink -f trimmomatic | sed 's/trimmomatic//' )
 
+cp $TRIM/trimmomatic-*.jar $PREFIX/bin/
+cp $TRIM/adapters/* $PREFIX/bin/
+
+cp dDocent $PREFIX/bin/
 chmod +x $PREFIX/bin/dDocent
