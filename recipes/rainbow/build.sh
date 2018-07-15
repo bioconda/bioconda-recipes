@@ -15,4 +15,4 @@ cp select_best_rbcontig_plus_read1.pl $PREFIX/bin
 
 chmod +x $PREFIX/bin/select_*
 
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/select_*.pl
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/select_*.pl
