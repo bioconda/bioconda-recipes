@@ -2,7 +2,7 @@
 
 mkdir -p $PREFIX/bin
 
-ls -l 
+cd rainbow_$PKG_VERSION
 
 make
 
