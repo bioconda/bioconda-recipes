@@ -16,4 +16,4 @@ cp select_best_rbcontig_plus_read1.pl $PREFIX/bin
 
 chmod +x $PREFIX/bin/select_*
 
-ll $PREFIX/bin
+ls -l  $PREFIX/bin
