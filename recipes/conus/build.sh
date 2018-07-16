@@ -14,5 +14,5 @@ binaries="ambtest \
             stk2ct \
             weedamb \
             "
-
+mkdir -p $PREFIX/bin
 for i in $binaries; do cp src/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
