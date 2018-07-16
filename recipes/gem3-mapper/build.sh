@@ -1,5 +1,14 @@
 #!/bin/bash
 
+#adding include and library paths in order to find bzip2
+sed -i.bak '
+    /^PATH_INCLUDE=/ s@$@ -I'$PREFIX'/include@
+    /^PATH_LIB=/ s@$@ -L'$PREFIX'/lib@
+  ' Makefile.mk.in
+
+#not being able to ensure cuda compatible end system it is disabled
+#to compile this section was lifted from a more recent version of the repository.
+#TODO: clarify with developers that this is OK
 sed -i.bak 's@#include "resources/gem-cutter/gpu_interface.h"@#ifdef HAVE_CUDA\
 #include "resources/gem-cutter/gpu_interface.h"\
 #else\
@@ -15,6 +24,6 @@ sed -i.bak 's@#include "resources/gem-cutter/gpu_interface.h"@#ifdef HAVE_CUDA\
 #endif@' include/gpu/gpu_config.h
 
 ./configure --disable-cuda
-make
+make all
 mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin
