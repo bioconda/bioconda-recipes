@@ -1,0 +1,32 @@
+{% set version = "1.1" %}
+
+package:
+  name: erds
+  version: {{ version }}
+
+build:
+  skip: True # [osx]
+  number: 2
+
+source:
+  url: http://www.utahresearch.org/wp-content/uploads/2014/01/erds1.1.tar
+  sha256: 52276bcccfef14163ac3c1c87e1f0f36e3afad1721ba8ae42d4ffd2d481c6051
+  patches:
+  - use_system_samtools.patch
+  - fix_scripts.patch
+
+requirements:
+  build:
+  - {{ compiler('c') }}
+  run:
+  - samtools ==0.1.19
+  - perl
+
+about:
+  home: http://www.utahresearch.org/mingfuzhu/erds/
+  license: Free to academia and non-profit organizations
+  summary: Inferring copy number variants in high-coverage human genomes with next-generation sequencing data.
+
+test:
+  commands:
+  - '{ erds_pipeline || true; } 2>&1 | grep erds_pipeline.pl'
