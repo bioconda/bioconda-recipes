@@ -1,17 +1,5 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-export INCLUDE_PATH="${PREFIX}/include:${PREFIX}/include/rapidjson"
-export LIBRARY_PATH="${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS} -std=c++11"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
-
-export LDFLAGS="-L${PREFIX}/lib"
-export CPPFLAGS="-I${PREFIX}/include -I${PREFIX}/include/rapidjson"
-export CFLAGS="-I${PREFIX}/include -I${PREFIX}/include/rapidjson"
-
-export CXXFLAGS="${LDFLAGS} ${CPPFLAGS}"
-
-export LD_LIBRARY_PATH=$PREFIX/lib
-
-set -x -e
-
-make
+make all PREFIX=${PREFIX}

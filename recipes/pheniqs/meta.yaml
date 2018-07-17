@@ -1,45 +1,36 @@
 {% set name = "pheniqs" %}
-{% set version = "1.0" %}
+{% set version = "2.1.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 1
+  number: 0
 
 source:
-  git_url: https://github.com/biosails/pheniqs.git
-  sha256: 5ba8e3a5d0cd6f173c9b8358d1f244edde7323ceded1671b4724ef30ab16ea9b
-  #patches:
-  #  - Makefile.patch
-  #  - configuration.sh.patch
-
+  url: https://github.com/biosails/pheniqs/archive/2.0.0-beta.tar.gz
 
 requirements:
   build:
-  - gcc # [not osx]
-  - llvm # [osx]
-  - cmake
-  - clang # [osx]
-  - rapidjson
-  - htslib
-
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - samtools
+    - htslib
+    - rapidjson
+    - python
   run:
-  - libgcc # [not osx]
-  - rapidjson
-  - htslib
+    - make
 
 test:
   commands:
-    - pheniq -h 
+    - pheniqs --version
 
 about:
-  home: https://biosails.github.io/pheniqs/
+  home: http://www.bcgsc.ca/platform/bioinfo/software/abyss
   license: GPL3
   license_file: LICENSE
-  summary: Fast and accurate sequence demultiplexing
-extra:
-  identifiers:
-    - biotools:abyss
-    - doi:10.1101/gr.089532.108
+  summary: Assembly By Short Sequences - a de novo, parallel, paired-end sequence assembler
+  dev_url: https://github.com/bcgsc/abyss
+  doc_url: https://github.com/bcgsc/abyss#readme
