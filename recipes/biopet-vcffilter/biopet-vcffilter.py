@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Wrapper script for starting the biopet-seattleseqkit JAR package
+# Wrapper script for starting the biopet-vcffilter JAR package
 #
 # This script is written for use with the Conda package manager and is copied
 # from the peptide-shaker wrapper. Only the parameters are changed.
@@ -17,7 +17,7 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = 'SeattleSeqKit-assembly-0.2.jar'
+jar_file = 'vcffilter-assembly-0.2.jar'
 
 default_jvm_mem_opts = []
 
