@@ -27,7 +27,7 @@ sed -i.bak '
 ##define GPU_BPM_FILTER_PEQ_SUBENTRIES        (GPU_BPM_FILTER_PEQ_ENTRY_LENGTH / UINT32_LENGTH)\
 ##endif@' include/gpu/gpu_config.h
 
-./configure 
+./configure
 make all
 mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin
