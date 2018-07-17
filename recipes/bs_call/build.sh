@@ -1,9 +1,19 @@
 #!/bin/bash
 
+export CPATH=${PREFIX}/include
+
+#This version of bs_call lacks a functioning configure script.
+#  Make sure all dependencies are found (including bzip2 and zlib)
 sed -i.bak '
-    @^GSL_LIB = -L/apps/GSL/2.4/lib/@ s@= -L.*@= '$PREFIX'/lib@
-    @^GSL_INC = -I/apps/GSL/2.4/include/@ s@= -I.*@'$PREFIX'/include@
+    /^GSL_LIB = -L\/apps\/GSL\/2.4\/lib\// s@= -L.*@= -L'$PREFIX'/lib@
+    /^GSL_INC = -I\/apps\/GSL\/2.4\/include\// s@= -I.*@= -I'$PREFIX'/include@
   ' Gsl.mk
+
+sed -i.bak '
+    /^INCLUDE_FLAGS=/ s@$@ -I'$PREFIX'/include@
+    /^LIB_PATH_FLAGS=/ s@$@ -L'$PREFIX'/lib@
+  ' GEMTools/Makefile.mk
+
 
 make all
 mkdir -p $PREFIX/bin
