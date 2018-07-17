@@ -7,7 +7,7 @@ sed -i.bak '
   ' Makefile.mk.in
 
 
-./configure 
+./configure
 make all
 mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin
