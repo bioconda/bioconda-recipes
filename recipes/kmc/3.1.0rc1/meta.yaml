@@ -1,0 +1,43 @@
+{% set version = "3.1.0" %}
+{% set rc = "1" %}
+
+package:
+  name: kmc
+  version: {{ version }}rc{{ rc }}
+
+source:
+  url: https://github.com/refresh-bio/KMC/archive/v{{ version }}-rc.{{ rc }}.tar.gz
+  sha256: 66b56e6f3ede31f2f78cf8ecf8f9633c09372fa8d44de826a8a5c57a18ec3915
+  patches:
+    - 0001-fixes-for-conda.patch
+
+build:
+  number: 0
+  # this recipe builds kmc without the asmlib speedup
+
+requirements:
+  build:
+    # C++14 features are required
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - bzip2
+  run:
+    - zlib
+    - bzip2
+
+test:
+  commands:
+    - (kmc 2>&1; true) | grep -q "K-Mer Counter (KMC) ver. {{ version }}"
+    - (kmc_dump 2>&1; true) | grep -q "KMC dump ver. {{ version }}"
+    - (kmc_tools 2>&1; true) | grep -q "kmc_tools ver. {{ version }}"
+
+about:
+  home: http://sun.aei.polsl.pl/kmc/
+  license: GPLv2
+  summary: K-mer Counter is a utility designed for counting k-mers (sequences of consecutive k symbols) in a set of reads from genome sequencing projects.
+
+extra:
+  identifiers:
+    - biotools:KMC
+    - doi:10.1093/bioinformatics/btx304
