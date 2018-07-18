@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
 curl -L https://github.com/samtools/samtools/archive/0.1.19.tar.gz > 0.1.19.tar.gz
