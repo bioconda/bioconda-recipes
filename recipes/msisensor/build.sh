@@ -13,4 +13,6 @@ export SAMTOOLS_ROOT=$PWD
 
 cd ..
 make
-make install
+
+mkdir -p $PREFIX/bin
+cp msisensor $PREFIX/bin
