@@ -2,6 +2,7 @@
 set -eu -o pipefail
 
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
 # Avoid htslib test, which require /usr/bin/perl
