@@ -1,6 +1,5 @@
 #!/bin/bash
 $PYTHON setup.py build_ext --inplace --force
-$PYTHON setup.py install
 cp *.py ${PREFIX}/bin/
 sed -i '#!/usr/bin/env python' ${PREFIX}/bin/bam_to_tbi.py
 sed -i '#!/usr/bin/env python' ${PREFIX}/bin/compute_mappability.py
