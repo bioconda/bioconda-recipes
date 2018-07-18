@@ -1,0 +1,36 @@
+{% set version = "2.4.0.r4736" %}
+{% set sha256 = "98aa1c7bfeef0dac68f7cedbee81dae424192c5cd7a22960d63efe6e943645aa" %}
+
+package:
+  name: mauve
+  version: {{ version }}
+
+build:
+  skip: True  # [osx]
+  number: 0
+
+source:
+  url: https://depot.galaxyproject.org/software/mauve/mauve_2.4.0_src_all.zip
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - ant
+    - openjdk >=8.0.122
+  host:
+    - mauvealigner
+  run:
+    - openjdk >=8.0.122
+    - mauvealigner
+
+test:
+  commands: 
+  - test -e $PREFIX/bin/Mauve
+  - JAR=$(find $PREFIX -name Mauve.jar|head -n1); java -cp ${JAR} -Djava.awt.headless=true org.gel.mauve.contigs.ContigOrderer --help 2>&1 | grep draft
+
+about:
+  home: http://darlinglab.org/mauve/
+  license: GPL-2.0
+  license_family: GPL
+  summary: Mauve is a system for constructing multiple genome alignments in the presence of large-scale evolutionary events such as rearrangement and inversion
+  dev_url: https://sourceforge.net/projects/mauve/
