@@ -1,16 +1,17 @@
-{% set version = "1.3.0" %}
+{% set version = "v1.3.1" %}
+{% set sha256 = "23cde08fb7883b007c1b5e2e91a54f579e40e61ac1ca430c2f4360a213e7a9d3" %}
 
 package:
   name: 'vkmz'
   version: {{ version }}
 
 source:
-  git_url: https://github.com/HegemanLab/vkmz.git
-  git_tag: master
+  url: https://github.com/HegemanLab/VKMZ/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   number: 0
-  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+  script: mkdir -p $PREFIX/bin $PREFIX/share $PREFIX/info && cp vkmz.py $PREFIX/bin && cp -R databases $PREFIX/share && cp -R test-data $PREFIX/share && cp -R d3.html $PREFIX/share && cp LICENSE $PREFIX/info && cp README* $PREFIX/info
 
 requirements:
   host:
@@ -20,13 +21,11 @@ requirements:
     - python 3.6.*
 
 test:
-  imports:
-    - vkmz
   commands:
-    - vkmz --help
+    - vkmz.py --help
 
 about:
-  home: https://github.com/HegemanLab/vkmz
+  home: https://github.com/HegemanLab/VKMZ
   license: MIT License
   summary: 'vkmz: metabolomics formula prediction and van Krevelen diagram generation'
   license_family: MIT
