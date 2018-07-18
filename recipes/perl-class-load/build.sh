@@ -20,4 +20,4 @@ else
     exit 1
 fi
 
-chmod 755 bin/config_data || echo "no config data"
+chmod 755 ${PREFIX}/bin/config_data || echo "no config data"
