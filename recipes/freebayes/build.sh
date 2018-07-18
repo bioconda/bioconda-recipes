@@ -5,9 +5,6 @@ if [ "$(uname)" == "Darwin" ]; then
     sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/g' vcflib/smithwaterman/Makefile
     export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
 
-    # Patch vcflib: fix for missing <thread> include.
-    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' vcflib/intervaltree/Makefile
-    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' vcflib/Makefile
 fi
 
 # Patch vcflib.
@@ -22,12 +19,6 @@ export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
-# Make bamtools.
-mkdir -p bamtools/build
-cd bamtools/build
-cmake ..
-cd ../..
-
 # Make autoversion.
 cd src
 make autoversion
@@ -36,7 +27,13 @@ cd ..
 
 # Make vcflib (needed for freebayes-parallel).
 cd vcflib
-make
+
+export LDFLAGS="-L$PREFIX/lib -L\$(LIB_DIR) -lvcflib -lhts -lpthread -lz -lm -llzma -lbz2"
+export INCLUDES="-Ihtslib -I$PREFIX/include -Itabixpp/htslib -I\$(INC_DIR) -L. -Ltabixpp/htslib"
+export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
+export CXXFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
+sed -i.bak 's/make/make -e/' Makefile
+make -e
 cd ..
 
 # Translate for Python 3 if needed.
