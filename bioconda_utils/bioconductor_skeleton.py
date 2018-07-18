@@ -255,7 +255,34 @@ class BioCProjectPage(object):
                 self.bioc_version = latest_bioconductor_version()
             else:
                 self.bioc_version = find_best_bioc_version(self.package, self._pkg_version)
+        htmls = {
+            'regular_package': os.path.join(
+                base_url, self.bioc_version, 'bioc', 'html', package
+                + '.html'),
+            'annotation_package': os.path.join(
+                base_url, self.bioc_version, 'data', 'annotation', 'html',
+                package + '.html'),
+            'experiment_package': os.path.join(
+                base_url, self.bioc_version, 'data', 'experiment', 'html',
+                package + '.html'),
+        }
+        tried = []
+        for label, url in htmls.items():
+            request = requests.get(url)
+            tried.append(url)
+            if request:
+                break
 
+        if not request:
+            raise PageNotFoundError(
+                'Could not find HTML page for {0.package}. Tried: '
+                '{1}'.format(self, ', '.join(tried)))
+
+        # Since we provide the "short link" we will get redirected. Using
+        # requests allows us to keep track of the final destination URL,
+        # which we need for reconstructing the tarball URL.
+        self.url = request.url
+            
         # If no version has been provided, the following code finds the latest
         # version by finding and scraping the HTML page for the package's
         # "Details" table.
@@ -264,35 +291,6 @@ class BioCProjectPage(object):
             self.version = self._pkg_version
 
         else:
-
-            htmls = {
-                'regular_package': os.path.join(
-                    base_url, self.bioc_version, 'bioc', 'html', package
-                    + '.html'),
-                'annotation_package': os.path.join(
-                    base_url, self.bioc_version, 'data', 'annotation', 'html',
-                    package + '.html'),
-                'experiment_package': os.path.join(
-                    base_url, self.bioc_version, 'data', 'experiment', 'html',
-                    package + '.html'),
-            }
-            tried = []
-            for label, url in htmls.items():
-                request = requests.get(url)
-                tried.append(url)
-                if request:
-                    break
-
-            if not request:
-                raise PageNotFoundError(
-                    'Could not find HTML page for {0.package}. Tried: '
-                    '{1}'.format(self, ', '.join(tried)))
-
-            # Since we provide the "short link" we will get redirected. Using
-            # requests allows us to keep track of the final destination URL,
-            # which we need for reconstructing the tarball URL.
-            self.url = request.url
-
             # The table at the bottom of the page has the info we want. An
             # earlier draft of this script parsed the dependencies from the
             # details table.  That's still an option if we need a double-check
