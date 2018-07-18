@@ -1,0 +1,35 @@
+{% set version = "3.6_gemBS" %}
+{% set sha256 = "e6f91c0961882369d3d0287ef0fe84bc204c439683c39c979105e64e9f7e5173" %}
+
+package:
+  name: gem3-mapper
+  version: {{ version }}
+
+source:
+  url: https://github.com/karl616/gem3-mapper/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - bzip2
+    - zlib
+  run:
+    - bzip2
+    - zlib
+
+test:
+  commands:
+    - gem-mapper 2>&1 | grep 'index|-I <index_file.gem>'
+    - gem-indexer -h 2>&1 | grep 'input|-i <input_file> (Multi-FASTA)'
+    - gem-retriever -h 2>&1 | grep 'index|-I <index_file.gem> (GEM archive)'
+
+about:
+  home: https://github.com/smarco/gem3-mapper
+  license: GPL3
+  summary: The GEM read mapper (v3).
+
