@@ -389,10 +389,9 @@ example, bioconda provides an environnmnet variable ``CONDA_BOOST`` that
 contains the current major version of Boost. You should pin your boost
 dependency against that version. An example is the `salmon recipe
 <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/salmon>`_.
-You find the libraries you can currently pin in `scripts/env\_matrix.yml
-<https://github.com/bioconda/bioconda-recipes/blob/master/scripts/env_matrix.yml>`_.
-If you need to pin another library, please notify @bioconda/core, and we will
-set up a corresponding environment variable.
+You find the libraries that are already pinned `here
+<https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/master/recipe/conda_build_config.yamll>`_.
+If you need to pin another library, please notify @bioconda/core, and we will extend this list.
 
 It's not uncommon to have difficulty compiling package into a portable
 conda package. Since there is no single solution, here are some examples

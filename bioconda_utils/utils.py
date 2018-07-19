@@ -8,22 +8,22 @@ import subprocess as sp
 import sys
 import shutil
 import contextlib
-from collections import defaultdict, Iterable
+from collections import Counter, Iterable, defaultdict, namedtuple
 from itertools import product, chain, groupby
 import logging
+import datetime
+from threading import Event, Thread
+from pathlib import PurePath
+
+from conda_build import api
+from conda.exports import VersionOrder
 import pkg_resources
 import networkx as nx
 import requests
 from jsonschema import validate
-import datetime
 from distutils.version import LooseVersion
-import time
-from threading import Event, Thread
-
-from conda_build import api
-from conda_build.metadata import MetaData
-from conda.version import VersionOrder
 import yaml
+import jinja2
 from jinja2 import Environment, PackageLoader
 from colorlog import ColoredFormatter
 
@@ -40,16 +40,17 @@ log_stream_handler.setFormatter(ColoredFormatter(
             'CRITICAL': 'red',
         }))
 
+
 def setup_logger(name, loglevel=None):
-    l = logging.getLogger(name)
-    l.propagate = False
+    logger = logging.getLogger(name)
+    logger.propagate = False
     if loglevel:
-        l.setLevel(getattr(logging, loglevel.upper()))
-    l.addHandler(log_stream_handler)
-    return l
+        logger.setLevel(getattr(logging, loglevel.upper()))
+    logger.addHandler(log_stream_handler)
+    return logger
+
 
 logger = setup_logger(__name__)
-
 
 jinja = Environment(
     loader=PackageLoader('bioconda_utils', 'templates'),
@@ -78,7 +79,6 @@ ENV_VAR_DOCKER_BLACKLIST = [
 ]
 
 
-
 def get_free_space():
     """Return free space in MB on disk"""
     s = os.statvfs(os.getcwd())
@@ -102,21 +102,6 @@ def bin_for(name='conda'):
     if 'CONDA_ROOT' in os.environ:
         return os.path.join(os.environ['CONDA_ROOT'], 'bin', name)
     return name
-
-
-def get_meta_value(meta, *keys, default=None):
-    """
-    Return value from metadata.
-    Given keys can define a path in the document tree.
-    """
-    try:
-        for key in keys:
-            if not meta:
-                raise KeyError(key)
-            meta = meta[key]
-        return meta
-    except KeyError:
-        return default
 
 
 @contextlib.contextmanager
@@ -162,31 +147,127 @@ def sandboxed_env(env):
         os.environ.update(orig)
 
 
-def load_all_meta(recipe, config):
+def load_all_meta(recipe, config=None, finalize=True):
     """
     For each environment, yield the rendered meta.yaml.
+
+    Parameters
+    ----------
+    finalize : bool
+        If True, do a full conda-build render. Determines exact package builds
+        of build/host dependencies. It involves costly dependency resolution
+        via conda and also download of those packages (to inspect possible
+        run_exports). For fast-running tasks like linting, set to False.
     """
-    cfg = load_config(config)
-    env_matrix = EnvMatrix(cfg['env_matrix'])
-    for env in env_matrix:
-        yield load_meta(recipe, env)
+    if config is None:
+        config = load_conda_build_config()
+    # `bypass_env_check=True` prevents evaluating (=environment solving) the
+    # package versions used for `pin_compatible` and the like.
+    # To avoid adding a separate `bypass_env_check` alongside every `finalize`
+    # parameter, just assume we always want to bypass if `finalize is True`.
+    bypass_env_check = (not finalize)
+    return [meta for (meta, _, _) in api.render(recipe,
+                                                config=config,
+                                                finalize=finalize,
+                                                bypass_env_check=bypass_env_check,
+                                                )]
 
 
-def load_meta(recipe, env):
+def load_meta_fast(recipe):
     """
-    Load metadata for a specific environment.
+    Given a package name, find the current meta.yaml file, parse it, and return
+    the dict.
+
+    Parameters
+    ----------
+    recipe : str
+        Path to recipe (directory containing the meta.yaml file)
+
+    config : str or dict
+        Config YAML or dict
     """
-    with temp_env(env):
-        # Disabling set_build_id prevents the creation of uniquely-named work
-        # directories just for checking the output file.
-        # It needs to be done within the context manager so that it sees the
-        # os.environ.
-        config = api.Config(
-            no_download_source=True,
-            set_build_id=False)
-        meta = MetaData(recipe, config=config)
-        meta.parse_again()
-        return meta.meta
+    class SilentUndefined(jinja2.Undefined):
+        def _fail_with_undefined_error(self, *args, **kwargs):
+            return ""
+
+        __add__ = __radd__ = __mul__ = __rmul__ = __div__ = __rdiv__ = \
+            __truediv__ = __rtruediv__ = __floordiv__ = __rfloordiv__ = \
+            __mod__ = __rmod__ = __pos__ = __neg__ = __call__ = \
+            __getitem__ = __lt__ = __le__ = __gt__ = __ge__ = __int__ = \
+            __float__ = __complex__ = __pow__ = __rpow__ = \
+            _fail_with_undefined_error
+
+    pth = os.path.join(recipe, 'meta.yaml')
+    jinja_env = jinja2.Environment(undefined=SilentUndefined)
+    content = jinja_env.from_string(
+        open(pth, 'r', encoding='utf-8').read()).render({})
+    meta = yaml.load(content)
+    return meta
+
+
+def load_conda_build_config(platform=None, trim_skip=True):
+    """
+    Load conda build config while considering global pinnings from conda-forge.
+    """
+    config = api.Config(
+        no_download_source=True,
+        set_build_id=False)
+
+    # get environment root
+    env_root = PurePath(shutil.which("bioconda-utils")).parents[1]
+    # set path to pinnings from conda forge package
+    config.exclusive_config_file = os.path.join(env_root,
+                                                "conda_build_config.yaml")
+    config.variant_config_files = [
+        os.path.join(
+            os.path.dirname(__file__),
+            'bioconda_utils-conda_build_config.yaml')
+    ]
+    for cfg in config.variant_config_files:
+        assert os.path.exists(cfg), ('error: {0} does not exist'.format(cfg))
+    assert os.path.exists(config.exclusive_config_file), (
+        "error: conda_build_config.yaml not found in environment root")
+    if platform:
+        config.platform = platform
+    config.trim_skip = trim_skip
+    return config
+
+
+CondaBuildConfigFile = namedtuple('CondaBuildConfigFile', (
+    'arg',  # either '-e' or '-m'
+    'path',
+))
+
+
+def get_conda_build_config_files(config=None):
+    if config is None:
+        config = load_conda_build_config()
+    # TODO: open PR upstream for conda-build to support multiple exclusive_config_files
+    for file_path in ([config.exclusive_config_file] if config.exclusive_config_file else []):
+        yield CondaBuildConfigFile('-e', file_path)
+    for file_path in (config.variant_config_files or []):
+        yield CondaBuildConfigFile('-m', file_path)
+
+
+def load_first_metadata(recipe, config=None, finalize=True):
+    """
+    Returns just the first of possibly many metadata files. Used for when you
+    need to do things like check a package name or version number (which are
+    not expected to change between variants).
+
+    If the recipe will be skipped, then returns None
+
+    Parameters
+    ----------
+    finalize : bool
+        If True, do a full conda-build render. Determines exact package builds
+        of build/host dependencies. It involves costly dependency resolution
+        via conda and also download of those packages (to inspect possible
+        run_exports). For fast-running tasks like linting, set to False.
+    """
+    metas = load_all_meta(recipe, config, finalize=finalize)
+    if len(metas) > 0:
+        return metas[0]
 
 
 @contextlib.contextmanager
@@ -222,12 +303,13 @@ def run(cmds, env=None, mask=None, **kwargs):
     except sp.CalledProcessError as e:
         e.stdout = e.stdout.decode(errors='replace')
         # mask command arguments
+
         def do_mask(arg):
             if mask is None:
                 # caller has not considered masking, hide the entire command
                 # for security reasons
                 return '<hidden>'
-            elif mask == False:
+            elif mask is False:
                 # masking has been deactivated
                 return arg
             for m in mask:
@@ -311,11 +393,14 @@ class EnvMatrix:
             yield env
 
 
-def get_deps(recipe, config, build=True):
+def get_deps(recipe=None, meta=None, build=True):
     """
     Generator of dependencies for a single recipe
 
     Only names (not versions) of dependencies are yielded.
+
+    If the variant/version matrix yields multiple instances of the metadata,
+    the union of these dependencies is returned.
 
     Parameters
     ----------
@@ -326,24 +411,22 @@ def get_deps(recipe, config, build=True):
     build : bool
         If True yield build dependencies, if False yield run dependencies.
     """
-    if isinstance(recipe, str):
-        metadata = load_all_meta(recipe, config)
-
-        # TODO: This function is currently used only for creating DAGs, but it's
-        # unclear how to manage different dependencies depending on the
-        # particular environment. For now, just use the first environment.
-        metadata = list(metadata)
-        metadata = metadata[0]
+    if recipe is not None:
+        assert isinstance(recipe, str)
+        metadata = load_all_meta(recipe, finalize=False)
+    elif meta is not None:
+        metadata = [meta]
     else:
-        metadata = recipe
+        raise ValueError("Either meta or recipe has to be specified.")
 
-    reqs = metadata.get('requirements', {})
-    if build:
-        deps = reqs.get('build', [])
-    else:
-        deps = reqs.get('run', [])
-    for dep in deps:
-        yield dep.split()[0]
+    all_deps = set()
+    for meta in metadata:
+        if build:
+            deps = meta.get_value('requirements/build', [])
+        else:
+            deps = meta.get_value('requirements/run', [])
+        all_deps.update(dep.split()[0] for dep in deps)
+    return all_deps
 
 
 def get_dag(recipes, config, blacklist=None, restrict=True):
@@ -375,11 +458,17 @@ def get_dag(recipes, config, blacklist=None, restrict=True):
         Dictionary mapping package names to recipe paths. These recipe path
         values are lists and contain paths to all defined versions.
     """
+    logger.info("Generating DAG")
     recipes = list(recipes)
     metadata = []
-    for recipe in sorted(recipes):
-        for r in list(load_all_meta(recipe, config)):
-            metadata.append((r, recipe))
+    for i, recipe in enumerate(sorted(recipes)):
+        try:
+            meta = load_meta_fast(recipe)
+            metadata.append((meta, recipe))
+            if i % 100 == 0:
+                logger.info("Inspected {} of {} recipes".format(i, len(recipes)))
+        except Exception:
+            raise ValueError('Problem inspecting {0}'.format(recipe))
     if blacklist is None:
         blacklist = set()
 
@@ -392,25 +481,38 @@ def get_dag(recipes, config, blacklist=None, restrict=True):
     # Note that this may change once we support conda-build 3.
     name2recipe = defaultdict(set)
     for meta, recipe in metadata:
-        name = meta['package']['name']
+        name = meta["package"]["name"]
         if name not in blacklist:
             name2recipe[name].update([recipe])
 
+    def get_deps(meta, sec):
+        reqs = meta.get("requirements")
+        if not reqs:
+            return []
+        deps = reqs.get(sec)
+        if not deps:
+            return []
+        return [dep.split()[0] for dep in deps if dep]
+
     def get_inner_deps(dependencies):
+        dependencies = list(dependencies)
         for dep in dependencies:
-            name = dep.split()[0]
-            if name in name2recipe or not restrict:
-                yield name
+            if dep in name2recipe or not restrict:
+                yield dep
 
     dag = nx.DiGraph()
-    dag.add_nodes_from(meta['package']['name'] for meta, recipe in metadata)
+    dag.add_nodes_from(meta["package"]["name"]
+                       for meta, recipe in metadata)
     for meta, recipe in metadata:
-        name = meta['package']['name']
-        dag.add_edges_from((dep, name)
-                           for dep in set(get_inner_deps(chain(
-                               get_deps(meta, config=config),
-                               get_deps(meta, config=config,
-                                        build=False)))))
+        name = meta["package"]["name"]
+        dag.add_edges_from(
+            (dep, name)
+            for dep in set(chain(
+                get_inner_deps(get_deps(meta, "build")),
+                get_inner_deps(get_deps(meta, "host")),
+                get_inner_deps(get_deps(meta, "run")),
+            ))
+        )
 
     return dag, name2recipe
 
@@ -464,7 +566,6 @@ def get_latest_recipes(recipe_folder, config, package="*"):
             recipe_folder, '').strip(os.path.sep).split(os.path.sep)[0]
 
     config = load_config(config)
-    env = list(EnvMatrix(config['env_matrix']))[0]
     recipes = sorted(get_recipes(recipe_folder, package), key=toplevel)
 
     for package, group in groupby(recipes, key=toplevel):
@@ -473,9 +574,10 @@ def get_latest_recipes(recipe_folder, config, package="*"):
             yield group[0]
         else:
             def get_version(p):
-                return VersionOrder(
-                    load_meta(os.path.join(p, 'meta.yaml'), env)['package']['version']
-                )
+                meta_path = os.path.join(p, 'meta.yaml')
+                meta = load_first_metadata(meta_path, finalize=False)
+                version = meta.get_value('package/version')
+                return VersionOrder(version)
             sorted_versions = sorted(group, key=get_version)
             if sorted_versions:
                 yield sorted_versions[-1]
@@ -529,9 +631,18 @@ def get_channel_repodata(channel='bioconda', platform=None):
     return repodata.json(), noarch_repodata.json()
 
 
+PackageKey = namedtuple('PackageKey', ('name', 'version', 'build_number'))
+PackageBuild = namedtuple('PackageBuild', ('subdir', 'build_id'))
+
+
+class DivergentBuildsError(Exception):
+    pass
+
+
 def get_channel_packages(channel='bioconda', platform=None):
     """
-    Retrieves the existing packages for a channel from conda.anaconda.org
+    Return a PackageKey -> set(PackageBuild) mapping.
+    Retrieves the existing packages for a channel from conda.anaconda.org.
 
     Parameters
     ----------
@@ -544,8 +655,15 @@ def get_channel_packages(channel='bioconda', platform=None):
     """
     repodata, noarch_repodata = get_channel_repodata(
         channel=channel, platform=platform)
-    channel_packages = set(repodata['packages'].keys())
-    channel_packages.update(noarch_repodata['packages'].keys())
+    channel_packages = defaultdict(set)
+    for repo in (repodata, noarch_repodata):
+        subdir = repo['info']['subdir']
+        for package in repo['packages'].values():
+            pkg_key = PackageKey(
+                package['name'], package['version'], package['build_number'])
+            pkg_build = PackageBuild(subdir, package['build'])
+            channel_packages[pkg_key].add(pkg_build)
+    channel_packages.default_factory = None
     return channel_packages
 
 
@@ -568,57 +686,16 @@ def _string_or_float_to_integer_python(s):
     return s
 
 
-def built_package_path(recipe, env=None):
+def built_package_paths(recipe):
     """
     Returns the path to which a recipe would be built.
 
     Does not necessarily exist; equivalent to `conda build --output recipename`
     but without the subprocess.
     """
-    if env is None:
-        env = {}
-    env = dict(env)
-
-    # Ensure CONDA_PY is an integer (needed by conda-build 2.0.4)
-    py = env.get('CONDA_PY', None)
-    env = dict(env)
-    if py is not None:
-        env['CONDA_PY'] = _string_or_float_to_integer_python(py)
-
-    with temp_env(env):
-        # Disabling set_build_id prevents the creation of uniquely-named work
-        # directories just for checking the output file.
-        # It needs to be done within the context manager so that it sees the
-        # os.environ.
-        config = api.Config(
-            no_download_source=True,
-            set_build_id=False)
-        meta = MetaData(recipe, config=config)
-        meta.parse_again()
-        path = api.get_output_file_path(meta, config=config)
-    return path
-
-
-class Target:
-    def __init__(self, pkg, env):
-        """
-        Class to represent a package built with a particular environment
-        (e.g. from EnvMatirix).
-        """
-        self.pkg = pkg
-        self.env = env
-
-    def __hash__(self):
-        return self.pkg.__hash__()
-
-    def __eq__(self, other):
-        return self.pkg == other.pkg
-
-    def __str__(self):
-        return os.path.basename(self.pkg)
-
-    def envstring(self):
-        return ';'.join(['='.join([i, str(j)]) for i, j in self.env])
+    config = load_conda_build_config()
+    paths = api.get_output_file_paths(recipe, config=config)
+    return paths
 
 
 def last_commit_to_master():
@@ -721,115 +798,142 @@ def changed_since_master(recipe_folder):
     ]
 
 
-def filter_recipes(recipes, env_matrix, channels=None, force=False):
+def _load_platform_metas(recipe, finalize=True):
+    # check if package is noarch, if so, build only on linux
+    # with temp_os, we can fool the MetaData if needed.
+    platform = os.environ.get('OSTYPE', sys.platform)
+    if platform.startswith("darwin"):
+        platform = 'osx'
+    elif platform == "linux-gnu":
+        platform = "linux"
+
+    config = load_conda_build_config(platform=platform)
+    return platform, load_all_meta(recipe, config=config, finalize=finalize)
+
+
+def _meta_subdir(meta):
+    # logic extracted from conda_build.variants.bldpkg_path
+    return 'noarch' if meta.noarch or meta.noarch_python else meta.config.host_subdir
+
+
+def _get_pkg_key_build_meta_map(metas):
+    key_build_meta = defaultdict(dict)
+    for meta in metas:
+        pkg_key = PackageKey(meta.name(), meta.version(), int(meta.build_number() or 0))
+        pkg_build = PackageBuild(_meta_subdir(meta), meta.build_id())
+        key_build_meta[pkg_key][pkg_build] = meta
+    key_build_meta.default_factory = None
+    return key_build_meta
+
+
+def check_recipe_skippable(recipe, channel_packages, force=False):
     """
-    Generator yielding only those recipes that should be built.
-
-    Parameters
-    ----------
-    recipes : iterable
-        Iterable of candidate recipes
-
-    env_matrix : str, dict, or EnvMatrix
-        If str or dict, create an EnvMatrix; if EnvMatrix already use it as-is.
-
-    channels : None or list
-        Optional list of channels to check for existing recipes
-
-    force : bool
-        Build the package even if it is already available in supplied channels.
+    Return True if the same number of builds (per subdir) defined by the recipe
+    are already in channel_packages (and force is False).
     """
-    if not isinstance(env_matrix, EnvMatrix):
-        env_matrix = EnvMatrix(env_matrix)
+    if force:
+        return False
+    platform, metas = _load_platform_metas(recipe, finalize=False)
+    key_build_meta = _get_pkg_key_build_meta_map(metas)
+    num_existing_pkg_builds = sum(
+        (
+            Counter(
+                (pkg_key, pkg_build.subdir)
+                for pkg_build in channel_packages.get(pkg_key, set())
+            )
+            for pkg_key in key_build_meta.keys()
+        ),
+        Counter()
+    )
+    if num_existing_pkg_builds == Counter():
+        # No packages with same version + build num in channels: no need to skip
+        return False
+    num_new_pkg_builds = sum(
+        (
+            Counter((pkg_key, pkg_build.subdir) for pkg_build in build_meta.keys())
+            for pkg_key, build_meta in key_build_meta.items()
+        ),
+        Counter()
+    )
+    return num_new_pkg_builds == num_existing_pkg_builds
 
+
+def _filter_existing_packages(metas, channel_packages):
+    new_metas = []  # MetaData instances of packages not yet in channel
+    existing_metas = []  # MetaData instances of packages already in channel
+    divergent_builds = set()  # set of Dist (i.e., name-version-build) strings
+
+    key_build_meta = _get_pkg_key_build_meta_map(metas)
+    for pkg_key, build_meta in key_build_meta.items():
+        existing_pkg_builds = channel_packages.get(pkg_key, set())
+        for pkg_build, meta in build_meta.items():
+            if pkg_build not in existing_pkg_builds:
+                new_metas.append(meta)
+            else:
+                existing_metas.append(meta)
+        for divergent_build in (existing_pkg_builds - set(build_meta.keys())):
+            divergent_builds.add(
+                '-'.join((pkg_key.name, pkg_key.version, divergent_build.build_id)))
+    return new_metas, existing_metas, divergent_builds
+
+
+def get_package_paths(recipe, channel_packages, force=False):
+    if check_recipe_skippable(recipe, channel_packages, force):
+        # NB: If we skip early here, we don't detect possible divergent builds.
+        logger.info(
+            'FILTER: not building recipe %s because '
+            'the same number of builds are in channel(s) and it is not forced.',
+            recipe)
+        return []
+    platform, metas = _load_platform_metas(recipe, finalize=True)
+
+    # The recipe likely defined skip: True
+    if not metas:
+        return []
+
+    # If on CI, handle noarch.
+    if os.environ.get('CI', None) == 'true':
+        first_meta = metas[0]
+        if first_meta.get_value('build/noarch'):
+            if platform != 'linux':
+                logger.debug('FILTER: only building %s on '
+                             'linux because it defines noarch.',
+                             recipe)
+                return []
+
+    new_metas, existing_metas, divergent_builds = (
+        _filter_existing_packages(metas, channel_packages))
+
+    if divergent_builds:
+        raise DivergentBuildsError(*sorted(divergent_builds))
+
+    for meta in existing_metas:
+        logger.info(
+            'FILTER: not building %s because '
+            'it is in channel(s) and it is not forced.', meta.pkg_fn())
+    # yield all pkgs that do not yet exist
+    if force:
+        build_metas = new_metas + existing_metas
+    else:
+        build_metas = new_metas
+    return list(chain.from_iterable(
+        api.get_output_file_paths(meta) for meta in build_metas))
+
+
+def get_all_channel_packages(channels):
+    """
+    Return a PackageKey -> set(PackageBuild) mapping.
+    """
     if channels is None:
         channels = []
 
-    channel_packages = defaultdict(set)
+    all_channel_packages = defaultdict(set)
     for channel in channels:
-        channel_packages[channel].update(get_channel_packages(channel=channel))
-
-    def tobuild(recipe, env):
-        pkg = os.path.basename(built_package_path(recipe, env))
-
-        in_channels = [
-            channel for channel, pkgs in channel_packages.items()
-            if pkg in pkgs
-        ]
-        if in_channels and not force:
-            logger.debug(
-                'FILTER: not building %s because '
-                'it is in channel(s) and it is not forced: %s', pkg,
-                in_channels)
-            return False
-
-        # with temp_env, MetaData will see everything in env added to
-        # os.environ.
-        with temp_env(env):
-
-            # with temp_os, we can fool the MetaData if needed.
-            platform = os.environ.get('OSTYPE', sys.platform)
-            if platform.startswith("darwin"):
-                platform = 'darwin'
-            elif platform == "linux-gnu":
-                platform = "linux"
-
-            with temp_os(platform):
-                meta = MetaData(recipe)
-                if meta.skip():
-                    logger.debug(
-                        'FILTER: not building %s because '
-                        'it defines skip for this env', pkg)
-                    return False
-
-                # If on CI, handle noarch.
-                if os.environ.get('CI', None) == 'true':
-                    if meta.get_value('build/noarch'):
-                        if platform != 'linux':
-                            logger.debug('FILTER: only building %s on '
-                                         'linux because it defines noarch.',
-                                         pkg)
-                            return False
-
-        assert not pkg.endswith("_.tar.bz2"), (
-            "rendered path {} does not "
-            "contain a build number and recipe does not "
-            "define skip for this environment. "
-            "This is a conda bug.".format(pkg))
-
-        logger.debug(
-            'FILTER: building %s because it is not in channels and '
-            'does not define skip', pkg)
-        return True
-
-    logger.debug('recipes: %s', recipes)
-    recipes = list(recipes)
-    nrecipes = len(recipes)
-    if nrecipes == 0:
-        raise StopIteration
-    max_recipe = max(map(len, recipes))
-    template = (
-        'Filtering {{0}} of {{1}} ({{2:.1f}}%) {{3:<{0}}}'.format(max_recipe)
-    )
-    print(flush=True)
-    try:
-        for i, recipe in enumerate(sorted(recipes)):
-            perc = (i + 1) / nrecipes * 100
-            print(template.format(i + 1, nrecipes, perc, recipe), end='')
-            targets = set()
-            for env in env_matrix:
-                pkg = built_package_path(recipe, env)
-                if tobuild(recipe, env):
-                    targets.update([Target(pkg, env)])
-            if targets:
-                yield recipe, targets
-            print(end='\r')
-    except sp.CalledProcessError as e:
-        logger.debug(e.stdout)
-        logger.error(e.stderr)
-        exit(1)
-    finally:
-        print(flush=True)
+        channel_packages = get_channel_packages(channel=channel)
+        for pkg_key, pkg_builds in channel_packages.items():
+            all_channel_packages[pkg_key].update(pkg_builds)
+    all_channel_packages.default_factory = None
+    return all_channel_packages
 
 
 def get_blacklist(blacklists, recipe_folder):
@@ -867,8 +971,7 @@ def validate_config(config):
 
 def load_config(path):
     """
-    Parses config file, building paths to relevant blacklists and loading any
-    specified env_matrix files.
+    Parses config file, building paths to relevant blacklists
 
     Parameters
     ----------
@@ -878,11 +981,13 @@ def load_config(path):
     validate_config(path)
 
     if isinstance(path, dict):
+        def relpath(p):
+            return p
         config = path
-        relpath = lambda p: p
     else:
+        def relpath(p):
+            return os.path.join(os.path.dirname(path), p)
         config = yaml.load(open(path))
-        relpath = lambda p: os.path.join(os.path.dirname(path), p)
 
     def get_list(key):
         # always return empty list, also if NoneType is defined in yaml
@@ -892,15 +997,11 @@ def load_config(path):
         return value
 
     default_config = {
-        'env_matrix': {'CONDA_PY': 35},
         'blacklists': [],
         'channels': [],
         'requirements': None,
         'upload_channel': 'bioconda'
     }
-    if 'env_matrix' in config:
-        if isinstance(config['env_matrix'], str):
-            config['env_matrix'] = relpath(config['env_matrix'])
     if 'blacklists' in config:
         config['blacklists'] = [relpath(p) for p in get_list('blacklists')]
     if 'channels' in config:

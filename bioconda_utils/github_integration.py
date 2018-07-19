@@ -1,5 +1,7 @@
-import github
 import os
+
+import github
+
 
 def _n(x):
     """
@@ -31,7 +33,7 @@ def push_comment(user, repo, pull_request_number, msg):
     user = g.get_user(user)
     repo = user.get_repo(repo)
     pr = repo.get_pull(pull_request_number)
-    
+
     return pr.create_issue_comment(msg)
 
 
@@ -75,7 +77,6 @@ def update_status(user, repo, commit, state, context=None, description=None,
         target_url=_n(target_url))
 
 
-
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
@@ -84,4 +85,7 @@ if __name__ == "__main__":
     ap.add_argument('--context')
     ap.add_argument('--description')
     args = ap.parse_args()
-    print(update_status('bioconda', 'bioconda-recipes', args.commit, args.state, args.context, args.description))
+    status = update_status(
+        'bioconda', 'bioconda-recipes', args.commit, args.state, args.context, args.description,
+    )
+    print(status)

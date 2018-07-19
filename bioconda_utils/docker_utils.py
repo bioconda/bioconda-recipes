@@ -45,6 +45,8 @@ Other notes:
 """
 
 import os
+import os.path
+from shlex import quote
 import shutil
 import subprocess as sp
 import tempfile
@@ -54,6 +56,9 @@ from textwrap import dedent
 import pkg_resources
 import re
 from distutils.version import LooseVersion
+
+import conda
+import conda_build
 
 from . import utils
 
@@ -95,29 +100,12 @@ conda config --add channels file://{self.container_staging}  > /dev/null 2>&1
 # conda-build from building all subdirectories
 conda build {self.conda_build_args} {self.container_recipe}/meta.yaml 2>&1
 
-# Identify the output package
-OUTPUT_DIR=$(dirname $(conda build {self.container_recipe}/meta.yaml --output 2> /dev/null))
-OUTPUT=$OUTPUT_DIR/{pkg}
-
-
-# Some args to conda-build make it run and exit 0 without creating a package
-# (e.g., -h or --skip-existing), so check to see if there's anything to copy
-# over first.
-if [[ -e $OUTPUT ]]; then
-
-    # Copy over the recipe from where the container built it to the mounted
-    # conda-bld dir from the host. The arch will be either linux-64 or noarch.
-    cp $OUTPUT {self.container_staging}/{arch}
-
-    conda index {self.container_staging}/{arch} > /dev/null 2>&1
-
-    # Ensure permissions are correct on the host.
-    HOST_USER={self.user_info[uid]}
-    chown $HOST_USER:$HOST_USER {self.container_staging}/{arch}/$(basename $OUTPUT)
-    chown $HOST_USER:$HOST_USER {self.container_staging}/{arch}/{{repodata.json,repodata.json.bz2,.index.json}}
-
-fi
-"""
+# copy all built packages to the staging area
+cp `conda build {self.conda_build_args} {self.container_recipe}/meta.yaml --output` {self.container_staging}/{arch}
+# Ensure permissions are correct on the host.
+HOST_USER={self.user_info[uid]}
+chown $HOST_USER:$HOST_USER {self.container_staging}/{arch}/*
+"""  # noqa: E501,E122: line too long, continuation line missing indentation or outdented
 
 
 # ----------------------------------------------------------------------------
@@ -132,9 +120,11 @@ fi
 
 DOCKERFILE_TEMPLATE = \
 """
-FROM bioconda/bioconda-utils-build-env
+FROM {self.docker_base_image}
 {self.proxies}
-"""
+RUN /opt/conda/bin/conda install -y conda={conda_ver} conda-build={conda_build_ver}
+"""  # noqa: E122 continuation line missing indentation or outdented
+
 
 class DockerCalledProcessError(sp.CalledProcessError):
     pass
@@ -199,6 +189,7 @@ class RecipeBuilder(object):
         pkg_dir=None,
         keep_image=False,
         image_build_dir=None,
+        docker_base_image=None,
     ):
         """
         Class to handle building a custom docker container that can be used for
@@ -216,7 +207,7 @@ class RecipeBuilder(object):
 
         container_staging : str
             Directory to which the host's conda-bld dir will be mounted so that
-            the container can use previously-built packages as depdendencies.
+            the container can use previously-built packages as dependencies.
             Upon successful building container-built packages will be copied
             over. Mounted as read-write.
 
@@ -272,6 +263,11 @@ class RecipeBuilder(object):
         image_build_dir : str or None
             If not None, use an existing directory as a docker image context
             instead of a temporary one. For testing purposes only.
+
+        docker_base_image : str or None
+            Name of base image that can be used in `dockerfile_template`.
+            Defaults to 'bioconda/bioconda-utils-build-env:TAG' where TAG is
+            `os.environ.get('BIOCONDA_UTILS_TAG', 'latest')`.
         """
         self.tag = tag
         self.requirements = requirements
@@ -279,6 +275,10 @@ class RecipeBuilder(object):
         self.build_script_template = build_script_template
         self.dockerfile_template = dockerfile_template
         self.keep_image = keep_image
+        if docker_base_image is None:
+            docker_base_image = 'bioconda/bioconda-utils-build-env:{}'.format(
+                os.environ.get('BIOCONDA_UTILS_TAG', 'latest'))
+        self.docker_base_image = docker_base_image
 
         # To address issue #5027:
         #
@@ -327,6 +327,7 @@ class RecipeBuilder(object):
 
         self.container_recipe = container_recipe
         self.container_staging = container_staging
+
         self.host_conda_bld = get_host_conda_bld()
 
         if use_host_conda_bld:
@@ -339,7 +340,18 @@ class RecipeBuilder(object):
                     os.makedirs(pkg_dir)
                 self.pkg_dir = pkg_dir
 
+        # Copy the conda build config files to the staging directory that is
+        # visible in the container
+        for i, config_file in enumerate(utils.get_conda_build_config_files()):
+            dst_file = self._get_config_path(self.pkg_dir, i, config_file)
+            shutil.copyfile(config_file.path, dst_file)
+
         self._build_image(image_build_dir)
+
+    def _get_config_path(self, staging_prefix, i, config_file):
+        src_basename = os.path.basename(config_file.path)
+        dst_basename = 'conda_build_config_{}_{}_{}'.format(i, config_file.arg, src_basename)
+        return os.path.join(staging_prefix, dst_basename)
 
     def __del__(self):
         if not self.keep_image:
@@ -368,7 +380,11 @@ class RecipeBuilder(object):
                 ).read())
 
         with open(os.path.join(build_dir, "Dockerfile"), 'w') as fout:
-            fout.write(self.dockerfile_template.format(self=self))
+            fout.write(self.dockerfile_template.format(
+                self=self,
+                conda_ver=conda.__version__,
+                conda_build_ver=conda_build.__version__)
+            )
 
         logger.debug('Dockerfile:\n' + open(fout.name).read())
 
@@ -418,7 +434,7 @@ class RecipeBuilder(object):
             shutil.rmtree(build_dir)
         return p
 
-    def build_recipe(self, recipe_dir, build_args, env, pkg, noarch=False):
+    def build_recipe(self, recipe_dir, build_args, env, noarch=False):
         """
         Build a single recipe.
 
@@ -435,8 +451,6 @@ class RecipeBuilder(object):
         env : dict
             Environmental variables
 
-        pkg : filename of the desired package (e.g. obtained by utils.built_package_path)
-
         noarch: bool
             Has to be set to true if this is a noarch build
 
@@ -449,13 +463,18 @@ class RecipeBuilder(object):
         # template.
         if not isinstance(build_args, str):
             raise ValueError('build_args must be str')
-        self.conda_build_args = build_args
+        build_args_list = [build_args]
+        for i, config_file in enumerate(utils.get_conda_build_config_files()):
+            dst_file = self._get_config_path(self.container_staging, i, config_file)
+            build_args_list.extend([config_file.arg, quote(dst_file)])
+        self.conda_build_args = ' '.join(build_args_list)
 
         # Write build script to tempfile
         build_dir = os.path.realpath(tempfile.mkdtemp())
+        script = self.build_script_template.format(
+            self=self, arch='noarch' if noarch else 'linux-64')
         with open(os.path.join(build_dir, 'build_script.bash'), 'w') as fout:
-            fout.write(self.build_script_template.format(
-                self=self, pkg=pkg, arch='noarch' if noarch else 'linux-64'))
+            fout.write(script)
         build_script = fout.name
         logger.debug('DOCKER: Container build script: \n%s', open(fout.name).read())
 
@@ -467,7 +486,7 @@ class RecipeBuilder(object):
             env_list.append('{0}={1}'.format(k, v))
 
         env_list.append('-e')
-        env_list.append('{0}={1}'.format('HOST_USER_ID',self.user_info['uid']))
+        env_list.append('{0}={1}'.format('HOST_USER_ID', self.user_info['uid']))
 
         cmd = [
             'docker', 'run',

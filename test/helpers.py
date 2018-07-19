@@ -3,8 +3,6 @@ import tempfile
 import yaml
 import os
 import subprocess as sp
-from conda_build.metadata import MetaData
-from bioconda_utils.utils import built_package_path
 
 
 def ensure_missing(package):
@@ -26,25 +24,6 @@ def ensure_missing(package):
         os.unlink(package)
     assert not os.path.exists(package)
     sp.check_call(['conda', 'index', os.path.dirname(package)])
-
-
-def tmp_env_matrix():
-    tmp = tempfile.NamedTemporaryFile(delete=False).name
-    with open(tmp, 'w') as fout:
-        fout.write(dedent(
-            """\
-            CONDA_PY:
-            - "27"
-            - "35"
-            CONDA_BOOST: "1.60"
-            CONDA_R: "3.4.1"
-            CONDA_PERL: "5.22.0"
-            CONDA_NPY: "110"
-            CONDA_NCURSES: "5.9"
-            CONDA_GSL: "1.16"
-            CONDA_GMP: "5.1"
-            """))
-    return tmp
 
 
 class Recipes(object):

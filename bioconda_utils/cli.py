@@ -38,7 +38,8 @@ def select_recipes(packages, git_range, recipe_folder, config_filename, config, 
             if os.path.basename(f) in ['meta.yaml', 'build.sh'] and
             os.path.exists(f)
         ]
-        logger.info('Recipes to consider according to git: \n{}'.format('\n '.join(changed_recipes)))
+        logger.info(
+            'Recipes to consider according to git: \n{}'.format('\n '.join(changed_recipes)))
     else:
         changed_recipes = []
 
@@ -98,15 +99,18 @@ def duplicates(
     target_channel = channels[0]
 
     if strict_version:
-        get_spec = lambda pkg: (pkg['name'], pkg['version'])
+        def get_spec(pkg):
+            return (pkg['name'], pkg['version'])
         if not remove and not url:
             print('name', 'version', 'channels', sep='\t')
     elif strict_build:
-        get_spec = lambda pkg: (pkg['name'], pkg['version'], pkg['build'])
+        def get_spec(pkg):
+            return (pkg['name'], pkg['version'], pkg['build'])
         if not remove and not url:
             print('name', 'version', 'build', 'channels', sep='\t')
     else:
-        get_spec = lambda pkg: pkg['name']
+        def get_spec(pkg):
+            return pkg['name']
         if not remove and not url:
             print('name', 'channels', sep='\t')
 
@@ -234,13 +238,8 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
 
     _recipes = select_recipes(packages, git_range, recipe_folder, config_filename, config, force)
 
-    report = linting.lint(
-        _recipes,
-        config=config,
-        df=df,
-        exclude=exclude,
-        registry=registry,
-    )
+    lint_args = linting.LintArgs(df=df, exclude=exclude, registry=registry)
+    report = linting.lint(_recipes, lint_args)
 
     # The returned dataframe is in tidy format; summarize a bit to get a more
     # reasonable log
@@ -310,6 +309,14 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
 @arg('--keep-image', action='store_true', help='''After building recipes, the
      created Docker image is removed by default to save disk space. Use this
      argument to disable this behavior.''')
+@arg('--lint', '--prelint', action='store_true', help='''Just before each recipe, apply
+     the linting functions to it. This can be used as an alternative to linting
+     all recipes before any building takes place with the `bioconda-utils lint`
+     command.''')
+@arg('--lint-only', nargs='+',
+     help='''Only run this linting function. Can be used multiple times.''')
+@arg('--lint-exclude', nargs='+',
+     help='''Exclude this linting function. Can be used multiple times.''')
 def build(
     recipe_folder,
     config,
@@ -325,6 +332,9 @@ def build(
     anaconda_upload=False,
     mulled_upload_target=None,
     keep_image=False,
+    lint=False,
+    lint_only=None,
+    lint_exclude=None,
 ):
     utils.setup_logger('bioconda_utils', loglevel)
 
@@ -374,6 +384,22 @@ def build(
     else:
         docker_builder = None
 
+    if lint:
+        registry = lint_functions.registry
+        if lint_only is not None:
+            registry = tuple(func for func in registry if func.__name__ in lint_only)
+            if len(registry) == 0:
+                sys.stderr.write('No valid linting functions selected, exiting.\n')
+                sys.exit(1)
+        df = linting.channel_dataframe()
+        lint_args = linting.LintArgs(df=df, exclude=lint_exclude, registry=registry)
+    else:
+        lint_args = None
+        if lint_only is not None:
+            logger.warning('--lint-only has no effect unless --lint is specified.')
+        if lint_exclude is not None:
+            logger.warning('--lint-exclude has no effect unless --lint is specified.')
+
     success = build_recipes(
         recipe_folder,
         config=config,
@@ -384,6 +410,7 @@ def build(
         docker_builder=docker_builder,
         anaconda_upload=anaconda_upload,
         mulled_upload_target=mulled_upload_target,
+        lint_args=lint_args,
     )
     exit(0 if success else 1)
 
@@ -451,7 +478,10 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
      effect if --reverse-dependencies, which always looks just in the recipe
      dir.''')
 @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
-def dependent(recipe_folder, config, restrict=False, dependencies=None, reverse_dependencies=None, loglevel='warning'):
+def dependent(
+    recipe_folder, config, restrict=False, dependencies=None, reverse_dependencies=None,
+    loglevel='warning',
+):
     """
     Print recipes dependent on a package
     """
@@ -490,7 +520,7 @@ def dependent(recipe_folder, config, restrict=False, dependencies=None, reverse_
      with the specified version in --pkg-version, or if --pkg-version not
      specified, then finds the the latest package version in the latest
      Bioconductor version""")
-@arg('--loglevel',  help='Log level')
+@arg('--loglevel', help='Log level')
 @arg('--recursive', action='store_true', help="""Creates the recipes for all
      Bioconductor and CRAN dependencies of the specified package.""")
 @arg('--skip-if-in-channels', nargs='*', help="""When --recursive is used, it will build
@@ -522,7 +552,7 @@ def bioconductor_skeleton(
     utils.setup_logger('bioconda_utils', loglevel)
     seen_dependencies = set()
 
-    written = _bioconductor_skeleton.write_recipe(
+    _bioconductor_skeleton.write_recipe(
         package, recipe_folder, config, force=force, bioc_version=bioc_version,
         pkg_version=pkg_version, versioned=versioned, recursive=recursive,
         seen_dependencies=seen_dependencies,
@@ -603,4 +633,7 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
 
 
 def main():
-    argh.dispatch_commands([build, dag, dependent, lint, duplicates, bioconductor_skeleton, pypi_check, clean_cran_skeleton])
+    argh.dispatch_commands([
+        build, dag, dependent, lint, duplicates,
+        bioconductor_skeleton, pypi_check, clean_cran_skeleton,
+    ])

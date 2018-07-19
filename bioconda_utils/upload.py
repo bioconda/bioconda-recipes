@@ -40,7 +40,7 @@ def anaconda_upload(package, token=None, label=None):
     logger.info("UPLOAD uploading package %s", package)
     try:
         cmds = ["anaconda", "-t", token, 'upload', package] + label_arg
-        p = utils.run(cmds, mask=[token])
+        utils.run(cmds, mask=[token])
         logger.info("UPLOAD SUCCESS: uploaded package %s", package)
         return True
 

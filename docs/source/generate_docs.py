@@ -37,10 +37,10 @@ class RepoData(object):
         logger.info('Loading packages...')
         repodata = defaultdict(lambda: defaultdict(list))
         for platform in ['linux', 'osx']:
-            for pkg in utils.get_channel_packages(channel='bioconda',
-                                                  platform=platform):
-                name, version, _ = self._parse_pkgname(pkg)
-                repodata[name][version].append(platform)
+            channel_packages = utils.get_channel_packages(
+                channel='bioconda', platform=platform)
+            for pkg_key in channel_packages.keys():
+                repodata[pkg_key.name][pkg_key.version].append(platform)
         self.repodata = repodata
         # e.g., repodata = {
         #   'package1': {
@@ -48,14 +48,6 @@ class RepoData(object):
         #       '0.2': ['linux', 'osx'],
         #   },
         # }
-
-    def _parse_pkgname(self, p):
-        p = p.replace('.tar.bz2', '')
-        toks = p.split('-')
-        build_string = toks.pop()
-        version = toks.pop()
-        name = '-'.join(toks)
-        return name, version, build_string
 
     def get_versions(self, p):
         """Get versions available for package
@@ -88,7 +80,7 @@ def as_extlink_filter(text):
         return "{0}: :{0}:`{1}`".format(*text)
 
     assert isinstance(text, list), "identifiers have to be given as list"
- 
+
     return list(map(fmt, text))
 
 
@@ -218,15 +210,14 @@ def generate_readme(folder, repodata, renderer):
         logger.error("Failed to parse recipe {}".format(recipe))
         raise e
 
-
     name = metadata.name()
     versions_in_channel = repodata.get_versions(name)
 
     # Format the README
     template_options = {
         'name': name,
-        'about': metadata.get_section('about'),
-        'extra': metadata.get_section('extra'),
+        'about': (metadata.get_section('about') or {}),
+        'extra': (metadata.get_section('extra') or {}),
         'versions': versions_in_channel,
         'gh_recipes': 'https://github.com/bioconda/bioconda-recipes/tree/master/recipes/',
         'recipe_path': op.dirname(op.relpath(metadata.meta_path, RECIPE_DIR)),

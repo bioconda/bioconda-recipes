@@ -1,16 +1,11 @@
-import sys
-
 import pytest
 
 from bioconda_utils import bioconductor_skeleton
 from bioconda_utils import cran_skeleton
 from bioconda_utils import utils
 
-import helpers
 
-env_matrix = helpers.tmp_env_matrix()
 config = {
-    'env_matrix': env_matrix,
     'channels': ['bioconda', 'conda-forge', 'defaults']
 }
 
@@ -62,25 +57,19 @@ def test_bioc_write_recipe_no_skipping(tmpdir):
 
 
 def test_meta_contents(tmpdir):
-    env_matrix = helpers.tmp_env_matrix()
     config = {
-        'env_matrix': env_matrix,
         'channels': ['bioconda', 'conda-forge', 'defaults']
     }
     bioconductor_skeleton.write_recipe(
         'edgeR', recipe_dir=str(tmpdir), config=config, recursive=False)
 
-    edger_meta = utils.load_meta(str(tmpdir.join('bioconductor-edger')), {})
-    assert 'r-rcpp' in edger_meta['requirements']['build']
+    edger_meta = utils.load_first_metadata(str(tmpdir.join('bioconductor-edger'))).meta
+    assert 'r-rcpp' in edger_meta['requirements']['run']
 
-    # note that the preprocessing selector is stripped off by yaml parsing, so
-    # just check for gcc
-    if sys.platform == 'linux':
-        assert 'gcc' in edger_meta['requirements']['build']
-    elif sys.platform == 'darwin':
-        assert 'llvm' in edger_meta['requirements']['build']
-    else:
-        raise ValueError('Unhandled platform: {}'.format(sys.platform))
+    # The rendered meta has {{ compiler('c') }} filled in, so we need to check
+    # for one of those filled-in values.
+    names = [i.split()[0] for i in edger_meta['requirements']['build']]
+    assert 'toolchain' in names
 
     # bioconductor, bioarchive, and cargoport
     assert len(edger_meta['source']['url']) == 3
@@ -110,16 +99,17 @@ def test_pkg_version():
         'http://bioconductor.org/packages/3.4/bioc/src/contrib/DESeq2_1.14.1.tar.gz')
     assert b.bioarchive_url is None
     assert b.cargoport_url == (
-        'https://depot.galaxyproject.org/software/bioconductor-deseq2/bioconductor-deseq2_1.14.1_src_all.tar.gz')
+        'https://depot.galaxyproject.org/software/bioconductor-deseq2/bioconductor-deseq2_1.14.1_src_all.tar.gz')  # noqa: E501: line too long
 
     # bioc version specified, but not package version
     b = bioconductor_skeleton.BioCProjectPage('edgeR', bioc_version='3.5')
     assert b.version == '3.18.1'
     assert b.bioc_version == '3.5'
-    assert b.bioconductor_tarball_url == 'http://bioconductor.org/packages/3.5/bioc/src/contrib/edgeR_3.18.1.tar.gz'
+    assert b.bioconductor_tarball_url == (
+        'http://bioconductor.org/packages/3.5/bioc/src/contrib/edgeR_3.18.1.tar.gz')
     assert b.bioarchive_url is None
     assert b.cargoport_url == (
-        'https://depot.galaxyproject.org/software/bioconductor-edger/bioconductor-edger_3.18.1_src_all.tar.gz')
+        'https://depot.galaxyproject.org/software/bioconductor-edger/bioconductor-edger_3.18.1_src_all.tar.gz')  # noqa: E501: line too long
 
 
 def test_bioarchive_exists_but_not_bioconductor():
@@ -144,7 +134,7 @@ def test_bioarchive_exists():
 
 def test_annotation_data(tmpdir):
     bioconductor_skeleton.write_recipe('AHCytoBands', str(tmpdir), config, recursive=True)
-    meta = utils.load_meta(str(tmpdir.join('bioconductor-ahcytobands')), {})
+    meta = utils.load_first_metadata(str(tmpdir.join('bioconductor-ahcytobands'))).meta
     assert 'wget' in meta['requirements']['run']
     assert len(meta['source']['url']) == 3
     assert not tmpdir.join('bioconductor-ahcytobands', 'build.sh').exists()
@@ -154,7 +144,7 @@ def test_annotation_data(tmpdir):
 
 def test_experiment_data(tmpdir):
     bioconductor_skeleton.write_recipe('affydata', str(tmpdir), config, recursive=True)
-    meta = utils.load_meta(str(tmpdir.join('bioconductor-affydata')), {})
+    meta = utils.load_first_metadata(str(tmpdir.join('bioconductor-affydata'))).meta
     assert 'wget' in meta['requirements']['run']
     assert len(meta['source']['url']) == 3
     assert not tmpdir.join('bioconductor-affydata', 'build.sh').exists()
@@ -166,11 +156,13 @@ def test_nonexistent_pkg(tmpdir):
 
     # no such package exists in the current bioconductor
     with pytest.raises(bioconductor_skeleton.PageNotFoundError):
-        bioconductor_skeleton.write_recipe('nonexistent', str(tmpdir), config, recursive=True)
+        bioconductor_skeleton.write_recipe(
+            'nonexistent', str(tmpdir), config, recursive=True)
 
     # package exists, but not this version
     with pytest.raises(bioconductor_skeleton.PackageNotFoundError):
-        bioconductor_skeleton.write_recipe('DESeq', str(tmpdir), config, recursive=True, pkg_version='5000')
+        bioconductor_skeleton.write_recipe(
+            'DESeq', str(tmpdir), config, recursive=True, pkg_version='5000')
 
 
 def test_overwrite(tmpdir):

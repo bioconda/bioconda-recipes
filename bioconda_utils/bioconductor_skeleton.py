@@ -5,15 +5,16 @@ import tempfile
 import configparser
 from textwrap import dedent
 import tarfile
-import pyaml
 import hashlib
 import os
 import re
-import bs4
 from collections import OrderedDict
 import logging
+
+import bs4
+import pyaml
 import requests
-from colorlog import ColoredFormatter
+
 from . import utils
 from . import cran_skeleton
 
@@ -34,12 +35,6 @@ base_url = 'http://bioconductor.org/packages/'
 BASE_R_PACKAGES = ["base", "compiler", "datasets", "graphics", "grDevices",
                    "grid", "methods", "parallel", "splines", "stats", "stats4",
                    "tcltk", "tools", "utils"]
-
-
-# A list of packages, in recipe name format. If a package depends on something
-# in this list, then we will add the gcc/llvm build-deps as appropriate to the
-# constructed recipe.
-GCC_PACKAGES = ['r-rcpp']
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -206,7 +201,10 @@ def find_best_bioc_version(package, version):
     for bioc_version in bioconductor_versions():
         for kind, func in zip(
             ('package', 'data'),
-            (bioconductor_tarball_url, bioconductor_annotation_data_url, bioconductor_experiment_data_url)
+            (
+                bioconductor_tarball_url, bioconductor_annotation_data_url,
+                bioconductor_experiment_data_url,
+            ),
         ):
             url = func(package, version, bioc_version)
             if requests.head(url).status_code == 200:
@@ -291,6 +289,34 @@ class BioCProjectPage(object):
             self.version = self._pkg_version
 
         else:
+            htmls = {
+                'regular_package': os.path.join(
+                    base_url, self.bioc_version, 'bioc', 'html',
+                    package + '.html'),
+                'annotation_package': os.path.join(
+                    base_url, self.bioc_version, 'data', 'annotation', 'html',
+                    package + '.html'),
+                'experiment_package': os.path.join(
+                    base_url, self.bioc_version, 'data', 'experiment', 'html',
+                    package + '.html'),
+            }
+            tried = []
+            for label, url in htmls.items():
+                request = requests.get(url)
+                tried.append(url)
+                if request:
+                    break
+
+            if not request:
+                raise PageNotFoundError(
+                    'Could not find HTML page for {0.package}. Tried: '
+                    '{1}'.format(self, ', '.join(tried)))
+
+            # Since we provide the "short link" we will get redirected. Using
+            # requests allows us to keep track of the final destination URL,
+            # which we need for reconstructing the tarball URL.
+            self.url = request.url
+
             # The table at the bottom of the page has the info we want. An
             # earlier draft of this script parsed the dependencies from the
             # details table.  That's still an option if we need a double-check
@@ -313,7 +339,6 @@ class BioCProjectPage(object):
             self.version = parsed_html_version
 
         self.depends_on_gcc = False
-
 
     @property
     def bioarchive_url(self):
@@ -341,7 +366,8 @@ class BioCProjectPage(object):
         elif response.status_code == 200:
             return url
         else:
-            raise PageNotFoundError("Unexpected error: {0.status_code} ({0.reason})".format(response))
+            raise PageNotFoundError(
+                "Unexpected error: {0.status_code} ({0.reason})".format(response))
 
     @property
     def bioconductor_tarball_url(self):
@@ -400,7 +426,8 @@ class BioCProjectPage(object):
                 find_best_bioc_version(self.package, self.version)
 
             if self._tarball_url is None:
-                raise ValueError("No working URLs found for this version in any bioconductor version")
+                raise ValueError(
+                    "No working URLs found for this version in any bioconductor version")
         return self._tarball_url
 
     @property
@@ -432,7 +459,8 @@ class BioCProjectPage(object):
             if response.status_code == 200:
                 fout.write(response.content)
             else:
-                raise PageNotFoundError('Unexpected error {0.status_code} ({0.reason})'.format(response))
+                raise PageNotFoundError(
+                    'Unexpected error {0.status_code} ({0.reason})'.format(response))
         shutil.move(tmp, fn)
         self._cached_tarball = fn
         return fn
@@ -483,7 +511,6 @@ class BioCProjectPage(object):
         except KeyError:
             return []
 
-
     @property
     def linkingto(self):
         """
@@ -493,7 +520,6 @@ class BioCProjectPage(object):
             return [i.strip() for i in self.description['linkingto'].replace(' ', '').split(',')]
         except KeyError:
             return []
-
 
     def _parse_dependencies(self, items):
         """
@@ -592,12 +618,47 @@ class BioCProjectPage(object):
             else:
                 dependency_mapping[prefix + name.lower() + version] = name
 
-            if (
-                (prefix + name.lower() in GCC_PACKAGES) or
-                (self.description.get('needscompilation', 'no') == 'yes') or
-                (self.description.get('linkingto', None) is not None)
-            ):
-                self.depends_on_gcc = True
+        if (
+            (self.description.get('needscompilation', 'no') == 'yes') or
+            (self.description.get('linkingto', None) is not None)
+        ):
+            # Modified from conda_build.skeletons.cran
+            #
+            with tarfile.open(self.cached_tarball) as tf:
+                need_f = any(f.name.lower().endswith(('.f', '.f90', '.f77')) for f in tf)
+                if need_f:
+                    need_c = True
+                else:
+                    need_c = any(f.name.lower().endswith('.c') for f in tf)
+                need_cxx = any(
+                    f.name.lower().endswith(('.cxx', '.cpp', '.cc', '.c++')) for f in tf)
+                need_autotools = any(f.name.lower().endswith('/configure') for f in tf)
+                if any((need_autotools, need_f, need_cxx, need_c)):
+                    need_make = True
+                else:
+                    need_make = any(
+                        f.name.lower().endswith(('/makefile', '/makevars')) for f in tf)
+        else:
+            need_c = need_cxx = need_f = need_autotools = need_make = False
+
+        for name, version in sorted(versions.items()):
+            if name in ['Rcpp', 'RcppArmadillo']:
+                need_cxx = True
+
+        if need_cxx:
+            need_c = True
+
+        self._cb3_build_reqs = {}
+        if need_c:
+            self._cb3_build_reqs['c'] = "{{ compiler('c') }}"
+        if need_cxx:
+            self._cb3_build_reqs['cxx'] = "{{ compiler('cxx') }}"
+        if need_f:
+            self._cb3_build_reqs['fortran'] = "{{ compiler('fortran') }}"
+        if need_autotools:
+            self._cb3_build_reqs['automake'] = 'automake'
+        if need_make:
+            self._cb3_build_reqs['make'] = 'make'
 
         # Add R itself
         if not specific_r_version:
@@ -719,7 +780,7 @@ class BioCProjectPage(object):
                     # object and tries to make a shortcut, causing an error in
                     # decoding unicode. Possible pyaml bug? Anyway, this fixes
                     # it.
-                    ('build', DEPENDENCIES[:]),
+                    ('host', DEPENDENCIES[:]),
                     ('run', DEPENDENCIES[:] + additional_run_deps),
                 )),
             ),
@@ -738,21 +799,25 @@ class BioCProjectPage(object):
                 )),
             ),
         ))
-        if self.depends_on_gcc:
-            d['requirements']['build'].append('GCC_PLACEHOLDER')
-            d['requirements']['build'].append('LLVM_PLACEHOLDER')
+
+        if self._cb3_build_reqs:
+            d['requirements']['build'] = []
+        for k, v in self._cb3_build_reqs.items():
+            d['requirements']['build'].append(k + '_' + "PLACEHOLDER")
 
         rendered = pyaml.dumps(d, width=1e6).decode('utf-8')
-        rendered = rendered.replace('GCC_PLACEHOLDER', 'gcc  # [linux]')
-        rendered = rendered.replace('LLVM_PLACEHOLDER', 'llvm  # [osx]')
         rendered = (
             '{% set version = "' + self.version + '" %}\n' +
             '{% set name = "' + self.package + '" %}\n' +
             '{% set bioc = "' + self.bioc_version + '" %}\n\n' +
             rendered
         )
-        tmp = tempfile.NamedTemporaryFile(delete=False).name
-        with open(tmp, 'w') as fout:
+
+        for k, v in self._cb3_build_reqs.items():
+            rendered = rendered.replace(k + '_' + "PLACEHOLDER", v)
+
+        tmpdir = tempfile.mkdtemp()
+        with open(os.path.join(tmpdir, 'meta.yaml'), 'w') as fout:
             fout.write(rendered)
         return fout.name
 
@@ -787,7 +852,9 @@ def write_recipe_recursive(proj, seen_dependencies, recipe_dir, config, force,
             continue
 
         if conda_name_without_version in seen_dependencies:
-            logger.debug("{} already created or in existing channels, skipping".format(conda_name_without_version))
+            logger.debug(
+                "{} already created or in existing channels, skipping"
+                .format(conda_name_without_version))
             continue
 
         seen_dependencies.update([conda_name_without_version])
@@ -854,7 +921,6 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
         `seen_dependencies`. Only has an effect if `recursive=True`.
     """
     config = utils.load_config(config)
-    env = list(utils.EnvMatrix(config['env_matrix']))[0]
     proj = BioCProjectPage(package, bioc_version, pkg_version)
     logger.info('Making recipe for: {}'.format(package))
 
@@ -893,8 +959,8 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
     # *has* changed, then bump the version number.
     meta_file = os.path.join(recipe_dir, 'meta.yaml')
     if os.path.exists(meta_file):
-        updated_meta = utils.load_meta(proj.meta_yaml, env)
-        current_meta = utils.load_meta(meta_file, env)
+        updated_meta = utils.load_first_metadata(proj.meta_yaml).meta
+        current_meta = utils.load_first_metadata(meta_file).meta
 
         # pop off the version and build numbers so we can compare the rest of
         # the dicts
@@ -988,7 +1054,8 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
             # Install and clean up
             R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
             rm $TARBALL
-            rmdir $STAGING""")
+            rmdir $STAGING
+            """)  # noqa: E501: line too long
         with open(os.path.join(recipe_dir, 'post-link.sh'), 'w') as fout:
             fout.write(dedent(post_link_template))
         pre_unlink_template = "R CMD REMOVE --library=$PREFIX/lib/R/library/ {0}\n".format(package)

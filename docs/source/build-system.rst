@@ -88,10 +88,7 @@ Configure the environment
       run in the container.
     - At the end of the build, the build script copies the package to the
       exported conda-bld directory
-    - ``bioconda-recipes: scripts/env_matrix.yml``: each unique combination of
-      env vars defined here will create an independent build
-    - A whitelist of env vars (including those defined in the
-      ``env_matrix.yml``) is exported. The whitelist is configured in
+    - A whitelist of env vars is exported. The whitelist is configured in
       ``bioconda-utils: utils.py``.
 
 - Upon successfully building and testing via ``conda-build``, the built package

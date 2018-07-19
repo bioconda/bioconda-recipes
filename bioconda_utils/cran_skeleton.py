@@ -3,13 +3,13 @@ This module cleans up conda CRAN skeletons to make it compliant with
 conda-forge requirements.
 """
 
-import subprocess as sp
 import os
-import logging
 import re
 from itertools import zip_longest
 import argparse
+
 from conda_build.api import skeletonize
+
 from .utils import run, setup_logger
 
 logger = setup_logger(__name__)
@@ -38,7 +38,6 @@ gpl3_long = (
     "\\\R\\\share\\\licenses\\\GPL-3'  # [win]"
 )
 win32_string = 'number: 0\n  skip: true  # [win32]'
-
 
 
 def write_recipe(package, recipe_dir='.', recursive=False, force=False,
@@ -91,7 +90,8 @@ def write_recipe(package, recipe_dir='.', recursive=False, force=False,
                 return
 
         try:
-            skeletonize(package, repo='cran', output_dir=recipe_dir, version=None, recursive=recursive)
+            skeletonize(
+                package, repo='cran', output_dir=recipe_dir, version=None, recursive=recursive)
             clean_skeleton_files(
                 package=os.path.join(recipe_dir, 'r-' + package.lower()),
                 no_windows=no_windows)

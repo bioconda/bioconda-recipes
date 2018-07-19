@@ -1,11 +1,11 @@
 import os
 import requests
-from conda.version import VersionOrder
+from conda.exports import VersionOrder
 from . import utils
 from . import linting
 
 
-def compare_recipe_to_pypi(recipe, env):
+def compare_recipe_to_pypi(recipe):
     """
     If it looks like a PyPI package, returns a tuple of
     (name, current_bioconda_version, latest_version_on_PyPI, needs_update).
@@ -16,7 +16,7 @@ def compare_recipe_to_pypi(recipe, env):
     "python-wget") then a tuple is returned but with a value of None for the
     latest version on PyPI and None for needs_update.
     """
-    meta = utils.load_meta(os.path.join(recipe, 'meta.yaml'), env)
+    meta = utils.load_meta(os.path.join(recipe, 'meta.yaml')).meta
     current = meta['package']['version']
     name = meta['package']['name']
 
@@ -70,10 +70,9 @@ def check_all(recipe_folder, config, packages='*'):
     # Only consider the latest version we can find here
     recipes = list(utils.get_latest_recipes(recipe_folder, config, packages))
     config = utils.load_config(config)
-    env = list(utils.EnvMatrix(config['env_matrix']))[0]
 
     for recipe in recipes:
-        result = compare_recipe_to_pypi(recipe, env)
+        result = compare_recipe_to_pypi(recipe)
 
         if not result:
             continue

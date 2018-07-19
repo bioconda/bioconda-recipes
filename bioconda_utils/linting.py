@@ -1,12 +1,11 @@
 import os
 import re
 import itertools
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 
 import pandas as pd
 import numpy as np
 import ruamel_yaml as yaml
-import jinja2
 
 from . import utils
 from . import lint_functions
@@ -58,9 +57,6 @@ TODO:
   - if version changed, ensure build number is 0
   - if version unchanged, ensure build number incremented
 
-- currently we only check a single environment (see the `get_meta` function).
-  This should probably be converted to a generator function.
-
 - currently we don't pay attention to py27/py3. It would be nice to handle
   that.
 
@@ -78,32 +74,28 @@ Perform various checks on recipes.
 """
 
 
-def get_meta(recipe, config):
+class LintArgs(namedtuple('LintArgs', (
+    'df', 'exclude', 'registry',
+))):
     """
-    Given a package name, find the current meta.yaml file, parse it, and return
-    the dict.
+    df : pandas.DataFrame
+        Dataframe containing channel data, typically as output from
+        `channel_dataframe()`
 
-    Parameters
-    ----------
-    recipe : str
-        Path to recipe (directory containing the meta.yaml file)
+    exclude : list
+        List of function names in `registry` to skip globally. When running on
+        CI, this will be merged with anything else detected from the commit
+        message or LINT_SKIP environment variable using the special string
+        "[skip lint <function name> for <recipe name>]". While those other
+        mechanisms define skipping on a recipe-specific basis, this argument
+        can be used to skip tests for all recipes. Use sparingly.
 
-    config : str or dict
-        Config YAML or dict
+    registry : list or tuple
+        List of functions to apply to each recipe. If None, defaults to
+        `lint_functions.registry`.
     """
-    cfg = utils.load_config(config)
-
-    # TODO: Currently just uses the first env. Should turn this into
-    # a generator.
-
-    env = dict(next(iter(utils.EnvMatrix(cfg['env_matrix']))))
-
-    pth = os.path.join(recipe, 'meta.yaml')
-    jinja_env = jinja2.Environment()
-    content = jinja_env.from_string(
-        open(pth, 'r', encoding='utf-8').read()).render(env)
-    meta = yaml.round_trip_load(content, preserve_quotes=True)
-    return meta
+    def __new__(cls, df, exclude=None, registry=None):
+        return super().__new__(cls, df, exclude, registry)
 
 
 def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
@@ -151,7 +143,7 @@ def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
     return df
 
 
-def lint(recipes, config, df, exclude=None, registry=None):
+def lint(recipes, lint_args):
     """
     Parameters
     ----------
@@ -159,27 +151,11 @@ def lint(recipes, config, df, exclude=None, registry=None):
     recipes : list
         List of recipes to lint
 
-    config : str, dict
-        Used to pass any necessary environment variables (CONDA_BOOST, etc) to
-        meta.yaml files. If str, path to config file. If dict, parsed version
-        of the config file.
-
-    df : pandas.DataFrame
-        Dataframe containing channel data, typically as output from
-        `channel_dataframe()`
-
-    exclude : list
-        List of function names in `registry` to skip globally. When running on
-        CI, this will be merged with anything else detected from the commit
-        message or LINT_SKIP environment variable using the special string
-        "[skip lint <function name> for <recipe name>]". While those other
-        mechanisms define skipping on a recipe-specific basis, this argument
-        can be used to skip tests for all recipes. Use sparingly.
-
-    registry : list or tuple
-        List of functions to apply to each recipe. If None, defaults to
-        `lint_functions.registry`.
+    lint_args : LintArgs
     """
+    df = lint_args.df
+    exclude = lint_args.exclude
+    registry = lint_args.registry
 
     if registry is None:
         registry = lint_functions.registry
@@ -213,15 +189,18 @@ def lint(recipes, config, df, exclude=None, registry=None):
         skip_dict[recipe].append(func)
 
     hits = []
-    for recipe in recipes:
+    for recipe in sorted(recipes):
         # Since lint functions need a parsed meta.yaml, checking for parsing
         # errors can't be a lint function.
         #
         # TODO: do we need a way to skip this the same way we can skip lint
         # functions? I can't think of a reason we'd want to keep an unparseable
         # YAML.
+        metas = []
         try:
-            meta = get_meta(recipe, config)
+            for platform in ["linux", "osx"]:
+                config = utils.load_conda_build_config(platform=platform, trim_skip=False)
+                metas.extend(utils.load_all_meta(recipe, config=config, finalize=False))
         except (
             yaml.scanner.ScannerError, yaml.constructor.ConstructorError
         ) as e:
@@ -238,8 +217,9 @@ def lint(recipes, config, df, exclude=None, registry=None):
         skip_for_this_recipe = set(skip_dict[recipe])
 
         # skips defined in meta.yaml
-        persistent = meta.get('extra', {}).get('skip-lints', [])
-        skip_for_this_recipe.update(persistent)
+        for meta in metas:
+            persistent = meta.get_value('extra/skip-lints', [])
+            skip_for_this_recipe.update(persistent)
 
         for func in registry:
             if func.__name__ in skip_for_this_recipe:
@@ -254,7 +234,7 @@ def lint(recipes, config, df, exclude=None, registry=None):
                         '%s defines skip lint test %s for recipe %s'
                         % (source, func.__name__, recipe))
                 continue
-            result = func(recipe, meta, df)
+            result = func(recipe, metas, df)
             if result:
                 hits.append(
                     {'recipe': recipe,

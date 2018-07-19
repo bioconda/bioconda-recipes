@@ -133,20 +133,22 @@ How to resolve: Add a hash in the `source section
 <https://conda.io/docs/building/meta-yaml.html#source-section>`_. See
 :ref:`hashes` for more info.
 
-`should_be_noarch` (currently disabled)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`should_be_noarch`
+~~~~~~~~~~~~~~~~~~
 Reason for failing: The package should be labelled as ``noarch``.
 
-Rationale: A ``noarch`` package should be created for pure Python packages, data packages, or
-packages that do not require compilation. With this a single ``noarch`` package can be
-used across multiple platforms and (in case of Python) Python versions, which saves
-on build time and saves on storage space on the bioconda channel.
+Rationale: A ``noarch`` package should be created for pure Python packages,
+data packages, or packages that do not require compilation. With this a single
+``noarch`` package can be used across multiple platforms and (in case of
+Python) Python versions, which saves on build time and saves on storage space
+on the bioconda channel.
 
-How to resolve: For pure Python packages, add ``noarch: python`` to the ``build`` section.
-**Don't do this if your Python package has a command line interface**, as these are not
-independent of the Python version!
-For other generic packages (like a data package), add ``noarch: generic`` to the ``build`` section.
-See `here <https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_ for
+How to resolve: For pure Python packages, add ``noarch: python`` to the
+``build`` section.  **Don't do this if your Python package has a command line
+interface**, as these are not independent of the Python version!  For other
+generic packages (like a data package), add ``noarch: generic`` to the
+``build`` section.  See `here
+<https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_ for
 more details.
 
 `should_not_be_noarch`
@@ -244,70 +246,55 @@ to::
 
 `invalid_identifiers`
 ~~~~~~~~~~~~~~~~~~~~~
-Reason for failing: The recipes has an `extra -> identifiers` section with an
+Reason for failing: The recipe has an ``extra -> identifiers`` section with an
 invalid format.
 
 Rationale: The identifiers section has to be machine readable.
 
-How to resolve: Ensure that the section is of the following format:
+How to resolve: Ensure that the section is of the following format::
 
-```
-extra:
-  identifiers:
-    - doi:10.1093/bioinformatics/bts480
-    - biotools:Snakemake
-```
+    extra:
+      identifiers:
+        - doi:10.1093/bioinformatics/bts480
+        - biotools:Snakemake
 
 In particular, ensure that each identifier starts with a type
 (`doi`, `biotools`, ...), followed by a colon and the identifier.
 Whitespace is not allowed.
 
+`deprecated_numpy_spec`
+~~~~~~~~~~~~~~~~~~~~~~~
+Reason for failing: The recipe contains ``numpy x.x`` in build or run requirements.
 
-`*_not_pinned`
-~~~~~~~~~~~~~~
+Rationale: This kind of version pinning is deprecated, and numpy pinning is now
+handled automatically by the system.
 
-Reason for failing: The recipe has dependencies that need to be pinned to
-a specific version all across bioconda.
+How to resolve: Remove the ``x.x``.
 
-Rationale: Sometimes when a core dependency (like ``zlib``, which is used across
-many recipes) is updated it breaks backwards compatibility. In order to avoid
-this, for known-to-be-problematic dependencies we pin to a specific version
-across all recipes.
+`should_not_use_fn`
+~~~~~~~~~~~~~~~~~~~
+Reason for failing: Recipe contains a ``fn:`` key in the ``source:`` section
 
-How to resolve: Change the dependency line as follows. For each dependency
-failing the linting, specify a jinja-templated version by converting it to
-uppercase, prefixing it with ``CONDA_``, adding double braces, and adding a ``*``.
+Rationale: Conda-build 3 no longer requres ``fn:``, and it is redundant with ``url:``.
 
-Examples are much easier to understand:
+How to resolve: Remove the ``source: fn:`` key.
 
-- ``zlib`` should become ``zlib {{ CONDA_ZLIB }}*``
-- ``ncurses`` should become ``ncurses {{ CONDA_NCURSES }}*``
-- ``htslib`` should become ``htslib {{ CONDA_HTSLIB }}*``
-- ``boost`` should become ``boost {{ CONDA_BOOST }}*``
-- ... and so on.
+`should_use_compilers`
+~~~~~~~~~~~~~~~~~~~~~~
+Reason for failing: The recipe has one of ``gcc``, ``llvm``, ``libgfortran``, or ``libgcc`` as dependencies.
 
-Here is an example in the context of a ``meta.yaml`` file where ``zlib`` needs to be
-pinned:
+Rationale: Conda-build 3 now uses compiler tools, which are more up-to-date and
+better-supported.
 
-.. code-block:: yaml
+How to resolve: Use ``{{ compiler() }}`` variables. See :ref:`compiler-tools` for details.
 
-    # this will give a linting error because zlib is not pinned
-    build:
-      - zlib
-    run:
-      - zlib
-      - bedtools
+`compilers_must_be_in_build`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Reason for failing: A ``{{ compiler() }}`` varaiable was found, but not in the ``build:`` section.
 
-And here is the fixed version:
+Rational: The compiler tools must not be in ``host:`` or ``run:`` sections.
 
-.. code-block:: yaml
-
-    # fixed:
-    build:
-      - zlib {{ CONDA_ZLIB }}*
-    run:
-      - zlib {{ CONDA_ZLIB }}*
-      - bedtools
+How to resolve: Move ``{{ compiler() }}`` variables to the ``build:`` section.
 
 `bioconductor_37`
 ~~~~~~~~~~~~~~~~~
