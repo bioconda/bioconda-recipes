@@ -15,6 +15,15 @@ sed -i.bak '
   ' src/Makefile.mk.in
 
 
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  #remove openmp for macos
+  sed -i.bak 's/-fopenmp/-Xpreprocessor -fopenmp -lomp/g' src/Makefile
+  sed -i.bak 's/-fopenmp/-Xpreprocessor -fopenmp -lomp/g' GEMTools/src/Makefile
+  sed -i.bak 's/-fopenmp/-Xpreprocessor -fopenmp -lomp/g' GEMTools/tools/Makefile
+  sed -i.bak 's/-fopenmp/-Xpreprocessor -fopenmp -lomp/g' GEMTools/test/Makefile
+fi
+
+
 ./configure
 
 make all
