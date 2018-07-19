@@ -19,4 +19,5 @@ else
     exit 1
 fi
 
+
 head `which exiftool`
