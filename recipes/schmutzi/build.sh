@@ -18,14 +18,14 @@ cmake ..
 make
 cd ../../
 
-make
+make install
 
 # Fix shebangs
 sed -i.bak "s:usr/bin/perl:usr/bin/env perl:" *.pl
 
 # There's no "make install"
-binaries=(addXACircular contDeam endoCaller log2fasta mtCont approxDist.R schmutzi.pl mtCont bam2prof insertSize log2freq logs2pos mitoConsPDF.R msa2freq msa2log posteriorDeam.R contOut2ContEst.pl)
-for binary in ${binaries[@]}; do
-    cp ${binary} ${PREFIX}/bin/
-    chmod 0755 ${PREFIX}/bin/${binary}
-done
+#binaries=(addXACircular contDeam endoCaller log2fasta mtCont approxDist.R schmutzi.pl mtCont bam2prof insertSize log2freq logs2pos mitoConsPDF.R msa2freq msa2log posteriorDeam.R contOut2ContEst.pl)
+#for binary in ${binaries[@]}; do
+ #   cp ${binary} ${PREFIX}/bin/
+  #  chmod 0755 ${PREFIX}/bin/${binary}
+#done
