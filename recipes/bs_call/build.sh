@@ -14,6 +14,11 @@ sed -i.bak '
     /^LIB_PATH_FLAGS=/ s@$@ -L'$PREFIX'/lib@
   ' GEMTools/Makefile.mk
 
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  #remove openmp for macos
+  sed -i.bak 's/-fopenmp/-Xpreprocessor -fopenmp -lomp/g' src/Makefile
+  sed -i.bak 's/-fopenmp/-Xpreprocessor -fopenmp -lomp/g' GEMTools/src/Makefile
+fi
 
 make all
 mkdir -p $PREFIX/bin
