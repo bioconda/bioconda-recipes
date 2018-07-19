@@ -2,7 +2,9 @@
 
 # install in opt/
 mkdir -p $PREFIX/opt/
-cp -r $SRC_DIR $PREFIX/opt/$PKG_NAME
+find $SRC_DIR/util -name '*.pl' -exec sed -i.bak 's/FindBin::Bin/FindBin::RealBin/' {} +
+find $SRC_DIR/util -name '*.bak' -exec rm {} +
+cp -R $SRC_DIR $PREFIX/opt/$PKG_NAME
 
 # symlink to binaries
 mkdir -p $PREFIX/bin/

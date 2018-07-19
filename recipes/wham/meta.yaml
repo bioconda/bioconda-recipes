@@ -1,26 +1,29 @@
+{% set version = "1.8.0" %}
+{% set sha256 = "6864ae6c76faed8b0a9df5e61a5f37c1f43379adbd0559b8406b95a307fd5704" %}
+
 package:
   name: wham
-  version: '1.7.0.311'
+  version: '{{version}}'
 
 source:
   # Needs Git for recursive bamtools retrieval:
-  git_url: https://github.com/zeeev/wham.git
-  git_rev: 4e8c9bee568211596cdc634d15600114e75d2619
-  md5: unneeded
+  url: https://github.com/zeeev/wham/archive/{{version}}.tar.gz
+  sha256: '{{sha256}}'
 
 build:
-  number: 1
-  skip: True # [osx]
+  number: 0
+  skip: true # [osx]
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - cmake
-    - gcc
-    - git
-    - zlib {{CONDA_ZLIB}}*
+  host:
+    - bamtools
+    - zlib
   run:
-    - libgcc
-    - zlib {{CONDA_ZLIB}}*
+    - bamtools
+    - zlib
 
 test:
   commands:
@@ -28,10 +31,11 @@ test:
     - wham --help 2>&1 | grep WHAM-BAM
 
 about:
-  home: https://github.com/jewmanchue/wham
+  home: https://github.com/zeeev/wham
   license: MIT
+  license_family: MIT
   summary: Structural variant detection and association testing
 
 extra:
-  skip-lints:
-    - uses_git_url
+  identifiers:
+    - biotools:Wham6216
