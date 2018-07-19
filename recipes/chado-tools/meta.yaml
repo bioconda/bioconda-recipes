@@ -1,18 +1,23 @@
 {% set name = "chado-tools" %}
-{% set version = "0.0.3" %}
-{% set sha256 = "e8b7407013eee815288589f07314655d1e6ffc7c688f7daf58080fc4369a3668" %}
+{% set version = "0.0.4" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "350c40f1433cf24465cbc4550efadcf5b7fcbd19f8353e43b22d97cfef33bec9" %}
 
 package:
-  name: {{ name }}
-  version: {{ version }}
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  url: https://github.com/sanger-pathogens/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
 
 build:
   number: 0
-  noarch: generic
+  entry_points:
+    - chado = scripts.chado_tools:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
   host:
@@ -26,11 +31,24 @@ requirements:
     - pyyaml
 
 test:
+  imports:
+    - pychado
+    - pychado.runners
+    - pychado.tests
+    - scripts
   commands:
-    - chado -h
+    - chado --help
+  requires:
+    - nose >=1.3
 
 about:
-  home: https://github.com/sanger-pathogens/chado-tools
-  license: GPLv3
-  license_file: LICENSE
-  summary: Tools for accessing CHADO databases
+  home: https://github.com/sanger-pathogens/chado-tools/
+  license: GNU General Public v3 (GPLv3)
+  license_family: GPL3
+  license_file: ''
+  summary: Tools to access CHADO databases
+  doc_url: ''
+  dev_url: ''
+
+extra:
+  recipe-maintainers: ''
