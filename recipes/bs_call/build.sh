@@ -15,7 +15,8 @@ sed -i.bak '
   ' GEMTools/Makefile.mk
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  #remove openmp for macos
+  #openmp cannot be disabled. This is a workaround based on:
+  #https://iscinumpy.gitlab.io/post/omp-on-high-sierra/
   sed -i.bak 's/-fopenmp/-Xpreprocessor -fopenmp -lomp/g' src/Makefile
   sed -i.bak 's/-fopenmp/-Xpreprocessor -fopenmp -lomp/g' GEMTools/src/Makefile
   sed -i.bak 's/-fopenmp/-Xpreprocessor -fopenmp -lomp/g' GEMTools/tools/Makefile
