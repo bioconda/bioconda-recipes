@@ -976,3 +976,96 @@ def test_compiler():
         for i in utils.built_package_paths(v):
             assert os.path.exists(i)
             ensure_missing(i)
+    
+def test_nested_recipes():
+    """  
+    Test get_recipes ability to identify different nesting depths of recipes 
+    """
+    r = Recipes(
+
+        """
+        shallow:
+            meta.yaml: |
+                package:
+                    name: shallow
+                    version: "0.1"
+            build.sh: |
+                #!/bin/bash
+                echo "Shallow Created"
+                pwd
+        normal/normal:
+            meta.yaml: |
+                package:
+                    name: normal
+                    version: "0.1"
+                build:
+                    skip: true
+                requirements:
+                    build:
+                        - python 3.6
+            build.sh: |
+                #!/bin/bash
+                echo "Testing build.sh through python"
+                python -h
+        deep/deep/deep:
+            meta.yaml: |
+                package:
+                    name: deep
+                    version: "0.1"
+                requirements:
+                    build:
+                        - python
+                    run:
+                        - python
+            build.sh: |
+                #!/bin/bash
+                ## Empty script
+        deeper/deeper/deeper/deeper:
+            meta.yaml: |
+                package:
+                    name: deeper
+                    version: "0.1"
+        F/I/V/E/deep:
+            meta.yaml: |
+                package:
+                    name: fivedeep
+                    version: "0.1"
+                requirements:
+                    build:
+                        - python 3.6
+                    run:
+                        - python 3.6
+        S/I/X/De/e/ep:
+            meta.yaml: |
+                package:
+                    name: ep
+                    version: "0.1"
+        S/E/V/E/N/D/eep:
+            meta.yaml: |
+                package:
+                    name: eep
+                    version: "0.1"
+        T/W/E/N/T/Y/N/E/S/T/D/I/R/E/C/T/O/R/Y/DEEP:
+            meta.yaml: |
+                package:
+                    name: twentydeep
+                    version: "0.1"
+        """, from_string=True)
+    r.write_recipes()
+
+    build_results = build.build_recipes(
+        r.basedir,
+        config={},
+        packages="*",
+        testonly=False,
+        force=False,
+        mulled_test=False,
+    )
+    assert build_results
+    
+    assert len(list(utils.get_recipes(r.basedir))) == 8 
+    
+    for k, v in r.recipe_dirs.items():
+        for i in utils.built_package_paths(v):
+            assert os.path.exists(i)
+            ensure_missing(i)

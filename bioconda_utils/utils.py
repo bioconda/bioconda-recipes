@@ -494,6 +494,7 @@ def get_dag(recipes, config, blacklist=None, restrict=True):
             return []
         return [dep.split()[0] for dep in deps if dep]
 
+
     def get_inner_deps(dependencies):
         dependencies = list(dependencies)
         for dep in dependencies:
@@ -537,10 +538,10 @@ def get_recipes(recipe_folder, package="*"):
         logger.debug(
             "get_recipes(%s, package='%s'): %s", recipe_folder, package, p)
         path = os.path.join(recipe_folder, p)
-        yield from map(os.path.dirname,
-                       glob.glob(os.path.join(path, "meta.yaml")))
-        yield from map(os.path.dirname,
-                       glob.glob(os.path.join(path, "*", "meta.yaml")))
+        for new_dir in glob.glob(path):
+            for dir_path,dir_names,file_names in os.walk(new_dir):
+                if "meta.yaml" in file_names:
+                    yield dir_path 
 
 
 def get_latest_recipes(recipe_folder, config, package="*"):

@@ -1,4 +1,5 @@
 import subprocess as sp
+from itertools import chain
 from collections import defaultdict, namedtuple
 import os
 import logging
@@ -370,6 +371,7 @@ def build_recipes(
         return True
     # merge subdags of the selected chunk
     subdag = dag.subgraph(chunks[subdag_i])
+
 
     recipes = [recipe
                for package in subdag
