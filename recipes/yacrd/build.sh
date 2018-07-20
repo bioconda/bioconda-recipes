@@ -1,11 +1,4 @@
-#!/bin/bash
+#!/bin/bash -euo
 
-mkdir -p $PREFIX/bin
-
-mkdir build
-cd build
-cmake ..
-make -j 8
-
-cp yacrd $PREFIX/bin/
-
+# build statically linked binary with Rust
+RUST_BACKTRACE=1 C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib cargo install --verbose --root $PREFIX
