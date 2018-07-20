@@ -8,11 +8,10 @@ source:
 
 build:
   number: 2
+  noarch: python
   preserve_egg_dir: true
   entry_points:
     - phizz = phizz.__main__:cli
-  # click needs to be patched in order to properly detect unicode in py3k
-  skip: true  # [py3k]
 
 requirements:
   host:
@@ -20,12 +19,14 @@ requirements:
     - setuptools
     - click
     - configobj
+    - intervaltree
 
   run:
     - python
     - setuptools
     - click
     - configobj
+    - intervaltree
 
 test:
   imports:
@@ -34,10 +35,15 @@ test:
     - phizz.utils
 
   commands:
-    # click requires a unicode locale
-    - LANG=C.UTF-8 phizz --help
+    - phizz --help
 
 about:
   home: https://github.com/moonso/query_hpo
   license: MIT License
   summary: 'Tool to query hpo database and some other sources'
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true
