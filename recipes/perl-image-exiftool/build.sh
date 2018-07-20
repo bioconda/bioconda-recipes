@@ -21,4 +21,5 @@ else
 fi
 
 sed -i.bak 's/perl -w/perl/' `which exiftool`
+rm ${PREFIX}/bin/exiftool.bak
 chmod 777 ${PREFIX}/bin/exiftool
