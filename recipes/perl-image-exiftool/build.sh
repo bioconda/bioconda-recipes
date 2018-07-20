@@ -20,5 +20,5 @@ else
     exit 1
 fi
 
-
 head `which exiftool`
+sed -i.bak 's/perl -w/perl/' `which exiftool`
