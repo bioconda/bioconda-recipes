@@ -20,6 +20,5 @@ else
     exit 1
 fi
 
-head `which exiftool`
 sed -i.bak 's/perl -w/perl/' `which exiftool`
-head `which exiftool`
+chmod 777 ${PREFIX}/bin/exiftool
