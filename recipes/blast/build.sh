@@ -12,6 +12,10 @@ if test x"`uname`" = x"Linux"; then
     LDFLAGS="$LDFLAGS -Wl,-as-needed"
 fi
 
+if [ `uname` == Darwin ]; then
+    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
+fi
+
 LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 
 # with/without options:
@@ -38,6 +42,12 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # nettle: set nettle
 # -krb5: disable kerberos (needed on OSX)
 
+if [ `uname` == Linux ]; then
+  CONFIG_ARGS="--without-openssl --with-gnutls=$PREFIX"
+else
+  CONFIG_ARGS="--without-gnutls --with-openssl=$PREFIX"
+fi
+
 ./configure \
     --with-dll \
     --with-mt \
@@ -55,11 +65,10 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
     --with-z=$PREFIX \
     --with-bz2=$PREFIX \
     --with-boost=$PREFIX \
-    --without-openssl \
     --without-gcrypt \
-    --with-gnutls=$PREFIX \
     --with-nettle=$PREFIX \
-    --without-krb5
+    --with-z=$PREFIX \
+    --without-krb5 $CONFIG_ARGS
 
 projects="algo/blast/ app/ objmgr/ objtools/align_format/ objtools/blast/"
 cd ReleaseMT
