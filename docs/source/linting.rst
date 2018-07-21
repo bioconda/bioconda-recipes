@@ -49,6 +49,21 @@ skipped, for example::
         - uses_git_url
         - uses_setuptools
 
+.. _in-conda-forge:
+
+Recipes duplicated in conda-forge
+---------------------------------
+
+Sometimes when adding or updating a recipe in a pull request to `conda-forge`
+the conda-forge linter will warn that a recipe with the same name already
+exists in bioconda. When this happens, usually the best thing to do is:
+
+1. Submit -- but don't merge yet! -- a PR to bioconda that removes the recipe.
+   In that PR, reference the conda-forge/staged-recipes PR.
+2. Merge the conda-forge PR adding or updating the recipe
+3. Merge the bioconda PR deleting the recipe
+
+
 Linting functions
 -----------------
 
