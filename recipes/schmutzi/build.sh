@@ -11,6 +11,9 @@ sed -i.bak "s#usr/share/#${PREFIX}/share"
 # Fix shebangs
 sed -i.bak "s:usr/bin/perl:usr/bin/env perl:" *.pl
 
+#Create dir for shared reference files
+mkdir -p $PREFIX/share
+
 # schmutzi uses non-standard bamtools functions that aren't part of the normal library
 cd lib
 rmdir bamtools
