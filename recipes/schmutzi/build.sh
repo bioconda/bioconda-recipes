@@ -29,7 +29,13 @@ rmdir libgab
 git clone https://github.com/grenaud/libgab
 cd libgab
 make BAMTOOLSINC=${PREFIX}/include/bamtools BAMTOOLSLIB=${PREFIX}/lib
+#Copy libgab header files to include directories (?)
+cp -fv *.h ${PREFIX}/include/
+cp -fv *.o ${PREFIX}/lib/
+
 cd ../..
+
+
 
 make install
 
