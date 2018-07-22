@@ -5,6 +5,8 @@ export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
 # schmutzi uses non-standard bamtools functions that aren't part of the normal library
+cd lib
+rmdir bamtools
 git clone https://github.com/pezmaster31/bamtools
 mkdir bamtools/build
 cd bamtools/build
@@ -13,6 +15,8 @@ make
 cd ../../
 
 # Build libgab
+cd lib
+rmdir libgab
 git clone https://github.com/grenaud/libgab
 cd libgab
 make BAMTOOLSINC=${PREFIX}/include/bamtools BAMTOOLSLIB=${PREFIX}/lib
