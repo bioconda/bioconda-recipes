@@ -4,12 +4,6 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
-# Build libgab
-git clone https://github.com/grenaud/libgab
-cd libgab
-make BAMTOOLSINC=${PREFIX}/include/bamtools BAMTOOLSLIB=${PREFIX}/lib
-cd ..
-
 # schmutzi uses non-standard bamtools functions that aren't part of the normal library
 git clone https://github.com/pezmaster31/bamtools
 mkdir bamtools/build
@@ -17,6 +11,12 @@ cd bamtools/build
 cmake ..
 make
 cd ../../
+
+# Build libgab
+git clone https://github.com/grenaud/libgab
+cd libgab
+make BAMTOOLSINC=${PREFIX}/include/bamtools BAMTOOLSLIB=${PREFIX}/lib
+cd ..
 
 make install
 
