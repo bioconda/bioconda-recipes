@@ -5,7 +5,7 @@ export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
 # schmutzi uses non-standard bamtools functions that aren't part of the normal library
-cd ${SRC_DIR}/schmutzi-1.5.5.5/lib
+cd lib
 rmdir bamtools
 git clone https://github.com/pezmaster31/bamtools
 mkdir bamtools/build
