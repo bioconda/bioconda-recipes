@@ -4,6 +4,13 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
+#Adust path to copy executables too with prefix
+sed -i.bak "s#usr/bin/#${PREFIX}/bin"
+sed -i.bak "s#usr/share/#${PREFIX}/share"
+
+# Fix shebangs
+sed -i.bak "s:usr/bin/perl:usr/bin/env perl:" *.pl
+
 # schmutzi uses non-standard bamtools functions that aren't part of the normal library
 cd lib
 rmdir bamtools
@@ -23,12 +30,3 @@ cd ../..
 
 make install
 
-# Fix shebangs
-sed -i.bak "s:usr/bin/perl:usr/bin/env perl:" *.pl
-
-# There's no "make install"
-#binaries=(addXACircular contDeam endoCaller log2fasta mtCont approxDist.R schmutzi.pl mtCont bam2prof insertSize log2freq logs2pos mitoConsPDF.R msa2freq msa2log posteriorDeam.R contOut2ContEst.pl)
-#for binary in ${binaries[@]}; do
- #   cp ${binary} ${PREFIX}/bin/
-  #  chmod 0755 ${PREFIX}/bin/${binary}
-#done
