@@ -1,7 +1,9 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
-
-chmod +x $SRC_DIR/skesa
-
-cp $SRC_DIR/skesa $PREFIX/bin/
+export LIBRARY_PATH=${PREFIX}/lib
+export CPP_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export CXX_INCLUDE_PATH=${PREFIX}/include
+make
+mkdir -p ${PREFIX}/bin
+mv skesa ${PREFIX}/bin/
