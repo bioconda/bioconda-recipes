@@ -1,0 +1,75 @@
+--- Makefile	2018-06-20 10:40:34.326385149 +0200
++++ Makefile.new	2018-06-20 13:26:28.916995429 +0200
+@@ -1,13 +1,13 @@
+-CXX      = /usr/bin/g++ #-g -pg
+-BAMTOOLS= bamtools/
++BAMTOOLS= ${PREFIX}/lib
++BAMTOOLS_Include= ${PREFIX}/include/bamtools/api
+ LIBGAB   = libgab/
+ 
+-CXXFLAGS  = -lm -O3 -Wall -I${LIBGAB} -I${LIBGAB}/gzstream/ -I${BAMTOOLS}/include/  -I${BAMTOOLS}/src/ -c
+-LDLIBS   +=    ${BAMTOOLS}/build/src/utils/CMakeFiles/BamTools-utils.dir/*cpp.o  ${BAMTOOLS}/build/src/api/libbamtools.a -lpthread -lm -lz
++CXXFLAGS  = -lm -O3 -Wall -I${LIBGAB} -I${LIBGAB}/gzstream/ -I${BAMTOOLS_Include} -c
++LDLIBS   += ${BAMTOOLS_Include} ${BAMTOOLS}/libbamtools.a -lpthread -lm -lz
+ 
+ 
+ 
+-all: endoCaller  mtCont damage2profile log2freq log2fasta contDeam msa2freq bam2prof insertSize splitEndoVsCont/poshap2splitbam logs2pos countRecords libgab/utils.o bamtools/build/src/api/libbamtools.a jointFreqDeaminated jointFreqDeaminatedDouble msa2log log2ConsensusLog logdiff logmask filterlog msa2singlefreq subSampleBAM addXACircular
++all: endoCaller  mtCont damage2profile log2freq log2fasta contDeam msa2freq bam2prof insertSize splitEndoVsCont/poshap2splitbam logs2pos countRecords libgab/utils.o jointFreqDeaminated jointFreqDeaminatedDouble msa2log log2ConsensusLog logdiff logmask filterlog msa2singlefreq subSampleBAM addXACircular
+ 
+ splitEndoVsCont/poshap2splitbam:
+ 	make -C splitEndoVsCont/
+@@ -16,16 +16,10 @@
+ 	rm -rf libgab/
+ 	git clone --recursive https://github.com/grenaud/libgab.git
+ 
+-
+-libgab/utils.o: bamtools/build/src/api/libbamtools.a   libgab/utils.h
++libgab/utils.o: ${BAMTOOLS}/libbamtools.a   libgab/utils.h
+ 	make -C libgab
+ 
+-bamtools/src/api/BamAlignment.h:
+-	rm -rf bamtools/
+-	git clone --recursive https://github.com/pezmaster31/bamtools.git
+-
+-bamtools/build/src/api/libbamtools.a: bamtools/src/api/BamAlignment.h
+-	cd bamtools/ && mkdir -p build/  && cd build/ && cmake .. && make && cd ../..
++${BAMTOOLS}/libbamtools.a:
+ 
+ 
+ miscfunc.o:	libgab/utils.o miscfunc.cpp
+@@ -85,7 +79,6 @@
+ contDeam:	libgab/utils.o ${LIBGAB}/ReconsReferenceBAM.o miscfunc.o contDeam.o ${LIBGAB}utils.o    ${LIBGAB}gzstream/libgzstream.a
+ 	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+ 
+-
+ endoCaller.o:	libgab/utils.o  endoCaller.cpp
+ 	${CXX} ${CXXFLAGS} endoCaller.cpp
+ 
+@@ -134,7 +127,6 @@
+ logmask:	libgab/utils.o logmask.o ${LIBGAB}utils.o  ${LIBGAB}gzstream/libgzstream.a
+ 	${CXX} -o $@ $^ $(LDLIBS) $(LDFLAGS)
+ 
+-
+ msa2freq.o:	libgab/utils.o msa2freq.cpp
+ 	${CXX} ${CXXFLAGS} msa2freq.cpp
+ 
+@@ -164,7 +156,6 @@
+ 
+ testdata: testdata/mezB9687.bam testdata/simulation.bam
+ 
+-
+ testdata/mezB9687.bam:
+ 	wget -O testdata/mezB9687.bam       https://bioinf.eva.mpg.de/schmutzi/testData/mezB9687.bam
+ 	wget -O testdata/mezB9687.bam.bai   https://bioinf.eva.mpg.de/schmutzi/testData/mezB9687.bam.bai
+@@ -173,9 +164,8 @@
+ 	wget -O testdata/simulation.bam     https://bioinf.eva.mpg.de/schmutzi/testData/simulation.bam
+ 	wget -O testdata/simulation.bam.bai https://bioinf.eva.mpg.de/schmutzi/testData/simulation.bam.bai
+ 
+-
+ clean :
+-	rm -f *.o endoCaller  mtCont damage2profile log2freq log2fasta contDeam msa2freq msa2log bam2prof subSampleBAM addXACircular insertSize splitEndoVsCont/poshap2splitbam logs2pos countRecords libgab/utils.o bamtools/lib/libbamtools.a jointFreqDeaminated jointFreqDeaminatedDouble log2ConsensusLog logdiff logmask filterlog msa2singlefreq
++	rm -f *.o endoCaller  mtCont damage2profile log2freq log2fasta contDeam msa2freq msa2log bam2prof subSampleBAM addXACircular insertSize splitEndoVsCont/poshap2splitbam logs2pos countRecords libgab/utils.o jointFreqDeaminated jointFreqDeaminatedDouble log2ConsensusLog logdiff logmask filterlog msa2singlefreq
+ 	make -C splitEndoVsCont/ clean
+ 	make -C libgab/ clean
+ 
