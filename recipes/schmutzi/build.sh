@@ -9,7 +9,7 @@ sed -i.bak "s#usr/bin/#${PREFIX}/bin#g" Makefile
 sed -i.bak "s#usr/share/#${PREFIX}/share#g" Makefile
 
 # Fix shebangs
-sed -i.bak "s:usr/bin/perl:usr/bin/env perl:" *.pl
+sed -i.bak "s:usr/bin/perl:usr/bin/env perl:" src/*.pl
 
 #Create dir for shared reference files
 mkdir -p $PREFIX/share
