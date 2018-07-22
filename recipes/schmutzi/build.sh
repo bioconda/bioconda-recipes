@@ -5,8 +5,8 @@ export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
 #Adust path to copy executables too with prefix
-sed -i.bak "s#usr/bin/#${PREFIX}/bin"
-sed -i.bak "s#usr/share/#${PREFIX}/share"
+sed -i.bak "s#usr/bin/#${PREFIX}/bin#g"
+sed -i.bak "s#usr/share/#${PREFIX}/share#g"
 
 # Fix shebangs
 sed -i.bak "s:usr/bin/perl:usr/bin/env perl:" *.pl
