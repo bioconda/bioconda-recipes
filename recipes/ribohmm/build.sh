@@ -1,7 +1,9 @@
 #!/bin/bash
-#$PYTHON setup.py build_ext --inplace --force
+$PYTHON setup.py build_ext --inplace --force
 $PYTHON setup.py install
 cp *.py ${PREFIX}/bin/
+cp *.pyx ${PREFIX}/bin/
+cp -r data $PREFIX/
 sed -i '1s/^/\#!\/usr\/bin\/env python\n/' ${PREFIX}/bin/bam_to_tbi.py
 sed -i '1s/^/\#!\/usr\/bin\/env python\n/' ${PREFIX}/bin/compute_mappability.py
 sed -i '1s/^/\#!\/usr\/bin\/env python\n/' ${PREFIX}/bin/construct_synthetic_footprints.py
