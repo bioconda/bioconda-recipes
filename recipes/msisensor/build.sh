@@ -9,10 +9,10 @@ export CPATH=${PREFIX}/include
 # make
 
 # DEBUGGING Where is samtools located?
-echo "**** SAMTOOLS ****"
-find / -name "*samtools*"
+# echo "**** SAMTOOLS ****"
+# find / -name "*samtools*"
 
-# export SAMTOOLS_ROOT=$PWD
+export SAMTOOLS_ROOT=/opt/conda/pkgs/samtools-0.1.19-3
 
 # cd ..
 make
