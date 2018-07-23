@@ -12,6 +12,9 @@ export CPATH=${PREFIX}/include
 # echo "**** SAMTOOLS ****"
 # find / -name "*samtools*"
 
+echo "*** DEBUG ***"
+find / -name bam.h
+
 export SAMTOOLS_ROOT=/opt/conda/pkgs/samtools-0.1.19-3
 
 # cd ..
