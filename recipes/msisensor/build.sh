@@ -9,12 +9,14 @@ export CPATH=${PREFIX}/include
 # make
 
 # DEBUGGING Where is samtools located?
+echo "**** PREFIX ****"
 echo $PREFIX
+echo "**** SAMTOOLS ****"
 find . -name "*samtools*"
 
 # export SAMTOOLS_ROOT=$PWD
 
-cd ..
+# cd ..
 make
 
 mkdir -p $PREFIX/bin
