@@ -14,7 +14,12 @@ sed -i.bak '
   ' src/Makefile.mk.in
 
 ./configure
-make all
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  #forced disabling of openmp for macos
+  make HAVE_OPENMP=0 all
+else
+  make all
+fi
 mkdir -p $PREFIX/bin
 cp bin/bs_call $PREFIX/bin
 cp bin/dbSNP_idx $PREFIX/bin
