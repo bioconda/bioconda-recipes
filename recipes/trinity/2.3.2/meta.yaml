@@ -6,11 +6,10 @@ package:
   version: {{ version }}
 
 build:
-  number: 2
+  number: 3
   skip: True  # [osx]
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
   url: https://github.com/trinityrnaseq/trinityrnaseq/archive/Trinity-v{{ version }}.tar.gz
   patches:
     - makefile.clean.patch
@@ -18,12 +17,12 @@ source:
 
 requirements:
   build:
-    - gcc
+    - {{ compiler('c') }}
     - perl-app-cpanminus
     - perl-module-build
     - perl-file-find-rule
     - java-jdk
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
     - jellyfish 2.2.3
     - samtools 0.1.19
     - trimmomatic
@@ -31,7 +30,7 @@ requirements:
     - fastool
     - parafly
     - slclust
-    - autoconf 
+    - autoconf
     - automake
 
   run:
@@ -39,7 +38,7 @@ requirements:
     - perl-module-build
     - perl-file-find-rule
     - java-jdk
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
     - jellyfish 2.2.3
     - samtools 0.1.19
     - trimmomatic
@@ -48,22 +47,25 @@ requirements:
     - fastool
     - parafly
     - slclust
-    - libgcc
 
 test:
-    commands:
-        - "Trinity --cite"
-        - "align_and_estimate_abundance.pl --help &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "abundance_estimates_to_matrix.pl --help &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "run_DE_analysis.pl -h &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "analyze_diff_expr.pl -h &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "PtR --help &> /dev/null || [[ \"$?\" == 255 ]]"
-        - "TrinityStats.pl 2>&1 | grep \"usage:\" "
-        - "define_clusters_by_cutting_tree.pl 2>&1 | grep \"define K clusters via k-means algorithm\" "
-        - "contig_ExN50_statistic.pl 2>&1 | grep \"usage:\" &> /dev/null"
+  commands:
+    - "Trinity --cite"
+    - "align_and_estimate_abundance.pl --help &> /dev/null || [[ \"$?\" == 255 ]]"
+    - "abundance_estimates_to_matrix.pl --help &> /dev/null || [[ \"$?\" == 255 ]]"
+    - "run_DE_analysis.pl -h &> /dev/null || [[ \"$?\" == 255 ]]"
+    - "analyze_diff_expr.pl -h &> /dev/null || [[ \"$?\" == 255 ]]"
+    - "PtR --help &> /dev/null || [[ \"$?\" == 255 ]]"
+    - "TrinityStats.pl 2>&1 | grep \"usage:\" "
+    - "define_clusters_by_cutting_tree.pl 2>&1 | grep \"define K clusters via k-means algorithm\" "
+    - "contig_ExN50_statistic.pl 2>&1 | grep \"usage:\" &> /dev/null"
 
 about:
   home: https://github.com/trinityrnaseq/trinityrnaseq/
   license: 'BSD-3-Clause'
   summary: 'Trinity RNA-Seq de novo transcriptome assembly'
 
+
+extra:
+  identifiers:
+    - biotools:trinity

@@ -8,4 +8,4 @@ export LDFLAGS="-L$PREFIX/lib"
 BIN=$PREFIX/bin
 mkdir -p $BIN
 make -C kseq_split
-cp $SRC_DIR/kseq_split/kseq_split $BIN
+cp $SRC_DIR/kseq_split/kseq_split $SRC_DIR/kseq_split/kseq_count $BIN

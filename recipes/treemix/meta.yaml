@@ -1,34 +1,44 @@
 package:
   name: treemix
-  version: 1.12
+  version: 1.13
 
 build:
   number: 1
-  skip: True # [osx]
-  string: boost{{CONDA_BOOST}}__gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}
-
 
 source:
-  fn: treemix-1.12.tar.gz
-  url: https://bitbucket.org/nygcresearch/treemix/downloads/treemix-1.12.tar.gz
-  md5: 183f605751a0fa445e249db840907104
+  url: https://bitbucket.org/nygcresearch/treemix/downloads/treemix-1.13.tar.gz
+  md5: 2a744026d3fd567d76104dd15e6a2887
+  patches:
+    - Rscript.patch
 
 requirements:
   build:
-  - gcc
-  - zlib {{CONDA_ZLIB}}*
-  - gsl {{CONDA_GSL}}*
-  - boost {{CONDA_BOOST}}*
-
+    - cmake
+    - {{ compiler('c') }}
+  host:
+    - openblas
+    - zlib
+    - gsl
+    - boost
   run:
-  - libgcc
-  - zlib {{CONDA_ZLIB}}*
-  - gsl {{CONDA_GSL}}*
+    - openblas
+    - zlib
+    - gsl
+    - boost
+    - r-rcolorbrewer
+
+test:
+  commands:
+    - treemix --help | grep 1.13
+    - plotting_funcs.R > /dev/null
 
 about:
   home: http://pritchardlab.stanford.edu/software.html
   license: GPLv3
-  summary: TreeMix is a method for inferring the patterns of population splits and mixtures in the history of a set of populations
-test:
-  commands:
-    - treemix --help | grep 1.12
+  license_family: GPL
+  summary: TreeMix is a method for inferring the patterns of population splits and mixtures in the history of a set of populations.
+
+extra:
+  identifiers:
+    - biotools:TreeMix
+    - doi:10.1371/journal.pgen.1002967

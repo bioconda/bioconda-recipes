@@ -1,9 +1,11 @@
 #!/bin/bash
+find src -name "*.o" -delete
+rm bin/*
 cd src
-sed -i -e 's/-Wl,-Bdynamic//g' Makefile
-sed -i -e 's/-Wl,-Bstatic//g' Makefile
 export OPENBLAS=$PREFIX
+make clean
 make 
+make install
 cd ..
 mkdir -p $PREFIX/bin
-cp bin/* $PREFIX/bin
+cp bin/* $PREFIX/bin/
