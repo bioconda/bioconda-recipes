@@ -11,7 +11,8 @@ export CPATH=${PREFIX}/include
 export SAMTOOLS_ROOT=/opt/conda/pkgs/samtools-0.1.19-3/include/bam
 
 echo "*** DEBUG ***"
-ls -l $SAMTOOLS_ROOT
+find / -name "*htslib*"
+
 
 # cd ..
 make
