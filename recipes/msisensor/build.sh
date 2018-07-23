@@ -8,15 +8,8 @@ export CPATH=${PREFIX}/include
 # cd samtools-0.1.19
 # make
 
-export SAMTOOLS_ROOT=/opt/conda/pkgs/samtools-0.1.19-3
+export SAMTOOLS_ROOT=/opt/conda/pkgs/samtools-0.1.19-3/include/bam
 export HTSLIB_ROOT=/opt/conda/pkgs/htslib-1.6-0
-
-echo "*** DEBUG ***"
-find $SAMTOOLS_ROOT
-
-echo "*** DEBUG ***"
-find $HTSLIB_ROOT
-
 
 # cd ..
 make
