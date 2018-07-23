@@ -9,10 +9,7 @@ export CPATH=${PREFIX}/include
 # make
 
 export SAMTOOLS_ROOT=/opt/conda/pkgs/samtools-0.1.19-3/include/bam
-
-echo "*** DEBUG ***"
-find / -name "*htslib*"
-
+export HTSLIB_ROOT=/opt/conda/pkgs/htslib-1.6-0/include/htslib
 
 # cd ..
 make
