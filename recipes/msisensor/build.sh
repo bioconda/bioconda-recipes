@@ -15,7 +15,7 @@ export CPATH=${PREFIX}/include
 echo "*** DEBUG ***"
 find / -name bam.h
 
-export SAMTOOLS_ROOT=/opt/conda/pkgs/samtools-0.1.19-3
+export SAMTOOLS_ROOT=/opt/conda/pkgs/samtools-0.1.19-3/include/
 
 # cd ..
 make
