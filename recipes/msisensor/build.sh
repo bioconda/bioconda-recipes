@@ -8,7 +8,7 @@ export CPATH=${PREFIX}/include
 # cd samtools-0.1.19
 # make
 
-export SAMTOOLS_ROOT=/opt/conda/pkgs/samtools-0.1.19-3/include/
+export SAMTOOLS_ROOT=/opt/conda/pkgs/samtools-0.1.19-3/include/bam
 
 echo "*** DEBUG ***"
 ls -l $SAMTOOLS_ROOT
