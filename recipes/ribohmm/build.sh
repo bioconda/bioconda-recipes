@@ -1,5 +1,6 @@
 #!/bin/bash
 cp -r data/kozak_model.npz $PREFIX/share/kozak_model.npz
+mkdir -p $PREFIX/bin/data/
 cp -r data/kozak_model.npz $PREFIX/bin/data/kozak_model.npz
 sed -i 's@data/kozak_model.npz@'"$PREFIX"'/share/kozak_model.npz@' seq.pyx
 $PYTHON setup.py build_ext --inplace --force
