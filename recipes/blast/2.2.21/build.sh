@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e -x -o pipefail
+export LIBRARY_PATH=${PREFIX}/lib
 
 mkdir -p $PREFIX/bin
 
