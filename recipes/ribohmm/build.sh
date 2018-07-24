@@ -14,5 +14,5 @@ sed -i '1s/^/\#!\/usr\/bin\/env python\n/' ${PREFIX}/bin/load_data.py
 sed -i '1s/^/\#!\/usr\/bin\/env python\n/' ${PREFIX}/bin/plot_model.py
 sed -i '1s/^/\#!\/usr\/bin\/env python\n/' ${PREFIX}/bin/setup.py
 sed -i '1s/^/\#!\/usr\/bin\/env python\n/' ${PREFIX}/bin/utils.py
-sed -i 's@data/kozak_model.npz@"$PREFIX"/share/kozak_model.npz@' ${PREFIX}/bin/seq.pyx
+sed -i 's@data/kozak_model.npz@'"$PREFIX"'/share/kozak_model.npz@' ${PREFIX}/bin/seq.pyx
 chmod 755 ${PREFIX}/bin/*.py
