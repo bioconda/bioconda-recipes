@@ -20,3 +20,6 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
+
+chmod 755 ${PREFIX}/bin/config_data || echo "could not change file permissions"
+
