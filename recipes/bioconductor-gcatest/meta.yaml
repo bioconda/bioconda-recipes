@@ -1,0 +1,40 @@
+{% set version = "1.8.0" %}
+{% set name = "gcatest" %}
+{% set bioc = "3.6" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: d65e011a9e04b585c0a05d714e572242763b6e1f418a80b6afd14647a4eaec6a
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - bioconductor-lfa
+    - r-base
+  run:
+    - bioconductor-lfa
+    - r-base
+    - libcxx # [osx]
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'GCAT is an association test for genome wide association studies that controls for population structure under a general class of trait. models.'
+
+extra:
+  identifiers:
+    - biotools:gcatest
+    - doi:10.1101/012682

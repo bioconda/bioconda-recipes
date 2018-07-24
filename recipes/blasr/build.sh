@@ -1,20 +1,23 @@
 #!/bin/bash
+export CPP_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export CXX_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
 
-mkdir -p $PREFIX/bin
+# HDF5 doesn't have pkgconfig files yet
+export CPPFLAGS="-isystem ${PREFIX}/include"
+export LDFLAGS="-L${PREFIX}/lib -lhdf5_cpp -lhdf5"
 
-export HDF5_INCLUDE=$PREFIX/include
-export HDF5_LIB=$PREFIX/lib
+# configure
+# '--wrap-mode nofallback' prevents meson from downloading
+# stuff from the internet or using subprojects.
+meson \
+  --default-library shared \
+  --libdir lib \
+  --wrap-mode nofallback \
+  --prefix "${PREFIX}" \
+  -Dtests=false \
+  build .
 
-./configure.py CXXFLAGS=-O3 --shared --sub --no-pbbam
-make configure-submodule
-make build-submodule
-make
-
-cp blasr $PREFIX/bin
-cp utils/loadPulses $PREFIX/bin
-cp utils/pls2fasta $PREFIX/bin
-cp utils/samtoh5 $PREFIX/bin
-cp utils/samtom4 $PREFIX/bin
-cp utils/samFilter $PREFIX/bin
-cp utils/sawriter $PREFIX/bin
-cp utils/sdpMatcher  $PREFIX/bin
+ninja -C build -v
+ninja -C build -v install

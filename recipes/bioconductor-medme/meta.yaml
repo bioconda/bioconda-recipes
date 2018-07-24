@@ -1,0 +1,44 @@
+{% set version = "1.38.0" %}
+{% set name = "MEDME" %}
+{% set bioc = "3.6" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 37154c7d207b4f5f03bc26e19c57b6a798ba9eb8fa666d073e99fcf1c24ff78c
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - bioconductor-biostrings
+    - r-base
+    - r-drc
+    - r-mass
+  run:
+    - bioconductor-biostrings
+    - r-base
+    - r-drc
+    - r-mass
+    - libcxx # [osx]
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'Description: MEDME allows the prediction of absolute and relative methylation levels based on measures obtained by MeDIP-microarray experiments'
+
+extra:
+  identifiers:
+    - biotools:medme
+    - doi:10.1101/gr.080721.108

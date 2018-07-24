@@ -1,70 +1,54 @@
+{% set version = "5.1.0" %}
+{% set ver = "5.1" %}
+{% set sha256 = "86bcb201f6d784d74fd8448d008e27c54c8f182341c83337bb7e6bd3b09722c4" %}
+
 package:
   name: anvio
-  version: 3.0.0
+  version: {{ version }}
 
 source:
-  fn: anvio-3.tar.gz
-  url: https://pypi.python.org/packages/16/45/a0378836eb14fceed15f8179da5dee6edf6e63bacaa5f9a062bca1f7ad57/anvio-3.tar.gz
-  md5: "45f0c2c20de4f92529ca3e28ba6a29fa"
+  url: https://github.com/merenlab/anvio/releases/download/v{{ ver }}/anvio-{{ ver }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 0
-  skip: True # [not py35]
+  number: 1
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:
-    - python
-    - gcc  # [not osx]
-    - llvm  # [osx]
-    - setuptools
-    - cython
+    - {{ compiler('c') }}
+  host:
+    - python >=3
+    - pip
     - numpy
-    - bottle >=0.12.9
-    - pysam ==0.11.1
-    - ete3 ==3.0.0b35
-    - scipy >=0.13.3
-    - scikit-learn >=0.17.1
-    - django >=1.9.7
-    - h5py >=2.6.0
-    - cherrypy >=8,<9
-    - requests >=2.10.0
-    - psutil >=5.0.1
-    - mistune ==0.7.4
-    - gsl ==2.2.1
-    - six ==1.10.0
-    - pandas ==0.20.1
-    - openblas
-
+    - cython
+    - gsl
   run:
-    - python
-    - libgcc  # [not osx]
-    - cython
-    - numpy
-    - bottle >=0.12.9
-    - pysam ==0.11.1
-    - ete3 ==3.0.0b35
+    - python >=3
+    - {{ pin_compatible('numpy') }}
+    - bottle ==0.12.13
+    - pysam ==0.14.1
+    - ete3 ==3.1.1
     - scipy >=0.13.3
-    - scikit-learn >=0.17.1
-    - django >=1.9.7
-    - h5py >=2.6.0
+    - scikit-learn ==0.19.1
+    - django ==2.0.2
+    - h5py >=2.8.0rc1
     - cherrypy >=8,<9
     - requests >=2.10.0
     - psutil >=5.0.1
     - mistune ==0.7.4
-    - six ==1.10.0
-    - pandas ==0.20.1
+    - six ==1.11.0
+    - pandas >=0.20.1
+    - matplotlib >=2.2.0
+    - pyani ==0.2.7
+    - statsmodels ==0.9.0
+    - snakemake ==4.7.0
+    - gsl
     - openblas
-    - gsl ==2.2.1
-    - sqlite
-    - diamond
-    - blast
     - prodigal
     - mcl
     - muscle
     - hmmer
-    - bwa
-    - samtools
-    - centrifuge
 
 test:
   commands:
@@ -74,7 +58,7 @@ test:
 
 about:
   home: http://merenlab.org/software/anvio/index.html
-  license: GNU General Public License v3 or later (GPLv3+)
-  summary: "An interactive analysis and visualization platform for omics data"
+  license: GPL-3.0-or-later
   license_family: GPL3
-
+  summary: "An interactive analysis and visualization platform for omics data"
+  dev_url:  https://github.com/merenlab/anvio

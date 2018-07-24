@@ -1,42 +1,44 @@
+{% set version = "1.40.5" %}
+
 package:
   name: mothur
-  version: 1.39.5
+  version: {{ version }}
 
 source:
-  fn: v1.39.5.tar.gz
-  url: https://github.com/mothur/mothur/archive/v1.39.5.tar.gz
-  md5: 1f826ea4420e6822fc0db002c5940b92
+  url: https://github.com/mothur/mothur/archive/v{{ version }}.tar.gz
+  md5: d57847849fdb961c3f66c9b9fdf3057b
   patches:
-    - Build-Flags.patch
+    - patch
+    - patch2
 
 build:
   number: 0
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
-  skip: True # [not linux64 or osx]
+  skip: true # [not linux64 or osx]
 
 requirements:
   build:
-    - gcc   # [linux]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
+  host:
     - zlib
     - ncurses
     - readline
-    - boost >=1.55,{{CONDA_BOOST}}*
+    - boost
     - blast-legacy
   run:
-    - libgcc   # [linux]
     - zlib
     - ncurses
     - readline
-    - boost {{CONDA_BOOST}}*
+    - boost
     - blast-legacy
 test:
   commands:
-     - mothur "#help()"
-     - uchime --version
+    - mothur "#help()"
+    - uchime --version
 
 about:
   home: http://www.mothur.org
-  license: GPL
+  license: GPL-3.0
+  license_family: GPL
   license_file: LICENSE.md
   summary: This project seeks to develop a single piece of open-source, expandable software to fill the bioinformatics needs of the microbial ecology community.
+  dev_url: https://github.com/mothur/mothur

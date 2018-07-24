@@ -16,7 +16,7 @@ QUAST_HOME=$PREFIX/opt/quast-$PKG_VERSION
 mkdir -p $BINARY_HOME
 mkdir -p $QUAST_HOME
 
-python "setup.py" install_full
+python "setup.py" install
 
 cp -R $SRC_DIR/*quast.py $QUAST_HOME/
 cp -R $SRC_DIR/icarus.py $QUAST_HOME/
@@ -31,3 +31,6 @@ ln -s "$QUAST_HOME/quast.py" "$BINARY_HOME/quast"
 
 chmod +x $QUAST_HOME/metaquast.py
 ln -s "$QUAST_HOME/metaquast.py" "$BINARY_HOME/metaquast"
+
+cp $RECIPE_DIR/quast-download-* $PREFIX/bin
+chmod +x $PREFIX/bin/quast-download-*

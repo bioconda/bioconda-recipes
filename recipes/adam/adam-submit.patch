@@ -1,12 +1,13 @@
+diff --git a/bin/adam-submit b/bin/adam-submit
+index 3af00104..b584bb02 100755
 --- a/bin/adam-submit
 +++ b/bin/adam-submit
-@@ -49,15 +49,23 @@ if [[ $DD == False && -n "$ADAM_OPTS" ]]; then
-     echo "Run adam-submit instead as adam-submit <spark-args> -- <adam-args>"
- fi
+@@ -21,7 +21,15 @@
  
--# Figure out where ADAM is installed
--SCRIPT_DIR="$(cd `dirname $0`/..; pwd)"
-+# Find original directory of this script, resovling symlinks
+ set -e
+ 
+-SOURCE_DIR=$(dirname ${BASH_SOURCE[0]})
++# Find original directory of this script, resolving symlinks
 +# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
 +SOURCE="${BASH_SOURCE[0]}"
 +while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -15,17 +16,24 @@
 +    [[ $SOURCE != /* ]] && SOURCE="$SCRIPT_DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 +done
 +SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-+INSTALL_DIR="$SCRIPT_DIR/.."
  
- # Find ADAM cli assembly jar
- ADAM_CLI_JAR=
--if [ -d "$SCRIPT_DIR/repo" ]; then
--  ASSEMBLY_DIR="$SCRIPT_DIR/repo"
-+if [ -d "$INSTALL_DIR/repo" ]; then
-+  ASSEMBLY_DIR="$INSTALL_DIR/repo"
- else
--  ASSEMBLY_DIR="$SCRIPT_DIR/adam-assembly/target"
-+  ASSEMBLY_DIR="$INSTALL_DIR/adam-assembly/target"
+ # Split args into Spark and ADAM args
+ DD=False  # DD is "double dash"
+@@ -51,7 +59,7 @@ if [[ $DD == False && -n "$ADAM_OPTS" ]]; then
+     echo "Run adam-submit instead as adam-submit <spark-args> -- <adam-args>" 1>&2
  fi
  
- num_jars="$(ls -1 "$ASSEMBLY_DIR" | grep "^adam[0-9A-Za-z\.\_\-]*\.jar$" | grep -v javadoc | grep -v sources | wc -l)"
+-ADAM_CLI_JAR=$(${SOURCE_DIR}/find-adam-assembly.sh)
++ADAM_CLI_JAR=$(${SCRIPT_DIR}/find-adam-assembly.sh)
+ 
+ # Allow main class to be overridden
+ if [ -z "$ADAM_MAIN" ]; then
+@@ -59,7 +67,7 @@ if [ -z "$ADAM_MAIN" ]; then
+ fi
+ echo "Using ADAM_MAIN=$ADAM_MAIN" 1>&2
+ 
+-SPARK_SUBMIT=$(${SOURCE_DIR}/find-spark.sh)
++SPARK_SUBMIT=$(${SCRIPT_DIR}/find-spark.sh)
+ echo "Using spark-submit=$SPARK_SUBMIT" 1>&2
+ 
+ # submit the job to Spark

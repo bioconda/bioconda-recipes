@@ -1,0 +1,69 @@
+{% set version = '0.71.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-gkmsvm
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - https://cran.r-project.org/src/contrib/gkmSVM_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/gkmSVM/gkmSVM_{{ version }}.tar.gz
+
+
+  sha256: 60825f7e91fae0ab49ce21731dda819da3dcdd34fa02607991a559e16a7ffdfe
+
+build:
+  number: 1
+
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+
+  host:
+    - r-base
+    - bioconductor-biocgenerics
+    - bioconductor-biostrings
+    - bioconductor-genomeinfodb
+    - bioconductor-genomicranges
+    - bioconductor-iranges
+    - r-rocr
+    - r-rcpp
+    - bioconductor-s4vectors
+    - r-kernlab
+    - bioconductor-rtracklayer
+    - r-seqinr
+
+  run:
+    - r-base
+    - bioconductor-biocgenerics
+    - bioconductor-biostrings
+    - bioconductor-genomeinfodb
+    - bioconductor-genomicranges
+    - bioconductor-iranges
+    - r-rocr
+    - r-rcpp
+    - bioconductor-s4vectors
+    - r-kernlab
+    - bioconductor-rtracklayer
+    - r-seqinr
+
+test:
+  commands:
+    - $R -e "library('gkmSVM')"  # [not win]
+    - "\"%R%\" -e \"library('gkmSVM')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=gkmSVM
+  license: GPL (>= 2)
+  summary: 'Imports the ''gkmSVM'' v2.0 functionalities into R (www.beerlab.org/gkmsvm). It also
+    uses the ''kernlab'' library (separate R package by different authors) for various
+    SVM algorithms.   '
+
+  license_family: GPL3

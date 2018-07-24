@@ -1,0 +1,62 @@
+{% set version = "1.1.1" %}
+
+package:
+  name: pyseer
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/p/pyseer/pyseer-{{ version }}.tar.gz
+  sha256: df7c56713ccab2356929dee1e089bb06a1f61ebd64c01d9d9d9cd33526122b25
+
+
+build:
+  number: 0
+  noarch: python
+  script: python -m pip install --no-deps --ignore-installed .
+  entry_points:
+    - pyseer = pyseer.__main__:main
+    - square_mash = pyseer.mash:main
+    - scree_plot_pyseer = pyseer.scree_plot:main
+    - phandango_mapper = pyseer.kmer_mapping.phandango_plot:main
+    - annotate_hits_pyseer = pyseer.kmer_mapping.annotate_hits:main
+
+requirements:
+  host:
+    - python
+    - pip
+
+  run:
+    - python
+    - numpy
+    - scipy
+    - python-dateutil >=2.5.0
+    - pandas
+    - statsmodels
+    - scikit-learn
+    - pysam
+    - dendropy
+    - matplotlib
+    - pybedtools
+    - mash
+    - bwa
+    - bedtools
+    - bedops
+
+test:
+  imports:
+    - pyseer
+    - pyseer.fastlmm
+    - pyseer.kmer_mapping
+
+  commands:
+    - pyseer --help
+    - square_mash --help
+    - scree_plot_pyseer --help
+    - phandango_mapper --help
+    - annotate_hits_pyseer --help
+
+about:
+  home: https://github.com/mgalardini/pyseer
+  license: Apache-2.0
+  license_family: APACHE
+  summary: 'Sequence Elements Enrichment Analysis (SEER), python implementation'

@@ -1,14 +1,22 @@
+{% set version = "1.0.2" %}
+
 package:
   name: musicc
-  version: "1.0.1"
+  version: {{ version }}
 
 source:
-  fn: MUSiCC-1.0.1.tar.gz
-  url: https://pypi.python.org/packages/source/M/MUSiCC/MUSiCC-1.0.1.tar.gz
-  md5: 270b23e925c6673643af8610d63070d4
+  url: https://pypi.io/packages/source/M/MUSiCC/MUSiCC-{{ version }}.tar.gz
+  sha256: 8e53bb2932e0189ef0d6c26b4e7b31d466f2ecb1fe2609ded8223e1d7704a643
+  patches:
+    # patch import to make musicc compatible with scikit-learn >=0.18
+    - scikit-learn-0.18-compat.patch
+
+build:
+  noarch: python
+  number: 1
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
     - numpy >=1.6.1
@@ -24,12 +32,10 @@ requirements:
     - pandas >=0.14
 
 test:
-  # Python imports
   imports:
-    - musicc
+    - musicc.core
 
 about:
   home: http://elbo.gs.washington.edu/software_musicc.html
   license: BSD License
   summary: 'MUSICC: A marker genes based framework for metagenomic normalization and accurate profiling of gene abundances in the microbiome.'
-

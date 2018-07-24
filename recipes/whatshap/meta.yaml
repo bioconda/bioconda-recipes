@@ -1,40 +1,50 @@
 package:
   name: whatshap
-  version: "0.14.1"
+  version: "0.17"
 
 about:
   home: https://whatshap.readthedocs.io/
   license: MIT License
   summary: 'phase genomic variants using DNA sequencing reads (haplotype assembly)'
 
+build:
+  number: 0
+
 source:
-  fn: whatshap-0.14.1.tar.gz
-  url: https://pypi.python.org/packages/ec/d4/d6c19b716926895ee3def919ab23194212172ed5cf89ccb91c2949fb258d/whatshap-0.14.1.tar.gz
-  md5: edaaeada862844285de1fee9d76da93d
+  url: https://files.pythonhosted.org/packages/79/11/79da12b8c23f43b00fab8a6206f75cc1cc8c1902ff30eca53c17abe2f633/whatshap-0.17.tar.gz
+  sha256: 8ad1c66789fe5fe957b3695902dae3c3fd4e67f79b9e349b92b532e9ff618933
 
 requirements:
   build:
-    - gcc
+    - {{ compiler('c') }}
+  host:
     - python
+    - pip
     - setuptools
-    - pysam >0.11.0
+    - pysam >=0.14
     - pyvcf
     - pyfaidx
     - xopen
+    - networkx
   run:
-    - libgcc
     - python
-    - pysam >0.11.0
+    - pysam >=0.14
     - pyvcf
     - pyfaidx
     - xopen
+    - networkx
 
 build:
   skip: True  # [not py3k]
-  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+  script: python -m pip install --no-deps --ignore-installed .
 
 test:
   imports:
     - whatshap
   commands:
     - whatshap --help > /dev/null
+
+extra:
+  identifiers:
+    - biotools:whatshap
+    - doi:10.1089/cmb.2014.0157

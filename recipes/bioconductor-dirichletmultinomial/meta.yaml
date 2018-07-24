@@ -1,45 +1,42 @@
+{% set version = "1.20.0" %}
+{% set name = "DirichletMultinomial" %}
+{% set bioc = "3.6" %}
+
 package:
-  name: bioconductor-dirichletmultinomial
-  version: 1.16.0
-
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: DirichletMultinomial_1.16.0.tar.gz
-  url: https://bioarchive.galaxyproject.org/DirichletMultinomial_1.16.0.tar.gz
-  md5: 59f90d37be2dfd1763a6b8a384196ded
-
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: a193f836368f71aa2a39242aa5d5fdd4de3993f63d34969f2905888a41379ab0
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-  string: gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}
-
 requirements:
   build:
-    - gcc # [not osx]
-    - llvm # [osx]
-    - blas
+    - {{ compiler('c') }}
+  host:
     - bioconductor-biocgenerics
     - bioconductor-iranges
     - bioconductor-s4vectors
-    - gsl {{CONDA_GSL}}*
+    - r-base
   run:
-    - libgcc # [not osx]
     - bioconductor-biocgenerics
     - bioconductor-iranges
     - bioconductor-s4vectors
-    - blas
-    - gsl {{CONDA_GSL}}*
-
+    - r-base
 test:
   commands:
-    - '$R -e "library(''DirichletMultinomial'')"'
-
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/DirichletMultinomial.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL-3
-  summary: 'Dirichlet-multinomial mixture models can be used to describe variability
-    in microbial metagenomic data. This package is an interface to code originally
-    made available by Holmes, Harris, and Quince, 2012, PLoS ONE 7(2): 1-15, as discussed
-    further in the man page for this package, ?DirichletMultinomial.'
+  summary: 'Dirichlet-multinomial mixture models can be used to describe variability in microbial metagenomic data. This package is an interface to code originally made available by Holmes, Harris, and Quince, 2012, PLoS ONE 7(2): 1-15, as discussed further in the man page for this package, ?DirichletMultinomial.'
 
+extra:
+  identifiers:
+    - biotools:dirichletmultinomial
+    - doi:10.1371/journal.pone.0030126

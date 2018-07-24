@@ -1,0 +1,48 @@
+{% set version = "2.28.0" %}
+{% set name = "GeneSelector" %}
+{% set bioc = "3.6" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 3a292ef0236ad9004a98636379ce85636d8a325a148158dfd3836bfeac168139
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - bioconductor-biobase
+    - bioconductor-limma
+    - bioconductor-multtest
+    - bioconductor-siggenes
+    - r-base
+    - r-samr
+  run:
+    - bioconductor-biobase
+    - bioconductor-limma
+    - bioconductor-multtest
+    - bioconductor-siggenes
+    - r-base
+    - r-samr
+    - libcxx # [osx]
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'The term ''GeneSelector'' refers to a filter selecting those genes which are consistently identified as differentially expressed using various statistical procedures. ''Selected'' genes are those present at the top of the list in various ranking methods (currently 14). In addition, the stability of the findings can be taken into account in the final ranking by examining perturbed versions of the original data set, e.g. by leaving samples, swapping class labels, generating bootstrap replicates or adding noise. Given multiple ranked lists, one can use aggregation methods in order to find a synthesis.'
+
+extra:
+  identifiers:
+    - biotools:geneselector
+    - doi:10.1093/bib/bbp034

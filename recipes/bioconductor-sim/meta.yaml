@@ -1,0 +1,44 @@
+{% set version = "1.48.0" %}
+{% set name = "SIM" %}
+{% set bioc = "3.6" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: cecad837161de40bc56dc745e3fb1776f3804f77fa5eb44b285bb4160b3f40d8
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - bioconductor-globaltest
+    - bioconductor-quantsmooth
+    - r-base
+    - r-quantreg
+  run:
+    - bioconductor-globaltest
+    - bioconductor-quantsmooth
+    - r-base
+    - r-quantreg
+    - libcxx # [osx]
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'Finds associations between two human genomic datasets.'
+
+extra:
+  identifiers:
+    - biotools:sim
+    - doi:10.1186/1471-2105-10-203
