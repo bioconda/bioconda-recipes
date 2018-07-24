@@ -4,7 +4,7 @@ $PYTHON setup.py install
 cp *.py ${PREFIX}/bin/
 cp *.pyx ${PREFIX}/bin/
 cp *.pxd ${PREFIX}/bin/
-cp -r data/kozak_model.npz $PREFIX/share
+cp -r data/kozak_model.npz $PREFIX/share/kozak_model.npz
 sed -i '1s/^/\#!\/usr\/bin\/env python\n/' ${PREFIX}/bin/bam_to_tbi.py
 sed -i '1s/^/\#!\/usr\/bin\/env python\n/' ${PREFIX}/bin/compute_mappability.py
 sed -i '1s/^/\#!\/usr\/bin\/env python\n/' ${PREFIX}/bin/construct_synthetic_footprints.py
