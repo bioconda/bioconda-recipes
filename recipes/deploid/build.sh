@@ -6,5 +6,5 @@ sed -i.bak 's|^./configure$|./configure --prefix="$PREFIX"|g' bootstrap
 ./bootstrap
 make
 make unit_tests
-./unit_tests
+DYLD_LIBRARY_PATH=${PREFIX}/lib:${DYLD_LIBRARY_PATH} ./unit_tests
 make install
