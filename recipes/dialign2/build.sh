@@ -11,7 +11,5 @@ cd src
 make
 mv -t $PREFIX/bin/ dialign2-2
 
-cd ..
-mv -t $PREFIX/share/dialign2 dialign2_dir/tp400_dna dialign2_dir/tp400_prot dialign2_dir/tp400_trans dialign2_dir/BLOSUM
-
-#export DIALIGN2_DIR="$PREFIX/share/dialign2"
+cd ../dialign2_dir
+mv -t $PREFIX/share/dialign2 tp400_dna tp400_prot tp400_trans BLOSUM
