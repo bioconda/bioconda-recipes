@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#adding cosmetic comment to have a change last version
+
 #adding include and library paths in order to find bzip2
 sed -i.bak '
     /^PATH_INCLUDE=/ s@$@ -I'$PREFIX'/include@
