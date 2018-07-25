@@ -10,6 +10,7 @@ mkdir -p $PREFIX/share/dialign2
 
 cd src
 make
+cd ..
 
 mv -t $PREFIX/bin/ dialign2-2
 mv -t $PREFIX/share/dialign2 dialign2_dir/tp400_dna dialign2_dir/tp400_prot dialign2_dir/tp400_trans dialign2_dir/BLOSUM
