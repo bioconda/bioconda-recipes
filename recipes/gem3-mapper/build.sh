@@ -5,7 +5,7 @@
 sed -i.bak '
     /^PATH_INCLUDE=/ s@$@ -I'$PREFIX'/include@
     /^PATH_LIB=/ s@$@ -L'$PREFIX'/lib@
-    /FLAGS_OPT=/ s@-march=native@-march=x86-64 -mtune=generic@
+    /FLAGS_OPT=/ s@-Ofast -march=native@-O3 -march=x86-64 -mtune=generic@
   ' Makefile.mk.in
 
 
