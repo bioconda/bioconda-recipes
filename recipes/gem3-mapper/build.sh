@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#changing arch
+#changing arch to x86-64 and tuning down the optimizations to make the binary more general
 #adding include and library paths in order to find bzip2
 sed -i.bak '
     /^PATH_INCLUDE=/ s@$@ -I'$PREFIX'/include@
