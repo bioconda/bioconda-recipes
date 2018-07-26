@@ -15,6 +15,7 @@ make CXX="${CXX}" CXXFLAGS="${CXXFLAGS}"
 #link
 mkdir -p $PREFIX/bin
 mv CodingQuarry $PREFIX/bin
+sed -i.bak 's|/usr/bin/python|/usr/bin/env python|' CufflinksGTF_to_CodingQuarryGFF3.py
 mv CufflinksGTF_to_CodingQuarryGFF3.py $PREFIX/bin
 mv run_CQ-PM_mine.sh $PREFIX/bin
 mv run_CQ-PM_stranded.sh $PREFIX/bin
