@@ -1,0 +1,38 @@
+{% set version = "0.2" %}
+
+package:
+  name: msisensor
+  version: {{ version }}
+
+build:
+  skip: True # [osx]
+  number: 0
+
+source:
+  url: https://github.com/ding-lab/msisensor/archive/{{ version }}.tar.gz
+  sha256: c4f68e643cee9b07bf00b2004ab300c19f13f2f7fdcef42682d63bc047631c8b
+  patches:
+    - makefile.patch
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - wget
+  host:
+    - zlib
+    - openmp
+    - ncurses
+  run:
+    - zlib
+    - openmp
+    - ncurses
+
+about:
+  home: https://github.com/ding-lab/msisensor
+  license: MIT
+  summary: MSIsensor is a C++ program to detect replication slippage variants at microsatellite regions, and differentiate them as somatic or germline. 
+
+test:
+  commands:
+     - "msisensor msi -h 2>&1 | grep Usage"
+     - "msisensor scan -h 2>&1 | grep Usage"
