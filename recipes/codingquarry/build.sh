@@ -19,6 +19,14 @@ mv CufflinksGTF_to_CodingQuarryGFF3.py $PREFIX/bin
 mv run_CQ-PM_mine.sh $PREFIX/bin
 mv run_CQ-PM_stranded.sh $PREFIX/bin
 mv run_CQ-PM_unstranded.sh $PREFIX/bin
+
+#fix scripts in QuarryFiles directory
+if [ "$PY3K" == 1 ]; then
+    2to3 -w $SRC_DIR/QuarryFiles/scripts/fastaTranslate.py
+fi
+sed -i.bak 's|/usr/bin/python|/usr/bin/env python|' $SRC_DIR/QuarryFiles/scripts/fastaTranslate.py
+sed -i.bak 's|/usr/bin/python|/usr/bin/env python|' $SRC_DIR/QuarryFiles/scripts/gene_errors_Xs.py
+sed -i.bak 's|/usr/bin/python|/usr/bin/env python|' $SRC_DIR/QuarryFiles/scripts/split_fasta.py
 mkdir -p ${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}/QuarryFiles
 cp -R $SRC_DIR/QuarryFiles ${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}/QuarryFiles
 
