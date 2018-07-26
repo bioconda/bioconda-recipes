@@ -10,25 +10,24 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 2
+  number: 6
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
   host:
     - bzip2
     - zlib
-    - openmp # [linux]
   run:
     - bzip2
     - zlib
-    - openmp # [linux]
 
 test:
   commands:
     - gem-mapper 2>&1 | grep 'index|-I <index_file.gem>'
     - gem-indexer -h 2>&1 | grep 'input|-i <input_file> (Multi-FASTA)'
     - gem-retriever -h 2>&1 | grep 'index|-I <index_file.gem> (GEM archive)'
+    - echo -e ">seq\nATATTAG\n" > test.fa && gem-indexer -i test.fa -o test.gem
 
 about:
   home: https://github.com/smarco/gem3-mapper
