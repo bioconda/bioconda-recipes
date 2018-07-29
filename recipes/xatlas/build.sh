@@ -6,11 +6,7 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
 export LIBS="-lpthread $LIBS"
-if [ "$(uname)" == "Darwin" ]; then
-    export CXXFLAGS="-pthread -std=c++11 -stdlib=libc++"
-else
-    export CXXFLAGS="-pthread -std=c++11"
-fi
+export CXXFLAGS="-pthread -std=c++11"
 
 mkdir -p $PREFIX/bin
 
