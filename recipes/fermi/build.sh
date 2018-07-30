@@ -7,6 +7,6 @@ export LIBRARY_PATH=${PREFIX}/lib
 
 mkdir -p $PREFIX/bin
 
-make 
+make CC=$CC
 mv fermi  $PREFIX/bin
 mv run-fermi.pl $PREFIX/bin
