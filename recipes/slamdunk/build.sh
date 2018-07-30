@@ -4,24 +4,11 @@ pip install -r requirements.txt
 echo "PWD"
 echo $PWD
 mkdir -p slamdunk/plot/Rslamdunk
-export R_LIBS_SITE=${PREFIX}/slamdunk/plot/Rslamdunk
-echo $R_LIBS_SITE
-echo "PREFIX"
-echo $PREFIX
-ls $PREFIX
-echo "RECIPE_DIR"
-echo $RECIPE_DIR
-echo "SP_DIR"
-echo $SP_DIR
-ls $SP_DIR
-echo "SRC_DIR"
-echo $SRC_DIR
-ls $SRC_DIR
-#$R --vanilla -e 'libLoc = .libPaths()[grep("Rslamdunk",.libPaths())]; source("${PREFIX}/slamdunk/plot/checkLibraries.R"); checkLib(libLoc)'
+export R_LIBS_SITE=slamdunk/plot/Rslamdunk
+$R --vanilla -e 'libLoc = .libPaths()[grep("Rslamdunk",.libPaths())]; source("slamdunk/plot/checkLibraries.R"); checkLib(libLoc)'
 cd slamdunk/contrib
+echo "BUILDINGGGGGGGGGGGGGGGG"
 ./build-ngm.sh
 ./build-varscan.sh
 ./build-samtools.sh
 ./build-rnaseqreadsimulator.sh
-echo "CONTENTS"
-ls -lah *
