@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pip install -r requirements.txt
+#python setup.py install --single-version-externally-managed --record=record.txt
 mkdir -p slamdunk/plot/Rslamdunk
 export R_LIBS_SITE=slamdunk/plot/Rslamdunk
 #$R --vanilla -e 'libLoc = .libPaths()[grep("Rslamdunk",.libPaths())]; source("slamdunk/plot/checkLibraries.R"); checkLib(libLoc)'
