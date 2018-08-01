@@ -37,7 +37,7 @@ for PROG in "${PROGRAMS[@]}"
 do
 	sed -i'.bak' -E 's@^thisdir=.+@thisdir='$outdir'@g' "${outdir}/${PROG}"
 	rm -f "${outdir}/${PROG}.bak"
-	ln -s "${outdir}/${PROG}" "${PREFIX}/bin/${PROG}"
-	chmod 0755 "${PREFIX}/bin/${PROG}"
+	ln -s "${outdir}/${PROG}" "${bindir}${PROG}"
+	chmod 0755 "${bindir}/${PROG}"
 done
 
