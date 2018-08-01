@@ -1,12 +1,17 @@
-{% set version="0.11.0" %}
+{% set version="0.11.1" %}
 {% set llvm_version = "4.0.0" %}
 
 build:
   number: 0
-  # OSX failing due to libary issues even though shipping with Salmon binary
-  # dyld: Library not loaded: /usr/local/opt/tbb/lib/libtbbmalloc_proxy.dylib
-  # https://travis-ci.org/bioconda/bioconda-recipes/jobs/211785820#L295
-  #skip: true # [osx]
+  # OSX failing due to complier/linking issues
+  # Undefined symbols for architecture x86_64:
+  # "icu_58::Locale::Locale(icu_58::Locale const&)", referenced from:
+  #     boost::basic_regex<int, boost::icu_regex_traits>::imbue(icu_58::Locale) in libboost_regex.a(icu.o)
+  #     boost::icu_regex_traits::imbue(icu_58::Locale) in libboost_regex.a(icu.o)
+  #     boost::re_detail_106700::icu_regex_traits_implementation::icu_regex_traits_implementation(icu_58::Locale const&) in libboost_regex.a(icu.o)
+  # ld: symbol(s) not found for architecture x86_64
+  # https://circleci.com/gh/bioconda/bioconda-recipes/19273?utm_campaign=vcs-integration-link&utm_medium=referral&utm_source=github-build-link
+  skip: true # [osx]
 
 about:
   home: https://github.com/COMBINE-lab/salmon
@@ -19,13 +24,19 @@ package:
 
 source:
   url: https://github.com/COMBINE-lab/salmon/archive/v{{ version }}.tar.gz
-  md5: e89ac62883854a3c2215981debd168ae
+  md5: c16a29058a2afb8f8928e743278a6949
+  #patches: salmon_cmake.patch
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
     - autoconf
     - cmake
+    #- gcc ==4.8.5 # [linux]
+    #- llvm # [osx]
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    #- clangdev =={{ llvm_version }}  # [osx]
+    #- libcxx =={{ llvm_version }}  # [osx]
   host:
     - boost
     - icu
@@ -35,6 +46,8 @@ requirements:
     - jemalloc >=5.1.0
     - tbb
   run:
+    #- libgcc # [linux]
+    #- libcxx =={{ llvm_version }}  # [osx]
     - boost
     - icu
     - jemalloc >=5.1.0
