@@ -70,11 +70,7 @@ The simplest way to conduct local tests is to :ref:`setup the Circle CI client
 
 in the root of your repository clone. This command effectively runs the recipe
 linting and then  ``conda build`` on all recipes recently changed. It does so
-in an environment with properly configured channels and environment variables
-in ``scripts/env.yaml`` exported into the build environment. The latter allows
-``conda build`` to fill in variables in recipes like ``CONDA_BOOST`` that
-otherwise wouldn't work with a simple ``conda build`` directly from the command
-line.
+in an environment with properly configured channels.
 
 
 .. _bootstrap:
@@ -147,7 +143,7 @@ recipe once the tests pass.
 
 .. note::
 
-    If you are a first time user, you can't ask people specifically for a review (e.g. link @bioconda/core). 
+    If you are a first time user, you can't ask people specifically for a review (e.g. link @bioconda/core).
     In this case, either ask to be added to the status of contributor [here](https://github.com/bioconda/bioconda-recipes/issues/1) (and then ask for a review by linking @bioconda/core) or just wait.
 
 6. Use your new recipe

@@ -355,43 +355,45 @@ C/C++
 -----
 
 Build tools (e.g., ``autoconf``) and compilers (e.g., ``gcc``) should be
-specified in the build requirements.
+specified in the build requirements. Compilers are handled via a special macro.
+E.g., `{{ compiler('c')}}` ensures that the correct version of `gcc` is used.
+For the C++ variant `g++`, you need to use `{{ compiler('cxx') }}`.
+These rules apply for both Linux and macOS.
 
-We have decided that to optimize compatibility, ``gcc`` needs to be added as
-a dependency rather than assume it is in the build environment. However there
-is still discussion on how best to do this on OSX. For now, please add ``gcc``
-(for Linux packages) and ``llvm`` (for OSX packages) to the ``meta.yaml`` as
-follows:
+Conda distinguishes between dependencies needed for building (the `build` section),
+and dependencies needed during build time (the `host` section).
+For example, the following
+
 
 .. code:: yaml
 
     requirements:
       build:
-        - gcc   # [not osx]
-        - llvm  # [osx]
-
+        - {{ compiler('c') }}
+      host:
+        - zlib
       run:
-        - libgcc    # [not osx]
+        - zlib
 
-If the package uses ``zlib``, then please see the :ref:`troubleshooting section on zlib <zlib>`.
+specifies that a recipe needs the C compiler to build, and zlib present during
+building and running.
+
+For two examples see:
 
 - example requiring ``autoconf``: `srprism
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/srprism>`_
 - simple example: `samtools
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/samtools>`_
 
+If the package uses ``zlib``, then please see the :ref:`troubleshooting section on zlib <zlib>`.
+
 If your package links dynamically against a particular library, it is
 often necessary to pin the version against which it was compiled, in
 order to avoid ABI incompatibilities. Instead of hardcoding a particular
-version in the recipe, we use jinja templates to achieve this. This helps
-ensure that all bioconda packages are binary-compatible with each other. For
-example, bioconda provides an environnmnet variable ``CONDA_BOOST`` that
-contains the current major version of Boost. You should pin your boost
-dependency against that version. An example is the `salmon recipe
-<https://github.com/bioconda/bioconda-recipes/tree/master/recipes/salmon>`_.
-You find the libraries that are already pinned `here
-<https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/master/recipe/conda_build_config.yamll>`_.
-If you need to pin another library, please notify @bioconda/core, and we will extend this list.
+version in the recipe, we rely on conda doing this automatically.
+We use globally defined configurations, namely `this for dependencies from conda-forge <https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/master/recipe/conda_build_config.yaml>`_
+and `this for dependencies in bioconda <https://github.com/bioconda/bioconda-utils/blob/master/bioconda_utils/bioconda_utils-conda_build_config.yaml>`_.
+If you need to pin another library, please notify @bioconda/core, and we will extend these lists.
 
 It's not uncommon to have difficulty compiling package into a portable
 conda package. Since there is no single solution, here are some examples

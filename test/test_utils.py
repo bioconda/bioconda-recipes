@@ -976,10 +976,10 @@ def test_compiler():
         for i in utils.built_package_paths(v):
             assert os.path.exists(i)
             ensure_missing(i)
-    
+
 def test_nested_recipes():
-    """  
-    Test get_recipes ability to identify different nesting depths of recipes 
+    """
+    Test get_recipes ability to identify different nesting depths of recipes
     """
     r = Recipes(
 
@@ -1062,9 +1062,9 @@ def test_nested_recipes():
         mulled_test=False,
     )
     assert build_results
-    
-    assert len(list(utils.get_recipes(r.basedir))) == 8 
-    
+
+    assert len(list(utils.get_recipes(r.basedir))) == 8
+
     for k, v in r.recipe_dirs.items():
         for i in utils.built_package_paths(v):
             assert os.path.exists(i)
