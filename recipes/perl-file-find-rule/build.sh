@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cpanm --notest Text::Glob Number::Compare
-
 # If it has Build.PL use that, otherwise use Makefile.PL
 
 if [ -f Build.PL ]; then
