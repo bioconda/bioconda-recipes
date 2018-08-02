@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e -o pipefail
+set -x -e
 
 # adapted from recipes/blast/run_test.sh
 
