@@ -1,6 +1,6 @@
 {% set name = "BBMap" %}
-{% set version = "38.18" %}
-{% set sha256 = "ab41a6b27c6bf884c8d509d97b8619c79715443fb3d76e6b451f5430ce7d4aa6" %}
+{% set version = "38.19" %}
+{% set sha256 = "bb85c84b2354402096803e4f736af4537dcbe146d09e4b431c97cb25c5d2abdd" %}
 
 about:
   home: 'https://sourceforge.net/projects/bbmap'
@@ -9,26 +9,32 @@ about:
 
 build:
   number: 0
-  noarch: generic
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  sha256: {{ sha256 }}
   url: http://downloads.sourceforge.net/project/{{ name|lower }}/{{ name }}_{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-changed-jni-makefiles-to-be-more-standards-compatibl.patch
 
 requirements:
   build:
     - openjdk >=7.0
+    - {{ compiler('c') }}
+    
   run:
     - openjdk >=7.0
 
 test:
+  files:
+    - test-data.fa
   commands:
     - bbmap.sh -V 2>&1 | grep "BBMap" > /dev/null
     - bbmap.sh -V 2>&1 | grep "Version {{ version }}" > /dev/null
+    - bbmap.sh in=test-data.fa ref=test-data.fa out=/dev/null jni=t
     - bbmerge.sh -V 2>&1 | grep "BBMerge" > /dev/null
     - bbduk.sh -V 2>&1 | grep "BBDuk" > /dev/null
     - bbmask.sh -V 2>&1 | grep "BBMask" > /dev/null
