@@ -11,5 +11,5 @@ cp test*.fa $TMPDIR
 cd $TMPDIR
 
 bbmap.sh in=test.fa ref=testdatabase.fa out=result.sam jni=t nodisk
-diff <(tail -2 result.sam) expected.sam
+diff <(tail -2 result.sam) testexpected.sam
 
