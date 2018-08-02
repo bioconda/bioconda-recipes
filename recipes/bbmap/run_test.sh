@@ -7,7 +7,7 @@ set -e -o pipefail
 TMPDIR=$(mktemp -d)
 trap "rm -rf $TMPDIR" 0 INT QUIT ABRT PIPE TERM
 
-cp test*.fa $TMPDIR
+cp test*.fa test*.sam $TMPDIR
 cd $TMPDIR
 
 bbmap.sh in=test.fa ref=testdatabase.fa out=result.sam jni=t nodisk
