@@ -18,3 +18,5 @@ cp ${RECIPE_DIR}/Build.PL ./
 perl ./Build.PL
 perl ./Build manifest
 perl ./Build install --installdirs site
+
+chomd u+rwx $PREFIX/bin/*
