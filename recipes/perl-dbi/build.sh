@@ -16,4 +16,4 @@ else
     exit 1
 fi
 
-chmod u+rwx $PREFIX/bin/dbilogstrip
+chmod u+rwx $PREFIX/bin/*
