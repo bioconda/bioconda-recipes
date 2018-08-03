@@ -31,6 +31,7 @@ case $arg in
     echo "Clinker Wrapper Script"
     echo ""
     echo "The command clinker will invoke the Clinker bpipe pipeline with simple options. Use the direct pipeline method to use any advanced bpipe features."
+    echo "See https://github.com/Oshlack/Clinker/wiki/ for further information onusing Clinker."
     echo ""
     echo -e "\nusage (info): clinker [-h] "
     echo -e "\nusage (wrapper): clinker -w [-p option1=\"values\" -p option2=\"values\" ...]\" *.fastq.gz "
