@@ -1,2 +1,2 @@
 #!/bin/bash
-cpanm .
+HOME=/tmp cpanm .
