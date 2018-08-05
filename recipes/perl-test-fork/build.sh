@@ -17,6 +17,3 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
-
-chmod u+w $PREFIX/bin/bdf2gdfont.pl
-chmod u+w $PREFIX/bin/bdftogd
