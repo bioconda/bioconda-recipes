@@ -21,7 +21,7 @@ export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 # needed because it is otherwise reported that SIZE_MAX is undefined
-export CPPFLAGS="-D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS"
+export CXXFLAGS="-D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS"
 make
 
 for i in $binaries; do cp $i $BINDIR && chmod +x $BINDIR/$(basename $i); done
