@@ -1,38 +1,32 @@
-{% set version = "2.9.0" %}
-{% set sha256 = "fbdbbf69cf95afca311b9759e14a991dafcb95549ffd5e2e21fb0ecc99fa06aa" %}
+{% set version = "2.9.1-1" %}
+{% set bioconda_version = "2.9.1_1" %}
+{% set ngs_version = "2.9.1" %}
 
 package:
   name: sra-tools
-  version: {{ version }}
-
-build:
-  number: 1
+  version: '{{ bioconda_version }}'
 
 source:
-  url: https://github.com/ncbi/sra-tools/archive/{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  - url: https://github.com/ncbi/sra-tools/archive/{{version}}.tar.gz
+    sha256: 561dea9bb00f76a6f9a65cb20d6794379353d02a9e33b0db4f10eb38a42465db
+    folder: sra-tools
+  - url: https://github.com/ncbi/ncbi-vdb/archive/{{version}}.tar.gz
+    sha256: c1ee7443599d2cedab13eb44af0a2d29a4c3e8bf0130c2a6b34a9aa7016287e4
+    folder: ncbi-vdb
+  - url: https://github.com/ncbi/ngs/archive/{{ngs_version}}.tar.gz
+    sha256: c24c93bd70ed198a44c6b9dba0d6704edc90f228f832f2fef21fa5342303fc50
+    folder: ngs
 
-extra:
-  notes: "After installation, you should run the configuration tool: ./vdb-config -i. This tool will setup your download/cache area for downloaded files and references."
+build:
+  number: 0
 
 requirements:
   build:
-    - {{ compiler('c') }}
-
+    - '{{ compiler("c") }}'
   host:
+    - ncbi-ngs-sdk
     - perl
-    - ncbi-ngs-sdk
-    - ncbi-vdb
 
-  run:
-    - ncbi-ngs-sdk
-    - ncbi-vdb
-
-about:
-  home: https://github.com/ncbi/sra-tools
-  license: Public Domain
-  summary: The SRA Toolkit and SDK from NCBI is a collection of tools and
-           libraries for using data in the INSDC Sequence Read Archives.
 test:
   commands:
     # "Frequently Used Tools"
@@ -43,3 +37,14 @@ test:
     - vdb-config --help > /dev/null
     - vdb-decrypt --help > /dev/null
     - fastq-dump -N 1 -X 1 SRR000001 && grep '@SRR000001.1' SRR000001.fastq
+    - fasterq-dump --help > /dev/null
+
+about:
+  home: https://github.com/ncbi/sra-tools
+  license: Public Domain
+  summary: The SRA Toolkit and SDK from NCBI is a collection of tools and libraries
+    for using data in the INSDC Sequence Read Archives.
+
+extra:
+  notes: 'After installation, you should run the configuration tool: ./vdb-config
+    -i. This tool will setup your download/cache area for downloaded files and references.'

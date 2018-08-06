@@ -46,5 +46,17 @@ do
     chmod +x $PREFIX/bin/$i
 done
 
+for i in \
+    hisatgenotype_modules/hisatgenotype_assembly_graph.py \
+    hisatgenotype_modules/hisatgenotype_convert_codis.py \
+    hisatgenotype_modules/hisatgenotype_extract_codis_data.py \
+    hisatgenotype_modules/hisatgenotype_extract_cyp_data.py \
+    hisatgenotype_modules/hisatgenotype_gene_typing.py \
+    hisatgenotype_modules/hisatgenotype_typing_common.py ;
+do
+   echo $i
+   cp $i $PREFIX/lib/python${PY_VER}/site-packages
+done
+
 cp -r example $PREFIX/bin
 

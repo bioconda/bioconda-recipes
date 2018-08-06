@@ -1,5 +1,7 @@
-export ROOT=$PREFIX
-./configure --prefix=$PREFIX/ --build-prefix=$PWD/ncbi-outdir/ --with-ngs-sdk-prefix=$PREFIX 
+./configure \
+    --prefix=$PREFIX \
+    --build-prefix=ncbi-outdir \
+    --with-ngs-sdk-prefix=$PREFIX
 make
 make install
 make -C test/vdb
