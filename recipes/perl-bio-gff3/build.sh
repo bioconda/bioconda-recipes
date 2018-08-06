@@ -18,4 +18,4 @@ else
     exit 1
 fi
 
-chmod r+rwx $PREFIX/bin/*
+chmod u+rwx $PREFIX/bin/*
