@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cpanm --notest Text::Glob Number::Compare
-
 # If it has Build.PL use that, otherwise use Makefile.PL
 
 if [ -f Build.PL ]; then
@@ -26,3 +24,5 @@ fi
 # See
 # http://docs.continuum.io/conda/build.html
 # for a list of environment variables that are set during the build process.
+
+chmod u+rwx $PREFIX/bin/findrule
