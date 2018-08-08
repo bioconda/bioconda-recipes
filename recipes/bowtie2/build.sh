@@ -1,5 +1,6 @@
 #!/bin/bash
 
+LDFLAGS=""
 make static-libs && make STATIC_BUILD=1
 
 binaries="\
