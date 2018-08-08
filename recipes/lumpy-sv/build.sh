@@ -38,6 +38,6 @@ cp scripts/bamkit/* $outdir/scripts/bamkit
 
 cp $RECIPE_DIR/lumpyexpress.config $outdir
 ln -s $outdir/lumpyexpress.config $PREFIX/bin
-ln -s $outdir/extractSplitReads_BwaMem /$PREFIX/bin
+ln -s $outdir/scripts/extractSplitReads_BwaMem $PREFIX/bin
 
 chmod +x $PREFIX/bin/extractSplitReads_BwaMem
