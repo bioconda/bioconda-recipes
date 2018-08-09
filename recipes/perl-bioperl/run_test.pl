@@ -174,7 +174,7 @@ my @items = (
     ["Bio::DB::SeqFeature::Store::FeatureFileLoader", undef],
     ["Bio::DB::SeqFeature::Store::GFF2Loader", undef],
     ["Bio::DB::SeqFeature::Store::GFF3Loader", undef],
-    ["Bio::DB::SeqFeature::Store::LoadHelper", "1.10"],
+    ["Bio::DB::SeqFeature::Store::LoadHelper", "1.12"],
     ["Bio::DB::SeqFeature::Store::Loader", undef],
     ["Bio::DB::SeqFeature::Store::bdb", undef],
     ["Bio::DB::SeqFeature::Store::berkeleydb", undef],
@@ -481,20 +481,16 @@ my @items = (
     ["Bio::SearchIO::IteratedSearchResultEventBuilder", undef],
     ["Bio::SearchIO::SearchResultEventBuilder", undef],
     ["Bio::SearchIO::SearchWriterI", undef],
-    ["Bio::SearchIO::Writer::BSMLResultWriter", undef],
     ["Bio::SearchIO::Writer::GbrowseGFF", undef],
     ["Bio::SearchIO::Writer::HSPTableWriter", undef],
     ["Bio::SearchIO::Writer::HTMLResultWriter", undef],
     ["Bio::SearchIO::Writer::HitTableWriter", undef],
     ["Bio::SearchIO::Writer::ResultTableWriter", undef],
     ["Bio::SearchIO::Writer::TextResultWriter", undef],
-    ["Bio::SearchIO::XML::BlastHandler", undef],
-    ["Bio::SearchIO::XML::PsiBlastHandler", undef],
     ["Bio::SearchIO::axt", undef],
     ["Bio::SearchIO::blast", undef],
     ["Bio::SearchIO::blast_pull", undef],
     ["Bio::SearchIO::blasttable", undef],
-    ["Bio::SearchIO::blastxml", undef],
     ["Bio::SearchIO::cross_match", undef],
     ["Bio::SearchIO::exonerate", undef],
     ["Bio::SearchIO::fasta", undef],
@@ -585,7 +581,6 @@ my @items = (
     ["Bio::SeqIO::ctf", undef],
     ["Bio::SeqIO::embl", undef],
     ["Bio::SeqIO::embldriver", undef],
-    ["Bio::SeqIO::entrezgene", undef],
     ["Bio::SeqIO::excel", undef],
     ["Bio::SeqIO::exp", undef],
     ["Bio::SeqIO::fasta", undef],
@@ -697,7 +692,6 @@ my @items = (
     ["Bio::Tools::Match", undef],
     ["Bio::Tools::OddCodes", undef],
     ["Bio::Tools::Phylo::Gerp", undef],
-    ["Bio::Tools::Phylo::Gumby", undef],
     ["Bio::Tools::Phylo::Molphy", undef],
     ["Bio::Tools::Phylo::Molphy::Result", undef],
     ["Bio::Tools::Phylo::PAML", undef],
@@ -724,10 +718,6 @@ my @items = (
     ["Bio::Tools::Run::GenericParameters", undef],
     ["Bio::Tools::Run::ParametersI", undef],
     ["Bio::Tools::Run::RemoteBlast", undef],
-    ["Bio::Tools::Run::StandAloneBlast", undef],
-    ["Bio::Tools::Run::StandAloneNCBIBlast", undef],
-    ["Bio::Tools::Run::StandAloneWUBlast", undef],
-    ["Bio::Tools::Run::WrapperBase", undef],
     ["Bio::Tools::Seg", undef],
     ["Bio::Tools::SeqPattern", undef],
     ["Bio::Tools::SeqPattern::Backtranslate", undef],
@@ -815,7 +805,7 @@ foreach $item (@items) {
     print STDERR "Checking '$module' version: ";
     my $actual_version = eval "use $module; $module->VERSION";
     if($@) { die $@; }
-    if(defined $actual_version) {
+    if(defined $actual_version && defined $expected_version) {
         print STDERR $actual_version;
         if($actual_version == $expected_version) {
             print STDERR " $actual_version (PASSED)\n";
