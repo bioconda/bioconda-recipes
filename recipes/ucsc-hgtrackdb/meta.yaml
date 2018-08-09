@@ -1,0 +1,50 @@
+{% set package = "ucsc-hgtrackdb" %}
+{% set program = "hgTrackDb" %}
+{% set version = "366" %}
+{% set sha256 = "c110a27acd25df5c4ae56a9d4c359b40e83e3b1cca7cb61361e623fc8574bdd7" %}
+
+package:
+  name: "{{ package }}"
+  version: "{{ version }}"
+
+source:
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{{ version }}.src.tgz"                      # [linux]
+  sha256: "{{ sha256 }}"                                                    # [linux]
+  patches:                                                                                   # [linux]
+    - "include.patch"                                                                        # [linux]
+
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/{{ program }}"                    # [osx]
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}                                       # [linux]
+  host:
+    - libpng                                                    # [linux]
+    - libuuid                                                   # [linux]
+    - mysql-connector-c                                         # [linux]
+    - openssl                                                   # [linux]
+    - zlib
+
+  run:
+    - libpng                                                    # [linux]
+    - libuuid                                                   # [linux]
+    - mysql-connector-c                                         # [linux]
+    - openssl                                                   # [linux]
+    - zlib
+
+test:
+  commands:
+    # just check for existence, because the individual packages have no unified behavior
+    - which {{ program }}
+
+about:
+  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "varies; see http://genome.ucsc.edu/license"
+  summary: "Create trackDb table from text files."
+
+extra:
+  skip-lints:
+    - missing_hash

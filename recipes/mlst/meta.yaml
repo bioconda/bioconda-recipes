@@ -1,31 +1,32 @@
+{% set name = "mlst" %}
+{% set version = "2.11" %}
+
 package:
-  name: mlst
-  version: "2.9"
+  name: {{ name }}
+  version: {{ version }}
 
 build:
   number: 0
+  # OSX failing due to problems with perl-list-moreutils and bioperl
+  skip: true # [osx]
 
 source:
-  fn: mlst_2.9.tar.gz
-  url: https://github.com/tseemann/mlst/archive/2.9.tar.gz
-  md5: 7421ad5a423440570f6eede2cfc4a684
+  url: https://github.com/tseemann/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: fcb403e3563b68119359235c984ce65e4604056a0678699ac559294fc2224086
 
 requirements:
-
-  build:
-  - gcc # [linux]
-  - llvm # [osx]
-
   run:
-  - libgcc # [linux]
-  - perl
-  - perl-bioperl
-  - perl-moo
-  - perl-list-moreutils
-  - blast
+    - perl
+    - perl-bioperl
+    - perl-moo
+    - perl-list-moreutils
+    - perl-json
+    - blast
+    - zlib
 
 test:
   commands:
+    - mlst --version
     - mlst --list 2>&1 | grep leptospira > /dev/null
 
 about:
@@ -33,3 +34,7 @@ about:
   license: GPL2
   license_file: LICENSE
   summary: Scan contig files against PubMLST typing schemes
+
+extra:
+  identifiers:
+    - biotools:mlst

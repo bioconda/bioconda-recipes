@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cp -r ./* $PREFIX/
+cp -r bin/* $PREFIX/bin

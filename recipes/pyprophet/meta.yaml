@@ -1,23 +1,27 @@
+{% set name = "pyprophet" %}
+{% set version = "0.24.1" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "a7585d71dbd8127a68333fe65f0ffb77ef682f7e07424bbda3077e35ca929d2d" %}
+
 package:
-  name: pyprophet
-  version: "0.22.0"
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  fn: pyprophet-0.22.0.tar.gz
-  url: https://pypi.python.org/packages/0b/b5/4afe0b5b6ebac3755c2d27a58aeac39d57168d5246a0d52f32752cc46c45/pyprophet-0.22.0.tar.gz
-  md5: 8e2e0445f161b69514cc9284e89305e4
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  '{{ hash_type }}': '{{ hash_value }}'
 
 build:
+  number: 1
+  skip: True  # [not py27]
   entry_points:
-
     - pyprophet=pyprophet.main:main
-
-  number: 0
-  skip: True # [py3k]
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
+  host:
     - python
+    - pip
     - setuptools
     - numpy >=1.9.0
     - pandas >=0.17
@@ -26,7 +30,6 @@ requirements:
     - scikit-learn >=0.17
     - matplotlib
     - seaborn
-
   run:
     - python
     - numpy >=1.9.0
@@ -40,13 +43,11 @@ requirements:
 test:
   imports:
     - pyprophet
-
   commands:
-
     - pyprophet --help
 
 about:
   home: http://github.com/uweschmitt/pyprophet
   license: BSD License
-  summary: 'Python reimplementation of mProphet peak scoring'
   license_family: BSD
+  summary: Python reimplementation of mProphet peak scoring

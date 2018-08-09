@@ -1,3 +1,3 @@
 #!/bin/sh
 
-cpanm -n -f -i .
+HOME=/tmp cpanm -i .

@@ -3,33 +3,32 @@ package:
   version: "2.91"
 
 source:
-  fn: SimWalk2-2.91-lin.tar.gz # [linux]
   url: https://github.com/BioTools-Tek/packages/blob/master/simwalk2/SimWalk2-2.91-lin.tar.gz?raw=true # [linux]
   md5: 2a529d50ca48cd7ea2b67f85c290f203 # [linux]
 
- # fn: SimWalk2-2.91-osx.tar.gz # [osx]
- # url: https://github.com/BioTools-Tek/packages/blob/master/simwalk2/SimWalk2-2.91-osx.tar.gz?raw=true # [osx]
- # md5: 157cf4a869afdacf8e415005886f27c7 # [osx]
-
-  
 build:
-  number: 0
+  number: 1
   skip: True # [osx]
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+  host:
     - libgfortran
-    - gcc
-
   run:
     - libgfortran
-    - libgcc
-    
+
 test:
   commands:
     - simwalk2 | grep "SimWalk2 version 2.91 terminated before normal completion"
-    
+
 about:
   home: http://www.genetics.ucla.edu/software/
   license: INDIVIDUAL
   summary: Stochastic Statistical Analysis of Qualitative Traits
+
+extra:
+  skip-lints:
+    # The wrong libgfortran version is present otherwise
+    - should_use_compilers

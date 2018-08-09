@@ -1,25 +1,24 @@
+{% set version = "0.5.1" %}
+
 package:
   name: genomepy
-  version: "0.4.0"
+  version: {{ version }}
 
 source:
-  fn: genomepy-0.4.0.tar.gz
-  url: https://github.com/simonvh/genomepy/releases/download/0.4.0/genomepy-0.4.0.tar.gz
-  md5: 8ff17afbf8a9f15477078b33857ed2de
+  url: https://github.com/simonvh/genomepy/releases/download/{{ version }}/genomepy-{{ version }}.tar.gz
+  sha256: e13862a60a89e4d46cf6d969092c19ddfbe00566c3f4e9261c0718b480a2456c
 
 build:
   number: 0
-  # click needs to be patched in order to properly detect unicode in py3k
-  skip: true  # [py3k]
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
-    - nose
+    - pytest
     - click
-    - pyfaidx
-    - norns >0.0.1
+    - pyfaidx >=0.5.1
+    - norns >0.1.1
     - xmltodict
     - bucketcache
     - msgpack-python
@@ -31,10 +30,10 @@ requirements:
 
   run:
     - python
-    - nose
+    - pytest
     - click
-    - pyfaidx
-    - norns >0.0.1
+    - pyfaidx >=0.5.1
+    - norns >0.1.1
     - xmltodict
     - bucketcache
     - msgpack-python
@@ -49,8 +48,17 @@ test:
   imports:
     - genomepy
 
+  commands:
+    - LC_ALL=en_US.utf8 genomepy -h
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]
+
 about:
   home: https://github.com/simonvh/genomepy
   license: MIT License
-  summary: 'Easy install of genomes.'
+  summary: 'Download genomes the easy way.'
   license_family: MIT

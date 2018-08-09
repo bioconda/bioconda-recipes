@@ -1,5 +1,12 @@
 #!/bin/bash
 
+
+export C_INCLUDE_PATH="${PREFIX}/include"
+export CPP_INCLUDE_PATH="${PREFIX}/include"
+export CXX_INCLUDE_PATH="${PREFIX}/include"
+export CPLUS_INCLUDE_PATH="${PREFIX}/include"
+export LIBRARY_PATH="${PREFIX}/lib"
+
 mkdir -p $PREFIX/bin
 
 cd $SRC_DIR/src/
@@ -19,4 +26,5 @@ cp makeDB.sh $PREFIX/bin
 cp mergeOutputs $PREFIX/bin
 cp mkbwt $PREFIX/bin
 cp mkfmi $PREFIX/bin
+cp convert_mar_to_kaiju.py $PREFIX/bin
 cp taxonlist.tsv $PREFIX/bin

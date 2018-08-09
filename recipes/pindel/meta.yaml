@@ -1,26 +1,28 @@
-{% set version = "0.2.5b8" %}
+{% set version = "0.2.5b9" %}
+{% set revision = "b706fba" %}
 
 package:
   name: pindel
   version: {{ version }}
 
 build:
-  number: 2
+  number: 3
   skip: True # [osx]
-  string: "htslib{{CONDA_HTSLIB}}_{{PKG_BUILDNUM}}"
 
 source:
-  fn: pindel-{{ version }}.tar.gz
-  url: https://github.com/genome/pindel/archive/v{{ version }}.tar.gz
-  sha256: 7f21fda0b751d420831724d96e60873ce332139cfd24396e81c7f1ae2f707a19
+  url: https://github.com/genome/pindel/archive/{{ revision }}.tar.gz
+  sha256: d626260986270efce5a947d03785781c8fddfc922f41279cf9d4bd504c4e3690
+  patches:
+    # HTSLIB 1.6 compatibility: https://github.com/genome/pindel/pull/75
+    - htslib16.diff
 
 requirements:
   build:
-    - htslib {{CONDA_HTSLIB}}*
-    - gcc
+    - {{ compiler('c') }}
+  host:
+    - htslib
   run:
-    - htslib {{CONDA_HTSLIB}}*
-    - libgcc
+    - htslib
 
 test:
   commands:
@@ -31,3 +33,7 @@ about:
   home: http://gmt.genome.wustl.edu/packages/pindel/index.html
   license: GPLv3
   summary: Pindel can detect breakpoints of large deletions, medium sized insertions, inversions, tandem duplications and other structural variants at single-based resolution from next-gen sequence data
+
+extra:
+  identifiers:
+    - biotools:pindel

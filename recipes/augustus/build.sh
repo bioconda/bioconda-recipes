@@ -18,7 +18,17 @@ mkdir -p $PREFIX/config
 
 ## Make the software
 
-make
+sed -i.bak -e 's/^CC *=/CXX=/' -e 's/\$(CC)/$(CXX)/g' auxprogs/homGeneMapping/src/Makefile
+sed -i.bak -e 's/^CC *=/CXX=/' -e 's/\$(CC)/$(CXX)/g' auxprogs/joingenes/Makefile
+# TODO: don't set CC/CXX here when switching to newer compilers
+CC=gcc
+CXX=g++
+if [ "$(uname)" == Darwin ] ; then
+  # SQLITE disabled due to compile issue, see: https://svn.boost.org/trac10/ticket/13501
+  make CC="${CC}" CXX="${CXX}" COMPGENPRED=true
+else
+  make CC="${CC}" CXX="${CXX}" COMPGENPRED=true SQLITE=true
+fi
 
 ## Build Perl
 
@@ -31,8 +41,8 @@ perl ./Build manifest
 perl ./Build install --installdirs site
 
 cd ..
-## End build perl
 
+## End build perl
 
 mv bin/* $PREFIX/bin/
 mv scripts/* $PREFIX/bin/
@@ -47,5 +57,3 @@ chmod a+x $PREFIX/etc/conda/activate.d/augustus-confdir.sh
 mkdir -p $PREFIX/etc/conda/deactivate.d/
 echo "unset AUGUSTUS_CONFIG_PATH" > $PREFIX/etc/conda/deactivate.d/augustus-confdir.sh
 chmod a+x $PREFIX/etc/conda/deactivate.d/augustus-confdir.sh
-
-#exit 1
