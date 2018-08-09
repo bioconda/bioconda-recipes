@@ -6,7 +6,6 @@ package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
@@ -14,13 +13,14 @@ source:
 build:
   ## Library not loaded: @rpath/libc++.1.dylib
   skip: True  # [osx]
-  number: 1
-  string: r{{CONDA_R}}_gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - 'bioconductor-biocgenerics >=0.1.0'
     - 'bioconductor-biostrings >=1.24.0'
     - 'bioconductor-iranges >=1.13.5'
@@ -28,9 +28,7 @@ requirements:
     - bioconductor-s4vectors
     - r-base
     - r-lattice
-    - gsl {{CONDA_GSL}}*
-    - gcc  # [linux]
-    - llvm  # [osx]
+    - gsl
     - openblas
   run:
     - 'bioconductor-biocgenerics >=0.1.0'
@@ -40,8 +38,7 @@ requirements:
     - bioconductor-s4vectors
     - r-base
     - r-lattice
-    - gsl {{CONDA_GSL}}*
-    - libgcc  # [linux]
+    - gsl
     - openblas
 
 test:

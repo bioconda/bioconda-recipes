@@ -1,24 +1,26 @@
-{% set version = "0.12.0" %}
+{% set version = "0.12.3" %}
+{% set sha256 = "2e2709cac9667c3fd6227110472bc9a3818776dd9f8f1c02d9aface4773c6713" %}
 
 package:
   name: bioconda-utils
-  version: {{ version }}
+  version: '{{version}}'
 
 source:
-  fn: bioconda-utils-{{ version }}.tar.gz
-  url: https://github.com/bioconda/bioconda-utils/archive/v{{ version }}.tar.gz
-  sha256: c96a08498e9d895dc34bca2e881758e6a831ec1e9d067e508390c25f73753134
+
+  url: https://github.com/bioconda/bioconda-utils/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
 
 build:
-  number: 0
-  skip: True  # [not py3k]
-  script: python setup.py install --single-version-externally-managed --record record.txt
+  number: 1
+  skip: true  # [not py3k]
+  script: python -m pip install --no-deps --ignore-installed .
   entry_points:
     - bioconda-utils = bioconda_utils.cli:main
 
 requirements:
-  build:
+  host:
     - python
+    - pip
     - setuptools
   run:
     - python
@@ -46,12 +48,14 @@ requirements:
     - alabaster 0.7.*
 
 test:
-    imports:
-      - bioconda_utils
-    commands:
-      - bioconda-utils --help
+  imports:
+    - bioconda_utils
+  commands:
+    - bioconda-utils --help
 
 about:
   home: http://bioconda.github.io/build-system.html
   license: MIT
-  summary:  Utilities for building and managing bioconda recipes.
+  summary: Utilities for building and managing bioconda recipes.
+  dev_url: https://github.com/bioconda/bioconda-utils
+  license_family: MIT
