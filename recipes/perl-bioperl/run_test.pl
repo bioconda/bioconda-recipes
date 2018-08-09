@@ -174,7 +174,7 @@ my @items = (
     ["Bio::DB::SeqFeature::Store::FeatureFileLoader", undef],
     ["Bio::DB::SeqFeature::Store::GFF2Loader", undef],
     ["Bio::DB::SeqFeature::Store::GFF3Loader", undef],
-    ["Bio::DB::SeqFeature::Store::LoadHelper", "1.10"],
+    ["Bio::DB::SeqFeature::Store::LoadHelper", "1.12"],
     ["Bio::DB::SeqFeature::Store::Loader", undef],
     ["Bio::DB::SeqFeature::Store::bdb", undef],
     ["Bio::DB::SeqFeature::Store::berkeleydb", undef],
@@ -815,7 +815,7 @@ foreach $item (@items) {
     print STDERR "Checking '$module' version: ";
     my $actual_version = eval "use $module; $module->VERSION";
     if($@) { die $@; }
-    if(defined $actual_version) {
+    if(defined $actual_version && defined $expected_version) {
         print STDERR $actual_version;
         if($actual_version == $expected_version) {
             print STDERR " $actual_version (PASSED)\n";
