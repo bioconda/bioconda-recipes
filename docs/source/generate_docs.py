@@ -205,7 +205,7 @@ def generate_readme(folder, repodata, renderer):
                 metadata = MetaData(recipe)
             else:
                 # ignore non-recipe folders
-                return
+                return []
     except UnableToParse as e:
         logger.error("Failed to parse recipe {}".format(recipe))
         raise e
