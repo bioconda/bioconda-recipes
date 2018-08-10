@@ -1,36 +1,34 @@
-{% set name = "khmer" %}
-{% set version = "2.1.2" %}
-{% set sha256hash = "e349cac450963822ac74a3313be5164a1bdadb0bf3767285f43b9d2f10ef7f88" %}
+{% set version = "3.0.0a1" %}
+{% set sha256 = "312a08f48e178cc4ff37dac9469ecfeeca348d5d99e51248dbfef9aba65aa68c" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: khmer
+  version: '{{version}}'
 
 source:
   url: https://github.com/dib-lab/khmer/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256hash }}
+  sha256: '{{sha256}}'
 
 build:
-  number: 1
+  number: 0
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - '{{compiler("c")}}'
+    - '{{compiler("cxx")}}'
   host:
-    - python
-    - cython
-    - setuptools
-    - screed >=1.0
-    - bz2file
-    - pytest-runner
-
+    - python >=3
+    - pip
+    - pytest-runner >=2.0,<3dev
+    - setuptools >=18.0
+    - Cython >=0.25.2
   run:
-    - python
+    - python >=3
     - screed >=1.0
     - bz2file
 
 test:
-  # Python imports
   imports:
     - khmer
     - khmer.tests
@@ -39,8 +37,9 @@ test:
 about:
   home: https://khmer.readthedocs.io/
   license: BSD License
-  summary: 'khmer k-mer counting library'
   license_family: BSD
+  summary: khmer k-mer counting library
+  dev_url: https://github.com/dib-lab/khmer
 
 extra:
   identifiers:
