@@ -2,10 +2,10 @@
 set -eu -o pipefail
 
 if [[ "$(uname)" == Darwin ]]; then
-    export CC=clang
-    export CXX=clang++
-    export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include/c++/v1"
-    export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
+    #export CC=clang
+    #export CXX=clang++
+    #export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include/c++/v1"
+    #export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
 fi
 
 mkdir -p $PREFIX/bin
