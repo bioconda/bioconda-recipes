@@ -3,10 +3,15 @@
 #modify makefile to use correct compiler c++
 sed -i.bak -e 's/\${CC}/${CXX}/g' -e 's/\${CFLAGS}/${CXXFLAGS}/g' makefile
 
+CXXFLAGS="$CXXFLAGS"
+LDFLAGS="$LDFLAGS"
 if [ "$(uname)" == Darwin ] ; then
-  CXXFLAGS="-Wl,-rpath ${PREFIX}/lib -L${PREFIX}/lib -fopenmp"
+    CXXFLAGS="$CXXFLAGS -Wl,-rpath ${PREFIX}/lib -L${PREFIX}/lib -I${PREFIX}/include -fopenmp"
+    LDFLAGS="$LDFLAGS -stdlib=libc++"
+    CXX=clang++
 else
-  CXXFLAGS="-fopenmp -g -O3"
+	CXXFLAGS="$CXXFLAGS -fopenmp -g -O3"
+	CXX=g++
 fi
 
 #now build
@@ -22,9 +27,9 @@ mv run_CQ-PM_stranded.sh $PREFIX/bin
 mv run_CQ-PM_unstranded.sh $PREFIX/bin
 
 #fix scripts in QuarryFiles directory
-if [ "$PY3K" == 1 ]; then
-    2to3 -w $SRC_DIR/QuarryFiles/scripts/fastaTranslate.py
-fi
+2to3 -w $SRC_DIR/QuarryFiles/scripts/fastaTranslate.py
+2to3 -w $SRC_DIR/QuarryFiles/scripts/gene_errors_Xs.py
+2to3 -w $SRC_DIR/QuarryFiles/scripts/split_fasta.py
 sed -i.bak 's|/usr/bin/python|/usr/bin/env python|' $SRC_DIR/QuarryFiles/scripts/fastaTranslate.py
 sed -i.bak 's|/usr/bin/python|/usr/bin/env python|' $SRC_DIR/QuarryFiles/scripts/gene_errors_Xs.py
 sed -i.bak 's|/usr/bin/python|/usr/bin/env python|' $SRC_DIR/QuarryFiles/scripts/split_fasta.py
