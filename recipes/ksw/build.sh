@@ -7,5 +7,5 @@
 
 mkdir -p $PREFIX/bin
 make clean
-make PKG_VERSION=${GIT_DESCRIBE_TAG} 
-make PREFIX=${PREFIX}/bin PKG_VERSION=${GIT_DESCRIBE_TAG} install
+make PKG_VERSION=${PKG_VERSION} 
+make PREFIX=${PREFIX}/bin PKG_VERSION=${PKG_VERSION} install
