@@ -1,26 +1,32 @@
-{% set version = "3.1.0" %}
+{% set version = "3.1.1" %}
+{% set rc = "rc1" %}
+{% set printed_version = "3.1.0" %}
 
 package:
   name: kmc
-  version: {{ version }}
+  version: {{ version }}{{ rc }}
 
 source:
-  url: https://github.com/refresh-bio/KMC/archive/v{{ version }}.tar.gz
-  sha256: b931f3cc4f315c12e296fa2453c3097094ea37f2aa089a611dee15123753a81b
+  url: https://github.com/refresh-bio/KMC/archive/v{{ version }}{{ rc }}.tar.gz
+  sha256: c7382df6af73f456fea2b497231958144fd01198280fa6427204de58434741f6
   patches:
-    - 0001-kmc-use-make-user-flags.patch
-    - 0002-kmc-no-stdlib-static-link.patch
-    - 0003-kmc-c++11-compat.patch
-    - 0004-kmc-no-libz-libbz2-static-link.patch
+    - 0001-rewrote-build-with-autotools.patch
+    - 0002-updated-cxx14-detection.patch
+    - 0003-automake-option-fixes.patch
+    - 0004-changed-stdio.h-to-cstdio-etc.patch
+    - 0005-fixed-stat_func.patch
+    - 0006-disable-sort.patch
 
 build:
-  number: 4
+  number: 0
+  skip: True # [osx]
   # this recipe builds kmc without the asmlib speedup
 
 requirements:
   build:
-    # C++11 features are required
+    # C++14 features are required
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - zlib
     - bzip2
@@ -30,9 +36,9 @@ requirements:
 
 test:
   commands:
-    - (kmc 2>&1; true) | grep -q "K-Mer Counter (KMC) ver. {{ version }}"
-    - (kmc_dump 2>&1; true) | grep -q "KMC dump ver. {{ version }}"
-    - (kmc_tools 2>&1; true) | grep -q "kmc_tools ver. {{ version }}"
+    - (kmc 2>&1; true) | grep -q "K-Mer Counter (KMC) ver. {{ printed_version }}"
+    - (kmc_dump 2>&1; true) | grep -q "KMC dump ver. {{ printed_version }}"
+    - (kmc_tools 2>&1; true) | grep -q "kmc_tools ver. {{ printed_version }}"
 
 about:
   home: http://sun.aei.polsl.pl/kmc/
