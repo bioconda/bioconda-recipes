@@ -2,7 +2,6 @@
 
 sed -i.bak "s:/usr/bin/perl:/usr/bin/env perl:" t/*.t
 
-head t/versions.t
 
 if [ -f Build.PL ]; then
     perl Build.PL
