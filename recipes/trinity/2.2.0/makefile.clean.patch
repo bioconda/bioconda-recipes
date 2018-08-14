@@ -1,0 +1,41 @@
+--- Makefile	2016-07-01 23:52:59.348747668 +0400
++++ Makefile	2016-07-02 00:12:15.824595481 +0400
+@@ -6,13 +6,6 @@
+ # to build Inchworm and Chrysalis with the Intel compiler.
+ #
+ 
+-ifeq ($(TRINITY_COMPILER),intel)
+- INCHWORM_CONFIGURE_FLAGS = CXX=icpc CXXFLAGS="-fast"
+- CHRYSALIS_MAKE_FLAGS = COMPILER=icpc
+-else
+- override TRINITY_COMPILER=gnu
+-endif
+-
+ 
+ all: inchworm_target chrysalis_target trinity_essentials
+ 	sh ./util/support_scripts/trinity_install_tests.sh
+@@ -20,9 +13,10 @@
+ inchworm_target:
+ 	@echo Using $(TRINITY_COMPILER) compiler for Inchworm and Chrysalis
+ 	cd Inchworm && (test -e configure || autoreconf) \
+-                && sh ./configure --prefix=`pwd` $(INCHWORM_CONFIGURE_FLAGS) && $(MAKE) install
++	            && sh ./configure --prefix=`pwd` CC=${PREFIX}/bin/gcc $(INCHWORM_CONFIGURE_FLAGS) CXX=${PREFIX}/bin/g++ CFLAGS="-fopenmp" CXXFLAGS="-fopenmp" && $(MAKE) install
+ 
+ chrysalis_target:
++	echo "cd Chrysalis && $(MAKE) UNSUPPORTED=yes $(CHRYSALIS_MAKE_FLAGS)"
+ 	cd Chrysalis && $(MAKE) UNSUPPORTED=yes $(CHRYSALIS_MAKE_FLAGS)
+ 
+ 
+@@ -55,9 +49,9 @@
+ test_gg_trinity:
+ 	cd sample_data/test_GenomeGuidedTrinity && make test
+ 
+-test_all:
+-	cd sample_data/ && make test
+-	cd sample_data/test_Trinity_Assembly && make test_full
++#test_all:
++#	cd sample_data/ && make test
++#	cd sample_data/test_Trinity_Assembly && make test_full
+ 
+ test_clean:
+ 	cd sample_data/ && make clean
