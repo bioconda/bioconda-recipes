@@ -10,4 +10,4 @@ cd build
 cmake -D CMAKE_INSTALL_PREFIX:PATH=$PREFIX -DIQTREE_FLAGS=omp ..
 make
 make install
-ln -s ${PREFIX}/bin/iqtree-omp ${PREFIX}/bin/iqtree
+#ln -s ${PREFIX}/bin/iqtree-omp ${PREFIX}/bin/iqtree
