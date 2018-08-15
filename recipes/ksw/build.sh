@@ -6,8 +6,8 @@ set -euo pipefail
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+export CFLAGS="-I${PREFIX}/include"
+export LDFLAGS="-L${PREFIX}/lib"
 
 get_submodule () {
     read name git_hash owner repo tarball_hash <<< "$@"
