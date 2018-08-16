@@ -2,50 +2,49 @@
 {% set version = "0.3.1" %}
 
 package:
-    name: {{ name|lower }}
-    version: {{ version }}
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-    url: https://bitbucket.org/aroth85/scg/downloads/{{ name }}-{{ version }}.tar.gz
-    md5: 6f0fb91266de66d6a9d73fb741f49e13
+  url: https://bitbucket.org/aroth85/scg/downloads/{{ name }}-{{ version }}.tar.gz
+  md5: 6f0fb91266de66d6a9d73fb741f49e13
 
 build:
-    script: $PYTHON setup.py install --record=record.txt
-    number: 0
-    skip: True # [not py27]
-#    noarch: python # tried building with it, causes TESTS to fail, no clue why
+  script: python -m pip install --no-deps --ignore-installed .
+  number: 1
+  skip: True # [not py27]
 
 requirements:
-    build:
-        - python
-        - pandas >=0.16
-        - numpy >=1.9.2
-        - scipy >=0.15
-        - pyyaml
+  host:
+    - python
+    - pip
+    - pandas >=0.16
+    - numpy >=1.9.2
+    - scipy >=0.15
+    - pyyaml
 
-    run:
-        - python
-        - pandas >=0.16
-        - numpy >=1.9.2
-        - scipy >=0.15
-        - pyyaml
-        - libgcc
+  run:
+    - python
+    - pandas >=0.16
+    - numpy >=1.9.2
+    - scipy >=0.15
+    - pyyaml
 
 test:
-    source_files:
-        - examples/config.yaml
-        - examples/state_map.yaml
-        - examples/snv.tsv.gz
-        - examples/breakpoint.tsv.gz
-    commands:
-        # omitting for linux64 to avoid test failures when run in biocontainers on travis where version seems to be returned with exit code 1
-        - scg --version # [osx] 
-        - scg --help
-        # omitting for linux64 to avoid test failures when run in biocontainers on travis where file copying doesn't seem to work
-        - scg run_doublet_model --config_file examples/config.yaml --state_map_file examples/state_map.yaml # [osx]
+  source_files:
+    - examples/config.yaml
+    - examples/state_map.yaml
+    - examples/snv.tsv.gz
+    - examples/breakpoint.tsv.gz
+  commands:
+    # omitting for linux64 to avoid test failures when run in biocontainers on travis where version seems to be returned with exit code 1
+    - scg --version # [osx]
+    - scg --help
+    # omitting for linux64 to avoid test failures when run in biocontainers on travis where file copying doesn't seem to work
+    - scg run_doublet_model --config_file examples/config.yaml --state_map_file examples/state_map.yaml # [osx]
 
 about:
-    home: https://bitbucket.org/aroth85/scg/wiki/Home
-    license: GPL-3
-    license_file: LICENSE.txt
-    summary: 'The single cell genotyper (SCG): "Roth A, McPherson A, Laks E, Biele J, Yap D, Wan A, et al. Clonal genotype and population structure inference from single-cell tumor sequencing. Nat Meth. 2016;13: 573–576. doi:10.1038/nmeth.3867"'
+  home: https://bitbucket.org/aroth85/scg/wiki/Home
+  license: GPL-3
+  license_file: LICENSE.txt
+  summary: 'The single cell genotyper (SCG): "Roth A, McPherson A, Laks E, Biele J, Yap D, Wan A, et al. Clonal genotype and population structure inference from single-cell tumor sequencing. Nat Meth. 2016;13: 573–576. doi:10.1038/nmeth.3867"'

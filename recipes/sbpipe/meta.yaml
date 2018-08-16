@@ -1,5 +1,5 @@
 {% set name = "sbpipe" %}
-{% set version = "4.18.0" %}
+{% set version = "4.20.0" %}
 {% set file_ext = "tar.gz" %}
 
 package:
@@ -7,23 +7,22 @@ package:
   version: '{{ version }}'
 
 source:
-  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  sha256: 5ae5fe0332ea76567f9f5405abda27f2631146ff6c735ac809127939f61c9fac
+  sha256: c417db041e8990f41bc56101b7a4be7a861136bac67207dec47b83546ca26d50
 
 build:
+  noarch: python
   number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: python -m pip install --no-deps --ignore-installed .
   entry_points:
     - sbpipe = sbpipe:main
     - sbpipe_move_datasets = sbpipe.sbpipe_move_datasets:main
 
 requirements:
-  build:
+  host:
     - python
+    - pip
     - setuptools
-    - pyyaml
-    - colorlog
   run:
     - python
     - pyyaml

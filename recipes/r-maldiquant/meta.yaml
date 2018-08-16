@@ -1,15 +1,13 @@
-{% set version = '1.17' %}
+{% set version = '1.18' %}
+
 
 package:
   name: r-maldiquant
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: MALDIquant_{{ version }}.tar.gz
-  url:
-    - https://cran.r-project.org/src/contrib/MALDIquant_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/MALDIquant/MALDIquant_{{ version }}.tar.gz
-  sha256: 1ff85f28f57c1088b2434390066c09ffd94a16ad4780ca514783357f0030fa10
+  url: https://cran.r-project.org/src/contrib/MALDIquant_{{ version }}.tar.gz
+  sha256: 46c1744ead86dc782c410b0be8bf2e95dbef01af53a6f3d665b36bd94910d4a2
 
 build:
   number: 0
@@ -19,26 +17,27 @@ build:
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+  host:
     - r-base
-    - gcc  # [linux]
-    - llvm # [osx]
-
   run:
     - r-base
-    - libgcc # [linux]
+    - libgfortran-ng
 
 test:
   commands:
     - $R -e "library('MALDIquant')"
 
 about:
-  home: http://strimmerlab.org/software/maldiquant/ https://github.com/sgibb/MALDIquant/
+  home: https://github.com/sgibb/MALDIquant/
   license: GPL (>= 3)
-  summary: A complete analysis pipeline for matrix-assisted laser desorption/ionization-time-of-flight
+  license_family: GPL3
+  summary: |
+    A complete analysis pipeline for matrix-assisted laser desorption/ionization-time-of-flight
     (MALDI-TOF) and other two-dimensional mass spectrometry data. In addition to commonly
     used plotting and processing methods it includes distinctive features, namely baseline
     subtraction methods such as morphological filters (TopHat) or the statistics-sensitive
     non-linear iterative peak-clipping algorithm (SNIP), peak alignment using warping
     functions, handling of replicated measurements as well as allowing spectra with
     different resolutions.
-  license_family: GPL3
