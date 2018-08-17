@@ -14,6 +14,7 @@ mv models $TGT
 cd $PREFIX
 BINARY_DIR=`ls -d $SHAREDIR/binaries/DeepVariant/*/DeepVariant*`
 WGS_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wgs_standard`
+WES_MODEL_DIR=`ls -d $SHAREDIR/models/DeepVariant/*/DeepVariant*wes_standard`
 cd $SRC_DIR
 
 # models installed in post-link script
@@ -36,7 +37,8 @@ cp ${RECIPE_DIR}/dv_make_examples.py $PREFIX/bin
 sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_make_examples.py
 cp ${RECIPE_DIR}/dv_call_variants.py $PREFIX/bin
 sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_call_variants.py
-sed -i.bak "s|MODELSUB|${WGS_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
+sed -i.bak "s|WGSMODELSUB|${WGS_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
+sed -i.bak "s|WESMODELSUB|${WES_MODEL_DIR}|" $PREFIX/bin/dv_call_variants.py
 cp ${RECIPE_DIR}/dv_postprocess_variants.py $PREFIX/bin
 sed -i.bak "s|BINARYSUB|${BINARY_DIR}|" $PREFIX/bin/dv_postprocess_variants.py
 rm -f $PREFIX/bin/*.bak

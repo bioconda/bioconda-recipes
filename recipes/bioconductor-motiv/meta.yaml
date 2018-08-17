@@ -6,19 +6,21 @@ package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
   sha256: 06be19672eea04d778970040805097e8cc6543acbea476c5f5bd2231f8fa7353
 build:
-  number: 0
-  string: r{{CONDA_R}}_gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}
+  ## Library not loaded: @rpath/libc++.1.dylib
+  skip: True  # [osx]
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - 'bioconductor-biocgenerics >=0.1.0'
     - 'bioconductor-biostrings >=1.24.0'
     - 'bioconductor-iranges >=1.13.5'
@@ -26,9 +28,8 @@ requirements:
     - bioconductor-s4vectors
     - r-base
     - r-lattice
-    - gsl {{CONDA_GSL}}*
-    - gcc  # [linux]
-    - llvm  # [osx]
+    - gsl
+    - openblas
   run:
     - 'bioconductor-biocgenerics >=0.1.0'
     - 'bioconductor-biostrings >=1.24.0'
@@ -37,8 +38,9 @@ requirements:
     - bioconductor-s4vectors
     - r-base
     - r-lattice
-    - gsl {{CONDA_GSL}}*
-    - libgcc  # [linux]
+    - gsl
+    - openblas
+
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -46,3 +48,8 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'This package makes use of STAMP for comparing a set of motifs to a given database (e.g. JASPAR). It can also be used to visualize motifs, motif distributions, modules and filter motifs.'
+
+extra:
+  identifiers:
+    - biotools:motiv
+    - doi:10.1038/nmeth.3252

@@ -1,8 +1,8 @@
 #!/bin/bash
 set -eu -o pipefail
 
-cd build
 # BOOST -- need up to date version compiled with gcc 7.2
+cd build
 wget http://dl.bintray.com/boostorg/release/1.65.0/source/boost_1_65_0.tar.gz
 tar -xzpf boost_1_65_0.tar.gz
 cd boost_1_65_0
@@ -20,7 +20,9 @@ EOF
   toolset=gcc \
   cxxflags="${CXXFLAGS}" \
   install
-cd ..
+cd ../..
+
 # octopus
+cd build
 cmake  -DINSTALL_PREFIX=ON -DCMAKE_INSTALL_PREFIX=$PREFIX -DINSTALL_ROOT=ON -DCMAKE_BUILD_TYPE=Release ..
 make install
