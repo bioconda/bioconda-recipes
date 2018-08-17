@@ -10,6 +10,8 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
+export CFLAGS="-I${PREFIX}/include"
+
 
 BINARY_HOME=$PREFIX/bin
 TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
@@ -18,6 +20,7 @@ cd $SRC_DIR
 
 make
 make plugins
+
 
 # remove the sample data
 rm -rf $SRC_DIR/sample_data
