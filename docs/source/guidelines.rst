@@ -351,6 +351,14 @@ If the recipe was created with ``conda skeleton cpan``, the tests are
 likely sufficient. Otherwise, test the import of modules (see the
 ``imports`` section of the ``meta.yaml`` files in above examples).
 
+Additionally, if the recipe was created with ``conda skeleton cpan``, several modifications
+are necessary to satisfy bioconda policies:
+
+- remove the ``bld.bat`` script
+- remove the ``source/fn`` entry in ``meta.yaml``
+- the ``requirements/build`` keyword in ``meta.yaml`` should be changed to
+  ``requirements/host``
+
 C/C++
 -----
 
