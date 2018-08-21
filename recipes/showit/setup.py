@@ -9,4 +9,5 @@ setup(
     version='1.1.4',
     description='simple and sensible display of images in python',
     url='https://github.com/freeman-lab/showit',
-    packages=find_packages(), py_modules=pyfiles)
+    packages=find_packages(), py_modules=pyfiles,
+    include_package_data=True)
