@@ -1,6 +1,6 @@
 {% set name = "trinity" %}
-{% set version = "2.8.1" %}
-{% set hash = "546302184fa5d8090cd069ae5a39da9de5c8042b4e412f9e770850fef989a18b" %}
+{% set version = "2.8.2" %}
+{% set hash = "1cdb8a1fe37e20486964e6df1e14063c58855dbdb57b747bdecd4e182558df23" %}
 
 
 package:
@@ -11,19 +11,23 @@ source:
   url: https://github.com/trinityrnaseq/trinityrnaseq/archive/Trinity-v{{ version }}.tar.gz
   sha256: {{ hash }}
   patches:
-    - chrysalis.bioconda.patch
-    - trinity-plugins.makefile.patch
+    - trinseqtk.make.patch
+    - trinity-plugins.makefile.clean.patch
 
 build:
-  number: 4
+  number: 1
+  skip: True  # [osx]
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
     - cmake
     - autoconf
-	
-run:
+    - zlib
+
+  run:
+    - trimmomatic >=0.36
     - bowtie2 >=2.3.0
     - jellyfish >=2.2.6
     - openjdk >=8
@@ -33,9 +37,29 @@ run:
     - zlib
     - salmon >=0.9.1
 
+  host:
+    - bowtie2 >=2.3.0
+    - jellyfish >=2.2.6
+    - openjdk >=8
+    - perl >=5.8
+    - python >=2.7
+    - samtools >=1.3
+    - zlib
+    - salmon >=0.9.1
+    - cmake
+
+
 test:
   commands:
-      - "Trinity --cite &> /dev/null"
+    - "Trinity --cite"
+    - "align_and_estimate_abundance.pl --help || [[ \"$?\" == 255 ]]"
+    - "abundance_estimates_to_matrix.pl --help || [[ \"$?\" == 255 ]]"
+    - "run_DE_analysis.pl -h || [[ \"$?\" == 255 ]]"
+    - "analyze_diff_expr.pl -h || [[ \"$?\" == 255 ]]"
+    - "PtR --help || [[ \"$?\" == 255 ]]"
+    - "TrinityStats.pl 2>&1 | grep \"usage:\""
+    - "define_clusters_by_cutting_tree.pl 2>&1 | grep \"define K clusters via k-means algorithm\""
+    - "Trinity_gene_splice_modeler.py --help"
 
 about:
   home: https://github.com/trinityrnaseq/trinityrnaseq/
