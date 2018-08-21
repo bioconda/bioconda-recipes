@@ -18,8 +18,5 @@ else
     exit 1
 fi
 
-# Add more build steps here, if they are necessary.
+chmod u+rwx $PREFIX/bin/*
 
-# See
-# http://docs.continuum.io/conda/build.html
-# for a list of environment variables that are set during the build process.
