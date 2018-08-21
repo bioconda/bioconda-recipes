@@ -12,9 +12,10 @@ source:
   sha256: {{ hash }}
   patches:
     - trinseqtk.make.patch
+    - trinity-plugins.makefile.clean.patch
 
 build:
-  number: 0
+  number: 1
   skip: True  # [osx]
 
 requirements:
@@ -26,6 +27,7 @@ requirements:
     - zlib
 
   run:
+    - trimmomatic >=0.36
     - bowtie2 >=2.3.0
     - jellyfish >=2.2.6
     - openjdk >=8
@@ -50,6 +52,14 @@ requirements:
 test:
   commands:
     - "Trinity --cite"
+    - "align_and_estimate_abundance.pl --help || [[ \"$?\" == 255 ]]"
+    - "abundance_estimates_to_matrix.pl --help || [[ \"$?\" == 255 ]]"
+    - "run_DE_analysis.pl -h || [[ \"$?\" == 255 ]]"
+    - "analyze_diff_expr.pl -h || [[ \"$?\" == 255 ]]"
+    - "PtR --help || [[ \"$?\" == 255 ]]"
+    - "TrinityStats.pl 2>&1 | grep \"usage:\""
+    - "define_clusters_by_cutting_tree.pl 2>&1 | grep \"define K clusters via k-means algorithm\""
+    - "Trinity_gene_splice_modeler.py --help"
 
 about:
   home: https://github.com/trinityrnaseq/trinityrnaseq/
