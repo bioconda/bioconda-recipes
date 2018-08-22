@@ -1,9 +1,6 @@
 #!/bin/bash
 
 # If it has Build.PL use that, otherwise use Makefile.PL
-cpanm --installdeps .
-cpanm --force -nq Test2
-
 if [ -f Build.PL ]; then
     perl Build.PL
     perl ./Build
@@ -21,10 +18,3 @@ else
     exit 1
 fi
 
-cpanm --force -nq Test2
-
-# Add more build steps here, if they are necessary.
-
-# See
-# http://docs.continuum.io/conda/build.html
-# for a list of environment variables that are set during the build process.
