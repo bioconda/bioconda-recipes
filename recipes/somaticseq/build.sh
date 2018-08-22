@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
 mkdir -p $PREFIX/opt/SomaticSeq
-mv ./* $PREFIX/opt/SomaticSeq/
+
+for file in *
+do
+ mv $file $PREFIX/opt/SomaticSeq/
+done
 
 cd $PREFIX/opt/SomaticSeq
 for script in *.sh *.py
