@@ -1,0 +1,101 @@
+{% set version = '0.1.4' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-fateid
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/FateID_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/FateID/FateID_{{ version }}.tar.gz
+  sha256: 1e168ccdef75b6a4229976740e60704d75e2f1d5c3f6757f9fb7798c727f7fec
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: DESeq2, destiny, knitr, rmarkdown
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - r-rcolorbrewer
+    - r-rtsne
+    - r-lle
+    - r-locfit
+    - r-pheatmap
+    - r-princurve
+    - r-randomforest
+    - r-rgl
+    - r-som
+
+  run:
+    - r-base
+    - r-rcolorbrewer
+    - r-rtsne
+    - r-lle
+    - r-locfit
+    - r-pheatmap
+    - r-princurve
+    - r-randomforest
+    - r-rgl
+    - r-som
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('FateID')"           # [not win]
+    - "\"%R%\" -e \"library('FateID')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=FateID
+  license: GPL-3
+  summary: "Application of 'FateID' allows computation and visualization of cell fate bias for
+    multi-lineage single cell transcriptome data. Herman, J.S., Sagar, Gr\xFCn D. (2017)
+    <DOI:10.1038/nmeth.4662>."
+
+  license_family: GPL3
+
+# The original CRAN metadata for this package was:
+
+# Package: FateID
+# Title: Quantification of Fate Bias in Multipotent Progenitors
+# Version: 0.1.4
+# Date: 2018-08-07
+# Author: Dominic Grun <dominic.gruen@gmail.com>
+# Maintainer: Dominic Grun <dominic.gruen@gmail.com>
+# Description: Application of 'FateID' allows computation and visualization of cell fate bias for multi-lineage single cell transcriptome data. Herman, J.S., Sagar, Grun D. (2017) <DOI:10.1038/nmeth.4662>.
+# Depends: R (>= 3.4)
+# biocViews:
+# Imports: graphics, grDevices, lle, locfit, pheatmap, princurve, randomForest, rgl, RColorBrewer, Rtsne, som, stats, utils
+# Suggests: DESeq2, destiny, knitr, rmarkdown
+# VignetteBuilder: knitr
+# License: GPL-3
+# Encoding: UTF-8
+# LazyData: true
+# RoxygenNote: 6.0.1
+# NeedsCompilation: no
+# Packaged: 2018-08-07 12:41:56 UTC; d.grun
+# Repository: CRAN
+# Date/Publication: 2018-08-07 13:40:07 UTC
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
