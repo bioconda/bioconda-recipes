@@ -15,5 +15,5 @@ echo '-----------------------------------------------' >> $MSGS
 # They made an exception for Bioconda (and Homebrew), with the condition that
 # each user installation through Bioconda trigger an access to Novocraft's website,
 # so they can track commercial users.
-curl -L http://www.novocraft.com/bioconda/license.txt >> $MSGS 2>&1
+curl --silent -L http://www.novocraft.com/bioconda/license.txt >> $MSGS 2>&1
 echo '-----------------------------------------------' >> $MSGS
