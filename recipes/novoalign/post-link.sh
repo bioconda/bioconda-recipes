@@ -1,21 +1,30 @@
 #!/bin/bash
 
+set -e -o pipefail
+
 MSGS=$PREFIX/.messages.txt
 touch $MSGS
-echo '-----------------------------------------------' >> $MSGS
-echo 'Novoalign is installed.  Commercial use requires a license;' >> $MSGS
-echo 'contact sales@novocraft.com.  License also adds' >> $MSGS
-echo 'multi-threading and other features.' >> $MSGS
 
-echo 'Once you have a license file, run novoalign-license-register to install it.' >> $MSGS
+function msg {
+    echo $1 >> $MSGS 2>&1
+}
 
+msg
+msg '========================= Novoalign information ==========================================='
+msg 'Novoalign is installed.  Documentation installed in'
+msg "${PREFIX}/share/doc/novoalign"
+msg
+msg 'Commercial use requires a license; contact sales@novocraft.com.'
+msg 'License also adds multi-threading and other features.'
 
-echo 'Licensing information from Novocraft website:' >> $MSGS
-echo >> $MSGS
-echo '-----------------------------------------------' >> $MSGS
+msg 'Once you have a license file, run novoalign-license-register to install it.'
+
+msg
+msg 'Licensing information from Novocraft website:'
+msg '--------------------------------------------------------------------------------------------'
 # Novocraft normally does not permit distribution of novoalign to third parties.
 # They made an exception for Bioconda (and Homebrew), with the condition that
 # each user installation through Bioconda trigger an access to Novocraft's website,
 # so they can track commercial users.
 curl --silent -L http://www.novocraft.com/bioconda/license.txt >> $MSGS 2>&1
-echo '-----------------------------------------------' >> $MSGS
+msg '======================== End of novoalign information ======================================'
