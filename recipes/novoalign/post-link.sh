@@ -2,7 +2,9 @@
 
 MSGS=$PREFIX/.messages.txt
 touch $MSGS
-echo 'Novoalign is installed.  Commercial use requires a license; contact sales@novocraft.com.  License also adds' >> $MSGS
+echo '-----------------------------------------------' >> $MSGS
+echo 'Novoalign is installed.  Commercial use requires a license;' >> $MSGS
+echo 'contact sales@novocraft.com.  License also adds' >> $MSGS
 echo 'multi-threading and other features.' >> $MSGS
 
 echo 'Once you have a license file, run novoalign-license-register to install it.' >> $MSGS
