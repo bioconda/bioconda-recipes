@@ -1,0 +1,93 @@
+{% set version = '2.1.2.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-princurve
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: princurve_{{ version }}.tar.gz
+  url:
+    - {{ cran_mirror }}/src/contrib/princurve_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/princurve/princurve_{{ version }}.tar.gz
+  sha256: c38324faff5b84794b983f399fec970afae62b577b53ea2c007d147905f36929
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: devtools, dplyr, ggplot2, knitr, magick, microbenchmark, purrr, rmarkdown, testthat, tidyr
+requirements:
+  build:
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}      # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - r-rcpp
+
+  run:
+    - r-base
+    - {{native}}gcc-libs         # [win]
+    - r-rcpp
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('princurve')"           # [not win]
+    - "\"%R%\" -e \"library('princurve')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://github.com/dynverse/princurve
+  license: GPL-2
+  summary: Fitting a principal curve to a data matrix in arbitrary dimensions.
+  license_family: GPL2
+
+# The original CRAN metadata for this package was:
+
+# Package: princurve
+# Version: 2.1.2.1
+# Title: Fits a Principal Curve in Arbitrary Dimension
+# Authors@R: c( person("Trevor", "Hastie", email = "trevor@research.att.com", role = "aut"), person("Andreas", "Weingessel", email = "Andreas.Weingessel@ci.tuwien.ac.at", role = "aut"), person( "Kurt", "Hornik",  email = "kurt.hornik@wu.ac.at",  role = "aut", comment = c(ORCID = "0000-0003-4198-9911") ), person( "Henrik", "Bengtsson",  email = "henrikb@braju.com",  role = "ctb", comment = c(github = "HenrikBengtsson") ), person( "Robrecht", "Cannoodt",  email = "rcannood@gmail.com",  role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3641-729X", github = "rcannood") ))
+# Description: Fitting a principal curve to a data matrix in arbitrary dimensions.
+# License: GPL-2
+# Depends: R (>= 3.0)
+# Imports: stats, graphics, grDevices, Rcpp
+# Suggests: devtools, dplyr, ggplot2, knitr, magick, microbenchmark, purrr, rmarkdown, testthat, tidyr
+# SystemRequirements: ImageMagick++: ImageMagick-c++-devel (rpm) or libmagick++-dev (deb)
+# NeedsCompilation: yes
+# RoxygenNote: 6.0.1
+# URL: https://github.com/dynverse/princurve
+# BugReports: https://github.com/dynverse/princurve/issues
+# LinkingTo: Rcpp
+# VignetteBuilder: knitr
+# Collate: 'RcppExports.R' 'bias_correct_curve.R' 'data.R' 'get.lam.R' 'package.R' 'periodic_lowess.R' 'smoother_functions.R' 'principal_curve.R' 'principal.curve.R' 'start_circle.R'
+# Packaged: 2018-08-02 08:15:00 UTC; ripley
+# Author: Trevor Hastie [aut], Andreas Weingessel [aut], Kurt Hornik [aut] (<https://orcid.org/0000-0003-4198-9911>), Henrik Bengtsson [ctb] (HenrikBengtsson), Robrecht Cannoodt [aut, cre] (<https://orcid.org/0000-0003-3641-729X>, rcannood)
+# Maintainer: Robrecht Cannoodt <rcannood@gmail.com>
+# Repository: CRAN
+# Date/Publication: 2018-08-02 08:51:49 UTC
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml

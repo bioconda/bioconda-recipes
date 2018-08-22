@@ -1,0 +1,86 @@
+{% set version = '1.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-lle
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: lle_{{ version }}.tar.gz
+  url:
+    - {{ cran_mirror }}/src/contrib/lle_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/lle/lle_{{ version }}.tar.gz
+  sha256: 13cafa6262cd67ba5d051b3b73d0978151c7521a32920566b99f21c27f3d9827
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: rgl
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - r-mass
+    - r-scatterplot3d
+    - r-snowfall
+
+  run:
+    - r-base
+    - r-mass
+    - r-scatterplot3d
+    - r-snowfall
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('lle')"           # [not win]
+    - "\"%R%\" -e \"library('lle')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=lle
+  license: GPL-3
+  summary: LLE is a non-linear algorithm for mapping high-dimensional data into a lower dimensional
+    (intrinsic) space. This package provides the main functions to performs the LLE
+    alogrithm including some enhancements like subset selection, calculation of the
+    intrinsic dimension etc.
+  license_family: GPL3
+
+# The original CRAN metadata for this package was:
+
+# Package: lle
+# Type: Package
+# Title: Locally linear embedding
+# Version: 1.1
+# Date: 2012-03-21
+# Author: Holger Diedrich, Dr. Markus Abel (Department of Physics, University Potsdam)
+# Maintainer: Holger Diedrich <holgerdiedrich@gmx.net>
+# Depends: scatterplot3d, MASS, snowfall
+# Suggests: rgl
+# Description: LLE is a non-linear algorithm for mapping high-dimensional data into a lower dimensional (intrinsic) space. This package provides the main functions to performs the LLE alogrithm including some enhancements like subset selection, calculation of the intrinsic dimension etc.
+# License: GPL-3
+# LazyLoad: yes
+# Packaged: 2012-03-21 09:51:04 UTC; holger
+# Repository: CRAN
+# Date/Publication: 2012-03-21 12:52:58
+# NeedsCompilation: no
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml

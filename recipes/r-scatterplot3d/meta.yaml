@@ -1,0 +1,75 @@
+{% set version = '0.3-41' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-scatterplot3d
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: scatterplot3d_{{ version }}.tar.gz
+  url:
+    - {{ cran_mirror }}/src/contrib/scatterplot3d_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/scatterplot3d/scatterplot3d_{{ version }}.tar.gz
+  sha256: 4c8326b70a3b2d37126ca806771d71e5e9fe1201cfbe5b0d5a0a83c3d2c75d94
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+
+  run:
+    - r-base
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('scatterplot3d')"           # [not win]
+    - "\"%R%\" -e \"library('scatterplot3d')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=scatterplot3d
+  license: GPL-2
+  summary: Plots a three dimensional (3D) point cloud.
+  license_family: GPL2
+
+# The original CRAN metadata for this package was:
+
+# Package: scatterplot3d
+# Version: 0.3-41
+# Date: 2018-02-13
+# Title: 3D Scatter Plot
+# Author: Uwe Ligges <ligges@statistik.tu-dortmund.de>, Martin Maechler, Sarah Schnackenberg
+# Maintainer: Uwe Ligges <ligges@statistik.tu-dortmund.de>
+# Description: Plots a three dimensional (3D) point cloud.
+# Depends: R (>= 2.7.0)
+# License: GPL-2
+# Encoding: latin1
+# Imports: grDevices, graphics, stats
+# NeedsCompilation: no
+# Packaged: 2018-03-13 16:41:55 UTC; ligges
+# Repository: CRAN
+# Date/Publication: 2018-03-14 14:01:37 UTC
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml

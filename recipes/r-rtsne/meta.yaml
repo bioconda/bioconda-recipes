@@ -1,0 +1,91 @@
+{% set version = '0.13' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-rtsne
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: Rtsne_{{ version }}.tar.gz
+  url:
+    - {{ cran_mirror }}/src/contrib/Rtsne_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/Rtsne/Rtsne_{{ version }}.tar.gz
+  sha256: 1c3bffe3bd11733ee4fe01749c293669daafda1af2ec74f9158f6080625b999d
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: testthat
+requirements:
+  build:
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}      # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - r-rcpp >=0.11.0
+
+  run:
+    - r-base
+    - {{native}}gcc-libs         # [win]
+    - r-rcpp >=0.11.0
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('Rtsne')"           # [not win]
+    - "\"%R%\" -e \"library('Rtsne')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://github.com/jkrijthe/Rtsne
+  license: BSD_3_clause + file LICENSE
+  summary: An R wrapper around the fast T-distributed Stochastic Neighbor Embedding implementation
+    by Van der Maaten  (see <https://github.com/lvdmaaten/bhtsne/> for more information
+    on the original implementation).
+  license_family: BSD
+
+# The original CRAN metadata for this package was:
+
+# Package: Rtsne
+# Type: Package
+# Title: T-Distributed Stochastic Neighbor Embedding using a Barnes-Hut Implementation
+# Version: 0.13
+# Authors@R: c( person("Jesse", "Krijthe", ,"jkrijthe@gmail.com", role = c("aut", "cre")), person("Laurens", "van der Maaten", role = c("cph"), comment = "Author of original C++ code") )
+# Description: An R wrapper around the fast T-distributed Stochastic Neighbor Embedding implementation by Van der Maaten  (see <https://github.com/lvdmaaten/bhtsne/> for more information on the original implementation).
+# License: BSD_3_clause + file LICENSE
+# URL: https://github.com/jkrijthe/Rtsne
+# Imports: Rcpp (>= 0.11.0)
+# LinkingTo: Rcpp
+# Suggests: testthat
+# RoxygenNote: 6.0.1
+# NeedsCompilation: yes
+# Packaged: 2017-04-14 15:51:58 UTC; jkrijthe
+# Author: Jesse Krijthe [aut, cre], Laurens van der Maaten [cph] (Author of original C++ code)
+# Maintainer: Jesse Krijthe <jkrijthe@gmail.com>
+# Repository: CRAN
+# Date/Publication: 2017-04-14 16:38:37 UTC
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml

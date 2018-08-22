@@ -1,0 +1,83 @@
+{% set version = '1.0.10' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-pheatmap
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: pheatmap_{{ version }}.tar.gz
+  url:
+    - {{ cran_mirror }}/src/contrib/pheatmap_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/pheatmap/pheatmap_{{ version }}.tar.gz
+  sha256: c7fde6bf25decec1945af18fbab2edcd6a129a3b31817bc50779fcc561d1fdcb
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - r-rcolorbrewer
+    - r-gtable
+    - r-scales
+
+  run:
+    - r-base
+    - r-rcolorbrewer
+    - r-gtable
+    - r-scales
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('pheatmap')"           # [not win]
+    - "\"%R%\" -e \"library('pheatmap')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=pheatmap
+  license: GPL-2
+  summary: Implementation of heatmaps that offers more control over dimensions and appearance.
+  license_family: GPL2
+
+# The original CRAN metadata for this package was:
+
+# Package: pheatmap
+# Type: Package
+# Title: Pretty Heatmaps
+# Version: 1.0.10
+# Date: 2018-05-18
+# Author: Raivo Kolde
+# Maintainer: Raivo Kolde <rkolde@gmail.com>
+# Depends: R (>= 2.0)
+# Description: Implementation of heatmaps that offers more control over dimensions and appearance.
+# Imports: grid, RColorBrewer, scales, gtable, stats, grDevices, graphics
+# License: GPL-2
+# LazyLoad: yes
+# RoxygenNote: 6.0.1
+# NeedsCompilation: no
+# Packaged: 2018-05-19 02:55:34 UTC; kolde
+# Repository: CRAN
+# Date/Publication: 2018-05-19 23:04:25 UTC
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
