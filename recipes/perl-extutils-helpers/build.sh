@@ -1,5 +1,8 @@
 #!/bin/bash
 
+sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' t/*.t
+sed -i.bak 's|perl -w|/usr/bin/env perl|' t/make_executable.t
+
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
