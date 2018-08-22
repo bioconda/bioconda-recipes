@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
 
-mkdir -p $PREFIX/opt/SomaticSeq
+PACKAGE_HOME=$PREFIX/opt/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+BINARY_HOME=$PREFIX/bin
 
-for file in *
+mkdir -p $PACKAGE_HOME
+mkdir -p $BINARY_HOME
+
+cp -R * PACKAGE_HOME
+
+for file in $PACKAGE_HOME/*.sh $PACKAGE_HOME/*.py
 do
- mv $file $PREFIX/opt/SomaticSeq/
+  ln -s $file $BINARY_HOME
 done
 
-cd $PREFIX/opt/SomaticSeq
-for script in *.sh *.py
+mkdir -p $BINARY_HOME/utilities
+
+for file in $PACKAGE_HOME/utilities/*
 do
-  ln -s ../opt/SomaticSeq/$script $PREFIX/bin/$script
+  ln -s $file $BINARY_HOME/utilities
 done
 
-mkdir $PREFIX/bin/utilities
-cd $PREFIX/bin/utilities
-for file in *
+mkdir -p $BINARY_HOME/r_scripts
+for file in $PACKAGE_HOME/r_scripts/*
 do
-  ln -s ../../opt/SomaticSeq/utilities/$file $PREFIX/bin/utilities/$file
-done
-
-mkdir $PREFIX/bin/r_scripts
-for file in $prog_dir/r_scripts/*
-do
-  ln -s ../../opt/SomaticSeq/r_sripts/$file $PREFIX/bin/r_scripts/$file
+  ln -s $file $BINARY_HOME/r_scripts
 done
