@@ -1,25 +1,29 @@
-{% set name = "Antismash" %}
-{% set version = "4.0.2" %}
+{% set version = "4.1.0" %}
+{% set sha256 = "bf2db777fdaa269728b911ebd31c4d9726039058b59fe578c09148dd7ad3cb1c" %}
 
 package:
-  name: {{ name|lower }}
+  name: antismash
   version: {{ version }}
 
 build:
-  skip: True # [not py27]
   number: 2
+  entry_points:
+    - antismash=run_antismash:main
+    - download-antismash-databases=download_databases:main
 
 source:
-  fn: {{ name|lower }}-{{ version }}.tar.gz
-  url: https://bitbucket.org/antismash/antismash/downloads/{{ name|lower  }}-{{ version }}.tar.gz
-  md5: 98e7a6402f0614acc80d8e87b17ed36b
+  url: https://dl.secondarymetabolites.org/releases/{{ version }}/antismash-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - smiles.patch [osx]
+    - manifest.patch
 
 requirements:
-  build:
-    - python
-
+  host:
+    - python >=2.7,<3.0a0
+    - pip
   run:
-    - python
+    - python >=2.7,<3.0a0
     - argparse
     - backports.lzma
     - bcbiogff
@@ -38,22 +42,21 @@ requirements:
     - openjdk
     - libxml2 ==2.9.4
     - mafft
-    - matplotlib  
+    - matplotlib
     - meme ==4.11.2
     - muscle
     - networkx
     - numpy
-    - pandas    
+    - pandas
     - perl-bioperl
     - perl-pathtools
     - prodigal
     - pyexcelerator
     - pyquery ==1.2.9
-    - pysvg 
-    - scipy  
+    - pysvg
+    - scipy
     - scikit-learn ==0.18.2
     - xz ==5.2.2
-
 
 test:
   commands:
@@ -61,7 +64,10 @@ test:
 
 about:
   home: http://antismash.secondarymetabolites.org/
-  license: GPL3
+  license: AGPL-3.0-or-later
   license_file: LICENSE.txt
   summary: antiSMASH allows the rapid genome-wide identification, annotation and analysis of secondary metabolite biosynthesis gene clusters.
 
+extra:
+  identifiers:
+    - biotools:antismash

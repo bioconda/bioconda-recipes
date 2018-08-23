@@ -1,51 +1,52 @@
 {% set name = "augustus" %}
-{% set version = "3.2.3" %}
-{% set sha256 = "a1af128aefd228dea0c46d6f5234910fdf068a2b9133175ca8da3af639cb4514" %}
+{% set version = "3.3" %}
+{% set sha256 = "b5eb811a4c33a2cc3bbd16355e19d530eeac6d1ac923e59f48d7a79f396234ee" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  url: http://bioinf.uni-greifswald.de/augustus/binaries/old/augustus-3.2.3.tar.gz
+  url: http://bioinf.uni-greifswald.de/augustus/binaries/old/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-      - patches/bam2hints.Makefile.patch
-      - patches/filterBam.src.Makefile.patch
-      - patches/filterBam.Makefile.patch
-      - patches/compileSpliceCands.Makefile.patch
+    - patches/bam2hints.Makefile.patch
+    - patches/filterBam.src.Makefile.patch
+    - patches/filterBam.Makefile.patch
+    - patches/compileSpliceCands.Makefile.patch
 
 build:
-  number: 2
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
-  skip: True # [osx]
+  number: 4
 
 requirements:
   build:
-      - gcc # [linux]
-      - llvm # [osx]
-      - zlib {{CONDA_ZLIB}}*
-      - libgcc
-      - bamtools
-      - gsl
-      - lp_solve
-      - perl
-      - perl-module-build
-      - boost {{CONDA_BOOST}}*
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - bamtools
+    - gsl
+    - lp_solve
+    - perl
+    - perl-module-build
+    - boost
+    - sqlite
+    - suitesparse
+    - openblas
   run:
-      - libgcc # [not osx]
-      - zlib {{CONDA_ZLIB}}*
-      - bamtools
-      - boost {{CONDA_BOOST}}*
-      - gsl
-      - lp_solve
-      - perl
-      - perl-app-cpanminus
-      - perl-module-build
-      - perl-yaml
-      - perl-dbi
-      - perl-scalar-list-utils
+    - zlib
+    - bamtools
+    - boost
+    - gsl
+    - lp_solve
+    - perl
+    - perl-app-cpanminus
+    - perl-module-build
+    - perl-yaml
+    - perl-dbi
+    - perl-scalar-list-utils
+    - sqlite
+    - suitesparse
+    - openblas
 
 test:
   commands:
@@ -60,10 +61,12 @@ test:
     - clusterAndSplitGenes.pl --help
     - createAugustusJoblist.pl --help
     - del_from_prfl.pl --help 2>&1 | grep "Need two arguments"
+    - eval_dualdecomp.pl --help
     - evalCGP.pl --help
     - exonerate2hints.pl --help
     - echo "hello" | exoniphyDb2hints.pl
     - echo "hello" | extractTranscriptEnds.pl | grep ">seq1"
+    - filterBam --help 2>&1 | grep "filterBam --in in.bam --out out.bam"
     - filterGenesIn_mRNAname.pl --help
     - filterGenesOut_mRNAname.pl --help
     - filterGenes.pl --help 2>&1 | grep "usage:filterGenes.pl namefile dbfile"
@@ -124,3 +127,9 @@ about:
     it bases its prediction purely on the sequence. AUGUSTUS may also incorporate
     hints on the gene structure coming from extrinsic sources such as EST, MS/MS,
     protein alignments and synthenic genomic alignments.'
+
+extra:
+  identifiers:
+    - biotools:augustus
+    - doi:10.1093/bioinformatics/btr010
+  notes: Builds with sqlite support are currently only available on Linux due to compile issues with macOS

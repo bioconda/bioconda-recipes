@@ -7,35 +7,34 @@ package:
   version: {{ version }}
 
 source:
-  fn: {{name | lower }}-{{ version }}-source.tgz
   url: http://download.arb-home.de/release/{{ name|lower }}-{{ version }}/{{ name|lower }}-{{ version }}-source.tgz
   sha256: {{ sha256 }}
   patches:
-   # allow disabling build of bundled tools
-   - disable_pkgs.patch
-   # do not create links for mafft
-   - no_mafftlinks.patch
-   # allow linking with missing symbols on macos
-   - link_dyn.patch
-   - make.patch
-   # prefix SOURCE_TOOLS/... with full PATH
-   - make_path_fix.patch
-   # change all /usr/bin/xyz paths to /usr/bin/env xyz
-   - abs_path_fix.patch
-   # use sed, not gsed
-   - gsed.patch
+    # allow disabling build of bundled tools
+    - disable_pkgs.patch
+    # do not create links for mafft
+    - no_mafftlinks.patch
+    # allow linking with missing symbols on macos
+    - link_dyn.patch
+    - make.patch
+    # prefix SOURCE_TOOLS/... with full PATH
+    - make_path_fix.patch
+    # change all /usr/bin/xyz paths to /usr/bin/env xyz
+    - abs_path_fix.patch
+    # use sed, not gsed
+    - gsed.patch
 
 build:
-  number: 1
+  number: 2
 
 requirements:
   build:
-    - gcc   # [linux]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
     - pkg-config
+  host:
     - openmotif-dev
-    - glib 2.51.* # 2.50.2 links to broken gettext
-    - gettext !=0.19.8  # gettext 0.19.8 is broken
+    ##- glib 2.51.* # 2.50.2 links to broken gettext
+    - gettext
     - pthread-stubs
     - xorg-libxp
     - xorg-libxmu
@@ -53,17 +52,15 @@ requirements:
     - lynx
     - time
     - sed >=4.4 # 4.2 links to broken gettext
-
   run:
-    - libgcc   # [linux]
-    - gettext !=0.19.8  # gettext 0.19.8 is broken
+    - gettext
     - xorg-libxi
     - xorg-libxmu
     - xorg-libxp
     - xorg-libxaw
     - xorg-libxpm
     - xorg-libxft
-    - glib 2.51.*
+    ##- glib 2.51.*
     - openmotif
     - gnuplot
     - muscle

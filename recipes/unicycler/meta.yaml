@@ -1,31 +1,31 @@
 {% set name = "unicycler" %}
-{% set version = "0.4.1" %}
+{% set version = "0.4.2" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
   skip: True
+  script: python -m pip install --no-deps --ignore-installed .
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
   url: https://github.com/rrwick/Unicycler/archive/v{{ version }}.tar.gz
-  sha256: 00200ea13c2ce90ba7b55917060ffb2e425f59ba515423fa516ff3d6519af336
+  sha256: 58dbeee3b829e00a6f53ea0a151fd6dc77f1a7c35fefa31602deb2f1f5f481ea
   patches:
     - Makefile.patch [linux]
     - misc.py.patch
 
 requirements:
   build:
+  - {{ compiler('c') }}
+  host:
   - python
+  - pip
   - setuptools
-  - gcc >=4.9.4
-
   run:
   - python
-  - libgcc
   - spades >=3.6.2
   - pilon
   - openjdk
@@ -33,6 +33,8 @@ requirements:
   - samtools >=1.0
   - blast
   - freebayes
+  - racon
+  - miniasm
 
 test:
   commands:

@@ -1,7 +1,12 @@
 #!/bin/bash
+
+
+binaries="graphlan.py graphlan_annotate.py"
+
 mkdir -p $PREFIX/bin
-cp $SRC_DIR/graphlan.py $PREFIX/bin
-cp $SRC_DIR/graphlan_annotate.py $PREFIX/bin
-cp -r $SRC_DIR/src $PREFIX/bin/
-cp -r $SRC_DIR/export2graphlan $PREFIX/bin
-cp -r $SRC_DIR/pyphlan $PREFIX/bin
+
+for i in $binaries; do
+    cp $i $PREFIX/bin;
+done
+
+cp -a src/ $PREFIX/bin

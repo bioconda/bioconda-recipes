@@ -5,29 +5,27 @@ package:
   version: {{ version }}
 
 source:
-  fn: mash-{{ version }}.tar.gz
   url: https://github.com/marbl/Mash/archive/v{{ version }}.tar.gz
   sha256: 7bea8cd3c266640bbd97f2e1c9d0168892915c1c14f7d03a9751bf7a3709dd01
 
 build:
-  number: 0
-  string: gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}
+  number: 3
 
 requirements:
-  build: 
-    - gcc  # [not osx]
-    - llvm  # [osx]
+  build:
+    - {{ compiler('cxx') }}
     - autoconf
     - automake
-    - zlib {{CONDA_ZLIB}}*
+  host:
+    - zlib
     - capnproto
-    - gsl {{ CONDA_GSL }}*
-
+    - gsl
+    - openblas
   run:
-    - libgcc  # [not osx]
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
     - capnproto
-    - gsl {{ CONDA_GSL }}*
+    - gsl
+    - openblas
 test:
   commands:
     - mash -h

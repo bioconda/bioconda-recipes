@@ -10,16 +10,6 @@ set +u
 [[ -z $SKIP_LINTING ]] && SKIP_LINTING=false
 set -u
 
-if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_BRANCH != "bulk" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
-then
-    echo ""
-    echo "Tests are skipped for pushes to the main bioconda-recipes repo."
-    echo "If you have opened a pull request, please see the full tests for that PR."
-    echo "See https://bioconda.github.io/build-system.html for details"
-    echo ""
-    exit 0
-fi
-
 
 # determine recipes to build. If building locally, build anything that changed
 # since master. If on travis, only build the commit range included in the push
