@@ -6,7 +6,7 @@ BINARY_HOME=$PREFIX/bin
 mkdir -p $PACKAGE_HOME
 mkdir -p $BINARY_HOME
 
-cp -R * PACKAGE_HOME
+cp -r * $PACKAGE_HOME
 
 for file in $PACKAGE_HOME/*.sh $PACKAGE_HOME/*.py
 do
