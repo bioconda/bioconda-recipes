@@ -21,7 +21,6 @@ cd $SRC_DIR
 make
 make plugins
 
-
 # remove the sample data
 rm -rf $SRC_DIR/sample_data
 
