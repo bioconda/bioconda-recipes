@@ -1,35 +1,36 @@
-{% set version = "17.9.9" %}
+{% set version = "18.5.13" %}
+{% set sha256 = "be2279e50a1534b8c8611748d5c19cb76f100c5cc70a689b6055067715105bb1" %}
 
 package:
   name: galaxy-lib
-  version: {{ version }}
+  version: '{{version}}'
 
 source:
-  fn: galaxy-lib-{{ version }}.tar.gz
-  url: https://pypi.python.org/packages/01/c5/5b987bca46367f5917b5be4c165fc9b374b3a30bc8a7ce5f344bb8835d41/galaxy-lib-17.9.9.tar.gz
-  md5: bc13556ba71a5e33122d7e81c44b15b5
+  url: https://pypi.io/packages/source/g/galaxy-lib/galaxy-lib-{{version}}.tar.gz
+  sha256: '{{sha256}}'
 
 build:
-  preserve_egg_dir: True
-  number: 0
+  noarch: python
+  preserve_egg_dir: true
+  number: 2
   entry_points:
     - mulled-build=galaxy.tools.deps.mulled.mulled_build:main
     - mulled-build-channel=galaxy.tools.deps.mulled.mulled_build_channel:main
     - mulled-build-tool=galaxy.tools.deps.mulled.mulled_build_tool:main
     - mulled-build-files=galaxy.tools.deps.mulled.mulled_build_files:main
-  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+    - mulled-search=galaxy.tools.deps.mulled.mulled_search:main
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
+  host:
     - python
+    - pip
     - setuptools
-    - pyyaml
-    - six >=1.9.0
-    - markupsafe
-
   run:
     - python
     - six >=1.9.0
+    - docutils
+    - packaging
     - pyyaml
     - markupsafe
 
@@ -63,9 +64,11 @@ test:
     - mulled-build-channel --help
     - mulled-build-tool --help
     - mulled-build-files --help
+    - mulled-search --help
 
 about:
   home: https://github.com/galaxyproject/galaxy-lib
   license: Academic Free License (AFL)
-  summary: 'Subset of Galaxy (http://galaxyproject.org/) core code base designed to be used a library.'
+  summary: Subset of Galaxy (http://galaxyproject.org/) core code base designed to
+    be used a library.
   license_family: Apache

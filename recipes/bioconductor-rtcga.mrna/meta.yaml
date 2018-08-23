@@ -1,0 +1,37 @@
+{% set version = "1.6.0" %}
+{% set name = "RTCGA.mRNA" %}
+{% set bioc = "3.6" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: fe4bbd73fd8ee12d3d26747731ea9f2a3f2dfe55fdc0fbc2a4dd219b224c9f6c
+
+build:
+  number: 2
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - bioconductor-rtcga
+    - r-base
+  run:
+    - bioconductor-rtcga
+    - r-base
+    - wget
+
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+
+about:
+  home: 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'Package provides mRNA datasets from The Cancer Genome Atlas Project for all available cohorts types from http://gdac.broadinstitute.org/. Data format is explained here https://wiki.nci.nih.gov/display/TCGA/Gene+expression+data Data from 2015-11-01 snapshot.'

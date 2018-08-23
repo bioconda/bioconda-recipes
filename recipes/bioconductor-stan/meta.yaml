@@ -1,0 +1,53 @@
+{% set version = "2.6.0" %}
+{% set name = "STAN" %}
+{% set bioc = "3.6" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 57f631c2de8398df6292654cfd66ee1d873afa1845e6d9cc657b353daea14a25
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - bioconductor-biocgenerics
+    - bioconductor-genomeinfodb
+    - bioconductor-genomicranges
+    - bioconductor-gviz
+    - bioconductor-iranges
+    - bioconductor-s4vectors
+    - r-base
+    - r-poilog
+    - r-rsolnp
+  run:
+    - bioconductor-biocgenerics
+    - bioconductor-genomeinfodb
+    - bioconductor-genomicranges
+    - bioconductor-gviz
+    - bioconductor-iranges
+    - bioconductor-s4vectors
+    - r-base
+    - r-poilog
+    - r-rsolnp
+    - libcxx # [osx]
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'Genome segmentation with hidden Markov models has become a useful tool to annotate genomic elements, such as promoters and enhancers. STAN (genomic STate ANnotation) implements (bidirectional) hidden Markov models (HMMs) using a variety of different probability distributions, which can model a wide range of current genomic data (e.g. continuous, discrete, binary). STAN de novo learns and annotates the genome into a given number of ''genomic states''. The ''genomic states'' may for instance reflect distinct genome-associated protein complexes (e.g. ''transcription states'') or describe recurring patterns of chromatin features (referred to as ''chromatin states''). Unlike other tools, STAN also allows for the integration of strand-specific (e.g. RNA)  and non-strand-specific data (e.g. ChIP).'
+
+extra:
+  identifiers:
+    - biotools:stan

@@ -1,6 +1,6 @@
-diff -Naur orig-poretools-0.6.0/poretools/hist.py poretools-0.6.0/poretools/hist.py
---- orig-poretools-0.6.0/poretools/hist.py	2017-11-13 10:37:49.999604611 -0500
-+++ poretools-0.6.0/poretools/hist.py	2017-11-13 10:38:54.015141655 -0500
+diff -Naur poretools-0.6.1.orig/poretools/hist.py poretools-0.6.1/poretools/hist.py
+--- poretools-0.6.1.orig/poretools/hist.py	2017-05-31 14:36:46.000000000 -0400
++++ poretools-0.6.1/poretools/hist.py	2017-12-11 17:05:45.428750967 -0500
 @@ -18,6 +18,10 @@
      """
      sizes = [s for s in sizes if args.min_length < s < args.max_length]
@@ -12,127 +12,46 @@ diff -Naur orig-poretools-0.6.0/poretools/hist.py poretools-0.6.0/poretools/hist
      if args.theme_bw:
          sns.set_style("whitegrid")
      plt.hist(sizes, args.num_bins)
-diff -Naur orig-poretools-0.6.0/poretools/occupancy.py poretools-0.6.0/poretools/occupancy.py
---- orig-poretools-0.6.0/poretools/occupancy.py	2017-11-13 10:37:49.999604611 -0500
-+++ poretools-0.6.0/poretools/occupancy.py	2017-11-13 10:38:54.015141655 -0500
-@@ -45,6 +45,8 @@
-     sns.heatmap(d, annot=True, fmt="d", linewidths=.5)
- 
-     if args.saveas is not None:
+diff -Naur poretools-0.6.1.orig/poretools/occupancy.py poretools-0.6.1/poretools/occupancy.py
+--- poretools-0.6.1.orig/poretools/occupancy.py	2017-05-31 14:36:46.000000000 -0400
++++ poretools-0.6.1/poretools/occupancy.py	2017-12-11 17:05:45.428750967 -0500
+@@ -25,6 +25,9 @@
+     """
+     Plot the pore performance in terms of reads per pore
+     """
++    if args.saveas is not None:
 +        plt.switch_backend('Agg') # Use non-interactive backend in case this is
 +                                  # running on a headless system.
-         plot_file = args.saveas
-         plt.savefig(plot_file, figsize=(8.5, 8.5))
-     else:
-diff -Naur orig-poretools-0.6.0/poretools/poretools_main.py poretools-0.6.0/poretools/poretools_main.py
---- orig-poretools-0.6.0/poretools/poretools_main.py	2017-11-13 10:37:49.999604611 -0500
-+++ poretools-0.6.0/poretools/poretools_main.py	2017-11-13 10:38:54.015141655 -0500
-@@ -124,12 +124,12 @@
-                               dest='max_length',
-                               default=-1,
-                               type=int,
--                              help=('Maximum read length for FASTQ entry to be reported.'))                          
-+                              help=('Maximum read length for FASTQ entry to be reported.'))
-     parser_fastq.add_argument('--high-quality',
-                               dest='high_quality',
-                               default=False,
-                               action='store_true',
--                              help=('Only report reads with more complement events than template.'))   
-+                              help=('Only report reads with more complement events than template.'))
-     parser_fastq.add_argument('--normal-quality',
-                               dest='normal_quality',
-                               default=False,
-@@ -175,7 +175,7 @@
-                               dest='max_length',
-                               default=-1,
-                               type=int,
--                              help=('Maximum read length for FASTA entry to be reported.'))                          
-+                              help=('Maximum read length for FASTA entry to be reported.'))
-     parser_fasta.add_argument('--high-quality',
-                               dest='high_quality',
-                               default=False,
-@@ -266,7 +266,7 @@
-                               dest='pre_basecalled',
-                               default=False,
-                               action='store_true',
--                              help=('Report pre-basecalled events'))     
-+                              help=('Report pre-basecalled events'))
-     parser_events.set_defaults(func=run_subtool)
+     flowcell_layout = minion_flowcell_layout()
  
- 
-@@ -315,9 +315,9 @@
-                               dest='read',
-                               default=False,
-                               action='store_true',
--                              help=('Report read level metadata'))      
-+                              help=('Report read level metadata'))
-     parser_metadata.set_defaults(func=run_subtool)
--    
-+
-     #########
-     # index
-     #########
-@@ -327,7 +327,7 @@
-                              help='The input FAST5 files.')
-     parser_index.set_defaults(func=run_subtool)
- 
--    
-+
-     ##########
-     # qualdist
-     ##########
-@@ -440,6 +440,11 @@
+     pore_values = []
+diff -Naur poretools-0.6.1.orig/poretools/poretools_main.py poretools-0.6.1/poretools/poretools_main.py
+--- poretools-0.6.1.orig/poretools/poretools_main.py	2017-05-31 14:36:46.000000000 -0400
++++ poretools-0.6.1/poretools/poretools_main.py	2017-12-11 17:05:45.428750967 -0500
+@@ -445,6 +445,11 @@
      ##########
      parser_times = subparsers.add_parser('times',
                                          help='Return the start times from a set of FAST5 files in tabular format')
 +    parser_times.add_argument('--utc',
-+                              dest='utc',
-+                              default=False,
-+                              action='store_true',
-+                              help="Show timestamps in UTC.")
++                               dest='utc',
++                               default=False,
++                               action='store_true',
++                               help="Show timestamps in UTC.")
      parser_times.add_argument('files', metavar='FILES', nargs='+',
                                 help='The input FAST5 files.')
      parser_times.set_defaults(func=run_subtool)
-@@ -501,7 +506,7 @@
-                              default='read_count')
+diff -Naur poretools-0.6.1.orig/poretools/qual_v_pos.py poretools-0.6.1/poretools/qual_v_pos.py
+--- poretools-0.6.1.orig/poretools/qual_v_pos.py	2017-05-31 14:36:46.000000000 -0400
++++ poretools-0.6.1/poretools/qual_v_pos.py	2017-12-11 17:05:45.428750967 -0500
+@@ -1,6 +1,7 @@
+ import Fast5File
+ from collections import defaultdict
+ import pandas
++import sys
+ import matplotlib.pyplot as plt
  
-     parser_occupancy.set_defaults(func=run_subtool)
--    
-+
-     ##########
-     # organise
-     ##########
-@@ -516,7 +521,7 @@
-     parser_organise.add_argument('--copy',
-                                default=False,
-                                action='store_true',
--                               dest='copy', 
-+                               dest='copy',
-                                help='Make a copy of files instead of moving')
- 
-     parser_organise.set_defaults(func=run_subtool)
-diff -Naur orig-poretools-0.6.0/poretools/qual_v_pos.py poretools-0.6.0/poretools/qual_v_pos.py
---- orig-poretools-0.6.0/poretools/qual_v_pos.py	2017-11-13 10:37:49.999604611 -0500
-+++ poretools-0.6.0/poretools/qual_v_pos.py	2017-11-13 10:38:54.015141655 -0500
-@@ -12,7 +12,7 @@
-     """ returns boxplot with qual scores for each bin/position"""
-     qualpos = defaultdict(list)
-     bin_width = args.bin_width
--    
-+
-     for fast5 in Fast5File.Fast5FileSet(args.files):
-         if args.start_time or args.end_time:
-                 read_start_time = fast5.get_start_time()
-@@ -32,7 +32,7 @@
-                         continue
- 
-         for fq in fqs:
--                if fq is None or len(fq.seq) < args.min_length or len(fq.seq) > args.max_length:			
-+                if fq is None or len(fq.seq) < args.min_length or len(fq.seq) > args.max_length:
-                         continue
- 
-                 ctr = 0
-@@ -42,6 +42,10 @@
+ #logging
+@@ -42,6 +43,10 @@
  
          fast5.close()
  
@@ -143,9 +62,22 @@ diff -Naur orig-poretools-0.6.0/poretools/qual_v_pos.py poretools-0.6.0/poretool
      logger.info("Processing data...")
      data = [qualpos[e] for e in sorted(qualpos.keys())]
      logger.info("Constructing box plot...")
-diff -Naur orig-poretools-0.6.0/poretools/squiggle.py poretools-0.6.0/poretools/squiggle.py
---- orig-poretools-0.6.0/poretools/squiggle.py	2017-11-13 10:37:49.999604611 -0500
-+++ poretools-0.6.0/poretools/squiggle.py	2017-11-13 10:38:54.015141655 -0500
+@@ -53,10 +58,10 @@
+     if args.saveas is not None:
+             logger.info("Writing plot to file...")
+             plot_file = args.saveas
+-            if plot_file.endswith(".pdf") or plot_file.endswith(".jpg"):
++            if plot_file.endswith(".pdf") or plot_file.endswith(".png") or plot_file.endswith(".svg"):
+                     plt.savefig(plot_file)
+             else:
+-                    logger.error("Unrecognized extension for %s! Try .pdf or .jpg" % (plot_file))
++                    logger.error("Unrecognized extension for %s! Try .pdf, .png, or .svg" % (plot_file))
+                     sys.exit()
+ 
+     else:
+diff -Naur poretools-0.6.1.orig/poretools/squiggle.py poretools-0.6.1/poretools/squiggle.py
+--- poretools-0.6.1.orig/poretools/squiggle.py	2017-05-31 14:36:46.000000000 -0400
++++ poretools-0.6.1/poretools/squiggle.py	2017-12-11 17:05:45.428750967 -0500
 @@ -36,6 +36,10 @@
      starts = df.groupby('cat')['start']
      mins, maxs = list(starts.min()), list(starts.max())
@@ -157,54 +89,52 @@ diff -Naur orig-poretools-0.6.0/poretools/squiggle.py poretools-0.6.0/poretools/
      grid = sns.FacetGrid(df, row="cat", sharex=False, size=8)
      #plt.gcf().tight_layout()
      grid.fig.suptitle('Squiggle plot for read: ' + filename + "\nTotal time (sec): " + str(total_time))
-diff -Naur orig-poretools-0.6.0/poretools/times.py poretools-0.6.0/poretools/times.py
---- orig-poretools-0.6.0/poretools/times.py	2017-11-13 10:37:49.999604611 -0500
-+++ poretools-0.6.0/poretools/times.py	2017-11-13 10:38:54.015141655 -0500
-@@ -7,16 +7,16 @@
- logger = logging.getLogger('poretools')
+diff -Naur poretools-0.6.1.orig/poretools/times.py poretools-0.6.1/poretools/times.py
+--- poretools-0.6.1.orig/poretools/times.py	2017-05-31 14:36:46.000000000 -0400
++++ poretools-0.6.1/poretools/times.py	2017-12-11 17:07:20.845379441 -0500
+@@ -1,5 +1,5 @@
+ import Fast5File
+-from time import strftime, localtime
++from time import strftime, localtime, gmtime
+ import sys
  
- def run(parser, args):
--	print '\t'.join(['channel', 'filename', 'read_length', 
--		'exp_starttime', 'unix_timestamp', 'duration', 
--		'unix_timestamp_end', 'iso_timestamp', 'day', 
-+	print '\t'.join(['channel', 'filename', 'read_length',
-+		'exp_starttime', 'unix_timestamp', 'duration',
-+		'unix_timestamp_end', 'iso_timestamp', 'day',
- 		'hour', 'minute'])
--	
-+
- 	for fast5 in Fast5File.Fast5FileSet(args.files):
- 		if fast5.is_open:
--			
-+
- 			fq = fast5.get_fastq()
--			
-+
- 			start_time = fast5.get_start_time()
- 			if start_time is None:
- 				logger.warning("No start time for %s!" % (fast5.filename))
-@@ -28,7 +28,10 @@
+ #logging
+@@ -28,14 +28,18 @@
  			else:
  				read_length = 0
  
 -			lt = localtime(start_time)
-+            if args.utc:
-+                lt = gmtime(start_time)
-+            else:
-+                lt = localtime(start_time)
- 			print "\t".join([fast5.get_channel_number(),
- 				fast5.filename, 
- 				str(read_length),
-diff -Naur orig-poretools-0.6.0/poretools/yield_plot.py poretools-0.6.0/poretools/yield_plot.py
---- orig-poretools-0.6.0/poretools/yield_plot.py	2017-11-13 10:37:49.999604611 -0500
-+++ poretools-0.6.0/poretools/yield_plot.py	2017-11-13 10:38:54.015141655 -0500
-@@ -50,6 +50,10 @@
+-			print "\t".join([fast5.get_channel_number(),
+-				fast5.filename, 
+-				str(read_length),
+-				str(fast5.get_exp_start_time()),
+-				str(start_time), \
+-				str(fast5.get_duration()),
+-				str(fast5.get_end_time()),
++			if args.utc:
++				lt = gmtime(start_time)
++			else:
++				lt = localtime(start_time)
++
++			print "\t".join(str(column) for column in [fast5.get_channel_number(),
++				fast5.filename,
++				read_length,
++				fast5.get_exp_start_time(),
++				start_time, \
++				fast5.get_duration(),
++				fast5.get_end_time(),
+ 				strftime('%Y-%m-%dT%H:%M:%S%z', lt),
+ 				strftime('%d', lt),
+ 				strftime('%H', lt),
+diff -Naur poretools-0.6.1.orig/poretools/yield_plot.py poretools-0.6.1/poretools/yield_plot.py
+--- poretools-0.6.1.orig/poretools/yield_plot.py	2017-05-31 14:36:46.000000000 -0400
++++ poretools-0.6.1/poretools/yield_plot.py	2017-12-11 17:05:45.428750967 -0500
+@@ -50,6 +50,9 @@
          if args.theme_bw:
              sns.set_style("whitegrid")
  
 +        if args.saveas is not None:
-+            plt.switch_backend('Agg') # Use non-interactive backend in case this is
-+                                      # running on a headless system.
++            plt.switch_backend('Agg')
 +
          # plot
          plt.plot(df['start'], df['cumul'])

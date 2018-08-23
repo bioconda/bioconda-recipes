@@ -1,27 +1,21 @@
 {% set name = "TASSEL" %}
 {% set version = "3.0.174" %}
 
-about:
-  home: 'https://tassel.bitbucket.io/TasselArchived.html'
-  license: LGPL V2.1
-  summary: "TASSEL is a software package to evaluate traits associations, evolutionary patterns, and linkage disequilibrium."
-
-build:
-  skip: True  # [osx]
-  number: 0
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: {{ name|lower }}-{{ version }}.zip
-  url: https://sourceforge.net/code-snapshots/git/t/ta/tassel/tassel3-standalone.git/tassel-tassel3-standalone-612a92c0f677d6ec040c17e146671974a3cdc2da.zip
-  md5: 77f9c8703711e528ca51e5fc2236d612
+  git_url: https://git.code.sf.net/p/tassel/tassel3-standalone
+  git_rev: 612a92c0f677d6ec040c17e146671974a3cdc2da
   patches:
     - patches/run_anything.patch
     - patches/run_pipeline.patch
     - patches/start_tassel.patch
 
-package:
-  name: {{ name|lower }}
-  version: {{ version }}
+build:
+  skip: True  # [osx]
+  number: 1
 
 requirements:
   run:
@@ -31,3 +25,14 @@ requirements:
 test:
   commands:
     - run_pipeline.pl
+
+about:
+  home: 'https://tassel.bitbucket.io/TasselArchived.html'
+  license: LGPL V2.1
+  summary: "TASSEL is a software package to evaluate traits associations, evolutionary patterns, and linkage disequilibrium."
+
+extra:
+  skip-lints:
+    # SourceForge Git snapshots do not persist
+    - uses_git_url
+    - missing_hash

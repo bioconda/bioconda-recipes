@@ -7,24 +7,21 @@ package:
   version: {{ version }}
 
 source:
-  fn: {{ name | lower }}-{{ version }}.tar.gz
   url: https://sourceforge.net/projects/{{ name | lower }}/files/{{ name | lower }}/{{ version }}/{{ name | lower }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
-    - gcc   # [linux]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
     - autoconf
     - automake
     - readline 6.*
     - openmpi
     - beagle-lib
   run:
-    - libgcc   # [linux]
     - readline 6.*
     - openmpi
     - beagle-lib
@@ -35,8 +32,8 @@ test:
   commands:
 #    - conda inspect linkages -p $PREFIX $PKG_NAME  # [linux]
 #    - conda inspect objects -p $PREFIX $PKG_NAME  # [osx]
-    - echo Version | mb
-    - echo Version | mpirun -mca plm_rsh_agent true --allow-run-as-root mb-mpi 
+  - echo Version | mb
+  - echo Version | mpirun -mca plm_rsh_agent true --allow-run-as-root mb-mpi
 
 about:
   home: http://mrbayes.sourceforge.net
@@ -49,3 +46,7 @@ about:
     range of phylogenetic and evolutionary models. MrBayes uses Markov chain
     Monte Carlo (MCMC) methods to estimate the posterior distribution of model
     parameters.
+
+extra:
+  identifiers:
+    - biotools:mrbayes

@@ -1,51 +1,59 @@
-{% set version="0.9.1" %}
+{% set version="0.11.2" %}
 {% set llvm_version = "4.0.0" %}
 
 build:
   number: 0
-  # OSX failing due to libary issues even though shipping with Salmon binary
-  # dyld: Library not loaded: /usr/local/opt/tbb/lib/libtbbmalloc_proxy.dylib
-  # https://travis-ci.org/bioconda/bioconda-recipes/jobs/211785820#L295
-  #skip: true # [osx]
+  # OSX failing due to complier/linking issues
+  # Undefined symbols for architecture x86_64:
+  # "icu_58::Locale::Locale(icu_58::Locale const&)", referenced from:
+  #     boost::basic_regex<int, boost::icu_regex_traits>::imbue(icu_58::Locale) in libboost_regex.a(icu.o)
+  #     boost::icu_regex_traits::imbue(icu_58::Locale) in libboost_regex.a(icu.o)
+  #     boost::re_detail_106700::icu_regex_traits_implementation::icu_regex_traits_implementation(icu_58::Locale const&) in libboost_regex.a(icu.o)
+  # ld: symbol(s) not found for architecture x86_64
+  # https://circleci.com/gh/bioconda/bioconda-recipes/19273?utm_campaign=vcs-integration-link&utm_medium=referral&utm_source=github-build-link
+  skip: true # [osx]
 
 about:
-    home: https://github.com/COMBINE-lab/salmon
-    license: GPLv3
-    summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using lightweight alignments
+  home: https://github.com/COMBINE-lab/salmon
+  license: GPLv3
+  summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using lightweight alignments
 
 package:
-    name: salmon
-    version: {{ version }}
+  name: salmon
+  version: {{ version }}
 
 source:
-  fn: Salmon-{{ version }}_src.tar.gz 
   url: https://github.com/COMBINE-lab/salmon/archive/v{{ version }}.tar.gz
-  md5: 1277b8ed65d2c6982ed176a496a2a1e3
+  md5: d81f083e71adc6d46a21ed14df624136
+  #patches: salmon_cmake.patch
 
 requirements:
   build:
-    - llvm # [osx]
-    - clangdev =={{ llvm_version }}  # [osx]
-    - libcxx =={{ llvm_version }}  # [osx]
-    - gcc ==4.8.5 # [linux]
-    - autoconf 2.69 pl5.*
-    - boost {{CONDA_BOOST}}*
-    - icu 58.*
+    - autoconf
     - cmake
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{CONDA_BZIP2}}*
+    #- gcc ==4.8.5 # [linux]
+    #- llvm # [osx]
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    #- clangdev =={{ llvm_version }}  # [osx]
+    #- libcxx =={{ llvm_version }}  # [osx]
+  host:
+    - boost
+    - icu
+    - zlib
+    - bzip2
     - unzip
-    - jemalloc ==4.5.0
+    - jemalloc >=5.1.0
     - tbb
   run:
-    - libgcc # [linux]
-    - libcxx =={{ llvm_version }}  # [osx]
-    - boost {{CONDA_BOOST}}*
-    - icu 58.*
-    - jemalloc ==4.5.0
+    #- libgcc # [linux]
+    #- libcxx =={{ llvm_version }}  # [osx]
+    - boost
+    - icu
+    - jemalloc >=5.1.0
     - tbb
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{CONDA_BZIP2}}*
+    - zlib
+    - bzip2
 
 test:
   commands:

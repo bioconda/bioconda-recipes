@@ -2,9 +2,9 @@
 FN="BSgenome.Dmelanogaster.UCSC.dm3_1.4.0.tar.gz"
 URLS=(
   "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/BSgenome.Dmelanogaster.UCSC.dm3_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/BSgenome.Dmelanogaster.UCSC.dm3/BSgenome.Dmelanogaster.UCSC.dm3_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.dmelanogaster.ucsc.dm3/bioconductor-bsgenome.dmelanogaster.ucsc.dm3_1.4.0_src_all.tar.gz"
 )
-    MD5="b7ceebf7bfee766596f602f9e808d069"
+MD5="b7ceebf7bfee766596f602f9e808d069"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -20,7 +20,7 @@ for URL in ${URLS[@]}; do
 
   # Platform-specific md5sum checks.
   if [[ $(uname -s) == "Linux" ]]; then
-    if [[ $(md5sum -c <<<"$MD5  $TARBALL") ]]; then
+    if md5sum -c <<<"$MD5  $TARBALL"; then
       SUCCESS=1
       break
     fi
@@ -40,5 +40,6 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 # Install and clean up
-R CMD INSTALL --build $TARBALL
+R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
 rm $TARBALL
+rmdir $STAGING

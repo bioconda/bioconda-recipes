@@ -1,45 +1,53 @@
 {% set name = "genomicconsensus" %}
-{% set version = "3.0.2" %}
+{% set version = "2.3.2" %}
+{% set sha256 = "de31420e2026b91b85d0a451afe924a0f20faeb3aad5517bdc9f40a9f4c6c80f" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://github.com/PacificBiosciences/GenomicConsensus/archive/smrtanalysis-{{ version }}.tar.gz
-  md5: 47bd0ecc00a8cdaf61c4662dfb88fcc7
-
-build:
-  skip: True # [not py27]
-
-requirements:
-  build:
-    - python
-    - setuptools
-    - gcc # [not osx]
-    - llvm # [osx]
-    - h5py >=2.0.1
-    - numpy >=1.6.0
-    - python-consensuscore >=1.0.1
-    - pbcommand >=0.3.20
-    - pbcore >=1.2.9
-
-  run:
-    - python
-    - libgcc  # [not osx]
-    - h5py >=2.0.1
-    - numpy >=1.6.0
-    - python-consensuscore >=1.0.1
-    - pbcommand >=0.3.20
-    - pbcore >=1.2.9
-
-test:
-  imports:
-    - GenomicConsensus.main
-  
+  url: https://github.com/PacificBiosciences/GenomicConsensus/releases/download/{{ version }}/GenomicConsensus-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 about:
   home: https://github.com/PacificBiosciences/GenomicConsensus
-  summary: 'PacBio variant and consensus caller.'
-  license: Redistribution and use in source and binary forms, with or without modification
+  license: BSD
+  summary: PacBio genomic consensus and variant caller for RSII and Sequel
+
+extra:
+  recipe-maintainers:
+    - pb-dseifert
+    - mhsieh
+
+build:
+  skip: True # [not py27 or osx]
+  number: 0
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - numpy >=1.7.1
+    - pbcore >=1.5.1
+    - pbcommand >=1.1.1
+    - python-consensuscore >=1.1.1
+    - python-consensuscore2 >=3.1.0
+  run:
+    - python
+    - numpy >=1.7.1
+    - pbcore >=1.5.1
+    - pbcommand >=1.1.1
+    - python-consensuscore >=1.1.1
+    - python-consensuscore2 >=3.1.0
+
+test:
+  commands:
+    - variantCaller -h
+    - summarizeConsensus -h
+    - gffToVcf -h
+    - gffToBed -h
+    - plurality -h
+    - poa -h
+    - quiver -h
+    - arrow -h

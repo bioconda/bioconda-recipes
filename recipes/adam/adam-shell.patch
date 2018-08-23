@@ -1,19 +1,13 @@
+diff --git a/bin/adam-shell b/bin/adam-shell
+index a1a7d946..b0c50053 100755
 --- a/bin/adam-shell
 +++ b/bin/adam-shell
-@@ -19,21 +19,29 @@
- 
- set -e
- 
--# Figure out where ADAM is installed
--SCRIPT_DIR="$(cd `dirname $0`/..; pwd)"
--
- # does the user have ADAM_OPTS set? if yes, then warn
- if [[ -z $@ && -n "$ADAM_OPTS" ]]; then
-     echo "WARNING: Passing Spark arguments via ADAM_OPTS was recently removed."
-     echo "Run adam-shell instead as adam-shell <spark-args>"
+@@ -25,11 +25,19 @@ if [[ -z $@ && -n "$ADAM_OPTS" ]]; then
+     echo "Run adam-shell instead as adam-shell <spark-args>" 1>&2
  fi
  
-+# Find original directory of this script, resovling symlinks
+-SOURCE_DIR=$(dirname ${BASH_SOURCE[0]})
++# Find original directory of this script, resolving symlinks
 +# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
 +SOURCE="${BASH_SOURCE[0]}"
 +while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -22,17 +16,12 @@
 +    [[ $SOURCE != /* ]] && SOURCE="$SCRIPT_DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 +done
 +SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-+INSTALL_DIR="$SCRIPT_DIR/.."
-+
- # Find ADAM cli assembly jar
- ADAM_CLI_JAR=
--if [ -d "$SCRIPT_DIR/repo" ]; then
--  ASSEMBLY_DIR="$SCRIPT_DIR/repo"
-+if [ -d "$INSTALL_DIR/repo" ]; then
-+  ASSEMBLY_DIR="$INSTALL_DIR/repo"
- else
--  ASSEMBLY_DIR="$SCRIPT_DIR/adam-assembly/target"
-+  ASSEMBLY_DIR="$INSTALL_DIR/adam-assembly/target"
- fi
  
- num_jars="$(ls -1 "$ASSEMBLY_DIR" | grep "^adam[0-9A-Za-z\.\_\-]*\.jar$" | grep -v javadoc | grep -v sources | wc -l)"
+-ADAM_CLI_JAR=$(${SOURCE_DIR}/find-adam-assembly.sh)
++ADAM_CLI_JAR=$(${SCRIPT_DIR}/find-adam-assembly.sh)
+ 
+-SPARK_SHELL=$(${SOURCE_DIR}/find-spark.sh spark-shell)
++SPARK_SHELL=$(${SCRIPT_DIR}/find-spark.sh spark-shell)
+ echo "Using SPARK_SHELL=$SPARK_SHELL" 1>&2
+ 
+ # submit the job to Spark
