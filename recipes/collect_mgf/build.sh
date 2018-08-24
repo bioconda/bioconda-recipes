@@ -1,4 +1,4 @@
 #!/bin/bash
 gcc -o collect_mgf collect_mgf.c
-cp collect_mgf $PREFIX/collect_mgf
-chmod +x $PREFIX/collect_mgf
+cp collect_mgf $PREFIX/bin/collect_mgf
+chmod +x $PREFIX/bin/collect_mgf
