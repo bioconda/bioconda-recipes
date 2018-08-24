@@ -1,4 +1,4 @@
 #!/bin/bash
 make -j
-cp $SRC_DIR/mapDIA $PREFIX/bin/mapDIA
-chmod +x $PREFIX/bin/mapDIA
+cp $SRC_DIR/mapDIA $PREFIX/mapDIA
+chmod +x $PREFIX/mapDIA
