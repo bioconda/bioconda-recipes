@@ -31,7 +31,7 @@ fi
 git remote remove $UPSTREAM_REMOTE
 
 
-if ! type bioconda-utils > /dev/null || [[ $BOOTSTRAP == "true" ]]; then
+if ! type bioconda-utils 2> /dev/null || [[ $BOOTSTRAP == "true" ]]; then
     echo "Setting up bioconda-utils..."
 
     # setup conda and bioconda-utils if not loaded from cache
