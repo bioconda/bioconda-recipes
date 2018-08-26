@@ -1,6 +1,6 @@
 #!/bin/bash
 
-chmod a+rwx 'bin/download-entities.pl'
+chmod u+w "$PREFIX/bin/download-entities.pl"
 
 if [ -f Build.PL ]; then
     perl Build.PL
