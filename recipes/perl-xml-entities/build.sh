@@ -1,7 +1,5 @@
 #!/bin/bash
 
-chmod u+w "$PREFIX/bin/download-entities.pl"
-
 if [ -f Build.PL ]; then
     perl Build.PL
     perl ./Build
@@ -16,4 +14,6 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
+
+chmod u+w "$PREFIX/bin/download-entities.pl"
 
