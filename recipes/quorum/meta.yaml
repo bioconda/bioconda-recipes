@@ -4,23 +4,30 @@
 
 build:
   number: 1
+  skip: True  # [osx]
+  # This uses a gcc-specific header that won't exist with clang (ext/stdio_filebuf.h)
 
 package:
   name: {{ name }}
   version: {{ version }}
+
 source:
   url: https://github.com/gmarcais/Quorum/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
   md5: {{ md5 }}
+
 requirements:
   build:
-    - {{ compiler('c') }}
-    - jellyfish >=2.0
+    - {{ compiler('cxx') }}
+  host:
+    - jellyfish 2.2.10
   run:
     - perl
-    - jellyfish >=2.0
+    - jellyfish 2.2.10
+
 test:
   commands:
     - quorum --version 2>&1 > /dev/null
+
 about:
   home: http://www.genome.umd.edu/quorum.html
   license: GPLv3
