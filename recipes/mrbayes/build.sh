@@ -1,7 +1,8 @@
 #!/bin/bash
 set -x
 
-cd src
+tar -xzf mrbayes-3.2.6.tar.gz
+cd mrbayes-3.2.6/src
 autoconf
 
 # build version with MPI & Beagle
