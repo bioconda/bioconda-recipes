@@ -2,7 +2,8 @@
 set -x
 set +e
 
-#sh autogen.sh
+# needed to fix version
+sh autogen.sh
 
 # PhyML builds different binaries depending on configure flags.
 # We build
