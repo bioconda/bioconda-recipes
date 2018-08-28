@@ -8,14 +8,14 @@ sh autogen.sh
 # We build
 #   - phyml
 #   - phyml-mpi
-#   - phyml-beagle
 # but not
+#   - phyml-beagle
 #   - phyrex
 #   - phytime
 
 export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PREFIX/share/pkgconfig"
 
-for binary in beagle mpi phyml; do
+for binary in mpi phyml; do
     ./configure \
 	--disable-dependency-tracking \
 	--prefix $PREFIX \
