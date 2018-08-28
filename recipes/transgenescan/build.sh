@@ -7,6 +7,6 @@ processFragOut.py \
 post_process.pl \
 FGS_gff.py \
 "
-
+mkdri -p $PREFIX/bin
 for i in $binaries; do cp $i $PREFIX/bin/$i; done
 chmod +x $PREFIX/bin/TransGeneScan 
