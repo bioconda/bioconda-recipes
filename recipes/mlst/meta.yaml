@@ -1,5 +1,6 @@
 {% set name = "mlst" %}
-{% set version = "2.11" %}
+{% set version = "2.14" %}
+{% set sha256 = "9bba751b67ab8978c54a2c508256a76b1771402f638e7e88588149d276f4f57c" %}
 
 package:
   name: {{ name }}
@@ -7,26 +8,24 @@ package:
 
 build:
   number: 0
-  # OSX failing due to problems with perl-list-moreutils and bioperl
-  skip: true # [osx]
 
 source:
   url: https://github.com/tseemann/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: fcb403e3563b68119359235c984ce65e4604056a0678699ac559294fc2224086
+  sha256: {{ sha256 }}
 
 requirements:
   run:
-    - perl
-    - perl-bioperl
+    - blast >=2.7.1
+    - perl-bioperl >=1.7.2
     - perl-moo
     - perl-list-moreutils
     - perl-json
-    - blast
     - zlib
 
 test:
   commands:
     - mlst --version
+    - mlst --check
     - mlst --list 2>&1 | grep leptospira > /dev/null
 
 about:
@@ -37,4 +36,4 @@ about:
 
 extra:
   identifiers:
-    - biotools:mlst
+    - biotools:{{ name }}
