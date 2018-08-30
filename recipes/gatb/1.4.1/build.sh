@@ -9,6 +9,9 @@ cd gatb-core
 
 rm -rf thirdparty/hdf5 thirdparty/boost
 
+# gatb wants an hdf5 dir
+ln -s ${PREFIX}/include ${PREFIX}/include/hdf5
+
 mkdir build
 cd build
 
