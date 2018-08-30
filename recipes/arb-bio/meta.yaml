@@ -2,6 +2,8 @@
 {% set version = "6.0.6" %}
 {% set sha256 = "8b1fc3fd11bbb05aca4731ac8803c004a4f2b6b87c11b543660d07ea349a6c21" %}
 
+{% set build = "bash $RECIPE_DIR/builder.sh" %}
+
 package:
   name: {{ name|lower }}-bio
   version: {{ version }}
@@ -29,11 +31,15 @@ build:
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - pkg-config
+    - time
+    - lynx
+    - xorg-makedepend
+    - sed >=4.4
   host:
     - openmotif-dev
-    ##- glib 2.51.* # 2.50.2 links to broken gettext
+    - glib
     - gettext
     - pthread-stubs
     - xorg-libxp
@@ -41,17 +47,11 @@ requirements:
     - xorg-libxi
     - xorg-libxaw
     - xorg-libxpm
-    - xorg-makedepend
     - xerces-c
     - libtiff
     - libxslt
-    # perl 5.22.0.1-0 and 5.22.2.1-0 want to use
-    # -fstack-protector-strong, which doesn't exist in conda gcc 4.8 and
-    # leads to compile failure
-    - perl !=5.22.0.1-0,!=5.22.2.1-0
-    - lynx
-    - time
-    - sed >=4.4 # 4.2 links to broken gettext
+    - perl >=5.23
+    - libpng
   run:
     - gettext
     - xorg-libxi
@@ -60,7 +60,7 @@ requirements:
     - xorg-libxaw
     - xorg-libxpm
     - xorg-libxft
-    ##- glib 2.51.*
+    - glib
     - openmotif
     - gnuplot
     - muscle
@@ -68,12 +68,15 @@ requirements:
     - raxml
     - mrbayes
     - phylip
-    - phyml 3.2.0
+    - phyml 3.2.0*
     - fasttree
     - sed >=4.4
     - xfig
     - fig2dev
-    - perl !=5.22.0.1-0,!=5.22.2.1-0
+    # We built a binary perl module. ABI compatability seems to be maintained
+    # at minor version (5.26.x), so we pin accordingly:
+    - {{ pin_compatible("perl", min_pin="x.x", max_pin="x.x") }}
+    - libpng
 
 test:
   requires:
@@ -83,6 +86,17 @@ test:
     - if command -v conda; then conda inspect objects -p $PREFIX $PKG_NAME; fi   # [osx]
     - which arb
     - which arb_pt_server
+
+outputs:
+  - name: arb-bio
+    build:
+      script: {{ build }} config build install-main install-activate
+  - name: arb-bio-devel
+    build:
+      script: {{ build }} install-devel
+    requirements:
+      run:
+        - {{ pin_subpackage('arb-bio', exact=True) }}
 
 about:
   home: http://www.arb-home.de
