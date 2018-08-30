@@ -12,4 +12,4 @@ export prefix=$PREFIX
 make ${CAIRO_OPT} install 
 
 cd gtpython
-$PYTHON setup.py install
+$PYTHON setup.py install 
