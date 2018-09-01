@@ -6,7 +6,7 @@ export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
 # Override Makefile -mtune=native
-export CXXFLAGS = -mtune=generic
+export CXXFLAGS="-mtune=generic"
 
 # TODO: remove when seqan is updated upstream
 rm -rf unicycler/include/seqan
