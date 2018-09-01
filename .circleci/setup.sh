@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
-
 [[ -z $WORKSPACE ]] && WORKSPACE=`pwd`
 [[ -z $BOOTSTRAP ]] && BOOTSTRAP=false
 [[ -z $BASH_ENV ]] && BASH_ENV=`mktemp`
+[[ -z $USE_DOCKER ]] && USE_DOCKER=true
 
 set -u
 
@@ -17,22 +17,19 @@ source $BASH_ENV
 
 # Make sure the CircleCI config is up to date.
 # add upstream as some semi-randomly named temporary remote to diff against
-UPSTREAM_REMOTE=__upstream__$(tr -dc a-z < /dev/urandom | head -c10)
+UPSTREAM_REMOTE=__upstream__$(mktemp -u XXXXXXXXXX)
 git remote add -t master $UPSTREAM_REMOTE https://github.com/bioconda/bioconda-recipes.git
 git fetch $UPSTREAM_REMOTE
 if ! git diff --quiet HEAD...$UPSTREAM_REMOTE/master -- .circleci/; then
-    echo 'The CI configuration is out of date.'
-    echo 'Please merge in bioconda:master.'
+    echo 'Your bioconda-recipes CI configuration is out of date.'
+    echo 'Please update it to the latest version of the upstream master branch.'
+    echo 'You can do this, e.g., by running:'
+    echo '  git fetch https://github.com/bioconda/bioconda-recipes.git master'
+    echo '  git merge FETCH_HEAD'
     exit 1
 fi
 git remote remove $UPSTREAM_REMOTE
 
-
-# TODO: remove this workaround
-if [[ $OSTYPE == linux* && ${CIRCLE_JOB-} != build ]]; then
-    docker pull continuumio/miniconda3:4.3.27
-    docker tag continuumio/miniconda3:4.3.27 continuumio/miniconda3:latest
-fi
 
 if ! type bioconda-utils > /dev/null || [[ $BOOTSTRAP == "true" ]]; then
     echo "Setting up bioconda-utils..."

@@ -1,0 +1,45 @@
+
+if [ "$#" -ne 0 ]
+then
+    echo '
+    
+    blobtools has installed successfully.
+    
+    However, the blobtools package requires a nodes database to be generated from 
+    the nodes.dmp & names.dmp files found in the NCBI taxonomy taxdump.
+    
+    To generate the nodes database, please execute the "blobtools-build_nodesdb"
+    command without any arguments prior to running blobtools
+    
+    '
+    exit 0;
+fi
+
+curl ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz -o $blobtools/data/taxdump.tar.gz 
+curl ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz.md5 -o $blobtools/data/taxdump.tar.gz.md5 
+cd $blobtools/data
+md5_line=`openssl dgst -md5 taxdump.tar.gz`
+expected_md5_line="MD5(taxdump.tar.gz)= $(awk '{print $1}' taxdump.tar.gz.md5)"
+
+echo "Calculated checksum: $md5_line"
+echo "Expected checksum: $expected_md5_line"
+
+if [ "$md5_line" != "$expected_md5_line" ]
+then
+    echo "taxdump.tar.gz checksum failure"
+    exit 1;
+fi
+
+tar -xzf $blobtools/data/taxdump.tar.gz nodes.dmp names.dmp
+echo "Generating nodes.db..."
+
+$blobtools/lib/blobtools.py nodesdb --nodes $blobtools/data/nodes.dmp --names $blobtools/data/names.dmp
+if [ $? -eq 0 ]
+then
+    echo "[+] Removing intermediate files..."
+    rm -f $blobtools/data/taxdump.tar.gz $blobtools/data/taxdump.tar.gz.md5 $blobtools/data/nodes.dmp $blobtools/data/names.dmp
+else
+    echo "[X] - Could not create nodesdb. Please follow installation steps on https://blobtools.readme.io/"
+    echo "blobtools directory location = $blobtools"
+    exit 1;
+fi

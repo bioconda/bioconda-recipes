@@ -1,38 +1,31 @@
 {% set name = "mlst" %}
-{% set version = "2.10" %}
-
+{% set version = "2.15" %}
+{% set sha256 = "46f98da03cc80f410ca7049ce2c9437da26bb17087ef816a718351ecbb3c4e9b" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 build:
-  number: 1
+  number: 0
 
 source:
-  fn: {{ name }}_{{ version }}.tar.gz
   url: https://github.com/tseemann/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 431c50a8b5f48f0261049902dd22a6eec3a02579bd8590713f5b31a4db6ce1ed
+  sha256: {{ sha256 }}
 
 requirements:
-
-  build:
-  - gcc # [linux]
-  - llvm # [osx]
-
   run:
-  - libgcc # [linux]
-  - perl
-  - perl-bioperl
-  - perl-moo
-  - perl-list-moreutils
-  - perl-json
-  - perl-file-slurp
-  - blast
-  - zlib {{CONDA_ZLIB}}*
+    - blast >=2.7.1
+    - perl-bioperl >=1.7.2
+    - perl-moo
+    - perl-list-moreutils
+    - perl-json
+    - zlib
 
 test:
   commands:
+    - mlst --version
+    - mlst --check
     - mlst --list 2>&1 | grep leptospira > /dev/null
 
 about:
@@ -43,4 +36,4 @@ about:
 
 extra:
   identifiers:
-    - biotools:mlst
+    - biotools:{{ name }}
