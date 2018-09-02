@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e
 
 export CFLAGS="-I$PREFIX/include"
