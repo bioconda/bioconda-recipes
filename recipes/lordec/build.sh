@@ -6,4 +6,4 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
 make all
-PREFIX=$PREFIX make install
+PREFIX=$PREFIX/bin make install
