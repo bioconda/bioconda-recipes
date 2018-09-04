@@ -5,17 +5,39 @@ package:
   version: {{ version }}
 
 source:
-  git_url: https://github.com/ebi-gene-expression-group/bioconductor-scater-scripts.git
+  url: https://github.com/ebi-gene-expression-group/biconductor-scater-scripts/archive/v{{ version }}.tar.gz
+  sha256: b46cff11d7fa7ca145da90819a2f611ed8850276e6eadca061ffdc08c3ce4f9d
 
 requirements:
-    build:
-        - git
     run:
-        - bioconductor-scater
+        - r-base
         - r-optparse
+        - r-workflowscriptscommon
+        - bioconductor-biobase
+        - bioconductor-scater>=1.6.0
+        - bioconductor-singlecellexperiment-scripts
+
+build:
+  number: 0
+  noarch: generic
 
 test:
     commands:
-        - scater-read-10x-results.R
-        - scater-normalize.R
-        - scater-calculate-qc-metrics.R
+        - scater-read-10x-results.R --help
+        - scater-normalize.R --help
+        - scater-calculate-qc-metrics.R --help
+        - scater-is-outlier.R --help
+        - scater-extract-qc-metrics.R --help
+        - which r-scater-scripts-post-install-tests.sh
+
+about:
+  home: https://github.com/ebi-gene-expression-group/bioconductor-scater-scripts
+  dev_url: https://github.com/ebi-gene-expression-group/bioconductor-scater-scripts
+  license: GPL-3
+  summary: A set of wrappers for individual components of the Scater package.
+      Functions R packages are hard to call when building workflows outside of R,
+      so this package adds a set of simple wrappers with robust argument parsing.
+      Intermediate steps are currently mainly serialized R objects, but the
+      ultimate objective is to have language-agnostic intermediate formats allowing
+      composite workflows using a variety of software packages.
+  license_family: GPL
