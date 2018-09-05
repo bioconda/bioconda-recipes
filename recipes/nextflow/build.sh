@@ -11,5 +11,8 @@ rm -f *.bak
 sed -i.bak "s|^CAPSULE_CACHE_DIR=\${CAPSULE_CACHE_DIR:=\"\$NXF_HOME/capsule\"}|CAPSULE_CACHE_DIR=\${CAPSULE_CACHE_DIR:=\"\$HOME/.nextflow/capsule\"}|" $PREFIX/bin/nextflow
 rm -f *.bak
 
+sed -i.bak "s|^JAVA_KEY=\"\$NXF_HOME/|JAVA_KEY=\"\$HOME/.nextflow/|" $PREFIX/bin/nextflow
+rm -f *.bak
+
 chmod 755 $PREFIX/bin/nextflow
 $PREFIX/bin/nextflow -download
