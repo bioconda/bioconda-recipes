@@ -10,7 +10,7 @@ about:
   summary: SSAKE is a genomics application for de novo assembly of millions of very short DNA sequences.
 
 build:
-  number: 0
+  number: 2
   skip: True  # [py3k]
 
 package:
@@ -24,13 +24,17 @@ source:
     - pl_py_paths.patch
 
 requirements:
+  host:
+    - python
+    - perl
   run:
     - perl-statistics-descriptive
+    - perl
     - python
 
 test:
   commands:
-    - SSAKE | grep "SSAKE" > /dev/null
+    - SSAKE 2> /dev/null || [[ "$?" == 255 ]]
     - analyzePositionSSAKE.pl 2> /dev/null || [[ "$?" == 255 ]]
     - getStats.pl 2> /dev/null || [[ "$?" == 255 ]]
     - makeFastaFileFromScaffolds.pl 2> /dev/null || [[ "$?" == 255 ]]

@@ -1,0 +1,39 @@
+{% set version = "0.0.5" %}
+{% set sha256 = "9b6b6cd27ccec85f63371f01b57910f9d561c70e8d9f1b1eddbc62286622838c" %}
+
+package:
+  name: chado-tools
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/sanger-pathogens/chado-tools/archive/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - chado = scripts.chado_tools:main
+  script: $PYTHON -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - psycopg2
+    - pyyaml
+
+test:
+  imports:
+    - scripts
+  commands:
+    - chado --help
+
+about:
+  home: https://github.com/sanger-pathogens/chado-tools
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: Tools to access CHADO databases
