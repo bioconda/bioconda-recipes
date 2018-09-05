@@ -16,6 +16,10 @@ export BAMTOOLS_LIBRARY_DIR="${PREFIX}/lib/"
 
 export CXXFLAGS="-DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
 export LDFLAGS="-L${BOOST_LIBRARY_DIR} -lboost_regex -lboost_filesystem -lboost_system"
+export CPP_INCLUDE_PATH=${PREFIX}/include
+export CXX_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
 
 mkdir build
 cd build
