@@ -12,7 +12,7 @@ get_needed() {
     get_needed_$UNAME "$@"
 }
 exclude_haves() {
-    grep -vE "^/(lib|usr|System)|lib(ARBDB|CORE|c\+\+)"
+    grep -vE "^/(lib|usr|System)|lib(ARBDB|CORE|(std|)c\+\+|glib-2.0|m|c|gcc_s|pthread)\."
 }
 
 mkdir -p $PREFIX/lib/arb/bin
