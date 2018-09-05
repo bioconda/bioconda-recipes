@@ -2,8 +2,6 @@
 {% set version = "6.0.6" %}
 {% set sha256 = "8b1fc3fd11bbb05aca4731ac8803c004a4f2b6b87c11b543660d07ea349a6c21" %}
 
-{% set build = "bash $RECIPE_DIR/builder.sh" %}
-
 package:
   name: {{ name|lower }}-bio
   version: {{ version }}
@@ -32,27 +30,32 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
     - pkg-config
     - time
     - lynx
     - xorg-makedepend
     - sed >=4.4
+    - tar
   host:
     - openmotif-dev
     - glib
     - gettext
     - pthread-stubs
-    - xorg-libxp
-    - xorg-libxmu
     - xorg-libxi
+    - xorg-libxp
     - xorg-libxaw
     - xorg-libxpm
-    - xerces-c
+    - xorg-libxmu
     - libtiff
     - libxslt
-    - perl >=5.23
     - libpng
+    - xerces-c
+    - perl >=5.23
   run:
+    # libs:
+    - openmotif
+    - glib
     - gettext
     - xorg-libxi
     - xorg-libxmu
@@ -60,8 +63,8 @@ requirements:
     - xorg-libxaw
     - xorg-libxpm
     - xorg-libxft
-    - glib
-    - openmotif
+    - libpng
+    # tools:
     - gnuplot
     - muscle
     - mafft
@@ -73,27 +76,37 @@ requirements:
     - sed >=4.4
     - xfig
     - fig2dev
-    # We built a binary perl module. ABI compatability seems to be maintained
+    # We build a binary perl module. ABI compatability seems to be maintained
     # at minor version (5.26.x), so we pin accordingly:
     - {{ pin_compatible("perl", min_pin="x.x", max_pin="x.x") }}
-    - libpng
-
 test:
   requires:
     - conda
   commands:
     - if command -v conda; then conda inspect linkages -p $PREFIX $PKG_NAME; fi
     - if command -v conda; then conda inspect objects -p $PREFIX $PKG_NAME; fi   # [osx]
-    - which arb
-    - which arb_pt_server
+    #- which arb
+    #- which arb_pt_server
 
 outputs:
+  - name: libarbdb
+    script: install_libarbdb.sh
+    requirements:
+      run:
+        - glib
+        - gettext
+  - name: arb-bio-tools
+    script: install_tools.sh
+    requirements:
+      run:
+        - {{ pin_subpackage('libarbdb', exact=True) }}
   - name: arb-bio
-    build:
-      script: {{ build }} config build install-main install-activate
+    script: install_main.sh
+    requirements:
+      run:
+        - {{ pin_subpackage('arb-bio-tools', exact=True) }}
   - name: arb-bio-devel
-    build:
-      script: {{ build }} install-devel
+    script: install_devel.sh
     requirements:
       run:
         - {{ pin_subpackage('arb-bio', exact=True) }}
