@@ -1,0 +1,27 @@
+--- positive_set.pl	2018-02-27 19:30:56.000000000 +0100
++++ positive_set_new.pl	2018-08-29 16:13:57.886017923 +0200
+@@ -106,19 +106,13 @@
+ 
+ 	my $ORF_positive = {};
+ 
+-    my $count = 0;
++  my $count = 0;
+ 	my $blast_rpt = $work_dir."tmp/positive_set.bls";
+-	my $search = `which usearch 2>&1`;
+-    my $ublast_cmd = "";
+-	chomp($search);
+-	if ($search =~ /^which: no/) {
+-		$ublast_cmd = $script_dir."/bin/usearch -ublast $positive_fasta -db $blastdb -id $identity -evalue $evalue -maxhits 1 -blast6out $blast_rpt -threads $threads 2> /dev/null";
+-	} else {
+-		$ublast_cmd = "usearch -ublast $positive_fasta -db $blastdb -id $identity -evalue $evalue -maxhits 1 -blast6out $blast_rpt -threads $threads 2> /dev/null";
+-	}
+ 
+-    system($ublast_cmd) == 0 
+-        or die ("Error running -ublast search. Please ensure USEARCH is properly installed\n");
++  my $blast_cmd = "blastn -query $positive_fasta -db $blastdb -perc_identity $identity -evalue $evalue -max_target_seqs 1 -outfmt 6 -out $blast_rpt -num_threads $threads";
++
++    system($blast_cmd) == 0 
++        or die ("Error running -blastn search. Please ensure blast is properly installed\n");
+     
+ 	# GTF file
+ 	open (G, ">".$positive_set_gtf) or die "Error creating file $positive_set_gtf\n";
