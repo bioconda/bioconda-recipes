@@ -2,7 +2,7 @@
 export CPATH=${PREFIX}/include
 sh INSTALL
 
-binaries = "\
+binaries="\
 simka \
 simkaCount \
 simkaCountProcess \
