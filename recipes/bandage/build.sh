@@ -4,10 +4,13 @@
 export QT_SELECT=5
 
 # Run qmake to generate a Makefile
-qmake
+qmake Bandage.pro
+
+# fix the makefile
+sed -i 's/isystem/I/' Makefile
 
 # Build the program
 make
 
 # Install
-make install
+cp Bandage $PREFIX/bin
