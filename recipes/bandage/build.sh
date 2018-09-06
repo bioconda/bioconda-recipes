@@ -4,7 +4,7 @@
 qmake Bandage.pro
 
 # fix the makefile
-sed -i "s/isystem/I/" Makefile
+sed -ie "s/isystem/I/" Makefile
 
 # Build the program
 make
