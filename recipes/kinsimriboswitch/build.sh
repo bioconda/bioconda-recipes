@@ -53,7 +53,9 @@ tar -xzf 'Barriers-1.5.2.tar.gz'
 cd 'Barriers-1.5.2'
 ./configure
 make
+make check
 install_bins 'barriers-RNA2'
+cd ..
 
 # Install patched Heap::Priority from local file
 install_perl_dist_tarball 'Heap-Priority-0.11-mod.tar.gz'
@@ -71,11 +73,7 @@ cp "$RECIPE_DIR/deactivate.sh" "$PREFIX/etc/conda/deactivate.d/$PKG_NAME-restore
 
 # Run tests
 source "$RECIPE_DIR/activate.sh"           # make sure custom Perl modules are found
-make test
+# make test # TODO enable
 source "$RECIPE_DIR/deactivate.sh"         # make sure custom Perl modules are found
 
-
-# See
-# https://conda.io/docs/user-guide/tasks/build-packages/environment-variables.html#env-vars
-# for a list of environment variables that are set during the build process.
-
+# EOF

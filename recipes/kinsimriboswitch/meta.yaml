@@ -1,8 +1,5 @@
----
-
 {% set version = '0.3' %}
-{% set hash = '4aa791332c408ec54f6c865f4e70561d97d5d91662ce75b57ec9a4180b868d25' %}
-
+{% set hash = '0b2716c65b99dba3f83f3b9c77be79dcafe0dee7376ed5a31c1cdbc72bbc9f8c' %}
 
 package:
   name: kinsimriboswitch
@@ -12,23 +9,19 @@ source:
     url: http://www.bioinf.uni-leipzig.de/~felix/downloads/software/kinSimRiboswitch-{{version}}.tar.gz
     sha256: {{ hash }}
 
-# If this is a new build for the same version, increment the build
-# number. If you do not include this key, it defaults to 0.
 build:
-  number: 2
+  number: 0
   skip: true # [win]
 
 requirements:
   build:
     - {{ compiler('c') }}
     - make
-
+    - check
   host:
-    - perl #>=5.12.0,<5.25.0
+    - perl
     - perl-sys-info
-      #- perl-sys-info-device-cpu
     - perl-parallel-loops
-      #- perl-heap-priority
     - perl-file-slurp
     - perl-math-random-mt-auto
     - perl-math-round
@@ -39,21 +32,20 @@ requirements:
     - perl-list-moreutils
     - perl-clone
     - perl-parse-recdescent
+    - perl-heap
     - r
     - r-argparser
     - r-rcolorbrewer
-    - viennarna #>=2.2.0
+    - viennarna
     - treekin
+    - coreutils # need an up-to-date GNU sort
+    - gmp       # fixes strange segfault of coreutils' expr (missing libgmp)
     - tar
-    - perl-extutils-makemaker # for local Heap::Priority installation
-    - perl-app-cpanminus # for local Heap::Priority installation
-      #- gengetopt
+    - perl-extutils-makemaker
   run:
-    - perl #>=5.12.0,<5.25.0
+    - perl
     - perl-sys-info
-      #- perl-sys-info-device-cpu
     - perl-parallel-loops
-      #- perl-heap-priority
     - perl-file-slurp
     - perl-math-random-mt-auto
     - perl-math-round
@@ -64,21 +56,21 @@ requirements:
     - perl-list-moreutils
     - perl-clone
     - perl-parse-recdescent
+    - perl-heap
     - r
     - r-argparser
     - r-rcolorbrewer
-    - viennarna #>=2.2.0
+    - viennarna
     - treekin
+    - coreutils
+#   - gmp       # Fix strange crash of conda build
 
 test:
-    commands:
-        - kinSimRiboswitch -h
-    # Perl 'use' tests
-    imports:
-        - RNAHelper
+  commands:
+    - kinSimRiboswitch -h 1>/dev/null
+# imports:
+#   - RNAhelper         # perl module, TODO
 
-  # You can also put a file called run_test.pl (or run_test.py) in the recipe
-  # that will be run at test time.
 
 about:
   home:         http://www.bioinf.uni-leipzig.de/~felix/
@@ -86,7 +78,3 @@ about:
   license_file: COPYING
   summary:      Pipeline for the simulation RNA--ligand interaction kinetics.
 
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
-...
