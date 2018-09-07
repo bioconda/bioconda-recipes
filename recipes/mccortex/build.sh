@@ -3,7 +3,6 @@ set -x
 
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
-# export LIBRARY_PATH="-L$PREFIX/lib" # maybe necessary for Mac OS X
 export CPATH=${PREFIX}/include
 
 for make_file in libs/string_buffer/Makefile $(find libs/seq_file -name Makefile) $(find libs/seq-align -name Makefile) Makefile; do
