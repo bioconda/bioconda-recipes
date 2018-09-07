@@ -13,6 +13,9 @@ done
 # 
 make MAXK=31
 make MAXK=63
+
+sed -i '1 s|^.*$|#!/usr/bin/env bash|g' bin/mccortex
+
 mkdir -p $PREFIX/bin
 install -p bin/* $PREFIX/bin
 
