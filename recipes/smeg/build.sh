@@ -15,4 +15,4 @@ cp uniqueSNPmultithreading $outdir
 cp smeg $outdir
 chmod +x $outdir/smeg
 
-cp $outdir/smeg $PREFIX/bin/.
+ln -s $outdir/smeg $PREFIX/bin/smeg
