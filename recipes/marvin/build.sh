@@ -1,7 +1,6 @@
 #! /bin/bash
 
-export CFLAGS="-I$PREFIX/include"
-export LFLAGS="-L$PREFIX/lib"
+export CPATH=${PREFIX}/include
 make
 
 cp marvin $PREFIX/bin/
