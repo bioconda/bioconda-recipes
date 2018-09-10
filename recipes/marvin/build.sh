@@ -1,6 +1,4 @@
 #! /bin/bash
-
-export CPATH=${PREFIX}/include
 make
 
 cp marvin $PREFIX/bin/
