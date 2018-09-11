@@ -9,7 +9,7 @@ mkdir -p ${RM_DIR}
 cp -r * ${RM_DIR}
 for name in ${RM_PROGRAMS} ; do
   # sed -i 's$^#!.*perl.*$#!/usr/bin/env perl$g;' ${RM_DIR}/${name}
-  LANG=C sed -i'' -e 's/^#!.*perl.*$/#!\/usr\/bin\/env perl/g' ${RM_DIR}/${name}
+  LC_ALL=C sed -i'' -e 's/^#!.*perl.*$/#!\/usr\/bin\/env perl/g' ${RM_DIR}/${name}
 done
 
 cp ${RECIPE_DIR}/RepeatMaskerConfig.pm ${RM_DIR}/RepeatMaskerConfig.pm
