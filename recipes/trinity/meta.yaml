@@ -1,6 +1,6 @@
 {% set name = "trinity" %}
-{% set version = "2.8.2" %}
-{% set hash = "1cdb8a1fe37e20486964e6df1e14063c58855dbdb57b747bdecd4e182558df23" %}
+{% set version = "2.8.3" %}
+{% set hash = "745abda5eafdd98e4625aae6c190975b499695a4ebda537d305fcd0129859823" %}
 
 
 package:
@@ -12,6 +12,7 @@ source:
   sha256: {{ hash }}
   patches:
     - trinseqtk.make.patch
+    - trinity-plugins.makefile.clean.patch
 
 build:
   number: 0
@@ -26,6 +27,8 @@ requirements:
     - zlib
 
   run:
+    - trimmomatic >=0.36
+    - bowtie
     - bowtie2 >=2.3.0
     - jellyfish >=2.2.6
     - openjdk >=8
@@ -36,6 +39,7 @@ requirements:
     - salmon >=0.9.1
 
   host:
+    - bowtie
     - bowtie2 >=2.3.0
     - jellyfish >=2.2.6
     - openjdk >=8
@@ -50,6 +54,14 @@ requirements:
 test:
   commands:
     - "Trinity --cite"
+    - "align_and_estimate_abundance.pl --help || [[ \"$?\" == 255 ]]"
+    - "abundance_estimates_to_matrix.pl --help || [[ \"$?\" == 255 ]]"
+    - "run_DE_analysis.pl -h || [[ \"$?\" == 255 ]]"
+    - "analyze_diff_expr.pl -h || [[ \"$?\" == 255 ]]"
+    - "PtR --help || [[ \"$?\" == 255 ]]"
+    - "TrinityStats.pl 2>&1 | grep \"usage:\""
+    - "define_clusters_by_cutting_tree.pl 2>&1 | grep \"define K clusters via k-means algorithm\""
+    - "Trinity_gene_splice_modeler.py --help"
 
 about:
   home: https://github.com/trinityrnaseq/trinityrnaseq/
