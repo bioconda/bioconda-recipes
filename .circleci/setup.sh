@@ -51,8 +51,8 @@ if ! type bioconda-utils > /dev/null || [[ $BOOTSTRAP == "true" ]]; then
 
     # step 2: setup channels
     $WORKSPACE/miniconda/bin/conda config --system --add channels defaults
-    $WORKSPACE/miniconda/bin/conda config --system --add channels conda-forge
     $WORKSPACE/miniconda/bin/conda config --system --add channels bioconda
+    $WORKSPACE/miniconda/bin/conda config --system --add channels conda-forge
 
     # step 3: install bioconda-utils
     $WORKSPACE/miniconda/bin/conda install -y git pip --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements.txt
