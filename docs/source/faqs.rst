@@ -108,7 +108,7 @@ the `broken` label, i.e.,
 
 .. code-block:: bash
 
-    conda install -c bioconda -c conda-forge -c defaults -c bioconda/label/broken my-package=<broken-version>
+    conda install -c conda-forge -c bioconda -c defaults -c bioconda/label/broken my-package=<broken-version>
 
 
 .. _circlecimacos:
