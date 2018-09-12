@@ -30,8 +30,8 @@ if [[ ! -d $WORKSPACE/miniconda ]]; then
     # step 2: setup channels
 
     conda config --system --add channels defaults
-    conda config --system --add channels conda-forge
     conda config --system --add channels bioconda
+    conda config --system --add channels conda-forge
 
     # step 3: install bioconda-utils and test requirements
     conda install -y --file bioconda_utils/bioconda_utils-requirements.txt --file test-requirements.txt

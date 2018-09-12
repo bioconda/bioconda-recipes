@@ -6,7 +6,7 @@ from bioconda_utils import utils
 
 
 config = {
-    'channels': ['bioconda', 'conda-forge', 'defaults']
+    'channels': ['conda-forge', 'bioconda', 'defaults']
 }
 
 
@@ -58,7 +58,7 @@ def test_bioc_write_recipe_no_skipping(tmpdir):
 
 def test_meta_contents(tmpdir):
     config = {
-        'channels': ['bioconda', 'conda-forge', 'defaults']
+        'channels': ['conda-forge', 'bioconda', 'defaults']
     }
     bioconductor_skeleton.write_recipe(
         'edgeR', recipe_dir=str(tmpdir), config=config, recursive=False)
