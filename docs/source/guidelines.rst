@@ -112,7 +112,7 @@ consider opening a pull request with `conda-forge
 <https://conda-forge.github.io/#add_recipe>`_ which hosts general packages.
 
 The exception to this is with R packages. We are still coordinating with
-anaconda and conda-forge about the best place to keep general R packages. In
+Anaconda and conda-forge about the best place to keep general R packages. In
 the meantime, R packages that are not specific to bioinformatics and that
 aren't already in the `conda-forge` channel can be added to bioconda.
 
