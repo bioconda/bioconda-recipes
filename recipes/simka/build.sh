@@ -1,6 +1,11 @@
 #!/bin/bash
 export CPATH=${PREFIX}/include
-sh INSTALL
+export LIBRARY_PATH=${PREFIX}/lib
+rm -rf build
+mkdir build
+cd build
+cmake ..
+make -j8
 
 binaries="\
 simka \
