@@ -13,7 +13,7 @@ bioconda recipe checklist
 - Adequate tests included (:ref:`details <tests>`)
 - Files created by the recipe follow the FSH (:ref:`details <fsh-section>`)
 - License allows redistribution and license is indicated in ``meta.yaml``
-- Package does not already exist in the `defaults`, `r`, or `conda-forge`
+- Package does not already exist in the `defaults` or `conda-forge`
   channels with some exceptions (:ref:`details <channel-exceptions>`)
 - Package is appropriate for bioconda (:ref:`details <appropriate-for-bioconda>`)
 - If the recipe installs custom wrapper scripts, usage notes should be added to
