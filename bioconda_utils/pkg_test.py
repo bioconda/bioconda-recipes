@@ -83,7 +83,7 @@ def get_image_name(path):
 def test_package(
     path,
     name_override=None,
-    channels=["conda-forge", "defaults"],
+    channels=("conda-forge", "bioconda", "local", "defaults"),
     mulled_args="",
     base_image=None,
     conda_image=MULLED_CONDA_IMAGE,
@@ -99,9 +99,9 @@ def test_package(
     name_override : str
         Passed as the --name-override argument to mulled-build
 
-    channels : None | str | list
-        The local channel of the provided package will be added automatically;
-        `channels` are channels to use in addition to the local channel.
+    channels : list
+        List of Conda channels to use. Must include an entry "local" for the
+        local build channel.
 
     mulled_args : str
         Mechanism for passing arguments to the mulled-build command. They will
@@ -127,13 +127,17 @@ def test_package(
 
     spec = get_image_name(path)
 
-    extra_channels = ['file://{0}'.format(conda_bld_dir)]
-    if channels is None:
-        channels = []
-    if isinstance(channels, str):
-        channels = [channels]
-    extra_channels.extend(channels)
-    channel_args = ['--extra-channels', ','.join(extra_channels)]
+    if "local" not in channels:
+        raise ValueError('"local" must be in channel list')
+
+    channel, extra_channels = [
+        'file://{0}'.format(conda_bld_dir) if channel == 'local' else 'channel'
+        for channel in channels
+    ]
+    # '--channel' currently defaults to 'bioconda' in mulled-build and is
+    # prepended to all remaining channels. To prevent this, i.e., to give
+    # 'conda-forge' a higher priority, we use '--channel' explicitly here.
+    channel_args = ['--channel', channel, '--extra-channels', ','.join(extra_channels)]
 
     tests = get_tests(path)
     logger.debug('Tests to run: %s', tests)
