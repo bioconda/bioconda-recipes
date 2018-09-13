@@ -27,7 +27,7 @@ add additional channels from which to install software packages not available
 in the defaults channel. Bioconda is one such channel specializing in
 bioinformatics software.
 
-When using Bioconda please **cite our article** `Grüning, Björn, Ryan Dale, Andreas Sjödin, Brad A. Chapman, Jillian Rowe, Christopher H. Tomkins-Tinch, Renan Valieris, the Bioconda Team, and Johannes Köster. 2018. "Bioconda: Sustainable and Comprehensive Software Distribution for the Life Sciences". Nature Methods, July. <https://doi.org/10.1038/s41592-018-0046-7>.`_.
+When using Bioconda please **cite our article** `Grüning, Björn, Ryan Dale, Andreas Sjödin, Brad A. Chapman, Jillian Rowe, Christopher H. Tomkins-Tinch, Renan Valieris, the Bioconda Team, and Johannes Köster. 2018. "Bioconda: Sustainable and Comprehensive Software Distribution for the Life Sciences". Nature Methods, 2018 <https://doi.org/10.1038/s41592-018-0046-7>`_.
 
 Bioconda has been acknowledged by NATURE in their
 `technology blog <http://blogs.nature.com/naturejobs/2017/11/03/techblog-bioconda-promises-to-ease-bioinformatics-software-installation-woes/>`_.
