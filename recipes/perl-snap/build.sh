@@ -5,7 +5,6 @@ sed -i.bak 's@#! /usr/local/bin/perl@#!/opt/anaconda1anaconda2anaconda3/bin/perl
 chmod +x *.pl
 
 cp *.pl ${PREFIX}/bin
-cp Codon.pm ${PREFIX}/bin
 
 # copy perl libraries
 perl_version=$(perl -e 'print $^V');
