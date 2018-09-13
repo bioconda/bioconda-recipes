@@ -1,7 +1,6 @@
 #! /bin/bash
 
 cd gdc_2/Gdc2/
-
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
         mv makefile.linux Makefile
 elif [[ "$OSTYPE" == "darwin"* ]]; then
