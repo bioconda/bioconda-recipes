@@ -130,7 +130,7 @@ def test_package(
     if "local" not in channels:
         raise ValueError('"local" must be in channel list')
 
-    channel, extra_channels = [
+    channel, *extra_channels = [
         'file://{0}'.format(conda_bld_dir) if channel == 'local' else 'channel'
         for channel in channels
     ]
