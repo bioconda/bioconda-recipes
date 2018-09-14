@@ -40,7 +40,8 @@ if [[ ! -d $WORKSPACE/miniconda ]]; then
     conda clean -y --all
 
     # Add local channel as highest priority
-    conda index $WORKSPACE/miniconda/conda-bld/linux-64 $WORKSPACE/miniconda/conda-bld/osx-64 $WORKSPACE/miniconda/conda-bld/noarch
+    mkdir -p $WORKSPACE/miniconda/conda-bld/{noarch,linux-64,osx-64}
+    conda index $WORKSPACE/miniconda/conda-bld
     conda config --system --add channels file://$WORKSPACE/miniconda/conda-bld
 fi
 
