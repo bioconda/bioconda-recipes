@@ -1,0 +1,57 @@
+{% set version = "1.1.2" %}
+{% set name = "PopPUNK" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/p/{{ name|lower }}/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: e1a0767a4d7d44ecfd6cefb78e38f2918c844abd7a67c894bc1cfac6a3a2de8a
+
+build:
+  number: 0
+  skip: true  # [py2k]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  entry_points:
+    - poppunk = PopPUNK.__main__:main
+    - poppunk_prune = PopPUNK.prune_db:main
+    - poppunk_references = PopPUNK.reference_pick:main
+    - poppunk_tsne = PopPUNK.tsne:main
+
+requirements:
+  host:
+    - python
+    - pip
+
+  run:
+    - python
+    - numpy
+    - mkl
+    - scipy
+    - statsmodels
+    - scikit-learn
+    - dendropy
+    - sharedmem
+    - numba
+    - pandas
+    - networkx >=2.1
+    - matplotlib
+    - hdbscan
+    - mash >=2.0
+
+test:
+  imports:
+    - PopPUNK
+
+  commands:
+    - poppunk --help
+    - poppunk_prune --help
+    - poppunk_references --help
+    - poppunk_tsne --help
+
+about:
+  home: https://github.com/johnlees/PopPUNK
+  license: Apache-2.0
+  license_family: APACHE
+  summary: 'PopPUNK (POPulation Partitioning Using Nucleotide Kmers)'
