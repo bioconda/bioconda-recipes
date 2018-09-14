@@ -59,7 +59,8 @@ if ! type bioconda-utils > /dev/null || [[ $BOOTSTRAP == "true" ]]; then
     $WORKSPACE/miniconda/bin/pip install git+https://github.com/bioconda/bioconda-utils.git@$BIOCONDA_UTILS_TAG
 
     # step 4: configure local channel
-    $WORKSPACE/miniconda/bin/conda index $WORKSPACE/miniconda/conda-bld/linux-64 $WORKSPACE/miniconda/conda-bld/osx-64 $WORKSPACE/miniconda/conda-bld/noarch
+    mkdir -p $WORKSPACE/miniconda/conda-bld/{noarch,linux-64,osx-64}
+    $WORKSPACE/miniconda/bin/conda index $WORKSPACE/miniconda/conda-bld
     $WORKSPACE/miniconda/bin/conda config --system --add channels file://$WORKSPACE/miniconda/conda-bld
 
     # step 5: cleanup
