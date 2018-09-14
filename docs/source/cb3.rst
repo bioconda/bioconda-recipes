@@ -156,7 +156,7 @@ After:
 
 .. warning::
 
-    These compilers are only available in the ``anaconda`` channel. Until now
+    These compilers are only available in the ``defaults`` channel. Until now
     we have not had this channel as a dependency, so be sure to add the channel
     when setting up bioconda (see :ref:`set-up-channels`).
 

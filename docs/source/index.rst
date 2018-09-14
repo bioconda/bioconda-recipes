@@ -80,21 +80,18 @@ package. The Python 3 version is recommended.
 
 After installing conda you will need to add the bioconda channel as well as the
 other channels bioconda depends on. **It is important to add them in this
-order** so that the priority is set correctly (that is, bioconda is highest
+order** so that the priority is set correctly (that is, conda-forge is highest
 priority).
 
 The `conda-forge` channel contains many general-purpose packages not already
-found in the `defaults` channel. The `r` channel is only included due to
-backward compatibility.  It is not mandatory, but without the `r` channel
-packages compiled against R 3.3.1 might not work.
+found in the `defaults` channel.
 
 
 ::
 
     conda config --add channels defaults
-    conda config --add channels conda-forge
     conda config --add channels bioconda
-
+    conda config --add channels conda-forge
 
 3. Install packages
 -------------------

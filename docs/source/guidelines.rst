@@ -13,7 +13,7 @@ bioconda recipe checklist
 - Adequate tests included (:ref:`details <tests>`)
 - Files created by the recipe follow the FSH (:ref:`details <fsh-section>`)
 - License allows redistribution and license is indicated in ``meta.yaml``
-- Package does not already exist in the `defaults`, `r`, or `conda-forge`
+- Package does not already exist in the `defaults` or `conda-forge`
   channels with some exceptions (:ref:`details <channel-exceptions>`)
 - Package is appropriate for bioconda (:ref:`details <appropriate-for-bioconda>`)
 - If the recipe installs custom wrapper scripts, usage notes should be added to
@@ -112,7 +112,7 @@ consider opening a pull request with `conda-forge
 <https://conda-forge.github.io/#add_recipe>`_ which hosts general packages.
 
 The exception to this is with R packages. We are still coordinating with
-anaconda and conda-forge about the best place to keep general R packages. In
+Anaconda and conda-forge about the best place to keep general R packages. In
 the meantime, R packages that are not specific to bioinformatics and that
 aren't already in the `conda-forge` channel can be added to bioconda.
 
