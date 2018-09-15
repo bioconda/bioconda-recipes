@@ -8,11 +8,7 @@ mkdir -p $PREFIX/bin
 
 cd $SRC_DIR
 
-cp *.R $outdir
-cp README.md $outdir
-cp pileupParser $outdir
-cp uniqueSNPmultithreading $outdir
-cp smeg $outdir
+cp -a . /$outdir/
 chmod +x $outdir/smeg
 
 ln -s $outdir/smeg $PREFIX/bin/smeg
