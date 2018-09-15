@@ -130,14 +130,11 @@ def test_package(
     if "local" not in channels:
         raise ValueError('"local" must be in channel list')
 
-    channel, *extra_channels = [
+    channels = [
         'file://{0}'.format(conda_bld_dir) if channel == 'local' else 'channel'
         for channel in channels
     ]
-    # '--channel' currently defaults to 'bioconda' in mulled-build and is
-    # prepended to all remaining channels. To prevent this, i.e., to give
-    # 'conda-forge' a higher priority, we use '--channel' explicitly here.
-    channel_args = ['--channel', channel, '--extra-channels', ','.join(extra_channels)]
+    channel_args = ['--channels', ','.join(channels)]
 
     tests = get_tests(path)
     logger.debug('Tests to run: %s', tests)
