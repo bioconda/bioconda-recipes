@@ -9,10 +9,8 @@ else
         echo "operating system not found or not supported"
 fi
 export CPATH=${PREFIX}/include
-#export LIBRARY_PATH=../libs
+export LIBRARY_PATH=../libs
 export LD_LIBRARY_PATH=${PREFIX}/lib
-#export CFLAGS="-I$PREFIX/include"
-#export LDFLAGS="-L$PREFIX/lib"
 make
 cp gdc2 $PREFIX/bin/
 chmod +x $PREFIX/bin/gdc2
