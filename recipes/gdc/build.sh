@@ -10,6 +10,7 @@ else
 fi
 export CPATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
+export LD_LIBRARY_PATH=${PREFIX}/lib
 make
 cp gdc2 $PREFIX/bin/
 chmod +x $PREFIX/bin/gdc2
