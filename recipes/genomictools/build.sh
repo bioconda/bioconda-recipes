@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export CPATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
 make
 
 cd bin
