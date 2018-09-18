@@ -1,7 +1,7 @@
 #!/bin/bash
 export C_INCLUDE_PATH=$PREFIX/include
 target=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-version=91
+version=93
 mkdir -p $target
 mkdir -p $PREFIX/bin
 
@@ -42,7 +42,7 @@ curl -ks -o MaxEntScan.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/
 curl -ks -o SpliceRegion.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/SpliceRegion.pm
 curl -ks -o GeneSplicer.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/GeneSplicer.pm
 curl -ks -o dbscSNV.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/dbscSNV.pm
-curl -L -ks -o loftee.tar.gz https://github.com/konradjk/loftee/archive/8de80a4.tar.gz
+curl -L -ks -o loftee.tar.gz https://github.com/konradjk/loftee/archive/f6789b9.tar.gz
 tar -xzvpf loftee.tar.gz
 mv loftee-*/*.pl .
 mv loftee-*/*.pm .

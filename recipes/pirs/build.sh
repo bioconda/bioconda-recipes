@@ -10,3 +10,7 @@ make
 
 # Link tools to PREFIX
 find . -type l | while read a; do cp --copy-contents -LR  "$a" ${PREFIX}/bin; done
+
+# Add required profiles in share/
+mkdir -p ${PREFIX}/share/pirs
+cp -R ./src/pirs/Profiles/* ${PREFIX}/share/pirs

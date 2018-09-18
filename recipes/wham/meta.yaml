@@ -1,26 +1,32 @@
+{% set version = "1.8.0.1.2017.05.03" %}
+{% set revision = "4e8c9bee568211596cdc634d15600114e75d2619" %}
+
 package:
   name: wham
-  version: '1.7.0.311'
+  version: '{{version}}'
 
 source:
   # Needs Git for recursive bamtools retrieval:
   git_url: https://github.com/zeeev/wham.git
-  git_rev: 4e8c9bee568211596cdc634d15600114e75d2619
-  md5: unneeded
+  git_rev: {{ revision }}
+  patches:
+    # Fix issues with build on version of bamtools included in wham
+    # https://github.com/pezmaster31/bamtools/pull/150
+    - bamtools-gcc-fix.diff
 
 build:
-  number: 1
-  skip: True # [osx]
+  number: 0
+  skip: true # [osx]
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
     - cmake
-    - gcc
-    - git
-    - zlib {{CONDA_ZLIB}}*
+  host:
+    - zlib
   run:
-    - libgcc
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
 
 test:
   commands:
@@ -28,10 +34,15 @@ test:
     - wham --help 2>&1 | grep WHAM-BAM
 
 about:
-  home: https://github.com/jewmanchue/wham
+  home: https://github.com/zeeev/wham
   license: MIT
+  license_family: MIT
   summary: Structural variant detection and association testing
 
 extra:
+  identifiers:
+    - biotools:Wham6216
   skip-lints:
+    # This needs git for recursive checkouts
     - uses_git_url
+    - missing_hash

@@ -1,4 +1,4 @@
-{% set version="1.7" %}
+{% set version="1.9" %}
 about:
   home: https://github.com/samtools/bcftools
   license: MIT
@@ -16,26 +16,26 @@ package:
   version: {{ version }}
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm # [osx]
-    - bzip2 {{CONDA_BZIP2}}*
+    - {{ compiler('c') }}
+  host:
+    - bzip2
     - curl
-    - xz {{CONDA_XZ}}*
-    - zlib {{CONDA_ZLIB}}*
+    - xz
+    - zlib
+    - libdeflate
   run:
-    - libgcc # [not osx]
-    - bzip2 {{CONDA_BZIP2}}*
+    - bzip2
     - curl
     # Currently removed due to size and dependency issues
     #- matplotlib # for plot-vcfstats
     #- texlive-core # for plot-vcfstats
-    - xz {{CONDA_XZ}}*
-    - zlib {{CONDA_ZLIB}}*
+    - xz
+    - zlib
+    - libdeflate
 
 source:
-  fn: bcftools-{{ version }}.tar.bz2
   url: https://github.com/samtools/bcftools/releases/download/{{ version }}/bcftools-{{ version }}.tar.bz2
-  sha256: dd4f63d91b0dffb0f0ce88ac75c2387251930c8063f7799611265083f8d302d1
+  sha256: 6f36d0e6f16ec4acf88649fb1565d443acf0ba40f25a9afd87f14d14d13070c8
 
 test:
   commands:
@@ -43,3 +43,8 @@ test:
     - bcftools --version
     - bcftools plugin -lv
     #- plot-vcfstats -h 2>&1 | grep -q "Plots output of "
+
+extra:
+  identifiers:
+    - biotools:bcftools
+    - doi:10.1093/bioinformatics/btp352

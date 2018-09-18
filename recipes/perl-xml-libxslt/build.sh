@@ -16,7 +16,7 @@ if [ -f Build.PL ]; then
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
     perl Makefile.PL INSTALLDIRS=site \
-        INC="-I${PREFIX}/include" LIBS="-L${PREFIX}/lib"
+        INC="-I${PREFIX}/include -I$PREFIX/include/libxml2/" LIBS="-L${PREFIX}/lib"
     make
     make test
     make install

@@ -1,27 +1,27 @@
-{% set version = "0.12.0" %}
+{% set version = "0.14.3" %}
+{% set sha256 = "e7adde87955240b5963c808e77d8166fe85b3068d30d7aac08aca835047f6514" %}
 
 package:
   name: bioconda-utils
-  version: {{ version }}
+  version: '{{ version }}'
 
 source:
-  fn: bioconda-utils-{{ version }}.tar.gz
   url: https://github.com/bioconda/bioconda-utils/archive/v{{ version }}.tar.gz
-  sha256: c96a08498e9d895dc34bca2e881758e6a831ec1e9d067e508390c25f73753134
+  sha256: '{{ sha256 }}'
 
 build:
+  noarch: python
   number: 0
-  skip: True  # [not py3k]
-  script: python setup.py install --single-version-externally-managed --record record.txt
+  script: python -m pip install --no-deps --ignore-installed .
   entry_points:
     - bioconda-utils = bioconda_utils.cli:main
 
 requirements:
-  build:
-    - python
-    - setuptools
+  host:
+    - python >=3
+    - pip
   run:
-    - python
+    - python >=3
     - anaconda-client 1.6.*
     - argh 0.26.*
     - beautifulsoup4 4.6.*
@@ -46,12 +46,14 @@ requirements:
     - alabaster 0.7.*
 
 test:
-    imports:
-      - bioconda_utils
-    commands:
-      - bioconda-utils --help
+  imports:
+    - bioconda_utils
+  commands:
+    - bioconda-utils --help
 
 about:
   home: http://bioconda.github.io/build-system.html
   license: MIT
-  summary:  Utilities for building and managing bioconda recipes.
+  license_family: MIT
+  summary: Utilities for building and managing bioconda recipes.
+  dev_url: https://github.com/bioconda/bioconda-utils

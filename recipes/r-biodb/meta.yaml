@@ -1,0 +1,54 @@
+{% set version = "1.1.0" %}
+
+package:
+  name: r-biodb
+  version: '{{ version }}'
+
+source:
+  url: 'https://github.com/pkrog/biodb/archive/v{{ version }}.tar.gz'
+  sha256: 924b28633786c5de1bd0bdae7233b24d21eed5bdaf1b492df8734ca74feaffc2
+
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+
+  host:
+    - r-base
+    - r-codetools
+    - r-devtools
+    - r-rcpp
+    - r-xml
+    - r-stringr
+    - r-plyr
+    - r-bitops
+    - r-rcurl
+    - r-r.utils
+
+  run:
+    - r-base
+    - libgfortran  # [osx]
+    - r-rcpp
+    - r-xml
+    - r-stringr
+    - r-plyr
+    - r-bitops
+    - r-rcurl
+    - r-r.utils
+    - r-jsonlite
+    - r-digest
+
+test:
+  commands:
+    - $R -e "library(biodb)"
+    - $R -e "library(biodb) ; biodb = biodb::Biodb()"
+
+about:
+  license: AGPL-3.0
+  summary: 'An R package for connecting to chemical and biological databases.'
+  home: https://github.com/pkrog/biodb

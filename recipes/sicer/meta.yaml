@@ -1,7 +1,6 @@
 {% set name = "SICER" %}
 {% set version = "1.1" %}
-#{% set sha256 = "1749c1e382629376f1d9db12978b9733fd5d9b9a896a2d127194c42b600c84c9" %}
-{% set sha256 = "c6b895a70d0104388e2df9bb20a4b4f1639e8c1adbd7f517008552975229ba85" %}
+{% set sha256 = "1749c1e382629376f1d9db12978b9733fd5d9b9a896a2d127194c42b600c84c9" %}
 
 package:
   name: {{ name|lower }}
@@ -10,24 +9,34 @@ package:
 source:
   url: http://home.gwu.edu/~wpeng/{{ name }}_V{{ version }}.tgz
   sha256: {{ sha256 }}
+  patches:
+    - genome_additions_v1.patch
 
 build:
-  number: 0
+  skip: True  # [not py27]
+  number: 3
 
 requirements:
+  host:
+    - python
+    - numpy
+    - scipy
   run:
-    - python 2.6.*
-    - numpy 1.9.*
-    - scipy 0.16.*
-
+    - numpy
+    - python
+    - scipy
 test:
   commands:
-    - SICER.sh $SRC_DIR/SICER/ex test.bed control.bed . hg18 1 200 150 0.74 600 .01
-    - SICER-rb.sh $SRC_DIR/SICER/ex test.bed . hg18 1 200 150 0.74 400 100
-
+    - SICER.sh $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/SICER/ex test.bed
+        control.bed . hg38 1 200 150 0.74 600 .01
+    - SICER-rb.sh $PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM/SICER/ex
+        test.bed . hg38 1 200 150 0.74 400 100
 about:
   home: http://home.gwu.edu/~wpeng/Software.htm
+
+  # Though the code implies GPL ("See the GNU General Public License for more
+  # details" appears at the top of *.py files), based on conversation with the
+  # authors they say MIT
   license: MIT
   license_family: MIT
   summary: 'A clustering approach for identification of enriched domains from histone modification ChIP-Seq data'
-

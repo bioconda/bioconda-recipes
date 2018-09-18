@@ -1,36 +1,35 @@
-{% set name = "ale" %}
-{% set version = "20160127" %}
-{% set md5 = "a99489df89482e24c1f8bc1ef8ee7095" %}
+{% set version = "20180904" %}
+{% set sha256 = "123457834c173f10710a0b4c2fcefd8c6fa62af11f6ad311f199c242c49e8f68" %}
+
+package:
+  name: ale
+  version: '{{ version }}'
 
 source:
-  fn: 5fb3b66c495844707c0f6f870b350ce324d2fced.tar.gz
-  md5: {{ md5 }}
-  url: https://github.com/sc932/ALE/archive/5fb3b66c495844707c0f6f870b350ce324d2fced.tar.gz
+  url: https://github.com/sc932/ALE/archive/{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
   number: 0
-  skip: True # [not py27]
-
-package:
-  name: {{ name }}
-  version: {{ version }}
+  skip: true  # [py3k]
 
 requirements:
   build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
+    - '{{ compiler("c") }}'
+  host:
     - python
     - samtools
     - setuptools
     - pymix
     - mpmath
+    - zlib
   run:
-    - libgcc    # [not osx]
     - python
     - mpmath
     - samtools
     - matplotlib
     - pymix
+    - zlib
 
 test:
   commands:
@@ -38,6 +37,6 @@ test:
     - synthReadGen --help
 
 about:
-    home: 'https://github.com/sc932/ALE'
-    license: NCSA
-    summary: "ALE: Assembly Likelihood Estimator"
+  home: https://github.com/sc932/ALE
+  license: NCSA
+  summary: 'ALE: Assembly Likelihood Estimator'

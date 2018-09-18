@@ -1,6 +1,16 @@
 #!/bin/bash
 
+export C_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export LD_LIBRARY_PATH=${PREFIX}/lib
+export LIBRARY_PATH=${PREFIX}/lib
+
+
 make clean
+export C_INCLUDE_PATH=${PREFIX}/include
+export CPP_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
 
 if [ `uname` == Darwin ]; then
     if mpic++ --show | grep -q "clang++"; then

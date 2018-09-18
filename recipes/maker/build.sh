@@ -12,6 +12,7 @@ cd ..
 # Maker needs to check RepeatMasker's libraries content which are not in the expected location
 sed -i.bak 's|Libraries/RepeatMaskerLib.embl|../share/RepeatMasker/Libraries/RepeatMaskerLib.embl|g' lib/GI.pm
 
+chmod 755 bin/*
 mv bin/* $PREFIX/bin
 mkdir -p $PREFIX/perl/lib/
 mv perl/lib/* $PREFIX/perl/lib/
