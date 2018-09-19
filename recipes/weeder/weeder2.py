@@ -23,5 +23,4 @@ if not args.fname:
 fname = os.path.abspath(args.fname)
 rest = " ".join(unknownargs)
 cmd = "./{} -f {} {}".format(weeder_exe, fname, rest)
-p = sp.Popen(cmd, shell=True, cwd=weeder_dir)
-p.communicate()
+sys.exit(sp.call(cmd, shell=True, cwd=weeder_dir))
