@@ -1,0 +1,66 @@
+{% set name = "pb-falcon" %}
+{% set version = "0.2.3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+about:
+  home: 'https://github.com/PacificBiosciences/pypeFLOW'
+  license: "BSD 3-Clause Clear License"
+  summary: "FALCON/Unzip tool-suite (originally by Jason Chin)"
+  authors:
+  - cschin
+  - pb-cdunn
+  - isovic
+
+source:
+  - url: https://github.com/PacificBiosciences/pb-falcon-phase/archive/0.2.0.tar.gz
+    sha256: 7992290cd4dfb317183eaea1f998d28d05ad3663ad056b36aebf467ef7363f1a
+    folder: pb-falcon-phase
+  - url: https://github.com/PacificBiosciences/pypeFLOW/archive/2.1.0.tar.gz
+    sha256: 441729ca6dce00c40bd8bbea8a4d1fc8153e485dadcf806518219315b5d6d12a
+    folder: pypeflow
+  - url: https://github.com/PacificBiosciences/pypeFLOW/releases/download/2.1.0/falcon_kit-1.2.3+git.62b598252681725577f4e4828534c3e5dc7614da.tar.gz
+    sha256: 614fe28f48756361aa3df221936732e3e28647f5055a8ce93586105491ee1f73
+    folder: falcon_kit
+  - url: https://github.com/PacificBiosciences/pypeFLOW/releases/download/2.1.0/falcon_unzip-1.1.3+git.6b3a2c5794eb735a7cd256574e9c8b82567bc0c0.tar.gz
+    sha256: 13be28a69f18da017faad95fea405fae4fae90a911e04891ae5f2c66a0df1bfb
+    folder: falcon_unzip
+  - url: https://github.com/PacificBiosciences/pypeFLOW/releases/download/2.1.0/falcon_phase-1.0.0+git.d09724058340ebba6d8bfb3c78fd2c8b8dc4b7c2.tar.gz
+    sha256: a99238885980f9e54f85efbdb8c36c4121380cc87427a4ffc94ff23d11e84dab
+    folder: falcon_phase
+
+build:
+  number: 0
+  skip: True # [not py27 or osx]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - meson
+    - ninja
+    - pkg-config
+  host:
+    - zlib
+    - htslib==1.7
+    - python
+    - setuptools
+  run:
+    - htslib==1.7
+    - python
+    - networkx >=1.9.1
+    - future >=0.16.0 # [not py3k]
+    - python-edlib
+    - python-intervaltree
+    - python-msgpack
+    - numpy
+
+test:
+  imports:
+    - pypeflow
+    - pwatcher
+    - pwatcher.mains
+    - falcon_kit
+    - falcon_unzip
+    - falcon_phase
