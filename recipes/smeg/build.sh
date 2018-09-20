@@ -11,10 +11,3 @@ chmod +x $outdir/uniqueSNPmultithreading
 chmod +x $outdir/pileupParser
 
 ln -s $outdir/smeg $PREFIX/bin/smeg
-
-cd $outdir
-wget https://github.com/PathoScope/PathoScope/archive/v2.0.6.tar.gz
-tar xvf v2.0.6.tar.gz
-cd PathoScope-2.0.6/
-python2.7 setup.py install
-
