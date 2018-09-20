@@ -1,0 +1,80 @@
+--- Makefile	2018-06-04 15:44:49.000000000 +0200
++++ Makefile	2018-08-24 17:04:15.286341639 +0200
+@@ -1,7 +1,7 @@
+ SHELL = /bin/bash
+ UNAME_S := $(shell uname -s)
+ 
+-AUTOMATIC_LIBBOOST_LOCAL_INSTALL=yes
++AUTOMATIC_LIBBOOST_LOCAL_INSTALL=no
+ ## adapt those values to your system
+ #HDF5_INCLUDE=/usr/include/hdf5/serial/
+ #HDF5_LD=/usr/lib/x86_64-linux-gnu/hdf5/serial/
+@@ -47,24 +47,12 @@
+ PROG_TRIM_SPLIT = lordec-trim-split
+ PROG_PB_STAT = pb-stat
+ PROG_GRAPH = lordec-build-SR-graph
+-HPC_SCRIPT=tools/lordec_sge_slurm_wrapper.sh
++HPC_SCRIPT=lordec_sge_slurm_wrapper.sh
+ # all binaries
+ PROGS = lordec-correct lordec-stat lordec-trim lordec-trim-split pb-stat lordec-build-SR-graph LoRDEC unittest-lordec-correct catchtest-lordec-correct
+-# ER 28.02.16 test for an option to control temporary disk location 
++# ER 28.02.16 test for an option to control temporary disk location
+ TEST_GRAPH = test-create-tmp-opt
+ 
+-##################### Dependencies to BOOST and GATB ############
+-# on MacOS, we need to get boost include files
+-ifeq ($(UNAME_S),Darwin)
+-$(PROG_GRAPH) $(OBJS_TEST_CORRECT) $(OBJS_CATCHTEST_CORRECT) $(OBJS_CORRECT) $(OBJS_STATS) $(OBJS_TRIM) $(OBJS_TRIM_SPLIT): boost_include/boost/graph/graph_traits.hpp
+-endif
+-
+-ifeq ($(AUTOMATIC_LIBBOOST_LOCAL_INSTALL),yes)
+-$(PROG_GRAPH) $(OBJS_TEST_CORRECT) $(OBJS_CATCHTEST_CORRECT) $(OBJS_CORRECT) $(OBJS_STATS) $(OBJS_TRIM) $(OBJS_TRIM_SPLIT): boost_include/boost/graph/graph_traits.hpp
+-endif
+-# ANYWAY we need GATB (compiled and installed) to compile all the objects
+-$(PROG_GRAPH) $(OBJS_TEST_CORRECT) $(OBJS_CATCHTEST_CORRECT) $(OBJS_CORRECT) $(OBJS_STATS) $(OBJS_TRIM) $(OBJS_TRIM_SPLIT): gatb_v$(GATBVERSION)$(SUFFIX)/include/gatb/gatb_core.hpp
+-
+ # get version from a file
+ VERSION := $(shell cat version.txt)
+ LICENSE=./LICENSE/Licence_CeCILL_V2.1-en.txt
+@@ -89,7 +77,12 @@
+ endif
+ GATB=gatb_v$(GATBVERSION)$(SUFFIX)
+ CPPFLAGS = -w -I$(GATB)/include/ $(ADDITIONAL_INCLUDE) -DGATB_V$(GATBSHORTVERSION) -DLORDECVERSION=$(VERSION)$(SUFFIX) -DGATBVERSION=$(GATBVERSION)$(SUFFIX) $(MACMACROS) -std=c++0x -O3 $(CDEBUG)
+-LDFLAGS = -L$(GATB)/lib/ -lgatbcore -lhdf5$(HDFSUFFIX) -ldl -lz -lpthread -std=c++0x -O3 $(EXTRALDFLAGS)
++ifeq ($(UNAME_S),Darwin)
++LDFLAGS = -L$(GATB)/lib/ -lgatbcore -lhdf5$(HDFSUFFIX) -ldl -lz -lpthread -std=c++0x -O3 $(EXTRALDFLAGS)
++else
++# on NON-MacOS, we need to add RT library
++LDFLAGS = -L$(GATB)/lib/ -lgatbcore -lhdf5$(HDFSUFFIX) -lrt -ldl -lz -lpthread -std=c++0x -O3 $(EXTRALDFLAGS)
++endif
+ CXXFLAGS = -w #-Wall  # put compiler settings here
+ ####################################################
+ 
+@@ -188,27 +181,6 @@
+ 	GATBVERSION=$(shell echo $(*) | sed 's:\(.\):.\1:g' | sed 's:^\.::g');\
+ 	EXTRALDFLAGS=-lgcov CDEBUG="-fprofile-arcs -ftest-coverage -g" GATBSHORTVERSION=$$GATBSHORTVERSION GATBVERSION=$$GATBVERSION $(MAKE) $(PROG_CATCHTEST_CORRECT)
+ 
+-##################### COMPILE GATB ############################
+-%/include/gatb/gatb_core.hpp:
+-		echo $@;\
+-		rm -rf v$(GATBVERSION).tar.gz gatb-core-$(GATBVERSION) && \
+-		wget https://github.com/GATB/gatb-core/archive/v$(GATBVERSION).tar.gz && \
+-		tar xf v$(GATBVERSION).tar.gz && \
+-		cd gatb-core-$(GATBVERSION)/gatb-core/ && \
+-		mkdir build && cd build && \
+-		cmake -DCMAKE_INSTALL_PREFIX=../../../gatb_v$(GATBVERSION)$(SUFFIX) $(CMAKEDEBUG) .. && \
+-		$(MAKE) && $(MAKE) install && \
+-		cd ../../.. && rm -r v$(GATBVERSION).tar.gz gatb-core-$(GATBVERSION)
+-
+-##################### compulsory on MACOS, optional on Linux : install boost includes manually #########################
+-boost_include/boost/graph/graph_traits.hpp:
+-		rm -rf boost_include boost_1_64_0 boost_1_64_0.tar.gz && \
+-		wget --no-check-certificate https://kent.dl.sourceforge.net/project/boost/boost/1.64.0/boost_1_64_0.tar.gz && \
+-		tar xf boost_1_64_0.tar.gz && \
+-		mkdir boost_include && \
+-		mv boost_1_64_0/boost boost_include/ && \
+-		rm -rf boost_1_64_0 boost_1_64_0.tar.gz
+-
+ bin:
+ 	mkdir bin
+ 
