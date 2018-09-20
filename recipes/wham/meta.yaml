@@ -1,5 +1,5 @@
-{% set version = "1.8.0" %}
-{% set sha256 = "6864ae6c76faed8b0a9df5e61a5f37c1f43379adbd0559b8406b95a307fd5704" %}
+{% set version = "1.8.0.1.2017.05.03" %}
+{% set revision = "4e8c9bee568211596cdc634d15600114e75d2619" %}
 
 package:
   name: wham
@@ -7,8 +7,12 @@ package:
 
 source:
   # Needs Git for recursive bamtools retrieval:
-  url: https://github.com/zeeev/wham/archive/{{version}}.tar.gz
-  sha256: '{{sha256}}'
+  git_url: https://github.com/zeeev/wham.git
+  git_rev: {{ revision }}
+  patches:
+    # Fix issues with build on version of bamtools included in wham
+    # https://github.com/pezmaster31/bamtools/pull/150
+    - bamtools-gcc-fix.diff
 
 build:
   number: 0
@@ -16,13 +20,12 @@ build:
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
     - {{ compiler('c') }}
     - cmake
   host:
-    - bamtools
     - zlib
   run:
-    - bamtools
     - zlib
 
 test:
@@ -39,3 +42,7 @@ about:
 extra:
   identifiers:
     - biotools:Wham6216
+  skip-lints:
+    # This needs git for recursive checkouts
+    - uses_git_url
+    - missing_hash
