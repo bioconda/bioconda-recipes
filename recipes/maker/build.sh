@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # We will need this script to precompile inline C code for MPI support
 cp maker_mpi_init $PREFIX/bin/
 rm maker_mpi_init
