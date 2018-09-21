@@ -23,7 +23,9 @@ mv perl/lib/* $PREFIX/perl/lib/
 mv lib/* $PREFIX/lib/
 
 # Run a first time MPI_Init() to pre compile inline C code
-mpirun --allow-run-as-root -n 1 $PREFIX/bin/maker_mpi_init
+which perl
+mpirun --allow-run-as-root -n 1 $PREFIX/bin/maker_mpi_init || true
+ls -l $PREFIX/perl/lib/auto/Parallel/Application/MPI/
 false
 # This is not needed anymore
 rm $PREFIX/bin/maker_mpi_init
