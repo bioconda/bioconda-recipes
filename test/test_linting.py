@@ -1019,35 +1019,35 @@ def test_should_not_use_fn():
     )
 
 
-def test_bioconductor_37():
-    run_lint(
-        func=lint_functions.bioconductor_37,
-        should_pass=[
-            '''
-            a:
-                meta.yaml: |
-                  {% set bioc = "3.6" %}
-                  package:
-                    name: a
-                    version: 0.1
-            ''',
-        ],
-        should_fail=[
-            '''
-            a:
-                meta.yaml: |
-                  {% set bioc = "3.7" %}
-                  package:
-                    name: a
-                    version: 0.1
-            ''',
-            '''
-            a:
-                meta.yaml: |
-                  {% set bioc = "release" %}
-                  package:
-                    name: a
-                    version: 0.1
-            ''',
-        ]
-    )
+#def test_bioconductor_37():
+#    run_lint(
+#        func=lint_functions.bioconductor_37,
+#        should_pass=[
+#            '''
+#            a:
+#                meta.yaml: |
+#                  {% set bioc = "3.6" %}
+#                  package:
+#                    name: a
+#                    version: 0.1
+#            ''',
+#        ],
+#        should_fail=[
+#            '''
+#            a:
+#                meta.yaml: |
+#                  {% set bioc = "3.7" %}
+#                  package:
+#                    name: a
+#                    version: 0.1
+#            ''',
+#            '''
+#            a:
+#                meta.yaml: |
+#                  {% set bioc = "release" %}
+#                  package:
+#                    name: a
+#                    version: 0.1
+#            ''',
+#        ]
+#    )
