@@ -311,15 +311,17 @@ Rational: The compiler tools must not be in ``host:`` or ``run:`` sections.
 
 How to resolve: Move ``{{ compiler() }}`` variables to the ``build:`` section.
 
-`bioconductor_37`
-~~~~~~~~~~~~~~~~~
-Reason for failing: The recipe specifies Bioconductor 3.7 or "release".
 
-Rationale: We cannot update Bioconductor packages yet -- see `#8947
-<https://github.com/bioconda/bioconda-recipes/issues/8947>`_ for details.
+..
+    `bioconductor_37`
+    ~~~~~~~~~~~~~~~~~
+    Reason for failing: The recipe specifies Bioconductor 3.7 or "release".
 
-How to resolve: Please use Bioconductor 3.6 only; otherwise we need to wait
-until R 3.5.1 is released.
+    Rationale: We cannot update Bioconductor packages yet -- see `#8947
+    <https://github.com/bioconda/bioconda-recipes/issues/8947>`_ for details.
+
+    How to resolve: Please use Bioconductor 3.6 only; otherwise we need to wait
+    until R 3.5.1 is released.
 
 Developer docs
 --------------
