@@ -14,6 +14,10 @@ build:
   number: 0
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+
   host:
     - perl
     - perl-file-sharedir-install >=0.06
@@ -26,6 +30,9 @@ requirements:
     - perl-autodie
     - perl-extutils-makemaker
     - perl-test-warn
+    # GCC is required for tests (see below)
+    - gcc_linux-64 # [linux]
+    - clang_osx-64 # [osx]
 
   run:
     - perl
@@ -33,13 +40,20 @@ requirements:
     - perl-extutils-makemaker
     - perl-pegex
     - perl-parse-recdescent
+    - make
+    # GCC is required at runtime as this is a perl module that allows compiling and executing inline C code
+    - gcc_linux-64 # [linux]
+    - clang_osx-64 # [osx]
 
 test:
-  imports:
-    - Inline::C
+  commands:
+    - export PERL_INLINE_DIRECTORY=/tmp/ && perl -e 'use Inline C=>q{void greet(){printf("Hello, world\n");}};greet'
 
 about:
   home: https://github.com/ingydotnet/inline-c-pm
   license: perl_5
   summary: 'C Language Support for Inline'
 
+extra:
+  skip-lints:
+    - compilers_must_be_in_build
