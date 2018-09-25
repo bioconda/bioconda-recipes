@@ -9,8 +9,9 @@ cp -R $SRC_DIR/ctat_mutations $ctat_mutations_INSTALL_PATH
 #change permissions on ctat_mutations
 chmod a+x $ctat_mutations_INSTALL_PATH/ctat_mutations
 cd $PREFIX/bin
+ls
 echo '#!/bin/bash' > ctat_mutations
-ln -s $PREFIX/bin/picard $PREFIX/bin/picard.jar
+ln -s picard picard.jar
 echo "export PICARD_HOME=$PREFIX/bin" >> ctat_mutations 
 echo "export GATK_HOME=$PREFIX/bin" >> ctat_mutations
 echo "$ctat_mutations_INSTALL_PATH/ctat_mutations \$@" >> ctat_mutations
