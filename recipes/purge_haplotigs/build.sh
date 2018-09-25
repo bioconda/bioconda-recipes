@@ -1,8 +1,12 @@
 #!/bin/bash
+set -eo pipefail
 
-mkdir -p  "$PREFIX/bin"
+mkdir -p  "${PREFIX}/bin" "${PREFIX}/scripts" "${PREFIX}/lib" "${PREFIX}/test"
 
-cp -r bin/ $PREFIX
-cp -r scripts/ $PREFIX
-cp -r lib/ $PREFIX
-cp -r test/ $PREFIX
+mv bin/* "${PREFIX}/bin"
+mv scripts/* "${PREFIX}/scripts"
+mv lib/* "${PREFIX}/lib"
+mv test/* "${PREFIX}/test"
+
+purge_haplotigs help
+
