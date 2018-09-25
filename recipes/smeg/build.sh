@@ -7,5 +7,7 @@ cd $SRC_DIR
 
 cp -a . /$outdir/
 chmod +x $outdir/smeg
+chmod +x $outdir/uniqueSNPmultithreading
+chmod +x $outdir/pileupParser
 
 ln -s $outdir/smeg $PREFIX/bin/smeg
