@@ -15,6 +15,7 @@ ACTUAL_GATK=$(python -c "\
 import glob
 print glob.glob(\"$share_path/gatk4-*\")
 ")
+echo $ACTUAL_GATK
 GATK_HOME=$(python -c "\
 print \"/\".join(\"$ACTUAL_GATK\".split(\"/\")[0:-1])
 ")
@@ -22,6 +23,7 @@ ACTUAL_PICARD=$(python -c "\
 import glob
 print glob.glob(\"$share_path/picard-*\")
 ")
+echo $ACTUAL_PICARD
 PICARD_HOME=$(python -c "\
 print \"/\".join(\"$ACTUAL_PICARD\".split(\"/\")[0:-1])
 ")
