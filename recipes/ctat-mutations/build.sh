@@ -19,7 +19,7 @@ echo "%%%%%%%%"
 echo $GATK_HOME
 PICARD_HOME=$(python -c "\
 import os
-print os.path.realpath(\"/\".join(os.readlink(\"picard\").split(\"/\")[0:-1])))
+print os.path.realpath(\"/\".join(os.readlink(\"picard\").split(\"/\")[0:-1]))
 ")
 echo "%%%%%%%%"
 echo $PICARD_HOME
