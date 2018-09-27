@@ -1,5 +1,6 @@
 {% set name = "sts" %}
 {% set version = "0.1" %}
+{% set sha256 = "4a1204bab6d12de99a8f69aebf7c219bdf8335d18b08b1f50672885e9042634c" %}
 
 package:
   name: {{ name|lower }}
@@ -11,19 +12,20 @@ build:
 
 source:
   fn: {{ name|lower }}-{{ version }}.tar.gz
-  url: https://github.com/OnlinePhylo/sts/archive/v{{ version }}.tar.gz
-  sha256: 4a1204bab6d12de99a8f69aebf7c219bdf8335d18b08b1f50672885e9042634c
+  url: https://github.com/OnlinePhylo/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
   patches:
     - CMakeLists.patch
     - lcfit_online_add_sequence_move.cc.patch
 
 requirements:
   build:
-  - gcc # [not osx]
-  - llvm # [osx]
+  - {{ compiler('cxx') }}
+  
+  host:
   - cmake
   - boost
-  - gsl {{ CONDA_GSL }}*
+  - gsl
   - bpp-core 2.2.0
   - bpp-seq 2.2.0
   - bpp-phyl 2.2.0
@@ -35,7 +37,7 @@ requirements:
 
   run:
   - libtool
-  - gsl {{ CONDA_GSL }}*
+  - gsl
   - bpp-core 2.2.0
   - bpp-seq 2.2.0
   - bpp-phyl 2.2.0
