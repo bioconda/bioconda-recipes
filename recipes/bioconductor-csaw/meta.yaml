@@ -1,50 +1,63 @@
+{% set version = "1.12.0" %}
+{% set name = "csaw" %}
+{% set bioc = "3.6" %}
+
 package:
-  name: bioconductor-csaw
-  version: 1.6.1
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: csaw_1.6.1.tar.gz
-  url: http://bioconductor.org/packages/3.3/bioc/src/contrib/csaw_1.6.1.tar.gz
-  md5: 4a700b2bb3929766ef98be2824f0a431
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 894cf793f221c0cc2564f1f1c43ca899a7ca6f925e0ba7cd7365388e996d844b
 build:
-  number: 0
-  skip: True # [osx]
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   build:
+    - {{ compiler('cxx') }}
+  host:
     - bioconductor-annotationdbi
+    - bioconductor-biocgenerics
+    - bioconductor-biocparallel
     - bioconductor-edger
     - bioconductor-genomeinfodb
-    - bioconductor-genomicalignments
     - bioconductor-genomicfeatures
     - bioconductor-genomicranges
     - bioconductor-iranges
     - bioconductor-limma
+    - bioconductor-rhtslib
     - bioconductor-rsamtools
     - bioconductor-s4vectors
-    - bioconductor-summarizedexperiment
-    - bioconductor-rhtslib
-    - r
+    - 'bioconductor-summarizedexperiment >=1.2.0'
+    - r-base
+    - r-rcpp
   run:
     - bioconductor-annotationdbi
+    - bioconductor-biocgenerics
+    - bioconductor-biocparallel
     - bioconductor-edger
     - bioconductor-genomeinfodb
-    - bioconductor-genomicalignments
     - bioconductor-genomicfeatures
     - bioconductor-genomicranges
     - bioconductor-iranges
     - bioconductor-limma
+    - bioconductor-rhtslib
     - bioconductor-rsamtools
     - bioconductor-s4vectors
-    - bioconductor-summarizedexperiment
-    - bioconductor-rhtslib
-    - r
+    - 'bioconductor-summarizedexperiment >=1.2.0'
+    - r-base
+    - r-rcpp
 test:
   commands:
-    - '$R -e "library(''csaw'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/csaw.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'Detection of differentially bound regions in ChIP-seq data with sliding
-    windows, with methods for normalization and proper FDR control.'
+  summary: 'Detection of differentially bound regions in ChIP-seq data with sliding windows, with methods for normalization and proper FDR control.'
+
+extra:
+  identifiers:
+    - biotools:csaw

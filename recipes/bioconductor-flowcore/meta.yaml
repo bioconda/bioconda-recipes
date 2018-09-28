@@ -1,43 +1,53 @@
+{% set version = "1.44.0" %}
+{% set name = "flowCore" %}
+{% set bioc = "3.6" %}
+
 package:
-  name: bioconductor-flowcore
-  version: 1.38.2
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: flowCore_1.38.2.tar.gz
-  url: http://bioconductor.org/packages/3.3/bioc/src/contrib/flowCore_1.38.2.tar.gz
-  md5: 6a70256cd2a98d00bfdcfe3780de42a9
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 46903d63fd36a8b0a7ab04ba5328811405613e94c78448b0d33f9ea52b99bc6a
 build:
-  number: 0
-  skip: True # [osx]
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   build:
+    - {{ compiler('cxx') }}
+  host:
     - bioconductor-biobase
     - 'bioconductor-biocgenerics >=0.1.14'
     - bioconductor-graph
-    - r
+    - r-base
+    - r-bh  # not included in original DESCRIPTION
     - r-corpcor
     - r-matrixstats
     - r-rcpp
     - r-rrcov
-    - r-bh
-    - gcc
+
   run:
     - bioconductor-biobase
     - 'bioconductor-biocgenerics >=0.1.14'
     - bioconductor-graph
-    - r
+    - r-base
+    - r-bh  # not included in original DESCRIPTION
     - r-corpcor
     - r-matrixstats
-    - r-bh
     - r-rcpp
     - r-rrcov
 test:
   commands:
-    - '$R -e "library(''flowCore'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/flowCore.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Provides S4 data structures and basic functions to deal with flow cytometry
-    data.'
+  summary: 'Provides S4 data structures and basic functions to deal with flow cytometry data.'
+
+extra:
+  identifiers:
+    - biotools:flowcore
+    - doi:10.1186/1471-2105-10-106

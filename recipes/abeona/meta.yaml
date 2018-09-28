@@ -1,0 +1,50 @@
+{% set version = "0.24.0" %}
+{% set sha256 = "dacf5a32530ecc2d43e023baf402c438897f829fb1aa3a8e302cdc4a331cdb5f" %}
+
+package:
+  name: abeona
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/a/abeona/abeona-{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  skip: true  # [not py36]
+  number: 2
+  entry_points:
+    - abeona=abeona.__main__:main
+  script: '$PYTHON -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv '
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - mccortex ==1.0
+    - nextflow ==0.31.1
+    - cortexpy ==0.44.0
+    - kallisto ==0.44.0
+    - pandas
+    - progressbar2
+    - python
+
+test:
+  imports:
+    - abeona
+    - abeona.assemble
+  commands:
+    - abeona --help
+
+about:
+  home: https://github.com/winni2k/abeona
+  license: Apache Software
+  license_family: Apache
+  license_file: LICENSE
+  summary: A simple transcriptome assembler based on kallisto and Cortex graphs.
+  doc_url: https://github.com/winni2k/abeona
+  dev_url: https://github.com/winni2k/abeona
+
+extra:
+  recipe-maintainers:
+    - winni2k

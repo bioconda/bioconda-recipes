@@ -1,10 +1,16 @@
+{% set version = "3.20.7" %}
+{% set name = "edgeR" %}
+{% set bioc = "3.6" %}
+
 package:
-  name: bioconductor-edger
-  version: 3.14.0
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: edgeR_3.14.0.tar.gz
-  url: https://bioarchive.galaxyproject.org/edgeR_3.14.0.tar.gz
-  md5: a32b76809deed15e31b744db1920b33d
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 5c4286fd0d80ae0696c4ef65111366152cc071c3e8fd446b2d0fce6d75b235dc
 build:
   number: 1
   rpaths:
@@ -12,20 +18,25 @@ build:
     - lib/
 requirements:
   build:
-    - bioconductor-limma
-    - r
+    - {{ compiler('cxx') }}
+  host:
+    - 'bioconductor-limma >=3.34.5'
+    - r-base
+    - r-locfit
+    - r-rcpp
   run:
-    - bioconductor-limma
-    - r
+    - 'bioconductor-limma >=3.34.5'
+    - r-base
+    - r-locfit
+    - r-rcpp
 test:
   commands:
-    - '$R -e "library(''edgeR'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/edgeR.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>=2)'
-  summary: 'Differential expression analysis of RNA-seq expression profiles with biological
-    replication. Implements a range of statistical methodology based on the negative
-    binomial distributions, including empirical Bayes estimation, exact tests, generalized
-    linear models and quasi-likelihood tests. As well as RNA-seq, it be applied to
-    differential signal analysis of other types of genomic data that produce counts,
-    including ChIP-seq, SAGE and CAGE.'
+  summary: 'Differential expression analysis of RNA-seq expression profiles with biological replication. Implements a range of statistical methodology based on the negative binomial distributions, including empirical Bayes estimation, exact tests, generalized linear models and quasi-likelihood tests. As well as RNA-seq, it be applied to differential signal analysis of other types of genomic data that produce counts, including ChIP-seq, Bisulfite-seq, SAGE and CAGE.'
+
+extra:
+  identifiers:
+    - biotools:edger

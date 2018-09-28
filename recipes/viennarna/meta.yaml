@@ -1,32 +1,38 @@
+{% set version = "2.4.9" %}
+{% set sha256 = "a95cbcab730449a5df3edcc2b71d5126b436ac84ac9c0efa53a91896af142a1f" %}
+
 package:
   name: viennarna
-  version: 2.3.3
+  version: {{ version }}
 
 build:
   number: 0
 
 source:
-  fn: ViennaRNA-2.3.3.tar.gz
-  url: http://www.tbi.univie.ac.at/RNA/packages/source/ViennaRNA-2.3.3.tar.gz
-  sha256: cf92c05e54dff32c2135433b6ebaa5330c05de02a1ae8b7c3b7a865d42eea514
-  
+  url: https://www.tbi.univie.ac.at/RNA/download/sourcecode/2_4_x/ViennaRNA-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
 requirements:
   build:
-    - gcc   # [linux]
-    - llvm  # [osx]
-    - perl-threaded
-    - python >3 # [linux]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - perl
+    - python
+    - zlib
   run:
-    - libgcc # [linux]
+    - python
+    - zlib
 
 test:
   commands:
-   - RNAalifold --version
-   - RNAeval    --version
-   - RNAfold    --version
-   - RNAplfold  --version
-   - RNAsubopt  --version
-   - kinwalker  --help >& /dev/null
+    - RNAalifold --version
+    - RNAeval    --version
+    - RNAfold    --version
+    - RNAplfold  --version
+    - RNAsubopt  --version
+    - RNAlocmin  --version
+    - kinwalker  --help >& /dev/null
 
 about:
   home: http://www.tbi.univie.ac.at/RNA/

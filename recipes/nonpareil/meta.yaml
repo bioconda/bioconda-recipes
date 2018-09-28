@@ -1,24 +1,33 @@
+{% set version = "3.3.1" %}
+{% set sha256 = "6fc9caf915f80704876fcd7b0a1fb3beda664fdb840fa0866bdfa1cb76df1a34" %}
+
 package:
   name: nonpareil
-  version: "2.4.01"
+  version: '{{version}}'
+
 source:
-  git_url: https://github.com/lmrodriguezr/nonpareil.git
-  git_rev: v2.4.01
+  url: https://github.com/lmrodriguezr/nonpareil/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
+
+build:
+  number: 0
+  script: make && make prefix=$PREFIX install
+
 requirements:
   build:
-    - automake
     - autoconf
-    - m4
-    - gcc
-    - r
+    - {{ compiler('c') }}
+  host:
+    - r-base
   run:
-    - r
-build:
-  skip: False
+    - r-base
+
 test:
   commands:
-    - nonpareil -V > /dev/null
+    - nonpareil -h 2>&1 | grep "Nonpareil"
+
 about:
-  home: https://github.com/lmrodriguezr/nonpareil
-  license: "Artistic License 2.0"
-  summary: "Estimate average coverage and create Nonpareil curves for metagenomic datasets."
+  home: http://nonpareil.readthedocs.io/
+  license: Artistic License 2.0
+  summary: Estimate average coverage and create curves for metagenomic datasets
+  dev_url: https://github.com/lmrodriguezr/nonpareil

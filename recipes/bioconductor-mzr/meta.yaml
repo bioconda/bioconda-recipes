@@ -1,43 +1,55 @@
+{% set version = "2.12.0" %}
+{% set name = "mzR" %}
+{% set bioc = "3.6" %}
+
 package:
-  name: bioconductor-mzr
-  version: 2.6.3
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+
 source:
-  fn: mzR_2.6.3.tar.gz
-  url: http://bioconductor.org/packages/release/bioc/src/contrib/mzR_2.6.3.tar.gz
-  md5: c36c4a9ec2ec82642f5ffae56d9a08ea
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 0c61b01e17d652eecd9dd4c20fcfdc59ace4dc4c30723de6d8e277a7c1b86ff4
+
 build:
-  number: 0
-  skip: True # [osx]
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
+
 requirements:
   build:
+    - {{ compiler('cxx') }}
+  host:
     - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.13.6'
-    - bioconductor-protgenerics
-    - bioconductor-zlibbioc
-    - r
+    - bioconductor-biocgenerics >=0.13.6
+    - bioconductor-protgenerics >=1.9.1
+    - bioconductor-zlibbioc  # not in DESCRIPTION
+    - r-ncdf4  # not in DESCRIPTION
+    - r-base
     - 'r-rcpp >=0.10.1'
-    - 'libnetcdf ==4.3.3.1'
-    - gcc
+    - boost
+    - libnetcdf 4.4.*
   run:
     - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.13.6'
-    - bioconductor-protgenerics
-    - bioconductor-zlibbioc
-    - r
-    - 'r-rcpp >=0.10.1'
-    - 'libnetcdf ==4.3.3.1'
-    - libgcc
+    - bioconductor-biocgenerics >=0.13.6
+    - bioconductor-protgenerics >=1.9.1
+    - bioconductor-zlibbioc  # not in DESCRIPTION
+    - r-ncdf4  # not in DESCRIPTION
+    - boost
+    - libnetcdf 4.4.*
+    - r-base
+    - r-rcpp >=0.10.1
+
 test:
   commands:
-    - '$R -e "library(''mzR'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/mzR.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'mzR provides a unified API to the common file formats and parsers available
-    for mass spectrometry data. It comes with a wrapper for the ISB random access
-    parser for mass spectrometry mzXML, mzData and mzML files. The package contains
-    the original code written by the ISB, and a subset of the proteowizard library
-    for mzML and mzIdentML. The netCDF reading code has previously been used in XCMS.'
+  summary: 'mzR provides a unified API to the common file formats and parsers available for mass spectrometry data. It comes with a wrapper for the ISB random access parser for mass spectrometry mzXML, mzData and mzML files. The package contains the original code written by the ISB, and a subset of the proteowizard library for mzML and mzIdentML. The netCDF reading code has previously been used in XCMS.'
+
+extra:
+  identifiers:
+    - biotools:mzr

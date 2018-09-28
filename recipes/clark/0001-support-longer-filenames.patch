@@ -1,0 +1,111 @@
+From edfc0c4cb35f91f4a46ee7086bcd693b0b2346de Mon Sep 17 00:00:00 2001
+From: Ilya Shlyakhter <ilya_shl@alum.mit.edu>
+Date: Tue, 25 Jul 2017 01:48:50 -0400
+Subject: [PATCH] support longer filenames
+
+---
+ src/CLARK_hh.hh     | 17 +++++++++--------
+ src/getAbundance.cc |  3 ++-
+ 2 files changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/src/CLARK_hh.hh b/src/CLARK_hh.hh
+index 90cf031..872d0af 100755
+--- a/src/CLARK_hh.hh
++++ b/src/CLARK_hh.hh
+@@ -33,6 +33,7 @@
+ #include <vector>
+ #include <iostream>
+ #include <cstdlib>
++#include <climits>
+ #include "./dataType.hh"
+ #include "./HashTableStorage_hh.hh"
+ #include "./spacedKmer.hh"
+@@ -418,7 +419,7 @@ void CLARK<HKMERr>::createTargetFilesNames(vector<string>& _filesHT, vector<stri
+ {
+ 	for(size_t t = 0 ; t < m_labels_c.size(); t++)
+ 	{
+-		char * fname = (char*) calloc(100, sizeof(char));
++		char * fname = (char*) calloc(PATH_MAX, sizeof(char));
+ 		if (m_isLightLoading)
+ 		{
+ 			sprintf(fname, "%s/%s_k%lu_light.ht", m_folder, m_labels_c[t].c_str(), (size_t) m_kmerSize);
+@@ -435,7 +436,7 @@ void CLARK<HKMERr>::createTargetFilesNames(vector<string>& _filesHT, vector<stri
+ 
+ 	for(size_t t = 0 ; t < m_labels.size(); t++)
+ 	{
+-		char * fname = (char*) calloc(100, sizeof(char));
++		char * fname = (char*) calloc(PATH_MAX, sizeof(char));
+ 		if (m_isLightLoading)
+ 		{
+ 			sprintf(fname, "%s/%s_k%lu_light.ht", m_folder, m_labels_c[t].c_str(), (size_t) m_kmerSize);
+@@ -830,7 +831,7 @@ void CLARK<HKMERr>::loadSpecificTargetSets(const vector<string>& _filesHT,
+ 	size_t kmersLoaded = 0;
+ 	ITYPE minCount = m_minCountTarget;
+ 	m_centralHt = new EHashtable<HKMERr, bigElement>(m_weight, m_labels, m_labels_c, m_DSS);
+-	char * cfname = (char*) calloc(130, sizeof(char));
++	char * cfname = (char*) calloc(PATH_MAX, sizeof(char));
+ 	size_t fileSize = 0;
+ 
+ 	if (m_isSpacedLoading /*m_kmerSize != m_weight*/)
+@@ -1058,7 +1059,7 @@ size_t CLARK<HKMERr>::makeSpecificTargetSets(const vector<string>& _filesHT, con
+ 
+ 		commonKmersHT.SortAllHashTable(2);
+ 		commonKmersHT.RemoveCommon(m_labels_c, m_minCountTarget);
+-		char * cfname = (char*) calloc(130, sizeof(char));
++		char * cfname = (char*) calloc(PATH_MAX, sizeof(char));
+ 		getdbName(cfname);
+ 
+ 		cerr << "Creating light database in disk..." << endl;
+@@ -1275,7 +1276,7 @@ size_t CLARK<HKMERr>::makeSpecificTargetSets(const vector<string>& _filesHT, con
+ 
+ 		commonKmersHT.SortAllHashTable(2);
+ 		commonKmersHT.RemoveCommon(m_labels_c, m_minCountTarget);
+-		char * cfname = (char*) calloc(130, sizeof(char));
++		char * cfname = (char*) calloc(PATH_MAX, sizeof(char));
+ 		getdbName(cfname);
+ 		cerr << "Creating database in disk..." << endl;	
+ 		uint64_t nbElement = commonKmersHT.Write(cfname,2);
+@@ -1491,7 +1492,7 @@ size_t CLARK<HKMERr>::makeSpecificTargetSets(const vector<string>& _filesHT, con
+ 	commonKmersHT.SaveMultiple(_filesHT, m_labels);
+ 	commonKmersHT.SortAllHashTable(2);
+ 	commonKmersHT.RemoveCommon(m_labels_c, m_minCountTarget);
+-	char * cfname = (char*) calloc(130, sizeof(char));
++	char * cfname = (char*) calloc(PATH_MAX, sizeof(char));
+ 	getdbName(cfname);
+ 	cerr << "Creating database in disk..." << endl;
+ 	uint64_t nbElement = commonKmersHT.Write(cfname,2);
+@@ -2802,8 +2803,8 @@ bool CLARK<HKMERr>::getTargetsData(const char* _filesName, vector<string>& _file
+ 	for(size_t t=0 ; t < m_labels_c.size(); t++)
+ 	{       m_targetsName.push_back(m_labels_c[t]);       }
+ 
+-	char * cfname = (char*) calloc(130, sizeof(char));
+-	char * cfname_s = (char*) calloc(130+4, sizeof(char));
++	char * cfname = (char*) calloc(PATH_MAX, sizeof(char));
++	char * cfname_s = (char*) calloc(PATH_MAX+4, sizeof(char));
+ 	if (!m_isSpacedLoading)
+ 	{	getdbName(cfname);	}
+ 	else
+diff --git a/src/getAbundance.cc b/src/getAbundance.cc
+index b998444..daec3c7 100755
+--- a/src/getAbundance.cc
++++ b/src/getAbundance.cc
+@@ -31,6 +31,7 @@
+ #include <cstdlib>
+ #include <vector>
+ #include <cstring>
++#include <climits>
+ #include <map>
+ #include <fstream>
+ #include <algorithm>
+@@ -346,7 +347,7 @@ int main(int argc, char** argv)
+ 		vector<char> sepc;
+ 		sepc.push_back('\t');
+ 		vector<string> elec;
+-		char * filename= (char*) calloc(130,sizeof(char));
++		char * filename= (char*) calloc(PATH_MAX,sizeof(char));
+ 		sprintf(filename,"%s/taxonomy/nodes.dmp", argv[i_names]);
+                 vector<node> nodes;
+                 getNodes(filename,nodes);
+-- 
+2.6.4
+

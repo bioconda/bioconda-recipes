@@ -1,26 +1,36 @@
+{% set version = "1.8.0" %}
+{% set name = "dupRadar" %}
+{% set bioc = "3.6" %}
+
 package:
-  name: bioconductor-dupradar
-  version: 1.2.2
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: dupRadar_1.2.2.tar.gz
-  url: http://bioconductor.org/packages/release/bioc/src/contrib/dupRadar_1.2.2.tar.gz
-  md5: 2c4527c61a83bdcaa9fb46c9865ae3a6
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: f6b605828f02480259adc6a692a0a90e96387457d4bb5cd4a2b0daa65b03609d
 build:
-  number: 0
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
+  host:
     - 'bioconductor-rsubread >=1.14.1'
-    - 'r'
+    - r-base
   run:
     - 'bioconductor-rsubread >=1.14.1'
-    - 'r'
+    - r-base
+    - r-kernsmooth  # loaded when running duprateExpDensPlot
 test:
   commands:
-    - '$R -e "library(''dupRadar'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/dupRadar.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Duplication rate quality control for RNA-Seq datasets.'
+
+extra:
+  identifiers:
+    - biotools:dupradar

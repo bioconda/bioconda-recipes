@@ -1,29 +1,41 @@
+{% set version = "1.12.0" %}
+{% set name = "BiocParallel" %}
+{% set bioc = "3.6" %}
+
 package:
-  name: bioconductor-biocparallel
-  version: 1.6.6
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: BiocParallel_1.6.6.tar.gz
-  url: http://bioconductor.org/packages/release/bioc/src/contrib/BiocParallel_1.6.6.tar.gz
-  md5: 445ec78a20e348d678d2e7b8dc5b4354
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 0de25aa5c7a1b1cce8da0d5f42a00eaccc50de1edf4ab30174833ecd851dcf8e
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - r
+  host:
+    - r-base
+    # not specified in DESCRIPTION, but complains during build
+    - r-bh
     - r-futile.logger
     - r-snow
   run:
-    - r
+    - r-base
+    - r-bh
     - r-futile.logger
     - r-snow
 test:
   commands:
-    - '$R -e "library(''BiocParallel'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/BiocParallel.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL-2 | GPL-3'
-  summary: 'This package provides modified versions and novel implementation of functions
-    for parallel evaluation, tailored to use with Bioconductor objects.'
+  summary: 'This package provides modified versions and novel implementation of functions for parallel evaluation, tailored to use with Bioconductor objects.'
+
+extra:
+  identifiers:
+    - biotools:biocparallel
+    - doi:10.1214/14-STS476

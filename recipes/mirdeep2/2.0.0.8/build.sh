@@ -1,6 +1,8 @@
 #!/bin/bash
 cp src/* $PREFIX/bin
 
+cp Rfam_for_miRDeep.fa $PREFIX/bin
+
 chmod +x $PREFIX/bin/bwa_sam_converter.pl
 chmod +x $PREFIX/bin/clip_adapters.pl
 chmod +x $PREFIX/bin/collapse_reads_md.pl
@@ -37,3 +39,4 @@ chmod +x $PREFIX/bin/sanity_check_reads_ready_file.pl
 chmod +x $PREFIX/bin/select_for_randfold.pl
 chmod +x $PREFIX/bin/survey.pl
 
+touch $PREFIX/install_successful

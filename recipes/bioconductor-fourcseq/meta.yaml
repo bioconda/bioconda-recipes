@@ -1,18 +1,22 @@
+{% set version = "1.12.0" %}
+{% set name = "FourCSeq" %}
+{% set bioc = "3.6" %}
+
 package:
-  name: bioconductor-fourcseq
-  version: 1.4.0
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: FourCSeq_1.4.0.tar.gz
-  url: https://bioarchive.galaxyproject.org/FourCSeq_1.4.0.tar.gz
-  md5: 1fa8c7291a9c0806ae9ada8e1f97e7f1
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 10936a5fd3b0b02d9cc7c4827a7fb6ee7e830bc12fc09b757dee3c541312d821
 build:
   number: 1
-  skip: True # [osx]
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
+  host:
     - bioconductor-biobase
     - bioconductor-biostrings
     - 'bioconductor-deseq2 >=1.9.11'
@@ -22,11 +26,12 @@ requirements:
     - bioconductor-rsamtools
     - bioconductor-rtracklayer
     - bioconductor-summarizedexperiment
-    - r
+    - r-base
     - r-fda
     - r-ggplot2
     - r-gtools
     - r-lsd
+    - r-matrix
     - r-reshape2
   run:
     - bioconductor-biobase
@@ -38,22 +43,21 @@ requirements:
     - bioconductor-rsamtools
     - bioconductor-rtracklayer
     - bioconductor-summarizedexperiment
-    - r
+    - r-base
     - r-fda
     - r-ggplot2
     - r-gtools
     - r-lsd
+    - r-matrix
     - r-reshape2
 test:
   commands:
-    - '$R -e "library(''FourCSeq'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/FourCSeq.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 3)'
-  summary: 'FourCSeq is an R package dedicated to the analysis of (multiplexed) 4C
-    sequencing data. The package provides a pipeline to detect specific interactions
-    between DNA elements and identify differential interactions between conditions.
-    The statistical analysis in R starts with individual bam files for each sample
-    as inputs. To obtain these files, the package contains a python script (extdata/python/demultiplex.py)
-    to demultiplex libraries and trim off primer sequences. With a standard alignment
-    software the required bam files can be then be generated.'
+  summary: 'FourCSeq is an R package dedicated to the analysis of (multiplexed) 4C sequencing data. The package provides a pipeline to detect specific interactions between DNA elements and identify differential interactions between conditions. The statistical analysis in R starts with individual bam files for each sample as inputs. To obtain these files, the package contains a python script (extdata/python/demultiplex.py) to demultiplex libraries and trim off primer sequences. With a standard alignment software the required bam files can be then be generated.'
+
+extra:
+  identifiers:
+    - biotools:fourcseq

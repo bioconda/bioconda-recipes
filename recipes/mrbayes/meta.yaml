@@ -1,0 +1,52 @@
+{% set name = "MrBayes" %}
+{% set version = "3.2.6" %}
+{% set sha256 = "f8fea43b5cb5e24a203a2bb233bfe9f6e7f77af48332f8df20085467cc61496d" %}
+
+package:
+  name: {{ name | lower }}
+  version: {{ version }}
+
+source:
+  url: https://sourceforge.net/projects/{{ name | lower }}/files/{{ name | lower }}/{{ version }}/{{ name | lower }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - autoconf
+    - automake
+    - readline 6.*
+    - openmpi
+    - beagle-lib
+  run:
+    - readline 6.*
+    - openmpi
+    - beagle-lib
+test:
+# conda inspect rules broken in bioconda toolchain
+#  requirements:
+#    - conda
+  commands:
+#    - conda inspect linkages -p $PREFIX $PKG_NAME  # [linux]
+#    - conda inspect objects -p $PREFIX $PKG_NAME  # [osx]
+  - echo Version | mb
+  - echo Version | mpirun -mca plm_rsh_agent true --allow-run-as-root mb-mpi
+
+about:
+  home: http://mrbayes.sourceforge.net
+  license: GPLv3
+  license_family: GPL
+  license_file: src/gpl.txt
+  summary: Bayesian Inference of Phylogeny
+  description: |
+    MrBayes is a program for Bayesian inference and model choice across a wide
+    range of phylogenetic and evolutionary models. MrBayes uses Markov chain
+    Monte Carlo (MCMC) methods to estimate the posterior distribution of model
+    parameters.
+
+extra:
+  identifiers:
+    - biotools:mrbayes

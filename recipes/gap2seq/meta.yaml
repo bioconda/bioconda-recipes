@@ -1,0 +1,47 @@
+{% set name = "Gap2Seq" %}
+{% set version = "2.1" %}
+{% set sha256 = "49ecc3298e91d3ce92cfe954bf3e8bf991629e7e895b04c3d4df2445dcb7a499" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 4
+
+source:
+  url: https://www.cs.helsinki.fi/u/lmsalmel/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-patches-for-osx.patch # [osx]
+    - 0002-added-randseed-parameter.patch
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - pkg-config
+    - cmake
+    - make
+  host:
+    - boost
+    - zlib
+  run:
+    - boost
+    - zlib
+test:
+  commands:
+    - GapMerger 2>&1 | grep "USAGE for"  > /dev/null
+    - GapCutter 2>&1 | grep "USAGE for"  > /dev/null
+    - Gap2Seq 2>&1 | grep "USAGE for"  > /dev/null
+    - Gap2Seq.sh 2>&1 | grep "Required parameters" > /dev/null
+
+about:
+  home: https://www.cs.helsinki.fi/u/lmsalmel/Gap2Seq/
+  license: GPLv3
+  license_file: LICENCE
+  summary: Gap2Seq is a tool for filling gaps between contigs in genome assemblies.
+
+extra:
+  notes: "Gap2Seq is only tested on Linux x86_64 by its author."
+  recipe-maintainers:
+    - notestaff

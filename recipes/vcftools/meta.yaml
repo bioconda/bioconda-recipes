@@ -1,28 +1,29 @@
+{% set version = "0.1.16" %}
+{% set sha256 = "575c13073efe65cbff6e2ab99eef12fe04536f5dc1f98de6674c848ca83cf302" %}
+
+
 package:
   name: vcftools
-  version: '0.1.14'
+  version: {{ version }}
 
 source:
-  fn: vcftools-0.1.14.tar.gz
-  url: https://github.com/vcftools/vcftools/releases/download/v0.1.14/vcftools-0.1.14.tar.gz
-  md5: a110662535651caa6cc8c876216a9f77
+  url: https://github.com/vcftools/vcftools/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 4
+  number: 2
 
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm  # [osx]
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+  host:
     - zlib
-    - perl-threaded
-    - perl-vcftools-vcf ==0.953
-
   run:
-    - libgcc  # [not osx]
     - zlib
-    - perl-threaded
-    - perl-vcftools-vcf ==0.953
 
 test:
   commands:
@@ -32,4 +33,8 @@ test:
 about:
   home: https://vcftools.github.io/
   license: LGPL
-  summary: A set of tools written in Perl and C++ for working with VCF files.
+  summary: A set of tools written in Perl and C++ for working with VCF files. This package only contains the C++ libraries whereas the package perl-vcftools-vcf contains the perl libraries
+
+extra:
+  identifiers:
+    - biotools:vcftools

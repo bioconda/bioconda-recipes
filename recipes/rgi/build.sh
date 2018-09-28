@@ -1,10 +1,5 @@
 #!/bin/bash
 
-#brew tap homebrew/science
-
-#brew install homebrew/science/prodigal
-
-#brew link --overwrite prodigal
-
-# install setup
-$PYTHON setup.py install
+tar xf rgi-4.0.3.tar.gz 
+cd rgi-4.0.3
+$PYTHON setup.py install --single-version-externally-managed --record record.txt

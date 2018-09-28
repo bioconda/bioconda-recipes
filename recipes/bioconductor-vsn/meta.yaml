@@ -1,42 +1,43 @@
-package:
-  name: bioconductor-vsn
-  version: 3.38.0
-source:
-  fn: vsn_3.38.0.tar.gz
-  url: https://bioarchive.galaxyproject.org/vsn_3.38.0.tar.gz
-  md5: 1acea08a752560f8c187a2eb010567f7
+{% set version = "3.46.0" %}
+{% set name = "vsn" %}
+{% set bioc = "3.6" %}
 
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: d270edb3a08bb03e0164101f6e541c62d6e5b90c84966dde2b47e6f8e115c6a3
 build:
-  skip: False
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-
 requirements:
-  build:
-    - r
+  host:
+    - bioconductor-affy
     - bioconductor-biobase
     - bioconductor-limma
-    - bioconductor-affy
+    - r-base
     - r-ggplot2
-    - r-hexbin
-
-
+    - r-lattice
   run:
-    - r
+    - bioconductor-affy
     - bioconductor-biobase
     - bioconductor-limma
-    - bioconductor-affy
+    - r-base
     - r-ggplot2
-    - r-hexbin
-
-
+    - r-lattice
 test:
   commands:
-    - $R -e "require('vsn')"
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://www.bioconductor.org/packages/release/bioc/html/vsn.html
-  license: 'GPL (>=2)'
-  summary: 'Data analysis, linear models and differential expression for microarray
-    data.'
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'The package implements a method for normalising microarray intensities, and works for single- and multiple-color arrays. It can also be used for data from other technologies, as long as they have similar format. The method uses a robust variant of the maximum-likelihood estimator for an additive-multiplicative error model and affine calibration. The model incorporates data calibration step (a.k.a. normalization), a model for the dependence of the variance on the mean intensity and a variance stabilizing data transformation. Differences between transformed intensities are analogous to "normalized log-ratios". However, in contrast to the latter, their variance is independent of the mean, and they are usually more sensitive and specific in detecting differential transcription.'
+
+extra:
+  identifiers:
+    - biotools:vsn

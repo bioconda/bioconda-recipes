@@ -1,21 +1,40 @@
 about:
-    home: http://subread.sourceforge.net/
-    license: GPLv3
-    summary: High-performance read alignment, quantification, and mutation discovery
+  home: http://subread.sourceforge.net/
+  license: GPLv3
+  summary: High-performance read alignment, quantification, and mutation discovery
 package:
-    name: subread
-    version: 1.5.0.post3 
+  name: subread
+  version: 1.6.2
 
 build:
   number: 0
 
-test:
-    commands:
-        - featureCounts -v 2>&1 > /dev/null
 source:
-    fn: subread-1.5.0-p3-Linux-x86_64.tar.gz                                                               # [linux64]
-    url: http://sourceforge.net/projects/subread/files/subread-1.5.0-p3/subread-1.5.0-p3-Linux-x86_64.tar.gz  # [linux64]
-    md5: 1f280858a6c529fe502f3b3183317bc8 # [linux64] 
-    fn: subread-1.5.0-p3-MacOSX-x86_64.tar.gz                                                              # [osx]
-    url: http://sourceforge.net/projects/subread/files/subread-1.5.0-p3/subread-1.5.0-p3-MacOSX-x86_64.tar.gz # [osx]
-    md5: 73dcc0e91e4322aea39c1be3fdf11ca1 # [osx]
+  url: https://downloads.sourceforge.net/project/subread/subread-1.6.2/subread-1.6.2-source.tar.gz
+  sha256: 77b4896c1c242967c5883a06c0a5576a5ff220008a12aa60af9669d2f9a87d7a
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - zlib
+  run:
+    - zlib
+test:
+  commands:
+    - featureCounts -v
+    - subread-align || [[ $? == 1 ]]
+    - exactSNP
+    - subread-buildindex || [[ $? == 255 ]]
+    - subjunc || [[ $? == 1 ]]
+    - subindel || [[ $? = 255 ]]
+    - repair -h
+    - txUnique || [[ $? == 1 ]]
+    - qualityScores
+    - subread-fullscan || [[ $? == 255 ]]
+    - coverageCount
+
+extra:
+  identifiers:
+    - biotools:subread
+    - doi:10.1093/nar/gkt214

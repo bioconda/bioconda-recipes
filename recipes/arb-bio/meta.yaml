@@ -1,0 +1,119 @@
+{% set name = "ARB" %}
+{% set version = "6.0.6" %}
+{% set sha256 = "8b1fc3fd11bbb05aca4731ac8803c004a4f2b6b87c11b543660d07ea349a6c21" %}
+
+package:
+  name: {{ name|lower }}-bio
+  version: {{ version }}
+
+source:
+  url: http://download.arb-home.de/release/{{ name|lower }}-{{ version }}/{{ name|lower }}-{{ version }}-source.tgz
+  sha256: {{ sha256 }}
+  patches:
+    # allow disabling build of bundled tools
+    - disable_pkgs.patch
+    # do not create links for mafft
+    - no_mafftlinks.patch
+    # allow linking with missing symbols on macos
+    - link_dyn.patch
+    - make.patch
+    # prefix SOURCE_TOOLS/... with full PATH
+    - make_path_fix.patch
+    # change all /usr/bin/xyz paths to /usr/bin/env xyz
+    - abs_path_fix.patch
+    # use sed, not gsed
+    - gsed.patch
+
+build:
+  number: 4
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - pkg-config
+    - time
+    - lynx
+    - xorg-makedepend
+    - sed >=4.4
+    - tar
+  host:
+    - openmotif-dev
+    - glib
+    - gettext
+    - pthread-stubs
+    - xorg-libxi
+    - xorg-libxp
+    - xorg-libxaw
+    - xorg-libxpm
+    - xorg-libxmu
+    - libtiff
+    - libxslt
+    - libpng
+    - xerces-c
+    - perl >=5.23
+  run:
+    # libs:
+    - openmotif
+    - glib
+    - gettext
+    - xorg-libxi
+    - xorg-libxmu
+    - xorg-libxp
+    - xorg-libxaw
+    - xorg-libxpm
+    - xorg-libxft
+    - libpng
+    # tools:
+    - gnuplot
+    - muscle
+    - mafft
+    - raxml
+    - mrbayes
+    - phylip
+    - phyml 3.2.0*
+    - fasttree
+    - sed >=4.4
+    - xfig
+    - fig2dev
+    # We build a binary perl module. ABI compatability seems to be maintained
+    # at minor version (5.26.x), so we pin accordingly:
+    - {{ pin_compatible("perl", min_pin="x.x", max_pin="x.x") }}
+test:
+  requires:
+    - conda
+  commands:
+    # most tests are in `run_test.sh`
+    - if command -v conda; then conda inspect linkages -p $PREFIX $PKG_NAME; fi
+    - if command -v conda; then conda inspect objects -p $PREFIX $PKG_NAME; fi   # [osx]
+    - which arb
+    - which arb_pt_server
+
+outputs:
+  - name: libarbdb
+    script: install_libarbdb.sh
+    requirements:
+      run:
+        - glib
+        - gettext
+  - name: arb-bio-tools
+    script: install_tools.sh
+    requirements:
+      run:
+        - {{ pin_subpackage('libarbdb', exact=True) }}
+  - name: arb-bio
+    script: install_main.sh
+    requirements:
+      run:
+        - {{ pin_subpackage('arb-bio-tools', exact=True) }}
+  - name: arb-bio-devel
+    script: install_devel.sh
+    requirements:
+      run:
+        - {{ pin_subpackage('arb-bio', exact=True) }}
+
+about:
+  home: http://www.arb-home.de
+  license: ARB
+  licence_file: arb_LICENSE.txt
+  summary: ARB 6 Sequence Analysis Suite

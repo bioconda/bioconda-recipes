@@ -1,0 +1,50 @@
+{% set version = "11.4" %}
+
+package:
+  name: control-freec
+  version: {{ version }}
+
+source:
+  url: https://github.com/BoevaLab/FREEC/archive/v{{ version }}.tar.gz
+  md5: b9453af0c2cf4707a482fd64f819abad
+  patches:
+    - makeGraph_Chromosome.R.patch
+    - perl_shebang.patch
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  run:
+    - perl
+    - r-base
+    - bioconductor-rtracklayer
+
+test:
+  commands:
+    - freec
+    - freec2bed.pl
+    - freec2circos.pl
+    - which get_fasta_lengths.pl
+    - which makeGraph.R
+    - which makeGraph_Chromosome.R
+    - vcf2snpFreec.pl
+    - which assess_significance.R
+
+about:
+  home: https://github.com/BoevaLab/FREEC
+  license: GPL (>=2)
+  summary: |
+    Copy number and genotype annotation from whole genome and whole exome
+    sequencing data.
+
+extra:
+  notes: |
+    The tool will be available as `freec` in the command line.
+    See the homepage for example config files. Auxiliary scripts
+    like e.g. freec2bed.pl and freec2circos.pl (see homepage) are available in the
+    command line as well.
+  identifiers:
+    - biotools:freec

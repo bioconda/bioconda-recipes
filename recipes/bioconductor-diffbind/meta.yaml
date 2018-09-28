@@ -1,17 +1,24 @@
+{% set version = "2.6.6" %}
+{% set name = "DiffBind" %}
+{% set bioc = "3.6" %}
+
 package:
-  name: bioconductor-diffbind
-  version: 2.0.9
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: DiffBind_2.0.9.tar.gz
-  url: http://bioconductor.statistik.tu-dortmund.de/packages/3.3/bioc/src/contrib/DiffBind_2.0.9.tar.gz
-  md5: 9d00cf8d809f138ce2a3b1e5620bbf51
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 77ee6153d3756247bb230cdfd70efaee75f6a3c736e4697474129e83ad81a5ea
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   build:
+    - {{ compiler('cxx') }}
+  host:
     - bioconductor-biocparallel
     - bioconductor-deseq2
     - bioconductor-edger
@@ -24,15 +31,16 @@ requirements:
     - bioconductor-summarizedexperiment
     - bioconductor-systempiper
     - bioconductor-zlibbioc
-    - r
     - r-amap
+    - r-base
     - r-dplyr
+    - r-ggplot2
+    - r-ggrepel
     - r-gplots
+    - r-lattice
     - r-locfit
     - r-rcolorbrewer
     - r-rcpp
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
     - bioconductor-biocparallel
     - bioconductor-deseq2
@@ -46,20 +54,25 @@ requirements:
     - bioconductor-summarizedexperiment
     - bioconductor-systempiper
     - bioconductor-zlibbioc
-    - r
     - r-amap
+    - r-base
     - r-dplyr
+    - r-ggplot2
+    - r-ggrepel
     - r-gplots
+    - r-lattice
     - r-locfit
     - r-rcolorbrewer
     - r-rcpp
-    - libgcc  # [linux]
+    - libcxx # [osx]
 test:
   commands:
-    - '$R -e "library(''DiffBind'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/DiffBind.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Compute differentially bound sites from multiple ChIP-seq experiments
-    using affinity (quantitative) data. Also enables occupancy (overlap) analysis
-    and plotting functions.'
+  summary: 'Compute differentially bound sites from multiple ChIP-seq experiments using affinity (quantitative) data. Also enables occupancy (overlap) analysis and plotting functions.'
+
+extra:
+  identifiers:
+    - biotools:diffbind

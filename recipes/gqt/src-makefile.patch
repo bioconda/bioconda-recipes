@@ -1,0 +1,50 @@
+--- src/Makefile
++++ src/Makefile
+@@ -1,6 +1,5 @@
+ BIN=../bin
+ OBJ=../obj
+-HTS_ROOT=../../htslib
+ CFLAGS=-g -D_FILE_OFFSET_BITS=64
+ #CFLAGS=-O2 -D_FILE_OFFSET_BITS=64 -Werror -Wuninitialized
+ #CFLAGS=-Wall -O0 -g -fno-inline -fkeep-inline-functions -D_FILE_OFFSET_BITS=64 -fPIC -DDEBUG -D_DEBUG
+@@ -11,7 +10,6 @@
+ #CFLAGS+=-Dtime_sum_range_records_in_place_wahbm
+ #CFLAGS+=-Dtime_convert_file_by_name_bcf_to_wahbm_bim
+ #CFLAGS+=-Dtime_sort_rotate_gt_md
+-SQLITE_ROOT=../../sqlite-amalgamation-3080701
+ CC=gcc
+ LEX=flex
+ 
+@@ -54,26 +52,22 @@
+ 	gqt 
+ 
+ 
+-LIST=$(SQLITE_ROOT)/sqlite3.o parse_q $(addprefix $(BIN)/, $(PROG))
++LIST=parse_q $(addprefix $(BIN)/, $(PROG))
+ 
+ all: $(LIST)
+ 
+ parse_q: 
+ 	$(LEX) -oparse_q.yy.c parse_q.l
+ 
+-$(SQLITE_ROOT)/sqlite3.o: $(SQLITE_ROOT)/sqlite3.c
+-	$(CC) -c $(SQLITE_ROOT)/sqlite3.c -o $(SQLITE_ROOT)/sqlite3.o
+-
+ $(OBJ)/%.o: %.c 
+ 	$(CC) -c $(CFLAGS) -o $@ $< \
+-		-I$(HTS_ROOT) -I$(SQLITE_ROOT)
++		-I$(PREFIX)/include
+ 
+ 
+ $(BIN)/%: %.c $(OBJS)
+ 	$(CC) $(CFLAGS) -o $@ $^ \
+-		-I$(HTS_ROOT) \
+-		-I$(SQLITE_ROOT) \
++		-I$(PREFIX)/include \
+ 		-DSAMTOOLS=1 \
+-		$(HTS_ROOT)/libhts.a \
+-		$(SQLITE_ROOT)/sqlite3.o \
+-		-ldl -lz -lm  -pthread
++		$(PREFIX)/lib/libhts.a \
++		$(PREFIX)/lib/libsqlite3.a \
++		-ldl -lz -lm -lcurl -lssl -lcrypto -llzma -lbz2 -pthread -ldeflate

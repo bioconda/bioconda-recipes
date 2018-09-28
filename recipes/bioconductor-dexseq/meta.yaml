@@ -1,18 +1,21 @@
+{% set version = "1.24.0" %}
+{% set name = "DEXSeq" %}
+{% set bioc = "3.6" %}
+
 package:
-  name: bioconductor-dexseq
-  version: 1.20.1
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: DEXSeq_1.20.1.tar.gz
-  url: http://bioconductor.org/packages/release/bioc/src/contrib/DEXSeq_1.20.1.tar.gz
-  md5: 020cf1c4899bb19fb3854d86e72132e1
+  url: 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 2db4e0ef43c0d14b4a08fcd012474cea3b6680982501cba84e5b41e7c4b7bc63
 build:
-  number: 0
-  skip: True # [py3k or osx]
+  noarch: python
+  number: 3
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
+  host:
     - bioconductor-annotationdbi
     - bioconductor-biobase
     - bioconductor-biocgenerics
@@ -26,7 +29,7 @@ requirements:
     - bioconductor-rsamtools
     - bioconductor-s4vectors
     - bioconductor-summarizedexperiment
-    - r
+    - r-base
     - r-hwriter
     - r-rcolorbrewer
     - r-statmod
@@ -45,21 +48,23 @@ requirements:
     - bioconductor-rsamtools
     - bioconductor-s4vectors
     - bioconductor-summarizedexperiment
-    - r
+    - r-base
     - r-hwriter
     - r-rcolorbrewer
     - r-statmod
     - r-stringr
-    - python
+    - libgfortran-ng
+    - python <3
 test:
   commands:
-    - '$R -e "library(''DEXSeq'')"'
+    - '$R -e "library(''{{ name }}'')"'
+    - dexseq_count.py --help
+    - dexseq_prepare_annotation.py --help
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/DEXSeq.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 3)'
-  summary: 'The package is focused on finding differential exon usage using RNA-seq
-    exon counts between samples with different experimental designs. It provides functions
-    that allows the user to make the necessary statistical tests based on a model
-    that uses the negative binomial distribution to estimate the variance between
-    biological replicates and generalized linear models for testing. The package also
-    provides functions for the visualization and exploration of the results.'
+  summary: 'The package is focused on finding differential exon usage using RNA-seq exon counts between samples with different experimental designs. It provides functions that allows the user to make the necessary statistical tests based on a model that uses the negative binomial distribution to estimate the variance between biological replicates and generalized linear models for testing. The package also provides functions for the visualization and exploration of the results.'
+
+extra:
+  identifiers:
+    - biotools:dexseq

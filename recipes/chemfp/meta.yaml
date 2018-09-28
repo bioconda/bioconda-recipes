@@ -1,24 +1,31 @@
+{% set version="1.4" %}
+
 package:
   name: chemfp
-  version: "1.1p1"
+  version: {{ version }}
 
 source:
-  fn: chemfp-1.1p1.tar.gz
-  url: https://pypi.python.org/packages/92/84/d059c29c212daf8ba302f90b8e01ffa0e51251109c064b15513f44322f34/chemfp-1.1p1.tar.gz
-  md5: 5a2fab57ce54d51e2b79be8ea0ce59bf
+  url: http://dalkescientific.com/releases/chemfp-{{ version }}.tar.gz
+  sha256: acab336971f0cf5650ca91e36ae74c7ed9d1bc3a93528e2041ccbcc17c3400ab
 
 build:
-  number: 0
+  number: 1
   skip: True    # [osx or py3k]
+  entry_points:
+    - ob2fps=chemfp.commandline.ob2fps:run
+    - oe2fps=chemfp.commandline.oe2fps:run
+    - rdkit2fps=chemfp.commandline.rdkit2fps:run
+    - sdf2fps=chemfp.commandline.sdf2fps:run
+    - simsearch=chemfp.commandline.simsearch:run
+    - fpcat=chemfp.commandline.fpcat:run
 
 requirements:
   build:
-    - gcc   # [linux]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
+  host:
     - python
     - openbabel
     - rdkit
-
   run:
     - python
     - openbabel
@@ -32,7 +39,26 @@ test:
     - chemfp.futures
     - chemfp.progressbar
 
+  commands:
+    - ob2fps --help
+    - rdkit2fps --help
+    - sdf2fps --help
+    - simsearch --help
+    - fpcat --help
+
 about:
-  home: http://code.google.com/p/chem-fingerprints/
-  license: MIT License
-  summary: 'chemfp is a set of command-lines tools for generating cheminformatics\nfingerprints and searching those fingerprints by Tanimoto similarity,\nas well as a Python library which can be used to build new tools.\n\nThese algorithms are designed for the dense, 100-10,000 bit\nfingerprints which occur in small-molecule/pharmaceutical\nchemisty. The Tanimoto search algorithms are implemented in C for\nperformance and support both threshold and k-nearest searches.\n\nFingerprint generation can be done either by extracting existing\nfingerprint data from an SD file or by using an existing chemistry\ntoolkit. chemfp supports the Python libraries from Open Babel,\nOpenEye, and RDKit toolkits.\n'
+  home: https://chemfp.com
+  license: MIT
+  summary: |
+    chemfp is a set of command-lines tools for generating cheminformatics fingerprints and searching those
+    fingerprints by Tanimoto similarity, as well as a Python library which can be used to build new tools.
+
+    These algorithms are designed for the dense, 100-10,000 bit
+    fingerprints which occur in small-molecule/pharmaceutical
+    chemisty. The Tanimoto search algorithms are implemented in C for
+    performance and support both threshold and k-nearest searches.
+
+    Fingerprint generation can be done either by extracting existing
+    fingerprint data from an SD file or by using an existing chemistry
+    toolkit. chemfp supports the Python libraries from Open Babel,
+    OpenEye, and RDKit toolkits.

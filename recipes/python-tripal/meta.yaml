@@ -1,36 +1,55 @@
 package:
   name: python-tripal
-  version: "1.5"
+  version: "3.0"
 
 source:
-  fn: tripal-1.5.tar.gz
-  url: https://pypi.python.org/packages/47/d5/dd042cf423ca265c7d530cac983650ea4cec4e4ed1fd57aa9fd74d0339ad/tripal-1.5.tar.gz
-  md5: 1ea80652a14b85ed88d39fce07d0c1d5
+  url: https://files.pythonhosted.org/packages/d9/c9/99cec61435f81812501b8598dbf18f76ba410b8c27f4b63a2e27b84dc235/tripal-3.0.tar.gz
+  sha256: 0f6002457d264b9ae42864e17e816dc41127573c0503709ee9dbf425d1a9ac10
 
 build:
-  number: 0
-  skip: True # [not py27]
+  noarch: python
+  number: 1
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
     - requests >=2.4.3
+    - wrapt
+    - click
+    - pyyaml
 
   run:
     - python
     - requests >=2.4.3
+    - wrapt
+    - click
+    - pyyaml
+    - future
 
 test:
   imports:
     - tripal
-    - tripal.actions
+    - tripal.analysis
+    - tripal.db
+    - tripal.feature
+    - tripal.job
+    - tripal.organism
+    - tripal.phylogeny
 
   commands:
-    - tripal --help > /dev/null
+    - tripaille --help > /dev/null
+    - tripaille analysis --help > /dev/null
 
 about:
-  home: https://github.com/abretaud/python-tripal
+  home: https://github.com/galaxy-genome-annotation/python-tripal
   license: MIT License
   summary: 'Tripal API library'
   license_family: MIT
+
+extra:
+  container:
+    # unicode problem with click
+    extended-base: true
+  identifiers:
+    - biotools:tripal

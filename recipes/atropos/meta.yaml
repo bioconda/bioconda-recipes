@@ -1,0 +1,36 @@
+{% set name = "atropos" %}
+{% set version = "1.1.18" %}
+{% set hash = "424f10592db82da2503ff3709f05423cc110b249b0537152da245769ac3caab9" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ hash }}
+
+about:
+  home: https://atropos.readthedocs.io/
+  license: CC0 and partly MIT
+  summary: 'trim adapters from high-throughput sequencing reads'
+
+build:
+  number: 1
+  script: python -m pip install --no-deps --ignore-installed .
+  skip: True  # [py27]
+
+requirements:
+  host:
+    - python
+    - pip
+    - cython >=0.25.2
+  run:
+    - python
+    - tqdm
+    - pysam
+    - jinja2
+
+test:
+  commands:
+    - atropos | grep "Atropos version"
