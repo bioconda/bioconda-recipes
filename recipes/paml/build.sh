@@ -6,7 +6,7 @@ mkdir -p ${PREFIX}/bin/
 cp -r dat ${PREFIX}/
 
 cd src
-make
+make -j 4
 
 cp baseml ${PREFIX}/bin/
 cp basemlg ${PREFIX}/bin/
