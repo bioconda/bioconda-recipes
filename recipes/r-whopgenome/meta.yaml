@@ -1,0 +1,51 @@
+{% set version = '0.9.7' %}
+{% set name = 'r-whopgenome' %}
+{% set posix = '' %}
+{% set native = '' %}
+
+package:
+  name: r-whopgenome
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/WhopGenome_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/WhopGenome/WhopGenome_{{ version }}.tar.gz
+  sha256: 58bb001a831eff64955e424f07de7775d4d463d9674fc7743a0f795b7a6a47f5
+
+build:
+  number: 0
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - r-base 3.3*
+    - r-dbi
+    - bioconductor-annotationdbi
+    - r-rmysql
+  run:
+    - r-base 3.3*
+    - r-dbi
+    - bioconductor-annotationdbi
+    - r-rmysql
+
+test:
+  commands:
+    - $R -e "library('WhopGenome')"
+
+about:
+  home: https://CRAN.R-project.org/package=WhopGenome
+  license: GPL (>= 2)
+  summary: Provides very fast access to whole genome, population scale variation data from VCF
+    files and sequence data from FASTA-formatted files. It also reads in alignments
+    from FASTA, Phylip, MAF and other file formats. Provides easy-to-use interfaces
+    to genome annotation from UCSC and Bioconductor and gene ontology data from AmiGO
+    and is capable to read, modify and write PLINK .PED-format pedigree files.
+  license_family: GPL3

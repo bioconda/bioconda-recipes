@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -vex
 
 cd pypeflow
@@ -19,9 +19,9 @@ cd pb-falcon-phase
 cd src
 echo ${CC}
 which ${CC}
-meson --buildtype=release ./build-meson
-ninja -C ./build-meson -v
-cp -f ./build-meson/falcon-phase ${PREFIX}/bin
+meson --prefix "${PREFIX}" --buildtype=release ./build-meson
+ninja -C ./build-meson -v install
+#cp -f ./build-meson/falcon-phase ${PREFIX}/bin # we want RPATH munging from Meson
 cd ..
 
 cd bin
