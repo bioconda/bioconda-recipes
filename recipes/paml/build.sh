@@ -18,4 +18,4 @@ cp pamp ${PREFIX}/bin/
 cp yn00 ${PREFIX}/bin/
 
 cd ..
-cp -r dat ${PREFIX}/bin/
+cp -r dat ${PREFIX}/
