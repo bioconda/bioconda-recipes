@@ -1,17 +1,19 @@
-{% set version = "1.14.0" %}
+{% set version = "1.16.1" %}
 {% set name = "CNEr" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
+  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 6c510e8aa2667658ef62c52c30f39132f8d8c9fda1d13965763b5c5cfcfdc0f9
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 431f04c9915af270b60e628737c53a0b3550d23c214f09eba6f172b456cbc425
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
@@ -58,6 +60,9 @@ requirements:
     - 'r-readr >=0.2.2'
     - 'r-reshape2 >=1.4.1'
     - 'r-rsqlite >=0.11.4'
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -65,8 +70,3 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL-2 | file LICENSE'
   summary: 'Large-scale identification and advanced visualization of sets of conserved noncoding elements.'
-
-extra:
-  identifiers:
-    - biotools:cner
-    - doi:10.1038/nmeth.3252

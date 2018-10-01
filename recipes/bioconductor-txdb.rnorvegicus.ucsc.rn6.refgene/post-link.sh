@@ -1,10 +1,11 @@
 #!/bin/bash
-FN="TxDb.Rnorvegicus.UCSC.rn6.refGene_3.4.1.tar.gz"
+FN="TxDb.Rnorvegicus.UCSC.rn6.refGene_3.4.3.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/TxDb.Rnorvegicus.UCSC.rn6.refGene_3.4.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.rnorvegicus.ucsc.rn6.refgene/bioconductor-txdb.rnorvegicus.ucsc.rn6.refgene_3.4.1_src_all.tar.gz"
+  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/TxDb.Rnorvegicus.UCSC.rn6.refGene_3.4.3.tar.gz"
+  "https://bioarchive.galaxyproject.org/TxDb.Rnorvegicus.UCSC.rn6.refGene_3.4.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.rnorvegicus.ucsc.rn6.refgene/bioconductor-txdb.rnorvegicus.ucsc.rn6.refgene_3.4.3_src_all.tar.gz"
 )
-MD5="4128d06fb48a78aad08da3765fe55234"
+MD5="502c29bc0eb476938794a01c2d8ce269"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

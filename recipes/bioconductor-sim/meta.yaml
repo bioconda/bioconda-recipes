@@ -1,24 +1,23 @@
-{% set version = "1.48.0" %}
+{% set version = "1.50.0" %}
 {% set name = "SIM" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
+  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: cecad837161de40bc56dc745e3fb1776f3804f77fa5eb44b285bb4160b3f40d8
+  sha256: ad883a0998f04b9f446c12603f9d6abbe8a502ba6612394ba7a43fd5ba28bc3e
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
     - bioconductor-globaltest
     - bioconductor-quantsmooth
@@ -29,7 +28,9 @@ requirements:
     - bioconductor-quantsmooth
     - r-base
     - r-quantreg
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -37,8 +38,3 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Finds associations between two human genomic datasets.'
-
-extra:
-  identifiers:
-    - biotools:sim
-    - doi:10.1186/1471-2105-10-203

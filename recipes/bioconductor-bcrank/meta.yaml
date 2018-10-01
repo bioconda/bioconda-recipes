@@ -1,17 +1,19 @@
-{% set version = "1.40.0" %}
+{% set version = "1.42.0" %}
 {% set name = "BCRANK" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
+  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 3c5fc7c5699bcadeb26ceb67dc2822680bba4b3685b0c62b25bb54f8d5d4726d
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 98196790877a23218038419beb4f8fc6b977f04ff58ca311998b528349810247
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
@@ -22,6 +24,9 @@ requirements:
   run:
     - bioconductor-biostrings
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -29,7 +34,3 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'Functions and classes for de novo prediction of transcription factor binding consensus by heuristic search'
-extra:
-  identifiers:
-    - biotools:bcrank
-    - doi:10.1093/nar/gkp381

@@ -1,24 +1,23 @@
-{% set version = "1.12.0" %}
+{% set version = "1.14.0" %}
 {% set name = "kebabs" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
+  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 82b8f95cc46a84245d1a314ffdaa6aa09ffd6242d321f77c69ee7fbef2af7ed5
+  sha256: 060e19e97316757ec24008fa9e4d4a370e81dcfceb0e886f15cf78ad2d0104e8
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
     - 'bioconductor-biostrings >=2.35.5'
     - bioconductor-iranges
@@ -43,7 +42,10 @@ requirements:
     - r-liblinear
     - r-matrix
     - 'r-rcpp >=0.11.2'
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

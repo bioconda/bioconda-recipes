@@ -1,23 +1,22 @@
-{% set version = "1.20.0" %}
+{% set version = "1.22.0" %}
 {% set name = "chimera" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
+  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: a473b0db84efef737782dc07f784eef7acc62133fcac140c7ba2fb6d3dbfa07c
-
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: b24054dd8cfccd9fcb5ae546a8b220c91eac68a8e965ddd1bd224ec3dfc16ccf
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-
 requirements:
   host:
     - bioconductor-annotationdbi
@@ -39,14 +38,14 @@ requirements:
     - 'bioconductor-rsamtools >=1.13.1'
     - bioconductor-txdb.hsapiens.ucsc.hg19.knowngene
     - r-base
-
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'This package facilitates the characterisation of fusion products events. It allows to import
-    fusion data results from the following fusion finders:  chimeraScan, bellerophontes, deFuse, FusionFinder,
-    FusionHunter, mapSplice, tophat-fusion, FusionMap, STAR, Rsubread, fusionCatcher.'
+  summary: 'This package facilitates the characterisation of fusion products events. It allows to import fusion data results from the following fusion finders:  chimeraScan, bellerophontes, deFuse, FusionFinder, FusionHunter, mapSplice, tophat-fusion, FusionMap, STAR, Rsubread, fusionCatcher.'

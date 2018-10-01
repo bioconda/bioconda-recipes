@@ -1,33 +1,38 @@
-{% set version = "2.46.0" %}
+{% set version = "2.48.0" %}
 {% set name = "Biostrings" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
+  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: f353f6c1fdbc520a685b880ef05f61245f04397adfcaae4c1395e14e1b06e56d
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: d244dd2dbe1fdaff293b07d6a9009f7fea49742dc252535f6cfea02941220b85
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
     - 'bioconductor-biocgenerics >=0.15.6'
-    - 'bioconductor-iranges >=2.9.18'
-    - 'bioconductor-s4vectors >=0.13.13'
-    - 'bioconductor-xvector >=0.11.6'
+    - 'bioconductor-iranges >=2.13.24'
+    - 'bioconductor-s4vectors >=0.17.25'
+    - 'bioconductor-xvector >=0.19.8'
     - r-base
   run:
     - 'bioconductor-biocgenerics >=0.15.6'
-    - 'bioconductor-iranges >=2.9.18'
-    - 'bioconductor-s4vectors >=0.13.13'
-    - 'bioconductor-xvector >=0.11.6'
+    - 'bioconductor-iranges >=2.13.24'
+    - 'bioconductor-s4vectors >=0.17.25'
+    - 'bioconductor-xvector >=0.19.8'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -35,8 +40,3 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Memory efficient string containers, string matching algorithms, and other utilities, for fast manipulation of large biological sequences or sets of sequences.'
-
-extra:
-  identifiers:
-    - biotools:biostrings
-    - doi:10.1038/nmeth.3252

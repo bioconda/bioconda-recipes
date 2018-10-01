@@ -1,24 +1,23 @@
-{% set version = "1.42.0" %}
+{% set version = "1.44.0" %}
 {% set name = "pdInfoBuilder" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
+  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: c100dc18d204ce086f5a14f9503cd256e1c0b3bb89ba6139eb11de3b3f3e4433
+  sha256: 96f94b99e7db9a2a38dfa19cc518c87fddc465aeb654b5033933959914bcb172
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
     - 'bioconductor-affxparser >=1.39.4'
     - 'bioconductor-biobase >=2.27.3'
@@ -43,7 +42,9 @@ requirements:
     - r-base
     - 'r-dbi >=0.3.1'
     - 'r-rsqlite >=1.0.0'
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -51,8 +52,3 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Builds platform design information packages. These consist of a SQLite database containing feature-level data such as x, y position on chip and featureSet ID. The database also incorporates featureSet-level annotation data. The products of this packages are used by the oligo pkg.'
-
-extra:
-  identifiers:
-    - biotools:pdinfobuilder
-    - doi:10.1093/bioinformatics/btq431

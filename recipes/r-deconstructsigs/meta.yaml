@@ -1,44 +1,67 @@
 {% set version = '1.8.0' %}
 
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-deconstructsigs
   version: {{ version|replace("-", "_") }}
 
 source:
+  fn: deconstructSigs_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/deconstructSigs_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/deconstructSigs/deconstructSigs_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/deconstructSigs_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/deconstructSigs/deconstructSigs_{{ version }}.tar.gz
   sha256: 2ab8f6c0fd674bd270035ba2112f1a79d63de1155ba9698c4169c92196059d04
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+
+  number: 2
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
+  build:
+    - {{posix}}zip               # [win]
+
   host:
-    - bioconductor-bsgenome
-    - bioconductor-bsgenome.hsapiens.ucsc.hg19
-    - bioconductor-genomeinfodb
     - r-base
+    - r-bsgenome
+    - r-bsgenome.hsapiens.ucsc.hg19
+    - r-genomeinfodb
     - r-reshape2
 
   run:
-    - bioconductor-bsgenome
-    - bioconductor-bsgenome.hsapiens.ucsc.hg19
-    - bioconductor-genomeinfodb
     - r-base
+    - r-bsgenome
+    - r-bsgenome.hsapiens.ucsc.hg19
+    - r-genomeinfodb
     - r-reshape2
 
 test:
   commands:
-    - $R -e "library('deconstructSigs')"
+
+    - $R -e "library('deconstructSigs')"           # [not win]
+    - "\"%R%\" -e \"library('deconstructSigs')\""  # [win]
 
 about:
-  home: https
+  home: https://github.com/raerose01/deconstructSigs
   license: GPL (>= 2)
   summary: Takes sample information in the form of the fraction of mutations in each of 96 trinucleotide
     contexts and identifies the weighted combination of published signatures that, when
     summed, most closely reconstructs the mutational profile.
   license_family: GPL3
+  license_file: '{{ environ["PREFIX"] }}\/lib\/R\/share\/licenses\/GPL-3'  # [unix]
+  license_file: '{{ environ["PREFIX"] }}\R\share\licenses\GPL-3'  # [win]
+extra:
+   recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

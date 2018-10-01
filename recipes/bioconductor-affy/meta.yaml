@@ -1,17 +1,19 @@
-{% set version = "1.56.0" %}
+{% set version = "1.58.0" %}
 {% set name = "affy" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
+  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 327b0d7ae506632b5c9c0a4f5b527b04fd4bc91be0f63167d3ce15556b9cab4a
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 26cef02431581909471bb637ba03c736fde6787699593c9c0ea2bea8cb41b86b
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
@@ -32,6 +34,10 @@ requirements:
     - bioconductor-preprocesscore
     - bioconductor-zlibbioc
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -39,7 +45,3 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>= 2.0)'
   summary: 'The package contains functions for exploratory oligonucleotide array analysis. The dependence on tkWidgets only concerns few convenience functions. ''affy'' is fully functional without it.'
-
-extra:
-  identifiers:
-    - biotools:affy

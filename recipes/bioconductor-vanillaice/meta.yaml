@@ -1,24 +1,23 @@
-{% set version = "1.40.0" %}
+{% set version = "1.42.4" %}
 {% set name = "VanillaICE" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
+  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: e2d6f62714c6da9341072bb89c6a17b6fddd6769dc695cff40c594b89da05c93
+  sha256: 0f744caf4e2dcceb4d25dccfcf06147e479db8145289c27eb204a73893fb3763
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
     - bioconductor-biobase
     - 'bioconductor-biocgenerics >=0.13.6'
@@ -51,7 +50,9 @@ requirements:
     - r-foreach
     - r-lattice
     - r-matrixstats
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -59,7 +60,3 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL-2
   summary: 'Hidden Markov Models for characterizing chromosomal alterations in high throughput SNP arrays.'
-
-extra:
-  identifiers:
-    - biotools:vanillaice

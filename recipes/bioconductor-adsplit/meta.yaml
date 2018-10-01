@@ -1,17 +1,19 @@
-{% set version = "1.48.0" %}
+{% set version = "1.50.0" %}
 {% set name = "adSplit" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
+  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: ca161b19138510145ea8c1ebb1129b247764435ae17ac9ef2bbf99360bc57b8d
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 5886e5d91dfa9c5bd859a0c6d158036a74dc8413f4874bc9fa7bbca46852257e
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
@@ -32,6 +34,10 @@ requirements:
     - 'bioconductor-multtest >=1.6.0'
     - r-base
     - 'r-cluster >=1.9.1'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

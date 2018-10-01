@@ -1,7 +1,9 @@
 #!/bin/bash
 FN="BSgenome.Celegans.UCSC.ce6_1.4.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/BSgenome.Celegans.UCSC.ce6_1.4.0.tar.gz"
+  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/BSgenome.Celegans.UCSC.ce6_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/BSgenome.Celegans.UCSC.ce6_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.celegans.ucsc.ce6/bioconductor-bsgenome.celegans.ucsc.ce6_1.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.celegans.ucsc.ce6/bioconductor-bsgenome.celegans.ucsc.ce6_1.4.0_src_all.tar.gz"
 )
 MD5="cb86ff861d8f660c2abd8fc1907d84a6"

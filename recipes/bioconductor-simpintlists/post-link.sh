@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="simpIntLists_1.14.0.tar.gz"
+FN="simpIntLists_1.16.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/experiment/src/contrib/simpIntLists_1.14.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/simpIntLists_1.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-simpintlists/bioconductor-simpintlists_1.14.0_src_all.tar.gz"
+  "http://bioconductor.org/packages/3.7/data/experiment/src/contrib/simpIntLists_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/simpIntLists_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-simpintlists/bioconductor-simpintlists_1.16.0_src_all.tar.gz"
 )
-MD5="38c2b32e4e24ca6b2761abf5a55e1d88"
+MD5="7a876bfa3d4e4ae339b90c3f64934a51"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
