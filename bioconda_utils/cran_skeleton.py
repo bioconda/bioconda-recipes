@@ -156,6 +156,7 @@ def clean_yaml_file(package, no_windows):
 
         # Add contents of maintainers file to the end of the recipe
         add_maintainers(lines)
+        lines.extend(["  skip-lints:\n", "    - should_not_use_fn\n"])
 
     with open(path, 'w') as yaml:
         out = "".join(lines)

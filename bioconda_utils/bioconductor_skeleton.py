@@ -800,7 +800,7 @@ class BioCProjectPage(object):
             ),
             (
                 'extra', OrderedDict((
-                    ('skip-lints', ['should_not_use_fn'])
+                    ('skip-lints', ['should_not_use_fn']),
                 )),
             ),
         ))
