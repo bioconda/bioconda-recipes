@@ -1,0 +1,140 @@
+# This is recipe uses an older "boost" version to provide a build of "augustus"
+# that can be installed alongside "rmblast" which requires "boost <=1.58".
+# Needed for package "maker" which depends on "augustus" and "repeatmasker"
+# ("repeatmasker" requires "rmblast").
+{% set boost = "1.57" %}
+
+{% set name = "augustus" %}
+{% set version = "3.2.3" %}
+{% set sha256 = "a1af128aefd228dea0c46d6f5234910fdf068a2b9133175ca8da3af639cb4514" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: http://bioinf.uni-greifswald.de/augustus/binaries/old/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patches/bam2hints.Makefile.patch
+    - patches/filterBam.src.Makefile.patch
+    - patches/filterBam.Makefile.patch
+    - patches/compileSpliceCands.Makefile.patch
+
+build:
+  number: 5
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - bamtools
+    - gsl
+    - lp_solve
+    - perl
+    - perl-module-build
+    - boost
+    - sqlite
+    - suitesparse
+    - openblas
+  run:
+    - zlib
+    - bamtools
+    - boost
+    - gsl
+    - lp_solve
+    - perl
+    - perl-app-cpanminus
+    - perl-module-build
+    - perl-yaml
+    - perl-dbi
+    - perl-scalar-list-utils
+    - sqlite
+    - suitesparse
+    - openblas
+
+test:
+  commands:
+    - augustus --version
+    - autoAug.pl --help &>/dev/null
+    - bedgraph2wig.pl --help &>/dev/null
+    - blat2gbrowse.pl --help 2>&1 | grep "convert blat file to gbrowse file" &>/dev/null
+    - blat2hints.pl --help
+    - cegma2gff.pl --help 2>&1 | grep "Could not open CEGMA file --help"
+    - checkParamArchive.pl --help 2>&1 | grep "checkParamArchive.pl param-archive.tar.gz projectDir > utrPossible 2> errors"
+    - cleanDOSfasta.pl --help 2>&1 | grep "Could not open file --help"
+    - clusterAndSplitGenes.pl --help
+    - createAugustusJoblist.pl --help
+    - del_from_prfl.pl --help 2>&1 | grep "Need two arguments"
+    - evalCGP.pl --help
+    - exonerate2hints.pl --help
+    - echo "hello" | exoniphyDb2hints.pl
+    - echo "hello" | extractTranscriptEnds.pl | grep ">seq1"
+    - filterBam --help 2>&1 | grep "filterBam --in in.bam --out out.bam"
+    - filterGenesIn_mRNAname.pl --help
+    - filterGenesOut_mRNAname.pl --help
+    - filterGenes.pl --help 2>&1 | grep "usage:filterGenes.pl namefile dbfile"
+    - filterInFrameStopCodons.pl --help 2>&1 | grep "Could not open protein file"
+    - filterMaf.pl --help 2>&1 | grep "filter blocks from a MAF alignment that intersect with a given genomic interval"
+    - echo "hello" | filter-ppx.pl | grep "hello"
+    - filterPSL.pl --help
+    - filterShrimp.pl --help
+    - filterSpliceHints.pl --help
+    - gbrowseold2gff3.pl --help 2>&1 | grep "gbrowseold2gff3.pl format convert a GFF file"
+    - gbSmallDNA2gff.pl --help 2>&1 | grep "Could not open genbank input file --help"
+    - getAnnoFasta.pl --help 2>&1 | grep "Makes a fasta file with protein sequences (augustus.aa)"
+    - gff2gbSmallDNA.pl --help 2>&1 | grep "convert GFF file and sequence fasta file to minimal genbank format"
+    - gffGetmRNA.pl --help
+    - gp2othergp.pl --help 2>&1 | grep "t open --help"
+    - gtf2gff.pl --help 2>&1 | grep "gtf2gff.pl format convert a GTF file"
+    - hal2maf_split.pl --help 2>&1 | grep "this script works on top of the "
+    - intron2exex.pl --help | grep "intron2exex.pl make a fasta file with exon-exon sequences"
+    - join_mult_hints.pl --help
+    - joinPeptides.pl --help 2>&1 | grep "joinPeptides.pl in1.fa in2.fa > out.fa"
+    - maf2conswig.pl --help | grep "maf2conswig.pl convert maf alignment format"
+    - makeMatchLists.pl --help  2>&1 | grep "t open --help"
+    - makeUtrTrainingSet.pl --help 2>&1 | grep "./makeUtrTrainingSet.pl -- make a genbank or gff training file with "
+    - maskNregions.pl --help 2>&1 | grep "could not open file --help"
+    - moveParameters.pl --help
+    - msa2prfl.pl --help 2>&1 | grep "Converts a Multiple Sequence Alignment"
+    - new_species.pl --help
+    - optimize_augustus.pl --help
+    - partition_gtf2gb.pl --help 2>&1 | grep "Partition a gtf file into gene clusters"
+    - pasapolyA2hints.pl --help 2>&1 | grep "PASA-Output file in fasta-format"
+    - peptides2alternatives.pl --help 2>&1 | grep "peptides2alternatives.pl peptides.aa augustus-genes.aa"
+    - peptides2hints.pl --help 2>&1 | grep "peptides2hints.pl psl-file gff-file fa-file src pri"
+    - polyA2hints.pl --help 2>&1 | grep "transcript end at position p gives rise to a tts hint"
+    - randomSplit.pl --help
+    - ratewig.pl --help 2>&1 | grep "ratewig /path/to/refseqfile/ /path/to/wigfile"
+    - rmRedundantHints.pl --help 2>&1 | grep "rmRedundantHints.pl list1.hints list2.hints > nonredundant.hints"
+    - runAllSim4.pl --help
+    - samMap.pl --help
+    - scipiogff2gff.pl --help 2>&1 | grep "convert a gff from scipio to a gff file"
+    - simpleFastaHeaders.pl --help 2>&1 | grep "in.fa prefix out.fa mapping.txt"
+    - simplifyFastaHeaders.pl --help 2>&1 | grep "in.fa nameStem out.fa header.map"
+    - splitMfasta.pl --help 2>&1 | grep "Unknown option"
+    - split_wiggle.pl --help
+    - summarizeACGTcontent.pl --help 2>&1 | grep "Couldn"
+    - transMap2hints.pl --help 2>&1 | grep "convert transmap alignments to hints file"
+    - uniquePeptides.pl --help 2>&1 | grep "uniquePeptides.pl in.fa prefix > out.fa"
+    - utrgff2gbrowse.pl --help
+    - wigchoose.pl --help
+    - writeResultsPage.pl --help 2>&1 | grep "writeResultsPage ID species-name db-file grails-out www-out AugustusConfigPath AugustusScriptsPath final-flag"
+    - yaml2gff.1.4.pl --help 2>&1 | grep "< scipio.yaml > scipio.gff"
+
+about:
+  home: http://bioinf.uni-greifswald.de/augustus/
+  license: MIT
+  license_family: MIT
+  summary: 'AUGUSTUS is a gene prediction program for eukaryotes written by Mario
+    Stanke and Oliver Keller. It can be used as an ab initio program, which means
+    it bases its prediction purely on the sequence. AUGUSTUS may also incorporate
+    hints on the gene structure coming from extrinsic sources such as EST, MS/MS,
+    protein alignments and synthenic genomic alignments.'
+
+extra:
+  identifiers:
+    - biotools:augustus
+    - doi:10.1093/bioinformatics/btr010
+  notes: Builds with sqlite support are currently only available on Linux due to compile issues with macOS

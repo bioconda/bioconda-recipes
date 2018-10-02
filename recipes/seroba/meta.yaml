@@ -1,0 +1,51 @@
+{% set name = "seroba" %}
+{% set version = "1.0.0" %}
+{% set sha256sum = "7056841f54e338f9fc981e4278c849c0e6d446a5d2a8db795482f826f2b3533e" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/sanger-pathogens/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256sum }}
+
+build:
+  number: 1
+  skip: True # [not py3k]
+
+requirements:
+  host:
+    - python
+    - setuptools
+  run:
+    - python
+    - setuptools
+    - kmc >=3.0
+    - mummer
+    - bowtie2
+    - cd-hit
+    - ariba >=2.9.1
+    - pymummer >=0.10.2
+    - biopython >=1.68
+    - pyyaml >=3.12
+    - pyfastaq >=3.14.0
+
+test:
+  commands:
+    # request agg Matplolib backend to avoid dependency on libGL.so.1
+    - MPLBACKEND=agg seroba -h
+
+about:
+  home: https://github.com/sanger-pathogens/seroba
+  license: GPL3.0
+  license_family: GPL
+  summary: 'SeroBA is a k-mer based Pipeline to identify the Serotype from Illumina NGS reads for given references.'
+  description: |
+      SeroBA is a k-mer based Pipeline to identify the Serotype from Illumina NGS reads for given references. 
+      You can use SeroBA to download references from (https://github.com/phe-bioinformatics/PneumoCaT) 
+      to do identify the capsular type of Streptococcus pneumoniae.
+
+extra:
+  skip-lints:
+    - uses_setuptools  # seroba uses pkg_resources

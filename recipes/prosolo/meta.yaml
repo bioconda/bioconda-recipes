@@ -1,0 +1,45 @@
+{% set version = "0.4.0" %}
+
+package:
+  name: prosolo
+  version: {{ version }}
+
+build:
+  # only on OSX, `cargo install` fails with: `thread 'main' panicked at 'assertion failed: src_path.is_absolute()', src/tools/cargo/src/cargo/core/manifest.rs:311`
+  # looks like a `cargo` bug, that may go away with newer `rust` versions; check osx with rust>1.21 when available
+  skip: True # [not linux64]
+  number: 4
+
+source:
+  url: https://github.com/PROSIC/prosolo/archive/v{{ version }}.tar.gz
+  md5: 6b91b9a3dfb915891fb9df702249ff99
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - rust >=1.21
+    - gsl
+    - openblas
+    - zlib
+    # new cram dependencies for rust-htslib 0.16.0
+    - bzip2
+    - xz
+    - clangdev
+  run:
+    - gsl
+    - openblas
+    - zlib
+    # new cram dependencies for rust-htslib 0.16.0
+    - bzip2
+    - xz
+    - clangdev
+
+test:
+  commands:
+    - prosolo single-cell-bulk --help
+
+about:
+  home: https://github.com/PROSIC/prosolo/tree/v{{ version }}
+  license: GPLv3
+  summary: A highly sensitive and accurate Bayesian caller for variants in single cell sequencing data.

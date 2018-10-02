@@ -1,0 +1,55 @@
+{% set version = "1.22.0" %}
+{% set name = "ffpe" %}
+{% set bioc = "3.6" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 0400831fc0451f4847ad511452ab4868b77264da0bbcdd5a36bf374f160f1430
+
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - bioconductor-affy
+    - bioconductor-biobase
+    - bioconductor-biocgenerics
+    - bioconductor-lumi
+    - bioconductor-methylumi
+    - r-base
+    - r-sfsmisc
+    - r-ttr
+  run:
+    - bioconductor-affy
+    - bioconductor-biobase
+    - bioconductor-biocgenerics
+    - bioconductor-lumi
+    - bioconductor-methylumi
+    - r-base
+    - r-sfsmisc
+    - r-ttr
+
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+
+about:
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>2)'
+  summary: 'Identify low-quality data using metrics developed for expression data derived from Formalin-Fixed, Paraffin-Embedded (FFPE) data.  Also a function for making Concordance at the Top plots (CAT-plots).'
+
+extra:
+  identifiers:
+    - biotools:ffpe

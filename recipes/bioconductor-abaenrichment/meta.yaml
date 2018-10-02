@@ -1,0 +1,46 @@
+{% set version = "1.8.0" %}
+{% set name = "ABAEnrichment" %}
+{% set bioc = "3.6" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: a17c26cb3ee7b80d577caac9a36ca2c4ca50e28ca6a0f92d0563a98561b15f50
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - 'bioconductor-abadata >=0.99.2'
+    - r-base
+    - 'r-data.table >=1.10.4'
+    - 'r-gplots >=2.14.2'
+    - 'r-gtools >=3.5.0'
+    - 'r-rcpp >=0.11.5'
+  run:
+    - 'bioconductor-abadata >=0.99.2'
+    - r-base
+    - 'r-data.table >=1.10.4'
+    - 'r-gplots >=2.14.2'
+    - 'r-gtools >=3.5.0'
+    - 'r-rcpp >=0.11.5'
+    - libcxx # [osx]
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'The package ABAEnrichment is designed to test for enrichment of user defined candidate genes in the set of expressed genes in different human brain regions. The core function ''aba_enrich'' integrates the expression of the candidate gene set (averaged across donors) and the structural information of the brain using an ontology, both provided by the Allen Brain Atlas project. ''aba_enrich'' interfaces the ontology enrichment software FUNC to perform the statistical analyses. Additional functions provided in this package like ''get_expression'' and ''plot_expression'' facilitate exploring the expression data. From version 1.3.5 onwards genomic regions can be provided as input, too; and from version 1.5.9 onwards the function ''get_annotated_genes'' offers an easy way to obtain annotations of genes to enriched or user-defined brain regions.'
+extra:
+  identifiers:
+    - biotools:abaenrichment

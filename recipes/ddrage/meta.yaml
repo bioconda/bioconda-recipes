@@ -1,24 +1,27 @@
 package:
   name: ddrage
-  version: "1.2.2"
+  version: "1.5.2"
 
 source:
-  fn: ddrage-1.2.2.tar.gz
-  url: https://pypi.python.org/packages/23/4f/b2de08852b6a58169556b34b757b0337dac80f17da32a8be15413c35ab5f/ddrage-1.2.2.tar.gz
-  md5: 9bca00e2700d874d4a7479e4adc3d425
+  url: https://bitbucket.org/genomeinformatics/rage/get/1.5.2.tar.gz
+  sha256: 63dba01ac03a14b0ab4828b5cc63b7723bcf05441231d43f93d82b4a401fd7de
+
 
 build:
   skip: True # [py2k or py34]
   entry_points:
     - rage = ddrage.__main__:main
+    - ddrage = ddrage.__main__:main
     - randomize_fastq = ddrage.tools.randomize_fastq:main
     - learn_qmodel = ddrage.tools.learn_qmodel:main
     - visualize_bbd = ddrage.tools.bbd_visualization:main_standalone
     - remove_annotation = ddrage.tools.remove_annotation:main
-  number: 0
+    - split_by_p7_barcode = ddrage.tools.split_by_p7_barcode:main
+  build: 1
+
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
     - numpy
@@ -26,7 +29,6 @@ requirements:
     - matplotlib
     - scipy
     - pyyaml
-    - libgcc
 
   run:
     - python
@@ -35,7 +37,9 @@ requirements:
     - matplotlib
     - scipy
     - pyyaml
-    - libgcc
+    - dinopy
+    - seaborn
+
 
 test:
   imports:
@@ -44,14 +48,20 @@ test:
     - ddrage.tools
 
   commands:
-    - rage --help
+    - ddrage --help
     - randomize_fastq --help
     - learn_qmodel --help
     # - visualize_bbd --help  # adding bokeh as a hard dependency made the build stall.
     - remove_annotation --help
+    - split_by_p7_barcode --help
 
 about:
   home: https://bitbucket.org/genomeinformatics/rage
   license: MIT License
   summary: 'Simulator for ddRADseq (double digest restriction site associdated DNA squencing) datasets. Generates reads (FASTQ format) that can be analyzed and validated using a ground truth file (YAML).'
   license_family: MIT
+
+extra:
+  container:
+    # needs libGL.so.1
+    extended-base: true

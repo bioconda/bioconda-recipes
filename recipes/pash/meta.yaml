@@ -3,23 +3,22 @@ package:
   version: "3.0.6.2"
 
 build:
-  number: 0
+  number: 1
   skip: True # [osx]
 
 source:
-  fn: pash-3.0.6.2.tar.gz
   url: https://genboree.org/pash-supp/pash-3.0.6.2.tar.gz
   md5: f475acdb1ad8dd712cdf16913849b860
 
 requirements:
   build:
-    - gcc
+    - {{ compiler('cxx') }}
+  host:
     - glib
-    - ruby
+    - ruby >=2.2.4
   run:
-    - libgcc
     - glib
-    - ruby
+    - ruby >=2.2.4 # to avoid the bioconda pkg
 
 about:
   home: http://www.bioinformatics.bbsrc.ac.uk/projects/bismark/
@@ -29,9 +28,13 @@ about:
 
 test:
   commands:
-    - keyFreq --help 2> /dev/null
-    - makeIgnoreList --help 2> /dev/null
-    - pash2SAM --help 2> /dev/null
-    - pash-3.0lx --help > /dev/null
-    - buildFastaIndex.rb --help | grep "PROGRAM DESCRIPTION" > /dev/null
-    - pashToLff.rb --help 2>&1 | grep "pash output" > /dev/null
+    - keyFreq --help
+    - makeIgnoreList --help
+    - pash2SAM --help
+    - pash-3.0lx --help
+    - buildFastaIndex.rb --help | grep "PROGRAM DESCRIPTION"
+    - pashToLff.rb --help 2>&1 | grep "pash output"
+
+extra:
+  identifiers:
+    - biotools:pash

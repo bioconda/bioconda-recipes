@@ -1,0 +1,77 @@
+--- Commet.py	2017-07-04 12:21:01.000000000 +0000
++++ Commet.py	2017-10-05 09:41:09.420000000 +0000
+@@ -30,6 +30,7 @@
+ import string
+ import argparse
+ import subprocess
++from distutils.spawn import find_executable
+ 
+ 
+ 
+@@ -319,19 +320,22 @@
+     
+     # Plot the dendrogram for the normalized matrix
+     ########################################################
+-    command="Rscript --vanilla dendro.R "+output_directory+"matrix_normalized.csv "+output_directory+"dendrogram_normalized.png"
++    dendro_path=find_executable("dendro.R")
++    command="Rscript --vanilla "+dendro_path+" "+output_directory+"matrix_normalized.csv "+output_directory+"dendrogram_normalized.png"
+     os.system(command)
+     
+     
+     # Plot the heatmap matrices
+     # Plain Matrix
+-    command="Rscript --vanilla heatmap.r "+output_directory+"matrix_plain.csv " +output_directory+"matrix_normalized.csv "+ output_directory+"heatmap_plain.png Plain"
++
++    heatmap_path=find_executable("heatmap.r")
++    command="Rscript --vanilla "+heatmap_path+" "+output_directory+"matrix_plain.csv " +output_directory+"matrix_normalized.csv "+ output_directory+"heatmap_plain.png Plain"
+     os.system(command)
+     # Percentage Matrix
+-    command="Rscript --vanilla heatmap.r "+output_directory+"matrix_percentage.csv " +output_directory+"matrix_normalized.csv "+ output_directory+"heatmap_percentage.png Percentage"
++    command="Rscript --vanilla "+heatmap_path+" "+output_directory+"matrix_percentage.csv " +output_directory+"matrix_normalized.csv "+ output_directory+"heatmap_percentage.png Percentage"
+     os.system(command)
+     # Normalized Matrix
+-    command="Rscript --vanilla heatmap.r "+output_directory+"matrix_normalized.csv " +output_directory+"matrix_normalized.csv "+ output_directory+"heatmap_normalized.png Normalized"
++    command="Rscript --vanilla "+heatmap_path+" "+output_directory+"matrix_normalized.csv " +output_directory+"matrix_normalized.csv "+ output_directory+"heatmap_normalized.png Normalized"
+     print (command)
+     os.system(command)
+     
+@@ -444,8 +448,7 @@
+     
+     parser.add_argument('--one_vs_all', help='With this option the first set is then called "first" and is compared to all others. However, the other sets are not compared to each others. In this case, commet outputs the reads from first set in all others and vice versa, and it outputs two "vector" files instead of three matrice files. File called vector_plain.csv (resp vector_percentage) contains for each read set i, the number (resp. percentage) of reads from "first" in i "/" the number (resp. percentage) of reads from i in ref.', action="store_true") 
+     
+-    parser.add_argument("-b", "--binaries_directory", type=str, dest='binary_directory', metavar='',
+-                        help="binary directory  [default: \"./bin\"]", default="./bin" )
++    parser.add_argument("-b", "--binaries_directory", type=str, dest='binary_directory', metavar='' )
+     
+     parser.add_argument("-o", "--output_directory", type=str, dest='directory', metavar='',
+                         help="directory in which results will be output [default: \"output_commet\"]", default="output_commet/" )
+@@ -477,16 +480,9 @@
+     input_file=str(args.input_file)
+     output_directory=str(args.directory)
+     if output_directory[-1]!='/': output_directory+="/"
+-    bin_dir=str(args.binary_directory)
+-    # print "OIEHZFOIHJ"+bin_dir[-1])
+-    if bin_dir[-1]!='/': 
+-        bin_dir+="/"
+-    
+-    
+-    if not os.path.isfile(bin_dir+"bvop"):
+-        print ("Cannot find binaries in directory +\""+bin_dir+"\". Exit")
+-        sys.exit(1) 
+-    
++
++    bin_dir=""
++       
+     k=args.k
+     t=args.t
+     l=args.l
+@@ -594,9 +590,6 @@
+         os.system(command)
+     	
+         
+-        
+-    sys.exit(1)
+-
+ if __name__ == "__main__":
+     main()
+         

@@ -1,37 +1,30 @@
+{% set version = "0.2.3" %}
+{% set sha256 = "9c016fdb06ebfeaf5d7c90b77a920230681806bb2cf9814dbf3bb3ecead9aa2b" %}
+
 package:
   name: pyquant-ms
-  version: "0.1.43rc3"
+  version: '{{ version }}'
 
 source:
-  fn: pyquant-ms-0.1.43rc3.tar.gz
-  url: https://pypi.python.org/packages/6c/bf/9c5992e782105a5b33cd1bba5e8e0ee970fa48488564a8f58d02cfc4ebbc/pyquant-ms-0.1.43rc3.tar.gz
-  md5: 26f95f994fc7d31ae00e746b3696ff08
+  url: https://pypi.io/packages/source/p/pyquant-ms/pyquant-ms-{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
-
-  entry_points:
-
-    - pyQuant = pyquant.command_line:run_pyquant
-
   number: 0
-  skip: True # [py3k]
+  entry_points:
+    - pyQuant = pyquant.command_line:run_pyquant
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:
-    - python
-    - setuptools
+    - '{{ compiler("c") }}'
+  host:
+    - python <3
+    - pip
     - cython
     - numpy
-    - scipy >=0.18.*
-    - patsy
-    - pythomics >=0.3.41
-    - pandas
-    - lxml
-    - scikit-learn
-    - simplejson
-
   run:
-    - python
+    - python <3
     - cython
     - numpy
     - scipy >=0.18.*
@@ -46,13 +39,12 @@ test:
   imports:
     - pyquant
     - pyquant.tests
-
   commands:
-
     - pyQuant --help
 
 about:
-  home: http://www.github.com/pandeylab/pyquant
-  license: MIT License
-  summary: 'A framework for the analysis of quantitative mass spectrometry data'
+  home: https://chris7.github.io/pyquant/
+  license: MIT
   license_family: MIT
+  summary: A framework for the analysis of quantitative mass spectrometry data
+  dev_uri: https://github.com/Chris7/pyquant

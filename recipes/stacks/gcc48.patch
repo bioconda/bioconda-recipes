@@ -1,9 +1,18 @@
---- a/configure	2017-04-13 23:03:09.000000000 +0200
-+++ b/configure	2017-04-20 17:18:58.177959732 +0200
-@@ -7650,97 +7650,6 @@
+From 6336ca9136597d842a1026cc18c7d4078434782c Mon Sep 17 00:00:00 2001
+From: Matthew Workentine <matthew.workentine@ucalgary.ca>
+Date: Fri, 20 Oct 2017 09:51:56 -0600
+Subject: [PATCH] using boost::regex
+
+
+diff --git a/configure b/configure
+index ce4d663..9832770 100755
+--- a/configure
++++ b/configure
+@@ -7649,98 +7649,6 @@ _ACEOF
+ fi
  done
  
- 
+-
 -#
 -# Test if regular expressions are functional. Early regex implementations have nonfunctional stubs,
 -# so the check for C++11 succeeds, but the compiled code will throw an exception.
@@ -98,55 +107,103 @@
  # For test harness
  for ac_prog in gawk mawk nawk awk
  do
---- a/src/sstacks.cc	2017-04-20 19:43:55.274105934 +0200
-+++ b/src/sstacks.cc	2017-04-20 19:40:00.930177547 +0200
+diff --git a/src/catalog_utils.cc b/src/catalog_utils.cc
+index 9908557..58bbd9b 100644
+--- a/src/catalog_utils.cc
++++ b/src/catalog_utils.cc
+@@ -25,7 +25,7 @@
+ // jcatchen@uoregon.edu
+ // University of Oregon
+ //
+-#include <regex>
++#include <boost/regex.hpp>
+ 
+ #include "utils.h"
+ 
+@@ -33,15 +33,15 @@
+ 
+ using namespace std;
+ 
+-const regex catalog_tags_regex ("^batch_([0-9]+).catalog.tags.tsv(.gz)?$");
++const boost::regex catalog_tags_regex ("^batch_([0-9]+).catalog.tags.tsv(.gz)?$");
+ 
+ vector<int> find_catalogs(const string& dir_path) {
+     vector<int> ids;
+ 
+     for (DirIterator e (dir_path); e; ++e) {
+-        smatch m;
++        boost::smatch m;
+         string name (e.name());
+-        regex_match(name, m, catalog_tags_regex);
++        boost::regex_match(name, m, catalog_tags_regex);
+         if (!m.empty())
+             ids.push_back(stoi(m[1].str()));
+     }
+diff --git a/src/constants.cc b/src/constants.cc
+index e89d2df..a2dd8f2 100644
+--- a/src/constants.cc
++++ b/src/constants.cc
+@@ -1,4 +1,4 @@
+-#include <regex>
++#include <boost/regex.hpp>
+ #include <cassert>
+ #include <map>
+ 
+@@ -44,7 +44,7 @@ string remove_suffix(FileT type, const string& orig) {
+     return file;
+ }
+ 
+-regex init_file_ext_regex () {
++boost::regex init_file_ext_regex () {
+     string s = "(";
+ 
+     auto i = known_extensions.begin();
+@@ -61,15 +61,15 @@ regex init_file_ext_regex () {
+     }
+ 
+     s += ")$";
+-    return regex(s);
++    return boost::regex(s);
+ }
+ 
+ FileT guess_file_type (const string& path) {
+ 
+-    static const regex reg = init_file_ext_regex();
++    static const boost::regex reg = init_file_ext_regex();
+ 
+-    smatch m;
+-    regex_search(path, m, reg);
++    boost::smatch m;
++    boost::regex_search(path, m, reg);
+ 
+     if (m.empty())
+         return FileT::unknown;
+diff --git a/src/sstacks.cc b/src/sstacks.cc
+index a7e56ad..7644153 100644
+--- a/src/sstacks.cc
++++ b/src/sstacks.cc
 @@ -22,7 +22,7 @@
  // sstacks -- search for occurances of stacks in a catalog of stacks.
  //
  
-+#include <boost/regex.hpp>
 -#include <regex>
++#include <boost/regex.hpp>
  
  #include "catalog_utils.h"
  #include "MetaPopInfo.h"
-@@ -30,6 +30,7 @@
- #include "sstacks.h"
+@@ -1432,9 +1432,9 @@ int parse_command_line(int argc, char* argv[]) {
  
- using namespace std;
-+using namespace boost;
- 
- // Global variables to hold command-line options.
- queue<string> samples;
---- a/src/constants.cc	2017-04-20 19:43:32.793399833 +0200
-+++ b/src/constants.cc	2017-04-20 19:41:33.523959091 +0200
-@@ -1,10 +1,11 @@
-+#include <boost/regex.hpp>
--#include <regex>
- #include <cassert>
- #include <map>
- 
- #include "constants.h"
- 
- using namespace std;
-+using namespace boost;
- 
- const
- map<string, FileT> known_extensions = {
---- a/src/catalog_utils.cc	2017-04-20 19:44:48.203413967 +0200
-+++ b/src/catalog_utils.cc	2017-04-20 19:44:21.373764722 +0200
-@@ -25,13 +25,14 @@
- // jcatchen@uoregon.edu
- // University of Oregon
- //
-+#include <boost/regex.hpp>
--#include <regex>
- 
- #include "utils.h"
- 
- #include "catalog_utils.h"
- 
- using namespace std;
-+using namespace boost;
- 
- const regex catalog_tags_regex ("^batch_([0-9]+).catalog.tags.tsv(.gz)?$");
- 
+     } else if (!catalog_path.empty()) {
+         if (batch_id < 0) {
+-            regex r ("batch_([0-9]+)");
+-            smatch m;
+-            regex_search(catalog_path, m, r);
++            boost::regex r ("batch_([0-9]+)");
++            boost::smatch m;
++            boost::regex_search(catalog_path, m, r);
+             if (m.size()==2) {
+                 // full match plus one submatch
+                 batch_id = stoi(m[1].str());
+-- 
+2.14.2
+

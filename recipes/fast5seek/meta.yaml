@@ -1,0 +1,41 @@
+{% set name = "fast5seek" %}
+{% set version = "0.1.0" %}
+{% set hash_value = "aa005f2fff12c2d94e583a4c477fd5bbeddb1cb17ead24d1e7857024e5239747" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/mbhall88/fast5seek/archive/v{{ version }}.tar.gz
+  sha256: '{{ hash_value }}'
+
+build:
+  number: 1
+  entry_points:
+    - fast5seek=fast5seek.cli:cli
+  script: python -m pip install --no-deps --ignore-installed .
+  skip: True  # [py27]
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+    - ont-fast5-api
+    - pysam
+
+test:
+  imports:
+    - fast5seek
+  commands:
+    - fast5seek --help
+
+about:
+  home: https://github.com/mbhall88/fast5seek
+  license: MIT License
+  license_family: MIT
+  license_file: LICENSE
+  summary: Get paths for fast5 files contained in BAM, SAM, or fastq.

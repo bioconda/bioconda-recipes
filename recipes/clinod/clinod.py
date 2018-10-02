@@ -13,7 +13,7 @@ import shutil
 from os import access
 from os import getenv
 from os import X_OK
-jar_file = 'clinod-1.3.jar'
+jar_file = 'clinod_1.3_src_all.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 

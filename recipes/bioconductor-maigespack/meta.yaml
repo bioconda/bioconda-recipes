@@ -1,0 +1,46 @@
+{% set version = "1.42.0" %}
+{% set name = "maigesPack" %}
+{% set bioc = "3.6" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: b2241940bd8edacc6f58f5fe913a1c3bfc4fc14331ef55276bded52cf29c22b1
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - bioconductor-convert
+    - bioconductor-graph
+    - bioconductor-limma
+    - bioconductor-marray
+    - r-base
+  run:
+    - bioconductor-convert
+    - bioconductor-graph
+    - bioconductor-limma
+    - bioconductor-marray
+    - r-base
+    - libcxx # [osx]
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'This package uses functions of various other packages together with other functions in a coordinated way to handle and analyse cDNA microarray data'
+
+extra:
+  identifiers:
+    - biotools:maigespack
+    - doi:10.1038/nmeth.3252

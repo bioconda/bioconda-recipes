@@ -1,0 +1,47 @@
+{% set version = "2.26.0" %}
+{% set name = "DSS" %}
+{% set bioc = "3.6" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 1fecdae846e3ced49b1569fada4d6b452c61be91978248ab4eda10474cb6c02a
+
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - bioconductor-biobase
+    - bioconductor-bsseq
+    - bioconductor-delayedarray
+    - r-base
+  run:
+    - bioconductor-biobase
+    - bioconductor-bsseq
+    - bioconductor-delayedarray
+    - r-base
+
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+
+about:
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL
+  summary: 'DSS is an R library performing differntial analysis for count-based sequencing data. It detectes differentially expressed genes (DEGs) from RNA-seq, and differentially methylated loci or regions (DML/DMRs) from bisulfite sequencing (BS-seq). The core of DSS is a new dispersion shrinkage method for estimating the dispersion parameter from Gamma-Poisson or Beta-Binomial distributions.'
+
+extra:
+  identifiers:
+    - biotools:dss
