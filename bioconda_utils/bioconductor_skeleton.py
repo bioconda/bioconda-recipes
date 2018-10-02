@@ -798,6 +798,11 @@ class BioCProjectPage(object):
                     ('summary', self.description['description']),
                 )),
             ),
+            (
+                'extra', OrderedDict((
+                    ('skip-lints', ['should_not_use_fn'])
+                )),
+            ),
         ))
 
         if self._cb3_build_reqs:
