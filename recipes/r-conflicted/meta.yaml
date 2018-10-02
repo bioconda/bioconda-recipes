@@ -1,0 +1,78 @@
+{% set version = '1.0.0' %}
+
+package:
+  name: r-conflicted
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: conflicted_{{ version }}.tar.gz
+  url:
+    - {{ cran_mirror }}/src/contrib/conflicted_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/conflicted/conflicted_{{ version }}.tar.gz
+  sha256: f488de5c2e90a081d4797de0fabfec5f41048909fe82f7014634f9922c8a6f0c
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: covr, crayon, dplyr, pkgdown, testthat
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - r-memoise
+    - r-rlang
+
+  run:
+    - r-base
+    - r-memoise
+    - r-rlang
+
+test:
+  commands:
+    - $R -e "library('conflicted')"
+
+about:
+  home: https://github.com/r-lib/conflicted
+  license: GPL-3
+  summary: R's default conflict management system gives the most recently loaded package precedence.
+    This can make it hard to detect conflicts,  particularly when they arise because
+    a package update creates ambiguity that did not previously exist. 'conflicted' takes
+    a different approach,  making every conflict an error and forcing you to choose
+    which function  to use.
+  license_family: GPL3
+
+# The original CRAN metadata for this package was:
+
+# Package: conflicted
+# Title: An Alternative Conflict Resolution Strategy
+# Version: 1.0.0
+# Authors@R: c( person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut", "cre")), person("RStudio", role = "cph") )
+# Description: R's default conflict management system gives the most recently loaded package precedence. This can make it hard to detect conflicts,  particularly when they arise because a package update creates ambiguity that did not previously exist. 'conflicted' takes a different approach,  making every conflict an error and forcing you to choose which function  to use.
+# License: GPL-3
+# URL: https://github.com/r-lib/conflicted
+# BugReports: https://github.com/r-lib/conflicted/issues
+# Depends: R (>= 3.1)
+# Imports: rlang, memoise
+# Suggests: covr, crayon, dplyr, pkgdown, testthat
+# Encoding: UTF-8
+# LazyData: true
+# RoxygenNote: 6.1.0
+# NeedsCompilation: no
+# Packaged: 2018-09-15 15:51:47 UTC; hadley
+# Author: Hadley Wickham [aut, cre], RStudio [cph]
+# Maintainer: Hadley Wickham <hadley@rstudio.com>
+# Repository: CRAN
+# Date/Publication: 2018-09-15 16:10:03 UTC
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
