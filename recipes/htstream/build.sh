@@ -2,7 +2,7 @@
 
 set -eu -o pipefail
 
-export LIBRARY_PATH=${PREFIX}/lib
+export CMAKE_CXX_FLAGS="-L${PREFIX}/lib -I${PREFIX}/include"
 
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
