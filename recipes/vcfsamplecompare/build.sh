@@ -1,3 +1,8 @@
 #!/bin/bash
 
-perl Makefile.PL && make && make test && make install
+set -e
+
+perl Makefile.PL
+make
+make test
+make install
