@@ -2,6 +2,9 @@
 
 set -eu -o pipefail
 
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
