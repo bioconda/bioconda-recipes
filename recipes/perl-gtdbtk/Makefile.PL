@@ -16,9 +16,9 @@ WriteMakefile(
         'ExtUtils::MakeMaker' => 0,
     },
     PREREQ_PM => {
-	'Moose'          => 0,
+        'Moose'          => 0,
         'IPC::Run'       => 0,
-	'File::Basename' => 0,
+        'File::Basename' => 0,
         'Getopt::Long'   => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
