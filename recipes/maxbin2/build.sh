@@ -20,16 +20,4 @@ sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' _getmarker.pl
 sed -i.bak 's|\$Bin|\$RealBin|' run_MaxBin.pl
 chmod a+x *.pl
 
-
-mkdir -p $PREFIX/bin/
-mkdir -p $PREFIX/bin/src/
-
-cp bacar_marker.hmm $PREFIX/bin/
-cp buildapp $PREFIX/bin/
-cp _getabund.pl $PREFIX/bin/
-cp _getmarker.pl $PREFIX/bin/
-cp heatmap.r $PREFIX/bin/
-cp marker.hmm $PREFIX/bin/
-cp run_MaxBin.pl $PREFIX/bin/
-cp _sepReads.pl $PREFIX/bin/
-cp -r src/MaxBin $PREFIX/bin/src/
+ln -s $MAXBIN_HOME/run_MaxBin.pl $PREFIX/bin/run_MaxBin.pl
