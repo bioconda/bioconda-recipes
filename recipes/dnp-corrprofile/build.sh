@@ -1,6 +1,5 @@
 #!/bin/bash
 
-svn checkout https://github.com/seqan/seqan/trunk/include >/dev/null 2>&1
-make corrprofile
+INCLUDE=$CONDA_DEFAULT_ENV/include
+${GCC} -I $INCLUDE -std=c++14 -lpthread  corrprofile.cpp -lstdc++ -lrt -lm -o  corrprofile
 cp corrprofile $PREFIX/bin
-rm -r -f include

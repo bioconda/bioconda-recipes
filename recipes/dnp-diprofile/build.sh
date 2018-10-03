@@ -1,6 +1,5 @@
 #!/bin/bash
 
-svn checkout https://github.com/seqan/seqan/trunk/include >/dev/null 2>&1
-make diprofile 
+INCLUDE=$CONDA_DEFAULT_ENV/include
+${GCC} -I $INCLUDE -std=c++14 -lpthread diprofile.cpp -lstdc++ -lrt -lm -o  diprofile
 cp diprofile $PREFIX/bin
-rm -r -f include

@@ -1,5 +1,4 @@
 #!/bin/bash
 
-make fourier 
+make fourier
 cp fourier $PREFIX/bin
-rm -f -r include
