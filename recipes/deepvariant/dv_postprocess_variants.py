@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/opt/anaconda1anaconda2anaconda3/bin/python
 #
 # Wrapper script for DeepVariant postprocess_variants
 
