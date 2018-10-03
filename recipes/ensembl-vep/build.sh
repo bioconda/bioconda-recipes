@@ -36,12 +36,13 @@ vep_install -a a --NO_HTSLIB --NO_TEST --NO_BIOPERL --NO_UPDATE
 rm -rf t/
 
 # Install plugins
-curl -ks -o CADD.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/CADD.pm
-curl -ks -o dbNSFP.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/dbNSFP.pm
-curl -ks -o MaxEntScan.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/MaxEntScan.pm
-curl -ks -o SpliceRegion.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/SpliceRegion.pm
-curl -ks -o GeneSplicer.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/GeneSplicer.pm
-curl -ks -o dbscSNV.pm https://raw.githubusercontent.com/Ensembl/VEP_plugins/release/$version/dbscSNV.pm
+curl -L -ks -o VEP_plugins.tar.gz https://github.com/Ensembl/VEP_plugins/archive/release/$version.tar.gz
+tar -xzvpf VEP_plugins.tar.gz
+mv VEP_plugins*/*.pm .
+mv VEP_plugins*/config .
+rm -rf VEP_plugins*
+
+# Install loftee
 curl -L -ks -o loftee.tar.gz https://github.com/konradjk/loftee/archive/df3d29e.tar.gz
 tar -xzvpf loftee.tar.gz
 mv loftee-*/*.pl .
