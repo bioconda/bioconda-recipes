@@ -1,4 +1,5 @@
 {% set version = "1.0.0" %}
+{% set sha256 = "4cf9ea61be427ea71c346e438ad2871cf0c7671948819647ef8f182d54e955fe" %}
 
 package:
   name: htstream
@@ -6,7 +7,9 @@ package:
 
 source:
   url: https://github.com/ibest/HTStream/archive/v{{ version }}-release.tar.gz
-  md5: b86484dbfa1541cff22125647a5f6e92
+  sha256: {{ sha256 }}
+  patches:
+    - cmake.patch
 
 build:
   number: 0
@@ -14,22 +17,30 @@ build:
 
 requirements:
   build:
+    - {{ comipler('c') }}
     - {{ compiler('cxx') }}
-    - cmake
+
   host:
+    - cmake
     - boost
-    - boost-cpp
-    - libboost
+    - zlib
+    - bzip2
+    - xz
+
   run:
-    - libboost
+    - boost
+    - zlib
+    - bzip2
+    - xz
 
 test:
   commands:
     - hts_Stats --help
 
 about:
-  home: https://ibest.github.io/HTStream/
+  home: https://ibest.github.io/HTStream
   license: Apache 2.0
+  license_family: Apache
   license_file: LICENSE
   summary: |
     HTStream is a fast, quality control pipeline for Hight Throughput Sequencing data.
