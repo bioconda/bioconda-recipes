@@ -8,7 +8,7 @@ pwd
 ls -l .
 
 npm install --unsafe-perm
-METEOR_ALLOW_SUPERUSER=1 npm run bundle
+METEOR_ALLOW_SUPERUSER=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 npm run bundle
 
 cp -R genenotebook_v${PKG_VERSION}/* $outdir
 
