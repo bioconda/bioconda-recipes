@@ -763,7 +763,6 @@ class BioCProjectPage(object):
             ),
             (
                 'source', OrderedDict((
-                    ('fn', '{{ name }}_{{ version }}.tar.gz'),
                     ('url', url),
                     ('sha256', self.sha256),
                 )),
@@ -796,11 +795,6 @@ class BioCProjectPage(object):
                     ('home', sub_placeholders(self.url)),
                     ('license', self.license),
                     ('summary', self.description['description']),
-                )),
-            ),
-            (
-                'extra', OrderedDict((
-                    ('skip-lints', ['should_not_use_fn']),
                 )),
             ),
         ))

@@ -74,9 +74,6 @@ def test_meta_contents(tmpdir):
     # bioconductor, bioarchive, and cargoport
     assert len(edger_meta['source']['url']) == 3
 
-    # skip-lints
-    assert "should_not_use_fn" in edger_meta['extra']['skip-lints']
-
 
 def test_find_best_bioc_version():
 
