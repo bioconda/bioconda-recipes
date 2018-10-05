@@ -21,7 +21,7 @@ pytest
 
 # install
 mkdir -p $BIN $LIBEXEC $SHARE
-cp GraphProt.pl $BIN
-cp bin/* $LIBEXEC -r
-cp EDeN/EDeN $LIBEXEC
-cp data $SHARE -r
+cp $SRC_DIR/GraphProt.pl $BIN
+cp $SRC_DIR/bin/* $LIBEXEC -r
+cp $SRC_DIR/EDeN/EDeN $LIBEXEC
+cp $SRC_DIR/data $SHARE -r
