@@ -13,7 +13,7 @@ SHARE=${CONDA_PREFIX}/share/graphprot/
 pushd .
 cd EDeN
 make clean
-make
+make CC="${CC}" CXX="${CXX}"
 popd
 
 # run build tests
