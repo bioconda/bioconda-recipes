@@ -1,5 +1,9 @@
 #!/bin/bash
 
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+export CPATH=${PREFIX}/include
+
 # set install paths
 BIN=${CONDA_PREFIX}/bin/
 LIBEXEC=${CONDA_PREFIX}/libexec/graphprot/
@@ -9,7 +13,7 @@ SHARE=${CONDA_PREFIX}/share/graphprot/
 pushd .
 cd EDeN
 make clean
-make -j 4
+make
 popd
 
 # run build tests
