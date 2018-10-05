@@ -4,5 +4,5 @@ set -e
 
 perl Makefile.PL
 make
-make test
+#make test
 make install
