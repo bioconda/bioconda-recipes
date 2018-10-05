@@ -1,0 +1,61 @@
+{% set version = '1.0' %}
+{% set name = 'CREST' %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name}}.tgz'
+  url:
+    - 'http://ftp.stjude.org/pub/software/CREST/CREST.tgz'
+  sha256: '2352da023a40aedd258437fb4864e7f34f0b73a1970941cf3fafd696d28c39c0'
+
+build:
+  skip: True  # [win]
+  number: 0
+
+requirements:
+  build:
+    - blat
+    - cap3
+    - perl ==5.22.0.1
+    - perl-bio-samtools
+    - perl-bioperl
+    - samtools
+
+  run:
+    - blat
+    - ncurses
+    - cap3
+    - perl ==5.22.0.1
+    - perl-bio-samtools
+    - perl-bioperl
+    - perl-bioperl-core
+    - perl-threaded
+    - perl-lwp-simple
+    - perl-bioperl-core
+    - zlib
+
+test:
+  commands:
+    - '[[ -f $PREFIX/bin/extractSClip.pl ]] && echo "TEST SUCCESS" || echo "TEST FAILED"'
+    - perl -MBio::DB::Sam -e "print \"Bio::DB::Sam Module installed.\\n\";"
+
+about:
+  home: 'https://www.stjuderesearch.org/site/lab/zhang'
+  license: 'GPL-3'
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+  license_family: 'GPL'
+  summary: 'CREST (Clipping Reveals Structure) is a new algorithm for detecting genomic
+          structural variations at base-pair resolution using next-generation sequencing data'
+extra:
+   recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak
+    - slacalle
