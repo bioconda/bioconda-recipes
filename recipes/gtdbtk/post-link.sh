@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 
-echo "Please run download-db.sh to download the database to ${GTDBTK_DB_PATH}" >> ${PREFIX}/.messages.txt
+cat <<EOF >> ${PREFIX}/.messages.txt
+
+Please run download-db.sh to download the database to ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db/
+
+EOF
