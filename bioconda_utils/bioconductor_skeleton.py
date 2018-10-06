@@ -763,7 +763,6 @@ class BioCProjectPage(object):
             ),
             (
                 'source', OrderedDict((
-                    ('fn', '{{ name }}_{{ version }}.tar.gz'),
                     ('url', url),
                     ('sha256', self.sha256),
                 )),

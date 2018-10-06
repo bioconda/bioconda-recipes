@@ -48,14 +48,15 @@ def select_recipes(packages, git_range, recipe_folder, config_filename, config, 
     selected_recipes = list(utils.get_recipes(recipe_folder, packages))
     _recipes = []
     for recipe in selected_recipes:
-        if recipe in blacklisted_recipes and recipe in changed_recipes:
+        stripped = os.path.relpath(recipe, recipe_folder)
+        if stripped in blacklisted_recipes and recipe in changed_recipes:
             logger.warning('%s is blacklisted but also has changed. Consider '
                            'removing from blacklist if you want to build it', recipe)
         if force:
             _recipes.append(recipe)
             logger.debug('forced: %s', recipe)
             continue
-        if recipe in blacklisted_recipes:
+        if stripped in blacklisted_recipes:
             logger.debug('blacklisted: %s', recipe)
             continue
         if git_range:
