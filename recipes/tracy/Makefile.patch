@@ -1,13 +1,14 @@
-diff --git a/opt/dev/alfred/Makefile b/Makefile
-index e76eead8e..d0866c3e9 100644
---- a/opt/dev/alfred/Makefile
-+++ b/Makefile
-@@ -1,64 +1,21 @@
+diff --git a/opt/dev/tracy/Makefile b/b/Makefile
+index bce8fe317..e0f6abdb4 100644
+--- a/a/Makefile
++++ b/b/Makefile
+@@ -1,73 +1,22 @@
  DEBUG ?= 0
  STATIC ?= 0
  
 -# Submodules
 -PWD = $(shell pwd)
+-SDSL_ROOT ?= ${PWD}/src/sdslLite/
 -EBROOTHTSLIB ?= ${PWD}/src/htslib/
 -
 -# Install dir
@@ -17,10 +18,11 @@ index e76eead8e..d0866c3e9 100644
 -
  # Flags
 -CXX=g++
--CXXFLAGS += -isystem ${EBROOTHTSLIB} -pedantic -W -Wall -Wno-unknown-pragmas -D__STDC_LIMIT_MACROS -fno-strict-aliasing
--LDFLAGS += -L${EBROOTHTSLIB} -L${EBROOTHTSLIB}/lib -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time 
--
--# Additional flags for release/debug
+-CXXFLAGS += -std=c++11 -isystem ${EBROOTHTSLIB} -isystem ${SDSL_ROOT}/include -pedantic -W -Wall -fvisibility=hidden
+-LDFLAGS += -L${SDSL_ROOT}/lib -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time -lsdsl -ldivsufsort -ldivsufsort64 -ldl -L${EBROOTHTSLIB} -L${EBROOTHTSLIB}/lib
++CXXFLAGS += -std=c++11 -isystem ${PREFIX} -isystem ${BOOST_ROOT} -pedantic -W -Wall -Wno-unknown-pragmas -D__STDC_LIMIT_MACROS -fno-strict-aliasing
++LDFLAGS += -L${PREFIX}/lib -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time -lsdsl -ldivsufsort -ldivsufsort64 -ldl
+ 
 -ifeq (${STATIC}, 1)
 -	LDFLAGS += -static -static-libgcc -pthread -lhts -lz -llzma -lbz2
 -else
@@ -37,28 +39,34 @@ index e76eead8e..d0866c3e9 100644
 -ifeq (${EBROOTHTSLIB}, ${PWD}/src/htslib/)
 -	SUBMODULES += .htslib
 -endif
--
-+CXXFLAGS += -isystem ${PREFIX} -isystem ${BOOST_ROOT} -pedantic -W -Wall -Wno-unknown-pragmas -D__STDC_LIMIT_MACROS -fno-strict-aliasing -fpermissive
-+LDFLAGS += -L${PREFIX}/lib -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time 
+-ifeq (${SDSL_ROOT}, ${PWD}/src/sdslLite/)
+-	SUBMODULES += .sdsl
+-endif
 +LDFLAGS += -lhts -lz -llzma -lbz2
 +CXXFLAGS += -O3 -fno-tree-vectorize -DNDEBUG
  
+-
 -# External sources
+-SDSLSOURCES = $(wildcard src/sdsl/lib/*.cpp)
+ TRACYSOURCES = $(wildcard src/*.cpp) $(wildcard src/*.h)
 -HTSLIBSOURCES = $(wildcard src/htslib/*.c) $(wildcard src/htslib/*.h)
- SOURCES = $(wildcard src/*.h) $(wildcard src/*.cpp)
+-PBASE=$(shell pwd)
  
  # Targets
--BUILT_PROGRAMS = src/alfred
+-BUILT_PROGRAMS = src/tracy
 -TARGETS = ${SUBMODULES} ${BUILT_PROGRAMS}
-+TARGETS = src/alfred
++TARGETS = src/tracy
  
  all:   	$(TARGETS)
  
+-.sdsl: $(SDSLSOURCES)
+-	if [ -r src/sdsl/install.sh ]; then cd src/sdsl/ && ./install.sh ${PBASE}/src/sdslLite && cd ../../ && touch .sdsl; fi
+-
 -.htslib: $(HTSLIBSOURCES)
 -	if [ -r src/htslib/Makefile ]; then cd src/htslib && make && make lib-static && cd ../../ && touch .htslib; fi
 -
--src/alfred: ${SUBMODULES} $(SOURCES)
-+src/alfred: $(SOURCES)
+-src/tracy: ${SUBMODULES} ${TRACYSOURCES}
++src/tracy: ${TRACYSOURCES}
  	$(CXX) $(CXXFLAGS) $@.cpp -o $@ $(LDFLAGS)
  
 -install: ${BUILT_PROGRAMS}
@@ -67,6 +75,7 @@ index e76eead8e..d0866c3e9 100644
 -
  clean:
 -	if [ -r src/htslib/Makefile ]; then cd src/htslib && make clean; fi
+-	if [ -r src/sdsl/install.sh ]; then cd src/sdsl/ && ./uninstall.sh && cd ../../ && rm -rf src/sdslLite/; fi
 -	rm -f $(TARGETS) $(TARGETS:=.o) ${SUBMODULES}
 -
 -distclean: clean
