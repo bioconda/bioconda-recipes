@@ -1,5 +1,5 @@
 #!/bin/bash
 
-mkdir $PREFIX/bin/
+mkdir -p $PREFIX/bin/
 make fourier
 cp fourier $PREFIX/bin/dnp-fourier
