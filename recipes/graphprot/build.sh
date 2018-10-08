@@ -5,9 +5,9 @@ export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
 # set install paths
-BIN=${CONDA_PREFIX}/bin/
-LIBEXEC=${CONDA_PREFIX}/libexec/graphprot/
-SHARE=${CONDA_PREFIX}/share/graphprot/
+BIN=${PREFIX}/bin/
+LIBEXEC=${PREFIX}/libexec/graphprot/
+SHARE=${PREFIX}/share/graphprot/
 
 # compile EDeN
 pushd .
