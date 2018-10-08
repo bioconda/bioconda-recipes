@@ -1,0 +1,56 @@
+{% set name = "seer" %}
+{% set version = "1.1.4" %}
+
+package:
+  name: {{ name|lower}}
+  version: {{ version }}
+
+source:
+  url: https://github.com/johnlees/{{ name|lower }}/releases/download/v{{ version }}/{{ name|lower }}_v{{ version }}_submodules.tar.gz
+  fn: {{ name }}.tar.gz
+  sha256: b5a36516b0cebee26c9150e00cc03a56724d897339eae245cd06f69383d35ca0
+
+build:
+  skip: True #  [osx]
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+
+  host:
+    - zlib
+    - armadillo
+    - boost >=1.57
+    - hdf5 1.8.18|1.8.18.*
+    - lapack
+    - openblas 0.2.19|0.2.19.*
+    - pthread-stubs
+
+  run:
+    - libgcc >=4.9.0
+    - zlib
+    - lapack
+    - openblas 0.2.19|0.2.19.*
+    - boost >=1.57
+    - armadillo
+    - hdf5 1.8.18|1.8.18.*
+    - pthread-stubs
+
+test:
+  commands:
+    - seer --version
+    - kmds --version
+    - combineKmers -h
+    - filter_seer --version
+
+about:
+   home: https://github.com/johnlees/seer
+   license: GPL-2
+   license_family: GPL
+   license_file: LICENSE
+   summary: sequence element (kmer) enrichment analysis
+
+extra:
+   identifiers:
+     - doi:10.1038/ncomms12797
