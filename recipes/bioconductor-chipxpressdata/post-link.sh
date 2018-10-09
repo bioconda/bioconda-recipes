@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ChIPXpressData_1.16.0.tar.gz"
+FN="ChIPXpressData_1.18.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/experiment/src/contrib/ChIPXpressData_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ChIPXpressData_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-chipxpressdata/bioconductor-chipxpressdata_1.16.0_src_all.tar.gz"
+  "http://bioconductor.org/packages/3.7/data/experiment/src/contrib/ChIPXpressData_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ChIPXpressData_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chipxpressdata/bioconductor-chipxpressdata_1.18.0_src_all.tar.gz"
 )
-MD5="020fc315cf29fb563d2c78b750ad4765"
+MD5="5c2695c0ef69ef1d8c5702a478667047"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

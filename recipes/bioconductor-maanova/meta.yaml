@@ -1,6 +1,6 @@
-{% set version = "1.48.0" %}
+{% set version = "1.50.0" %}
 {% set name = "maanova" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,20 +8,24 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 1818c4d535605cb5f4aba28ba0137569962e11f1c191e9113db0dc8abc9972ef
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: ab170030f4581a7377913e8c27881854dfe69e5c2310b20d7b81be06fb84209d
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
-    - bioconductor-biobase
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
     - r-base
   run:
-    - bioconductor-biobase
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -29,7 +33,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Analysis of N-dye Micro Array experiment using mixed model effect. Containing analysis of variance, permutation and bootstrap, cluster and consensus tree.'
-
 extra:
   identifiers:
     - biotools:maanova

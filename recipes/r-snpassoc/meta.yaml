@@ -1,22 +1,31 @@
 {% set version = '1.9-2' %}
 
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-snpassoc
   version: {{ version|replace("-", "_") }}
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/SNPassoc_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/SNPassoc/SNPassoc_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/SNPassoc_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/SNPassoc/SNPassoc_{{ version }}.tar.gz
   sha256: b08e65ddbaa287fa7f4806a4a6c1556e4cefb036a77e1c56f7ddbcf591f46b84
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+
+  number: 2
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
+  build:
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
     - r-haplo.stats
@@ -31,7 +40,9 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('SNPassoc')"
+
+    - $R -e "library('SNPassoc')"           # [not win]
+    - "\"%R%\" -e \"library('SNPassoc')\""  # [win]
 
 about:
   home: http://www.creal.cat/jrgonzalez/software.htm
@@ -43,4 +54,16 @@ about:
     analysis of multiple SNPs (haplotype and epistasis analysis). Permutation test and
     related tests (sum statistic and truncated product) are also implemented. Max-statistic
     and genetic risk-allele score exact distributions are also possible to be estimated. '
+
   license_family: GPL3
+  license_file: '{{ environ["PREFIX"] }}\/lib\/R\/share\/licenses\/GPL-3'  # [unix]
+  license_file: '{{ environ["PREFIX"] }}\R\share\licenses\GPL-3'  # [win]
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

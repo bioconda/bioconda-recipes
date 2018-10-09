@@ -1,24 +1,33 @@
-{% set version = '0.2.1' %}
+{% set version = '0.3.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-taxa
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: taxa_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/taxa_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/taxa/taxa_{{ version }}.tar.gz
-  sha256: b605fa2dbcfb710a92217d742c0bfd017ba50661e16d055b4d7d1948a58e034a
+    - {{ cran_mirror }}/src/contrib/taxa_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/taxa/taxa_{{ version }}.tar.gz
+  sha256: e718b187b7f2c8b46d9db0052e90562aab4c787c7270e9b1c67bfbbc227b6ea5
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+
+  number: 0
+  skip: true  # [win32]
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{posix}}zip               # [win]
+
+  host:
     - r-base
     - r-r6
     - r-crayon
@@ -50,12 +59,23 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('taxa')"
+
+    - $R -e "library('taxa')"           # [not win]
+    - "\"%R%\" -e \"library('taxa')\""  # [win]
 
 about:
-  home: https://CRAN.R-project.org/package=taxa
-  license: MIT + file LICENSE
+  home: https://github.com/ropensci/taxa
+  license: MIT
   summary: Provides taxonomic classes for groupings of taxonomic names without data, and those
     with data. Methods provided are "taxonomically aware", in that they know about ordering
     of ranks, and methods that filter based on taxonomy also filter associated data.
   license_family: MIT
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

@@ -1,4 +1,7 @@
-{% set version = '2.1.0' %}
+{% set version = '2.1.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-adegenet
@@ -6,20 +9,29 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/adegenet_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/adegenet/adegenet_{{ version }}.tar.gz
-  sha256: 7ee44061002b41164bbc09256307ab02e536f4f2ac03f36c7dc8f85f6af4639a
+    - {{ cran_mirror }}/src/contrib/adegenet_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/adegenet/adegenet_{{ version }}.tar.gz
+  sha256: 3043fe5d731a38ff0e266f090dcda448640c3d0fd61934c76da32d082e5dce7a
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+
+  number: 0
+  skip: true  # [win32]
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
-
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('c') }}        # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
 
   host:
     - r-base
@@ -38,6 +50,7 @@ requirements:
 
   run:
     - r-base
+    - {{native}}gcc-libs         # [win]
     - r-mass
     - r-ade4
     - r-ape
@@ -53,7 +66,9 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('adegenet')"
+
+    - $R -e "library('adegenet')"           # [not win]
+    - "\"%R%\" -e \"library('adegenet')\""  # [win]
 
 about:
   home: https://github.com/thibautjombart/adegenet
@@ -67,3 +82,12 @@ about:
     A range of both empirical and simulated datasets is also provided to illustrate
     various methods.
   license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

@@ -1,26 +1,30 @@
 {% set version = '1.0' %}
 
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-mqtl
   version: {{ version|replace("-", "_") }}
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/mQTL_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/mQTL/mQTL_{{ version }}.tar.gz
-
-  sha256: 7a36044224285354a58686dbf7ce24ee8bd8a543a56821d7b8152c90e7ee004d
+    - {{ cran_mirror }}/src/contrib/mQTL_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/mQTL/mQTL_{{ version }}.tar.gz
+  sha256: 21193861fbf2d280f2b7284ba87d68adce515e35fbe4e71821439fa8b14d1b72
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+
+  number: 2
+
   rpaths:
     - lib/R/lib/
     - lib/
 
-
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{posix}}zip               # [win]
 
   host:
     - r-base
@@ -36,7 +40,9 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('mQTL')"
+
+    - $R -e "library('mQTL')"           # [not win]
+    - "\"%R%\" -e \"library('mQTL')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=mQTL
@@ -46,3 +52,12 @@ about:
     dimensionality reduction using SRV approach and finally  QTL mapping using R/qtl
     package.
   license_family: GPL
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

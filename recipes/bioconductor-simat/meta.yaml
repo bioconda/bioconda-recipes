@@ -1,6 +1,6 @@
-{% set version = "1.10.0" %}
+{% set version = "1.12.1" %}
 {% set name = "SIMAT" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,27 +10,28 @@ source:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 10a494cbeea8d62ad4472fbfa1c6b52bddd65ebfd7b7e73bb03c3839d14da93d
+  sha256: 4ba6cf05252f63457d121e064b0dda6412d3fd93ae1d849469d9e350534f02c3
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
-    - bioconductor-mzr
+    - 'bioconductor-mzr >=2.17.0,<2.19.0'
     - r-base
     - r-ggplot2
     - 'r-rcpp >=0.11.3'
     - r-reshape2
   run:
-    - bioconductor-mzr
+    - 'bioconductor-mzr >=2.17.0,<2.19.0'
     - r-base
     - r-ggplot2
     - 'r-rcpp >=0.11.3'
     - r-reshape2
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -38,7 +39,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'This package provides a pipeline for analysis of GC-MS data acquired in selected ion monitoring (SIM) mode. The tool also provides a guidance in choosing appropriate fragments for the targets of interest by using an optimization algorithm. This is done by considering overlapping peaks from a provided library by the user.'
-
 extra:
   identifiers:
     - biotools:simat

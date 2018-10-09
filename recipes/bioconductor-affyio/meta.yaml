@@ -1,6 +1,6 @@
-{% set version = "1.48.0" %}
+{% set version = "1.50.0" %}
 {% set name = "affyio" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,20 +8,25 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 69aa9239db6ab4a0464138c3fdb21996e93bf38d6ec7fdc870beae36dab8ffdf
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 56885f62402c8d68acca2f17fbdb3cd6af2356c50bb26c6cc1d779c8ace5056a
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
-    - bioconductor-zlibbioc
+    - 'bioconductor-zlibbioc >=1.26.0,<1.28.0'
     - r-base
   run:
-    - bioconductor-zlibbioc
+    - 'bioconductor-zlibbioc >=1.26.0,<1.28.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

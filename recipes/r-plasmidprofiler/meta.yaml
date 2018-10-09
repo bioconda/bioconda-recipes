@@ -1,23 +1,31 @@
 {% set version = '0.1.6' %}
 
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-plasmidprofiler
   version: {{ version|replace("-", "_") }}
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/Plasmidprofiler_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/Plasmidprofiler/Plasmidprofiler_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Plasmidprofiler_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/Plasmidprofiler/Plasmidprofiler_{{ version }}.tar.gz
   sha256: d37c6f7eac38aef0e525968c7caa5c82509355bece330b46cd2615f0ab9da382
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+
+  number: 2
 
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
+  build:
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
     - r-rcolorbrewer
@@ -34,9 +42,6 @@ requirements:
     - r-plyr
     - r-reshape2
     - r-stringr
-
-    # prev version:
-    # - pandoc
 
   run:
     - r-base
@@ -55,12 +60,11 @@ requirements:
     - r-reshape2
     - r-stringr
 
-    # prev version:
-    # - pandoc
-
 test:
   commands:
-    - $R -e "library('Plasmidprofiler')"
+
+    - $R -e "library('Plasmidprofiler')"           # [not win]
+    - "\"%R%\" -e \"library('Plasmidprofiler')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=Plasmidprofiler
@@ -69,3 +73,12 @@ about:
     using short-read sequence typing with the results of a blast analysis against the
     query results.
   license_family: APACHE
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

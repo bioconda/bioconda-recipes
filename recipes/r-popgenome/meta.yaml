@@ -1,6 +1,7 @@
 {% set version = '2.6.1' %}
-{% set posix = '' %}
-{% set native = '' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-popgenome
@@ -13,26 +14,39 @@ source:
   sha256: 7a2922ed505fa801117a153e479d246bcf4854b91c6ab0241acc620a9d779b1c
 
 build:
-  number: 0
+  merge_build_host: True  # [win]
+
+  number: 1
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}      # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
     - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
     - r-ff
+
   run:
     - r-base
+    - {{native}}gcc-libs         # [win]
     - r-ff
 
 test:
   commands:
-    - $R -e "library('PopGenome')"
+
+    - $R -e "library('PopGenome')"           # [not win]
+    - "\"%R%\" -e \"library('PopGenome')\""  # [win]
 
 about:
   home: http://popgenome.weebly.com
@@ -43,16 +57,15 @@ about:
     the easy  implementation of new algorithms by other researchers. PopGenome is optimized
     for speed via  the seamless integration of C code.
   license_family: GPL3
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 
 extra:
   identifiers:
     - doi:10.1093/molbev/msu136
   recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
     - johanneskoester
     - bgruening
     - daler
     - jdblischak
-    - cbrueffer
-    - dbast
-    - npavlovikj

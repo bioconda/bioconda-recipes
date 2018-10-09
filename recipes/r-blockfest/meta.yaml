@@ -1,6 +1,7 @@
 {% set version = '1.6' %}
-{% set posix = '' %}
-{% set native = '' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-blockfest
@@ -13,25 +14,38 @@ source:
   sha256: 458d137f638905578a4aeec28b3a7aa33bc71d3672d1c3947cabdba355514742
 
 build:
-  number: 0
+  merge_build_host: True  # [win]
+
+  number: 1
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('c') }}        # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
     - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
     - r-basix
+
   run:
     - r-base
+    - {{native}}gcc-libs         # [win]
     - r-basix
 
 test:
   commands:
-    - $R -e "library('BlockFeST')"
+
+    - $R -e "library('BlockFeST')"           # [not win]
+    - "\"%R%\" -e \"library('BlockFeST')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=BlockFeST
@@ -42,7 +56,6 @@ about:
     regions, genes, or gene sets containing one or more SNPs that evolved under directional
     selection.
   license_family: GPL2
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 
 extra:
   identifiers:

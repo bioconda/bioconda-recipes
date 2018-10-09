@@ -14,19 +14,18 @@ source:
   sha256: 1e168ccdef75b6a4229976740e60704d75e2f1d5c3f6757f9fb7798c727f7fec
 
 build:
-  # If this is a new build for the same version, increment the build number.
-  number: 0
-  # rgl issues on OSX
-  skip: True  # [osx]
+  merge_build_host: True  # [win]
 
-  # This is required to make R link correctly on Linux.
+  number: 1
+
   rpaths:
     - lib/R/lib/
     - lib/
 
-# Suggests: DESeq2, destiny, knitr, rmarkdown
 requirements:
   build:
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
     - r-rcolorbrewer
@@ -53,19 +52,29 @@ requirements:
 
 test:
   commands:
+
     - $R -e "library('FateID')"           # [not win]
+    - "\"%R%\" -e \"library('FateID')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=FateID
   license: GPL-3
   summary: "Application of 'FateID' allows computation and visualization of cell fate bias for
-    multi-lineage single cell transcriptome data."
+    multi-lineage single cell transcriptome data. Herman, J.S., Sagar, Gr\xFCn D. (2017)
+    <DOI:10.1038/nmeth.4662>."
 
   license_family: GPL3
-
 extra:
   identifiers:
     - doi:10.1038/nmeth.4662
   container:
     # needed for libGL.so.1
     extended-base: true
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

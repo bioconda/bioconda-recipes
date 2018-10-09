@@ -1,4 +1,7 @@
-{% set version = '0.2.10' %}
+{% set version = '0.2.11' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-alakazam
@@ -6,13 +9,15 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/alakazam_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/alakazam/alakazam_{{ version }}.tar.gz
-  sha256: d9fe93736b7ec0a38774f8a31df04461bee45ca71d31e45703b242b6f261d82d
+    - {{ cran_mirror }}/src/contrib/alakazam_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/alakazam/alakazam_{{ version }}.tar.gz
+  sha256: 267855037ba824927d36be3fd8b5c6c2274af4dd9953ba583517dece1278d95c
 
 build:
-  number: 1
-  skip:  true #  [osx]
+  merge_build_host: True  # [win]
+
+  number: 0
+  skip: true  # [win32]
 
   rpaths:
     - lib/R/lib/
@@ -20,11 +25,18 @@ build:
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}      # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
 
   host:
     - r-base
-    - r-rcpp
+    - r-rcpp >=0.12.12
     - r-dplyr >=0.5.0
     - r-ggplot2 >=2.0.0
     - r-igraph >=1.0.0
@@ -34,10 +46,12 @@ requirements:
     - r-scales
     - r-seqinr
     - r-stringi
+    - r-tidyr
 
   run:
     - r-base
-    - r-rcpp
+    - {{native}}gcc-libs         # [win]
+    - r-rcpp >=0.12.12
     - r-dplyr >=0.5.0
     - r-ggplot2 >=2.0.0
     - r-igraph >=1.0.0
@@ -47,14 +61,30 @@ requirements:
     - r-scales
     - r-seqinr
     - r-stringi
+    - r-tidyr
 
 test:
   commands:
-    - $R -e "library('alakazam')"
+
+    - $R -e "library('alakazam')"           # [not win]
+    - "\"%R%\" -e \"library('alakazam')\""  # [win]
 
 about:
   home: http://alakazam.readthedocs.org
   license: CC BY-SA 4.0
-  summary: Provides immunoglobulin (Ig) sequence lineage reconstruction, diversity profiling,
-    and amino acid property analysis.
-  license_family: OTHER
+  summary: 'Provides methods for high-throughput adaptive immune  receptor repertoire sequencing
+    (AIRR-Seq; Rep-Seq) analysis. In  particular, immunoglobulin (Ig) sequence lineage
+    reconstruction,  lineage topology analysis, diversity profiling, amino acid property  analysis
+    and gene usage. Citations:  Gupta and Vander Heiden, et al (2017) <doi:10.1093/bioinformatics/btv359>,
+    Stern, Yaari and Vander Heiden, et al (2014) <doi:10.1126/scitranslmed.3008879>.'
+
+  license_family: CC
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

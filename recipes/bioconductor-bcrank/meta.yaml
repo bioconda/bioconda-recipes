@@ -1,6 +1,6 @@
-{% set version = "1.40.0" %}
+{% set version = "1.42.0" %}
 {% set name = "BCRANK" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,20 +8,24 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 3c5fc7c5699bcadeb26ceb67dc2822680bba4b3685b0c62b25bb54f8d5d4726d
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 98196790877a23218038419beb4f8fc6b977f04ff58ca311998b528349810247
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
-    - bioconductor-biostrings
+    - 'bioconductor-biostrings >=2.48.0,<2.50.0'
     - r-base
   run:
-    - bioconductor-biostrings
+    - 'bioconductor-biostrings >=2.48.0,<2.50.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

@@ -1,24 +1,36 @@
 {% set version = '3.4-5' %}
 
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-seqinr
   version: {{ version|replace("-", "_") }}
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/seqinr_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/seqinr/seqinr_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/seqinr_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/seqinr/seqinr_{{ version }}.tar.gz
   sha256: 162a347495fd52cbb62e8187a4692e7c50b9fa62123c5ef98f2744c98a05fb9f
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+
+  number: 2
 
   rpaths:
     - lib/R/lib/
     - lib/
+
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('c') }}        # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
 
   host:
     - r-base
@@ -27,12 +39,15 @@ requirements:
 
   run:
     - r-base
+    - {{native}}gcc-libs         # [win]
     - r-ade4
     - r-segmented
 
 test:
   commands:
-    - $R -e "library('seqinr')"
+
+    - $R -e "library('seqinr')"           # [not win]
+    - "\"%R%\" -e \"library('seqinr')\""  # [win]
 
 about:
   home: http://seqinr.r-forge.r-project.org/
@@ -41,3 +56,14 @@ about:
     protein) data. Seqinr includes  utilities for sequence data management under the
     ACNUC system described in Gouy, M. et al. (1984) Nucleic Acids Res. 12:121-127 <doi:10.1093/nar/12.1Part1.121>.
   license_family: GPL3
+  license_file: '{{ environ["PREFIX"] }}\/lib\/R\/share\/licenses\/GPL-3'  # [unix]
+  license_file: '{{ environ["PREFIX"] }}\R\share\licenses\GPL-3'  # [win]
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

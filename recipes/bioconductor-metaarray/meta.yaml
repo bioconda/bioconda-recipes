@@ -1,6 +1,6 @@
-{% set version = "1.56.0" %}
+{% set version = "1.58.0" %}
 {% set name = "metaArray" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,22 +8,26 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: fbb49fb1d98ecf691f63dbdd3540e5258d4ed6b5bd3d595f79d749f580ab70d8
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 6d17b3fe4860060594b99b873e476217e7c9f2f4e30501c9f16ca252accaaaea
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
-    - bioconductor-biobase
-    - bioconductor-mergemaid
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-mergemaid >=2.52.0,<2.54.0'
     - r-base
   run:
-    - bioconductor-biobase
-    - bioconductor-mergemaid
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-mergemaid >=2.52.0,<2.54.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -31,7 +35,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL-2
   summary: '1) Data transformation for meta-analysis of microarray Data: Transformation of gene expression data to signed probability scale (MCMC/EM methods) 2) Combined differential expression on raw scale: Weighted Z-score after stabilizing mean-variance relation within platform'
-
 extra:
   identifiers:
     - biotools:metaarray

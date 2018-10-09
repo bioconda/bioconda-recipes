@@ -1,6 +1,6 @@
-{% set version = "1.48.0" %}
+{% set version = "1.50.0" %}
 {% set name = "plier" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,22 +8,27 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 7daf8556ea66cc0be722ba23078291a38eeb8d59dc45e82b6d0fdfc759911558
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: c658643f7380b61dd09f213a9eef0bcb5d284c796dacd9520905d40723912e0e
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
-    - bioconductor-affy
-    - bioconductor-biobase
+    - 'bioconductor-affy >=1.58.0,<1.60.0'
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
     - r-base
   run:
-    - bioconductor-affy
-    - bioconductor-biobase
+    - 'bioconductor-affy >=1.58.0,<1.60.0'
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -31,7 +36,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'The PLIER (Probe Logarithmic Error Intensity Estimate) method produces an improved signal by accounting for experimentally observed patterns in probe behavior and handling error at the appropriately at low and high signal values.'
-
 extra:
   identifiers:
     - biotools:plier

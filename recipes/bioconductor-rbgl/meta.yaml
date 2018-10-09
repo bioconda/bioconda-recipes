@@ -1,6 +1,6 @@
-{% set version = "1.54.0" %}
+{% set version = "1.56.0" %}
 {% set name = "RBGL" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,20 +8,26 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 675b6e7cd9be8c007aba42477c83b478e8bdd92174bc45f6f529a11187684aa2
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 0e5a056a1a63e711bf73ec9978b525dfb7adb49f63e01cba2bd15f5cab384942
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
-    - bioconductor-graph
+    - 'bioconductor-graph >=1.58.0,<1.60.0'
     - r-base
   run:
-    - bioconductor-graph
+    - 'bioconductor-graph >=1.58.0,<1.60.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -29,7 +35,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'A fairly extensive and comprehensive interface to the graph algorithms contained in the BOOST library.'
-
 extra:
   identifiers:
     - biotools:rbgl
