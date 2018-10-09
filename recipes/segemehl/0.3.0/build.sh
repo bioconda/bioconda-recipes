@@ -1,10 +1,12 @@
 #!/bin/sh
-cd segemehl
+
+cd 20181005-161011
 
 export C_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/ncurses
 export LIBRARY_PATH=${PREFIX}/lib
+export PKG_CONFIG_PATH=${PREFIX}/lib/pkgconfig
 
-make -j 1 ## do not use >1 make threads!
+make all -j
 
 for i in *.x ; do
     install ${i} ${PREFIX}/bin
