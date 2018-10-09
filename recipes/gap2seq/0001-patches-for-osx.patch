@@ -1,0 +1,312 @@
+From 683e9c7ff67bc7d547b882c4d71974fda245c99e Mon Sep 17 00:00:00 2001
+From: Ilya Shlyakhter <ilya_shl@alum.mit.edu>
+Date: Fri, 18 Aug 2017 22:56:30 -0400
+Subject: [PATCH] patches for osx
+
+---
+ src/Gap2Seq.cpp   | 65 ++++++++++++++++++++++++++++---------------------------
+ src/GapCutter.cpp |  5 ++---
+ src/GapMerger.cpp |  5 ++---
+ 3 files changed, 37 insertions(+), 38 deletions(-)
+
+diff --git a/src/Gap2Seq.cpp b/src/Gap2Seq.cpp
+index abef579..db59b82 100755
+--- a/src/Gap2Seq.cpp
++++ b/src/Gap2Seq.cpp
+@@ -22,8 +22,8 @@
+ #include <Gap2Seq.hpp>
+ #include <map>
+ #include <fstream>
+-#include <unordered_map>
+-#include <unordered_set>
++#include <boost/unordered_map.hpp>
++#include <boost/unordered_set.hpp>
+ 
+ #include <boost/graph/adjacency_list.hpp>
+ #include <boost/graph/graphviz.hpp>
+@@ -92,7 +92,7 @@ Gap2Seq::Gap2Seq ()  : Tool ("Gap2Seq")
+ 
+ #ifndef SINGLE_THREAD
+ // Synchronizer for access to global variables
+-ISynchronizer *lock;
++ISynchronizer *Gap2Seq_lock;
+ #endif
+ 
+ /*********************************************************************
+@@ -188,7 +188,7 @@ void Gap2Seq::execute ()
+ 
+ #ifndef SINGLE_THREAD
+   // Synchronization for output (both file and stdout)
+-  lock = System::thread().newSynchronizer();
++  Gap2Seq_lock = System::thread().newSynchronizer();
+   IDispatcher *d = getDispatcher();
+   // Default group size is too big (one thread will do all the work...)
+   d->setGroupSize(1);
+@@ -215,7 +215,7 @@ void Gap2Seq::execute ()
+     std::string seq = "";
+     std::string comment = "";
+     {
+-      LocalSynchronizer local(lock);
++      LocalSynchronizer local(Gap2Seq_lock);
+       if (!itSeq.isDone()) {
+ 	seq = itSeq->toString();
+ 	comment = itSeq->getComment();
+@@ -244,7 +244,7 @@ void Gap2Seq::execute ()
+ //     std::cout << comment << std::endl;
+ // #else
+ //     {
+-//       LocalSynchronizer local(lock);
++//       LocalSynchronizer local(Gap2Seq_lock);
+ //       std::cout << comment << std::endl;
+ 
+ // #ifdef DEBUG
+@@ -259,7 +259,7 @@ void Gap2Seq::execute ()
+       if (seq[i] == 'N' || seq[i] == 'n') {
+ #ifndef SINGLE_THREAD
+ 	{
+-	  LocalSynchronizer local(lock);
++	  LocalSynchronizer local(Gap2Seq_lock);
+ #endif
+ 	  gapcount++;
+ #ifndef SINGLE_THREAD
+@@ -298,7 +298,7 @@ void Gap2Seq::execute ()
+ 
+ #ifndef SINGLE_THREAD
+ 	  {
+-	    LocalSynchronizer local(lock);
++	    LocalSynchronizer local(Gap2Seq_lock);
+ #endif
+ 	    //ofstream statfile;
+ 	    //statfile.open(STATS_FILE, ios::out | ios::app | ios::ate);
+@@ -400,7 +400,7 @@ void Gap2Seq::execute ()
+     s._comment = comment;
+ #ifndef SINGLE_THREAD
+     {
+-      LocalSynchronizer local(lock);
++      LocalSynchronizer local(Gap2Seq_lock);
+ #endif
+       output.insert(s);
+       output.flush();
+@@ -426,7 +426,7 @@ void Gap2Seq::execute ()
+ // Threadwise memory limit using std allocators
+ 
+ // Array of memory usage accessed by thread id
+-unordered_map<long long, long long> memuse;
++boost::unordered_map<long long, long long> memuse;
+ 
+ // Custom memory allocator to be used with stl containers
+ template <typename T>
+@@ -448,7 +448,7 @@ public:
+     long long id = System::thread().getThreadSelf();
+ #ifndef SINGLE_THREAD
+     {
+-      LocalSynchronizer local(lock);
++      LocalSynchronizer local(Gap2Seq_lock);
+ #endif
+       memuse[id] += n*sizeof(T);
+ #ifndef SINGLE_THREAD
+@@ -464,7 +464,7 @@ public:
+     long long id = System::thread().getThreadSelf();
+ #ifndef SINGLE_THREAD
+     {
+-      LocalSynchronizer local(lock);
++      LocalSynchronizer local(Gap2Seq_lock);
+ #endif
+       memuse[id] -= n*sizeof(T);
+ #ifndef SINGLE_THREAD
+@@ -898,7 +898,7 @@ int Gap2Seq::fill_gap(Graph graph, std::string kmer_left, std::string kmer_right
+   long long id = System::thread().getThreadSelf();
+ #ifndef SINGLE_THREAD
+   {
+-      LocalSynchronizer local(lock);
++      LocalSynchronizer local(Gap2Seq_lock);
+ #endif
+       memuse[id] = 0;
+ #ifndef SINGLE_THREAD
+@@ -906,10 +906,10 @@ int Gap2Seq::fill_gap(Graph graph, std::string kmer_left, std::string kmer_right
+ #endif
+ 
+   // Border sets for breadth first search
+-  std::unordered_set<Node, node_hash, equal_to<Node>, count_allocator<Node> > border;
+-  std::unordered_set<Node, node_hash, equal_to<Node>, count_allocator<Node> > nextBorder;
++  boost::unordered_set<Node, node_hash, equal_to<Node>, count_allocator<Node> > border;
++  boost::unordered_set<Node, node_hash, equal_to<Node>, count_allocator<Node> > nextBorder;
+ 
+-  unordered_map<Node, map_element2 *, node_hash, equal_to<Node>, count_allocator< pair <const Node, map_element2 *> > > reachableSetRight;
++	boost::unordered_map<Node, map_element2 *, node_hash, equal_to<Node>, count_allocator< pair <const Node, map_element2 *> > > reachableSetRight;
+ 
+ #ifdef DEBUG
+   std::cout << "Search from right end" << std::endl;
+@@ -953,7 +953,7 @@ int Gap2Seq::fill_gap(Graph graph, std::string kmer_left, std::string kmer_right
+   long long mymemuse;
+ #ifndef SINGLE_THREAD
+   {
+-      LocalSynchronizer local(lock);
++      LocalSynchronizer local(Gap2Seq_lock);
+ #endif
+       mymemuse = memuse[id];
+ #ifndef SINGLE_THREAD
+@@ -974,10 +974,10 @@ int Gap2Seq::fill_gap(Graph graph, std::string kmer_left, std::string kmer_right
+     std::cout << "Border size: " << border.size() << std::endl;
+ #endif
+ 
+-    for (std::unordered_set<Node, node_hash, equal_to<Node>, count_allocator<Node> >::iterator it = border.begin(); it != border.end(); ++ it) {
++    for (boost::unordered_set<Node, node_hash, equal_to<Node>, count_allocator<Node> >::iterator it = border.begin(); it != border.end(); ++ it) {
+ #ifndef SINGLE_THREAD
+       {
+-	LocalSynchronizer local(lock);
++	LocalSynchronizer local(Gap2Seq_lock);
+ #endif
+ 	mymemuse = memuse[id];
+ #ifndef SINGLE_THREAD
+@@ -1069,7 +1069,7 @@ int Gap2Seq::fill_gap(Graph graph, std::string kmer_left, std::string kmer_right
+ 
+ #ifndef SINGLE_THREAD
+     {
+-      LocalSynchronizer local(lock);
++      LocalSynchronizer local(Gap2Seq_lock);
+ #endif
+       mymemuse = memuse[id];
+ #ifndef SINGLE_THREAD
+@@ -1085,7 +1085,7 @@ int Gap2Seq::fill_gap(Graph graph, std::string kmer_left, std::string kmer_right
+   int count = 0;
+ 
+   // The set of nodes reached so far
+-  unordered_map<Node, map_element *, node_hash, equal_to<Node>, count_allocator< pair <const Node, map_element *> > > reachableSetLeft;
++	boost::unordered_map<Node, map_element *, node_hash, equal_to<Node>, count_allocator< pair <const Node, map_element *> > > reachableSetLeft;
+ 
+ #ifdef DEBUG
+   std::cout << "Search from left end" << std::endl;
+@@ -1130,7 +1130,7 @@ int Gap2Seq::fill_gap(Graph graph, std::string kmer_left, std::string kmer_right
+ 
+ #ifndef SINGLE_THREAD
+   {
+-      LocalSynchronizer local(lock);
++      LocalSynchronizer local(Gap2Seq_lock);
+ #endif
+       mymemuse = memuse[id];
+ #ifndef SINGLE_THREAD
+@@ -1153,10 +1153,10 @@ int Gap2Seq::fill_gap(Graph graph, std::string kmer_left, std::string kmer_right
+     std::cout << "Border size: " << border.size() << std::endl;
+ #endif
+ 
+-    for (std::unordered_set<Node, node_hash, equal_to<Node>, count_allocator<Node> >::iterator it = border.begin(); it != border.end(); ++ it) {
++    for (boost::unordered_set<Node, node_hash, equal_to<Node>, count_allocator<Node> >::iterator it = border.begin(); it != border.end(); ++ it) {
+ #ifndef SINGLE_THREAD
+       {
+-	LocalSynchronizer local(lock);
++	LocalSynchronizer local(Gap2Seq_lock);
+ #endif
+ 	mymemuse = memuse[id];
+ #ifndef SINGLE_THREAD
+@@ -1207,7 +1207,7 @@ int Gap2Seq::fill_gap(Graph graph, std::string kmer_left, std::string kmer_right
+     
+ #ifndef SINGLE_THREAD
+     {
+-      LocalSynchronizer local(lock);
++      LocalSynchronizer local(Gap2Seq_lock);
+ #endif
+       mymemuse = memuse[id];
+ #ifndef SINGLE_THREAD
+@@ -1339,7 +1339,7 @@ int Gap2Seq::fill_gap(Graph graph, std::string kmer_left, std::string kmer_right
+ 
+ #ifndef SINGLE_THREAD
+     {
+-      LocalSynchronizer local(lock);
++      LocalSynchronizer local(Gap2Seq_lock);
+ #endif
+       mymemuse = memuse[id];
+ #ifndef SINGLE_THREAD
+@@ -1358,12 +1358,12 @@ int Gap2Seq::fill_gap(Graph graph, std::string kmer_left, std::string kmer_right
+     typedef boost::graph_traits<digraph>::vertex_descriptor bnode ;
+     typedef boost::graph_traits<digraph>::edge_descriptor bedge ;
+     digraph subgraph(0);
+-    std::unordered_map<Node, bnode, node_hash, equal_to<Node>, count_allocator< pair <const Node, map_element *> > > node2boost;
++    boost::unordered_map<Node, bnode, node_hash, equal_to<Node>, count_allocator< pair <const Node, map_element *> > > node2boost;
+     int *branch = NULL;
+ 
+     if (!skip_confident) {
+-      std::unordered_set<Node, node_hash, equal_to<Node>, count_allocator<Node> > backBorder;
+-      std::unordered_set<Node, node_hash, equal_to<Node>, count_allocator<Node> > nextBackBorder;
++      boost::unordered_set<Node, node_hash, equal_to<Node>, count_allocator<Node> > backBorder;
++      boost::unordered_set<Node, node_hash, equal_to<Node>, count_allocator<Node> > nextBackBorder;
+ 
+       bnode sink = boost::add_vertex(subgraph);
+       bnode source = boost::add_vertex(subgraph);
+@@ -1494,7 +1494,7 @@ int Gap2Seq::fill_gap(Graph graph, std::string kmer_left, std::string kmer_right
+ 
+ #ifdef DEBUG_GRAPH
+       {
+-	LocalSynchronizer local(lock);
++	LocalSynchronizer local(Gap2Seq_lock);
+ 	std::cout << "The whole graph:" << std::endl;
+ 	write_graphviz(std::cout, subgraph);
+       }
+@@ -1623,7 +1623,7 @@ int Gap2Seq::fill_gap(Graph graph, std::string kmer_left, std::string kmer_right
+       
+ #ifdef DEBUG_GRAPH
+       {
+-	LocalSynchronizer local(lock);
++	LocalSynchronizer local(Gap2Seq_lock);
+ 	std::cout << "DAG:" << std::endl;
+ 	write_graphviz(std::cout, subgraph, boost::make_label_writer(branch));
+       }
+@@ -1767,7 +1767,7 @@ int Gap2Seq::fill_gap(Graph graph, std::string kmer_left, std::string kmer_right
+ #ifdef STATS
+ #ifndef SINGLE_THREAD
+   {
+-    LocalSynchronizer local(lock);
++    LocalSynchronizer local(Gap2Seq_lock);
+ #endif
+     std::cout << "Nodes: " << n << " Nonzeros: " << nz << " Total memory: " << memuse[id] << std::endl; 
+ #ifndef SINGLE_THREAD
+@@ -1811,3 +1811,4 @@ std::set<Node> Gap2Seq::extract_reachable_nodes(Graph graph, std::string kmer, i
+ 
+   return reachableSet;
+ }
++
+diff --git a/src/GapCutter.cpp b/src/GapCutter.cpp
+index 9e55530..22c6802 100644
+--- a/src/GapCutter.cpp
++++ b/src/GapCutter.cpp
+@@ -20,8 +20,6 @@
+ 
+ #include <map>
+ #include <fstream>
+-#include <unordered_map>
+-#include <unordered_set>
+ 
+ #include <gatb/gatb_core.hpp>
+ 
+@@ -239,4 +237,5 @@ int main (int argc, char* argv[])
+     }
+ 
+     return EXIT_SUCCESS;
+-}
+\ No newline at end of file
++}
++
+diff --git a/src/GapMerger.cpp b/src/GapMerger.cpp
+index 50d8f97..47ae6da 100644
+--- a/src/GapMerger.cpp
++++ b/src/GapMerger.cpp
+@@ -20,8 +20,6 @@
+ 
+ #include <map>
+ #include <fstream>
+-#include <unordered_map>
+-#include <unordered_set>
+ 
+ #include <gatb/gatb_core.hpp>
+ 
+@@ -211,4 +209,5 @@ int main (int argc, char* argv[])
+     }
+ 
+     return EXIT_SUCCESS;
+-}
+\ No newline at end of file
++}
++
+-- 
+2.13.3
+

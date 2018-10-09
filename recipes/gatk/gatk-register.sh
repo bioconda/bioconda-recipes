@@ -89,10 +89,19 @@ elif [[ "$file_ext" == "tar.bz2" ]]; then
     mkdir /tmp/gatk
     cd /tmp/gatk
     tar -vxjf $abspath_tarball
+
+    # jar locations: Handle both nested (GATK3.8) and non-ested (<=GATK 3.7)
+    NESTED_GLOB="GenomeAnalysisTK-*/GenomeAnalysisTK.jar"
+    if compgen -G "$NESTED_GLOB"; then
+      JARS=( "$NESTED_GLOB" )
+      JAR=( "${JARS[0]}" )
+    else
+      JAR=./GenomeAnalysisTK.jar
+    fi
     
     if [[ "$2" != "--noversioncheck" ]]; then
-      check_version ./GenomeAnalysisTK.jar
+      check_version $JAR
     fi
     echo "Moving $(basename $abspath_tarball) to $ENV_PREFIX/opt/$PKG_NAME-$PKG_VERSION"
-    mv ./GenomeAnalysisTK.jar $ENV_PREFIX/opt/$PKG_NAME-$PKG_VERSION/
+    mv $JAR $ENV_PREFIX/opt/$PKG_NAME-$PKG_VERSION/
 fi

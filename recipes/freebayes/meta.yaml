@@ -1,34 +1,48 @@
 package:
   name: freebayes
-  version: '1.1.0'
+  version: '1.2.0'
 
 source:
   git_url: https://github.com/ekg/freebayes.git
-  git_tag: 39e5e4bcb801556141f2da36aba1df5c5c60701f
+  git_tag: 40155b407a4bead708aaafcadf7904854c411275
+  patches:
+    - qcfail.diff
 
 build:
-  number: 2
-  skip: true  # [osx]
+  number: 3
 
 requirements:
   build:
-    - cmake
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
     - zlib
+    - bzip2
     - python
-    - gcc   # [not osx]
-    - llvm  # [osx]
+    - xz
   run:
     - zlib
+    - bzip2
     - python
-    - libgcc    # [not osx]
-    - htslib <1.4
-
+    - htslib
+    - parallel
+    - xz
 test:
   commands:
     - freebayes --version
     - vcfstreamsort -h
+    - bamleftalign -h
 
 about:
   home: https://github.com/ekg/freebayes
   license: MIT
+  license_file: LICENSE
+  license_family: MIT
   summary: Bayesian haplotype-based polymorphism discovery and genotyping
+
+extra:
+  skip-lints:
+    - uses_git_url
+    - missing_hash
+  identifiers:
+    - biotools:freebayes

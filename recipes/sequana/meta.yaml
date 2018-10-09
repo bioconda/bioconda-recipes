@@ -1,22 +1,19 @@
 {% set name = "sequana" %}
-{% set version = "0.4.0" %}
-{% set md5 = "5664f19787c15340505b30deaf7a9bc0" %}
+{% set version = "0.7.1" %}
+{% set sha = "891e9a27fd992a9713de2e3afac9b4c8042d492703be65e1ae2b0ab098e275d6" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  md5: {{ md5 }}
+  sha256: {{ sha }}
 
-
-# py36 requires pyvcf do be updated so for now, only 3.5
 build:
   skip: True # [py27]
   preserve_egg_dir: True
-  number: 0
+  number: 1
   entry_points:
     - sequana_gui=sequana.gui.sequana_gui:main
     - sequanix=sequana.gui.sequana_gui:main
@@ -31,82 +28,86 @@ build:
     - sequana_mapping=sequana.scripts.mapping:main
     - sequana_compressor=sequana.scripts.compressor:main
     - sequana_report=sequana.scripts.reports:main
-    - sequana_fox=sequana.scripts.browser:main
 
-# matplotlib and qt cause trouble. Removed whihc prevent the
-# test or imports unfortunately
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
-    - colorlog
-    - ruamel.yaml >=0.13.2
-    - qtconsole
-    - psutil
-    - mock
-    - docutils
-    - pysam
-    - easydev >=0.9.34
-    #- numpy <=1.11
-    #- reports >=0.3.1
-    - pyvcf
-    #- pandas
-    - cutadapt >=1.9.1
-    - bioservices >=1.4.14
-    #- biokit >=0.4.1
-
   run:
     - python
-    - colorlog
-    - ruamel.yaml >=0.13.2
-    - qtconsole
-    - psutil
-    - mock
-    - docutils
-    - pysam
-    - easydev >=0.9.34
-    #- numpy <=1.11
-    - reports >=0.3.1
-    - pyvcf
-    - pandas
-    - cutadapt >=1.9.1
-    - bioservices >=1.4.14
-    - biokit >=0.4.1
-    - snakemake
-    - shustring
-    - numexpr
-    - xlrd
-    - pyyaml
-    - kraken # [not osx]
-    - snpeff
-    - krona
+    - atropos ==1.1.16
+    - bcftools
+    - bedtools
+    - bioservices >=1.5.1
+    - biokit >=0.4.3
+    - bleach
+    - bowtie
+    - bowtie2
     - bwa
+    - colorlog
+    - cutadapt
+    - easydev >=0.9.36
+    - fastq-screen
+    - fastqc ==0.11.5
+    - freebayes
+    - graphviz
+    - khmer
+    - kraken # [not osx]
+    - krona
+    - mock
+    - multiqc ==1.0
+    - numexpr
+    - pandas
+    - pigz
+    - psutil
+    - pyyaml
+    - pyvcf
+    - pysam
+    - ruamel.yaml 
+    - qtconsole
+    - sambamba
+    - samtools
+    - snakemake ==4.0.0
+    - snpeff
+    - spades
+    - shustring
+    - subread
+    - xlrd
 
+#
 test:
-  #imports:
-  #  - sequana
-  #  - sequana.modules_report
-  #  - sequana.pipelines
-  #  - sequana.plots
-  #  - sequana.scripts
-  #  - sequana.sphinxext
-  #  - sequana.utils
-  #commands:
-  #  - fastq_count --help 1>out 2>>err
-  #  - sequana_fastq_head --help
-  #  - sequana_fastq_count --help
-  #  - sequana --help
-  #  - sequana_taxonomy --help
-  #  - sequana_coverage --help
-  #  - sequana_summary --help
-  #  - sequana_mapping --help
-  #  - sequana_compressor --help
-  #  - sequana_report --help
+  imports:
+    - sequana
+    - sequana.modules_report
+    - sequana.pipelines
+    - sequana.plots
+    - sequana.scripts
+    - sequana.sphinxext
+    - sequana.utils
+  commands:
+    - fastq_count --help 1>out 2>err
+    - sequana_fastq_head --help
+    - sequana_fastq_count --help
+    - sequana --help
+    - sequana_taxonomy --help 1>out 2>err
+    - sequana_coverage --help 1>out 2>err
+  #  - sequanix
+    - sequana_mapping --help 1>out 2>err
+    - sequana_compressor --help
+
+# commands:
+#    - MPLBACKEND=agg bioconvert --help
+#    - MPLBACKEND=agg bioconvert_init --help
+
+extra:
+  container:
+    # needs libGL.so.1
+    extended-base: true
 
 about:
-  home: ['http://github.com/sequana/']
+  home: 'http://sequana.readthedocs.io/'
   license: "BSD 3-clause"
-  summary: 'A set of standalone application and pipelines dedicated to NGS (new generation sequencing) analysis'
+  summary: 'A set of standalone application and snakemake pipelines dedicated to NGS (new generation sequencing) analysis'
   license_family: BSD
 

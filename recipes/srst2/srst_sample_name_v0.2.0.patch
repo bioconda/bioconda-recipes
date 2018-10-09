@@ -1,0 +1,74 @@
+From d9d617a67e432cabd768bac0cb06462aa8c87ec5 Mon Sep 17 00:00:00 2001
+From: Eric Enns <eric.enns@phac-aspc.gc.ca>
+Date: Tue, 28 Nov 2017 11:12:31 -0600
+Subject: [PATCH] Remove sample name parsing which doesn't work when
+ directories have . in the name, instead just pass sample_name along to
+ functions requiring it.
+
+---
+ scripts/srst2.py | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/scripts/srst2.py b/scripts/srst2.py
+index ac174ef..5c753e1 100755
+--- a/scripts/srst2.py
++++ b/scripts/srst2.py
+@@ -311,7 +311,7 @@ def parse_fai(fai_file,db_type,delimiter):
+ 	return size, gene_clusters, unique_gene_symbols, unique_allele_symbols, gene_cluster_symbols
+ 
+ 
+-def read_pileup_data(pileup_file, size, prob_err, consensus_file = ""):
++def read_pileup_data(pileup_file, size, prob_err, sample_name, consensus_file = ""):
+ 	with open(pileup_file) as pileup:
+ 		prob_success = 1 - prob_err	# Set by user, default is prob_err = 0.01
+ 		hash_alignment = {}
+@@ -450,7 +450,7 @@ def read_pileup_data(pileup_file, size, prob_err, consensus_file = ""):
+ 				elif consensus_file.split(".")[-2] == "all_consensus_alleles":
+ 					consensus_type = "consensus"
+ 				with open(consensus_file, "a") as consensus_outfile:
+-					consensus_outfile.write(">{0}.{1} {2}\n".format(allele, consensus_type, pileup_file.split(".")[1].split("__")[1]))
++					consensus_outfile.write(">{0}.{1} {2}\n".format(allele, consensus_type, sample_name))
+ 					outstring = consensus_seq + "\n"
+ 					consensus_outfile.write(outstring)
+ 
+@@ -942,7 +942,7 @@ def dict_of_dicts_inverted_ind(dd):
+ def parse_scores(run_type,args,scores, hash_edge_depth,
+ 					avg_depth_allele, coverage_allele, mismatch_allele, indel_allele,
+ 					missing_allele, size_allele, next_to_del_depth_allele,
+-					unique_cluster_symbols,unique_allele_symbols, pileup_file):
++					unique_cluster_symbols,unique_allele_symbols, pileup_file, sample_name):
+ 
+ 	# sort into hash for each gene locus
+ 	scores_by_gene = group_allele_dict_by_gene(dict( (allele,val) for (allele,val) in scores.items() \
+@@ -1018,11 +1018,11 @@ def parse_scores(run_type,args,scores, hash_edge_depth,
+ 			if args.report_new_consensus or args.report_all_consensus:
+ 				new_alleles_filename = args.output + ".new_consensus_alleles.fasta"
+ 				allele_pileup_file = create_allele_pileup(results[gene][0], pileup_file)
+-				read_pileup_data(allele_pileup_file, size_allele, args.prob_err, consensus_file = new_alleles_filename)
++				read_pileup_data(allele_pileup_file, size_allele, args.prob_err, sample_name, consensus_file = new_alleles_filename)
+ 		if args.report_all_consensus:
+ 			new_alleles_filename = args.output + ".all_consensus_alleles.fasta"
+ 			allele_pileup_file = create_allele_pileup(results[gene][0], pileup_file)
+-			read_pileup_data(allele_pileup_file, size_allele, args.prob_err, consensus_file = new_alleles_filename)
++			read_pileup_data(allele_pileup_file, size_allele, args.prob_err, sample_name, consensus_file = new_alleles_filename)
+ 
+ 	return results # (allele, diffs, depth_problem, divergence)
+ 
+@@ -1419,7 +1419,7 @@ def map_fileSet_to_db(args, sample_name, fastq_inputs, db_name, fasta, size, gen
+ 		logging.info(' Processing SAMtools pileup...')
+ 		hash_alignment, hash_max_depth, hash_edge_depth, avg_depth_allele, coverage_allele, \
+ 				mismatch_allele, indel_allele, missing_allele, size_allele, next_to_del_depth_allele= \
+-				read_pileup_data(pileup_file, size, args.prob_err)
++				read_pileup_data(pileup_file, size, args.prob_err, sample_name)
+ 
+ 		# Generate scores for all alleles (prints these and associated info if verbose)
+ 		#   result = dict, with key=allele, value=score
+@@ -1437,7 +1437,7 @@ def map_fileSet_to_db(args, sample_name, fastq_inputs, db_name, fasta, size, gen
+ 	allele_scores = parse_scores(run_type, args, scores, \
+ 			hash_edge_depth, avg_depth_allele, coverage_allele, mismatch_allele, \
+ 			indel_allele, missing_allele, size_allele, next_to_del_depth_allele,
+-			unique_gene_symbols, unique_allele_symbols, pileup_file)
++			unique_gene_symbols, unique_allele_symbols, pileup_file, sample_name)
+ 
+ 	# REPORT/RECORD RESULTS
+ 

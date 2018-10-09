@@ -1,34 +1,66 @@
-{% set version = "2.6.0" %}
+{% set version = "2.7.1" %}
+{% set sha256 = "10a78d3007413a6d4c983d2acbf03ef84b622b82bd9a59c6bd9fbdde9d0298ca" %}
 
 package:
-    name: blast
-    version: {{ version }}
+  name: blast
+  version: {{ version }}
 
 source:
-    fn: ncbi-blast-{{ version }}+-src.tar.gz # [linux]
-    url: http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz # [linux]
-    md5: c8ce8055b10c4d774d995f88c7cc6225 # [linux]
-    fn: ncbi-blast-{{ version }}+-x64-macosx.tar.gz # [osx]
-    url: http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-x64-macosx.tar.gz # [osx]
-    md5: 7dc2ebc86b3a064bae6a3e378495d414 # [osx]
+  url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - boost_106400.patch
+    - boost_106500.patch
+    # patch taken from http://www.repeatmasker.org/isb-2.6.0+-changes-vers2.patch.gz
+    - negative_gilist.patch
 
 build:
-  number: 0
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+  number: 6
 
 requirements:
   build:
-    - boost {{CONDA_BOOST}}*  # [linux]
-    - gcc  # [linux]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - time
+  host:
+    - boost
+    - zlib
+    - bzip2
+    - gnutls # [linux]
+    - openssl # [osx]
+    - nettle 3.3|3.3.*
+    - pcre
   run:
-    - boost {{CONDA_BOOST}}*  # [linux]
-    - libgcc  # [linux]
+    - boost
+    - zlib
+    - bzip2
+    - gnutls # [linux]
+    - openssl # [osx]
+    - nettle 3.3|3.3.*
+    - pcre
+    - perl
+    - perl-list-moreutils
+    - perl-archive-tar
 
 test:
-    commands:
-        - blastn -help > /dev/null
+  files:
+    - test.fa
+    - testdatabase.fa
+  commands:
+    # (see run_tests.sh for remainder of tests)
+    - blastn -help
+    - blastp -help
+    - makeblastdb -help
+    # test that BLAST ignores LD_LIBRARY_PATH
+    - touch libstdc++.so.6; LD_LIBRARY_PATH=. makeblastdb -help && rm libstdc++.so.6
+    # - update_blastdb.pl --help (disabled as it now starts a pager, stalling forever)
 
 about:
-    home: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs
-    license: Public Domain
-    summary: BLAST+ is a new suite of BLAST tools that utilizes the NCBI C++ Toolkit.
+  home: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs
+  license: Public Domain
+  summary: BLAST+ is a new suite of BLAST tools that utilizes the NCBI C++ Toolkit.
+
+extra:
+  identifiers:
+    - biotools:blast
+    - doi:10.1016/S0022-2836(05)80360-2

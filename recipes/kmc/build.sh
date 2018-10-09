@@ -1,9 +1,13 @@
 #!/bin/bash
 
-set -efu -o pipefail
+set -x -e -o pipefail
+
+echo HERE IS THE ENV
+env
 
 export CPPFLAGS="-I${PREFIX}/include"
 export LDFLAGS="-L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS}"
 
 chmod u+x ${SRC_DIR}/configure
 chmod u+x ${SRC_DIR}/build-aux/ar-lib
@@ -22,20 +26,9 @@ mkdir -p build
 pushd build
 
 ${SRC_DIR}/configure --prefix=$PREFIX
-make install
-
-# kmc_tool may not have been built, if a C++14 compiler was not available.
-# in that case, fetch the statically-compiled binary.
-if [ ! -f "$PREFIX/kmc_tool" ]
-then
-		if [ "$(uname)" == "Darwin" ]; then
-				echo "Platform: Mac"
-				wget --no-check-certificate -O $PREFIX/bin/kmc_tools http://sun.aei.polsl.pl/REFRESH/kmc/downloads/2.3.0/mac/kmc_tools
-				chmod u+x $PREFIX/bin/kmc_tools
-		elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-				echo "Platform: Linux"
-				wget --no-check-certificate -O $PREFIX/bin/kmc_tools http://sun.aei.polsl.pl/REFRESH/kmc/downloads/2.3.0/linux/kmc_tools
-				chmod u+x $PREFIX/bin/kmc_tools
-		fi
-fi  # if kmc_tool wasn't compiled
+make -j${CPU_COUNT} install
 popd
+
+mv $PREFIX/bin/kmc_prog $PREFIX/bin/kmc
+mv $PREFIX/bin/kmc_tools_prog $PREFIX/bin/kmc_tools
+mv $PREFIX/bin/kmc_dump_prog $PREFIX/bin/kmc_dump

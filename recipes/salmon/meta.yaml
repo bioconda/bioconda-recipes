@@ -1,43 +1,42 @@
-{% set version="0.8.2" %}
+{% set version="0.11.3" %}
+
 build:
-  number: 1
-  # OSX failing due to libary issues even though shipping with Salmon binary
-  # dyld: Library not loaded: /usr/local/opt/tbb/lib/libtbbmalloc_proxy.dylib
-  # https://travis-ci.org/bioconda/bioconda-recipes/jobs/211785820#L295
-  #skip: true # [osx]
+  number: 2
 
 about:
-    home: https://github.com/COMBINE-lab/salmon
-    license: GPLv3
-    summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using lightweight alignments
+  home: https://github.com/COMBINE-lab/salmon
+  license: GPLv3
+  summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using lightweight alignments
 
 package:
-    name: salmon
-    version: {{ version }}
+  name: salmon
+  version: {{ version }}
 
 source:
-  fn: Salmon-{{ version }}_src.tar.gz 
   url: https://github.com/COMBINE-lab/salmon/archive/v{{ version }}.tar.gz
-  md5: ee512697bc44b13661a16d4e14cf0a00 
+  # work on develop until everything compiles cleanly
+  #url: https://github.com/COMBINE-lab/salmon/archive/develop.tar.gz
+  md5:  99e95233be7f8510bed5c4d0c46a5074 
+  #patches: salmon_cmake.patch
 
 requirements:
   build:
-    - llvm # [osx]
-    - gcc ==4.8.5 # [linux]
-    - autoconf 2.69 pl5.*
-    - boost ==1.63.0
-    - icu 58.*
+    - autoconf
     - cmake
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - libboost 
+    - icu 
     - zlib
     - bzip2
     - unzip
-    - jemalloc ==4.5.0
+    - jemalloc >=5.1.0
     - tbb
   run:
-    - libgcc # [linux]
-    - boost ==1.63.0
-    - icu 58.*
-    - jemalloc ==4.5.0
+    - libboost 
+    - icu 
+    - jemalloc >=5.1.0
     - tbb
     - zlib
     - bzip2

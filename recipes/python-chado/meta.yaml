@@ -1,42 +1,57 @@
 package:
   name: python-chado
-  version: "1.2"
+  version: "2.1.5"
 
 source:
-  fn: chado-1.2.tar.gz
-  url: https://pypi.python.org/packages/45/e3/bb69216919454371d228d36e39f306430d26a90a48d1cee66437e10e7e65/chado-1.2.tar.gz
-  md5: a9197699812dd43ee7a5d332f0cd59eb
+  url: https://files.pythonhosted.org/packages/7a/17/296926b1a497d5ddc6359d28ba5b6175a76b8df88f43ed4e07ec128cd54d/chado-2.1.5.tar.gz
+  sha256: cb3b0ab01a8cb6c0bc0e8c0a7b30d985a5b30e18559b7768573860f01b33d524
 
 build:
+  noarch: python
   number: 0
-  skip: True # [not py27]
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
     - sqlalchemy
     - psycopg2
     - biopython
-    - bcbiogff
+    - bcbiogff >=0.6.4
+    - wrapt
+    - click
+    - pyyaml
 
   run:
     - python
     - sqlalchemy
     - psycopg2
     - biopython
-    - bcbiogff
+    - bcbiogff >=0.6.4
+    - wrapt
+    - click
+    - pyyaml
+    - future
 
 test:
   imports:
     - chado
-    - chado.actions
+    - chado.analysis
+    - chado.export
+    - chado.organism
+    - chado.util
 
   commands:
-    - chado --help > /dev/null
+    - chakin --help > /dev/null
+    - chakin analysis --help > /dev/null
 
 about:
-  home: https://github.com/abretaud/python-chado
+  home: https://github.com/galaxy-genome-annotation/python-chado
   license: MIT License
   summary: 'Chado library'
   license_family: MIT
+
+extra:
+  container:
+    # unicode problem with click
+    extended-base: true

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import os
-import sys
 import shutil
+import sys
 
 """
 This script produces for every binary a new shell script similar to:
@@ -14,7 +14,7 @@ export EMBOSS_ACDROOT=../share/EMBOSS/acd/
 export EMBOSS_DATA=../share/EMBOSS/data
 export PLPLOT_LIB=../share/EMBOSS
 
-_water $@
+_water "$@"
 
 --------------------------------------------
 
@@ -264,9 +264,8 @@ for filename in os.listdir(sys.argv[1]):
         with open(source, 'w+') as handle:
             handle.write('#!/bin/sh\n\n')
             handle.write('BIN_DIR=$(dirname $(which %s))\n' % filename)
-    
+
             handle.write('export EMBOSS_ACDROOT=$BIN_DIR/../share/EMBOSS/acd/\n')
             handle.write('export EMBOSS_DATA=$BIN_DIR/../share/EMBOSS/data/\n')
             handle.write('export PLPLOT_LIB=$BIN_DIR/../share/EMBOSS/\n')
-            handle.write('_%s $@\n' % filename)
-
+            handle.write('_%s "$@"\n' % filename)
