@@ -1,6 +1,4 @@
-#!/bin/sh
-
-#cd segemehl
+#!/usr/bin/env sh
 
 export C_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/ncurses
 export LIBRARY_PATH=${PREFIX}/lib
