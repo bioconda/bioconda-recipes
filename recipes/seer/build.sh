@@ -5,7 +5,7 @@ popd
 pushd boost
 python2 tools/boostdep/depinst/depinst.py program_options --include example
 ./bootstrap.sh --with-libraries=program_options
-./b2 install toolset=gcc-std11
+./b2 install toolset=gcc
 popd boost
 pushd src
 make CXXFLAGS="$CXXFLAGS"
