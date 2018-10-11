@@ -18,7 +18,10 @@ echo "PREFIX: $PREFIX"
 #export CPATH=${PREFIX}/include
 #
 #
-ln -s $CC $PREFIX/bin/gcc
+# Produce this error:
+# Error: bin/gcc is a symlink to a path that may not exist after the build is completed (/opt/conda/conda-bld/pygtftk_1539270111754/_build_env/bin/x86_64-conda_cos6-linux-gnu-cc) compiling .pyc files...
+#ln -s $CC $PREFIX/bin/gcc
+ln -s $CC `dirname $CC`/gcc
 #
 #echo "${PREFIX}/bin/gcc -v"
 #${PREFIX}/bin/gcc -v
@@ -30,3 +33,5 @@ ln -s $CC $PREFIX/bin/gcc
 #/opt/rh/devtoolset-2/root/usr/bin/gcc -v
 
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+
+cp bin/* $PREFIX/bin/
