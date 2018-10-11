@@ -6,9 +6,9 @@ export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXX_INCLUDE_PATH=${PREFIX}/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
-export CPPFLAGS="$CPPFLAGS -I$PREFIX/include -std=c99"
+export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export CFLAGS="$CFLAGS -I$PREFIX/include -std=c99"
+export CFLAGS="$CFLAGS -I$PREFIX/include"
 
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/libexec/bcftools
