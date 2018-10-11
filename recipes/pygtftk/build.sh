@@ -5,6 +5,7 @@
 #export CPP_INCLUDE_PATH=${PREFIX}/include
 #export C_INCLUDE_PATH=${PREFIX}/include
 echo "CC: $CC"
+echo "PATH: $PATH"
 ##export CC=/usr/local/bin/gcc
 ##/opt/rh/devtoolset-2/root/usr/bin/gcc -v
 ##gcc -v
@@ -16,7 +17,9 @@ echo "CC: $CC"
 #export CPATH=${PREFIX}/include
 #
 #
-export PATH="`dirname $CC`:$PATH"
+mkdir bin
+ln -s $CC bin/gcc
+export PATH="`bin:$PATH"
 #
 #echo "${PREFIX}/bin/gcc -v"
 #${PREFIX}/bin/gcc -v
