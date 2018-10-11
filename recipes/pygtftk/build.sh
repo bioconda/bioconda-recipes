@@ -16,6 +16,7 @@ echo "CC: $CC"
 #export CPATH=${PREFIX}/include
 #
 #
+export PATH="`dirname $CC`:$PATH"
 #
 #echo "${PREFIX}/bin/gcc -v"
 #${PREFIX}/bin/gcc -v
