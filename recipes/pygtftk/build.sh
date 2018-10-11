@@ -8,6 +8,7 @@ echo "CC: $CC"
 ##export CC=/usr/local/bin/gcc
 ##/opt/rh/devtoolset-2/root/usr/bin/gcc -v
 ##gcc -v
+export CC='/opt/rh/devtoolset-2/root/usr/bin/gcc'
 
 export C_INCLUDE_PATH=$PREFIX/include
 export CPP_INCLUDE_PATH=$PREFIX/include
