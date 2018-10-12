@@ -2,8 +2,8 @@
 set -eu -o pipefail
 
 declare -a PROGRAMS=(
-    'BAMTagHistogram'
-    'BAMTagofTagCounts'
+    'BamTagHistogram'
+    'BamTagofTagCounts'
     'BaseDistributionAtReadPosition'
     'CollapseBarcodesInPlace'
     'CollapseTagWithContext'
@@ -14,7 +14,7 @@ declare -a PROGRAMS=(
     'DetectBeadSynthesisErrors'
     'DigitalExpression'
     'FilterBAM'
-    'FilterBAMByTag'
+    'FilterBamByTag'
     'GatherGeneGCLength'
     'GatherMolecularBarcodeDistributionByGene'
     'GatherReadQualityMetrics'
