@@ -13,7 +13,7 @@ declare -a PROGRAMS=(
     'DetectBeadSubstitutionErrors'
     'DetectBeadSynthesisErrors'
     'DigitalExpression'
-    'FilterBAM'
+    'FilterBam'
     'FilterBamByTag'
     'GatherGeneGCLength'
     'GatherMolecularBarcodeDistributionByGene'
