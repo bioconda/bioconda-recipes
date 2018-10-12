@@ -3,7 +3,7 @@ set -eu -o pipefail
 
 declare -a PROGRAMS=(
     'BamTagHistogram'
-    'BamTagofTagCounts'
+    'BamTagOfTagCounts'
     'BaseDistributionAtReadPosition'
     'CollapseBarcodesInPlace'
     'CollapseTagWithContext'
