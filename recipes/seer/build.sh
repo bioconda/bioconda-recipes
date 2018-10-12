@@ -45,7 +45,7 @@ popd
 # build seer, statically linking boost manually
 pushd src
 make CXXFLAGS="$CXXFLAGS" \
-   SEER_LDLIBS="-L../gzstream -L${BOOST_BUILT}/lib -L/usr/local/hdf5/lib -lhdf5 -lgzstream -lz -larmadillo -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic -llapack -lblas -lpthread" \
+   SEER_LDLIBS="-L../gzstream -L${BOOST_BUILT}/lib -L/usr/local/hdf5/lib -lhdf5 -lgzstream -lz -larmadillo -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic -llapack -lopenblas -lpthread" \
    MAP_LDLIBS="-L${BOOST_BUILT}/lib -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic -lpthread" \
    COMBINE_LDLIBS="-L${BOOST_BUILT}/lib -L../gzstream -L/lib -lgzstream -lz -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic" \
    FILTER_LDLIBS="-L${BOOST_BUILT}/lib -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic" \
