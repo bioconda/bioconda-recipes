@@ -15,6 +15,7 @@ declare -a PROGRAMS=(
     'DigitalExpression'
     'FilterBam'
     'FilterBamByTag'
+    'FilterGtf'
     'GatherGeneGCLength'
     'GatherMolecularBarcodeDistributionByGene'
     'GatherReadQualityMetrics'
