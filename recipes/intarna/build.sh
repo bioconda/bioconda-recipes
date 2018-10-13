@@ -26,6 +26,7 @@ export LDFLAGS=${LDFLAGS}
             --with-vrna=$PREFIX \
             --with-boost=$PREFIX \
             --disable-multithreading \
+            --disable-log-coloring \
             ${extra_config_options} \
             
 make

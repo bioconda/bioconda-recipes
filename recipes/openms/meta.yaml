@@ -1,19 +1,20 @@
 {% set name = "OpenMS" %}
-{% set version = "2.2.0" %}
+{% set version = "2.3.0" %}
 {% set boost = "1.64" %}
 package:
   name: {{ name|lower  }}
   version: {{ version  }}
 
 source:
-  fn: OpenMS-{{ version }}_src_contrib_doc.tar.gz
-  url: https://github.com/OpenMS/OpenMS/releases/download/Release2.2.0/OpenMS-{{ version }}-src.tar.gz
-  sha256: 61e7d24890abb6f462e2f026efb0dc88b84639b228d96e919c8074d3b11d286e
+  fn: OpenMS-{{ version }}-src.tar.gz
+  url: https://github.com/OpenMS/OpenMS/releases/download/Release{{ version }}/OpenMS-{{ version }}-src.tar.gz
+  sha256: 574c3ea73ec3e57f87446a86563d2c954baa290b3cf72aff8fa149c2a086bba4
   
 build:
     number: 0
     string:  py{{CONDA_PY}}_boost{{ boost }}_{{PKG_BUILDNUM}}
-    skip: True # [py3k] 
+    # osx times out on travis
+    skip: True # [py3k or osx]
 
 requirements:
   build:
@@ -24,14 +25,14 @@ requirements:
     - autoconf
     - automake
     - python
-    - zlib
+    - zlib {{ CONDA_ZLIB }}*
     - libtool
     - xerces-c
-    - gsl
-    - boost  =={{ boost }}
+    - gsl {{ CONDA_GSL }}*
+    - boost  {{ CONDA_BOOST }}*
     - eigen
     - glpk  >=4.60
-    - bzip2
+    - bzip2 {{ CONDA_BZIP2 }}*
     - qt  <5
     - libsvm >=3.21
     - seqan-library ==1.4.2
@@ -40,19 +41,19 @@ requirements:
     - python
     - libgcc    # [linux]
     - glib
-    - zlib
+    - zlib {{ CONDA_ZLIB }}*
     - xerces-c
-    - gsl
-    - boost  =={{ boost }}
+    - gsl {{ CONDA_GSL }}*
+    - boost  {{ CONDA_BOOST }}*
     - eigen
     - glpk  >=4.60
-    - bzip2
+    - bzip2 {{ CONDA_BZIP2 }}*
     - qt  <5
     - libsvm >=3.21
     - coinmp
 test:
   commands:
-    - FileMerger --help
+    - OPENMS_DATA_PATH=$PREFIX/share/OpenMS/ FileMerger --help
 
 about:
   home: https://github.com/OpenMS/OpenMS

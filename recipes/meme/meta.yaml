@@ -1,16 +1,18 @@
-about:
-    home: http://alternate.meme-suite.org/
-    license: Custom
-    license_file: COPYING
-    summary: Motif based sequence Analysis tools
+{% set version = "4.12.0" %}
 
 package:
     name: meme
-    version: 4.11.2
+    version: {{ version }}
+
+source:
+    fn: meme_{{ version }}.tar.gz
+    url: http://alternate.meme-suite.org/meme-software/{{ version }}/meme_{{ version }}.tar.gz
+    sha256: 49ff80f842b59d328588acfcd1d15bf94c55fed661d22b0f95f37430cc363a06
+    patches:
+        - mast.patch
 
 build:
     number: 0
-    skip: True  # [not py27]
     detect_binary_files_with_prefix: True
 
 requirements:
@@ -21,41 +23,47 @@ requirements:
         - python
         - perl
         - ghostscript
-        - zlib
+        - zlib {{ CONDA_ZLIB }}*
         - libxslt
-        - libxml2
+        - libxml2 2.9.*
         - expat
         - perl-xml-parser
         - perl-app-cpanminus
+        - perl-module-build
         - perl-yaml
         - perl-xml-simple
         - perl-html-template
         - perl-cgi
+        - perl-html-parser
+        - perl-html-tree
+
     run:
         - libgcc # [not osx]
         - yaml
         - expat
         - python
         - perl
-        - zlib
+        - zlib {{ CONDA_ZLIB }}*
         - libxslt
-        - libxml2
+        - libxml2 2.9.*
         - ghostscript
         - perl-xml-parser
         - perl-yaml
         - perl-xml-simple
         - perl-html-template
         - perl-cgi
-source:
-    fn: meme_4.11.2.tar.gz
-    url: http://alternate.meme-suite.org/meme-software/4.11.2/meme_4.11.2.tar.gz
-    sha1: 317c230772b62ae3a44d2e7dcc2466eadedf6662
-    patches:
-        - mast.patch
+        - perl-html-parser
+        - perl-html-tree
 
 test:
     commands:
         - meme -version
         - mast -version
-        - meme-chip 2>&1 | grep FIMO > /dev/null
-        - centrimo 2>&1 | grep maxreg > /dev/null
+        - meme-chip -version
+        - centrimo -version
+
+about:
+    home: http://alternate.meme-suite.org/
+    license: Custom
+    license_file: COPYING
+    summary: Motif based sequence Analysis tools

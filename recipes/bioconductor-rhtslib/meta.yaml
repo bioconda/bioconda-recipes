@@ -1,43 +1,38 @@
+{% set version = "1.10.0" %}
+{% set name = "Rhtslib" %}
+{% set bioc = "3.6" %}
+
 package:
-  name: bioconductor-rhtslib
-  version: 1.6.0
-
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: Rhtslib_1.6.0.tar.gz
-  url: https://bioarchive.galaxyproject.org/Rhtslib_1.6.0.tar.gz
-  md5: a4749fbe0ac9bcbc544decde28dac713
-  patches: # [osx]
-    - rpath.patch # [osx]
-
+  patches:
+    - rpath.patch
+  fn: '{{ name }}_{{ version }}.tar.gz'
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 5260b08d54b284aa50ae22bcb4c0ffe132a9cf98824d96063f1564b708b983b7
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-
-#Suggests: BiocStyle, knitrSuggests: BiocStyle, knitr
-#for each dependency, the used version for building the package is in comment
 requirements:
   build:
+    - bioconductor-zlibbioc
     - r-base
-    - bioconductor-zlibbioc # 1.18.0
-    - autoconf 2.69 pl5.20.3.1_4
+    - autoconf
     - gcc # [linux]
     - llvm # [osx]
   run:
+    - bioconductor-zlibbioc
     - r-base
-    - bioconductor-zlibbioc # 1.18.0
     - libgcc # [linux]
-
 test:
   commands:
-    - '$R -e "library(''Rhtslib'')"'
-
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/Rhtslib.html
-  license: LGPL (>= 2)
-  summary: 'This package provides version 1.1 of the "HTSlib" C library for
-  high-throughput sequence analysis. The package is primarily useful to
-  developers of other R packages who wish to make use of HTSlib.
-  Motivation and instructions for use of this package are in the vignette,
-  vignette(package="Rhtslib", "Rhtslib").'
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'LGPL (>= 2)'
+  summary: 'This package provides version 1.1 of the ''HTSlib'' C library for high-throughput sequence analysis. The package is primarily useful to developers of other R packages who wish to make use of HTSlib. Motivation and instructions for use of this package are in the vignette, vignette(package="Rhtslib", "Rhtslib").'

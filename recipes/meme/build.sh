@@ -1,10 +1,8 @@
 #!/bin/bash
 set -e
 MEME_ETC_DIR=${PREFIX}/etc
-cpanm HTML::PullParser
-cpanm HTML::Parse
-cpanm CGI::Application
-cpanm XML::Parser::Expat --configure-args "EXPATLIBPATH=$PREFIX/lib" --configure-args "EXPATHINCPATH=$PREFIX/include"
+HOME=/tmp cpanm CGI::Application
+HOME=/tmp cpanm XML::Parser::Expat --configure-args "EXPATLIBPATH=$PREFIX/lib" --configure-args "EXPATHINCPATH=$PREFIX/include"
 perl scripts/dependencies.pl
 
 ./configure --prefix="$PREFIX"

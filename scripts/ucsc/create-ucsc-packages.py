@@ -49,14 +49,14 @@ def parse_footer(fn):
 
 
 # Identify version of the last available tarball visible on
-# http://hgdownload.cse.ucsc.edu/admin/exe and compute its md5sum; place them
+# http://hgdownload.cse.ucsc.edu/admin/exe and compute its  sha256; place them
 # in the ucsc_config.yaml file that looks like:
 #
 #   version: 332
-#   md5: 8c2663c7bd302a77cdf52b2e9e85e2cd
+#   sha256: 8c2663c7bd302a77cdf52b2e9e85e2cd
 ucsc_config = yaml.load(open('ucsc_config.yaml'))
 VERSION = ucsc_config['version']
-MD5 = ucsc_config['md5']
+SHA256 = ucsc_config['sha256']
 
 # Download tarball if it doesn't exist. Always download FOOTER.
 tarball = (
@@ -104,11 +104,29 @@ problematic = {
 # the header and values are the dir in the source code.
 resolve_header_and_summary_conflicts = {
     'rmFaDups': 'rmFaDups',
+    'bedJoinTabOffset': 'bedJoinTabOffset',
+    'webSync': 'webSync',
 }
 
 # Some programs' descriptions do not meet the regex in FOOTER and therefore
 # must be manually assigned.
 manual_descriptions = {
+
+    'expMatrixToBarchartBed': dedent(
+        """
+        Generate a barChart bed6+5 file from a matrix, meta data, and
+        coordinates.
+        """),
+
+    'pslRc': 'reverse-complement psl',
+
+    'pslMapPostChain': dedent(
+        """
+        Post genomic pslMap (TransMap) chaining.  This takes transcripts
+        that have been mapped via genomic chains adds back in
+        blocks that didn't get include in genomic chains due
+        to complex rearrangements or other issues.
+        """),
 
     'estOrient': dedent(
         """
@@ -160,6 +178,10 @@ manual_descriptions = {
 # programs listed in FOOTER that should not be considered a "ucsc utility"
 SKIP = [
     'sizeof',
+    'calc',
+    'ave',
+    'gfClient',
+    'gfServer',
 ]
 
 # Some programs need to be built differently. It seems that a subset of
@@ -169,7 +191,18 @@ custom_build_scripts = {
     'fetchChromSizes': 'template-build-fetchChromSizes.sh',
     'pslCDnaFilter': 'template-build-with-stringify.sh',
     'pslMap': 'template-build-with-stringify.sh',
+    'overlapSelect': 'template-build-with-stringify.sh',
+    'expMatrixToBarchartBed': 'template-build-cp.sh',
 }
+
+custom_tests = {
+    'expMatrixToBarchartBed': 'template-run_test-exit1.sh',
+}
+
+custom_meta = {
+    'expMatrixToBarchartBed': 'template-meta-with-python.yaml',
+}
+
 
 for block in parse_footer('FOOTER'):
     sys.stderr.write('.')
@@ -220,13 +253,16 @@ for block in parse_footer('FOOTER'):
 
     # Fill in templates and write them to recipe dir
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
+        _template = open(
+            custom_meta.get(program, 'template-meta.yaml')
+        ).read()
         fout.write(
-            meta_template.format(
+            _template.format(
                 program=program,
                 package=package,
                 summary=description,
                 version=VERSION,
-                md5=MD5,
+                sha256=SHA256,
             )
         )
 
@@ -243,8 +279,11 @@ for block in parse_footer('FOOTER'):
         )
 
     with open(os.path.join(recipe_dir, 'run_test.sh'), 'w') as fout:
+        _template = open(
+            custom_tests.get(program, 'template-run_test.sh')
+        ).read()
         fout.write(
-            test_template.format(
+            _template.format(
                 program=program
             )
         )

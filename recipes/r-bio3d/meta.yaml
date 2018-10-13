@@ -1,17 +1,19 @@
+{% set version = '2.3-3' %}
+
 package:
   name: r-bio3d
-  version: "2.2_3"
+  version: {{ version|replace("-", "_") }}
 
 source:
-  fn: bio3d_2.2-3.tar.gz
+  fn: bio3d_{{ version }}.tar.gz
   url:
-    - http://cran.r-project.org/src/contrib/Archive/bio3d/bio3d_2.2-3.tar.gz
-  sha256: 58afd7f9682c2355b62831793bef93159f91ab804a01bc05a16b208994815181
-
+    - https://cran.r-project.org/src/contrib/bio3d_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/bio3d/bio3d_{{ version }}.tar.gz
+  sha256: f4b45847eb8a4175dacea659f30a8075769ec1ae19daec6842b0d72227b48633
 
 build:
   number: 0
-  skip: False
+
   rpaths:
     - lib/R/lib/
     - lib/
@@ -19,25 +21,30 @@ build:
 requirements:
   build:
     - r-base
+    - r-rcpp
+    - gcc  # [linux]
+    - llvm # [osx]
+
   run:
     - r-base
+    - r-rcpp
+    - libgcc # [linux]
 
 test:
   commands:
-    # You can put additional test commands to be run here.
-    - $R -e "library('bio3d')" # [not win]
-    - "\"%R%\" -e \"library('bio3d')\"" # [win]
+    - $R -e "library('bio3d')"
 
 about:
   home: http://thegrantlab.org/bio3d/, http://bitbucket.org/Grantlab/bio3d
   license: GPL (>= 2)
   summary: Utilities to process, organize and explore protein structure, sequence and dynamics
-    data.  Features include the ability to read and write structure, sequence and dynamic
+    data. Features include the ability to read and write structure, sequence and dynamic
     trajectory data, perform sequence and structure database searches, data summaries,
     atom selection, alignment, superposition, rigid core identification, clustering,
     torsion analysis, distance matrix analysis, structure and sequence conservation
     analysis, normal mode analysis, principal component analysis of heterogeneous structure
-    data, and correlation network analysis from normal mode and molecular dynamics data.  In
-    addition, various utility functions are provided to enable the statistical and graphical
-    power of the R environment to work with biological sequence and structural data.  Please
-    refer to the URLs below for more information.
+    data, and correlation network analysis from normal mode and molecular dynamics data.
+    In addition, various utility functions are provided to enable the statistical and
+    graphical power of the R environment to work with biological sequence and structural
+    data. Please refer to the URLs below for more information.
+  license_family: GPL3
