@@ -45,10 +45,10 @@ popd
 # build seer, statically linking boost manually
 pushd src
 make CXXFLAGS="$CXXFLAGS" \
-   SEER_LDLIBS="-L../gzstream -L${BOOST_BUILT}/lib -L/usr/local/hdf5/lib -lhdf5 -lgzstream -lz -larmadillo -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic -llapack -lopenblas -lpthread" \
+   SEER_LDLIBS="-L../gzstream -L${BOOST_BUILT}/lib -L/usr/local/hdf5/lib -lhdf5 -lgzstream -lz -larmadillo -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic -lopenblas -llapack -lpthread" \
    MAP_LDLIBS="-L${BOOST_BUILT}/lib -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic -lpthread" \
    COMBINE_LDLIBS="-L${BOOST_BUILT}/lib -L../gzstream -L/lib -lgzstream -lz -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic" \
    FILTER_LDLIBS="-L${BOOST_BUILT}/lib -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic" \
-   CPPFLAGS="-I${BOOST_BUILT}/include -I../gzstream -I../dlib -I/usr/local/hdf5/include -D DLIB_NO_GUI_SUPPORT=1 -D DLIB_USE_BLAS=1 -D DLIB_USE_LAPACK=1 -DARMA_USE_HDF5=1"
+   CPPFLAGS="-I${BOOST_BUILT}/include -I../gzstream -I../dlib -I/usr/local/hdf5/include -D DLIB_NO_GUI_SUPPORT=1 -D DLIB_USE_BLAS=1 -D DLIB_USE_LAPACK=1 -DARMA_DONT_USE_WRAPPER -DARMA_USE_HDF5=1"
 make install BINDIR="${PREFIX}/bin"
 popd
