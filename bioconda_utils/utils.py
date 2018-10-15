@@ -26,8 +26,20 @@ import yaml
 import jinja2
 from jinja2 import Environment, PackageLoader
 from colorlog import ColoredFormatter
+import tqdm
 
-log_stream_handler = logging.StreamHandler()
+
+class TqdmHandler(logging.StreamHandler):
+    """Tqdm aware logging StreamHandler
+
+    Passes all log writes through tqdm to allow progress bars
+    and log messages to coexist without clobbering terminal
+    """
+    def emit(self, record):
+        tqdm.tqdm.write(self.format(record))
+
+
+log_stream_handler = TqdmHandler()
 log_stream_handler.setFormatter(ColoredFormatter(
         "%(asctime)s %(log_color)sBIOCONDA %(levelname)s%(reset)s %(message)s",
         datefmt="%H:%M:%S",
@@ -173,7 +185,7 @@ def load_all_meta(recipe, config=None, finalize=True):
                                                 )]
 
 
-def load_meta_fast(recipe):
+def load_meta_fast(recipe, env=None):
     """
     Given a package name, find the current meta.yaml file, parse it, and return
     the dict.
@@ -183,9 +195,11 @@ def load_meta_fast(recipe):
     recipe : str
         Path to recipe (directory containing the meta.yaml file)
 
-    config : str or dict
-        Config YAML or dict
+    env: Optional[dict]
+        Variables to expand
     """
+    if not env:
+        env = {}
     class SilentUndefined(jinja2.Undefined):
         def _fail_with_undefined_error(self, *args, **kwargs):
             return ""
@@ -200,7 +214,7 @@ def load_meta_fast(recipe):
     pth = os.path.join(recipe, 'meta.yaml')
     jinja_env = jinja2.Environment(undefined=SilentUndefined)
     content = jinja_env.from_string(
-        open(pth, 'r', encoding='utf-8').read()).render({})
+        open(pth, 'r', encoding='utf-8').read()).render(env)
     meta = yaml.load(content)
     return meta
 
@@ -535,11 +549,11 @@ def get_recipes(recipe_folder, package="*"):
     if isinstance(package, str):
         package = [package]
     for p in package:
-        logger.debug(
-            "get_recipes(%s, package='%s'): %s", recipe_folder, package, p)
+        logger.debug("get_recipes(%s, package='%s'): %s",
+                     recipe_folder, package, p)
         path = os.path.join(recipe_folder, p)
         for new_dir in glob.glob(path):
-            for dir_path,dir_names,file_names in os.walk(new_dir):
+            for dir_path, dir_names, file_names in os.walk(new_dir):
                 if "meta.yaml" in file_names:
                     yield dir_path
 

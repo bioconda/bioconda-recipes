@@ -650,9 +650,34 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
                 continue
         print('\t'.join(map(str, result)))
 
+@arg('recipe_folder', help='Path to recipes directory')
+@arg('config', help='Path to yaml file specifying the configuration')
+@arg('--loglevel', default='info', help='Log level')
+@arg('--packages',
+     nargs="+",
+     help='Glob for package[s] to show in DAG. Default is to show all '
+     'packages. Can be specified more than once')
+@arg('--only-out-of-date', help='Only report results for packages that need an update')
+def update(recipe_folder, config, loglevel='info', packages='*', only_out_of_date=False):
+    """
+    Updates recipes in recipe_folder
+    """
+    utils.setup_logger('bioconda_utils', loglevel)
+    from . import update
+    from tqdm import tqdm
+    from collections import Counter
+    recipes = list(utils.get_recipes(recipe_folder, packages))
+    count = Counter()
+    for meta_filename in tqdm(recipes, disable=None):
+        res = update.update_version(recipe_folder, meta_filename)
+        count.update(res)
+    logger.warning("Finished update")
+    for key, value in count.most_common():
+        logger.info("%s: %s", key, value)
+
 
 def main():
     argh.dispatch_commands([
         build, dag, dependent, lint, duplicates,
-        bioconductor_skeleton, pypi_check, clean_cran_skeleton,
+        bioconductor_skeleton, pypi_check, clean_cran_skeleton, update
     ])
