@@ -20,7 +20,8 @@ echo  ">line4" >> test.fasta
 echo  "GAaATGCGTAATGGTGGCAATTAAGCTAGTG" >> test.fasta
 echo  ">line5" >> test.fasta
 echo  "GGCaaTGCGTAATGGTAGTTATGGAATCGGT" >> test.fasta
-
+# run on small fasta 
 ./diprofile test.fasta -sl 30 -di AA  
+./diprofile test.fasta -sl 30 -c -di AA
 
 cp diprofile $PREFIX/bin/dnp-diprofile
