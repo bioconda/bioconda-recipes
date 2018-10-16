@@ -2,6 +2,8 @@
 
 set -exo pipefail
 
+echo ${CXX}
+
 outdir=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p $outdir $PREFIX/bin
 
