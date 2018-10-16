@@ -307,20 +307,24 @@ class FeedHoster(Hoster):
 
 class GithubRelease(HTMLHoster):
     link_pattern = "/(?P<account>[\w\-]*)/(?P<project>[\w\-]*)/releases/download/v?{version}/(?P<fname>[^/]+{ext})"
-    url_pattern = "github.com" + link_pattern
+    url_pattern = "github.com{link}"
     releases_format = "https://github.com/{account}/{project}/releases"
 
+class GithubTag(HTMLHoster):
+    link_pattern = "/(?P<account>[\w\-]*)/(?P<project>[\w\-]*)/archive/v?{version}{ext}"
+    url_pattern = "github.com{link}"
+    releases_format = "https://github.com/{account}/{project}/tags"
 
 class Bioconductor(HTMLHoster):
     link_pattern = "/src/contrib/(?P<package>[^/]+)_{version}{ext}"
-    url_pattern = "bioconductor.org/packages/(?P<bioc>[\d\.]+)/bioc" + link_pattern
+    url_pattern = "bioconductor.org/packages/(?P<bioc>[\d\.]+)/bioc{link}"
     releases_format = "https://bioconductor.org/packages/{bioc}/bioc/html/{package}.html"
 
 
 class DepotGalaxyProject(HTMLHoster):
     os_pattern = "_(?P<os>src_all|linux_x86|darwin_x86)"
     link_pattern = "(?P<package>[^/]+)_{version}{os}{ext}"
-    url_pattern = "depot.galaxyproject.org/software/(?P<package>[^/]+)/" + link_pattern
+    url_pattern = "depot.galaxyproject.org/software/(?P<package>[^/]+)/{link}"
     releases_format = "https://depot.galaxyproject.org/software/{package}/"
 
 
