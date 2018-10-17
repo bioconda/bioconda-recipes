@@ -2,13 +2,18 @@ import abc
 import inspect
 import logging
 import requests
+import asyncio
 
-from collections import defaultdict
+from collections import defaultdict, Counter
 from html.parser import HTMLParser
 from pkg_resources import parse_version
 from pprint import pprint
 from urllib.parse import urljoin
 from typing import List, Dict, Optional, Iterable, Mapping, List, Tuple, Any
+
+import aiohttp
+
+from tqdm import tqdm
 
 import regex as re
 
@@ -32,6 +37,48 @@ logger = logging.getLogger(__name__)
 """
 
 
+class Scanner(object):
+    def __init__(self):
+        try:
+            self.loop = asyncio.get_event_loop()
+        except RuntimeError:
+            # no loop in context (i.e. running in thread)
+            self.loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self.loop)
+
+    def scan(self, recipe_folder, packages):
+        try:
+            task = asyncio.ensure_future(self._scan(recipe_folder, packages))
+            self.loop.run_until_complete(task)
+        except KeyboardInterrupt:
+            end = asyncio.gather(*asyncio.Task.all_tasks())
+            end.cancel()
+            try:
+                self.loop.run_until_complete(end)
+            except asyncio.CancelledError:
+                pass
+            raise
+
+        return task.result()
+
+    async def _scan(self, recipe_folder, packages):
+        recipes = list(utils.get_recipes(recipe_folder, packages))
+        stats = Counter()
+        async with aiohttp.ClientSession() as session:
+            coros = [
+                asyncio.ensure_future(
+                    try_update_version(session, recipe_folder, recipe_dir)
+                )
+                for recipe_dir in recipes
+            ]
+            with tqdm(asyncio.as_completed(coros), total=len(coros)) as t:
+                for coro in t:
+                    stats.update(await coro)
+        logger.warning("Finished update")
+        for key, value in stats.most_common():
+            logger.info("%s: %s", key, value)
+
+
 #: Matches named capture groups
 #: This is so complicated because we need to parse matched, not-escaped parentheses to
 #: determine where the clause ends.
@@ -52,26 +99,13 @@ def dedup_named_capture_group(pattern):
             return match.group(0)
     return re.sub(re_capgroup, replace, pattern)
 
+async def try_update_version(session, recipe_folder, recipe_dir):
+    try:
+        return await update_version(session, recipe_folder, recipe_dir)
+    except Exception:
+        logger.exception("while scanning %s %s", recipe_folder, recipe_dir)
 
-def get_meta_urls(meta: Mapping) -> Iterable[str]:
-    """Extract all source URLs from parsed meta.yaml
-
-    - The source key may not exist, be a list or a dict
-    - The url key may not exist, be a list or a dict
-    - Multiple urls in the url key indicate alternative download locations
-    - Multiple sources indicate additional files
-    """
-    sources = meta.get("source", [])
-    if isinstance(sources, Mapping):
-        sources = [sources]
-    for source in sources:
-        urls = source.get("url", [])
-        if isinstance(urls, str):
-            urls = [urls]
-        yield from urls
-
-
-def update_version(recipe_folder: str, recipe_dir: str) -> None:
+async def update_version(session, recipe_folder: str, recipe_dir: str) -> None:
     """
     - In the most simple case, a package has a single URL which also indicates the version
     - Recipes may have alternative download locations
@@ -141,7 +175,7 @@ def update_version(recipe_folder: str, recipe_dir: str) -> None:
         for url in urls:
             hoster = Hoster.select_hoster(url)
             if hoster:
-                versions = hoster.get_versions()
+                versions = await hoster.get_versions(session)
                 for vers, data in versions.items():
                     version_map[vers][url] = data
             else:
@@ -165,7 +199,7 @@ def update_version(recipe_folder: str, recipe_dir: str) -> None:
         else:
             logger.info("Recipe %s has a new version %s => %s", recipe_dir, version, latest)
             stats += ["UPDATE"]
-        return stats
+    return stats
 
 
 class HosterMeta(abc.ABCMeta):
@@ -292,13 +326,16 @@ class HTMLHoster(Hoster):
         self.versions: Mapping = defaultdict(list)
         super().__init__(url)
     
-    def get_versions(self) -> Mapping:
+    async def get_versions(self, session) -> Mapping:
         logger.debug("Loading page '%s'", self.url)
-        page = requests.get(self.url)
-        logger.debug("done loading (%i bytes)", len(page.text))
-        parser = self.Parser(self)
-        parser.feed(page.text)
-        return parser.versions
+        async with session.get(self.url) as resp:
+            if not resp.status == 200:
+                logger.error("HTTP failure %i getting %s", resp.status, self.url)
+                return {}
+            parser = self.Parser(self)
+            text = await resp.text()
+            parser.feed(text)
+            return parser.versions
 
 
 class FeedHoster(Hoster):

@@ -664,16 +664,8 @@ def update(recipe_folder, config, loglevel='info', packages='*', only_out_of_dat
     """
     utils.setup_logger('bioconda_utils', loglevel)
     from . import update
-    from tqdm import tqdm
-    from collections import Counter
-    recipes = list(utils.get_recipes(recipe_folder, packages))
-    count = Counter()
-    for meta_filename in tqdm(recipes, disable=None):
-        res = update.update_version(recipe_folder, meta_filename)
-        count.update(res)
-    logger.warning("Finished update")
-    for key, value in count.most_common():
-        logger.info("%s: %s", key, value)
+    scanner = update.Scanner()
+    scanner.scan(recipe_folder, packages)
 
 
 def main():
