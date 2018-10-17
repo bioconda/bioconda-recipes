@@ -4,6 +4,7 @@ Scans for package updates
 
 import abc
 import asyncio
+import inspect
 import logging
 
 from collections import defaultdict, Counter
@@ -106,13 +107,13 @@ class Scanner(object):
             self.loop.run_until_complete(task)
             logger.warning("Finished update")
         except KeyboardInterrupt:
-            end = asyncio.gather(*asyncio.Task.all_tasks())
-            end.cancel()
+            task.cancel()
             try:
-                self.loop.run_until_complete(end)
+                self.loop.run_until_complete(task)
             except asyncio.CancelledError:
                 pass
-            raise
+        for key, value in self.stats.most_common():
+            logger.info("%s: %s", key, value)
         return task.result()
 
     async def _async_run(self):
@@ -120,21 +121,28 @@ class Scanner(object):
         async with aiohttp.ClientSession() as session:
             self.session = session
             coros = [
-                self.try_update_version(recipe_dir)
+                asyncio.ensure_future(
+                    self.try_update_version(recipe_dir)
+                )
                 for recipe_dir in self.recipes
             ]
-            with tqdm(asyncio.as_completed(coros), total=len(coros)) as t:
-                for coro in t:
-                    stats.update(await coro)
-            for key, value in stats.most_common():
-                logger.info("%s: %s", key, value)
+            try:
+                with tqdm(asyncio.as_completed(coros), total=len(coros)) as t:
+                    for coro in t:
+                        await coro
+            except asyncio.CancelledError:
+                for coro in coros:
+                    coro.cancel()
+                await asyncio.wait(coros)
 
     async def try_update_version(self, recipe_dir):
         """Wrapper around `update_version` catching and logging exceptions"""
         try:
             return await self.update_version(recipe_dir)
-        except Exception:
-            logger.exception("while scanning %s %s", self.recipe_folder, recipe_dir)
+        except asyncio.CancelledError:
+            return
+        except Exception as e:
+            logger.exception("while scanning %s %s: %s", self.recipe_folder, recipe_dir)
 
     async def load_meta(self, recipe_dir):
         """Loads a meta.yaml async in one of the io executors"""
@@ -187,7 +195,6 @@ class Scanner(object):
         logger.debug("Checking for updates to %s - %s", recipe_dir, version)
 
         if is_sub_recipe:
-            self.stats["SUBRECIPE"] += 1
             if watchcfg.get("enable", False):
                 logger.debug("Processing explicitly enabled subrecipe")
                 self.stats["SUBRECIPE_ENABLED"] += 1
@@ -226,8 +233,8 @@ class Scanner(object):
                 hoster = Hoster.select_hoster(url)
                 if not hoster:
                     logger.debug("Failed to parse url '%s'", url)
-                    with open("urls.txt", "w") as out:
-                        out.write("{}\n", url)
+                    with open("urls.txt", "a") as out:
+                        out.write("{}\n".format(url))
 
                     match = re.search(r"://([^/]+)/", url)
                     if match:
