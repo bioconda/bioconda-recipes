@@ -10,6 +10,7 @@ from pkg_resources import parse_version
 from pprint import pprint
 from urllib.parse import urljoin
 from typing import List, Dict, Optional, Iterable, Mapping, List, Tuple, Any
+from concurrent.futures import ThreadPoolExecutor
 
 import aiohttp
 
@@ -37,6 +38,27 @@ logger = logging.getLogger(__name__)
 """
 
 
+#: Matches named capture groups
+#: This is so complicated because we need to parse matched, not-escaped parentheses to
+#: determine where the clause ends.
+#: Requires regex package for recursion.
+re_capgroup = re.compile(r"\(\?P<(\w+)>(?>[^()]+|\\\(|\\\)|(\((?>[^()]+|\\\(|\\\)|(?2))*\)))*\)")
+
+
+def dedup_named_capture_group(pattern):
+    """Replaces repetitions of capture groups with matches to first instance"""
+    seen = set()
+
+    def replace(match):
+        name = match.group(1)
+        if name in seen:
+            return f"(?P={name})"
+        else:
+            seen.add(name)
+            return match.group(0)
+    return re.sub(re_capgroup, replace, pattern)
+
+
 class Scanner(object):
     def __init__(self):
         try:
@@ -45,6 +67,8 @@ class Scanner(object):
             # no loop in context (i.e. running in thread)
             self.loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self.loop)
+        self.io_exc = ThreadPoolExecutor()
+        self.io_sem = asyncio.Semaphore(20)
 
     def scan(self, recipe_folder, packages):
         try:
@@ -66,9 +90,7 @@ class Scanner(object):
         stats = Counter()
         async with aiohttp.ClientSession() as session:
             coros = [
-                asyncio.ensure_future(
-                    try_update_version(session, recipe_folder, recipe_dir)
-                )
+                self.try_update_version(session, recipe_folder, recipe_dir)
                 for recipe_dir in recipes
             ]
             with tqdm(asyncio.as_completed(coros), total=len(coros)) as t:
@@ -78,128 +100,112 @@ class Scanner(object):
         for key, value in stats.most_common():
             logger.info("%s: %s", key, value)
 
+    async def try_update_version(self, session, recipe_folder, recipe_dir):
+        try:
+            return await self.update_version(session, recipe_folder, recipe_dir)
+        except Exception:
+            logger.exception("while scanning %s %s", recipe_folder, recipe_dir)
 
-#: Matches named capture groups
-#: This is so complicated because we need to parse matched, not-escaped parentheses to
-#: determine where the clause ends.
-#: Requires regex package for recursion.
-re_capgroup = re.compile(r"\(\?P<(\w+)>(?>[^()]+|\\\(|\\\)|(\((?>[^()]+|\\\(|\\\)|(?2))*\)))*\)")
+    async def load_meta(self, recipe_dir, jinja_vars):
+        async with self.io_sem:
+            return await self.loop.run_in_executor(
+                self.io_exc, utils.load_meta_fast, recipe_dir, jinja_vars)
 
+    async def update_version(self, session, recipe_folder: str, recipe_dir: str) -> None:
+        """
+        - In the most simple case, a package has a single URL which also indicates the version
+        - Recipes may have alternative download locations
+          => Update to newest available, disable others as comment
+        - Recipes may have multiple sources
+          => Ignore URLs not matching main recipe version
 
-def dedup_named_capture_group(pattern):
-    """Replaces repetitions of capture groups with matches to first instance"""
-    seen = set()
-
-    def replace(match):
-        name = match.group(1)
-        if name in seen:
-            return f"(?P={name})"
-        else:
-            seen.add(name)
-            return match.group(0)
-    return re.sub(re_capgroup, replace, pattern)
-
-async def try_update_version(session, recipe_folder, recipe_dir):
-    try:
-        return await update_version(session, recipe_folder, recipe_dir)
-    except Exception:
-        logger.exception("while scanning %s %s", recipe_folder, recipe_dir)
-
-async def update_version(session, recipe_folder: str, recipe_dir: str) -> None:
-    """
-    - In the most simple case, a package has a single URL which also indicates the version
-    - Recipes may have alternative download locations
-      => Update to newest available, disable others as comment
-    - Recipes may have multiple sources
-      => Ignore URLs not matching main recipe version
-
-    stages:
-     1. select hoster based on source URL
-     2. hoster determines releases page url
-     3. fetch url
-     4. hoster extracts (link,version) pairs
-     5. select newest
-     4. update sources
-    """
-    stats = []
-    if not recipe_dir.startswith(recipe_folder):
-        logger.error("Something went wrong: %s not prefix of %s", recipe_dir, recipe_folder)
-        stats += ["ERROR_INTERNAL"]
-        return stats
-
-    is_sub_recipe = recipe_dir[len(recipe_folder):].strip("/").count("/") > 0
-
-    jinja_vars = {
-        "cran_mirror": "https://cloud.r-project.org"
-    }
-    meta = utils.load_meta_fast(recipe_dir, jinja_vars)  # this is still pretty slow
-    watchcfg = meta.get("extra", {}).get("watch", {})
-
-    if is_sub_recipe:
-        stats += ["SUBRECIPE"]
-        if watchcfg.get("enable", False):
-            logger.debug("Processing explicitly enabled subrecipe")
-            stats += ["SUBRECIPE_ENABLED"]
-        else:
-            stats += ["SUBRECIPE_SKIPPED"]
+        stages:
+         1. select hoster based on source URL
+         2. hoster determines releases page url
+         3. fetch url
+         4. hoster extracts (link,version) pairs
+         5. select newest
+         4. update sources
+        """
+        stats = []
+        if not recipe_dir.startswith(recipe_folder):
+            logger.error("Something went wrong: %s not prefix of %s", recipe_dir, recipe_folder)
+            stats += ["ERROR_INTERNAL"]
             return stats
 
-    version = meta.get("package", {}).get("version")
-    if not version:
-        logger.error("Package %s has no version?!", recipe_dir)
-        stats += ["ERROR_NO_VERSION"]
-        return stats
+        is_sub_recipe = recipe_dir[len(recipe_folder):].strip("/").count("/") > 0
 
-    logger.debug("Checking for updates to %s - %s", recipe_dir, version)
+        jinja_vars = {
+            "cran_mirror": "https://cloud.r-project.org"
+        }
+        meta = await self.load_meta(recipe_dir, jinja_vars)  # this is still pretty slow
+        watchcfg = meta.get("extra", {}).get("watch", {})
 
-    sources = meta.get("source", [])
-    if not sources:
-        logger.error("Package %s has no sources?", recipe_dir)
-        stats += ["ERROR_NO_SOURCES"]
-        return stats
-    if isinstance(sources, Mapping):
-        sources = [sources]
-    else:
-        stats += ["MULTISOURCE"]
-
-    replace_map = {}
-    for n, source in enumerate(sources):
-        urls = source.get("url")
-        if isinstance(urls, str):
-            urls = [urls]
-        if not urls:
-            logger.error("Package %s has no url(s) in source %i", recipe_dir, n+1)
-            stats += ["ERROR_NO_URLS"]
-            continue
-        version_map = defaultdict(dict)
-        for url in urls:
-            hoster = Hoster.select_hoster(url)
-            if hoster:
-                versions = await hoster.get_versions(session)
-                for vers, data in versions.items():
-                    version_map[vers][url] = data
+        if is_sub_recipe:
+            stats += ["SUBRECIPE"]
+            if watchcfg.get("enable", False):
+                logger.debug("Processing explicitly enabled subrecipe")
+                stats += ["SUBRECIPE_ENABLED"]
             else:
-                logger.debug("Failed to parse url '%s'", url)
-                match = re.search(r"://([^/]+)/", url)
-                if match:
-                    stats += [f"UNKOWN_URL_{match.group(1)}"]
-                else:
-                    stats += ["UNKNOWN_URL"]
+                stats += ["SUBRECIPE_SKIPPED"]
                 return stats
 
-        if not version_map:
-            logger.debug("Failed to parse any url in %s", recipe_dir)
-            continue
+        version = meta.get("package", {}).get("version")
+        if not version:
+            logger.error("Package %s has no version?!", recipe_dir)
+            stats += ["ERROR_NO_VERSION"]
+            return stats
 
-        latest = max(version_map.keys(), key=lambda x: VersionOrder(x))
+        logger.debug("Checking for updates to %s - %s", recipe_dir, version)
 
-        if version == latest:
-            logger.debug("Recipe %s is up to date", recipe_dir)
-            stats += ["OK"]
+        sources = meta.get("source", [])
+        if not sources:
+            logger.error("Package %s has no sources?", recipe_dir)
+            stats += ["ERROR_NO_SOURCES"]
+            return stats
+        if isinstance(sources, Mapping):
+            sources = [sources]
         else:
-            logger.info("Recipe %s has a new version %s => %s", recipe_dir, version, latest)
-            stats += ["UPDATE"]
-    return stats
+            stats += ["MULTISOURCE"]
+
+        replace_map = {}
+        for n, source in enumerate(sources):
+            urls = source.get("url")
+            if isinstance(urls, str):
+                urls = [urls]
+            if not urls:
+                logger.error("Package %s has no url(s) in source %i", recipe_dir, n+1)
+                stats += ["ERROR_NO_URLS"]
+                continue
+            version_map = defaultdict(dict)
+            for url in urls:
+                hoster = Hoster.select_hoster(url)
+                if hoster:
+                    versions = await hoster.get_versions(session)
+                    for vers, data in versions.items():
+                        version_map[vers][url] = data
+                else:
+                    logger.debug("Failed to parse url '%s'", url)
+                    match = re.search(r"://([^/]+)/", url)
+                    if match:
+                        stats += [f"UNKOWN_URL_{match.group(1)}"]
+                    else:
+                        stats += ["UNKNOWN_URL"]
+                    return stats
+
+            if not version_map:
+                logger.debug("Failed to parse any url in %s", recipe_dir)
+                continue
+
+            latest = max(version_map.keys(), key=lambda x: VersionOrder(x))
+
+            if version == latest:
+                logger.debug("Recipe %s is up to date", recipe_dir)
+                stats += ["OK"]
+            else:
+                logger.info("Recipe %s has a new version %s => %s", recipe_dir, version, latest)
+                stats += ["UPDATE"]
+        return stats
 
 
 class HosterMeta(abc.ABCMeta):
