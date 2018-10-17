@@ -1,18 +1,21 @@
+"""
+Scans for package updates
+"""
+
 import abc
-import inspect
-import logging
-import requests
 import asyncio
+import logging
 
 from collections import defaultdict, Counter
 from html.parser import HTMLParser
-from pkg_resources import parse_version
-from pprint import pprint
 from urllib.parse import urljoin
+#from pkg_resources import parse_version
+#from pprint import pprint
 from typing import List, Dict, Optional, Iterable, Mapping, List, Tuple, Any
 from concurrent.futures import ThreadPoolExecutor
 
 import aiohttp
+import backoff
 
 from tqdm import tqdm
 
@@ -60,7 +63,16 @@ def dedup_named_capture_group(pattern):
 
 
 class Scanner(object):
-    def __init__(self):
+    """Scans recipes for updates"""
+    jinja_vars = {
+        "cran_mirror": "https://cloud.r-project.org"
+    }
+
+    def __init__(self, recipe_folder, packages, config):
+        self.config = config
+        self.recipe_folder = recipe_folder
+        self.package_glob = packages
+        self.recipes = list(utils.get_recipes(self.recipe_folder, self.package_glob))
         try:
             self.loop = asyncio.get_event_loop()
         except RuntimeError:
@@ -70,10 +82,15 @@ class Scanner(object):
         self.io_exc = ThreadPoolExecutor()
         self.io_sem = asyncio.Semaphore(20)
 
-    def scan(self, recipe_folder, packages):
+    def run(self):
+        """Runs scanner
+
+        This starts the asyncio loop and manages shutdown.
+        """
         try:
-            task = asyncio.ensure_future(self._scan(recipe_folder, packages))
+            task = asyncio.ensure_future(self._async_run())
             self.loop.run_until_complete(task)
+            logger.warning("Finished update")
         except KeyboardInterrupt:
             end = asyncio.gather(*asyncio.Task.all_tasks())
             end.cancel()
@@ -85,34 +102,45 @@ class Scanner(object):
 
         return task.result()
 
-    async def _scan(self, recipe_folder, packages):
-        recipes = list(utils.get_recipes(recipe_folder, packages))
+    async def _async_run(self):
+        """Runner within async loop"""
         stats = Counter()
         async with aiohttp.ClientSession() as session:
+            self.session = session
             coros = [
-                self.try_update_version(session, recipe_folder, recipe_dir)
-                for recipe_dir in recipes
+                self.try_update_version(recipe_dir)
+                for recipe_dir in self.recipes
             ]
             with tqdm(asyncio.as_completed(coros), total=len(coros)) as t:
                 for coro in t:
                     stats.update(await coro)
-        logger.warning("Finished update")
-        for key, value in stats.most_common():
-            logger.info("%s: %s", key, value)
+            for key, value in stats.most_common():
+                logger.info("%s: %s", key, value)
 
-    async def try_update_version(self, session, recipe_folder, recipe_dir):
+    async def try_update_version(self, recipe_dir):
+        """Wrapper around update_version catching exceptions that may occur"""
         try:
-            return await self.update_version(session, recipe_folder, recipe_dir)
+            return await self.update_version(recipe_dir)
         except Exception:
-            logger.exception("while scanning %s %s", recipe_folder, recipe_dir)
+            logger.exception("while scanning %s %s", self.recipe_folder, recipe_dir)
 
-    async def load_meta(self, recipe_dir, jinja_vars):
+    async def load_meta(self, recipe_dir):
+        """Loads a meta.yaml async in one of the io executors"""
         async with self.io_sem:
             return await self.loop.run_in_executor(
-                self.io_exc, utils.load_meta_fast, recipe_dir, jinja_vars)
+                self.io_exc, utils.load_meta_fast, recipe_dir, self.jinja_vars)
 
-    async def update_version(self, session, recipe_folder: str, recipe_dir: str) -> None:
-        """
+    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=10,
+                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
+    async def get_text_from_url(self, url):
+        async with self.session.get(url) as resp:
+            resp.raise_for_status()
+            return await resp.text()
+
+
+    async def update_version(self, recipe_dir: str) -> None:
+        """Checks for updates to a recipe
+
         - In the most simple case, a package has a single URL which also indicates the version
         - Recipes may have alternative download locations
           => Update to newest available, disable others as comment
@@ -128,18 +156,19 @@ class Scanner(object):
          4. update sources
         """
         stats = []
-        if not recipe_dir.startswith(recipe_folder):
-            logger.error("Something went wrong: %s not prefix of %s", recipe_dir, recipe_folder)
+        if not recipe_dir.startswith(self.recipe_folder):
+            logger.error("Something went wrong: %s not prefix of %s", recipe_dir, self.recipe_folder)
             stats += ["ERROR_INTERNAL"]
             return stats
 
-        is_sub_recipe = recipe_dir[len(recipe_folder):].strip("/").count("/") > 0
+        meta = await self.load_meta(recipe_dir)
 
-        jinja_vars = {
-            "cran_mirror": "https://cloud.r-project.org"
-        }
-        meta = await self.load_meta(recipe_dir, jinja_vars)  # this is still pretty slow
         watchcfg = meta.get("extra", {}).get("watch", {})
+        is_sub_recipe = recipe_dir[len(self.recipe_folder):].strip("/").count("/") > 0
+        version = meta.get("package", {}).get("version")
+        sources = meta.get("source", [])
+
+        logger.debug("Checking for updates to %s - %s", recipe_dir, version)
 
         if is_sub_recipe:
             stats += ["SUBRECIPE"]
@@ -150,23 +179,21 @@ class Scanner(object):
                 stats += ["SUBRECIPE_SKIPPED"]
                 return stats
 
-        version = meta.get("package", {}).get("version")
         if not version:
             logger.error("Package %s has no version?!", recipe_dir)
             stats += ["ERROR_NO_VERSION"]
             return stats
 
-        logger.debug("Checking for updates to %s - %s", recipe_dir, version)
-
-        sources = meta.get("source", [])
         if not sources:
             logger.error("Package %s has no sources?", recipe_dir)
             stats += ["ERROR_NO_SOURCES"]
             return stats
+
         if isinstance(sources, Mapping):
             sources = [sources]
         else:
             stats += ["MULTISOURCE"]
+            logger.error("Package %s is multi-source", recipe_dir)
 
         replace_map = {}
         for n, source in enumerate(sources):
@@ -180,18 +207,24 @@ class Scanner(object):
             version_map = defaultdict(dict)
             for url in urls:
                 hoster = Hoster.select_hoster(url)
-                if hoster:
-                    versions = await hoster.get_versions(session)
-                    for vers, data in versions.items():
-                        version_map[vers][url] = data
-                else:
+                if not hoster:
                     logger.debug("Failed to parse url '%s'", url)
+                    with open("urls.txt", "w") as out:
+                        out.write("{}\n", url)
+
                     match = re.search(r"://([^/]+)/", url)
                     if match:
                         stats += [f"UNKOWN_URL_{match.group(1)}"]
                     else:
                         stats += ["UNKNOWN_URL"]
                     return stats
+                try:
+                    versions = await hoster.get_versions(self)
+                    for vers, data in versions.items():
+                        version_map[vers][url] = data
+                except aiohttp.ClientResponseError as e:
+                    stats += [f"HTTP_{e.code}"]
+                    logger.debug("HTTP %s when getting %s", e, url)
 
             if not version_map:
                 logger.debug("Failed to parse any url in %s", recipe_dir)
@@ -331,17 +364,13 @@ class HTMLHoster(Hoster):
         self.url = self.releases_format.format(**self.data)
         self.versions: Mapping = defaultdict(list)
         super().__init__(url)
-    
-    async def get_versions(self, session) -> Mapping:
+
+    async def get_versions(self, scanner) -> Mapping:
         logger.debug("Loading page '%s'", self.url)
-        async with session.get(self.url) as resp:
-            if not resp.status == 200:
-                logger.error("HTTP failure %i getting %s", resp.status, self.url)
-                return {}
-            parser = self.Parser(self)
-            text = await resp.text()
-            parser.feed(text)
-            return parser.versions
+        parser = self.Parser(self)
+        parser.feed(await scanner.get_text_from_url(self.url))
+        return parser.versions
+
 
 
 class FeedHoster(Hoster):

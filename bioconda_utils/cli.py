@@ -664,8 +664,8 @@ def update(recipe_folder, config, loglevel='info', packages='*', only_out_of_dat
     """
     utils.setup_logger('bioconda_utils', loglevel)
     from . import update
-    scanner = update.Scanner()
-    scanner.scan(recipe_folder, packages)
+    scanner = update.Scanner(recipe_folder, packages, config)
+    scanner.run()
 
 
 def main():
