@@ -63,23 +63,33 @@ def dedup_named_capture_group(pattern):
 
 
 class Scanner(object):
-    """Scans recipes for updates"""
+    """Scans recipes for updates
+
+    Arguments:
+      recipe_folder: location of recipe directories
+      packages: glob pattern to select recipes
+      config: config.yaml (unused)
+    """
+
+    #: Defaults for Jinja2 rendering of meta.yaml files
     jinja_vars = {
         "cran_mirror": "https://cloud.r-project.org"
     }
 
     def __init__(self, recipe_folder, packages, config):
         self.config = config
+        #: folder containing recipes
         self.recipe_folder = recipe_folder
-        self.package_glob = packages
-        self.recipes = list(utils.get_recipes(self.recipe_folder, self.package_glob))
-        try:
+        #: list of recipe folders to scan
+        self.recipes = list(utils.get_recipes(self.recipe_folder, packages))
+        try:  # get or create loop (threads don't have one)
             self.loop = asyncio.get_event_loop()
         except RuntimeError:
-            # no loop in context (i.e. running in thread)
             self.loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self.loop)
+        #: executor for running local io
         self.io_exc = ThreadPoolExecutor()
+        #: semaphore to limit parallelism in io_exc
         self.io_sem = asyncio.Semaphore(20)
 
     def run(self):
@@ -118,7 +128,7 @@ class Scanner(object):
                 logger.info("%s: %s", key, value)
 
     async def try_update_version(self, recipe_dir):
-        """Wrapper around update_version catching exceptions that may occur"""
+        """Wrapper around `update_version` catching and logging exceptions"""
         try:
             return await self.update_version(recipe_dir)
         except Exception:
@@ -133,10 +143,15 @@ class Scanner(object):
     @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=10,
                           giveup=lambda ex: ex.code not in [429, 502, 503, 504])
     async def get_text_from_url(self, url):
+        """Returns text from http URLjoin
+
+        - On non-permanent errors (429, 502, 503, 504), the GET is retried 10 times with
+        increasing wait times according to fibonacci series.
+        - Permanent errors raise a ClientResponseError
+        """
         async with self.session.get(url) as resp:
             resp.raise_for_status()
             return await resp.text()
-
 
     async def update_version(self, recipe_dir: str) -> None:
         """Checks for updates to a recipe
