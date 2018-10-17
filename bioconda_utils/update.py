@@ -91,6 +91,10 @@ class Scanner(object):
         self.io_exc = ThreadPoolExecutor()
         #: semaphore to limit parallelism in io_exc
         self.io_sem = asyncio.Semaphore(20)
+        #: counter to gather stats on various states
+        self.stats = Counter()
+        #: aiohttp session (only exists while running)
+        self.session = None
 
     def run(self):
         """Runs scanner
@@ -109,12 +113,10 @@ class Scanner(object):
             except asyncio.CancelledError:
                 pass
             raise
-
         return task.result()
 
     async def _async_run(self):
         """Runner within async loop"""
-        stats = Counter()
         async with aiohttp.ClientSession() as session:
             self.session = session
             coros = [
@@ -170,11 +172,10 @@ class Scanner(object):
          5. select newest
          4. update sources
         """
-        stats = []
         if not recipe_dir.startswith(self.recipe_folder):
             logger.error("Something went wrong: %s not prefix of %s", recipe_dir, self.recipe_folder)
-            stats += ["ERROR_INTERNAL"]
-            return stats
+            self.stats["ERROR_INTERNAL"] += 1
+            return
 
         meta = await self.load_meta(recipe_dir)
 
@@ -186,28 +187,28 @@ class Scanner(object):
         logger.debug("Checking for updates to %s - %s", recipe_dir, version)
 
         if is_sub_recipe:
-            stats += ["SUBRECIPE"]
+            self.stats["SUBRECIPE"] += 1
             if watchcfg.get("enable", False):
                 logger.debug("Processing explicitly enabled subrecipe")
-                stats += ["SUBRECIPE_ENABLED"]
+                self.stats["SUBRECIPE_ENABLED"] += 1
             else:
-                stats += ["SUBRECIPE_SKIPPED"]
-                return stats
+                self.stats["SUBRECIPE_SKIPPED"] += 1
+                return
 
         if not version:
             logger.error("Package %s has no version?!", recipe_dir)
-            stats += ["ERROR_NO_VERSION"]
-            return stats
+            self.stats["ERROR_NO_VERSION"] += 1
+            return
 
         if not sources:
             logger.error("Package %s has no sources?", recipe_dir)
-            stats += ["ERROR_NO_SOURCES"]
-            return stats
+            self.stats["ERROR_NO_SOURCES"] += 1
+            return
 
         if isinstance(sources, Mapping):
             sources = [sources]
         else:
-            stats += ["MULTISOURCE"]
+            self.stats["MULTISOURCE"] += 1
             logger.error("Package %s is multi-source", recipe_dir)
 
         replace_map = {}
@@ -217,8 +218,9 @@ class Scanner(object):
                 urls = [urls]
             if not urls:
                 logger.error("Package %s has no url(s) in source %i", recipe_dir, n+1)
-                stats += ["ERROR_NO_URLS"]
+                self.stats["ERROR_NO_URLS"] += 1
                 continue
+
             version_map = defaultdict(dict)
             for url in urls:
                 hoster = Hoster.select_hoster(url)
@@ -229,16 +231,17 @@ class Scanner(object):
 
                     match = re.search(r"://([^/]+)/", url)
                     if match:
-                        stats += [f"UNKOWN_URL_{match.group(1)}"]
+                        self.stats[f"UNKOWN_URL_{match.group(1)}"] += 1
                     else:
-                        stats += ["UNKNOWN_URL"]
-                    return stats
+                        self.stats["UNKNOWN_URL"] += 1
+                    return
+
                 try:
                     versions = await hoster.get_versions(self)
                     for vers, data in versions.items():
                         version_map[vers][url] = data
                 except aiohttp.ClientResponseError as e:
-                    stats += [f"HTTP_{e.code}"]
+                    self.stats[f"HTTP_{e.code}"] += 1
                     logger.debug("HTTP %s when getting %s", e, url)
 
             if not version_map:
@@ -249,11 +252,10 @@ class Scanner(object):
 
             if version == latest:
                 logger.debug("Recipe %s is up to date", recipe_dir)
-                stats += ["OK"]
+                self.stats["OK"] += 1
             else:
                 logger.info("Recipe %s has a new version %s => %s", recipe_dir, version, latest)
-                stats += ["UPDATE"]
-        return stats
+                self.stats["UPDATE"] += 1
 
 
 class HosterMeta(abc.ABCMeta):
