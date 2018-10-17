@@ -17,3 +17,5 @@ make AM_CFLAGS='-DNAN="(0.0/0.0)"'
 # make test
 
 make install
+
+ln -s $PREFIX/libexec/meme*/* $PREFIX/bin/
