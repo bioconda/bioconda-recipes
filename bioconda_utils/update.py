@@ -96,6 +96,8 @@ class Scanner(object):
         self.stats = Counter()
         #: aiohttp session (only exists while running)
         self.session = None
+        #: failed urls - for later inspection
+        self.failed_urls = []
 
     def run(self):
         """Runs scanner
@@ -107,6 +109,7 @@ class Scanner(object):
             self.loop.run_until_complete(task)
             logger.warning("Finished update")
         except KeyboardInterrupt:
+            logger.error("Ctrl-C pressed - aborting...")
             task.cancel()
             try:
                 self.loop.run_until_complete(task)
@@ -114,6 +117,8 @@ class Scanner(object):
                 pass
         for key, value in self.stats.most_common():
             logger.info("%s: %s", key, value)
+        with open("failed_urls.txt", "w") as out:
+            out.write("\n".join(self.failed_urls))
         return task.result()
 
     async def _async_run(self):
@@ -142,7 +147,7 @@ class Scanner(object):
         except asyncio.CancelledError:
             return
         except Exception as e:
-            logger.exception("while scanning %s %s: %s", self.recipe_folder, recipe_dir)
+            logger.exception("while scanning %s %s", self.recipe_folder, recipe_dir)
 
     async def load_meta(self, recipe_dir):
         """Loads a meta.yaml async in one of the io executors"""
@@ -233,8 +238,7 @@ class Scanner(object):
                 hoster = Hoster.select_hoster(url)
                 if not hoster:
                     logger.debug("Failed to parse url '%s'", url)
-                    with open("urls.txt", "a") as out:
-                        out.write("{}\n".format(url))
+                    self.failed_urls += [url]
 
                     match = re.search(r"://([^/]+)/", url)
                     if match:
