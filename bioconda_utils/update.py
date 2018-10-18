@@ -6,18 +6,20 @@ import abc
 import asyncio
 import inspect
 import logging
+import os
 
 from collections import defaultdict, Counter
 from html.parser import HTMLParser
 from urllib.parse import urljoin
 #from pkg_resources import parse_version
 from pprint import pprint
-from typing import List, Dict, Optional, Iterable, Mapping, List, Tuple, Any
+from typing import List, Dict, Optional, Iterable, Mapping, List, Tuple, Any, Set
 from concurrent.futures import ThreadPoolExecutor
 from hashlib import sha256
 
 import aiohttp
 import backoff
+import yaml
 
 from tqdm import tqdm
 
@@ -39,10 +41,10 @@ RE_CAPGROUP = re.compile(r"\(\?P<(\w+)>(?>[^()]+|\\\(|\\\)|(\((?>[^()]+|\\\(|\\\
 
 def dedup_named_capture_group(pattern):
     """Replaces repetitions of capture groups with matches to first instance"""
-    seen = set()
+    seen: Set[str] = set()
 
     def replace(match):
-        name = match.group(1)
+        name: str = match.group(1)
         if name in seen:
             return f"(?P={name})"
         else:
@@ -71,6 +73,13 @@ class Recipe(object):
         self.basedir = recipe_folder
         self.reldir = recipe_dir[len(recipe_folder):].strip("/")
 
+        # Will be filled in by LoadMeta Filter
+        self.version = None
+        self.name = None
+        self.config = None
+        self.meta = None
+        self.meta_yaml = None
+
     def __str__(self):
         return self.reldir
 
@@ -83,6 +92,9 @@ class Filter(abc.ABC):
     @abc.abstractmethod
     async def apply(self, recipe: Recipe) -> bool:
         """Process a recipe. Returns False if processing should stop"""
+
+    def finalize(self) -> None:
+        """Called at the end of a run"""
 
 
 class Scanner(object):
@@ -106,17 +118,13 @@ class Scanner(object):
             self.loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self.loop)
         #: executor for running local io
-        self.io_exc: ThreadPoolExecutor = ThreadPoolExecutor()
-        #: executor for CPU
-        self.cpu_exc: ThreadPoolExecutor = ThreadPoolExecutor()
-        #: semaphore to limit parallelism in io_exc
+        self.executor: ThreadPoolExecutor = ThreadPoolExecutor()
+        #: semaphore to limit io parallelism
         self.io_sem: asyncio.Semaphore = asyncio.Semaphore(1)
         #: counter to gather stats on various states
         self.stats: Counter = Counter()
         #: aiohttp session (only exists while running)
         self.session: aiohttp.ClientSession = None
-        #: failed urls - for later inspection
-        self.failed_urls: List[str] = []
         #: filters
         self.filters: List[Filter] = [
             LoadMeta(self),
@@ -144,8 +152,8 @@ class Scanner(object):
                 pass
         for key, value in self.stats.most_common():
             logger.info("%s: %s", key, value)
-        with open("failed_urls.txt", "w") as out:
-            out.write("\n".join(self.failed_urls))
+        for filt in self.filters:
+            filt.finalize()
         return task.result()
 
     async def _async_run(self) -> bool:
@@ -183,7 +191,7 @@ class Scanner(object):
     async def run_io(self, func, *args):
         """Run **func** in thread pool executor using **args**"""
         async with self.io_sem:
-            return await self.loop.run_in_executor(self.io_exc, func, *args)
+            return await self.loop.run_in_executor(self.executor, func, *args)
 
     @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
                           giveup=lambda ex: ex.code not in [429, 502, 503, 504])
@@ -216,7 +224,7 @@ class Scanner(object):
                     if not block:
                         break
                     t.update(len(block))
-                    await self.loop.run_in_executor(self.cpu_exc, checksum.update, block)
+                    await self.loop.run_in_executor(self.executor, checksum.update, block)
         return checksum.hexdigest()
 
 
@@ -231,7 +239,8 @@ class LoadMeta(Filter):
         "cran_mirror": "https://cloud.r-project.org"
     }
     async def apply(self, recipe):
-        recipe.meta = await self.scanner.run_io(utils.load_meta_fast, recipe.dir, self.jinja_vars)
+        recipe.meta_yaml, recipe.meta = await self.scanner.run_io(
+            self.load_meta, recipe.dir, self.jinja_vars)
         try:
             recipe.version = recipe.meta["package"]["version"]
             recipe.name = recipe.meta["package"]["name"]
@@ -241,6 +250,14 @@ class LoadMeta(Filter):
             return False
         recipe.config = recipe.meta.get("extra", {}).get("watch", {})
         return True
+
+    @staticmethod
+    def load_meta(recipe_dir, jinja_vars):
+        path = os.path.join(recipe_dir, "meta.yaml")
+        with open(path, "r", encoding="utf-8") as meta_yaml:
+            meta_yaml = meta_yaml.read()
+        template = utils.JINJA_ENV.from_string(meta_yaml)
+        return meta_yaml, yaml.load(template.render(jinja_vars))
 
 
 class ExcludeOtherChannel(Filter):
@@ -298,6 +315,16 @@ class UpdateVersion(Filter):
      5. select newest
      4. update sources
     """
+    def __init__(self, scanner: "Scanner") -> None:
+        super().__init__(scanner)
+        #: failed urls - for later inspection
+        self.failed_urls: List[str] = []
+
+    def finalize(self):
+        if self.failed_urls:
+            with open("failed_urls.txt", "w") as out:
+                out.write("\n".join(self.failed_urls))
+
     async def apply(self, recipe: Recipe) -> None:
         logger.debug("Checking for updates to %s - %s", recipe, recipe.version)
 
@@ -331,7 +358,7 @@ class UpdateVersion(Filter):
                 if not hoster:
                     self.scanner.stats["UNKNOWN_URL"] += 1
                     logger.debug("Failed to parse url '%s'", url)
-                    self.scanner.failed_urls += [url]
+                    self.failed_urls += [url]
                     match = re.search(r"://([^/]+)/", url)
                     if match:
                         self.scanner.stats[f"UNKNOWN_URL_{match.group(1)}"] += 1
