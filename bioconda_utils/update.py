@@ -29,19 +29,6 @@ from . import utils
 
 logger = logging.getLogger(__name__)
 
-"""
- - similar to pygments lexers to add more parsers
- - from URL and VERSION detect RELEASE_URL and select appropriate downloads
- - understand about
-    - multiple meta.yaml per package for stable release branches
-    - multiple upstream source packages
-    - alternate download locations
- - configurable via meta.yaml to allow for funky schemes
-
- - think about debian-epoch style numbering
-
-"""
-
 
 #: Matches named capture groups
 #: This is so complicated because we need to parse matched, not-escaped parentheses to
@@ -88,8 +75,18 @@ class Recipe(object):
         return self.reldir
 
 
+class Filter(abc.ABC):
+    """Function object type called by Scanner"""
+    def __init__(self, scanner: "Scanner") -> None:
+        self.scanner = scanner
+
+    @abc.abstractmethod
+    async def apply(self, recipe: Recipe) -> bool:
+        """Process a recipe. Returns False if processing should stop"""
+
+
 class Scanner(object):
-    """Scans recipes for updates
+    """Scans recipes and applies filters in asyncio loop
 
     Arguments:
       recipe_folder: location of recipe directories
@@ -97,38 +94,39 @@ class Scanner(object):
       config: config.yaml (unused)
     """
 
-    def __init__(self, recipe_folder, packages, config):
+    def __init__(self, recipe_folder: str, packages: str, config: str) -> None:
         self.config = config
         #: folder containing recipes
-        self.recipe_folder = recipe_folder
+        self.recipe_folder: str = recipe_folder
         #: list of recipe folders to scan
-        self.recipes = list(utils.get_recipes(self.recipe_folder, packages))
+        self.recipes: List[str] = list(utils.get_recipes(self.recipe_folder, packages))
         try:  # get or create loop (threads don't have one)
             self.loop = asyncio.get_event_loop()
         except RuntimeError:
             self.loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self.loop)
         #: executor for running local io
-        self.io_exc = ThreadPoolExecutor()
+        self.io_exc: ThreadPoolExecutor = ThreadPoolExecutor()
         #: executor for CPU
-        self.cpu_exc = ThreadPoolExecutor()
+        self.cpu_exc: ThreadPoolExecutor = ThreadPoolExecutor()
         #: semaphore to limit parallelism in io_exc
-        self.io_sem = asyncio.Semaphore(1)
+        self.io_sem: asyncio.Semaphore = asyncio.Semaphore(1)
         #: counter to gather stats on various states
-        self.stats = Counter()
+        self.stats: Counter = Counter()
         #: aiohttp session (only exists while running)
-        self.session = None
+        self.session: aiohttp.ClientSession = None
         #: failed urls - for later inspection
-        self.failed_urls = []
+        self.failed_urls: List[str] = []
         #: filters
         self.filters: List[Filter] = [
             LoadMeta(self),
-            ExcludeSubrecipe(self, always=False),
-            ExcludeOtherChannel(self, ['conda-forge']),
-            UpdateVersion(self),
         ]
 
-    def run(self):
+    def add(self, filter: Filter, *args, **kwargs) -> None:
+        """Adds `Filter` to this `Scanner`"""
+        self.filters.append(filter(self, *args, **kwargs))
+
+    def run(self) -> bool:
         """Runs scanner
 
         This starts the asyncio loop and manages shutdown.
@@ -150,7 +148,7 @@ class Scanner(object):
             out.write("\n".join(self.failed_urls))
         return task.result()
 
-    async def _async_run(self):
+    async def _async_run(self) -> bool:
         """Runner within async loop"""
         async with aiohttp.ClientSession() as session:
             self.session = session
@@ -162,31 +160,35 @@ class Scanner(object):
             ]
             try:
                 with tqdm(asyncio.as_completed(coros), total=len(coros)) as t:
-                    for coro in t:
-                        await coro
+                    return all([await coro for coro in t])
             except asyncio.CancelledError:
                 for coro in coros:
                     coro.cancel()
                 await asyncio.wait(coros)
+                return False
 
     async def process(self, recipe_dir):
         """Wrapper around `update_version` catching and logging exceptions"""
         try:
             recipe = Recipe(recipe_dir, self.recipe_folder)
-            return all([await filt.apply(recipe) for filt in self.filters])
+            for filt in self.filters:
+                if not await filt.apply(recipe):
+                    return False
         except asyncio.CancelledError:
-            return
+            return False
         except Exception as e:
             logger.exception("while scanning %s", recipe_dir)
+            return False
 
-    async def run_io(self, *args):
+    async def run_io(self, func, *args):
+        """Run **func** in thread pool executor using **args**"""
         async with self.io_sem:
-            return await self.loop.run_in_executor(self.io_exc, *args)
+            return await self.loop.run_in_executor(self.io_exc, func, *args)
 
     @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
                           giveup=lambda ex: ex.code not in [429, 502, 503, 504])
-    async def get_text_from_url(self, url):
-        """Returns text from http URLjoin
+    async def get_text_from_url(self, url: str) -> str:
+        """Fetch content at **url** and return as text
 
         - On non-permanent errors (429, 502, 503, 504), the GET is retried 10 times with
         increasing wait times according to fibonacci series.
@@ -198,13 +200,17 @@ class Scanner(object):
 
     @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
                           giveup=lambda ex: ex.code not in [429, 502, 503, 504])
-    async def get_checksum_from_url(self, url, desc):
+    async def get_checksum_from_url(self, url: str, desc: str) -> str:
+        """Compute sha256 checksum of content at **url**
+
+        Shows TQDM progress monitor with label **desc**.
+        """
         checksum = sha256()
         async with self.session.get(url) as resp:
             resp.raise_for_status()
             size = int(resp.headers.get("Content-Length", 0))
             with tqdm(total=size, unit='B', unit_scale=True, unit_divisor=1024,
-                      desc=desc, miniters=1, leave=False) as t:
+                      desc=desc, miniters=1, leave=False, disable=None) as t:
                 while True:
                     block = await resp.content.read(1024*1024)
                     if not block:
@@ -214,16 +220,12 @@ class Scanner(object):
         return checksum.hexdigest()
 
 
-class Filter(abc.ABC):
-    def __init__(self, scanner: "Scanner"):
-        self.scanner = scanner
-
-    @abc.abstractmethod
-    async def apply(self, recipe: Recipe) -> bool:
-        """Process a recipe. Returns False if processing should stop"""
-
-
 class LoadMeta(Filter):
+    """Loads the recipe's meta.yaml
+
+    - Populates **recipe.meta**, **recipe.version**, **recipe.name** and **recipe.config**
+    - Fails if **version** or **name** don't exist
+    """
     #: Defaults for Jinja2 rendering of meta.yaml files
     jinja_vars = {
         "cran_mirror": "https://cloud.r-project.org"
@@ -234,6 +236,7 @@ class LoadMeta(Filter):
             recipe.version = recipe.meta["package"]["version"]
             recipe.name = recipe.meta["package"]["name"]
         except KeyError as ex:
+            self.scanner_stats["BROKEN"] += 1
             logger.error("% missing %s?!", recipe, ex.args[0])
             return False
         recipe.config = recipe.meta.get("extra", {}).get("watch", {})
@@ -241,22 +244,29 @@ class LoadMeta(Filter):
 
 
 class ExcludeOtherChannel(Filter):
-    def __init__(self, scanner: "Scanner", channels):
+    """Filters recipes matching packages in other **channels**"""
+    def __init__(self, scanner: "Scanner", channels, cache):
         super().__init__(scanner)
         from .linting import channel_dataframe
         logger.info("Loading package lists for %s", channels)
-        cdf = channel_dataframe(channels=channels, cache="update_channel_cache.csv")
+        cdf = channel_dataframe(channels=channels, cache=cache)
         cdf['versionorder'] = cdf['version'].apply(VersionOrder)
         self.other_latest = cdf.groupby('name')['versionorder'].agg(max)
 
     async def apply(self, recipe):
         if recipe.name in self.other_latest:
-            logger.debug("Skipping %s because it's in other channels", recipe)
+            self.scanner.stats["SKIPPED_OTHER_CHANNEL"] += 1
+            logger.info("Skipping %s because it's in other channels", recipe)
             return False
         return True
 
 
 class ExcludeSubrecipe(Filter):
+    """Filters sub-recipes
+
+    Unless **always** is True, subrecipes specifically enabled via
+    ``extra: watch: enable: yes`` will not be filtered.
+    """
     def __init__(self, scanner: "Scanner", always=False):
         super().__init__(scanner)
         self.always_exclude = always
@@ -264,32 +274,31 @@ class ExcludeSubrecipe(Filter):
     async def apply(self, recipe):
         is_subrecipe = recipe.reldir.count("/") > 0
         enabled = recipe.config.get("enable", False) == True
-        skip = (not is_subrecipe) or (enabled and not self.always_exclude)
+        skip = is_subrecipe and not (enabled and not self.always_exclude)
         if skip:
             logger.debug("Skipping subrecipe %s", recipe)
-            self.scanner.stats["SUBRECIPE_SKIPPED"] += 1
-        return skip
+            self.scanner.stats["SKIPPED_SUBRECIPE"] += 1
+        return not skip
 
 
 class UpdateVersion(Filter):
+    """Checks for updates to a recipe
+
+    - In the most simple case, a package has a single URL which also indicates the version
+    - Recipes may have alternative download locations
+      => Update to newest available, disable others as comment
+    - Recipes may have multiple sources
+      => Ignore URLs not matching main recipe version
+
+    stages:
+     1. select hoster based on source URL
+     2. hoster determines releases page url
+     3. fetch url
+     4. hoster extracts (link,version) pairs
+     5. select newest
+     4. update sources
+    """
     async def apply(self, recipe: Recipe) -> None:
-        """Checks for updates to a recipe
-
-        - In the most simple case, a package has a single URL which also indicates the version
-        - Recipes may have alternative download locations
-          => Update to newest available, disable others as comment
-        - Recipes may have multiple sources
-          => Ignore URLs not matching main recipe version
-
-        stages:
-         1. select hoster based on source URL
-         2. hoster determines releases page url
-         3. fetch url
-         4. hoster extracts (link,version) pairs
-         5. select newest
-         4. update sources
-        """
-
         logger.debug("Checking for updates to %s - %s", recipe, recipe.version)
 
         sources = recipe.meta.get("source")

@@ -657,14 +657,29 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
      nargs="+",
      help='Glob for package[s] to show in DAG. Default is to show all '
      'packages. Can be specified more than once')
-@arg('--only-out-of-date', help='Only report results for packages that need an update')
-def update(recipe_folder, config, loglevel='info', packages='*', only_out_of_date=False):
+@arg('--exclude-subrecipes', help='''By default, only subrecipes explicitly enabled
+     for watch in meta.yaml are considered. Set to 'always' to exclude all subrecipes.
+     Set to 'never' to include all subrecipes''')
+@arg('--exclude-channels', nargs="+", help='''Exclude recipes
+     building packages present in other channels. Set to 'none' to disable check.''')
+@arg('--cache', help='''To speed up debugging, use repodata cached locally in
+     the provided filename. If the file does not exist, it will be created the
+     first time.
+     Caution: The cache will not be updated if exclude-channels is changed''')
+def update(recipe_folder, config, loglevel='info', packages='*', cache=None, exclude_subrecipes=None,
+           exclude_channels='conda-forge'):
     """
     Updates recipes in recipe_folder
     """
     utils.setup_logger('bioconda_utils', loglevel)
     from . import update
     scanner = update.Scanner(recipe_folder, packages, config)
+    if exclude_subrecipes != "never":
+        scanner.add(update.ExcludeSubrecipe, always=exclude_subrecipes == "always")
+    print(exclude_channels)
+    if exclude_channels != ["none"]:
+        scanner.add(update.ExcludeOtherChannel, exclude_channels, cache)
+    scanner.add(update.UpdateVersion)
     scanner.run()
 
 
