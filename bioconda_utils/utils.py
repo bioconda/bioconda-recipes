@@ -185,6 +185,21 @@ def load_all_meta(recipe, config=None, finalize=True):
                                                 )]
 
 
+class JinjaSilentUndefined(jinja2.Undefined):
+    def _fail_with_undefined_error(self, *args, **kwargs):
+        return ""
+
+    __add__ = __radd__ = __mul__ = __rmul__ = __div__ = __rdiv__ = \
+        __truediv__ = __rtruediv__ = __floordiv__ = __rfloordiv__ = \
+        __mod__ = __rmod__ = __pos__ = __neg__ = __call__ = \
+        __getitem__ = __lt__ = __le__ = __gt__ = __ge__ = __int__ = \
+        __float__ = __complex__ = __pow__ = __rpow__ = \
+        _fail_with_undefined_error
+
+
+JINJA_ENV = jinja2.Environment(undefined=JinjaSilentUndefined)
+
+
 def load_meta_fast(recipe, env=None):
     """
     Given a package name, find the current meta.yaml file, parse it, and return
@@ -200,22 +215,10 @@ def load_meta_fast(recipe, env=None):
     """
     if not env:
         env = {}
-    class SilentUndefined(jinja2.Undefined):
-        def _fail_with_undefined_error(self, *args, **kwargs):
-            return ""
-
-        __add__ = __radd__ = __mul__ = __rmul__ = __div__ = __rdiv__ = \
-            __truediv__ = __rtruediv__ = __floordiv__ = __rfloordiv__ = \
-            __mod__ = __rmod__ = __pos__ = __neg__ = __call__ = \
-            __getitem__ = __lt__ = __le__ = __gt__ = __ge__ = __int__ = \
-            __float__ = __complex__ = __pow__ = __rpow__ = \
-            _fail_with_undefined_error
 
     pth = os.path.join(recipe, 'meta.yaml')
-    jinja_env = jinja2.Environment(undefined=SilentUndefined)
-    content = jinja_env.from_string(
-        open(pth, 'r', encoding='utf-8').read()).render(env)
-    meta = yaml.load(content)
+    template = JINJA_ENV.from_string(open(pth, 'r', encoding='utf-8').read())
+    meta = yaml.load(template.render(env))
     return meta
 
 
