@@ -11,9 +11,10 @@ from collections import defaultdict, Counter
 from html.parser import HTMLParser
 from urllib.parse import urljoin
 #from pkg_resources import parse_version
-#from pprint import pprint
+from pprint import pprint
 from typing import List, Dict, Optional, Iterable, Mapping, List, Tuple, Any
 from concurrent.futures import ThreadPoolExecutor
+from hashlib import sha256
 
 import aiohttp
 import backoff
@@ -59,6 +60,16 @@ def dedup_named_capture_group(pattern):
             return f"(?P={name})"
         else:
             seen.add(name)
+            return match.group(0)
+    return re.sub(re_capgroup, replace, pattern)
+
+
+def replace_named_capture_group(pattern, vals):
+    def replace(match):
+        name = match.group(1)
+        if name in vals:
+            return vals[name]
+        else:
             return match.group(0)
     return re.sub(re_capgroup, replace, pattern)
 
@@ -168,6 +179,22 @@ class Scanner(object):
             resp.raise_for_status()
             return await resp.text()
 
+    async def get_checksum_from_url(self, url, desc):
+        checksum = sha256()
+        async with self.session.get(url) as resp:
+            resp.raise_for_status()
+            size = int(resp.headers.get("Content-Length", 0))
+            with tqdm(total=size, unit='B', unit_scale=True, unit_divisor=1024,
+                      desc=desc, miniters=1, leave=False) as t:
+                while True:
+                    block = await resp.content.read(1024*64)
+                    if not block:
+                        break
+                    checksum.update(block)
+                    t.update(len(block))
+        return checksum.hexdigest()
+
+
     async def update_version(self, recipe_dir: str) -> None:
         """Checks for updates to a recipe
 
@@ -246,11 +273,11 @@ class Scanner(object):
                     else:
                         self.stats["UNKNOWN_URL"] += 1
                     return
-
+                logger.debug("Scanning with %s", hoster.__class__.__name__)
                 try:
                     versions = await hoster.get_versions(self)
-                    for vers, data in versions.items():
-                        version_map[vers][url] = data
+                    for match in versions:
+                        version_map[match["version"]][url] = match
                 except aiohttp.ClientResponseError as e:
                     self.stats[f"HTTP_{e.code}"] += 1
                     logger.debug("HTTP %s when getting %s", e, url)
@@ -262,11 +289,22 @@ class Scanner(object):
             latest = max(version_map.keys(), key=lambda x: VersionOrder(x))
 
             if version == latest:
-                logger.debug("Recipe %s is up to date", recipe_dir)
-                self.stats["OK"] += 1
-            else:
-                logger.info("Recipe %s has a new version %s => %s", recipe_dir, version, latest)
-                self.stats["UPDATE"] += 1
+                continue
+            replace_map.update(version_map[latest])
+
+        if not replace_map:
+            logger.debug("Recipe %s is up to date", recipe_dir)
+            self.stats["OK"] += 1
+            return
+
+        logger.info("Recipe %s has a new version %s => %s", recipe_dir, version, latest)
+        self.stats["UPDATE"] += 1
+
+        for n, fn in enumerate(replace_map):
+            link = replace_map[fn]["link"]
+            checksum = await self.get_checksum_from_url(link, f"{recipe_dir} [{n}]")
+            replace_map[fn]["sha256"] = checksum
+        logger.warning(replace_map)
 
 
 class HosterMeta(abc.ABCMeta):
@@ -305,7 +343,7 @@ class HosterMeta(abc.ABCMeta):
             # fix duplicate capture groups:
             pattern = dedup_named_capture_group(pattern)
             # save parsed and compiled pattern
-            setattr(typ, pat + "_regex", pattern)
+            setattr(typ, pat + "_pattern", pattern)
             setattr(typ, pat + "_re", re.compile(pattern))
             logger.debug("%s Pattern %s = %s", typ.__name__, pat, pattern)
 
@@ -361,48 +399,49 @@ class Hoster(object, metaclass=HosterMeta):
         ""
 
 
+class HrefParser(HTMLParser):
+    def __init__(self, link_re):
+        super().__init__()
+        self.link_re = link_re
+        self.matches = []
+
+    def handle_starttag(self, tag: str, attrs: List[Tuple[str, str]]) -> None:
+        if tag == "a":
+            for key, val in attrs:
+                if key == "href":
+                    self.handle_a_href(val)
+                    break
+
+    def handle_a_href(self, href: str) -> None:
+        match = self.link_re.search(href)
+        if match:
+            data = match.groupdict()
+            data["href"] = href
+            self.matches.append(data)
+
+    def error(self, message: str) -> None:
+        logger.debug("Error parsing HTML: %s", message)
+
+
 class HTMLHoster(Hoster):
     """Base for Hosters handling release listings in HTML format"""
 
-    class Parser(HTMLParser):
-        def __init__(self, hoster):
-            super().__init__()
-            self.hoster = hoster
-            self.versions: Mapping = defaultdict(list)
-
-        def handle_starttag(self, tag: str, attrs: List[Tuple[str, str]]) -> None:
-            if tag == "a":
-                for key, val in attrs:
-                    if key == "href":
-                        self.handle_href(val)
-                        break
-
-        def handle_href(self, href: str) -> None:
-            match = self.hoster.link_re.search(href)
-            if match:
-                res = match.groupdict()
-                res["link"] = urljoin(self.hoster.url, href)
-                self.versions[res["version"]].append(res)
-
-        def error(self, message: str) -> None:
-            logger.debug("Error parsing HTML: %s", message)
-
-    def __init__(self, url, data):
-        self.data = data.groupdict()
-        self.url = self.releases_format.format(**self.data)
-        self.versions: Mapping = defaultdict(list)
+    def __init__(self, url, match):
+        self.orig_match = match
+        self.releases_url = self.releases_format.format(**match.groupdict())
         super().__init__(url)
 
     async def get_versions(self, scanner) -> Mapping:
-        logger.debug("Loading page '%s'", self.url)
-        parser = self.Parser(self)
-        parser.feed(await scanner.get_text_from_url(self.url))
-        return parser.versions
-
-
-
-class FeedHoster(Hoster):
-    pass
+        exclude = set(["version"])
+        vals = { key: val
+                 for key, val in self.orig_match.groupdict().items()
+                 if key not in exclude }
+        link_pattern = replace_named_capture_group(self.link_pattern, vals)
+        parser = HrefParser(re.compile(link_pattern))
+        parser.feed(await scanner.get_text_from_url(self.releases_url))
+        for match in parser.matches:
+            match["link"] = urljoin(self.releases_url, match["href"])
+        return parser.matches
 
 
 class GithubRelease(HTMLHoster):
