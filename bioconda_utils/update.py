@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 #: This is so complicated because we need to parse matched, not-escaped parentheses to
 #: determine where the clause ends.
 #: Requires regex package for recursion.
-re_capgroup = re.compile(r"\(\?P<(\w+)>(?>[^()]+|\\\(|\\\)|(\((?>[^()]+|\\\(|\\\)|(?2))*\)))*\)")
+RE_CAPGROUP = re.compile(r"\(\?P<(\w+)>(?>[^()]+|\\\(|\\\)|(\((?>[^()]+|\\\(|\\\)|(?2))*\)))*\)")
 
 
 def dedup_named_capture_group(pattern):
@@ -61,17 +61,18 @@ def dedup_named_capture_group(pattern):
         else:
             seen.add(name)
             return match.group(0)
-    return re.sub(re_capgroup, replace, pattern)
+    return re.sub(RE_CAPGROUP, replace, pattern)
 
 
-def replace_named_capture_group(pattern, vals):
+def replace_named_capture_group(pattern, vals: Dict[str,str]):
+    """Replaces capture groups with values from **vals**"""
     def replace(match):
         name = match.group(1)
         if name in vals:
             return vals[name]
         else:
             return match.group(0)
-    return re.sub(re_capgroup, replace, pattern)
+    return re.sub(RE_CAPGROUP, replace, pattern)
 
 
 class Scanner(object):
