@@ -75,6 +75,19 @@ def replace_named_capture_group(pattern, vals: Dict[str,str]):
     return re.sub(RE_CAPGROUP, replace, pattern)
 
 
+class Recipe(object):
+    """Represents a recipe"""
+    def __init__(self, recipe_dir, recipe_folder):
+        if not recipe_dir.startswith(recipe_folder):
+            raise RuntimeError(f"{recipe_folder} is not prefix of {recipe_dir}")
+        self.dir = recipe_dir
+        self.basedir = recipe_folder
+        self.reldir = recipe_dir[len(recipe_folder):].strip("/")
+
+    def __str__(self):
+        return self.reldir
+
+
 class Scanner(object):
     """Scans recipes for updates
 
@@ -83,11 +96,6 @@ class Scanner(object):
       packages: glob pattern to select recipes
       config: config.yaml (unused)
     """
-
-    #: Defaults for Jinja2 rendering of meta.yaml files
-    jinja_vars = {
-        "cran_mirror": "https://cloud.r-project.org"
-    }
 
     def __init__(self, recipe_folder, packages, config):
         self.config = config
@@ -102,14 +110,23 @@ class Scanner(object):
             asyncio.set_event_loop(self.loop)
         #: executor for running local io
         self.io_exc = ThreadPoolExecutor()
+        #: executor for CPU
+        self.cpu_exc = ThreadPoolExecutor()
         #: semaphore to limit parallelism in io_exc
-        self.io_sem = asyncio.Semaphore(20)
+        self.io_sem = asyncio.Semaphore(1)
         #: counter to gather stats on various states
         self.stats = Counter()
         #: aiohttp session (only exists while running)
         self.session = None
         #: failed urls - for later inspection
         self.failed_urls = []
+        #: filters
+        self.filters: List[Filter] = [
+            LoadMeta(self),
+            ExcludeSubrecipe(self, always=False),
+            ExcludeOtherChannel(self, ['conda-forge']),
+            UpdateVersion(self),
+        ]
 
     def run(self):
         """Runs scanner
@@ -139,7 +156,7 @@ class Scanner(object):
             self.session = session
             coros = [
                 asyncio.ensure_future(
-                    self.try_update_version(recipe_dir)
+                    self.process(recipe_dir)
                 )
                 for recipe_dir in self.recipes
             ]
@@ -152,22 +169,21 @@ class Scanner(object):
                     coro.cancel()
                 await asyncio.wait(coros)
 
-    async def try_update_version(self, recipe_dir):
+    async def process(self, recipe_dir):
         """Wrapper around `update_version` catching and logging exceptions"""
         try:
-            return await self.update_version(recipe_dir)
+            recipe = Recipe(recipe_dir, self.recipe_folder)
+            return all([await filt.apply(recipe) for filt in self.filters])
         except asyncio.CancelledError:
             return
         except Exception as e:
-            logger.exception("while scanning %s %s", self.recipe_folder, recipe_dir)
+            logger.exception("while scanning %s", recipe_dir)
 
-    async def load_meta(self, recipe_dir):
-        """Loads a meta.yaml async in one of the io executors"""
+    async def run_io(self, *args):
         async with self.io_sem:
-            return await self.loop.run_in_executor(
-                self.io_exc, utils.load_meta_fast, recipe_dir, self.jinja_vars)
+            return await self.loop.run_in_executor(self.io_exc, *args)
 
-    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=10,
+    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
                           giveup=lambda ex: ex.code not in [429, 502, 503, 504])
     async def get_text_from_url(self, url):
         """Returns text from http URLjoin
@@ -180,7 +196,7 @@ class Scanner(object):
             resp.raise_for_status()
             return await resp.text()
 
-    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=10,
+    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
                           giveup=lambda ex: ex.code not in [429, 502, 503, 504])
     async def get_checksum_from_url(self, url, desc):
         checksum = sha256()
@@ -190,15 +206,73 @@ class Scanner(object):
             with tqdm(total=size, unit='B', unit_scale=True, unit_divisor=1024,
                       desc=desc, miniters=1, leave=False) as t:
                 while True:
-                    block = await resp.content.read(1024*64)
+                    block = await resp.content.read(1024*1024)
                     if not block:
                         break
-                    checksum.update(block)
                     t.update(len(block))
+                    await self.loop.run_in_executor(self.cpu_exc, checksum.update, block)
         return checksum.hexdigest()
 
 
-    async def update_version(self, recipe_dir: str) -> None:
+class Filter(abc.ABC):
+    def __init__(self, scanner: "Scanner"):
+        self.scanner = scanner
+
+    @abc.abstractmethod
+    async def apply(self, recipe: Recipe) -> bool:
+        """Process a recipe. Returns False if processing should stop"""
+
+
+class LoadMeta(Filter):
+    #: Defaults for Jinja2 rendering of meta.yaml files
+    jinja_vars = {
+        "cran_mirror": "https://cloud.r-project.org"
+    }
+    async def apply(self, recipe):
+        recipe.meta = await self.scanner.run_io(utils.load_meta_fast, recipe.dir, self.jinja_vars)
+        try:
+            recipe.version = recipe.meta["package"]["version"]
+            recipe.name = recipe.meta["package"]["name"]
+        except KeyError as ex:
+            logger.error("% missing %s?!", recipe, ex.args[0])
+            return False
+        recipe.config = recipe.meta.get("extra", {}).get("watch", {})
+        return True
+
+
+class ExcludeOtherChannel(Filter):
+    def __init__(self, scanner: "Scanner", channels):
+        super().__init__(scanner)
+        from .linting import channel_dataframe
+        logger.info("Loading package lists for %s", channels)
+        cdf = channel_dataframe(channels=channels, cache="update_channel_cache.csv")
+        cdf['versionorder'] = cdf['version'].apply(VersionOrder)
+        self.other_latest = cdf.groupby('name')['versionorder'].agg(max)
+
+    async def apply(self, recipe):
+        if recipe.name in self.other_latest:
+            logger.debug("Skipping %s because it's in other channels", recipe)
+            return False
+        return True
+
+
+class ExcludeSubrecipe(Filter):
+    def __init__(self, scanner: "Scanner", always=False):
+        super().__init__(scanner)
+        self.always_exclude = always
+
+    async def apply(self, recipe):
+        is_subrecipe = recipe.reldir.count("/") > 0
+        enabled = recipe.config.get("enable", False) == True
+        skip = (not is_subrecipe) or (enabled and not self.always_exclude)
+        if skip:
+            logger.debug("Skipping subrecipe %s", recipe)
+            self.scanner.stats["SUBRECIPE_SKIPPED"] += 1
+        return skip
+
+
+class UpdateVersion(Filter):
+    async def apply(self, recipe: Recipe) -> None:
         """Checks for updates to a recipe
 
         - In the most simple case, a package has a single URL which also indicates the version
@@ -215,97 +289,75 @@ class Scanner(object):
          5. select newest
          4. update sources
         """
-        if not recipe_dir.startswith(self.recipe_folder):
-            logger.error("Something went wrong: %s not prefix of %s", recipe_dir, self.recipe_folder)
-            self.stats["ERROR_INTERNAL"] += 1
-            return
 
-        meta = await self.load_meta(recipe_dir)
+        logger.debug("Checking for updates to %s - %s", recipe, recipe.version)
 
-        watchcfg = meta.get("extra", {}).get("watch", {})
-        is_sub_recipe = recipe_dir[len(self.recipe_folder):].strip("/").count("/") > 0
-        version = meta.get("package", {}).get("version")
-        sources = meta.get("source", [])
-
-        logger.debug("Checking for updates to %s - %s", recipe_dir, version)
-
-        if is_sub_recipe:
-            if watchcfg.get("enable", False):
-                logger.debug("Processing explicitly enabled subrecipe")
-                self.stats["SUBRECIPE_ENABLED"] += 1
-            else:
-                self.stats["SUBRECIPE_SKIPPED"] += 1
-                return
-
-        if not version:
-            logger.error("Package %s has no version?!", recipe_dir)
-            self.stats["ERROR_NO_VERSION"] += 1
-            return
-
+        sources = recipe.meta.get("source")
         if not sources:
-            logger.error("Package %s has no sources?", recipe_dir)
-            self.stats["ERROR_NO_SOURCES"] += 1
-            return
+            logger.error("Package %s has no sources?", recipe)
+            logger.error(recipe.meta)
+            self.scanner.stats["METAPACKAGE"] += 1
+            return False
 
         if isinstance(sources, Mapping):
             sources = [sources]
         else:
-            self.stats["MULTISOURCE"] += 1
-            logger.error("Package %s is multi-source", recipe_dir)
+            self.scanner.stats["MULTISOURCE"] += 1
+            logger.error("Package %s is multi-source", recipe)
 
+        good=False
         replace_map = {}
         for n, source in enumerate(sources):
             urls = source.get("url")
             if isinstance(urls, str):
                 urls = [urls]
             if not urls:
-                logger.error("Package %s has no url(s) in source %i", recipe_dir, n+1)
-                self.stats["ERROR_NO_URLS"] += 1
+                logger.error("Package %s has no url(s) in source %i", recipe, n+1)
+                self.scanner.stats["ERROR_NO_URLS"] += 1
                 continue
 
             version_map = defaultdict(dict)
             for url in urls:
                 hoster = Hoster.select_hoster(url)
                 if not hoster:
+                    self.scanner.stats["UNKNOWN_URL"] += 1
                     logger.debug("Failed to parse url '%s'", url)
-                    self.failed_urls += [url]
-
+                    self.scanner.failed_urls += [url]
                     match = re.search(r"://([^/]+)/", url)
                     if match:
-                        self.stats[f"UNKOWN_URL_{match.group(1)}"] += 1
-                    else:
-                        self.stats["UNKNOWN_URL"] += 1
-                    return
+                        self.scanner.stats[f"UNKNOWN_URL_{match.group(1)}"] += 1
+                    continue
                 logger.debug("Scanning with %s", hoster.__class__.__name__)
                 try:
-                    versions = await hoster.get_versions(self)
+                    versions = await hoster.get_versions(self.scanner)
                     for match in versions:
                         version_map[match["version"]][url] = match
                 except aiohttp.ClientResponseError as e:
-                    self.stats[f"HTTP_{e.code}"] += 1
+                    self.scanner.stats[f"HTTP_{e.code}"] += 1
                     logger.debug("HTTP %s when getting %s", e, url)
 
             if not version_map:
-                logger.debug("Failed to parse any url in %s", recipe_dir)
+                logger.debug("Failed to parse any url in %s", recipe)
                 continue
 
             latest = max(version_map.keys(), key=lambda x: VersionOrder(x))
 
-            if version == latest:
+            if recipe.version == latest:
+                good=True
                 continue
             replace_map.update(version_map[latest])
 
         if not replace_map:
-            logger.debug("Recipe %s is up to date", recipe_dir)
-            self.stats["OK"] += 1
+            logger.debug("Recipe %s is up to date", recipe)
+            self.scanner.stats["OK"] += 1
             return
 
-        logger.info("Recipe %s has a new version %s => %s", recipe_dir, version, latest)
-        self.stats["UPDATE"] += 1
+        logger.info("Recipe %s has a new version %s => %s", recipe, recipe.version, latest)
+        self.scanner.stats["UPDATE"] += 1
 
         for n, fn in enumerate(replace_map):
             link = replace_map[fn]["link"]
-            checksum = await self.get_checksum_from_url(link, f"{recipe_dir} [{n}]")
+            checksum = await self.scanner.get_checksum_from_url(link, f"{recipe} [{n}]")
             replace_map[fn]["sha256"] = checksum
         logger.warning(replace_map)
 
@@ -379,6 +431,11 @@ class Hoster(object, metaclass=HosterMeta):
     @abc.abstractmethod
     def url_pattern(self) -> str:
         "matches upstream package url"
+
+    @property
+    @abc.abstractmethod
+    def link_pattern(self) -> str:
+        "matches links on relase page"
 
     @property
     @abc.abstractmethod
