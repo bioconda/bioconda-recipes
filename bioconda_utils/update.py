@@ -179,6 +179,8 @@ class Scanner(object):
             resp.raise_for_status()
             return await resp.text()
 
+    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=10,
+                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
     async def get_checksum_from_url(self, url, desc):
         checksum = sha256()
         async with self.session.get(url) as resp:
