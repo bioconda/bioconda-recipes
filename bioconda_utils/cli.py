@@ -682,6 +682,8 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None, exc
             exclude_channels = [exclude_channels]
         scanner.add(update.ExcludeOtherChannel, exclude_channels, cache)
     scanner.add(update.UpdateVersion)
+    scanner.add(update.UpdateChecksums)
+    scanner.add(update.WriteRecipe)
     scanner.run()
 
 

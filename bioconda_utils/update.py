@@ -19,6 +19,7 @@ from concurrent.futures import ThreadPoolExecutor
 from hashlib import sha256
 
 import aiohttp
+import aiofiles
 import backoff
 import yaml
 
@@ -64,6 +65,9 @@ def replace_named_capture_group(pattern, vals: Dict[str,str]):
             return match.group(0)
     return re.sub(RE_CAPGROUP, replace, pattern)
 
+JINJA_VARS = {
+    "cran_mirror": "https://cloud.r-project.org"
+}
 
 class Recipe(object):
     """Represents a recipe"""
@@ -74,15 +78,42 @@ class Recipe(object):
         self.basedir = recipe_folder
         self.reldir = recipe_dir[len(recipe_folder):].strip("/")
 
-        # Will be filled in by LoadMeta Filter
-        self.version = None
-        self.name = None
-        self.config = None
-        self.meta = None
-        self.meta_yaml = None
+        # Will be filled in by render
+        self.version = ""
+        self.name = ""
+        self.config = {}
+        self.meta = {}
+        # Filled in by load
+        self.meta_yaml = ""
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.reldir
+
+    async def load(self) -> None:
+        path = os.path.join(self.dir, "meta.yaml")
+        async with aiofiles.open(path, "r", encoding="utf-8") as meta_yaml:
+            self.meta_yaml =  await meta_yaml.read()
+        self.render()
+
+    def render(self) -> None:
+        template = utils.JINJA_ENV.from_string(self.meta_yaml)
+        self.meta = yaml.load(template.render(JINJA_VARS))
+        try:
+            self.version = str(self.meta["package"]["version"])
+            self.name = self.meta["package"]["name"]
+        except KeyError as ex:
+            raise RuntimeError(f"{self.recipe_folder} yaml missing {ex.args[0]}")
+
+        self.config = self.meta.get("extra", {}).get("watch", {})
+
+    def replace(self, before: str, after: str) -> bool:
+        if re.search(re.escape(before) + r".*#.*\[", self.meta_yaml):
+            logger.error("Recipe %s: cannot replace %s->%s due to '# [flag]' selector",
+                         self, before, after)
+            return False
+        self.meta_yaml = self.meta_yaml.replace(before, after)
+        return True
+
 
 
 class Filter(abc.ABC):
@@ -127,9 +158,7 @@ class Scanner(object):
         #: aiohttp session (only exists while running)
         self.session: aiohttp.ClientSession = None
         #: filters
-        self.filters: List[Filter] = [
-            LoadMeta(self),
-        ]
+        self.filters: List[Filter] = []
 
     def add(self, filter: Filter, *args, **kwargs) -> None:
         """Adds `Filter` to this `Scanner`"""
@@ -180,6 +209,7 @@ class Scanner(object):
         """Wrapper around `update_version` catching and logging exceptions"""
         try:
             recipe = Recipe(recipe_dir, self.recipe_folder)
+            await recipe.load()
             for filt in self.filters:
                 if not await filt.apply(recipe):
                     return False
@@ -228,40 +258,6 @@ class Scanner(object):
                     await self.loop.run_in_executor(self.executor, checksum.update, block)
         return checksum.hexdigest()
 
-
-class LoadMeta(Filter):
-    """Loads the recipe's meta.yaml
-
-    - Populates **recipe.meta**, **recipe.version**, **recipe.name** and **recipe.config**
-    - Fails if **version** or **name** don't exist
-    """
-    #: Defaults for Jinja2 rendering of meta.yaml files
-    jinja_vars = {
-        "cran_mirror": "https://cloud.r-project.org"
-    }
-    async def apply(self, recipe):
-        recipe.meta_yaml = await self.scanner.run_io(self.load_meta, recipe.dir)
-        self.parse_meta(recipe, self.jinja_vars)
-        try:
-            recipe.version = str(recipe.meta["package"]["version"])
-            recipe.name = recipe.meta["package"]["name"]
-        except KeyError as ex:
-            self.scanner_stats["BROKEN"] += 1
-            logger.error("% missing %s?!", recipe, ex.args[0])
-            return False
-        recipe.config = recipe.meta.get("extra", {}).get("watch", {})
-        return True
-
-    @staticmethod
-    def load_meta(recipe_dir):
-        path = os.path.join(recipe_dir, "meta.yaml")
-        with open(path, "r", encoding="utf-8") as meta_yaml:
-            return meta_yaml.read()
-
-    @staticmethod
-    def parse_meta(recipe, jinja_vars):
-        template = utils.JINJA_ENV.from_string(recipe.meta_yaml)
-        recipe.meta = yaml.load(template.render(jinja_vars))
 
 class ExcludeOtherChannel(Filter):
     """Filters recipes matching packages in other **channels**"""
@@ -342,30 +338,29 @@ class UpdateVersion(Filter):
             if versions:
                 latest = self.select_version(recipe.version, versions.keys())
             else:
-                return
+                return False
         else:
             self.scanner.stats["MULTISOURCE"] += 1
             logger.info("Recipe %s is multi-source", recipe)
             # FIXME: handle multisource
             #for n, source in enumerate(sources):
             #    self.update_source(sources, n)
-            return
+            return False
 
         if latest == recipe.version:
             logger.debug("Recipe %s is up to date", recipe)
             self.scanner.stats["OK"] += 1
-            return
+            return False
 
         logger.info("Recipe %s has a new version %s > %s", recipe, latest, recipe.version)
-        self.scanner.stats["UPDATE"] += 1
+        self.scanner.stats["HAVE_UPDATE"] += 1
 
-        recipe.meta_yaml.replace(recipe.version, latest)
+        if not recipe.replace(recipe.version, latest):
+            self.scanner.stats["UPDATE_FAIL_VERSION"] += 1
+            return False
 
-        #for n, fn in enumerate(replace_map):
-        #    link = replace_map[fn]["link"]
-        #    checksum = await self.scanner.get_checksum_from_url(link, f"{recipe} [{n}]")
-        #    replace_map[fn]["sha256"] = checksum
-        #logger.warning(replace_map)
+        recipe.render()
+        return True
 
     async def get_versions(self, recipe, source, n):
         urls = source.get("url")
@@ -425,6 +420,67 @@ class UpdateVersion(Filter):
                 latest = vers
 
         return latest
+
+class UpdateChecksums(Filter):
+    async def apply(self, recipe: Recipe) -> bool:
+        sources = recipe.meta["source"]
+        logger.info("Updating checksum for %s %s", recipe, recipe.version)
+        if isinstance(sources, Mapping):
+            sources = [sources]
+        res = all([await self.update_source(recipe, source, n)
+                   for n, source in enumerate(sources)])
+        if res:
+            recipe.render()
+            return True
+        self.scanner.stats["UPDATE_FAIL_CHECKSUM"] += 1
+        return False
+
+    async def update_source(self, recipe: Recipe, source: Mapping, n: int) -> bool:
+        for checksum_type in ("sha256", "sha1", "md5"):
+            checksum = source.get(checksum_type)
+            if checksum:
+                break
+        else:
+            logger.error("Recipe %s has no checksum", recipe)
+            return False
+        if checksum_type != "sha256":
+            logger.error("Recipe %s has checksum type %s", recipe, checksum_type)
+            if not recipe.replace(checksum_type, "sha256"):
+                return False
+
+        urls = source["url"]
+        if isinstance(urls, str):
+            urls = [urls]
+        new_checksums = []
+        for m, url in enumerate(urls):
+            try:
+                res = await self.scanner.get_checksum_from_url(
+                    url, f"{recipe} [{n}.{m}]")
+            except aiohttp.client_exceptions.ClientResponseError as e:
+                res = None
+            new_checksums.append(res)
+        count = len(set(c for c in new_checksums if c is not None))
+        if count == 0:
+            logger.error("Recipe %s: update failed - no valid urls in source %s",
+                         recipe, n)
+            return False
+        if count > 1:
+            logger.error("Recipe %s: checksum mismatch on updated sources", recipe)
+            for n in range(len(urls)):
+                logger.error("Recipe %s: url %s - got %s for %s",
+                             recipe, n, new_checksums[n], urls[n])
+            return False
+        new_checksum = next(c for c in new_checksums if c is not None)
+        if not recipe.replace(checksum, new_checksum):
+            return False
+        return True
+
+class WriteRecipe(Filter):
+    async def apply(self, recipe: Recipe) -> bool:
+        path = os.path.join(recipe.dir, "meta.yaml")
+        async with aiofiles.open(path, "w", encoding="utf-8") as out:
+            await out.write(recipe.meta_yaml)
+        self.scanner.stats["UPDATED"] += 1
 
 
 class HosterMeta(abc.ABCMeta):
