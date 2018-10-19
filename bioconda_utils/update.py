@@ -21,7 +21,9 @@ from hashlib import sha256
 import aiohttp
 import aiofiles
 import backoff
-import yaml
+from ruamel.yaml import YAML
+
+yaml = YAML(typ="rt")
 
 from tqdm import tqdm
 
