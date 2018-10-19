@@ -69,6 +69,8 @@ JINJA_VARS = {
     "cran_mirror": "https://cloud.r-project.org"
 }
 
+FD_SEM = asyncio.Semaphore(50)
+
 class Recipe(object):
     """Represents a recipe"""
     def __init__(self, recipe_dir, recipe_folder):
@@ -91,8 +93,9 @@ class Recipe(object):
 
     async def load(self) -> None:
         path = os.path.join(self.dir, "meta.yaml")
-        async with aiofiles.open(path, "r", encoding="utf-8") as meta_yaml:
-            self.meta_yaml =  await meta_yaml.read()
+        async with FD_SEM:
+            async with aiofiles.open(path, "r", encoding="utf-8") as meta_yaml:
+                self.meta_yaml =  await meta_yaml.read()
         self.render()
 
     def render(self) -> None:
