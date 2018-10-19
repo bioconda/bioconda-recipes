@@ -678,6 +678,8 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None, exc
         scanner.add(update.ExcludeSubrecipe, always=exclude_subrecipes == "always")
     print(exclude_channels)
     if exclude_channels != ["none"]:
+        if not isinstance(exclude_channels, list):
+            exclude_channels = [exclude_channels]
         scanner.add(update.ExcludeOtherChannel, exclude_channels, cache)
     scanner.add(update.UpdateVersion)
     scanner.run()
