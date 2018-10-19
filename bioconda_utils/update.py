@@ -11,7 +11,8 @@ import os
 from collections import defaultdict, Counter
 from html.parser import HTMLParser
 from urllib.parse import urljoin
-#from pkg_resources import parse_version
+from pkg_resources import parse_version
+from pkg_resources.extern.packaging.version import LegacyVersion
 from pprint import pprint
 from typing import List, Dict, Optional, Iterable, Mapping, List, Tuple, Any, Set
 from concurrent.futures import ThreadPoolExecutor
@@ -239,10 +240,10 @@ class LoadMeta(Filter):
         "cran_mirror": "https://cloud.r-project.org"
     }
     async def apply(self, recipe):
-        recipe.meta_yaml, recipe.meta = await self.scanner.run_io(
-            self.load_meta, recipe.dir, self.jinja_vars)
+        recipe.meta_yaml = await self.scanner.run_io(self.load_meta, recipe.dir)
+        self.parse_meta(recipe, self.jinja_vars)
         try:
-            recipe.version = recipe.meta["package"]["version"]
+            recipe.version = str(recipe.meta["package"]["version"])
             recipe.name = recipe.meta["package"]["name"]
         except KeyError as ex:
             self.scanner_stats["BROKEN"] += 1
@@ -252,13 +253,15 @@ class LoadMeta(Filter):
         return True
 
     @staticmethod
-    def load_meta(recipe_dir, jinja_vars):
+    def load_meta(recipe_dir):
         path = os.path.join(recipe_dir, "meta.yaml")
         with open(path, "r", encoding="utf-8") as meta_yaml:
-            meta_yaml = meta_yaml.read()
-        template = utils.JINJA_ENV.from_string(meta_yaml)
-        return meta_yaml, yaml.load(template.render(jinja_vars))
+            return meta_yaml.read()
 
+    @staticmethod
+    def parse_meta(recipe, jinja_vars):
+        template = utils.JINJA_ENV.from_string(recipe.meta_yaml)
+        recipe.meta = yaml.load(template.render(jinja_vars))
 
 class ExcludeOtherChannel(Filter):
     """Filters recipes matching packages in other **channels**"""
@@ -330,72 +333,98 @@ class UpdateVersion(Filter):
 
         sources = recipe.meta.get("source")
         if not sources:
-            logger.error("Package %s has no sources?", recipe)
-            logger.error(recipe.meta)
+            logger.info("Recipe %s is a metapackage (no sources)", recipe)
             self.scanner.stats["METAPACKAGE"] += 1
             return False
 
         if isinstance(sources, Mapping):
-            sources = [sources]
+            versions = await self.get_versions(recipe, sources, 1)
+            if versions:
+                latest = self.select_version(recipe.version, versions.keys())
+            else:
+                return
         else:
             self.scanner.stats["MULTISOURCE"] += 1
-            logger.error("Package %s is multi-source", recipe)
+            logger.info("Recipe %s is multi-source", recipe)
+            # FIXME: handle multisource
+            #for n, source in enumerate(sources):
+            #    self.update_source(sources, n)
+            return
 
-        good=False
-        replace_map = {}
-        for n, source in enumerate(sources):
-            urls = source.get("url")
-            if isinstance(urls, str):
-                urls = [urls]
-            if not urls:
-                logger.error("Package %s has no url(s) in source %i", recipe, n+1)
-                self.scanner.stats["ERROR_NO_URLS"] += 1
-                continue
-
-            version_map = defaultdict(dict)
-            for url in urls:
-                hoster = Hoster.select_hoster(url)
-                if not hoster:
-                    self.scanner.stats["UNKNOWN_URL"] += 1
-                    logger.debug("Failed to parse url '%s'", url)
-                    self.failed_urls += [url]
-                    match = re.search(r"://([^/]+)/", url)
-                    if match:
-                        self.scanner.stats[f"UNKNOWN_URL_{match.group(1)}"] += 1
-                    continue
-                logger.debug("Scanning with %s", hoster.__class__.__name__)
-                try:
-                    versions = await hoster.get_versions(self.scanner)
-                    for match in versions:
-                        version_map[match["version"]][url] = match
-                except aiohttp.ClientResponseError as e:
-                    self.scanner.stats[f"HTTP_{e.code}"] += 1
-                    logger.debug("HTTP %s when getting %s", e, url)
-
-            if not version_map:
-                logger.debug("Failed to parse any url in %s", recipe)
-                continue
-
-            latest = max(version_map.keys(), key=lambda x: VersionOrder(x))
-
-            if recipe.version == latest:
-                good=True
-                continue
-            replace_map.update(version_map[latest])
-
-        if not replace_map:
+        if latest == recipe.version:
             logger.debug("Recipe %s is up to date", recipe)
             self.scanner.stats["OK"] += 1
             return
 
-        logger.info("Recipe %s has a new version %s => %s", recipe, recipe.version, latest)
+        logger.info("Recipe %s has a new version %s > %s", recipe, latest, recipe.version)
         self.scanner.stats["UPDATE"] += 1
 
-        for n, fn in enumerate(replace_map):
-            link = replace_map[fn]["link"]
-            checksum = await self.scanner.get_checksum_from_url(link, f"{recipe} [{n}]")
-            replace_map[fn]["sha256"] = checksum
-        logger.warning(replace_map)
+        recipe.meta_yaml.replace(recipe.version, latest)
+
+        #for n, fn in enumerate(replace_map):
+        #    link = replace_map[fn]["link"]
+        #    checksum = await self.scanner.get_checksum_from_url(link, f"{recipe} [{n}]")
+        #    replace_map[fn]["sha256"] = checksum
+        #logger.warning(replace_map)
+
+    async def get_versions(self, recipe, source, n):
+        urls = source.get("url")
+        if isinstance(urls, str):
+            urls = [urls]
+        if not urls:
+            logger.info("Package %s has no url in source %i", recipe, n+1)
+            self.scanner.stats["ERROR_NO_URLS"] += 1
+            return
+
+        version_map = defaultdict(dict)
+        for url in urls:
+            hoster = Hoster.select_hoster(url)
+            if not hoster:
+                self.scanner.stats["UNKNOWN_URL"] += 1
+                logger.debug("Failed to parse url '%s'", url)
+                self.failed_urls += [url]
+                match = re.search(r"://([^/]+)/", url)
+                if match:
+                    self.scanner.stats[f"UNKNOWN_URL_{match.group(1)}"] += 1
+                continue
+            logger.debug("Scanning with %s", hoster.__class__.__name__)
+            try:
+                versions = await hoster.get_versions(self.scanner)
+                for match in versions:
+                    version_map[match["version"]][url] = match
+            except aiohttp.ClientResponseError as e:
+                self.scanner.stats[f"HTTP_{e.code}"] += 1
+                logger.debug("HTTP %s when getting %s", e, url)
+
+        if not version_map:
+            logger.debug("Failed to parse any url in %s", recipe)
+            return
+
+        return version_map
+
+    @staticmethod
+    def select_version(current, versions):
+        current_version = parse_version(current)
+        current_is_legacy = isinstance(current_version, LegacyVersion)
+        latest_vo = VersionOrder(current)
+        latest = current
+        for vers in versions:
+            vers_version = parse_version(vers)
+            # allow prerelease only if current is prerelease
+            if vers_version.is_prerelease and not current_version.is_prerelease:
+                continue
+            # allow legacy only if current is legacy
+            vers_is_legacy = isinstance(vers_version, LegacyVersion)
+            if vers_is_legacy and not current_is_legacy:
+                continue
+            # using conda version order here as that's what will be
+            # used by the package manager
+            vers_vo = VersionOrder(vers)
+            if vers_vo > latest_vo:
+                latest_vo = vers_vo
+                latest = vers
+
+        return latest
 
 
 class HosterMeta(abc.ABCMeta):
