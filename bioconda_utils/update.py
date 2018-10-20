@@ -22,6 +22,7 @@ import aiohttp
 import aiofiles
 import backoff
 from ruamel.yaml import YAML
+from ruamel.yaml.constructor import DuplicateKeyError
 
 yaml = YAML(typ="rt")
 
@@ -89,37 +90,88 @@ class Recipe(object):
         self.meta = {}
         # Filled in by load
         self.meta_yaml = ""
+        # filled in by replace
+        self.meta_yaml_template_lines = set()
 
     def __str__(self) -> str:
         return self.reldir
 
-    async def load(self) -> None:
+    async def load(self) -> bool:
         path = os.path.join(self.dir, "meta.yaml")
         async with FD_SEM:
             async with aiofiles.open(path, "r", encoding="utf-8") as meta_yaml:
-                self.meta_yaml =  await meta_yaml.read()
-        self.render()
+                self.meta_yaml = (await meta_yaml.read()).splitlines()
+        if not self.meta_yaml:
+            return False
+        # FIXME: check file not empty
+        return self.render()
 
-    def render(self) -> None:
-        template = utils.JINJA_ENV.from_string(self.meta_yaml)
-        self.meta = yaml.load(template.render(JINJA_VARS))
+    async def write(self, path=None):
+        if not path:
+            path = os.path.join(self.dir, "meta.yaml")
+        async with FD_SEM:
+            async with aiofiles.open(path, "w", encoding="utf-8") as meta_yaml:
+                await meta_yaml.write("\n".join(self.meta_yaml)+"\n")
+
+    def render(self) -> bool:
+        self.template = utils.JINJA_ENV.from_string("\n".join(self.meta_yaml))
+        try:
+            self.meta = yaml.load(self.template.render(JINJA_VARS))
+        except DuplicateKeyError:
+            logger.error("Recipe %s: duplicate key", self)
+            return False
         try:
             self.version = str(self.meta["package"]["version"])
             self.name = self.meta["package"]["name"]
         except KeyError as ex:
             raise RuntimeError(f"{self.recipe_folder} yaml missing {ex.args[0]}")
-
         self.config = self.meta.get("extra", {}).get("watch", {})
-
-    def replace(self, before: str, after: str) -> bool:
-        if re.search(re.escape(before) + r".*#.*\[", self.meta_yaml):
-            logger.error("Recipe %s: cannot replace %s->%s due to '# [flag]' selector",
-                         self, before, after)
-            return False
-        self.meta_yaml = self.meta_yaml.replace(before, after)
         return True
 
+    def replace(self, before: str, after: str, within=None) -> bool:
+        """Replaces strings in package, source and jinja"""
+        if within is None:
+            within = ("package", "source")
 
+        if self.meta_yaml_template_lines:
+            lines = self.meta_yaml_template_lines
+        else:
+            lines = set()
+            for lineno, line in enumerate(self.meta_yaml):
+                if line.strip().startswith("{%"):
+                    lines.add(lineno)
+            self.meta_yaml_template_lines = lines
+
+        # get lines covered by keys listed in ``within``
+        start = None
+        for key in self.meta.keys():
+            line = self.meta[key].lc.line
+            if key in within:
+                start = line
+            elif start is not None:
+                lines.update(range(start, line))
+                start = None
+        if start is not None:
+            lines.update(range(start, len(self.meta_yaml)))
+
+        for lineno in sorted(lines):
+            line = self.meta_yaml[lineno]
+            if before not in line:
+                continue
+            if re.search(re.escape(before) + r".*#.*\[", line):
+                logger.error("Recipe %s: cannot replace %s->%s "
+                             "due to '# [flag]' selector in line %i",
+                             self, before, after, line)
+                return False
+            self.meta_yaml[lineno] = line.replace(before, after)
+        return True
+
+    def reset_buildnumber(self) -> bool:
+        lineno = self.meta["build"].lc.key("number")[0]
+        line = self.meta_yaml[lineno]
+        line = re.sub("number: [0-9]+", "number: 0", line)
+        self.meta_yaml[lineno] = line
+        return True
 
 class Filter(abc.ABC):
     """Function object type called by Scanner"""
@@ -363,9 +415,10 @@ class UpdateVersion(Filter):
         if not recipe.replace(recipe.version, latest):
             self.scanner.stats["UPDATE_FAIL_VERSION"] += 1
             return False
-
-        recipe.render()
-        return True
+        if not recipe.reset_buildnumber():
+            self.scanner.stats["UPDATE_FAIL_BUILNO"] +=  1
+            return False
+        return recipe.render()
 
     async def get_versions(self, recipe, source, n):
         urls = source.get("url")
@@ -435,8 +488,7 @@ class UpdateChecksums(Filter):
         res = all([await self.update_source(recipe, source, n)
                    for n, source in enumerate(sources)])
         if res:
-            recipe.render()
-            return True
+            return recipe.render()
         self.scanner.stats["UPDATE_FAIL_CHECKSUM"] += 1
         return False
 
@@ -482,9 +534,7 @@ class UpdateChecksums(Filter):
 
 class WriteRecipe(Filter):
     async def apply(self, recipe: Recipe) -> bool:
-        path = os.path.join(recipe.dir, "meta.yaml")
-        async with aiofiles.open(path, "w", encoding="utf-8") as out:
-            await out.write(recipe.meta_yaml)
+        await recipe.write()
         self.scanner.stats["UPDATED"] += 1
 
 
