@@ -149,13 +149,16 @@ class Recipe(object):
         for key in self.meta.keys():
             line = self.meta[key].lc.line
             if key in within:
-                start = line
-            elif start is not None:
-                lines.update(range(start, line))
-                start = None
+                if start is None:
+                    start = line
+            else:
+                if start is not None:
+                    lines.update(range(start, line))
+                    start = None
         if start is not None:
             lines.update(range(start, len(self.meta_yaml)))
 
+        replacements = 0
         for lineno in sorted(lines):
             line = self.meta_yaml[lineno]
             if before not in line:
@@ -166,6 +169,8 @@ class Recipe(object):
                              self, before, after, line)
                 return False
             self.meta_yaml[lineno] = line.replace(before, after)
+            replacements += 1
+        logger.debug("Replaced in %s: %s -> %s (%i times)", self, before, after, replacements)
         return True
 
     def reset_buildnumber(self) -> bool:
@@ -422,7 +427,13 @@ class UpdateVersion(Filter):
         if not recipe.reset_buildnumber():
             self.scanner.stats["UPDATE_FAIL_BUILNO"] +=  1
             return False
-        return recipe.render()
+        if not recipe.render():
+            self.scanner.stats["UPDATE_FAIL_RENDER"] +=  1
+            return False
+        if recipe.version != latest:
+            self.scanner.stats["UPDATE_FAIL_VERSION"] +=  1
+            return False
+        return True
 
     async def get_versions(self, recipe, source, n):
         urls = source.get("url")
