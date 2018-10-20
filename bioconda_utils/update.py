@@ -23,6 +23,8 @@ import aiofiles
 import backoff
 from ruamel.yaml import YAML
 from ruamel.yaml.constructor import DuplicateKeyError
+import git
+from gidgethub import aiohttp as gh_aiohttp
 
 yaml = YAML(typ="rt")
 
@@ -82,6 +84,7 @@ class Recipe(object):
         self.dir = recipe_dir
         self.basedir = recipe_folder
         self.reldir = recipe_dir[len(recipe_folder):].strip("/")
+        self.path = os.path.join(self.dir, "meta.yaml")
 
         # Will be filled in by render
         self.version = ""
@@ -97,9 +100,8 @@ class Recipe(object):
         return self.reldir
 
     async def load(self) -> bool:
-        path = os.path.join(self.dir, "meta.yaml")
         async with FD_SEM:
-            async with aiofiles.open(path, "r", encoding="utf-8") as meta_yaml:
+            async with aiofiles.open(self.path, "r", encoding="utf-8") as meta_yaml:
                 self.meta_yaml = (await meta_yaml.read()).splitlines()
         if not self.meta_yaml:
             return False
@@ -108,7 +110,7 @@ class Recipe(object):
 
     async def write(self, path=None):
         if not path:
-            path = os.path.join(self.dir, "meta.yaml")
+            path = self.path
         async with FD_SEM:
             async with aiofiles.open(path, "w", encoding="utf-8") as meta_yaml:
                 await meta_yaml.write("\n".join(self.meta_yaml)+"\n")
@@ -315,6 +317,8 @@ class Scanner(object):
                     await self.loop.run_in_executor(self.executor, checksum.update, block)
         return checksum.hexdigest()
 
+    def get_github(self):
+        return gh_aiohttp.GitHubAPI(self.session, "epruesse", oauth_token=os.environ["GITHUB_TOKEN"])
 
 class ExcludeOtherChannel(Filter):
     """Filters recipes matching packages in other **channels**"""
@@ -531,6 +535,63 @@ class UpdateChecksums(Filter):
         if not recipe.replace(checksum, new_checksum):
             return False
         return True
+
+
+class CreateBranch(Filter):
+    def __init__(self, scanner):
+        super().__init__(scanner)
+        self.repo = git.Repo(scanner.recipe_folder, search_parent_directories=True)
+        if self.repo.is_dirty():
+            raise RuntimeError("Repository is in dirty state. Bailing out")
+        self.repo.heads["master"].checkout()
+        self.from_commit = self.repo.remotes["upstream"].fetch("master")[0].commit
+        self.git_sem = asyncio.Semaphore(1)  # there can be only one
+        self.gh = None
+
+    def make_branch(self, branch_name):
+        logger.info("Creating branch %s", branch_name)
+        if branch_name in self.repo.heads:
+            self.repo.delete_head(branch_name, force=True)
+        self.repo.create_head(branch_name, self.from_commit)
+        branch = self.repo.heads[branch_name]
+        branch.checkout()
+
+    def commit_and_push_changes(self, recipe, branch_name):
+        self.repo.index.add([recipe.path])
+        self.repo.index.commit(f"Update {recipe.name} to {recipe.version}")
+        logger.info("Pushing branch %s", branch_name)
+        self.repo.remotes["origin"].push(branch_name, force=True)
+
+    async def create_pr(self, recipe, branch_name):
+        if not self.gh:
+            self.gh = self.scanner.get_github()
+            self.login = (await self.gh.getitem("/user"))["login"]
+        pulls = "/repos/bioconda/bioconda-recipes/pulls{?head,base}"
+        data = {
+            "head": f"{self.login}:{branch_name}",
+            "base": "master",
+            "title": f"Update {recipe.name} to {recipe.version}",
+            "body": "This PR was created automatically. See bioconda/bioconda-utils#348",
+            "maintainer_can_modify": True
+        }
+
+        pr_exists = len(await self.gh.getitem(pulls, data)) > 0
+        if not pr_exists:
+            result = await self.gh.post(pulls, data=data)
+            logger.error(result)
+            logger.error(result["number"])
+        return True
+
+    async def apply(self, recipe: Recipe) -> bool:
+        async with self.git_sem:
+            branch_name = f"auto_update_{recipe.name}"
+            self.make_branch(branch_name)
+            await recipe.write()
+            self.commit_and_push_changes(recipe, branch_name)
+            await self.create_pr(recipe, branch_name)
+
+            return True
+
 
 class WriteRecipe(Filter):
     async def apply(self, recipe: Recipe) -> bool:

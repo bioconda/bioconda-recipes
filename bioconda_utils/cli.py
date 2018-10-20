@@ -666,8 +666,9 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
      the provided filename. If the file does not exist, it will be created the
      first time.
      Caution: The cache will not be updated if exclude-channels is changed''')
+@arg("--create-pr", action="store_true", help='''Create PR for each update''')
 def update(recipe_folder, config, loglevel='info', packages='*', cache=None, exclude_subrecipes=None,
-           exclude_channels='conda-forge'):
+           exclude_channels='conda-forge', create_pr=False):
     """
     Updates recipes in recipe_folder
     """
@@ -683,7 +684,10 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None, exc
         scanner.add(update.ExcludeOtherChannel, exclude_channels, cache)
     scanner.add(update.UpdateVersion)
     scanner.add(update.UpdateChecksums)
-    scanner.add(update.WriteRecipe)
+    if create_pr:
+        scanner.add(update.CreateBranch)
+    else:
+        scanner.add(update.WriteRecipe)
     scanner.run()
 
 
