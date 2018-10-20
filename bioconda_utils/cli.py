@@ -657,18 +657,23 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
      nargs="+",
      help='Glob for package[s] to show in DAG. Default is to show all '
      'packages. Can be specified more than once')
-@arg('--exclude-subrecipes', help='''By default, only subrecipes explicitly enabled
-     for watch in meta.yaml are considered. Set to 'always' to exclude all subrecipes.
-     Set to 'never' to include all subrecipes''')
+@arg('--exclude-subrecipes', help='''By default, only subrecipes explicitly
+     enabled for watch in meta.yaml are considered. Set to 'always' to
+     exclude all subrecipes.  Set to 'never' to include all subrecipes''')
 @arg('--exclude-channels', nargs="+", help='''Exclude recipes
-     building packages present in other channels. Set to 'none' to disable check.''')
+     building packages present in other channels. Set to 'none' to disable
+     check.''')
 @arg('--cache', help='''To speed up debugging, use repodata cached locally in
-     the provided filename. If the file does not exist, it will be created the
-     first time.
-     Caution: The cache will not be updated if exclude-channels is changed''')
-@arg("--create-pr", action="store_true", help='''Create PR for each update''')
-def update(recipe_folder, config, loglevel='info', packages='*', cache=None, exclude_subrecipes=None,
-           exclude_channels='conda-forge', create_pr=False):
+     the provided filename. If the file does not exist, it will be created
+     the first time. Caution: The cache will not be updated if
+     exclude-channels is changed''')
+@arg("--create-branch", action="store_true", help='''Create branch for each
+     update''')
+@arg("--create-pr", action="store_true", help='''Create PR for each update.
+     Implies create-branch.''')
+def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
+           exclude_subrecipes=None, exclude_channels='conda-forge',
+           create_branch=False, create_pr=False):
     """
     Updates recipes in recipe_folder
     """
@@ -676,8 +681,8 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None, exc
     from . import update
     scanner = update.Scanner(recipe_folder, packages, config)
     if exclude_subrecipes != "never":
-        scanner.add(update.ExcludeSubrecipe, always=exclude_subrecipes == "always")
-    print(exclude_channels)
+        scanner.add(update.ExcludeSubrecipe,
+                    always=exclude_subrecipes == "always")
     if exclude_channels != ["none"]:
         if not isinstance(exclude_channels, list):
             exclude_channels = [exclude_channels]

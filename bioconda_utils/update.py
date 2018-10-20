@@ -1,5 +1,62 @@
-"""
-Scans for package updates
+"""Updates packages when new upstream releases become available
+
+Overview:
+
+- The `Scanner` initializes the `asyncio` loop and for each recipe,
+  loads the ``meta.yaml`` using `Recipe` and executes its `Filter`
+  objects for each recipe.
+
+- The `Recipe` handles reading, modification and writing of
+   ``meta.yaml`` files.
+
+- The filters `ExcludeSubrecipe` and `ExcludeOtherChannel` exclude
+  recipes in sub folders and present in other channels as configured.
+
+- The filter `UpdateVersion` determines available upstream verions
+  using `Hoster` and its subclasses, selects the most recent,
+  acceptable version and uses `Recipe` to replace
+
+- Subclasses of `Hoster` define how to handle each hoster. Hosters are
+  selected by regex matching each source URL in a recipe. The
+  `HTMLHoster` provides parsing for hosting sites listing new
+  releases in HTML format (probably covers most). Adding a hoster is
+  as simple as defining a regex to match the existing source URL, a
+  formatting string creating the URL of the relases page and a regex
+  to match links and extract their version.
+
+- The filter `UpdateChecksum` downloads the modified source URLs
+  and updates the checksums for each source of a recipe.
+
+- The filter `CommitToBranch` commits the changes made to each recipe
+  to individual branches.
+
+- The filter `WriteRecipe` (alternate to `CommitToBranch` simply
+  writes changes to the current branch.
+
+- The filter `CreateGithubPR` creates pull requests on GitHub for
+  changes made to per-recipe-branches.
+
+Rationale (for all those imports):
+
+- We use `asyncio` because it allows us to "to something else" while
+  we are waiting for one of the many remote servers to complete a
+  request (or fail to). As a consequence, we use `aiohttp` for HTTP
+  requests, `aiofiles` for file I/O and `gidget` to access the GitHub
+  API. Retrying is handled using decorators from `backoff`.
+
+- We need to use `regex` rather than `re` to allow recursive matching
+  to manipulate capture groups in URL patterns as
+  needed. (Technically, we could avoid this using a Snakemake wildcard
+  type syntax to define the patterns - implementers welcome).
+
+- We use `ruamel.yaml` to know where in a ``.yaml`` file a value is
+  defined. Ideally, we would extend its round-trip type to handle the
+  `# [exp]` line selectors and at least simple parts of Jinja2
+  template expansion.
+
+- Using `git` simply looks nicer than doing lot of `subprocess` calls
+  ourselves. An `asyncio` version would be nice though.
+
 """
 
 import abc
@@ -9,34 +66,36 @@ import logging
 import os
 
 from collections import defaultdict, Counter
-from html.parser import HTMLParser
-from urllib.parse import urljoin
-from pkg_resources import parse_version
-from pkg_resources.extern.packaging.version import LegacyVersion
-from pprint import pprint
-from typing import List, Dict, Optional, Iterable, Mapping, List, Tuple, Any, Set
 from concurrent.futures import ThreadPoolExecutor
 from hashlib import sha256
+from html.parser import HTMLParser
+from urllib.parse import urljoin
+from typing import Any, Dict, List, Mapping, Match, Optional, Pattern, \
+    Sequence, Set, Tuple
 
 import aiohttp
 import aiofiles
 import backoff
-from ruamel.yaml import YAML
-from ruamel.yaml.constructor import DuplicateKeyError
-import git
-from gidgethub import aiohttp as gh_aiohttp
-
-yaml = YAML(typ="rt")
-
-from tqdm import tqdm
-
 import regex as re
+import git
 
 from conda.models.version import VersionOrder
+from ruamel.yaml import YAML
+from ruamel.yaml.constructor import DuplicateKeyError
+from gidgethub import aiohttp as gh_aiohttp
+from pkg_resources import parse_version
+from tqdm import tqdm
 
 from . import utils
 
-logger = logging.getLogger(__name__)
+# pkg_resources.parse_version returns a Version or LegacyVersion object
+# as defined in packaging.version. Since it's bundling it's own copy of
+# packaging, the class it returns is not the same as the one we can import.
+# So we cheat by having it create a LegacyVersion delibarately.
+LegacyVersion = parse_version("").__class__  # pylint: disable=invalid-name
+
+yaml = YAML(typ="rt")  # pylint: disable=invalid-name
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 #: Matches named capture groups
@@ -54,30 +113,40 @@ def dedup_named_capture_group(pattern):
         name: str = match.group(1)
         if name in seen:
             return f"(?P={name})"
-        else:
-            seen.add(name)
-            return match.group(0)
+        seen.add(name)
+        return match.group(0)
     return re.sub(RE_CAPGROUP, replace, pattern)
 
 
-def replace_named_capture_group(pattern, vals: Dict[str,str]):
+def replace_named_capture_group(pattern, vals: Dict[str, str]):
     """Replaces capture groups with values from **vals**"""
     def replace(match):
         name = match.group(1)
         if name in vals:
             return vals[name]
-        else:
-            return match.group(0)
+        return match.group(0)
     return re.sub(RE_CAPGROUP, replace, pattern)
 
-JINJA_VARS = {
-    "cran_mirror": "https://cloud.r-project.org"
-}
 
-FD_SEM = asyncio.Semaphore(50)
+class Recipe():
+    """Represents a recipe (meta.yaml) in editable form
 
-class Recipe(object):
-    """Represents a recipe"""
+    Using conda-build to render recipe is slow and a one-way process. We need
+    to be able to load **and** save recipes, which is handled by the representation
+    in this class.
+
+    Recipes undergo two manipulation rounds before parsed as YAML:
+     1. Selecting lines using ``# [expression]``
+     2. Rendering as Jinja2 template
+
+    (1) is currently unhandled, leading to recipes with repeated mapping keys
+    (commonly two ``url`` keys). Those recipes are ignored for the time being.
+    """
+    FD_SEM = asyncio.Semaphore(50)
+    JINJA_VARS = {
+        "cran_mirror": "https://cloud.r-project.org"
+    }
+
     def __init__(self, recipe_dir, recipe_folder):
         if not recipe_dir.startswith(recipe_folder):
             raise RuntimeError(f"{recipe_folder} is not prefix of {recipe_dir}")
@@ -89,36 +158,41 @@ class Recipe(object):
         # Will be filled in by render
         self.version = ""
         self.name = ""
-        self.config = {}
-        self.meta = {}
+        self.config: Dict[str, Any] = {}
+        self.meta: Dict[str, Any] = {}
         # Filled in by load
-        self.meta_yaml = ""
-        # filled in by replace
-        self.meta_yaml_template_lines = set()
+        self.meta_yaml: List[str] = []
 
     def __str__(self) -> str:
         return self.reldir
 
     async def load(self) -> bool:
-        async with FD_SEM:
+        """Load and `render` recipe contents from disk"""
+        async with self.FD_SEM:
             async with aiofiles.open(self.path, "r", encoding="utf-8") as meta_yaml:
                 self.meta_yaml = (await meta_yaml.read()).splitlines()
         if not self.meta_yaml:
             return False
-        # FIXME: check file not empty
         return self.render()
 
     async def write(self, path=None):
+        """Write recipe to disk"""
         if not path:
             path = self.path
-        async with FD_SEM:
+        async with self.FD_SEM:
             async with aiofiles.open(path, "w", encoding="utf-8") as meta_yaml:
                 await meta_yaml.write("\n".join(self.meta_yaml)+"\n")
 
     def render(self) -> bool:
-        self.template = utils.JINJA_ENV.from_string("\n".join(self.meta_yaml))
+        """Convert recipe text into data structure
+
+        - create jinja template from recipe content
+        - render template
+        - parse yaml
+        """
+        template = utils.jinja_silent_undef.from_string("\n".join(self.meta_yaml))
         try:
-            self.meta = yaml.load(self.template.render(JINJA_VARS))
+            self.meta = yaml.load(template.render(self.JINJA_VARS))
         except DuplicateKeyError:
             logger.error("Recipe %s: duplicate key", self)
             return False
@@ -126,38 +200,43 @@ class Recipe(object):
             self.version = str(self.meta["package"]["version"])
             self.name = self.meta["package"]["name"]
         except KeyError as ex:
-            raise RuntimeError(f"{self.recipe_folder} yaml missing {ex.args[0]}")
+            raise RuntimeError(f"{self.dir} yaml missing {ex.args[0]}")
         self.config = self.meta.get("extra", {}).get("watch", {})
         return True
 
-    def replace(self, before: str, after: str, within=None) -> bool:
-        """Replaces strings in package, source and jinja"""
-        if within is None:
-            within = ("package", "source")
+    def replace(self, before: str, after: str,
+                within: Sequence[str] = ("package", "source")) -> bool:
+        """Runs string replace on parts of recipe text.
 
-        if self.meta_yaml_template_lines:
-            lines = self.meta_yaml_template_lines
-        else:
-            lines = set()
-            for lineno, line in enumerate(self.meta_yaml):
-                if line.strip().startswith("{%"):
-                    lines.add(lineno)
-            self.meta_yaml_template_lines = lines
+        - Lines considered are those containing Jinja set statements
+        (``{% set var="val" %}``) and those defining the top level
+        Mapping entries given by **within** (default:``package`` and
+        ``source``).
+
+        - Cowardly refuses to modify lines with ``# [expression]``
+        selectors.
+        """
+        # get lines starting with "{%"
+        lines = set()
+        for lineno, line in enumerate(self.meta_yaml):
+            if line.strip().startswith("{%"):
+                lines.add(lineno)
 
         # get lines covered by keys listed in ``within``
-        start = None
+        start: Optional[int] = None
         for key in self.meta.keys():
-            line = self.meta[key].lc.line
+            lineno = self.meta[key].lc.line
             if key in within:
                 if start is None:
-                    start = line
+                    start = lineno
             else:
                 if start is not None:
-                    lines.update(range(start, line))
+                    lines.update(range(start, lineno))
                     start = None
         if start is not None:
             lines.update(range(start, len(self.meta_yaml)))
 
+        # replace within those lines, erroring on "# [asd]" selectors
         replacements = 0
         for lineno in sorted(lines):
             line = self.meta_yaml[lineno]
@@ -174,11 +253,13 @@ class Recipe(object):
         return True
 
     def reset_buildnumber(self) -> bool:
-        lineno = self.meta["build"].lc.key("number")[0]
+        """Resets the build number"""
+        lineno: int = self.meta["build"].lc.key("number")[0]
         line = self.meta_yaml[lineno]
         line = re.sub("number: [0-9]+", "number: 0", line)
         self.meta_yaml[lineno] = line
         return True
+
 
 class Filter(abc.ABC):
     """Function object type called by Scanner"""
@@ -193,7 +274,7 @@ class Filter(abc.ABC):
         """Called at the end of a run"""
 
 
-class Scanner(object):
+class Scanner():
     """Scans recipes and applies filters in asyncio loop
 
     Arguments:
@@ -224,9 +305,9 @@ class Scanner(object):
         #: filters
         self.filters: List[Filter] = []
 
-    def add(self, filter: Filter, *args, **kwargs) -> None:
+    def add(self, filt: Filter, *args, **kwargs) -> None:
         """Adds `Filter` to this `Scanner`"""
-        self.filters.append(filter(self, *args, **kwargs))
+        self.filters.append(filt(self, *args, **kwargs))
 
     def run(self) -> bool:
         """Runs scanner
@@ -261,8 +342,9 @@ class Scanner(object):
                 for recipe_dir in self.recipes
             ]
             try:
-                with tqdm(asyncio.as_completed(coros), total=len(coros)) as t:
-                    return all([await coro for coro in t])
+                with tqdm(asyncio.as_completed(coros),
+                          total=len(coros)) as tcoros:
+                    return all([await coro for coro in tcoros])
             except asyncio.CancelledError:
                 for coro in coros:
                     coro.cancel()
@@ -279,7 +361,7 @@ class Scanner(object):
                     return False
         except asyncio.CancelledError:
             return False
-        except Exception as e:
+        except Exception:  # pylint: disable=broad-except
             logger.exception("while scanning %s", recipe_dir)
             return False
 
@@ -313,21 +395,26 @@ class Scanner(object):
             resp.raise_for_status()
             size = int(resp.headers.get("Content-Length", 0))
             with tqdm(total=size, unit='B', unit_scale=True, unit_divisor=1024,
-                      desc=desc, miniters=1, leave=False, disable=None) as t:
+                      desc=desc, miniters=1, leave=False, disable=None) as progress:
                 while True:
                     block = await resp.content.read(1024*1024)
                     if not block:
                         break
-                    t.update(len(block))
+                    progress.update(len(block))
                     await self.loop.run_in_executor(self.executor, checksum.update, block)
         return checksum.hexdigest()
 
     def get_github(self):
-        return gh_aiohttp.GitHubAPI(self.session, "epruesse", oauth_token=os.environ["GITHUB_TOKEN"])
+        """Create gidget GithubAPI object from session"""
+        return gh_aiohttp.GitHubAPI(self.session,
+                                    "bioconda/autobump",
+                                    oauth_token=os.environ["GITHUB_TOKEN"])
+
 
 class ExcludeOtherChannel(Filter):
     """Filters recipes matching packages in other **channels**"""
-    def __init__(self, scanner: "Scanner", channels, cache):
+    def __init__(self, scanner: "Scanner", channels: Sequence[str],
+                 cache: str) -> None:
         super().__init__(scanner)
         from .linting import channel_dataframe
         logger.info("Loading package lists for %s", channels)
@@ -349,13 +436,13 @@ class ExcludeSubrecipe(Filter):
     Unless **always** is True, subrecipes specifically enabled via
     ``extra: watch: enable: yes`` will not be filtered.
     """
-    def __init__(self, scanner: "Scanner", always=False):
+    def __init__(self, scanner: "Scanner", always=False) -> None:
         super().__init__(scanner)
         self.always_exclude = always
 
     async def apply(self, recipe):
         is_subrecipe = recipe.reldir.count("/") > 0
-        enabled = recipe.config.get("enable", False) == True
+        enabled = recipe.config.get("enable", False)
         skip = is_subrecipe and not (enabled and not self.always_exclude)
         if skip:
             logger.debug("Skipping subrecipe %s", recipe)
@@ -390,7 +477,7 @@ class UpdateVersion(Filter):
             with open("failed_urls.txt", "w") as out:
                 out.write("\n".join(self.failed_urls))
 
-    async def apply(self, recipe: Recipe) -> None:
+    async def apply(self, recipe: Recipe) -> bool:
         logger.debug("Checking for updates to %s - %s", recipe, recipe.version)
 
         sources = recipe.meta.get("source")
@@ -425,26 +512,28 @@ class UpdateVersion(Filter):
             self.scanner.stats["UPDATE_FAIL_VERSION"] += 1
             return False
         if not recipe.reset_buildnumber():
-            self.scanner.stats["UPDATE_FAIL_BUILNO"] +=  1
+            self.scanner.stats["UPDATE_FAIL_BUILNO"] += 1
             return False
         if not recipe.render():
-            self.scanner.stats["UPDATE_FAIL_RENDER"] +=  1
+            self.scanner.stats["UPDATE_FAIL_RENDER"] += 1
             return False
         if recipe.version != latest:
-            self.scanner.stats["UPDATE_FAIL_VERSION"] +=  1
+            self.scanner.stats["UPDATE_FAIL_VERSION"] += 1
             return False
         return True
 
-    async def get_versions(self, recipe, source, n):
+    async def get_versions(self, recipe: Recipe, source: Mapping[Any, Any],
+                           source_idx: int):
+        """Select hosters and retrieve versions for this source"""
         urls = source.get("url")
         if isinstance(urls, str):
             urls = [urls]
         if not urls:
-            logger.info("Package %s has no url in source %i", recipe, n+1)
+            logger.info("Package %s has no url in source %i", recipe, source_idx+1)
             self.scanner.stats["ERROR_NO_URLS"] += 1
             return
 
-        version_map = defaultdict(dict)
+        version_map: Dict[str, Dict[str, Any]] = defaultdict(dict)
         for url in urls:
             hoster = Hoster.select_hoster(url)
             if not hoster:
@@ -460,9 +549,9 @@ class UpdateVersion(Filter):
                 versions = await hoster.get_versions(self.scanner)
                 for match in versions:
                     version_map[match["version"]][url] = match
-            except aiohttp.ClientResponseError as e:
-                self.scanner.stats[f"HTTP_{e.code}"] += 1
-                logger.debug("HTTP %s when getting %s", e, url)
+            except aiohttp.ClientResponseError as exc:
+                self.scanner.stats[f"HTTP_{exc.code}"] += 1
+                logger.debug("HTTP %s when getting %s", exc, url)
 
         if not version_map:
             logger.debug("Failed to parse any url in %s", recipe)
@@ -471,7 +560,17 @@ class UpdateVersion(Filter):
         return version_map
 
     @staticmethod
-    def select_version(current, versions):
+    def select_version(current: str, versions: Sequence[str]) -> str:
+        """Chooses the most recent, acceptable version out of **versions**
+
+        - must be newer than current (as defined by conda VersionOrder)
+
+        - may only be a pre-release if current is pre-release (as
+          defined by parse_version)
+
+        - may only be "Legacy" (=strange) if current is Legacy (as
+          defined by parse_version)
+        """
         current_version = parse_version(current)
         current_is_legacy = isinstance(current_version, LegacyVersion)
         latest_vo = VersionOrder(current)
@@ -495,6 +594,8 @@ class UpdateVersion(Filter):
         return latest
 
 class UpdateChecksums(Filter):
+    """Download upstream source files, recompute checksum and update Recipe"""
+
     async def apply(self, recipe: Recipe) -> bool:
         sources = recipe.meta["source"]
         logger.info("Updating checksum for %s %s", recipe, recipe.version)
@@ -507,7 +608,15 @@ class UpdateChecksums(Filter):
         self.scanner.stats["UPDATE_FAIL_CHECKSUM"] += 1
         return False
 
-    async def update_source(self, recipe: Recipe, source: Mapping, n: int) -> bool:
+    async def update_source(self, recipe: Recipe, source: Mapping, source_idx: int) -> bool:
+        """Updates one source
+
+        Each source has its own checksum, but all urls in one source must have
+        the same checksum (if the link is available).
+
+        We don't fail if the link is not available as cargo-port will only update
+        after the recipe was built and uploaded.
+        """
         for checksum_type in ("sha256", "sha1", "md5"):
             checksum = source.get(checksum_type)
             if checksum:
@@ -524,23 +633,23 @@ class UpdateChecksums(Filter):
         if isinstance(urls, str):
             urls = [urls]
         new_checksums = []
-        for m, url in enumerate(urls):
+        for url_idx, url in enumerate(urls):
             try:
                 res = await self.scanner.get_checksum_from_url(
-                    url, f"{recipe} [{n}.{m}]")
-            except aiohttp.client_exceptions.ClientResponseError as e:
+                    url, f"{recipe} [{source_idx}.{url_idx}]")
+            except aiohttp.client_exceptions.ClientResponseError:
                 res = None
             new_checksums.append(res)
         count = len(set(c for c in new_checksums if c is not None))
         if count == 0:
             logger.error("Recipe %s: update failed - no valid urls in source %s",
-                         recipe, n)
+                         recipe, source_idx)
             return False
         if count > 1:
             logger.error("Recipe %s: checksum mismatch on updated sources", recipe)
-            for n in range(len(urls)):
+            for idx, (csum, url) in enumerate(zip(new_checksums, urls)):
                 logger.error("Recipe %s: url %s - got %s for %s",
-                             recipe, n, new_checksums[n], urls[n])
+                             recipe, idx, csum, url)
             return False
         new_checksum = next(c for c in new_checksums if c is not None)
         if not recipe.replace(checksum, new_checksum):
@@ -548,7 +657,7 @@ class UpdateChecksums(Filter):
         return True
 
 
-class CreateBranch(Filter):
+class CommitToBranch(Filter):
     def __init__(self, scanner):
         super().__init__(scanner)
         self.repo = git.Repo(scanner.recipe_folder, search_parent_directories=True)
@@ -557,7 +666,6 @@ class CreateBranch(Filter):
         self.repo.heads["master"].checkout()
         self.from_commit = self.repo.remotes["upstream"].fetch("master")[0].commit
         self.git_sem = asyncio.Semaphore(1)  # there can be only one
-        self.gh = None
 
     def make_branch(self, branch_name):
         logger.info("Creating branch %s", branch_name)
@@ -573,7 +681,30 @@ class CreateBranch(Filter):
         logger.info("Pushing branch %s", branch_name)
         self.repo.remotes["origin"].push(branch_name, force=True)
 
-    async def create_pr(self, recipe, branch_name):
+    async def apply(self, recipe: Recipe) -> bool:
+        branch_name = f"auto_update_{recipe.name}"
+        async with self.git_sem:
+            self.make_branch(branch_name)
+            await recipe.write()
+            self.commit_and_push_changes(recipe, branch_name)
+        return True
+
+
+class WriteRecipe(Filter):
+    async def apply(self, recipe: Recipe) -> bool:
+        await recipe.write()
+        self.scanner.stats["UPDATED"] += 1
+        return True
+
+
+class CreatePullRequest(Filter):
+    def __init__(self, scanner):
+        super().__init__(scanner)
+        self.gh = None
+        self.login: str = ""
+
+    async def create_pr(self, recipe):
+        branch_name = f"auto_update_{recipe.name}"
         if not self.gh:
             self.gh = self.scanner.get_github()
             self.login = (await self.gh.getitem("/user"))["login"]
@@ -593,22 +724,6 @@ class CreateBranch(Filter):
             logger.error(result["number"])
         return True
 
-    async def apply(self, recipe: Recipe) -> bool:
-        async with self.git_sem:
-            branch_name = f"auto_update_{recipe.name}"
-            self.make_branch(branch_name)
-            await recipe.write()
-            self.commit_and_push_changes(recipe, branch_name)
-            await self.create_pr(recipe, branch_name)
-
-            return True
-
-
-class WriteRecipe(Filter):
-    async def apply(self, recipe: Recipe) -> bool:
-        await recipe.write()
-        self.scanner.stats["UPDATED"] += 1
-
 
 class HosterMeta(abc.ABCMeta):
     """Meta-Class for Hosters
@@ -617,7 +732,7 @@ class HosterMeta(abc.ABCMeta):
     we leave the option to add functions to a Hoster.
     """
 
-    _hoster_types: List["HosterMeta"] = []
+    hoster_types: List["HosterMeta"] = []
 
     def __new__(mcs, name, bases, attrs, **opts):
         """Creates Hoster classes
@@ -630,7 +745,7 @@ class HosterMeta(abc.ABCMeta):
 
         if inspect.isabstract(typ):
             return typ
-        mcs._hoster_types.append(typ)
+        mcs.hoster_types.append(typ)
 
         patterns = {attr.replace("_pattern", ""): getattr(typ, attr)
                     for attr in dir(typ) if attr.endswith("_pattern")}
@@ -659,7 +774,7 @@ class HosterMeta(abc.ABCMeta):
         Returns: `Hoster` or `None`
         """
         logger.debug("Matching url '%s'", url)
-        for hoster_type in mcs._hoster_types:
+        for hoster_type in mcs.hoster_types:
             hoster = hoster_type.try_make_hoster(url)
             if hoster:
                 return hoster
@@ -690,7 +805,7 @@ class Hoster(object, metaclass=HosterMeta):
     def releases_format(self) -> str:
         "format template for release page URL"
 
-    def __init__(self, data):
+    def __init__(self, url: str, match: Match[str]) -> None:
         pass
 
     @classmethod
@@ -703,15 +818,16 @@ class Hoster(object, metaclass=HosterMeta):
 
     @classmethod
     @abc.abstractmethod
-    def get_versions(cls) -> Mapping:
+    def get_versions(cls, scanner: Scanner) -> List[Mapping[str, str]]:
         ""
 
 
 class HrefParser(HTMLParser):
-    def __init__(self, link_re):
+    """Extract link targets from HTML"""
+    def __init__(self, link_re: Pattern[str]):
         super().__init__()
         self.link_re = link_re
-        self.matches = []
+        self.matches: List[Mapping[str, str]] = []
 
     def handle_starttag(self, tag: str, attrs: List[Tuple[str, str]]) -> None:
         if tag == "a":
@@ -734,16 +850,16 @@ class HrefParser(HTMLParser):
 class HTMLHoster(Hoster):
     """Base for Hosters handling release listings in HTML format"""
 
-    def __init__(self, url, match):
+    def __init__(self, url: str, match: Match[str]) -> None:
         self.orig_match = match
         self.releases_url = self.releases_format.format(**match.groupdict())
-        super().__init__(url)
+        super().__init__(url, match)
 
-    async def get_versions(self, scanner) -> Mapping:
+    async def get_versions(self, scanner):
         exclude = set(["version"])
-        vals = { key: val
-                 for key, val in self.orig_match.groupdict().items()
-                 if key not in exclude }
+        vals = {key: val
+                for key, val in self.orig_match.groupdict().items()
+                if key not in exclude}
         link_pattern = replace_named_capture_group(self.link_pattern, vals)
         parser = HrefParser(re.compile(link_pattern))
         parser.feed(await scanner.get_text_from_url(self.releases_url))
@@ -753,26 +869,33 @@ class HTMLHoster(Hoster):
 
 
 class GithubRelease(HTMLHoster):
-    link_pattern = "/(?P<account>[\w\-]*)/(?P<project>[\w\-]*)/releases/download/v?{version}/(?P<fname>[^/]+{ext})"
-    url_pattern = "github.com{link}"
+    """Matches release artifacts uploaded to Github"""
+    link_pattern = (r"/(?P<account>[\w\-]*)/(?P<project>[\w\-]*)/releases/download/"
+                    r"v?{version}/(?P<fname>[^/]+{ext})")
+    url_pattern = r"github.com{link}"
     releases_format = "https://github.com/{account}/{project}/releases"
 
+
 class GithubTag(HTMLHoster):
-    link_pattern = "/(?P<account>[\w\-]*)/(?P<project>[\w\-]*)/archive/v?{version}{ext}"
-    url_pattern = "github.com{link}"
+    """Matches GitHub repository archives created automatically from tags"""
+    link_pattern = r"/(?P<account>[\w\-]*)/(?P<project>[\w\-]*)/archive/v?{version}{ext}"
+    url_pattern = r"github.com{link}"
     releases_format = "https://github.com/{account}/{project}/tags"
 
+
 class Bioconductor(HTMLHoster):
-    link_pattern = "/src/contrib/(?P<package>[^/]+)_{version}{ext}"
-    url_pattern = "bioconductor.org/packages/(?P<bioc>[\d\.]+)/bioc{link}"
+    """Matches R packages hosted at Bioconductor"""
+    link_pattern = r"/src/contrib/(?P<package>[^/]+)_{version}{ext}"
+    url_pattern = r"bioconductor.org/packages/(?P<bioc>[\d\.]+)/bioc{link}"
     releases_format = "https://bioconductor.org/packages/{bioc}/bioc/html/{package}.html"
 
 
 class DepotGalaxyProject(HTMLHoster):
-    os_pattern = "_(?P<os>src_all|linux_x86|darwin_x86)"
-    link_pattern = "(?P<package>[^/]+)_{version}{os}{ext}"
-    url_pattern = "depot.galaxyproject.org/software/(?P<package>[^/]+)/{link}"
+    """Matches source backup urls created by cargo-port"""
+    os_pattern = r"_(?P<os>src_all|linux_x86|darwin_x86)"
+    link_pattern = r"(?P<package>[^/]+)_{version}{os}{ext}"
+    url_pattern = r"depot.galaxyproject.org/software/(?P<package>[^/]+)/{link}"
     releases_format = "https://depot.galaxyproject.org/software/{package}/"
 
 
-logger.info(f"Hosters loaded: {[h.__name__ for h in HosterMeta._hoster_types]}")
+logger.info(f"Hosters loaded: %s", [h.__name__ for h in HosterMeta.hoster_types])
