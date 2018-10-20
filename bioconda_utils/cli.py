@@ -663,6 +663,7 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
 @arg('--exclude-channels', nargs="+", help='''Exclude recipes
      building packages present in other channels. Set to 'none' to disable
      check.''')
+@arg('--ignore-blacklists', help='''Do not exclude recipes from blacklist''')
 @arg('--cache', help='''To speed up debugging, use repodata cached locally in
      the provided filename. If the file does not exist, it will be created
      the first time. Caution: The cache will not be updated if
@@ -673,6 +674,7 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
      Implies create-branch.''')
 def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
            exclude_subrecipes=None, exclude_channels='conda-forge',
+           ignore_blacklists=False,
            create_branch=False, create_pr=False):
     """
     Updates recipes in recipe_folder
@@ -680,6 +682,8 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
     utils.setup_logger('bioconda_utils', loglevel)
     from . import update
     scanner = update.Scanner(recipe_folder, packages, config)
+    if not ignore_blacklists:
+        scanner.add(update.ExcludeBlacklisted)
     if exclude_subrecipes != "never":
         scanner.add(update.ExcludeSubrecipe,
                     always=exclude_subrecipes == "always")

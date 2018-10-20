@@ -284,7 +284,8 @@ class Scanner():
     """
 
     def __init__(self, recipe_folder: str, packages: str, config: str) -> None:
-        self.config = config
+        with open(config, "r") as config_file:
+            self.config = yaml.load(config_file)
         #: folder containing recipes
         self.recipe_folder: str = recipe_folder
         #: list of recipe folders to scan
@@ -448,6 +449,23 @@ class ExcludeSubrecipe(Filter):
             logger.debug("Skipping subrecipe %s", recipe)
             self.scanner.stats["SKIPPED_SUBRECIPE"] += 1
         return not skip
+
+
+class ExcludeBlacklisted(Filter):
+    """Filters blacklisted recipes"""
+    def __init__(self, scanner):
+        super().__init__(scanner)
+        self.blacklisted = utils.get_blacklist(
+            scanner.config["blacklists"],
+            scanner.recipe_folder)
+        logger.warning("Excluding %i blacklisted recipes", len(self.blacklisted))
+
+    async def apply(self, recipe):
+        if recipe.name in self.blacklisted:
+            logger.debug("Excluding %s", recipe.name)
+            self.scanner.stats["BLACKLISTED"] += 1
+            return False
+        return True
 
 
 class UpdateVersion(Filter):
