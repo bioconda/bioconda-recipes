@@ -774,7 +774,8 @@ class HosterMeta(abc.ABCMeta):
             new_pattern = patterns[pat]
             while pattern != new_pattern:
                 pattern = new_pattern
-                new_pattern = pattern.format(**patterns)
+                new_pattern = re.sub(r"(\{\d+,?\d*\})", r"{\1}", pattern)
+                new_pattern = new_pattern.format_map(patterns)
             patterns[pat] = pattern
             # fix duplicate capture groups:
             pattern = dedup_named_capture_group(pattern)
@@ -803,7 +804,10 @@ class Hoster(object, metaclass=HosterMeta):
     """Hoster Baseclass"""
 
     #: matches upstream version
-    version_pattern: str = r"(?P<version>\d[\-+\.:\~\da-zA-Z]*)"
+    #: - begins with a number
+    #: - then only numbers, characters or one of -, +, ., :, ~
+    #: - at most 31 characters length (to avoid matching checksums)
+    version_pattern: str = r"(?P<version>\d[\da-zA-Z\-+\.:\~]{0,30})"
 
     #: matches archive file extensions
     ext_pattern: str = r"(?P<ext>(?i)\.(?:tar\.(?:xz|bz2|gz)|zip))"
@@ -824,7 +828,7 @@ class Hoster(object, metaclass=HosterMeta):
         "format template for release page URL"
 
     def __init__(self, url: str, match: Match[str]) -> None:
-        pass
+        logger.debug("%s matched %s with %s", self.__class__.__name__, url, match.groupdict())
 
     @classmethod
     def try_make_hoster(cls, url: str) -> Optional["Hoster"]:
