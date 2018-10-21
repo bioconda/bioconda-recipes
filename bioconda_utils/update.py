@@ -721,7 +721,7 @@ class CreatePullRequest(Filter):
         self.gh = None
         self.login: str = ""
 
-    async def create_pr(self, recipe):
+    async def apply(self, recipe):
         branch_name = f"auto_update_{recipe.name}"
         if not self.gh:
             self.gh = self.scanner.get_github()
@@ -735,11 +735,16 @@ class CreatePullRequest(Filter):
             "maintainer_can_modify": True
         }
 
-        pr_exists = len(await self.gh.getitem(pulls, data)) > 0
-        if not pr_exists:
-            result = await self.gh.post(pulls, data=data)
-            logger.error(result)
-            logger.error(result["number"])
+        prs = await self.gh.getitem(pulls, data)
+        if len(prs) == 0:
+            pr = await self.gh.post(pulls, data=data)
+            logger.warning("Created PR %i updating %s to %s", pr["number"], recipe.name, recipe.version)
+        else:
+            for pr in prs:
+                logger.warning("Found PR %i updating %s", pr["number"], recipe.name)
+            # Fixme: if the existing PR was merged, create a new one
+            #        if it was closed... well, we need to handle all this
+
         return True
 
 
@@ -891,10 +896,17 @@ class HTMLHoster(Hoster):
 
 
 class OrderedHTMLHoster(HTMLHoster):
-    """HTMLHoster for which we can expected newest releases at top"""
+    """HTMLHoster for which we can expected newest releases at top
+
+    The point isn't performance, but avoiding hassle with old versions
+    which may follow different versioning schemes.
+    E.g. 0.09 -> 0.10 -> 0.2 -> 0.2.1
+    """
 
     async def get_versions(self, scanner):
         matches = await super().get_versions(scanner)
+        if not matches:
+            return matches
         for num, match in enumerate(matches):
             if match["version"] == self.orig_match["version"]:
                 break

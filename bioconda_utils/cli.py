@@ -693,8 +693,10 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
         scanner.add(update.ExcludeOtherChannel, exclude_channels, cache)
     scanner.add(update.UpdateVersion)
     scanner.add(update.UpdateChecksums)
-    if create_pr:
-        scanner.add(update.CreateBranch)
+    if create_branch or create_pr:
+        scanner.add(update.CommitToBranch)
+        if create_pr:
+            scanner.add(update.CreatePullRequest)
     else:
         scanner.add(update.WriteRecipe)
     scanner.run()
