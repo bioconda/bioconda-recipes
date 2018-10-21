@@ -890,7 +890,18 @@ class HTMLHoster(Hoster):
         return parser.matches
 
 
-class GithubRelease(HTMLHoster):
+class OrderedHTMLHoster(HTMLHoster):
+    """HTMLHoster for which we can expected newest releases at top"""
+
+    async def get_versions(self, scanner):
+        matches = await super().get_versions(scanner)
+        for num, match in enumerate(matches):
+            if match["version"] == self.orig_match["version"]:
+                break
+        return matches[:num+1]
+
+
+class GithubRelease(OrderedHTMLHoster):
     """Matches release artifacts uploaded to Github"""
     link_pattern = (r"/(?P<account>[\w\-]*)/(?P<project>[\w\-]*)/releases/download/"
                     r"v?{version}/(?P<fname>[^/]+{ext})")
@@ -898,7 +909,7 @@ class GithubRelease(HTMLHoster):
     releases_format = "https://github.com/{account}/{project}/releases"
 
 
-class GithubTag(HTMLHoster):
+class GithubTag(OrderedHTMLHoster):
     """Matches GitHub repository archives created automatically from tags"""
     link_pattern = r"/(?P<account>[\w\-]*)/(?P<project>[\w\-]*)/archive/v?{version}{ext}"
     url_pattern = r"github.com{link}"
