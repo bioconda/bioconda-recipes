@@ -1,0 +1,48 @@
+{% set name = "fred2" %}
+{% set version = "2.0.2" %}
+{% set sha256 = "223f139b35357e25d98644eb2668b9140f1489f4befd1e337a83fa6253cc0d54" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/FRED-2/Fred2/archive/{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: python
+  number: 0
+  skip: True  # [not py27]
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - pyomo
+    - pandas
+    - pyvcf
+    - biopython
+    - mysql-python
+  run:
+    - python
+    - setuptools
+    - pyomo
+    - pandas
+    - pyvcf
+    - biopython
+    - mysql-python 
+
+test:
+  commands:
+    - python -c "from Fred2.Core import Allele, Peptide, Protein,generate_peptides_from_proteins"
+
+about:
+  home: http://nf-co.re/
+  license: MIT
+  summary: 'Python package with helper tools for the nf-core community.'
+
+extra:
+  container:
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true
