@@ -67,6 +67,7 @@ import os
 
 from collections import defaultdict, Counter
 from concurrent.futures import ThreadPoolExecutor
+from copy import copy
 from hashlib import sha256
 from html.parser import HTMLParser
 from urllib.parse import urljoin
@@ -162,6 +163,8 @@ class Recipe():
         self.meta: Dict[str, Any] = {}
         # Filled in by load
         self.meta_yaml: List[str] = []
+        # Filled in by update filter
+        self.version_data = None
 
     def __str__(self) -> str:
         return self.reldir
@@ -173,7 +176,9 @@ class Recipe():
                 self.meta_yaml = (await meta_yaml.read()).splitlines()
         if not self.meta_yaml:
             return False
-        return self.render()
+        if not self.render():
+            return False
+        self.orig = copy(self)
 
     async def write(self, path=None):
         """Write recipe to disk"""
@@ -282,6 +287,8 @@ class Scanner():
       packages: glob pattern to select recipes
       config: config.yaml (unused)
     """
+    class EndProcessing(BaseException):
+        """For Filters to tell the scanner to stop"""
 
     def __init__(self, recipe_folder: str, packages: str, config: str) -> None:
         with open(config, "r") as config_file:
@@ -319,12 +326,15 @@ class Scanner():
             task = asyncio.ensure_future(self._async_run())
             self.loop.run_until_complete(task)
             logger.warning("Finished update")
-        except KeyboardInterrupt:
-            logger.error("Ctrl-C pressed - aborting...")
+        except (KeyboardInterrupt, self.EndProcessing) as exc:
+            if isinstance(exc, KeyboardInterrupt):
+                logger.error("Ctrl-C pressed - aborting...")
+            if isinstance(exc, self.EndProcessing):
+                logger.error("Terminating...")
             task.cancel()
             try:
                 self.loop.run_until_complete(task)
-            except asyncio.CancelledError:
+            except (asyncio.CancelledError):
                 pass
         for key, value in self.stats.most_common():
             logger.info("%s: %s", key, value)
@@ -506,10 +516,10 @@ class UpdateVersion(Filter):
 
         if isinstance(sources, Mapping):
             versions = await self.get_versions(recipe, sources, 1)
-            if versions:
-                latest = self.select_version(recipe.version, versions.keys())
-            else:
+            if not versions:
                 return False
+            latest = self.select_version(recipe.version, versions.keys())
+            recipe.version_data = versions[latest]
         else:
             self.scanner.stats["MULTISOURCE"] += 1
             logger.info("Recipe %s is multi-source", recipe)
@@ -675,15 +685,24 @@ class UpdateChecksums(Filter):
         return True
 
 
-class CommitToBranch(Filter):
-    def __init__(self, scanner):
+class BranchNameMixin():
+    @staticmethod
+    def branch_name(recipe):
+        return f"auto_update_{recipe.name.replace('-','_')}"
+
+
+class CommitToBranch(Filter, BranchNameMixin):
+    def __init__(self, scanner, ignore_dirty=False):
         super().__init__(scanner)
         self.repo = git.Repo(scanner.recipe_folder, search_parent_directories=True)
-        if self.repo.is_dirty():
-            raise RuntimeError("Repository is in dirty state. Bailing out")
-        self.repo.heads["master"].checkout()
+        if not ignore_dirty:
+            if self.repo.is_dirty():
+                raise RuntimeError("Repository is in dirty state. Bailing out")
+            self.repo.heads["master"].checkout()
         self.from_commit = self.repo.remotes["upstream"].fetch("master")[0].commit
         self.git_sem = asyncio.Semaphore(1)  # there can be only one
+        # update master if we are doing this
+        # use finalize to restore state
 
     def make_branch(self, branch_name):
         logger.info("Creating branch %s", branch_name)
@@ -700,7 +719,7 @@ class CommitToBranch(Filter):
         self.repo.remotes["origin"].push(branch_name, force=True)
 
     async def apply(self, recipe: Recipe) -> bool:
-        branch_name = f"auto_update_{recipe.name}"
+        branch_name = self.branch_name(recipe)
         async with self.git_sem:
             self.make_branch(branch_name)
             await recipe.write()
@@ -715,30 +734,34 @@ class WriteRecipe(Filter):
         return True
 
 
-class CreatePullRequest(Filter):
+class CreatePullRequest(Filter, BranchNameMixin):
     def __init__(self, scanner):
         super().__init__(scanner)
         self.gh = None
         self.login: str = ""
+        self.body_tpl = utils.jinja.get_template("bump_pr.md")
 
     async def apply(self, recipe):
-        branch_name = f"auto_update_{recipe.name}"
+        branch_name = self.branch_name(recipe)
         if not self.gh:
             self.gh = self.scanner.get_github()
             self.login = (await self.gh.getitem("/user"))["login"]
-        pulls = "/repos/bioconda/bioconda-recipes/pulls{?head,base}"
+        pulls = "/repos/bioconda/bioconda-recipes/pulls{/number}{?head,base}"
         data = {
             "head": f"{self.login}:{branch_name}",
             "base": "master",
             "title": f"Update {recipe.name} to {recipe.version}",
-            "body": "This PR was created automatically. See bioconda/bioconda-utils#348",
-            "maintainer_can_modify": True
+            "body": self.body_tpl.render({'r':recipe}),
+            "maintainer_can_modify": True,
+            "labels": ["autobump"],
         }
 
         prs = await self.gh.getitem(pulls, data)
         if len(prs) == 0:
             pr = await self.gh.post(pulls, data=data)
             logger.warning("Created PR %i updating %s to %s", pr["number"], recipe.name, recipe.version)
+            pr = await self.gh.patch(pr["issue_url"], data={"labels": ["autobump"]})
+            logger.debug("Set label autobump on PR %i", pr["number"])
         else:
             for pr in prs:
                 logger.warning("Found PR %i updating %s", pr["number"], recipe.name)
@@ -746,6 +769,20 @@ class CreatePullRequest(Filter):
             #        if it was closed... well, we need to handle all this
 
         return True
+
+
+class MaxUpdates(Filter):
+    def __init__(self, scanner, max_updates: int=0) -> None:
+        super().__init__(scanner)
+        self.max = max_updates
+        self.count = 0
+        logger.warning("Will exit after %s updated recipes", max_updates)
+
+    async def apply(self, recipe):
+        self.count += 1
+        if self.max and self.count == self.max:
+            logger.warning("Reached update limit %s", self.count)
+            raise self.scanner.EndProcessing()
 
 
 class HosterMeta(abc.ABCMeta):
@@ -892,6 +929,7 @@ class HTMLHoster(Hoster):
         parser.feed(await scanner.get_text_from_url(self.releases_url))
         for match in parser.matches:
             match["link"] = urljoin(self.releases_url, match["href"])
+            match["releases_url"] = self.releases_url
         return parser.matches
 
 
