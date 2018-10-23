@@ -11,6 +11,9 @@ QUAST_HOME=$PREFIX/opt/quast-$PKG_VERSION
 mkdir -p $BINARY_HOME
 mkdir -p $QUAST_HOME
 
+rm -r $SRC_DIR/quast_libs/site_packages/joblib*
+rm -r $SRC_DIR/quast_libs/site_packages/simplejson
+
 python "setup.py" install
 
 cp -R $SRC_DIR/*quast*.py $QUAST_HOME/
