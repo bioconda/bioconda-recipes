@@ -1,0 +1,55 @@
+{% set name = "Multicore-TSNE" %}
+{% set version = "0.1_d4ff4aab" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/DmitryUlyanov/{{ name }}/archive/d4ff4aab177da777ccd06fb66cc16cacc33ce855.zip
+  sha256: 2558a4d7c3864b6f3211dac823ea79869ae0e9f79fbd1aa6fe03f5848d87054f
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+
+requirements:
+  build:
+    - cmake
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - pip
+    - numpy >=1.13.3
+    - cffi >=1.11.5
+  run:
+    - python >=2.7
+    - numpy >=1.13.3
+    - cffi >=1.11.5
+
+test:
+  requires:
+    - scikit-learn =0.19.2
+  source_files:
+    - MulticoreTSNE/tests/test_base.py
+  commands:
+    - "python -m unittest MulticoreTSNE/tests/test_base.py"
+
+
+about:
+  home: https://github.com/DmitryUlyanov/Multicore-TSNE
+  license: BSD-3-Clause
+  license_family: BSD
+  license_file: LICENSE.txt
+  summary: 'Parallel t-SNE implementation with Python and Torch wrappers.'
+
+  # The remaining entries in this section are optional, but recommended
+  description: |
+    This is a multicore modification of Barnes-Hut t-SNE by L. Van der Maaten
+    with python and Torch CFFI-based wrappers.
+    This code also works faster than sklearn.TSNE on 1 core.
+  dev_url: https://github.com/DmitryUlyanov/Multicore-TSNE
+
+extra:
+  recipe-maintainers:
+    - grst
