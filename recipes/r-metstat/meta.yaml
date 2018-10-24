@@ -1,0 +1,74 @@
+{% set version = '1.0' %}
+
+package:
+  name: r-metstat
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/MetStaT_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/MetStaT/MetStaT_{{ version }}.tar.gz
+  sha256: 77c25984193ebbaee80596ebfedc9bf9c1c142ba0a25d542a99376144d7f0010
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+
+  host:
+    - r-base
+    - r-mass
+    - r-abind
+    - r-pls
+
+  run:
+    - r-base
+    - r-mass
+    - r-abind
+    - r-pls
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('MetStaT')"
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=MetStaT
+  license: Apache License (== 2.0)
+  summary: A diverse collection of metabolomics related statistical tools.
+  license_family: APACHE
+
+# The original CRAN metadata for this package was:
+
+# Package: MetStaT
+# Type: Package
+# Title: Statistical metabolomics tools
+# Version: 1.0
+# Date: 2012-12-10
+# Author: Tim Dorscheidt
+# Maintainer: Gooitzen Zwanenburg <g.zwanenburg@uva.nl>
+# Depends: MASS, abind, pls
+# Description: A diverse collection of metabolomics related statistical tools.
+# License: Apache License (== 2.0)
+# Packaged: 2013-11-18 08:31:40 UTC; gzwanen1
+# NeedsCompilation: no
+# Repository: CRAN
+# Date/Publication: 2013-11-18 10:09:08
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
