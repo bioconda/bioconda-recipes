@@ -695,6 +695,7 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
         if not isinstance(exclude_channels, list):
             exclude_channels = [exclude_channels]
         scanner.add(update.ExcludeOtherChannel, exclude_channels, cache)
+    scanner.add(update.LoadRecipe)
     scanner.add(update.UpdateVersion)
     scanner.add(update.UpdateChecksums)
     if create_branch or create_pr:

@@ -143,7 +143,6 @@ class Recipe():
     (1) is currently unhandled, leading to recipes with repeated mapping keys
     (commonly two ``url`` keys). Those recipes are ignored for the time being.
     """
-    FD_SEM = asyncio.Semaphore(50)
     JINJA_VARS = {
         "cran_mirror": "https://cloud.r-project.org"
     }
@@ -165,28 +164,24 @@ class Recipe():
         self.meta_yaml: List[str] = []
         # Filled in by update filter
         self.version_data = None
+        self.orig: Recipe = copy(self)
 
     def __str__(self) -> str:
         return self.reldir
 
-    async def load(self) -> bool:
+    def load_from_string(self, data) -> bool:
         """Load and `render` recipe contents from disk"""
-        async with self.FD_SEM:
-            async with aiofiles.open(self.path, "r", encoding="utf-8") as meta_yaml:
-                self.meta_yaml = (await meta_yaml.read()).splitlines()
+        self.meta_yaml = data.splitlines()
         if not self.meta_yaml:
             return False
         if not self.render():
             return False
         self.orig = copy(self)
+        return True
 
-    async def write(self, path=None):
-        """Write recipe to disk"""
-        if not path:
-            path = self.path
-        async with self.FD_SEM:
-            async with aiofiles.open(path, "w", encoding="utf-8") as meta_yaml:
-                await meta_yaml.write("\n".join(self.meta_yaml)+"\n")
+    def dump(self):
+        """Dump recipe content"""
+        return "\n".join(self.meta_yaml) + "\n"
 
     def render(self) -> bool:
         """Convert recipe text into data structure
@@ -334,7 +329,7 @@ class Scanner():
             task.cancel()
             try:
                 self.loop.run_until_complete(task)
-            except (asyncio.CancelledError):
+            except asyncio.CancelledError:
                 pass
         for key, value in self.stats.most_common():
             logger.info("%s: %s", key, value)
@@ -362,18 +357,17 @@ class Scanner():
                 await asyncio.wait(coros)
                 return False
 
-    async def process(self, recipe_dir):
-        """Wrapper around `update_version` catching and logging exceptions"""
+    async def process(self, recipe_dir: str) -> bool:
+        """Applies the filters to a recipe"""
         try:
             recipe = Recipe(recipe_dir, self.recipe_folder)
-            await recipe.load()
             for filt in self.filters:
                 if not await filt.apply(recipe):
                     return False
         except asyncio.CancelledError:
             return False
         except Exception:  # pylint: disable=broad-except
-            logger.exception("while scanning %s", recipe_dir)
+            logger.exception("While processing %s", recipe_dir)
             return False
 
     async def run_io(self, func, *args):
@@ -727,9 +721,18 @@ class CommitToBranch(Filter, BranchNameMixin):
         return True
 
 
-class WriteRecipe(Filter):
+class LoadRecipe(Filter):
+    """Loads the Recipe from the filesystem"""
     async def apply(self, recipe: Recipe) -> bool:
-        await recipe.write()
+        async with aiofiles.open(recipe.path, encoding="utf-8") as fd:
+            return recipe.load_from_string(await fd.read())
+
+
+class WriteRecipe(Filter):
+    """Writes the Recipe to the filesystem"""
+    async def apply(self, recipe: Recipe) -> bool:
+        async with aiofiles.open(recipe.path, "w", encoding="utf-8") as fd:
+            return await fd.write(recipe.dump())
         self.scanner.stats["UPDATED"] += 1
         return True
 
