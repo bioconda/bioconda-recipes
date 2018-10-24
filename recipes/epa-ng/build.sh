@@ -4,7 +4,7 @@
 # https://github.com/conda-forge/bison-feedstock/issues/7#issuecomment-431602144
 export M4=m4
 
-make 
+make  
 
 mkdir -p $PREFIX/bin
 
