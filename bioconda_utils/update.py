@@ -150,20 +150,34 @@ class Recipe():
     def __init__(self, recipe_dir, recipe_folder):
         if not recipe_dir.startswith(recipe_folder):
             raise RuntimeError(f"{recipe_folder} is not prefix of {recipe_dir}")
+        #: path to recipe dir from CWD
         self.dir = recipe_dir
+        #: path to folder containing recipes
         self.basedir = recipe_folder
+        #: relative path to recipe dir from folder containing recipes
+        #: this is effectively the recipe "name"
         self.reldir = recipe_dir[len(recipe_folder):].strip("/")
+        #: full path to meta.yaml
         self.path = os.path.join(self.dir, "meta.yaml")
 
-        # Will be filled in by render
+        ### These will be filled in by render:
+
+        #: Version of package(s) built by recipe
         self.version = ""
+        #: Name of toplevel package built by recipe
+        #: Important: this may be different from the Recipe's "name" (`reldir`)
+        #: and may not list all packages built by the recipe (``outputs:``).
         self.name = ""
+        #: Config options set in recipe specifically for us
         self.config: Dict[str, Any] = {}
+        #: Parsed recipe YAML
         self.meta: Dict[str, Any] = {}
-        # Filled in by load
+
+        ### These will be filled in by load_from_string
+
+        #: Lines of the raw recipe file
         self.meta_yaml: List[str] = []
-        # Filled in by update filter
-        self.version_data = None
+        #: Original recipe before modifications
         self.orig: Recipe = copy(self)
 
     def __str__(self) -> str:
@@ -249,7 +263,8 @@ class Recipe():
                 return False
             self.meta_yaml[lineno] = line.replace(before, after)
             replacements += 1
-        logger.debug("Replaced in %s: %s -> %s (%i times)", self, before, after, replacements)
+        logger.debug("Replaced in %s: %s -> %s (%i times)",
+                     self, before, after, replacements)
         return True
 
     def reset_buildnumber(self) -> bool:
@@ -431,6 +446,7 @@ class ExcludeOtherChannel(Filter):
         self.other_latest = cdf.groupby('name')['versionorder'].agg(max)
 
     async def apply(self, recipe):
+        # FIXME: handle recipes with multiple outputs
         if recipe.name in self.other_latest:
             self.scanner.stats["SKIPPED_OTHER_CHANNEL"] += 1
             logger.info("Skipping %s because it's in other channels", recipe)
@@ -516,7 +532,6 @@ class UpdateVersion(Filter):
             if not versions:
                 return False
             latest = self.select_version(recipe.version, versions.keys())
-            recipe.version_data = versions[latest]
         else:
             self.scanner.stats["MULTISOURCE"] += 1
             logger.info("Recipe %s is multi-source", recipe)
@@ -617,6 +632,7 @@ class UpdateVersion(Filter):
                 latest = vers
 
         return latest
+
 
 class UpdateChecksums(Filter):
     """Download upstream source files, recompute checksum and update Recipe"""
@@ -815,7 +831,7 @@ class CommitToBranch(GitFilter):
     def commit_and_push_changes(self, recipe, branch_name):
         self.repo.index.add([recipe.path])
         if self.repo.index.diff("HEAD"):
-            self.repo.index.commit(f"Update {recipe.name} to {recipe.version}")
+            self.repo.index.commit(f"Update {recipe} to {recipe.version}")
             logger.info("Pushing branch %s", branch_name)
             self.repo.remotes["origin"].push(branch_name)
         else:
@@ -961,10 +977,10 @@ class CreatePullRequest(GitFilter):
             for pr in prs:
                 #head = pr["head"]["repo"]["full_name"]
                 logger.warning("Found PR %i updating %s: %s", pr["number"],
-                               recipe.name, pr["title"])
+                               recipe, pr["title"])
             return False
 
-        pr = await self.create_pr(title=f"Update {recipe.name} to {recipe.version}",
+        pr = await self.create_pr(title=f"Update {recipe} to {recipe.version}",
                                   from_branch=branch_name,
                                   body_template="bump_pr.md",
                                   recipe=recipe)
@@ -972,11 +988,12 @@ class CreatePullRequest(GitFilter):
         if pr_number:
             await self.modify_issue(number=pr_number, labels=["autobump"])
 
-        logger.info("Created PR %i updating %s to %s", pr_number, recipe.name, recipe.version)
+        logger.info("Created PR %i updating %s to %s", pr_number, recipe, recipe.version)
         return True
 
 
 class MaxUpdates(Filter):
+    """Terminate loop after **max_updates** Recipes have been updated."""
     def __init__(self, scanner, max_updates: int = 0) -> None:
         super().__init__(scanner)
         self.max = max_updates
