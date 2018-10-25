@@ -668,12 +668,14 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
      the provided filename. If the file does not exist, it will be created
      the first time. Caution: The cache will not be updated if
      exclude-channels is changed''')
+@arg('--failed-urls', help='''Write unrecognized urls to this file''')
 @arg("--create-branch", action="store_true", help='''Create branch for each
      update''')
 @arg("--create-pr", action="store_true", help='''Create PR for each update.
      Implies create-branch.''')
 @arg("--max-updates", help='''Exit after ARG updates''')
 def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
+           failed_urls=None,
            exclude_subrecipes=None, exclude_channels='conda-forge',
            ignore_blacklists=False,
            create_branch=False, create_pr=False,
@@ -692,7 +694,7 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
     if exclude_channels != ["none"]:
         if not isinstance(exclude_channels, list):
             exclude_channels = [exclude_channels]
-        scanner.add(update.ExcludeOtherChannel, exclude_channels, cache)
+        scanner.add(update.ExcludeOtherChannel, exclude_channels, cache+"_repodata.txt")
     git_handler = None
     if create_branch or create_pr:
         git_handler = update.GitHandler(recipe_folder)
@@ -700,8 +702,8 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
     else:
         scanner.add(update.LoadRecipe)
 
-    scanner.add(update.UpdateVersion)
-    scanner.add(update.UpdateChecksums)
+    scanner.add(update.UpdateVersion, failed_urls)
+    scanner.add(update.UpdateChecksums, cache+"_checksums.txt")
 
     if create_branch or create_pr:
         scanner.add(update.CommitToBranch, git_handler)
