@@ -270,6 +270,9 @@ class Filter(abc.ABC):
     async def apply(self, recipe: Recipe) -> bool:
         """Process a recipe. Returns False if processing should stop"""
 
+    async def async_init(self) -> None:
+        """Called inside loop before processing"""
+
     def finalize(self) -> None:
         """Called at the end of a run"""
 
@@ -341,6 +344,7 @@ class Scanner():
         """Runner within async loop"""
         async with aiohttp.ClientSession() as session:
             self.session = session
+            await asyncio.gather(*(filt.async_init() for filt in self.filters))
             coros = [
                 asyncio.ensure_future(
                     self.process(recipe_dir)
