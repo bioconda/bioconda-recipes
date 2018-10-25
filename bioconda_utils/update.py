@@ -111,6 +111,7 @@ def dedup_named_capture_group(pattern):
     seen: Set[str] = set()
 
     def replace(match):
+        "inner replace"
         name: str = match.group(1)
         if name in seen:
             return f"(?P={name})"
@@ -122,6 +123,7 @@ def dedup_named_capture_group(pattern):
 def replace_named_capture_group(pattern, vals: Dict[str, str]):
     """Replaces capture groups with values from **vals**"""
     def replace(match):
+        "inner replace"
         name = match.group(1)
         if name in vals:
             return vals[name]
@@ -143,45 +145,58 @@ class Recipe():
     (1) is currently unhandled, leading to recipes with repeated mapping keys
     (commonly two ``url`` keys). Those recipes are ignored for the time being.
 
+    Arguments:
+      recipe_folder: base recipes folder
+      recipe_dir: path to specific recipe
     """
+
+    #: Variables to pass to Jinja when rendering recipe
     JINJA_VARS = {
         "cran_mirror": "https://cloud.r-project.org"
     }
 
+    #: Name of key under ``extra`` containing config
+    EXTRA_CONFIG = "watch"
+
     def __init__(self, recipe_dir, recipe_folder):
-        if not recipe_dir.startswith(recipe_folder):
-            raise RuntimeError(
-                f"{recipe_folder} is not prefix of {recipe_dir}"
-            )
-        #: path to recipe dir from CWD
-        self.dir = recipe_dir
         #: path to folder containing recipes
         self.basedir = recipe_folder
         #: relative path to recipe dir from folder containing recipes
-        #: this is effectively the recipe "name"
-        self.reldir = recipe_dir[len(recipe_folder):].strip("/")
-        #: full path to meta.yaml
-        self.path = os.path.join(self.dir, "meta.yaml")
+        self.reldir = os.path.relpath(
+            os.path.join(recipe_folder, recipe_dir),
+            recipe_folder)
+        if self.reldir.startswith(".."):
+            raise RuntimeError(f"'{recipe_dir}' not inside '{recipe_folder}'")
 
-        ### These will be filled in by render:
-
+        # These are filled in by render()
         #: Version of package(s) built by recipe
         self.version = ""
         #: Name of toplevel package built by recipe
         #: Important: this may be different from the Recipe's "name" (`reldir`)
         #: and may not list all packages built by the recipe (``outputs:``).
         self.name = ""
-        #: Config options set in recipe specifically for us
-        self.config: Dict[str, Any] = {}
         #: Parsed recipe YAML
         self.meta: Dict[str, Any] = {}
 
-        ### These will be filled in by load_from_string
-
+        # These will be filled in by load_from_string()
         #: Lines of the raw recipe file
         self.meta_yaml: List[str] = []
         #: Original recipe before modifications
         self.orig: Recipe = copy(self)
+
+    @property
+    def path(self):
+        """Full path to `meta.yaml``"""
+        return os.path.join(self.basedir, self.reldir, "meta.yaml")
+
+    @property
+    def config(self):
+        """Per-recipe configuration parameters
+
+        These are the values set in ``extra:`` under the key
+        defined as `Recipe.EXTRA_CONFIG` (default is ``watch``).
+        """
+        return self.meta.get("extra", {}).get(self.EXTRA_CONFIG, {})
 
     def __str__(self) -> str:
         return self.reldir
@@ -219,8 +234,7 @@ class Recipe():
             self.version = str(self.meta["package"]["version"])
             self.name = self.meta["package"]["name"]
         except KeyError as ex:
-            raise RuntimeError(f"{self.dir} yaml missing {ex.args[0]}")
-        self.config = self.meta.get("extra", {}).get("watch", {})
+            raise RuntimeError(f"{self.path} missing {ex.args[0]}")
         return True
 
     def replace(self, before: str, after: str,
@@ -325,8 +339,6 @@ class Scanner():
         except RuntimeError:
             self.loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self.loop)
-        #: executor for running local io
-        self.executor: ThreadPoolExecutor = ThreadPoolExecutor()
         #: semaphore to limit io parallelism
         self.io_sem: asyncio.Semaphore = asyncio.Semaphore(1)
         #: counter to gather stats on various states
@@ -388,8 +400,8 @@ class Scanner():
 
     async def process(self, recipe_dir: str) -> bool:
         """Applies the filters to a recipe"""
+        recipe = Recipe(recipe_dir, self.recipe_folder)
         try:
-            recipe = Recipe(recipe_dir, self.recipe_folder)
             for filt in self.filters:
                 if not await filt.apply(recipe):
                     return False
@@ -398,11 +410,12 @@ class Scanner():
         except Exception:  # pylint: disable=broad-except
             logger.exception("While processing %s", recipe_dir)
             return False
+        return True
 
     async def run_io(self, func, *args):
         """Run **func** in thread pool executor using **args**"""
         async with self.io_sem:
-            return await self.loop.run_in_executor(self.executor, func, *args)
+            return await self.loop.run_in_executor(None, func, *args)
 
     @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
                           giveup=lambda ex: ex.code not in [429, 502, 503, 504])
@@ -435,7 +448,7 @@ class Scanner():
                     if not block:
                         break
                     progress.update(len(block))
-                    await self.loop.run_in_executor(self.executor, checksum.update, block)
+                    await self.loop.run_in_executor(None, checksum.update, block)
         return checksum.hexdigest()
 
 
@@ -555,17 +568,15 @@ class UpdateVersion(Filter):
 
         if not recipe.replace(recipe.version, latest):
             self.scanner.stats["UPDATE_FAIL_VERSION"] += 1
-            return False
-        if not recipe.reset_buildnumber():
+        elif not recipe.reset_buildnumber():
             self.scanner.stats["UPDATE_FAIL_BUILNO"] += 1
-            return False
-        if not recipe.render():
+        elif not recipe.render():
             self.scanner.stats["UPDATE_FAIL_RENDER"] += 1
-            return False
-        if recipe.version != latest:
+        elif not recipe.version == latest:
             self.scanner.stats["UPDATE_FAIL_VERSION"] += 1
-            return False
-        return True
+        else:
+            return True
+        return False
 
     async def get_versions(self, recipe: Recipe, source: Mapping[Any, Any],
                            source_idx: int):
@@ -670,6 +681,8 @@ class UpdateChecksums(Filter):
         else:
             logger.error("Recipe %s has no checksum", recipe)
             return False
+        if not checksum_type:
+            raise RuntimeError()
         if checksum_type != "sha256":
             logger.error("Recipe %s has checksum type %s", recipe, checksum_type)
             if not recipe.replace(checksum_type, "sha256"):
@@ -763,6 +776,7 @@ class GitFilter(Filter):
 
     @staticmethod
     def branch_name(recipe):
+        """Render branch name from recipe"""
         return f"auto_update_{recipe.reldir.replace('-', '_').replace('/', '_')}"
 
     @abc.abstractmethod
@@ -1009,7 +1023,7 @@ class MaxUpdates(Filter):
         self.count += 1
         if self.max and self.count == self.max:
             logger.warning("Reached update limit %s", self.count)
-            raise self.scanner.EndProcessing()
+            raise Scanner.EndProcessing()
 
 
 class HosterMeta(abc.ABCMeta):
