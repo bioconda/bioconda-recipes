@@ -1,4 +1,5 @@
 #!/bin/bash
 
 make CXX="$CXX" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS -lz"
-make install
+install -d ${PREFIX}/bin
+install bin/ska ${PREFIX}/bin
