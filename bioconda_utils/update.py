@@ -468,8 +468,8 @@ class ExcludeBlacklisted(Filter):
         logger.warning("Excluding %i blacklisted recipes", len(self.blacklisted))
 
     async def apply(self, recipe):
-        if recipe.name in self.blacklisted:
-            logger.debug("Excluding %s", recipe.name)
+        if recipe.reldir in self.blacklisted:
+            logger.debug("Excluding %s", recipe)
             self.scanner.stats["BLACKLISTED"] += 1
             return False
         return True
