@@ -854,7 +854,7 @@ class HosterMeta(abc.ABCMeta):
         return None
 
 
-class Hoster(object, metaclass=HosterMeta):
+class Hoster(metaclass=HosterMeta):
     """Hoster Baseclass"""
 
     #: matches upstream version
@@ -951,6 +951,9 @@ class OrderedHTMLHoster(HTMLHoster):
     The point isn't performance, but avoiding hassle with old versions
     which may follow different versioning schemes.
     E.g. 0.09 -> 0.10 -> 0.2 -> 0.2.1
+
+    FIXME: If the current version is not in the list, that's likely
+           a pathologic case. Should be handled somewhere.
     """
 
     async def get_versions(self, scanner):
@@ -960,6 +963,8 @@ class OrderedHTMLHoster(HTMLHoster):
         for num, match in enumerate(matches):
             if match["version"] == self.orig_match["version"]:
                 break
+        else:  # version not in list
+            return matches
         return matches[:num+1]
 
 
