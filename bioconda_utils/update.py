@@ -418,12 +418,6 @@ class Scanner():
                     await self.loop.run_in_executor(self.executor, checksum.update, block)
         return checksum.hexdigest()
 
-    def get_github(self):
-        """Create gidget GithubAPI object from session"""
-        return gh_aiohttp.GitHubAPI(self.session,
-                                    "bioconda/autobump",
-                                    oauth_token=os.environ["GITHUB_TOKEN"])
-
 
 class ExcludeOtherChannel(Filter):
     """Filters recipes matching packages in other **channels**"""
@@ -688,45 +682,154 @@ class UpdateChecksums(Filter):
         return True
 
 
-class BranchNameMixin():
+class GitHandler():
+    """Encapsulates code to interact with git repo
+
+    Arguments:
+      recipe_folder: Base folder containing recipes (needed to determine
+                     location of git repo).
+    """
+    def __init__(self, recipe_folder):
+        #: current repository
+        self.repo = git.Repo(recipe_folder, search_parent_directories=True)
+        if self.repo.is_dirty():
+            raise RuntimeError("Repository is in dirty state. Bailing out")
+
+    def get_remote(self, desc):
+        """Finds first remote containing **desc** in one of its URLs"""
+        if desc in [r.name for r in self.repo.remotes]:
+            return self.repo.remotes[desc]
+        remotes = [r for r in self.repo.remotes
+                   if any(filter(lambda x: desc in x, r.urls))]
+        if not remotes:
+            raise KeyError(f"No remote matching '{desc}' found")
+        return remotes[0]
+
+    def get_branch(self, branch_name: str):
+        """Finds branch named **branch_name**"""
+        if branch_name in self.repo.heads:
+            return self.repo.heads[branch_name]
+        return None
+
+    def read_from_branch(self, branch, file_name: str) -> str:
+        """Reads contents of file **file_name** from git branch **branch**"""
+        abs_file_name = os.path.abspath(file_name)
+        abs_repo_root = os.path.abspath(self.repo.working_dir)
+        if not abs_file_name.startswith(abs_repo_root):
+            raise RuntimeError(
+                f"File {abs_file_name} not inside {abs_repo_root}"
+            )
+        rel_file_name = abs_file_name[len(abs_repo_root):].lstrip("/")
+        return (branch.commit.tree / rel_file_name).data_stream.read().decode("utf-8")
+
+    def close(self):
+        """Release resources allocated"""
+        self.repo.close()
+
+
+class GitFilter(Filter):
+    """Base class for `Filter`s needing access to the git repo
+
+    Arguments:
+       scanner: Scanner we are called from
+       git_handler: Instance of GitHandler for repo access
+    """
+    def __init__(self, scanner, git_handler):
+        super().__init__(scanner)
+        #: The `GitHandler` class for accessing repo
+        self.git = git_handler
+        self.repo = git_handler.repo
+
     @staticmethod
     def branch_name(recipe):
-        return f"auto_update_{recipe.name.replace('-','_')}"
+        return f"auto_update_{recipe.reldir.replace('-', '_').replace('/', '_')}"
+
+    @abc.abstractmethod
+    def apply(self, recipe):  # placate pylint by reiterating abstrace method
+        pass
 
 
-class CommitToBranch(Filter, BranchNameMixin):
-    def __init__(self, scanner, ignore_dirty=False):
-        super().__init__(scanner)
-        self.repo = git.Repo(scanner.recipe_folder, search_parent_directories=True)
-        if not ignore_dirty:
-            if self.repo.is_dirty():
-                raise RuntimeError("Repository is in dirty state. Bailing out")
-            self.repo.heads["master"].checkout()
-        self.from_commit = self.repo.remotes["upstream"].fetch("master")[0].commit
-        self.git_sem = asyncio.Semaphore(1)  # there can be only one
-        # update master if we are doing this
-        # use finalize to restore state
+class LoadFromBranch(GitFilter):
+    """Loads `Recipe` from git repo
 
-    def make_branch(self, branch_name):
-        logger.info("Creating branch %s", branch_name)
-        if branch_name in self.repo.heads:
-            self.repo.delete_head(branch_name, force=True)
-        self.repo.create_head(branch_name, self.from_commit)
+    If the recipe has an update branch, the file from the update branch
+    will be read. Otherwise, the file will be read from the master branch.
+
+    FIXME: Handle merged branches
+           The catch here is that we use Squash-Merge on Github, so the
+           commit in the branch won't actually be merged (as in accessible from
+           the commit tree from master).
+           Best idea I've got is to go by modification time.
+    """
+    async def apply(self, recipe: Recipe) -> bool:
+        branch_name = self.branch_name(recipe)
+        logger.debug("Loading %s from branch %s", recipe, branch_name)
+        branch = self.git.get_branch(branch_name)
+        if not branch:
+            branch = self.git.get_branch("master")
+        return recipe.load_from_string(
+            self.git.read_from_branch(branch, recipe.path)
+        )
+
+
+class CommitToBranch(GitFilter):
+    """Writes `Recipe` to git repo
+
+    Arguments:
+      upstream: Upstream remote (for pull)
+      origin:   Origin remote (for push)
+    """
+    def __init__(self, scanner, git_handler, upstream='bioconda/bioconda-recipe'):
+        super().__init__(scanner, git_handler)
+        #: Make sure only one "thread" is meddling with repo
+        self.git_sem = asyncio.Semaphore(1)
+        #: Branch to restore after running
+        self.prev_active_branch = self.repo.active_branch
+        #: Remote upstream (for pulling)
+        self.upstream = self.git.get_remote(upstream)
+        logger.warning("Using remote %s: %s", self.upstream.name,
+                       ",".join(self.upstream.urls))
+
+        logger.warning("Checking out master")
+        self.repo.heads["master"].checkout()
+        logger.info("Pulling from %s: %s", self.upstream.name, list(self.upstream.urls))
+        self.upstream.pull("master")
+
+        #: commit from which branches should derive
+        self.from_commit = self.upstream.fetch('master')[0].commit
+
+    def finalize(self):
+        """Restore previously checked out branch"""
+        logger.warning("Switching back to %s", self.prev_active_branch.name)
+        self.prev_active_branch.checkout()
+
+    def prepare_branch(self, branch_name):
+        if branch_name not in self.repo.heads:
+            logger.info("Creating new branch %sq", branch_name)
+            self.repo.create_head(branch_name, self.from_commit)
+        logger.info("Checking out branch %s", branch_name)
         branch = self.repo.heads[branch_name]
         branch.checkout()
+        self.upstream.pull("master")
 
     def commit_and_push_changes(self, recipe, branch_name):
         self.repo.index.add([recipe.path])
-        self.repo.index.commit(f"Update {recipe.name} to {recipe.version}")
-        logger.info("Pushing branch %s", branch_name)
-        self.repo.remotes["origin"].push(branch_name, force=True)
+        if self.repo.index.diff("HEAD"):
+            self.repo.index.commit(f"Update {recipe.name} to {recipe.version}")
+            logger.info("Pushing branch %s", branch_name)
+            self.repo.remotes["origin"].push(branch_name)
+        else:
+            logger.error("Nothing to commit?")
 
     async def apply(self, recipe: Recipe) -> bool:
         branch_name = self.branch_name(recipe)
         async with self.git_sem:
-            self.make_branch(branch_name)
-            await recipe.write()
+            self.prepare_branch(branch_name)
+            async with aiofiles.open(recipe.path, "w", encoding="utf-8") as fd:
+                await fd.write(recipe.dump())
             self.commit_and_push_changes(recipe, branch_name)
+            asyncio.sleep(1)  # let push settle before going on
+        self.scanner.stats["UPDATED"] += 1
         return True
 
 
@@ -746,45 +849,135 @@ class WriteRecipe(Filter):
         return True
 
 
-class CreatePullRequest(Filter, BranchNameMixin):
-    def __init__(self, scanner):
-        super().__init__(scanner)
-        self.gh = None
-        self.login: str = ""
-        self.body_tpl = utils.jinja.get_template("bump_pr.md")
+class CreatePullRequest(GitFilter):
+    PULLS = "/repos/{user}/{repo}/pulls{/number}{?head,base}"
+    ISSUES = "/repos/{user}/{repo}/issues{/number}"
+
+    def __init__(self, scanner, git_handler, token: str,
+                 to_user: str = "bioconda",
+                 to_repo: str = "bioconda-recipes") -> None:
+        super().__init__(scanner, git_handler)
+        self.token = token
+        self.var_default = {'user': to_user,
+                            'repo': to_repo}
+        self.gh: Optional[gh_aiohttp.GitHubAPI] = None
+        self.user: Dict[Any, Any] = None
+        self.from_user = ""
+
+    async def async_init(self):
+        """Create gidget GithubAPI object from session"""
+        # GitHub asks for user-agent to be set to something they can contact
+        # if need be.
+        user_agent = "bioconda/bioconda-utils"
+        self.gh = gh_aiohttp.GitHubAPI(self.scanner.session, user_agent,
+                                       oauth_token=self.token)
+        asyncio.sleep(1)  # let API settle
+        self.user = await self.gh.getitem("/user")
+        self.from_user = self.user["login"]
+
+    async def get_prs(self,
+                      from_branch: Optional[str] = None,
+                      from_user: Optional[str] = None,
+                      to_branch: Optional[str] = None,
+                      number: Optional[int] = None) -> List[Dict[Any, Any]]:
+        """Retrieve list of PRs
+
+        Arguments:
+          from_branch: Name of branch from which PR asks to pull
+          from_user: Name of user/org in from which to pull
+                     (default: from auth)
+          to_branch: Name of branch into which to pull (default: master)
+          number: PR number
+        """
+        var_data = copy(self.var_default)
+        if not from_user:
+            from_user = self.from_user
+        if from_branch:
+            if from_user:
+                var_data['head'] = f"{from_user}:{from_branch}"
+            else:
+                var_data['head'] = from_branch
+        if to_branch:
+            var_data['base'] = to_branch
+        if number:
+            var_data['number'] = number
+
+        return await self.gh.getitem(self.PULLS, var_data)
+
+    async def create_pr(self, title: str,
+                        recipe: Optional[Recipe] = None,
+                        from_branch: Optional[str] = None,
+                        from_user: Optional[str] = None,
+                        to_branch: Optional[str] = "master",
+                        body: Optional[str] = None,
+                        body_template: Optional[str] = None,
+                        maintainer_can_modify: bool = True) -> Dict[Any, Any]:
+        """Create new PR
+
+        Arguments:
+          title: Title of new PR
+          recipe: Recipe for which to create PR (fed into template)
+          from_branch: Name of branch from which PR asks to pull
+          from_user: Name of user/org in from which to pull
+          to_branch: Name of branch into which to pull (default: master)
+          body: Body text of PR
+          body_template: Jinja2 template name for rendering body
+          maintainer_can_modify: Whether to allow maintainer to modify from_branch
+        """
+        var_data = copy(self.var_default)
+        if not from_user:
+            from_user = self.from_user
+        data = {'title': title,
+                'body': '',
+                'maintainer_can_modify': maintainer_can_modify}
+        if body:
+            data['body'] += body
+        if body_template:
+            template = utils.jinja.get_template(body_template)
+            data['body'] += template.render({'r': recipe})
+        if from_branch:
+            if from_user:
+                data['head'] = f"{from_user}:{from_branch}"
+            else:
+                data['head'] = from_branch
+        if to_branch:
+            data['base'] = to_branch
+
+        logger.debug("PR data %s", data)
+        return await self.gh.post(self.PULLS, var_data, data=data)
+
+    async def modify_issue(self, number: int,
+                           labels: Optional[List[str]]) -> Dict[Any, Any]:
+        var_data = copy(self.var_default)
+        var_data["number"] = str(number)
+        data = {'labels': labels}
+        return await self.gh.patch(self.ISSUES, var_data, data=data)
 
     async def apply(self, recipe):
         branch_name = self.branch_name(recipe)
-        if not self.gh:
-            self.gh = self.scanner.get_github()
-            self.login = (await self.gh.getitem("/user"))["login"]
-        pulls = "/repos/bioconda/bioconda-recipes/pulls{/number}{?head,base}"
-        data = {
-            "head": f"{self.login}:{branch_name}",
-            "base": "master",
-            "title": f"Update {recipe.name} to {recipe.version}",
-            "body": self.body_tpl.render({'r':recipe}),
-            "maintainer_can_modify": True,
-            "labels": ["autobump"],
-        }
 
-        prs = await self.gh.getitem(pulls, data)
-        if len(prs) == 0:
-            pr = await self.gh.post(pulls, data=data)
-            logger.warning("Created PR %i updating %s to %s", pr["number"], recipe.name, recipe.version)
-            pr = await self.gh.patch(pr["issue_url"], data={"labels": ["autobump"]})
-            logger.debug("Set label autobump on PR %i", pr["number"])
-        else:
+        prs = await self.get_prs(from_branch=branch_name)
+        if prs:
             for pr in prs:
-                logger.warning("Found PR %i updating %s", pr["number"], recipe.name)
-            # Fixme: if the existing PR was merged, create a new one
-            #        if it was closed... well, we need to handle all this
+                #head = pr["head"]["repo"]["full_name"]
+                logger.warning("Found PR %i updating %s: %s", pr["number"],
+                               recipe.name, pr["title"])
+            return False
 
+        pr = await self.create_pr(title=f"Update {recipe.name} to {recipe.version}",
+                                  from_branch=branch_name,
+                                  body_template="bump_pr.md",
+                                  recipe=recipe)
+        pr_number = pr["number"]
+        if pr_number:
+            await self.modify_issue(number=pr_number, labels=["autobump"])
+
+        logger.info("Created PR %i updating %s to %s", pr_number, recipe.name, recipe.version)
         return True
 
 
 class MaxUpdates(Filter):
-    def __init__(self, scanner, max_updates: int=0) -> None:
+    def __init__(self, scanner, max_updates: int = 0) -> None:
         super().__init__(scanner)
         self.max = max_updates
         self.count = 0

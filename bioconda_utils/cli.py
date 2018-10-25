@@ -672,14 +672,12 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
      update''')
 @arg("--create-pr", action="store_true", help='''Create PR for each update.
      Implies create-branch.''')
-@arg("--ignore-dirty", action="store_true", help='''Don't verify that the
-     current git workding directory is clean''')
 @arg("--max-updates", help='''Exit after ARG updates''')
 def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
            exclude_subrecipes=None, exclude_channels='conda-forge',
            ignore_blacklists=False,
            create_branch=False, create_pr=False,
-           ignore_dirty=False, max_updates=0):
+           max_updates=0):
     """
     Updates recipes in recipe_folder
     """
@@ -695,18 +693,32 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
         if not isinstance(exclude_channels, list):
             exclude_channels = [exclude_channels]
         scanner.add(update.ExcludeOtherChannel, exclude_channels, cache)
-    scanner.add(update.LoadRecipe)
+    git_handler = None
+    if create_branch or create_pr:
+        git_handler = update.GitHandler(recipe_folder)
+        scanner.add(update.LoadFromBranch, git_handler)
+    else:
+        scanner.add(update.LoadRecipe)
+
     scanner.add(update.UpdateVersion)
     scanner.add(update.UpdateChecksums)
+
     if create_branch or create_pr:
-        scanner.add(update.CommitToBranch, ignore_dirty=ignore_dirty)
-        if create_pr:
-            scanner.add(update.CreatePullRequest)
+        scanner.add(update.CommitToBranch, git_handler)
     else:
         scanner.add(update.WriteRecipe)
+
+    if create_pr:
+        token = os.environ["GITHUB_TOKEN"]
+        if not token:
+            logger.critical("GITHUB_TOKEN required to create PRs")
+            exit(1)
+        scanner.add(update.CreatePullRequest, git_handler, token)
     if max_updates:
         scanner.add(update.MaxUpdates, max_updates)
     scanner.run()
+    if git_handler:
+        git_handler.close()
 
 
 def main():
