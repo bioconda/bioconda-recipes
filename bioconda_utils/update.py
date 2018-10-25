@@ -100,8 +100,8 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 #: Matches named capture groups
-#: This is so complicated because we need to parse matched, not-escaped parentheses to
-#: determine where the clause ends.
+#: This is so complicated because we need to parse matched, not-escaped
+#: parentheses to determine where the clause ends.
 #: Requires regex package for recursion.
 RE_CAPGROUP = re.compile(r"\(\?P<(\w+)>(?>[^()]+|\\\(|\\\)|(\((?>[^()]+|\\\(|\\\)|(?2))*\)))*\)")
 
@@ -132,9 +132,9 @@ def replace_named_capture_group(pattern, vals: Dict[str, str]):
 class Recipe():
     """Represents a recipe (meta.yaml) in editable form
 
-    Using conda-build to render recipe is slow and a one-way process. We need
-    to be able to load **and** save recipes, which is handled by the representation
-    in this class.
+    Using conda-build to render recipe is slow and a one-way
+    process. We need to be able to load **and** save recipes, which is
+    handled by the representation in this class.
 
     Recipes undergo two manipulation rounds before parsed as YAML:
      1. Selecting lines using ``# [expression]``
@@ -142,6 +142,7 @@ class Recipe():
 
     (1) is currently unhandled, leading to recipes with repeated mapping keys
     (commonly two ``url`` keys). Those recipes are ignored for the time being.
+
     """
     JINJA_VARS = {
         "cran_mirror": "https://cloud.r-project.org"
@@ -149,7 +150,9 @@ class Recipe():
 
     def __init__(self, recipe_dir, recipe_folder):
         if not recipe_dir.startswith(recipe_folder):
-            raise RuntimeError(f"{recipe_folder} is not prefix of {recipe_dir}")
+            raise RuntimeError(
+                f"{recipe_folder} is not prefix of {recipe_dir}"
+            )
         #: path to recipe dir from CWD
         self.dir = recipe_dir
         #: path to folder containing recipes
@@ -204,7 +207,9 @@ class Recipe():
         - render template
         - parse yaml
         """
-        template = utils.jinja_silent_undef.from_string("\n".join(self.meta_yaml))
+        template = utils.jinja_silent_undef.from_string(
+            "\n".join(self.meta_yaml)
+        )
         try:
             self.meta = yaml.load(template.render(self.JINJA_VARS))
         except DuplicateKeyError:
