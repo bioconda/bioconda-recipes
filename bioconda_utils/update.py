@@ -290,7 +290,12 @@ class Scanner():
 
     def __init__(self, recipe_folder: str, packages: str, config: str) -> None:
         with open(config, "r") as config_file:
+            #: config
             self.config = yaml.load(config_file)
+            self.config['blacklists'] = [
+                os.path.join(os.path.dirname(config), bl)
+                for bl in self.config['blacklists']
+            ]
         #: folder containing recipes
         self.recipe_folder: str = recipe_folder
         #: list of recipe folders to scan
