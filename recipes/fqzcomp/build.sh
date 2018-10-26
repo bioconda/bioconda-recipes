@@ -1,3 +1,3 @@
 #! /bin/bash
 make
-make install
+cp msisensor $PREFIX/bin
