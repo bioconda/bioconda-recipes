@@ -137,13 +137,15 @@ class EndProcessing(BaseException):
 class RecipeError(Exception):
     """Raised to indicate processing of Recipe failed"""
     __slots__ = ['recipe', 'args']
-    template = "failed: %s"
+    template = "broken: %s"
 
     def __init__(self, recipe: "Recipe", *args) -> None:
+        super().__init__()
         self.recipe = recipe
         self.args = args
 
     def log(self, logfunc):
+        """Print message using provided logging func"""
         logfunc("Recipe %s " + self.template, self.recipe, *self.args)
 
     @property
@@ -302,7 +304,10 @@ class Recipe():
 
     def reset_buildnumber(self):
         """Resets the build number"""
-        lineno: int = self.meta["build"].lc.key("number")[0]
+        try:
+            lineno: int = self.meta["build"].lc.key("number")[0]
+        except KeyError: # no build number?
+            raise RecipeError(self, "missing build number")
         line = self.meta_yaml[lineno]
         line = re.sub("number: [0-9]+", "number: 0", line)
         self.meta_yaml[lineno] = line
@@ -690,13 +695,13 @@ class UpdateChecksums(Filter):
 
         if self.cache_fn and os.path.exists(self.cache_fn):
             with open(self.cache_fn, "r") as stream:
-                self.cache = dict(line.split("\t", 1) for line in stream)
+                self.cache = dict(line.split("\t", 1) for line in stream if "\t" in line)
 
     def finalize(self):
         if self.cache_fn:
             with open(self.cache_fn, "w") as stream:
                 for item in self.cache.items():
-                    stream.write("\t".join(item) + "\n")
+                    stream.write("\t".join(item))
 
     async def apply(self, recipe: Recipe) -> bool:
         sources = recipe.meta["source"]
