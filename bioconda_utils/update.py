@@ -604,6 +604,9 @@ class UpdateVersion(Filter):
     class NoRecognizedSourceUrl(RecipeError):
         template = "has no URL in source %i recognized by any Hoster class"
 
+    class UrlNotVersioned(RecipeError):
+        template = "has URL not modified by version change"
+
     def __init__(self, scanner: "Scanner", failed_file: Optional[str] = None) -> None:
         super().__init__(scanner)
         #: failed urls - for later inspection
@@ -648,6 +651,15 @@ class UpdateVersion(Filter):
 
         if not recipe.version == latest:
             raise self.UpdateVersionFailure(recipe, recipe.orig.version, latest)
+
+        if isinstance(recipe.meta["source"]["url"], str):
+            if recipe.meta["source"]["url"] == recipe.orig.meta["source"]["url"]:
+                raise self.UrlNotVersioned(recipe)
+        else:
+            for orig_url, url in zip(recipe.meta["source"]["url"],
+                                     recipe.orig.meta["source"]["url"]):
+                if orig_url == url:
+                    raise self.UrlNotVersioned(recipe)
 
     async def get_versions(self, recipe: Recipe, source: Mapping[Any, Any],
                            source_idx: int):
