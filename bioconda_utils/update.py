@@ -871,15 +871,20 @@ class LoadFromBranch(GitFilter):
            the commit tree from master).
            Best idea I've got is to go by modification time.
     """
+    def __init__(self, scanner, git_handler):
+        super().__init__(scanner, git_handler)
+        self.sem = asyncio.Semaphore(1)
+
     async def apply(self, recipe: Recipe) -> bool:
         branch_name = self.branch_name(recipe)
         logger.debug("Loading %s from branch %s", recipe, branch_name)
         branch = self.git.get_branch(branch_name)
         if not branch:
             branch = self.git.get_branch("master")
-        return recipe.load_from_string(
-            self.git.read_from_branch(branch, recipe.path)
-        )
+        async with self.sem:
+            return recipe.load_from_string(
+                self.git.read_from_branch(branch, recipe.path)
+            )
 
 
 class CommitToBranch(GitFilter):
