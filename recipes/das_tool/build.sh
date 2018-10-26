@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # install DAStool R package
-R CMD INSTALL "package/${PKG_NAME}_${PKG_VERSION}.tar.gz"
+R CMD INSTALL "package/DAS_Tool_${PKG_VERSION}.tar.gz"
 
 # unzip SCG marker database
 unzip db.zip
