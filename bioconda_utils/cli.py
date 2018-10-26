@@ -669,6 +669,7 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
      the first time. Caution: The cache will not be updated if
      exclude-channels is changed''')
 @arg('--failed-urls', help='''Write unrecognized urls to this file''')
+@arg('--check-branch', help='''Check if recipe has active branch''')
 @arg("--create-branch", action="store_true", help='''Create branch for each
      update''')
 @arg("--create-pr", action="store_true", help='''Create PR for each update.
@@ -678,14 +679,14 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
            failed_urls=None,
            exclude_subrecipes=None, exclude_channels='conda-forge',
            ignore_blacklists=False,
-           create_branch=False, create_pr=False,
+           check_branch=False, create_branch=False, create_pr=False,
            max_updates=0):
     """
     Updates recipes in recipe_folder
     """
     utils.setup_logger('bioconda_utils', loglevel)
     from . import update
-    scanner = update.Scanner(recipe_folder, packages, config)
+    scanner = update.Scanner(recipe_folder, packages, config, cache+"_scan.pkl")
     if not ignore_blacklists:
         scanner.add(update.ExcludeBlacklisted)
     if exclude_subrecipes != "never":
@@ -696,14 +697,14 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
             exclude_channels = [exclude_channels]
         scanner.add(update.ExcludeOtherChannel, exclude_channels, cache+"_repodata.txt")
     git_handler = None
-    if create_branch or create_pr:
+    if check_branch or create_branch or create_pr:
         git_handler = update.GitHandler(recipe_folder)
         scanner.add(update.LoadFromBranch, git_handler)
     else:
         scanner.add(update.LoadRecipe)
 
     scanner.add(update.UpdateVersion, failed_urls)
-    scanner.add(update.UpdateChecksums, cache+"_checksums.txt")
+    scanner.add(update.UpdateChecksums)
 
     if create_branch or create_pr:
         scanner.add(update.CommitToBranch, git_handler)

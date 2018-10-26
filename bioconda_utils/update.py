@@ -64,6 +64,7 @@ import asyncio
 import inspect
 import logging
 import os
+import pickle
 
 from collections import defaultdict, Counter
 from copy import copy
@@ -337,7 +338,7 @@ class Scanner():
       packages: glob pattern to select recipes
       config: config.yaml (unused)
     """
-    def __init__(self, recipe_folder: str, packages: List[str], config: str) -> None:
+    def __init__(self, recipe_folder: str, packages: List[str], config: str, cache_fn: str) -> None:
         with open(config, "r") as config_file:
             #: config
             self.config = yaml.load(config_file)
@@ -362,6 +363,20 @@ class Scanner():
         self.session: aiohttp.ClientSession = None
         #: filters
         self.filters: List[Filter] = []
+        #: cache file name (for debugging)
+        self.cache_fn: str = cache_fn
+        #: cache
+        self.cache: Optional[Dict[str, Dict[str, str]]] = None
+        if cache_fn:
+            if os.path.exists(cache_fn):
+                with open(cache_fn, "rb") as stream:
+                    self.cache = pickle.load(stream)
+            else:
+                self.cache = {}
+            if "url_text" not in self.cache:
+                self.cache["url_text"] = {}
+            if "url_checksum" not in self.cache:
+                self.cache["url_checksum"] = {}
 
     def add(self, filt: Filter, *args, **kwargs) -> None:
         """Adds `Filter` to this `Scanner`"""
@@ -391,6 +406,9 @@ class Scanner():
         logger.info("SUM: %i", sum(self.stats.values()))
         for filt in self.filters:
             filt.finalize()
+        if self.cache_fn:
+            with open(self.cache_fn, "wb") as stream:
+                pickle.dump(self.cache, stream)
         return task.result()
 
     async def _async_run(self) -> bool:
@@ -448,9 +466,17 @@ class Scanner():
         increasing wait times according to fibonacci series.
         - Permanent errors raise a ClientResponseError
         """
+        if self.cache and url in self.cache["url_text"]:
+            return self.cache["url_text"][url]
+
         async with self.session.get(url) as resp:
             resp.raise_for_status()
-            return await resp.text()
+            res = await resp.text()
+
+        if self.cache:
+            self.cache["url_text"][url] = res
+
+        return res
 
     @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
                           giveup=lambda ex: ex.code not in [429, 502, 503, 504])
@@ -459,6 +485,9 @@ class Scanner():
 
         Shows TQDM progress monitor with label **desc**.
         """
+        if self.cache and url in self.cache["url_checksum"]:
+            return self.cache["url_checksum"][url]
+
         checksum = sha256()
         async with self.session.get(url) as resp:
             resp.raise_for_status()
@@ -471,7 +500,12 @@ class Scanner():
                         break
                     progress.update(len(block))
                     await self.loop.run_in_executor(None, checksum.update, block)
-        return checksum.hexdigest()
+        res = checksum.hexdigest()
+
+        if self.cache:
+            self.cache["url_checksum"][url] = res
+
+        return res
 
 
 class ExcludeOtherChannel(Filter):
@@ -688,21 +722,6 @@ class UpdateChecksums(Filter):
     class SourceUrlMismatch(RecipeError):
         template = "has urls in source %i pointing to different files"
 
-    def __init__(self, scanner, cache_fn: str) -> None:
-        super().__init__(scanner)
-        self.cache: Dict[str: str] = {}
-        self.cache_fn = cache_fn
-
-        if self.cache_fn and os.path.exists(self.cache_fn):
-            with open(self.cache_fn, "r") as stream:
-                self.cache = dict(line.split("\t", 1) for line in stream if "\t" in line)
-
-    def finalize(self):
-        if self.cache_fn:
-            with open(self.cache_fn, "w") as stream:
-                for item in self.cache.items():
-                    stream.write("\t".join(item))
-
     async def apply(self, recipe: Recipe) -> bool:
         sources = recipe.meta["source"]
         logger.info("Updating checksum for %s %s", recipe, recipe.version)
@@ -741,15 +760,11 @@ class UpdateChecksums(Filter):
             urls = [urls]
         new_checksums = []
         for url_idx, url in enumerate(urls):
-            if url in self.cache:
-                res = self.cache[url]
-            else:
-                try:
-                    res = await self.scanner.get_checksum_from_url(
-                        url, f"{recipe} [{source_idx}.{url_idx}]")
-                    self.cache[url] = res
-                except aiohttp.client_exceptions.ClientResponseError:
-                    res = None
+            try:
+                res = await self.scanner.get_checksum_from_url(
+                    url, f"{recipe} [{source_idx}.{url_idx}]")
+            except aiohttp.client_exceptions.ClientResponseError:
+                res = None
             new_checksums.append(res)
         count = len(set(c for c in new_checksums if c is not None))
         if count == 0:
@@ -967,6 +982,10 @@ class CreatePullRequest(GitFilter):
         asyncio.sleep(1)  # let API settle
         self.user = await self.gh.getitem("/user")
         self.from_user = self.user["login"]
+
+    async def is_member(self, username):
+        res = await self.gh.getitem("/orgs/:org/members/:username")
+
 
     async def get_prs(self,
                       from_branch: Optional[str] = None,
