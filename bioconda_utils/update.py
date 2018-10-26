@@ -1147,8 +1147,7 @@ class CreatePullRequest(GitFilter):
         else:
             pr = await self.create_pr(title=title,
                                       from_branch=branch_name,
-                                      body=body,
-                                      recipe=recipe)
+                                      body=body)
             pr_number = pr["number"]
             if pr_number:
                 await self.modify_issue(number=pr_number, labels=labels)
