@@ -897,13 +897,20 @@ class LoadFromBranch(GitFilter):
         self.sem = asyncio.Semaphore(1)
 
     async def async_init(self):
-        for branch in self.git.repo.branches:
-            if branch.name.startswith("auto_update_"):
-                recipe_dir = branch.name[len("auto_update_"):]
-                ok = await self.git.check_branch(branch, recipe_dir)
-                if not ok:
-                    logger.info("Deleting branch %s (master changed)", branch.name)
-                    await self.git.delete_branch(branch)
+        # Fixme: does not work for subrecipes
+        async def delete_if_bad(branch):
+            recipe_dir = branch.name[len("auto_update_"):]
+            if not await self.git.check_branch(branch, recipe_dir):
+                logger.info("Deleting branch %s (master changed)", branch.name)
+                await self.git.delete_branch(branch)
+            else:
+                logger.info("Found active update in branch %s", branch.name)
+
+        await asyncio.gather(*[
+            delete_if_bad(branch)
+            for branch in self.git.repo.branches
+            if branch.name.startswith("auto_update_")
+        ])
 
     async def apply(self, recipe: Recipe) -> bool:
         branch_name = self.branch_name(recipe)
