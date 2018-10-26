@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cp -R bin/piret $PREFIX/bin
+$PYTHON setup.py install
