@@ -806,6 +806,10 @@ class GitHandler():
         if self.repo.is_dirty():
             raise RuntimeError("Repository is in dirty state. Bailing out")
 
+        abs_recipe_folder = os.path.abspath(recipe_folder)
+        abs_repo_root = os.path.abspath(self.repo.working_dir)
+        self.rel_recipe_folder = abs_recipe_folder[len(abs_repo_root):].lstrip("/")
+
     def get_remote(self, desc):
         """Finds first remote containing **desc** in one of its URLs"""
         if desc in [r.name for r in self.repo.remotes]:
@@ -815,6 +819,21 @@ class GitHandler():
         if not remotes:
             raise KeyError(f"No remote matching '{desc}' found")
         return remotes[0]
+
+    async def check_branch(self, branch, path):
+        rpath = os.path.join(self.rel_recipe_folder, path)
+        proc = await asyncio.create_subprocess_exec(
+            'git', 'log', '-1', '--oneline', '--decorate',
+            f'master...{branch.name}', '--', rpath,
+            stdout=asyncio.subprocess.PIPE)
+        stdout, _ = await proc.communicate()
+        return branch.name in stdout.decode('ascii')
+
+    async def delete_branch(self, branch):
+        proc = await asyncio.create_subprocess_exec(
+            'git', 'branch', '-D', branch.name
+        )
+        return await proc.communicate()
 
     def get_branch(self, branch_name: str):
         """Finds branch named **branch_name**"""
@@ -877,6 +896,15 @@ class LoadFromBranch(GitFilter):
         super().__init__(scanner, git_handler)
         self.sem = asyncio.Semaphore(1)
 
+    async def async_init(self):
+        for branch in self.git.repo.branches:
+            if branch.name.startswith("auto_update_"):
+                recipe_dir = branch.name[len("auto_update_"):]
+                ok = await self.git.check_branch(branch, recipe_dir)
+                if not ok:
+                    logger.info("Deleting branch %s (master changed)", branch.name)
+                    await self.git.delete_branch(branch)
+
     async def apply(self, recipe: Recipe) -> bool:
         branch_name = self.branch_name(recipe)
         logger.debug("Loading %s from branch %s", recipe, branch_name)
@@ -885,7 +913,9 @@ class LoadFromBranch(GitFilter):
             branch = self.git.get_branch("master")
         async with self.sem:
             return recipe.load_from_string(
-                self.git.read_from_branch(branch, recipe.path)
+                await self.scanner.run_io(
+                    self.git.read_from_branch, branch, recipe.path
+                )
             )
 
 
