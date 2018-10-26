@@ -203,9 +203,10 @@ class Recipe():
         # These will be filled in by load_from_string()
         #: Lines of the raw recipe file
         self.meta_yaml: List[str] = []
+        # Filled in by update filter
+        self.version_data = None
         #: Original recipe before modifications
         self.orig: Recipe = copy(self)
-
     @property
     def path(self):
         """Full path to `meta.yaml``"""
@@ -641,6 +642,7 @@ class UpdateVersion(Filter):
 
         versions = await self.get_versions(recipe, sources, 1)
         latest = self.select_version(recipe.version, versions.keys())
+        recipe.version_data = versions[latest]
 
         if latest == recipe.version:
             raise self.UpToDate(recipe)
@@ -1073,7 +1075,6 @@ class CreatePullRequest(GitFilter):
         return await self.gh.getitem(self.PULLS, var_data)
 
     async def create_pr(self, title: str,
-                        recipe: Optional[Recipe] = None,
                         from_branch: Optional[str] = None,
                         from_user: Optional[str] = None,
                         to_branch: Optional[str] = "master",
@@ -1084,7 +1085,6 @@ class CreatePullRequest(GitFilter):
 
         Arguments:
           title: Title of new PR
-          recipe: Recipe for which to create PR (fed into template)
           from_branch: Name of branch from which PR asks to pull
           from_user: Name of user/org in from which to pull
           to_branch: Name of branch into which to pull (default: master)
@@ -1100,9 +1100,6 @@ class CreatePullRequest(GitFilter):
                 'maintainer_can_modify': maintainer_can_modify}
         if body:
             data['body'] += body
-        if body_template:
-            template = utils.jinja.get_template(body_template)
-            data['body'] += template.render({'r': recipe})
         if from_branch:
             if from_user:
                 data['head'] = f"{from_user}:{from_branch}"
@@ -1115,32 +1112,48 @@ class CreatePullRequest(GitFilter):
         return await self.gh.post(self.PULLS, var_data, data=data)
 
     async def modify_issue(self, number: int,
-                           labels: Optional[List[str]]) -> Dict[Any, Any]:
+                           labels: Optional[List[str]] = None,
+                           title: Optional[str] = None,
+                           body: Optional[str] = None) -> Dict[Any, Any]:
         var_data = copy(self.var_default)
         var_data["number"] = str(number)
-        data = {'labels': labels}
+        data: Dict[str, Any] = {}
+        if labels:
+            data['labels'] = labels
+        if title:
+            data['title'] = title
+        if body:
+            data['body'] = body
         return await self.gh.patch(self.ISSUES, var_data, data=data)
 
     async def apply(self, recipe):
         branch_name = self.branch_name(recipe)
+        template = utils.jinja.get_template("bump_pr.md")
+        body = template.render({'r': recipe})
+        labels = ["autobump"]
+        title = f"Update {recipe} to {recipe.version}"
 
         prs = await self.get_prs(from_branch=branch_name)
         if prs:
-            for pr in prs:
-                #head = pr["head"]["repo"]["full_name"]
-                logger.warning("Found PR %i updating %s: %s", pr["number"],
-                               recipe, pr["title"])
-            raise self.HasOpenPR(recipe, ", ".join(pr["number"] for pr in prs))
+            if len(prs) > 1:
+                for pr in prs:
+                    logger.error("Found PR %i updating %s: %s", pr["number"],
+                                 recipe, pr["title"])
+            pr_number = prs[0]["number"]
+            pr = await self.modify_issue(number=pr_number, labels=labels,
+                                   body=body, title=title)
+            logger.info("Updated PR %i updating %s to %s", pr_number, recipe, recipe.version)
+            # FIXME: since we now updated the update, the orig is wrong
+        else:
+            pr = await self.create_pr(title=title,
+                                      from_branch=branch_name,
+                                      body=body,
+                                      recipe=recipe)
+            pr_number = pr["number"]
+            if pr_number:
+                await self.modify_issue(number=pr_number, labels=labels)
 
-        pr = await self.create_pr(title=f"Update {recipe} to {recipe.version}",
-                                  from_branch=branch_name,
-                                  body_template="bump_pr.md",
-                                  recipe=recipe)
-        pr_number = pr["number"]
-        if pr_number:
-            await self.modify_issue(number=pr_number, labels=["autobump"])
-
-        logger.info("Created PR %i updating %s to %s", pr_number, recipe, recipe.version)
+            logger.info("Created PR %i updating %s to %s", pr_number, recipe, recipe.version)
 
 
 class MaxUpdates(Filter):
