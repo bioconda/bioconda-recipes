@@ -1,3 +1,3 @@
 #! /bin/bash
 make
-cp msisensor $PREFIX/bin
+cp fqz_comp $PREFIX/bin
