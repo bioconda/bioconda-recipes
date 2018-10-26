@@ -707,6 +707,8 @@ class UpdateVersion(Filter):
         latest_vo = VersionOrder(current)
         latest = current
         for vers in versions:
+            if "-" in vers: # ignore versions with local (FIXME)
+                continue
             vers_version = parse_version(vers)
             # allow prerelease only if current is prerelease
             if vers_version.is_prerelease and not current_version.is_prerelease:
