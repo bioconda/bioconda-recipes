@@ -1,4 +1,4 @@
 mkdir -p bin
 python PLEK_setup.py
-mv PLEK* ${PREFIX}/bin/
-mv svm* ${PREFIX}/bin/
+mv ${PREFIX}/PLEK* ${PREFIX}/bin/
+mv ${PREFIX}/svm* ${PREFIX}/bin/
