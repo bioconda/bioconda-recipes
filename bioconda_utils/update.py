@@ -139,15 +139,18 @@ class RecipeError(Exception):
     """Raised to indicate processing of Recipe failed"""
     __slots__ = ['recipe', 'args']
     template = "broken: %s"
+    level = logging.INFO
 
     def __init__(self, recipe: "Recipe", *args) -> None:
         super().__init__()
         self.recipe = recipe
         self.args = args
 
-    def log(self, logfunc):
+    def log(self, uselogger=logger, level=None):
         """Print message using provided logging func"""
-        logfunc("Recipe %s " + self.template, self.recipe, *self.args)
+        if not level:
+            level = self.level
+        uselogger.log(level, "Recipe %s " + self.template, self.recipe, *self.args)
 
     @property
     def name(self):
@@ -172,6 +175,21 @@ class Recipe():
       recipe_folder: base recipes folder
       recipe_dir: path to specific recipe
     """
+
+    class DuplicateKey(RecipeError):
+        template = "has duplicate key"
+
+    class MissingKey(RecipeError):
+        template = "has missing key"
+
+    class EmptyRecipe(RecipeError):
+        template = "is empty"
+
+    class MissingBuildNumber(RecipeError):
+        template = "is missing build number"
+
+    class HasSelector(RecipeError):
+        template = "has selector in line %i (replace failed)"
 
     #: Variables to pass to Jinja when rendering recipe
     JINJA_VARS = {
@@ -228,7 +246,7 @@ class Recipe():
         """Load and `render` recipe contents from disk"""
         self.meta_yaml = data.splitlines()
         if not self.meta_yaml:
-            raise RecipeError(self, "empty meta.yaml")
+            raise self.EmptyRecipe(self)
         self.render()
         self.orig = copy(self)
 
@@ -249,12 +267,12 @@ class Recipe():
         try:
             self.meta = yaml.load(template.render(self.JINJA_VARS))
         except DuplicateKeyError:
-            raise RecipeError(self, "duplicate key")
+            raise self.DuplicateKey(self)
         try:
             self.version = str(self.meta["package"]["version"])
             self.name = self.meta["package"]["name"]
         except KeyError as exc:
-            raise RecipeError(self, "missing %s", exc.args)
+            raise self.MissingKey(self)
 
     def replace(self, before: str, after: str,
                 within: Sequence[str] = ("package", "source")) -> int:
@@ -295,9 +313,7 @@ class Recipe():
             if before not in line:
                 continue
             if re.search(re.escape(before) + r".*#.*\[", line):
-                raise RecipeError(self, "cannot replace %s->%s due to "
-                                  "'# [flag]' selector in line %i",
-                                  before, after, line)
+                raise HasSelector(self, lineno)
             self.meta_yaml[lineno] = line.replace(before, after)
             replacements += 1
         logger.debug("Replaced in %s: %s -> %s (%i times)",
@@ -309,7 +325,8 @@ class Recipe():
         try:
             lineno: int = self.meta["build"].lc.key("number")[0]
         except KeyError: # no build number?
-            raise RecipeError(self, "missing build number")
+            raise self.MissingBuildNumber(self)
+
         line = self.meta_yaml[lineno]
         line = re.sub("number: [0-9]+", "number: 0", line)
         self.meta_yaml[lineno] = line
@@ -444,7 +461,7 @@ class Scanner():
         except asyncio.CancelledError:
             return False
         except RecipeError as recipe_error:
-            recipe_error.log(logger.info)
+            recipe_error.log(logger)
             self.stats[recipe_error.name] += 1
             return False
         except Exception:  # pylint: disable=broad-except
@@ -514,6 +531,7 @@ class ExcludeOtherChannel(Filter):
 
     class OtherChannel(RecipeError):
         template = "Recipe %s is in excluded channels%s"
+        level = logging.DEBUG
 
     def __init__(self, scanner: "Scanner", channels: Sequence[str],
                  cache: str) -> None:
@@ -539,6 +557,7 @@ class ExcludeSubrecipe(Filter):
 
     class IsSubRecipe(RecipeError):
         template = "is a subrecipe"
+        level = logging.DEBUG
 
     def __init__(self, scanner: "Scanner", always=False) -> None:
         super().__init__(scanner)
@@ -556,6 +575,7 @@ class ExcludeBlacklisted(Filter):
 
     class Blacklisted(RecipeError):
         template = "is blacklisted"
+        level = logging.DEBUG
 
     def __init__(self, scanner):
         super().__init__(scanner)
@@ -595,6 +615,7 @@ class UpdateVersion(Filter):
 
     class UpToDate(RecipeError):
         template = "is up to date"
+        level = logging.DEBUG
 
     class UpdateVersionFailure(RecipeError):
         template = "could not be updated from %s to %s"
@@ -604,6 +625,7 @@ class UpdateVersion(Filter):
 
     class NoRecognizedSourceUrl(RecipeError):
         template = "has no URL in source %i recognized by any Hoster class"
+        level = logging.DEBUG
 
     class UrlNotVersioned(RecipeError):
         template = "has URL not modified by version change"
@@ -640,7 +662,7 @@ class UpdateVersion(Filter):
             # FIXME: handle multisource
             raise self.Multisource(recipe)
 
-        versions = await self.get_versions(recipe, sources, 1)
+        versions = await self.get_versions(recipe, sources, 0)
         latest = self.select_version(recipe.version, versions.keys())
         recipe.version_data = versions[latest]
 
@@ -1015,9 +1037,6 @@ class WriteRecipe(Filter):
 class CreatePullRequest(GitFilter):
     PULLS = "/repos/{user}/{repo}/pulls{/number}{?head,base}"
     ISSUES = "/repos/{user}/{repo}/issues{/number}"
-
-    class HasOpenPR(RecipeError):
-        template = "has open PR(s) %s"
 
     def __init__(self, scanner, git_handler, token: str,
                  to_user: str = "bioconda",
