@@ -57,6 +57,29 @@ Rationale (for all those imports):
 - Using `git` simply looks nicer than doing lot of `subprocess` calls
   ourselves. An `asyncio` version would be nice though.
 
+
+Todo:
+
+ - [ ] deal with multi-output packages
+ - [ ] deal with linux/osx packages (selectors)
+ - [ ] deal with already open PRs
+ - [ ] handle remote/local git correctly
+ - [ ] collect editors from log
+ - [ ] collect author from GithubHoster
+ - [ ] ping author if in bioconda team
+ - [ ] show recent versions in PR body
+ - [ ] allow custom url patterns in meta.yaml
+ - [ ] randomize recipe order
+ - [ ] parse pypi (pypi.io, pypi.python.org, files.pythonhosted.org)
+ - [ ] parse bitbucket
+ - [ ] parse sourceforge (downloads.sourceforge.net, sourceforge.net)
+ - [ ] parse cran (cloud.r-project.org, cran.r-project.org)
+ - [ ] parse cpan (cpan.metapan.org, search.cpan.org)
+ - [ ] handle FTP
+ - [ ] parse gitlab (gitlab.com, local-install?)
+ - [ ] ? process requirements from pypi, cran, cpan
+
+
 """
 
 import abc
