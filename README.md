@@ -10,7 +10,7 @@
 manager that sports easy distribution, installation and version management of
 software.  The [bioconda channel](https://anaconda.org/bioconda) is a Conda
 channel providing bioinformatics related packages for **Linux** and **Mac OS**.
-This repository hosts the corresponding recipes.
+This repository hosts the corresponding recipes
 
 ## User guide
 
