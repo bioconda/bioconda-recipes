@@ -70,7 +70,7 @@ Todo:
  - [ ] show recent versions in PR body
  - [ ] allow custom url patterns in meta.yaml
  - [ ] randomize recipe order
- - [ ] parse pypi (pypi.io, pypi.python.org, files.pythonhosted.org)
+ - [x] parse pypi (pypi.io, pypi.python.org, files.pythonhosted.org)
  - [ ] parse bitbucket
  - [ ] parse sourceforge (downloads.sourceforge.net, sourceforge.net)
  - [ ] parse cran (cloud.r-project.org, cran.r-project.org)
@@ -85,6 +85,7 @@ Todo:
 import abc
 import asyncio
 import inspect
+import json
 import logging
 import os
 import pickle
@@ -1250,8 +1251,8 @@ class HosterMeta(abc.ABCMeta):
             pattern = dedup_named_capture_group(pattern)
             # save parsed and compiled pattern
             setattr(typ, pat + "_pattern", pattern)
-            setattr(typ, pat + "_re", re.compile(pattern))
             logger.debug("%s Pattern %s = %s", typ.__name__, pat, pattern)
+            setattr(typ, pat + "_re", re.compile(pattern))
 
         return typ
 
@@ -1279,7 +1280,7 @@ class Hoster(metaclass=HosterMeta):
     version_pattern: str = r"(?P<version>\d[\da-zA-Z\-+\.:\~]{0,30})"
 
     #: matches archive file extensions
-    ext_pattern: str = r"(?P<ext>(?i)\.(?:tar\.(?:xz|bz2|gz)|zip))"
+    ext_pattern: str = r"(?P<ext>(?i)\.(?:tar\.(?:xz|bz2|gz)|zip|tgz|tbz2|txz))"
 
     @property
     @abc.abstractmethod
@@ -1288,15 +1289,12 @@ class Hoster(metaclass=HosterMeta):
 
     @property
     @abc.abstractmethod
-    def link_pattern(self) -> str:
-        "matches links on relase page"
-
-    @property
-    @abc.abstractmethod
     def releases_format(self) -> str:
         "format template for release page URL"
 
     def __init__(self, url: str, match: Match[str]) -> None:
+        self.orig_match = match
+        self.releases_url = self.releases_format.format(**match.groupdict())
         logger.debug("%s matched %s with %s", self.__class__.__name__, url, match.groupdict())
 
     @classmethod
@@ -1338,13 +1336,42 @@ class HrefParser(HTMLParser):
         logger.debug("Error parsing HTML: %s", message)
 
 
+class JSONHoster(Hoster):
+    """Base for Hosters handling release listings in JSON format"""
+
+
+class PyPi(JSONHoster):
+    async def get_versions(self, scanner):
+        text = await scanner.get_text_from_url(self.releases_url)
+        data = json.loads(text)
+
+        latest = data["info"]["version"]
+        for rel in data["releases"][latest]:
+            if rel["packagetype"] == "sdist":
+                rel["releases_url"] = self.releases_url
+                rel["link"] = rel["url"]
+                rel["version"] = latest
+                return [rel]
+        return []
+
+    releases_format = "https://pypi.org/pypi/{package}/json"
+    package_pattern = r"(?P<package>[\w\-\.]+)"
+    source_pattern = r"{package}[-_]{version}{ext}"
+    hoster_pattern = (r"(?P<hoster>"
+                      r"files.pythonhosted.org/packages|"
+                      r"pypi.python.org/packages|"
+                      r"pypi.io/packages)")
+    url_pattern = r"{hoster}/.*/{source}"
+
+
 class HTMLHoster(Hoster):
     """Base for Hosters handling release listings in HTML format"""
 
-    def __init__(self, url: str, match: Match[str]) -> None:
-        self.orig_match = match
-        self.releases_url = self.releases_format.format(**match.groupdict())
-        super().__init__(url, match)
+    @property
+    @abc.abstractmethod
+    def link_pattern(self) -> str:
+        "matches links on relase page"
+
 
     async def get_versions(self, scanner):
         exclude = set(["version"])
