@@ -692,16 +692,16 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
     if exclude_subrecipes != "never":
         scanner.add(update.ExcludeSubrecipe,
                     always=exclude_subrecipes == "always")
-    if exclude_channels != ["none"]:
-        if not isinstance(exclude_channels, list):
-            exclude_channels = [exclude_channels]
-        scanner.add(update.ExcludeOtherChannel, exclude_channels, cache+"_repodata.txt")
     git_handler = None
     if check_branch or create_branch or create_pr:
         git_handler = update.GitHandler(recipe_folder)
         scanner.add(update.LoadFromBranch, git_handler)
     else:
         scanner.add(update.LoadRecipe)
+    if exclude_channels != ["none"]:
+        if not isinstance(exclude_channels, list):
+            exclude_channels = [exclude_channels]
+        scanner.add(update.ExcludeOtherChannel, exclude_channels, cache+"_repodata.txt")
 
     scanner.add(update.UpdateVersion, failed_urls)
     scanner.add(update.UpdateChecksums)

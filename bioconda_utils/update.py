@@ -554,7 +554,7 @@ class ExcludeOtherChannel(Filter):
     """Filters recipes matching packages in other **channels**"""
 
     class OtherChannel(RecipeError):
-        template = "Recipe %s is in excluded channels%s"
+        template = "is in excluded channels"
         level = logging.DEBUG
 
     def __init__(self, scanner: "Scanner", channels: Sequence[str],
