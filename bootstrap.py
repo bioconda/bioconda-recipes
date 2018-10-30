@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+
+
 import os
 import sys
 import subprocess as sp
@@ -32,7 +34,7 @@ It creates an activate script at ~/.config/bioconda/activate. So you can then us
 
 and then use that isolated root environment independent of any other conda
 installations you might have.
-"""
+""" 
 
 ap = argparse.ArgumentParser(usage)
 ap.add_argument('bootstrap', help='''Location to which a new Miniconda
