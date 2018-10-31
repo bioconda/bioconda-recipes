@@ -1,0 +1,88 @@
+{% set version = '2.4' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-ontologyindex
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: ontologyIndex_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/ontologyIndex_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/ontologyIndex/ontologyIndex_{{ version }}.tar.gz
+  sha256: 59260230dba99514902f0bb62a9bb3302463c01806a45ee3a568ffc59b241599
+
+
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+  noarch: generic
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: knitr, ontologySimilarity, ontologyPlot
+requirements:
+  build:
+
+  host:
+    - r-base
+
+  run:
+    - r-base
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('ontologyIndex')"           # [not win]
+    - "\"%R%\" -e \"library('ontologyIndex')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=ontologyIndex
+  license: GPL (>= 2)
+  summary: 'Functions for reading ontologies into R as lists and manipulating sets of ontological
+    terms - ''ontologyX: A suite of R packages for working with ontological data'',
+    Greene et al 2017 <doi:10.1093/bioinformatics/btw763>.'
+
+  license_family: GPL3
+
+
+
+# The original CRAN metadata for this package was:
+
+# Package: ontologyIndex
+# Type: Package
+# Title: Functions for Reading Ontologies into R
+# Version: 2.4
+# Date: 2017-02-01
+# Author: Daniel Greene <dg333@cam.ac.uk>
+# Maintainer: Daniel Greene <dg333@cam.ac.uk>
+# Description: Functions for reading ontologies into R as lists and manipulating sets of ontological terms - 'ontologyX: A suite of R packages for working with ontological data', Greene et al 2017 <doi:10.1093/bioinformatics/btw763>.
+# License: GPL (>= 2)
+# Depends: R (>= 3.1.0)
+# Suggests: knitr, ontologySimilarity, ontologyPlot
+# VignetteBuilder: knitr
+# RoxygenNote: 5.0.1
+# NeedsCompilation: no
+# Packaged: 2017-02-06 11:39:30 UTC; dg333
+# Repository: CRAN
+# Date/Publication: 2017-02-06 14:21:31
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
