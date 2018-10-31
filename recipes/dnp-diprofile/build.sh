@@ -1,5 +1,4 @@
 #!/bin/bash
-env
 sed 's/CPROGNAME/diprofile/g' CMakeLists.template > CMakeLists.txt
 
 mkdir -p  build
