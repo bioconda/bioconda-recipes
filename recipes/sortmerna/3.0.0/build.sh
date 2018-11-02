@@ -3,11 +3,18 @@ mkdir -pv $PREFIX/bin
 mkdir -p build
 cd build
 cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DSRC_ROCKSDB=1 -DSRC_RAPIDJSON=1 -DSET_ROCKSDB=1 ..
+echo "build dir content\n"
 ls
+echo "root dir content\n"
 ls ..
+echo "current path"
+pwd
 mkdir -p $SMR_HOME/3rdparty/rocksdb
 pushd $SMR_HOME/3rdparty/rocksdb
-cd $PREFIX
+echo "postpush content"
+ls
+echo "postpush path"
+pwd
 cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DPORTABLE=1 -DWITH_ZLIB=1 -DWITH_TESTS=0 -DWITH_TOOLS=0 .
 ls
 ls ..
