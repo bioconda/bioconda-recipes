@@ -1,130 +1,131 @@
 {% set version = '2.3.4' %}
 
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-seurat
-  version: {{ version }}
+  version: {{ version|replace("-", "_") }}
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/Seurat_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/Seurat/Seurat_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Seurat_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/Seurat/Seurat_{{ version }}.tar.gz
   sha256: 0d0a92c8ecc7beebddbefbcc4d845cb1c66b7005416d9b6335e27f9b22d90b51
 
 build:
-  number: 0
+  merge_build_host: True  # [win]
+
+  number: 1
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}      # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+
   host:
-    - r-ape
     - r-base
-    - r-caret
+    - r-hmisc
+    - r-mass
+    - r-matrix >=1.2.14
+    - r-rann
+    - r-rcolorbrewer
+    - r-rocr
+    - r-rcpp >=0.11.0
+    - r-rcppeigen
+    - r-rcppprogress
+    - r-rtsne
+    - r-sdmtools
+    - r-ape
     - r-cluster
     - r-cowplot
-    - r-diffusionmap
     - r-dosnow
     - r-dplyr
     - r-dtw
-    - r-fpc
     - r-fitdistrplus
-    - r-fnn
-    - r-hdf5r
     - r-foreach
-    - r-gdata
+    - r-fpc
     - r-ggplot2
     - r-ggridges
     - r-gplots
-    - r-hmisc
+    - r-hdf5r
+    - r-httr
     - r-ica
     - r-igraph
     - r-irlba
     - r-lars
     - r-lmtest
-    - r-mass
-    - r-matrix >=1.2.14
     - r-metap
     - r-mixtools
     - r-pbapply
     - r-plotly
     - r-png
-    - r-ranger
-    - r-rann
-    - r-rcolorbrewer
-    - r-rcpp
-    - r-rcppeigen
-    - r-rcppprogress
     - r-reshape2
     - r-reticulate
-    - r-rocr
-    - r-rtsne
-    - r-sdmtools
-    - r-stringr
-    - r-tclust
     - r-tidyr
     - r-tsne
-    - r-vgam
 
   run:
-    - r-ape
     - r-base
-    - r-caret
+    - {{native}}gcc-libs         # [win]
+    - r-hmisc
+    - r-mass
+    - r-matrix >=1.2.14
+    - r-rann
+    - r-rcolorbrewer
+    - r-rocr
+    - r-rcpp >=0.11.0
+    - r-rcppeigen
+    - r-rcppprogress
+    - r-rtsne
+    - r-sdmtools
+    - r-ape
     - r-cluster
     - r-cowplot
-    - r-diffusionmap
     - r-dosnow
     - r-dplyr
     - r-dtw
-    - r-fpc
     - r-fitdistrplus
-    - r-fnn
     - r-foreach
-    - r-hdf5r
-    - r-gdata
+    - r-fpc
     - r-ggplot2
     - r-ggridges
     - r-gplots
-    - r-hmisc
+    - r-hdf5r
+    - r-httr
     - r-ica
     - r-igraph
     - r-irlba
     - r-lars
     - r-lmtest
-    - r-mass
-    - r-matrix >=1.2.14
     - r-metap
     - r-mixtools
     - r-pbapply
     - r-plotly
     - r-png
-    - r-ranger
-    - r-rann
-    - r-rcolorbrewer
-    - r-rcpp
-    - r-rcppeigen
-    - r-rcppprogress
     - r-reshape2
     - r-reticulate
-    - r-rocr
-    - r-rtsne
-    - r-sdmtools
-    - r-stringr
-    - r-tclust
     - r-tidyr
     - r-tsne
-    - r-vgam
-    - openjdk >=6
 
 test:
   commands:
-    - $R -e "library('Seurat')"
+
+    - $R -e "library('Seurat')"           # [not win]
+    - "\"%R%\" -e \"library('Seurat')\""  # [win]
 
 about:
-  home: http://www.satijalab.org/seurat
-  dev_url: https://github.com/satijalab/seurat
+  home: http://www.satijalab.org/seurat, https://github.com/satijalab/seurat
   license: GPL-3
   summary: A toolkit for quality control, analysis, and exploration of single cell RNA sequencing
     data. 'Seurat' aims to enable users to identify and interpret sources of heterogeneity
@@ -132,5 +133,13 @@ about:
     single cell data. See Satija R, Farrell J, Gennert D, et al (2015) <doi:10.1038/nbt.3192>,
     Macosko E, Basu A, Satija R, et al (2015) <doi:10.1016/j.cell.2015.05.002>, and
     Butler A and Satija R (2017) <doi:10.1101/164889> for more details.
-  license_family: GPL
-
+  license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak
