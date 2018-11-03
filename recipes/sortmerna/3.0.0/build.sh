@@ -15,7 +15,7 @@ echo "postpush content"
 ls
 echo "postpush path"
 pwd
-cd $PREFIX/work
+cd $PREFIX/build
 cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DPORTABLE=1 -DWITH_ZLIB=1 -DWITH_TESTS=0 -DWITH_TOOLS=0 .
 ls
 ls ..
