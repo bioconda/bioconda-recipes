@@ -9,7 +9,7 @@ echo "root dir content\n"
 ls ..
 echo "current path"
 pwd
-export BUILDPATH=$(command)
+export BUILDPATH=$(pwd)
 mkdir -p $SMR_HOME/3rdparty/rocksdb
 pushd $SMR_HOME/3rdparty/rocksdb
 echo "postpush content"
