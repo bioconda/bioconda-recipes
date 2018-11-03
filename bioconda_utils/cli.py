@@ -513,7 +513,9 @@ def dependent(
 
 
 @arg('package', help='''Bioconductor package name. This is case-sensitive, and
-     must match the package name on the Bioconductor site.''')
+     must match the package name on the Bioconductor site. If "update-all-packages"
+     is specified, then all packages in a given bioconductor release will be
+     created/updated (--force is then implied).''')
 @arg('recipe_folder', help='Path to recipes directory')
 @arg('config', help='Path to yaml file specifying the configuration')
 @arg('--versioned', action='store_true', help='''If specified, recipe will be
@@ -537,7 +539,7 @@ def dependent(
 def bioconductor_skeleton(
     recipe_folder, config, package, versioned=False, force=False,
     pkg_version=None, bioc_version=None, loglevel='debug', recursive=False,
-    skip_if_in_channels=['conda-forge', 'bioconda'],
+    skip_if_in_channels=['conda-forge', 'bioconda'], update_all=False,
 ):
     """
     Build a Bioconductor recipe. The recipe will be created in the `recipes`
@@ -560,11 +562,28 @@ def bioconductor_skeleton(
     utils.setup_logger('bioconda_utils', loglevel)
     seen_dependencies = set()
 
-    _bioconductor_skeleton.write_recipe(
-        package, recipe_folder, config, force=force, bioc_version=bioc_version,
-        pkg_version=pkg_version, versioned=versioned, recursive=recursive,
-        seen_dependencies=seen_dependencies,
-        skip_if_in_channels=skip_if_in_channels)
+    if package == "update-all-packages":
+        if not bioc_version:
+            bioc_version = _bioconductor_skeleton.latest_bioconductor_version()
+        packages = _bioconductor_skeleton.fetchPackages(bioc_version)
+        problems = []
+        for k, v in packages.items():
+            try:
+                _bioconductor_skeleton.write_recipe(
+                    k, recipe_folder, config, force=True, bioc_version=bioc_version,
+                    pkg_version=v['Version'], versioned=versioned, packages=packages,
+                    skip_if_in_channels=skip_if_in_channels)
+            except:
+                problems.append(k)
+        if len(problems):
+            print("The following recipes had problems and were not finished: {}".format(", ".join(problems)))
+            sys.exit(1)
+    else:
+        _bioconductor_skeleton.write_recipe(
+            package, recipe_folder, config, force=force, bioc_version=bioc_version,
+            pkg_version=pkg_version, versioned=versioned, recursive=recursive,
+            seen_dependencies=seen_dependencies,
+            skip_if_in_channels=skip_if_in_channels)
 
     # E.g., r-probmetab has versioned 1.0 and 1.1 dirs in bioconda-recipes, and
     # this fails to find the meta.yaml files.

@@ -14,6 +14,7 @@ import logging
 import bs4
 import pyaml
 import requests
+import yaml
 
 from . import utils
 from . import cran_skeleton
@@ -22,7 +23,7 @@ logging.getLogger("requests").setLevel(logging.WARNING)
 
 logger = utils.setup_logger(__name__)
 
-base_url = 'http://bioconductor.org/packages/'
+base_url = 'https://bioconductor.org/packages/'
 
 # Packages that might be specified in the DESCRIPTION of a package as
 # dependencies, but since they're built-in we don't need to specify them in
@@ -221,8 +222,51 @@ def find_best_bioc_version(package, version):
     )
 
 
+def fetchPackages(bioc_version):
+    """
+    Return a dictionary of all bioconductor packages in a given release:
+
+    {package: {Version: "version",
+               Depends: [list],
+               Suggests: [list],
+               MD5sum: "hash",
+               License: "foo",
+               NeedsCompilation: boolean},
+              ...
+    }
+    """
+    d = dict()
+    packages_urls = [os.path.join(base_url, bioc_version, 'bioc', 'src', 'contrib', 'PACKAGES'),
+                     os.path.join(base_url, bioc_version, 'data', 'annotation', 'src', 'contrib', 'PACKAGES'),
+                     os.path.join(base_url, bioc_version, 'data', 'experiment', 'src', 'contrib', 'PACKAGES')]
+    for url in packages_urls:
+        req = requests.get(url)
+        if not req.ok:
+            sys.exit("ERROR: Could not fetch {}!\n".format(url))
+        for pkg in req.text.split("\n\n"):
+            y = yaml.load(pkg)
+            d[y['Package']] = y
+    return d
+
+
+def parseDescription(txt):
+    """
+    Parse the DESCRIPTION text file, returning a dictionary
+    """
+    d = dict()
+    lastKey = None
+    for line in txt.split("\n"):
+        if line.startswith(" ") or ":" not in line:
+            d[lastKey] += " " + line.strip()
+        else:
+            idx = line.index(":")
+            lastKey = line[:idx]
+            d[lastKey] = line[idx+2:].strip()
+    return d
+
+
 class BioCProjectPage(object):
-    def __init__(self, package, bioc_version=None, pkg_version=None):
+    def __init__(self, package, bioc_version=None, pkg_version=None, packages=None):
         """
         Represents a single Bioconductor package page and provides access to
         scraped data.
@@ -246,6 +290,7 @@ class BioCProjectPage(object):
         self._bioconductor_tarball_url = None
         self.is_data_package = False
         self.package_lower = package.lower()
+        self.extra = None
 
         # If no version specified, assume the latest
         if not self.bioc_version:
@@ -264,6 +309,13 @@ class BioCProjectPage(object):
                 base_url, self.bioc_version, 'data', 'experiment', 'html',
                 package + '.html'),
         }
+
+        # Fetch a list of all packages, so dependency versions can be calculated
+        if not packages:
+            self.packages = fetchPackages(self.bioc_version)
+        else:
+            self.packages = packages
+
         tried = []
         for label, url in htmls.items():
             request = requests.get(url)
@@ -473,23 +525,12 @@ class BioCProjectPage(object):
         t = tarfile.open(self.cached_tarball)
         d = t.extractfile(os.path.join(self.package, 'DESCRIPTION')).read()
         self._contents = d
-        c = configparser.ConfigParser(strict=False)
-
-        # On-spec config files need a "section", but the DESCRIPTION file
-        # doesn't have one. So we just add a fake section, and let the
-        # configparser module take care of the details of parsing.
-        c.read_string('[top]\n' + d.decode('UTF-8'))
-        e = c['top']
-
-        # Glue together newlines
-        for k in e.keys():
-            e[k] = e[k].replace('\n', ' ')
-
-        return dict(e)
+        e = parseDescription(d.decode('UTF-8'))
+        return e
 
     @property
     def license(self):
-        return self.description['license']
+        return self.description['License']
 
     @property
     def imports(self):
@@ -497,7 +538,7 @@ class BioCProjectPage(object):
         List of "imports" from the DESCRIPTION file
         """
         try:
-            return [i.strip() for i in self.description['imports'].replace(' ', '').split(',')]
+            return [i.strip() for i in self.description['Imports'].replace(' ', '').split(',')]
         except KeyError:
             return []
 
@@ -507,7 +548,7 @@ class BioCProjectPage(object):
         List of "depends" from the DESCRIPTION file
         """
         try:
-            return [i.strip() for i in self.description['depends'].replace(' ', '').split(',')]
+            return [i.strip() for i in self.description['Depends'].replace(' ', '').split(',')]
         except KeyError:
             return []
 
@@ -517,7 +558,7 @@ class BioCProjectPage(object):
         List of "linkingto" from the DESCRIPTION file
         """
         try:
-            return [i.strip() for i in self.description['linkingto'].replace(' ', '').split(',')]
+            return [i.strip() for i in self.description['LinkingTo'].replace(' ', '').split(',')]
         except KeyError:
             return []
 
@@ -549,6 +590,27 @@ class BioCProjectPage(object):
             else:
                 raise ValueError("Found {0} toks: {1}".format(len(toks), toks))
         return results
+
+    def pin_version(self, name):
+        """
+        Given a package name, return the version pin string.
+
+        For example, if version 1.2.3 is in the current bioconductor release,
+        then return >=1.2.0,<1.4.0.
+
+        The following have 2 digit versions:
+          - BSgenome.Vvinifera.URGI.IGGP8X
+          - DO.db
+          - BSgenome.Vvinifera.URGI.IGGP12Xv0
+          - BSgenome.Vvinifera.URGI.IGGP12Xv2
+        """
+        v = str(self.packages[name]['Version'])
+        # There are a few packages with only major.minor versions!
+        s = v.split(".")
+        if len(s) == 3:
+            return ">={}.{}.0,<{}.{}.0".format(s[0], s[1], s[0], int(s[1]) + 2)
+        else:
+            return "{}.{}".format(s[0], s[1])
 
     @property
     def dependencies(self):
@@ -586,10 +648,10 @@ class BioCProjectPage(object):
 
             # Try finding the dependency on the bioconductor site; if it can't
             # be found then we assume it's in CRAN.
-            try:
-                BioCProjectPage(name, bioc_version=self.bioc_version)
+            if name in self.packages:
                 prefix = 'bioconductor-'
-            except PageNotFoundError:
+                version = self.pin_version(name)
+            else:
                 prefix = 'r-'
 
             logger.info('{0:>12} dependency: name="{1}" version="{2}"'.format(
@@ -619,8 +681,8 @@ class BioCProjectPage(object):
                 dependency_mapping[prefix + name.lower() + version] = name
 
         if (
-            (self.description.get('needscompilation', 'no') == 'yes') or
-            (self.description.get('linkingto', None) is not None)
+            (self.description.get('NeedsCompilation', 'no') == 'yes') or
+            (self.description.get('LinkingTo', None) is not None)
         ):
             # Modified from conda_build.skeletons.cran
             #
@@ -794,10 +856,13 @@ class BioCProjectPage(object):
                 'about', OrderedDict((
                     ('home', sub_placeholders(self.url)),
                     ('license', self.license),
-                    ('summary', self.description['description']),
+                    ('summary', self.description['Description']),
                 )),
             ),
         ))
+
+        if self.extra:
+            d['extra'] = self.extra
 
         if self._cb3_build_reqs:
             d['requirements']['build'] = []
@@ -877,7 +942,7 @@ def write_recipe_recursive(proj, seen_dependencies, recipe_dir, config, force,
 
 def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
                  pkg_version=None, versioned=False, recursive=False, seen_dependencies=None,
-                 skip_if_in_channels=None):
+                 packages=None, skip_if_in_channels=None):
     """
     Write the meta.yaml and build.sh files. If the package is detected to be
     a data package (bsed on the detected URL from Bioconductor), then also
@@ -915,12 +980,16 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
         Dependencies to skip and will be updated with any packages built by
         this function. Used internally when `recursive=True`.
 
+    packages : dict
+        A dictionary, as returned by fetchPackages(), of all packages in a
+        given bioconductor release and their versions.
+
     skip_if_in_channels : list or None
         List of channels whose existing packages will be automatically added to
         `seen_dependencies`. Only has an effect if `recursive=True`.
     """
     config = utils.load_config(config)
-    proj = BioCProjectPage(package, bioc_version, pkg_version)
+    proj = BioCProjectPage(package, bioc_version, pkg_version, packages=packages)
     logger.info('Making recipe for: {}'.format(package))
 
     if seen_dependencies is None:
@@ -958,8 +1027,8 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
     # *has* changed, then bump the version number.
     meta_file = os.path.join(recipe_dir, 'meta.yaml')
     if os.path.exists(meta_file):
-        updated_meta = utils.load_first_metadata(proj.meta_yaml).meta
-        current_meta = utils.load_first_metadata(meta_file).meta
+        updated_meta = utils.load_first_metadata(proj.meta_yaml, finalize=False).meta
+        current_meta = utils.load_first_metadata(meta_file, finalize=False).meta
 
         # pop off the version and build numbers so we can compare the rest of
         # the dicts
@@ -974,6 +1043,9 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
             (updated_meta != current_meta)
         ):
             proj.build_number = int(current_build_number) + 1
+        if 'extra' in current_meta:
+            exclude = set(['final', 'copy_test_source_files'])
+            proj.extra = {x: y for x, y in current_meta['extra'].items() if x not in exclude}
 
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
         fout.write(open(proj.meta_yaml).read())
