@@ -243,7 +243,7 @@ def fetchPackages(bioc_version):
         req = requests.get(url)
         if not req.ok:
             sys.exit("ERROR: Could not fetch {}!\n".format(url))
-        for pkg in req.text.split("\n\n"):
+        for pkg in req.text.strip().split("\n\n"):
             y = yaml.load(pkg)
             d[y['Package']] = y
     return d
