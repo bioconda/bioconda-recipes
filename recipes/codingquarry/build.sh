@@ -3,8 +3,11 @@
 #modify makefile to use correct compiler c++
 sed -i.bak -e 's/\${CC}/${CXX}/g' -e 's/\${CFLAGS}/${CXXFLAGS}/g' makefile
 
+# Remove explicit CC, CXX, and LDFLAGS definitions to use conda ones
+sed -i.bak '1,4d' makefile
+
 if [ "$(uname)" == Darwin ] ; then
-  CXXFLAGS="-Wl -rpath ${PREFIX}/lib -L${PREFIX}/lib -fopenmp"
+  CXXFLAGS="-Wl,-rpath ${PREFIX}/lib -L${PREFIX}/lib -fopenmp"
 else
   CXXFLAGS="-fopenmp -g -O3"
 fi
