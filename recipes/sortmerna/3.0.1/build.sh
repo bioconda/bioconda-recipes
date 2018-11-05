@@ -10,8 +10,8 @@ ls ..
 echo "current path"
 pwd
 export BUILDPATH=$(pwd)
-mkdir -p $SMR_HOME/3rdparty/rocksdb
-pushd $SMR_HOME/3rdparty/rocksdb
+mkdir -p $SMR_HOME/3rdparty/rocksd/build/Release
+pushd $SMR_HOME/3rdparty/rocksdb/build/Release
 echo "postpush content"
 ls
 echo "postpush path"
