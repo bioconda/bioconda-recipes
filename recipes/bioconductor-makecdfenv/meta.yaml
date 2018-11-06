@@ -1,6 +1,6 @@
-{% set version = "1.54.0" %}
+{% set version = "1.56.0" %}
 {% set name = "makecdfenv" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,26 +8,31 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 0a2482b880ea8bc4afc4b90ee4e66b95c9f26a752a63ebf6c0b7312542fbd59d
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 2bd03184374ccde9683d2b614183918217f9364fa5b51035a67b34dac11d04b5
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
-    - bioconductor-affy
-    - bioconductor-affyio
-    - bioconductor-biobase
-    - bioconductor-zlibbioc
+    - 'bioconductor-affy >=1.58.0,<1.60.0'
+    - 'bioconductor-affyio >=1.50.0,<1.52.0'
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-zlibbioc >=1.26.0,<1.28.0'
     - r-base
   run:
-    - bioconductor-affy
-    - bioconductor-affyio
-    - bioconductor-biobase
-    - bioconductor-zlibbioc
+    - 'bioconductor-affy >=1.58.0,<1.60.0'
+    - 'bioconductor-affyio >=1.50.0,<1.52.0'
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-zlibbioc >=1.26.0,<1.28.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -35,7 +40,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'This package has two functions. One reads a Affymetrix chip description file (CDF) and creates a hash table environment containing the location/probe set membership mapping. The other creates a package that automatically loads that environment.'
-
 extra:
   identifiers:
     - biotools:makecdfenv

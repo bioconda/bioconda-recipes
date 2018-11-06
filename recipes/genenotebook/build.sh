@@ -2,11 +2,8 @@
 
 set -exo pipefail
 
-
 outdir=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 mkdir -p $outdir $PREFIX/bin
-
-pwd
 ls -l .
 
 npm install --unsafe-perm
