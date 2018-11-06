@@ -539,7 +539,7 @@ def dependent(
 def bioconductor_skeleton(
     recipe_folder, config, package, versioned=False, force=False,
     pkg_version=None, bioc_version=None, loglevel='debug', recursive=False,
-    skip_if_in_channels=['conda-forge', 'bioconda'], update_all=False,
+    skip_if_in_channels=['conda-forge', 'bioconda'],
 ):
     """
     Build a Bioconductor recipe. The recipe will be created in the `recipes`
