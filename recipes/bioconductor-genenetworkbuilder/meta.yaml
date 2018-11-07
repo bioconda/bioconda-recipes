@@ -1,0 +1,48 @@
+{% set version = "1.24.0" %}
+{% set name = "GeneNetworkBuilder" %}
+{% set bioc = "3.8" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 445338f26d30a4211c4d48257e4676c6a7aec0b8dcddff270fcaba24b41537ef
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  host:
+    - 'bioconductor-graph >=1.60.0,<1.62.0'
+    - 'bioconductor-rgraphviz >=2.26.0,<2.28.0'
+    - r-base
+    - r-htmlwidgets
+    - r-plyr
+    - 'r-rcpp >=0.9.13'
+    - r-rjson
+    - r-xml
+  run:
+    - 'bioconductor-graph >=1.60.0,<1.62.0'
+    - 'bioconductor-rgraphviz >=2.26.0,<2.28.0'
+    - r-base
+    - r-htmlwidgets
+    - r-plyr
+    - 'r-rcpp >=0.9.13'
+    - r-rjson
+    - r-xml
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'Appliation for discovering direct or indirect targets of transcription factors using ChIP-chip or ChIP-seq, and microarray or RNA-seq gene expression data. Inputting a list of genes of potential targets of one TF from ChIP-chip or ChIP-seq, and the gene expression results, GeneNetworkBuilder generates a regulatory network of the TF.'

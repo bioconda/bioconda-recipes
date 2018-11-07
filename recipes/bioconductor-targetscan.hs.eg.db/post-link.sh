@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="targetscan.Hs.eg.db_0.6.1.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/targetscan.Hs.eg.db_0.6.1.tar.gz"
+  "http://bioconductor.org/packages/3.8/data/annotation/src/contrib/targetscan.Hs.eg.db_0.6.1.tar.gz"
   "https://bioarchive.galaxyproject.org/targetscan.Hs.eg.db_0.6.1.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-targetscan.hs.eg.db/bioconductor-targetscan.hs.eg.db_0.6.1_src_all.tar.gz"
 )

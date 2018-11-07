@@ -1,0 +1,37 @@
+{% set version = "2.22.0" %}
+{% set name = "BAGS" %}
+{% set bioc = "3.8" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 7f5ca7bc34b031803fcf3f2e416ec0c8c0d4bfe38a0b23efcc3b78f49cabf48f
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  host:
+    - 'bioconductor-biobase >=2.42.0,<2.44.0'
+    - 'bioconductor-breastcancervdx >=1.20.0,<1.22.0'
+    - r-base
+  run:
+    - 'bioconductor-biobase >=2.42.0,<2.44.0'
+    - 'bioconductor-breastcancervdx >=1.20.0,<1.22.0'
+    - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'R package providing functions to perform geneset significance analysis over simple cross-sectional data between 2 and 5 phenotypes of interest.'

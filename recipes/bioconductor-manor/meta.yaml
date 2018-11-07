@@ -1,0 +1,35 @@
+{% set version = "1.54.0" %}
+{% set name = "MANOR" %}
+{% set bioc = "3.8" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 68f8ac90cc4725402e11fb7c6d14dc8c4f0f63d19841f1f52176a4db54385a80
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  host:
+    - 'bioconductor-glad >=2.46.0,<2.48.0'
+    - r-base
+  run:
+    - 'bioconductor-glad >=2.46.0,<2.48.0'
+    - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'Importation, normalization, visualization, and quality control functions to correct identified sources of variability in array-CGH experiments.'
