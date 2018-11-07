@@ -1,18 +1,19 @@
-{% set version = "1.0" %}
-{% set sha256 = "44e2837de6ac9dab22c615c874212f421c11559a9cf3aef037c5c6618a10e8fb" %}
+{% set version = "1.0.1" %}
+{% set sha256 = "c2e2be06cb2ba6f1e346544ca3902461ee5b0c4960a98c800a56993a4478bcd2" %}
 
 package:
   name: 'wgfast'
   version: '{{ version }}'
 
 source:
-  url: https://github.com/FofanovLab/wgfast/archive/{{ version }}.tar.gz
+  url: https://github.com/FofanovLab/wgfast/archive/v{{ version }}.tar.gz
   sha256: '{{ sha256 }}'
 
 build:
   number: 0
   entry_points:
     - wgfast = wgfast.main:main
+    - wgfast_prep = wgfast.tools.wgfast_prep:main
 
 requirements:
   build:
@@ -24,12 +25,16 @@ requirements:
     - dendropy # -c bioconda
     - samtools # -c bioconda
     - bwa==0.7.8
-    - java-1.7.0-openjdk-cos6-x86_64 # -c anaconda
-    - java-jdk # -c anaconda
+    - bbmap # -c bioconda
+    - raxml # -c bioconda
+    - picard # bioconda
 
 test:
   imports:
     - wgfast
+  commands:
+    - wgfast --help > /dev/null
+    - wgfast_prep --help > /dev/null
 
 about:
   home: https://github.com/jasonsahl/wgfast
