@@ -1,4 +1,3 @@
-#!/bin/bash
 $R CMD INSTALL --build .
 
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
@@ -8,9 +7,6 @@ mkdir -p $PREFIX/bin
 
 perl -pi -e 'print "#!/opt/anaconda1anaconda2anaconda3/bin/Rscript\n" if $. == 1' scripts/runIchorCNA.R
 perl -pi -e 'print "#!/opt/anaconda1anaconda2anaconda3/bin/Rscript\n" if $. == 1' scripts/createPanelOfNormals.R
-
-mv scripts/runIchorCNA.R $outdir/scripts/runIchorCNA.R
-mv scripts/createPanelOfNormals.R $outdir/scripts/ichorCNA_createPanelOfNormals.R
 
 chmod a+x $outdir/scripts/*.R
 ln -s $outdir/scripts/runIchorCNA.R $PREFIX/bin
