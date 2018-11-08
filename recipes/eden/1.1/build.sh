@@ -1,4 +1,5 @@
 #!/bin/sh
+export LD_LIBRARY_PATH="$PREFIX/lib:$LD_LIBRARY_PATH"
 export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
