@@ -231,37 +231,30 @@ def fetchPackages(bioc_version):
                Suggests: [list],
                MD5sum: "hash",
                License: "foo",
+               Description: "Something...",
                NeedsCompilation: boolean},
               ...
     }
     """
     d = dict()
-    packages_urls = [os.path.join(base_url, bioc_version, 'bioc', 'src', 'contrib', 'PACKAGES'),
-                     os.path.join(base_url, bioc_version, 'data', 'annotation', 'src', 'contrib', 'PACKAGES'),
-                     os.path.join(base_url, bioc_version, 'data', 'experiment', 'src', 'contrib', 'PACKAGES')]
+    packages_urls = [os.path.join(base_url, bioc_version, 'bioc', 'VIEWS'),
+                     os.path.join(base_url, bioc_version, 'data', 'annotation', 'VIEWS'),
+                     os.path.join(base_url, bioc_version, 'data', 'experiment', 'VIEWS')]
     for url in packages_urls:
         req = requests.get(url)
         if not req.ok:
             sys.exit("ERROR: Could not fetch {}!\n".format(url))
         for pkg in req.text.strip().split("\n\n"):
-            y = yaml.load(pkg)
-            d[y['Package']] = y
-    return d
-
-
-def parseDescription(txt):
-    """
-    Parse the DESCRIPTION text file, returning a dictionary
-    """
-    d = dict()
-    lastKey = None
-    for line in txt.split("\n"):
-        if line.startswith(" ") or ":" not in line:
-            d[lastKey] += " " + line.strip()
-        else:
-            idx = line.index(":")
-            lastKey = line[:idx]
-            d[lastKey] = line[idx+2:].strip()
+            pkgDict = dict()
+            lastKey = None
+            for line in pkg.split("\n"):
+                if line.startswith(" "):
+                    pkgDict[lastKey] += " {}".format(line.strip())
+                elif ":" in line:
+                    idx = line.index(":")
+                    lastKey = line[:idx]
+                    pkgDict[lastKey] = line[idx + 2:].strip()
+            d[pkgDict['Package']] = pkgDict
     return d
 
 
@@ -278,7 +271,6 @@ class BioCProjectPage(object):
         self.package = package
         self.package_lower = package.lower()
         self._md5 = None
-        self._sha256 = None
         self._cached_tarball = None
         self._dependencies = None
         self.build_number = 0
@@ -298,17 +290,6 @@ class BioCProjectPage(object):
                 self.bioc_version = latest_bioconductor_version()
             else:
                 self.bioc_version = find_best_bioc_version(self.package, self._pkg_version)
-        htmls = {
-            'regular_package': os.path.join(
-                base_url, self.bioc_version, 'bioc', 'html', package
-                + '.html'),
-            'annotation_package': os.path.join(
-                base_url, self.bioc_version, 'data', 'annotation', 'html',
-                package + '.html'),
-            'experiment_package': os.path.join(
-                base_url, self.bioc_version, 'data', 'experiment', 'html',
-                package + '.html'),
-        }
 
         # Fetch a list of all packages, so dependency versions can be calculated
         if not packages:
@@ -316,80 +297,7 @@ class BioCProjectPage(object):
         else:
             self.packages = packages
 
-        tried = []
-        for label, url in htmls.items():
-            request = requests.get(url)
-            tried.append(url)
-            if request:
-                break
-
-        if not request:
-            raise PageNotFoundError(
-                'Could not find HTML page for {0.package}. Tried: '
-                '{1}'.format(self, ', '.join(tried)))
-
-        # Since we provide the "short link" we will get redirected. Using
-        # requests allows us to keep track of the final destination URL,
-        # which we need for reconstructing the tarball URL.
-        self.url = request.url
-            
-        # If no version has been provided, the following code finds the latest
-        # version by finding and scraping the HTML page for the package's
-        # "Details" table.
-
-        if self._pkg_version is not None:
-            self.version = self._pkg_version
-
-        else:
-            htmls = {
-                'regular_package': os.path.join(
-                    base_url, self.bioc_version, 'bioc', 'html',
-                    package + '.html'),
-                'annotation_package': os.path.join(
-                    base_url, self.bioc_version, 'data', 'annotation', 'html',
-                    package + '.html'),
-                'experiment_package': os.path.join(
-                    base_url, self.bioc_version, 'data', 'experiment', 'html',
-                    package + '.html'),
-            }
-            tried = []
-            for label, url in htmls.items():
-                request = requests.get(url)
-                tried.append(url)
-                if request:
-                    break
-
-            if not request:
-                raise PageNotFoundError(
-                    'Could not find HTML page for {0.package}. Tried: '
-                    '{1}'.format(self, ', '.join(tried)))
-
-            # Since we provide the "short link" we will get redirected. Using
-            # requests allows us to keep track of the final destination URL,
-            # which we need for reconstructing the tarball URL.
-            self.url = request.url
-
-            # The table at the bottom of the page has the info we want. An
-            # earlier draft of this script parsed the dependencies from the
-            # details table.  That's still an option if we need a double-check
-            # on the DESCRIPTION fields. For now, we're grabbing the version
-            # information from the table.
-            soup = bs4.BeautifulSoup(request.content, 'html.parser')
-            details_table = soup.find_all(attrs={'class': 'details'})[0]
-
-            parsed_html_version = None
-            for td in details_table.findAll('td'):
-                if td.getText() == 'Version':
-                    parsed_html_version = td.findNext().getText()
-                    break
-
-            if parsed_html_version is None:
-                raise ValueError(
-                    "Could not scrape latest version information from "
-                    "{0}".format(self.url))
-
-            self.version = parsed_html_version
-
+        self.version = self.packages[package]['Version']
         self.depends_on_gcc = False
 
     @property
@@ -492,8 +400,8 @@ class BioCProjectPage(object):
         Downloads the tarball to the `cached_bioconductor_tarballs` dir if one
         hasn't already been downloaded for this package.
 
-        This is because we need the whole tarball to get the DESCRIPTION file
-        and to generate an md5 hash, so we might as well save it somewhere.
+        This is because we need the whole tarball to determine which compilers
+        are needed.
         """
         if self._cached_tarball:
             return self._cached_tarball
@@ -520,45 +428,41 @@ class BioCProjectPage(object):
     @property
     def description(self):
         """
-        Extract the DESCRIPTION file from the tarball and parse it.
+        The "Description" from the VIEW file
         """
-        t = tarfile.open(self.cached_tarball)
-        d = t.extractfile(os.path.join(self.package, 'DESCRIPTION')).read()
-        self._contents = d
-        e = parseDescription(d.decode('UTF-8'))
-        return e
+        return self.packages[self.package]['Description']
 
     @property
     def license(self):
-        return self.description['License']
+        return self.packages[self.package]['License']
 
     @property
     def imports(self):
         """
-        List of "imports" from the DESCRIPTION file
+        List of "imports" from the VIEW file
         """
         try:
-            return [i.strip() for i in self.description['Imports'].replace(' ', '').split(',')]
+            return [i.strip() for i in self.packages[self.package]['Imports'].replace(' ', '').split(',')]
         except KeyError:
             return []
 
     @property
     def depends(self):
         """
-        List of "depends" from the DESCRIPTION file
+        List of "depends" from the VIEW file
         """
         try:
-            return [i.strip() for i in self.description['Depends'].replace(' ', '').split(',')]
+            return [i.strip() for i in self.packages[self.package]['Depends'].replace(' ', '').split(',')]
         except KeyError:
             return []
 
     @property
     def linkingto(self):
         """
-        List of "linkingto" from the DESCRIPTION file
+        List of "linkingto" from the VIEW file
         """
         try:
-            return [i.strip() for i in self.description['LinkingTo'].replace(' ', '').split(',')]
+            return [i.strip() for i in self.packages[self.package]['LinkingTo'].replace(' ', '').split(',')]
         except KeyError:
             return []
 
@@ -681,8 +585,8 @@ class BioCProjectPage(object):
                 dependency_mapping[prefix + name.lower() + version] = name
 
         if (
-            (self.description.get('NeedsCompilation', 'no') == 'yes') or
-            (self.description.get('LinkingTo', None) is not None)
+            (self.packages[self.package].get('NeedsCompilation', 'no') == 'yes') or
+            (self.packages[self.package].get('LinkingTo', None) is not None)
         ):
             # Modified from conda_build.skeletons.cran
             #
@@ -741,21 +645,7 @@ class BioCProjectPage(object):
         Calculate the md5 hash of the tarball so it can be filled into the
         meta.yaml.
         """
-        if self._md5 is None:
-            self._md5 = hashlib.md5(
-                open(self.cached_tarball, 'rb').read()).hexdigest()
-        return self._md5
-
-    @property
-    def sha256(self):
-        """
-        Calculate the sha256 hash of the tarball so it can be filled into the
-        meta.yaml.
-        """
-        if self._sha256 is None:
-            self._sha256 = hashlib.sha256(
-                open(self.cached_tarball, 'rb').read()).hexdigest()
-        return self._sha256
+        return self.packages[self.package]['MD5sum']
 
     @property
     def meta_yaml(self):
@@ -826,7 +716,7 @@ class BioCProjectPage(object):
             (
                 'source', OrderedDict((
                     ('url', url),
-                    ('sha256', self.sha256),
+                    ('md5', self.md5),
                 )),
             ),
             (
