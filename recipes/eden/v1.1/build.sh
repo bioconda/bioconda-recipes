@@ -1,5 +1,4 @@
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+#!/bin/sh
 
 export CXXFLAGS="$CXXFLAGS -I$PREFIX/include"
 
