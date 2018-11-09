@@ -10,6 +10,8 @@ import git
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
+class GitHandlerFailure(Exception):
+    """Something went wrong interacting with git"""
 
 class GitHandler():
     """GitPython abstraction
@@ -139,7 +141,11 @@ class GitHandler():
         self.repo.index.commit(f"Update {recipe} to {recipe.version}")
         if not self.dry_run:
             logger.info("Pushing branch %s", branch_name)
-            self.repo.remotes["origin"].push(branch_name)
+            res = self.origin.push(branch_name)
+            failed = res[0].flags & ~(git.PushInfo.FAST_FORWARD | git.PushInfo.NEW_HEAD)
+            if failed:
+                logger.error("Failed to push branch %s: %s", branch_name, res[0].summary)
+                raise GitHandlerFailure(res[0].summary)
         else:
             logger.info("Would push branch %s", branch_name)
         return True
