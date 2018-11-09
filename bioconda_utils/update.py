@@ -63,13 +63,13 @@ Todo:
  - [ ] deal with multi-output packages
  - [ ] deal with linux/osx packages (selectors)
  - [ ] deal with already open PRs
- - [ ] handle remote/local git correctly
+ - [x] handle remote/local git correctly
  - [ ] collect editors from log
  - [ ] collect author from GithubHoster
  - [ ] ping author if in bioconda team
  - [ ] show recent versions in PR body
  - [ ] allow custom url patterns in meta.yaml
- - [ ] randomize recipe order
+ - [x] randomize recipe order
  - [x] parse pypi (pypi.io, pypi.python.org, files.pythonhosted.org)
  - [ ] parse bitbucket
  - [ ] parse sourceforge (downloads.sourceforge.net, sourceforge.net)
@@ -92,6 +92,7 @@ import json
 import logging
 import os
 import pickle
+import random
 
 from collections import defaultdict, Counter
 from copy import copy
@@ -473,11 +474,13 @@ class Scanner():
         async with aiohttp.ClientSession() as session:
             self.session = session
             await asyncio.gather(*(filt.async_init() for filt in self.filters))
+            recipes = list(utils.get_recipes(self.recipe_folder, self.packages))
+            random.shuffle(recipes)
             coros = [
                 asyncio.ensure_future(
                     self.process(recipe_dir)
                 )
-                for recipe_dir in utils.get_recipes(self.recipe_folder, self.packages)
+                for recipe_dir in recipes
             ]
             try:
                 with tqdm(asyncio.as_completed(coros),
@@ -711,6 +714,7 @@ class UpdateVersion(Filter):
         if latest == recipe.version:
             if recipe.on_branch:
                 raise self.UpdateInProgress(recipe)
+                # Fixme: what if the PR isn't there?
             else:
                 raise self.UpToDate(recipe)
 
