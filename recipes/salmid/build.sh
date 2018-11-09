@@ -1,5 +1,5 @@
 #!/bin/sh
 
-cp SalmID.py version.py invA_mers_dict rpoB_mers_dict $PREFIX/bin
+poetry build --format wheel
+pip install --no-deps dist/salmid*.whl
 
-chmod a+x $PREFIX/bin/SalmID.py
