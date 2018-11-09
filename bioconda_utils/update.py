@@ -213,8 +213,8 @@ class Recipe():
     class EmptyRecipe(RecipeError):
         template = "is empty"
 
-    class MissingBuildNumber(RecipeError):
-        template = "is missing build number"
+    class MissingBuild(RecipeError):
+        template = "is missing build section"
 
     class HasSelector(RecipeError):
         template = "has selector in line %i (replace failed)"
@@ -334,7 +334,7 @@ class Recipe():
         # get lines covered by keys listed in ``within``
         start: Optional[int] = None
         for key in self.meta.keys():
-            lineno = self.meta[key].lc.line
+            lineno = self.meta.lc.key(key)[0]
             if key in within:
                 if start is None:
                     start = lineno
@@ -360,11 +360,20 @@ class Recipe():
         return replacements
 
     def reset_buildnumber(self):
-        """Resets the build number"""
+        """Resets the build number
+
+        If the build number is missing, it is added after build.
+        """
         try:
             lineno: int = self.meta["build"].lc.key("number")[0]
         except KeyError:  # no build number?
-            raise self.MissingBuildNumber(self)
+            if "build" in self.meta and self.meta["build"] is not None:
+                build = self.meta["build"]
+                first_in_build = next(iter(build))
+                lineno, colno = build.lc.key(first_in_build)
+                self.meta_yaml.insert(lineno, " "*colno + "number: 0")
+            else:
+                raise self.MissingBuild(self)
 
         line = self.meta_yaml[lineno]
         line = re.sub("number: [0-9]+", "number: 0", line)
