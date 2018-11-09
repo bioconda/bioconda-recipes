@@ -62,7 +62,7 @@ Todo:
 
  - [ ] deal with multi-output packages
  - [ ] deal with linux/osx packages (selectors)
- - [ ] deal with already open PRs
+ - [x] deal with already open PRs
  - [x] handle remote/local git correctly
  - [ ] collect editors from log
  - [ ] collect author from GithubHoster
@@ -221,7 +221,8 @@ class Recipe():
 
     #: Variables to pass to Jinja when rendering recipe
     JINJA_VARS = {
-        "cran_mirror": "https://cloud.r-project.org"
+        "cran_mirror": "https://cloud.r-project.org",
+        "compiler": lambda x: f"compiler_{x}",
     }
 
     #: Name of key under ``extra`` containing config
