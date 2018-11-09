@@ -878,10 +878,6 @@ class GitFilter(Filter):
         """Render branch name from recipe"""
         return f"{cls.branch_prefix}{recipe.reldir.replace('-', '_').replace('/', '_')}"
 
-    def list_branches(self):
-        """List active branches (i.e. those starting with our prefix)"""
-        return self.git.list_branches(self.branch_prefix)
-
     @abc.abstractmethod
     def apply(self, recipe):  # placate pylint by reiterating abstrace method
         pass

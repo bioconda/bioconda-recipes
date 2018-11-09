@@ -88,16 +88,6 @@ class GitHandler():
         else:
             logger.info("Would delete branch %s", branch_name)
 
-    def list_branches(self, branch_prefix):
-        """Get list of branch names starting with **branch_prefix** including
-        both those from local and from remote/origin"""
-        return list(set(
-            branch.name
-            for branch in chain(self.repo.branches,
-                                self.origin.refs)
-            if branch.name.startswith(branch_prefix)
-        ))
-
     def get_local_branch(self, branch_name: str):
         """Finds local branch named **branch_name**"""
         if branch_name in self.repo.branches:
