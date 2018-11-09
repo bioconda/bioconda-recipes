@@ -675,17 +675,19 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
 @arg("--create-pr", action="store_true", help='''Create PR for each update.
      Implies create-branch.''')
 @arg("--max-updates", help='''Exit after ARG updates''')
+@arg("--dry-run", help='''Don't update remote git or github"''')
 def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
            failed_urls=None,
            exclude_subrecipes=None, exclude_channels='conda-forge',
            ignore_blacklists=False,
            check_branch=False, create_branch=False, create_pr=False,
-           max_updates=0):
+           max_updates=0, dry_run=False):
     """
     Updates recipes in recipe_folder
     """
     utils.setup_logger('bioconda_utils', loglevel)
     from . import update
+    from . import githandler
     scanner = update.Scanner(recipe_folder, packages, config, cache+"_scan.pkl")
     if not ignore_blacklists:
         scanner.add(update.ExcludeBlacklisted)
@@ -694,8 +696,8 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
                     always=exclude_subrecipes == "always")
     git_handler = None
     if check_branch or create_branch or create_pr:
-        git_handler = update.GitHandler(recipe_folder)
-        scanner.add(update.LoadFromBranch, git_handler)
+        git_handler = githandler.GitHandler(recipe_folder, dry_run)
+        scanner.add(update.GitLoadRecipe, git_handler)
     else:
         scanner.add(update.LoadRecipe)
     if exclude_channels != ["none"]:
@@ -707,7 +709,7 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
     scanner.add(update.UpdateChecksums)
 
     if create_branch or create_pr:
-        scanner.add(update.CommitToBranch, git_handler)
+        scanner.add(update.GitWriteRecipe, git_handler)
     else:
         scanner.add(update.WriteRecipe)
 
@@ -716,7 +718,7 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
         if not token:
             logger.critical("GITHUB_TOKEN required to create PRs")
             exit(1)
-        scanner.add(update.CreatePullRequest, git_handler, token)
+        scanner.add(update.CreatePullRequest, git_handler, token, dry_run)
     if max_updates:
         scanner.add(update.MaxUpdates, max_updates)
     scanner.run()
