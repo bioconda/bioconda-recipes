@@ -237,10 +237,11 @@ def fetchPackages(bioc_version):
     }
     """
     d = dict()
-    packages_urls = [os.path.join(base_url, bioc_version, 'bioc', 'VIEWS'),
-                     os.path.join(base_url, bioc_version, 'data', 'annotation', 'VIEWS'),
-                     os.path.join(base_url, bioc_version, 'data', 'experiment', 'VIEWS')]
-    for url in packages_urls:
+    packages_urls = [(os.path.join(base_url, bioc_version, 'bioc', 'VIEWS'), 'bioc'),
+                     (os.path.join(base_url, bioc_version, 'data', 'annotation', 'VIEWS'), 'data/annotation'),
+                     (os.path.join(base_url, bioc_version, 'data', 'experiment', 'VIEWS'), 'data/experiment')]
+    packages_urls = packages_urls[1:]
+    for url, prefix in packages_urls:
         req = requests.get(url)
         if not req.ok:
             sys.exit("ERROR: Could not fetch {}!\n".format(url))
@@ -254,6 +255,7 @@ def fetchPackages(bioc_version):
                     idx = line.index(":")
                     lastKey = line[:idx]
                     pkgDict[lastKey] = line[idx + 2:].strip()
+            pkgDict['URLprefix'] = prefix
             d[pkgDict['Package']] = pkgDict
     return d
 
@@ -306,28 +308,13 @@ class BioCProjectPage(object):
         self.depends_on_gcc = False
 
         # Determine the URL
-        htmls = {
-            'regular_package': os.path.join(
-                base_url, self.bioc_version, 'bioc', 'html', package
-                + '.html'),
-            'annotation_package': os.path.join(
-                base_url, self.bioc_version, 'data', 'annotation', 'html',
-                package + '.html'),
-            'experiment_package': os.path.join(
-                base_url, self.bioc_version, 'data', 'experiment', 'html',
-                package + '.html'),
-        }
-        tried = []
-        for label, url in htmls.items():
-            request = requests.get(url)
-            tried.append(url)
-            if request:
-                break
+        url = os.path.join(base_url, self.bioc_version, self.packages[package]['URLprefix'], 'html', package + '.html')
+        request = requests.get(url)
 
         if not request:
             raise PageNotFoundError(
                 'Could not find HTML page for {0.package}. Tried: '
-                '{1}'.format(self, ', '.join(tried)))
+                '{1}'.format(self, url))
 
         # Since we provide the "short link" we will get redirected. Using
         # requests allows us to keep track of the final destination URL,
@@ -368,39 +355,15 @@ class BioCProjectPage(object):
         """
         Return the url to the tarball from the bioconductor site.
         """
-        url = bioconductor_tarball_url(self.package, self.version, self.bioc_version)
+        url = os.path.join(base_url, self.bioc_version, self.packages[self.package]['URLprefix'], self.packages[self.package]['source.ver'])
         response = requests.head(url)
         if response.status_code == 200:
-            return url
-
-    @property
-    def bioconductor_annotation_data_url(self):
-        """
-        Return the url to the tarball from the bioconductor site.
-        """
-        url = bioconductor_annotation_data_url(self.package, self.version, self.bioc_version)
-        response = requests.head(url)
-        if response.status_code == 200:
-            self.is_data_package = True
-            return url
-
-    @property
-    def bioconductor_experiment_data_url(self):
-        """
-        Return the url to the tarball from the bioconductor site.
-        """
-        url = bioconductor_experiment_data_url(self.package, self.version, self.bioc_version)
-        response = requests.head(url)
-        if response.status_code == 200:
-            self.is_data_package = True
             return url
 
     @property
     def tarball_url(self):
         if not self._tarball_url:
             urls = [self.bioconductor_tarball_url,
-                    self.bioconductor_annotation_data_url,
-                    self.bioconductor_experiment_data_url,
                     self.bioarchive_url,
                     self.cargoport_url]
             for url in urls:
@@ -624,6 +587,7 @@ class BioCProjectPage(object):
         ):
             # Modified from conda_build.skeletons.cran
             #
+            logger.info("WTF, we're downloading the tarball!!! Compilation {} LinkingTo {}".format(self.packages[self.package].get('NeedsCompilation', 'no'), self.packages[self.package].get('LinkingTo', None)))
             with tarfile.open(self.cached_tarball) as tf:
                 need_f = any(f.name.lower().endswith(('.f', '.f90', '.f77')) for f in tf)
                 if need_f:
@@ -735,10 +699,12 @@ class BioCProjectPage(object):
         ]
 
         DEPENDENCIES = sorted(self.dependencies)
+        logger.info("A")
 
         additional_run_deps = []
         if self.is_data_package:
             additional_run_deps.append('wget')
+        logger.info("B")
 
         d = OrderedDict((
             (
@@ -784,6 +750,7 @@ class BioCProjectPage(object):
                 )),
             ),
         ))
+        logger.info("C")
 
         if self.extra:
             d['extra'] = self.extra
@@ -792,6 +759,7 @@ class BioCProjectPage(object):
             d['requirements']['build'] = []
         for k, v in self._cb3_build_reqs.items():
             d['requirements']['build'].append(k + '_' + "PLACEHOLDER")
+        logger.info("D")
 
         rendered = pyaml.dumps(d, width=1e6).decode('utf-8')
         rendered = (
@@ -800,13 +768,16 @@ class BioCProjectPage(object):
             '{% set bioc = "' + self.bioc_version + '" %}\n\n' +
             rendered
         )
+        logger.info("E")
 
         for k, v in self._cb3_build_reqs.items():
             rendered = rendered.replace(k + '_' + "PLACEHOLDER", v)
+        logger.info("F")
 
         tmpdir = tempfile.mkdtemp()
         with open(os.path.join(tmpdir, 'meta.yaml'), 'w') as fout:
             fout.write(rendered)
+        logger.info("G finished")
         return fout.name
 
 
@@ -950,6 +921,7 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
     # If the version number has not changed but something else in the recipe
     # *has* changed, then bump the version number.
     meta_file = os.path.join(recipe_dir, 'meta.yaml')
+    logger.info("1")
     if os.path.exists(meta_file):
         updated_meta = utils.load_first_metadata(proj.meta_yaml, finalize=False).meta
         current_meta = utils.load_first_metadata(meta_file, finalize=False).meta
@@ -970,9 +942,11 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
         if 'extra' in current_meta:
             exclude = set(['final', 'copy_test_source_files'])
             proj.extra = {x: y for x, y in current_meta['extra'].items() if x not in exclude}
+    logger.info("2")
 
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
         fout.write(open(proj.meta_yaml).read())
+    logger.info("3")
 
     if not proj.is_data_package:
         with open(os.path.join(recipe_dir, 'build.sh'), 'w') as fout:
