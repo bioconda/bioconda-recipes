@@ -300,6 +300,35 @@ class BioCProjectPage(object):
         self.version = self.packages[package]['Version']
         self.depends_on_gcc = False
 
+        # Determine the URL
+        htmls = {
+            'regular_package': os.path.join(
+                base_url, self.bioc_version, 'bioc', 'html', package
+                + '.html'),
+            'annotation_package': os.path.join(
+                base_url, self.bioc_version, 'data', 'annotation', 'html',
+                package + '.html'),
+            'experiment_package': os.path.join(
+                base_url, self.bioc_version, 'data', 'experiment', 'html',
+                package + '.html'),
+        }
+        tried = []
+        for label, url in htmls.items():
+            request = requests.get(url)
+            tried.append(url)
+            if request:
+                break
+
+        if not request:
+            raise PageNotFoundError(
+                'Could not find HTML page for {0.package}. Tried: '
+                '{1}'.format(self, ', '.join(tried)))
+
+        # Since we provide the "short link" we will get redirected. Using
+        # requests allows us to keep track of the final destination URL,
+        # which we need for reconstructing the tarball URL.
+        self.url = request.url
+
     @property
     def bioarchive_url(self):
         """
