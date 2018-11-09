@@ -927,7 +927,7 @@ class GitLoadRecipe(GitFilter):
                 recipe.on_branch = True
             else:
                 logger.info("Recipe %s: deleting outdated remote %s", recipe, branch_name)
-                self.git.delete_remote_branch(branch_name)
+                await self.scanner.run_io(self.git.delete_remote_branch, branch_name)
         else:
             logger.debug("Recipe %s: loading from master", recipe)
         recipe_text = await self.scanner.run_io(self.git.read_from_branch,
