@@ -79,7 +79,7 @@ Todo:
  - [ ] parse gitlab (gitlab.com, local-install?)
  - [ ] ? process requirements from pypi, cran, cpan
  - [ ] fix branch name for subrecipes
- - [ ] update message should be from master to newest
+ - [x] update message should be from master to newest
  - [x] labels should not be removed when updating PR
 
 
@@ -278,6 +278,8 @@ class Recipe():
         if not self.meta_yaml:
             raise self.EmptyRecipe(self)
         self.render()
+
+    def set_original(self) -> None:
         self.orig = copy(self)
 
     def dump(self):
@@ -894,6 +896,7 @@ class LoadRecipe(Filter):
     async def apply(self, recipe: Recipe):
         async with self.sem, aiofiles.open(recipe.path, encoding="utf-8") as fd:
             recipe.load_from_string(await fd.read())
+            recipe.set_original()
 
 
 class GitLoadRecipe(GitFilter):
@@ -921,21 +924,24 @@ class GitLoadRecipe(GitFilter):
         if local_branch:
             logger.debug("Recipe %s: removing local branch %s", recipe, branch_name)
             self.git.delete_local_branch(local_branch)
-        branch = self.git.master
+
+        logger.debug("Recipe %s: loading from master", recipe)
+        recipe_text = await self.scanner.run_io(self.git.read_from_branch,
+                                                self.git.master, recipe.path)
+        recipe.load_from_string(recipe_text)
+        recipe.set_original()
+
         if remote_branch:
             if await self.git.branch_is_current(remote_branch, recipe.reldir):
-                logger.debug("Recipe %s: loading from remote %s", recipe, branch_name)
-                branch = remote_branch
+                logger.debug("Recipe %s: updating from remote %s", recipe, branch_name)
+                recipe_text = await self.scanner.run_io(self.git.read_from_branch,
+                                                        remote_branch, recipe.path)
+                recipe.load_from_string(recipe_text)
                 recipe.on_branch = True
             else:
+                # FIXME: this silently closes existing PR
                 logger.info("Recipe %s: deleting outdated remote %s", recipe, branch_name)
                 await self.scanner.run_io(self.git.delete_remote_branch, branch_name)
-        else:
-            logger.debug("Recipe %s: loading from master", recipe)
-        recipe_text = await self.scanner.run_io(self.git.read_from_branch,
-                                                branch, recipe.path)
-        recipe.load_from_string(recipe_text)
-        return
 
 
 class WriteRecipe(Filter):
@@ -968,7 +974,7 @@ class GitWriteRecipe(GitFilter):
         if changed:
             await asyncio.sleep(1)  # let push settle before going on
         else:
-            raise self.NoChanges()
+            raise self.NoChanges(recipe)
 
 
 class CreatePullRequest(GitFilter):
@@ -1001,7 +1007,6 @@ class CreatePullRequest(GitFilter):
             pr_number = prs[0]["number"]
             pr = await self.gh.modify_issue(number=pr_number, body=body, title=title)
             logger.info("Updated PR %i updating %s to %s", pr_number, recipe, recipe.version)
-            # FIXME: since we now updated the update, the orig is wrong
         else:
             pr = await self.gh.create_pr(title=title,
                                       from_branch=branch_name,
