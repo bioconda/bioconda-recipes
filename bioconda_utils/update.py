@@ -79,6 +79,8 @@ Todo:
  - [ ] parse gitlab (gitlab.com, local-install?)
  - [ ] ? process requirements from pypi, cran, cpan
  - [ ] fix branch name for subrecipes
+ - [ ] update message should be from master to newest
+ - [x] labels should not be removed when updating PR
 
 
 """
@@ -997,8 +999,7 @@ class CreatePullRequest(GitFilter):
                     logger.error("Found PR %i updating %s: %s", pr["number"],
                                  recipe, pr["title"])
             pr_number = prs[0]["number"]
-            pr = await self.gh.modify_issue(number=pr_number, labels=labels,
-                                            body=body, title=title)
+            pr = await self.gh.modify_issue(number=pr_number, body=body, title=title)
             logger.info("Updated PR %i updating %s to %s", pr_number, recipe, recipe.version)
             # FIXME: since we now updated the update, the orig is wrong
         else:
