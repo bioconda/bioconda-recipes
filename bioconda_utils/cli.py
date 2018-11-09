@@ -564,7 +564,7 @@ def bioconductor_skeleton(
 
     if package == "update-all-packages":
         if not bioc_version:
-            bioc_version = _bioconductor_skeleton.latest_bioconductor_version()
+            bioc_version = _bioconductor_skeleton.latest_bioconductor_release_version()
         packages = _bioconductor_skeleton.fetchPackages(bioc_version)
         problems = []
         for k, v in packages.items():

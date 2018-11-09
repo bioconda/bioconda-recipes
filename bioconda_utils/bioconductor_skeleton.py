@@ -368,6 +368,7 @@ class BioCProjectPage(object):
                     self.bioarchive_url,
                     self.cargoport_url]
             for url in urls:
+                logger.info("trying {}".format(url))
                 if url is not None:
                     response = requests.head(url)
                     if response.status_code == 200:
