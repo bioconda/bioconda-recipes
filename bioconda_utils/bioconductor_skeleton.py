@@ -282,6 +282,7 @@ class BioCProjectPage(object):
         self._bioconductor_tarball_url = None
         self.is_data_package = False
         self.package_lower = package.lower()
+        self.version = pkg_version
         self.extra = None
 
         # If no version specified, assume the latest
@@ -297,7 +298,8 @@ class BioCProjectPage(object):
         else:
             self.packages = packages
 
-        self.version = self.packages[package]['Version']
+        if not pkg_version:
+            self.version = self.packages[package]['Version']
         self.depends_on_gcc = False
 
         # Determine the URL
