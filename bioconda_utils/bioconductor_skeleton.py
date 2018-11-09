@@ -53,23 +53,24 @@ def bioconductor_versions():
     Returns a list of available Bioconductor versions scraped from the
     Bioconductor site.
     """
-    regex = re.compile('^/packages/(?P<version>\d+\.\d+)/$')
-    url = 'https://www.bioconductor.org/about/release-announcements/#release-versions'
+    url = "https://bioconductor.org/config.yaml"
     response = requests.get(url)
-    soup = bs4.BeautifulSoup(response.content, 'html.parser')
-    versions = []
-    for a in soup.find_all('a', href=True):
-        ref = a.attrs['href']
-        m = regex.search(ref)
-        if m:
-            versions.append(m.group('version'))
+    bioc_config = yaml.load(response.text)
+    versions = list(bioc_config["r_ver_for_bioc_ver"].keys())
     versions = sorted(versions, key=float, reverse=True)
     return versions
 
 
-def latest_bioconductor_version():
+def latest_bioconductor_release_version():
     """
-    Latest Bioconductor version scraped from the Bioconductor site.
+    Latest Bioconductor release version.
+    """
+    return bioconductor_versions()[1]
+
+
+def latest_bioconductor_devel_version():
+    """
+    Latest Bioconductor version in development.
     """
     return bioconductor_versions()[0]
 
@@ -290,7 +291,7 @@ class BioCProjectPage(object):
         # If no version specified, assume the latest
         if not self.bioc_version:
             if not self._pkg_version:
-                self.bioc_version = latest_bioconductor_version()
+                self.bioc_version = latest_bioconductor_release_version()
             else:
                 self.bioc_version = find_best_bioc_version(self.package, self._pkg_version)
 
