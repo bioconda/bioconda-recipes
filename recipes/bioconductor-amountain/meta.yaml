@@ -1,6 +1,6 @@
-{% set version = "1.4.0" %}
+{% set version = "1.6.0" %}
 {% set name = "AMOUNTAIN" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,18 +8,24 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 39a43c3cc9dbe341b9bbda154403b25393ae35c1115c5df0b3baed85fa21f47d
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 94d402f778f446eba3c9a75c6ebb8fb7443153652534e1911f1c761c9a0f2edd
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
     - r-base
+    - openblas
   run:
     - r-base
+    - openblas
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
