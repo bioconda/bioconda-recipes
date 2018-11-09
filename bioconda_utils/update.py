@@ -1008,6 +1008,9 @@ class CreatePullRequest(GitFilter):
             pr = await self.gh.modify_issue(number=pr_number, body=body, title=title)
             logger.info("Updated PR %i updating %s to %s", pr_number, recipe, recipe.version)
         else:
+            # CircleCI appears to have problems picking up on our PRs. Let's wait
+            # a while before we create the PR, so the pushed branch has time to settle.
+            await asyncio.sleep(10)
             pr = await self.gh.create_pr(title=title,
                                       from_branch=branch_name,
                                       body=body)
