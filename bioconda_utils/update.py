@@ -933,10 +933,11 @@ class GitLoadRecipe(GitFilter):
 
         if remote_branch:
             if await self.git.branch_is_current(remote_branch, recipe.reldir):
-                logger.debug("Recipe %s: updating from remote %s", recipe, branch_name)
+                logger.info("Recipe %s: updating from remote %s", recipe, branch_name)
                 recipe_text = await self.scanner.run_io(self.git.read_from_branch,
                                                         remote_branch, recipe.path)
                 recipe.load_from_string(recipe_text)
+                await self.scanner.run_io(self.git.create_local_branch, branch_name)
                 recipe.on_branch = True
             else:
                 # FIXME: this silently closes existing PR
