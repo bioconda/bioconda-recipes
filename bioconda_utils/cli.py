@@ -585,13 +585,6 @@ def bioconductor_skeleton(
             seen_dependencies=seen_dependencies,
             skip_if_in_channels=skip_if_in_channels)
 
-    # E.g., r-probmetab has versioned 1.0 and 1.1 dirs in bioconda-recipes, and
-    # this fails to find the meta.yaml files.
-    # if recursive:
-    #     for package in os.listdir(recipe_folder):
-    #         if package[:2] == "r-":
-    #             cran_skeleton.clean_skeleton_files(os.path.join(recipe_folder, package))
-
 
 @arg('recipe', help='''Path to recipe to be cleaned''')
 @arg('--no-windows', action='store_true', help="""Use this when submitting an

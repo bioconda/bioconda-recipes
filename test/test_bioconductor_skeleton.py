@@ -155,7 +155,7 @@ def test_experiment_data(tmpdir):
 def test_nonexistent_pkg(tmpdir):
 
     # no such package exists in the current bioconductor
-    with pytest.raises(bioconductor_skeleton.PageNotFoundError):
+    with pytest.raises(bioconductor_skeleton.PackageNotFoundError):
         bioconductor_skeleton.write_recipe(
             'nonexistent', str(tmpdir), config, recursive=True)
 

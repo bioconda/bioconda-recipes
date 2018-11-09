@@ -298,6 +298,9 @@ class BioCProjectPage(object):
         else:
             self.packages = packages
 
+        if package not in self.packages:
+            raise PackageNotFoundError('{} does not exist in this bioconductor release!'.format(package))
+
         if not pkg_version:
             self.version = self.packages[package]['Version']
         self.depends_on_gcc = False
@@ -777,7 +780,7 @@ class BioCProjectPage(object):
                 'about', OrderedDict((
                     ('home', sub_placeholders(self.url)),
                     ('license', self.license),
-                    ('summary', self.description['Description']),
+                    ('summary', self.packages[self.package]['Description']),
                 )),
             ),
         ))
