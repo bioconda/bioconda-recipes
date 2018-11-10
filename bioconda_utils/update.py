@@ -87,8 +87,6 @@ Todo:
 
 import abc
 import asyncio
-import inspect
-import json
 import logging
 import os
 import pickle
@@ -97,8 +95,7 @@ import random
 from collections import defaultdict, Counter
 from copy import copy
 from hashlib import sha256
-from html.parser import HTMLParser
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 from typing import Any, Dict, List, Mapping, Match, Optional, Pattern, \
     Sequence, Set, Tuple
 
@@ -124,38 +121,6 @@ LegacyVersion = parse_version("").__class__  # pylint: disable=invalid-name
 
 yaml = YAML(typ="rt")  # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
-
-
-#: Matches named capture groups
-#: This is so complicated because we need to parse matched, not-escaped
-#: parentheses to determine where the clause ends.
-#: Requires regex package for recursion.
-RE_CAPGROUP = re.compile(r"\(\?P<(\w+)>(?>[^()]+|\\\(|\\\)|(\((?>[^()]+|\\\(|\\\)|(?2))*\)))*\)")
-
-
-def dedup_named_capture_group(pattern):
-    """Replaces repetitions of capture groups with matches to first instance"""
-    seen: Set[str] = set()
-
-    def replace(match):
-        "inner replace"
-        name: str = match.group(1)
-        if name in seen:
-            return f"(?P={name})"
-        seen.add(name)
-        return match.group(0)
-    return re.sub(RE_CAPGROUP, replace, pattern)
-
-
-def replace_named_capture_group(pattern, vals: Dict[str, str]):
-    """Replaces capture groups with values from **vals**"""
-    def replace(match):
-        "inner replace"
-        name = match.group(1)
-        if name in vals:
-            return vals[name]
-        return match.group(0)
-    return re.sub(RE_CAPGROUP, replace, pattern)
 
 
 class EndProcessing(BaseException):
@@ -685,12 +650,15 @@ class UpdateVersion(Filter):
     class UrlNotVersioned(RecipeError):
         template = "has URL not modified by version change"
 
-    def __init__(self, scanner: "Scanner", failed_file: Optional[str] = None) -> None:
+    def __init__(self, scanner: "Scanner", hoster_factory,
+                 failed_file: Optional[str] = None) -> None:
         super().__init__(scanner)
         #: failed urls - for later inspection
         self.failed_urls: List[str] = []
         #: output file name for failed urls
         self.failed_file = failed_file
+        #: function selecting hoster
+        self.hoster_factory = hoster_factory
 
     def finalize(self):
         stats = Counter()
@@ -755,7 +723,7 @@ class UpdateVersion(Filter):
 
         version_map: Dict[str, Dict[str, Any]] = defaultdict(dict)
         for url in urls:
-            hoster = Hoster.select_hoster(url)
+            hoster = self.hoster_factory(url)
             if not hoster:
                 self.failed_urls += [url]
                 continue
@@ -1049,233 +1017,3 @@ class MaxUpdates(Filter):
         if self.max and self.count == self.max:
             logger.warning("Reached update limit %s", self.count)
             raise EndProcessing()
-
-
-class HosterMeta(abc.ABCMeta):
-    """Meta-Class for Hosters
-
-    By making Hosters classes of a metaclass, rather than instances of a class,
-    we leave the option to add functions to a Hoster.
-    """
-
-    hoster_types: List["HosterMeta"] = []
-
-    def __new__(mcs, name, bases, attrs, **opts):
-        """Creates Hoster classes
-
-        - expands references among ``{var}_pattern`` attributes
-        - compiles ``{var}_pattern`` attributes to ``{var}_re``
-        - registers complete classes
-        """
-        typ = super().__new__(mcs, name, bases, attrs, **opts)
-
-        if inspect.isabstract(typ):
-            return typ
-        mcs.hoster_types.append(typ)
-
-        patterns = {attr.replace("_pattern", ""): getattr(typ, attr)
-                    for attr in dir(typ) if attr.endswith("_pattern")}
-
-        for pat in patterns:
-            # expand pattern references:
-            pattern = ""
-            new_pattern = patterns[pat]
-            while pattern != new_pattern:
-                pattern = new_pattern
-                new_pattern = re.sub(r"(\{\d+,?\d*\})", r"{\1}", pattern)
-                new_pattern = new_pattern.format_map(patterns)
-            patterns[pat] = pattern
-            # fix duplicate capture groups:
-            pattern = dedup_named_capture_group(pattern)
-            # save parsed and compiled pattern
-            setattr(typ, pat + "_pattern", pattern)
-            logger.debug("%s Pattern %s = %s", typ.__name__, pat, pattern)
-            setattr(typ, pat + "_re", re.compile(pattern))
-
-        return typ
-
-    @classmethod
-    def select_hoster(mcs, url: str) -> Optional["Hoster"]:
-        """Select `Hoster` able to handle **url**
-
-        Returns: `Hoster` or `None`
-        """
-        logger.debug("Matching url '%s'", url)
-        for hoster_type in mcs.hoster_types:
-            hoster = hoster_type.try_make_hoster(url)
-            if hoster:
-                return hoster
-        return None
-
-
-class Hoster(metaclass=HosterMeta):
-    """Hoster Baseclass"""
-
-    #: matches upstream version
-    #: - begins with a number
-    #: - then only numbers, characters or one of -, +, ., :, ~
-    #: - at most 31 characters length (to avoid matching checksums)
-    version_pattern: str = r"(?P<version>\d[\da-zA-Z\-+\.:\~]{0,30})"
-
-    #: matches archive file extensions
-    ext_pattern: str = r"(?P<ext>(?i)\.(?:tar\.(?:xz|bz2|gz)|zip|tgz|tbz2|txz))"
-
-    @property
-    @abc.abstractmethod
-    def url_pattern(self) -> str:
-        "matches upstream package url"
-
-    @property
-    @abc.abstractmethod
-    def releases_format(self) -> str:
-        "format template for release page URL"
-
-    def __init__(self, url: str, match: Match[str]) -> None:
-        self.orig_match = match
-        self.releases_url = self.releases_format.format(**match.groupdict())
-        logger.debug("%s matched %s with %s", self.__class__.__name__, url, match.groupdict())
-
-    @classmethod
-    def try_make_hoster(cls, url: str) -> Optional["Hoster"]:
-        """Creates hoster if **url** is matched by its **url_pattern**"""
-        match = cls.url_re.search(url)
-        if match:
-            return cls(url, match)
-        return None
-
-    @classmethod
-    @abc.abstractmethod
-    def get_versions(cls, scanner: Scanner) -> List[Mapping[str, str]]:
-        ""
-
-
-class HrefParser(HTMLParser):
-    """Extract link targets from HTML"""
-    def __init__(self, link_re: Pattern[str]):
-        super().__init__()
-        self.link_re = link_re
-        self.matches: List[Mapping[str, str]] = []
-
-    def handle_starttag(self, tag: str, attrs: List[Tuple[str, str]]) -> None:
-        if tag == "a":
-            for key, val in attrs:
-                if key == "href":
-                    self.handle_a_href(val)
-                    break
-
-    def handle_a_href(self, href: str) -> None:
-        match = self.link_re.search(href)
-        if match:
-            data = match.groupdict()
-            data["href"] = href
-            self.matches.append(data)
-
-    def error(self, message: str) -> None:
-        logger.debug("Error parsing HTML: %s", message)
-
-
-class JSONHoster(Hoster):
-    """Base for Hosters handling release listings in JSON format"""
-
-
-class PyPi(JSONHoster):
-    async def get_versions(self, scanner):
-        text = await scanner.get_text_from_url(self.releases_url)
-        data = json.loads(text)
-
-        latest = data["info"]["version"]
-        for rel in data["releases"][latest]:
-            if rel["packagetype"] == "sdist":
-                rel["releases_url"] = self.releases_url
-                rel["link"] = rel["url"]
-                rel["version"] = latest
-                return [rel]
-        return []
-
-    releases_format = "https://pypi.org/pypi/{package}/json"
-    package_pattern = r"(?P<package>[\w\-\.]+)"
-    source_pattern = r"{package}[-_]{version}{ext}"
-    hoster_pattern = (r"(?P<hoster>"
-                      r"files.pythonhosted.org/packages|"
-                      r"pypi.python.org/packages|"
-                      r"pypi.io/packages)")
-    url_pattern = r"{hoster}/.*/{source}"
-
-
-class HTMLHoster(Hoster):
-    """Base for Hosters handling release listings in HTML format"""
-
-    @property
-    @abc.abstractmethod
-    def link_pattern(self) -> str:
-        "matches links on relase page"
-
-
-    async def get_versions(self, scanner):
-        exclude = set(["version"])
-        vals = {key: val
-                for key, val in self.orig_match.groupdict().items()
-                if key not in exclude}
-        link_pattern = replace_named_capture_group(self.link_pattern, vals)
-        parser = HrefParser(re.compile(link_pattern))
-        parser.feed(await scanner.get_text_from_url(self.releases_url))
-        for match in parser.matches:
-            match["link"] = urljoin(self.releases_url, match["href"])
-            match["releases_url"] = self.releases_url
-        return parser.matches
-
-
-class OrderedHTMLHoster(HTMLHoster):
-    """HTMLHoster for which we can expected newest releases at top
-
-    The point isn't performance, but avoiding hassle with old versions
-    which may follow different versioning schemes.
-    E.g. 0.09 -> 0.10 -> 0.2 -> 0.2.1
-
-    FIXME: If the current version is not in the list, that's likely
-           a pathologic case. Should be handled somewhere.
-    """
-
-    async def get_versions(self, scanner):
-        matches = await super().get_versions(scanner)
-        if not matches:
-            return matches
-        for num, match in enumerate(matches):
-            if match["version"] == self.orig_match["version"]:
-                break
-        else:  # version not in list
-            return matches
-        return matches[:num+1]
-
-
-class GithubRelease(OrderedHTMLHoster):
-    """Matches release artifacts uploaded to Github"""
-    link_pattern = (r"/(?P<account>[\w\-]*)/(?P<project>[\w\-]*)/releases/download/"
-                    r"v?{version}/(?P<fname>[^/]+{ext})")
-    url_pattern = r"github.com{link}"
-    releases_format = "https://github.com/{account}/{project}/releases"
-
-
-class GithubTag(OrderedHTMLHoster):
-    """Matches GitHub repository archives created automatically from tags"""
-    link_pattern = r"/(?P<account>[\w\-]*)/(?P<project>[\w\-]*)/archive/v?{version}{ext}"
-    url_pattern = r"github.com{link}"
-    releases_format = "https://github.com/{account}/{project}/tags"
-
-
-class Bioconductor(HTMLHoster):
-    """Matches R packages hosted at Bioconductor"""
-    link_pattern = r"/src/contrib/(?P<package>[^/]+)_{version}{ext}"
-    url_pattern = r"bioconductor.org/packages/(?P<bioc>[\d\.]+)/bioc{link}"
-    releases_format = "https://bioconductor.org/packages/{bioc}/bioc/html/{package}.html"
-
-
-class DepotGalaxyProject(HTMLHoster):
-    """Matches source backup urls created by cargo-port"""
-    os_pattern = r"_(?P<os>src_all|linux_x86|darwin_x86)"
-    link_pattern = r"(?P<package>[^/]+)_{version}{os}{ext}"
-    url_pattern = r"depot.galaxyproject.org/software/(?P<package>[^/]+)/{link}"
-    releases_format = "https://depot.galaxyproject.org/software/{package}/"
-
-
-logger.info(f"Hosters loaded: %s", [h.__name__ for h in HosterMeta.hoster_types])

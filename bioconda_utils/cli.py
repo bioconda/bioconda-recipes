@@ -705,7 +705,7 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
             exclude_channels = [exclude_channels]
         scanner.add(update.ExcludeOtherChannel, exclude_channels, cache+"_repodata.txt")
 
-    scanner.add(update.UpdateVersion, failed_urls)
+    scanner.add(update.UpdateVersion, hosters.Hoster.select_hoster, failed_urls)
     scanner.add(update.UpdateChecksums)
 
     if create_branch or create_pr:
