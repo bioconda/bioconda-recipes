@@ -10,4 +10,3 @@ sed -i 's/xsdcxx/xsd/' CMakeFiles/xsdpout2mzidmllibrary.dir/build.make
 make
 mkdir -p $PREFIX/bin
 mv pout2mzid $PREFIX/bin/
-cd ..

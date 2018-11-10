@@ -1,19 +1,16 @@
-{% set version="1.8.0" %}
-{% set name="Rhtslib" %}
-{% set bioc="3.5" %}
+{% set version = "1.12.1" %}
+{% set name = "Rhtslib" %}
+{% set bioc = "3.7" %}
 
 package:
-  name: 'bioconductor-{{ name|lower}}'
+  name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  patches:
-    - rpath.patch
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 0bdcdb2cbc40b0e76fc3283f9b1f5575bd6baafe838a4b8724cebff20382454a
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 3f0dc503b927187ea309db17b197eb87c7efb2482b8818da525de4cad0b2dc9b
 build:
   number: 0
   rpaths:
@@ -21,19 +18,25 @@ build:
     - lib/
 requirements:
   build:
-    - bioconductor-zlibbioc
+    - {{ compiler('c') }}
+    - automake
+    - make
+  host:
+    - 'bioconductor-zlibbioc >=1.26.0,<1.28.0'
     - r-base
-    - autoconf
-    - gcc # [linux]
-    - llvm # [osx]
+    - zlib
   run:
-    - bioconductor-zlibbioc
+    - 'bioconductor-zlibbioc >=1.26.0,<1.28.0'
     - r-base
-    - libgcc # [linux]
+    - zlib
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>= 2)'
-  summary: 'This package provides version 1.1 of the ''HTSlib'' C library for high-throughput sequence analysis. The package is primarily useful to developers of other R packages who wish to make use of HTSlib. Motivation and instructions for use of this package are in the vignette, vignette(package="Rhtslib", "Rhtslib").'
+  summary: 'This package provides version 1.7 of the ''HTSlib'' C library for high-throughput sequence analysis. The package is primarily useful to developers of other R packages who wish to make use of HTSlib. Motivation and instructions for use of this package are in the vignette, vignette(package="Rhtslib", "Rhtslib").'
+extra:
+  identifiers:
+    - biotools:rhtslib
+    - doi:10.1038/nmeth.3252

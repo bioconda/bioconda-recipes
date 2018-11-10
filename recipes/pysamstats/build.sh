@@ -1,7 +1,4 @@
 #!/bin/bash
 
 export C_INCLUDE_PATH=${PREFIX}/include
-$PYTHON setup.py install
-# run tests here
-$PYTHON setup.py build_ext --inplace
-$PYTHON -m nose -v pysamstats
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt

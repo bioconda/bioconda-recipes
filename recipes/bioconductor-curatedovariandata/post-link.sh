@@ -1,10 +1,11 @@
 #!/bin/bash
-FN="curatedOvarianData_1.14.0.tar.gz"
+FN="curatedOvarianData_1.18.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.5/data/experiment/src/contrib/curatedOvarianData_1.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/curatedOvarianData/curatedOvarianData_1.14.0_src_all.tar.gz"
+  "http://bioconductor.org/packages/3.7/data/experiment/src/contrib/curatedOvarianData_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/curatedOvarianData_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-curatedovariandata/bioconductor-curatedovariandata_1.18.0_src_all.tar.gz"
 )
-    MD5="5338384dfe2f75c93ddffd68eae7e3e6"
+MD5="0fd49d3ff3764702e6324e8e03af2a0a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -20,7 +21,7 @@ for URL in ${URLS[@]}; do
 
   # Platform-specific md5sum checks.
   if [[ $(uname -s) == "Linux" ]]; then
-    if [[ $(md5sum -c <<<"$MD5  $TARBALL") ]]; then
+    if md5sum -c <<<"$MD5  $TARBALL"; then
       SUCCESS=1
       break
     fi
@@ -40,5 +41,6 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 # Install and clean up
-R CMD INSTALL --build $TARBALL
+R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
 rm $TARBALL
+rmdir $STAGING

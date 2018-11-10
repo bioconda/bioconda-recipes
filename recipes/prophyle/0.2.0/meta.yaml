@@ -6,26 +6,29 @@ package:
   version: {{ version }}
 
 source:
-  fn: prophyle-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/p/prophyle/prophyle-{{version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 2
   skip: True # [py27]
-  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - python
+    - pip
     - samtools
     - ete3
     - bitarray
     - scipy
     - wheel
-    - zlib {{CONDA_ZLIB }}*
+    - zlib
     - psutil
     - pysam
+    - zlib
   run:
     - python
     - samtools
@@ -33,13 +36,14 @@ requirements:
     - bitarray
     - scipy
     - wheel
-    - zlib {{CONDA_ZLIB }}*
+    - zlib
     - psutil
     - pysam
+    - zlib
 
 test:
-    commands:
-      - prophyle -h
+  commands:
+    - prophyle -h
 
 about:
   home: https://github.com/karel-brinda/prophyle

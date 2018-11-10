@@ -1,19 +1,16 @@
-{% set version="1.54.0" %}
-{% set name="graph" %}
-{% set bioc="3.5" %}
+{% set version = "1.58.2" %}
+{% set name = "graph" %}
+{% set bioc = "3.7" %}
 
 package:
-  name: 'bioconductor-{{ name|lower}}'
+  name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: caeedd6a98d35bc7ffafcf2df552b76de657e5a53fb417626127b26ca9e6a943
-  patches:
-    - Makevars.patch
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: ea81f17367f1e15616bfdd60d14d974567f0740f28bc22482ef982c1c65a551f
 build:
   number: 0
   rpaths:
@@ -21,10 +18,13 @@ build:
     - lib/
 requirements:
   build:
-    - 'bioconductor-biocgenerics >=0.13.11'
+    - {{ compiler('c') }}
+    - make
+  host:
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
     - r-base
   run:
-    - 'bioconductor-biocgenerics >=0.13.11'
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
     - r-base
 test:
   commands:
@@ -33,3 +33,7 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'A package that implements some simple graph handling capabilities.'
+extra:
+  identifiers:
+    - biotools:graph
+    - doi:10.1038/nmeth.3252

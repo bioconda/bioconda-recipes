@@ -2,23 +2,13 @@
 set -euo pipefail
 # Set some defaults
 set +u
-[[ -z $DOCKER_ARG ]] && DOCKER_ARG=""
-[[ -z $TRAVIS ]] && TRAVIS="false"
-[[ -z $BIOCONDA_UTILS_LINT_ARGS ]] && BIOCONDA_UTILS_LINT_ARGS=""
-[[ -z $RANGE_ARG ]] && RANGE_ARG="--git-range master HEAD"
-[[ -z $DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK  ]] && DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK="false"
-[[ -z $SKIP_LINTING ]] && SKIP_LINTING=false
+DOCKER_ARG=${DOCKER_ARG:-""}
+TRAVIS=${TRAVIS:-"false"}
+BIOCONDA_UTILS_LINT_ARGS=${BIOCONDA_UTILS_LINT_ARGS:-""}
+RANGE_ARG=${RANGE_ARG:-"--git-range master HEAD"}
+DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK=${DISABLE_BIOCONDA_UTILS_BUILD_GIT_RANGE_CHECK:-"false"}
+SKIP_LINTING=${SKIP_LINTING:-"false"}
 set -u
-
-if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_BRANCH != "bulk" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_REPO_SLUG == "bioconda/bioconda-recipes" ]]
-then
-    echo ""
-    echo "Tests are skipped for pushes to the main bioconda-recipes repo."
-    echo "If you have opened a pull request, please see the full tests for that PR."
-    echo "See https://bioconda.github.io/build-system.html for details"
-    echo ""
-    exit 0
-fi
 
 
 # determine recipes to build. If building locally, build anything that changed

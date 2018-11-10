@@ -34,16 +34,16 @@ pass_args=""
 for arg in "$@"; do
     case $arg in
         '-D'*)
-            jvm_prop_opts="$jvm_prop_opts $arg"
+            jvm_prop_opts="$jvm_prop_opts '$arg'"
             ;;
         '-XX'*)
-            jvm_prop_opts="$jvm_prop_opts $arg"
+            jvm_prop_opts="$jvm_prop_opts '$arg'"
             ;;
          '-Xm'*)
-            jvm_mem_opts="$jvm_mem_opts $arg"
+            jvm_mem_opts="$jvm_mem_opts '$arg'"
             ;;
          *)
-            pass_args="$pass_args $arg"
+            pass_args="$pass_args '$arg'"
             ;;
     esac
 done
@@ -53,7 +53,7 @@ if [ "$jvm_mem_opts" == "" ]; then
 fi
 
 pass_arr=($pass_args)
-if [[ ${pass_arr[0]:=} == org* ]]
+if [[ ${pass_arr[0]:=} == \'de* ]]
 then
     eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/jannovar-cli-$PKG_VERSION.jar" $pass_args
 else

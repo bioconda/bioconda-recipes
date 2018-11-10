@@ -1,0 +1,50 @@
+{% set name = "refseq_masher" %}
+{% set version = "0.1.1" %}
+{% set sha256sum = "9905755aeca1126253720af0c799df0e3d560ec01ecd901299ea57cfac058c58" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256sum }}
+
+build:
+  skip: True # [py27]
+  number: 1
+  script: python -m pip install --no-deps --ignore-installed .
+  entry_points:
+    - refseq_masher = refseq_masher.cli:cli
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+    - numpy >=1.12.1
+    - pandas >=0.20.1
+    - click
+    - mash >=2.0
+test:
+  commands:
+    - refseq_masher --version
+    - refseq_masher --help
+
+about:
+  home: https://github.com/phac-nml/refseq_masher
+  license: Apache 2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: refseq_masher finds what NCBI RefSeq genomes match or are contained within your sequence data using Mash
+  author: Peter Kruczkiewicz, Gary van Domselaar
+  dev_url: https://github.com/phac-nml/refseq_masher
+  doc_url: https://github.com/phac-nml/refseq_masher
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]

@@ -1,9 +1,10 @@
 #!/bin/bash
-FN="JASPAR2018_0.99.2.tar.gz"
+FN="JASPAR2018_1.1.0.tar.gz"
 URLS=(
-  "http://www.bioconductor.org/packages/devel/bioc/src/contrib/JASPAR2018_0.99.2.tar.gz"
+  "https://bioconductor.org/packages/3.7/bioc/src/contrib/JASPAR2018_1.1.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-jaspar2018/bioconductor-jaspar2018_1.1.0_src_all.tar.gz"
 )
-    MD5="f8e457c665c2a81ba3855ccaabd0310e"
+MD5="7f6d748701d83294d6138b265657712a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -19,7 +20,7 @@ for URL in ${URLS[@]}; do
 
   # Platform-specific md5sum checks.
   if [[ $(uname -s) == "Linux" ]]; then
-    if [[ $(md5sum -c <<<"$MD5  $TARBALL") ]]; then
+    if md5sum -c <<<"$MD5  $TARBALL"; then
       SUCCESS=1
       break
     fi
@@ -39,5 +40,6 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 # Install and clean up
-R CMD INSTALL --build $TARBALL
+R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
 rm $TARBALL
+rmdir $STAGING

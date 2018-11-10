@@ -1,28 +1,31 @@
-{% set version="0.14.7" %}
-{% set name="S4Vectors" %}
-{% set bioc="3.5" %}
+{% set version = "0.18.3" %}
+{% set name = "S4Vectors" %}
+{% set bioc = "3.7" %}
 
 package:
-  name: 'bioconductor-{{ name|lower}}'
+  name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: e608792c6d611488ae2fab91cd94e775d09cbd7ed4db7f6f0e96a598febfc13d
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: c8b7f6045f48340a0d342572564cc8efa5c89915a60fdcf9b5a26379b3d07709
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - 'bioconductor-biocgenerics >=0.21.1'
+  host:
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
     - r-base
   run:
-    - 'bioconductor-biocgenerics >=0.21.1'
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -30,3 +33,7 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'The S4Vectors package defines the Vector and List virtual classes and a set of generic functions that extend the semantic of ordinary vectors and lists in R. Package developers can easily implement vector-like or list-like objects as concrete subclasses of Vector or List. In addition, a few low-level concrete subclasses of general interest (e.g. DataFrame, Rle, and Hits) are implemented in the S4Vectors package itself (many more are implemented in the IRanges package and in other Bioconductor infrastructure packages).'
+extra:
+  identifiers:
+    - biotools:s4vectors
+    - doi:10.1038/nmeth.3252

@@ -1,29 +1,32 @@
-{% set version="1.46.0" %}
-{% set name="affyio" %}
-{% set bioc="3.5" %}
+{% set version = "1.50.0" %}
+{% set name = "affyio" %}
+{% set bioc = "3.7" %}
 
 package:
-  name: 'bioconductor-{{ name|lower}}'
+  name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 529b189d877b41cc1c20d6aca0285441ac22a65ecf1a0eb809099b241255868f
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 56885f62402c8d68acca2f17fbdb3cd6af2356c50bb26c6cc1d779c8ace5056a
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - bioconductor-zlibbioc
+  host:
+    - 'bioconductor-zlibbioc >=1.26.0,<1.28.0'
     - r-base
   run:
-    - bioconductor-zlibbioc
+    - 'bioconductor-zlibbioc >=1.26.0,<1.28.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -31,3 +34,7 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>= 2)'
   summary: 'Routines for parsing Affymetrix data files based upon file format information. Primary focus is on accessing the CEL and CDF file formats.'
+extra:
+  identifiers:
+    - biotools:affyio
+    - doi:10.1038/nmeth.3252

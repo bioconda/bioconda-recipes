@@ -1,10 +1,11 @@
 #!/bin/bash
-FN="HSMMSingleCell_0.110.0.tar.gz"
+FN="HSMMSingleCell_0.114.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.5/data/experiment/src/contrib/HSMMSingleCell_0.110.0.tar.gz"
-  "https://depot.galaxyproject.org/software/HSMMSingleCell/HSMMSingleCell_0.110.0_src_all.tar.gz"
+  "http://bioconductor.org/packages/3.7/data/experiment/src/contrib/HSMMSingleCell_0.114.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HSMMSingleCell_0.114.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hsmmsinglecell/bioconductor-hsmmsinglecell_0.114.0_src_all.tar.gz"
 )
-    MD5="9e2e48e26b05c6ba8b9cbb1cb224441a"
+MD5="2b928efcb786a4486c79673d4ff457e3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -20,7 +21,7 @@ for URL in ${URLS[@]}; do
 
   # Platform-specific md5sum checks.
   if [[ $(uname -s) == "Linux" ]]; then
-    if [[ $(md5sum -c <<<"$MD5  $TARBALL") ]]; then
+    if md5sum -c <<<"$MD5  $TARBALL"; then
       SUCCESS=1
       break
     fi
@@ -40,5 +41,6 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 # Install and clean up
-R CMD INSTALL --build $TARBALL
+R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
 rm $TARBALL
+rmdir $STAGING

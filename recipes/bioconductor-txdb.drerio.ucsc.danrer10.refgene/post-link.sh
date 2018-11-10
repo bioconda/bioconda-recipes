@@ -1,10 +1,11 @@
 #!/bin/bash
-FN="TxDb.Drerio.UCSC.danRer10.refGene_3.4.0.tar.gz"
+FN="TxDb.Drerio.UCSC.danRer10.refGene_3.4.3.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.5/data/annotation/src/contrib/TxDb.Drerio.UCSC.danRer10.refGene_3.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/TxDb.Drerio.UCSC.danRer10.refGene/TxDb.Drerio.UCSC.danRer10.refGene_3.4.0_src_all.tar.gz"
+  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/TxDb.Drerio.UCSC.danRer10.refGene_3.4.3.tar.gz"
+  "https://bioarchive.galaxyproject.org/TxDb.Drerio.UCSC.danRer10.refGene_3.4.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.drerio.ucsc.danrer10.refgene/bioconductor-txdb.drerio.ucsc.danrer10.refgene_3.4.3_src_all.tar.gz"
 )
-    MD5="98e1c76aec76584fa76f5a86272970db"
+MD5="db746342bff2cd07c9e02b5f5840fb2b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -20,7 +21,7 @@ for URL in ${URLS[@]}; do
 
   # Platform-specific md5sum checks.
   if [[ $(uname -s) == "Linux" ]]; then
-    if [[ $(md5sum -c <<<"$MD5  $TARBALL") ]]; then
+    if md5sum -c <<<"$MD5  $TARBALL"; then
       SUCCESS=1
       break
     fi
@@ -40,5 +41,6 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 # Install and clean up
-R CMD INSTALL --build $TARBALL
+R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
 rm $TARBALL
+rmdir $STAGING

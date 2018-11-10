@@ -1,36 +1,37 @@
 {% set version = "2.5.0" %}
 
 package:
-    name: blast
-    version: {{ version }}
+  name: blast
+  version: {{ version }}
 
 source:
-    fn: ncbi-blast-{{ version }}+-src.tar.gz # [linux]
-    url: http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz # [linux]
-    md5: 54ad4f2ea15715487b3de712a9d27be8 # [linux]
-    patches:
-      - boost_106400.patch # [linux]
-    fn: ncbi-blast-{{ version }}+-x64-macosx.tar.gz # [osx]
-    url: http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-x64-macosx.tar.gz # [osx]
-    md5: 9a2ac418e3031ed266787ea06585d468 # [osx]
+  url: http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz # [linux]
+  md5: 54ad4f2ea15715487b3de712a9d27be8 # [linux]
+  patches:
+    - boost_106400.patch # [linux]
+  url: http://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-x64-macosx.tar.gz # [osx]
+  md5: 9a2ac418e3031ed266787ea06585d468 # [osx]
 
 build:
-  number: 2
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+  number: 3
 
 requirements:
   build:
-    - boost {{CONDA_BOOST}}*  # [linux]
-    - gcc  # [linux]
+  - boost
+  - {{ compiler('c') }}
   run:
-    - boost {{CONDA_BOOST}}*  # [linux]
-    - libgcc  # [linux]
+  - boost
 
 test:
-    commands:
-        - blastn -help
-        - blastp -help
+  commands:
+    - blastn -help
+    - blastp -help
 about:
-    home: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs
-    license: Public Domain
-    summary: BLAST+ is a new suite of BLAST tools that utilizes the NCBI C++ Toolkit.
+  home: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs
+  license: Public Domain
+  summary: BLAST+ is a new suite of BLAST tools that utilizes the NCBI C++ Toolkit.
+
+extra:
+  identifiers:
+    - biotools:blast
+    - doi:10.1016/S0022-2836(05)80360-2

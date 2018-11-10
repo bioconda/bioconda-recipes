@@ -1,12 +1,16 @@
 #!/bin/bash
-
-export MACHTYPE=x86_64
-export BINDIR=$(pwd)/bin
-mkdir -p $BINDIR
-(cd kent/src/lib && make)
-(cd kent/src/jkOwnLib && make)
-(cd kent/src/hg/lib && make)
-(cd kent/src/hg/utils/bedExtendRanges && make)
-mkdir -p $PREFIX/bin
-cp bin/bedExtendRanges $PREFIX/bin
-chmod +x $PREFIX/bin/bedExtendRanges
+mkdir -p "$PREFIX/bin"
+if [ "$(uname)" == "Darwin" ]; then
+    cp bedExtendRanges "$PREFIX/bin"
+else
+    export MACHTYPE=x86_64
+    export BINDIR=$(pwd)/bin
+    mkdir -p "$BINDIR"
+    (cd kent/src/lib && make)
+    (cd kent/src/htslib && make)
+    (cd kent/src/jkOwnLib && make)
+    (cd kent/src/hg/lib && make)
+    (cd kent/src/hg/utils/bedExtendRanges && make)
+    cp bin/bedExtendRanges "$PREFIX/bin"
+fi
+chmod +x "$PREFIX/bin/bedExtendRanges"

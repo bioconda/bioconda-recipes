@@ -1,38 +1,20 @@
-{% set version = "4.3.0" %}
+{% set version = "5.3.0" %}
 
 package:
   name: snakemake
   version: {{ version }}
 
-source:
-  fn: snakemake-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/s/snakemake/snakemake-{{ version }}.tar.gz
-  sha256: 71ff8882ed7280922e8f5d92f2cccb6f25b274213c2465bdae1d28cc8003c15b
-
 build:
-  number: 0
+  number: 1
   skip: True # [py27]
-  script: python setup.py install --single-version-externally-managed --record record.txt
-  entry_points:
-    - snakemake = snakemake:main
-    - snakemake-bash-completion = snakemake:bash_completion
 
 requirements:
-  build:
+  host:
     - python
-    - setuptools
-    - wrapt
-    - requests
-    - ratelimiter
-    - configargparse
-    - appdirs
   run:
     - python
-    - wrapt
-    - requests
-    - docutils
-    - pyyaml
-    - requests >=2.8.1
+    - snakemake-minimal ={{ version }}
+    # optional dependencies needed for the full experience
     # require this dropbox version to ensure that a conda doesn't pick up the
     # outdated version available
     - dropbox >=7.2.1
@@ -45,16 +27,28 @@ requirements:
     - pandas
     - ratelimiter
     - configargparse
-    - appdirs
+    - python-irodsclient
+    - google-cloud-storage
+    - boto3
+    - aioeasywebdav
+    - jsonschema
+    - jinja2
+    - pygraphviz
+    - networkx >=2.0
 
 test:
-    imports:
-      - snakemake
-    commands:
-      - snakemake --version
-      - snakemake --version | grep "{{ version }}"
+  imports:
+    - snakemake
+  commands:
+    - snakemake --version
+    - snakemake --version | grep "{{ version }}"
 
 about:
   home: https://snakemake.readthedocs.io
   license: MIT
-  summary: Snakemake is a workflow management system that aims to reduce the complexity of creating workflows by providing a fast and comfortable execution environment, together with a clean and modern specification language in python style. Snakemake workflows are essentially Python scripts extended by declarative code to define rules. Rules describe how to create output files from input files.
+  summary: Snakemake is a workflow management system that aims to reduce the complexity of creating workflows by providing a fast and comfortable execution environment, together with a clean and modern specification language in python style. Snakemake workflows are essentially Python scripts extended by declarative code to define rules. Rules describe how to create output files from input files. This package provides the full installation including all optional dependencies.
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/bts480
+    - biotools:Snakemake

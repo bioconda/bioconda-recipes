@@ -15,7 +15,8 @@ rm -f *.bak
 # https://github.com/rabix/bunny/issues/258#issuecomment-302366409
 # https://github.com/rabix/bunny/issues/325
 # Need better way of managing non-Docker environments in general.
-sed -i.bak 's/executor.set_permissions=false/executor.set_permissions=true/' config/core.properties
+# No longer needed:  https://github.com/rabix/bunny/issues/325#issuecomment-342853956
+#sed -i.bak 's/executor.set_permissions=false/executor.set_permissions=true/' config/core.properties
 
 cp -R ./* $outdir/
 

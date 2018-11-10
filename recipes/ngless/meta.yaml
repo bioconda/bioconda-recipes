@@ -1,14 +1,13 @@
 {% set name = "ngless" %}
-{% set version = "0.5.1" %}
-{% set md5 = "8d1dbf3c10f38b29c815091d3d92f729" %}
+{% set version = "0.9.1" %}
+{% set md5 = "808e091b8b99eac4488a236606e9f19c" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  fn: {{ version }}.tar.gz
-  url: https://github.com/luispedro/ngless/archive/v{{ version }}.tar.gz
+  url: https://github.com/ngless-toolkit/ngless/archive/v{{ version }}.tar.gz
   md5: {{ md5 }}
 
 build:
@@ -17,26 +16,31 @@ build:
 
 requirements:
   build:
-    - stack >=1.3.2
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - gmp {{CONDA_GMP}}*
-    - zlib {{CONDA_ZLIB}}*
+    - {{ compiler('c') }}
+  host:
+    - stack >=1.7.1
+    - cairo
+    - xorg-libxext # [linux]
+    - bzip2
+    - gmp
+    - zlib
     - perl
     - wget
-    - xz 5.2.*
-    - gcc # necessary for megahit
+    - xz
   run:
     - python
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - gmp {{CONDA_GMP}}*
-    - zlib {{CONDA_ZLIB}}*
-    - libgcc # for gomp (megahit)
-    - xz 5.2.*
+    - cairo
+    - xorg-libxext # [linux]
+    - bzip2
+    - gmp
+    - zlib
+    - xz
 
 
 test:
   commands:
     - ngless --version
+    - ngless --check-install
 
 about:
   home: http://ngless.embl.de
