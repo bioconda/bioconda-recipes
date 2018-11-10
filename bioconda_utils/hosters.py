@@ -1,3 +1,21 @@
+"""Check package URLs for updates
+
+Subclasses of `Hoster` define how to handle each hoster. Hosters are
+selected by regex matching each source URL in a recipe. The
+`HTMLHoster` provides parsing for hosting sites listing new
+releases in HTML format (probably covers most). Adding a hoster is
+as simple as defining a regex to match the existing source URL, a
+formatting string creating the URL of the relases page and a regex
+to match links and extract their version.
+
+- We need to use `regex` rather than `re` to allow recursive matching
+  to manipulate capture groups in URL patterns as
+  needed. (Technically, we could avoid this using a Snakemake wildcard
+  type syntax to define the patterns - implementers welcome).
+
+"""
+
+
 import abc
 import inspect
 import json

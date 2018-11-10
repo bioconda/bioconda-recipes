@@ -16,14 +16,6 @@ Overview:
   using `Hoster` and its subclasses, selects the most recent,
   acceptable version and uses `Recipe` to replace
 
-- Subclasses of `Hoster` define how to handle each hoster. Hosters are
-  selected by regex matching each source URL in a recipe. The
-  `HTMLHoster` provides parsing for hosting sites listing new
-  releases in HTML format (probably covers most). Adding a hoster is
-  as simple as defining a regex to match the existing source URL, a
-  formatting string creating the URL of the relases page and a regex
-  to match links and extract their version.
-
 - The filter `UpdateChecksum` downloads the modified source URLs
   and updates the checksums for each source of a recipe.
 
@@ -44,19 +36,10 @@ Rationale (for all those imports):
   requests, `aiofiles` for file I/O and `gidget` to access the GitHub
   API. Retrying is handled using decorators from `backoff`.
 
-- We need to use `regex` rather than `re` to allow recursive matching
-  to manipulate capture groups in URL patterns as
-  needed. (Technically, we could avoid this using a Snakemake wildcard
-  type syntax to define the patterns - implementers welcome).
-
 - We use `ruamel.yaml` to know where in a ``.yaml`` file a value is
   defined. Ideally, we would extend its round-trip type to handle the
   `# [exp]` line selectors and at least simple parts of Jinja2
   template expansion.
-
-- Using `git` simply looks nicer than doing lot of `subprocess` calls
-  ourselves. An `asyncio` version would be nice though.
-
 
 Todo:
 
@@ -91,19 +74,18 @@ import logging
 import os
 import pickle
 import random
+import re
 
 from collections import defaultdict, Counter
 from concurrent.futures import ProcessPoolExecutor
 from copy import copy
 from hashlib import sha256
 from urllib.parse import urlparse
-from typing import Any, Dict, List, Mapping, Match, Optional, Pattern, \
-    Sequence, Set, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Sequence
 
 import aiohttp
 import aiofiles
 import backoff
-import regex as re
 
 from conda.models.version import VersionOrder
 from ruamel.yaml import YAML
@@ -249,6 +231,7 @@ class Recipe():
         return self
 
     def set_original(self) -> None:
+        """Store the current state of the recipe as "original" version"""
         self.orig = copy(self)
 
     def dump(self):
@@ -669,7 +652,7 @@ class UpdateVersion(Filter):
         self.hoster_factory = hoster_factory
 
     def finalize(self):
-        stats = Counter()
+        stats: Counter = Counter()
         for url in self.failed_urls:
             parsed = urlparse(url)
             stats[parsed.scheme] += 1
@@ -742,7 +725,6 @@ class UpdateVersion(Filter):
                 for match in versions:
                     version_map[match["version"]][url] = match
             except aiohttp.ClientResponseError as exc:
-                #self.scanner.stats[f"HTTP_{exc.code}"] += 1
                 logger.debug("HTTP %s when getting %s", exc, url)
 
         if not version_map:
@@ -767,7 +749,7 @@ class UpdateVersion(Filter):
         latest_vo = VersionOrder(current)
         latest = current
         for vers in versions:
-            if "-" in vers: # ignore versions with local (FIXME)
+            if "-" in vers:  # ignore versions with local (FIXME)
                 continue
             vers_version = parse_version(vers)
             # allow prerelease only if current is prerelease
@@ -807,7 +789,7 @@ class UpdateChecksums(Filter):
         # FIXME: check that we have new checksums
         return recipe
 
-    async def update_source(self, recipe: Recipe, source: Mapping, source_idx: int) -> bool:
+    async def update_source(self, recipe: Recipe, source: Mapping, source_idx: int) -> None:
         """Updates one source
 
         Each source has its own checksum, but all urls in one source must have
@@ -823,7 +805,7 @@ class UpdateChecksums(Filter):
                 break
         else:
             logger.error("Recipe %s has no checksum", recipe)
-            return False
+            return
         if checksum_type != "sha256":
             logger.error("Recipe %s had checksum type %s", recipe, checksum_type)
             if not recipe.replace(checksum_type, "sha256"):
@@ -952,8 +934,7 @@ class WriteRecipe(Filter):
 
 
 class GitWriteRecipe(GitFilter):
-    """Writes `Recipe` to git repo
-    """
+    """Writes `Recipe` to git repo"""
 
     class NoChanges(RecipeError):
         template = "had no changes"
@@ -975,6 +956,8 @@ class GitWriteRecipe(GitFilter):
 
 
 class CreatePullRequest(GitFilter):
+    """Creates or Updates PR on GitHub"""
+
     def __init__(self, scanner, git_handler, token: str,
                  dry_run: bool = False,
                  to_user: str = "bioconda",
@@ -1009,8 +992,8 @@ class CreatePullRequest(GitFilter):
             # a while before we create the PR, so the pushed branch has time to settle.
             await asyncio.sleep(10)
             pr = await self.gh.create_pr(title=title,
-                                      from_branch=branch_name,
-                                      body=body)
+                                         from_branch=branch_name,
+                                         body=body)
             pr_number = pr["number"]
             if pr_number:
                 await self.gh.modify_issue(number=pr_number, labels=labels)
