@@ -689,7 +689,8 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
     from . import update
     from . import githandler
     from . import hosters
-    scanner = update.Scanner(recipe_folder, packages, config, cache+"_scan.pkl")
+    scanner = update.Scanner(recipe_folder, packages, config,
+                             cache and cache + "_scan.pkl")
     if not ignore_blacklists:
         scanner.add(update.ExcludeBlacklisted)
     if exclude_subrecipes != "never":
@@ -704,7 +705,8 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
     if exclude_channels != ["none"]:
         if not isinstance(exclude_channels, list):
             exclude_channels = [exclude_channels]
-        scanner.add(update.ExcludeOtherChannel, exclude_channels, cache+"_repodata.txt")
+        scanner.add(update.ExcludeOtherChannel, exclude_channels,
+                    cache and cache + "_repodata.txt")
 
     scanner.add(update.UpdateVersion, hosters.Hoster.select_hoster, failed_urls)
     scanner.add(update.UpdateChecksums)
