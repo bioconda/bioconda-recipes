@@ -134,7 +134,7 @@ class RecipeError(Exception):
     level = logging.INFO
 
     def __init__(self, recipe: "Recipe", *args) -> None:
-        super().__init__()
+        super().__init__(recipe, *args)
         self.recipe = recipe
         self.args = args
 
