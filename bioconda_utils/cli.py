@@ -688,6 +688,7 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
     utils.setup_logger('bioconda_utils', loglevel)
     from . import update
     from . import githandler
+    from . import hosters
     scanner = update.Scanner(recipe_folder, packages, config, cache+"_scan.pkl")
     if not ignore_blacklists:
         scanner.add(update.ExcludeBlacklisted)
