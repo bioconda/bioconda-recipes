@@ -93,6 +93,7 @@ import pickle
 import random
 
 from collections import defaultdict, Counter
+from concurrent.futures import ProcessPoolExecutor
 from copy import copy
 from hashlib import sha256
 from urllib.parse import urlparse
@@ -239,12 +240,13 @@ class Recipe():
     def __str__(self) -> str:
         return self.reldir
 
-    def load_from_string(self, data) -> None:
+    def load_from_string(self, data) -> "Recipe":
         """Load and `render` recipe contents from disk"""
         self.meta_yaml = data.splitlines()
         if not self.meta_yaml:
             raise self.EmptyRecipe(self)
         self.render()
+        return self
 
     def set_original(self) -> None:
         self.orig = copy(self)
@@ -352,7 +354,7 @@ class Filter(abc.ABC):
         self.scanner = scanner
 
     @abc.abstractmethod
-    async def apply(self, recipe: Recipe) -> bool:
+    async def apply(self, recipe: Recipe) -> Recipe:
         """Process a recipe. Returns False if processing should stop"""
 
     async def async_init(self) -> None:
@@ -410,6 +412,7 @@ class Scanner():
                 self.cache["url_text"] = {}
             if "url_checksum" not in self.cache:
                 self.cache["url_checksum"] = {}
+        self.proc_pool_executor = ProcessPoolExecutor(3)
 
     def add(self, filt: Filter, *args, **kwargs) -> None:
         """Adds `Filter` to this `Scanner`"""
@@ -472,9 +475,7 @@ class Scanner():
         recipe = Recipe(recipe_dir, self.recipe_folder)
         try:
             for filt in self.filters:
-                result = await filt.apply(recipe)
-                if result == False:
-                    return False
+                recipe = await filt.apply(recipe)
         except asyncio.CancelledError:
             return False
         except RecipeError as recipe_error:
@@ -491,6 +492,10 @@ class Scanner():
         """Run **func** in thread pool executor using **args**"""
         async with self.io_sem:
             return await self.loop.run_in_executor(None, func, *args)
+
+    async def run_sp(self, func, *args):
+        """Run **func** in process pool executor using **args**"""
+        return await self.loop.run_in_executor(self.proc_pool_executor, func, *args)
 
     @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
                           giveup=lambda ex: ex.code not in [429, 502, 503, 504])
@@ -563,6 +568,7 @@ class ExcludeOtherChannel(Filter):
         # FIXME: handle recipes with multiple outputs
         if recipe.name in self.other_latest:
             raise self.OtherChannel(recipe)
+        return recipe
 
 
 class ExcludeSubrecipe(Filter):
@@ -585,6 +591,7 @@ class ExcludeSubrecipe(Filter):
         enabled = recipe.config.get("enable", False)
         if is_subrecipe and not (enabled and not self.always_exclude):
             raise self.IsSubRecipe(recipe)
+        return recipe
 
 
 class ExcludeBlacklisted(Filter):
@@ -604,6 +611,7 @@ class ExcludeBlacklisted(Filter):
     async def apply(self, recipe):
         if recipe.reldir in self.blacklisted:
             raise self.Blacklisted(recipe)
+        return recipe
 
 
 class UpdateVersion(Filter):
@@ -711,6 +719,7 @@ class UpdateVersion(Filter):
                                      recipe.orig.meta["source"]["url"]):
                 if orig_url == url:
                     raise self.UrlNotVersioned(recipe)
+        return recipe
 
     async def get_versions(self, recipe: Recipe, source: Mapping[Any, Any],
                            source_idx: int):
@@ -787,7 +796,7 @@ class UpdateChecksums(Filter):
     class SourceUrlMismatch(RecipeError):
         template = "has urls in source %i pointing to different files"
 
-    async def apply(self, recipe: Recipe) -> bool:
+    async def apply(self, recipe):
         sources = recipe.meta["source"]
         logger.info("Updating checksum for %s %s", recipe, recipe.version)
         if isinstance(sources, Mapping):
@@ -796,6 +805,7 @@ class UpdateChecksums(Filter):
             await self.update_source(recipe, source, source_idx)
         recipe.render()
         # FIXME: check that we have new checksums
+        return recipe
 
     async def update_source(self, recipe: Recipe, source: Mapping, source_idx: int) -> bool:
         """Updates one source
@@ -874,10 +884,12 @@ class LoadRecipe(Filter):
         super().__init__(scanner)
         self.sem = asyncio.Semaphore(10)
 
-    async def apply(self, recipe: Recipe):
+    async def apply(self, recipe):
         async with self.sem, aiofiles.open(recipe.path, encoding="utf-8") as fd:
-            recipe.load_from_string(await fd.read())
-            recipe.set_original()
+            recipe_text = await fd.read()
+        recipe = await self.scanner.run_sp(recipe.load_from_string, recipe_text)
+        recipe.set_original()
+        return recipe
 
 
 class GitLoadRecipe(GitFilter):
@@ -897,7 +909,7 @@ class GitLoadRecipe(GitFilter):
     - Otherwise load master
     """
 
-    async def apply(self, recipe: Recipe):
+    async def apply(self, recipe):
         branch_name = self.branch_name(recipe)
         remote_branch = self.git.get_remote_branch(branch_name)
         local_branch = self.git.get_local_branch(branch_name)
@@ -909,7 +921,7 @@ class GitLoadRecipe(GitFilter):
         logger.debug("Recipe %s: loading from master", recipe)
         recipe_text = await self.scanner.run_io(self.git.read_from_branch,
                                                 self.git.master, recipe.path)
-        recipe.load_from_string(recipe_text)
+        recipe = await self.scanner.run_sp(recipe.load_from_string, recipe_text)
         recipe.set_original()
 
         if remote_branch:
@@ -917,13 +929,14 @@ class GitLoadRecipe(GitFilter):
                 logger.info("Recipe %s: updating from remote %s", recipe, branch_name)
                 recipe_text = await self.scanner.run_io(self.git.read_from_branch,
                                                         remote_branch, recipe.path)
-                recipe.load_from_string(recipe_text)
+                recipe = await self.scanner.run_sp(recipe.load_from_string, recipe_text)
                 await self.scanner.run_io(self.git.create_local_branch, branch_name)
                 recipe.on_branch = True
             else:
                 # FIXME: this silently closes existing PR
                 logger.info("Recipe %s: deleting outdated remote %s", recipe, branch_name)
                 await self.scanner.run_io(self.git.delete_remote_branch, branch_name)
+        return recipe
 
 
 class WriteRecipe(Filter):
@@ -932,9 +945,10 @@ class WriteRecipe(Filter):
         super().__init__(scanner)
         self.sem = asyncio.Semaphore(10)
 
-    async def apply(self, recipe: Recipe):
+    async def apply(self, recipe):
         async with self.sem, aiofiles.open(recipe.path, "w", encoding="utf-8") as fd:
             await fd.write(recipe.dump())
+        return recipe
 
 
 class GitWriteRecipe(GitFilter):
@@ -944,7 +958,7 @@ class GitWriteRecipe(GitFilter):
     class NoChanges(RecipeError):
         template = "had no changes"
 
-    async def apply(self, recipe: Recipe):
+    async def apply(self, recipe):
         branch_name = self.branch_name(recipe)
         remote_branch = self.git.get_remote_branch(branch_name)
         changed = False
@@ -957,6 +971,7 @@ class GitWriteRecipe(GitFilter):
             await asyncio.sleep(1)  # let push settle before going on
         else:
             raise self.NoChanges(recipe)
+        return recipe
 
 
 class CreatePullRequest(GitFilter):
@@ -1001,6 +1016,7 @@ class CreatePullRequest(GitFilter):
                 await self.gh.modify_issue(number=pr_number, labels=labels)
 
             logger.info("Created PR %i updating %s to %s", pr_number, recipe, recipe.version)
+        return recipe
 
 
 class MaxUpdates(Filter):
@@ -1016,3 +1032,4 @@ class MaxUpdates(Filter):
         if self.max and self.count == self.max:
             logger.warning("Reached update limit %s", self.count)
             raise EndProcessing()
+        return recipe
