@@ -217,13 +217,15 @@ class PyPi(JSONHoster):
 class HTMLHoster(Hoster):
     """Base for Hosters handling release listings in HTML format"""
 
+    exclude = ['version']
+
     @property
     @abc.abstractmethod
     def link_pattern(self) -> str:
         "matches links on relase page"
 
     async def get_versions(self, scanner):
-        exclude = set(["version"])
+        exclude = set(self.exclude)
         vals = {key: val
                 for key, val in self.orig_match.groupdict().items()
                 if key not in exclude}
@@ -261,6 +263,7 @@ class OrderedHTMLHoster(HTMLHoster):
 
 class GithubRelease(OrderedHTMLHoster):
     """Matches release artifacts uploaded to Github"""
+    exclude = ['version', 'fname']
     link_pattern = (r"/(?P<account>[\w\-]*)/(?P<project>[\w\-]*)/releases/download/"
                     r"v?{version}/(?P<fname>[^/]+{ext})")
     url_pattern = r"github.com{link}"
