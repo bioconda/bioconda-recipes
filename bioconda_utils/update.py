@@ -806,6 +806,7 @@ class UpdateChecksums(Filter):
         We don't fail if the link is not available as cargo-port will only update
         after the recipe was built and uploaded.
         """
+        checksum_type = "none"
         for checksum_type in ("sha256", "sha1", "md5"):
             checksum = source.get(checksum_type)
             if checksum:
@@ -813,8 +814,6 @@ class UpdateChecksums(Filter):
         else:
             logger.error("Recipe %s has no checksum", recipe)
             return False
-        if not checksum_type:
-            raise RuntimeError("?")
         if checksum_type != "sha256":
             logger.error("Recipe %s had checksum type %s", recipe, checksum_type)
             if not recipe.replace(checksum_type, "sha256"):
