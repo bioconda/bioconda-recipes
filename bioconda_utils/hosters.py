@@ -318,4 +318,25 @@ class BioarchiveGalaxyProject(JSONHoster):
     url_pattern = r"bioarchive.galaxyproject.org/{package}_{version}{ext}"
     link_pattern = "https://{url}"
 
+
+class MetaCPAN(JSONHoster):
+    async def get_versions(self, scanner):
+        text = await scanner.get_text_from_url(self.releases_url)
+        data = json.loads(text)
+        try:
+            version = {
+                'releases_url': self.releases_url,
+                'link': data['download_url'],
+                'version': str(data['version']),
+            }
+            return [version]
+        except KeyError:
+            return []
+
+    package_pattern = r"(?P<package>[\w\-\.\+]+)"
+    author_pattern = r"(?P<author>[A-Z]+)"
+    url_pattern = r"(www.cpan.org|cpan.metacpan.org|search.cpan.org/CPAN)/authors/id/./../{author}/([^/]+/|){package}-v?{version}{ext}"
+    releases_format = "https://fastapi.metacpan.org/v1/release/{package}"
+
+
 logger.info(f"Hosters loaded: %s", [h.__name__ for h in HosterMeta.hoster_types])
