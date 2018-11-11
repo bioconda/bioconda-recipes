@@ -121,7 +121,7 @@ class GitHubHandler:
         logger.debug("PR data %s", data)
         if self.dry_run:
             logger.info("Would create PR '%s'", title)
-            return {}
+            return {'number': -1}
         logger.info("Creating PR '%s'", title)
         return await self.api.post(self.PULLS, var_data, data=data)
 
@@ -148,7 +148,7 @@ class GitHubHandler:
 
         if self.dry_run:
             logger.info("Would modify PR %s", number)
-            return {}
+            return {'number': number}
         logger.info("Modifying PR %s", number)
         return await self.api.patch(self.ISSUES, var_data, data=data)
 
