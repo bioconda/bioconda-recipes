@@ -4,6 +4,7 @@ import abc
 import logging
 
 from copy import copy
+from enum import Enum
 
 from gidgethub.abc import GitHubAPI
 from gidgethub import aiohttp as gh_aiohttp
@@ -12,6 +13,10 @@ import aiohttp
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
+
+
+#: State for Github Issues
+IssueState = Enum("IssueState", "open closed all")
 
 
 class GitHubHandler:
@@ -24,8 +29,10 @@ class GitHubHandler:
       to_repo: Target repository within **to_user**
     """
     USER_AGENT = "bioconda/bioconda-utils"
-    PULLS = "/repos/{user}/{repo}/pulls{/number}{?head,base}"
+    PULLS = "/repos/{user}/{repo}/pulls{/number}{?head,base,state}"
     ISSUES = "/repos/{user}/{repo}/issues{/number}"
+
+    STATE = IssueState
 
     def __init__(self, token: str,
                  dry_run: bool = False,
@@ -61,7 +68,8 @@ class GitHubHandler:
                       from_branch: Optional[str] = None,
                       from_user: Optional[str] = None,
                       to_branch: Optional[str] = None,
-                      number: Optional[int] = None) -> List[Dict[Any, Any]]:
+                      number: Optional[int] = None,
+                      state: Optional[IssueState] = None) -> List[Dict[Any, Any]]:
         """Retrieve list of PRs matching parameters
 
         Arguments:
@@ -83,6 +91,8 @@ class GitHubHandler:
             var_data['base'] = to_branch
         if number:
             var_data['number'] = str(number)
+        if state:
+            var_data['state'] = state.name.lower()
 
         return await self.api.getitem(self.PULLS, var_data)
 
