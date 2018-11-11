@@ -132,6 +132,9 @@ class Hoster(metaclass=HosterMeta):
     #: matches archive file extensions
     ext_pattern: str = r"(?P<ext>(?i)\.(?:tar\.(?:xz|bz2|gz)|zip|tgz|tbz2|txz))"
 
+    #: named patterns that will change with a version upgrade
+    exclude = ['version']
+
     @property
     @abc.abstractmethod
     def url_pattern(self) -> str:
@@ -190,34 +193,8 @@ class JSONHoster(Hoster):
     """Base for Hosters handling release listings in JSON format"""
 
 
-class PyPi(JSONHoster):
-    async def get_versions(self, scanner):
-        text = await scanner.get_text_from_url(self.releases_url)
-        data = json.loads(text)
-
-        latest = data["info"]["version"]
-        for rel in data["releases"][latest]:
-            if rel["packagetype"] == "sdist":
-                rel["releases_url"] = self.releases_url
-                rel["link"] = rel["url"]
-                rel["version"] = latest
-                return [rel]
-        return []
-
-    releases_format = "https://pypi.org/pypi/{package}/json"
-    package_pattern = r"(?P<package>[\w\-\.]+)"
-    source_pattern = r"{package}[-_]{version}{ext}"
-    hoster_pattern = (r"(?P<hoster>"
-                      r"files.pythonhosted.org/packages|"
-                      r"pypi.python.org/packages|"
-                      r"pypi.io/packages)")
-    url_pattern = r"{hoster}/.*/{source}"
-
-
 class HTMLHoster(Hoster):
     """Base for Hosters handling release listings in HTML format"""
-
-    exclude = ['version']
 
     @property
     @abc.abstractmethod
@@ -291,5 +268,54 @@ class DepotGalaxyProject(HTMLHoster):
     url_pattern = r"depot.galaxyproject.org/software/(?P<package>[^/]+)/{link}"
     releases_format = "https://depot.galaxyproject.org/software/{package}/"
 
+
+class PyPi(JSONHoster):
+    async def get_versions(self, scanner):
+        text = await scanner.get_text_from_url(self.releases_url)
+        data = json.loads(text)
+
+        latest = data["info"]["version"]
+        for rel in data["releases"][latest]:
+            if rel["packagetype"] == "sdist":
+                rel["releases_url"] = self.releases_url
+                rel["link"] = rel["url"]
+                rel["version"] = latest
+                return [rel]
+        return []
+
+    releases_format = "https://pypi.org/pypi/{package}/json"
+    package_pattern = r"(?P<package>[\w\-\.]+)"
+    source_pattern = r"{package}[-_]{version}{ext}"
+    hoster_pattern = (r"(?P<hoster>"
+                      r"files.pythonhosted.org/packages|"
+                      r"pypi.python.org/packages|"
+                      r"pypi.io/packages)")
+    url_pattern = r"{hoster}/.*/{source}"
+
+
+class BioarchiveGalaxyProject(JSONHoster):
+    async def get_versions(self, scanner):
+        text = await scanner.get_text_from_url(self.releases_url)
+        data = json.loads(text)
+
+        try:
+            latest = data["info"]["Version"]
+            vals = {key: val
+                    for key, val in self.orig_match.groupdict().items()
+                    if key not in self.exclude}
+            vals['version'] = latest
+            link = replace_named_capture_group(self.link_pattern, vals)
+            return [{
+                "releases_url": self.releases_url,
+                "link": link,
+                "version": latest,
+            }]
+        except KeyError:
+            return []
+
+    releases_format = "https://bioarchive.galaxyproject.org/api/{package}.json"
+    package_pattern = r"(?P<package>[\w\-\.]+)"
+    url_pattern = r"bioarchive.galaxyproject.org/{package}_{version}{ext}"
+    link_pattern = "https://{url}"
 
 logger.info(f"Hosters loaded: %s", [h.__name__ for h in HosterMeta.hoster_types])
