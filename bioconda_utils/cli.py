@@ -576,8 +576,7 @@ def bioconductor_skeleton(
             except:
                 problems.append(k)
         if len(problems):
-            print("The following recipes had problems and were not finished: {}".format(", ".join(problems)))
-            sys.exit(1)
+            sys.exit("The following recipes had problems and were not finished: {}".format(", ".join(problems)))
     else:
         _bioconductor_skeleton.write_recipe(
             package, recipe_folder, config, force=force, bioc_version=bioc_version,

@@ -241,7 +241,6 @@ def fetchPackages(bioc_version):
     packages_urls = [(os.path.join(base_url, bioc_version, 'bioc', 'VIEWS'), 'bioc'),
                      (os.path.join(base_url, bioc_version, 'data', 'annotation', 'VIEWS'), 'data/annotation'),
                      (os.path.join(base_url, bioc_version, 'data', 'experiment', 'VIEWS'), 'data/experiment')]
-    packages_urls = packages_urls[1:]
     for url, prefix in packages_urls:
         req = requests.get(url)
         if not req.ok:
@@ -252,11 +251,12 @@ def fetchPackages(bioc_version):
             for line in pkg.split("\n"):
                 if line.startswith(" "):
                     pkgDict[lastKey] += " {}".format(line.strip())
+                    pkgDict[lastKey] = pkgDict[lastKey].strip()  # Prevent prepending a space when content begins on the next line
                 elif ":" in line:
                     idx = line.index(":")
                     lastKey = line[:idx]
                     pkgDict[lastKey] = line[idx + 2:].strip()
-            pkgDict['URLprefix'] = prefix
+            pkgDict['URLprefix'] = prefix.strip()
             d[pkgDict['Package']] = pkgDict
     return d
 
@@ -322,6 +322,9 @@ class BioCProjectPage(object):
         # which we need for reconstructing the tarball URL.
         self.url = request.url
 
+        if self.packages[package]['URLprefix'] != 'bioc':
+            self.is_data_package = True
+
     @property
     def bioarchive_url(self):
         """
@@ -368,7 +371,6 @@ class BioCProjectPage(object):
                     self.bioarchive_url,
                     self.cargoport_url]
             for url in urls:
-                logger.info("trying {}".format(url))
                 if url is not None:
                     response = requests.head(url)
                     if response.status_code == 200:
@@ -589,7 +591,6 @@ class BioCProjectPage(object):
         ):
             # Modified from conda_build.skeletons.cran
             #
-            logger.info("WTF, we're downloading the tarball!!! Compilation {} LinkingTo {}".format(self.packages[self.package].get('NeedsCompilation', 'no'), self.packages[self.package].get('LinkingTo', None)))
             with tarfile.open(self.cached_tarball) as tf:
                 need_f = any(f.name.lower().endswith(('.f', '.f90', '.f77')) for f in tf)
                 if need_f:
@@ -647,6 +648,18 @@ class BioCProjectPage(object):
         """
         return self.packages[self.package]['MD5sum']
 
+    def pacified_description(self):
+        """
+        Linting will fail if GIT_, HG_, or SVN_ appear in the description.
+        This usually isn't an issue, except some microarray annotation packages
+        include HG_ in their summaries. The goal is to simply remove _ in such
+        cases.
+        """
+        description = self.packages[self.package]['Description']
+        for vcs in ['HG', 'SVN', 'GIT']:
+            description = description.replace('{}_'.format(vcs), '{} '.format(vcs))
+        return description
+
     @property
     def meta_yaml(self):
         """
@@ -688,9 +701,6 @@ class BioCProjectPage(object):
             [
                 # keep the one that was found
                 self.bioconductor_tarball_url,
-                self.bioconductor_annotation_data_url,
-                self.bioconductor_experiment_data_url,
-
                 # use the built URL, regardless of whether it was found or not.
                 # bioaRchive and cargo-port cache packages but only after the
                 # first recipe is built.
@@ -701,12 +711,10 @@ class BioCProjectPage(object):
         ]
 
         DEPENDENCIES = sorted(self.dependencies)
-        logger.info("A")
 
         additional_run_deps = []
         if self.is_data_package:
             additional_run_deps.append('wget')
-        logger.info("B")
 
         d = OrderedDict((
             (
@@ -748,11 +756,10 @@ class BioCProjectPage(object):
                 'about', OrderedDict((
                     ('home', sub_placeholders(self.url)),
                     ('license', self.license),
-                    ('summary', self.packages[self.package]['Description']),
+                    ('summary', self.pacified_description()),
                 )),
             ),
         ))
-        logger.info("C")
 
         if self.extra:
             d['extra'] = self.extra
@@ -761,7 +768,6 @@ class BioCProjectPage(object):
             d['requirements']['build'] = []
         for k, v in self._cb3_build_reqs.items():
             d['requirements']['build'].append(k + '_' + "PLACEHOLDER")
-        logger.info("D")
 
         rendered = pyaml.dumps(d, width=1e6).decode('utf-8')
         rendered = (
@@ -770,16 +776,13 @@ class BioCProjectPage(object):
             '{% set bioc = "' + self.bioc_version + '" %}\n\n' +
             rendered
         )
-        logger.info("E")
 
         for k, v in self._cb3_build_reqs.items():
             rendered = rendered.replace(k + '_' + "PLACEHOLDER", v)
-        logger.info("F")
 
         tmpdir = tempfile.mkdtemp()
         with open(os.path.join(tmpdir, 'meta.yaml'), 'w') as fout:
             fout.write(rendered)
-        logger.info("G finished")
         return fout.name
 
 
@@ -923,7 +926,6 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
     # If the version number has not changed but something else in the recipe
     # *has* changed, then bump the version number.
     meta_file = os.path.join(recipe_dir, 'meta.yaml')
-    logger.info("1")
     if os.path.exists(meta_file):
         updated_meta = utils.load_first_metadata(proj.meta_yaml, finalize=False).meta
         current_meta = utils.load_first_metadata(meta_file, finalize=False).meta
@@ -944,11 +946,9 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
         if 'extra' in current_meta:
             exclude = set(['final', 'copy_test_source_files'])
             proj.extra = {x: y for x, y in current_meta['extra'].items() if x not in exclude}
-    logger.info("2")
 
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
         fout.write(open(proj.meta_yaml).read())
-    logger.info("3")
 
     if not proj.is_data_package:
         with open(os.path.join(recipe_dir, 'build.sh'), 'w') as fout:
@@ -965,8 +965,6 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
         urls = [
             '"{0}"'.format(u) for u in [
                 proj.bioconductor_tarball_url,
-                proj.bioconductor_annotation_data_url,
-                proj.bioconductor_experiment_data_url,
                 bioarchive_url(proj.package, proj.version, proj.bioc_version),
                 cargoport_url(proj.package, proj.version, proj.bioc_version),
                 proj.cargoport_url
