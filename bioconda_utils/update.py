@@ -57,15 +57,16 @@ Todo:
  - [ ] parse bitbucket
  - [ ] parse sourceforge (downloads.sourceforge.net, sourceforge.net)
  - [ ] parse cran (cloud.r-project.org, cran.r-project.org)
- - [ ] parse cpan (cpan.metapan.org, search.cpan.org)
+ - [x] parse cpan (cpan.metapan.org, search.cpan.org)
  - [ ] handle FTP
  - [ ] parse gitlab (gitlab.com, local-install?)
  - [ ] ? process requirements from pypi, cran, cpan
  - [ ] fix branch name for subrecipes
  - [x] update message should be from master to newest
  - [x] labels should not be removed when updating PR
-
-
+ - [ ] fix recipes with missing checksum
+ - [ ] check run_exports, remove redundant run deps
+ - [ ] fix user agent (we want to always send that)
 """
 
 import abc
@@ -630,9 +631,6 @@ class UpdateVersion(Filter):
         template = "is up to date"
         level = logging.DEBUG
 
-    class UpdateInProgress(RecipeError):
-        template = "has update in progress"
-
     class UpdateVersionFailure(RecipeError):
         template = "could not be updated from %s to %s"
 
@@ -685,12 +683,8 @@ class UpdateVersion(Filter):
         latest = self.select_version(recipe.version, versions.keys())
         recipe.version_data = versions[latest]
 
-        if latest == recipe.version:
-            if recipe.on_branch:
-                raise self.UpdateInProgress(recipe)
-                # Fixme: what if the PR isn't there?
-            else:
-                raise self.UpToDate(recipe)
+        if latest == recipe.version and not recipe.on_branch:
+            raise self.UpToDate(recipe)
 
         recipe.replace(recipe.version, latest)
         recipe.reset_buildnumber()
@@ -954,14 +948,25 @@ class GitWriteRecipe(GitFilter):
                 await fd.write(recipe.dump())
             changed = self.git.commit_and_push_changes(recipe, branch_name)
         if changed:
-            await asyncio.sleep(1)  # let push settle before going on
-        else:
+            # CircleCI appears to have problems picking up on our PRs. Let's wait
+            # a while before we create the PR, so the pushed branch has time to settle.
+            await asyncio.sleep(10)  # let push settle before going on
+        elif not recipe.on_branch:
             raise self.NoChanges(recipe)
         return recipe
 
 
 class CreatePullRequest(GitFilter):
     """Creates or Updates PR on GitHub"""
+
+    class UpdateInProgress(RecipeError):
+        template = "has update in progress"
+
+    class UpdateRejected(RecipeError):
+        template = "had latest updated rejected manually"
+
+    class FailedToCreatePR(RecipeError):
+        template = "had failure in PR create"
 
     def __init__(self, scanner, git_handler, token: str,
                  dry_run: bool = False,
@@ -983,27 +988,53 @@ class CreatePullRequest(GitFilter):
         labels = ["autobump"]
         title = f"Update {recipe} to {recipe.version}"
 
+        # check if we already have an open PR (=> update in progress)
         prs = await self.gh.get_prs(from_branch=branch_name)
         if prs:
             if len(prs) > 1:
-                for pr in prs:
-                    logger.error("Found PR %i updating %s: %s", pr["number"],
-                                 recipe, pr["title"])
-            pr_number = prs[0]["number"]
-            pr = await self.gh.modify_issue(number=pr_number, body=body, title=title)
-            logger.info("Updated PR %i updating %s to %s", pr_number, recipe, recipe.version)
-        else:
-            # CircleCI appears to have problems picking up on our PRs. Let's wait
-            # a while before we create the PR, so the pushed branch has time to settle.
-            await asyncio.sleep(10)
-            pr = await self.gh.create_pr(title=title,
-                                         from_branch=branch_name,
-                                         body=body)
-            pr_number = pr["number"]
-            if pr_number:
-                await self.gh.modify_issue(number=pr_number, labels=labels)
+                logger.error("Multiple PRs updating %s: %s",
+                             recipe,
+                             ", ".join(pr['number'] for pr in prs))
+            for pr in prs:
+                logger.debug("Found PR %i updating %s: %s",
+                             pr["number"], recipe, pr["title"])
+            # update the PR if title or body changed
+            pr = prs[0]
+            args = {}
+            if body != pr["body"]:
+                args["body"] = body
+            if title != pr["title"]:
+                args["title"] = title
+            if args:
+                prs = await self.gh.modify_issue(number=pr['number'], **args)
+                if prs:
+                    logger.info("Updated PR %i updating %s to %s",
+                                pr['number'], recipe, recipe.version)
+                else:
+                    logger.error("Failed to update PR %i with %s",
+                                 pr['number'], args)
+            else:
+                logger.debug("Not updating PR %i updating %s - no changes",
+                             pr['number'], recipe)
 
-            logger.info("Created PR %i updating %s to %s", pr_number, recipe, recipe.version)
+            raise self.UpdateInProgress(recipe)
+
+        # check for matching closed PR (=> update rejected)
+        prs = await self.gh.get_prs(from_branch=branch_name, state=self.gh.STATE.closed)
+        if any(recipe.version in pr['title'] for pr in prs):
+            raise self.UpdateRejected(recipe)
+
+        # finally, create new PR
+        pr = await self.gh.create_pr(title=title,
+                                     from_branch=branch_name,
+                                     body=body)
+        if not pr:
+            raise self.FailedToCreatePR(recipe)
+
+        # set labels (can't do that in create_pr as they are part of issue API)
+        await self.gh.modify_issue(number=pr['number'], labels=labels)
+
+        logger.info("Created PR %i updating %s to %s", pr['number'], recipe, recipe.version)
         return recipe
 
 
