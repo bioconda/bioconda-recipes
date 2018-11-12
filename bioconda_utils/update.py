@@ -645,18 +645,18 @@ class UpdateVersion(Filter):
         template = "has URL not modified by version change"
 
     def __init__(self, scanner: "Scanner", hoster_factory,
-                 failed_file: Optional[str] = None) -> None:
+                 unparsed_file: Optional[str] = None) -> None:
         super().__init__(scanner)
-        #: failed urls - for later inspection
-        self.failed_urls: List[str] = []
+        #: output file name for unparsed urls
+        self.unparsed_urls: List[str] = []
         #: output file name for failed urls
-        self.failed_file = failed_file
+        self.unparsed_file = unparsed_file
         #: function selecting hoster
         self.hoster_factory = hoster_factory
 
     def finalize(self):
         stats: Counter = Counter()
-        for url in self.failed_urls:
+        for url in self.unparsed_urls:
             parsed = urlparse(url)
             stats[parsed.scheme] += 1
             stats[parsed.netloc] += 1
@@ -664,9 +664,9 @@ class UpdateVersion(Filter):
         for key, value in stats.most_common():
             logger.info("%s: %i", key, value)
 
-        if self.failed_urls and self.failed_file:
-            with open(self.failed_file, "w") as out:
-                out.write("\n".join(self.failed_urls))
+        if self.unparsed_urls and self.unparsed_file:
+            with open(self.unparsed_file, "w") as out:
+                out.write("\n".join(self.unparsed_urls))
 
     async def apply(self, recipe: Recipe):
         logger.debug("Checking for updates to %s - %s", recipe, recipe.version)
@@ -716,7 +716,7 @@ class UpdateVersion(Filter):
         for url in urls:
             hoster = self.hoster_factory(url)
             if not hoster:
-                self.failed_urls += [url]
+                self.unparsed_urls += [url]
                 continue
             logger.debug("Scanning with %s", hoster.__class__.__name__)
             try:
@@ -777,6 +777,23 @@ class UpdateChecksums(Filter):
     class SourceUrlMismatch(RecipeError):
         template = "has urls in source %i pointing to different files"
 
+
+    def __init__(self, scanner: "Scanner",
+                 failed_file: Optional[str] = None) -> None:
+        super().__init__(scanner)
+        #: failed urls - for later inspection
+        self.failed_urls: List[str] = []
+        #: unparsed urls - for later inspection
+        self.failed_file = failed_file
+
+    def finalize(self):
+        if self.failed_urls:
+            logger.warning("Encountered %i download failures while computing checksums",
+                           len(self.failed_urls))
+        if self.failed_urls and self.failed_file:
+            with open(self.failed_file, "w") as out:
+                out.write("\n".join(self.failed_urls))
+
     async def apply(self, recipe):
         sources = recipe.meta["source"]
         logger.info("Updating checksum for %s %s", recipe, recipe.version)
@@ -818,7 +835,10 @@ class UpdateChecksums(Filter):
             try:
                 res = await self.scanner.get_checksum_from_url(
                     url, f"{recipe} [{source_idx}.{url_idx}]")
-            except aiohttp.client_exceptions.ClientResponseError:
+            except aiohttp.client_exceptions.ClientResponseError as exc:
+                logger.info("Recipe %s: HTTP %s while downloading url %i",
+                            recipe, exc.code, url_idx)
+                self.failed_urls += ["\t".join((str(exc.code), url))]
                 res = None
             new_checksums.append(res)
         count = len(set(c for c in new_checksums if c is not None))

@@ -668,7 +668,8 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
      the provided filename. If the file does not exist, it will be created
      the first time. Caution: The cache will not be updated if
      exclude-channels is changed''')
-@arg('--failed-urls', help='''Write unrecognized urls to this file''')
+@arg('--unparsed-urls', help='''Write unrecognized urls to this file''')
+@arg('--failed-urls', help='''Write urls with permanent failure to this file''')
 @arg('--check-branch', help='''Check if recipe has active branch''')
 @arg("--create-branch", action="store_true", help='''Create branch for each
      update''')
@@ -677,7 +678,7 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
 @arg("--max-updates", help='''Exit after ARG updates''')
 @arg("--dry-run", help='''Don't update remote git or github"''')
 def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
-           failed_urls=None,
+           failed_urls=None, unparsed_urls=None,
            exclude_subrecipes=None, exclude_channels='conda-forge',
            ignore_blacklists=False,
            check_branch=False, create_branch=False, create_pr=False,
@@ -708,8 +709,8 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
         scanner.add(update.ExcludeOtherChannel, exclude_channels,
                     cache and cache + "_repodata.txt")
 
-    scanner.add(update.UpdateVersion, hosters.Hoster.select_hoster, failed_urls)
-    scanner.add(update.UpdateChecksums)
+    scanner.add(update.UpdateVersion, hosters.Hoster.select_hoster, unparsed_urls)
+    scanner.add(update.UpdateChecksums, failed_urls)
 
     if create_branch or create_pr:
         scanner.add(update.GitWriteRecipe, git_handler)
