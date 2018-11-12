@@ -402,6 +402,7 @@ class Scanner():
             if "url_checksum" not in self.cache:
                 self.cache["url_checksum"] = {}
         self.proc_pool_executor = ProcessPoolExecutor(3)
+        self.limit_inflight = asyncio.Semaphore(100)
 
     def add(self, filt: Filter, *args, **kwargs) -> None:
         """Adds `Filter` to this `Scanner`"""
@@ -462,18 +463,19 @@ class Scanner():
     async def process(self, recipe_dir: str) -> bool:
         """Applies the filters to a recipe"""
         recipe = Recipe(recipe_dir, self.recipe_folder)
-        try:
-            for filt in self.filters:
-                recipe = await filt.apply(recipe)
-        except asyncio.CancelledError:
-            return False
-        except RecipeError as recipe_error:
-            recipe_error.log(logger)
-            self.stats[recipe_error.name] += 1
-            return False
-        except Exception:  # pylint: disable=broad-except
-            logger.exception("While processing %s", recipe_dir)
-            return False
+        async with self.limit_inflight:
+            try:
+                for filt in self.filters:
+                    recipe = await filt.apply(recipe)
+            except asyncio.CancelledError:
+                return False
+            except RecipeError as recipe_error:
+                recipe_error.log(logger)
+                self.stats[recipe_error.name] += 1
+                return False
+            except Exception:  # pylint: disable=broad-except
+                logger.exception("While processing %s", recipe_dir)
+                return False
         self.stats["Updated"] += 1
         return True
 
