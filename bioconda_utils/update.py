@@ -686,6 +686,8 @@ class UpdateVersion(Filter):
         if latest == recipe.version and not recipe.on_branch:
             raise self.UpToDate(recipe)
 
+        for fn in versions[latest]:
+            recipe.replace(fn, versions[latest][fn]['link'])
         recipe.replace(recipe.version, latest)
         recipe.reset_buildnumber()
         recipe.render()
