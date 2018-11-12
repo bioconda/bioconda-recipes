@@ -1,6 +1,6 @@
-{% set version = "1.16.0" %}
+{% set version = "1.18.0" %}
 {% set name = "methylMnM" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,22 +8,26 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: b028097051c7a446303fa85e8aef2c6a277f55be2bb1a7192238781fe99b0153
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 22584a7d451e4a7c7114c0372f3fc420e3c81f6511362f21e65cf57c77011cbe
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
-    - bioconductor-edger
+    - 'bioconductor-edger >=3.22.4,<3.24.0'
     - r-base
     - r-statmod
   run:
-    - bioconductor-edger
+    - 'bioconductor-edger >=3.22.4,<3.24.0'
     - r-base
     - r-statmod
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -31,7 +35,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'To give the exactly p-value and q-value of MeDIP-seq and MRE-seq data for different samples comparation.'
-
 extra:
   identifiers:
     - biotools:methylmnm
