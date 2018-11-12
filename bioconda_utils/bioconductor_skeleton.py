@@ -238,10 +238,10 @@ def fetchPackages(bioc_version):
     }
     """
     d = dict()
-    packages_urls = [os.path.join(base_url, bioc_version, 'bioc', 'VIEWS'),
-                     os.path.join(base_url, bioc_version, 'data', 'annotation', 'VIEWS'),
-                     os.path.join(base_url, bioc_version, 'data', 'experiment', 'VIEWS')]
-    for url in packages_urls:
+    packages_urls = [(os.path.join(base_url, bioc_version, 'bioc', 'VIEWS'), 'bioc'),
+                     (os.path.join(base_url, bioc_version, 'data', 'annotation', 'VIEWS'), 'data/annotation'),
+                     (os.path.join(base_url, bioc_version, 'data', 'experiment', 'VIEWS'), 'data/experiment')]
+    for url, prefix in packages_urls:
         req = requests.get(url)
         if not req.ok:
             sys.exit("ERROR: Could not fetch {}!\n".format(url))
@@ -251,10 +251,12 @@ def fetchPackages(bioc_version):
             for line in pkg.split("\n"):
                 if line.startswith(" "):
                     pkgDict[lastKey] += " {}".format(line.strip())
+                    pkgDict[lastKey] = pkgDict[lastKey].strip()  # Prevent prepending a space when content begins on the next line
                 elif ":" in line:
                     idx = line.index(":")
                     lastKey = line[:idx]
                     pkgDict[lastKey] = line[idx + 2:].strip()
+            pkgDict['URLprefix'] = prefix.strip()
             d[pkgDict['Package']] = pkgDict
     return d
 
@@ -307,33 +309,21 @@ class BioCProjectPage(object):
         self.depends_on_gcc = False
 
         # Determine the URL
-        htmls = {
-            'regular_package': os.path.join(
-                base_url, self.bioc_version, 'bioc', 'html', package
-                + '.html'),
-            'annotation_package': os.path.join(
-                base_url, self.bioc_version, 'data', 'annotation', 'html',
-                package + '.html'),
-            'experiment_package': os.path.join(
-                base_url, self.bioc_version, 'data', 'experiment', 'html',
-                package + '.html'),
-        }
-        tried = []
-        for label, url in htmls.items():
-            request = requests.get(url)
-            tried.append(url)
-            if request:
-                break
+        url = os.path.join(base_url, self.bioc_version, self.packages[package]['URLprefix'], 'html', package + '.html')
+        request = requests.get(url)
 
         if not request:
             raise PageNotFoundError(
                 'Could not find HTML page for {0.package}. Tried: '
-                '{1}'.format(self, ', '.join(tried)))
+                '{1}'.format(self, url))
 
         # Since we provide the "short link" we will get redirected. Using
         # requests allows us to keep track of the final destination URL,
         # which we need for reconstructing the tarball URL.
         self.url = request.url
+
+        if self.packages[package]['URLprefix'] != 'bioc':
+            self.is_data_package = True
 
     @property
     def bioarchive_url(self):
@@ -369,39 +359,15 @@ class BioCProjectPage(object):
         """
         Return the url to the tarball from the bioconductor site.
         """
-        url = bioconductor_tarball_url(self.package, self.version, self.bioc_version)
+        url = os.path.join(base_url, self.bioc_version, self.packages[self.package]['URLprefix'], self.packages[self.package]['source.ver'])
         response = requests.head(url)
         if response.status_code == 200:
-            return url
-
-    @property
-    def bioconductor_annotation_data_url(self):
-        """
-        Return the url to the tarball from the bioconductor site.
-        """
-        url = bioconductor_annotation_data_url(self.package, self.version, self.bioc_version)
-        response = requests.head(url)
-        if response.status_code == 200:
-            self.is_data_package = True
-            return url
-
-    @property
-    def bioconductor_experiment_data_url(self):
-        """
-        Return the url to the tarball from the bioconductor site.
-        """
-        url = bioconductor_experiment_data_url(self.package, self.version, self.bioc_version)
-        response = requests.head(url)
-        if response.status_code == 200:
-            self.is_data_package = True
             return url
 
     @property
     def tarball_url(self):
         if not self._tarball_url:
             urls = [self.bioconductor_tarball_url,
-                    self.bioconductor_annotation_data_url,
-                    self.bioconductor_experiment_data_url,
                     self.bioarchive_url,
                     self.cargoport_url]
             for url in urls:
@@ -682,6 +648,18 @@ class BioCProjectPage(object):
         """
         return self.packages[self.package]['MD5sum']
 
+    def pacified_description(self):
+        """
+        Linting will fail if GIT_, HG_, or SVN_ appear in the description.
+        This usually isn't an issue, except some microarray annotation packages
+        include HG_ in their summaries. The goal is to simply remove _ in such
+        cases.
+        """
+        description = self.packages[self.package]['Description']
+        for vcs in ['HG', 'SVN', 'GIT']:
+            description = description.replace('{}_'.format(vcs), '{} '.format(vcs))
+        return description
+
     @property
     def meta_yaml(self):
         """
@@ -723,9 +701,6 @@ class BioCProjectPage(object):
             [
                 # keep the one that was found
                 self.bioconductor_tarball_url,
-                self.bioconductor_annotation_data_url,
-                self.bioconductor_experiment_data_url,
-
                 # use the built URL, regardless of whether it was found or not.
                 # bioaRchive and cargo-port cache packages but only after the
                 # first recipe is built.
@@ -781,7 +756,7 @@ class BioCProjectPage(object):
                 'about', OrderedDict((
                     ('home', sub_placeholders(self.url)),
                     ('license', self.license),
-                    ('summary', self.packages[self.package]['Description']),
+                    ('summary', self.pacified_description()),
                 )),
             ),
         ))
@@ -990,8 +965,6 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
         urls = [
             '"{0}"'.format(u) for u in [
                 proj.bioconductor_tarball_url,
-                proj.bioconductor_annotation_data_url,
-                proj.bioconductor_experiment_data_url,
                 bioarchive_url(proj.package, proj.version, proj.bioc_version),
                 cargoport_url(proj.package, proj.version, proj.bioc_version),
                 proj.cargoport_url

@@ -564,7 +564,7 @@ def bioconductor_skeleton(
 
     if package == "update-all-packages":
         if not bioc_version:
-            bioc_version = _bioconductor_skeleton.latest_bioconductor_version()
+            bioc_version = _bioconductor_skeleton.latest_bioconductor_release_version()
         packages = _bioconductor_skeleton.fetchPackages(bioc_version)
         problems = []
         for k, v in packages.items():
@@ -576,8 +576,7 @@ def bioconductor_skeleton(
             except:
                 problems.append(k)
         if len(problems):
-            print("The following recipes had problems and were not finished: {}".format(", ".join(problems)))
-            sys.exit(1)
+            sys.exit("The following recipes had problems and were not finished: {}".format(", ".join(problems)))
     else:
         _bioconductor_skeleton.write_recipe(
             package, recipe_folder, config, force=force, bioc_version=bioc_version,
