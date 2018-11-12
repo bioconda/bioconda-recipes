@@ -107,11 +107,6 @@ yaml = YAML(typ="rt")  # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-# connect backoff logger
-# FIXME: this logs "giveup" (404) to error level
-logging.getLogger('backoff').addHandler(utils.log_stream_handler)
-
-
 class EndProcessing(BaseException):
     """Raised by `Filter` to tell `Scanner` to stop processing"""
 
