@@ -823,7 +823,7 @@ class UpdateChecksums(Filter):
             logger.error("Recipe %s has no checksum", recipe)
             return
         if checksum_type != "sha256":
-            logger.error("Recipe %s had checksum type %s", recipe, checksum_type)
+            logger.info("Recipe %s had checksum type %s", recipe, checksum_type)
             if not recipe.replace(checksum_type, "sha256"):
                 raise RuntimeError("Failed to replace checksum type?")
 
