@@ -146,9 +146,9 @@ class Hoster(metaclass=HosterMeta):
         "format template for release page URL"
 
     def __init__(self, url: str, match: Match[str]) -> None:
-        self.orig_match = match
-        self.releases_url = self.releases_format.format(**match.groupdict())
-        logger.debug("%s matched %s with %s", self.__class__.__name__, url, match.groupdict())
+        self.vals = match.groupdict()
+        self.releases_url = self.releases_format.format_map(self.vals)
+        logger.debug("%s matched %s with %s", self.__class__.__name__, url, self.vals)
 
     @classmethod
     def try_make_hoster(cls, url: str) -> Optional["Hoster"]:
@@ -204,7 +204,7 @@ class HTMLHoster(Hoster):
     async def get_versions(self, scanner):
         exclude = set(self.exclude)
         vals = {key: val
-                for key, val in self.orig_match.groupdict().items()
+                for key, val in self.vals.items()
                 if key not in exclude}
         link_pattern = replace_named_capture_group(self.link_pattern, vals)
         parser = HrefParser(re.compile(link_pattern))
@@ -231,7 +231,7 @@ class OrderedHTMLHoster(HTMLHoster):
         if not matches:
             return matches
         for num, match in enumerate(matches):
-            if match["version"] == self.orig_match["version"]:
+            if match["version"] == self.vals["version"]:
                 break
         else:  # version not in list
             return matches
@@ -301,7 +301,7 @@ class BioarchiveGalaxyProject(JSONHoster):
         try:
             latest = data["info"]["Version"]
             vals = {key: val
-                    for key, val in self.orig_match.groupdict().items()
+                    for key, val in self.vals.items()
                     if key not in self.exclude}
             vals['version'] = latest
             link = replace_named_capture_group(self.link_pattern, vals)
@@ -319,7 +319,7 @@ class BioarchiveGalaxyProject(JSONHoster):
     link_pattern = "https://{url}"
 
 
-class MetaCPAN(JSONHoster):
+class CPAN(JSONHoster):
     async def get_versions(self, scanner):
         text = await scanner.get_text_from_url(self.releases_url)
         data = json.loads(text)
