@@ -1,0 +1,85 @@
+{% set version = '3.2.6' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-oompabase
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: oompaBase_{{ version }}.tar.gz
+  url:
+    - https://cran.r-project.org/src/contrib/oompaBase_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/oompaBase/oompaBase_{{ version }}.tar.gz
+
+
+  sha256: 7a286464c73ad07125da02ada2a8ef86cbc34699c46ab9de85de1a5284862f52
+  # patches:
+   # List any patch files here
+   # - fix.patch
+
+build:
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+
+requirements:
+  build:
+    - r-base
+    - r-cluster
+
+  run:
+    - r-base
+    - r-cluster
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('oompaBase')"  # [not win]
+    - "\"%R%\" -e \"library('oompaBase')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: http
+  license: Apache (== 2.0)
+  summary: Provides the class unions that must be preloaded in order for the basic tools in the
+    OOMPA (Object-Oriented  Microarray and Proteomics Analysis) project to be defined
+    and loaded. It also includes vectorized operations for row-by-row means, variances,
+    and t-tests. Finally, it provides new color schemes. Details on the packages in
+    the OOMPA project can be found at <http
+  license_family: APACHE
+
+# The original CRAN metadata for this package was:
+
+# Package: oompaBase
+# Version: 3.2.6
+# Date: 2018-05-16
+# Title: Class Unions, Matrix Operations, and Color Schemes for OOMPA
+# Author: Kevin R. Coombes
+# Maintainer: Kevin R. Coombes <krc@silicovore.com>
+# Depends: R (>= 3.0)
+# Imports: methods, graphics, grDevices, stats, cluster
+# Description: Provides the class unions that must be preloaded in order for the basic tools in the OOMPA (Object-Oriented  Microarray and Proteomics Analysis) project to be defined and loaded. It also includes vectorized operations for row-by-row means, variances, and t-tests. Finally, it provides new color schemes. Details on the packages in the OOMPA project can be found at <http://oompa.r-forge.r-project.org/>.
+# License: Apache License (== 2.0)
+# LazyLoad: yes
+# biocViews: Infrastructure
+# URL: http://oompa.r-forge.r-project.org/
+# NeedsCompilation: no
+# Packaged: 2018-05-17 01:27:40 UTC; Kevin
+# Repository: CRAN
+# Date/Publication: 2018-05-17 04:01:58 UTC
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
