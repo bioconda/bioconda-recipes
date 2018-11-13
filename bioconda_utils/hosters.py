@@ -22,6 +22,7 @@ import json
 import logging
 
 from html.parser import HTMLParser
+from itertools import chain
 from typing import Dict, List, Match, Mapping, Pattern, Set, Tuple, Optional
 from urllib.parse import urljoin
 
@@ -337,6 +338,35 @@ class CPAN(JSONHoster):
     author_pattern = r"(?P<author>[A-Z]+)"
     url_pattern = r"(www.cpan.org|cpan.metacpan.org|search.cpan.org/CPAN)/authors/id/./../{author}/([^/]+/|){package}-v?{version}{ext}"
     releases_format = "https://fastapi.metacpan.org/v1/release/{package}"
+
+
+class CRAN(JSONHoster):
+    async def get_versions(self, scanner):
+        text = await scanner.get_text_from_url(self.releases_url)
+        data = json.loads(text)
+        res = []
+        for vers in (str(data["latest"]), self.vals["version"]):
+            if vers not in data['versions']:
+                continue
+            vdata = data['versions'][vers]
+            version = {
+                'releases_url': self.releases_url,
+                'link': '',
+                'version': vers,
+                'depends': {
+                    pkg: spec.replace(" ", "")
+                    for pkg, spec in chain(vdata.get('Depends', {}).items(),
+                                           vdata.get('Imports', {}).items())
+                }
+            }
+            res.append(version)
+        return res
+
+    package_pattern = r"(?P<package>[\w\.]+)"
+    url_pattern = (r"r-project\.org/src/contrib"
+                   r"(/Archive)?/{package}(?(1)/{package}|)"
+                   r"_{version}{ext}")
+    releases_format = "https://crandb.r-pkg.org/{package}/all"
 
 
 logger.info(f"Hosters loaded: %s", [h.__name__ for h in HosterMeta.hoster_types])
