@@ -160,13 +160,7 @@ class Recipe():
         #: relative path to recipe dir from folder containing recipes
         self.reldir = recipe_dir[len(recipe_folder):].strip("/")
 
-        # These are filled in by render()
-        #: Version of package(s) built by recipe
-        self.version = ""
-        #: Name of toplevel package built by recipe
-        #: Important: this may be different from the Recipe's "name" (`reldir`)
-        #: and may not list all packages built by the recipe (``outputs:``).
-        self.name = ""
+        # Filled in by render()
         #: Parsed recipe YAML
         self.meta: Dict[str, Any] = {}
 
@@ -228,16 +222,34 @@ class Recipe():
             self.meta = yaml.load(template.render(self.JINJA_VARS))
         except DuplicateKeyError:
             raise self.DuplicateKey(self)
-        try:
-            self.version = str(self.meta["package"]["version"])
-            self.name = self.meta["package"]["name"]
-        except KeyError:
+
+        if ("package" not in self.meta
+            or "version" not in self.meta["package"]
+            or "name" not in self.meta["package"]):
             raise self.MissingKey(self)
 
         # make recipe-maintainers a list if it is a string
         maintainers = self.meta.mlget(["extra", "recipe-maintainers"])
         if maintainers and isinstance(maintainers, str):
             self.meta["extra"]["recipe-maintainers"] = [maintainers]
+
+    @property
+    def name(self) -> str:
+        """The name of the toplevel package built by this recipe"""
+        return self.meta["package"]["name"]
+
+    @property
+    def version(self) -> str:
+        """The version of the package build by this recipe"""
+        return str(self.meta["package"]["version"])
+
+    @property
+    def package_names(self) -> List[str]:
+        """List of the packages built by this recipe (including outputs)"""
+        packages = [self.name]
+        if "outputs" in self.meta:
+            packages.extend(output['name'] for output in self.meta['outputs'])
+        return packages
 
     def replace(self, before: str, after: str,
                 within: Sequence[str] = ("package", "source")) -> int:
