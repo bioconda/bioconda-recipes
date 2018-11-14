@@ -346,6 +346,10 @@ class Scanner():
       packages: glob pattern to select recipes
       config: config.yaml (unused)
     """
+
+    #: Used as user agent in http requests and as requester in github API requests
+    USER_AGENT = "bioconda/bioconda-utils"
+
     def __init__(self, recipe_folder: str, packages: List[str],
                  config: str, cache_fn: str, max_inflight: int = 100) -> None:
         with open(config, "r") as config_file:
@@ -424,7 +428,9 @@ class Scanner():
 
     async def _async_run(self) -> bool:
         """Runner within async loop"""
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(
+                headers={'User-Agent': self.USER_AGENT}
+        ) as session:
             self.session = session
             await asyncio.gather(*(filt.async_init() for filt in self.filters))
             recipes = list(utils.get_recipes(self.recipe_folder, self.packages))

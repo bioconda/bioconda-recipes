@@ -28,7 +28,6 @@ class GitHubHandler:
       to_user: Target User/Org for PRs
       to_repo: Target repository within **to_user**
     """
-    USER_AGENT = "bioconda/bioconda-utils"
     PULLS = "/repos/{user}/{repo}/pulls{/number}{?head,base,state}"
     ISSUES = "/repos/{user}/{repo}/issues{/number}"
 
@@ -168,8 +167,10 @@ class AiohttpGitHubHandler(GitHubHandler):
 
     Arguments:
       session: Aiohttp Client Session object
+      requester: Identify self (e.g. user agent)
     """
-    def create_api_object(self, session: aiohttp.ClientSession, *args, **kwargs):
-        self.api = gh_aiohttp.GitHubAPI(session,
-                                        self.USER_AGENT,
-                                        oauth_token=self.token)
+    def create_api_object(self, session: aiohttp.ClientSession,
+                          requester: str, *args, **kwargs) -> None:
+        self.api = gh_aiohttp.GitHubAPI(
+            session, requester, oauth_token=self.token
+        )
