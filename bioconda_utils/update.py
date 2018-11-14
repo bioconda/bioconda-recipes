@@ -41,32 +41,6 @@ Rationale (for all those imports):
   `# [exp]` line selectors and at least simple parts of Jinja2
   template expansion.
 
-Todo:
-
- - [ ] deal with multi-output packages
- - [ ] deal with linux/osx packages (selectors)
- - [x] deal with already open PRs
- - [x] handle remote/local git correctly
- - [ ] collect editors from log
- - [ ] collect author from GithubHoster
- - [ ] ping author if in bioconda team
- - [ ] show recent versions in PR body
- - [ ] allow custom url patterns in meta.yaml
- - [x] randomize recipe order
- - [x] parse pypi (pypi.io, pypi.python.org, files.pythonhosted.org)
- - [ ] parse bitbucket
- - [ ] parse sourceforge (downloads.sourceforge.net, sourceforge.net)
- - [ ] parse cran (cloud.r-project.org, cran.r-project.org)
- - [x] parse cpan (cpan.metapan.org, search.cpan.org)
- - [ ] handle FTP
- - [ ] parse gitlab (gitlab.com, local-install?)
- - [ ] ? process requirements from pypi, cran, cpan
- - [ ] fix branch name for subrecipes
- - [x] update message should be from master to newest
- - [x] labels should not be removed when updating PR
- - [ ] fix recipes with missing checksum
- - [ ] check run_exports, remove redundant run deps
- - [ ] fix user agent (we want to always send that)
 """
 
 import abc
