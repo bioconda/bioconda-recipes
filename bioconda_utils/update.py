@@ -62,7 +62,11 @@ import aiohttp
 import aiofiles
 import backoff
 
-from conda.models.version import VersionOrder
+import conda_build.variants
+import conda_build.config
+from conda.exports import MatchSpec, VersionOrder
+import conda.exceptions
+
 from ruamel.yaml import YAML
 from ruamel.yaml.constructor import DuplicateKeyError
 from pkg_resources import parse_version
@@ -636,6 +640,9 @@ class UpdateVersion(Filter):
         self.unparsed_file = unparsed_file
         #: function selecting hoster
         self.hoster_factory = hoster_factory
+        #: conda build config
+        self.build_config: conda_build.config.Config = \
+            utils.load_conda_build_config()
 
     def finalize(self):
         stats: Counter = Counter()
@@ -663,6 +670,7 @@ class UpdateVersion(Filter):
             raise self.Multisource(recipe)
 
         versions = await self.get_versions(recipe, sources, 0)
+        conflicts = self.check_version_pin_conflict(recipe, versions)
         latest = self.select_version(recipe.version, versions.keys())
         recipe.version_data = versions[latest]
 
@@ -751,6 +759,40 @@ class UpdateVersion(Filter):
                 latest = vers
 
         return latest
+
+    def check_version_pin_conflict(self, recipe: Recipe,
+                                   versions: List[Dict[str, Any]]) -> List[str]:
+        """Find items in **versions** conflicting with pins
+
+        Example:
+          If ggplot 7.0 needs r-base 4.0, but our pin is 3.5.1, it conflicts
+
+        TODO: currently, this only logs an error
+        """
+        variants = conda_build.variants.get_package_variants(
+            recipe.path, self.build_config)
+
+        def check_pins(depends):
+            for pkg, spec in depends:
+                norm_pkg = pkg.replace("-", "_")
+                try:
+                    ms = MatchSpec(version=spec.replace(" ",""))
+                except conda.exceptions.InvalidVersionSpecError:
+                    logger.error("Recipe %s: invalid upstream spec %s %s",
+                                 recipe, pkg, repr(spec))
+                    continue
+                if norm_pkg in variants[0]:
+                    for variant in variants:
+                        if not ms.match({'name': '', 'build': '', 'build_number': 0,
+                                         'version': variant[norm_pkg]}):
+                            logger.error("Recipe %s: %s %s conflicts pins",
+                                         recipe, pkg, spec)
+
+        for version, files in versions.items():
+            for fn, data in files.items():
+                depends = data.get('depends')
+                if depends:
+                    check_pins(depends.items())
 
 
 class UpdateChecksums(Filter):
