@@ -355,7 +355,8 @@ class CRAN(JSONHoster):
                 'link': '',
                 'version': vers,
                 'depends': {
-                    pkg: spec.replace(" ", "")
+                    "r-" + pkg.lower() if pkg != 'R' else 'r-base':
+                    spec.replace(" ", "").replace("\n","")
                     for pkg, spec in chain(vdata.get('Depends', {}).items(),
                                            vdata.get('Imports', {}).items())
                 }
