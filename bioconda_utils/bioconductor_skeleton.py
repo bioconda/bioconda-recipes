@@ -448,6 +448,17 @@ class BioCProjectPage(object):
             return []
 
     @property
+    def systemrequirements(self):
+        """
+        List of "SystemRequirements" from the VIEW file
+        """
+        try:
+            print(self.packages[self.package]['SystemRequirements'])
+            return self.packages[self.package]['SystemRequirements']
+        except KeyError:
+            return []
+
+    @property
     def depends(self):
         """
         List of "depends" from the VIEW file
@@ -584,6 +595,15 @@ class BioCProjectPage(object):
 
             else:
                 dependency_mapping[prefix + name.lower() + version] = name
+
+        # Check SystemRequirements in the DESCRIPTION file to make sure
+        # packages with such reqquirements are provided correct recipes.
+        if (self.packages[self.package].get('SystemRequirements') is not None):
+            logger.warning(
+                "The 'SystemRequirements' {} are needed".format(
+                    self.packages[self.package].get('SystemRequirements')) +
+                " by the recipe for the package to work as intended."
+            )
 
         if (
             (self.packages[self.package].get('NeedsCompilation', 'no') == 'yes') or
