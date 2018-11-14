@@ -676,13 +676,14 @@ def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of
 @arg("--create-pr", action="store_true", help='''Create PR for each update.
      Implies create-branch.''')
 @arg("--max-updates", help='''Exit after ARG updates''')
+@arg("--parallel", help='''Maximum number of recipes to consider in parallel''')
 @arg("--dry-run", help='''Don't update remote git or github"''')
 def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
            failed_urls=None, unparsed_urls=None,
            exclude_subrecipes=None, exclude_channels='conda-forge',
            ignore_blacklists=False,
            check_branch=False, create_branch=False, create_pr=False,
-           max_updates=0, dry_run=False):
+           max_updates=0, parallel=100, dry_run=False):
     """
     Updates recipes in recipe_folder
     """
@@ -691,7 +692,8 @@ def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
     from . import githandler
     from . import hosters
     scanner = update.Scanner(recipe_folder, packages, config,
-                             cache and cache + "_scan.pkl")
+                             cache and cache + "_scan.pkl",
+                             max_inflight=parallel)
     if not ignore_blacklists:
         scanner.add(update.ExcludeBlacklisted)
     if exclude_subrecipes != "never":

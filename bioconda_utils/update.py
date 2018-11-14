@@ -343,7 +343,7 @@ class Scanner():
       config: config.yaml (unused)
     """
     def __init__(self, recipe_folder: str, packages: List[str],
-                 config: str, cache_fn: str) -> None:
+                 config: str, cache_fn: str, max_inflight: int = 100) -> None:
         with open(config, "r") as config_file:
             #: config
             self.config = yaml.load(config_file)
@@ -383,7 +383,7 @@ class Scanner():
             if "url_checksum" not in self.cache:
                 self.cache["url_checksum"] = {}
         self.proc_pool_executor = ProcessPoolExecutor(3)
-        self.limit_inflight = asyncio.Semaphore(100)
+        self.limit_inflight = asyncio.Semaphore(max_inflight)
 
     def add(self, filt: Filter, *args, **kwargs) -> None:
         """Adds `Filter` to this `Scanner`"""
