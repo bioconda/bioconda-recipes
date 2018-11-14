@@ -528,7 +528,7 @@ class ExcludeOtherChannel(Filter):
     """Filters recipes matching packages in other **channels**"""
 
     class OtherChannel(RecipeError):
-        template = "is in excluded channels"
+        template = "builds package found in other channel(s)"
         level = logging.DEBUG
 
     def __init__(self, scanner: "Scanner", channels: Sequence[str],
@@ -541,8 +541,8 @@ class ExcludeOtherChannel(Filter):
         self.other_latest = cdf.groupby('name')['versionorder'].agg(max)
 
     async def apply(self, recipe):
-        # FIXME: handle recipes with multiple outputs
-        if recipe.name in self.other_latest:
+        if any(package in self.other_latest
+               for package in recipe.package_names):
             raise self.OtherChannel(recipe)
         return recipe
 
