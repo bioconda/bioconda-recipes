@@ -1,0 +1,50 @@
+{% set name = "spaln" %}
+{% set version = "2.3.2" %}
+{% set sha256 = "2c39f338e9bad17907eadc3218937500379213fde4263dcf041994a6f58d22f0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/ogotoh/{{ name }}/archive/Ver.{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patch-makefile_pl   # add a Makefile.PL for the Perl part of the code
+    - patch-adddef_h      # set MAXL to a more reasonable value - 1 larger than maximum POSIX path length
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - perl
+    - zlib
+  run:
+    - perl
+    - zlib
+
+test:
+  commands:
+    - spaln -h 2>&1 |grep 'SPALN version' >/dev/null
+    - makblk.pl |grep makblk.pl >/dev/null
+
+about:
+  home: http://www.genome.ist.i.kyoto-u.ac.jp/~aln_user/spaln/
+  dev_url: https://github.com/ogotoh/spaln
+  license: GPL-2.0
+  license_family: GPL
+  license_file: COPYING
+  summary: 'Map and align a set of cDNA/EST or protein sequences onto a genome'
+  description: |
+    Spaln (space-efficient spliced alignment) is a stand-alone program that maps
+    and aligns a set of cDNA or protein sequences onto a whole genomic sequence
+    in a single job. Spaln also performs spliced or ordinary alignment after
+    rapid similarity search against a protein sequence database, if a genomic segment 
+    or an amino acid sequence is given as a query. 
+extra:
+  recipe-maintainers:
+    - pvanheus
+

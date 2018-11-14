@@ -1,19 +1,15 @@
 #!/bin/bash
 
-# cpanm -i .
-
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
     perl Build.PL
-    ./Build
-    ./Build test
+    perl ./Build
+    perl ./Build test
     # Make sure this goes in site
-    ./Build install --installdirs site
+    perl ./Build install --installdirs site
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
-    perl Makefile.PL # INSTALLDIRS=site
-    cat Makefile | grep fstack
-    # sed -i 's/-fstack-protector-strong/-fstack-protector/g' Makefile
+    perl Makefile.PL INSTALLDIRS=site
     make
     make test
     make install
