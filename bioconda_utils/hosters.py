@@ -258,7 +258,8 @@ class GithubTag(OrderedHTMLHoster):
 class Bioconductor(HTMLHoster):
     """Matches R packages hosted at Bioconductor"""
     link_pattern = r"/src/contrib/(?P<package>[^/]+)_{version}{ext}"
-    url_pattern = r"bioconductor.org/packages/(?P<bioc>[\d\.]+)/bioc{link}"
+    section_pattern = r"/(bioc|data/annotation|data/experiment)"
+    url_pattern = r"bioconductor.org/packages/(?P<bioc>[\d\.]+){section}{link}"
     releases_format = "https://bioconductor.org/packages/{bioc}/bioc/html/{package}.html"
 
 
