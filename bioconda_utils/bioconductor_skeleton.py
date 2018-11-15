@@ -790,6 +790,16 @@ class BioCProjectPage(object):
             d['requirements']['build'].append(k + '_' + "PLACEHOLDER")
 
         rendered = pyaml.dumps(d, width=1e6).decode('utf-8')
+
+        # Add Suggests: and SystemRequirements:
+        renderedsplit = rendered.split('\n')
+        idx = renderedsplit.index('requirements:')
+        if self.packages[self.package].get('SystemRequirements', None):
+            renderedsplit.insert(idx, '# SystemRequirements: {}'.format(self.packages[self.package]['SystemRequirements']))
+        if self.packages[self.package].get('Suggests', None):
+            renderedsplit.insert(idx, '# Suggests: {}'.format(self.packages[self.package]['Suggests']))
+        rendered = '\n'.join(renderedsplit) + '\n'
+
         rendered = (
             '{% set version = "' + self.version + '" %}\n' +
             '{% set name = "' + self.package + '" %}\n' +
