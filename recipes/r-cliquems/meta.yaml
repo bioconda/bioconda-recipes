@@ -1,0 +1,69 @@
+{% set version = '0.2.3' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-cliquems
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: cliqueMS_{{ version }}.tar.gz
+  url:
+    - {{ cran_mirror }}/src/contrib/cliqueMS_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/cliqueMS/cliqueMS_{{ version }}.tar.gz
+  sha256: 9285f7245c4bbba1e73bbd54f95f41dfa50baa4ff63944700e1f0c2f34970dd6
+
+build:
+  number: 0
+
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }} 
+    - {{ compiler('cxx') }}
+    - {{posix}}make
+
+  host:
+    - r-base
+    - r-bh
+    - r-camera
+    - r-matrix
+    - r-rcpp >=0.12.15
+    - r-rcpparmadillo
+    - r-igraph
+    - r-qlcmatrix
+    - r-xcms
+
+  run:
+    - r-base
+    - r-bh
+    - r-camera
+    - r-matrix
+    - r-rcpp >=0.12.15
+    - r-rcpparmadillo
+    - r-igraph
+    - r-qlcmatrix
+    - r-xcms
+
+test:
+  commands:
+    - $R -e "library('cliqueMS')"
+
+about:
+  home: https://github.com/osenan/cliqueMS
+  license: GPL (>= 2)
+  summary: "Annotates data from liquid chromatography coupled to mass spectrometry (LC/MS) metabolomics
+    experiments. Based on a network algorithm (O.Senan, A. Aguilar- Mogas, M. Navarro,
+    O. Yanes, R.Guimer\xE0 and M. Sales-Pardo, Metabolomics Conference (2016), Dublin),
+    'CliqueMS' builds a weighted similarity network where nodes are features and edges
+    are weighted according to the similarity of this features. Then it searches for
+    the most plausible division of the similarity network into cliques (fully connected
+    components). Finally it annotates metabolites within each clique, obtaining for
+    each annotated metabolite the neutral mass and their features, corresponding to
+    isotopes, ionization adducts and fragmentation adducts of that metabolite."
+
+  license_family: GPL3
