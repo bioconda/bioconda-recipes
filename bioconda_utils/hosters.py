@@ -256,6 +256,11 @@ class GithubRelease(GithubBase):
     link_pattern = r"/{account}/{project}/releases/download/{tag}/{fname}{ext}?"
 
 
+class GithubReleaseAttachment(GithubBase):
+    """Matches release artifacts uploaded as attachment to release notes"""
+    link_pattern = r"/{account}/{project}/files/\d+/{tag}{ext}"
+
+
 class GithubTag(GithubBase):
     """Matches GitHub repository archives created automatically from tags"""
     link_pattern = r"/{account}/{project}/archive/{tag}{ext}"

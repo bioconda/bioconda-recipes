@@ -2,6 +2,7 @@ import pytest
 
 from bioconda_utils.hosters import (
     GithubRelease,
+    GithubReleaseAttachment,
     GithubTag,
     Bioconductor,
     Bioarchive,
@@ -23,6 +24,9 @@ CASES = {
         ("https://github.com/cpb/bcb.va/releases/download/v0.2.6/bcb.va-0.2.6-st.jar", "0.2.6"),
         # no file extension (apparently direct linux binary)
         ("https://github.com/brentp/duphold/releases/download/v0.0.9/duphold", "0.0.9")
+    ),
+    GithubReleaseAttachment: (
+        ("https://github.com/arshajii/ema/files/2241867/ema-v0.6.2.tar.gz", "0.6.2"),
     ),
     GithubTag: (
         # common
