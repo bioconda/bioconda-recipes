@@ -128,7 +128,8 @@ class Hoster(metaclass=HosterMeta):
     #: - begins with a number
     #: - then only numbers, characters or one of -, +, ., :, ~
     #: - at most 31 characters length (to avoid matching checksums)
-    version_pattern: str = r"(?P<version>\d[\da-zA-Z\-+\.:\~]{0,30})"
+    #: - accept v or r as prefix if after slash, dot, underscore or dash
+    version_pattern: str = r"(?:(?<=[/._-])[rv])?(?P<version>\d[\da-zA-Z\-+\.:\~]{0,30})"
 
     #: matches archive file extensions
     ext_pattern: str = r"(?P<ext>(?i)\.(?:tar\.(?:xz|bz2|gz)|zip|tgz|tbz2|txz))"
@@ -242,15 +243,15 @@ class OrderedHTMLHoster(HTMLHoster):
 class GithubRelease(OrderedHTMLHoster):
     """Matches release artifacts uploaded to Github"""
     exclude = ['version', 'fname']
-    link_pattern = (r"/(?P<account>[\w\-]*)/(?P<project>[\w\-]*)/releases/download/"
-                    r"v?{version}/(?P<fname>[^/]+{ext})")
+    link_pattern = (r"/(?P<account>[-\w]+)/(?P<project>[-\w]+)/releases/download/"
+                    r"{version}/(?P<fname>[^/]+{ext})")
     url_pattern = r"github.com{link}"
     releases_format = "https://github.com/{account}/{project}/releases"
 
 
 class GithubTag(OrderedHTMLHoster):
     """Matches GitHub repository archives created automatically from tags"""
-    link_pattern = r"/(?P<account>[\w\-]*)/(?P<project>[\w\-]*)/archive/v?{version}{ext}"
+    link_pattern = r"/(?P<account>[-\w]*)/(?P<project>[-\w]*)/archive/{version}{ext}"
     url_pattern = r"github.com{link}"
     releases_format = "https://github.com/{account}/{project}/tags"
 
@@ -263,7 +264,7 @@ class Bioconductor(HTMLHoster):
     releases_format = "https://bioconductor.org/packages/{bioc}/bioc/html/{package}.html"
 
 
-class DepotGalaxyProject(HTMLHoster):
+class CargoPort(HTMLHoster):
     """Matches source backup urls created by cargo-port"""
     os_pattern = r"_(?P<os>src_all|linux_x86|darwin_x86)"
     link_pattern = r"(?P<package>[^/]+)_{version}{os}{ext}"
@@ -295,7 +296,7 @@ class PyPi(JSONHoster):
     url_pattern = r"{hoster}/.*/{source}"
 
 
-class BioarchiveGalaxyProject(JSONHoster):
+class Bioarchive(JSONHoster):
     async def get_versions(self, scanner):
         text = await scanner.get_text_from_url(self.releases_url)
         data = json.loads(text)
@@ -316,7 +317,7 @@ class BioarchiveGalaxyProject(JSONHoster):
             return []
 
     releases_format = "https://bioarchive.galaxyproject.org/api/{package}.json"
-    package_pattern = r"(?P<package>[\w\-\.]+)"
+    package_pattern = r"(?P<package>[-\w.]+)"
     url_pattern = r"bioarchive.galaxyproject.org/{package}_{version}{ext}"
     link_pattern = "https://{url}"
 
@@ -335,7 +336,7 @@ class CPAN(JSONHoster):
         except KeyError:
             return []
 
-    package_pattern = r"(?P<package>[\w\-\.\+]+)"
+    package_pattern = r"(?P<package>[-\w.+]+)"
     author_pattern = r"(?P<author>[A-Z]+)"
     url_pattern = r"(www.cpan.org|cpan.metacpan.org|search.cpan.org/CPAN)/authors/id/./../{author}/([^/]+/|){package}-v?{version}{ext}"
     releases_format = "https://fastapi.metacpan.org/v1/release/{package}"
@@ -364,7 +365,7 @@ class CRAN(JSONHoster):
             res.append(version)
         return res
 
-    package_pattern = r"(?P<package>[\w\.]+)"
+    package_pattern = r"(?P<package>[\w.]+)"
     url_pattern = (r"r-project\.org/src/contrib"
                    r"(/Archive)?/{package}(?(1)/{package}|)"
                    r"_{version}{ext}")
