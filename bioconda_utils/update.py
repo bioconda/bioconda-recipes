@@ -1031,7 +1031,7 @@ class CreatePullRequest(GitFilter):
 
     async def async_init(self):
         """Create gidget GithubAPI object from session"""
-        await self.gh.login(self.scanner.session)
+        await self.gh.login(self.scanner.session, self.scanner.USER_AGENT)
         await asyncio.sleep(1)  # let API settle
 
     async def apply(self, recipe):
