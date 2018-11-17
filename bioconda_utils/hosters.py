@@ -59,7 +59,7 @@ def replace_named_capture_group(pattern, vals: Dict[str, str]):
         "inner replace"
         name = match.group(1)
         if name in vals:
-            return vals[name]
+            return vals[name] or ""
         return match.group(0)
     return re.sub(RE_CAPGROUP, replace, pattern)
 
