@@ -129,10 +129,10 @@ class Hoster(metaclass=HosterMeta):
     #: - then only numbers, characters or one of -, +, ., :, ~
     #: - at most 31 characters length (to avoid matching checksums)
     #: - accept v or r as prefix if after slash, dot, underscore or dash
-    version_pattern: str = r"(?:(?<=[/._-])[rv])?(?P<version>\d[\da-zA-Z\-+\.:\~]{0,30})"
+    version_pattern: str = r"(?:(?<=[/._-])[rv])?(?P<version>\d[\da-zA-Z\-+\.:\~_]{0,30})"
 
     #: matches archive file extensions
-    ext_pattern: str = r"(?P<ext>(?i)\.(?:tar\.(?:xz|bz2|gz)|zip|tgz|tbz2|txz))"
+    ext_pattern: str = r"(?P<ext>(?i)\.(?:(?:(tar\.|t)(?:xz|bz2|gz))|zip|jar))"
 
     #: named patterns that will change with a version upgrade
     exclude = ['version']
@@ -240,19 +240,25 @@ class OrderedHTMLHoster(HTMLHoster):
         return matches[:num+1]
 
 
-class GithubRelease(OrderedHTMLHoster):
-    """Matches release artifacts uploaded to Github"""
+class GithubBase(OrderedHTMLHoster):
     exclude = ['version', 'fname']
-    link_pattern = (r"/(?P<account>[-\w]+)/(?P<project>[-\w]+)/releases/download/"
-                    r"{version}/(?P<fname>[^/]+{ext})")
-    url_pattern = r"github.com{link}"
+    account_pattern = r"(?P<account>[-\w]+)"
+    project_pattern = r"(?P<project>[-.\w]+)"
+    prefix_pattern = r"(?P<prefix>[-_./\w]+?)"
+    tag_pattern = "{prefix}??{version}"
+    url_pattern = r"github\.com{link}"
+    fname_pattern = r"(?P<fname>[^/]+)"
     releases_format = "https://github.com/{account}/{project}/releases"
 
 
-class GithubTag(OrderedHTMLHoster):
+class GithubRelease(GithubBase):
+    """Matches release artifacts uploaded to Github"""
+    link_pattern = r"/{account}/{project}/releases/download/{tag}/{fname}{ext}?"
+
+
+class GithubTag(GithubBase):
     """Matches GitHub repository archives created automatically from tags"""
-    link_pattern = r"/(?P<account>[-\w]*)/(?P<project>[-\w]*)/archive/{version}{ext}"
-    url_pattern = r"github.com{link}"
+    link_pattern = r"/{account}/{project}/archive/{tag}{ext}"
     releases_format = "https://github.com/{account}/{project}/tags"
 
 

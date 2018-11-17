@@ -15,10 +15,26 @@ from bioconda_utils.hosters import (
 
 CASES = {
     GithubRelease: (
-        ("https://github.com/epruesse/SINA/releases/download/v1.2.0/sina-1.2.0.tar.gz", "1.2.0"),
+        # common
+        ("https://github.com/epr/SNA/releases/download/v1.2.0/sna-1.2.0.tar.gz", "1.2.0"),
+        # jar file
+        ("https://github.com/bpet/sctrrgns/releases/download/v0.2/ScttrRgns-assm-0.2.jar", "0.2"),
+        # dot in project name
+        ("https://github.com/cpb/bcb.va/releases/download/v0.2.6/bcb.va-0.2.6-st.jar", "0.2.6"),
+        # no file extension (apparently direct linux binary)
+        ("https://github.com/brentp/duphold/releases/download/v0.0.9/duphold", "0.0.9")
     ),
     GithubTag: (
+        # common
         ("https://github.com/epruesse/SINA/archive/v1.2.0.tar.gz", "1.2.0"),
+        # tag with prefix
+        ("https://github.com/abaizan/kodoja/archive/kodoja-v0.0.9.tar.gz", "0.0.9"),
+        # strange version
+        ("https://github.com/BenLangmead/bowtie/archive/v1.2.2_p1.zip", "1.2.2_p1"),
+        # tag with prefix and slash
+        ("https://github.com/Ensembl/ensembl-vep/archive/release/94.5.tar.gz", "94.5"),
+        # tag without separator
+        ("https://github.com/HRGV/phyloFlash/archive/pf3.0b1.tar.gz", "3.0b1"),
     ),
     Bioconductor: (
         ("http://bioconductor.org/packages/3.7/bioc/src/contrib/a4base_1.28.0.tar.gz", "1.28.0"),
