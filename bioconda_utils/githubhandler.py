@@ -120,7 +120,7 @@ class GitHubHandler:
         if body:
             data['body'] += body
         if from_branch:
-            if from_user:
+            if from_user and from_user != self.username:
                 data['head'] = f"{from_user}:{from_branch}"
             else:
                 data['head'] = from_branch
