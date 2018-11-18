@@ -22,7 +22,7 @@ class GitHandler():
       dry_run: Don't push anything to remote
     """
     def __init__(self, recipe_folder, dry_run=False,
-                 upstream='bioconda/bioconda-recipe', origin='origin'):
+                 upstream='bioconda/bioconda-recipes', origin='bioconda/bioconda-recipes'):
         #: current repository
         self.repo = git.Repo(recipe_folder, search_parent_directories=True)
         if self.repo.is_dirty():
