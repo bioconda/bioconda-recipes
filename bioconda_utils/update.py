@@ -895,7 +895,7 @@ class GitFilter(Filter):
        git_handler: Instance of GitHandler for repo access
     """
 
-    branch_prefix = "auto_update_"
+    branch_prefix = "bump/"
 
     def __init__(self, scanner, git_handler):
         super().__init__(scanner)
