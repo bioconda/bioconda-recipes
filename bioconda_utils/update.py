@@ -904,8 +904,15 @@ class GitFilter(Filter):
 
     @classmethod
     def branch_name(cls, recipe):
-        """Render branch name from recipe"""
-        return f"{cls.branch_prefix}{recipe.reldir.replace('-', '_').replace('/', '_')}"
+        """Render branch name from recipe
+
+        - Replace dashes with underscores (GitPython does not like dash)
+        - Replace slashes with `.d/` slash as Git will use directories when separating
+          parts with slashes, so `bump/toolx` cannot be a branch at the same time as
+         `bump/toolx/1.2.x`.
+          Note: this will break if we have `recipe/x` and `recipe/x.d` in the repo.
+        """
+        return f"{cls.branch_prefix}{recipe.reldir.replace('-', '_').replace('/', '.d/')}"
 
     @abc.abstractmethod
     def apply(self, recipe):  # placate pylint by reiterating abstrace method
