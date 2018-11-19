@@ -25,64 +25,92 @@ source:
     - gsed.patch
 
 build:
-  number: 2
+  number: 4
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
     - {{ compiler('c') }}
     - pkg-config
+    - time
+    - lynx
+    - xorg-makedepend
+    - sed >=4.4
+    - tar
+  host:
     - openmotif-dev
-    - glib 2.51.* # 2.50.2 links to broken gettext
-    - gettext !=0.19.8  # gettext 0.19.8 is broken
+    - glib
+    - gettext
     - pthread-stubs
-    - xorg-libxp
-    - xorg-libxmu
     - xorg-libxi
+    - xorg-libxp
     - xorg-libxaw
     - xorg-libxpm
-    - xorg-makedepend
-    - xerces-c
+    - xorg-libxmu
     - libtiff
     - libxslt
-    # perl 5.22.0.1-0 and 5.22.2.1-0 want to use
-    # -fstack-protector-strong, which doesn't exist in conda gcc 4.8 and
-    # leads to compile failure
-    - perl !=5.22.0.1-0,!=5.22.2.1-0
-    - lynx
-    - time
-    - sed >=4.4 # 4.2 links to broken gettext
-
+    - libpng
+    - xerces-c
+    - perl >=5.23
   run:
-    - gettext !=0.19.8  # gettext 0.19.8 is broken
+    # libs:
+    - openmotif
+    - glib
+    - gettext
     - xorg-libxi
     - xorg-libxmu
     - xorg-libxp
     - xorg-libxaw
     - xorg-libxpm
     - xorg-libxft
-    - glib 2.51.*
-    - openmotif
+    - libpng
+    # tools:
     - gnuplot
     - muscle
     - mafft
     - raxml
     - mrbayes
     - phylip
-    - phyml 3.2.0
+    - phyml 3.2.0*
     - fasttree
     - sed >=4.4
     - xfig
     - fig2dev
-    - perl !=5.22.0.1-0,!=5.22.2.1-0
-
+    # We build a binary perl module. ABI compatability seems to be maintained
+    # at minor version (5.26.x), so we pin accordingly:
+    - {{ pin_compatible("perl", min_pin="x.x", max_pin="x.x") }}
 test:
   requires:
     - conda
   commands:
+    # most tests are in `run_test.sh`
     - if command -v conda; then conda inspect linkages -p $PREFIX $PKG_NAME; fi
     - if command -v conda; then conda inspect objects -p $PREFIX $PKG_NAME; fi   # [osx]
     - which arb
     - which arb_pt_server
+
+outputs:
+  - name: libarbdb
+    script: install_libarbdb.sh
+    requirements:
+      run:
+        - glib
+        - gettext
+  - name: arb-bio-tools
+    script: install_tools.sh
+    requirements:
+      run:
+        - {{ pin_subpackage('libarbdb', exact=True) }}
+  - name: arb-bio
+    script: install_main.sh
+    requirements:
+      run:
+        - {{ pin_subpackage('arb-bio-tools', exact=True) }}
+  - name: arb-bio-devel
+    script: install_devel.sh
+    requirements:
+      run:
+        - {{ pin_subpackage('arb-bio', exact=True) }}
 
 about:
   home: http://www.arb-home.de

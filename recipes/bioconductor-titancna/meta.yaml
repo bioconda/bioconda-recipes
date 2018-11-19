@@ -1,4 +1,4 @@
-{% set version="1.16.0" %}
+{% set version="1.19.1" %}
 {% set name="TitanCNA" %}
 {% set bioc="3.6" %}
 
@@ -6,30 +6,26 @@ package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  url:
-    - https://github.com/gavinha/TitanCNA/archive/179aa80.tar.gz
+  url: https://github.com/gavinha/TitanCNA/archive/e214ca3.tar.gz
     # - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     # - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     # - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 7bc32ba29fa713f196ed7192d1ce784019bc9d7ec2cab1c495cef1992addc84b
-  patches:
-    # Fix issues with default file extensions for titanCNA.R script
-    - params-ext.patch
+  sha256: 990137a1b3ae6c6a94fb3ee7735171188393b34006d5053f6eb9746ea47ee82a
 build:
-  number: 2
+  number: 4
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
+    - r-base 3.4.1
     - perl # for adding in correct path references to scripts
-    - 'bioconductor-genomeinfodb >=1.4.0'
-    - 'bioconductor-genomicranges >=1.20.5'
-    - 'bioconductor-iranges >=2.2.4'
+    - 'bioconductor-genomeinfodb >=1.8.7'
+    - 'bioconductor-genomicranges >=1.24.3'
+    - 'bioconductor-iranges >=2.6.1'
     - 'bioconductor-rsamtools >=1.20.4'
     - 'bioconductor-variantannotation >=1.18.7'
-    - r-base
-    - 'r-foreach >=1.4.2'
+    - 'r-foreach >=1.4.3'
     - r-data.table
     - r-dplyr
     - r-optparse
@@ -37,19 +33,22 @@ requirements:
     - bioconductor-snpchip
     - r-stringr
   run:
+    - r-base 3.4.1
     - 'bioconductor-genomeinfodb >=1.8.7'
     - 'bioconductor-genomicranges >=1.24.3'
     - 'bioconductor-iranges >=2.6.1'
     - 'bioconductor-rsamtools >=1.24.0'
     - 'bioconductor-variantannotation >=1.18.7'
-    - r-base
-    - 'r-foreach >=1.4.2'
+    - 'r-foreach >=1.4.3'
     - r-data.table
     - r-dplyr
     - r-optparse
     - r-domc
     - bioconductor-snpchip
     - r-stringr
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
