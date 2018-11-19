@@ -148,7 +148,7 @@ class Hoster(metaclass=HosterMeta):
         "format template for release page URL"
 
     def __init__(self, url: str, match: Match[str]) -> None:
-        self.vals = match.groupdict()
+        self.vals = {k: v or "" for k, v in match.groupdict().items()}
         self.releases_url = self.releases_format.format_map(self.vals)
         logger.debug("%s matched %s with %s", self.__class__.__name__, url, self.vals)
 
