@@ -293,7 +293,7 @@ class CargoPort(HTMLHoster):
     os_pattern = r"_(?P<os>src_all|linux_x86|darwin_x86)"
     link_pattern = r"(?P<package>[^/]+)_{version}{os}{ext}"
     url_pattern = r"depot.galaxyproject.org/software/(?P<package>[^/]+)/{link}"
-    releases_format = "https://depot.galaxyproject.org/software/{package}/"
+    releases_format = "https://depot.galaxyproject.org/software/{package}"
 
 
 class PyPi(JSONHoster):
