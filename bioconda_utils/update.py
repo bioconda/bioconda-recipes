@@ -676,7 +676,8 @@ class UpdateVersion(Filter):
             raise self.Multisource(recipe)
 
         versions = await self.get_versions(recipe, sources, 0)
-        conflicts = self.check_version_pin_conflict(recipe, versions)
+        #fixme: slow
+        #conflicts = self.check_version_pin_conflict(recipe, versions)
         latest = self.select_version(recipe.version, versions.keys())
         recipe.version_data = versions[latest]
 

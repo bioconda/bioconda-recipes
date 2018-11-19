@@ -245,6 +245,8 @@ class GithubBase(OrderedHTMLHoster):
     account_pattern = r"(?P<account>[-\w]+)"
     project_pattern = r"(?P<project>[-.\w]+)"
     prefix_pattern = r"(?P<prefix>[-_./\w]+?)"
+    suffix_pattern = r"(?P<suffix>[-_](lin)?)"
+    #tag_pattern = "{prefix}??{version}{suffix}??"
     tag_pattern = "{prefix}??{version}"
     url_pattern = r"github\.com{link}"
     fname_pattern = r"(?P<fname>[^/]+)"
@@ -256,16 +258,27 @@ class GithubRelease(GithubBase):
     link_pattern = r"/{account}/{project}/releases/download/{tag}/{fname}{ext}?"
 
 
-class GithubReleaseAttachment(GithubBase):
-    """Matches release artifacts uploaded as attachment to release notes"""
-    link_pattern = r"/{account}/{project}/files/\d+/{tag}{ext}"
-
-
 class GithubTag(GithubBase):
     """Matches GitHub repository archives created automatically from tags"""
     link_pattern = r"/{account}/{project}/archive/{tag}{ext}"
     releases_format = "https://github.com/{account}/{project}/tags"
 
+
+class GithubReleaseAttachment(GithubBase):
+    """Matches release artifacts uploaded as attachment to release notes"""
+    link_pattern = r"/{account}/{project}/files/\d+/{tag}{ext}"
+
+
+class GithubRepoStore(GithubBase):
+    """Matches release artifacts stored in a github repo"""
+    branch_pattern = r"(master|[\da-f]{40})"
+    subdir_pattern = r"(?P<subdir>([-._\w]+/)+)"
+    link_pattern = r"/{account}/{project}/blob/master/{subdir}{tag}{ext}"
+    url_pattern = (r"(?:(?P<raw>raw\.githubusercontent)|github)\.com/"
+                   r"{account}/{project}/(?(raw)|(?:(?P<blob>blob/)|raw/))"
+                   r"{branch}/{subdir}?{tag}{ext}(?(blob)\?raw|)")
+    #releases_format = "https://github.com/{account}/{project}/tree/master/{subdir}{prefix}{version}{suffix}{ext}"
+    releases_format = "https://github.com/{account}/{project}/tree/master/{subdir}{prefix}{version}{ext}"
 
 class Bioconductor(HTMLHoster):
     """Matches R packages hosted at Bioconductor"""
