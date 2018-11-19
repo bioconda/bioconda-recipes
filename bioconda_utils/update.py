@@ -1050,12 +1050,12 @@ class CreatePullRequest(GitFilter):
         title = f"Update {recipe} to {recipe.version}"
 
         # check if we already have an open PR (=> update in progress)
-        prs = await self.gh.get_prs(from_branch=branch_name)
+        prs = await self.gh.get_prs(from_branch=branch_name, from_user="bioconda")
         if prs:
             if len(prs) > 1:
                 logger.error("Multiple PRs updating %s: %s",
                              recipe,
-                             ", ".join(pr['number'] for pr in prs))
+                             ", ".join(str(pr['number']) for pr in prs))
             for pr in prs:
                 logger.debug("Found PR %i updating %s: %s",
                              pr["number"], recipe, pr["title"])
