@@ -39,11 +39,10 @@ def setup_params(request):
 class TestHoster:
     @classmethod
     def msg(cls, title):
-        res = f"""{title}
-        Hoster:           {cls.hoster}
+        res = f"""{title} ({cls.hoster}-{cls.caseno})
         Expected Version: {cls.case['version']}
         test_url:\n{cls.case['url']}
-        url_pattern:\n{cls.instance.url_pattern}
+        url_pattern:\n{getattr(cls.instance, 'url_pattern','N/A')}
         """
         return res
 
@@ -59,7 +58,8 @@ class TestHoster:
             raise
 
     def test_select(self):
-        assert self.instance, self.msg("No Hoster found")
+        assert self.instance, \
+            self.msg("No Hoster found")
         assert self.instance.__class__.__name__ == self.hoster, \
             self.msg("Incorrect Hoster selected")
 
@@ -68,8 +68,8 @@ class TestHoster:
             self.msg("Incorrect version detected")
 
     def test_releaseurl(self):
-        if 'release_url' not in self.case:
-            pytest.xfail("Missing 'release_url' for test case")
+        assert 'release_url' in self.case, \
+            self.msg("Missing release_url")
         assert self.instance.releases_url == self.case['release_url'], \
-            self.msg("Wrong release url computed")
+            self.msg("Wrong release url")
 
