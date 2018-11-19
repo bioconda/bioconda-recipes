@@ -5,8 +5,22 @@ import yaml
 
 from bioconda_utils.hosters import Hoster, HosterMeta
 
+
 with open(op.join(op.dirname(__file__), "hoster_cases.yaml")) as data:
     TEST_CASES = yaml.load(data)
+
+
+TEST_CASE_LIST = [
+    (hoster, num, case)
+    for hoster in TEST_CASES
+    for num, case in enumerate(TEST_CASES[hoster])
+]
+
+
+TEST_CASE_IDS = [
+    f"{x[0]}-{x[1]+1}{'-'+x[2]['case'] if 'case' in x[2] else ''}"
+    for x in TEST_CASE_LIST
+]
 
 
 @pytest.mark.parametrize('hoster', HosterMeta.hoster_types)
@@ -14,48 +28,48 @@ def test_hoster_has_test_case(hoster):
     assert hoster.__name__ in TEST_CASES, f"Missing test cases for {hoster.__name__}"
 
 
-@pytest.mark.parametrize(
-    argnames='hoster,case',
-    argvalues=[
-        (hoster, case) for hoster in TEST_CASES for case in TEST_CASES[hoster]
-    ],
-    ids=[
-        f"{hoster}-{caseno+1}{'-'+case['case'] if 'case' in case else ''}"
-        for hoster in TEST_CASES for caseno, case in enumerate(TEST_CASES[hoster])
-    ],
-    scope="class"  # run methods grouped by argument set
-)
+@pytest.fixture(scope="class")
+def setup_params(request):
+    request.cls.setup_params(*request.param)
+
+
+@pytest.mark.usefixtures('setup_params')
+@pytest.mark.parametrize('setup_params', TEST_CASE_LIST, ids=TEST_CASE_IDS, indirect=True)
 @pytest.mark.successive  # custom, see conftest.py
 class TestHoster:
-    @staticmethod
-    def msg(hoster, case, title):
+    @classmethod
+    def msg(cls, title):
         res = f"""{title}
-        Hoster:           {hoster}
-        Expected Version: {case['version']}
-        test_url:\n{case['url']}
-        url_pattern:\n{hoster.url_pattern}
+        Hoster:           {cls.hoster}
+        Expected Version: {cls.case['version']}
+        test_url:\n{cls.case['url']}
+        url_pattern:\n{cls.instance.url_pattern}
         """
         return res
 
-    def test_select(self, hoster, case):
+    @classmethod
+    def setup_params(cls, hoster, caseno, case):
+        cls.hoster = hoster
+        cls.case = case
+        cls.caseno = caseno
         try:
-            instance = Hoster.select_hoster(case['url'])
+            cls.instance = Hoster.select_hoster(case['url'])
         except Exception:
-            print(self.msg(hoster, case, ""))
+            print(cls.msg(""))
             raise
-        assert instance, self.msg(hoster, case, "No Hoster found")
-        assert instance.__class__.__name__ == hoster, \
+
+    def test_select(self):
+        assert self.instance, self.msg("No Hoster found")
+        assert self.instance.__class__.__name__ == self.hoster, \
             self.msg("Incorrect Hoster selected")
 
-    def test_version(self, hoster, case):
-        instance = Hoster.select_hoster(case['url'])
-        assert instance.vals['version'] == case['version'], \
-            self.msg(hoster, case, "Incorrect version detected")
+    def test_version(self):
+        assert self.instance.vals['version'] == self.case['version'], \
+            self.msg("Incorrect version detected")
 
-    def test_releaseurl(self, hoster, case):
-        instance = Hoster.select_hoster(case['url'])
-        if 'release_url' not in case:
+    def test_releaseurl(self):
+        if 'release_url' not in self.case:
             pytest.xfail("Missing 'release_url' for test case")
-        assert instance.releases_url == case['release_url'], \
-            self.msg(hoster, case, "Wrong release url computed")
+        assert self.instance.releases_url == self.case['release_url'], \
+            self.msg("Wrong release url computed")
 
