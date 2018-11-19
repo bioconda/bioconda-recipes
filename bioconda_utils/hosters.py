@@ -278,7 +278,7 @@ class GithubRepoStore(GithubBase):
                    r"{account}/{project}/(?(raw)|(?:(?P<blob>blob/)|raw/))"
                    r"{branch}/{subdir}?{tag}{ext}(?(blob)\?raw|)")
     #releases_format = "https://github.com/{account}/{project}/tree/master/{subdir}{prefix}{version}{suffix}{ext}"
-    releases_format = "https://github.com/{account}/{project}/tree/master/{subdir}{prefix}{version}{ext}"
+    releases_format = "https://github.com/{account}/{project}/tree/master/{subdir}"
 
 class Bioconductor(HTMLHoster):
     """Matches R packages hosted at Bioconductor"""
