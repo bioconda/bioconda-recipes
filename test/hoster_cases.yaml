@@ -1,35 +1,196 @@
+# This file contains the test cases validating the Hoster subclasses
+#
+# - Top-level names the Hoster class (e.g. Bioarchive) and contains a list
+# - Each list item is a test case
+# - test cases have these parameters:
+#   case: give a name to this case
+#   url: the URL from the recipe that should be recognized by this hoster
+#   version: the version it should recognize in that URL
+#   release_url: the URL that should be fetched for new releases
+#   release_links: example links that would be on releases page (list)
+#   release_json (alternative to links): example json data on release page (as yaml)
+#   parsed_versions: list of versions expected to parse from release page data
+
+
 Bioarchive:
   - case: normal
-    url: https://bioarchive.galaxyproject.org/a4base_1.28.0.tar.gz
+    url: https://bioarchive.galaxyproject.org/a4Base_1.28.0.tar.gz
     version: 1.28.0
-    release_url: https://bioarchive.galaxyproject.org/api/a4base.json
+    release_url: https://bioarchive.galaxyproject.org/api/a4Base.json
+    release_json:
+      info:
+        Version: 1.25.0
+      versions:
+        - 1.25.0
+        - 1.24.0
+    parsed_versions:
+        - 1.25.0
 Bioconductor:
   - case: normal
-    url: http://bioconductor.org/packages/3.7/bioc/src/contrib/a4base_1.28.0.tar.gz
+    url: http://bioconductor.org/packages/3.7/bioc/src/contrib/a4Base_1.28.0.tar.gz
     version: 1.28.0
-    release_url: https://bioconductor.org/packages/3.7/bioc/html/a4base.html
+    release_url: https://bioconductor.org/packages/3.7/bioc/html/a4Base.html
+    release_links:
+      - https://bioconductor.org/packages/3.7/bioc/src/contrib/a4Base_1.28.0.tar.gz
+      - https://bioconductor.org/packages/3.7/bioc/bin/macosx/el-capitan/contrib/3.5/a4Base_1.28.0.tgz
+      - https://bioconductor.org/packages/a4Base/
+    parsed_versions:
+      - 1.28.0
 CPAN:
   - case: metacpan
     url: https://cpan.metacpan.org/authors/id/L/LD/LDS/AcePerl-1.92.tar.gz
     version: '1.92'
     release_url: https://fastapi.metacpan.org/v1/release/AcePerl
+    release_json:
+      version: '1.92'
+      download_url: https://cpan.metacpan.org/authors/id/L/LD/LDS/AcePerl-1.92.tar.gz
+      dependency:
+        - phase: runtime
+          module: Cache::Cache
+          version: '1.03'
+          relationship: requires
+        - phase: runtime
+          module: Digest::MD5
+          version: 2
+          relationship: requires
+    parsed_versions:
+      - '1.92'
   - case: cpan
     url: http://www.cpan.org/authors/id/L/LD/LDS/Bio-SamTools-1.43.tar.gz
     version: '1.43'
     release_url: https://fastapi.metacpan.org/v1/release/Bio-SamTools
+    release_json:
+      version: '1.43'
+      download_url: http://www.cpan.org/authors/id/L/LD/LDS/Bio-SamTools-1.43.tar.gz
+      dependency:
+        - phase: configure
+          module: Module::Build
+          version: '0.42'
+          relationship: requires
+        - phase: runtime
+          module: perl
+          version: '5.008'
+          relationship: requires
+        - phase: runtime
+          module: Bio::Root::Version,
+          version: '1.006009001'
+          relationship : requires
+        - phase: build
+          module: ExtUtils::CBuilder
+          version: 0
+          relationship: requires
+    parsed_versions:
+      - '1.43'
   - case: search.cpan
     url: http://search.cpan.org/CPAN/authors/id/B/BI/BINGOS/Archive-Tar-2.32.tar.gz
     version: '2.32'
     release_url: https://fastapi.metacpan.org/v1/release/Archive-Tar
+    release_json:
+      version: '2.32'
+      download_url: http://search.cpan.org/CPAN/authors/id/B/BI/BINGOS/Archive-Tar-2.32.tar.gz
+      dependency:
+        - phase: build
+          version: 0
+          module: ExtUtils::MakeMaker
+          relationship: requires
+        - module: IO::Compress::Gzip
+          version: 2.015
+          phase: runtime
+          relationship: requires
+        - relationship: requires
+          phase: runtime
+          version: 1.01
+          module: IO::Zlib
+        - version: 2.015
+          module: Compress::Zlib
+          phase: runtime
+          relationship: requires
+        - module: perl
+          version: 5.00503
+          phase: runtime
+          relationship: requires
+        - phase: runtime
+          relationship: requires
+          version: 0
+          module: Test::More
+        - phase: runtime
+          relationship: requires
+          module: IO::Compress::Bzip2
+          version: 2.015
+        - version: 0.82
+          module: File::Spec
+          relationship: requires
+          phase: runtime
+        - version: 2.015
+          module: IO::Compress::Base
+          relationship: requires
+          phase: runtime
+        - version: 2.26
+          module: Test::Harness
+          phase: runtime
+          relationship: requires
+        - module: ExtUtils::MakeMaker
+          version: 0
+          phase: configure
+          relationship: requires
+    parsed_versions:
+      - '2.32'
 CRAN:
   - case: normal
-    url: https://cran.r-project.org/src/contrib/asics_1.0.1.tar.gz
+    url: https://cran.r-project.org/src/contrib/ASICS_1.0.1.tar.gz
     version: 1.0.1
-    release_url: https://crandb.r-pkg.org/asics/all
+    release_url: https://crandb.r-pkg.org/ASICS/all
+    release_json:
+      latest: 1.0.1
+      versions:
+        1.0.1:
+          Depends:
+            R: '>= 2.14'
+          Imports:
+            doParallel: '*'
+            ggplot2: '*'
+            foreach: '*'
+            methods: '*'
+            parallel: '*'
+            plyr: '*'
+            quadprog: '*'
+            zoo: '*'
+    parsed_versions:
+      - 1.0.1
   - case: archived
-    url: https://cran.r-project.org/src/contrib/Archive/asics/asics_1.0.1.tar.gz
+    url: https://cran.r-project.org/src/contrib/Archive/ASICS/ASICS_1.0.1.tar.gz
     version: 1.0.1
-    release_url: https://crandb.r-pkg.org/asics/all
+    release_url: https://crandb.r-pkg.org/ASICS/all
+    release_json:
+      latest: 1.5.15
+      versions:
+        1.0.1:
+          Depends:
+            R: '>= 2.14'
+          Imports:
+            doParallel: '*'
+            ggplot2: '*'
+            foreach: '*'
+            methods: '*'
+            parallel: '*'
+            plyr: '*'
+            quadprog: '*'
+            zoo: '*'
+        1.5.15:
+          Depends:
+            R: '>= 2.14'
+          Imports:
+            doParallel: '*'
+            ggplot2: '*'
+            foreach: '*'
+            methods: '*'
+            parallel: '*'
+            plyr: '*'
+            quadprog: '*'
+            zoo: '*'
+    parsed_versions:
+      - 1.0.1
+      - 1.5.15
 CargoPort: 
   - case: normal
     url: https://depot.galaxyproject.org/software/bctr-a4b/bctr-a4b_1.28.0_src_all.tar.gz
@@ -60,6 +221,10 @@ GithubReleaseAttachment:
   - url: https://github.com/arshajii/ema/files/2241867/ema-v0.6.2.tar.gz
     version: 0.6.2
     release_url: https://github.com/arshajii/ema/releases
+    release_links:
+        - /arshajii/ema/archive/v0.6.2.tar.gz
+        - https://github.com/arshajii/ema/files/2241867/ema-v0.6.2.tar.gz
+    parsed_versions: [0.6.2]
 GithubRepoStore: 
   - case: normal
     url: https://github.com/dkoboldt/varscan/raw/master/VarScan.v2.4.3.jar
