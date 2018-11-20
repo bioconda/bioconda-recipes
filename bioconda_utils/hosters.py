@@ -371,7 +371,8 @@ class CRAN(JSONHoster):
         text = await scanner.get_text_from_url(self.releases_url)
         data = json.loads(text)
         res = []
-        for vers in (str(data["latest"]), self.vals["version"]):
+        versions = list(set((str(data["latest"]), self.vals["version"])))
+        for vers in versions:
             if vers not in data['versions']:
                 continue
             vdata = data['versions'][vers]
