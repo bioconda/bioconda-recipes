@@ -256,7 +256,8 @@ class Recipe():
         return packages
 
     def replace(self, before: str, after: str,
-                within: Sequence[str] = ("package", "source")) -> int:
+                within: Sequence[str] = ("package", "source"),
+                with_fuzz=False) -> int:
         """Runs string replace on parts of recipe text.
 
         - Lines considered are those containing Jinja set statements
@@ -287,18 +288,25 @@ class Recipe():
         if start is not None:
             lines.update(range(start, len(self.meta_yaml)))
 
+        before_pattern = re.escape(before)
+        if with_fuzz:
+            before_pattern = re.sub(r"(-|\\\.|_)", "[-_.]", before_pattern)
+        re_before = re.compile(before_pattern)
+        re_select = re.compile(before_pattern + r".*#.*\[")
+
         # replace within those lines, erroring on "# [asd]" selectors
         replacements = 0
         for lineno in sorted(lines):
             line = self.meta_yaml[lineno]
-            if before not in line:
+            if not re_before.search(line):
                 continue
-            if re.search(re.escape(before) + r".*#.*\[", line):
+            if re_select.search(line):
                 raise self.HasSelector(self, lineno)
-            self.meta_yaml[lineno] = line.replace(before, after)
+            new = re_before.sub(after, line)
+            logger.debug("%i - %s", lineno, self.meta_yaml[lineno])
+            logger.debug("%i + %s", lineno, new)
+            self.meta_yaml[lineno] = new
             replacements += 1
-        logger.debug("Replaced in %s: %s -> %s (%i times)",
-                     self, before, after, replacements)
         return replacements
 
     def reset_buildnumber(self):
@@ -687,16 +695,18 @@ class UpdateVersion(Filter):
         latest = self.select_version(recipe.version, versions.keys())
         recipe.version_data = versions[latest]
 
-        if latest == recipe.version and not recipe.on_branch:
+        if VersionOrder(latest) == VersionOrder(recipe.version) and not recipe.on_branch:
             raise self.UpToDate(recipe)
 
         for fn in versions[latest]:
             recipe.replace(fn, versions[latest][fn]['link'])
-        recipe.replace(recipe.version, latest)
+        if not recipe.replace(recipe.version, latest):
+            if recipe.replace(recipe.version, latest, with_fuzz=True):
+                logger.warning("Recipe %s: replaced version with fuzz", recipe)
         recipe.reset_buildnumber()
         recipe.render()
 
-        if not recipe.version == latest:
+        if not VersionOrder(recipe.version) == VersionOrder(latest):
             raise self.UpdateVersionFailure(recipe, recipe.orig.version, latest)
 
         if isinstance(recipe.meta["source"]["url"], str):
