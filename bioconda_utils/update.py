@@ -637,6 +637,9 @@ class UpdateVersion(Filter):
     class UrlNotVersioned(RecipeError):
         template = "has URL not modified by version change"
 
+    class NoReleases(RecipeError):
+        template = "has no releases?!"
+
     def __init__(self, scanner: "Scanner", hoster_factory,
                  unparsed_file: Optional[str] = None) -> None:
         super().__init__(scanner)
@@ -676,6 +679,9 @@ class UpdateVersion(Filter):
             raise self.Multisource(recipe)
 
         versions = await self.get_versions(recipe, sources, 0)
+        if not versions:
+            raise self.NoReleases(recipe)
+
         #fixme: slow
         #conflicts = self.check_version_pin_conflict(recipe, versions)
         latest = self.select_version(recipe.version, versions.keys())
