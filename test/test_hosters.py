@@ -50,8 +50,12 @@ class TestHoster:
         res = f"""{title} ({cls.hoster}-{cls.caseno})
         Expected Version: {cls.case['version']}
         test_url:\n{cls.case['url']}
-        url_pattern:\n{getattr(cls.instance, 'url_pattern','N/A')}
         """
+        for attr in dir(cls.instance):
+            if attr.endswith("_pattern"):
+                res += f"{attr}: {getattr(cls.instance, attr)}\n"
+        if hasattr(cls.instance, 'vals'):
+            res += f"vals: {cls.instance.vals}\n"
         return res
 
     @classmethod
