@@ -298,6 +298,23 @@ class CargoPort(HTMLHoster):
     releases_format = "https://depot.galaxyproject.org/software/{package}"
 
 
+class SourceForge(HTMLHoster):
+    """Matches packages hosted at SourceForge"""
+    project_pattern = r"(?P<project>[-\w]+)"
+    subproject_pattern = r"((?P<subproject>[-\w%]+)/)?"
+    baseurl_pattern = r"sourceforge\.net/project(s)?/{project}/(?(1)files/|){subproject}"
+
+    package_pattern = r"(?P<package>[-\w_\.+]*?[a-zA-Z+])"
+    type_pattern = r"(?P<type>((linux|x?(64|86)|src|source|all|core|java\d?)[-_.])*)"
+    type2_pattern = type_pattern.replace("type", "type2")
+    sep_pattern = r"(?P<sep>[-_.]?)"  # separator between package name and version
+    filename_pattern = "{package}{sep}({type2}{sep})?{version}({sep}{type})?{ext}"
+
+    url_pattern = r"{baseurl}{filename}"
+    link_pattern = r"{baseurl}{filename}"
+    releases_format = "https://sourceforge.net/projects/{project}/files/"
+
+
 class PyPi(JSONHoster):
     async def get_versions(self, scanner):
         text = await scanner.get_text_from_url(self.releases_url)
