@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 #: parentheses to determine where the clause ends.
 #: Requires regex package for recursion.
 RE_CAPGROUP = re.compile(r"\(\?P<(\w+)>(?>[^()]+|\\\(|\\\)|(\((?>[^()]+|\\\(|\\\)|(?2))*\)))*\)")
-
+RE_REFGROUP = re.compile(r"\(\?P=(\w+)\)")
 
 def dedup_named_capture_group(pattern):
     """Replaces repetitions of capture groups with matches to first instance"""
@@ -61,7 +61,9 @@ def replace_named_capture_group(pattern, vals: Dict[str, str]):
         if name in vals:
             return vals[name] or ""
         return match.group(0)
-    return re.sub(RE_CAPGROUP, replace, pattern)
+    res = re.sub(RE_CAPGROUP, replace, pattern)
+    res = re.sub(RE_REFGROUP, replace, res)
+    return res
 
 
 class HosterMeta(abc.ABCMeta):
