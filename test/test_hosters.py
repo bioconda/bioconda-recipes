@@ -2,6 +2,8 @@ import os.path as op
 
 import pytest
 import yaml
+import json
+import asyncio
 
 from bioconda_utils.hosters import Hoster, HosterMeta
 
@@ -26,6 +28,12 @@ TEST_CASE_IDS = [
 @pytest.mark.parametrize('hoster', HosterMeta.hoster_types)
 def test_hoster_has_test_case(hoster):
     assert hoster.__name__ in TEST_CASES, f"Missing test cases for {hoster.__name__}"
+
+
+@pytest.fixture
+def event_loop():
+    loop = asyncio.get_event_loop()
+    yield loop
 
 
 @pytest.fixture(scope="class")
@@ -73,3 +81,21 @@ class TestHoster:
         assert self.instance.releases_url == self.case['release_url'], \
             self.msg("Wrong release url")
 
+    async def get_text_from_url(self, url):
+        if 'release_links' in self.case:
+            assert 'release_json' not in self.case, \
+                "Test case may not contain both release_links and release_json"
+            return "\n".join("<a href={}/>".format(url)
+                             for url in self.case['release_links'])
+        if 'release_json' in self.case:
+            return json.dumps(self.case['release_json'])
+
+    @pytest.mark.asyncio
+    def test_get_version(self, event_loop):
+        if not 'release_links' in self.case and not 'release_json' in self.case:
+            pytest.xfail("No release_links or release_json in test case")
+
+        versions_data = event_loop.run_until_complete(self.instance.get_versions(self))
+        versions = [item['version'] for item in versions_data]
+        assert sorted(versions) == sorted(self.case['parsed_versions']), \
+            self.msg("Incorrect versions found on page")
