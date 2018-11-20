@@ -4,8 +4,8 @@ set -eu -o pipefail
 # Build script based off of mosdepth build
 # https://github.com/brentp/mosdepth/blob/master/scripts/install.sh
 
-NIM_VERSION=v0.18.0
-NIMBLE_VERSION=v0.8.10
+NIM_VERSION=v0.19.0
+NIMBLE_VERSION=v0.9.0
 export base=$(pwd)
 
 # Install nim
