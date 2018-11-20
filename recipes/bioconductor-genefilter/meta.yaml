@@ -1,6 +1,6 @@
-{% set version = "1.60.0" %}
+{% set version = "1.62.0" %}
 {% set name = "genefilter" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,30 +8,34 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: e78d58043cf6f746b6a6b4e2cb298f9dadf75ae1d16fbc286d93c8671ee57a9c
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 11ab26d789c6ee644545d5b371a263fc4dbacb839f850a64e7b25e2d80738092
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - bioconductor-annotate
-    - bioconductor-annotationdbi
-    - bioconductor-biobase
-    - 'bioconductor-s4vectors >=0.9.42'
+    - 'bioconductor-annotate >=1.58.0,<1.60.0'
+    - 'bioconductor-annotationdbi >=1.42.1,<1.44.0'
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-s4vectors >=0.18.3,<0.20.0'
     - r-base
     - r-survival
   run:
-    - bioconductor-annotate
-    - bioconductor-annotationdbi
-    - bioconductor-biobase
-    - 'bioconductor-s4vectors >=0.9.42'
+    - 'bioconductor-annotate >=1.58.0,<1.60.0'
+    - 'bioconductor-annotationdbi >=1.42.1,<1.44.0'
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-s4vectors >=0.18.3,<0.20.0'
     - r-base
     - r-survival
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -39,7 +43,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Some basic functions for filtering genes'
-
 extra:
   identifiers:
     - biotools:genefilter
