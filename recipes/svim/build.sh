@@ -1,3 +1,3 @@
 #!/bin/bash
 
-pip install svim
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt
