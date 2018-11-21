@@ -1,9 +1,7 @@
 #!/bin/bash
 
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
-cd card-data
-mv card.json ..
-cd ..
+
+# Load the CARD database JSON file
+./rgi load -i card-data/card.json
 rm -rf card-data
-./rgi load -i card.json
-rm card.json
