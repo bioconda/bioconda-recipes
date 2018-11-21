@@ -8,14 +8,6 @@ mv card.json ..
 
 cd ..
 
-./rgi database
-
 ./rgi load -i card.json
 
-./rgi database
-
 rm -rf card-data
-
-ls
-
-rgi
