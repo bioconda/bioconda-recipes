@@ -1,0 +1,31 @@
+*** Makefile.am	2018-11-11 08:43:09.000000000 +0300
+--- Makefile.am	2018-11-11 11:35:35.000000000 +0300
+***************
+*** 3,9 ****
+  ## to provide a way for the user to supply additional arguments.
+  ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
+  
+! AM_CPPFLAGS = -fopenmp -I ../htslib/ -I ../../htslib/htslib -pipe -D__STDC_LIMIT_MACROS -Wall -Wno-unused-local-typedefs -Wno-enum-compare -fpic -O2 
+  
+  noinst_HEADERS = \
+  	Constant.h pException.h \
+--- 3,9 ----
+  ## to provide a way for the user to supply additional arguments.
+  ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
+  
+! AM_CPPFLAGS = -fopenmp -I ${PREFIX} -I ${PREFIX}/htslib -I ../htslib/ -I ../../htslib/htslib -pipe -D__STDC_LIMIT_MACROS -Wall -Wno-unused-local-typedefs -Wno-enum-compare -fpic -O2  -Wl,--no-as-needed -ldl 
+  
+  noinst_HEADERS = \
+  	Constant.h pException.h \
+*************** demuxlet_SOURCES = \
+*** 24,27 ****
+  	tsv_reader.cpp \
+  	cmd_cram_demuxlet.cpp
+  
+! demuxlet_LDADD = ../htslib/libhts.a -lpthread -llzma -lz -lbz2 -lgomp -lcurl -lcrypto
+--- 24,28 ----
+  	tsv_reader.cpp \
+  	cmd_cram_demuxlet.cpp
+  
+! demuxlet_LDADD = ../htslib/libhts.a  -ldl -lpthread -llzma -lz -lbz2 -lgomp -lcurl -lcrypto -ldeflate
+! #demuxlet_LDFLAGS = -Wl,--no-as-needed -ldl
