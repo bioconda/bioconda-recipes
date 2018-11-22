@@ -13,11 +13,11 @@ TEST_FASTQ=test2.fastq
 cp $TEST_FASTA $TEST_FASTQ $TMPDIR
 cd $TMPDIR
 
-echo -n "Testing LABEL... "
-LABEL $TEST_FASTA label-test H9v2011
-grep -q "GQ373074" label-test_final.txt
-grep -q "EF154979" label-test_final.txt
-echo PASS
+# echo -n "Testing LABEL... "
+# LABEL $TEST_FASTA label-test H9v2011
+# grep -q "GQ373074" label-test_final.txt
+# grep -q "EF154979" label-test_final.txt
+# echo PASS
 
 echo -n "Testing IRMA... "
 IRMA FLU test2.fastq irma-test
