@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="IlluminaHumanMethylationEPICanno.ilm10b2.hg19_0.6.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/IlluminaHumanMethylationEPICanno.ilm10b2.hg19_0.6.0.tar.gz"
+  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/IlluminaHumanMethylationEPICanno.ilm10b2.hg19_0.6.0.tar.gz"
   "https://bioarchive.galaxyproject.org/IlluminaHumanMethylationEPICanno.ilm10b2.hg19_0.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-illuminahumanmethylationepicanno.ilm10b2.hg19/bioconductor-illuminahumanmethylationepicanno.ilm10b2.hg19_0.6.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminahumanmethylationepicanno.ilm10b2.hg19/bioconductor-illuminahumanmethylationepicanno.ilm10b2.hg19_0.6.0_src_all.tar.gz"
 )
 MD5="6a8e2398a0f930aa7828a1412fb21e88"
