@@ -2,7 +2,7 @@
 
 set -e -o pipefail
 
-cpanm DDP
+#cpanm DDP #only mac
 cpanm LWP::UserAgent
 
 
