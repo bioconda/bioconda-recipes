@@ -1,6 +1,6 @@
-{% set version = "1.38.0" %}
+{% set version = "1.40.0" %}
 {% set name = "multiscan" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,20 +8,24 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: c6fc3ade1e5ca1325f0dc3967ff9060389e4b26cbb91ce12de72213b8f02cb1d
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: cda31408f2caff745b30c5c8f9716d0cbc86f652933336908e142fe44c8c8262
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
-    - bioconductor-biobase
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
     - r-base
   run:
-    - bioconductor-biobase
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -29,7 +33,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Estimates gene expressions from several laser scans of the same microarray'
-
 extra:
   identifiers:
     - biotools:multiscan
