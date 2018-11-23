@@ -29,7 +29,7 @@ fi
 
 # extract memory and system property Java arguments from the list of provided arguments
 # http://java.dzone.com/articles/better-java-shell-script
-default_jvm_mem_opts="-Xms512m -Xmx1g"
+default_jvm_mem_opts="-Xms512m -Xmx2g"
 jvm_mem_opts=""
 jvm_prop_opts=""
 pass_args=""
