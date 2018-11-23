@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="IlluminaHumanMethylation450kmanifest_0.4.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/IlluminaHumanMethylation450kmanifest_0.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/IlluminaHumanMethylation450kmanifest_0.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/IlluminaHumanMethylation450kmanifest_0.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminahumanmethylation450kmanifest/bioconductor-illuminahumanmethylation450kmanifest_0.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminahumanmethylation450kmanifest/bioconductor-illuminahumanmethylation450kmanifest_0.4.0_src_all.tar.gz"
