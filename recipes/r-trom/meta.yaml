@@ -1,0 +1,68 @@
+{% set version = '1.3' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-trom
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/TROM_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/TROM/TROM_{{ version }}.tar.gz
+  sha256: 4ec0c60e025ab4de65ca87d8a829744d55cd6cdd11ebc734839d428cf0ba8bbe
+
+build:
+  merge_build_host: True  # [win]
+
+  number: 0
+
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - r-annotationdbi
+    - r-go.db
+    - r-rcolorbrewer
+    - r-gplots
+    - r-gtools
+    - r-lattice
+    - r-openxlsx
+    - r-topgo
+
+  run:
+    - r-base
+    - r-annotationdbi
+    - r-go.db
+    - r-rcolorbrewer
+    - r-gplots
+    - r-gtools
+    - r-lattice
+    - r-openxlsx
+    - r-topgo
+
+test:
+  commands:
+
+    - $R -e "library('TROM')"           # [not win]
+    - "\"%R%\" -e \"library('TROM')\""  # [win]
+
+about:
+  home: http://www.stat.ucla.edu/~jingyi.li/software-and-data/trom.html, http://www.stat.ucla.edu/~jingyi.li/packages/TROM/vignette.pdf
+  license: GPL-2
+  summary: 'A new bioinformatic tool for comparing transcriptomes of two biological samples from
+    the same or different species. The mapping is conducted based on the overlap of
+    the associated genes of different samples. More examples and detailed explanations
+    are available in the vignette. For detailed description of the method, please refer
+    to Li, Wei Vivian, Yiling Chen, and Jingyi Jessica Li. "TROM: A testing-based method
+    for finding transcriptomic similarity of biological samples." Statistics in biosciences
+    9.1 (2017): 105-136 <doi:10.1007/s12561-016-9163-y>.'
+
+  license_family: GPL2
