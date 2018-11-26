@@ -7,7 +7,7 @@ mkdir -p $PREFIX/bin
 cp -R * $outdir/
 cp $RECIPE_DIR/SNVerIndividual.py $outdir/SNVerIndividual.py
 cp $RECIPE_DIR/SNVerPool.py $outdir/SNVerPool.py
-ln -s $outdir/SNVerIndividual.py $PREFIX/bin/SNVerIndividual
-ln -s $outdir/SNVerPool.py $PREFIX/bin/SNVerPool
-chmod 0755 "${PREFIX}/bin/SNVerIndividual"
-chmod 0755 "${PREFIX}/bin/SNVerPool"
+ln -s $outdir/SNVerIndividual $PREFIX/bin/snver
+ln -s $outdir/SNVerPool.py $PREFIX/bin/snver-pool
+chmod 0755 "${PREFIX}/bin/snver"
+chmod 0755 "${PREFIX}/bin/snver-pool.py"
