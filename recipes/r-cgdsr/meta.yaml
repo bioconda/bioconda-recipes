@@ -1,0 +1,51 @@
+{% set version = '1.2.10' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-cgdsr
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/cgdsr_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/cgdsr/cgdsr_{{ version }}.tar.gz
+  sha256: 43bc02fb33c371464f9407d5e5e6419527e9360e3e394343862cca0aebe1d0f7
+
+build:
+  merge_build_host: True  # [win]
+
+  number: 0
+
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - r-r.methodss3
+    - r-r.oo
+
+  run:
+    - r-base
+    - r-r.methodss3
+    - r-r.oo
+
+test:
+  commands:
+
+    - $R -e "library('cgdsr')"           # [not win]
+    - "\"%R%\" -e \"library('cgdsr')\""  # [win]
+
+about:
+  home: https://github.com/cBioPortal/cgdsr
+  license: LGPL-3
+  summary: Provides a basic set of R functions for querying the Cancer Genomics Data Server (CGDS),
+    hosted by the Computational Biology Center at Memorial-Sloan-Kettering Cancer Center
+    (MSKCC) at <www.cbioportal.org>.
+  license_family: LGPL
