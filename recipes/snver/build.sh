@@ -10,4 +10,4 @@ cp $RECIPE_DIR/SNVerPool.py $outdir/SNVerPool.py
 ln -s $outdir/SNVerIndividual.py $PREFIX/bin/snver
 ln -s $outdir/SNVerPool.py $PREFIX/bin/snver-pool
 chmod 0755 "${PREFIX}/bin/snver"
-chmod 0755 "${PREFIX}/bin/snver-pool.py"
+chmod 0755 "${PREFIX}/bin/snver-pool"
