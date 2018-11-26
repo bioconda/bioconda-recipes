@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export BOOST_ROOT="${CONDA_PREFIX}"
+export BOOST_ROOT="${PREFIX}"
 
 ./configure \
   --prefix=${PREFIX} \
