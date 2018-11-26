@@ -786,6 +786,8 @@ class BioCProjectPage(object):
 
         if self._cb3_build_reqs:
             d['requirements']['build'] = []
+        else:
+            d['build']['noarch'] = 'generic'
         for k, v in self._cb3_build_reqs.items():
             d['requirements']['build'].append(k + '_' + "PLACEHOLDER")
 
@@ -987,6 +989,8 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
                 #!/bin/bash
                 mv DESCRIPTION DESCRIPTION.old
                 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
+                mkdir -p ~/.R
+                echo -e "CC=$CC\nFC=$FC\n$CXX=$CXX\nCXX98=$CXX\nCXX11=$CXX\nCXX14=$CXX" > ~/.R/Makevars
                 $R CMD INSTALL --build .'''
                 )
             )
