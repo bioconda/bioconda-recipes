@@ -5,4 +5,5 @@ export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include:${SRC_DIR}/include
 
 make
-cp libStatGen.a "${PREFIX}"/lib
+cp libStatGen*.a ${PREFIX}/lib
+cp include/* ${PREFIX}/include
