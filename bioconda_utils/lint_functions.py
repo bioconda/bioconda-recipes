@@ -88,6 +88,7 @@ def lint_multiple_metas(lint_function):
         for meta in metas:
             ret = lint(meta, df, *args, **kwargs)
             if ret is not None:
+                ret['output'] = meta.name()
                 return ret
     lint_metas.__name__ = lint_function.__name__
     return lint_metas
@@ -259,6 +260,8 @@ def should_not_be_noarch(recipe, meta, df):
         meta.get_value('build/skip', False)
     ) and (
         'noarch' in (meta.get_section('build') or {})
+    ) and (
+        meta.get_value('build/noarch', False)
     ):
         print("error")
         return {
