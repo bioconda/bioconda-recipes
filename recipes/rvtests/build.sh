@@ -14,7 +14,8 @@
 (sed -i 's:^CXX_INCLUDE =:CXX_INCLUDE = -I${PREFIX}/include:' Makefile.common)
 (sed -i 's:^CXX_LIB =:CXX_LIB = -L${PREFIX}/lib:' Makefile.common)
 
-make STATIC_FLAG=''
+# hack this flag to link against rt, so clock_gettime can be linked
+make STATIC_FLAG='-lrt'
 
 # Install
 mkdir -p $PREFIX/bin
