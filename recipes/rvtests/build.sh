@@ -5,8 +5,8 @@
 
 # Build
 (cd third && tar zvxf zlib-1.2.8.tar.gz && cd zlib-1.2.8 && ./configure && make)
-(cd third && tar jvxf tabix-0.2.6.tar.bz2 && cd tabix-0.2.6 && sed -i 's:^CFLAGS=:CFLAGS=-I../zlib-1.2.8:' Makefile && make)
-(cd third && tar jvxf samtools-0.1.19.tar.bz2 && cd samtools-0.1.19 && sed -i 's:^CFLAGS=:CFLAGS=-I../zlib-1.2.8:' Makefile bcftools/Makefile && make)
+(cd third && tar jvxf tabix-0.2.6.tar.bz2 && cd tabix-0.2.6 && sed -i 's:^CFLAGS=:CFLAGS=-I../zlib-1.2.8:;s:^LIBPATH=:LIBPATH=-L../zlib-1.2.8:'  Makefile && make libtabix.a)
+(cd third && tar jvxf samtools-0.1.19.tar.bz2 && cd samtools-0.1.19 && sed -i 's:^CFLAGS=:CFLAGS=-I../zlib-1.2.8:;s:^LIBPATH=:LIBPATH=-L../zlib-1.2.8:' Makefile bcftools/Makefile && make)
 
 make
 
