@@ -11,8 +11,8 @@
 
 #export CFLAGS="-I$PREFIX/include"
 #export LDFLAGS="-L$PREFIX/lib"
-(sed -i 's:^CXX_INCLUDE =:CXX_INCLUDE = -I$(PREFIX)/include:' Makefile.common)
-(sed -i 's:^CXX_LIB =:CXX_LIB = -L$(PREFIX)/lib:' Makefile.common)
+(sed -i 's:^CXX_INCLUDE =:CXX_INCLUDE = -I${PREFIX}/include:' Makefile.common)
+(sed -i 's:^CXX_LIB =:CXX_LIB = -L${PREFIX}/lib:' Makefile.common)
 
 make
 
