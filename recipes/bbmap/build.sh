@@ -12,22 +12,4 @@ chmod a+x *.sh
 
 cp -R * $BBMAP_HOME/
 
-pushd $BBMAP_HOME/jni
-
-export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-
-if test x"`uname`" = x"Linux"; then
-    make -f makefile.linux
-    ldd libbbtoolsjni.so
-fi
-
-if [ `uname` == Darwin ]; then
-    export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib"
-    make -f makefile.osx
-fi
-rm -f *.o
-
-popd
-
 find *.sh -type f -exec ln -s $BBMAP_HOME/{} $BINARY_HOME/{} \;
