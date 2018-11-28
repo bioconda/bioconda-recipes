@@ -4,9 +4,9 @@
 #export LDFLAGS="-L$PREFIX/lib"
 
 # Build
-(cd third && tar zvxf zlib-1.2.8.tar.gz && cd zlib-1.2.8 && ./configure && make)
-(cd third && tar jvxf tabix-0.2.6.tar.bz2 && cd tabix-0.2.6 && sed -i 's:^CFLAGS=:CFLAGS=-I../zlib-1.2.8:;s:^LIBPATH=:LIBPATH=-L../zlib-1.2.8:'  Makefile && make libtabix.a)
-(cd third && tar jvxf samtools-0.1.19.tar.bz2 && cd samtools-0.1.19 && sed -i 's:^CFLAGS=:CFLAGS=-I../zlib-1.2.8 -I../../zlib-1.2.8:;s:^LIBPATH=:LIBPATH=-L../zlib-1.2.8 -L../../zlib-1.2.8:' Makefile bcftools/Makefile && make lib-recur)
+(cd third && tar zxf zlib-1.2.8.tar.gz && cd zlib-1.2.8 && ./configure && make)
+(cd third && tar jxf tabix-0.2.6.tar.bz2 && ln -s -f tabix-0.2.6 tabix && cd tabix-0.2.6 && sed -i 's:^CFLAGS=:CFLAGS=-I../zlib-1.2.8:;s:^LIBPATH=:LIBPATH=-L../zlib-1.2.8:'  Makefile && make libtabix.a)
+(cd third && tar jvf samtools-0.1.19.tar.bz2 && ln -s -f samtools-0.1.19 samtools && cd samtools-0.1.19 && sed -i 's:^CFLAGS=:CFLAGS=-I../zlib-1.2.8 -I../../zlib-1.2.8:;s:^LIBPATH=:LIBPATH=-L../zlib-1.2.8 -L../../zlib-1.2.8:' Makefile bcftools/Makefile && make lib-recur)
 
 make
 
