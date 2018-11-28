@@ -30,13 +30,17 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - {{ compiler('c') }}
     - pkg-config
     - time
     - lynx
     - xorg-makedepend
     - sed >=4.4
     - tar
+    # Perl is a problem. We must always have a perl version that was compiled with the
+    # same compiler we are using. Otherwise we run into e.g. "-fstack-protector-strong" type
+    # issues. Make-Maker uses the flags from the perl build time for the makefile it generates,
+    # so those flags must work for us as well.
+    - perl >=5.23
   host:
     - openmotif-dev
     - glib
@@ -51,34 +55,8 @@ requirements:
     - libxslt
     - libpng
     - xerces-c
-    - perl >=5.23
-  run:
-    # libs:
-    - openmotif
-    - {{ pin_compatible("glib") }}
-    - gettext
-    - xorg-libxi
-    - xorg-libxmu
-    - xorg-libxp
-    - xorg-libxaw
-    - xorg-libxpm
-    - xorg-libxft
-    - libpng
-    # tools:
-    - gnuplot
-    - muscle
-    - mafft
-    - raxml
-    - mrbayes
-    - phylip
-    - phyml 3.2.0*
-    - fasttree
-    - sed >=4.4
-    - xfig
-    - fig2dev
-    # We build a binary perl module. ABI compatability seems to be maintained
-    # at minor version (5.26.x), so we pin accordingly:
-    - {{ pin_compatible("perl", min_pin="x.x", max_pin="x.x") }}
+
+
 test:
   requires:
     - conda
@@ -93,27 +71,97 @@ outputs:
   - name: libarbdb
     script: install_libarbdb.sh
     requirements:
+      build:
+        - {{ compiler('cxx') }}
       host:
-        - gettext
         - glib
+        # We must have perl in the host sections of all output packages because
+        # `pin_compatible` will fail otherwise. Probably another bug.
+        - perl >=5.23
       run:
         - gettext
-        - {{ pin_compatible("glib") }}
+        - {{ pin_compatible("glib", max_pin="x") }}
+    build:
+      run_exports:
+        - {{ pin_subpackage("libarbdb", exact=True) }}
   - name: arb-bio-tools
     script: install_tools.sh
     requirements:
-      run:
-        - {{ pin_subpackage('libarbdb', exact=True) }}
+      build:
+        - {{ compiler('cxx') }}
+      host:
+        - glib
+        - perl >=5.23  # see above
+        - libarbdb  # will add itself to run dependencies
+
   - name: arb-bio
     script: install_main.sh
     requirements:
+      # We have to restate everything we used above in the top level requirements here.
+      # Lacking proper documentation of anything in conda build 3, all of this is trial
+      # and error. The run dependencies stated at the top level are not applied to the
+      # arb-bio output even though it shares the name with the toplevel.
+      # We also can't use YAML anchors to reference what we wrote above because conda
+      # build breaks YAML by parsing the outputs section again at a later point.
+      # Horrible mess....
+      build:
+        - {{ compiler('cxx') }}
+        - pkg-config
+        - time
+        - lynx
+        - xorg-makedepend
+        - sed >=4.4
+        - tar
+      host:
+        - openmotif-dev
+        - glib
+        - gettext
+        - pthread-stubs
+        - xorg-libxi
+        - xorg-libxp
+        - xorg-libxaw
+        - xorg-libxpm
+        - xorg-libxmu
+        - libtiff
+        - libxslt
+        - libpng
+        - xerces-c
+        - perl >=5.23
       run:
         - {{ pin_subpackage('arb-bio-tools', exact=True) }}
+        # We build a binary perl module. ABI compatability seems to be maintained
+        # at minor version (5.26.x), so we pin accordingly:
+        - {{ pin_compatible("perl", max_pin="x.x") }}
+        - gettext
+        - openmotif
+        - xorg-libxi
+        - xorg-libxmu
+        - xorg-libxp
+        - xorg-libxaw
+        - xorg-libxpm
+        - xorg-libxft
+        - libpng
+        # tools:
+        - gnuplot
+        - muscle
+        - mafft
+        - raxml
+        - mrbayes
+        - phylip
+        - phyml 3.2.0*
+        - fasttree
+        - sed >=4.4
+        - xfig
+        - fig2dev
   - name: arb-bio-devel
     script: install_devel.sh
     requirements:
+      build:
+        - {{ compiler('cxx') }}
+        - arb-bio
       run:
         - {{ pin_subpackage('arb-bio', exact=True) }}
+        - openmotif-dev
 
 about:
   home: http://www.arb-home.de
