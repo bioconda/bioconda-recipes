@@ -1,0 +1,51 @@
+{% set name = "metaquantome" %}
+{% set version = "0.99" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "bf399b32c1345cab4b6677d617f812b62658a523ec9a6df99d61e9c2dbb1c0ae"%}
+
+package:
+  name: '{{ name }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/galaxyproteomics/{{ name }}/archive/v{{ version }}-alpha.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  skip: True # [py27]
+  number: 0
+  entry_points:
+    - metaquantome=metaquantome.cli:cli
+
+requirements:
+  build:
+    - python
+  run:
+    - python
+    - ete3 3.1.1
+    - goatools 0.7.11
+    - statsmodels 0.8.0
+    - biopython 1.70
+    - pandas 0.23.*
+    - r-gplots 3.0.1
+    - r-ggplot2
+    - r-base 3.4.*
+    - r-jsonlite 1.5
+    - libiconv
+
+test:
+  commands:
+    - metaquantome -h
+    - metaquantome expand -h
+    - metaquantome filter -h
+    - metaquantome stat -h
+    - metaquantome viz -h
+
+about:
+  license: Apache Software License
+  license_family: APACHE
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+  summary: Quantitative metaproteomics analysis of taxonomy and function.
+  dev_url: 'https://github.com/galaxyproteomics/metaquant'
+
