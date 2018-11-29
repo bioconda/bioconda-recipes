@@ -19,4 +19,4 @@ make STATIC_FLAG='-lrt'
 
 # Install
 mkdir -p $PREFIX/bin
-find executable -executable -exec cp {} $PREFIX/bin \;
+find executable/ -executable -type f -exec cp {} $PREFIX/bin \;
