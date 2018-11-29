@@ -211,6 +211,53 @@ class Recipe():
         """Dump recipe content"""
         return "\n".join(self.meta_yaml) + "\n"
 
+    @staticmethod
+    def _rewrite_selector_block(text, block_top, block_left):
+        if not block_left:
+            return None  # never the whole yaml
+        lines = text.splitlines()
+        block_height = None
+        variants = defaultdict(list)
+
+        for block_height, line in enumerate(lines[block_top:]):
+            if line.strip() and not line.startswith(" " * block_left):
+                break
+            _, _, selector = line.partition("#")
+            if selector:
+                variants[selector.strip("[] ")].append(line)
+            else:
+                for variant in variants:
+                    variants[variant].append(line)
+        else:
+            # end of file, need to add one to block height
+            block_height+=1
+
+        if not block_height:  # empty lines?
+            return None
+        if not variants:
+            return None
+        if any(" " in v for v in variants):
+            # can't handle "[py2k or osx]" style things
+            return None
+
+        new_lines = []
+        for variant in variants.values():
+            first = True
+            for line in variant:
+                if first:
+                    new_lines.append("".join((" " * block_left, "- ", line)))
+                    first = False
+                else:
+                    new_lines.append("".join((" " * (block_left + 2), line)))
+
+        logger.debug("Replacing: lines %i - %i with %i lines:\n%s\n---\n%s",
+                     block_top, block_top+block_height, len(new_lines),
+                     "\n".join(lines[block_top:block_top+block_height]),
+                     "\n".join(new_lines))
+
+        lines[block_top:block_top+block_height] = new_lines
+        return "\n".join(lines)
+
     def render(self) -> None:
         """Convert recipe text into data structure
 
@@ -222,10 +269,22 @@ class Recipe():
         template = utils.jinja_silent_undef.from_string(
             "\n".join(self.meta_yaml)
         )
+        yaml_text = template.render(self.JINJA_VARS)
         try:
-            self.meta = yaml.load(template.render(self.JINJA_VARS))
-        except DuplicateKeyError:
-            raise self.DuplicateKey(self)
+            self.meta = yaml.load(yaml_text)
+        except DuplicateKeyError as err:
+            logger.debug("fixing duplicate key at %i:%i",
+                         err.context_mark.line, err.context_mark.column)
+            # We may have encountered a recipe with linux/osx variants using line selectors
+            yaml_text = self._rewrite_selector_block(yaml_text, err.context_mark.line,
+                                                     err.context_mark.column)
+            if yaml_text:
+                try:
+                    self.meta = yaml.load(yaml_text)
+                except DuplicateKeyError as errx:
+                    raise self.DuplicateKey(self)
+            else:
+                raise self.DuplicateKey(self)
 
         if ("package" not in self.meta
             or "version" not in self.meta["package"]
