@@ -1,0 +1,63 @@
+diff -ruN /tmp/gclib-0.10.3/GThreads.cpp ./GThreads.cpp
+--- ./GThreads.cpp	2018-06-26 00:26:41.000000000 +0200
++++ ./GThreads.cpp	2018-11-29 13:55:31.212906749 +0100
+@@ -375,7 +375,7 @@
+ 
+ void GThread::wait_all() {
+   while (GThread::num_running()>0)
+-	this_thread::sleep_for(chrono::milliseconds(4));
++	this_thread::sleep_for(gclib::chrono::milliseconds(4));
+ }
+ 
+ 
+diff -ruN /tmp/gclib-0.10.3/GThreads.h ./GThreads.h
+--- ./GThreads.h	2018-06-26 00:26:41.000000000 +0200
++++ ./GThreads.h	2018-11-29 13:56:50.372545993 +0100
+@@ -822,7 +822,7 @@
+ 
+ /// Minimal implementation of the \c chrono namespace.
+ /// The \c chrono namespace provides types for specifying time intervals.
+-namespace chrono {
++namespace gclib{ namespace chrono {
+   /// Duration template class. This class provides enough functionality to
+   /// implement \c this_thread::sleep_for().
+   template <class _Rep, class _Period = ratio<1> > class duration {
+@@ -850,7 +850,7 @@
+   typedef duration<int64_t> seconds;                            ///< Duration with the unit seconds.
+   typedef duration<int64_t, ratio<60> > minutes;                ///< Duration with the unit minutes.
+   typedef duration<int64_t, ratio<3600> > hours;                ///< Duration with the unit hours.
+-}
++}}
+ 
+ /// The namespace \c this_thread provides methods for dealing with the
+ /// calling thread.
+@@ -879,7 +879,7 @@
+   /// @endcode
+   /// @note Supported duration types are: nanoseconds, microseconds,
+   /// milliseconds, seconds, minutes and hours.
+-  template <class _Rep, class _Period> void sleep_for(const chrono::duration<_Rep, _Period>& aTime)
++  template <class _Rep, class _Period> void sleep_for(const gclib::chrono::duration<_Rep, _Period>& aTime)
+   {
+ #if defined(_GTHREADS_WIN32_)
+     Sleep(int(double(aTime.count()) * (1000.0 * _Period::_as_double()) + 0.5));
+diff -ruN /tmp/gclib-0.10.3/threads.cpp ./threads.cpp
+--- ./threads.cpp	2018-06-26 00:26:41.000000000 +0200
++++ ./threads.cpp	2018-11-29 13:57:33.300350761 +0100
+@@ -28,7 +28,7 @@
+       //cout << " My thread id is " << thisThread->get_id() << "." << endl << flush;
+       cout << " My thread id is " << my.thread->get_id() << "." << endl << flush;
+     }
+-  this_thread::sleep_for(chrono::seconds(4));
++  this_thread::sleep_for(gclib::chrono::seconds(4));
+ }
+ 
+ #ifndef GTHREADS_NO_TLS
+@@ -209,7 +209,7 @@
+     // Start the waiting thread (it will wait for gCount to reach zero).
+     GThread t1(ThreadCondition2, 0);
+     
+-    this_thread::sleep_for(chrono::milliseconds(400));
++    this_thread::sleep_for(gclib::chrono::milliseconds(400));
+       {
+        
+        for (int c=5;c>=0;c--) {
