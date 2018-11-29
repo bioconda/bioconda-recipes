@@ -625,9 +625,6 @@ class UpdateVersion(Filter):
     class Metapackage(RecipeError):
         template = "builds a meta package (recipe has no sources)"
 
-    class Multisource(RecipeError):
-        template = "has multiple sources"
-
     class UpToDate(RecipeError):
         template = "is up to date"
         level = logging.DEBUG
@@ -683,10 +680,16 @@ class UpdateVersion(Filter):
             raise self.Metapackage(recipe)
 
         if isinstance(sources, Sequence):
-            # FIXME: handle multisource
-            raise self.Multisource(recipe)
+            source_iter = iter(sources)
+            versions = await self.get_versions(recipe, next(source_iter), 0)
+            for num, source in enumerate(source_iter):
+                add_versions = await self.get_versions(recipe, source, num+1)
+                for vers, files in add_versions.items():
+                    for fn, data in files.items():
+                        versions[vers][fn] = data
+        else:
+            versions = await self.get_versions(recipe, sources, 0)
 
-        versions = await self.get_versions(recipe, sources, 0)
         if not versions:
             raise self.NoReleases(recipe)
 
@@ -709,14 +712,24 @@ class UpdateVersion(Filter):
         if not VersionOrder(recipe.version) == VersionOrder(latest):
             raise self.UpdateVersionFailure(recipe, recipe.orig.version, latest)
 
-        if isinstance(recipe.meta["source"]["url"], str):
-            if recipe.meta["source"]["url"] == recipe.orig.meta["source"]["url"]:
+        sources = recipe.meta["source"]
+        orig_sources = recipe.orig.meta["source"]
+        if isinstance(sources, dict):
+            sources = [sources]
+            orig_sources = [orig_sources]
+        urls: List[str] = []
+        orig_urls: List[str] = []
+        for source, orig_source in zip(sources, orig_sources):
+            add_urls = source["url"]
+            add_orig_urls = orig_source["url"]
+            if isinstance(add_urls, str):
+                add_urls = [add_urls]
+                add_orig_urls = [add_orig_urls]
+            urls.extend(add_urls)
+            orig_urls.extend(add_orig_urls)
+        for url, orig_url in zip(urls, orig_urls):
+            if orig_url == url:
                 raise self.UrlNotVersioned(recipe)
-        else:
-            for orig_url, url in zip(recipe.meta["source"]["url"],
-                                     recipe.orig.meta["source"]["url"]):
-                if orig_url == url:
-                    raise self.UrlNotVersioned(recipe)
         return recipe
 
     async def get_versions(self, recipe: Recipe, source: Mapping[Any, Any],
