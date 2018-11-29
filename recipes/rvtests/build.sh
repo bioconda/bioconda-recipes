@@ -18,5 +18,10 @@
 make STATIC_FLAG='-lrt'
 
 # Install
+echo "Install..."
 mkdir -p $PREFIX/bin
+pwd
+ls executable/
+echo "Copying..."
 find executable/ -executable -type f -exec cp {} $PREFIX/bin \;
+ls $PREFIX/bin
