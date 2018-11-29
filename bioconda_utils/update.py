@@ -316,7 +316,7 @@ class Recipe():
         """
         try:
             lineno: int = self.meta["build"].lc.key("number")[0]
-        except KeyError:  # no build number?
+        except (KeyError, AttributeError):  # no build number?
             if "build" in self.meta and self.meta["build"] is not None:
                 build = self.meta["build"]
                 first_in_build = next(iter(build))
