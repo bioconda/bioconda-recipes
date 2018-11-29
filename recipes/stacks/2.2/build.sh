@@ -22,6 +22,6 @@ cp -p scripts/{convert_stacks.pl,extract_interpop_chars.pl} "$PREFIX/bin/"
 # like @ included (Galaxy)
 for i in ref_map.pl denovo_map.pl
 do
-	sed -i -e 's/\(my $exe_path\s\+= \).*/\1"";/' "$PREFIX/bin/$i"
+    sed -i -e sed -i -e "s/^\(my \$exe_path\s\+=[^@]\+\)/\1\\\\/" "$PREFIX/bin/$i"
 done
 
