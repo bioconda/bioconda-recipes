@@ -3,6 +3,6 @@
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
-make
+make LIB_PATH_GENERAL="${PREFIX}"/lib
 
 cp fastQValidator "${PREFIX}"/bin
