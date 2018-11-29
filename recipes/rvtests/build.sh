@@ -25,3 +25,4 @@ ls executable/
 echo "Copying..."
 find executable/ -executable -type f -exec cp {} $PREFIX/bin \;
 ls $PREFIX/bin
+set
