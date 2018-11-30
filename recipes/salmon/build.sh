@@ -20,6 +20,7 @@ set -eu -o pipefail
 #linter failing 10
 #linter failing 11
 #linter failing 12
+#linter failing 13
 
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
