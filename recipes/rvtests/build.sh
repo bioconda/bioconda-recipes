@@ -18,6 +18,11 @@ if [[ $(uname -s) == Darwin ]]; then
   sed -i.bak '3i\
 #include <errno.h>
  ' base/Socket.cpp
+  sed -i.bak '4i\
+#ifdef _OPENMP
+;5i\
+#endif' libVcf/VCFRecord.h
+
   # clang does not support openmp
   sed -i.bak 's:-fopenmp::' libBgen/Makefile
   sed -i.bak 's:-fopenmp::' libVcf/Makefile
