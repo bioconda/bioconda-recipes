@@ -10,6 +10,7 @@ set -eu -o pipefail
 
 #lint
 #lint
+#linter failing
 
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
