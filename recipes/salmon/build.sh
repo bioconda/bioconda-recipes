@@ -9,6 +9,7 @@ set -eu -o pipefail
 #fi
 
 #lint
+#lint
 
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
