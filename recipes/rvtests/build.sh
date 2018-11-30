@@ -18,6 +18,11 @@ if [[ $(uname -s) == Darwin ]]; then
   sed -i.bak '3i\
 #include <errno.h>
  ' base/Socket.cpp
+  # clang does not support openmp
+  sed -i.bak 's:-fopenmp::' libBgen/Makefile
+  sed -i.bak 's:-fopenmp::' libVcf/Makefile
+  sed -i.bak 's:-fopenmp::' src/Makefile
+  
   make STATIC_FLAG='' OPENMP_FLAG='' CXX=clang++ CC=clang
 else
   # hack this flag to link against rt, so clock_gettime can be linked
