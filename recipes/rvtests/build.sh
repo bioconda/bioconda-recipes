@@ -15,6 +15,9 @@
 (sed -i.bak 's:^CXX_LIB =:CXX_LIB = -L${PREFIX}/lib:' Makefile.common)
 
 if [[ $(uname -s) == Darwin ]]; then
+  sed -i.bak '3i\
+#include <errno.h>
+ ' base/Socket.cpp
   make STATIC_FLAG='' OPENMP_FLAG='' CXX=clang++ CC=clang
 else
   # hack this flag to link against rt, so clock_gettime can be linked
