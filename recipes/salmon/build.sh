@@ -8,9 +8,10 @@ set -eu -o pipefail
 #export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
 #fi
 
-#lint
-#lint
-#linter failing
+#lint failing 1
+#lint failing 2
+#linter failing 3
+#linter failing 4
 
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
