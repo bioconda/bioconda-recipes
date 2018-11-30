@@ -8,6 +8,8 @@ set -eu -o pipefail
 #export LDFLAGS="${LDFLAGS} -L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
 #fi
 
+#lint
+
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
