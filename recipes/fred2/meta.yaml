@@ -1,0 +1,48 @@
+{% set name = "fred2" %}
+{% set version = "2.0.3" %}
+{% set sha256 = "539df6920f08bf3cb3866c390f837f65d4fd3318dfe99df8c4bc1e3e8ec27323" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/FRED-2/Fred2/archive/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 1
+  skip: True  # [not py27]
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - pyomo
+    - pandas
+    - pyvcf
+    - biopython
+    - pymysql
+    
+  run:
+    - python
+    - setuptools
+    - pyomo
+    - pandas
+    - pyvcf
+    - biopython
+    - pymysql 
+
+test:
+  commands:
+    - python -c "from Fred2.Core import Allele, Peptide, Protein,generate_peptides_from_proteins"
+
+about:
+  home: https://fred-2.github.io
+  license: BSD
+  summary: 'Python-based framework for computational immunomics.'
+
+extra:
+  container:
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true
