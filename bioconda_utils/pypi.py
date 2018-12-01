@@ -3,7 +3,7 @@ import requests
 from conda.exports import VersionOrder
 from . import utils
 from . import linting
-
+from . import anaconda
 
 def compare_recipe_to_pypi(recipe):
     """
@@ -63,7 +63,7 @@ def check_all(recipe_folder, config, packages='*'):
 
     """
     # Identify the latest version available on conda-forge
-    df = linting.channel_dataframe(channels=['conda-forge'])
+    df = anaconda.channel_dataframe(channels=['conda-forge'])
     df['looseversion'] = df['version'].apply(VersionOrder)
     latest_conda_forge = df.groupby('name')['looseversion'].agg(max)
 

@@ -15,6 +15,7 @@ from . import docker_utils
 from . import pkg_test
 from . import upload
 from . import linting
+from . import anaconda
 
 logger = logging.getLogger(__name__)
 
@@ -294,7 +295,7 @@ def build_recipes(
         df = lint_args.df
         if df is None:
             logger.info("Downloading channel information to use for linting")
-            df = linting.channel_dataframe(channels=['conda-forge', 'defaults'])
+            df = anaconda.channel_dataframe(channels=['conda-forge', 'defaults'])
         lint_exclude = (lint_args.exclude or ())
         if 'already_in_bioconda' not in lint_exclude:
             lint_exclude = tuple(lint_exclude) + ('already_in_bioconda',)
@@ -386,7 +387,7 @@ def build_recipes(
     skipped_recipes = []
     all_success = True
     failed_uploads = []
-    channel_packages = utils.get_all_channel_packages(check_channels)
+    channel_packages = anaconda.get_all_channel_packages(check_channels)
 
     for recipe in recipes:
         recipe_success = True

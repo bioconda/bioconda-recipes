@@ -21,6 +21,7 @@ from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import cran_skeleton
 from . import pypi
+from . import anaconda
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +140,7 @@ def duplicates(
 
     def get_packages(channel):
         return {get_spec(pkg)
-                for repodata in utils.get_channel_repodata(channel)
+                for repodata in anaconda.get_channel_repodata(channel)
                 for pkg in repodata['packages'].values()}
 
     # packages in our channel
@@ -225,7 +226,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
         print('\n'.join([i.__name__ for i in lint_functions.registry]))
         sys.exit(0)
 
-    df = linting.channel_dataframe(cache=cache)
+    df = anaconda.channel_dataframe(cache=cache)
     registry = lint_functions.registry
 
     if only is not None:
@@ -398,7 +399,7 @@ def build(
             if len(registry) == 0:
                 sys.stderr.write('No valid linting functions selected, exiting.\n')
                 sys.exit(1)
-        df = linting.channel_dataframe()
+        df = anaconda.channel_dataframe()
         lint_args = linting.LintArgs(df=df, exclude=lint_exclude, registry=registry)
     else:
         lint_args = None

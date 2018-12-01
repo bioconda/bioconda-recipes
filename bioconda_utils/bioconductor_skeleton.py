@@ -17,6 +17,7 @@ import requests
 import yaml
 
 from . import utils
+from . import anaconda
 from . import cran_skeleton
 
 logging.getLogger("requests").setLevel(logging.WARNING)
@@ -932,7 +933,7 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
         if skip_if_in_channels is not None:
             for channel in skip_if_in_channels:
                 logger.info('Downloading channel repodata for %s', channel)
-                for repodata in utils.get_channel_repodata(channel):
+                for repodata in anaconda.get_channel_repodata(channel):
                     for pkg in repodata['packages'].values():
                         name = pkg['name']
                         if name.startswith(('r-', 'bioconductor-')):

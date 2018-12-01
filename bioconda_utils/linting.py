@@ -98,52 +98,6 @@ class LintArgs(namedtuple('LintArgs', (
         return super().__new__(cls, df, exclude, registry)
 
 
-def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
-                                            'defaults']):
-    """
-    Return channel info as a dataframe.
-
-    Parameters
-    ----------
-
-    cache : str
-        Filename of cached channel info
-
-    channels : list
-        Channels to include in the dataframe
-    """
-    if cache is not None and os.path.exists(cache):
-        df = pd.read_table(cache)
-    else:
-        # Get the channel data into a big dataframe
-        dfs = []
-        for platform in ['linux', 'osx']:
-            for channel in channels:
-                repo, noarch = utils.get_channel_repodata(channel, platform)
-                repo = {k: v for k, v in repo.items() if k in ["info", "packages"]}
-                x = pd.DataFrame(repo)
-                x = x.drop([
-                    'arch',
-                    'default_numpy_version',
-                    'default_python_version',
-                    'platform',
-                    'subdir'], errors="ignore")  # conda-forge actually lacks these now
-                for k in [
-                    'build', 'build_number', 'name', 'version', 'license',
-                    'platform'
-                ]:
-                    x[k] = x['packages'].apply(lambda y: y.get(k, np.nan))
-
-                x['channel'] = channel
-                dfs.append(x)
-
-        df = pd.concat(dfs).drop(['info', 'packages'], axis=1)
-
-        if cache is not None:
-            df.to_csv(cache, sep='\t')
-    return df
-
-
 def lint(recipes, lint_args):
     """
     Parameters
