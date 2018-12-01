@@ -32,6 +32,7 @@ set -eu -o pipefail
 #linter failing 22
 #linter failing 23 (good morning)
 #linter failing 24 (good afternoon)
+#linter failing 25 (PM checkin)
 
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
