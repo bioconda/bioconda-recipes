@@ -6,9 +6,7 @@ import numpy as np
 import pandas as pd
 import requests
 
-PackageKey = namedtuple('PackageKey', ('name', 'version', 'build_number'))
-PackageBuild = namedtuple('PackageBuild', ('subdir', 'build_id'))
-
+from .utils import PackageKey, PackageBuild
 
 def get_channel_repodata(channel='bioconda', platform=None):
     """

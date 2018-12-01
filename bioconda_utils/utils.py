@@ -741,6 +741,10 @@ def _meta_subdir(meta):
     return 'noarch' if meta.noarch or meta.noarch_python else meta.config.host_subdir
 
 
+PackageKey = namedtuple('PackageKey', ('name', 'version', 'build_number'))
+PackageBuild = namedtuple('PackageBuild', ('subdir', 'build_id'))
+
+
 def _get_pkg_key_build_meta_map(metas):
     key_build_meta = defaultdict(dict)
     for meta in metas:
