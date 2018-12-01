@@ -2,7 +2,7 @@ import os
 import os.path as op
 from collections import defaultdict
 from jinja2.sandbox import SandboxedEnvironment
-from bioconda_utils import utils
+from bioconda_utils import anaconda
 from sphinx.util import logging as sphinx_logging
 from sphinx.util import status_iterator
 from sphinx.util.parallel import ParallelTasks, parallel_available, make_chunks
@@ -37,7 +37,7 @@ class RepoData(object):
         logger.info('Loading packages...')
         repodata = defaultdict(lambda: defaultdict(list))
         for platform in ['linux', 'osx']:
-            channel_packages = utils.get_channel_packages(
+            channel_packages = anaconda.get_channel_packages(
                 channel='bioconda', platform=platform)
             for pkg_key in channel_packages.keys():
                 repodata[pkg_key.name][pkg_key.version].append(platform)
