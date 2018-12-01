@@ -19,4 +19,3 @@ cp -p scripts/{convert_stacks.pl,extract_interpop_chars.pl} "$PREFIX/bin/"
 
 # fix a bug in ref_map v2.2 is fixed
 sed -i -e "s/_alpha/-alpha/" "$PREFIX"/bin/ref_map.pl
-
