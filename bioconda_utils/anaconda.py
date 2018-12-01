@@ -10,50 +10,6 @@ PackageKey = namedtuple('PackageKey', ('name', 'version', 'build_number'))
 PackageBuild = namedtuple('PackageBuild', ('subdir', 'build_id'))
 
 
-def get_channel_packages(channel='bioconda', platform=None):
-    """
-    Return a PackageKey -> set(PackageBuild) mapping.
-    Retrieves the existing packages for a channel from conda.anaconda.org.
-
-    Parameters
-    ----------
-    channel : str
-        Channel to retrieve packages for
-
-    platform : None | linux | osx
-        Platform (OS) to retrieve packages for from `channel`. If None, use the
-        currently-detected platform.
-    """
-    repodata, noarch_repodata = get_channel_repodata(
-        channel=channel, platform=platform)
-    channel_packages = defaultdict(set)
-    for repo in (repodata, noarch_repodata):
-        subdir = repo['info']['subdir']
-        for package in repo['packages'].values():
-            pkg_key = PackageKey(
-                package['name'], package['version'], package['build_number'])
-            pkg_build = PackageBuild(subdir, package['build'])
-            channel_packages[pkg_key].add(pkg_build)
-    channel_packages.default_factory = None
-    return channel_packages
-
-
-def get_all_channel_packages(channels):
-    """
-    Return a PackageKey -> set(PackageBuild) mapping.
-    """
-    if channels is None:
-        channels = []
-
-    all_channel_packages = defaultdict(set)
-    for channel in channels:
-        channel_packages = get_channel_packages(channel=channel)
-        for pkg_key, pkg_builds in channel_packages.items():
-            all_channel_packages[pkg_key].update(pkg_builds)
-    all_channel_packages.default_factory = None
-    return all_channel_packages
-
-
 def get_channel_repodata(channel='bioconda', platform=None):
     """
     Returns the parsed JSON repodata for a channel from conda.anaconda.org.
@@ -100,6 +56,50 @@ def get_channel_repodata(channel='bioconda', platform=None):
             '{0.status_code} {0.reason} for {1}'
             .format(noarch_repodata, noarch_url))
     return repodata.json(), noarch_repodata.json()
+
+
+def get_channel_packages(channel='bioconda', platform=None):
+    """
+    Return a PackageKey -> set(PackageBuild) mapping.
+    Retrieves the existing packages for a channel from conda.anaconda.org.
+
+    Parameters
+    ----------
+    channel : str
+        Channel to retrieve packages for
+
+    platform : None | linux | osx
+        Platform (OS) to retrieve packages for from `channel`. If None, use the
+        currently-detected platform.
+    """
+    repodata, noarch_repodata = get_channel_repodata(
+        channel=channel, platform=platform)
+    channel_packages = defaultdict(set)
+    for repo in (repodata, noarch_repodata):
+        subdir = repo['info']['subdir']
+        for package in repo['packages'].values():
+            pkg_key = PackageKey(
+                package['name'], package['version'], package['build_number'])
+            pkg_build = PackageBuild(subdir, package['build'])
+            channel_packages[pkg_key].add(pkg_build)
+    channel_packages.default_factory = None
+    return channel_packages
+
+
+def get_all_channel_packages(channels):
+    """
+    Return a PackageKey -> set(PackageBuild) mapping.
+    """
+    if channels is None:
+        channels = []
+
+    all_channel_packages = defaultdict(set)
+    for channel in channels:
+        channel_packages = get_channel_packages(channel=channel)
+        for pkg_key, pkg_builds in channel_packages.items():
+            all_channel_packages[pkg_key].update(pkg_builds)
+    all_channel_packages.default_factory = None
+    return all_channel_packages
 
 
 def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
