@@ -95,37 +95,36 @@ def duplicates(
     Detect packages in bioconda that have duplicates in the other defined
     channels.
     """
+
+    if remove and not strict_build:
+        raise ValueError('Removing packages is only supported in case of '
+                         '--strict-build.')
+
     config = utils.load_config(config)
+    our_channel = "bioconda"
+    channels = [c for c in config['channels'] if c != our_channel]
+    print("Checking for packages from {} also present in {}".format(
+        our_channel, channels))
 
-    channels = config['channels']
-    target_channel = channels[0]
+    check_fields = ['name']
+    if strict_version or strict_build:
+        check_fields += ['version']
+    if strict_build:
+        check_fields += ['build']
 
-    if strict_version:
-        def get_spec(pkg):
-            return (pkg['name'], pkg['version'])
-        if not remove and not url:
-            print('name', 'version', 'channels', sep='\t')
-    elif strict_build:
-        def get_spec(pkg):
-            return (pkg['name'], pkg['version'], pkg['build'])
-        if not remove and not url:
-            print('name', 'version', 'build', 'channels', sep='\t')
-    else:
-        def get_spec(pkg):
-            return pkg['name']
-        if not remove and not url:
-            print('name', 'channels', sep='\t')
+    def get_package_specs(channel):
+        return set(
+            tuple(pkg[key] for key in check_fields)
+            for pkg in anaconda.get_packages(channel)
+        )
 
     def remove_package(spec):
-        if not strict_build:
-            raise ValueError('Removing packages is only supported in case of '
-                             '--strict-build.')
         fn = '{}-{}-{}.tar.bz2'.format(*spec)
         name, version = spec[:2]
         subcmd = [
             'remove', '-f',
             '{channel}/{name}/{version}/{fn}'.format(
-                name=name, version=version, fn=fn, channel=target_channel
+                name=name, version=version, fn=fn, channel=our_channel
             )
         ]
         if dryrun:
@@ -138,33 +137,35 @@ def duplicates(
                 token = ['-t', token]
             print(utils.run([utils.bin_for('anaconda')] + token + subcmd, mask=[token]).stdout)
 
-    def get_packages(channel):
-        return {get_spec(pkg)
-                for repodata in anaconda.get_channel_repodata(channel)
-                for pkg in repodata['packages'].values()}
-
     # packages in our channel
-    packages = get_packages(target_channel)
+    our_package_specs = get_package_specs(our_channel)
+    print("{} unique packages specs to consider in {}".format(
+        len(our_package_specs), our_channel))
 
     # packages in channels we depend on
-    common = defaultdict(list)
-    for channel in channels[1:]:
-        pkgs = get_packages(channel)
-        for pkg in packages & pkgs:
-            common[pkg].append(channel)
+    duplicate = defaultdict(list)
+    for channel in channels:
+        package_specs = get_package_specs(channel)
+        print("{} unique packages specs to consider in {}".format(
+            len(package_specs), channel))
+        dups = our_package_specs & package_specs
+        print("  (of which {} overlap)".format(len(dups)))
+        for spec in dups:
+            duplicate[spec].append(channel)
 
-    for pkg, _channels in sorted(common.items()):
+    print('\t'.join(check_fields + ['channels']))
+    for spec, dup_channels in sorted(duplicate.items()):
         if remove:
-            remove_package(pkg)
+            remove_package(spec)
         else:
             if url:
                 if not strict_version and not strict_build:
                     print('https://anaconda.org/{}/{}'.format(
-                          target_channel, pkg[0]))
+                          our_channel, spec[0]))
                 print('https://anaconda.org/{}/{}/files?version={}'.format(
-                    target_channel, *pkg))
+                    our_channel, *spec))
             else:
-                print(*pkg, *_channels, sep='\t')
+                print(*spec, ','.join(dup_channels), sep='\t')
 
 
 @arg('recipe_folder', help='Path to top-level dir of recipes.')
