@@ -120,13 +120,14 @@ def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
         for platform in ['linux', 'osx']:
             for channel in channels:
                 repo, noarch = utils.get_channel_repodata(channel, platform)
+                repo = {k: v for k, v in repo.items() if k in ["info", "packages"]}
                 x = pd.DataFrame(repo)
                 x = x.drop([
                     'arch',
                     'default_numpy_version',
                     'default_python_version',
                     'platform',
-                    'subdir'])
+                    'subdir'], errors="ignore")  # conda-forge actually lacks these now
                 for k in [
                     'build', 'build_number', 'name', 'version', 'license',
                     'platform'
