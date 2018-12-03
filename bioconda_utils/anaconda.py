@@ -40,6 +40,10 @@ def get_channel_repodata(channel='bioconda', platform=None):
         raise ValueError(
             'Unsupported OS: bioconda only supports linux and osx.')
 
+    if channel == "defaults":
+        # caveat: this only gets defaults main, not 'free', 'r' or 'pro'
+        url_template =  "https://repo.anaconda.com/pkgs/main/{arch}/repodata.json"
+
     url = url_template.format(channel=channel, arch=arch)
     repodata = requests.get(url)
     if repodata.status_code != 200:
