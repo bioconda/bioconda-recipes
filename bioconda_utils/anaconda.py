@@ -55,6 +55,21 @@ def get_channel_repodata(channel='bioconda', platform=None):
             .format(noarch_repodata, noarch_url))
     return repodata.json(), noarch_repodata.json()
 
+def get_packages(channels):
+    """
+    Generates list of packages in channels
+
+    Args:
+      channels: string or list of string
+    """
+    if isinstance(channels, str):
+        channels = [channels]
+    for channel in channels:
+        for repodata in get_channel_repodata(channel):
+            for pkg in repodata['packages'].values():
+                yield pkg
+
+
 
 def get_channel_packages(channel='bioconda', platform=None):
     """
