@@ -51,9 +51,9 @@ cmake -DCMAKE_BUILD_TYPE=RELEASE -DCONDA_BUILD=TRUE -DCMAKE_OSX_DEPLOYMENT_TARGE
 make
 echo "unit test executable"
 ./src/unitTests
-echo "cmake-powered unit test"
-make test
 echo "installing"
 make install CFLAGS="-L${PREFIX}/lib -I${PREFIX}/include"
-
+../tests/unitTests
+echo "cmake-powered unit test"
+make test
 
