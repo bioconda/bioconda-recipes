@@ -38,6 +38,7 @@ set -eu -o pipefail
 #linter failing 28 (good night)
 #linter failing 29 (Morning check)
 #linter failing 30 (the big 3-0 ... if this counter eclipses my age, I'll be sad :()
+#linter failing 31 (and another one bites the dust?)
 
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
