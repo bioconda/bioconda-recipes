@@ -184,7 +184,7 @@ def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
                 x['channel'] = channel
                 dfs.append(x)
 
-        df = pd.concat(dfs).drop(['info', 'packages'], axis=1)
+        df = pd.concat(dfs)
 
         if cache is not None:
             df.to_csv(cache, sep='\t')
