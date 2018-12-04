@@ -17,18 +17,15 @@ def _get_channel_repodata(channel='bioconda', platform):
     """
     Returns the parsed JSON repodata for a channel from conda.anaconda.org.
 
-    A tuple of dicts is returned, (repodata, noarch_repodata). The first is the
-    repodata for the provided platform, and the second is the noarch repodata,
-    which will be the same for a channel no matter what the platform.
+    A dicts is containing the repodata is returned.
 
     Parameters
     ----------
     channel : str
         Channel to retrieve packages for
 
-    platform : None | linux | osx
-        Platform (OS) to retrieve packages for from `channel`. If None, use the
-        currently-detected platform.
+    platform : noarch | linux | osx
+        Platform (OS) to retrieve packages for from `channel`.
     """
     if platform == 'linux':
         arch = 'linux-64'
@@ -38,7 +35,7 @@ def _get_channel_repodata(channel='bioconda', platform):
         arch = 'noarch'
     else:
         raise ValueError(
-            'Unsupported OS: bioconda only supports linux and osx.')
+            'Unsupported platform: bioconda only supports linux, osx and noarch.')
 
     if channel == "defaults":
         # caveat: this only gets defaults main, not 'free', 'r' or 'pro'
@@ -53,13 +50,7 @@ def _get_channel_repodata(channel='bioconda', platform):
             '{0.status_code} {0.reason} for {1}'
             .format(repodata, url))
 
-    noarch_url = url_template.format(channel=channel, arch='noarch')
-    noarch_repodata = requests.get(noarch_url)
-    if noarch_repodata.status_code != 200:
-        raise requests.HTTPError(
-            '{0.status_code} {0.reason} for {1}'
-            .format(noarch_repodata, noarch_url))
-    return repodata.json(), noarch_repodata.json()
+    return repodata.json()
 
 
 def _get_channel_packages(channel='bioconda', platform):
@@ -76,10 +67,9 @@ def _get_channel_packages(channel='bioconda', platform):
         Platform (OS) to retrieve packages for from `channel`. If None, use the
         currently-detected platform.
     """
-    repodata, noarch_repodata = _get_channel_repodata(
-        channel=channel, platform=platform)
     channel_packages = defaultdict(set)
-    for repo in (repodata, noarch_repodata):
+    for arch in (platform, "noarch"):
+        repo = _get_channel_repodata(channel=channel, platform=arch)
         subdir = repo['info']['subdir']
         for package in repo['packages'].values():
             pkg_key = PackageKey(
@@ -90,7 +80,7 @@ def _get_channel_packages(channel='bioconda', platform):
     return channel_packages
 
 
-def _get_native_platform() {
+def _get_native_platform():
     if sys.platform.startswith("linux"):
         return "linux"
     if sys.platform.startswith("darwin"):
@@ -128,23 +118,6 @@ class RepoData(object):
         return self.repodata[p]
 
 
-# called from bioconductor_skeleton, cli
-def get_packages(channels):
-    """
-    Generates list of packages in channels
-
-    Args:
-      channels: string or list of string
-    """
-    if isinstance(channels, str):
-        channels = [channels]
-    platform = _get_native_platform()
-    for channel in channels:
-        for repodata in _get_channel_repodata(channel, platform):
-            for pkg in repodata['packages'].values():
-                yield pkg
-
-
 # called from build
 def get_all_channel_packages(channels):
     """
@@ -163,8 +136,30 @@ def get_all_channel_packages(channels):
     return all_channel_packages
 
 
-# called from build, cli, linting, pypi
-# as args to lint: build, cli, linting
+# called from bioconductor_skeleton, cli
+def get_packages(channels):
+    """
+    Generates list of packages in channels
+
+    Args:
+      channels: string or list of string
+    """
+    if isinstance(channels, str):
+        channels = [channels]
+    platform = _get_native_platform()
+    for channel in channels:
+        for arch in (platform, 'noarch'):
+            repo = _get_channel_repodata(channel, arch)
+            for pkg in repodata['packages'].values():
+                yield pkg
+
+
+# called from
+# build   - gets only conda-forge, defaults to use for linting
+# cli     - only with cache in lint, then () in build
+# linting only subsets as df[df.name==name & df.version==version] to look at once recipe
+# at a time, then checks if any of the result lines have 'bioconda' in row.channel
+# or subsets further with df.build_number == build_number and checks if in bioconda
 def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
                                             'defaults']):
     """
@@ -188,9 +183,9 @@ def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
     else:
         # Get the channel data into a big dataframe
         dfs = []
-        for platform in ['linux', 'osx']:
+        for platform in ['linux', 'osx', 'noarch']:
             for channel in channels:
-                repo, noarch = _get_channel_repodata(channel, platform)
+                repo = _get_channel_repodata(channel, platform)
                 x = pd.DataFrame.from_dict(repo['packages'], 'index', columns=columns)
                 x['channel'] = channel
                 dfs.append(x)
