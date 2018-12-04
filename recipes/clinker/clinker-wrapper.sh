@@ -15,8 +15,6 @@ END
 )
 # Clinker wrapper - invoke bpipe
 
-#bpipe -p option1="something" -p option2="something_else" [...] $CLINKERDIR/workflow/clinker.pipe /path/to/*.fastq.gz
-# parse and accept parameters in bpipe style, then pass on to fixed clinker.pipe location
 CLINKERFILES=()
 CLINKEROPTIONS=()
 ECHO="echo usage: call clinker -h for more detailed information or clinker -w to run:"
