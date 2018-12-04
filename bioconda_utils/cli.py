@@ -227,7 +227,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
         print('\n'.join([i.__name__ for i in lint_functions.registry]))
         sys.exit(0)
 
-    df = anaconda.channel_dataframe(cache=cache)
+    anaconda.RepoData(cache)
     registry = lint_functions.registry
 
     if only is not None:
@@ -241,7 +241,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
 
     _recipes = select_recipes(packages, git_range, recipe_folder, config_filename, config, force)
 
-    lint_args = linting.LintArgs(df=df, exclude=exclude, registry=registry)
+    lint_args = linting.LintArgs(exclude=exclude, registry=registry)
     report = linting.lint(_recipes, lint_args)
 
     # The returned dataframe is in tidy format; summarize a bit to get a more
@@ -400,8 +400,7 @@ def build(
             if len(registry) == 0:
                 sys.stderr.write('No valid linting functions selected, exiting.\n')
                 sys.exit(1)
-        df = anaconda.channel_dataframe()
-        lint_args = linting.LintArgs(df=df, exclude=lint_exclude, registry=registry)
+        lint_args = linting.LintArgs(exclude=lint_exclude, registry=registry)
     else:
         lint_args = None
         if lint_only is not None:

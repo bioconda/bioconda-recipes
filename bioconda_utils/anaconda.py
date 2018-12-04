@@ -177,8 +177,8 @@ class RepoData:
             RepoData.__instance = object.__new__(cls)
         return RepoData.__instance
 
-    def __init__(self):
-        self.df = channel_dataframe()
+    def __init__(self, cache=None):
+        self.df = channel_dataframe(cache)
 
     def get_versions(self, p):
         """Get versions available for package

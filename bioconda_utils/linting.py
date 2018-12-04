@@ -75,13 +75,9 @@ Perform various checks on recipes.
 
 
 class LintArgs(namedtuple('LintArgs', (
-    'df', 'exclude', 'registry',
+    'exclude', 'registry',
 ))):
     """
-    df : pandas.DataFrame
-        Dataframe containing channel data, typically as output from
-        `channel_dataframe()`
-
     exclude : list
         List of function names in `registry` to skip globally. When running on
         CI, this will be merged with anything else detected from the commit
@@ -94,8 +90,8 @@ class LintArgs(namedtuple('LintArgs', (
         List of functions to apply to each recipe. If None, defaults to
         `lint_functions.registry`.
     """
-    def __new__(cls, df, exclude=None, registry=None):
-        return super().__new__(cls, df, exclude, registry)
+    def __new__(cls, exclude=None, registry=None):
+        return super().__new__(cls, exclude, registry)
 
 
 def lint(recipes, lint_args):
@@ -108,7 +104,6 @@ def lint(recipes, lint_args):
 
     lint_args : LintArgs
     """
-    df = lint_args.df
     exclude = lint_args.exclude
     registry = lint_args.registry
 
@@ -189,7 +184,7 @@ def lint(recipes, lint_args):
                         '%s defines skip lint test %s for recipe %s'
                         % (source, func.__name__, recipe))
                 continue
-            result = func(recipe, metas, df)
+            result = func(recipe, metas)
             if result:
                 hits.append(
                     {'recipe': recipe,
