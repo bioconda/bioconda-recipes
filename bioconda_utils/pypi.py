@@ -63,9 +63,7 @@ def check_all(recipe_folder, config, packages='*'):
 
     """
     # Identify the latest version available on conda-forge
-    df = anaconda.channel_dataframe(channels=['conda-forge'])
-    df['looseversion'] = df['version'].apply(VersionOrder)
-    latest_conda_forge = df.groupby('name')['looseversion'].agg(max)
+    latest_conda_forge = anaconda.RepoData().get_latest_versions('conda-forge')
 
     # Only consider the latest version we can find here
     recipes = list(utils.get_latest_recipes(recipe_folder, config, packages))

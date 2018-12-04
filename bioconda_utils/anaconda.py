@@ -5,6 +5,7 @@ from collections import defaultdict, namedtuple
 import numpy as np
 import pandas as pd
 import requests
+from conda.exports import VersionOrder
 
 from .utils import PackageKey, PackageBuild
 
@@ -181,6 +182,7 @@ class RepoData:
         self.df = channel_dataframe(cache)
 
     def get_versions(self, p):
+        # called from doc generator
         """Get versions available for package
 
         Args:
@@ -198,9 +200,18 @@ class RepoData:
         return versions['platform'].to_dict()
 
     def get_channels(self, name, version, build_number=None):
+        # called from lint functions
         selection = self.df.name == name & self.df.version == version
         if build_number:
             selection = selection & self.df.build_number == build_number
         packages = self.df[selection]
         return set(packages.channel)
+
+    def get_latest_versions(self, channel):
+        # called from pypi module
+        packages = self.df[self.df.channel == channel]['version']
+        def max_vers(x):
+            return max(VersionOrder(v) for v in x)
+        vers = packages.groupby('name').agg(max_vers)
+
 
