@@ -223,18 +223,3 @@ def markdown_report(report=None):
     else:
         tmpl = utils.jinja.get_template("lint_failure.md")
         return tmpl.render(report=report)
-
-
-def bump_build_number(d):
-    """
-    Increase the build number of a recipe, adding the relevant keys if needed.
-
-    d : dict-like
-        Parsed meta.yaml, from get_meta()
-    """
-    if 'build' not in d:
-        d['build'] = {'number': 0}
-    elif 'number' not in d['build']:
-        d['build']['number'] = 0
-    d['build']['number'] += 1
-    return d
