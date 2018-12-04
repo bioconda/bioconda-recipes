@@ -59,6 +59,38 @@ def get_channel_repodata(channel='bioconda', platform=None):
             .format(noarch_repodata, noarch_url))
     return repodata.json(), noarch_repodata.json()
 
+
+class RepoData(object):
+    """Load and parse packages (not recipes) available via channel"""
+    def __init__(self):
+        logger.info('Loading packages...')
+        repodata = defaultdict(lambda: defaultdict(list))
+        for platform in ['linux', 'osx']:
+            channel_packages = anaconda.get_channel_packages(
+                channel='bioconda', platform=platform)
+            for pkg_key in channel_packages.keys():
+                repodata[pkg_key.name][pkg_key.version].append(platform)
+        self.repodata = repodata
+        # e.g., repodata = {
+        #   'package1': {
+        #       '0.1': ['linux'],
+        #       '0.2': ['linux', 'osx'],
+        #   },
+        # }
+
+    def get_versions(self, p):
+        """Get versions available for package
+
+        Args:
+          p: package name
+
+        Returns:
+          Dictionary mapping version numbers to list of architectures
+        """
+        return self.repodata[p]
+
+
+# called from bioconductor_skeleton, cli
 def get_packages(channels):
     """
     Generates list of packages in channels
@@ -75,6 +107,7 @@ def get_packages(channels):
 
 
 
+# called from docs/generate_docs.py
 def get_channel_packages(channel='bioconda', platform=None):
     """
     Return a PackageKey -> set(PackageBuild) mapping.
@@ -103,6 +136,7 @@ def get_channel_packages(channel='bioconda', platform=None):
     return channel_packages
 
 
+# called from build
 def get_all_channel_packages(channels):
     """
     Return a PackageKey -> set(PackageBuild) mapping.
@@ -119,6 +153,7 @@ def get_all_channel_packages(channels):
     return all_channel_packages
 
 
+# called from build, cli, linting, pypi
 def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
                                             'defaults']):
     """
