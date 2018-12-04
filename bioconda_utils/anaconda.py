@@ -9,6 +9,10 @@ import requests
 from .utils import PackageKey, PackageBuild
 
 
+REPODATA_URL = 'https://conda.anaconda.org/{channel}/{arch}/repodata.json'
+REPODATA_DEFAULTS_URL = 'https://repo.anaconda.com/pkgs/main/{arch}/repodata.json'
+
+
 def _get_channel_repodata(channel='bioconda', platform):
     """
     Returns the parsed JSON repodata for a channel from conda.anaconda.org.
@@ -26,7 +30,6 @@ def _get_channel_repodata(channel='bioconda', platform):
         Platform (OS) to retrieve packages for from `channel`. If None, use the
         currently-detected platform.
     """
-    url_template = 'https://conda.anaconda.org/{channel}/{arch}/repodata.json'
     if platform == 'linux':
         arch = 'linux-64'
     elif platform == 'osx':
@@ -39,7 +42,9 @@ def _get_channel_repodata(channel='bioconda', platform):
 
     if channel == "defaults":
         # caveat: this only gets defaults main, not 'free', 'r' or 'pro'
-        url_template =  "https://repo.anaconda.com/pkgs/main/{arch}/repodata.json"
+        url_template = REPODATA_DEFAULTS_URL
+    else:
+        url_template = REPODATA_URL
 
     url = url_template.format(channel=channel, arch=arch)
     repodata = requests.get(url)
