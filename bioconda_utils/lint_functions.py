@@ -85,7 +85,7 @@ def in_other_channels(recipe, meta):
     """
     channels = repodata.get_channels(meta.get_value("package/name"),
                                      meta.get_value("package/version"))
-    channels.remove('bioconda')
+    channels.discard('bioconda')
     if channels:
         return {
             'exists_in_channels': channels,
