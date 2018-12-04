@@ -55,5 +55,5 @@ echo "installing"
 make install CFLAGS="-L${PREFIX}/lib -I${PREFIX}/include"
 ../tests/unitTests
 echo "cmake-powered unit test"
-make test
+CTEST_OUTPUT_ON_FAILURE=1 make test
 
