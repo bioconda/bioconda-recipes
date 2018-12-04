@@ -69,7 +69,7 @@ def _get_channel_packages(channel, platform):
     """
     channel_packages = defaultdict(set)
     for arch in (platform, "noarch"):
-        repo = _get_channel_repodata(channel=channel, platform=arch)
+        repo = _get_channel_repodata(channel, arch)
         subdir = repo['info']['subdir']
         for package in repo['packages'].values():
             pkg_key = PackageKey(
@@ -94,8 +94,7 @@ class RepoData(object):
         logger.info('Loading packages...')
         repodata = defaultdict(lambda: defaultdict(list))
         for platform in ['linux', 'osx']:
-            channel_packages = _get_channel_packages(
-                channel='bioconda', platform=platform)
+            channel_packages = _get_channel_packages('bioconda', platform)
             for pkg_key in channel_packages.keys():
                 repodata[pkg_key.name][pkg_key.version].append(platform)
         self.repodata = repodata
@@ -129,7 +128,7 @@ def get_all_channel_packages(channels):
 
     all_channel_packages = defaultdict(set)
     for channel in channels:
-        channel_packages = _get_channel_packages(channel=channel, platform)
+        channel_packages = _get_channel_packages(channel, platform)
         for pkg_key, pkg_builds in channel_packages.items():
             all_channel_packages[pkg_key].update(pkg_builds)
     all_channel_packages.default_factory = None
