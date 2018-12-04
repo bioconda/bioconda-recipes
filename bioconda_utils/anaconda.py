@@ -196,3 +196,11 @@ class RepoData:
         # return dict from platform column
         # e.g. {'0.1': ['linux'], '0.2': ['linux', 'osx'], '0.3': ['noarch']}
         return versions['platform'].to_dict()
+
+    def get_channels(self, name, version, build_number=None):
+        selection = self.df.name == name & self.df.version == version
+        if build_number:
+            selection = selection & self.df.build_number == build_number
+        packages = self.df[selection]
+        return set(packages.channel)
+

@@ -6,25 +6,9 @@ import re
 import pandas
 import numpy as np
 
+from .anaconda import RepoData
 
-def _subset_df(recipe, meta, df):
-    """
-    Helper function to get the subset of `df` for this recipe.
-    """
-    if df is None:
-        # TODO: this is just a mockup; is there a better way to get the set of
-        # expected columns from a channel dump?
-        return pandas.DataFrame(
-            np.nan, index=[],
-            columns=['channel', 'name', 'version', 'build_number'])
-
-    name = meta.get_value('package/name')
-    version = meta.get_value('package/version')
-
-    return df[
-        (df.name == name) &
-        (df.version == version)
-    ]
+repodata = RepoData()
 
 
 def _get_deps(meta, section=None):
@@ -95,13 +79,14 @@ def lint_multiple_metas(lint_function):
 
 
 @lint_multiple_metas
-def in_other_channels(recipe, meta, df):
+def in_other_channels(recipe, meta, _):
     """
     Does the package exist in any other non-bioconda channels?
     """
-    results = _subset_df(recipe, meta, df)
-    channels = set(results.channel).difference(['bioconda'])
-    if len(channels):
+    channels = repodata.get_channels(meta.get_value("package/name"),
+                                     meta.get_value("package/version"))
+    channels.remove('bioconda')
+    if channels:
         return {
             'exists_in_channels': channels,
             'fix': 'consider deprecating',
@@ -109,14 +94,14 @@ def in_other_channels(recipe, meta, df):
 
 
 @lint_multiple_metas
-def already_in_bioconda(recipe, meta, df):
+def already_in_bioconda(recipe, meta, _):
     """
     Does the package exist in bioconda?
     """
-    results = _subset_df(recipe, meta, df)
-    build_number = int(meta.get_value('build/number', 0))
-    build_results = results[results.build_number == build_number]
-    channels = set(build_results.channel)
+    channels = repodata.get_channels(meta.get_value("package/name"),
+                                     meta.get_value("package/version"),
+                                     meta.get_value("build/number", 0))
+
     if 'bioconda' in channels:
         return {
             'already_in_bioconda': True,
