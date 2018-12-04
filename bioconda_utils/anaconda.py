@@ -66,7 +66,7 @@ class RepoData(object):
         logger.info('Loading packages...')
         repodata = defaultdict(lambda: defaultdict(list))
         for platform in ['linux', 'osx']:
-            channel_packages = anaconda.get_channel_packages(
+            channel_packages = get_channel_packages(
                 channel='bioconda', platform=platform)
             for pkg_key in channel_packages.keys():
                 repodata[pkg_key.name][pkg_key.version].append(platform)
