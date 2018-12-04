@@ -88,35 +88,6 @@ def _get_native_platform():
     raise ValueError("Running on unsupported platform")
 
 
-class RepoData(object):
-    """Load and parse packages (not recipes) available via channel"""
-    def __init__(self):
-        logger.info('Loading packages...')
-        repodata = defaultdict(lambda: defaultdict(list))
-        for platform in ['linux', 'osx']:
-            channel_packages = _get_channel_packages('bioconda', platform)
-            for pkg_key in channel_packages.keys():
-                repodata[pkg_key.name][pkg_key.version].append(platform)
-        self.repodata = repodata
-        # e.g., repodata = {
-        #   'package1': {
-        #       '0.1': ['linux'],
-        #       '0.2': ['linux', 'osx'],
-        #   },
-        # }
-
-    def get_versions(self, p):
-        """Get versions available for package
-
-        Args:
-          p: package name
-
-        Returns:
-          Dictionary mapping version numbers to list of architectures
-        """
-        return self.repodata[p]
-
-
 # called from build
 def get_all_channel_packages(channels):
     """
@@ -194,3 +165,34 @@ def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
         if cache is not None:
             df.to_csv(cache, sep='\t')
     return df
+
+
+class RepoData:
+    """Load and parse packages (not recipes) available via channel"""
+
+    # make this a singleton
+    __instance = None
+    def __new__(cls):
+        if RepoData.__instance is None:
+            RepoData.__instance = object.__new__(cls)
+        return RepoData.__instance
+
+    def __init__(self):
+        self.df = channel_dataframe()
+
+    def get_versions(self, p):
+        """Get versions available for package
+
+        Args:
+          p: package name
+
+        Returns:
+          Dictionary mapping version numbers to list of architectures
+        """
+        # get dataframe: (filename) x (version, platform)
+        packages = self.df[self.df.name == p][['version', 'platform']]
+        # merge rows with same version, making platform distinct list
+        versions = packages.groupby('version').agg(lambda x: list(set(x)))
+        # return dict from platform column
+        # e.g. {'0.1': ['linux'], '0.2': ['linux', 'osx'], '0.3': ['noarch']}
+        return versions['platform'].to_dict()
