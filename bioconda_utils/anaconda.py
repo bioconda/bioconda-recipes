@@ -13,7 +13,7 @@ REPODATA_URL = 'https://conda.anaconda.org/{channel}/{arch}/repodata.json'
 REPODATA_DEFAULTS_URL = 'https://repo.anaconda.com/pkgs/main/{arch}/repodata.json'
 
 
-def _get_channel_repodata(channel='bioconda', platform):
+def _get_channel_repodata(channel, platform):
     """
     Returns the parsed JSON repodata for a channel from conda.anaconda.org.
 
@@ -53,7 +53,7 @@ def _get_channel_repodata(channel='bioconda', platform):
     return repodata.json()
 
 
-def _get_channel_packages(channel='bioconda', platform):
+def _get_channel_packages(channel, platform):
     """
     Return a PackageKey -> set(PackageBuild) mapping.
     Retrieves the existing packages for a channel from conda.anaconda.org.
