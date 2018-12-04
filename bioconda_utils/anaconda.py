@@ -175,11 +175,13 @@ class RepoData:
         # e.g. {'0.1': ['linux'], '0.2': ['linux', 'osx'], '0.3': ['noarch']}
         return versions['platform'].to_dict()
 
-    def get_channels(self, name, version, build_number=None):
+    def get_channels(self, name, version=None, build_number=None):
         # called from lint functions
-        selection = self.df.name == name & self.df.version == version
+        selection = self.df.name == name
+        if version:
+            selection &= self.df.version == version
         if build_number:
-            selection = selection & self.df.build_number == build_number
+            selection &= self.df.build_number == build_number
         packages = self.df[selection]
         return set(packages.channel)
 
