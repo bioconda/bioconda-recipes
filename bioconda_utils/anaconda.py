@@ -149,7 +149,7 @@ def get_packages(channels):
     for channel in channels:
         for arch in (platform, 'noarch'):
             repo = _get_channel_repodata(channel, arch)
-            for pkg in repodata['packages'].values():
+            for pkg in repo['packages'].values():
                 yield pkg
 
 
