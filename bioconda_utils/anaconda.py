@@ -9,7 +9,7 @@ import requests
 from .utils import PackageKey, PackageBuild
 
 
-def _get_channel_repodata(channel='bioconda', platform=None):
+def _get_channel_repodata(channel='bioconda', platform):
     """
     Returns the parsed JSON repodata for a channel from conda.anaconda.org.
 
@@ -27,16 +27,12 @@ def _get_channel_repodata(channel='bioconda', platform=None):
         currently-detected platform.
     """
     url_template = 'https://conda.anaconda.org/{channel}/{arch}/repodata.json'
-    if (
-        (platform == 'linux') or
-        (platform is None and sys.platform.startswith("linux"))
-    ):
+    if platform == 'linux':
         arch = 'linux-64'
-    elif (
-        (platform == 'osx') or
-        (platform is None and sys.platform.startswith("darwin"))
-    ):
+    elif platform == 'osx':
         arch = 'osx-64'
+    elif platform == 'noarch':
+        arch = 'noarch'
     else:
         raise ValueError(
             'Unsupported OS: bioconda only supports linux and osx.')
@@ -61,7 +57,7 @@ def _get_channel_repodata(channel='bioconda', platform=None):
     return repodata.json(), noarch_repodata.json()
 
 
-def _get_channel_packages(channel='bioconda', platform=None):
+def _get_channel_packages(channel='bioconda', platform):
     """
     Return a PackageKey -> set(PackageBuild) mapping.
     Retrieves the existing packages for a channel from conda.anaconda.org.
@@ -87,6 +83,14 @@ def _get_channel_packages(channel='bioconda', platform=None):
             channel_packages[pkg_key].add(pkg_build)
     channel_packages.default_factory = None
     return channel_packages
+
+
+def _get_native_platform() {
+    if sys.platform.startswith("linux"):
+        return "linux"
+    if sys.platform.startswith("darwin"):
+        return "osx"
+    raise ValueError("Running on unsupported platform")
 
 
 class RepoData(object):
@@ -129,8 +133,9 @@ def get_packages(channels):
     """
     if isinstance(channels, str):
         channels = [channels]
+    platform = _get_native_platform()
     for channel in channels:
-        for repodata in _get_channel_repodata(channel):
+        for repodata in _get_channel_repodata(channel, platform):
             for pkg in repodata['packages'].values():
                 yield pkg
 
@@ -142,10 +147,11 @@ def get_all_channel_packages(channels):
     """
     if channels is None:
         channels = []
+    platform = _get_native_platform()
 
     all_channel_packages = defaultdict(set)
     for channel in channels:
-        channel_packages = _get_channel_packages(channel=channel)
+        channel_packages = _get_channel_packages(channel=channel, platform)
         for pkg_key, pkg_builds in channel_packages.items():
             all_channel_packages[pkg_key].update(pkg_builds)
     all_channel_packages.default_factory = None
