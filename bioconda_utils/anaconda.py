@@ -125,51 +125,10 @@ def get_packages(channels):
                 yield pkg
 
 
-# called from
-# build   - gets only conda-forge, defaults to use for linting
-# cli     - only with cache in lint, then () in build
-# linting only subsets as df[df.name==name & df.version==version] to look at once recipe
-# at a time, then checks if any of the result lines have 'bioconda' in row.channel
-# or subsets further with df.build_number == build_number and checks if in bioconda
-def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
-                                            'defaults']):
-    """
-    Return channel info as a dataframe.
-
-    Parameters
-    ----------
-
-    cache : str
-        Filename of cached channel info
-
-    channels : list
-        Channels to include in the dataframe
-    """
-
-    columns = ['build', 'build_number', 'name', 'version', 'license',
-               'platform']
-
-    if cache is not None and os.path.exists(cache):
-        df = pd.read_table(cache)
-    else:
-        # Get the channel data into a big dataframe
-        dfs = []
-        for platform in ['linux', 'osx', 'noarch']:
-            for channel in channels:
-                repo = _get_channel_repodata(channel, platform)
-                x = pd.DataFrame.from_dict(repo['packages'], 'index', columns=columns)
-                x['channel'] = channel
-                dfs.append(x)
-
-        df = pd.concat(dfs)
-
-        if cache is not None:
-            df.to_csv(cache, sep='\t')
-    return df
-
-
 class RepoData:
     """Load and parse packages (not recipes) available via channel"""
+    columns = ['build', 'build_number', 'name', 'version', 'license',
+               'platform']
 
     # make this a singleton
     __instance = None
@@ -179,7 +138,24 @@ class RepoData:
         return RepoData.__instance
 
     def __init__(self, cache=None):
-        self.df = channel_dataframe(cache)
+        if cache is not None and os.path.exists(cache):
+            self.df = pd.read_table(cache)
+            return
+
+        # Get the channel data into a big dataframe
+        dfs = []
+        for platform in ['linux', 'osx', 'noarch']:
+            for channel in ['conda-forge', 'bioconda', 'defaults']:
+                repo = _get_channel_repodata(channel, platform)
+                df = pd.DataFrame.from_dict(repo['packages'], 'index',
+                                            columns=self.columns)
+                df['channel'] = channel
+                dfs.append(df)
+
+        self.df = pd.concat(dfs)
+
+        if cache is not None:
+            self.df.to_csv(cache, sep='\t')
 
     def get_versions(self, p):
         # called from doc generator
