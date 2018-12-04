@@ -133,6 +133,10 @@ def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
     channels : list
         Channels to include in the dataframe
     """
+
+    columns = ['build', 'build_number', 'name', 'version', 'license',
+               'platform']
+
     if cache is not None and os.path.exists(cache):
         df = pd.read_table(cache)
     else:
@@ -141,19 +145,7 @@ def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
         for platform in ['linux', 'osx']:
             for channel in channels:
                 repo, noarch = get_channel_repodata(channel, platform)
-                x = pd.DataFrame(repo)
-                x = x.drop([
-                    'arch',
-                    'default_numpy_version',
-                    'default_python_version',
-                    'platform',
-                    'subdir'])
-                for k in [
-                    'build', 'build_number', 'name', 'version', 'license',
-                    'platform'
-                ]:
-                    x[k] = x['packages'].apply(lambda y: y.get(k, np.nan))
-
+                x = pd.DataFrame.from_dict(repo['packages'], 'index', columns=columns)
                 x['channel'] = channel
                 dfs.append(x)
 
