@@ -8,7 +8,8 @@ import requests
 
 from .utils import PackageKey, PackageBuild
 
-def get_channel_repodata(channel='bioconda', platform=None):
+
+def _get_channel_repodata(channel='bioconda', platform=None):
     """
     Returns the parsed JSON repodata for a channel from conda.anaconda.org.
 
@@ -60,13 +61,41 @@ def get_channel_repodata(channel='bioconda', platform=None):
     return repodata.json(), noarch_repodata.json()
 
 
+def _get_channel_packages(channel='bioconda', platform=None):
+    """
+    Return a PackageKey -> set(PackageBuild) mapping.
+    Retrieves the existing packages for a channel from conda.anaconda.org.
+
+    Parameters
+    ----------
+    channel : str
+        Channel to retrieve packages for
+
+    platform : None | linux | osx
+        Platform (OS) to retrieve packages for from `channel`. If None, use the
+        currently-detected platform.
+    """
+    repodata, noarch_repodata = _get_channel_repodata(
+        channel=channel, platform=platform)
+    channel_packages = defaultdict(set)
+    for repo in (repodata, noarch_repodata):
+        subdir = repo['info']['subdir']
+        for package in repo['packages'].values():
+            pkg_key = PackageKey(
+                package['name'], package['version'], package['build_number'])
+            pkg_build = PackageBuild(subdir, package['build'])
+            channel_packages[pkg_key].add(pkg_build)
+    channel_packages.default_factory = None
+    return channel_packages
+
+
 class RepoData(object):
     """Load and parse packages (not recipes) available via channel"""
     def __init__(self):
         logger.info('Loading packages...')
         repodata = defaultdict(lambda: defaultdict(list))
         for platform in ['linux', 'osx']:
-            channel_packages = get_channel_packages(
+            channel_packages = _get_channel_packages(
                 channel='bioconda', platform=platform)
             for pkg_key in channel_packages.keys():
                 repodata[pkg_key.name][pkg_key.version].append(platform)
@@ -101,39 +130,9 @@ def get_packages(channels):
     if isinstance(channels, str):
         channels = [channels]
     for channel in channels:
-        for repodata in get_channel_repodata(channel):
+        for repodata in _get_channel_repodata(channel):
             for pkg in repodata['packages'].values():
                 yield pkg
-
-
-
-# called from docs/generate_docs.py
-def get_channel_packages(channel='bioconda', platform=None):
-    """
-    Return a PackageKey -> set(PackageBuild) mapping.
-    Retrieves the existing packages for a channel from conda.anaconda.org.
-
-    Parameters
-    ----------
-    channel : str
-        Channel to retrieve packages for
-
-    platform : None | linux | osx
-        Platform (OS) to retrieve packages for from `channel`. If None, use the
-        currently-detected platform.
-    """
-    repodata, noarch_repodata = get_channel_repodata(
-        channel=channel, platform=platform)
-    channel_packages = defaultdict(set)
-    for repo in (repodata, noarch_repodata):
-        subdir = repo['info']['subdir']
-        for package in repo['packages'].values():
-            pkg_key = PackageKey(
-                package['name'], package['version'], package['build_number'])
-            pkg_build = PackageBuild(subdir, package['build'])
-            channel_packages[pkg_key].add(pkg_build)
-    channel_packages.default_factory = None
-    return channel_packages
 
 
 # called from build
@@ -146,7 +145,7 @@ def get_all_channel_packages(channels):
 
     all_channel_packages = defaultdict(set)
     for channel in channels:
-        channel_packages = get_channel_packages(channel=channel)
+        channel_packages = _get_channel_packages(channel=channel)
         for pkg_key, pkg_builds in channel_packages.items():
             all_channel_packages[pkg_key].update(pkg_builds)
     all_channel_packages.default_factory = None
@@ -154,6 +153,7 @@ def get_all_channel_packages(channels):
 
 
 # called from build, cli, linting, pypi
+# as args to lint: build, cli, linting
 def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
                                             'defaults']):
     """
@@ -179,7 +179,7 @@ def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
         dfs = []
         for platform in ['linux', 'osx']:
             for channel in channels:
-                repo, noarch = get_channel_repodata(channel, platform)
+                repo, noarch = _get_channel_repodata(channel, platform)
                 x = pd.DataFrame.from_dict(repo['packages'], 'index', columns=columns)
                 x['channel'] = channel
                 dfs.append(x)
