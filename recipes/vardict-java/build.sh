@@ -7,5 +7,8 @@ mkdir -p $PREFIX/bin
 
 cp lib/*.jar $outdir/lib
 cp bin/VarDict $outdir/bin/vardict-java
-chmod +x $outdir/bin/vardict-java
-ln -s $outdir/bin/vardict-java $PREFIX/bin
+cp bin/*.{R,pl} $outdir/bin
+for binary in vardict-java testsomatic.R teststrandbias.R var2vcf_paired.pl var2vcf_valid.pl; do
+  chmod +x $outdir/bin/$binary
+  ln -s $outdir/bin/$binary $PREFIX/bin
+done
