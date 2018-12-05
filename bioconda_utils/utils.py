@@ -755,13 +755,11 @@ def _get_pkg_key_build_meta_map(metas):
     return key_build_meta
 
 
-def check_recipe_skippable(recipe, channel_packages, force=False):
+def check_recipe_skippable(recipe, channel_packages):
     """
     Return True if the same number of builds (per subdir) defined by the recipe
-    are already in channel_packages (and force is False).
+    are already in channel_packages.
     """
-    if force:
-        return False
     platform, metas = _load_platform_metas(recipe, finalize=False)
     key_build_meta = _get_pkg_key_build_meta_map(metas)
     num_existing_pkg_builds = sum(
@@ -808,13 +806,14 @@ def _filter_existing_packages(metas, channel_packages):
 
 def get_package_paths(recipe, check_channels, force=False):
     channel_packages = anaconda.get_all_channel_packages(check_channels)
-    if check_recipe_skippable(recipe, channel_packages, force):
-        # NB: If we skip early here, we don't detect possible divergent builds.
-        logger.info(
-            'FILTER: not building recipe %s because '
-            'the same number of builds are in channel(s) and it is not forced.',
-            recipe)
-        return []
+    if not force:
+        if check_recipe_skippable(recipe, channel_packages):
+            # NB: If we skip early here, we don't detect possible divergent builds.
+            logger.info(
+                'FILTER: not building recipe %s because '
+                'the same number of builds are in channel(s) and it is not forced.',
+                recipe)
+            return []
     platform, metas = _load_platform_metas(recipe, finalize=True)
 
     # The recipe likely defined skip: True
