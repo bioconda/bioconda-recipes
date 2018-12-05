@@ -54,33 +54,6 @@ def _get_channel_repodata(channel, platform):
     return repodata.json()
 
 
-def _get_channel_packages(channel, platform):
-    """
-    Return a PackageKey -> set(PackageBuild) mapping.
-    Retrieves the existing packages for a channel from conda.anaconda.org.
-
-    Parameters
-    ----------
-    channel : str
-        Channel to retrieve packages for
-
-    platform : None | linux | osx
-        Platform (OS) to retrieve packages for from `channel`. If None, use the
-        currently-detected platform.
-    """
-    channel_packages = defaultdict(set)
-    for arch in (platform, "noarch"):
-        repo = _get_channel_repodata(channel, arch)
-        subdir = repo['info']['subdir']
-        for package in repo['packages'].values():
-            pkg_key = PackageKey(
-                package['name'], package['version'], package['build_number'])
-            pkg_build = PackageBuild(subdir, package['build'])
-            channel_packages[pkg_key].add(pkg_build)
-    channel_packages.default_factory = None
-    return channel_packages
-
-
 def _get_native_platform():
     if sys.platform.startswith("linux"):
         return "linux"
@@ -89,7 +62,6 @@ def _get_native_platform():
     raise ValueError("Running on unsupported platform")
 
 
-# called from build
 def get_all_channel_packages(channels):
     """
     Return a PackageKey -> set(PackageBuild) mapping.
@@ -100,7 +72,17 @@ def get_all_channel_packages(channels):
 
     all_channel_packages = defaultdict(set)
     for channel in channels:
-        channel_packages = _get_channel_packages(channel, platform)
+        channel_packages = defaultdict(set)
+        for arch in (platform, "noarch"):
+            repo = _get_channel_repodata(channel, arch)
+            subdir = repo['info']['subdir']
+            for package in repo['packages'].values():
+                pkg_key = PackageKey(
+                    package['name'], package['version'], package['build_number'])
+                pkg_build = PackageBuild(subdir, package['build'])
+                channel_packages[pkg_key].add(pkg_build)
+        channel_packages.default_factory = None
+
         for pkg_key, pkg_builds in channel_packages.items():
             all_channel_packages[pkg_key].update(pkg_builds)
     all_channel_packages.default_factory = None
