@@ -11,6 +11,7 @@ from .utils import PackageKey, PackageBuild
 
 
 REPODATA_URL = 'https://conda.anaconda.org/{channel}/{subdir}/repodata.json'
+REPODATA_LABELED_URL = 'https://conda.anaconda.org/{channel}/label/{label}/{subdir}/repodata.json'
 REPODATA_DEFAULTS_URL = 'https://repo.anaconda.com/pkgs/main/{subdir}/repodata.json'
 
 def platform2subdir(platform):
@@ -107,13 +108,71 @@ def get_packages(channels):
 
 
 class RepoData:
-    """Load and parse packages (not recipes) available via channel"""
-    columns = ['build', 'build_number', 'name', 'version', 'license',
-               'platform']
+    """Singleton providing access to package directory on anaconda cloud
 
-    # make this a singleton
+    If the first call provides a filename as **cache** argument, the
+    file is used to cache the directory in CSV format.
+
+    Data structure:
+
+    Each **channel** hosted at anaconda cloud comprises a number of
+    **subdirs** in which the individual package files reside. The
+    **subdirs** can be one of **noarch**, **osx-64** and **linux-64**
+    for Bioconda. (Technically ``(noarch|(linux|osx|win)-(64|32))``
+    appears to be the schema).
+
+    For **channel/subdir** (aka **channel/platform**) combination, a
+    **repodata.json** contains a **package** key describing each
+    package file with at least the following information:
+
+    name: Package name (lowercase, alphanumeric + dash)
+
+    version: Version (no dash, PEP440)
+
+    build_number: Non negative integer indicating packaging revisions
+
+    build: String comprising hash of pinned dependencies and build
+      number. Used to distinguish different builds of the same
+      package/version combination.
+
+    depends: Runtime requirements for package as list of strings. We
+      do not currently load this.
+
+    arch: Architecture key (x86_64). Not used by conda and not loaded
+      here.
+
+    platform: Platform of package (osx, linux, noarch). Optional
+      upstream, not used by conda. We generate this from the subdir
+      information to have it available.
+
+
+    Repodata versions:
+
+    The version is indicated by the key **repodata_version**, with
+    absence of that key indication version 0.
+
+    In version 0, the **info** key contains the **subdir**,
+    **platform**, **arch**, **default_python_version** and
+    **default_numpy_version** keys. In version 1 it only contains the
+    **subdir** key.
+
+    In version 1, a key **removed** was added, listing packages
+    removed from the repository.
+
+    """
+
+    _load_columns = ['build', 'build_number', 'name', 'version']
+
+    #: Columns available in internal dataframe
+    columns = _load_columns + ['channel', 'subdir', 'platform']
+    #: Platforms loaded
+    platforms = ['linux', 'osx', 'noarch']
+    #: Channels loaded
+    channels = ['conda-forge', 'bioconda', 'defaults']
+
     __instance = None
     def __new__(cls):
+        """Makes RepoData a singleton"""
         if RepoData.__instance is None:
             RepoData.__instance = object.__new__(cls)
         return RepoData.__instance
@@ -125,12 +184,14 @@ class RepoData:
 
         # Get the channel data into a big dataframe
         dfs = []
-        for platform in ['linux', 'osx', 'noarch']:
-            for channel in ['conda-forge', 'bioconda', 'defaults']:
+        for platform in self.platforms:
+            for channel in self.channels:
                 repo = _get_channel_repodata(channel, platform)
                 df = pd.DataFrame.from_dict(repo['packages'], 'index',
-                                            columns=self.columns)
+                                            columns=self._load_columns)
                 df['channel'] = channel
+                df['platform'] = platform
+                df['subdir'] = repo['info']['subdir']
                 dfs.append(df)
 
         self.df = pd.concat(dfs)
