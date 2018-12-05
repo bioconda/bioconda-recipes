@@ -383,7 +383,6 @@ def build_recipes(
     skipped_recipes = []
     all_success = True
     failed_uploads = []
-    channel_packages = anaconda.get_all_channel_packages(check_channels)
 
     for recipe in recipes:
         recipe_success = True
@@ -400,7 +399,7 @@ def build_recipes(
 
         logger.info('Determining expected packages')
         try:
-            pkg_paths = utils.get_package_paths(recipe, channel_packages,
+            pkg_paths = utils.get_package_paths(recipe, check_channels,
                                                 force=force)
         except utils.DivergentBuildsError as e:
             logger.error(

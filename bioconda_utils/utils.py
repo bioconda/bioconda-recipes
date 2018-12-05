@@ -806,7 +806,8 @@ def _filter_existing_packages(metas, channel_packages):
     return new_metas, existing_metas, divergent_builds
 
 
-def get_package_paths(recipe, channel_packages, force=False):
+def get_package_paths(recipe, check_channels, force=False):
+    channel_packages = anaconda.get_all_channel_packages(check_channels)
     if check_recipe_skippable(recipe, channel_packages, force):
         # NB: If we skip early here, we don't detect possible divergent builds.
         logger.info(
