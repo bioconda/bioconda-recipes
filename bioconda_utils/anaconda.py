@@ -10,9 +10,19 @@ from conda.exports import VersionOrder
 from .utils import PackageKey, PackageBuild
 
 
-REPODATA_URL = 'https://conda.anaconda.org/{channel}/{arch}/repodata.json'
-REPODATA_DEFAULTS_URL = 'https://repo.anaconda.com/pkgs/main/{arch}/repodata.json'
+REPODATA_URL = 'https://conda.anaconda.org/{channel}/{subdir}/repodata.json'
+REPODATA_DEFAULTS_URL = 'https://repo.anaconda.com/pkgs/main/{subdir}/repodata.json'
 
+def platform2subdir(platform):
+    if platform == 'linux':
+        return 'linux-64'
+    elif platform == 'osx':
+        return 'osx-64'
+    elif platform == 'noarch':
+        return 'noarch'
+    else:
+        raise ValueError(
+            'Unsupported platform: bioconda only supports linux, osx and noarch.')
 
 def _get_channel_repodata(channel, platform):
     """
@@ -28,15 +38,6 @@ def _get_channel_repodata(channel, platform):
     platform : noarch | linux | osx
         Platform (OS) to retrieve packages for from `channel`.
     """
-    if platform == 'linux':
-        arch = 'linux-64'
-    elif platform == 'osx':
-        arch = 'osx-64'
-    elif platform == 'noarch':
-        arch = 'noarch'
-    else:
-        raise ValueError(
-            'Unsupported platform: bioconda only supports linux, osx and noarch.')
 
     if channel == "defaults":
         # caveat: this only gets defaults main, not 'free', 'r' or 'pro'
@@ -44,7 +45,8 @@ def _get_channel_repodata(channel, platform):
     else:
         url_template = REPODATA_URL
 
-    url = url_template.format(channel=channel, arch=arch)
+    url = url_template.format(channel=channel,
+                              subdir=platform2subdir(platform))
     repodata = requests.get(url)
     if repodata.status_code != 200:
         raise requests.HTTPError(
