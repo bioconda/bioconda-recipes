@@ -513,7 +513,7 @@ class BioCProjectPage(object):
         Given a package name, return the version pin string.
 
         For example, if version 1.2.3 is in the current bioconductor release,
-        then return >=1.2.0,<1.4.0.
+        then return >=1.2.0,<1.3.0.
 
         The following have 2 digit versions:
           - BSgenome.Vvinifera.URGI.IGGP8X
@@ -525,7 +525,7 @@ class BioCProjectPage(object):
         # There are a few packages with only major.minor versions!
         s = v.split(".")
         if len(s) == 3:
-            return ">={}.{}.0,<{}.{}.0".format(s[0], s[1], s[0], int(s[1]) + 2)
+            return ">={}.{}.0,<{}.{}.0".format(s[0], s[1], s[0], int(s[1]) + 1)
         else:
             return "{}.{}".format(s[0], s[1])
 
