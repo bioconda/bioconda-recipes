@@ -65,28 +65,25 @@ def _get_native_platform():
 def get_all_channel_packages(channels):
     """
     Return a PackageKey -> set(PackageBuild) mapping.
+
+    That is: (name, version, build_number) -> Set[(subdir, build)]
     """
     if channels is None:
         channels = []
     platform = _get_native_platform()
 
-    all_channel_packages = defaultdict(set)
+    channel_packages = defaultdict(set)
     for channel in channels:
-        channel_packages = defaultdict(set)
         for arch in (platform, "noarch"):
             repo = _get_channel_repodata(channel, arch)
             subdir = repo['info']['subdir']
             for package in repo['packages'].values():
-                pkg_key = PackageKey(
-                    package['name'], package['version'], package['build_number'])
+                pkg_key = PackageKey(package['name'], package['version'],
+                                     package['build_number'])
                 pkg_build = PackageBuild(subdir, package['build'])
                 channel_packages[pkg_key].add(pkg_build)
-        channel_packages.default_factory = None
-
-        for pkg_key, pkg_builds in channel_packages.items():
-            all_channel_packages[pkg_key].update(pkg_builds)
-    all_channel_packages.default_factory = None
-    return all_channel_packages
+    channel_packages.default_factory = None
+    return channel_packages
 
 
 # called from bioconductor_skeleton, cli
