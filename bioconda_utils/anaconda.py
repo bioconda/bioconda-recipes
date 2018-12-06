@@ -200,25 +200,23 @@ class RepoData:
         if cache is not None:
             self.df.to_csv(cache, sep='\t')
 
-    def get_versions(self, p):
-        # called from doc generator
+    def get_versions(self, name):
         """Get versions available for package
 
         Args:
-          p: package name
+          name: package name
 
         Returns:
           Dictionary mapping version numbers to list of architectures
+          e.g. {'0.1': ['linux'], '0.2': ['linux', 'osx'], '0.3': ['noarch']}
         """
-        # get dataframe: (filename) x (version, platform)
-        packages = self.df[self.df.name == p][['version', 'platform']]
-        # merge rows with same version, making platform distinct list
+        # called from doc generator
+        packages = self.df[self.df.name == name][['version', 'platform']]
         versions = packages.groupby('version').agg(lambda x: list(set(x)))
-        # return dict from platform column
-        # e.g. {'0.1': ['linux'], '0.2': ['linux', 'osx'], '0.3': ['noarch']}
         return versions['platform'].to_dict()
 
     def get_channels(self, name, version=None, build_number=None):
+        """Get channels in which a package is available"""
         # called from lint functions
         selection = self.df.name == name
         if version:
@@ -229,6 +227,7 @@ class RepoData:
         return set(packages.channel)
 
     def get_latest_versions(self, channel):
+        """Get the latest version for each package in **channel**"""
         # called from pypi module
         packages = self.df[self.df.channel == channel]['version']
         def max_vers(x):
