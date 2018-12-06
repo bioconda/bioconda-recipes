@@ -21,7 +21,6 @@ from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import cran_skeleton
 from . import pypi
-from . import anaconda
 
 logger = logging.getLogger(__name__)
 
@@ -132,7 +131,7 @@ def duplicates(
             print(utils.run([utils.bin_for('anaconda')] + token + subcmd, mask=[token]).stdout)
 
     # packages in our channel
-    repodata = anaconda.RepoData()
+    repodata = utils.RepoData()
     our_package_specs = set(repodata.get_package_data(check_fields, our_channel))
     print("{} unique packages specs to consider in {}".format(
         len(our_package_specs), our_channel))
@@ -222,7 +221,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
         print('\n'.join([i.__name__ for i in lint_functions.registry]))
         sys.exit(0)
 
-    anaconda.RepoData(cache)
+    utils.RepoData(cache)
     registry = lint_functions.registry
 
     if only is not None:

@@ -3,7 +3,6 @@ import requests
 from conda.exports import VersionOrder
 from . import utils
 from . import linting
-from . import anaconda
 
 def compare_recipe_to_pypi(recipe):
     """
@@ -63,7 +62,7 @@ def check_all(recipe_folder, config, packages='*'):
 
     """
     # Identify the latest version available on conda-forge
-    latest_conda_forge = anaconda.RepoData().get_latest_versions('conda-forge')
+    latest_conda_forge = utils.RepoData().get_latest_versions('conda-forge')
 
     # Only consider the latest version we can find here
     recipes = list(utils.get_latest_recipes(recipe_folder, config, packages))

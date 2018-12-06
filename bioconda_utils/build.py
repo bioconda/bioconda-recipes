@@ -15,7 +15,6 @@ from . import docker_utils
 from . import pkg_test
 from . import upload
 from . import linting
-from . import anaconda
 
 logger = logging.getLogger(__name__)
 

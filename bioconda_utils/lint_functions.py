@@ -3,11 +3,7 @@ import glob
 import os
 import re
 
-import pandas
-import numpy as np
-
-from .anaconda import RepoData
-
+from . import utils
 
 
 def _get_deps(meta, section=None):
@@ -82,8 +78,9 @@ def in_other_channels(recipe, meta):
     """
     Does the package exist in any other non-bioconda channels?
     """
-    channels = RepoData().get_channels(meta.get_value("package/name"),
-                                     meta.get_value("package/version"))
+    channels = utils.RepoData().get_channels(
+        meta.get_value("package/name"),
+        meta.get_value("package/version"))
     channels.discard('bioconda')
     if channels:
         return {
@@ -97,9 +94,10 @@ def already_in_bioconda(recipe, meta):
     """
     Does the package exist in bioconda?
     """
-    channels = RepoData().get_channels(meta.get_value("package/name"),
-                                     meta.get_value("package/version"),
-                                     meta.get_value("build/number", 0))
+    channels = utils.RepoData().get_channels(
+        meta.get_value("package/name"),
+        meta.get_value("package/version"),
+        meta.get_value("build/number", 0))
 
     if 'bioconda' in channels:
         return {

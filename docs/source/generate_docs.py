@@ -2,7 +2,7 @@ import os
 import os.path as op
 from collections import defaultdict
 from jinja2.sandbox import SandboxedEnvironment
-from bioconda_utils.anaconda import RepoData
+from bioconda_utils.utils import RepoData
 from sphinx.util import logging as sphinx_logging
 from sphinx.util import status_iterator
 from sphinx.util.parallel import ParallelTasks, parallel_available, make_chunks
