@@ -216,16 +216,29 @@ class RepoData:
             return max(VersionOrder(v) for v in x)
         vers = packages.groupby('name').agg(max_vers)
 
-    def get_package_data(self, key, channels):
+    def get_package_data(self, key, channels=None, name=None, version=None,
+                         build_number=None):
         """Get **key** for each package in **channels**
 
         If **key** is a string, returns list of strings.
         If **key** is a list of string, returns tuple iterator.
         """
         # called from bioconductor skeleton
-        if isinstance(channels, str):
-            channels = [channels]
-        selection = self.df.channel.isin(channels)
+
+        df = self.df
+        for col, val in (
+                ('name', name),
+                ('channel', channels),
+                ('version', version),
+                ('build_number', build_number)
+        ):
+            if val is None:
+                continue
+            if isinstance(val, str):
+                df = df[df[col] == val]
+            else:
+                df = df[df[col].isin(val)]
+
         if isinstance(key, str):
-            return list(self.df[selection][key])
-        return self.df[selection][key].itertuples(index=False)
+            return list(df[key])
+        return df[key].itertuples(index=False)

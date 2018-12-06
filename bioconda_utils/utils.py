@@ -756,28 +756,32 @@ def _get_pkg_key_build_meta_map(metas):
     return key_build_meta
 
 
-def check_recipe_skippable(recipe, channel_packages):
+def check_recipe_skippable(recipe, check_channels):
     """
     Return True if the same number of builds (per subdir) defined by the recipe
     are already in channel_packages.
     """
     platform, metas = _load_platform_metas(recipe, finalize=False)
-    key_build_meta = _get_pkg_key_build_meta_map(metas)
-
+    packages =  set(
+        (meta.name(), meta.version(), int(meta.build_number()) or 0)
+        for meta in metas
+    )
+    r = RepoData()
     num_existing_pkg_builds = Counter(
-        (pkg_key, pkg_build.subdir)
-        for pkg_key in key_build_meta.keys()
-        for pkg_build in channel_packages.get(pkg_key, set())
+        (name, version, build_number, subdir)
+        for name, version, build_number in packages
+        for subdir in r.get_package_data("subdir", name=name, version=version,
+                                         build_number=build_number,
+                                         channels=check_channels)
     )
     if num_existing_pkg_builds == Counter():
         # No packages with same version + build num in channels: no need to skip
         return False
     num_new_pkg_builds = Counter(
-        (pkg_key, pkg_build.subdir)
-        for pkg_key, build_meta in key_build_meta.items()
-        for pkg_build in build_meta.keys()
+        (meta.name(), meta.version(), int(meta.build_number()) or 0, _meta_subdir(meta))
+        for meta in metas
     )
-    return num_new_pkg_builds == num_existing_pkg_builds
+    return m_new_pkg_builds == num_existing_pkg_builds
 
 
 def _filter_existing_packages(metas, channel_packages):
@@ -802,7 +806,7 @@ def _filter_existing_packages(metas, channel_packages):
 def get_package_paths(recipe, check_channels, force=False):
     channel_packages = get_all_channel_packages(check_channels)
     if not force:
-        if check_recipe_skippable(recipe, channel_packages):
+        if check_recipe_skippable(recipe, check_channels):
             # NB: If we skip early here, we don't detect possible divergent builds.
             logger.info(
                 'FILTER: not building recipe %s because '
