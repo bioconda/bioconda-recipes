@@ -931,7 +931,7 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
     if recursive:
         # get a list of existing packages in channels
         if skip_if_in_channels is not None:
-            for name in RepoData.get_package_data("name", skip_if_in_channels):
+            for name in RepoData().get_package_data("name", skip_if_in_channels):
                 if name.startswith(('r-', 'bioconductor-')):
                     seen_dependencies.add(name)
 
