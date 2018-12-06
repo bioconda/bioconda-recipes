@@ -7,88 +7,6 @@ import pandas as pd
 import requests
 from conda.exports import VersionOrder
 
-PackageKey = namedtuple('PackageKey', ('name', 'version', 'build_number'))
-PackageBuild = namedtuple('PackageBuild', ('subdir', 'build_id'))
-
-
-REPODATA_URL = 'https://conda.anaconda.org/{channel}/{subdir}/repodata.json'
-REPODATA_LABELED_URL = 'https://conda.anaconda.org/{channel}/label/{label}/{subdir}/repodata.json'
-REPODATA_DEFAULTS_URL = 'https://repo.anaconda.com/pkgs/main/{subdir}/repodata.json'
-
-def platform2subdir(platform):
-    if platform == 'linux':
-        return 'linux-64'
-    elif platform == 'osx':
-        return 'osx-64'
-    elif platform == 'noarch':
-        return 'noarch'
-    else:
-        raise ValueError(
-            'Unsupported platform: bioconda only supports linux, osx and noarch.')
-
-def _get_channel_repodata(channel, platform):
-    """
-    Returns the parsed JSON repodata for a channel from conda.anaconda.org.
-
-    A dicts is containing the repodata is returned.
-
-    Parameters
-    ----------
-    channel : str
-        Channel to retrieve packages for
-
-    platform : noarch | linux | osx
-        Platform (OS) to retrieve packages for from `channel`.
-    """
-
-    if channel == "defaults":
-        # caveat: this only gets defaults main, not 'free', 'r' or 'pro'
-        url_template = REPODATA_DEFAULTS_URL
-    else:
-        url_template = REPODATA_URL
-
-    url = url_template.format(channel=channel,
-                              subdir=platform2subdir(platform))
-    repodata = requests.get(url)
-    if repodata.status_code != 200:
-        raise requests.HTTPError(
-            '{0.status_code} {0.reason} for {1}'
-            .format(repodata, url))
-
-    return repodata.json()
-
-
-def _get_native_platform():
-    if sys.platform.startswith("linux"):
-        return "linux"
-    if sys.platform.startswith("darwin"):
-        return "osx"
-    raise ValueError("Running on unsupported platform")
-
-
-def get_all_channel_packages(channels):
-    """
-    Return a PackageKey -> set(PackageBuild) mapping.
-
-    That is: (name, version, build_number) -> Set[(subdir, build)]
-    """
-    if channels is None:
-        channels = []
-    platform = _get_native_platform()
-
-    channel_packages = defaultdict(set)
-    for channel in channels:
-        for arch in (platform, "noarch"):
-            repo = _get_channel_repodata(channel, arch)
-            subdir = repo['info']['subdir']
-            for package in repo['packages'].values():
-                pkg_key = PackageKey(package['name'], package['version'],
-                                     package['build_number'])
-                pkg_build = PackageBuild(subdir, package['build'])
-                channel_packages[pkg_key].add(pkg_build)
-    channel_packages.default_factory = None
-    return channel_packages
-
 
 class RepoData:
     """Singleton providing access to package directory on anaconda cloud
@@ -144,6 +62,10 @@ class RepoData:
 
     """
 
+    REPODATA_URL = 'https://conda.anaconda.org/{channel}/{subdir}/repodata.json'
+    REPODATA_LABELED_URL = 'https://conda.anaconda.org/{channel}/label/{label}/{subdir}/repodata.json'
+    REPODATA_DEFAULTS_URL = 'https://repo.anaconda.com/pkgs/main/{subdir}/repodata.json'
+
     _load_columns = ['build', 'build_number', 'name', 'version']
 
     #: Columns available in internal dataframe
@@ -167,9 +89,10 @@ class RepoData:
 
         # Get the channel data into a big dataframe
         dfs = []
-        for platform in self.platforms:
-            for channel in self.channels:
-                repo = _get_channel_repodata(channel, platform)
+        for channel in self.channels:
+            for platform in self.platforms:
+                print("loading %s/%s" % (channel, platform))
+                repo = self.fetch_repodata(channel, platform)
                 df = pd.DataFrame.from_dict(repo['packages'], 'index',
                                             columns=self._load_columns)
                 df['channel'] = channel
@@ -181,6 +104,57 @@ class RepoData:
 
         if cache is not None:
             self.df.to_csv(cache, sep='\t')
+
+    @staticmethod
+    def native_platform():
+        if sys.platform.startswith("linux"):
+            return "linux"
+        if sys.platform.startswith("darwin"):
+            return "osx"
+        raise ValueError("Running on unsupported platform")
+
+    @staticmethod
+    def platform2subdir(platform):
+        if platform == 'linux':
+            return 'linux-64'
+        elif platform == 'osx':
+            return 'osx-64'
+        elif platform == 'noarch':
+            return 'noarch'
+        else:
+            raise ValueError(
+                'Unsupported platform: bioconda only supports linux, osx and noarch.')
+
+    def fetch_repodata(self, channel, platform):
+        """
+        Returns the parsed JSON repodata for a channel from conda.anaconda.org.
+
+        A dicts is containing the repodata is returned.
+
+        Parameters
+        ----------
+        channel : str
+            Channel to retrieve packages for
+
+        platform : noarch | linux | osx
+            Platform (OS) to retrieve packages for from `channel`.
+        """
+
+        if channel == "defaults":
+            # caveat: this only gets defaults main, not 'free', 'r' or 'pro'
+            url_template = self.REPODATA_DEFAULTS_URL
+        else:
+            url_template = self.REPODATA_URL
+
+        url = url_template.format(channel=channel,
+                                  subdir=self.platform2subdir(platform))
+        repodata = requests.get(url)
+        if repodata.status_code != 200:
+            raise requests.HTTPError(
+                '{0.status_code} {0.reason} for {1}'
+                .format(repodata, url))
+
+        return repodata.json()
 
     def get_versions(self, name):
         """Get versions available for package
@@ -217,13 +191,14 @@ class RepoData:
         vers = packages.groupby('name').agg(max_vers)
 
     def get_package_data(self, key, channels=None, name=None, version=None,
-                         build_number=None):
+                         build_number=None, platform=None, native=False):
         """Get **key** for each package in **channels**
 
         If **key** is a string, returns list of strings.
         If **key** is a list of string, returns tuple iterator.
         """
-        # called from bioconductor skeleton
+        if native:
+            platform = ['noarch', self.native_platform()]
 
         df = self.df
         for col, val in (
@@ -231,6 +206,7 @@ class RepoData:
                 ('channel', channels),
                 ('version', version),
                 ('build_number', build_number)
+                ('platform', platform)
         ):
             if val is None:
                 continue
