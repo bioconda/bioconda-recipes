@@ -1,0 +1,77 @@
+{% set version = '1.0.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-rafalib
+  version: {{ version|replace("-", "_") }}
+
+source:
+  fn: rafalib_{{ version }}.tar.gz
+  url:
+    - {{ cran_mirror }}/src/contrib/rafalib_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/rafalib/rafalib_{{ version }}.tar.gz
+  sha256: 13d424a09e0feac38d4a6221de188e14181249434a790e97cfafb9650c95bdb6
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - r-rcolorbrewer
+
+  run:
+    - r-base
+    - r-rcolorbrewer
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('rafalib')"           # [not win]
+    - "\"%R%\" -e \"library('rafalib')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=rafalib
+  license: Artistic-2.0
+  summary: 'A series of shortcuts for routine tasks originally developed by Rafael A. Irizarry
+    to facilitate data exploration. '
+
+  license_family: OTHER
+
+# The original CRAN metadata for this package was:
+
+# Package: rafalib
+# Version: 1.0.0
+# Title: Convenience Functions for Routine Data Exploration
+# Description: A series of shortcuts for routine tasks originally developed by Rafael A. Irizarry to facilitate data exploration.
+# Author: Rafael A. Irizarry and Michael I. Love
+# Maintainer: Rafael A. Irizarry <rafa@jimmy.harvard.edu>
+# Imports: RColorBrewer
+# License: Artistic-2.0
+# LazyData: yes
+# NeedsCompilation: no
+# Packaged: 2015-08-08 17:15:39 UTC; ririzarr
+# Repository: CRAN
+# Date/Publication: 2015-08-09 00:00:40
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
