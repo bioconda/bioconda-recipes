@@ -112,12 +112,6 @@ def duplicates(
     if strict_build:
         check_fields += ['build']
 
-    def get_package_specs(channel):
-        return set(
-            tuple(pkg[key] for key in check_fields)
-            for pkg in anaconda.get_packages(channel)
-        )
-
     def remove_package(spec):
         fn = '{}-{}-{}.tar.bz2'.format(*spec)
         name, version = spec[:2]
@@ -138,14 +132,15 @@ def duplicates(
             print(utils.run([utils.bin_for('anaconda')] + token + subcmd, mask=[token]).stdout)
 
     # packages in our channel
-    our_package_specs = get_package_specs(our_channel)
+    repodata = anaconda.RepoData()
+    our_package_specs = set(repodata.get_package_data(check_fields, our_channel))
     print("{} unique packages specs to consider in {}".format(
         len(our_package_specs), our_channel))
 
     # packages in channels we depend on
     duplicate = defaultdict(list)
     for channel in channels:
-        package_specs = get_package_specs(channel)
+        package_specs = set(repodata.get_package_data(check_fields, channel))
         print("{} unique packages specs to consider in {}".format(
             len(package_specs), channel))
         dups = our_package_specs & package_specs

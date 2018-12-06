@@ -17,7 +17,7 @@ import requests
 import yaml
 
 from . import utils
-from . import anaconda
+from .anaconda import RepoData
 from . import cran_skeleton
 
 logging.getLogger("requests").setLevel(logging.WARNING)
@@ -931,10 +931,9 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
     if recursive:
         # get a list of existing packages in channels
         if skip_if_in_channels is not None:
-            for pkg in anaconda.get_packages(skip_if_in_channels):
-                name = pkg['name']
+            for name in RepoData.get_package_data("name", skip_if_in_channels):
                 if name.startswith(('r-', 'bioconductor-')):
-                    seen_dependencies.update([name])
+                    seen_dependencies.add(name)
 
         write_recipe_recursive(proj, seen_dependencies, recipe_dir, config,
                                force, bioc_version, pkg_version, versioned,

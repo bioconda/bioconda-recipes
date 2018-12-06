@@ -90,24 +90,6 @@ def get_all_channel_packages(channels):
     return channel_packages
 
 
-# called from bioconductor_skeleton, cli
-def get_packages(channels):
-    """
-    Generates list of packages in channels
-
-    Args:
-      channels: string or list of string
-    """
-    if isinstance(channels, str):
-        channels = [channels]
-    platform = _get_native_platform()
-    for channel in channels:
-        for arch in (platform, 'noarch'):
-            repo = _get_channel_repodata(channel, arch)
-            for pkg in repo['packages'].values():
-                yield pkg
-
-
 class RepoData:
     """Singleton providing access to package directory on anaconda cloud
 
@@ -234,4 +216,16 @@ class RepoData:
             return max(VersionOrder(v) for v in x)
         vers = packages.groupby('name').agg(max_vers)
 
+    def get_package_data(self, key, channels):
+        """Get **key** for each package in **channels**
 
+        If **key** is a string, returns list of strings.
+        If **key** is a list of string, returns tuple iterator.
+        """
+        # called from bioconductor skeleton
+        if isinstance(channels, str):
+            channels = [channels]
+        selection = self.df.channel.isin(channels)
+        if isinstance(key, str):
+            return list(self.df[selection][key])
+        return self.df[selection][key].itertuples(index=False)
