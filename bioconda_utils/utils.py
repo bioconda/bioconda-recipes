@@ -28,7 +28,7 @@ from jinja2 import Environment, PackageLoader
 from colorlog import ColoredFormatter
 
 
-from .anaconda import PackageKey, PackageBuild, get_all_channel_packages
+from .anaconda import RepoData
 
 
 log_stream_handler = logging.StreamHandler()
@@ -745,16 +745,6 @@ def _meta_subdir(meta):
     return 'noarch' if meta.noarch or meta.noarch_python else meta.config.host_subdir
 
 
-def _get_pkg_key_build_meta_map(metas):
-    """Returns Dict[PackageKey, Dict[PackageBuild, MetaData]]"""
-    key_build_meta = defaultdict(dict)
-    for meta in metas:
-        pkg_key = PackageKey(meta.name(), meta.version(), int(meta.build_number() or 0))
-        pkg_build = PackageBuild(_meta_subdir(meta), meta.build_id())
-        key_build_meta[pkg_key][pkg_build] = meta
-    key_build_meta.default_factory = None
-    return key_build_meta
-
 
 def check_recipe_skippable(recipe, check_channels):
     """
@@ -772,7 +762,7 @@ def check_recipe_skippable(recipe, check_channels):
         for name, version, build_number in packages
         for subdir in r.get_package_data("subdir", name=name, version=version,
                                          build_number=build_number,
-                                         channels=check_channels)
+                                         channels=check_channels, native=True)
     )
     if num_existing_pkg_builds == Counter():
         # No packages with same version + build num in channels: no need to skip
@@ -784,14 +774,25 @@ def check_recipe_skippable(recipe, check_channels):
     return m_new_pkg_builds == num_existing_pkg_builds
 
 
-def _filter_existing_packages(metas, channel_packages):
+def _filter_existing_packages(metas, check_channels):
     new_metas = []  # MetaData instances of packages not yet in channel
     existing_metas = []  # MetaData instances of packages already in channel
     divergent_builds = set()  # set of Dist (i.e., name-version-build) strings
 
-    key_build_meta = _get_pkg_key_build_meta_map(metas)
+    key_build_meta = defaultdict(dict)
+    for meta in metas:
+        pkg_key = (meta.name(), meta.version(), int(meta.build_number() or 0))
+        pkg_build = (_meta_subdir(meta), meta.build_id())
+        key_build_meta[pkg_key][pkg_build] = meta
+
+    r = RepoData()
     for pkg_key, build_meta in key_build_meta.items():
-        existing_pkg_builds = channel_packages.get(pkg_key, set())
+        existing_pkg_builds = set(r.get_package_data(['subdir', 'build'],
+                                                     name=pkg_key[0],
+                                                     version=pkg_key[1],
+                                                     build_number=pkg_key[2],
+                                                     channels=check_channels,
+                                                     native=True))
         for pkg_build, meta in build_meta.items():
             if pkg_build not in existing_pkg_builds:
                 new_metas.append(meta)
@@ -799,12 +800,11 @@ def _filter_existing_packages(metas, channel_packages):
                 existing_metas.append(meta)
         for divergent_build in (existing_pkg_builds - set(build_meta.keys())):
             divergent_builds.add(
-                '-'.join((pkg_key.name, pkg_key.version, divergent_build.build_id)))
+                '-'.join((pkg_key[0], pkg_key[1], divergent_build[1])))
     return new_metas, existing_metas, divergent_builds
 
 
 def get_package_paths(recipe, check_channels, force=False):
-    channel_packages = get_all_channel_packages(check_channels)
     if not force:
         if check_recipe_skippable(recipe, check_channels):
             # NB: If we skip early here, we don't detect possible divergent builds.
@@ -830,7 +830,7 @@ def get_package_paths(recipe, check_channels, force=False):
                 return []
 
     new_metas, existing_metas, divergent_builds = (
-        _filter_existing_packages(metas, channel_packages))
+        _filter_existing_packages(metas, check_channels))
 
     if divergent_builds:
         raise DivergentBuildsError(*sorted(divergent_builds))
