@@ -7,7 +7,8 @@ import pandas as pd
 import requests
 from conda.exports import VersionOrder
 
-from .utils import PackageKey, PackageBuild
+PackageKey = namedtuple('PackageKey', ('name', 'version', 'build_number'))
+PackageBuild = namedtuple('PackageBuild', ('subdir', 'build_id'))
 
 
 REPODATA_URL = 'https://conda.anaconda.org/{channel}/{subdir}/repodata.json'

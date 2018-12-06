@@ -27,6 +27,10 @@ import jinja2
 from jinja2 import Environment, PackageLoader
 from colorlog import ColoredFormatter
 
+
+from .anaconda import PackageKey, PackageBuild, get_all_channel_packages
+
+
 log_stream_handler = logging.StreamHandler()
 log_stream_handler.setFormatter(ColoredFormatter(
         "%(asctime)s %(log_color)sBIOCONDA %(levelname)s%(reset)s %(message)s",
@@ -741,8 +745,6 @@ def _meta_subdir(meta):
     return 'noarch' if meta.noarch or meta.noarch_python else meta.config.host_subdir
 
 
-PackageKey = namedtuple('PackageKey', ('name', 'version', 'build_number'))
-PackageBuild = namedtuple('PackageBuild', ('subdir', 'build_id'))
 
 
 def _get_pkg_key_build_meta_map(metas):
@@ -805,7 +807,7 @@ def _filter_existing_packages(metas, channel_packages):
 
 
 def get_package_paths(recipe, check_channels, force=False):
-    channel_packages = anaconda.get_all_channel_packages(check_channels)
+    channel_packages = get_all_channel_packages(check_channels)
     if not force:
         if check_recipe_skippable(recipe, channel_packages):
             # NB: If we skip early here, we don't detect possible divergent builds.
