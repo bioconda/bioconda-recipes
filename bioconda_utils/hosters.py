@@ -420,4 +420,20 @@ class CRAN(JSONHoster):
     releases_format = "https://crandb.r-pkg.org/{package}/all"
 
 
+class BitBucketBase(OrderedHTMLHoster):
+    account_pattern = r"(?P<account>[-\w]+)"
+    project_pattern = r"(?P<project>[-.\w]+)"
+    prefix_pattern = r"(?P<prefix>[-_./\w]+?)??"
+    url_pattern = "bitbucket\.org{link}"
+
+class BitBucketTag(BitBucketBase):
+    link_pattern = "/{account}/{project}/get/{prefix}{version}{ext}"
+    releases_format = ["https://bitbucket.org/{account}/{project}/downloads/?tab=tags",
+                       "https://bitbucket.org/{account}/{project}/downloads/?tab=branches"]
+
+class BitBucketDownload(BitBucketBase):
+    link_pattern = "/{account}/{project}/downloads/{prefix}{version}{ext}"
+    releases_format = "https://bitbucket.org/{account}/{project}/downloads/?tab=downloads"
+
+
 logger.info(f"Hosters loaded: %s", [h.__name__ for h in HosterMeta.hoster_types])
