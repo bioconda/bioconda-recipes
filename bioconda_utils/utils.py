@@ -1193,8 +1193,8 @@ class RepoData:
                 ('name', name),
                 ('channel', channels),
                 ('version', version),
-                ('build_number', build_number)
-                ('platform', platform)
+                ('build_number', build_number),
+                ('platform', platform),
         ):
             if val is None:
                 continue
