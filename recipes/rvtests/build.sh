@@ -3,7 +3,7 @@ echo "Start build..."
 if [[ $(uname -s) == Darwin ]]; then
   echo "test braces"
   (cd .. && pwd && ls)
-  tar --help
+  gcc --version
   echo "check build script..."
   cat /Users/distiller/project/miniconda/conda-bld/rvtests_*/work/conda_build.sh
   echo "done"
