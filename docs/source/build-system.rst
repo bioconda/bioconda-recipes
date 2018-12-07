@@ -106,7 +106,7 @@ Configure the environment
         - report the successful test back to the GitHub PR, at which time it
           can be merged into the master branch
     - if we are on the master branch:
-        - upload the built conda package to anaconda.org
+        - upload the built conda package to anaconda.org, with an optional label
         - upload the BusyBox container to quay.io
 
 As soon as the package is uploaded to anaconda.org, it is available for
@@ -146,3 +146,12 @@ successfully built, our work is saved and we can start the next build where we
 left off. Failing tests are fixed in another round of commits, and these
 changes are then pushed to ``bulk`` and the process repeats. Once ``bulk`` is
 fully successful, a PR is opened to merge the changes into master.
+
+Labels
+------
+
+If the ``BIOCONDA_LABEL`` environment variable is set, then all uploads will
+have that label assigned to them, rather than ``main``. Consequently, they can
+only be installed by adding ``-c bioconda/BIOCONDA_LABEL`` to the channels,
+where ``BIOCONDA_LABEL`` is whatever that environment variable is set to. Note
+that uploads of biocontainers to quay.io will still occur!
