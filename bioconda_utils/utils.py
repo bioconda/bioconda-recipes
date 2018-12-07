@@ -1200,6 +1200,9 @@ class RepoData:
         if native:
             platform = ['noarch', self.native_platform()]
 
+        if version is not None:
+            version = str(version)
+
         df = self.df
         for col, val in (
                 ('name', name),
