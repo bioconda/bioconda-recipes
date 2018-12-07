@@ -1038,6 +1038,8 @@ class AsyncRequests:
     """
     #: Identify ourselves
     USER_AGENT = "bioconda/bioconda-utils"
+    #: Max connections to each server
+    CONNECTIONS_PER_HOST = 4
 
     @classmethod
     def fetch(cls, urls, descs, cb):
@@ -1075,7 +1077,9 @@ class AsyncRequests:
 
     @classmethod
     async def _async_fetch(cls, urls, descs, cb):
+        conn = aiohttp.TCPConnector(limit_per_host=cls.CONNECTIONS_PER_HOST)
         async with aiohttp.ClientSession(
+                connector=conn,
                 headers={'User-Agent': cls.USER_AGENT}
         ) as session:
             coros = [
