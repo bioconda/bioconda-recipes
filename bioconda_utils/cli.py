@@ -20,7 +20,6 @@ from . import linting
 from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import cran_skeleton
-from . import pypi
 
 logger = logging.getLogger(__name__)
 
@@ -688,5 +687,5 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
 def main():
     argh.dispatch_commands([
         build, dag, dependent, lint, duplicates,
-        bioconductor_skeleton, pypi_check, clean_cran_skeleton, update
+        bioconductor_skeleton, clean_cran_skeleton, autobump
     ])
