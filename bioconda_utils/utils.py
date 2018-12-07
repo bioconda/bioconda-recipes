@@ -747,7 +747,7 @@ def check_recipe_skippable(recipe, check_channels):
     """
     platform, metas = _load_platform_metas(recipe, finalize=False)
     packages =  set(
-        (meta.name(), meta.version(), int(meta.build_number()) or 0)
+        (meta.name(), meta.version(), int(meta.build_number() or 0))
         for meta in metas
     )
     r = RepoData()
