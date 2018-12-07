@@ -1092,8 +1092,9 @@ class RepoData:
         return self._df
 
     def load_channel_dataframe(self):
-        if cache is not None and os.path.exists(cache):
-            self.df = pd.read_table(cache)
+        if self.cache_file is not None and os.path.exists(self.cache_file):
+            logger.info("Loading repodata from cache %s", self.cache_file)
+            self.df = pd.read_table(self.cache_file)
             return
 
         # Get the channel data into a big dataframe
@@ -1111,8 +1112,8 @@ class RepoData:
 
         self.df = pd.concat(dfs)
 
-        if cache is not None:
-            self.df.to_csv(cache, sep='\t')
+        if self.cache_file is not None:
+            self.df.to_csv(self.cache_file, sep='\t')
 
     @staticmethod
     def native_platform():
