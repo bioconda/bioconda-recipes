@@ -82,7 +82,7 @@ class TestHoster:
     def test_releaseurl(self):
         assert 'release_url' in self.case, \
             self.msg("Missing release_url")
-        assert self.instance.releases_url == self.case['release_url'], \
+        assert self.instance.releases_urls == self.case['release_url'], \
             self.msg("Wrong release url")
 
     async def get_text_from_url(self, url):

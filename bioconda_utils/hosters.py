@@ -151,7 +151,12 @@ class Hoster(metaclass=HosterMeta):
 
     def __init__(self, url: str, match: Match[str]) -> None:
         self.vals = {k: v or "" for k, v in match.groupdict().items()}
-        self.releases_url = self.releases_format.format_map(self.vals)
+        if isinstance(self.releases_format, str):
+            self.releases_format = [self.releases_format]
+        self.releases_urls = [
+            template.format_map(self.vals)
+            for template in self.releases_format
+        ]
         logger.debug("%s matched %s with %s", self.__class__.__name__, url, self.vals)
 
     @classmethod
@@ -193,10 +198,6 @@ class HrefParser(HTMLParser):
         logger.debug("Error parsing HTML: %s", message)
 
 
-class JSONHoster(Hoster):
-    """Base for Hosters handling release listings in JSON format"""
-
-
 class HTMLHoster(Hoster):
     """Base for Hosters handling release listings in HTML format"""
 
@@ -211,12 +212,15 @@ class HTMLHoster(Hoster):
                 for key, val in self.vals.items()
                 if key not in exclude}
         link_pattern = replace_named_capture_group(self.link_pattern, vals)
-        parser = HrefParser(re.compile(link_pattern))
-        parser.feed(await scanner.get_text_from_url(self.releases_url))
-        for match in parser.matches:
-            match["link"] = urljoin(self.releases_url, match["href"])
-            match["releases_url"] = self.releases_url
-        return parser.matches
+        result = []
+        for url in self.releases_urls:
+            parser = HrefParser(re.compile(link_pattern))
+            parser.feed(await scanner.get_text_from_url(url))
+            for match in parser.matches:
+                match["link"] = urljoin(url, match["href"])
+                match["releases_url"] = url
+                result.append(match)
+        return result
 
 
 class OrderedHTMLHoster(HTMLHoster):
@@ -315,15 +319,25 @@ class SourceForge(HTMLHoster):
     releases_format = "https://sourceforge.net/projects/{project}/files/"
 
 
-class PyPi(JSONHoster):
+class JSONHoster(Hoster):
+    """Base for Hosters handling release listings in JSON format"""
     async def get_versions(self, scanner):
-        text = await scanner.get_text_from_url(self.releases_url)
-        data = json.loads(text)
+        result = []
+        for url in self.releases_urls:
+            text = await scanner.get_text_from_url(url)
+            data = json.loads(text)
+            matches = self.get_versions_from_json(data)
+            for match in matches:
+                match['releases_url'] = url
+            result.extend(matches)
+        return result
 
+
+class PyPi(JSONHoster):
+    def get_versions_from_json(self, data):
         latest = data["info"]["version"]
         for rel in data["releases"][latest]:
             if rel["packagetype"] == "sdist":
-                rel["releases_url"] = self.releases_url
                 rel["link"] = rel["url"]
                 rel["version"] = latest
                 return [rel]
@@ -340,10 +354,7 @@ class PyPi(JSONHoster):
 
 
 class Bioarchive(JSONHoster):
-    async def get_versions(self, scanner):
-        text = await scanner.get_text_from_url(self.releases_url)
-        data = json.loads(text)
-
+    def get_versions_from_json(self, data):
         try:
             latest = data["info"]["Version"]
             vals = {key: val
@@ -352,7 +363,6 @@ class Bioarchive(JSONHoster):
             vals['version'] = latest
             link = replace_named_capture_group(self.link_pattern, vals)
             return [{
-                "releases_url": self.releases_url,
                 "link": link,
                 "version": latest,
             }]
@@ -366,12 +376,9 @@ class Bioarchive(JSONHoster):
 
 
 class CPAN(JSONHoster):
-    async def get_versions(self, scanner):
-        text = await scanner.get_text_from_url(self.releases_url)
-        data = json.loads(text)
+    def get_versions_from_json(self, data):
         try:
             version = {
-                'releases_url': self.releases_url,
                 'link': data['download_url'],
                 'version': str(data['version']),
             }
@@ -386,9 +393,7 @@ class CPAN(JSONHoster):
 
 
 class CRAN(JSONHoster):
-    async def get_versions(self, scanner):
-        text = await scanner.get_text_from_url(self.releases_url)
-        data = json.loads(text)
+    def get_versions_from_json(self, data):
         res = []
         versions = list(set((str(data["latest"]), self.vals["version"])))
         for vers in versions:
@@ -396,7 +401,6 @@ class CRAN(JSONHoster):
                 continue
             vdata = data['versions'][vers]
             version = {
-                'releases_url': self.releases_url,
                 'link': '',
                 'version': vers,
                 'depends': {
