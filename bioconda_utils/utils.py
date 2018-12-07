@@ -1198,10 +1198,10 @@ class RepoData:
         ):
             if val is None:
                 continue
-            if isinstance(val, str):
-                df = df[df[col] == val]
-            else:
+            if isinstance(val, list) or isinstance(val, tuple):
                 df = df[df[col].isin(val)]
+            else:
+                df = df[df[col] == val]
 
         if isinstance(key, str):
             return list(df[key])
