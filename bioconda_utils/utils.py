@@ -1070,8 +1070,6 @@ class AsyncRequests:
             task.cancel()
             loop.run_forever()
             task.exception()
-        finally:
-            loop.close()
 
         return task.result()
 
