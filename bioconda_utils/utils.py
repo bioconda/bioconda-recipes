@@ -1088,14 +1088,13 @@ class RepoData:
     @property
     def df(self):
         if not self._df:
-            self.load_channel_dataframe()
+            self._df = self._load_channel_dataframe()
         return self._df
 
-    def load_channel_dataframe(self):
+    def _load_channel_dataframe(self):
         if self.cache_file is not None and os.path.exists(self.cache_file):
             logger.info("Loading repodata from cache %s", self.cache_file)
-            self.df = pd.read_table(self.cache_file)
-            return
+            return pd.read_table(self.cache_file)
 
         # Get the channel data into a big dataframe
         dfs = []
@@ -1110,10 +1109,12 @@ class RepoData:
                 df['subdir'] = repo['info']['subdir']
                 dfs.append(df)
 
-        self.df = pd.concat(dfs)
+        res = pd.concat(dfs)
 
         if self.cache_file is not None:
-            self.df.to_csv(self.cache_file, sep='\t')
+            res.to_csv(self.cache_file, sep='\t')
+
+        return res
 
     @staticmethod
     def native_platform():
