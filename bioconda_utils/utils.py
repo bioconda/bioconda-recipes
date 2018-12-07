@@ -1170,17 +1170,6 @@ class RepoData:
         versions = packages.groupby('version').agg(lambda x: list(set(x)))
         return versions['platform'].to_dict()
 
-    def get_channels(self, name, version=None, build_number=None):
-        """Get channels in which a package is available"""
-        # called from lint functions
-        selection = self.df.name == name
-        if version:
-            selection &= self.df.version == version
-        if build_number:
-            selection &= self.df.build_number == build_number
-        packages = self.df[selection]
-        return set(packages.channel)
-
     def get_latest_versions(self, channel):
         """Get the latest version for each package in **channel**"""
         # called from pypi module

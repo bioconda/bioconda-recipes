@@ -78,9 +78,11 @@ def in_other_channels(recipe, meta):
     """
     Does the package exist in any other non-bioconda channels?
     """
-    channels = utils.RepoData().get_channels(
-        meta.get_value("package/name"),
-        meta.get_value("package/version"))
+    channels = set(utils.RepoData().get_package_data(
+        key="channel",
+        name=meta.get_value("package/name"),
+        version=meta.get_value("package/version")
+    ))
     channels.discard('bioconda')
     if channels:
         return {
@@ -94,10 +96,12 @@ def already_in_bioconda(recipe, meta):
     """
     Does the package exist in bioconda?
     """
-    channels = utils.RepoData().get_channels(
-        meta.get_value("package/name"),
-        meta.get_value("package/version"),
-        meta.get_value("build/number", 0))
+    channels = utils.RepoData().get_package_data(
+        key="channel",
+        name=meta.get_value("package/name"),
+        version=meta.get_value("package/version"),
+        build_number=meta.get_value("build/number", 0)
+    )
 
     if 'bioconda' in channels:
         return {
