@@ -1082,6 +1082,16 @@ class RepoData:
         return RepoData.__instance
 
     def __init__(self, cache=None):
+        self.cache_file = cache
+        self._df = None
+
+    @property
+    def df(self):
+        if not self._df:
+            self.load_channel_dataframe()
+        return self._df
+
+    def load_channel_dataframe(self):
         if cache is not None and os.path.exists(cache):
             self.df = pd.read_table(cache)
             return
