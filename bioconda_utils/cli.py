@@ -631,12 +631,12 @@ def clean_cran_skeleton(recipe, no_windows=False):
 @arg("--max-updates", help='''Exit after ARG updates''')
 @arg("--parallel", help='''Maximum number of recipes to consider in parallel''')
 @arg("--dry-run", help='''Don't update remote git or github"''')
-def update(recipe_folder, config, loglevel='info', packages='*', cache=None,
-           failed_urls=None, unparsed_urls=None,
-           exclude_subrecipes=None, exclude_channels='conda-forge',
-           ignore_blacklists=False,
-           check_branch=False, create_branch=False, create_pr=False,
-           max_updates=0, parallel=100, dry_run=False):
+def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
+             failed_urls=None, unparsed_urls=None,
+             exclude_subrecipes=None, exclude_channels='conda-forge',
+             ignore_blacklists=False,
+             check_branch=False, create_branch=False, create_pr=False,
+             max_updates=0, parallel=100, dry_run=False):
     """
     Updates recipes in recipe_folder
     """
