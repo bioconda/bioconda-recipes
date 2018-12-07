@@ -8,7 +8,7 @@ if [ "$platform" = "Darwin" ]; then
 	sed -i bak -e 's/ -static//' Makefile
 	make
 elif [ "$platform" = "Linux" ]; then
-	mv comet.2018012.linux.exe comet.exe
+	mv comet."$PKG_VERSION".linux.exe comet.exe
 fi
 chmod 755 comet.exe
 mkdir -p "$PREFIX"/bin
