@@ -1,8 +1,9 @@
 set -xe
-echo "Start build...
-"
+echo "Start build..."
 if [[ $(uname -s) == Darwin ]]; then
   /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  echo "test braces"
+  (cd .. && pwd && ls)
 fi
 
 ## export these flags so that zlib.h can be found
