@@ -14,6 +14,7 @@ import logging
 import datetime
 from threading import Event, Thread
 from pathlib import PurePath
+import json
 
 from conda_build import api
 from conda.exports import VersionOrder
@@ -27,9 +28,32 @@ import jinja2
 from jinja2 import Environment, PackageLoader
 from colorlog import ColoredFormatter
 import pandas as pd
+import tqdm as _tqdm
+import asyncio
+import aiohttp
+import backoff
 
 
-log_stream_handler = logging.StreamHandler()
+class TqdmHandler(logging.StreamHandler):
+    """Tqdm aware logging StreamHandler
+    Passes all log writes through tqdm to allow progress bars
+    and log messages to coexist without clobbering terminal
+    """
+    def emit(self, record):
+        _tqdm.tqdm.write(self.format(record))
+
+
+def tqdm(*args, **kwargs):
+    """Creates a TQDM that is disabled if STDOUT isn't a terminal"""
+    # disable can be True, False or None
+    # intuitively, None means that it should be disabled if we
+    # are not writing to a console
+    if 'disable' not in kwargs or kwargs['disable'] == False:
+        kwargs['disable'] = None
+    return _tqdm.tqdm(*args, **kwargs)
+
+
+log_stream_handler = TqdmHandler()
 log_stream_handler.setFormatter(ColoredFormatter(
         "%(asctime)s %(log_color)sBIOCONDA %(levelname)s%(reset)s %(message)s",
         datefmt="%H:%M:%S",
@@ -1007,6 +1031,87 @@ class Progress:
         self.thread.join()
 
 
+class AsyncRequests:
+    """Download a bunch of files in parallel
+
+    This is not really a class, more a name space encapsulating a bunch of calls.
+    """
+    #: Identify ourselves
+    USER_AGENT = "bioconda/bioconda-utils"
+
+    @classmethod
+    def fetch(cls, urls, descs, cb):
+        """Fetch data from URLs.
+
+        This will use asyncio to manage a pool of connections at once, speeding
+        up download as compared to iterative use of ``requests`` significantly.
+        It will also retry on non-permanent HTTP error codes (i.e. 429, 502,
+        503 and 504).
+
+        Args:
+          urls: List of URLS
+          descs: Matching list of descriptions (for progress display)
+          cb: As each download is completed, data is passed through this function.
+              Use to e.g. offload json parsing into download loop.
+        """
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        task = asyncio.ensure_future(cls._async_fetch(urls, descs, cb))
+
+        try:
+            loop.run_until_complete(task)
+        except KeyboardInterrupt:
+            task.cancel()
+            loop.run_forever()
+            task.exception()
+        finally:
+            loop.close()
+
+        return task.result()
+
+    @classmethod
+    async def _async_fetch(cls, urls, descs, cb):
+        async with aiohttp.ClientSession(
+                headers={'User-Agent': cls.USER_AGENT}
+        ) as session:
+            coros = [
+                asyncio.ensure_future(cls._async_fetch_one(session, url, desc, cb))
+                for url, desc in zip(urls, descs)
+            ]
+            with tqdm(asyncio.as_completed(coros),
+                      total=len(coros),
+                      desc="Downloading", unit="files") as t:
+                result = [await coro for coro in t]
+        return result
+
+    @staticmethod
+    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
+                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
+    async def _async_fetch_one(session, url, desc, cb):
+        result = []
+        async with session.get(url) as resp:
+            resp.raise_for_status()
+            size = int(resp.headers.get("Content-Length", 0))
+            with tqdm(total=size, unit='B', unit_scale=True, unit_divisor=1024,
+                      desc=desc, miniters=1,
+                      disable=logger.getEffectiveLevel() > logging.INFO
+            ) as progress:
+                while True:
+                    block = await resp.content.read(1024*16)
+                    if not block:
+                        break
+                    progress.update(len(block))
+                    result.append(block)
+        if cb:
+            return cb(b"".join(result))
+        else:
+            return b"".join(result)
+
+
 class RepoData:
     """Singleton providing access to package directory on anaconda cloud
 
@@ -1091,23 +1196,39 @@ class RepoData:
             self._df = self._load_channel_dataframe()
         return self._df
 
+    def _make_repodata_url(self, channel, platform):
+        if channel == "defaults":
+            # caveat: this only gets defaults main, not 'free', 'r' or 'pro'
+            url_template = self.REPODATA_DEFAULTS_URL
+        else:
+            url_template = self.REPODATA_URL
+
+        url = url_template.format(channel=channel,
+                                  subdir=self.platform2subdir(platform))
+        return url
+
     def _load_channel_dataframe(self):
         if self.cache_file is not None and os.path.exists(self.cache_file):
             logger.info("Loading repodata from cache %s", self.cache_file)
             return pd.read_table(self.cache_file)
 
+        repos = list(product(self.channels, self.platforms))
+        urls = [self._make_repodata_url(c, p) for c, p in repos]
+        descs = ["{}/{}".format(c, p) for c, p in repos]
+
+        # Download
+        data = AsyncRequests.fetch(urls, descs, json.loads)
+
         # Get the channel data into a big dataframe
         dfs = []
-        for channel in self.channels:
-            for platform in self.platforms:
-                print("loading %s/%s" % (channel, platform))
-                repo = self.fetch_repodata(channel, platform)
-                df = pd.DataFrame.from_dict(repo['packages'], 'index',
-                                            columns=self._load_columns)
-                df['channel'] = channel
-                df['platform'] = platform
-                df['subdir'] = repo['info']['subdir']
-                dfs.append(df)
+        for (channel, platform), data in zip(repos, data):
+            logger.info("Loading repodata for %s/%s", channel, platform)
+            df = pd.DataFrame.from_dict(data['packages'], 'index',
+                                        columns=self._load_columns)
+            df['channel'] = channel
+            df['platform'] = platform
+            df['subdir'] = data['info']['subdir']
+            dfs.append(df)
 
         res = pd.concat(dfs)
 
@@ -1136,36 +1257,7 @@ class RepoData:
             raise ValueError(
                 'Unsupported platform: bioconda only supports linux, osx and noarch.')
 
-    def fetch_repodata(self, channel, platform):
-        """
-        Returns the parsed JSON repodata for a channel from conda.anaconda.org.
 
-        A dicts is containing the repodata is returned.
-
-        Parameters
-        ----------
-        channel : str
-            Channel to retrieve packages for
-
-        platform : noarch | linux | osx
-            Platform (OS) to retrieve packages for from `channel`.
-        """
-
-        if channel == "defaults":
-            # caveat: this only gets defaults main, not 'free', 'r' or 'pro'
-            url_template = self.REPODATA_DEFAULTS_URL
-        else:
-            url_template = self.REPODATA_URL
-
-        url = url_template.format(channel=channel,
-                                  subdir=self.platform2subdir(platform))
-        repodata = requests.get(url)
-        if repodata.status_code != 200:
-            raise requests.HTTPError(
-                '{0.status_code} {0.reason} for {1}'
-                .format(repodata, url))
-
-        return repodata.json()
 
     def get_versions(self, name):
         """Get versions available for package
