@@ -1087,7 +1087,7 @@ class RepoData:
 
     @property
     def df(self):
-        if not self._df:
+        if self._df is None:
             self._df = self._load_channel_dataframe()
         return self._df
 
