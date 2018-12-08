@@ -424,16 +424,27 @@ class BitBucketBase(OrderedHTMLHoster):
     account_pattern = r"(?P<account>[-\w]+)"
     project_pattern = r"(?P<project>[-.\w]+)"
     prefix_pattern = r"(?P<prefix>[-_./\w]+?)??"
-    url_pattern = "bitbucket\.org{link}"
+    url_pattern = r"bitbucket\.org{link}"
+
 
 class BitBucketTag(BitBucketBase):
     link_pattern = "/{account}/{project}/get/{prefix}{version}{ext}"
     releases_format = ["https://bitbucket.org/{account}/{project}/downloads/?tab=tags",
                        "https://bitbucket.org/{account}/{project}/downloads/?tab=branches"]
 
+
 class BitBucketDownload(BitBucketBase):
     link_pattern = "/{account}/{project}/downloads/{prefix}{version}{ext}"
     releases_format = "https://bitbucket.org/{account}/{project}/downloads/?tab=downloads"
+
+
+class GitlabTag(OrderedHTMLHoster):
+    account_pattern = r"(?P<account>[-\w]+)"
+    subgroup_pattern = r"(?P<subgroup>(?:/[-\w]+|))"
+    project_pattern = r"(?P<project>[-.\w]+)"
+    link_pattern = r"/{account}{subgroup}/{project}/(repository|-/archive)/{version}/(archive|{project}-{version}){ext}"
+    url_pattern = r"gitlab\.com{link}"
+    releases_format = "https://gitlab.com/{account}{subgroup}/{project}/tags"
 
 
 logger.info(f"Hosters loaded: %s", [h.__name__ for h in HosterMeta.hoster_types])
