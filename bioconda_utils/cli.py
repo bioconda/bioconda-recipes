@@ -82,13 +82,15 @@ def select_recipes(packages, git_range, recipe_folder, config_filename, config, 
 @arg('--remove', action='store_true', help='Remove packages from anaconda.')
 @arg('--dryrun', '-n', action='store_true', help='Only print removal plan.')
 @arg('--url', action='store_true', help='Print anaconda urls.')
+@arg('--channel', help="Channel to check for duplicates")
 def duplicates(
     config,
     strict_version=False,
     strict_build=False,
     dryrun=False,
     remove=False,
-    url=False
+    url=False,
+    channel='bioconda'
 ):
     """
     Detect packages in bioconda that have duplicates in the other defined
@@ -100,7 +102,9 @@ def duplicates(
                          '--strict-build.')
 
     config = utils.load_config(config)
-    our_channel = "bioconda"
+    if channel not in config['channels']:
+        raise ValueError("Channel given with --channel must be in config channels")
+    our_channel = channel
     channels = [c for c in config['channels'] if c != our_channel]
     print("Checking for packages from {} also present in {}".format(
         our_channel, channels))
