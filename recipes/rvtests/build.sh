@@ -56,4 +56,8 @@ fi
 echo "Install..."
 mkdir -p $PREFIX/bin
 echo "Copying..."
-find executable/ -executable -type f -exec cp {} $PREFIX/bin \;
+if [[ $(uname -s) == Darwin ]]; then
+  find executable/ -executable -type f -exec cp {} $PREFIX/bin \;
+else
+  find executable/ -perm +111 -type f -exec cp {} $PREFIX/bin \;
+fi
