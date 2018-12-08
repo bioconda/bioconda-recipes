@@ -33,11 +33,18 @@ if [[ $(uname -s) == Darwin ]]; then
 #ifdef _OPENMP
 ;5i\
 #endif' libVcf/VCFRecord.h
+  sed -i.bak '3i\
+#ifdef _OPENMP
+#include <omp.h>
+#pragma message "Enable multithread using OpenMP"
+#endif
+ ' regression/BoltLMM.cpp
 
-  # clang does not support openmp
-  sed -i.bak 's:-fopenmp::' libBgen/Makefile
-  sed -i.bak 's:-fopenmp::' libVcf/Makefile
-  sed -i.bak 's:-fopenmp::' src/Makefile
+
+  ## clang does not support openmp
+  #sed -i.bak 's:-fopenmp::' libBgen/Makefile
+  #sed -i.bak 's:-fopenmp::' libVcf/Makefile
+  #sed -i.bak 's:-fopenmp::' src/Makefile
   
   make STATIC_FLAG='' OPENMP_FLAG=''
 else
