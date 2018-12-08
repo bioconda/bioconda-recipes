@@ -1,4 +1,11 @@
 #!/bin/bash
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
+echo -e "CC=$CC
+CXXFLAGS=$CXXFLAGS
+FC=$FC
+CXX=$CXX
+CXX98=$CXX
+CXX11=$CXX
+CXX14=$CXX" > src/Makevars
 $R CMD INSTALL --build .
