@@ -83,19 +83,20 @@ def select_recipes(packages, git_range, recipe_folder, config_filename, config, 
 @arg('--dryrun', '-n', action='store_true', help='Only print removal plan.')
 @arg('--url', action='store_true', help='Print anaconda urls.')
 @arg('--channel', help="Channel to check for duplicates")
-def duplicates(
-    config,
-    strict_version=False,
-    strict_build=False,
-    dryrun=False,
-    remove=False,
-    url=False,
-    channel='bioconda'
-):
+@arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
+def duplicates(config,
+               strict_version=False,
+               strict_build=False,
+               dryrun=False,
+               remove=False,
+               url=False,
+               channel='bioconda',
+               loglevel='info'):
     """
     Detect packages in bioconda that have duplicates in the other defined
     channels.
     """
+    utils.setup_logger('bioconda_utils', loglevel)
 
     if remove and not strict_build:
         raise ValueError('Removing packages is only supported in case of '
@@ -106,8 +107,8 @@ def duplicates(
         raise ValueError("Channel given with --channel must be in config channels")
     our_channel = channel
     channels = [c for c in config['channels'] if c != our_channel]
-    print("Checking for packages from {} also present in {}".format(
-        our_channel, channels))
+    logger.info("Checking for packages from %s also present in %s",
+                our_channel, channels)
 
     check_fields = ['name']
     if strict_version or strict_build:
@@ -125,29 +126,29 @@ def duplicates(
             )
         ]
         if dryrun:
-            print(utils.bin_for('anaconda'), *subcmd)
+            logger.info(" ".join([utils.bin_for('anaconda')] + subcmd))
         else:
             token = os.environ.get('ANACONDA_TOKEN')
             if token is None:
                 token = []
             else:
                 token = ['-t', token]
-            print(utils.run([utils.bin_for('anaconda')] + token + subcmd, mask=[token]).stdout)
+            logger.info(utils.run([utils.bin_for('anaconda')] + token + subcmd, mask=[token]).stdout)
 
     # packages in our channel
     repodata = utils.RepoData()
     our_package_specs = set(repodata.get_package_data(check_fields, our_channel))
-    print("{} unique packages specs to consider in {}".format(
-        len(our_package_specs), our_channel))
+    logger.info("%s unique packages specs to consider in %s",
+                len(our_package_specs), our_channel)
 
     # packages in channels we depend on
     duplicate = defaultdict(list)
     for channel in channels:
         package_specs = set(repodata.get_package_data(check_fields, channel))
-        print("{} unique packages specs to consider in {}".format(
-            len(package_specs), channel))
+        logger.info("%s unique packages specs to consider in %s",
+                    len(package_specs), channel)
         dups = our_package_specs & package_specs
-        print("  (of which {} overlap)".format(len(dups)))
+        logger.info("  (of which %s are duplicate)", len(dups))
         for spec in dups:
             duplicate[spec].append(channel)
 
