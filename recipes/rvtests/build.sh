@@ -43,7 +43,10 @@ if [[ $(uname -s) == Darwin ]]; then
   #sed -i.bak 's:-fopenmp::' libVcf/Makefile
   #sed -i.bak 's:-fopenmp::' src/Makefile
   
-  make STATIC_FLAG=''
+  echo "show Makefile"
+  cat src/Makefile
+  echo "start build..."
+  make STATIC_FLAG='-fopenmp'
 else
   # hack this flag to link against rt, so clock_gettime can be linked
   make STATIC_FLAG='-lrt'
