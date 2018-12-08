@@ -34,10 +34,7 @@ if [[ $(uname -s) == Darwin ]]; then
 ;5i\
 #endif' libVcf/VCFRecord.h
   sed -i.bak '3i\
-#ifdef _OPENMP
 #include <omp.h>
-#pragma message "Enable multithread using OpenMP"
-#endif
  ' regression/BoltLMM.cpp
 
 
