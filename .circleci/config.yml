@@ -28,6 +28,17 @@ variables:
       LANG: en_US.UTF-8
   linux: &linux
     machine: true
+  osx_bulk: &osx_bulk
+    macos:
+      xcode: "8.3.3"
+    environment:
+      LC_ALL: en_US.UTF-8
+      LANG: en_US.UTF-8
+      BIOCONDA_LABEL: gcc7
+  linux_bulk: &linux_bulk
+    machine: true
+    environment:
+      BIOCONDA_LABEL: gcc7
   skip_fork: &skip_fork
     run:
       name: Check for fork
@@ -163,7 +174,7 @@ jobs:
 
   # build, test and upload for bulk branch on linux
   bulk-linux:
-    <<: *linux
+    <<: *linux_bulk
     steps:
       - *fail_fork
       - checkout
@@ -175,11 +186,12 @@ jobs:
           name: Building, testing, and uploading of all unpublished recipes
           command: |
             bioconda-utils build recipes config.yml \
-              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
+              --check-channels conda-forge/label/gcc7 bioconda/label/gcc7 bioconda
 
   # build, test and upload for bulk branch on macos
   bulk-macos:
-    <<: *macos
+    <<: *macos_bulk
     steps:
       - *fail_fork
       - checkout
@@ -191,7 +203,8 @@ jobs:
           name: Building, testing and uploading of all unpublished recipes
           command: |
             bioconda-utils build recipes config.yml \
-              --anaconda-upload
+              --anaconda-upload \
+              --check-channels conda-forge/label/gcc7 bioconda/label/gcc7 bioconda
 
   # nightly build, test and upload of unpublished recipes on linux
   nightly-upload-linux:
