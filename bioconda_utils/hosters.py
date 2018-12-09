@@ -146,6 +146,12 @@ class Hoster(metaclass=HosterMeta):
 
     @property
     @abc.abstractmethod
+    def link_pattern(self) -> str:
+        "matches links on relase page"
+
+
+    @property
+    @abc.abstractmethod
     def releases_format(self) -> str:
         "format template for release page URL"
 
@@ -201,26 +207,54 @@ class HrefParser(HTMLParser):
 class HTMLHoster(Hoster):
     """Base for Hosters handling release listings in HTML format"""
 
-    @property
-    @abc.abstractmethod
-    def link_pattern(self) -> str:
-        "matches links on relase page"
-
     async def get_versions(self, scanner):
         exclude = set(self.exclude)
         vals = {key: val
                 for key, val in self.vals.items()
                 if key not in exclude}
         link_pattern = replace_named_capture_group(self.link_pattern, vals)
+        link_re = re.compile(link_pattern)
         result = []
         for url in self.releases_urls:
-            parser = HrefParser(re.compile(link_pattern))
+            parser = HrefParser(link_re)
             parser.feed(await scanner.get_text_from_url(url))
             for match in parser.matches:
                 match["link"] = urljoin(url, match["href"])
                 match["releases_url"] = url
                 result.append(match)
         return result
+
+
+class FTPHoster(Hoster):
+    async def get_versions(self, scanner):
+        exclude = set(self.exclude)
+        vals = {key: val
+                for key, val in self.vals.items()
+                if key not in exclude}
+        link_pattern = replace_named_capture_group(self.link_pattern, vals)
+        link_re = re.compile(link_pattern)
+        result = []
+        for url in self.releases_urls:
+            files = await scanner.get_ftp_listing(url)
+            for fn in files:
+                match = link_re.search(fn)
+                if match:
+                    data = match.groupdict()
+                    data['fn'] = fn
+                    data['link'] = "ftp://" + vals['host'] + fn
+                    data['releases_url'] = url
+                    logger.error(data)
+                    result.append(data)
+        return result
+
+    version_pattern = r"(?:(?<=[/._-])[rv])?(?P<version>\d[\da-zA-Z\-+\.:\~_]{0,30}?)"
+    host_pattern = r"(?P<host>[-_.\w]+)"
+    path_pattern = r"(?P<path>[-_/.\w]+/)"
+    package_pattern = r"(?P<package>[-_\w]+)"
+    suffix_pattern = r"(?P<suffix>([-_](lin|linux|Linux|x64|x86|src|64|OSX))*)"
+    link_pattern = "{package}{version}{suffix}{ext}"
+    url_pattern = r"ftp://{host}/{path}{link}"
+    releases_format = "ftp://{host}/{path}/"
 
 
 class OrderedHTMLHoster(HTMLHoster):
@@ -331,6 +365,7 @@ class JSONHoster(Hoster):
                 match['releases_url'] = url
             result.extend(matches)
         return result
+    link_pattern = "https://{url}"
 
 
 class PyPi(JSONHoster):
@@ -372,7 +407,6 @@ class Bioarchive(JSONHoster):
     releases_format = "https://bioarchive.galaxyproject.org/api/{package}.json"
     package_pattern = r"(?P<package>[-\w.]+)"
     url_pattern = r"bioarchive.galaxyproject.org/{package}_{version}{ext}"
-    link_pattern = "https://{url}"
 
 
 class CPAN(JSONHoster):

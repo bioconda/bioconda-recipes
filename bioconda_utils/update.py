@@ -60,6 +60,7 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence
 
 import aiohttp
 import aiofiles
+import aioftp
 import backoff
 
 import conda_build.variants
@@ -327,6 +328,8 @@ class Recipe():
         - Cowardly refuses to modify lines with ``# [expression]``
         selectors.
         """
+        logger.debug("Trying to replace %s with %s", before, after)
+
         # get lines starting with "{%"
         lines = set()
         for lineno, line in enumerate(self.meta_yaml):
@@ -567,8 +570,6 @@ class Scanner():
 
         return res
 
-    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
-                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
     async def get_checksum_from_url(self, url: str, desc: str) -> str:
         """Compute sha256 checksum of content at **url**
 
@@ -577,6 +578,20 @@ class Scanner():
         if self.cache and url in self.cache["url_checksum"]:
             return self.cache["url_checksum"][url]
 
+        parsed = urlparse(url)
+        if parsed.scheme in ("http", "https"):
+            res = await self.get_checksum_from_http(url, desc)
+        elif parsed.scheme == "ftp":
+            res = await self.get_checksum_from_ftp(url, desc)
+
+        if self.cache:
+            self.cache["url_checksum"][url] = res
+
+        return res
+
+    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
+                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
+    async def get_checksum_from_http(self, url: str, desc: str) -> str:
         checksum = sha256()
         async with self.session.get(url) as resp:
             resp.raise_for_status()
@@ -589,12 +604,23 @@ class Scanner():
                         break
                     progress.update(len(block))
                     await self.loop.run_in_executor(None, checksum.update, block)
-        res = checksum.hexdigest()
+        return checksum.hexdigest()
 
-        if self.cache:
-            self.cache["url_checksum"][url] = res
+    async def get_ftp_listing(self, url):
+        parsed = urlparse(url)
+        async with aioftp.ClientSession(parsed.netloc,
+                                        password=self.USER_AGENT+"@") as client:
+            return [str(path) for path, _info in (await client.list(parsed.path))]
 
-        return res
+    async def get_checksum_from_ftp(self, url, desc):
+        parsed = urlparse(url)
+        checksum = sha256()
+        async with aioftp.ClientSession(parsed.netloc,
+                                        password=self.USER_AGENT+"@") as client:
+            async with client.download_stream(parsed.path) as stream:
+                async for block in stream.iter_by_block():
+                    checksum.update(block)
+        return checksum.hexdigest()
 
 
 class ExcludeOtherChannel(Filter):

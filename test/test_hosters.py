@@ -94,6 +94,9 @@ class TestHoster:
         if 'release_json' in self.case:
             return json.dumps(self.case['release_json'])
 
+    async def get_ftp_listing(self, url):
+        return self.case['release_links']
+
     @pytest.mark.asyncio
     def test_get_version(self, event_loop):
         if not 'release_links' in self.case and not 'release_json' in self.case:
