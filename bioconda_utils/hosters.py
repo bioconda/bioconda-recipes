@@ -243,7 +243,6 @@ class FTPHoster(Hoster):
                     data['fn'] = fn
                     data['link'] = "ftp://" + vals['host'] + fn
                     data['releases_url'] = url
-                    logger.error(data)
                     result.append(data)
         return result
 
