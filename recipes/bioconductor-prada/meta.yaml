@@ -1,6 +1,6 @@
-{% set version = "1.54.0" %}
+{% set version = "1.56.0" %}
 {% set name = "prada" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,28 +8,32 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 36e2b25c172eb24b4c5feccfe47760184035143f99d9cd438d79fd1a0281c8a5
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 601a09c83d87dcdef2ae5e6dde37812c7c66178b2cf4a38279321b5845bb8d43
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
     - r-base
     - r-mass
     - r-rcolorbrewer
     - r-rrcov
   run:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
     - r-base
     - r-mass
     - r-rcolorbrewer
     - r-rrcov
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -37,7 +41,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
   summary: 'Tools for analysing and navigating data from high-throughput phenotyping experiments based on cellular assays and fluorescent detection (flow cytometry (FACS), high-content screening microscopy).'
-
 extra:
   identifiers:
     - biotools:prada
