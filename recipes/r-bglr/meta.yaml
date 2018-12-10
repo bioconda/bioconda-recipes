@@ -1,0 +1,53 @@
+{% set version = '1.0.8' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-bglr
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url: {{ cran_mirror }}/src/contrib/BGLR_{{ version }}.tar.gz
+  sha256: 5e969590d80b2f272c02a43b487ab1ffa13af386e0342993e6ac484fc82c9b95
+
+build:
+  merge_build_host: True  # [win]
+
+  number: 2
+
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}        # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+
+  run:
+    - r-base
+    - {{native}}gcc-libs         # [win]
+
+test:
+  commands:
+
+    - $R -e "library('BGLR')"           # [not win]
+    - "\"%R%\" -e \"library('BGLR')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=BGLR
+  license: GPL-3
+  summary: Bayesian Generalized Linear Regression.
+  license_family: GPL3
+extra:
+  recipe-maintainers:
+    - AlexisDereeper
