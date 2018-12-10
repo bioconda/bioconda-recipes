@@ -98,7 +98,8 @@ class HosterMeta(abc.ABCMeta):
             while pattern != new_pattern:
                 pattern = new_pattern
                 new_pattern = re.sub(r"(\{\d+,?\d*\})", r"{\1}", pattern)
-                new_pattern = new_pattern.format_map(patterns)
+                new_pattern = new_pattern.format_map(
+                    {k: v.rstrip("$") for k, v in patterns.items()})
             patterns[pat] = pattern
             # repair duplicate capture groups:
             pattern = dedup_named_capture_group(pattern)
