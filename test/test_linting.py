@@ -6,9 +6,7 @@ from bioconda_utils import linting, utils
 def run_lint(
     func,
     should_pass,
-    should_fail,
-    should_pass_df=None,
-    should_fail_df=None
+    should_fail
 ):
     """
     Helper function to run a lint function on a set of recipes that should pass
@@ -26,8 +24,6 @@ def run_lint(
         Recipe definitions that will be provided to `helpers.Recipes`. Each can
         be a single string or a list of strings to test.
 
-    should_pass_df, should_fail_df : pandas.DataFrame
-        Optional dataframes to pass to lint function
     """
 
     if isinstance(should_pass, str):
@@ -43,15 +39,15 @@ def run_lint(
         r.write_recipes()
         assert len(r.recipe_dirs) == 1
         name = list(r.recipe_dirs.keys())[0]
-        recipe, df = r.recipe_dirs[name], should_pass_df
+        recipe = r.recipe_dirs[name]
         metas = []
         for platform in ["linux", "osx"]:
             config = utils.load_conda_build_config(platform=platform, trim_skip=False)
             metas.extend(utils.load_all_meta(r.recipe_dirs[name], config=config, finalize=False))
         if expect_pass:
-            assert func(recipe, metas, df) is None, "lint did not pass"
+            assert func(recipe, metas) is None, "lint did not pass"
         else:
-            assert func(recipe, metas, df) is not None, "lint did not fail"
+            assert func(recipe, metas) is not None, "lint did not fail"
 
     for contents in should_pass:
         _run(contents, expect_pass=True)
@@ -76,7 +72,7 @@ def test_empty_build_section():
     registry = [lint_functions.should_be_noarch, lint_functions.should_not_be_noarch]
     res = linting.lint(
         r.recipe_dirs.values(),
-        linting.LintArgs(df=None, registry=registry))
+        linting.LintArgs(registry=registry))
     assert res is None
 
 
@@ -94,7 +90,7 @@ def test_lint_skip_in_recipe():
     r.write_recipes()
     res = linting.lint(
         r.recipe_dirs.values(),
-        linting.LintArgs(df=None, registry=[lint_functions.missing_home]))
+        linting.LintArgs(registry=[lint_functions.missing_home]))
     assert res is not None
 
     # should now pass with the extra:skip-lints (only linting for `missing_home`)
@@ -112,7 +108,7 @@ def test_lint_skip_in_recipe():
     r.write_recipes()
     res = linting.lint(
         r.recipe_dirs.values(),
-        linting.LintArgs(df=None, registry=[lint_functions.missing_home]))
+        linting.LintArgs(registry=[lint_functions.missing_home]))
     assert res is None
 
     # should pass; minimal recipe needs to skip these lints
@@ -130,7 +126,7 @@ def test_lint_skip_in_recipe():
                 - no_tests
         ''', from_string=True)
     r.write_recipes()
-    res = linting.lint(r.recipe_dirs.values(), linting.LintArgs(df=None))
+    res = linting.lint(r.recipe_dirs.values(), linting.LintArgs())
     assert res is not None
 
 

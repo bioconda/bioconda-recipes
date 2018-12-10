@@ -4,7 +4,6 @@ from conda.exports import VersionOrder
 from . import utils
 from . import linting
 
-
 def compare_recipe_to_pypi(recipe):
     """
     If it looks like a PyPI package, returns a tuple of
@@ -63,9 +62,7 @@ def check_all(recipe_folder, config, packages='*'):
 
     """
     # Identify the latest version available on conda-forge
-    df = linting.channel_dataframe(channels=['conda-forge'])
-    df['looseversion'] = df['version'].apply(VersionOrder)
-    latest_conda_forge = df.groupby('name')['looseversion'].agg(max)
+    latest_conda_forge = utils.RepoData().get_latest_versions('conda-forge')
 
     # Only consider the latest version we can find here
     recipes = list(utils.get_latest_recipes(recipe_folder, config, packages))

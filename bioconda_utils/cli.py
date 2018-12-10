@@ -82,88 +82,89 @@ def select_recipes(packages, git_range, recipe_folder, config_filename, config, 
 @arg('--remove', action='store_true', help='Remove packages from anaconda.')
 @arg('--dryrun', '-n', action='store_true', help='Only print removal plan.')
 @arg('--url', action='store_true', help='Print anaconda urls.')
-def duplicates(
-    config,
-    strict_version=False,
-    strict_build=False,
-    dryrun=False,
-    remove=False,
-    url=False
-):
+@arg('--channel', help="Channel to check for duplicates")
+@arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
+def duplicates(config,
+               strict_version=False,
+               strict_build=False,
+               dryrun=False,
+               remove=False,
+               url=False,
+               channel='bioconda',
+               loglevel='info'):
     """
     Detect packages in bioconda that have duplicates in the other defined
     channels.
     """
+    utils.setup_logger('bioconda_utils', loglevel)
+
+    if remove and not strict_build:
+        raise ValueError('Removing packages is only supported in case of '
+                         '--strict-build.')
+
     config = utils.load_config(config)
+    if channel not in config['channels']:
+        raise ValueError("Channel given with --channel must be in config channels")
+    our_channel = channel
+    channels = [c for c in config['channels'] if c != our_channel]
+    logger.info("Checking for packages from %s also present in %s",
+                our_channel, channels)
 
-    channels = config['channels']
-    target_channel = channels[0]
-
-    if strict_version:
-        def get_spec(pkg):
-            return (pkg['name'], pkg['version'])
-        if not remove and not url:
-            print('name', 'version', 'channels', sep='\t')
-    elif strict_build:
-        def get_spec(pkg):
-            return (pkg['name'], pkg['version'], pkg['build'])
-        if not remove and not url:
-            print('name', 'version', 'build', 'channels', sep='\t')
-    else:
-        def get_spec(pkg):
-            return pkg['name']
-        if not remove and not url:
-            print('name', 'channels', sep='\t')
+    check_fields = ['name']
+    if strict_version or strict_build:
+        check_fields += ['version']
+    if strict_build:
+        check_fields += ['build']
 
     def remove_package(spec):
-        if not strict_build:
-            raise ValueError('Removing packages is only supported in case of '
-                             '--strict-build.')
         fn = '{}-{}-{}.tar.bz2'.format(*spec)
         name, version = spec[:2]
         subcmd = [
             'remove', '-f',
             '{channel}/{name}/{version}/{fn}'.format(
-                name=name, version=version, fn=fn, channel=target_channel
+                name=name, version=version, fn=fn, channel=our_channel
             )
         ]
         if dryrun:
-            print(utils.bin_for('anaconda'), *subcmd)
+            logger.info(" ".join([utils.bin_for('anaconda')] + subcmd))
         else:
             token = os.environ.get('ANACONDA_TOKEN')
             if token is None:
                 token = []
             else:
                 token = ['-t', token]
-            print(utils.run([utils.bin_for('anaconda')] + token + subcmd, mask=[token]).stdout)
-
-    def get_packages(channel):
-        return {get_spec(pkg)
-                for repodata in utils.get_channel_repodata(channel)
-                for pkg in repodata['packages'].values()}
+            logger.info(utils.run([utils.bin_for('anaconda')] + token + subcmd, mask=[token]).stdout)
 
     # packages in our channel
-    packages = get_packages(target_channel)
+    repodata = utils.RepoData()
+    our_package_specs = set(repodata.get_package_data(check_fields, our_channel))
+    logger.info("%s unique packages specs to consider in %s",
+                len(our_package_specs), our_channel)
 
     # packages in channels we depend on
-    common = defaultdict(list)
-    for channel in channels[1:]:
-        pkgs = get_packages(channel)
-        for pkg in packages & pkgs:
-            common[pkg].append(channel)
+    duplicate = defaultdict(list)
+    for channel in channels:
+        package_specs = set(repodata.get_package_data(check_fields, channel))
+        logger.info("%s unique packages specs to consider in %s",
+                    len(package_specs), channel)
+        dups = our_package_specs & package_specs
+        logger.info("  (of which %s are duplicate)", len(dups))
+        for spec in dups:
+            duplicate[spec].append(channel)
 
-    for pkg, _channels in sorted(common.items()):
+    print('\t'.join(check_fields + ['channels']))
+    for spec, dup_channels in sorted(duplicate.items()):
         if remove:
-            remove_package(pkg)
+            remove_package(spec)
         else:
             if url:
                 if not strict_version and not strict_build:
                     print('https://anaconda.org/{}/{}'.format(
-                          target_channel, pkg[0]))
+                          our_channel, spec[0]))
                 print('https://anaconda.org/{}/{}/files?version={}'.format(
-                    target_channel, *pkg))
+                    our_channel, *spec))
             else:
-                print(*pkg, *_channels, sep='\t')
+                print(*spec, ','.join(dup_channels), sep='\t')
 
 
 @arg('recipe_folder', help='Path to top-level dir of recipes.')
@@ -225,7 +226,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
         print('\n'.join([i.__name__ for i in lint_functions.registry]))
         sys.exit(0)
 
-    df = linting.channel_dataframe(cache=cache)
+    utils.RepoData(cache)
     registry = lint_functions.registry
 
     if only is not None:
@@ -239,7 +240,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
 
     _recipes = select_recipes(packages, git_range, recipe_folder, config_filename, config, force)
 
-    lint_args = linting.LintArgs(df=df, exclude=exclude, registry=registry)
+    lint_args = linting.LintArgs(exclude=exclude, registry=registry)
     report = linting.lint(_recipes, lint_args)
 
     # The returned dataframe is in tidy format; summarize a bit to get a more
@@ -398,8 +399,7 @@ def build(
             if len(registry) == 0:
                 sys.stderr.write('No valid linting functions selected, exiting.\n')
                 sys.exit(1)
-        df = linting.channel_dataframe()
-        lint_args = linting.LintArgs(df=df, exclude=lint_exclude, registry=registry)
+        lint_args = linting.LintArgs(exclude=lint_exclude, registry=registry)
     else:
         lint_args = None
         if lint_only is not None:
