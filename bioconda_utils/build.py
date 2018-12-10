@@ -462,7 +462,7 @@ def build_recipes(
             for pkg in pkg_paths:
                 # upload build
                 if anaconda_upload:
-                    if not upload.anaconda_upload(pkg, label):
+                    if not upload.anaconda_upload(pkg, label=label):
                         failed_uploads.append(pkg)
             if mulled_upload_target and keep_mulled_test:
                 for img in res.mulled_images:

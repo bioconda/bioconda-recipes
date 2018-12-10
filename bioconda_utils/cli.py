@@ -407,6 +407,10 @@ def build(
         if lint_exclude is not None:
             logger.warning('--lint-exclude has no effect unless --lint is specified.')
 
+    label = os.getenv('BIOCONDA_LABEL', None)
+    if label == "":
+        label = None
+
     success = build_recipes(
         recipe_folder,
         config=config,
@@ -419,6 +423,7 @@ def build(
         mulled_upload_target=mulled_upload_target,
         lint_args=lint_args,
         check_channels=check_channels,
+        label=label,
     )
     exit(0 if success else 1)
 
