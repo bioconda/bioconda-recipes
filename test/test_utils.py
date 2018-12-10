@@ -468,12 +468,6 @@ def test_conda_as_dep():
 #     assert list(utils.filter_recipes([])) == []
 
 
-def test_get_channel_packages():
-    with pytest.raises(requests.HTTPError):
-        utils.get_channel_packages('bioconda_xyz_nonexistent_channel')
-    utils.get_channel_packages('bioconda')
-
-
 def test_built_package_paths():
     r = Recipes(
         """

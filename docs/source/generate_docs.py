@@ -2,7 +2,7 @@ import os
 import os.path as op
 from collections import defaultdict
 from jinja2.sandbox import SandboxedEnvironment
-from bioconda_utils import utils
+from bioconda_utils.utils import RepoData
 from sphinx.util import logging as sphinx_logging
 from sphinx.util import status_iterator
 from sphinx.util.parallel import ParallelTasks, parallel_available, make_chunks
@@ -31,34 +31,6 @@ RECIPE_DIR = op.join(op.dirname(BASE_DIR), 'bioconda-recipes', 'recipes')
 OUTPUT_DIR = op.join(BASE_DIR, 'recipes')
 
 
-class RepoData(object):
-    """Load and parse packages (not recipes) available via channel"""
-    def __init__(self):
-        logger.info('Loading packages...')
-        repodata = defaultdict(lambda: defaultdict(list))
-        for platform in ['linux', 'osx']:
-            channel_packages = utils.get_channel_packages(
-                channel='bioconda', platform=platform)
-            for pkg_key in channel_packages.keys():
-                repodata[pkg_key.name][pkg_key.version].append(platform)
-        self.repodata = repodata
-        # e.g., repodata = {
-        #   'package1': {
-        #       '0.1': ['linux'],
-        #       '0.2': ['linux', 'osx'],
-        #   },
-        # }
-
-    def get_versions(self, p):
-        """Get versions available for package
-
-        Args:
-          p: package name
-
-        Returns:
-          Dictionary mapping version numbers to list of architectures
-        """
-        return self.repodata[p]
 
 
 def as_extlink_filter(text):
