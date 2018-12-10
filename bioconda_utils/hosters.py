@@ -86,7 +86,8 @@ class HosterMeta(abc.ABCMeta):
 
         if inspect.isabstract(typ):
             return typ
-        mcs.hoster_types.append(typ)
+        if not typ.__name__.startswith("Custom"):
+            mcs.hoster_types.append(typ)
 
         patterns = {attr.replace("_pattern", ""): getattr(typ, attr)
                     for attr in dir(typ) if attr.endswith("_pattern")}
@@ -104,21 +105,21 @@ class HosterMeta(abc.ABCMeta):
             # repair duplicate capture groups:
             pattern = dedup_named_capture_group(pattern)
             # save parsed and compiled pattern
-            setattr(typ, pat + "_pattern", pattern)
+            setattr(typ, pat + "_pattern_compiled", pattern)
             logger.debug("%s Pattern %s = %s", typ.__name__, pat, pattern)
             setattr(typ, pat + "_re", re.compile(pattern))
 
         return typ
 
     @classmethod
-    def select_hoster(mcs, url: str) -> Optional["Hoster"]:
+    def select_hoster(mcs, url: str, config: Dict[str, str]) -> Optional["Hoster"]:
         """Select `Hoster` able to handle **url**
 
         Returns: `Hoster` or `None`
         """
         logger.debug("Matching url '%s'", url)
         for hoster_type in mcs.hoster_types:
-            hoster = hoster_type.try_make_hoster(url)
+            hoster = hoster_type.try_make_hoster(url, config)
             if hoster:
                 return hoster
         return None
@@ -167,8 +168,17 @@ class Hoster(metaclass=HosterMeta):
         logger.debug("%s matched %s with %s", self.__class__.__name__, url, self.vals)
 
     @classmethod
-    def try_make_hoster(cls, url: str) -> Optional["Hoster"]:
+    def try_make_hoster(cls, url: str, config: Dict[str, str]) -> Optional["Hoster"]:
         """Creates hoster if **url** is matched by its **url_pattern**"""
+        if config:
+            try:
+                cls = type("Customized"+cls.__name__,
+                           (cls,),
+                           {key+"_pattern":val for key, val in config.items()})
+            except KeyError:
+                logger.debug("Overrides invalid for %s - skipping", cls.__name__)
+                return None
+
         match = cls.url_re.search(url)
         if match:
             return cls(url, match)
@@ -213,7 +223,7 @@ class HTMLHoster(Hoster):
         vals = {key: val
                 for key, val in self.vals.items()
                 if key not in exclude}
-        link_pattern = replace_named_capture_group(self.link_pattern, vals)
+        link_pattern = replace_named_capture_group(self.link_pattern_compiled, vals)
         link_re = re.compile(link_pattern)
         result = []
         for url in self.releases_urls:
@@ -232,7 +242,7 @@ class FTPHoster(Hoster):
         vals = {key: val
                 for key, val in self.vals.items()
                 if key not in exclude}
-        link_pattern = replace_named_capture_group(self.link_pattern, vals)
+        link_pattern = replace_named_capture_group(self.link_pattern_compiled, vals)
         link_re = re.compile(link_pattern)
         result = []
         for url in self.releases_urls:
@@ -252,9 +262,9 @@ class FTPHoster(Hoster):
     path_pattern = r"(?P<path>[-_/.\w]+/)"
     package_pattern = r"(?P<package>[-_\w]+)"
     suffix_pattern = r"(?P<suffix>([-_](lin|linux|Linux|x64|x86|src|64|OSX))*)"
-    link_pattern = "{package}{version}{suffix}{ext}"
-    url_pattern = r"ftp://{host}/{path}{link}"
-    releases_format = "ftp://{host}/{path}/"
+    link_pattern = "{path}{package}{version}{suffix}{ext}"
+    url_pattern = r"ftp://{host}/{link}"
+    releases_format = "ftp://{host}/{path}"
 
 
 class OrderedHTMLHoster(HTMLHoster):

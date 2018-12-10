@@ -154,7 +154,7 @@ class Recipe():
     }
 
     #: Name of key under ``extra`` containing config
-    EXTRA_CONFIG = "watch"
+    EXTRA_CONFIG = "autobump"
 
     def __init__(self, recipe_dir, recipe_folder):
         if not recipe_dir.startswith(recipe_folder):
@@ -837,7 +837,7 @@ class UpdateVersion(Filter):
 
         version_map: Dict[str, Dict[str, Any]] = defaultdict(dict)
         for url in urls:
-            hoster = self.hoster_factory(url)
+            hoster = self.hoster_factory(url, recipe.config.get("override", {}))
             if not hoster:
                 self.unparsed_urls += [url]
                 continue

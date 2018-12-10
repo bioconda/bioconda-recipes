@@ -25,6 +25,12 @@ TEST_CASE_IDS = [
 ]
 
 
+AVAIL_HOSTERS = {
+    hoster.__name__: hoster
+    for hoster in HosterMeta.hoster_types
+}
+
+
 @pytest.mark.parametrize('hoster', HosterMeta.hoster_types)
 def test_hoster_has_test_case(hoster):
     assert hoster.__name__ in TEST_CASES, f"Missing test cases for {hoster.__name__}"
@@ -47,12 +53,12 @@ def setup_params(request):
 class TestHoster:
     @classmethod
     def msg(cls, title):
-        res = f"""{title} ({cls.hoster}-{cls.caseno})
-        Expected Version: {cls.case['version']}
-        test_url:\n{cls.case['url']}
-        """
+        res = (f"{title} ({cls.hoster}-{cls.caseno})\n"
+               f"Expected Version: {cls.case['version']}\n"
+               f"test_url: {cls.case['url']}\n"
+               f"test_url_pattern: {cls.hoster_cls.url_pattern}")
         for attr in dir(cls.instance):
-            if attr.endswith("_pattern"):
+            if any(attr.endswith(x) for x in ("_pattern", "_pattern_compiled", "_format")):
                 res += f"{attr}: {getattr(cls.instance, attr)}\n"
         if hasattr(cls.instance, 'vals'):
             res += f"vals: {cls.instance.vals}\n"
@@ -61,10 +67,12 @@ class TestHoster:
     @classmethod
     def setup_params(cls, hoster, caseno, case):
         cls.hoster = hoster
+        cls.hoster_cls = AVAIL_HOSTERS.get(hoster)
+        assert cls.hoster_cls, f"No (complete) hoster class '{hoster}' found. {AVAIL_HOSTERS}"
         cls.case = case
         cls.caseno = caseno
         try:
-            cls.instance = Hoster.select_hoster(case['url'])
+            cls.instance = Hoster.select_hoster(case['url'], case.get('override',{}))
         except Exception:
             print(cls.msg(""))
             raise
@@ -72,7 +80,7 @@ class TestHoster:
     def test_select(self):
         assert self.instance, \
             self.msg("No Hoster found")
-        assert self.instance.__class__.__name__ == self.hoster, \
+        assert isinstance(self.instance, self.hoster_cls), \
             self.msg("Incorrect Hoster selected")
 
     def test_version(self):
