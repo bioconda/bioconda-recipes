@@ -460,6 +460,8 @@ class Scanner():
                 self.cache["url_text"] = {}
             if "url_checksum" not in self.cache:
                 self.cache["url_checksum"] = {}
+            if "ftp_list" not in self.cache:
+                self.cache["ftp_list"] = {}
         self.proc_pool_executor = ProcessPoolExecutor(3)
         self.limit_inflight = asyncio.Semaphore(max_inflight)
 
@@ -607,10 +609,17 @@ class Scanner():
         return checksum.hexdigest()
 
     async def get_ftp_listing(self, url):
+        logger.debug("FTP: listing %s", url)
+        if self.cache and url in self.cache["ftp_list"]:
+            return self.cache["ftp_list"][url]
+
         parsed = urlparse(url)
         async with aioftp.ClientSession(parsed.netloc,
                                         password=self.USER_AGENT+"@") as client:
-            return [str(path) for path, _info in (await client.list(parsed.path))]
+            res = [str(path) for path, _info in (await client.list(parsed.path))]
+        if self.cache:
+            self.cache["ftp_list"][url] = res
+        return res
 
     async def get_checksum_from_ftp(self, url, desc):
         parsed = urlparse(url)
