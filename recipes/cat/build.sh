@@ -9,6 +9,6 @@ mkdir -p $PREFIX/bin
 
 chmod +x CAT_pack/CAT
 
-mv -r CAT_pack $outdir
+mv CAT_pack $outdir
 
 ln -s $outdir/CAT_pack/CAT $PREFIX/bin
