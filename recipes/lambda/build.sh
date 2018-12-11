@@ -3,6 +3,6 @@
 mkdir -p $PREFIX/bin
 mkdir -p build
 cd build
-cmake ../lambda
+cmake ..
 make
 cp bin/lambda $PREFIX/bin
