@@ -78,11 +78,30 @@ def setup_logger(name, loglevel=None):
 
 logger = setup_logger(__name__)
 
+
+class JinjaSilentUndefined(jinja2.Undefined):
+    def _fail_with_undefined_error(self, *args, **kwargs):
+        return ""
+
+    __add__ = __radd__ = __mul__ = __rmul__ = __div__ = __rdiv__ = \
+        __truediv__ = __rtruediv__ = __floordiv__ = __rfloordiv__ = \
+        __mod__ = __rmod__ = __pos__ = __neg__ = __call__ = \
+        __getitem__ = __lt__ = __le__ = __gt__ = __ge__ = __int__ = \
+        __float__ = __complex__ = __pow__ = __rpow__ = \
+        _fail_with_undefined_error
+
+
 jinja = Environment(
     loader=PackageLoader('bioconda_utils', 'templates'),
     trim_blocks=True,
     lstrip_blocks=True
 )
+
+
+jinja_silent_undef = Environment(
+    undefined=JinjaSilentUndefined
+)
+
 
 # Patterns of allowed environment variables that are allowed to be passed to
 # conda-build.
@@ -199,7 +218,8 @@ def load_all_meta(recipe, config=None, finalize=True):
                                                 )]
 
 
-def load_meta_fast(recipe):
+
+def load_meta_fast(recipe, env=None):
     """
     Given a package name, find the current meta.yaml file, parse it, and return
     the dict.
@@ -209,25 +229,15 @@ def load_meta_fast(recipe):
     recipe : str
         Path to recipe (directory containing the meta.yaml file)
 
-    config : str or dict
-        Config YAML or dict
+    env: Optional[dict]
+        Variables to expand
     """
-    class SilentUndefined(jinja2.Undefined):
-        def _fail_with_undefined_error(self, *args, **kwargs):
-            return ""
-
-        __add__ = __radd__ = __mul__ = __rmul__ = __div__ = __rdiv__ = \
-            __truediv__ = __rtruediv__ = __floordiv__ = __rfloordiv__ = \
-            __mod__ = __rmod__ = __pos__ = __neg__ = __call__ = \
-            __getitem__ = __lt__ = __le__ = __gt__ = __ge__ = __int__ = \
-            __float__ = __complex__ = __pow__ = __rpow__ = \
-            _fail_with_undefined_error
+    if not env:
+        env = {}
 
     pth = os.path.join(recipe, 'meta.yaml')
-    jinja_env = jinja2.Environment(undefined=SilentUndefined)
-    content = jinja_env.from_string(
-        open(pth, 'r', encoding='utf-8').read()).render({})
-    meta = yaml.load(content)
+    template = jinja_silent_undef.from_string(open(pth, 'r', encoding='utf-8').read())
+    meta = yaml.load(template.render(env))
     return meta
 
 
@@ -561,11 +571,11 @@ def get_recipes(recipe_folder, package="*"):
     if isinstance(package, str):
         package = [package]
     for p in package:
-        logger.debug(
-            "get_recipes(%s, package='%s'): %s", recipe_folder, package, p)
+        logger.debug("get_recipes(%s, package='%s'): %s",
+                     recipe_folder, package, p)
         path = os.path.join(recipe_folder, p)
         for new_dir in glob.glob(path):
-            for dir_path,dir_names,file_names in os.walk(new_dir):
+            for dir_path, dir_names, file_names in os.walk(new_dir):
                 if "meta.yaml" in file_names:
                     yield dir_path
 

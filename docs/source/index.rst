@@ -162,6 +162,7 @@ Contents:
 
     recipes
     contributing
+    updating
     linting
     faqs
     build-system

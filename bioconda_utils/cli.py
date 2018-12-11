@@ -20,7 +20,6 @@ from . import linting
 from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import cran_skeleton
-from . import pypi
 
 logger = logging.getLogger(__name__)
 
@@ -610,54 +609,88 @@ def clean_cran_skeleton(recipe, no_windows=False):
 
 @arg('recipe_folder', help='Path to recipes directory')
 @arg('config', help='Path to yaml file specifying the configuration')
-@arg('--loglevel', default='debug', help='Log level')
+@arg('--loglevel', default='info', help='Log level')
 @arg('--packages',
      nargs="+",
      help='Glob for package[s] to show in DAG. Default is to show all '
      'packages. Can be specified more than once')
-@arg('--only-out-of-date', help='Only report results for packages that need an update')
-def pypi_check(recipe_folder, config, loglevel='info', packages='*', only_out_of_date=False):
+@arg('--exclude-subrecipes', help='''By default, only subrecipes explicitly
+     enabled for watch in meta.yaml are considered. Set to 'always' to
+     exclude all subrecipes.  Set to 'never' to include all subrecipes''')
+@arg('--exclude-channels', nargs="+", help='''Exclude recipes
+     building packages present in other channels. Set to 'none' to disable
+     check.''')
+@arg('--ignore-blacklists', help='''Do not exclude recipes from blacklist''')
+@arg('--cache', help='''To speed up debugging, use repodata cached locally in
+     the provided filename. If the file does not exist, it will be created
+     the first time. Caution: The cache will not be updated if
+     exclude-channels is changed''')
+@arg('--unparsed-urls', help='''Write unrecognized urls to this file''')
+@arg('--failed-urls', help='''Write urls with permanent failure to this file''')
+@arg('--check-branch', help='''Check if recipe has active branch''')
+@arg("--create-branch", action="store_true", help='''Create branch for each
+     update''')
+@arg("--create-pr", action="store_true", help='''Create PR for each update.
+     Implies create-branch.''')
+@arg("--max-updates", help='''Exit after ARG updates''')
+@arg("--parallel", help='''Maximum number of recipes to consider in parallel''')
+@arg("--dry-run", help='''Don't update remote git or github"''')
+def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
+             failed_urls=None, unparsed_urls=None,
+             exclude_subrecipes=None, exclude_channels='conda-forge',
+             ignore_blacklists=False,
+             check_branch=False, create_branch=False, create_pr=False,
+             max_updates=0, parallel=100, dry_run=False):
     """
-    Checks recipes to see if an updated version is available on PyPI.
-
-    Recipes are only checked if "pypi" is somewhere in the source URL of their
-    meta.yaml.
-
-    A TSV is reported to stdout, with columns:
-        name:
-            package name
-
-        bioconda_version:
-            latest existing recipe version
-
-        pypi_version:
-            latest version on PyPI. If None, a PyPI package could not be found.
-
-        needs_update:
-            True if PyPI version is later than bioconda_version
-
-        conda_forge_version:
-            latest version in the conda-forge channel. "None" if not available
-            in conda-forge.
-
-        action:
-            One of the following:
-                - unavailable (not found on PyPI, check name)
-                - up-to-date (no action needed)
-                - update-bioconda (simply need to re-run conda skeleton)
-                - remove-from-bioconda (conda-forge has later version)
-                - decide-where-to-update (both conda-forge and bioconda are out-of-date)
+    Updates recipes in recipe_folder
     """
     utils.setup_logger('bioconda_utils', loglevel)
-    for result in pypi.check_all(recipe_folder, config):
-        if only_out_of_date:
-            if not result[3]:
-                continue
-        print('\t'.join(map(str, result)))
+    from . import update
+    from . import githandler
+    from . import hosters
+    scanner = update.Scanner(recipe_folder, packages, config,
+                             cache and cache + "_scan.pkl",
+                             max_inflight=parallel)
+    if not ignore_blacklists:
+        scanner.add(update.ExcludeBlacklisted)
+    if exclude_subrecipes != "never":
+        scanner.add(update.ExcludeSubrecipe,
+                    always=exclude_subrecipes == "always")
+    git_handler = None
+    if check_branch or create_branch or create_pr:
+        git_handler = githandler.GitHandler(recipe_folder, dry_run)
+        scanner.add(update.GitLoadRecipe, git_handler)
+    else:
+        scanner.add(update.LoadRecipe)
+    if exclude_channels != ["none"]:
+        if not isinstance(exclude_channels, list):
+            exclude_channels = [exclude_channels]
+        scanner.add(update.ExcludeOtherChannel, exclude_channels,
+                    cache and cache + "_repodata.txt")
+
+    scanner.add(update.UpdateVersion, hosters.Hoster.select_hoster, unparsed_urls)
+    scanner.add(update.UpdateChecksums, failed_urls)
+
+    if create_branch or create_pr:
+        scanner.add(update.GitWriteRecipe, git_handler)
+    else:
+        scanner.add(update.WriteRecipe)
+
+    if create_pr:
+        token = os.environ["GITHUB_TOKEN"]
+        if not token:
+            logger.critical("GITHUB_TOKEN required to create PRs")
+            exit(1)
+        scanner.add(update.CreatePullRequest, git_handler, token, dry_run)
+    if max_updates:
+        scanner.add(update.MaxUpdates, max_updates)
+    scanner.run()
+    if git_handler:
+        git_handler.close()
 
 
 def main():
     argh.dispatch_commands([
         build, dag, dependent, lint, duplicates,
-        bioconductor_skeleton, pypi_check, clean_cran_skeleton,
+        bioconductor_skeleton, clean_cran_skeleton, autobump
     ])

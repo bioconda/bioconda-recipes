@@ -112,6 +112,32 @@ telling the bootstrap setup to not use docker, and by excluding the
     source ~/.config/bioconda/activate
     bioconda-utils build recipes config.yml --git-range master
 
+Updating recipes
+++++++++++++++++
+
+`bioconda-utils` now has the ability to automatically update packages and
+submit a PR on your behalf. Note that the auto-updater does not yet know how to
+monitor changed dependencies, so it is important to verify that the updated
+recipe reflects all the changes. This tool is most useful when scanning
+packages to know when something has been updated.
+
+.. code-block:: bash
+
+    bioconda-utils update recipes/ config.yml --packages <my-package-name>
+
+will update the package's recipe which you can then inspect. If you have
+a `GitHub personal access token
+<https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/>`_
+set as the environment variable ``GITHUB_TOKEN``, the following command will
+additionally submit a pull request on your behalf:
+
+.. code-block:: bash
+
+    bioconda-utils update recipes/ config.yml \
+      --packages <my-package-name> \
+      --create-pr
+
+For more details, see the :ref:`updating` section.
 
 4. Push changes, wait for tests to pass, submit pull request
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
