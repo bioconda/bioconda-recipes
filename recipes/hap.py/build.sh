@@ -9,7 +9,14 @@ sed -i.bak 's/make -j4 -C samtools/#make -j4 -C samtools/' external/make_depende
 mkdir -p build
 cd build
 export BOOST_ROOT=${PREFIX}
+
+# Make a symlink to GCC to overcome hard-coded gcc calls in vendored tarballed makefiles
+ln -s $CC $PREFIX/bin/gcc
+
 cmake ../ -DCMAKE_INSTALL_PREFIX=$PREFIX -DBOOST_INCLUDEDIR=$PREFIX/include/boost -DBOOST_LIBRARYDIR=$PREFIX/lib
 make
 rm -f lib/libhts*so
 make install
+
+# Remove gcc symlink
+rm $PREFIX/bin/gcc
