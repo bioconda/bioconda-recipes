@@ -642,14 +642,12 @@ class ExcludeOtherChannel(Filter):
     def __init__(self, scanner: "Scanner", channels: Sequence[str],
                  cache: str) -> None:
         super().__init__(scanner)
-        from .linting import channel_dataframe
         logger.info("Loading package lists for %s", channels)
-        cdf = channel_dataframe(channels=channels, cache=cache)
-        cdf['versionorder'] = cdf['version'].apply(VersionOrder)
-        self.other_latest = cdf.groupby('name')['versionorder'].agg(max)
+        r = utils.RepoData()
+        self.other = set(r.get_package_data('name', channels=channels))
 
     async def apply(self, recipe):
-        if any(package in self.other_latest
+        if any(package in self.other
                for package in recipe.package_names):
             raise self.OtherChannel(recipe)
         return recipe
