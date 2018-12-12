@@ -800,7 +800,7 @@ def check_recipe_skippable(recipe, check_channels):
         (meta.name(), meta.version(), int(meta.build_number()) or 0, _meta_subdir(meta))
         for meta in metas
     )
-    return m_new_pkg_builds == num_existing_pkg_builds
+    return num_new_pkg_builds == num_existing_pkg_builds
 
 
 def _filter_existing_packages(metas, check_channels):
