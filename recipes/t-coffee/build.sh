@@ -15,5 +15,4 @@ make
 # install tcoffee in the target bin directory 
 mkdir -p $PREFIX/bin
 cp t_coffee $PREFIX/bin
-# this should go as a separate recipe in the a future release
-cp TMalign $PREFIX/bin
+
