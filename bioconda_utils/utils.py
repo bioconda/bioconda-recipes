@@ -15,6 +15,7 @@ import datetime
 from threading import Event, Thread
 from pathlib import PurePath
 import json
+import warnings
 
 from conda_build import api
 from conda.exports import VersionOrder
@@ -951,6 +952,10 @@ def load_config(path):
     return default_config
 
 
+class BiocondaUtilsWarning(UserWarning):
+    pass
+
+
 def modified_recipes(git_range, recipe_folder, config_file):
     """
     Returns files under the recipes dir that have been modified within the git
@@ -1198,9 +1203,15 @@ class RepoData:
             RepoData.__instance = object.__new__(cls)
         return RepoData.__instance
 
-    def __init__(self, cache=None):
-        self.cache_file = cache
+    def __init__(self):
+        self.cache_file = None
         self._df = None
+
+    def set_cache(self, cache):
+        if self._df is not None:
+            warnings.warn("RepoData cache set after first use", BiocondaUtilsWarning)
+        else:
+            self.cache_file = cache
 
     @property
     def df(self):
