@@ -13,6 +13,7 @@ import shutil
 from os import access
 from os import getenv
 from os import X_OK
+
 jar_file = 'PeptideShaker-1.16.36.jar'
 
 
