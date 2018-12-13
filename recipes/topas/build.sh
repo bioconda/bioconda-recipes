@@ -4,7 +4,7 @@ set -eu -o pipefail
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 mkdir -p $PREFIX/bin
-cp -R $SRC_DIR/TOPAS-1.0.1.jar  $outdir/
+cp -R $SRC_DIR/TOPAS-${PKG_VERSION}.jar  $outdir/
 cp $RECIPE_DIR/topas.py $outdir/topas 
 ls -l $outdir
 ln -s $outdir/topas $PREFIX/bin
