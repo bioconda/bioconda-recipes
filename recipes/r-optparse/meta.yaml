@@ -1,0 +1,53 @@
+{% set version = '1.6.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-optparse
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url: {{ cran_mirror }}/src/contrib/optparse_{{ version }}.tar.gz
+  sha256: 10e816bb8f5b08d52cfd3a0028903a8c62ef9cf7bfd85f9dae8af442e82bfbb4
+
+build:
+  merge_build_host: True  # [win]
+
+  number: 1
+
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}        # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base >=2.9.0
+
+  run:
+    - r-base >=2.9.0
+    - {{native}}gcc-libs         # [win]
+
+test:
+  commands:
+
+    - $R -e "library('optparse')"           # [not win]
+    - "\"%R%\" -e \"library('optparse')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=optparse
+  license: GPL-2
+  summary: Command Line Option Parser
+  license_family: GPL2
+extra:
+  recipe-maintainers:
+    - AlexisDereeper
