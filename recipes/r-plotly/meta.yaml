@@ -1,0 +1,53 @@
+{% set version = '4.8.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-plotly
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url: {{ cran_mirror }}/src/contrib/plotly_{{ version }}.tar.gz
+  sha256: 78f90282c831bbbb675ed4811fb506a98dd05e37251fabd42ebc263c80bae8a6 
+
+build:
+  merge_build_host: True  # [win]
+
+  number: 1
+
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}        # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base >=3.2.0
+
+  run:
+    - r-base >=3.2.0
+    - {{native}}gcc-libs         # [win]
+
+test:
+  commands:
+
+    - $R -e "library('plotly')"           # [not win]
+    - "\"%R%\" -e \"library('plotly')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=plotly
+  license: MIT
+  summary: Create Interactive Web Graphics via plotly.js
+  license_family: MIT
+extra:
+  recipe-maintainers:
+    - AlexisDereeper
