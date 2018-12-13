@@ -1,4 +1,5 @@
-#tar -xvf metabat-static-binary-linux-x64_v2.12.1.tar.gz
+#!/bin/bash
+ set -e -o pipefail
 
 # copying over all necessary files
 mkdir -p $PREFIX/bin/

@@ -154,9 +154,12 @@ BEGIN {
 ##     run against short sequences using the same
 ##     species parameters.
 ##
+  
   @LIBPATH = ( $REPEATMASKER_LIB_DIR, 
                $ENV{'HOME'} . "/.RepeatMaskerCache" );
-
+  if (defined($ENV{'REPEATMASKER_CACHE_DIR'})) {
+    unshift(@LIBPATH, $ENV{'REPEATMASKER_CACHE_DIR'});
+  }
 
 ##
 ## TRF Location ( OPTIONAL )

@@ -1,6 +1,6 @@
---- RepeatMasker.orig/RepeatMasker	2017-01-10 20:21:27.372748387 +0200
-+++ RepeatMasker/RepeatMasker	2017-01-10 19:58:58.074301195 +0200
-@@ -407,8 +407,8 @@
+--- RepeatMasker.orig	2018-03-07 22:59:45.733982926 +0200
++++ RepeatMasker	2018-03-07 23:03:59.499548938 +0200
+@@ -408,8 +408,8 @@
      . "incorrectly set in the RepeatMaskerConfig.pm file.  Please open the "
      . "RepeatMaskerConfig.pm file  and edit the "
      . "\$RepeatMaskerConfig::REPEATMASKER_DIR line.\n"
@@ -11,48 +11,16 @@
  
  #
  # Get the date
-@@ -549,26 +549,26 @@
- # Verify that the libraries exist
- #
- die "RepeatMasker could not find the repeat library at:\n"
--    . "  $RepeatMaskerConfig::REPEATMASKER_DIR/Libraries/RepeatMaskerLib.embl\n"
-+    . "  $RepeatMaskerConfig::REPEATMASKER_LIB_DIR/RepeatMaskerLib.embl\n"
-     . "This file is necessary to run RepeatMasker.  A minimal version of this\n"
-     . "file is distributed with RepeatMasker.  For an extensive library of\n"
-     . "interspersed repeats please obtain the complete file at:\n"
-     . "http://www.girinst.org and install before using RepeatMasker.\n\n"
-     unless (
--       -s "$RepeatMaskerConfig::REPEATMASKER_DIR/Libraries/RepeatMaskerLib.embl"
--       || -s "$RepeatMaskerConfig::REPEATMASKER_DIR/Libraries/Dfam.hmm" );
-+       -s "$RepeatMaskerConfig::REPEATMASKER_LIB_DIR/RepeatMaskerLib.embl"
-+       || -s "$RepeatMaskerConfig::REPEATMASKER_LIB_DIR/Dfam.hmm" );
+@@ -537,7 +537,7 @@
  
- my $dbversion;
- my $repbaseVersion;
- my $rmLibraryVersion;
- my $minLibraryVersion = 20140131.0;
- if ( $engine eq "hmmer" ) {
--  open INVERS, "<$RepeatMaskerConfig::REPEATMASKER_DIR/Libraries/Dfam.hmm"
-+  open INVERS, "<$RepeatMaskerConfig::REPEATMASKER_LIB_DIR/Dfam.hmm"
-       or die "Error! Could not open RepeatMasker HMM library database file!\n";
- }
- else {
-   open INVERS,
--      "<$RepeatMaskerConfig::REPEATMASKER_DIR/Libraries/RepeatMaskerLib.embl"
-+      "<$RepeatMaskerConfig::REPEATMASKER_LIB_DIR/RepeatMaskerLib.embl"
-       or die "Error! Could not open RepeatMasker EMBL library database file!\n";
- }
- while ( <INVERS> ) {
-@@ -583,7 +583,7 @@
-     die "The RepeatMasker.lib file is out of date.  This version of "
-         . "RepeatMasker requires library version $minLibraryVersion or "
-         . "higher.  Your version is $2.\n"
--        unless ( $2 >= $minLibraryVersion );
-+        unless ( $3 eq "-min" || $2 >= $minLibraryVersion );
-     $repbaseVersion   = $2 . $3;
-     $rmLibraryVersion = $2 . $3;
-     $dbversion        =
-@@ -661,7 +661,7 @@
+ my ( $combLib, $rmLibraryVersion, $dbversion ) =
+     LibraryUtils::validateLibraries(
+-                              "$RepeatMaskerConfig::REPEATMASKER_DIR/Libraries",
++                              "$RepeatMaskerConfig::REPEATMASKER_LIB_DIR",
+                               $libType );
+ 
+ # Some warnings for Dfam & species choice
+@@ -628,7 +628,7 @@
  #
  my $tax =
      Taxonomy->new( taxonomyDataFile =>

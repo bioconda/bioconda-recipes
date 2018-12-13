@@ -9,28 +9,30 @@ about:
   summary: Multiple alignment of RNAs
 
 build:
-  number: 0
+  number: 1
 
 source:
-  fn: locarna-1.9.2.tar.gz
   url: "https://github.com/s-will/LocARNA/releases/download/v1.9.2/locarna-1.9.2.tar.gz"
   sha256: 14aabc5425f5090bf1bcaa61c2db41f659e55dd40100db117fb9e40470b4a2b5
 
 requirements:
-  build: 
+  build:
+    - {{ compiler('cxx') }}
+  host:
     - viennarna ==2.3.5
-    - llvm # [osx]
-    - gcc # [linux]
-  run: 
+  run:
     - viennarna ==2.3.5
     - perl
-    - libgcc # [linux]
 
 test:
   commands:
-    - mlocarna --version  
+    - mlocarna --version
     - locarna --version
     - locarna_p --version
     - sparse --version
     - exparna_p --version
     - echo -e ">D10744\nGGAAAAUUGAUCAUCGGCAAGAUAAGUUAUUUACUAAAUAAUAGGAUUUAAUAACCUGGUGAGUUCGAAUCUCACAUUUUCCG" | locarna_rnafold_pp --in-loop --stacking --noLP -p0.5 |head -n3
+
+extra:
+  identifiers:
+    - biotools:locarna

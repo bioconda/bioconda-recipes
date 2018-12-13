@@ -2,26 +2,28 @@
 {% set version = "4.0.0beta2" %}
 
 about:
-    home: 'https://mummer4.github.io/'
-    license: "The Artistic License 2.0"
-    summary: "MUMmer is a system for rapidly aligning entire genomes"
+  home: 'https://mummer4.github.io/'
+  license: "The Artistic License 2.0"
+  summary: "MUMmer is a system for rapidly aligning entire genomes"
 build:
-  number: 0
-  skip: True #[osx]
+  number: 3
 package:
   name: {{ name|lower }}
   version: {{ version }}
 source:
-  fn: {{ name|lower }}-{{ version }}.tar.gz
   sha256: cece76e418bf9c294f348972e5b23a0230beeba7fd7d042d5584ce075ccd1b93
   url: https://github.com/mummer4/mummer/releases/download/v{{ version }}/mummer-{{ version }}.tar.gz
+  patches:
+    - Makefile.am.patch # replaces some double quotes with single quotes to accomodate filepaths with '@' (Galaxy)
+    - Makefile.in.patch
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
     - perl
-    - gcc
   run:
     - perl
-    - libgcc
 test:
   commands:
     - "mummer 2>&1 | grep mummer &> /dev/null"

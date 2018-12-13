@@ -13,7 +13,8 @@ fi
     --prefix="$PREFIX" \
     --with-boost="$PREFIX" \
     --with-mpi="$PREFIX" \
-    --with-sparsehash="$PREFIX"
+    --with-sparsehash="$PREFIX" \
+    --without-sqlite
 make AM_CXXFLAGS=-Wall
 make install
 

@@ -10,10 +10,7 @@ OUTDIR=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $OUTDIR
 
 # install folders
-cp -r $SRC_DIR/SICER/ex $OUTDIR
-cp -r $SRC_DIR/SICER/lib $OUTDIR
-cp -r $SRC_DIR/SICER/src $OUTDIR
-cp -r $SRC_DIR/SICER/utility $OUTDIR
+cp -r $SRC_DIR/SICER $OUTDIR
 
 # install files
 for b in `echo SICER.sh SICER-rb.sh SICER-df.sh SICER-df-rb.sh` ;

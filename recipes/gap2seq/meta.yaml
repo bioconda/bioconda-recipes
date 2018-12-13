@@ -7,11 +7,9 @@ package:
   version: {{ version }}
 
 build:
-  number: 2
-  string: boost{{CONDA_BOOST}}_zlib{{CONDA_ZLIB}}_{{PKG_BUILDNUM}}
+  number: 4
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://www.cs.helsinki.fi/u/lmsalmel/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
@@ -20,32 +18,22 @@ source:
 
 requirements:
   build:
-    # linux build
-    - gcc >=4.7  # [linux]
-    - libgcc  # [linux]
-    # osx build
-    - llvmdev ==3.9.1  # [osx]
-    - libcxx  # [osx]
-    # general build
+    - {{ compiler('c') }}
     - pkg-config
     - cmake
     - make
-    - boost {{CONDA_BOOST}}*
-    - zlib {{CONDA_ZLIB}}*
+  host:
+    - boost
+    - zlib
   run:
-    # linux run
-    - libgcc  # [linux]
-    # osx run
-    - libcxx  # [osx]
-    # general run
-    - boost {{CONDA_BOOST}}*
-    - zlib {{CONDA_ZLIB}}*
+    - boost
+    - zlib
 test:
   commands:
-     - GapMerger 2>&1 | grep "USAGE for"  > /dev/null
-     - GapCutter 2>&1 | grep "USAGE for"  > /dev/null
-     - Gap2Seq 2>&1 | grep "USAGE for"  > /dev/null
-     - Gap2Seq.sh 2>&1 | grep "Required parameters" > /dev/null
+    - GapMerger 2>&1 | grep "USAGE for"  > /dev/null
+    - GapCutter 2>&1 | grep "USAGE for"  > /dev/null
+    - Gap2Seq 2>&1 | grep "USAGE for"  > /dev/null
+    - Gap2Seq.sh 2>&1 | grep "Required parameters" > /dev/null
 
 about:
   home: https://www.cs.helsinki.fi/u/lmsalmel/Gap2Seq/

@@ -6,11 +6,9 @@ package:
   version: {{ version }}
 
 build:
-  number: 6
-  string: boost1.61_{{PKG_BUILDNUM}}
+  number: 8
 
 source:
-  fn: abyss-{{ version }}.tar.gz
   url: https://github.com/bcgsc/abyss/releases/download/{{ version }}/abyss-{{ version }}.tar.gz
   md5: 7b1b9f060dbae6c7fe815b1e50487c83
   patches:
@@ -18,25 +16,24 @@ source:
 
 requirements:
   build:
-  - gcc # [not osx]
-  - llvm # [osx]
-  - boost 1.61.0
-  - sparsehash
-  - sqlite
-  - openmpi
+    - {{ compiler('cxx') }}
+  host:
+    - boost
+    - sparsehash
+    - sqlite
+    - openmpi
 
   run:
-  - bwa
-  - libgcc # [not osx]
-  - sqlite
-  - make
-  - openmpi
+    - bwa
+    - sqlite
+    - make
+    - openmpi
 
 test:
   commands:
-    - ABYSS-P --version
-    - ABYSS --version
-    - abyss-pe help
+    - ABYSS-P --version | grep -q "{{ version }}"
+    - ABYSS --version | grep -q "{{ version }}"
+    - abyss-pe help | grep -q "Assemble reads into contigs and scaffolds"
 
 
 about:
@@ -49,3 +46,6 @@ extra:
   container:
     # openmpi needs ssh/rsh
     extended-base: true
+  identifiers:
+    - biotools:abyss
+    - doi:10.1101/gr.089532.108

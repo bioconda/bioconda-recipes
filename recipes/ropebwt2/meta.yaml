@@ -3,31 +3,27 @@ package:
   version: "r187"
 
 build:
-  number: 1
+  number: 3
 
 source:
-  fn: ropebwt2_r187.tar.gz
   url: https://github.com/lh3/ropebwt2/archive/e23a7df263571c02aa0c0434e623108482097e3d.tar.gz
   md5: fc23f90727e28eef748304a12583a585
 
 requirements:
   build:
-  - gcc  # [not osx]
-  - llvm  # [osx]
-  - zlib
-
+    - {{ compiler('c') }}
+  host:
+    - zlib
   run:
-  - libgcc  # [not osx]
-  - llvm
-  - zlib
+    - zlib
 
 test:
   commands:
-    - ropebwt2  2>&1 | grep ropebwt2 > /dev/null
+    # A normal "print the usage" test won't work due to use of isatty()
+    - ropebwt2 -h /dev/null 2>&1 | grep ropebwt2
 
 about:
   home: https://github.com/lh3/ropebwt2
   license: MIT
   license_file: LICENSE.txt
   summary: Incremental construction of FM-index for DNA sequences
-
