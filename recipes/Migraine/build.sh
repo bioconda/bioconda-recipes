@@ -1,6 +1,4 @@
 #!/bin/bash
 
-g++ -O3 -o migraine *.cpp
-
-cp migraine $PREFIX/bin
-chmod +x $PREFIX/bin/migraine
+mkdir -p ${PREFIX}/bin
+${CXX} -O3 -o ${PREFIX}/bin/migraine *.cpp

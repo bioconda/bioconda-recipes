@@ -1,0 +1,39 @@
+diff --git a/truvari.py b/truvari.py
+index 166bff6..1977177 100755
+--- a/truvari.py
++++ b/truvari.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/opt/anaconda1anaconda2anaconda3/bin/python
+ from __future__ import print_function
+ import os
+ import re
+@@ -897,6 +897,9 @@ def run(cmdargs):
+                 stats_box["TP-base"] += 1
+             if not matched_calls[c_key]:
+                 stats_box["TP-call"] += 1
++                write_tp_call = True
++            else:
++                write_tp_call = False
+             # Mark the call for multimatch checking
+             matched_calls[b_key] = True
+             matched_calls[c_key] = True
+@@ -905,7 +908,8 @@ def run(cmdargs):
+             annotate_tp(match_entry, *thresh_neighbors[0])
+ 
+             tpb_out.write_record(base_entry)
+-            tpc_out.write_record(match_entry)
++            if write_tp_call:
++                tpc_out.write_record(match_entry)
+             logging.debug("Matching %s and %s", str(base_entry), str(match_entry))
+         else:
+             stats_box["FN"] += 1
+@@ -938,7 +942,7 @@ def run(cmdargs):
+         if size < args.sizemin or size > args.sizemax:
+             c_filt.write_record(entry)
+             stats_box["call size filtered"] += 1
+-        elif args.no_ref and not entry.genotype(sampleB)["GT"].is_variant:
++        elif args.no_ref and not entry.genotype(sampleB).is_variant:
+             stats_box["call gt filtered"] += 1
+         elif regions.include(entry):
+             fp_out.write_record(entry)

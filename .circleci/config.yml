@@ -1,5 +1,5 @@
 version: 2
-# trigger cache invalidation: 2018-06-23T22:39+00:00
+# trigger cache invalidation: 2018-09-16T22:39+00:00
 
 variables:
   restore_cache: &restore_cache
@@ -16,8 +16,6 @@ variables:
       name: Download common definitions
       command: |
         curl -s https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh > .circleci/common.sh
-        # TODO remove this temporal override before merging the PR into master
-        echo -e 'MINICONDA_VER=4.5.4\nBIOCONDA_UTILS_TAG=cb3-migration' > .circleci/common.sh
   setup: &setup
     run:
       name: Setup bioconda-utils
@@ -53,8 +51,7 @@ jobs:
   # When running CircleCI locally, we put everything in one job.
   build:
     docker:
-      # TODO: remove cb3-migration tag
-      - image: bioconda/bioconda-utils-build-env:cb3-migration
+      - image: bioconda/bioconda-utils-build-env
     steps:
       - checkout
       - run:
@@ -62,16 +59,8 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-      - run:
-          name: Setup base system
-          command: |
-            cat >> $BASH_ENV <<EOF
-            if [[ \$- == *u* ]] ; then
-                set +u ; . /tmp/repo/docker-entrypoint-source ; set -u
-            else
-                . /tmp/repo/docker-entrypoint-source
-            fi
-            EOF
+      - run: echo ". /opt/conda/etc/profile.d/conda.sh" >> $BASH_ENV
+      - run: echo "conda activate" >> $BASH_ENV
       - *common
       - *setup
       - run:
@@ -87,8 +76,7 @@ jobs:
           # above. A workaround or an upstream fix would be welcome.
           command: |
             bioconda-utils build recipes config.yml \
-            --git-range master HEAD \
-            --prelint
+            --git-range master HEAD
 
   lint:
     <<: *linux

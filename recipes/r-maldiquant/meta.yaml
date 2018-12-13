@@ -1,4 +1,7 @@
-{% set version = '1.17' %}
+{% set version = '1.18' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-maldiquant
@@ -6,29 +9,41 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/MALDIquant_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/MALDIquant/MALDIquant_{{ version }}.tar.gz
-  sha256: 1ff85f28f57c1088b2434390066c09ffd94a16ad4780ca514783357f0030fa10
+    - {{ cran_mirror }}/src/contrib/MALDIquant_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/MALDIquant/MALDIquant_{{ version }}.tar.gz
+  sha256: 46c1744ead86dc782c410b0be8bf2e95dbef01af53a6f3d665b36bd94910d4a2
 
 build:
+  merge_build_host: True  # [win]
+
   number: 1
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('c') }}        # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
 
   host:
     - r-base
 
   run:
     - r-base
+    - {{native}}gcc-libs         # [win]
 
 test:
   commands:
-    - $R -e "library('MALDIquant')"
+
+    - $R -e "library('MALDIquant')"           # [not win]
+    - "\"%R%\" -e \"library('MALDIquant')\""  # [win]
 
 about:
   home: http://strimmerlab.org/software/maldiquant/ https://github.com/sgibb/MALDIquant/
@@ -41,3 +56,14 @@ about:
     functions, handling of replicated measurements as well as allowing spectra with
     different resolutions.
   license_family: GPL3
+  license_file: '{{ environ["PREFIX"] }}\/lib\/R\/share\/licenses\/GPL-3'  # [unix]
+  license_file: '{{ environ["PREFIX"] }}\R\share\licenses\GPL-3'  # [win]
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak
