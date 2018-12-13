@@ -1,0 +1,53 @@
+{% set version = '1.0.5' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-factoextra
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url: {{ cran_mirror }}/src/contrib/factoextra_{{ version }}.tar.gz
+  sha256: 8177a3f5107883ae248b2cd0afa388a1794741f5155a9455b3883788cf44d5d0 
+
+build:
+  merge_build_host: True  # [win]
+
+  number: 1
+
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}        # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base >=3.1.2
+
+  run:
+    - r-base >=3.1.2
+    - {{native}}gcc-libs         # [win]
+
+test:
+  commands:
+
+    - $R -e "library('factoextra')"           # [not win]
+    - "\"%R%\" -e \"library('factoextra')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=factoextra
+  license: GPL-2
+  summary: Extract and Visualize the Results of Multivariate Data Analyses
+  license_family: GPL2
+extra:
+  recipe-maintainers:
+    - AlexisDereeper
