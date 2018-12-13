@@ -1,4 +1,7 @@
-{% set version = '6.3.1' %}
+{% set version = '6.3.2' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-mixomics
@@ -6,18 +9,24 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/mixOmics_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/mixOmics/mixOmics_{{ version }}.tar.gz
-  sha256: 1883f0c60e4f0dfa0beb62a9b0f377624cc310efef1646b9c4ba57927a5f742f
+    - {{ cran_mirror }}/src/contrib/mixOmics_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/mixOmics/mixOmics_{{ version }}.tar.gz
+  sha256: 62c9bfe8967997c673e45433a8705dd43f6b5eb3c9fd62529461d3e6f4cb10d3
 
 build:
-  number: 1
-  # r-rgl not available on OSX for conda-forge
-  skip: true  # [osx]
+  merge_build_host: True  # [win]
+
+  number: 0
+  skip: true  # [win32]
+
   rpaths:
     - lib/R/lib/
     - lib/
+
 requirements:
+  build:
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
     - r-mass
@@ -30,14 +39,10 @@ requirements:
     - r-igraph
     - r-lattice
     - r-matrixstats
-    - r-plyr
     - r-rarpack
     - r-reshape2
     - r-rgl
     - r-tidyr
-
-    # prev version
-    - libglu # [linux]
 
   run:
     - r-base
@@ -51,18 +56,16 @@ requirements:
     - r-igraph
     - r-lattice
     - r-matrixstats
-    - r-plyr
     - r-rarpack
     - r-reshape2
     - r-rgl
     - r-tidyr
 
-    # prev version
-    - libglu # [linux]
-
 test:
   commands:
-    - $R -e "library('mixOmics')"
+
+    - $R -e "library('mixOmics')"           # [not win]
+    - "\"%R%\" -e \"library('mixOmics')\""  # [win]
 
 about:
   home: http://www.mixOmics.org
@@ -89,8 +92,17 @@ about:
     with variants of multi-group Partial Least Squares.'
 
   license_family: GPL3
-
+  license_file: '{{ environ["PREFIX"] }}\/lib\/R\/share\/licenses\/GPL-3'  # [unix]
+  license_file: '{{ environ["PREFIX"] }}\R\share\licenses\GPL-3'  # [win]
 extra:
   container:
     # needed for libGL.so.1
     extended-base: true
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

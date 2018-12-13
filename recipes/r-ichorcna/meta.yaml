@@ -1,0 +1,52 @@
+{% set version="0.1.0.20180710" %}
+{% set revision="8021afa" %}
+{% set name="ichorCNA" %}
+{% set sha256sum="1155c0e4cd415489e3ea9b00f7fdfee9bf13f3f2aeec04ab0a32b137b8ec850f" %}
+
+package:
+  name: 'r-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url: https://github.com/broadinstitute/ichorCNA/archive/{{ revision }}.tar.gz
+  sha256:  {{ sha256sum }}
+
+build:
+  number: 0
+  skip: true  # [win32]
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  host:
+    - r-base
+    - libgfortran-ng  # work around bug in r-base with Rcpp
+    - perl  # for adding in correct path references to scripts
+    - 'bioconductor-genomeinfodb >=1.8.7'
+    - 'bioconductor-hmmcopy >=1.14.0'
+    - r-optparse
+    - r-plyr
+  run:
+    - r-base
+    - libgfortran-ng  # work around bug in r-base with Rcpp
+    - 'bioconductor-genomeinfodb >=1.8.7'
+    - 'bioconductor-hmmcopy >=1.14.0'
+    - r-optparse
+    - r-plyr
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+    - runIchorCNA.R -h 2>&1 | grep Usage
+    - ichorCNA_createPanelOfNormals.R -h 2>&1 | grep Usage
+about:
+  home: https://github.com/broadinstitute/ichorCNA
+  license: GPL-3
+  summary:  Estimating tumor fraction in cell-free DNA from ultra-low-pass whole genome sequencing.
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak
