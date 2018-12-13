@@ -225,7 +225,8 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
         print('\n'.join([i.__name__ for i in lint_functions.registry]))
         sys.exit(0)
 
-    utils.RepoData(cache)
+    if cache is not None:
+        utils.RepoData().set_cache(cache)
     registry = lint_functions.registry
 
     if only is not None:
