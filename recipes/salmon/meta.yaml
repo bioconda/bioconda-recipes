@@ -1,7 +1,12 @@
-{% set version="0.12.0" %}
+{% set version="0.11.0" %}
+{% set llvm_version = "4.0.0" %}
 
 build:
-  number: 1
+  number: 0
+  # OSX failing due to libary issues even though shipping with Salmon binary
+  # dyld: Library not loaded: /usr/local/opt/tbb/lib/libtbbmalloc_proxy.dylib
+  # https://travis-ci.org/bioconda/bioconda-recipes/jobs/211785820#L295
+  #skip: true # [osx]
 
 about:
   home: https://github.com/COMBINE-lab/salmon
@@ -14,28 +19,24 @@ package:
 
 source:
   url: https://github.com/COMBINE-lab/salmon/archive/v{{ version }}.tar.gz
-  # work on develop until everything compiles cleanly
-  #url: https://github.com/COMBINE-lab/salmon/archive/develop.tar.gz
-  md5: 2f07447c0070d1e22fb2b3879eaca810
-  #patches: salmon_cmake.patch
+  md5: e89ac62883854a3c2215981debd168ae
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
     - autoconf
     - cmake
-    - {{ compiler('cxx') }}
-    - {{ compiler('c') }}
   host:
-    - libboost 
-    - icu 
+    - boost
+    - icu
     - zlib
     - bzip2
     - unzip
     - jemalloc >=5.1.0
-    - tbb-devel
+    - tbb
   run:
-    - libboost 
-    - icu 
+    - boost
+    - icu
     - jemalloc >=5.1.0
     - tbb
     - zlib

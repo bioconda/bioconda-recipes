@@ -1,31 +1,43 @@
-{% set version = "0.4.8" %}
-{% set sha256 = "60c58ab93412ef8762c9d95034b193f023898ac10a1a2c23321b285e83848d49" %}
+{% set name = "confindr" %}
+{% set version = "0.3.2" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "dae78a22b32cec2893553f624931b663c60d6362618b5db7d5d335d02a39e735" %}
 
 package:
-  name: confindr
+  name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/c/confindr/confindr-{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  noarch: python
-  number: 0
-  script: python -m pip install --no-deps --ignore-installed --no-cache-dir .
+  skip: True # [py27]
 
 requirements:
-  host:
-    - python >=3
-    - pip
-  run:
-    - python >=3
+  build:
+    - python
+    - setuptools
     - biopython
-    - pysam >=0.15
+    - pysam
     - pytest
-    - bbmap >=38
+    - bbmap
+    - jellyfish
+    - blast
     - mash >=2
-    - samtools >=1.6
+    - samtools
+  run:
+    - python
+    - biopython
+    - pysam
+    - pytest
+    - bbmap
+    - jellyfish
+    - blast
+    - mash >=2
+    - samtools
 
 test:
   imports:
@@ -38,9 +50,9 @@ about:
   home: https://github.com/lowandrew/ConFindr
   license: MIT
   license_family: MIT
-  summary: Detect intra- and inter-species bacterial contamination in NGS reads
-  doc_url: https://lowandrew.github.io/ConFindr/
-  dev_url: https://github.com/lowandrew/ConFindr
+  summary: 'Detect intra- and inter-species bacterial contamination in NGS reads'
+  doc_url: 'https://lowandrew.github.io/ConFindr/'
+  dev_url: 'https://github.com/lowandrew/ConFindr'
 
 extra:
-  recipe-maintainers: lowandrew
+  recipe-maintainers: 'Andrew Low'

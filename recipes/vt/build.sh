@@ -9,7 +9,6 @@ export CPATH=${PREFIX}/include
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
 
-make -j${CPU_COUNT}
-make test
+make
 mkdir -p $PREFIX/bin
 cp vt $PREFIX/bin

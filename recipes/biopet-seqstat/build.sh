@@ -6,7 +6,7 @@
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 mkdir -p $PREFIX/bin
-cp SeqStat-assembly-1.0.1.jar $outdir/SeqStat-assembly-1.0.1.jar
+cp seqstat-assembly-1.0.jar $outdir/seqstat-assembly-1.0.jar
 cp $RECIPE_DIR/biopet-seqstat.py $outdir/biopet-seqstat
 ln -s $outdir/biopet-seqstat $PREFIX/bin
 

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
 make install prefix=$PREFIX
 mkdir -p $PREFIX/lib
 #cp $(pwd)/plugins/*.so $PREFIX/lib

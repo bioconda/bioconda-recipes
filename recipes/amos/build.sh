@@ -1,6 +1,7 @@
 #!/bin/bash
 
-rm -rf test tutorial
+rm -r test tutorial
+./bootstrap
 ./configure \
     --prefix=$PREFIX
 make

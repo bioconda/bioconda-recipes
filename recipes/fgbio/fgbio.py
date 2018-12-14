@@ -1,43 +1,44 @@
-#!/usr/bin/env python
+#!/opt/anaconda1anaconda2anaconda3/bin/python
 #
 # Wrapper script for invoking the jar.
 #
 # This script is written for use with the Conda package manager and is ported
 # from a bash script that does the same thing, adapting the style in
-# the womtool wrapper
+# the peptide-shaker wrapper
+# (https://github.com/bioconda/bioconda-recipes/blob/master/recipes/peptide-shaker/peptide-shaker.py)
 
 import subprocess
 import sys
-import os
 from os import access, getenv, path, X_OK
 
 
-# Expected name of the VarScan JAR file.
+# Expected name of the JAR file.
 JAR_NAME = 'fgbio.jar'
-PKG_NAME = 'fgbio'
 
 # Default options passed to the `java` executable.
-DEFAULT_JVM_MEM_OPTS = ['-Xms512m', '-Xmx1g']
+DEFAULT_JVM_MEM_OPTS = ['-Xms512m', '-Xmx4g']
 
 
 def real_dirname(in_path):
-    """Returns the path to the JAR file"""
-    realPath = os.path.dirname(os.path.realpath(in_path))
-    newPath = os.path.realpath(os.path.join(realPath, "..", "share", PKG_NAME))
-    return newPath
+    """Returns the symlink-resolved, canonicalized directory-portion of
+    the given path."""
+    return path.dirname(path.realpath(in_path))
 
 
 def java_executable():
-    """Returns the name of the Java executable."""
+    """Returns the name of the Java executable.
+
+    Use JAVA_HOME, or local anaconda java, or just `java` in the PATH.
+    """
     java_home = getenv('JAVA_HOME')
     java_bin = path.join('bin', 'java')
-    env_prefix = os.path.dirname(os.path.dirname(real_dirname(sys.argv[0])))
+    if java_home and access(path.join(java_home, java_bin), X_OK):
+        return path.join(java_home, java_bin)
+    conda_java_bin = path.join(real_dirname(sys.executable), "java")
+    if conda_java_bin and path.exists(conda_java_bin) and access(conda_java_bin, X_OK):
+        return conda_java_bin
+    return 'java'
 
-    if java_home and access(os.path.join(java_home, java_bin), X_OK):
-        return os.path.join(java_home, java_bin)
-    else:
-        # Use Java installed with Anaconda to ensure correct version
-        return os.path.join(env_prefix, 'bin', 'java')
 
 def jvm_opts(argv, default_mem_opts=DEFAULT_JVM_MEM_OPTS):
     """Constructs a list of Java arguments based on our argument list.

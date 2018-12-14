@@ -17,7 +17,7 @@ from os import access
 from os import getenv
 from os import X_OK
 
-jar_file = 'SeqStat-assembly-1.0.1.jar'
+jar_file = 'seqstat-assembly-1.0.jar'
 
 default_jvm_mem_opts = []
 

@@ -15,5 +15,3 @@ cd perl-build
 perl ./Build.PL
 perl ./Build manifest
 perl ./Build install --installdirs site
-
-chmod u+rwx $PREFIX/bin/*

@@ -1,11 +1,13 @@
 #!/bin/bash
 
-TGT=${PREFIX}/share/weeder2
-mkdir -p ${PREFIX}/bin
-mkdir -p ${TGT}
+TGT="$PREFIX/share/weeder2"
+mkdir -p "$TGT"
+mkdir -p "${PREFIX}/bin"
 
-cp -r FreqFiles ${TGT}
-$CXX weeder2.cpp -o ${TGT}/weeder2 -O3
+cd "${SRC_DIR}"
+g++ weeder2.cpp -o weeder2 -O3
+cp weeder2 $TGT/
 
-cp ${RECIPE_DIR}/weeder2.py ${PREFIX}/bin/weeder2
-chmod 0755 ${PREFIX}/bin/weeder2
+cp $RECIPE_DIR/weeder2.py $TGT/
+ln -s $TGT/weeder2.py $PREFIX/bin/weeder2
+chmod 0755 "${PREFIX}/bin/weeder2"

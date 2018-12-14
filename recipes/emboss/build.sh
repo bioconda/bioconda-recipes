@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Remove some .la confusing libtool
-rm $PREFIX/lib/*.la
-
 ./configure --prefix=$PREFIX --without-x
 make
 make install

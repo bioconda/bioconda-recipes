@@ -6,16 +6,14 @@ sh autogen.sh
 
 # PhyML builds different binaries depending on configure flags.
 # We build
-#   - phyml
-#   - phyml-mpi
-# but not
-#   - phyml-beagle
-#   - phyrex
+#   - phyml (enable-phyml),
+#   - phyml-mpi (enable-mpi),
 #   - phytime
+# but not
+#   - phyml-beagle -- doesn't compile in this relase
+#   - phyrex -- doesn't build
 
-export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PREFIX/share/pkgconfig"
-
-for binary in mpi phyml; do
+for binary in beagle mpi phyml; do
     ./configure \
 	--disable-dependency-tracking \
 	--prefix $PREFIX \

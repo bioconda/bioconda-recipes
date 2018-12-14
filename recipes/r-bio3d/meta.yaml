@@ -1,7 +1,4 @@
-{% set version = '2.3-4' %}
-
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '2.3-3' %}
 
 package:
   name: r-bio3d
@@ -9,15 +6,12 @@ package:
 
 source:
   url:
-    - {{ cran_mirror }}/src/contrib/bio3d_{{ version }}.tar.gz
-    - {{ cran_mirror }}/src/contrib/Archive/bio3d/bio3d_{{ version }}.tar.gz
-  sha256: f9b39ab242cbedafcd98c1732cb1f5c0dd9ef66e28be39695e3420dd93e2bafe
+    - https://cran.r-project.org/src/contrib/bio3d_{{ version }}.tar.gz
+    - https://cran.r-project.org/src/contrib/Archive/bio3d/bio3d_{{ version }}.tar.gz
+  sha256: f4b45847eb8a4175dacea659f30a8075769ec1ae19daec6842b0d72227b48633
 
 build:
-  merge_build_host: True  # [win]
-
-  number: 0
-  skip: true  # [win32]
+  number: 1
 
   rpaths:
     - lib/R/lib/
@@ -25,14 +19,7 @@ build:
 
 requirements:
   build:
-    - {{ compiler('c') }}        # [not win]
-    - {{ compiler('cxx') }}      # [not win]
-    - {{native}}toolchain        # [win]
-    - {{posix}}filesystem        # [win]
-    - {{posix}}make
-    - {{posix}}sed               # [win]
-    - {{posix}}coreutils         # [win]
-    - {{posix}}zip               # [win]
+    - {{ compiler('cxx') }}
 
   host:
     - r-base
@@ -40,14 +27,11 @@ requirements:
 
   run:
     - r-base
-    - {{native}}gcc-libs         # [win]
     - r-rcpp
 
 test:
   commands:
-
-    - $R -e "library('bio3d')"           # [not win]
-    - "\"%R%\" -e \"library('bio3d')\""  # [win]
+    - $R -e "library('bio3d')"
 
 about:
   home: http://thegrantlab.org/bio3d/, http://bitbucket.org/Grantlab/bio3d
@@ -63,14 +47,3 @@ about:
     graphical power of the R environment to work with biological sequence and structural
     data. Please refer to the URLs below for more information.
   license_family: GPL3
-  license_file: '{{ environ["PREFIX"] }}\/lib\/R\/share\/licenses\/GPL-3'  # [unix]
-  license_file: '{{ environ["PREFIX"] }}\R\share\licenses\GPL-3'  # [win]
-extra:
-  recipe-maintainers:
-    - MathiasHaudgaard
-    - FrodePedersen
-    - ArneKr
-    - johanneskoester
-    - bgruening
-    - daler
-    - jdblischak

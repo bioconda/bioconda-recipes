@@ -1,4 +1,4 @@
-#!/opt/anaconda1anaconda2anaconda3/bin/python
+#!/usr/bin/env python
 #
 # Wrapper script for DeepVariant call_variants
 

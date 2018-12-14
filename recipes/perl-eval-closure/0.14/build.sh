@@ -2,8 +2,8 @@
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 
-HOME=/tmp cpanm Test2::Bundle::Extended
-HOME=/tmp cpanm --installdeps .
+cpanm Test2::Bundle::Extended
+cpanm --installdeps .
 
 if [ -f Build.PL ]; then
     perl Build.PL

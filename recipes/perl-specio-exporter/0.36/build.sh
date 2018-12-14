@@ -2,7 +2,7 @@
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 
-HOME=/tmp cpanm --installdeps .
+cpanm --installdeps .
 
 if [ -f Build.PL ]; then
     perl Build.PL
@@ -21,5 +21,8 @@ else
     exit 1
 fi
 
-chmod 755 ${PREFIX}/bin/config_data || echo "could not change file permissions"
+# Add more build steps here, if they are necessary.
 
+# See
+# http://docs.continuum.io/conda/build.html
+# for a list of environment variables that are set during the build process.
