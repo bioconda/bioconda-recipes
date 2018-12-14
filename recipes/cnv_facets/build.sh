@@ -1,5 +1,7 @@
 #!/bin/bash
 
+samtools view 
+
 function install_htslib(){
     # Download and install htslib. Compiled stuff is in `pwd`/htslib 
     pushd .
@@ -23,10 +25,11 @@ echo 'HTSLIB DONE'
 ln -s `pwd`/htslib/lib/libhts.a `pwd`/htslib/lib/libhts-static.a
 echo 'INSTALLING SNP-PILEUP'
 g++ -std=c++11 -I `pwd`/htslib/include snp-pileup.cpp -L `pwd`/htslib/lib -lhts-static -o snp-pileup -lcurl -lz -lpthread -lcrypto -llzma -lbz2
+./snp-pileup --help
 popd
 
 echo 'SNP-PILEUP DONE'
 
-R -e 'library(data.table); print("DONE")'
+$R -e 'library(RColorBrewer); print("DONE")'
 
 # bash setup.sh --bin_dir $PREFIX/bin
