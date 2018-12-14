@@ -14,11 +14,14 @@ function install_htslib(){
     make install
     popd
 }
+echo 'INSTALLING HTSLIB'
+install_htslib
+echo 'HTSLIB DONE'
 
+echo 'INSTALLING SNP-PILEUP'
 git clone https://github.com/mskcc/facets.git
 pushd .
 cd facets/inst/extcode/
-install_htslib
 ln -s `pwd`/htslib/lib/libhts.a `pwd`/htslib/lib/libhts-static.a
 g++ -std=c++11 -I `pwd`/htslib/include snp-pileup.cpp -L `pwd`/htslib/lib -lhts-static -o snp-pileup -lcurl -lz -lpthread -lcrypto -llzma -lbz2
 popd
