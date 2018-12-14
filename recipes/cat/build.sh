@@ -7,8 +7,6 @@ mkdir -p $outdir
 mkdir -p $PREFIX/bin
 
 
-chmod +x CAT_pack/CAT
-
 mv CAT_pack $outdir
 
 ln -s $outdir/CAT_pack/CAT $PREFIX/bin
