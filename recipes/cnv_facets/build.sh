@@ -1,3 +1,3 @@
 #!/bin/bash
 
-bash setup.sh --bin_dir $PREFIX
+bash setup.sh --bin_dir $PREFIX/bin
