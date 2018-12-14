@@ -10,9 +10,11 @@ cp utils/FEELnc_pipeline.sh ${PREFIX}/bin/
 cp utils/* ${PREFIX}/utils/
 
 # copy perl libraries
-cp lib/Bio/SeqFeature/* ${PREFIX}/lib/perl5/site_perl/*/Bio/SeqFeature/
-cp -r lib/Bio/DB/* ${PREFIX}/lib/perl5/site_perl/*/Bio/DB/
-cp lib/*pm ${PREFIX}/lib/perl5/site_perl/*/
+perl_version=$(perl -e 'print $^V');
+perl_version=${perl_version:1}
+cp lib/Bio/SeqFeature/* ${PREFIX}/lib/site_perl/${perl_version}/Bio/SeqFeature/
+cp -r lib/Bio/DB/* ${PREFIX}/lib/site_perl/${perl_version}/Bio/DB/
+cp lib/*pm ${PREFIX}/lib/site_perl/${perl_version}/
 
 # create env files to export / unset FEELNCPATH environment variable needed by feelnc scripts
 mkdir -p ${PREFIX}/etc/conda/activate.d/
