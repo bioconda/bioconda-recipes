@@ -30,6 +30,6 @@ popd
 
 echo 'SNP-PILEUP DONE'
 
-# $R -e 'library(RColorBrewer); print("DONE")'
+$R -e 'library(RColorBrewer); print("DONE")'
 
 # bash setup.sh --bin_dir $PREFIX/bin
