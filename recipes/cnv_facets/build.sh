@@ -27,4 +27,6 @@ popd
 
 echo 'SNP-PILEUP DONE'
 
-bash setup.sh --bin_dir $PREFIX/bin
+R -e 'library(data.table); print("DONE")'
+
+# bash setup.sh --bin_dir $PREFIX/bin
