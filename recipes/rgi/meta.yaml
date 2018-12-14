@@ -1,19 +1,19 @@
 {% set name = "rgi" %}
-{% set version = "4.0.3" %}
-{% set sha256 = "d82c92b2152089046fa0096f279714a068d31108030cb89c7a9fde6f9ee824b5" %}
+{% set version = "4.2.2" %}
+{% set sha256 = "ab4a5614e359884129064ec318d8dda2516052b26aa38cfd480245d24e0c96e7" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://card.mcmaster.ca/download/1/software-v{{ version }}.tar.gz
+  url: https://github.com/arpcard/rgi/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
-
 build:
-  skip: True # [not py27]
-  number: 1
+  skip: True # [win or py27]
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
   build:
@@ -25,14 +25,22 @@ requirements:
     - six >=1.7.0
     - zlib
   run:
+    # RGI requires these exact versions of blast prodigal and diamond, or else --alignment_mode DIAMOND fails
     - python
-    - filetype
-    - blast
-    - biopython
+    - blast ==2.6.0
     - six >=1.7.0
     - zlib
-    - prodigal
-    - diamond >=0.8.24.86
+    - prodigal ==2.6.3
+    - diamond ==0.8.36
+    - biopython >=1.60
+    - filetype >=1.0.0
+    - pytest >=3.0.0
+    - mock >=2.0.0
+    - pandas >=0.15.0
+    - matplotlib >=2.1.2
+    - seaborn >=0.8.1
+    - pyfaidx >=0.5.4.1
+    - pyahocorasick >=1.1.7
 
 test:
   commands:
@@ -43,11 +51,10 @@ test:
     - rgi clean -h
     - rgi galaxy -h
 
-
 about:
   home: https://card.mcmaster.ca
   license: https://card.mcmaster.ca/about
-  license_file: rgi-{{ version }}/LICENSE
+  license_file: LICENSE
   summary: 'This tool provides a preliminary annotation of your DNA sequence(s) based upon the data available in The Comprehensive Antibiotic Resistance Database (CARD). Hits to genes tagged with Antibiotic Resistance ontology terms will be highlighted. As CARD expands to include more pathogens, genomes, plasmids, and ontology terms this tool will grow increasingly powerful in providing first-pass detection of antibiotic resistance associated genes. See license at CARD website'
 
 extra:
