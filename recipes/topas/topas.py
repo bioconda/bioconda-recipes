@@ -11,7 +11,7 @@ import os
 import sys
 import subprocess
 from os import access, getenv, X_OK
-jar_file = 'TOPAS-1.0.1.jar'
+jar_file = 'TOPAS.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
