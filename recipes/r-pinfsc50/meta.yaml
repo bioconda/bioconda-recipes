@@ -9,21 +9,23 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/pinfsc50_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/pinfsc50/pinfsc50_{{ version }}.tar.gz
-
-
+    - {{ cran_mirror }}/src/contrib/pinfsc50_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/pinfsc50/pinfsc50_{{ version }}.tar.gz
   sha256: b6b9b6365a3f408533264d7ec820494f57eccaf362553e8478a46a8e5b474aba
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+
+  number: 2
 
   rpaths:
     - lib/R/lib/
     - lib/
 
-
 requirements:
+  build:
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
 
@@ -32,7 +34,8 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('pinfsc50')"  # [not win]
+
+    - $R -e "library('pinfsc50')"           # [not win]
     - "\"%R%\" -e \"library('pinfsc50')\""  # [win]
 
 about:
@@ -42,3 +45,12 @@ about:
     file ('VCF'), a sequence file ('FASTA') and an annotation file ('GFF'). This package
     is intended to be used as example data for packages that work with genomic data.
   license_family: GPL
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak
