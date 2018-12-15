@@ -18,7 +18,7 @@ then
     tar -xzf a3e6f56.tar.gz
     mv sate-tools-linux-a3e6f56372599ffacf1bd43adb2d67cf361228e2 sate-tools-linux
     cd pasta
-    $PYTHON setup.py install
+    $PYTHON setup.py install --single-version-externally-managed --record=/tmp/record.txt
     mkdir $install_dir/sate-tools-linux
     cp -R $work_dir/sate-tools-linux/* $install_dir/sate-tools-linux/
     # Handle a PASTA bug.
@@ -33,7 +33,7 @@ then
     tar -xzf 0712214.tar.gz
     mv sate-tools-mac-0712214e20152b2ec989fc102602afa53d3a7b1a sate-tools-mac
     cd pasta
-    $PYTHON setup.py install
+    $PYTHON setup.py install --single-version-externally-managed --record=/tmp/record.txt
     mkdir $install_dir/sate-tools-mac
     cp -R $work_dir/sate-tools-mac/* $install_dir/sate-tools-mac/
     # Handle a PASTA bug.
