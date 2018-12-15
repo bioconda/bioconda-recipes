@@ -1,7 +1,5 @@
 #!/bin/bash
 
-ls ${SRC_DIR}/libStatGen
-
 export CFLAGS="-I${PREFIX}/include -I${SRC_DIR}/libStatGen/include"
 export LDFLAGS="-L${PREFIX}/lib"
 export CPATH=${PREFIX}/include:${SRC_DIR}/libStatGen/include
@@ -21,3 +19,4 @@ cd ..
 cd fastQValidator
 make
 cp bin/fastQValidator ${PREFIX}/bin
+cd ..
