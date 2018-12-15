@@ -1,0 +1,37 @@
+{% set name = "fastqvalidator" %}
+{% set version = "0.1.1" %}
+{% set sha256 = "cb85bc5ea486207da30290132744aab4d129f38c08a1342fa1ce01f7b718c7f6" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+    - url: https://github.com/statgen/libStatGen/archive/v1.0.14.tar.gz
+      sha256: 70a504c5cc4838c6ac96cdd010644454615cc907df4e3794c999baf958fa734b
+      folder: libStatGen
+      patches:
+        - gcc_zlib.patch
+    - url: https://github.com/statgen/fastQValidator/archive/v{{ version }}.tar.gz
+      sha256: {{ sha256 }}
+      folder: fastQValidator
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+
+test:
+  commands:
+    - fastQValidator -h
+
+about:
+  home: https://genome.sph.umich.edu/wiki/FastQValidator
+  license: GPL3
+  license_file: copyrights/LICENSE.txt
+  summary: Validate FastQ Files
+  dev_url: https://github.com/statgen/fastQValidator
