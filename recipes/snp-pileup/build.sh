@@ -9,7 +9,7 @@ function install_htslib(){
     rm htslib-1.8.tar.bz2
     mv htslib-1.8 htslib
     cd htslib
-    ./configure --prefix=`pwd` --disable-bz2 --disable-lzma
+    ./configure --prefix=`pwd`
     make -j 4
     make install
     popd
