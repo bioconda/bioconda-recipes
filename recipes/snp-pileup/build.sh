@@ -24,7 +24,7 @@ mkdir -p $PREFIX/bin
 cd inst/extcode/
 
 # install_htslib
-
+echo $PREFIX
 find $PREFIX -name 'libhts.a'
 
 ln -s `pwd`/htslib/lib/libhts.a `pwd`/htslib/lib/libhts-static.a
