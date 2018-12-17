@@ -31,5 +31,3 @@ g++ -std=c++11 -I$PREFIX/include -I `pwd`/htslib/include snp-pileup.cpp -L$PREFI
 
 ./snp-pileup --help
 cp snp-pileup $PREFIX/bin/
-#cd $PREFIX
-#snp-pileup --help
