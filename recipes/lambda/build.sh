@@ -6,3 +6,4 @@ cd build
 cmake ..
 make
 cp bin/lambda $PREFIX/bin
+cp bin/lambda_indexer $PREFIX/bin
