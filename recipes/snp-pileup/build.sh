@@ -1,8 +1,8 @@
 #!/bin/bash
 
-export CFLAGS="-I$PREFIX/include"
-export CPPFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+#export CFLAGS="-I$PREFIX/include"
+#export CPPFLAGS="-I$PREFIX/include"
+#export LDFLAGS="-L$PREFIX/lib"
 
 function install_htslib(){
     # Download and install htslib. Compiled stuff is in `pwd`/htslib
@@ -30,6 +30,6 @@ g++ -std=c++11 -I$PREFIX/include -I `pwd`/htslib/include snp-pileup.cpp -L$PREFI
     -lhts-static -o snp-pileup -lcurl -lz -lpthread -lcrypto -llzma -lbz2
 
 ./snp-pileup --help
-mv snp-pileup $PREFIX/bin/
-cd $PREFIX
-snp-pileup --help
+cp snp-pileup $PREFIX/bin/
+#cd $PREFIX
+#snp-pileup --help
