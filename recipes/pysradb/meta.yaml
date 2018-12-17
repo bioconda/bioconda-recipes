@@ -1,0 +1,58 @@
+{% set name = "pysradb" %}
+{% set version = "0.4.2" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "66cafd599614345b30011dccfdca1ff044ba62f02d8fef1ab940fbbf8fa71917" %}
+
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  entry_points:
+    - pysradb=pysradb.cli:cli
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+  noarch: python
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - pandas >=0.23.4
+    - tqdm >=4.28
+    - click >=7.0
+  run:
+    - python
+    - pandas >=0.23.4
+    - tqdm >=4.28
+    - click >=7.0
+
+test:
+  imports:
+    - pysradb
+    - pysradb.sradb
+    - pysradb.geodb
+  commands:
+    - pysradb | grep "Query NGS metadata"
+
+about:
+  home: https://github.com/saketkc/pysradb
+  license: BSD License
+  license_family: BSD
+  summary: 'Python package for interacting with SRAdb and downloading datasets from SRA'
+  description: 'Python package for interacting with SRAdb and downloading datasets from SRA'
+  doc_url: 'https://saketkc.github.io/pysradb'
+
+extra:
+  recipe-maintainers:
+    - saketkc
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true
