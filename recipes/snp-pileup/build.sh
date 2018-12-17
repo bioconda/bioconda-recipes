@@ -26,14 +26,8 @@ cd inst/extcode/
 install_htslib
 
 ln -s `pwd`/htslib/lib/libhts.a `pwd`/htslib/lib/libhts-static.a
-g++ -std=c++11 -I$PREFIX/include \
-               -I `pwd`/htslib/include \
-               snp-pileup.cpp \
-               -L$PREFIX/lib \
-               -L `pwd`/htslib/lib \
-               -lhts-static \
-               -o snp-pileup \
-               -lcurl -lz -lpthread -lcrypto -llzma -lbz2
+g++ -std=c++11 -I$PREFIX/include -I `pwd`/htslib/include snp-pileup.cpp -L$PREFIX/lib -L `pwd`/htslib/lib \
+    -lhts-static -o snp-pileup -lcurl -lz -lpthread -lcrypto -llzma -lbz2
 
 ./snp-pileup --help
 mv snp-pileup $PREFIX/bin/
