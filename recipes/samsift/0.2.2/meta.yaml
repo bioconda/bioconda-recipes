@@ -6,22 +6,21 @@ package:
   version: {{ version }}
 
 source:
-  fn: samsift-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/s/samsift/samsift-{{version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   skip: True # [py27]
   entry_points:
     - samsift = samsift.samsift:main
     - samsift-norm-sam = samsift.samsift_norm_sam:main
-
-  script: $PYTHON setup.py install --single-version-externally-managed --record=record.txt
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
+  host:
     - python
+    - pip
     - pysam
     - wheel
     - setuptools
@@ -30,11 +29,12 @@ requirements:
     - pysam
 
 test:
-    commands:
-      - samsift -v
-      - samsift -h
-      - samsift-norm-sam --help
-      - BAM=https://github.com/karel-brinda/samsift/raw/master/tests/tests/test.bam; curl -L ${BAM} | samsift
+  commands:
+    - samsift -v
+    - samsift -h
+    - samsift-norm-sam --help
+    # invalid test file, missing PG tag
+    #- BAM=https://github.com/karel-brinda/samsift/raw/{{ version }}/tests/test.bam; curl -L ${BAM} | samsift
 
 about:
   home: https://github.com/karel-brinda/samsift

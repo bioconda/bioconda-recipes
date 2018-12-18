@@ -1,1 +1,0 @@
-Maintainers: There are algorithmic changes in Trinity v2 and later, and the recipe for this dated version should be preserved to serve users who prefer the older algorithm.

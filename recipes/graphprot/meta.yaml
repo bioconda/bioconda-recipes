@@ -7,22 +7,25 @@ package:
 
 source:
   url: https://github.com/dmaticzka/GraphProt/archive/v{{ version }}.tar.gz
-  fn: GraphProt-v{{ version }}.tar.gz
   sha256: "{{ sha256 }}"
+  patches:
+    # don't fix C and CXX vars in Makefile
+    make.patch
 
 build:
-  number: 2
+  number: 4
   skip: True # [osx]
 
 requirements:
   build:
-    - gcc
+    - {{ compiler('cxx') }}
+  host:
     - openmp
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
     - make
-    - coreutils
     - gawk
     - pytest
+    - coreutils
     - scripttest
     - rnashapes <3
     - weblogo >=3
@@ -31,9 +34,8 @@ requirements:
     - r-plyr
     - r-prroc
   run:
-    - libgcc
     - openmp
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
     - make
     - coreutils
     - gawk
@@ -57,40 +59,40 @@ test:
     - curl -O https://raw.githubusercontent.com/dmaticzka/GraphProt/v{{ version }}/tests/REG_ls.params
     # classification, linesearch
     - GraphProt.pl
-        -mode classification -action ls --onlyseq \
-        -fasta testclip.train.positives.fa \
-        -negfasta testclip.train.negatives.fa \
+      -mode classification -action ls --onlyseq \
+      -fasta testclip.train.positives.fa \
+      -negfasta testclip.train.negatives.fa \
     # classification, crossvalidation
     - GraphProt.pl \
-        -mode classification -action cv --onlyseq
-        -fasta testclip.train.positives.fa
-        -negfasta testclip.train.negatives.fa
-        -params CL_ls.params
+      -mode classification -action cv --onlyseq
+      -fasta testclip.train.positives.fa
+      -negfasta testclip.train.negatives.fa
+      -params CL_ls.params
     # classification, train
     - GraphProt.pl -mode classification -action train
-        -fasta testclip.train.positives.fa
-        -negfasta testclip.train.negatives.fa
-        -abstraction 1 -R 0 -D 0 -epochs 2 -lambda 0.1 -bitsize 10
+      -fasta testclip.train.positives.fa
+      -negfasta testclip.train.negatives.fa
+      -abstraction 1 -R 0 -D 0 -epochs 2 -lambda 0.1 -bitsize 10
     # classification, motif
     - GraphProt.pl -mode classification -action motif
-        -fasta testclip.train.positives.fa
-        -model CL_train.model
-        -abstraction 1 -R 0 -D 0 -epochs 2 -lambda 0.1 -bitsize 10
+      -fasta testclip.train.positives.fa
+      -model CL_train.model
+      -abstraction 1 -R 0 -D 0 -epochs 2 -lambda 0.1 -bitsize 10
     # regression, linesearch
     - GraphProt.pl -mode regression -action ls --onlyseq
-        -fasta test_data_full_A.train.fa
-        -affinities test_data_full_A.train.affys
-        -abstraction 1 -R 0 -D 0 -epsilon 0.11 -c 11 -bitsize 10
+      -fasta test_data_full_A.train.fa
+      -affinities test_data_full_A.train.affys
+      -abstraction 1 -R 0 -D 0 -epsilon 0.11 -c 11 -bitsize 10
     # regression, crossvalidation
     - GraphProt.pl -mode regression -action cv --onlyseq
-        -fasta test_data_full_A.train.fa
-        -affinities test_data_full_A.train.affys
-        -params REG_ls.params
+      -fasta test_data_full_A.train.fa
+      -affinities test_data_full_A.train.affys
+      -params REG_ls.params
     # regression, train
     - GraphProt.pl -mode regression -action train
-        -fasta test_data_full_A.train.fa
-        -affinities test_data_full_A.train.affys
-        -abstraction 1 -R 0 -D 0 -epsilon 0.11 -c 11 -bitsize 10
+      -fasta test_data_full_A.train.fa
+      -affinities test_data_full_A.train.affys
+      -abstraction 1 -R 0 -D 0 -epsilon 0.11 -c 11 -bitsize 10
 
 about:
   home: https://github.com/dmaticzka/graphprot

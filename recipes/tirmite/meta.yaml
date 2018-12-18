@@ -1,40 +1,42 @@
+{% set name = "tirmite" %}
+{% set version = "1.1.3" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "6fa2cea73b40e0faa813a19957801629e971bcc9bd4c4feb2f4f67ce0031039e" %}
+
 package:
-  name: tirmite
-  version: "1.1.0"
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  fn: tirmite-1.1.0.tar.gz
-  url: https://pypi.python.org/packages/10/66/4636b9a8a700dd417c5f4d7f1ef7e81f2aa3492372a22868f9c54b23e2dd/tirmite-1.1.0.tar.gz
-  md5: 1439e917c4d8449566f60cf5036ae1b1
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 0
   skip: True # [py27]
+  number: 0
   entry_points:
     - tirmite=tirmite.cmd_tirmite:main
     - tsplit-LTR=tirmite.cmd_LTR:main
     - tsplit-TIR=tirmite.cmd_TIR:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
     - pandas >=0.20.3
     - biopython >=1.70
     - pymummer >=0.10.3
-
-
   run:
     - python
     - pandas >=0.20.3
     - biopython >=1.70
     - pymummer >=0.10.3
-    - libgcc # [linux]
 
 test:
   imports:
     - tirmite
-
   commands:
     - tirmite --help
     - tsplit-LTR --help
@@ -43,6 +45,12 @@ test:
 about:
   home: https://github.com/Adamtaranto/TIRmite
   license: MIT License
-  summary: 'Map TIR-pHMM models to genomic sequences for annotation of MITES and complete DNA-Transposons.'
   license_family: MIT
+  license_file: ''
+  summary: Map TIR-pHMM models to genomic sequences for annotation of MITES and complete DNA-Transposons.
+  description: "Build profile Hidden Markov Models for Terminal Inverted repeat families (TIR-pHMMs) and map to genomic sequences for annotation of MITES and complete DNA-Transposons with variable internal sequence composition."
+  doc_url: ''
+  dev_url: ''
 
+extra:
+  recipe-maintainers: 'Adam Taranto'

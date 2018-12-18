@@ -8,12 +8,13 @@ FusionFilter_INSTALL_PATH="$PREFIX/share/$FusionFilter_DIR_NAME"
 # Make the install directory and move the FusionFilter files to that location.
 mkdir -p $FusionFilter_INSTALL_PATH
 # Split the copy into two commands for readability.
-cp -R $SRC_DIR/*.pl $SRC_DIR/lib $SRC_DIR/util $SRC_DIR/testing $FusionFilter_INSTALL_PATH
+cp -R $SRC_DIR/*.pl $SRC_DIR/lib $SRC_DIR/util $SRC_DIR/AnnotFilterRuleLib $SRC_DIR/testing $FusionFilter_INSTALL_PATH
 cp -R $SRC_DIR/LICENSE $SRC_DIR/Makefile $SRC_DIR/README.md $FusionFilter_INSTALL_PATH
 chmod a+x $FusionFilter_INSTALL_PATH/*.pl 
 chmod a+x $FusionFilter_INSTALL_PATH/util/*.pl 
 chmod a+x $FusionFilter_INSTALL_PATH/util/paralog_clustering_util/*.pl 
 chmod a+x $FusionFilter_INSTALL_PATH/testing/*/*.sh 
+
 # Connecting lib files.
 cd $PREFIX/lib
 ln $FusionFilter_INSTALL_PATH/lib/Fasta_reader.pm
@@ -29,12 +30,14 @@ ln $FusionFilter_INSTALL_PATH/lib/Overlap_piler.pm
 ln $FusionFilter_INSTALL_PATH/lib/Pipeliner.pm
 ln $FusionFilter_INSTALL_PATH/lib/Process_cmd.pm
 ln $FusionFilter_INSTALL_PATH/lib/TiedHash.pm
-# Connecting executable files. Links are made to lib, util and util/paralog_clustering_util
+
+# We need links to lib, util, util/paralog_clustering_util, and AnnotFilterRuleLib
 # directories, because various executables expect those directories to exist in the same
 # directory as themselves.
 cd $PREFIX/bin
 ln -s $FusionFilter_INSTALL_PATH/lib
 ln -s $FusionFilter_INSTALL_PATH/util
+ln -s $FusionFilter_INSTALL_PATH/AnnotFilterRuleLib
 ln -s $FusionFilter_INSTALL_PATH/util/paralog_clustering_util
 ln -s $FusionFilter_INSTALL_PATH/blast_and_promiscuity_filter.pl
 ln -s $FusionFilter_INSTALL_PATH/prep_genome_lib.pl
