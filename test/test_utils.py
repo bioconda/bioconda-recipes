@@ -468,12 +468,6 @@ def test_conda_as_dep():
 #     assert list(utils.filter_recipes([])) == []
 
 
-def test_get_channel_packages():
-    with pytest.raises(requests.HTTPError):
-        utils.get_channel_packages('bioconda_xyz_nonexistent_channel')
-    utils.get_channel_packages('bioconda')
-
-
 def test_built_package_paths():
     r = Recipes(
         """
@@ -651,27 +645,27 @@ def test_skip_dependencies():
         one:
           meta.yaml: |
             package:
-              name: one
+              name: skip_dependencies_one
               version: 0.1
         two:
           meta.yaml: |
             package:
-              name: two
+              name: skip_dependencies_two
               version: 0.1
             requirements:
               build:
-                - one
+                - skip_dependencies_one
                 - nonexistent
         three:
           meta.yaml: |
             package:
-              name: three
+              name: skip_dependencies_three
               version: 0.1
             requirements:
               build:
-                - one
+                - skip_dependencies_one
               run:
-                - two
+                - skip_dependencies_two
     """, from_string=True)
     r.write_recipes()
     pkgs = {}

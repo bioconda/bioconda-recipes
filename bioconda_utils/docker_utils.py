@@ -82,7 +82,7 @@ logger = logging.getLogger(__name__)
 BUILD_SCRIPT_TEMPLATE = \
 """
 #!/bin/bash
-set -e
+set -eo pipefail
 
 # Add the host's mounted conda-bld dir so that we can use its contents as
 # dependencies for building this recipe.
@@ -93,7 +93,9 @@ set -e
 # exists before adding the channel.
 mkdir -p {self.container_staging}/linux-64
 mkdir -p {self.container_staging}/noarch
-conda config --add channels file://{self.container_staging}  > /dev/null 2>&1
+conda config --add channels file://{self.container_staging} 2> >(
+    grep -vF "Warning: 'file://{self.container_staging}' already in 'channels' list, moving to the top" >&2
+)
 
 # The actual building...
 # we explicitly point to the meta.yaml, in order to keep
@@ -489,7 +491,7 @@ class RecipeBuilder(object):
         env_list.append('{0}={1}'.format('HOST_USER_ID', self.user_info['uid']))
 
         cmd = [
-            'docker', 'run',
+            'docker', 'run', '-t',
             '--net', 'host',
             '--rm',
             '-v', '{0}:/opt/build_script.bash'.format(build_script),

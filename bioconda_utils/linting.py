@@ -75,13 +75,9 @@ Perform various checks on recipes.
 
 
 class LintArgs(namedtuple('LintArgs', (
-    'df', 'exclude', 'registry',
+    'exclude', 'registry',
 ))):
     """
-    df : pandas.DataFrame
-        Dataframe containing channel data, typically as output from
-        `channel_dataframe()`
-
     exclude : list
         List of function names in `registry` to skip globally. When running on
         CI, this will be merged with anything else detected from the commit
@@ -94,53 +90,8 @@ class LintArgs(namedtuple('LintArgs', (
         List of functions to apply to each recipe. If None, defaults to
         `lint_functions.registry`.
     """
-    def __new__(cls, df, exclude=None, registry=None):
-        return super().__new__(cls, df, exclude, registry)
-
-
-def channel_dataframe(cache=None, channels=['bioconda', 'conda-forge',
-                                            'defaults']):
-    """
-    Return channel info as a dataframe.
-
-    Parameters
-    ----------
-
-    cache : str
-        Filename of cached channel info
-
-    channels : list
-        Channels to include in the dataframe
-    """
-    if cache is not None and os.path.exists(cache):
-        df = pd.read_table(cache)
-    else:
-        # Get the channel data into a big dataframe
-        dfs = []
-        for platform in ['linux', 'osx']:
-            for channel in channels:
-                repo, noarch = utils.get_channel_repodata(channel, platform)
-                x = pd.DataFrame(repo)
-                x = x.drop([
-                    'arch',
-                    'default_numpy_version',
-                    'default_python_version',
-                    'platform',
-                    'subdir'])
-                for k in [
-                    'build', 'build_number', 'name', 'version', 'license',
-                    'platform'
-                ]:
-                    x[k] = x['packages'].apply(lambda y: y.get(k, np.nan))
-
-                x['channel'] = channel
-                dfs.append(x)
-
-        df = pd.concat(dfs).drop(['info', 'packages'], axis=1)
-
-        if cache is not None:
-            df.to_csv(cache, sep='\t')
-    return df
+    def __new__(cls, exclude=None, registry=None):
+        return super().__new__(cls, exclude, registry)
 
 
 def lint(recipes, lint_args):
@@ -153,7 +104,6 @@ def lint(recipes, lint_args):
 
     lint_args : LintArgs
     """
-    df = lint_args.df
     exclude = lint_args.exclude
     registry = lint_args.registry
 
@@ -234,7 +184,7 @@ def lint(recipes, lint_args):
                         '%s defines skip lint test %s for recipe %s'
                         % (source, func.__name__, recipe))
                 continue
-            result = func(recipe, metas, df)
+            result = func(recipe, metas)
             if result:
                 hits.append(
                     {'recipe': recipe,
@@ -268,18 +218,3 @@ def markdown_report(report=None):
     else:
         tmpl = utils.jinja.get_template("lint_failure.md")
         return tmpl.render(report=report)
-
-
-def bump_build_number(d):
-    """
-    Increase the build number of a recipe, adding the relevant keys if needed.
-
-    d : dict-like
-        Parsed meta.yaml, from get_meta()
-    """
-    if 'build' not in d:
-        d['build'] = {'number': 0}
-    elif 'number' not in d['build']:
-        d['build']['number'] = 0
-    d['build']['number'] += 1
-    return d

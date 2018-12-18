@@ -18,7 +18,7 @@ bioconda-utils, you can install requirements via conda into your root conda
 environment and then install the package:
 
 ```bash
-conda install --file bioconda_utils/bioconda_utils-requirements.txt -c bioconda -c conda-forge
+conda install --file bioconda_utils/bioconda_utils-requirements.txt -c conda-forge -c bioconda 
 python setup.py install
 ```
 
