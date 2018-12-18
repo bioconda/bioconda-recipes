@@ -7,8 +7,7 @@ FACETS_GIT_REF=`grep -P ' *^FACETS_REF' install/install_pkgs.R \
 | tr "'" '"' \
 | sed 's/FACETS_REF"//; s/".*//'`
 
-$R -e "library(devtools)
-devtools::install_github('mskcc/facets', ref= '$FACETS_GIT_REF', lib= NULL, repos= 'https://cran.r-project.org')"
+$R -e "devtools::install_github('mskcc/facets', ref= '$FACETS_GIT_REF', lib= NULL, repos= 'https://cran.r-project.org')"
 
 $R -e 'install.packages("argparse", lib= NULL, repos= "https://cran.r-project.org")'
 
