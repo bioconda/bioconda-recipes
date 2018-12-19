@@ -1,0 +1,50 @@
+{% set version = "v0.11.2" %}
+{% set sha256 = "fc90ea96b9b284ba85e06783f32ed87aee69a7c1afe91c9663dbbe6b30f12d05" %}
+
+package:
+  name: cnv_facets
+  version: '{{version}}'
+
+source:
+  url: https://github.com/wwcrc/cnv_facets/archive/{{version}}.tar.gz
+  sha256: '{{sha256}}'
+
+build:
+  number: 0
+  skip: True  # [not linux]
+
+requirements:
+  host:
+      - r-base
+      - r-devtools
+      - r-data.table
+      - r-ggplot2
+      - r-gridextra
+      - bioconductor-rsamtools
+      - samtools 
+      - bcftools
+      - snp-pileup
+  run:
+      - r-base
+      - r-data.table
+      - r-ggplot2
+      - r-gridextra
+      - bioconductor-rsamtools
+      - samtools 
+      - bcftools
+      - snp-pileup
+
+test:
+  commands:
+    - cnv_facets.R -h > /dev/null 2>&1 || [[ $? == 1 ]]
+    - cnv_facets.R -d 1 8000 
+        -t test/data/TCRBOA6-T-WEX.sample.bam 
+        -n test/data/TCRBOA6-N-WEX.sample.bam 
+        -vcf test/data/common.sample.vcf.gz 
+        -o test_out/out > /dev/null 2>&1 || [[ $? == 1 ]]
+
+about:
+  home: https://github.com/wwcrc/cnv_facets
+  license: MIT
+  summary: Somatic copy variant caller (CNV) for next generation sequencing
+  license_family: MIT
