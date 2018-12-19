@@ -83,6 +83,13 @@ from .githubhandler import AiohttpGitHubHandler, GitHubHandler
 LegacyVersion = parse_version("").__class__  # pylint: disable=invalid-name
 
 yaml = YAML(typ="rt")  # pylint: disable=invalid-name
+
+# Hack: mirror stringify from conda-build in removing implicit
+#       resolution of numbers
+for digit in '0123456789':
+    if digit in yaml.resolver.versioned_resolver:
+        del yaml.resolver.versioned_resolver[digit]
+
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
@@ -911,7 +918,7 @@ class UpdateVersion(Filter):
                     continue
                 if norm_pkg in variants[0]:
                     for variant in variants:
-                        if not ms.match({'name': '', 'build': '', 'build_number': 0,
+                        if not ms.match({'name': '', 'build': '', 'build_number': '0',
                                          'version': variant[norm_pkg]}):
                             logger.error("Recipe %s: %s %s conflicts pins",
                                          recipe, pkg, spec)
