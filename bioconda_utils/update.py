@@ -651,6 +651,8 @@ class ExcludeOtherChannel(Filter):
         super().__init__(scanner)
         logger.info("Loading package lists for %s", channels)
         r = utils.RepoData()
+        if cache:
+            r.set_cache(cache)
         self.other = set(r.get_package_data('name', channels=channels))
 
     async def apply(self, recipe):
