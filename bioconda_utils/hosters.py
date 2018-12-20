@@ -483,20 +483,22 @@ class CPAN(JSONHoster):
 class CRAN(JSONHoster):
     async def get_versions_from_json(self, data, scanner, orig_version):
         res = []
-        versions = list(set((str(data["latest"]), self.vals["version"])))
+        versions = list(set((str(data["latest"]), self.vals["version"], orig_version)))
         for vers in versions:
             if vers not in data['versions']:
                 continue
             vdata = data['versions'][vers]
+            depends = {
+                "r-" + pkg.lower() if pkg != 'R' else 'r-base':
+                spec.replace(" ", "").replace("\n","").replace("*", "")
+                for pkg, spec in chain(vdata.get('Depends', {}).items(),
+                                       vdata.get('Imports', {}).items(),
+                                       vdata.get('LinkingTo', {}).items())
+            }
             version = {
                 'link': '',
                 'version': vers,
-                'depends': {
-                    "r-" + pkg.lower() if pkg != 'R' else 'r-base':
-                    spec.replace(" ", "").replace("\n","")
-                    for pkg, spec in chain(vdata.get('Depends', {}).items(),
-                                           vdata.get('Imports', {}).items())
-                }
+                'depends': { 'host': depends, 'run': depends },
             }
             res.append(version)
         return res

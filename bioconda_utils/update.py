@@ -1190,6 +1190,41 @@ class CreatePullRequest(GitFilter):
         await self.gh.login(self.scanner.session, self.scanner.USER_AGENT)
         await asyncio.sleep(1)  # let API settle
 
+    def get_deps_diff(self, recipe):
+        diffset = {'host': set(), 'run': set()}
+        if not recipe.version_data:
+            logger.debug("Recipe %s: dependency diff not rendered (no version_data)", recipe)
+        for fn in recipe.version_data:
+            if fn not in recipe.orig.version_data:
+                logger.debug("Recipe %s: dependency diff not rendered (no orig.version_data)", recipe)
+                continue
+            new = recipe.version_data[fn].get('depends')
+            orig = recipe.orig.version_data[fn].get('depends')
+            if not new or not orig:
+                logger.debug("Recipe %s: dependency diff not rendered (no depends in version_data)", recipe)
+                continue
+            for kind in ('host', 'run'):
+                deps = set()
+                deps.update(new[kind].keys())
+                deps.update(orig[kind].keys())
+                for dep in deps:
+                    if dep not in new[kind]:
+                        diffset[kind].add("-   - {} {}".format(dep, orig[kind][dep]))
+                    elif dep not in orig[kind]:
+                        diffset[kind].add("+   - {} {}".format(dep, new[kind][dep]))
+                    elif orig[kind][dep] != new[kind][dep]:
+                        diffset[kind].add("-   - {} {}\n"
+                                          "+   - {} {}".format(dep, orig[kind][dep],
+                                                               dep, new[kind][dep]))
+        text = ""
+        for kind, lines in diffset.items():
+            if lines:
+                text += "  {}:\n".format(kind)
+                text += "\n".join(sorted(lines, key=lambda x: x[1:])) + "\n"
+        if not text:
+            logger.debug("Recipe %s: dependency diff not rendered (all good)", recipe)
+        return text
+
     async def apply(self, recipe):
         branch_name = self.branch_name(recipe)
         template = utils.jinja.get_template("bump_pr.md")
@@ -1199,37 +1234,13 @@ class CreatePullRequest(GitFilter):
                 author = v['vals']['account']
                 break
 
-        dependency_diff = []
-        for fn in recipe.version_data:
-            if fn not in recipe.orig.version_data:
-                continue
-            new = recipe.version_data[fn].get('depends')
-            orig = recipe.orig.version_data[fn].get('depends')
-            if not new or not orig:
-                continue
-            for kind in ('host', 'run'):
-                deps = set()
-                deps.update(new[kind].keys())
-                deps.update(orig[kind].keys())
-                diff = []
-                for dep in deps:
-                    if dep not in new[kind]:
-                        diff += ["-   - {} {}".format(dep, orig[kind][dep])]
-                    elif dep not in orig[kind]:
-                        diff += ["+   - {} {}".format(dep, new[kind][dep])]
-                    elif orig[kind][dep] != new[kind][dep]:
-                        diff += ["-   - {} {}".format(dep, orig[kind][dep]),
-                                 "+   - {} {}".format(dep, new[kind][dep])]
-                if diff:
-                    dependency_diff += ["  {}:".format(kind)]
-                    dependency_diff += diff
         body = template.render({
             'r': recipe,
             'recipe_relurl': "/".join((self.to_user, self.to_repo, 'tree',
                                        branch_name, recipe.basedir + recipe.reldir)),
             'author': author,
             'author_is_member': await self.gh.is_member(author),
-            'dependency_diff': "\n".join(dependency_diff)
+            'dependency_diff': self.get_deps_diff(recipe),
         })
         labels = ["autobump"]
         title = f"Update {recipe} to {recipe.version}"
