@@ -1,4 +1,4 @@
-{% set version = '1.63' %}
+{% set version = '1.66' %}
 
 package:
   name: r-wgcna
@@ -6,9 +6,9 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/WGCNA_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/WGCNA/WGCNA_{{ version }}.tar.gz
-  sha256: 098cdfc7f8e5ccda57449e7a8ef7fa37e33f5ac3ad6b4b679dd62f642a6e4588
+    - {{ cran_mirror }}/src/contrib/WGCNA_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/WGCNA/WGCNA_{{ version }}.tar.gz
+  sha256: 1b4b8d2a0b7c8c096a8b47810378fbfc475ff36f66a72f89b87e24eb3ef41666
 
 build:
   number: 0
@@ -19,55 +19,67 @@ build:
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
+
 
   host:
     - r-base
-    - bioconductor-annotationdbi
-    - bioconductor-go.db
+    - 'bioconductor-annotationdbi >=1.42.0,<1.44.0'
+    - 'bioconductor-go.db >=3.6.0,<3.8.0'
     - r-hmisc
     - r-rcpp >=0.11.0
     - r-doparallel
     - r-dynamictreecut >=1.62
     - r-fastcluster
     - r-foreach
-    - bioconductor-impute
+    - 'bioconductor-impute >=1.54.0,<1.56.0'
     - r-matrixstats >=0.8.1
-    - bioconductor-preprocesscore
+    - 'bioconductor-preprocesscore >=1.42.0,<1.44.0'
     - r-robust
     - r-survival
 
   run:
     - r-base
-    - bioconductor-annotationdbi
-    - bioconductor-go.db
+    - 'bioconductor-annotationdbi >=1.42.0,<1.44.0'
+    - 'bioconductor-go.db >=3.6.0,<3.8.0'
     - r-hmisc
     - r-rcpp >=0.11.0
     - r-doparallel
     - r-dynamictreecut >=1.62
     - r-fastcluster
     - r-foreach
-    - bioconductor-impute
+    - 'bioconductor-impute >=1.54.0,<1.56.0'
     - r-matrixstats >=0.8.1
-    - bioconductor-preprocesscore
+    - 'bioconductor-preprocesscore >=1.42.0,<1.44.0'
     - r-robust
     - r-survival
 
 test:
   commands:
-    - $R -e "library('WGCNA')"
+
+    - $R -e "library('WGCNA')" 
 
 about:
-  home: http://www.genetics.ucla.edu/labs/horvath/CoexpressionNetwork/Rpackages/WGCNA/
+  home: http://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/
   license: GPL (>= 2)
   summary: Functions necessary to perform Weighted Correlation Network Analysis on high-dimensional
-    data. Includes functions for rudimentary data cleaning, construction of correlation
-    networks, module identification, summarization, and relating of variables and modules
-    to sample traits. Also includes a number of utility functions for data manipulation
-    and visualization.
+    data as originally described in Horvath and Zhang (2005) <doi:10.2202/1544-6115.1128>
+    and Langfelder and Horvath (2008) <doi:10.1186/1471-2105-9-559>. Includes functions
+    for rudimentary data cleaning, construction of correlation networks, module identification,
+    summarization, and relating of variables and modules to sample traits. Also includes
+    a number of utility functions for data manipulation and visualization.
   license_family: GPL3
-
 extra:
   identifiers:
     - biotools:wgcna
     - doi:10.1186/1471-2105-9-559
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

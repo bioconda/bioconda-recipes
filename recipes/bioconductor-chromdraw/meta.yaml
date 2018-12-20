@@ -1,6 +1,6 @@
-{% set version = "2.8.0" %}
+{% set version = "2.10.0" %}
 {% set name = "chromDraw" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,24 +8,27 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 4eb3d62f7c6037a25dc04612d6abd313ff154131bc22034abf7d0a31dcba19d3
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 8429d9c00418d6cd63180ee5763c8ef907cf8aa5855140553143830c47af59e7
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
-    - 'bioconductor-genomicranges >=1.17.46'
+    - 'bioconductor-genomicranges >=1.32.7,<1.34.0'
     - r-base
     - 'r-rcpp >=0.11.1'
   run:
-    - 'bioconductor-genomicranges >=1.17.46'
+    - 'bioconductor-genomicranges >=1.32.7,<1.34.0'
     - r-base
     - 'r-rcpp >=0.11.1'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -33,7 +36,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'ChromDraw is a R package for drawing the schemes of karyotype(s) in the linear and circular fashion. It is possible to visualized cytogenetic marsk on the chromosomes. This tool has own input data format. Input data can be imported from the GenomicRanges data structure. This package can visualized the data in the BED file format. Here is requirement on to the first nine fields of the BED format. Output files format are *.eps and *.svg.'
-
 extra:
   identifiers:
     - biotools:chromdraw
