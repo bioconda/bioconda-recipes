@@ -629,6 +629,7 @@ def clean_cran_skeleton(recipe, no_windows=False):
 @arg('--unparsed-urls', help='''Write unrecognized urls to this file''')
 @arg('--failed-urls', help='''Write urls with permanent failure to this file''')
 @arg('--check-branch', help='''Check if recipe has active branch''')
+@arg("--only-active", action="store_true", help="Check only recipes with active update")
 @arg("--create-branch", action="store_true", help='''Create branch for each
      update''')
 @arg("--create-pr", action="store_true", help='''Create PR for each update.
@@ -641,6 +642,7 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
              exclude_subrecipes=None, exclude_channels='conda-forge',
              ignore_blacklists=False,
              check_branch=False, create_branch=False, create_pr=False,
+             only_active=False,
              max_updates=0, parallel=100, dry_run=False):
     """
     Updates recipes in recipe_folder
@@ -658,8 +660,10 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
         scanner.add(update.ExcludeSubrecipe,
                     always=exclude_subrecipes == "always")
     git_handler = None
-    if check_branch or create_branch or create_pr:
+    if check_branch or create_branch or create_pr or only_active:
         git_handler = githandler.GitHandler(recipe_folder, dry_run)
+        if only_active:
+            scanner.add(update.ExcludeNoActiveUpdate, git_handler)
         scanner.add(update.GitLoadRecipe, git_handler)
     else:
         scanner.add(update.LoadRecipe)

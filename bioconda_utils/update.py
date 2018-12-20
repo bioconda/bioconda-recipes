@@ -1050,6 +1050,18 @@ class GitFilter(Filter):
         pass
 
 
+class ExcludeNoActiveUpdate(GitFilter):
+    class NoActiveUpdate(RecipeError):
+        template = "is not currently being updated"
+        level = logging.DEBUG
+
+    async def apply(self, recipe):
+        branch_name = self.branch_name(recipe)
+        if not self.git.get_remote_branch(branch_name):
+            raise self.NoActiveUpdate(recipe)
+        return recipe
+
+
 class LoadRecipe(Filter):
     """Loads the Recipe from the filesystem"""
     def __init__(self, scanner):
