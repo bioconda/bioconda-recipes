@@ -1177,10 +1177,17 @@ class CreatePullRequest(GitFilter):
     async def apply(self, recipe):
         branch_name = self.branch_name(recipe)
         template = utils.jinja.get_template("bump_pr.md")
+        author = None
+        for v in recipe.version_data.values():
+            if 'hoster' in v and v['hoster'].startswith('Github'):
+                author = v['vals']['account']
+                break
         body = template.render({
             'r': recipe,
             'recipe_relurl': "/".join((self.to_user, self.to_repo, 'tree',
-                                       branch_name, recipe.basedir + recipe.reldir))
+                                       branch_name, recipe.basedir + recipe.reldir)),
+            'author': author,
+            'author_is_member': await self.gh.is_member(author),
         })
         labels = ["autobump"]
         title = f"Update {recipe} to {recipe.version}"
