@@ -651,6 +651,8 @@ class ExcludeOtherChannel(Filter):
         super().__init__(scanner)
         logger.info("Loading package lists for %s", channels)
         r = utils.RepoData()
+        if cache:
+            r.set_cache(cache)
         self.other = set(r.get_package_data('name', channels=channels))
 
     async def apply(self, recipe):
@@ -1162,6 +1164,8 @@ class CreatePullRequest(GitFilter):
                  to_user: str = "bioconda",
                  to_repo: str = "bioconda-recipes") -> None:
         super().__init__(scanner, git_handler)
+        self.to_user = to_user
+        self.to_repo = to_repo
         self.gh: GitHubHandler = AiohttpGitHubHandler(
             token, dry_run, to_user, to_repo)
 
@@ -1173,7 +1177,18 @@ class CreatePullRequest(GitFilter):
     async def apply(self, recipe):
         branch_name = self.branch_name(recipe)
         template = utils.jinja.get_template("bump_pr.md")
-        body = template.render({'r': recipe})
+        author = None
+        for v in recipe.version_data.values():
+            if 'hoster' in v and v['hoster'].startswith('Github'):
+                author = v['vals']['account']
+                break
+        body = template.render({
+            'r': recipe,
+            'recipe_relurl': "/".join((self.to_user, self.to_repo, 'tree',
+                                       branch_name, recipe.basedir + recipe.reldir)),
+            'author': author,
+            'author_is_member': await self.gh.is_member(author),
+        })
         labels = ["autobump"]
         title = f"Update {recipe} to {recipe.version}"
 
