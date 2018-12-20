@@ -2,8 +2,8 @@
 mkdir -p $PREFIX/Colombo
 cp -r . $PREFIX/Colombo
 mkdir -p $PREFIX/bin
-ln -s $PREFIX/Colombo/Colombo/SigiHMM $PREFIX/bin
-ln -s $PREFIX/Colombo/Colombo/mSigiHMM $PREFIX/bin
-ln -s $PREFIX/Colombo/Colombo/SigiCRF $PREFIX/bin
-ln -s $PREFIX/Colombo/Colombo/Colombo $PREFIX/bin
+PROGRAM="SigiHMM"; sed "s\`PREFIX\`${PREFIX}\` ; s\`PROGRAM\`${PROGRAM}\`" $RECIPE_DIR/Colombo > $PREFIX/bin/$PROGRAM; chmod +x $PREFIX/Colombo/Colombo/$PROGRAM
+PROGRAM="mSigiHMM"; sed "s\`PREFIX\`${PREFIX}\` ; s\`PROGRAM\`${PROGRAM}\`" $RECIPE_DIR/Colombo > $PREFIX/bin/$PROGRAM; chmod +x $PREFIX/Colombo/Colombo/$PROGRAM
+PROGRAM="SigiCRF"; sed "s\`PREFIX\`${PREFIX}\` ; s\`PROGRAM\`${PROGRAM}\`" $RECIPE_DIR/Colombo > $PREFIX/bin/$PROGRAM; chmod +x $PREFIX/Colombo/Colombo/$PROGRAM
+PROGRAM="Colombo"; sed "s\`PREFIX\`${PREFIX}\` ; s\`PROGRAM\`${PROGRAM}\`" $RECIPE_DIR/Colombo > $PREFIX/bin/$PROGRAM; chmod +x $PREFIX/Colombo/Colombo/$PROGRAM
 chmod +x $PREFIX/bin/*
