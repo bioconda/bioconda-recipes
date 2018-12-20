@@ -424,7 +424,7 @@ class Bioarchive(JSONHoster):
 class CPAN(JSONHoster):
     def parse_deps(self, data):
         run_deps = {}
-        build_deps = {}
+        host_deps = {}
         for dep in data:
             if dep['relationship'] != 'requires':
                 continue
@@ -443,9 +443,9 @@ class CPAN(JSONHoster):
             if dep['phase'] == 'runtime':
                 run_deps[name] = version
             elif dep['phase'] in ('build', 'configure', 'test'):
-                build_deps[name] = version
+                host_deps[name] = version
 
-        return {'host':build_deps, 'run': run_deps }
+        return {'host': host_deps, 'run': run_deps }
 
     async def get_versions_from_json(self, data, scanner, orig_version):
         try:
