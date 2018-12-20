@@ -1164,6 +1164,8 @@ class CreatePullRequest(GitFilter):
                  to_user: str = "bioconda",
                  to_repo: str = "bioconda-recipes") -> None:
         super().__init__(scanner, git_handler)
+        self.to_user = to_user
+        self.to_repo = to_repo
         self.gh: GitHubHandler = AiohttpGitHubHandler(
             token, dry_run, to_user, to_repo)
 
@@ -1175,7 +1177,11 @@ class CreatePullRequest(GitFilter):
     async def apply(self, recipe):
         branch_name = self.branch_name(recipe)
         template = utils.jinja.get_template("bump_pr.md")
-        body = template.render({'r': recipe})
+        body = template.render({
+            'r': recipe,
+            'recipe_relurl': "/".join((self.to_user, self.to_repo, 'tree',
+                                       branch_name, recipe.basedir + recipe.reldir))
+        })
         labels = ["autobump"]
         title = f"Update {recipe} to {recipe.version}"
 
