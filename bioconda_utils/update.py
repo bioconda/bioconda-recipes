@@ -798,6 +798,10 @@ class UpdateVersion(Filter):
         #conflicts = self.check_version_pin_conflict(recipe, versions)
         latest = self.select_version(recipe.version, versions.keys())
         recipe.version_data = versions[latest]
+        if recipe.orig.version in versions:
+            recipe.orig.version_data = versions[recipe.orig.version]
+        else:
+            recipe.orig.version_data = {}
 
         if VersionOrder(latest) == VersionOrder(recipe.version) and not recipe.on_branch:
             raise self.UpToDate(recipe)
@@ -850,7 +854,7 @@ class UpdateVersion(Filter):
                 continue
             logger.debug("Scanning with %s", hoster.__class__.__name__)
             try:
-                versions = await hoster.get_versions(self.scanner)
+                versions = await hoster.get_versions(self.scanner, recipe.orig.version)
                 for match in versions:
                     version_map[match["version"]][url] = match
             except aiohttp.ClientResponseError as exc:
@@ -1194,12 +1198,38 @@ class CreatePullRequest(GitFilter):
             if 'hoster' in v and v['hoster'].startswith('Github'):
                 author = v['vals']['account']
                 break
+
+        dependency_diff = []
+        for fn in recipe.version_data:
+            if fn not in recipe.orig.version_data:
+                continue
+            new = recipe.version_data[fn].get('depends')
+            orig = recipe.orig.version_data[fn].get('depends')
+            if not new or not orig:
+                continue
+            for kind in ('host', 'run'):
+                deps = set()
+                deps.update(new[kind].keys())
+                deps.update(orig[kind].keys())
+                diff = []
+                for dep in deps:
+                    if dep not in new[kind]:
+                        diff += ["-   - {} {}".format(dep, orig[kind][dep])]
+                    elif dep not in orig[kind]:
+                        diff += ["+   - {} {}".format(dep, new[kind][dep])]
+                    elif orig[kind][dep] != new[kind][dep]:
+                        diff += ["-   - {} {}".format(dep, orig[kind][dep]),
+                                 "+   - {} {}".format(dep, new[kind][dep])]
+                if diff:
+                    dependency_diff += ["  {}:".format(kind)]
+                    dependency_diff += diff
         body = template.render({
             'r': recipe,
             'recipe_relurl': "/".join((self.to_user, self.to_repo, 'tree',
                                        branch_name, recipe.basedir + recipe.reldir)),
             'author': author,
             'author_is_member': await self.gh.is_member(author),
+            'dependency_diff': "\n".join(dependency_diff)
         })
         labels = ["autobump"]
         title = f"Update {recipe} to {recipe.version}"

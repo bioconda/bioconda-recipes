@@ -168,11 +168,11 @@ class GitHubHandler:
         if self.dry_run:
             logger.info("Would modify PR %s", number)
             if title:
-                logger.debug("New title: %s", title)
+                logger.info("New title: %s", title)
             if labels:
-                logger.debug("New labels: %s", labels)
+                logger.info("New labels: %s", labels)
             if body:
-                logger.debug("New Body:\n%s\n", body)
+                logger.info("New Body:\n%s\n", body)
 
             return {'number': number}
         logger.info("Modifying PR %s", number)

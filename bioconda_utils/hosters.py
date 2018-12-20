@@ -186,7 +186,7 @@ class Hoster(metaclass=HosterMeta):
 
     @classmethod
     @abc.abstractmethod
-    def get_versions(cls, scanner) -> List[Mapping[str, str]]:
+    def get_versions(cls, scanner, orig_version) -> List[Mapping[str, str]]:
         ""
 
 
@@ -218,7 +218,7 @@ class HrefParser(HTMLParser):
 class HTMLHoster(Hoster):
     """Base for Hosters handling release listings in HTML format"""
 
-    async def get_versions(self, scanner):
+    async def get_versions(self, scanner, orig_version):
         exclude = set(self.exclude)
         vals = {key: val
                 for key, val in self.vals.items()
@@ -239,7 +239,7 @@ class HTMLHoster(Hoster):
 
 
 class FTPHoster(Hoster):
-    async def get_versions(self, scanner):
+    async def get_versions(self, scanner, orig_version):
         exclude = set(self.exclude)
         vals = {key: val
                 for key, val in self.vals.items()
@@ -280,8 +280,8 @@ class OrderedHTMLHoster(HTMLHoster):
            a pathologic case. Should be handled somewhere.
     """
 
-    async def get_versions(self, scanner):
-        matches = await super().get_versions(scanner)
+    async def get_versions(self, scanner, orig_version):
+        matches = await super().get_versions(scanner, orig_version)
         if not matches:
             return matches
         for num, match in enumerate(matches):
@@ -367,12 +367,12 @@ class SourceForge(HTMLHoster):
 
 class JSONHoster(Hoster):
     """Base for Hosters handling release listings in JSON format"""
-    async def get_versions(self, scanner):
+    async def get_versions(self, scanner, orig_version):
         result = []
         for url in self.releases_urls:
             text = await scanner.get_text_from_url(url)
             data = json.loads(text)
-            matches = self.get_versions_from_json(data)
+            matches = await self.get_versions_from_json(data, scanner, orig_version)
             for match in matches:
                 match['releases_url'] = url
             result.extend(matches)
@@ -381,7 +381,7 @@ class JSONHoster(Hoster):
 
 
 class PyPi(JSONHoster):
-    def get_versions_from_json(self, data):
+    async def get_versions_from_json(self, data, scanner, orig_version):
         latest = data["info"]["version"]
         for rel in data["releases"][latest]:
             if rel["packagetype"] == "sdist":
@@ -401,7 +401,7 @@ class PyPi(JSONHoster):
 
 
 class Bioarchive(JSONHoster):
-    def get_versions_from_json(self, data):
+    async def get_versions_from_json(self, data, scanner, orig_version):
         try:
             latest = data["info"]["Version"]
             vals = {key: val
@@ -422,13 +422,54 @@ class Bioarchive(JSONHoster):
 
 
 class CPAN(JSONHoster):
-    def get_versions_from_json(self, data):
+    def parse_deps(self, data):
+        run_deps = {}
+        build_deps = {}
+        for dep in data:
+            if dep['relationship'] != 'requires':
+                continue
+            if dep['module'] in ('strict', 'warnings'):
+                continue
+            name = dep['module'].lower().replace('::', '-')
+            if 'version' in dep and dep['version'] not in ('0', None, 'undef'):
+                version = ">="+str(dep['version'])
+            else:
+                version = ''
+            if name != 'perl':
+                name = 'perl-' + name
+            else:
+                version = ''
+
+            if dep['phase'] == 'runtime':
+                run_deps[name] = version
+            elif dep['phase'] in ('build', 'configure', 'test'):
+                build_deps[name] = version
+
+        return {'host':build_deps, 'run': run_deps }
+
+    async def get_versions_from_json(self, data, scanner, orig_version):
         try:
             version = {
                 'link': data['download_url'],
                 'version': str(data['version']),
+                'depends': self.parse_deps(data['dependency'])
             }
-            return [version]
+            result = [version]
+
+            if version['version'] != orig_version:
+                url = self.orig_release_format.format(vers = orig_version,
+                                                      dist = data['distribution'])
+                text = await scanner.get_text_from_url(url)
+                data2 = json.loads(text)
+                if data2['hits']['total']:
+                    data = data2['hits']['hits'][0]['_source']
+                orig_vers = {
+                    'link': data['download_url'],
+                    'version': str(data['version']),
+                    'depends': self.parse_deps(data['dependency'])
+                }
+                result.append(orig_vers)
+            return result
         except KeyError:
             return []
 
@@ -436,10 +477,11 @@ class CPAN(JSONHoster):
     author_pattern = r"(?P<author>[A-Z]+)"
     url_pattern = r"(www.cpan.org|cpan.metacpan.org|search.cpan.org/CPAN)/authors/id/./../{author}/([^/]+/|){package}-v?{version}{ext}"
     releases_format = "https://fastapi.metacpan.org/v1/release/{package}"
+    orig_release_format = "https://fastapi.metacpan.org/v1/release/_search?q=distribution:{dist}%20AND%20version:{vers}"
 
 
 class CRAN(JSONHoster):
-    def get_versions_from_json(self, data):
+    async def get_versions_from_json(self, data, scanner, orig_version):
         res = []
         versions = list(set((str(data["latest"]), self.vals["version"])))
         for vers in versions:
