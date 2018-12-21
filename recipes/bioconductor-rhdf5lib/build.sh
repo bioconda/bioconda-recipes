@@ -8,7 +8,7 @@ CXX=$CXX
 CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX
-LDFLAGS='-Wl,-rpath,$PREFIX/lib -L$PREFIX/lib'
+LDFLAGS='-L$PREFIX/lib'
 CPPFLAGS='-I$PREFIX/include'
 PREFIX=$PREFIX" > ~/.R/Makevars
 $R CMD INSTALL --build .
