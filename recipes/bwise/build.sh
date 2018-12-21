@@ -1,7 +1,6 @@
 #!/bin/bash
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+export CPATH=${PREFIX}/include
 
 cd src;
 g++ -o n50.o -c N50.cpp -Wall  -Ofast -std=c++11  -flto -pipe -funit-at-a-time  -Wfatal-errors -fopenmp -lz
