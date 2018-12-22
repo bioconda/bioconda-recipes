@@ -2,9 +2,6 @@
 
 set -euo pipefail
 
-# test that find has the -delete flag, which BUSCO uses
-mkdir findtest ; cd findtest ; touch file ; find . -delete ; cd ..
-
 cat > ex.fasta <<EOF
 >1
 AATTCC
