@@ -1,0 +1,2 @@
+make GSL_PATH=$PREFIX/ CC=$CXX
+make install BIN_INSTALL=$PREFIX/bin/ LIB_INSTALL=$PREFIX/lib/
