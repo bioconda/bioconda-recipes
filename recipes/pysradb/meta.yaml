@@ -1,8 +1,8 @@
 {% set name = "pysradb" %}
-{% set version = "0.2.2" %}
+{% set version = "0.6.0" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "15736bec19ca3927b68dd13e3a9ccfab5eee9e586a3d7017b0081605ef37b524" %}
+{% set hash_value = "1dc65f2473eb30a992a9a75585544fef6a7171ae2aea263b53c150eeec98f186" %}
 
 
 package:
@@ -15,6 +15,8 @@ source:
 
 build:
   number: 0
+  entry_points:
+    - pysradb=pysradb.cli:cli
   script: python setup.py install --single-version-externally-managed --record=record.txt
   noarch: python
 
@@ -23,16 +25,21 @@ requirements:
     - python
     - setuptools
     - pandas >=0.23.4
-    - tqdm  >=4.28
+    - tqdm >=4.28
+    - click >=7.0
   run:
     - python
     - pandas >=0.23.4
     - tqdm >=4.28
+    - click >=7.0
 
 test:
   imports:
     - pysradb
-    - pysradb.pysradb
+    - pysradb.sradb
+    - pysradb.geodb
+  commands:
+    - pysradb | grep "Query NGS metadata"
 
 about:
   home: https://github.com/saketkc/pysradb
@@ -45,3 +52,7 @@ about:
 extra:
   recipe-maintainers:
     - saketkc
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true
