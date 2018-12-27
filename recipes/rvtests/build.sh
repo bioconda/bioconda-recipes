@@ -12,6 +12,8 @@ echo "Start build..."
 #(cd third && tar jxf samtools-0.1.19.tar.bz2 && ln -s -f samtools-0.1.19 samtools && cd samtools-0.1.19 && sed -i.bak 's:^CFLAGS=:CFLAGS=-I../zlib-1.2.8 -I../../zlib-1.2.8:;s:^LIBPATH=:LIBPATH=-L../zlib-1.2.8 -L../../zlib-1.2.8:' Makefile bcftools/Makefile && make lib-recur)
 #(sed -i.bak 's:CXX_FLAGS = -O2 -DNDEBUG:CXX_FLAGS = -O2 -DNDEBUG -I../third/zlib-1.2.8:' libsrc/Makefile)
 
+(cd third && unzip cnpy.zip && sed -i.bak 's:#include<zlib.h>:#include"../zlib/zlib.h":' cnpy-master/cnpy.h)
+
 # Use system zlib
 #export CFLAGS="-I$PREFIX/include"
 #export LDFLAGS="-L$PREFIX/lib"
