@@ -1,1 +1,0 @@
-py.test -W Ignore::DeprecationWarning basicTests.py
