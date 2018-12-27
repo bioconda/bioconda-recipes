@@ -9,7 +9,8 @@ def test_pwm():
     random_pwm = np.random.dirichlet(np.ones(4), size=6)
     assert seqLogo.Pwm(random_pwm), "PWM could not be generated"
 
-def test_pfm():
+def test_pfm2pwm():
     np.random.seed(42)
     pfm = pd.DataFrame(np.random.randint(0, 36, size=(8, 4)))
     assert seqLogo.pfm2pwm(pfm), "PWM from PFM could not be generated"
+

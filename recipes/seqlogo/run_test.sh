@@ -1,1 +1,1 @@
-pytest -W Ignore::DeprecationWarning basicTests.py
+py.test -W Ignore::DeprecationWarning basicTests.py
