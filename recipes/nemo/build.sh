@@ -1,7 +1,7 @@
-MAC=0
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    MAC=1
+    make GSL_PATH=$PREFIX/ CC=$CXX MAC=1
+else
+    make GSL_PATH=$PREFIX/ CC=$CXX
 fi
 
-make GSL_PATH=$PREFIX/ CC=$CXX MAC=$MAC
-make install BIN_INSTALL=$PREFIX/bin/ LIB_INSTALL=$PREFIX/lib/ MAC=$MAC
+make install BIN_INSTALL=$PREFIX/bin/ LIB_INSTALL=$PREFIX/lib/
