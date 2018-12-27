@@ -26,6 +26,7 @@ cat third/Makefile
 (sed -i.bak 's:^CXX_LIB =:CXX_LIB = -L${PREFIX}/lib:' Makefile.common)
 
 if [[ $(uname -s) == Darwin ]]; then
+  sed -i.bak 's/release: CXX_FLAGS =/ release: CXX_FLAGS = -headerpad_max_install_names /' vcfUtils/Makefile
   make STATIC_FLAG='-fopenmp'
 else
   # hack this flag to link against rt, so clock_gettime can be linked
