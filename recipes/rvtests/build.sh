@@ -13,8 +13,10 @@ echo "Start build..."
 (sed -i.bak 's:CXX_FLAGS = -O2 -DNDEBUG:CXX_FLAGS = -O2 -DNDEBUG -I../third/zlib-1.2.8:' libsrc/Makefile)
 (sed -i.bak 's:cd tabix-0.2.6; make:cd tabix-0.2.6; make libtabix.a:' third/Makefile)
 
+(cd third && tar zxf zlib-1.2.8.tar.gz && cd zlib-1.2.8 && ./configure && make)
 (sed -i.bak 's/cnpy: cnpy.zip/cnpy: cnpy.zip zlib/' third/Makefile)
 (sed -i.bak 's:-c cnpy.cpp:-c cnpy.cpp -I../zlib:' third/Makefile)
+(cd third && make cnpy && sed -i.bak 's:#include<zlib.h>:#include "../zlib/zlib.h":' cnpy/cnpy.h)
 cat third/Makefile
 
 # Use system zlib
