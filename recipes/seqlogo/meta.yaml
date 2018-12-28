@@ -1,0 +1,47 @@
+{% set name = "seqlogo" %}
+{% set version = "0.1.10" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: de9ce0678af69630cd50da762abc9cfb7008e60153b0e8b5ad5a0edd730bc13a
+
+build:
+  number: 0
+  skip: True # [py27]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+
+requirements:
+  host:
+    - numpy
+    - pandas
+    - pip
+    - python
+    - weblogo
+  run:
+    - numpy
+    - pandas
+    - python
+    - weblogo
+
+test:
+  imports:
+    - seqlogo
+  requires:
+    - pytest
+  commands:
+    - py.test --pyargs seqlogo
+
+about:
+  home: https://github.com/betteridiot/seqlogo
+  license: BSD
+  license_family: BSD
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+  summary: Python port of the R Bioconductor `seqlogo` package 
+
+extra:
+  recipe-maintainers:
+    - betteridiot
