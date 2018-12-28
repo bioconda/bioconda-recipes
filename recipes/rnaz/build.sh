@@ -1,5 +1,4 @@
 #!/bin/bash
-./configure --prefix=$PREFIX --datadir=$PREFIX/share
+./configure CFLAGS="-std=gnu89 -g -O2" --prefix=$PREFIX --datadir=$PREFIX/share --libdir=$PREFIX/lib
 make
 make install
-mv $PREFIX/bin/RNAz.pm $PREFIX/lib/perl5/site_perl/*/.

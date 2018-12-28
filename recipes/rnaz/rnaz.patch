@@ -1,0 +1,75 @@
+diff -ruN RNAz-2.1/Makefile.am patched_RNAz/Makefile.am
+--- RNAz-2.1/Makefile.am	2009-10-28 16:53:13.000000000 +0100
++++ patched_RNAz/Makefile.am	2018-12-28 15:58:36.371446148 +0100
+@@ -2,6 +2,6 @@
+ 
+ docu_DATA = INSTALL README AUTHORS COPYING TODO manual.pdf
+  
+-EXTRA_DIST = INSTALL README AUTHORS COPYING TODO manual.pdf libsvm-2.89
++EXTRA_DIST = INSTALL README AUTHORS COPYING TODO manual.pdf libsvm-3.21
+ 
+ docudir = $(pkgdatadir)
+diff -ruN RNAz-2.1/rnaz/Makefile.am patched_RNAz/rnaz/Makefile.am
+--- RNAz-2.1/rnaz/Makefile.am	2009-06-04 13:45:10.000000000 +0200
++++ patched_RNAz/rnaz/Makefile.am	2018-12-28 15:58:37.744444795 +0100
+@@ -2,11 +2,11 @@
+ 
+ RNAz_SOURCES=RNAz.c rnaz_utils.c svm_helper.c rnaz_utils.h svm_helper.h zscore.c zscore.h cmdline.c cmdline.h strand.c strand.h  ../models/mfe_avg.inc  ../models/mfe_stdv.inc  ../models/strand.inc ../models/decision.inc 
+ 
+-nodist_RNAz_SOURCES=../libsvm-2.89/svm.cpp 
++nodist_RNAz_SOURCES=${PREFIX}/lib/libsvm-3.21/svm.cpp 
+ 
+ LDADD = -L../librna -lRNA -lm
+  
+ RNAz_LINK = $(CXX) -o $@
+  
+-INCLUDES = -I../librna -I../libsvm-2.89 -I../models
++INCLUDES = -I../librna -I${PREFIX}/lib/libsvm-3.21 -I../models
+ 
+diff -ruN RNAz-2.1/rnaz/strand.c patched_RNAz/rnaz/strand.c
+--- RNAz-2.1/rnaz/strand.c	2009-08-19 14:04:39.000000000 +0200
++++ patched_RNAz/rnaz/strand.c	2018-12-28 15:54:20.928697847 +0100
+@@ -123,9 +123,9 @@
+ 	    ++j;
+ 	}
+ 	singleMFE = fold(woGapsSeq, singleStruc);
+-	singleZ=mfe_zscore(woGapsSeq,singleMFE,z_score_type,0,warningString_strand);
++	singleZ=mfe_zscore(woGapsSeq,singleMFE,&z_score_type,0,warningString_strand);
+ 	singleMFE_reverse = fold(woGapsSeq_reverse, singleStruc_reverse);
+-	singleZ_reverse=mfe_zscore(woGapsSeq_reverse,singleMFE_reverse,z_score_type,0,warningString_strand);
++	singleZ_reverse=mfe_zscore(woGapsSeq_reverse,singleMFE_reverse,&z_score_type,0,warningString_strand);
+ 	sumZ+=singleZ;
+ 	sumMFE+=singleMFE;
+ 	sumZ_reverse+=singleZ_reverse;
+diff -ruN RNAz-2.1/rnaz/svm_helper.c patched_RNAz/rnaz/svm_helper.c
+--- RNAz-2.1/rnaz/svm_helper.c	2009-08-17 13:09:57.000000000 +0200
++++ patched_RNAz/rnaz/svm_helper.c	2018-12-28 15:52:50.052787389 +0100
+@@ -251,6 +251,7 @@
+ */
+ 
+ 
++/*
+ struct svm_model{
+   struct svm_parameter param;
+   int nr_class;
+@@ -263,7 +264,8 @@
+   int *label;
+   int *nSV;
+   int free_sv;
+-};
++  };
++*/
+ 
+ struct svm_model* svm_load_model_string(char *modelString){
+ 
+diff -ruN RNAz-2.1/rnaz/svm_helper.h patched_RNAz/rnaz/svm_helper.h
+--- RNAz-2.1/rnaz/svm_helper.h	2009-08-17 13:09:52.000000000 +0200
++++ patched_RNAz/rnaz/svm_helper.h	2018-12-28 15:51:32.059864233 +0100
+@@ -11,6 +11,7 @@
+  *                                                                   *
+  *********************************************************************/
+ 
++#define svm_destroy_model(A) svm_free_model_content((A))
+ 
+ void get_regression_models(struct svm_model** avg_model,
+ 			   struct svm_model** stdv_model,
