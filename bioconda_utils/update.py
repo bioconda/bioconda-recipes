@@ -424,6 +424,86 @@ class Recipe():
         line = re.sub("number: [0-9]+", "number: 0", line)
         self.meta_yaml[lineno] = line
 
+    def get_raw_range(self, path):
+        """Locate the position of a node in the YAML within the raw text
+
+
+        See also `get_raw()` if you want to get the content of the unparsed
+        meta.yaml at a specific key.
+
+        Args:
+          path: The "path" to the node. Use numbers for lists ('source/1/url')
+
+        Returns:
+          a tuple of first_row, first_column, last_row, last_column
+        """
+        nodes = [self.meta]
+        keys = []
+        # find items composing path
+        for key in path.split("/"):
+            last = nodes[-1]
+            try:
+                number = int(key)
+                if isinstance(last, list):
+                    nodes.append(last[number])
+                    keys.append(number)
+                elif isinstance(last, dict) and number == 0:
+                    pass
+                else:
+                    raise ValueError(f"Can't access {path} in meta")
+            except ValueError:
+                nodes.append(last[key])
+                keys.append(key)
+
+        nodes.pop()  # pop parsed value
+
+        # get the start row/col for the value
+        if isinstance(keys[-1], int):
+            start_row, start_col = nodes[-1].lc.key(keys[-1])
+        else:
+            start_row, start_col = nodes[-1].lc.value(keys[-1])
+
+        # getting the end is more complicated, we need to move
+        # up the tree to the next item in order until one is not the last
+        # item in its collection
+        while nodes:
+            node = nodes.pop()
+            key = keys.pop()
+            if isinstance(key, int):
+                if key + 1 < len(node):
+                    end_row, end_col = node.lc.key(key + 1)
+                    break
+            else:
+                node_keys = list(node.keys())
+                if key != node_keys[-1]:
+                    next_key = node_keys[node_keys.index(key)+1]
+                    end_row, end_col = node.lc.key(next_key)
+                    break
+        else:
+            end_row = len(self.meta_yaml)
+            end_col = len(self.meta_yaml[-1])
+        return (start_row, start_col, end_row, end_col)
+
+    def get_raw(self, path):
+        """Extracts the unparsed text for a node in the meta.yaml
+
+        Args:
+          path: Slash-separated path to the node. Numbers can be used
+                to access indices in lists. A number '0' is ignored if
+                the node is a dict (so 'source/0/url' will work even if
+                there is only one url).
+
+        Returns:
+          Extracted raw text
+        """
+        start_row, start_col, end_row, end_col = self.get_raw_range(path)
+        lines = []
+        lines.append(self.meta_yaml[start_row][start_col:])
+        for row in range(start_row+1, end_row):
+            lines.append(self.meta_yaml[row])
+        lines.append(self.meta_yaml[end_row][:end_col])
+        return "\n".join(lines).strip()
+
 
 class Filter(abc.ABC):
     """Function object type called by Scanner"""
