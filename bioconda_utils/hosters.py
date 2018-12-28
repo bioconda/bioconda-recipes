@@ -383,12 +383,14 @@ class JSONHoster(Hoster):
 class PyPi(JSONHoster):
     async def get_versions_from_json(self, data, scanner, orig_version):
         latest = data["info"]["version"]
-        for rel in data["releases"][latest]:
-            if rel["packagetype"] == "sdist":
-                rel["link"] = rel["url"]
-                rel["version"] = latest
-                return [rel]
-        return []
+        result = []
+        for vers in list(set([latest, orig_version])):
+            for rel in data['releases'][vers]:
+                if rel["packagetype"] == "sdist":
+                    rel["link"] = rel["url"]
+                    rel["version"] = latest
+                    result.append(rel)
+        return result
 
     releases_format = "https://pypi.org/pypi/{package}/json"
     package_pattern = r"(?P<package>[\w\-\.]+)"
