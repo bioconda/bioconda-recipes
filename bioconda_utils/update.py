@@ -266,6 +266,31 @@ class Recipe():
         lines[block_top:block_top+block_height] = new_lines
         return "\n".join(lines)
 
+    def get_template(self):
+        """Create a Jinja2 template from the current raw recipe"""
+        # This function exists because the template cannot be pickled.
+        # Storing it means the recipe cannot be pickled, which in turn
+        # means we cannot pass it to ProcessExecutors.
+        return utils.jinja_silent_undef.from_string(
+            "\n".join(self.meta_yaml)
+        )
+
+    def get_simple_modules(self):
+        """Yield simple replacement values from template
+
+        E.g. those set with ``{% set version='1.2.3' %}```
+
+        Returns:
+          a dictionary of replacements (e.g. version: 1.2.3)
+        """
+        template = self.get_template()
+        return {
+            attr: getattr(template.module, attr)
+            for attr in dir(template.module)
+            if not attr.startswith("_")
+            and not hasattr(getattr(template.module, attr), '__call__')
+        }
+
     def render(self) -> None:
         """Convert recipe text into data structure
 
@@ -274,10 +299,7 @@ class Recipe():
         - parse yaml
         - normalize
         """
-        template = utils.jinja_silent_undef.from_string(
-            "\n".join(self.meta_yaml)
-        )
-        yaml_text = template.render(self.JINJA_VARS)
+        yaml_text = self.get_template().render(self.JINJA_VARS)
         try:
             self.meta = yaml.load(yaml_text)
         except DuplicateKeyError as err:
