@@ -56,7 +56,7 @@ from concurrent.futures import ProcessPoolExecutor
 from copy import copy
 from hashlib import sha256
 from urllib.parse import urlparse
-from typing import Any, Dict, List, Mapping, Optional, Sequence
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Pattern
 
 import aiohttp
 import aiofiles
@@ -379,11 +379,15 @@ class Recipe():
         if start is not None:
             lines.update(range(start, len(self.meta_yaml)))
 
-        before_pattern = re.escape(before)
-        if with_fuzz:
-            before_pattern = re.sub(r"(-|\\\.|_)", "[-_.]", before_pattern)
-        re_before = re.compile(before_pattern)
-        re_select = re.compile(before_pattern + r".*#.*\[")
+        if isinstance(before, Pattern):
+            re_before = before
+            re_select = re.compile(before.pattern + r".*#.*\[")
+        else:
+            before_pattern = re.escape(before)
+            if with_fuzz:
+                before_pattern = re.sub(r"(-|\\\.|_)", "[-_.]", before_pattern)
+            re_before = re.compile(before_pattern)
+            re_select = re.compile(before_pattern + r".*#.*\[")
 
         # replace within those lines, erroring on "# [asd]" selectors
         replacements = 0
