@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [[ "$OSTYPE" == "darwin"* ]]; then
     make GSL_PATH=$PREFIX/ CC=$CXX MAC=1 SHELL=/bin/bash
 else
