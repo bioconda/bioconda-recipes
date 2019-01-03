@@ -1,4 +1,4 @@
-{% set version = "5.2.2" %}
+{% set version = "5.4.0" %}
 
 package:
   name: snakemake-minimal
@@ -6,11 +6,11 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/snakemake/snakemake-{{ version }}.tar.gz
-  sha256: adffe7e24b4a613a9e8bf0a2a320b3cea236d86afb9132bb0bbbc08b8e35a3a3
+  sha256: 26157e349988b3416b663c9695634a813edf02e2f658dbe48149fff028ab1793
 
 build:
-  number: 1
-  skip: True # [py27]
+  number: 0
+  noarch: python
   script: python -m pip install --no-deps --ignore-installed .
   entry_points:
     - snakemake = snakemake:main
@@ -18,17 +18,11 @@ build:
 
 requirements:
   host:
-    - python
+    - python >=3.5
     - pip
     - setuptools
-    - wrapt
-    - requests
-    - ratelimiter
-    - configargparse
-    - appdirs
-    - datrie
   run:
-    - python
+    - python >=3.5
     - setuptools
     - wrapt
     - requests
@@ -41,11 +35,13 @@ requirements:
     - configargparse
     - appdirs
     - jsonschema
+    - gitpython
 
 test:
   imports:
     - snakemake
   commands:
+    - export GIT\_PYTHON_REFRESH=warn
     - snakemake --version
     - snakemake --version | grep "{{ version }}"
 
