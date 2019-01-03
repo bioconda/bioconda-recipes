@@ -17,14 +17,6 @@ make install
 # copy missing scripts
 cp -p scripts/{convert_stacks.pl,extract_interpop_chars.pl} "$PREFIX/bin/"
 
-# after installation the exe_dir is set to the absolute binary path 
-# this is not necessary and leads to an error if there are characters 
-# like @ included (Galaxy)
-
-# furthermore a bug in ref_map v2.2 is fixed
-for i in ref_map.pl denovo_map.pl
-do
-    sed -i -e "s/^\(my \$exe_path\s\+=[^@]\+\)/\1\\\\/" "$PREFIX/bin/$i"
-    sed -i -e "s/_alpha/-alpha/" "$PREFIX/bin/$i"
-done
+# fix a bug in ref_map v2.2 is fixed
+sed -i -e "s/_alpha/-alpha/" "$PREFIX"/bin/ref_map.pl
 
