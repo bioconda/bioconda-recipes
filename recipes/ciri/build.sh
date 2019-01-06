@@ -1,7 +1,6 @@
 #!/bin/sh
-mkdir -p bin
-cp bin/* ${PREFIX}/bin
-chmod +x *.pl
-cp *.pl ${PREFIX}/bin
+cp bin/CIRI_v2.0.6/* ${PREFIX}/bin
+chmod +x bin/CIRI_v2.0.6/*.pl
+
 
 
