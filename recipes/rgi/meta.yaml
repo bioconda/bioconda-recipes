@@ -1,29 +1,44 @@
 {% set name = "rgi" %}
 {% set version = "4.2.2" %}
 {% set sha256 = "ab4a5614e359884129064ec318d8dda2516052b26aa38cfd480245d24e0c96e7" %}
+{% set sha256database = "a98a7cfff770f1eb92b901d96fc82c7884a62bf0a837f896414e16e7ed32a368" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/arpcard/rgi/archive/{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+    - url: https://github.com/arpcard/rgi/archive/{{ version }}.tar.gz
+      sha256: {{ sha256 }}
+    - url: https://card.mcmaster.ca/download/0/broadstreet-v3.0.0.tar.gz
+      sha256: {{ sha256database }}
+      folder: card-data
 
 build:
-  skip: True # [win or py27]
-  number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  skip: True # [win or py27 or py34]
+  number: 1
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
-    - setuptools
-    - biopython
+    - blast ==2.6.0
     - six >=1.7.0
     - zlib
+    - prodigal ==2.6.3
+    - diamond ==0.8.36
+    - biopython >=1.60
+    - filetype >=1.0.0
+    - pytest >=3.0.0
+    - mock >=2.0.0
+    - pandas >=0.15.0
+    - matplotlib >=2.1.2
+    - seaborn >=0.8.1
+    - pyfaidx >=0.5.4.1
+    - pyahocorasick >=1.1.7
+    - setuptools
+
   run:
     # RGI requires these exact versions of blast prodigal and diamond, or else --alignment_mode DIAMOND fails
     - python
@@ -44,6 +59,7 @@ requirements:
 
 test:
   commands:
+    - rgi database | grep "3.0.0"
     - rgi load -h
     - rgi main -h
     - rgi tab -h
