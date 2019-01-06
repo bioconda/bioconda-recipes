@@ -1,13 +1,8 @@
 #!/bin/bash
 
-cd htslib
-autoreconf -fi
-./configure --prefix=`pwd`
-make install
-
-cd ../ivar/
+export CPATH=${PREFIX}/include
 
 ./autogen.sh
-./configure --prefix=$PREFIX --with-hts=$(pwd ../)/htslib
+./configure --prefix=$PREFIX --with-hts=$PREFIX/include/htslib
 make
 make install
