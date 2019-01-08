@@ -385,10 +385,12 @@ class PyPi(JSONHoster):
         latest = data["info"]["version"]
         result = []
         for vers in list(set([latest, orig_version])):
+            if vers not in data['releases']:
+                continue
             for rel in data['releases'][vers]:
                 if rel["packagetype"] == "sdist":
                     rel["link"] = rel["url"]
-                    rel["version"] = latest
+                    rel["version"] = vers
                     result.append(rel)
         return result
 
