@@ -13,6 +13,7 @@ from itertools import product, chain, groupby
 import logging
 import datetime
 from threading import Event, Thread
+from typing import Sequence
 from pathlib import PurePath
 import json
 import warnings
