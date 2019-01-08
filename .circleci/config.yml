@@ -37,6 +37,18 @@ variables:
     run:
       name: Install bioconda-utils
       command: python setup.py install
+  autobump_run: &autobump_run
+    name: Check recipes for new upstream releases
+    command: |
+      git checkout git@github.com/bioconda/bioconda-recipes
+      cd bioconda-recipes
+      bioconda-utils autobump recipes/ config.yml \
+        --unparsed-urls unparsed_urls.txt \
+        --failed-urls failed_urls.txt \
+        --create-pr $AUTOBUMP_OPTS
+      mkdir -p /tmp/artifacts
+      mv unparsed_urls.txt failed_urls.txt /tmp/artifacts
+
 
     
 jobs:
@@ -94,6 +106,36 @@ jobs:
       - run:
           name: Build and upload docs
           command: .circleci/build-docs.sh
+  autobump-test:
+    <<: *linux
+    steps:
+      - checkout
+      - *common
+      - *restore_cache
+      - *setup
+      - *save_cache
+      - *install_bioconda_utils
+      - run:
+          <<: *autobump_run
+          environment:
+            AUTOBUMP_OPTS: --dry-run
+      - store_artifacts:
+          path: /tmp/artifacts
+  autobump:
+    <<: *linux
+    steps:
+      - checkout
+      - *common
+      - *restore_cache
+      - *setup
+      - *save_cache
+      - *install_bioconda_utils
+      - run:
+          <<: *autobump_run
+          environment:
+            AUTOBUMP_OPTS: ""
+      - store_artifacts:
+          path: /tmp/artifacts
 
 
 
@@ -110,7 +152,9 @@ workflows:
           context: org-global
       - build-docs:
           context: org-global
-  bioconda-utils-nightly-docs:
+      - autobump-test:
+          context: org-global
+  bioconda-utils-nightly:
      triggers:
        - schedule:
            cron: "0 0 * * *"
@@ -119,5 +163,7 @@ workflows:
                only:
                  - master
      jobs:
+       - autobump:
+           context: org-global
        - build-docs:
            context: org-global
