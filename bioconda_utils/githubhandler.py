@@ -6,8 +6,8 @@ import logging
 from copy import copy
 from enum import Enum
 
-from gidgethub.abc import GitHubAPI
-from gidgethub import aiohttp as gh_aiohttp
+import gidgethub
+import gidgethub.aiohttp
 import aiohttp
 
 from typing import Any, Dict, List, Optional
@@ -30,6 +30,7 @@ class GitHubHandler:
     """
     PULLS = "/repos/{user}/{repo}/pulls{/number}{?head,base,state}"
     ISSUES = "/repos/{user}/{repo}/issues{/number}"
+    ORG_MEMBERS = "/orgs/{user}/members{/username}"
 
     STATE = IssueState
 
@@ -43,7 +44,7 @@ class GitHubHandler:
                             'repo': to_repo}
 
         # filled in by login():
-        self.api: GitHubAPI = None
+        self.api: gidgethub.abc.GitHubAPI = None
         self.username: str = None
 
     @abc.abstractmethod
@@ -58,10 +59,19 @@ class GitHubHandler:
         user = await self.api.getitem("/user")
         self.username = user["login"]
 
-    async def is_member(self, username):
-        """Tests if **username** is a member"""
-        # FIXME unfinished
-        res = await self.gh.getitem("/orgs/:org/members/:username")
+    async def is_member(self, username) -> bool:
+        """Check if **username** is member of current org"""
+        if not username:
+            return False
+        var_data = copy(self.var_default)
+        var_data['username'] = username
+        try:
+            await self.api.getitem(self.ORG_MEMBERS, var_data)
+        except gidgethub.BadRequest:
+            logger.debug("User %s is not a member of %s", username, var_data['user'])
+            return False
+        logger.debug("User %s IS a member of %s", username, var_data['user'])
+        return True
 
     async def get_prs(self,
                       from_branch: Optional[str] = None,
@@ -157,6 +167,13 @@ class GitHubHandler:
 
         if self.dry_run:
             logger.info("Would modify PR %s", number)
+            if title:
+                logger.debug("New title: %s", title)
+            if labels:
+                logger.debug("New labels: %s", labels)
+            if body:
+                logger.debug("New Body:\n%s\n", body)
+
             return {'number': number}
         logger.info("Modifying PR %s", number)
         return await self.api.patch(self.ISSUES, var_data, data=data)
@@ -171,6 +188,6 @@ class AiohttpGitHubHandler(GitHubHandler):
     """
     def create_api_object(self, session: aiohttp.ClientSession,
                           requester: str, *args, **kwargs) -> None:
-        self.api = gh_aiohttp.GitHubAPI(
+        self.api = gidgethub.aiohttp.GitHubAPI(
             session, requester, oauth_token=self.token
         )

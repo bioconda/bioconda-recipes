@@ -83,6 +83,13 @@ from .githubhandler import AiohttpGitHubHandler, GitHubHandler
 LegacyVersion = parse_version("").__class__  # pylint: disable=invalid-name
 
 yaml = YAML(typ="rt")  # pylint: disable=invalid-name
+
+# Hack: mirror stringify from conda-build in removing implicit
+#       resolution of numbers
+for digit in '0123456789':
+    if digit in yaml.resolver.versioned_resolver:
+        del yaml.resolver.versioned_resolver[digit]
+
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
@@ -644,6 +651,8 @@ class ExcludeOtherChannel(Filter):
         super().__init__(scanner)
         logger.info("Loading package lists for %s", channels)
         r = utils.RepoData()
+        if cache:
+            r.set_cache(cache)
         self.other = set(r.get_package_data('name', channels=channels))
 
     async def apply(self, recipe):
@@ -911,7 +920,7 @@ class UpdateVersion(Filter):
                     continue
                 if norm_pkg in variants[0]:
                     for variant in variants:
-                        if not ms.match({'name': '', 'build': '', 'build_number': 0,
+                        if not ms.match({'name': '', 'build': '', 'build_number': '0',
                                          'version': variant[norm_pkg]}):
                             logger.error("Recipe %s: %s %s conflicts pins",
                                          recipe, pkg, spec)
@@ -1155,6 +1164,8 @@ class CreatePullRequest(GitFilter):
                  to_user: str = "bioconda",
                  to_repo: str = "bioconda-recipes") -> None:
         super().__init__(scanner, git_handler)
+        self.to_user = to_user
+        self.to_repo = to_repo
         self.gh: GitHubHandler = AiohttpGitHubHandler(
             token, dry_run, to_user, to_repo)
 
@@ -1166,7 +1177,18 @@ class CreatePullRequest(GitFilter):
     async def apply(self, recipe):
         branch_name = self.branch_name(recipe)
         template = utils.jinja.get_template("bump_pr.md")
-        body = template.render({'r': recipe})
+        author = None
+        for v in recipe.version_data.values():
+            if 'hoster' in v and v['hoster'].startswith('Github'):
+                author = v['vals']['account']
+                break
+        body = template.render({
+            'r': recipe,
+            'recipe_relurl': "/".join((self.to_user, self.to_repo, 'tree',
+                                       branch_name, recipe.basedir + recipe.reldir)),
+            'author': author,
+            'author_is_member': await self.gh.is_member(author),
+        })
         labels = ["autobump"]
         title = f"Update {recipe} to {recipe.version}"
 
