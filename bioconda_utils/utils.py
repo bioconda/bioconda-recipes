@@ -68,6 +68,19 @@ log_stream_handler.setFormatter(ColoredFormatter(
         }))
 
 
+def ensure_list(obj):
+    """Wraps **obj** in a list if necessary
+
+    >>> ensure_list("one")
+    ["one"]
+    >>> ensure_list(["one", "two"])
+    ["one", "two"]
+    """
+    if isinstance(obj, Sequence) and not isinstance(obj, str):
+        return obj
+    return [obj]
+
+
 def setup_logger(name, loglevel=None):
     logger = logging.getLogger(name)
     logger.propagate = False

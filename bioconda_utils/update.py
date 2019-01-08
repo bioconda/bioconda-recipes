@@ -74,6 +74,7 @@ from pkg_resources import parse_version
 from tqdm import tqdm
 
 from . import utils
+from .utils import ensure_list
 from .githubhandler import AiohttpGitHubHandler, GitHubHandler
 
 # pkg_resources.parse_version returns a Version or LegacyVersion object
@@ -882,6 +883,56 @@ class UpdateVersion(Filter):
     async def apply(self, recipe: Recipe):
         logger.debug("Checking for updates to %s - %s", recipe, recipe.version)
 
+        # scan for available versions
+        versions = await self.get_version_map(recipe)
+        # (too slow) conflicts = self.check_version_pin_conflict(recipe, versions)
+
+        # select apropriate most current version
+        latest = self.select_version(recipe.version, versions.keys())
+
+        # add data for respective versions to recipe and recipe.orig
+        recipe.version_data = versions[latest]
+        if recipe.orig.version in versions:
+            recipe.orig.version_data = versions[recipe.orig.version]
+        else:
+            recipe.orig.version_data = {}
+
+        # check if the recipe is up to date
+        if VersionOrder(latest) == VersionOrder(recipe.version):
+            if not recipe.on_branch:
+                raise self.UpToDate(recipe)
+
+        # Update `url:`s without Jinja expressions (plain text)
+        for fn in versions[latest]:
+            recipe.replace(fn, versions[latest][fn]['link'], within=["source"])
+
+        # Update the version number itself. This will also usually update
+        # `url:`s expressed with `{{version}}` tags.
+        if not recipe.replace(recipe.version, latest, within=["package"]):
+            # allow changes between dash/dot/underscore
+            if recipe.replace(recipe.version, latest, within=["package"], with_fuzz=True):
+                logger.warning("Recipe %s: replaced version with fuzz", recipe)
+
+        recipe.reset_buildnumber()
+        recipe.render()
+
+        # Verify that the rendered recipe has the right version number
+        if not VersionOrder(recipe.version) == VersionOrder(latest):
+            raise self.UpdateVersionFailure(recipe, recipe.orig.version, latest)
+
+        # Verify that every url was modified
+        for src, osrc in zip(ensure_list(recipe.meta['source']),
+                             ensure_list(recipe.orig.meta['source'])):
+            for url, ourl in zip(ensure_list(src['url']),
+                                 ensure_list(osrc['url'])):
+                if url == ourl:
+                    raise self.UrlNotVersioned(recipe)
+
+        return recipe
+
+    async def get_version_map(self, recipe: Recipe):
+        """Scan all source urls"""
+
         sources = recipe.meta.get("source")
         if not sources:
             raise self.Metapackage(recipe)
@@ -899,49 +950,7 @@ class UpdateVersion(Filter):
 
         if not versions:
             raise self.NoReleases(recipe)
-
-        #fixme: slow
-        #conflicts = self.check_version_pin_conflict(recipe, versions)
-        latest = self.select_version(recipe.version, versions.keys())
-        recipe.version_data = versions[latest]
-        if recipe.orig.version in versions:
-            recipe.orig.version_data = versions[recipe.orig.version]
-        else:
-            recipe.orig.version_data = {}
-
-        if VersionOrder(latest) == VersionOrder(recipe.version) and not recipe.on_branch:
-            raise self.UpToDate(recipe)
-
-        for fn in versions[latest]:
-            recipe.replace(fn, versions[latest][fn]['link'])
-        if not recipe.replace(recipe.version, latest):
-            if recipe.replace(recipe.version, latest, with_fuzz=True):
-                logger.warning("Recipe %s: replaced version with fuzz", recipe)
-        recipe.reset_buildnumber()
-        recipe.render()
-
-        if not VersionOrder(recipe.version) == VersionOrder(latest):
-            raise self.UpdateVersionFailure(recipe, recipe.orig.version, latest)
-
-        sources = recipe.meta["source"]
-        orig_sources = recipe.orig.meta["source"]
-        if isinstance(sources, dict):
-            sources = [sources]
-            orig_sources = [orig_sources]
-        urls: List[str] = []
-        orig_urls: List[str] = []
-        for source, orig_source in zip(sources, orig_sources):
-            add_urls = source["url"]
-            add_orig_urls = orig_source["url"]
-            if isinstance(add_urls, str):
-                add_urls = [add_urls]
-                add_orig_urls = [add_orig_urls]
-            urls.extend(add_urls)
-            orig_urls.extend(add_orig_urls)
-        for url, orig_url in zip(urls, orig_urls):
-            if orig_url == url:
-                raise self.UrlNotVersioned(recipe)
-        return recipe
+        return versions
 
     async def get_versions(self, recipe: Recipe, source: Mapping[Any, Any],
                            source_idx: int):
