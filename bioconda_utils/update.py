@@ -68,8 +68,13 @@ import conda_build.config
 from conda.exports import MatchSpec, VersionOrder
 import conda.exceptions
 
-from ruamel.yaml import YAML
-from ruamel.yaml.constructor import DuplicateKeyError
+try:
+    from ruamel.yaml import YAML
+    from ruamel.yaml.constructor import DuplicateKeyError
+except ModuleNotFoundError:
+    from ruamel_yaml import YAML
+    from ruamel_yaml.constructor import DuplicateKeyError
+
 from pkg_resources import parse_version
 from tqdm import tqdm
 
