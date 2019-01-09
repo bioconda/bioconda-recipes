@@ -975,6 +975,7 @@ class UpdateVersion(Filter):
             try:
                 versions = await hoster.get_versions(self.scanner, recipe.orig.version)
                 for match in versions:
+                    match['hoster'] = hoster
                     version_map[match["version"]][url] = match
             except aiohttp.ClientResponseError as exc:
                 logger.debug("HTTP %s when getting %s", exc, url)
@@ -1349,7 +1350,7 @@ class CreatePullRequest(GitFilter):
         template = utils.jinja.get_template("bump_pr.md")
         author = None
         for v in recipe.version_data.values():
-            if 'hoster' in v and v['hoster'].startswith('Github'):
+            if 'hoster' in v and v['hoster'].__class__.__name__.startswith('Github'):
                 author = v['vals']['account']
                 break
 

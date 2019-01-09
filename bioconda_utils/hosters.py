@@ -233,7 +233,6 @@ class HTMLHoster(Hoster):
                 match["link"] = urljoin(url, match["href"])
                 match["releases_url"] = url
                 match["vals"] = vals
-                match["hoster"] = self.__class__.__name__
                 result.append(match)
         return result
 
