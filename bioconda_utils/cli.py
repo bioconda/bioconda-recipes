@@ -682,7 +682,7 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
         scanner.add(update.WriteRecipe)
 
     if create_pr:
-        token = os.environ["GITHUB_TOKEN"]
+        token = os.environ.get("GITHUB_TOKEN")
         if not token:
             logger.critical("GITHUB_TOKEN required to create PRs")
             exit(1)
