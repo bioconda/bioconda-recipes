@@ -41,6 +41,10 @@ class TqdmHandler(logging.StreamHandler):
     Passes all log writes through tqdm to allow progress bars
     and log messages to coexist without clobbering terminal
     """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+         # initialise internal tqdm lock so that we can use tqdm.write
+        _tqdm.tqdm(disable=True, total=0)
     def emit(self, record):
         _tqdm.tqdm.write(self.format(record))
 
