@@ -5,17 +5,21 @@
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
+
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
   sha256: e1e9026c07fc26e1eaee06a0dd63d2f765bcd711f350fdb2a2236ad65b1d0bd7
+
 build:
-  number: 0
+  noarch: python
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
+
 requirements:
   host:
     - 'bioconductor-annotationdbi >=1.42.1,<1.44.0'
@@ -55,13 +59,20 @@ requirements:
     - r-rcolorbrewer
     - r-statmod
     - r-stringr
+    - python <3
+    - 'htseq >=0.6.1,<0.10.0'  # dexseq_count.py performes an overly simplistic version check
+
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
+    - dexseq_count.py --help
+    - dexseq_prepare_annotation.py --help
+
 about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 3)'
   summary: 'The package is focused on finding differential exon usage using RNA-seq exon counts between samples with different experimental designs. It provides functions that allows the user to make the necessary statistical tests based on a model that uses the negative binomial distribution to estimate the variance between biological replicates and generalized linear models for testing. The package also provides functions for the visualization and exploration of the results.'
+
 extra:
   identifiers:
     - biotools:dexseq
