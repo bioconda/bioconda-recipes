@@ -51,7 +51,9 @@ class TqdmHandler(logging.StreamHandler):
 
 def tqdm(*args, **kwargs):
     """Wrapper around TQDM handling disable"""
-    enable = sys.stderr.isatty() and os.environ.get("TERM", "") != "dumb"
+    enable = (sys.stderr.isatty()
+              and os.environ.get("TERM", "") != "dumb"
+              and os.environ.get("CIRCLECI", "") != "true")
     kwargs['disable'] = not enable
     return _tqdm.tqdm(*args, **kwargs)
 
