@@ -76,10 +76,9 @@ except ModuleNotFoundError:
     from ruamel_yaml.constructor import DuplicateKeyError
 
 from pkg_resources import parse_version
-from tqdm import tqdm
 
 from . import utils
-from .utils import ensure_list
+from .utils import ensure_list, tqdm
 from .githubhandler import AiohttpGitHubHandler, GitHubHandler
 
 # pkg_resources.parse_version returns a Version or LegacyVersion object

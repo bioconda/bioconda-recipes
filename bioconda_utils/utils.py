@@ -50,12 +50,9 @@ class TqdmHandler(logging.StreamHandler):
 
 
 def tqdm(*args, **kwargs):
-    """Creates a TQDM that is disabled if STDOUT isn't a terminal"""
-    # disable can be True, False or None
-    # intuitively, None means that it should be disabled if we
-    # are not writing to a console
-    if 'disable' not in kwargs or kwargs['disable'] == False:
-        kwargs['disable'] = None
+    """Wrapper around TQDM handling disable"""
+    enable = sys.stderr.isatty() and os.environ.get("TERM", "") != "dumb"
+    kwargs['disable'] = not enable
     return _tqdm.tqdm(*args, **kwargs)
 
 
