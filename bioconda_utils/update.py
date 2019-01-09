@@ -558,6 +558,8 @@ class Scanner():
             asyncio.set_event_loop(self.loop)
         #: semaphore to limit io parallelism
         self.io_sem: asyncio.Semaphore = asyncio.Semaphore(1)
+        #: must never run more than one conda at the same time
+        self.conda_sem: asyncio.Semaphore = asyncio.Semaphore(1)
         #: counter to gather stats on various states
         self.stats: Counter = Counter()
         #: aiohttp session (only exists while running)
@@ -725,6 +727,22 @@ class Scanner():
                     progress.update(len(block))
                     await self.loop.run_in_executor(None, checksum.update, block)
         return checksum.hexdigest()
+
+    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
+                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
+    async def get_file_from_url(self, fname: str, url: str, desc: str) -> None:
+        async with self.session.get(url) as resp:
+            resp.raise_for_status()
+            size = int(resp.headers.get("Content-Length", 0))
+            with tqdm(total=size, unit='B', unit_scale=True, unit_divisor=1024,
+                      desc=desc, miniters=1, leave=False, disable=None) as progress:
+                with open(fname, "wb") as out:
+                    while True:
+                        block = await resp.content.read(1024*1024)
+                        if not block:
+                            break
+                        out.write(block)
+                        progress.update(len(block))
 
     async def get_ftp_listing(self, url):
         logger.debug("FTP: listing %s", url)
@@ -931,6 +949,17 @@ class UpdateVersion(Filter):
                                  ensure_list(osrc['url'])):
                 if url == ourl:
                     raise self.UrlNotVersioned(recipe)
+
+        # Fetch expensive requirements
+        await asyncio.gather(*[
+            data["hoster"].get_deps(self.scanner, self.build_config,
+                                    recipe.name, data)
+            for r in (recipe, recipe.orig)
+            for fn, data in r.version_data.items()
+            if "depends" not in data
+            and "hoster" in data
+            and hasattr(data["hoster"], "get_deps")
+        ])
 
         return recipe
 

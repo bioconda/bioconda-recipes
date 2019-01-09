@@ -20,7 +20,10 @@ import abc
 import inspect
 import json
 import logging
+import os
 
+from contextlib import redirect_stdout, redirect_stderr
+from distutils.version import LooseVersion
 from html.parser import HTMLParser
 from itertools import chain
 from typing import Dict, List, Match, Mapping, Pattern, Set, Tuple, Optional
@@ -390,8 +393,119 @@ class PyPi(JSONHoster):
                 if rel["packagetype"] == "sdist":
                     rel["link"] = rel["url"]
                     rel["version"] = vers
+                    rel["info"] = data['info']
                     result.append(rel)
         return result
+
+    @staticmethod
+    def _get_requirements(package, fname, url, digest, python_version, build_config):
+        """Call into conda_build.skeletons.pypi to handle the ugly mess of extracting
+        requirements from python packages.
+
+        Note: It is not safe to call into conda multiple times parallel, and thus this
+        function must not be called in parallel.
+        """
+        from conda_build.skeletons.pypi import get_pkginfo, get_requirements
+
+        with open("/dev/null", "w") as devnull:
+            with redirect_stdout(devnull), redirect_stderr(devnull):
+                try:
+                    pkg_info = get_pkginfo(package, fname, url, digest, python_version,
+                                           [], build_config, [])
+                    requirements = get_requirements(package, pkg_info)
+                except SystemExit as e:
+                    raise Exception(e) from None
+                except Exception as e:
+                    raise Exception(e) from None
+
+        if len(requirements) == 1 and isinstance(requirements[0], list):
+            requirements = requirements[0]
+        requirements_fixed = []
+        for req in requirements:
+            if '\n' in req:
+                requirements_fixed.extend(req.split('\n'))
+            else:
+                requirements_fixed.append(req)
+
+        return pkg_info, requirements_fixed
+
+    @staticmethod
+    def _get_python_version(rel):
+        """Try to determine correct python version"""
+        choose_from = ('3.6', '3.5', '3.7', '2.7')
+
+        requires_python = rel.get('requires_python')
+        if requires_python:
+            requires_python = requires_python.replace(" ","")
+            checks = []
+            for check in requires_python.split(","):
+                for key, func in (('==', lambda x,y: x==y),
+                                  ('!=', lambda x,y: x!=y),
+                                  ('<=', lambda x,y: x<=y),
+                                  ('>=', lambda x,y: x>=y),
+                                  ('>', lambda x,y: x>y),
+                                  ('<', lambda x,y: x>y),
+                                  ('~=', lambda x,y: x==y),
+                ):
+                    if check.startswith(key):
+                        checks.append((func, check[len(key):]))
+                        break
+                else:
+                    checks.append((lambda x,y: x==y, check))
+
+            for vers in choose_from:
+                try:
+                    if all(op(LooseVersion(vers), LooseVersion(check))
+                           for op, check in checks):
+                        return vers
+                except TypeError:
+                    logger.exception("Failed to compare %s to %s", vers, requires_python)
+
+        python_versions = [
+            classifier.split('::')[-1].strip()
+            for classifier in rel['info'].get('classifiers', [])
+            if classifier.startswith('Programming Language :: Python ::')
+        ]
+        for vers in choose_from:
+            if vers in python_versions:
+                return vers
+
+        return '2.7'
+
+
+    async def get_deps(self, scanner, build_config, package, rel):
+
+        # We download ourselves to get async benefits
+        target_file = rel['filename']
+        target_path = os.path.join(build_config.src_cache, target_file)
+        if not os.path.exists(target_path):
+            await scanner.get_file_from_url(target_path, rel['link'], target_file)
+
+        python_version = self._get_python_version(rel)
+
+        # Run code from conda_build.skeletons in ProcessPoolExecutor
+        async with scanner.conda_sem:
+            try:
+                pkg_info, depends = await scanner.run_sp(
+                    self._get_requirements,
+                    package, target_file, rel['link'],
+                    ('sha256', rel['digests']['sha256']),
+                    python_version, build_config)
+            except Exception:
+                logger.info("Failed to get depends for PyPi %s (py=%s)",
+                            target_file, python_version)
+                return
+
+        logger.debug("PyPi info for %s: %s", target_file, pkg_info)
+
+        # Convert into dict
+        deps = {}
+        for dep in depends:
+            m = re.search(r'([^<>= ]+)(.*)', dep)
+            if m:
+                deps[m.group(1)] = m.group(2)
+        # Write to rel dict for return
+        rel['depends'] = { 'host': deps, 'run': deps }
 
     releases_format = "https://pypi.org/pypi/{package}/json"
     package_pattern = r"(?P<package>[\w\-\.]+)"
