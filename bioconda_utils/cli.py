@@ -677,7 +677,7 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
                     cache and cache + "_repodata.txt")
 
     scanner.add(update.UpdateVersion, hosters.Hoster.select_hoster, unparsed_urls)
-    if not no_check_requirements:
+    if not no_fetch_requirements:
         scanner.add(update.FetchUpstreamDependencies)
     scanner.add(update.UpdateChecksums, failed_urls)
 
