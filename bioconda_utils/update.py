@@ -145,18 +145,31 @@ class Recipe():
     """
 
     class DuplicateKey(RecipeError):
+        """Raised for recipes with duplicate keys in the meta.yaml. YAML
+        does not allow those, but the PyYAML parser silently overwrites
+        previous keys.
+
+        For duplicate keys that are a result of `# [osx]` style line selectors,
+        `Recipe` attempts to resolve them as a list of dictionaries instead.
+        """
         template = "has duplicate key"
 
     class MissingKey(RecipeError):
+        """Raised if a recipe is missing package/version or package/name"""
         template = "has missing key"
 
     class EmptyRecipe(RecipeError):
+        """Raised if the recipe file is empty"""
         template = "is empty"
 
     class MissingBuild(RecipeError):
+        """Raised if the recipe is missing the build section"""
         template = "is missing build section"
 
     class HasSelector(RecipeError):
+        """Raised when recplacements fail due to `# [cond]` line selectors
+        FIXME: This should no longer be an error
+        """
         template = "has selector in line %i (replace failed)"
 
     #: Variables to pass to Jinja when rendering recipe
