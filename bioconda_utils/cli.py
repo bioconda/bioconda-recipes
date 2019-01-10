@@ -622,6 +622,8 @@ def clean_cran_skeleton(recipe, no_windows=False):
      building packages present in other channels. Set to 'none' to disable
      check.''')
 @arg('--ignore-blacklists', help='''Do not exclude recipes from blacklist''')
+@arg('--no-fetch-requirements', help='''Do not try to determine upstream
+     requirements''')
 @arg('--cache', help='''To speed up debugging, use repodata cached locally in
      the provided filename. If the file does not exist, it will be created
      the first time. Caution: The cache will not be updated if
@@ -641,6 +643,7 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
              failed_urls=None, unparsed_urls=None,
              exclude_subrecipes=None, exclude_channels='conda-forge',
              ignore_blacklists=False,
+             no_fetch_requirements=False,
              check_branch=False, create_branch=False, create_pr=False,
              only_active=False,
              max_updates=0, parallel=100, dry_run=False):
@@ -674,6 +677,8 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
                     cache and cache + "_repodata.txt")
 
     scanner.add(update.UpdateVersion, hosters.Hoster.select_hoster, unparsed_urls)
+    if not no_check_requirements:
+        scanner.add(update.FetchUpstreamDependencies)
     scanner.add(update.UpdateChecksums, failed_urls)
 
     if create_branch or create_pr:

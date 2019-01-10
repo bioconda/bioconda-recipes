@@ -950,17 +950,6 @@ class UpdateVersion(Filter):
                 if url == ourl:
                     raise self.UrlNotVersioned(recipe)
 
-        # Fetch expensive requirements
-        await asyncio.gather(*[
-            data["hoster"].get_deps(self.scanner, self.build_config,
-                                    recipe.name, data)
-            for r in (recipe, recipe.orig)
-            for fn, data in r.version_data.items()
-            if "depends" not in data
-            and "hoster" in data
-            and hasattr(data["hoster"], "get_deps")
-        ])
-
         return recipe
 
     async def get_version_map(self, recipe: Recipe):
@@ -1083,6 +1072,25 @@ class UpdateVersion(Filter):
                 depends = data.get('depends')
                 if depends:
                     check_pins(depends.items())
+
+
+class FetchUpstreamDependencies(Filter):
+    """Fetch requirements from upstream where possible
+
+    This currently only affects PyPi. Dependencies for Python packages are
+    determined by ``setup.py`` at installation time and need not be static
+    in many cases (there is work to change this going on).
+    """
+    async def apply(self, recipe):
+        await asyncio.gather(*[
+            data["hoster"].get_deps(self.scanner, self.build_config,
+                                    recipe.name, data)
+            for r in (recipe, recipe.orig)
+            for fn, data in r.version_data.items()
+            if "depends" not in data
+            and "hoster" in data
+            and hasattr(data["hoster"], "get_deps")
+        ])
 
 
 class UpdateChecksums(Filter):
