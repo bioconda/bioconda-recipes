@@ -1,0 +1,53 @@
+{% set name = "fastStructure" %}
+{% set version = "1.0" %}
+{% set sha256 = "f1bfb24bb5ecd108bc3a90145fad232012165c1e60608003f1c87d200f867b81" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/rajanil/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - python_path.patch
+
+build:
+  number: 0
+  skip: True  # [py3k]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - numpy
+    - scipy
+    - cython <0.28
+    - gsl
+    - openblas
+  run:
+    - python
+    - numpy
+    - scipy
+    - matplotlib
+    - cython <0.28
+    - gsl
+    - openblas
+
+test:
+  imports:
+    - fastStructure
+    - parse_bed
+    - parse_str
+  commands:
+    - structure.py | grep "structure.py" > /dev/null
+    - chooseK.py | grep "chooseK.py" > /dev/null
+    - export MPLBACKEND="svg" && distruct.py | grep "distruct.py" > /dev/null
+
+about:
+  home: https://github.com/rajanil/fastStructure
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "A variational framework for inferring population structure from SNP genotype data."
