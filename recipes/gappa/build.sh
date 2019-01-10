@@ -3,7 +3,7 @@
 CXXFLAGS="$CXXFLAGS"
 LDFLAGS="$LDFLAGS"
 if [ "$(uname)" == Darwin ] ; then
-        CXXFLAGS="$CXXFLAGS -Wl,-rpath ${PREFIX}/lib -L${PREFIX}/lib -I${PREFIX}/include -fopenmp"
+        CXXFLAGS="$CXXFLAGS -fopenmp"
 fi
 
 make  
