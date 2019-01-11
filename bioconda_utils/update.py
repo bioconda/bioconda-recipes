@@ -1209,7 +1209,7 @@ class UpdateChecksums(Filter):
                              recipe, idx, csum, url)
             raise self.SourceUrlMismatch(recipe, source_idx)
         new_checksum = next(c for c in new_checksums if c is not None)
-        if checksum == new_checksum:
+        if checksum == new_checksum and not recipe.on_branch:
             raise self.ChecksumUnchanged(recipe)
         if not recipe.replace(checksum, new_checksum):
             raise self.ChecksumReplaceFailed(recipe)
