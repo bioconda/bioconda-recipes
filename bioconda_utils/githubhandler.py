@@ -5,18 +5,18 @@ import logging
 
 from copy import copy
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 import gidgethub
 import gidgethub.aiohttp
 import aiohttp
 
-from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 #: State for Github Issues
-IssueState = Enum("IssueState", "open closed all")
+IssueState = Enum("IssueState", "open closed all")  # pylint: disable=invalid-name
 
 
 class GitHubHandler:
@@ -73,6 +73,7 @@ class GitHubHandler:
         logger.debug("User %s IS a member of %s", username, var_data['user'])
         return True
 
+    # pylint: disable=too-many-arguments
     async def get_prs(self,
                       from_branch: Optional[str] = None,
                       from_user: Optional[str] = None,
@@ -105,6 +106,7 @@ class GitHubHandler:
 
         return await self.api.getitem(self.PULLS, var_data)
 
+    # pylint: disable=too-many-arguments
     async def create_pr(self, title: str,
                         from_branch: Optional[str] = None,
                         from_user: Optional[str] = None,

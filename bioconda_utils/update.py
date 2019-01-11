@@ -577,7 +577,7 @@ class Scanner():
         #: counter to gather stats on various states
         self.stats: Counter = Counter()
         #: collect end status for each recipe
-        self.status: List[Tuple(str, str)] = []
+        self.status: List[Tuple[str, str]] = []
         #: filename to write statuses to
         self.status_fn: str = status_fn
         #: aiohttp session (only exists while running)
