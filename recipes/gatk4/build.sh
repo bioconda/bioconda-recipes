@@ -14,3 +14,5 @@ cp gatk-*-local.jar $PACKAGE_HOME
 # cp gatk-*-spark.jar $PACKAGE_HOME
 
 ln -s $PACKAGE_HOME/gatk $PREFIX/bin
+
+export LD_PRELOAD=$PREFIX/lib/libopenblas.so
