@@ -1,9 +1,10 @@
+
 {% set name = "clinker" %}
 {% set version = "1.32" %}
 
 package:
   name: {{ name }}
-  version: "{{ version }}"
+  version: {{ version }}
 
 source:
   url: https://github.com/Oshlack/Clinker/archive/v{{ version }}.tar.gz
@@ -11,42 +12,33 @@ source:
 
 build:
   number: 2
-  noarch: python
+  noarch: generic
 
-  
 requirements:
-  host:
-    - samtools
-    - bpipe
-    - star >=2.5.3a
-    - 'bioconductor-gviz >=1.24.0,<1.26.0'
-    - 'bioconductor-biomart >=2.36.1,<2.38.0'
-    - python 2.7.*
   run:
-    - samtools
     - bpipe
-    - star >=2.5.3a
-    - 'bioconductor-gviz >=1.24.0,<1.26.0'
+    - samtools
+    - star ==2.5.3a
     - 'bioconductor-biomart >=2.36.1,<2.38.0'
-    - python 2.7.*
-    
-    
+    - 'bioconductor-gviz >=1.24.0,<1.26.0'
+    - python >=2.7,<3
 
 test:
   commands:
-    - clinker -h
-    - bpipe --help
+    - cd /tmp &&  bpipe --help
+    - cd /tmp &&  clinker -h
 
 about:
   home: https://github.com/Oshlack/Clinker
   summary: |
-    Clinker is a bioinformatics pipeline that generates a superTranscript 
+    Clinker is a bioinformatics pipeline that generates a superTranscript
     from popular fusion finder outputs (JAFFA, tophatFusion, SOAP, deFUSE,
     Pizzly, etc), that can be then be either viewed in genome viewers such
     as IGV or through the included plotting feature developed with GViz.
   license: MIT
- 
+  
 extra:
   notes: |
     Wrapper script provided to indicate clinker is a bpipe pipeline,
     provide example command from wiki, and also a passthrough option.
+    Tests run from /tmp to avoid Docker permission error.
