@@ -1122,6 +1122,11 @@ class UpdateChecksums(Filter):
     class SourceUrlMismatch(RecipeError):
         template = "has urls in source %i pointing to different files"
 
+    class ChecksumReplaceFailed(RecipeError):
+        template = ": failed to replace checksum"
+
+    class ChecksumUnchanged(RecipeError):
+        template = "had no change to checksum after update?!"
 
     def __init__(self, scanner: "Scanner",
                  failed_file: Optional[str] = None) -> None:
@@ -1147,7 +1152,6 @@ class UpdateChecksums(Filter):
         for source_idx,  source in enumerate(sources):
             await self.update_source(recipe, source, source_idx)
         recipe.render()
-        # FIXME: check that we have new checksums
         return recipe
 
     async def update_source(self, recipe: Recipe, source: Mapping, source_idx: int) -> None:
@@ -1195,8 +1199,10 @@ class UpdateChecksums(Filter):
                              recipe, idx, csum, url)
             raise self.SourceUrlMismatch(recipe, source_idx)
         new_checksum = next(c for c in new_checksums if c is not None)
+        if checksum == new_checksum:
+            raise ChecksumUnchanged(recipe)
         if not recipe.replace(checksum, new_checksum):
-            raise RuntimeError("Failed to replace checksum?")
+            raise ChecksumReplaceFailed(recipe)
 
 
 class GitFilter(Filter):
