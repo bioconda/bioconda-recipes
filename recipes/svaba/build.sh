@@ -1,5 +1,11 @@
 #!/bin/bash
 
+rm -rf SeqLib
+git clone --recursive https://github.com/walaj/SeqLib
+cd SeqLib
+git checkout 770cd10c308430e1719d54ebedcfe708db560bec
+cd ..
+
 ./configure
 make
 make install
