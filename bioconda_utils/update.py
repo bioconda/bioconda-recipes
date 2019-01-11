@@ -552,7 +552,8 @@ class Scanner():
     USER_AGENT = "bioconda/bioconda-utils"
 
     def __init__(self, recipe_folder: str, packages: List[str],
-                 config: str, cache_fn: str, max_inflight: int = 100) -> None:
+                 config: str, cache_fn: str = None, max_inflight: int = 100,
+                 status_fn: str = None) -> None:
         with open(config, "r") as config_file:
             #: config
             self.config = yaml.load(config_file)
@@ -575,6 +576,10 @@ class Scanner():
         self.conda_sem: asyncio.Semaphore = asyncio.Semaphore(1)
         #: counter to gather stats on various states
         self.stats: Counter = Counter()
+        #: collect end status for each recipe
+        self.status: List[Tuple(str, str)] = []
+        #: filename to write statuses to
+        self.status_fn: str = status_fn
         #: aiohttp session (only exists while running)
         self.session: aiohttp.ClientSession = None
         #: filters
@@ -629,6 +634,10 @@ class Scanner():
         if self.cache_fn:
             with open(self.cache_fn, "wb") as stream:
                 pickle.dump(self.cache, stream)
+        if self.status_fn:
+            with open(self.status_fn, "w") as out:
+                for entry in self.status:
+                    out.write('\t'.join(entry)+"\n")
         return task.result()
 
     async def _async_run(self) -> bool:
@@ -668,6 +677,7 @@ class Scanner():
             except RecipeError as recipe_error:
                 recipe_error.log(logger)
                 self.stats[recipe_error.name] += 1
+                self.status.append((recipe.reldir, recipe_error.name))
                 return False
             except Exception:  # pylint: disable=broad-except
                 logger.exception("While processing %s", recipe_dir)

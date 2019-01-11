@@ -630,6 +630,7 @@ def clean_cran_skeleton(recipe, no_windows=False):
      exclude-channels is changed''')
 @arg('--unparsed-urls', help='''Write unrecognized urls to this file''')
 @arg('--failed-urls', help='''Write urls with permanent failure to this file''')
+@arg('--recipe-status', help='''Write status for each recipe to this file''')
 @arg('--check-branch', help='''Check if recipe has active branch''')
 @arg("--only-active", action="store_true", help="Check only recipes with active update")
 @arg("--create-branch", action="store_true", help='''Create branch for each
@@ -640,7 +641,7 @@ def clean_cran_skeleton(recipe, no_windows=False):
 @arg("--parallel", help='''Maximum number of recipes to consider in parallel''')
 @arg("--dry-run", help='''Don't update remote git or github"''')
 def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
-             failed_urls=None, unparsed_urls=None,
+             failed_urls=None, unparsed_urls=None, recipe_status=None,
              exclude_subrecipes=None, exclude_channels='conda-forge',
              ignore_blacklists=False,
              no_fetch_requirements=False,
@@ -656,7 +657,8 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
     from . import hosters
     scanner = update.Scanner(recipe_folder, packages, config,
                              cache and cache + "_scan.pkl",
-                             max_inflight=parallel)
+                             max_inflight=parallel,
+                             status_fn=recipe_status)
     if not ignore_blacklists:
         scanner.add(update.ExcludeBlacklisted)
     if exclude_subrecipes != "never":
