@@ -1094,6 +1094,12 @@ class FetchUpstreamDependencies(Filter):
     determined by ``setup.py`` at installation time and need not be static
     in many cases (there is work to change this going on).
     """
+    def __init__(self, scanner: "Scanner") -> None:
+        super().__init__(scanner)
+        #: conda build config
+        self.build_config: conda_build.config.Config = \
+            utils.load_conda_build_config()
+
     async def apply(self, recipe):
         await asyncio.gather(*[
             data["hoster"].get_deps(self.scanner, self.build_config,
@@ -1104,6 +1110,7 @@ class FetchUpstreamDependencies(Filter):
             and "hoster" in data
             and hasattr(data["hoster"], "get_deps")
         ])
+        return recipe
 
 
 class UpdateChecksums(Filter):
