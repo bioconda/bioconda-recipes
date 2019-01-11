@@ -1210,9 +1210,9 @@ class UpdateChecksums(Filter):
             raise self.SourceUrlMismatch(recipe, source_idx)
         new_checksum = next(c for c in new_checksums if c is not None)
         if checksum == new_checksum:
-            raise ChecksumUnchanged(recipe)
+            raise self.ChecksumUnchanged(recipe)
         if not recipe.replace(checksum, new_checksum):
-            raise ChecksumReplaceFailed(recipe)
+            raise self.ChecksumReplaceFailed(recipe)
 
 
 class GitFilter(Filter):
