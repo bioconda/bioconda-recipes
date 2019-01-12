@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu -o pipefail
 
 rm -rf SeqLib
 git clone --recursive https://github.com/walaj/SeqLib
