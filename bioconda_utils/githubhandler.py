@@ -51,6 +51,11 @@ class GitHubHandler:
     def create_api_object(self, *args, **kwargs):
         """Create API object"""
 
+    def get_file_relurl(self, path: str, branch_name: str = "master") -> str:
+        """Format domain relative url for **path** on **branch_name**"""
+        return "/{user}/{repo}/tree/{branch_name}/{path}".format(
+            branch_name=branch_name, path=path, **self.var_default)
+
     async def login(self, *args, **kwargs):
         """Log into API (fills `self.username`)"""
 

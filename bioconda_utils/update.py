@@ -52,7 +52,8 @@ import random
 from collections import defaultdict, Counter
 
 from urllib.parse import urlparse
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Set, Tuple
+from typing import (Any, Dict, Iterator, List, Mapping, Optional, Sequence,
+                    Set, Tuple, TYPE_CHECKING)
 
 import aiofiles
 from aiohttp import ClientResponseError
@@ -67,9 +68,12 @@ from pkg_resources import parse_version
 
 from . import utils
 from .utils import ensure_list
-from .githubhandler import AiohttpGitHubHandler, GitHubHandler
 from .recipe import Recipe
 from .async import AsyncFilter, AsyncPipeline, AsyncRequests, EndProcessingItem, EndProcessing
+
+if TYPE_CHECKING:
+    from .githandler import GitHandler
+    from .githubhandler import AiohttpGitHubHandler, GitHubHandler
 
 # pkg_resources.parse_version returns a Version or LegacyVersion object
 # as defined in packaging.version. Since it's bundling it's own copy of
@@ -81,7 +85,7 @@ LegacyVersion = parse_version("").__class__  # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-class Scanner(AsyncPipeline):
+class Scanner(AsyncPipeline[Recipe]):
     """Scans recipes and applies filters in asyncio loop
 
     Arguments:
@@ -120,19 +124,20 @@ class Scanner(AsyncPipeline):
                     out.write('\t'.join(entry)+"\n")
         return res
 
-    def get_items(self):
+    def get_item_iterator(self) -> Iterator[Recipe]:
+        """Return initial iterator over stub (unloaded) Recipes"""
         recipes = list(utils.get_recipes(self.recipe_folder, self.packages))
         random.shuffle(recipes)
-        return recipes
+        return (Recipe(recipe_dir, self.recipe_folder)
+                for recipe_dir in recipes)
 
     async def _async_run(self) -> bool:
         """Runner within async loop"""
         async with self.req:
             return await super()._async_run()
 
-    async def process(self, recipe_dir: str) -> bool:
+    async def process(self, recipe: Recipe) -> bool:
         """Applies the filters to a recipe"""
-        recipe = Recipe(recipe_dir, self.recipe_folder)
         try:
             if await super().process(recipe):
                 self.stats["Updated"] += 1
@@ -144,7 +149,16 @@ class Scanner(AsyncPipeline):
             return True
 
 
-class ExcludeOtherChannel(AsyncFilter):
+class Filter(AsyncFilter[Recipe]):
+    """Filter for Scanner - class exists primarily to silence mypy"""
+    pipeline: Scanner
+
+    @abc.abstractmethod
+    async def apply(self, recipe: Recipe) -> Recipe:
+        """Process a recipe. Returns False if processing should stop"""
+
+
+class ExcludeOtherChannel(Filter):
     """Filters recipes matching packages in other **channels**"""
 
     class OtherChannel(EndProcessingItem):
@@ -153,7 +167,7 @@ class ExcludeOtherChannel(AsyncFilter):
         template = "builds package found in other channel(s)"
         level = logging.DEBUG
 
-    def __init__(self, scanner: "Scanner", channels: Sequence[str],
+    def __init__(self, scanner: Scanner, channels: Sequence[str],
                  cache: str) -> None:
         super().__init__(scanner)
         logger.info("Loading package lists for %s", channels)
@@ -162,14 +176,14 @@ class ExcludeOtherChannel(AsyncFilter):
             repo.set_cache(cache)
         self.other = set(repo.get_package_data('name', channels=channels))
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         if any(package in self.other
                for package in recipe.package_names):
             raise self.OtherChannel(recipe)
         return recipe
 
 
-class ExcludeSubrecipe(AsyncFilter):
+class ExcludeSubrecipe(Filter):
     """Filters sub-recipes
 
     Unless **always** is True, subrecipes specifically enabled via
@@ -181,11 +195,11 @@ class ExcludeSubrecipe(AsyncFilter):
         template = "is a subrecipe"
         level = logging.DEBUG
 
-    def __init__(self, scanner: "Scanner", always=False) -> None:
+    def __init__(self, scanner: Scanner, always=False) -> None:
         super().__init__(scanner)
         self.always_exclude = always
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         is_subrecipe = recipe.reldir.strip("/").count("/") > 0
         enabled = recipe.config.get("enable", False)
         if is_subrecipe and not (enabled and not self.always_exclude):
@@ -193,7 +207,7 @@ class ExcludeSubrecipe(AsyncFilter):
         return recipe
 
 
-class ExcludeBlacklisted(AsyncFilter):
+class ExcludeBlacklisted(Filter):
     """Filters blacklisted recipes"""
 
     class Blacklisted(EndProcessingItem):
@@ -210,13 +224,13 @@ class ExcludeBlacklisted(AsyncFilter):
         self.blacklisted = utils.get_blacklist(blacklists, scanner.recipe_folder)
         logger.warning("Excluding %i blacklisted recipes", len(self.blacklisted))
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         if recipe.reldir in self.blacklisted:
             raise self.Blacklisted(recipe)
         return recipe
 
 
-class UpdateVersion(AsyncFilter):
+class UpdateVersion(Filter):
     """Checks for updates to a recipe
 
     - In the most simple case, a package has a single URL which also indicates the version
@@ -276,7 +290,7 @@ class UpdateVersion(AsyncFilter):
         """
         template = "has no releases?!"
 
-    def __init__(self, scanner: "Scanner", hoster_factory,
+    def __init__(self, scanner: Scanner, hoster_factory,
                  unparsed_file: Optional[str] = None) -> None:
         super().__init__(scanner)
         #: output file name for unparsed urls
@@ -290,6 +304,7 @@ class UpdateVersion(AsyncFilter):
             utils.load_conda_build_config()
 
     def finalize(self):
+        """Save unparsed urls to file and print stats to log"""
         stats: Counter = Counter()
         for url in self.unparsed_urls:
             parsed = urlparse(url)
@@ -475,20 +490,20 @@ class UpdateVersion(AsyncFilter):
                     check_pins(depends.items())
 
 
-class FetchUpstreamDependencies(AsyncFilter):
+class FetchUpstreamDependencies(Filter):
     """Fetch requirements from upstream where possible
 
     This currently only affects PyPi. Dependencies for Python packages are
     determined by ``setup.py`` at installation time and need not be static
     in many cases (there is work to change this going on).
     """
-    def __init__(self, scanner: "Scanner") -> None:
+    def __init__(self, scanner: Scanner) -> None:
         super().__init__(scanner)
         #: conda build config
         self.build_config: conda_build.config.Config = \
             utils.load_conda_build_config()
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         await asyncio.gather(*[
             data["hoster"].get_deps(self.pipeline, self.build_config,
                                     recipe.name, data)
@@ -501,7 +516,7 @@ class FetchUpstreamDependencies(AsyncFilter):
         return recipe
 
 
-class UpdateChecksums(AsyncFilter):
+class UpdateChecksums(Filter):
     """Download upstream source files, recompute checksum and update Recipe"""
 
     class NoValidUrls(EndProcessingItem):
@@ -520,7 +535,7 @@ class UpdateChecksums(AsyncFilter):
         """The checksum did not change after version bump"""
         template = "had no change to checksum after update?!"
 
-    def __init__(self, scanner: "Scanner",
+    def __init__(self, scanner: Scanner,
                  failed_file: Optional[str] = None) -> None:
         super().__init__(scanner)
         #: failed urls - for later inspection
@@ -529,6 +544,7 @@ class UpdateChecksums(AsyncFilter):
         self.failed_file = failed_file
 
     def finalize(self):
+        """Store list of URLs that could not be downloaded"""
         if self.failed_urls:
             logger.warning("Encountered %i download failures while computing checksums",
                            len(self.failed_urls))
@@ -536,7 +552,7 @@ class UpdateChecksums(AsyncFilter):
             with open(self.failed_file, "w") as out:
                 out.write("\n".join(self.failed_urls))
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         sources = recipe.meta["source"]
         logger.info("Updating checksum for %s %s", recipe, recipe.version)
         if isinstance(sources, Mapping):
@@ -568,36 +584,34 @@ class UpdateChecksums(AsyncFilter):
             if not recipe.replace(checksum_type, "sha256"):
                 raise RuntimeError("Failed to replace checksum type?")
 
-        urls = source["url"]
-        if isinstance(urls, str):
-            urls = [urls]
-        new_checksums = []
+        urls = ensure_list(source["url"])
+        new_checksums = set()
         for url_idx, url in enumerate(urls):
             try:
-                res = await self.pipeline.req.get_checksum_from_url(
-                    url, f"{recipe} [{source_idx}.{url_idx}]")
+                new_checksums.add(
+                    await self.pipeline.req.get_checksum_from_url(
+                        url, f"{recipe} [{source_idx}.{url_idx}]")
+                )
             except ClientResponseError as exc:
                 logger.info("Recipe %s: HTTP %s while downloading url %i",
                             recipe, exc.code, url_idx)
                 self.failed_urls += ["\t".join((str(exc.code), url))]
-                res = None
-            new_checksums.append(res)
-        count = len(set(c for c in new_checksums if c is not None))
-        if count == 0:
+
+        if not new_checksums:
             raise self.NoValidUrls(recipe, source_idx)
-        if count > 1:
-            for idx, (csum, url) in enumerate(zip(new_checksums, urls)):
-                logger.error("Recipe %s: url %s - got %s for %s",
-                             recipe, idx, csum, url)
+        if len(new_checksums) > 1:
+            logger.error("Recipe %s source %i: checksum mismatch between alternate urls - %s",
+                         recipe, source_idx, new_checksums)
             raise self.SourceUrlMismatch(recipe, source_idx)
-        new_checksum = next(c for c in new_checksums if c is not None)
+
+        new_checksum = new_checksums.pop()
         if checksum == new_checksum and not recipe.on_branch:
             raise self.ChecksumUnchanged(recipe)
         if not recipe.replace(checksum, new_checksum):
             raise self.ChecksumReplaceFailed(recipe)
 
 
-class GitFilter(AsyncFilter):
+class GitFilter(Filter):
     """Base class for `Filter`s needing access to the git repo
 
     Arguments:
@@ -607,7 +621,7 @@ class GitFilter(AsyncFilter):
 
     branch_prefix = "bump/"
 
-    def __init__(self, scanner, git_handler):
+    def __init__(self, scanner: Scanner, git_handler: "GitHandler") -> None:
         super().__init__(scanner)
         #: The `GitHandler` class for accessing repo
         self.git = git_handler
@@ -624,8 +638,9 @@ class GitFilter(AsyncFilter):
         """
         return f"{cls.branch_prefix}{recipe.reldir.replace('-', '_').replace('/', '.d/')}"
 
+    # placate pylint by reiterating abstract method
     @abc.abstractmethod
-    def apply(self, recipe):  # placate pylint by reiterating abstrace method
+    async def apply(self, recipe: Recipe) -> Recipe:
         pass
 
 
@@ -641,20 +656,20 @@ class ExcludeNoActiveUpdate(GitFilter):
         template = "is not currently being updated"
         level = logging.DEBUG
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         branch_name = self.branch_name(recipe)
         if not self.git.get_remote_branch(branch_name):
             raise self.NoActiveUpdate(recipe)
         return recipe
 
 
-class LoadRecipe(AsyncFilter):
+class LoadRecipe(Filter):
     """Loads the Recipe from the filesystem"""
-    def __init__(self, scanner):
+    def __init__(self, scanner: Scanner) -> None:
         super().__init__(scanner)
         self.sem = asyncio.Semaphore(10)
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         async with self.sem, \
                    aiofiles.open(recipe.path, encoding="utf-8") as fdes:
             recipe_text = await fdes.read()
@@ -680,7 +695,7 @@ class GitLoadRecipe(GitFilter):
     - Otherwise load master
     """
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         branch_name = self.branch_name(recipe)
         remote_branch = self.git.get_remote_branch(branch_name)
         local_branch = self.git.get_local_branch(branch_name)
@@ -704,19 +719,20 @@ class GitLoadRecipe(GitFilter):
                 await self.pipeline.run_io(self.git.create_local_branch, branch_name)
                 recipe.on_branch = True
             else:
-                # FIXME: this silently closes existing PR
+                # Note: If a PR still exists for this, it is silently closed by deleting
+                #       the branch.
                 logger.info("Recipe %s: deleting outdated remote %s", recipe, branch_name)
                 await self.pipeline.run_io(self.git.delete_remote_branch, branch_name)
         return recipe
 
 
-class WriteRecipe(AsyncFilter):
+class WriteRecipe(Filter):
     """Writes the Recipe to the filesystem"""
-    def __init__(self, scanner):
+    def __init__(self, scanner: Scanner) -> None:
         super().__init__(scanner)
         self.sem = asyncio.Semaphore(10)
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         async with self.sem, \
                    aiofiles.open(recipe.path, "w", encoding="utf-8") as fdes:
             await fdes.write(recipe.dump())
@@ -730,7 +746,7 @@ class GitWriteRecipe(GitFilter):
         """Recipe had no changes after applying updates"""
         template = "had no changes"
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         branch_name = self.branch_name(recipe)
         changed = False
         async with self.git.lock_working_dir:
@@ -769,15 +785,10 @@ class CreatePullRequest(GitFilter):
         """Something went wrong trying to create a new PR on Github."""
         template = "had failure in PR create"
 
-    def __init__(self, scanner, git_handler, token: str,
-                 dry_run: bool = False,
-                 to_user: str = "bioconda",
-                 to_repo: str = "bioconda-recipes") -> None:
+    def __init__(self, scanner: Scanner, git_handler: "GitHandler",
+                 github_handler: "GitHubHandler") -> None:
         super().__init__(scanner, git_handler)
-        self.to_user = to_user
-        self.to_repo = to_repo
-        self.ghub: GitHubHandler = AiohttpGitHubHandler(
-            token, dry_run, to_user, to_repo)
+        self.ghub = github_handler
 
     async def async_init(self):
         """Create gidget GithubAPI object from session"""
@@ -845,15 +856,15 @@ class CreatePullRequest(GitFilter):
                 return ver['vals']['account']
         return None
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         branch_name = self.branch_name(recipe)
         template = utils.jinja.get_template("bump_pr.md")
         author = self.get_github_author(recipe)
 
         body = template.render({
             'r': recipe,
-            'recipe_relurl': "/".join((self.to_user, self.to_repo, 'tree',
-                                       branch_name, recipe.basedir + recipe.reldir)),
+            'recipe_relurl': self.ghub.get_file_relurl(recipe.basedir + recipe.reldir,
+                                                       branch_name),
             'author': author,
             'author_is_member': await self.ghub.is_member(author),
             'dependency_diff': self.render_deps_diff(recipe),
@@ -873,18 +884,17 @@ class CreatePullRequest(GitFilter):
                              pull["number"], recipe, pull["title"])
             # update the PR if title or body changed
             pull = pullreqs[0]
-            args = {}
-            if body != pull["body"]:
-                args["body"] = body
-            if title != pull["title"]:
-                args["title"] = title
-            if args:
-                if await self.ghub.modify_issue(number=pull['number'], **args):
+            if body == pull["body"]:
+                body = None
+            if title == pull["title"]:
+                title = None
+            if not (body is None and title is None):
+                if await self.ghub.modify_issue(number=pull['number'], body=body, title=title):
                     logger.info("Updated PR %i updating %s to %s",
                                 pull['number'], recipe, recipe.version)
                 else:
-                    logger.error("Failed to update PR %i with %s",
-                                 pull['number'], args)
+                    logger.error("Failed to update PR %i with title=%s and body=%s",
+                                 pull['number'], title, body)
             else:
                 logger.debug("Not updating PR %i updating %s - no changes",
                              pull['number'], recipe)
@@ -910,15 +920,15 @@ class CreatePullRequest(GitFilter):
         return recipe
 
 
-class MaxUpdates(AsyncFilter):
+class MaxUpdates(Filter):
     """Terminate loop after **max_updates** Recipes have been updated."""
-    def __init__(self, scanner, max_updates: int = 0) -> None:
+    def __init__(self, scanner: Scanner, max_updates: int = 0) -> None:
         super().__init__(scanner)
         self.max = max_updates
         self.count = 0
         logger.warning("Will exit after %s updated recipes", max_updates)
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         self.count += 1
         if self.max and self.count == self.max:
             logger.warning("Reached update limit %s", self.count)

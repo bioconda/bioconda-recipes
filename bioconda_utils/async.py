@@ -4,25 +4,24 @@ import abc
 import asyncio
 import logging
 import os
+import pickle
 
 from concurrent.futures import ProcessPoolExecutor
 from hashlib import sha256
 from urllib.parse import urlparse
-from typing import Dict, List, Generic, Optional, Type, TypeVar
-
-from .utils import tqdm
+from typing import Dict, Iterator, List, Generic, Optional, Type, TypeVar
 
 import aiohttp
 import aioftp
-import pickle
 import backoff
+
+from .utils import tqdm
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 ITEM = TypeVar('ITEM')
-
 
 class EndProcessing(BaseException):
     """Raised by `AsyncFilter` to tell `AsyncPipeline` to stop processing"""
@@ -112,9 +111,9 @@ class AsyncPipeline(Generic[ITEM]):
             filt.finalize()
         return task.result()
 
-    def get_items(self) -> List[ITEM]:
+    @abc.abstractmethod
+    def get_item_iterator(self) -> Iterator[ITEM]:
         """Load items"""
-        return []
 
     async def _async_run(self) -> bool:
         """Runner within async loop"""
@@ -123,7 +122,7 @@ class AsyncPipeline(Generic[ITEM]):
             asyncio.ensure_future(
                 self.process(item)
             )
-            for item in self.get_items()
+            for item in self.get_item_iterator()
         ]
         try:
             with tqdm(asyncio.as_completed(coros),
@@ -175,7 +174,7 @@ class AsyncRequests():
         #: cache
         self.cache: Optional[Dict[str, Dict[str, str]]] = None
 
-    async def __aenter__(self) -> 'AioHelper':
+    async def __aenter__(self) -> 'AsyncRequests':
         session = aiohttp.ClientSession(headers={'User-Agent': self.USER_AGENT})
         await session.__aenter__()
         self.session = session
@@ -193,8 +192,8 @@ class AsyncRequests():
                 self.cache["ftp_list"] = {}
         return self
 
-    async def __aexit__(self, ext_type, exc, tb):
-        await self.session.__aexit__(ext_type, exc, tb)
+    async def __aexit__(self, ext_type, exc, trace):
+        await self.session.__aexit__(ext_type, exc, trace)
         self.session = None
         if self.cache_fn:
             with open(self.cache_fn, "wb") as stream:

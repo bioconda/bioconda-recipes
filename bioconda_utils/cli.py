@@ -654,6 +654,7 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
     utils.setup_logger('bioconda_utils', loglevel)
     from . import update
     from . import githandler
+    from . import githubhandler
     from . import hosters
     scanner = update.Scanner(recipe_folder, packages,
                              cache and cache + "_scan.pkl",
@@ -693,7 +694,10 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
         if not token:
             logger.critical("GITHUB_TOKEN required to create PRs")
             exit(1)
-        scanner.add(update.CreatePullRequest, git_handler, token, dry_run)
+        github_handler = githubhandler.AiohttpGitHubHandler(
+            token, dry_run, "bioconda", "bioconda-recipes")
+        scanner.add(update.CreatePullRequest, git_handler, github_handler)
+
     if max_updates:
         scanner.add(update.MaxUpdates, max_updates)
     scanner.run()
