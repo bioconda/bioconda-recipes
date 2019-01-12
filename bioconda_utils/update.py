@@ -47,20 +47,15 @@ import abc
 import asyncio
 import logging
 import os
-import pickle
 import random
 
 from collections import defaultdict, Counter
-from concurrent.futures import ProcessPoolExecutor
 
-from hashlib import sha256
 from urllib.parse import urlparse
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Set, Tuple, Type
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Set, Tuple
 
-import aiohttp
 import aiofiles
-import aioftp
-import backoff
+from aiohttp import ClientResponseError
 import yaml
 
 import conda_build.variants
@@ -71,9 +66,9 @@ import conda.exceptions
 from pkg_resources import parse_version
 
 from . import utils
-from .utils import ensure_list, tqdm
+from .utils import ensure_list
 from .githubhandler import AiohttpGitHubHandler, GitHubHandler
-from .recipe import Recipe, RecipeError
+from .recipe import Recipe
 from .async import AsyncFilter, AsyncPipeline, AsyncRequests, EndProcessingItem, EndProcessing
 
 # pkg_resources.parse_version returns a Version or LegacyVersion object
@@ -401,7 +396,7 @@ class UpdateVersion(AsyncFilter):
                 for match in versions:
                     match['hoster'] = hoster
                     version_map[match["version"]][url] = match
-            except aiohttp.ClientResponseError as exc:
+            except ClientResponseError as exc:
                 logger.debug("HTTP %s when getting %s", exc, url)
 
         if not version_map:
@@ -581,7 +576,7 @@ class UpdateChecksums(AsyncFilter):
             try:
                 res = await self.pipeline.req.get_checksum_from_url(
                     url, f"{recipe} [{source_idx}.{url_idx}]")
-            except aiohttp.client_exceptions.ClientResponseError as exc:
+            except ClientResponseError as exc:
                 logger.info("Recipe %s: HTTP %s while downloading url %i",
                             recipe, exc.code, url_idx)
                 self.failed_urls += ["\t".join((str(exc.code), url))]
@@ -696,7 +691,7 @@ class GitLoadRecipe(GitFilter):
 
         logger.debug("Recipe %s: loading from master", recipe)
         recipe_text = await self.pipeline.run_io(self.git.read_from_branch,
-                                                self.git.master, recipe.path)
+                                                 self.git.master, recipe.path)
         recipe = await self.pipeline.run_sp(recipe.load_from_string, recipe_text)
         recipe.set_original()
 
@@ -704,7 +699,7 @@ class GitLoadRecipe(GitFilter):
             if await self.git.branch_is_current(remote_branch, recipe.reldir):
                 logger.info("Recipe %s: updating from remote %s", recipe, branch_name)
                 recipe_text = await self.pipeline.run_io(self.git.read_from_branch,
-                                                        remote_branch, recipe.path)
+                                                         remote_branch, recipe.path)
                 recipe = await self.pipeline.run_sp(recipe.load_from_string, recipe_text)
                 await self.pipeline.run_io(self.git.create_local_branch, branch_name)
                 recipe.on_branch = True

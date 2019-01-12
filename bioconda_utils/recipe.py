@@ -39,6 +39,40 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 class RecipeError(EndProcessingItem):
     pass
 
+
+class DuplicateKey(RecipeError):
+    """Raised for recipes with duplicate keys in the meta.yaml. YAML
+    does not allow those, but the PyYAML parser silently overwrites
+    previous keys.
+
+    For duplicate keys that are a result of `# [osx]` style line selectors,
+    `Recipe` attempts to resolve them as a list of dictionaries instead.
+    """
+    template = "has duplicate key"
+
+
+class MissingKey(RecipeError):
+    """Raised if a recipe is missing package/version or package/name"""
+    template = "has missing key"
+
+
+class EmptyRecipe(RecipeError):
+    """Raised if the recipe file is empty"""
+    template = "is empty"
+
+
+class MissingBuild(RecipeError):
+    """Raised if the recipe is missing the build section"""
+    template = "is missing build section"
+
+
+class HasSelector(RecipeError):
+    """Raised when recplacements fail due to `# [cond]` line selectors
+    FIXME: This should no longer be an error
+    """
+    template = "has selector in line %i (replace failed)"
+
+
 class Recipe():
     """Represents a recipe (meta.yaml) in editable form
 
@@ -58,33 +92,6 @@ class Recipe():
       recipe_dir: path to specific recipe
     """
 
-    class DuplicateKey(RecipeError):
-        """Raised for recipes with duplicate keys in the meta.yaml. YAML
-        does not allow those, but the PyYAML parser silently overwrites
-        previous keys.
-
-        For duplicate keys that are a result of `# [osx]` style line selectors,
-        `Recipe` attempts to resolve them as a list of dictionaries instead.
-        """
-        template = "has duplicate key"
-
-    class MissingKey(RecipeError):
-        """Raised if a recipe is missing package/version or package/name"""
-        template = "has missing key"
-
-    class EmptyRecipe(RecipeError):
-        """Raised if the recipe file is empty"""
-        template = "is empty"
-
-    class MissingBuild(RecipeError):
-        """Raised if the recipe is missing the build section"""
-        template = "is missing build section"
-
-    class HasSelector(RecipeError):
-        """Raised when recplacements fail due to `# [cond]` line selectors
-        FIXME: This should no longer be an error
-        """
-        template = "has selector in line %i (replace failed)"
 
     #: Variables to pass to Jinja when rendering recipe
     JINJA_VARS = {
@@ -139,7 +146,7 @@ class Recipe():
         """Load and `render` recipe contents from disk"""
         self.meta_yaml = data.splitlines()
         if not self.meta_yaml:
-            raise self.EmptyRecipe(self)
+            raise EmptyRecipe(self)
         self.render()
         return self
 
@@ -244,14 +251,14 @@ class Recipe():
                 try:
                     self.meta = yaml.load(yaml_text)
                 except DuplicateKeyError:
-                    raise self.DuplicateKey(self)
+                    raise DuplicateKey(self)
             else:
-                raise self.DuplicateKey(self)
+                raise DuplicateKey(self)
 
         if "package" not in self.meta \
            or "version" not in self.meta["package"] \
            or "name" not in self.meta["package"]:
-            raise self.MissingKey(self)
+            raise MissingKey(self)
 
         # make recipe-maintainers a list if it is a string
         maintainers = self.meta.mlget(["extra", "recipe-maintainers"])
@@ -328,7 +335,7 @@ class Recipe():
             if not re_before.search(line):
                 continue
             if re_select.search(line):
-                raise self.HasSelector(self, lineno)
+                raise HasSelector(self, lineno)
             new = re_before.sub(after, line)
             logger.debug("%i - %s", lineno, self.meta_yaml[lineno])
             logger.debug("%i + %s", lineno, new)
@@ -350,7 +357,7 @@ class Recipe():
                 lineno, colno = build.lc.key(first_in_build)
                 self.meta_yaml.insert(lineno, " "*colno + "number: 0")
             else:
-                raise self.MissingBuild(self)
+                raise MissingBuild(self)
 
         line = self.meta_yaml[lineno]
         line = re.sub("number: [0-9]+", "number: 0", line)
