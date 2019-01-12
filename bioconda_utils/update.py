@@ -74,7 +74,7 @@ from . import utils
 from .utils import ensure_list, tqdm
 from .githubhandler import AiohttpGitHubHandler, GitHubHandler
 from .recipe import Recipe, RecipeError
-from .async import AsyncFilter, AsyncPipeline, EndProcessingItem, EndProcessing
+from .async import AsyncFilter, AsyncPipeline, AsyncRequests, EndProcessingItem, EndProcessing
 
 # pkg_resources.parse_version returns a Version or LegacyVersion object
 # as defined in packaging.version. Since it's bundling it's own copy of
@@ -94,10 +94,6 @@ class Scanner(AsyncPipeline):
       packages: glob pattern to select recipes
       config: config.yaml (unused)
     """
-
-    #: Used as user agent in http requests and as requester in github API requests
-    USER_AGENT = "bioconda/bioconda-utils"
-
     def __init__(self, recipe_folder: str, packages: List[str],
                  cache_fn: str = None, max_inflight: int = 100,
                  status_fn: str = None) -> None:
@@ -112,24 +108,8 @@ class Scanner(AsyncPipeline):
         self.status: List[Tuple[str, str]] = []
         #: filename to write statuses to
         self.status_fn: str = status_fn
-        #: aiohttp session (only exists while running)
-        self.session: aiohttp.ClientSession = None
-        #: cache file name (for debugging)
-        self.cache_fn: str = cache_fn
-        #: cache
-        self.cache: Optional[Dict[str, Dict[str, str]]] = None
-        if cache_fn:
-            if os.path.exists(cache_fn):
-                with open(cache_fn, "rb") as stream:
-                    self.cache = pickle.load(stream)
-            else:
-                self.cache = {}
-            if "url_text" not in self.cache:
-                self.cache["url_text"] = {}
-            if "url_checksum" not in self.cache:
-                self.cache["url_checksum"] = {}
-            if "ftp_list" not in self.cache:
-                self.cache["ftp_list"] = {}
+        #: async requests helper
+        self.req = AsyncRequests(cache_fn)
 
     def run(self) -> bool:
         """Runs scanner"""
@@ -139,9 +119,6 @@ class Scanner(AsyncPipeline):
         for key, value in self.stats.most_common():
             logger.info("%s: %s", key, value)
         logger.info("SUM: %i", sum(self.stats.values()))
-        if self.cache_fn:
-            with open(self.cache_fn, "wb") as stream:
-                pickle.dump(self.cache, stream)
         if self.status_fn:
             with open(self.status_fn, "w") as out:
                 for entry in self.status:
@@ -155,10 +132,7 @@ class Scanner(AsyncPipeline):
 
     async def _async_run(self) -> bool:
         """Runner within async loop"""
-        async with aiohttp.ClientSession(
-                headers={'User-Agent': self.USER_AGENT}
-        ) as session:
-            self.session = session
+        async with self.req:
             return await super()._async_run()
 
     async def process(self, recipe_dir: str) -> bool:
@@ -173,117 +147,6 @@ class Scanner(AsyncPipeline):
             self.stats[recipe_error.name] += 1
             self.status.append((recipe.reldir, recipe_error.name))
             return True
-
-    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
-                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
-    async def get_text_from_url(self, url: str) -> str:
-        """Fetch content at **url** and return as text
-
-        - On non-permanent errors (429, 502, 503, 504), the GET is retried 10 times with
-        increasing wait times according to fibonacci series.
-        - Permanent errors raise a ClientResponseError
-        """
-        if self.cache and url in self.cache["url_text"]:
-            return self.cache["url_text"][url]
-
-        async with self.session.get(url) as resp:
-            resp.raise_for_status()
-            res = await resp.text()
-
-        if self.cache:
-            self.cache["url_text"][url] = res
-
-        return res
-
-    async def get_checksum_from_url(self, url: str, desc: str) -> str:
-        """Compute sha256 checksum of content at **url**
-
-        - Shows TQDM progress monitor with label **desc**.
-        - Caches result
-        """
-        if self.cache and url in self.cache["url_checksum"]:
-            return self.cache["url_checksum"][url]
-
-        parsed = urlparse(url)
-        if parsed.scheme in ("http", "https"):
-            res = await self.get_checksum_from_http(url, desc)
-        elif parsed.scheme == "ftp":
-            res = await self.get_checksum_from_ftp(url, desc)
-
-        if self.cache:
-            self.cache["url_checksum"][url] = res
-
-        return res
-
-    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
-                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
-    async def get_checksum_from_http(self, url: str, desc: str) -> str:
-        """Compute sha256 checksum of content at http **url**
-
-        Shows TQDM progress monitor with label **desc**.
-        """
-        checksum = sha256()
-        async with self.session.get(url) as resp:
-            resp.raise_for_status()
-            size = int(resp.headers.get("Content-Length", 0))
-            with tqdm(total=size, unit='B', unit_scale=True, unit_divisor=1024,
-                      desc=desc, miniters=1, leave=False, disable=None) as progress:
-                while True:
-                    block = await resp.content.read(1024*1024)
-                    if not block:
-                        break
-                    progress.update(len(block))
-                    await self.loop.run_in_executor(None, checksum.update, block)
-        return checksum.hexdigest()
-
-    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
-                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
-    async def get_file_from_url(self, fname: str, url: str, desc: str) -> None:
-        """Fetch file at **url** into **fname**
-
-        Shows TQDM progress monitor with label **desc**.
-        """
-        async with self.session.get(url) as resp:
-            resp.raise_for_status()
-            size = int(resp.headers.get("Content-Length", 0))
-            with tqdm(total=size, unit='B', unit_scale=True, unit_divisor=1024,
-                      desc=desc, miniters=1, leave=False, disable=None) as progress:
-                with open(fname, "wb") as out:
-                    while True:
-                        block = await resp.content.read(1024*1024)
-                        if not block:
-                            break
-                        out.write(block)
-                        progress.update(len(block))
-
-    async def get_ftp_listing(self, url):
-        """Returns list of files at FTP **url**"""
-        logger.debug("FTP: listing %s", url)
-        if self.cache and url in self.cache["ftp_list"]:
-            return self.cache["ftp_list"][url]
-
-        parsed = urlparse(url)
-        async with aioftp.ClientSession(parsed.netloc,
-                                        password=self.USER_AGENT+"@") as client:
-            res = [str(path) for path, _info in await client.list(parsed.path)]
-        if self.cache:
-            self.cache["ftp_list"][url] = res
-        return res
-
-    async def get_checksum_from_ftp(self, url, _desc=None):
-        """Compute sha256 checksum of content at ftp **url**
-
-        Does not show progress monitor at this time (would need to
-        get file size first)
-        """
-        parsed = urlparse(url)
-        checksum = sha256()
-        async with aioftp.ClientSession(parsed.netloc,
-                                        password=self.USER_AGENT+"@") as client:
-            async with client.download_stream(parsed.path) as stream:
-                async for block in stream.iter_by_block():
-                    checksum.update(block)
-        return checksum.hexdigest()
 
 
 class ExcludeOtherChannel(AsyncFilter):
@@ -534,7 +397,7 @@ class UpdateVersion(AsyncFilter):
                 continue
             logger.debug("Scanning with %s", hoster.__class__.__name__)
             try:
-                versions = await hoster.get_versions(self.pipeline, recipe.orig.version)
+                versions = await hoster.get_versions(self.pipeline.req, recipe.orig.version)
                 for match in versions:
                     match['hoster'] = hoster
                     version_map[match["version"]][url] = match
@@ -716,7 +579,7 @@ class UpdateChecksums(AsyncFilter):
         new_checksums = []
         for url_idx, url in enumerate(urls):
             try:
-                res = await self.pipeline.get_checksum_from_url(
+                res = await self.pipeline.req.get_checksum_from_url(
                     url, f"{recipe} [{source_idx}.{url_idx}]")
             except aiohttp.client_exceptions.ClientResponseError as exc:
                 logger.info("Recipe %s: HTTP %s while downloading url %i",
@@ -923,7 +786,7 @@ class CreatePullRequest(GitFilter):
 
     async def async_init(self):
         """Create gidget GithubAPI object from session"""
-        await self.ghub.login(self.pipeline.session, self.pipeline.USER_AGENT)
+        await self.ghub.login(self.pipeline.req.session, self.pipeline.req.USER_AGENT)
         await asyncio.sleep(1)  # let API settle
 
     @staticmethod

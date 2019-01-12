@@ -3,11 +3,19 @@
 import abc
 import asyncio
 import logging
+import os
 
 from concurrent.futures import ProcessPoolExecutor
-from typing import List, Generic, Type, TypeVar
+from hashlib import sha256
+from urllib.parse import urlparse
+from typing import Dict, List, Generic, Optional, Type, TypeVar
 
 from .utils import tqdm
+
+import aiohttp
+import aioftp
+import pickle
+import backoff
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -151,3 +159,154 @@ class AsyncPipeline(Generic[ITEM]):
     async def run_sp(self, func, *args):
         """Run **func** in process pool executor using **args**"""
         return await self.loop.run_in_executor(self.proc_pool_executor, func, *args)
+
+
+class AsyncRequests():
+    """Provides helpers for async access to URLs
+    """
+
+    #: Used as user agent in http requests and as requester in github API requests
+    USER_AGENT = "bioconda/bioconda-utils"
+
+    def __init__(self, cache_fn: str = None) -> None:
+        #: aiohttp session (only exists while running)
+        self.session: aiohttp.ClientSession = None
+        self.cache_fn: str = cache_fn
+        #: cache
+        self.cache: Optional[Dict[str, Dict[str, str]]] = None
+
+    async def __aenter__(self) -> 'AioHelper':
+        session = aiohttp.ClientSession(headers={'User-Agent': self.USER_AGENT})
+        await session.__aenter__()
+        self.session = session
+        if self.cache_fn:
+            if os.path.exists(self.cache_fn):
+                with open(self.cache_fn, "rb") as stream:
+                    self.cache = pickle.load(stream)
+            else:
+                self.cache = {}
+            if "url_text" not in self.cache:
+                self.cache["url_text"] = {}
+            if "url_checksum" not in self.cache:
+                self.cache["url_checksum"] = {}
+            if "ftp_list" not in self.cache:
+                self.cache["ftp_list"] = {}
+        return self
+
+    async def __aexit__(self, ext_type, exc, tb):
+        await self.session.__aexit__(ext_type, exc, tb)
+        self.session = None
+        if self.cache_fn:
+            with open(self.cache_fn, "wb") as stream:
+                pickle.dump(self.cache, stream)
+
+    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
+                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
+    async def get_text_from_url(self, url: str) -> str:
+        """Fetch content at **url** and return as text
+
+        - On non-permanent errors (429, 502, 503, 504), the GET is retried 10 times with
+        increasing wait times according to fibonacci series.
+        - Permanent errors raise a ClientResponseError
+        """
+        if self.cache and url in self.cache["url_text"]:
+            return self.cache["url_text"][url]
+
+        async with self.session.get(url) as resp:
+            resp.raise_for_status()
+            res = await resp.text()
+
+        if self.cache:
+            self.cache["url_text"][url] = res
+
+        return res
+
+    async def get_checksum_from_url(self, url: str, desc: str) -> str:
+        """Compute sha256 checksum of content at **url**
+
+        - Shows TQDM progress monitor with label **desc**.
+        - Caches result
+        """
+        if self.cache and url in self.cache["url_checksum"]:
+            return self.cache["url_checksum"][url]
+
+        parsed = urlparse(url)
+        if parsed.scheme in ("http", "https"):
+            res = await self.get_checksum_from_http(url, desc)
+        elif parsed.scheme == "ftp":
+            res = await self.get_checksum_from_ftp(url, desc)
+
+        if self.cache:
+            self.cache["url_checksum"][url] = res
+
+        return res
+
+    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
+                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
+    async def get_checksum_from_http(self, url: str, desc: str) -> str:
+        """Compute sha256 checksum of content at http **url**
+
+        Shows TQDM progress monitor with label **desc**.
+        """
+        checksum = sha256()
+        async with self.session.get(url) as resp:
+            resp.raise_for_status()
+            size = int(resp.headers.get("Content-Length", 0))
+            with tqdm(total=size, unit='B', unit_scale=True, unit_divisor=1024,
+                      desc=desc, miniters=1, leave=False, disable=None) as progress:
+                while True:
+                    block = await resp.content.read(1024*1024)
+                    if not block:
+                        break
+                    progress.update(len(block))
+                    checksum.update(block)
+        return checksum.hexdigest()
+
+    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
+                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
+    async def get_file_from_url(self, fname: str, url: str, desc: str) -> None:
+        """Fetch file at **url** into **fname**
+
+        Shows TQDM progress monitor with label **desc**.
+        """
+        async with self.session.get(url) as resp:
+            resp.raise_for_status()
+            size = int(resp.headers.get("Content-Length", 0))
+            with tqdm(total=size, unit='B', unit_scale=True, unit_divisor=1024,
+                      desc=desc, miniters=1, leave=False, disable=None) as progress:
+                with open(fname, "wb") as out:
+                    while True:
+                        block = await resp.content.read(1024*1024)
+                        if not block:
+                            break
+                        out.write(block)
+                        progress.update(len(block))
+
+    async def get_ftp_listing(self, url):
+        """Returns list of files at FTP **url**"""
+        logger.debug("FTP: listing %s", url)
+        if self.cache and url in self.cache["ftp_list"]:
+            return self.cache["ftp_list"][url]
+
+        parsed = urlparse(url)
+        async with aioftp.ClientSession(parsed.netloc,
+                                        password=self.USER_AGENT+"@") as client:
+            res = [str(path) for path, _info in await client.list(parsed.path)]
+        if self.cache:
+            self.cache["ftp_list"][url] = res
+        return res
+
+    async def get_checksum_from_ftp(self, url, _desc=None):
+        """Compute sha256 checksum of content at ftp **url**
+
+        Does not show progress monitor at this time (would need to
+        get file size first)
+        """
+        parsed = urlparse(url)
+        checksum = sha256()
+        async with aioftp.ClientSession(parsed.netloc,
+                                        password=self.USER_AGENT+"@") as client:
+            async with client.download_stream(parsed.path) as stream:
+                async for block in stream.iter_by_block():
+                    checksum.update(block)
+        return checksum.hexdigest()

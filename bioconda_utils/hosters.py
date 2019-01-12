@@ -26,11 +26,14 @@ from contextlib import redirect_stdout, redirect_stderr
 from distutils.version import LooseVersion
 from html.parser import HTMLParser
 from itertools import chain
-from typing import Any, Dict, List, Match, Mapping, Pattern, Set, Tuple, Type, Optional
+from typing import (Any, Dict, List, Match, Mapping, Pattern, Set, Tuple, Type,
+                    Optional, TYPE_CHECKING)
 from urllib.parse import urljoin
 
 import regex as re
 
+if TYPE_CHECKING:
+    from .async import AsyncRequests
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -195,7 +198,7 @@ class Hoster(metaclass=HosterMeta):
 
     @classmethod
     @abc.abstractmethod
-    def get_versions(cls, scanner, orig_version) -> List[Mapping[str, Any]]:
+    def get_versions(cls, req: "AsyncRequests", orig_version: str) -> List[Mapping[str, Any]]:
         "Gets list of versions from upstream hosting site"
 
 
@@ -233,7 +236,7 @@ class HrefParser(HTMLParser):
 class HTMLHoster(Hoster):
     """Base for Hosters handling release listings in HTML format"""
 
-    async def get_versions(self, scanner, orig_version):
+    async def get_versions(self, req, orig_version):
         exclude = set(self.exclude)
         vals = {key: val
                 for key, val in self.vals.items()
@@ -243,7 +246,7 @@ class HTMLHoster(Hoster):
         result = []
         for url in self.releases_urls:
             parser = HrefParser(link_re)
-            parser.feed(await scanner.get_text_from_url(url))
+            parser.feed(await req.get_text_from_url(url))
             for match in parser.get_matches():
                 match["link"] = urljoin(url, match["href"])
                 match["releases_url"] = url
@@ -255,7 +258,7 @@ class HTMLHoster(Hoster):
 
 class FTPHoster(Hoster):
     """Scans for updates on FTP servers"""
-    async def get_versions(self, scanner, orig_version):
+    async def get_versions(self, req, orig_version):
         exclude = set(self.exclude)
         vals = {key: val
                 for key, val in self.vals.items()
@@ -264,7 +267,7 @@ class FTPHoster(Hoster):
         link_re = re.compile(link_pattern)
         result = []
         for url in self.releases_urls:
-            files = await scanner.get_ftp_listing(url)
+            files = await req.get_ftp_listing(url)
             for fname in files:
                 match = link_re.search(fname)
                 if match:
@@ -296,8 +299,8 @@ class OrderedHTMLHoster(HTMLHoster):
            a pathologic case. Should be handled somewhere.
     """
 
-    async def get_versions(self, scanner, orig_version):
-        matches = await super().get_versions(scanner, orig_version)
+    async def get_versions(self, req, orig_version):
+        matches = await super().get_versions(req, orig_version)
         num = None
         for num, match in enumerate(matches):
             if match["version"] == self.vals["version"]:
@@ -382,12 +385,12 @@ class SourceForge(HTMLHoster):
 
 class JSONHoster(Hoster):
     """Base for Hosters handling release listings in JSON format"""
-    async def get_versions(self, scanner, orig_version: str):
+    async def get_versions(self, req, orig_version: str):
         result = []
         for url in self.releases_urls:
-            text = await scanner.get_text_from_url(url)
+            text = await req.get_text_from_url(url)
             data = json.loads(text)
-            matches = await self.get_versions_from_json(data, scanner, orig_version)
+            matches = await self.get_versions_from_json(data, req, orig_version)
             for match in matches:
                 match['releases_url'] = url
             result.extend(matches)
@@ -395,14 +398,14 @@ class JSONHoster(Hoster):
     link_pattern = "https://{url}"
 
     @abc.abstractmethod
-    async def get_versions_from_json(self, data, scanner, orig_version) -> List[Dict[str, Any]]:
+    async def get_versions_from_json(self, data, req, orig_version) -> List[Dict[str, Any]]:
         """Extract matches from json data in **data**
         """
 
 
 class PyPi(JSONHoster):
     """Scans PyPi for updates"""
-    async def get_versions_from_json(self, data, scanner, orig_version):
+    async def get_versions_from_json(self, data, req, orig_version):
         latest = data["info"]["version"]
         result = []
         for vers in list(set([latest, orig_version])):
@@ -491,7 +494,7 @@ class PyPi(JSONHoster):
         return '2.7'
 
 
-    async def get_deps(self, scanner, build_config, package, rel):
+    async def get_deps(self, pipeline, build_config, package, rel):
         """Get dependencies for **package** using version data **rel**
 
         This is messy even though we use conda_build.skeleton.pypi to
@@ -500,18 +503,19 @@ class PyPi(JSONHoster):
         (e.g. for one Bioconda package, this triggers compilation
         of a binary module).
         """
+        req = pipeline.req
         # We download ourselves to get async benefits
         target_file = rel['filename']
         target_path = os.path.join(build_config.src_cache, target_file)
         if not os.path.exists(target_path):
-            await scanner.get_file_from_url(target_path, rel['link'], target_file)
+            await req.get_file_from_url(target_path, rel['link'], target_file)
 
         python_version = self._get_python_version(rel)
 
         # Run code from conda_build.skeletons in ProcessPoolExecutor
-        async with scanner.conda_sem:
+        async with pipeline.conda_sem:
             try:
-                pkg_info, depends = await scanner.run_sp(
+                pkg_info, depends = await pipeline.run_sp(
                     self._get_requirements,
                     package, target_file, rel['link'],
                     ('sha256', rel['digests']['sha256']),
@@ -545,7 +549,7 @@ class PyPi(JSONHoster):
 
 class Bioarchive(JSONHoster):
     """Scans for updates to packages hosted on bioarchive.galaxyproject.org"""
-    async def get_versions_from_json(self, data, scanner, orig_version):
+    async def get_versions_from_json(self, data, req, orig_version):
         try:
             latest = data["info"]["Version"]
             vals = {key: val
@@ -594,7 +598,7 @@ class CPAN(JSONHoster):
 
         return {'host': host_deps, 'run': run_deps}
 
-    async def get_versions_from_json(self, data, scanner, orig_version):
+    async def get_versions_from_json(self, data, req, orig_version):
         try:
             version = {
                 'link': data['download_url'],
@@ -606,7 +610,7 @@ class CPAN(JSONHoster):
             if version['version'] != orig_version:
                 url = self.orig_release_format.format(vers=orig_version,
                                                       dist=data['distribution'])
-                text = await scanner.get_text_from_url(url)
+                text = await req.get_text_from_url(url)
                 data2 = json.loads(text)
                 if data2['hits']['total']:
                     data = data2['hits']['hits'][0]['_source']
