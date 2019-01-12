@@ -4,14 +4,15 @@ import asyncio
 import logging
 import os
 
-from itertools import chain
-
 import git
+
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
+
 class GitHandlerFailure(Exception):
     """Something went wrong interacting with git"""
+
 
 class GitHandler():
     """GitPython abstraction
@@ -21,8 +22,10 @@ class GitHandler():
                      location of git repo).
       dry_run: Don't push anything to remote
     """
-    def __init__(self, recipe_folder, dry_run=False,
-                 upstream='bioconda/bioconda-recipes', origin='bioconda/bioconda-recipes'):
+    def __init__(self, recipe_folder: str,
+                 dry_run=False,
+                 upstream='bioconda/bioconda-recipes',
+                 origin='bioconda/bioconda-recipes') -> None:
         #: current repository
         self.repo = git.Repo(recipe_folder, search_parent_directories=True)
         if self.repo.is_dirty():
@@ -57,7 +60,7 @@ class GitHandler():
         #: commit from which branches should derive
         self.from_commit = self.upstream.fetch('master')[0].commit
 
-    def get_remote(self, desc):
+    def get_remote(self, desc: str):
         """Finds first remote containing **desc** in one of its URLs"""
         if desc in [r.name for r in self.repo.remotes]:
             return self.repo.remotes[desc]
@@ -67,7 +70,7 @@ class GitHandler():
             raise KeyError(f"No remote matching '{desc}' found")
         return remotes[0]
 
-    async def branch_is_current(self, branch, path, master="master"):
+    async def branch_is_current(self, branch, path: str, master="master") -> bool:
         """Checks if **branch** has the most recent commit modifying **path**
         as compared to **master**"""
         rpath = os.path.join(self.rel_recipe_folder, path)
@@ -78,11 +81,11 @@ class GitHandler():
         stdout, _ = await proc.communicate()
         return branch.name in stdout.decode('ascii')
 
-    def delete_local_branch(self, branch):
+    def delete_local_branch(self, branch) -> None:
         """Deletes **branch** locally"""
         git.Reference.delete(self.repo, branch)
 
-    def delete_remote_branch(self, branch_name):
+    def delete_remote_branch(self, branch_name: str) -> None:
         """Deletes **branch** on remote"""
         if not self.dry_run:
             logger.info("Deleting branch %s", branch_name)
@@ -113,13 +116,13 @@ class GitHandler():
         rel_file_name = abs_file_name[len(abs_repo_root):].lstrip("/")
         return (branch.commit.tree / rel_file_name).data_stream.read().decode("utf-8")
 
-    def create_local_branch(self, branch_name):
+    def create_local_branch(self, branch_name: str):
         """Creates local branch from remote **branch_name**"""
         remote_branch = self.get_remote_branch(branch_name)
         self.repo.create_head(branch_name, remote_branch.commit)
         return self.get_local_branch(branch_name)
 
-    def prepare_branch(self, branch_name):
+    def prepare_branch(self, branch_name: str) -> None:
         """Checks out **branch_name**, creating it from master if needed"""
         if branch_name not in self.repo.heads:
             logger.info("Creating new branch %s", branch_name)
@@ -129,7 +132,7 @@ class GitHandler():
         branch.checkout()
         self.upstream.pull("master")
 
-    def commit_and_push_changes(self, recipe, branch_name) -> bool:
+    def commit_and_push_changes(self, recipe, branch_name: str) -> bool:
         """Create recipe commit and pushes to upstream remote
 
         Returns:
@@ -156,5 +159,3 @@ class GitHandler():
         self.prev_active_branch.checkout()
 
         self.repo.close()
-
-

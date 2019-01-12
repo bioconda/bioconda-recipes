@@ -13,6 +13,7 @@ from itertools import product, chain, groupby
 import logging
 import datetime
 from threading import Event, Thread
+from typing import Sequence
 from pathlib import PurePath
 import json
 import warnings
@@ -40,17 +41,20 @@ class TqdmHandler(logging.StreamHandler):
     Passes all log writes through tqdm to allow progress bars
     and log messages to coexist without clobbering terminal
     """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+         # initialise internal tqdm lock so that we can use tqdm.write
+        _tqdm.tqdm(disable=True, total=0)
     def emit(self, record):
         _tqdm.tqdm.write(self.format(record))
 
 
 def tqdm(*args, **kwargs):
-    """Creates a TQDM that is disabled if STDOUT isn't a terminal"""
-    # disable can be True, False or None
-    # intuitively, None means that it should be disabled if we
-    # are not writing to a console
-    if 'disable' not in kwargs or kwargs['disable'] == False:
-        kwargs['disable'] = None
+    """Wrapper around TQDM handling disable"""
+    enable = (sys.stderr.isatty()
+              and os.environ.get("TERM", "") != "dumb"
+              and os.environ.get("CIRCLECI", "") != "true")
+    kwargs['disable'] = not enable
     return _tqdm.tqdm(*args, **kwargs)
 
 
@@ -66,6 +70,19 @@ log_stream_handler.setFormatter(ColoredFormatter(
             'ERROR': 'red',
             'CRITICAL': 'red',
         }))
+
+
+def ensure_list(obj):
+    """Wraps **obj** in a list if necessary
+
+    >>> ensure_list("one")
+    ["one"]
+    >>> ensure_list(["one", "two"])
+    ["one", "two"]
+    """
+    if isinstance(obj, Sequence) and not isinstance(obj, str):
+        return obj
+    return [obj]
 
 
 def setup_logger(name, loglevel=None):

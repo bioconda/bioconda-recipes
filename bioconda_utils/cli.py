@@ -622,13 +622,17 @@ def clean_cran_skeleton(recipe, no_windows=False):
      building packages present in other channels. Set to 'none' to disable
      check.''')
 @arg('--ignore-blacklists', help='''Do not exclude recipes from blacklist''')
+@arg('--no-fetch-requirements', help='''Do not try to determine upstream
+     requirements''')
 @arg('--cache', help='''To speed up debugging, use repodata cached locally in
      the provided filename. If the file does not exist, it will be created
      the first time. Caution: The cache will not be updated if
      exclude-channels is changed''')
 @arg('--unparsed-urls', help='''Write unrecognized urls to this file''')
 @arg('--failed-urls', help='''Write urls with permanent failure to this file''')
+@arg('--recipe-status', help='''Write status for each recipe to this file''')
 @arg('--check-branch', help='''Check if recipe has active branch''')
+@arg("--only-active", action="store_true", help="Check only recipes with active update")
 @arg("--create-branch", action="store_true", help='''Create branch for each
      update''')
 @arg("--create-pr", action="store_true", help='''Create PR for each update.
@@ -637,10 +641,12 @@ def clean_cran_skeleton(recipe, no_windows=False):
 @arg("--parallel", help='''Maximum number of recipes to consider in parallel''')
 @arg("--dry-run", help='''Don't update remote git or github"''')
 def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
-             failed_urls=None, unparsed_urls=None,
+             failed_urls=None, unparsed_urls=None, recipe_status=None,
              exclude_subrecipes=None, exclude_channels='conda-forge',
              ignore_blacklists=False,
+             no_fetch_requirements=False,
              check_branch=False, create_branch=False, create_pr=False,
+             only_active=False,
              max_updates=0, parallel=100, dry_run=False):
     """
     Updates recipes in recipe_folder
@@ -648,18 +654,22 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
     utils.setup_logger('bioconda_utils', loglevel)
     from . import update
     from . import githandler
+    from . import githubhandler
     from . import hosters
-    scanner = update.Scanner(recipe_folder, packages, config,
+    scanner = update.Scanner(recipe_folder, packages,
                              cache and cache + "_scan.pkl",
-                             max_inflight=parallel)
+                             max_inflight=parallel,
+                             status_fn=recipe_status)
     if not ignore_blacklists:
-        scanner.add(update.ExcludeBlacklisted)
+        scanner.add(update.ExcludeBlacklisted, config)
     if exclude_subrecipes != "never":
         scanner.add(update.ExcludeSubrecipe,
                     always=exclude_subrecipes == "always")
     git_handler = None
-    if check_branch or create_branch or create_pr:
+    if check_branch or create_branch or create_pr or only_active:
         git_handler = githandler.GitHandler(recipe_folder, dry_run)
+        if only_active:
+            scanner.add(update.ExcludeNoActiveUpdate, git_handler)
         scanner.add(update.GitLoadRecipe, git_handler)
     else:
         scanner.add(update.LoadRecipe)
@@ -670,6 +680,8 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
                     cache and cache + "_repodata.txt")
 
     scanner.add(update.UpdateVersion, hosters.Hoster.select_hoster, unparsed_urls)
+    if not no_fetch_requirements:
+        scanner.add(update.FetchUpstreamDependencies)
     scanner.add(update.UpdateChecksums, failed_urls)
 
     if create_branch or create_pr:
@@ -678,11 +690,14 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
         scanner.add(update.WriteRecipe)
 
     if create_pr:
-        token = os.environ["GITHUB_TOKEN"]
+        token = os.environ.get("GITHUB_TOKEN")
         if not token:
             logger.critical("GITHUB_TOKEN required to create PRs")
             exit(1)
-        scanner.add(update.CreatePullRequest, git_handler, token, dry_run)
+        github_handler = githubhandler.AiohttpGitHubHandler(
+            token, dry_run, "bioconda", "bioconda-recipes")
+        scanner.add(update.CreatePullRequest, git_handler, github_handler)
+
     if max_updates:
         scanner.add(update.MaxUpdates, max_updates)
     scanner.run()

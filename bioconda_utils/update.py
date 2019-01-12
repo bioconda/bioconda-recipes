@@ -47,34 +47,33 @@ import abc
 import asyncio
 import logging
 import os
-import pickle
 import random
-import re
 
 from collections import defaultdict, Counter
-from concurrent.futures import ProcessPoolExecutor
-from copy import copy
-from hashlib import sha256
-from urllib.parse import urlparse
-from typing import Any, Dict, List, Mapping, Optional, Sequence
 
-import aiohttp
+from urllib.parse import urlparse
+from typing import (Any, Dict, Iterator, List, Mapping, Optional, Sequence,
+                    Set, Tuple, TYPE_CHECKING)
+
 import aiofiles
-import aioftp
-import backoff
+from aiohttp import ClientResponseError
+import yaml
 
 import conda_build.variants
 import conda_build.config
 from conda.exports import MatchSpec, VersionOrder
 import conda.exceptions
 
-from ruamel.yaml import YAML
-from ruamel.yaml.constructor import DuplicateKeyError
 from pkg_resources import parse_version
-from tqdm import tqdm
 
 from . import utils
-from .githubhandler import AiohttpGitHubHandler, GitHubHandler
+from .utils import ensure_list
+from .recipe import Recipe
+from .async import AsyncFilter, AsyncPipeline, AsyncRequests, EndProcessingItem, EndProcessing
+
+if TYPE_CHECKING:
+    from .githandler import GitHandler
+    from .githubhandler import AiohttpGitHubHandler, GitHubHandler
 
 # pkg_resources.parse_version returns a Version or LegacyVersion object
 # as defined in packaging.version. Since it's bundling it's own copy of
@@ -82,340 +81,11 @@ from .githubhandler import AiohttpGitHubHandler, GitHubHandler
 # So we cheat by having it create a LegacyVersion delibarately.
 LegacyVersion = parse_version("").__class__  # pylint: disable=invalid-name
 
-yaml = YAML(typ="rt")  # pylint: disable=invalid-name
-
-# Hack: mirror stringify from conda-build in removing implicit
-#       resolution of numbers
-for digit in '0123456789':
-    if digit in yaml.resolver.versioned_resolver:
-        del yaml.resolver.versioned_resolver[digit]
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-class EndProcessing(BaseException):
-    """Raised by `Filter` to tell `Scanner` to stop processing"""
-
-
-class RecipeError(Exception):
-    """Raised to indicate processing of Recipe failed"""
-    __slots__ = ['recipe', 'args']
-    template = "broken: %s"
-    level = logging.INFO
-
-    def __init__(self, recipe: "Recipe", *args) -> None:
-        super().__init__(recipe, *args)
-        self.recipe = recipe
-        self.args = args
-
-    def log(self, uselogger=logger, level=None):
-        """Print message using provided logging func"""
-        if not level:
-            level = self.level
-        uselogger.log(level, "Recipe %s " + self.template, self.recipe, *self.args)
-
-    @property
-    def name(self):
-        """Class name of RecipeError"""
-        return self.__class__.__name__
-
-
-class Recipe():
-    """Represents a recipe (meta.yaml) in editable form
-
-    Using conda-build to render recipe is slow and a one-way
-    process. We need to be able to load **and** save recipes, which is
-    handled by the representation in this class.
-
-    Recipes undergo two manipulation rounds before parsed as YAML:
-     1. Selecting lines using ``# [expression]``
-     2. Rendering as Jinja2 template
-
-    (1) is currently unhandled, leading to recipes with repeated mapping keys
-    (commonly two ``url`` keys). Those recipes are ignored for the time being.
-
-    Arguments:
-      recipe_folder: base recipes folder
-      recipe_dir: path to specific recipe
-    """
-
-    class DuplicateKey(RecipeError):
-        template = "has duplicate key"
-
-    class MissingKey(RecipeError):
-        template = "has missing key"
-
-    class EmptyRecipe(RecipeError):
-        template = "is empty"
-
-    class MissingBuild(RecipeError):
-        template = "is missing build section"
-
-    class HasSelector(RecipeError):
-        template = "has selector in line %i (replace failed)"
-
-    #: Variables to pass to Jinja when rendering recipe
-    JINJA_VARS = {
-        "cran_mirror": "https://cloud.r-project.org",
-        "compiler": lambda x: f"compiler_{x}",
-    }
-
-    #: Name of key under ``extra`` containing config
-    EXTRA_CONFIG = "autobump"
-
-    def __init__(self, recipe_dir, recipe_folder):
-        if not recipe_dir.startswith(recipe_folder):
-            raise RuntimeError(f"'{recipe_dir}' not inside '{recipe_folder}'")
-
-        #: path to folder containing recipes
-        self.basedir = recipe_folder
-        #: relative path to recipe dir from folder containing recipes
-        self.reldir = recipe_dir[len(recipe_folder):].strip("/")
-
-        # Filled in by render()
-        #: Parsed recipe YAML
-        self.meta: Dict[str, Any] = {}
-
-        # These will be filled in by load_from_string()
-        #: Lines of the raw recipe file
-        self.meta_yaml: List[str] = []
-        # Filled in by update filter
-        self.version_data = None
-        #: Original recipe before modifications (updated by load_from_string)
-        self.orig: Recipe = copy(self)
-        #: Whether the recipe was loaded from a branch (update in progress)
-        self.on_branch: bool = False
-
-    @property
-    def path(self):
-        """Full path to `meta.yaml``"""
-        return os.path.join(self.basedir, self.reldir, "meta.yaml")
-
-    @property
-    def config(self):
-        """Per-recipe configuration parameters
-
-        These are the values set in ``extra:`` under the key
-        defined as `Recipe.EXTRA_CONFIG` (default is ``watch``).
-        """
-        return self.meta.get("extra", {}).get(self.EXTRA_CONFIG, {})
-
-    def __str__(self) -> str:
-        return self.reldir
-
-    def load_from_string(self, data) -> "Recipe":
-        """Load and `render` recipe contents from disk"""
-        self.meta_yaml = data.splitlines()
-        if not self.meta_yaml:
-            raise self.EmptyRecipe(self)
-        self.render()
-        return self
-
-    def set_original(self) -> None:
-        """Store the current state of the recipe as "original" version"""
-        self.orig = copy(self)
-
-    def dump(self):
-        """Dump recipe content"""
-        return "\n".join(self.meta_yaml) + "\n"
-
-    @staticmethod
-    def _rewrite_selector_block(text, block_top, block_left):
-        if not block_left:
-            return None  # never the whole yaml
-        lines = text.splitlines()
-        block_height = None
-        variants = defaultdict(list)
-
-        for block_height, line in enumerate(lines[block_top:]):
-            if line.strip() and not line.startswith(" " * block_left):
-                break
-            _, _, selector = line.partition("#")
-            if selector:
-                variants[selector.strip("[] ")].append(line)
-            else:
-                for variant in variants:
-                    variants[variant].append(line)
-        else:
-            # end of file, need to add one to block height
-            block_height+=1
-
-        if not block_height:  # empty lines?
-            return None
-        if not variants:
-            return None
-        if any(" " in v for v in variants):
-            # can't handle "[py2k or osx]" style things
-            return None
-
-        new_lines = []
-        for variant in variants.values():
-            first = True
-            for line in variant:
-                if first:
-                    new_lines.append("".join((" " * block_left, "- ", line)))
-                    first = False
-                else:
-                    new_lines.append("".join((" " * (block_left + 2), line)))
-
-        logger.debug("Replacing: lines %i - %i with %i lines:\n%s\n---\n%s",
-                     block_top, block_top+block_height, len(new_lines),
-                     "\n".join(lines[block_top:block_top+block_height]),
-                     "\n".join(new_lines))
-
-        lines[block_top:block_top+block_height] = new_lines
-        return "\n".join(lines)
-
-    def render(self) -> None:
-        """Convert recipe text into data structure
-
-        - create jinja template from recipe content
-        - render template
-        - parse yaml
-        - normalize
-        """
-        template = utils.jinja_silent_undef.from_string(
-            "\n".join(self.meta_yaml)
-        )
-        yaml_text = template.render(self.JINJA_VARS)
-        try:
-            self.meta = yaml.load(yaml_text)
-        except DuplicateKeyError as err:
-            logger.debug("fixing duplicate key at %i:%i",
-                         err.context_mark.line, err.context_mark.column)
-            # We may have encountered a recipe with linux/osx variants using line selectors
-            yaml_text = self._rewrite_selector_block(yaml_text, err.context_mark.line,
-                                                     err.context_mark.column)
-            if yaml_text:
-                try:
-                    self.meta = yaml.load(yaml_text)
-                except DuplicateKeyError as errx:
-                    raise self.DuplicateKey(self)
-            else:
-                raise self.DuplicateKey(self)
-
-        if ("package" not in self.meta
-            or "version" not in self.meta["package"]
-            or "name" not in self.meta["package"]):
-            raise self.MissingKey(self)
-
-        # make recipe-maintainers a list if it is a string
-        maintainers = self.meta.mlget(["extra", "recipe-maintainers"])
-        if maintainers and isinstance(maintainers, str):
-            self.meta["extra"]["recipe-maintainers"] = [maintainers]
-
-    @property
-    def name(self) -> str:
-        """The name of the toplevel package built by this recipe"""
-        return self.meta["package"]["name"]
-
-    @property
-    def version(self) -> str:
-        """The version of the package build by this recipe"""
-        return str(self.meta["package"]["version"])
-
-    @property
-    def package_names(self) -> List[str]:
-        """List of the packages built by this recipe (including outputs)"""
-        packages = [self.name]
-        if "outputs" in self.meta:
-            packages.extend(output['name'] for output in self.meta['outputs'])
-        return packages
-
-    def replace(self, before: str, after: str,
-                within: Sequence[str] = ("package", "source"),
-                with_fuzz=False) -> int:
-        """Runs string replace on parts of recipe text.
-
-        - Lines considered are those containing Jinja set statements
-        (``{% set var="val" %}``) and those defining the top level
-        Mapping entries given by **within** (default:``package`` and
-        ``source``).
-
-        - Cowardly refuses to modify lines with ``# [expression]``
-        selectors.
-        """
-        logger.debug("Trying to replace %s with %s", before, after)
-
-        # get lines starting with "{%"
-        lines = set()
-        for lineno, line in enumerate(self.meta_yaml):
-            if line.strip().startswith("{%"):
-                lines.add(lineno)
-
-        # get lines covered by keys listed in ``within``
-        start: Optional[int] = None
-        for key in self.meta.keys():
-            lineno = self.meta.lc.key(key)[0]
-            if key in within:
-                if start is None:
-                    start = lineno
-            else:
-                if start is not None:
-                    lines.update(range(start, lineno))
-                    start = None
-        if start is not None:
-            lines.update(range(start, len(self.meta_yaml)))
-
-        before_pattern = re.escape(before)
-        if with_fuzz:
-            before_pattern = re.sub(r"(-|\\\.|_)", "[-_.]", before_pattern)
-        re_before = re.compile(before_pattern)
-        re_select = re.compile(before_pattern + r".*#.*\[")
-
-        # replace within those lines, erroring on "# [asd]" selectors
-        replacements = 0
-        for lineno in sorted(lines):
-            line = self.meta_yaml[lineno]
-            if not re_before.search(line):
-                continue
-            if re_select.search(line):
-                raise self.HasSelector(self, lineno)
-            new = re_before.sub(after, line)
-            logger.debug("%i - %s", lineno, self.meta_yaml[lineno])
-            logger.debug("%i + %s", lineno, new)
-            self.meta_yaml[lineno] = new
-            replacements += 1
-        return replacements
-
-    def reset_buildnumber(self):
-        """Resets the build number
-
-        If the build number is missing, it is added after build.
-        """
-        try:
-            lineno: int = self.meta["build"].lc.key("number")[0]
-        except (KeyError, AttributeError):  # no build number?
-            if "build" in self.meta and self.meta["build"] is not None:
-                build = self.meta["build"]
-                first_in_build = next(iter(build))
-                lineno, colno = build.lc.key(first_in_build)
-                self.meta_yaml.insert(lineno, " "*colno + "number: 0")
-            else:
-                raise self.MissingBuild(self)
-
-        line = self.meta_yaml[lineno]
-        line = re.sub("number: [0-9]+", "number: 0", line)
-        self.meta_yaml[lineno] = line
-
-
-class Filter(abc.ABC):
-    """Function object type called by Scanner"""
-    def __init__(self, scanner: "Scanner") -> None:
-        self.scanner = scanner
-
-    @abc.abstractmethod
-    async def apply(self, recipe: Recipe) -> Recipe:
-        """Process a recipe. Returns False if processing should stop"""
-
-    async def async_init(self) -> None:
-        """Called inside loop before processing"""
-
-    def finalize(self) -> None:
-        """Called at the end of a run"""
-
-
-class Scanner():
+class Scanner(AsyncPipeline[Recipe]):
     """Scans recipes and applies filters in asyncio loop
 
     Arguments:
@@ -423,239 +93,90 @@ class Scanner():
       packages: glob pattern to select recipes
       config: config.yaml (unused)
     """
-
-    #: Used as user agent in http requests and as requester in github API requests
-    USER_AGENT = "bioconda/bioconda-utils"
-
     def __init__(self, recipe_folder: str, packages: List[str],
-                 config: str, cache_fn: str, max_inflight: int = 100) -> None:
-        with open(config, "r") as config_file:
-            #: config
-            self.config = yaml.load(config_file)
-            self.config['blacklists'] = [
-                os.path.join(os.path.dirname(config), bl)
-                for bl in self.config['blacklists']
-            ]
+                 cache_fn: str = None, max_inflight: int = 100,
+                 status_fn: str = None) -> None:
+        super().__init__(max_inflight)
         #: folder containing recipes
         self.recipe_folder: str = recipe_folder
         #: glob expressions
         self.packages: List[str] = packages
-        try:  # get or create loop (threads don't have one)
-            self.loop = asyncio.get_event_loop()
-        except RuntimeError:
-            self.loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(self.loop)
-        #: semaphore to limit io parallelism
-        self.io_sem: asyncio.Semaphore = asyncio.Semaphore(1)
         #: counter to gather stats on various states
         self.stats: Counter = Counter()
-        #: aiohttp session (only exists while running)
-        self.session: aiohttp.ClientSession = None
-        #: filters
-        self.filters: List[Filter] = []
-        #: cache file name (for debugging)
-        self.cache_fn: str = cache_fn
-        #: cache
-        self.cache: Optional[Dict[str, Dict[str, str]]] = None
-        if cache_fn:
-            if os.path.exists(cache_fn):
-                with open(cache_fn, "rb") as stream:
-                    self.cache = pickle.load(stream)
-            else:
-                self.cache = {}
-            if "url_text" not in self.cache:
-                self.cache["url_text"] = {}
-            if "url_checksum" not in self.cache:
-                self.cache["url_checksum"] = {}
-            if "ftp_list" not in self.cache:
-                self.cache["ftp_list"] = {}
-        self.proc_pool_executor = ProcessPoolExecutor(3)
-        self.limit_inflight = asyncio.Semaphore(max_inflight)
-
-    def add(self, filt: Filter, *args, **kwargs) -> None:
-        """Adds `Filter` to this `Scanner`"""
-        self.filters.append(filt(self, *args, **kwargs))
+        #: collect end status for each recipe
+        self.status: List[Tuple[str, str]] = []
+        #: filename to write statuses to
+        self.status_fn: str = status_fn
+        #: async requests helper
+        self.req = AsyncRequests(cache_fn)
 
     def run(self) -> bool:
-        """Runs scanner
-
-        This starts the asyncio loop and manages shutdown.
-        """
-        try:
-            task = asyncio.ensure_future(self._async_run())
-            self.loop.run_until_complete(task)
-            logger.warning("Finished update")
-        except (KeyboardInterrupt, EndProcessing) as exc:
-            if isinstance(exc, KeyboardInterrupt):
-                logger.error("Ctrl-C pressed - aborting...")
-            if isinstance(exc, EndProcessing):
-                logger.error("Terminating...")
-            task.cancel()
-            try:
-                self.loop.run_until_complete(task)
-            except asyncio.CancelledError:
-                pass
+        """Runs scanner"""
+        res = super().run()
+        logger.info("")
+        logger.info("Recipe status statistics:")
         for key, value in self.stats.most_common():
             logger.info("%s: %s", key, value)
         logger.info("SUM: %i", sum(self.stats.values()))
-        for filt in self.filters:
-            filt.finalize()
-        if self.cache_fn:
-            with open(self.cache_fn, "wb") as stream:
-                pickle.dump(self.cache, stream)
-        return task.result()
+        if self.status_fn:
+            with open(self.status_fn, "w") as out:
+                for entry in self.status:
+                    out.write('\t'.join(entry)+"\n")
+        return res
+
+    def get_item_iterator(self) -> Iterator[Recipe]:
+        """Return initial iterator over stub (unloaded) Recipes"""
+        recipes = list(utils.get_recipes(self.recipe_folder, self.packages))
+        random.shuffle(recipes)
+        return (Recipe(recipe_dir, self.recipe_folder)
+                for recipe_dir in recipes)
 
     async def _async_run(self) -> bool:
         """Runner within async loop"""
-        async with aiohttp.ClientSession(
-                headers={'User-Agent': self.USER_AGENT}
-        ) as session:
-            self.session = session
-            await asyncio.gather(*(filt.async_init() for filt in self.filters))
-            recipes = list(utils.get_recipes(self.recipe_folder, self.packages))
-            random.shuffle(recipes)
-            coros = [
-                asyncio.ensure_future(
-                    self.process(recipe_dir)
-                )
-                for recipe_dir in recipes
-            ]
-            try:
-                with tqdm(asyncio.as_completed(coros),
-                          total=len(coros)) as tcoros:
-                    return all([await coro for coro in tcoros])
-            except asyncio.CancelledError:
-                for coro in coros:
-                    coro.cancel()
-                await asyncio.wait(coros)
-                return False
+        async with self.req:
+            return await super()._async_run()
 
-    async def process(self, recipe_dir: str) -> bool:
+    async def process(self, recipe: Recipe) -> bool:
         """Applies the filters to a recipe"""
-        recipe = Recipe(recipe_dir, self.recipe_folder)
-        async with self.limit_inflight:
-            try:
-                for filt in self.filters:
-                    recipe = await filt.apply(recipe)
-            except asyncio.CancelledError:
-                return False
-            except RecipeError as recipe_error:
-                recipe_error.log(logger)
-                self.stats[recipe_error.name] += 1
-                return False
-            except Exception:  # pylint: disable=broad-except
-                logger.exception("While processing %s", recipe_dir)
-                return False
-        self.stats["Updated"] += 1
-        return True
+        try:
+            if await super().process(recipe):
+                self.stats["Updated"] += 1
+                return True
+            return False
+        except EndProcessingItem as recipe_error:
+            self.stats[recipe_error.name] += 1
+            self.status.append((recipe.reldir, recipe_error.name))
+            return True
 
-    async def run_io(self, func, *args):
-        """Run **func** in thread pool executor using **args**"""
-        async with self.io_sem:
-            return await self.loop.run_in_executor(None, func, *args)
 
-    async def run_sp(self, func, *args):
-        """Run **func** in process pool executor using **args**"""
-        return await self.loop.run_in_executor(self.proc_pool_executor, func, *args)
+class Filter(AsyncFilter[Recipe]):
+    """Filter for Scanner - class exists primarily to silence mypy"""
+    pipeline: Scanner
 
-    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
-                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
-    async def get_text_from_url(self, url: str) -> str:
-        """Fetch content at **url** and return as text
-
-        - On non-permanent errors (429, 502, 503, 504), the GET is retried 10 times with
-        increasing wait times according to fibonacci series.
-        - Permanent errors raise a ClientResponseError
-        """
-        if self.cache and url in self.cache["url_text"]:
-            return self.cache["url_text"][url]
-
-        async with self.session.get(url) as resp:
-            resp.raise_for_status()
-            res = await resp.text()
-
-        if self.cache:
-            self.cache["url_text"][url] = res
-
-        return res
-
-    async def get_checksum_from_url(self, url: str, desc: str) -> str:
-        """Compute sha256 checksum of content at **url**
-
-        Shows TQDM progress monitor with label **desc**.
-        """
-        if self.cache and url in self.cache["url_checksum"]:
-            return self.cache["url_checksum"][url]
-
-        parsed = urlparse(url)
-        if parsed.scheme in ("http", "https"):
-            res = await self.get_checksum_from_http(url, desc)
-        elif parsed.scheme == "ftp":
-            res = await self.get_checksum_from_ftp(url, desc)
-
-        if self.cache:
-            self.cache["url_checksum"][url] = res
-
-        return res
-
-    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
-                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
-    async def get_checksum_from_http(self, url: str, desc: str) -> str:
-        checksum = sha256()
-        async with self.session.get(url) as resp:
-            resp.raise_for_status()
-            size = int(resp.headers.get("Content-Length", 0))
-            with tqdm(total=size, unit='B', unit_scale=True, unit_divisor=1024,
-                      desc=desc, miniters=1, leave=False, disable=None) as progress:
-                while True:
-                    block = await resp.content.read(1024*1024)
-                    if not block:
-                        break
-                    progress.update(len(block))
-                    await self.loop.run_in_executor(None, checksum.update, block)
-        return checksum.hexdigest()
-
-    async def get_ftp_listing(self, url):
-        logger.debug("FTP: listing %s", url)
-        if self.cache and url in self.cache["ftp_list"]:
-            return self.cache["ftp_list"][url]
-
-        parsed = urlparse(url)
-        async with aioftp.ClientSession(parsed.netloc,
-                                        password=self.USER_AGENT+"@") as client:
-            res = [str(path) for path, _info in (await client.list(parsed.path))]
-        if self.cache:
-            self.cache["ftp_list"][url] = res
-        return res
-
-    async def get_checksum_from_ftp(self, url, desc):
-        parsed = urlparse(url)
-        checksum = sha256()
-        async with aioftp.ClientSession(parsed.netloc,
-                                        password=self.USER_AGENT+"@") as client:
-            async with client.download_stream(parsed.path) as stream:
-                async for block in stream.iter_by_block():
-                    checksum.update(block)
-        return checksum.hexdigest()
+    @abc.abstractmethod
+    async def apply(self, recipe: Recipe) -> Recipe:
+        """Process a recipe. Returns False if processing should stop"""
 
 
 class ExcludeOtherChannel(Filter):
     """Filters recipes matching packages in other **channels**"""
 
-    class OtherChannel(RecipeError):
+    class OtherChannel(EndProcessingItem):
+        """This recipe builds one or more packages that are also present
+        in at least one other channel"""
         template = "builds package found in other channel(s)"
         level = logging.DEBUG
 
-    def __init__(self, scanner: "Scanner", channels: Sequence[str],
+    def __init__(self, scanner: Scanner, channels: Sequence[str],
                  cache: str) -> None:
         super().__init__(scanner)
         logger.info("Loading package lists for %s", channels)
-        r = utils.RepoData()
+        repo = utils.RepoData()
         if cache:
-            r.set_cache(cache)
-        self.other = set(r.get_package_data('name', channels=channels))
+            repo.set_cache(cache)
+        self.other = set(repo.get_package_data('name', channels=channels))
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         if any(package in self.other
                for package in recipe.package_names):
             raise self.OtherChannel(recipe)
@@ -669,15 +190,16 @@ class ExcludeSubrecipe(Filter):
     ``extra: watch: enable: yes`` will not be filtered.
     """
 
-    class IsSubRecipe(RecipeError):
+    class IsSubRecipe(EndProcessingItem):
+        """This recipe is a sub-recipe (i.e. blast/2.4.0)."""
         template = "is a subrecipe"
         level = logging.DEBUG
 
-    def __init__(self, scanner: "Scanner", always=False) -> None:
+    def __init__(self, scanner: Scanner, always=False) -> None:
         super().__init__(scanner)
         self.always_exclude = always
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         is_subrecipe = recipe.reldir.strip("/").count("/") > 0
         enabled = recipe.config.get("enable", False)
         if is_subrecipe and not (enabled and not self.always_exclude):
@@ -688,18 +210,21 @@ class ExcludeSubrecipe(Filter):
 class ExcludeBlacklisted(Filter):
     """Filters blacklisted recipes"""
 
-    class Blacklisted(RecipeError):
+    class Blacklisted(EndProcessingItem):
+        """This recipe has been blacklisted (fails to build, see blacklist file)"""
         template = "is blacklisted"
         level = logging.DEBUG
 
-    def __init__(self, scanner):
+    def __init__(self, scanner, config_fn: str) -> None:
         super().__init__(scanner)
-        self.blacklisted = utils.get_blacklist(
-            scanner.config["blacklists"],
-            scanner.recipe_folder)
+        with open(config_fn, "r") as config_fdes:
+            config = yaml.load(config_fdes)
+        blacklists = [os.path.join(os.path.dirname(config_fn), bl)
+                      for bl in config['blacklists']]
+        self.blacklisted = utils.get_blacklist(blacklists, scanner.recipe_folder)
         logger.warning("Excluding %i blacklisted recipes", len(self.blacklisted))
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         if recipe.reldir in self.blacklisted:
             raise self.Blacklisted(recipe)
         return recipe
@@ -723,30 +248,49 @@ class UpdateVersion(Filter):
      4. update sources
     """
 
-    class Metapackage(RecipeError):
+    class Metapackage(EndProcessingItem):
+        """This recipe only builds a meta package - it has no upstream sources."""
         template = "builds a meta package (recipe has no sources)"
 
-    class UpToDate(RecipeError):
+    class UpToDate(EndProcessingItem):
+        """This recipe appears to be up to date!"""
         template = "is up to date"
         level = logging.DEBUG
 
-    class UpdateVersionFailure(RecipeError):
+    class UpdateVersionFailure(EndProcessingItem):
+        """This recipe did not show the expected version number after updating.
+
+        Something probably went wrong trying to replace the version number in the
+        meta.yaml.
+        """
         template = "could not be updated from %s to %s"
 
-    class NoUrlInSource(RecipeError):
+    class NoUrlInSource(EndProcessingItem):
+        """This recipe has a source without an URL.
+
+        Most likely, this is due to a git-url.
+        """
         template = "has no URL in source %i"
 
-    class NoRecognizedSourceUrl(RecipeError):
+    class NoRecognizedSourceUrl(EndProcessingItem):
+        """None of the source URLs in this recipe were recognized."""
         template = "has no URL in source %i recognized by any Hoster class"
         level = logging.DEBUG
 
-    class UrlNotVersioned(RecipeError):
+    class UrlNotVersioned(EndProcessingItem):
+        """This recipe has an URL unaffected by the version change.
+        the recipe"""
         template = "has URL not modified by version change"
 
-    class NoReleases(RecipeError):
+    class NoReleases(EndProcessingItem):
+        """No releases at all were found for this recipe.
+
+        This is unusual - something probably went wrong finding releases for
+        the source urls in this recipe.
+        """
         template = "has no releases?!"
 
-    def __init__(self, scanner: "Scanner", hoster_factory,
+    def __init__(self, scanner: Scanner, hoster_factory,
                  unparsed_file: Optional[str] = None) -> None:
         super().__init__(scanner)
         #: output file name for unparsed urls
@@ -760,6 +304,7 @@ class UpdateVersion(Filter):
             utils.load_conda_build_config()
 
     def finalize(self):
+        """Save unparsed urls to file and print stats to log"""
         stats: Counter = Counter()
         for url in self.unparsed_urls:
             parsed = urlparse(url)
@@ -776,6 +321,56 @@ class UpdateVersion(Filter):
     async def apply(self, recipe: Recipe):
         logger.debug("Checking for updates to %s - %s", recipe, recipe.version)
 
+        # scan for available versions
+        versions = await self.get_version_map(recipe)
+        # (too slow) conflicts = self.check_version_pin_conflict(recipe, versions)
+
+        # select apropriate most current version
+        latest = self.select_version(recipe.version, versions.keys())
+
+        # add data for respective versions to recipe and recipe.orig
+        recipe.version_data = versions[latest]
+        if recipe.orig.version in versions:
+            recipe.orig.version_data = versions[recipe.orig.version]
+        else:
+            recipe.orig.version_data = {}
+
+        # check if the recipe is up to date
+        if VersionOrder(latest) == VersionOrder(recipe.version):
+            if not recipe.on_branch:
+                raise self.UpToDate(recipe)
+
+        # Update `url:`s without Jinja expressions (plain text)
+        for fname in versions[latest]:
+            recipe.replace(fname, versions[latest][fname]['link'], within=["source"])
+
+        # Update the version number itself. This will also usually update
+        # `url:`s expressed with `{{version}}` tags.
+        if not recipe.replace(recipe.version, latest, within=["package"]):
+            # allow changes between dash/dot/underscore
+            if recipe.replace(recipe.version, latest, within=["package"], with_fuzz=True):
+                logger.warning("Recipe %s: replaced version with fuzz", recipe)
+
+        recipe.reset_buildnumber()
+        recipe.render()
+
+        # Verify that the rendered recipe has the right version number
+        if VersionOrder(recipe.version) != VersionOrder(latest):
+            raise self.UpdateVersionFailure(recipe, recipe.orig.version, latest)
+
+        # Verify that every url was modified
+        for src, osrc in zip(ensure_list(recipe.meta['source']),
+                             ensure_list(recipe.orig.meta['source'])):
+            for url, ourl in zip(ensure_list(src['url']),
+                                 ensure_list(osrc['url'])):
+                if url == ourl:
+                    raise self.UrlNotVersioned(recipe)
+
+        return recipe
+
+    async def get_version_map(self, recipe: Recipe):
+        """Scan all source urls"""
+
         sources = recipe.meta.get("source")
         if not sources:
             raise self.Metapackage(recipe)
@@ -786,52 +381,14 @@ class UpdateVersion(Filter):
             for num, source in enumerate(source_iter):
                 add_versions = await self.get_versions(recipe, source, num+1)
                 for vers, files in add_versions.items():
-                    for fn, data in files.items():
-                        versions[vers][fn] = data
+                    for fname, data in files.items():
+                        versions[vers][fname] = data
         else:
             versions = await self.get_versions(recipe, sources, 0)
 
         if not versions:
             raise self.NoReleases(recipe)
-
-        #fixme: slow
-        #conflicts = self.check_version_pin_conflict(recipe, versions)
-        latest = self.select_version(recipe.version, versions.keys())
-        recipe.version_data = versions[latest]
-
-        if VersionOrder(latest) == VersionOrder(recipe.version) and not recipe.on_branch:
-            raise self.UpToDate(recipe)
-
-        for fn in versions[latest]:
-            recipe.replace(fn, versions[latest][fn]['link'])
-        if not recipe.replace(recipe.version, latest):
-            if recipe.replace(recipe.version, latest, with_fuzz=True):
-                logger.warning("Recipe %s: replaced version with fuzz", recipe)
-        recipe.reset_buildnumber()
-        recipe.render()
-
-        if not VersionOrder(recipe.version) == VersionOrder(latest):
-            raise self.UpdateVersionFailure(recipe, recipe.orig.version, latest)
-
-        sources = recipe.meta["source"]
-        orig_sources = recipe.orig.meta["source"]
-        if isinstance(sources, dict):
-            sources = [sources]
-            orig_sources = [orig_sources]
-        urls: List[str] = []
-        orig_urls: List[str] = []
-        for source, orig_source in zip(sources, orig_sources):
-            add_urls = source["url"]
-            add_orig_urls = orig_source["url"]
-            if isinstance(add_urls, str):
-                add_urls = [add_urls]
-                add_orig_urls = [add_orig_urls]
-            urls.extend(add_urls)
-            orig_urls.extend(add_orig_urls)
-        for url, orig_url in zip(urls, orig_urls):
-            if orig_url == url:
-                raise self.UrlNotVersioned(recipe)
-        return recipe
+        return versions
 
     async def get_versions(self, recipe: Recipe, source: Mapping[Any, Any],
                            source_idx: int):
@@ -850,10 +407,11 @@ class UpdateVersion(Filter):
                 continue
             logger.debug("Scanning with %s", hoster.__class__.__name__)
             try:
-                versions = await hoster.get_versions(self.scanner)
+                versions = await hoster.get_versions(self.pipeline.req, recipe.orig.version)
                 for match in versions:
+                    match['hoster'] = hoster
                     version_map[match["version"]][url] = match
-            except aiohttp.ClientResponseError as exc:
+            except ClientResponseError as exc:
                 logger.debug("HTTP %s when getting %s", exc, url)
 
         if not version_map:
@@ -898,7 +456,7 @@ class UpdateVersion(Filter):
         return latest
 
     def check_version_pin_conflict(self, recipe: Recipe,
-                                   versions: List[Dict[str, Any]]) -> List[str]:
+                                   versions: Dict[str, Any]) -> None:
         """Find items in **versions** conflicting with pins
 
         Example:
@@ -913,36 +471,71 @@ class UpdateVersion(Filter):
             for pkg, spec in depends:
                 norm_pkg = pkg.replace("-", "_")
                 try:
-                    ms = MatchSpec(version=spec.replace(" ",""))
+                    mspec = MatchSpec(version=spec.replace(" ", ""))
                 except conda.exceptions.InvalidVersionSpecError:
                     logger.error("Recipe %s: invalid upstream spec %s %s",
                                  recipe, pkg, repr(spec))
                     continue
                 if norm_pkg in variants[0]:
                     for variant in variants:
-                        if not ms.match({'name': '', 'build': '', 'build_number': '0',
-                                         'version': variant[norm_pkg]}):
+                        if not mspec.match({'name': '', 'build': '', 'build_number': '0',
+                                            'version': variant[norm_pkg]}):
                             logger.error("Recipe %s: %s %s conflicts pins",
                                          recipe, pkg, spec)
 
-        for version, files in versions.items():
-            for fn, data in files.items():
+        for files in versions.values():
+            for data in files.values():
                 depends = data.get('depends')
                 if depends:
                     check_pins(depends.items())
 
 
+class FetchUpstreamDependencies(Filter):
+    """Fetch requirements from upstream where possible
+
+    This currently only affects PyPi. Dependencies for Python packages are
+    determined by ``setup.py`` at installation time and need not be static
+    in many cases (there is work to change this going on).
+    """
+    def __init__(self, scanner: Scanner) -> None:
+        super().__init__(scanner)
+        #: conda build config
+        self.build_config: conda_build.config.Config = \
+            utils.load_conda_build_config()
+
+    async def apply(self, recipe: Recipe) -> Recipe:
+        await asyncio.gather(*[
+            data["hoster"].get_deps(self.pipeline, self.build_config,
+                                    recipe.name, data)
+            for r in (recipe, recipe.orig)
+            for fn, data in r.version_data.items()
+            if "depends" not in data
+            and "hoster" in data
+            and hasattr(data["hoster"], "get_deps")
+        ])
+        return recipe
+
+
 class UpdateChecksums(Filter):
     """Download upstream source files, recompute checksum and update Recipe"""
 
-    class NoValidUrls(RecipeError):
+    class NoValidUrls(EndProcessingItem):
+        """Failed to download any file for a source to generate new checksum"""
         template = "has no valid urls in source %i"
 
-    class SourceUrlMismatch(RecipeError):
+    class SourceUrlMismatch(EndProcessingItem):
+        """The URLs in a source point to different files after update"""
         template = "has urls in source %i pointing to different files"
 
+    class ChecksumReplaceFailed(EndProcessingItem):
+        """The checksum could not be updated after version bump"""
+        template = ": failed to replace checksum"
 
-    def __init__(self, scanner: "Scanner",
+    class ChecksumUnchanged(EndProcessingItem):
+        """The checksum did not change after version bump"""
+        template = "had no change to checksum after update?!"
+
+    def __init__(self, scanner: Scanner,
                  failed_file: Optional[str] = None) -> None:
         super().__init__(scanner)
         #: failed urls - for later inspection
@@ -951,6 +544,7 @@ class UpdateChecksums(Filter):
         self.failed_file = failed_file
 
     def finalize(self):
+        """Store list of URLs that could not be downloaded"""
         if self.failed_urls:
             logger.warning("Encountered %i download failures while computing checksums",
                            len(self.failed_urls))
@@ -958,15 +552,14 @@ class UpdateChecksums(Filter):
             with open(self.failed_file, "w") as out:
                 out.write("\n".join(self.failed_urls))
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         sources = recipe.meta["source"]
         logger.info("Updating checksum for %s %s", recipe, recipe.version)
         if isinstance(sources, Mapping):
             sources = [sources]
-        for source_idx,  source in enumerate(sources):
+        for source_idx, source in enumerate(sources):
             await self.update_source(recipe, source, source_idx)
         recipe.render()
-        # FIXME: check that we have new checksums
         return recipe
 
     async def update_source(self, recipe: Recipe, source: Mapping, source_idx: int) -> None:
@@ -991,31 +584,31 @@ class UpdateChecksums(Filter):
             if not recipe.replace(checksum_type, "sha256"):
                 raise RuntimeError("Failed to replace checksum type?")
 
-        urls = source["url"]
-        if isinstance(urls, str):
-            urls = [urls]
-        new_checksums = []
+        urls = ensure_list(source["url"])
+        new_checksums = set()
         for url_idx, url in enumerate(urls):
             try:
-                res = await self.scanner.get_checksum_from_url(
-                    url, f"{recipe} [{source_idx}.{url_idx}]")
-            except aiohttp.client_exceptions.ClientResponseError as exc:
+                new_checksums.add(
+                    await self.pipeline.req.get_checksum_from_url(
+                        url, f"{recipe} [{source_idx}.{url_idx}]")
+                )
+            except ClientResponseError as exc:
                 logger.info("Recipe %s: HTTP %s while downloading url %i",
                             recipe, exc.code, url_idx)
                 self.failed_urls += ["\t".join((str(exc.code), url))]
-                res = None
-            new_checksums.append(res)
-        count = len(set(c for c in new_checksums if c is not None))
-        if count == 0:
+
+        if not new_checksums:
             raise self.NoValidUrls(recipe, source_idx)
-        if count > 1:
-            for idx, (csum, url) in enumerate(zip(new_checksums, urls)):
-                logger.error("Recipe %s: url %s - got %s for %s",
-                             recipe, idx, csum, url)
+        if len(new_checksums) > 1:
+            logger.error("Recipe %s source %i: checksum mismatch between alternate urls - %s",
+                         recipe, source_idx, new_checksums)
             raise self.SourceUrlMismatch(recipe, source_idx)
-        new_checksum = next(c for c in new_checksums if c is not None)
+
+        new_checksum = new_checksums.pop()
+        if checksum == new_checksum and not recipe.on_branch:
+            raise self.ChecksumUnchanged(recipe)
         if not recipe.replace(checksum, new_checksum):
-            raise RuntimeError("Failed to replace checksum?")
+            raise self.ChecksumReplaceFailed(recipe)
 
 
 class GitFilter(Filter):
@@ -1028,7 +621,7 @@ class GitFilter(Filter):
 
     branch_prefix = "bump/"
 
-    def __init__(self, scanner, git_handler):
+    def __init__(self, scanner: Scanner, git_handler: "GitHandler") -> None:
         super().__init__(scanner)
         #: The `GitHandler` class for accessing repo
         self.git = git_handler
@@ -1045,21 +638,42 @@ class GitFilter(Filter):
         """
         return f"{cls.branch_prefix}{recipe.reldir.replace('-', '_').replace('/', '.d/')}"
 
+    # placate pylint by reiterating abstract method
     @abc.abstractmethod
-    def apply(self, recipe):  # placate pylint by reiterating abstrace method
+    async def apply(self, recipe: Recipe) -> Recipe:
         pass
+
+
+class ExcludeNoActiveUpdate(GitFilter):
+    """Allows only recipes that already have an update active
+
+    Requires that the recipes are loaded from git - recipes with active
+    updates are those for which a branch with commits newer than master
+    exists (which is checked by GitLoadRecipe).
+    """
+    class NoActiveUpdate(EndProcessingItem):
+        """Recipe is not currently being updated"""
+        template = "is not currently being updated"
+        level = logging.DEBUG
+
+    async def apply(self, recipe: Recipe) -> Recipe:
+        branch_name = self.branch_name(recipe)
+        if not self.git.get_remote_branch(branch_name):
+            raise self.NoActiveUpdate(recipe)
+        return recipe
 
 
 class LoadRecipe(Filter):
     """Loads the Recipe from the filesystem"""
-    def __init__(self, scanner):
+    def __init__(self, scanner: Scanner) -> None:
         super().__init__(scanner)
         self.sem = asyncio.Semaphore(10)
 
-    async def apply(self, recipe):
-        async with self.sem, aiofiles.open(recipe.path, encoding="utf-8") as fd:
-            recipe_text = await fd.read()
-        recipe = await self.scanner.run_sp(recipe.load_from_string, recipe_text)
+    async def apply(self, recipe: Recipe) -> Recipe:
+        async with self.sem, \
+                   aiofiles.open(recipe.path, encoding="utf-8") as fdes:
+            recipe_text = await fdes.read()
+        recipe = await self.pipeline.run_sp(recipe.load_from_string, recipe_text)
         recipe.set_original()
         return recipe
 
@@ -1081,7 +695,7 @@ class GitLoadRecipe(GitFilter):
     - Otherwise load master
     """
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         branch_name = self.branch_name(recipe)
         remote_branch = self.git.get_remote_branch(branch_name)
         local_branch = self.git.get_local_branch(branch_name)
@@ -1091,52 +705,55 @@ class GitLoadRecipe(GitFilter):
             self.git.delete_local_branch(local_branch)
 
         logger.debug("Recipe %s: loading from master", recipe)
-        recipe_text = await self.scanner.run_io(self.git.read_from_branch,
-                                                self.git.master, recipe.path)
-        recipe = await self.scanner.run_sp(recipe.load_from_string, recipe_text)
+        recipe_text = await self.pipeline.run_io(self.git.read_from_branch,
+                                                 self.git.master, recipe.path)
+        recipe = await self.pipeline.run_sp(recipe.load_from_string, recipe_text)
         recipe.set_original()
 
         if remote_branch:
             if await self.git.branch_is_current(remote_branch, recipe.reldir):
                 logger.info("Recipe %s: updating from remote %s", recipe, branch_name)
-                recipe_text = await self.scanner.run_io(self.git.read_from_branch,
-                                                        remote_branch, recipe.path)
-                recipe = await self.scanner.run_sp(recipe.load_from_string, recipe_text)
-                await self.scanner.run_io(self.git.create_local_branch, branch_name)
+                recipe_text = await self.pipeline.run_io(self.git.read_from_branch,
+                                                         remote_branch, recipe.path)
+                recipe = await self.pipeline.run_sp(recipe.load_from_string, recipe_text)
+                await self.pipeline.run_io(self.git.create_local_branch, branch_name)
                 recipe.on_branch = True
             else:
-                # FIXME: this silently closes existing PR
+                # Note: If a PR still exists for this, it is silently closed by deleting
+                #       the branch.
                 logger.info("Recipe %s: deleting outdated remote %s", recipe, branch_name)
-                await self.scanner.run_io(self.git.delete_remote_branch, branch_name)
+                await self.pipeline.run_io(self.git.delete_remote_branch, branch_name)
         return recipe
 
 
 class WriteRecipe(Filter):
     """Writes the Recipe to the filesystem"""
-    def __init__(self, scanner):
+    def __init__(self, scanner: Scanner) -> None:
         super().__init__(scanner)
         self.sem = asyncio.Semaphore(10)
 
-    async def apply(self, recipe):
-        async with self.sem, aiofiles.open(recipe.path, "w", encoding="utf-8") as fd:
-            await fd.write(recipe.dump())
+    async def apply(self, recipe: Recipe) -> Recipe:
+        async with self.sem, \
+                   aiofiles.open(recipe.path, "w", encoding="utf-8") as fdes:
+            await fdes.write(recipe.dump())
         return recipe
 
 
 class GitWriteRecipe(GitFilter):
     """Writes `Recipe` to git repo"""
 
-    class NoChanges(RecipeError):
+    class NoChanges(EndProcessingItem):
+        """Recipe had no changes after applying updates"""
         template = "had no changes"
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         branch_name = self.branch_name(recipe)
-        remote_branch = self.git.get_remote_branch(branch_name)
         changed = False
         async with self.git.lock_working_dir:
             self.git.prepare_branch(branch_name)
-            async with aiofiles.open(recipe.path, "w", encoding="utf-8") as fd:
-                await fd.write(recipe.dump())
+            async with aiofiles.open(recipe.path, "w",
+                                     encoding="utf-8") as fdes:
+                await fdes.write(recipe.dump())
             changed = self.git.commit_and_push_changes(recipe, branch_name)
         if changed:
             # CircleCI appears to have problems picking up on our PRs. Let's wait
@@ -1150,107 +767,168 @@ class GitWriteRecipe(GitFilter):
 class CreatePullRequest(GitFilter):
     """Creates or Updates PR on GitHub"""
 
-    class UpdateInProgress(RecipeError):
+    class UpdateInProgress(EndProcessingItem):
+        """The recipe has an active update PR"""
         template = "has update in progress"
 
-    class UpdateRejected(RecipeError):
+    class UpdateRejected(EndProcessingItem):
+        """This update has been rejected previously on Github
+
+        A PR created by Autobump for this recipe and this version
+        already exists on Github and has been closed. We take this as
+        indication that the update should not be repeated
+
+        """
         template = "had latest updated rejected manually"
 
-    class FailedToCreatePR(RecipeError):
+    class FailedToCreatePR(EndProcessingItem):
+        """Something went wrong trying to create a new PR on Github."""
         template = "had failure in PR create"
 
-    def __init__(self, scanner, git_handler, token: str,
-                 dry_run: bool = False,
-                 to_user: str = "bioconda",
-                 to_repo: str = "bioconda-recipes") -> None:
+    def __init__(self, scanner: Scanner, git_handler: "GitHandler",
+                 github_handler: "GitHubHandler") -> None:
         super().__init__(scanner, git_handler)
-        self.to_user = to_user
-        self.to_repo = to_repo
-        self.gh: GitHubHandler = AiohttpGitHubHandler(
-            token, dry_run, to_user, to_repo)
+        self.ghub = github_handler
 
     async def async_init(self):
         """Create gidget GithubAPI object from session"""
-        await self.gh.login(self.scanner.session, self.scanner.USER_AGENT)
+        await self.ghub.login(self.pipeline.req.session, self.pipeline.req.USER_AGENT)
         await asyncio.sleep(1)  # let API settle
 
-    async def apply(self, recipe):
+    @staticmethod
+    def render_deps_diff(recipe):
+        """Renders a "diff" of the recipes upstream dependencies.
+
+        This relies on the 'depends' data structure in the recipe's
+        ``version_data`. This structure is expected to be a dict with
+        two keys 'host' and 'run', each of which contain dict of
+        package to version dependency mappings. The 'depends' data can
+        be created by the **hoster** (currently done by CPAN and CRAN)
+        or filled in later by the `FetchUpstreamDependcies` filter
+        (currently for PyPi).
+        """
+        diffset: Dict[str, Set[str]] = {'host': set(), 'run': set()}
+        if not recipe.version_data:
+            logger.debug("Recipe %s: dependency diff not rendered (no version_data)", recipe)
+        for fname in recipe.version_data:
+            if fname not in recipe.orig.version_data:
+                logger.debug("Recipe %s: dependency diff not rendered (no orig.version_data)",
+                             recipe)
+                continue
+            new = recipe.version_data[fname].get('depends')
+            orig = recipe.orig.version_data[fname].get('depends')
+            if not new or not orig:
+                logger.debug("Recipe %s: dependency diff not rendered (no depends in version_data)",
+                             recipe)
+                continue
+            for kind in ('host', 'run'):
+                deps: Set[str] = set()
+                deps.update(new[kind].keys())
+                deps.update(orig[kind].keys())
+                for dep in deps:
+                    if dep not in new[kind]:
+                        diffset[kind].add("-   - {} {}".format(dep, orig[kind][dep]))
+                    elif dep not in orig[kind]:
+                        diffset[kind].add("+   - {} {}".format(dep, new[kind][dep]))
+                    elif orig[kind][dep] != new[kind][dep]:
+                        diffset[kind].add("-   - {dep} {}\n"
+                                          "+   - {dep} {}".format(orig[kind][dep], new[kind][dep],
+                                                                  dep=dep))
+        text = ""
+        for kind, lines in diffset.items():
+            if lines:
+                text += "  {}:\n".format(kind)
+                text += "\n".join(sorted(lines, key=lambda x: x[1:])) + "\n"
+        if not text:
+            logger.debug("Recipe %s: dependency diff not rendered (all good)", recipe)
+        return text
+
+    @staticmethod
+    def get_github_author(recipe) -> Optional[str]:
+        """Fetches upstream Github account name if applicable
+
+        For recipes with upstream sources hosted on Github, we can extract
+        the account name from the source URL, so that we can add an @mention
+        notifying the upstream author of the update.
+        """
+        for ver in recipe.version_data.values():
+            if 'hoster' in ver and ver['hoster'].__class__.__name__.startswith('Github'):
+                return ver['vals']['account']
+        return None
+
+    async def apply(self, recipe: Recipe) -> Recipe:
         branch_name = self.branch_name(recipe)
         template = utils.jinja.get_template("bump_pr.md")
-        author = None
-        for v in recipe.version_data.values():
-            if 'hoster' in v and v['hoster'].startswith('Github'):
-                author = v['vals']['account']
-                break
+        author = self.get_github_author(recipe)
+
         body = template.render({
             'r': recipe,
-            'recipe_relurl': "/".join((self.to_user, self.to_repo, 'tree',
-                                       branch_name, recipe.basedir + recipe.reldir)),
+            'recipe_relurl': self.ghub.get_file_relurl(recipe.basedir + recipe.reldir,
+                                                       branch_name),
             'author': author,
-            'author_is_member': await self.gh.is_member(author),
+            'author_is_member': await self.ghub.is_member(author),
+            'dependency_diff': self.render_deps_diff(recipe),
         })
         labels = ["autobump"]
         title = f"Update {recipe} to {recipe.version}"
 
         # check if we already have an open PR (=> update in progress)
-        prs = await self.gh.get_prs(from_branch=branch_name, from_user="bioconda")
-        if prs:
-            if len(prs) > 1:
+        pullreqs = await self.ghub.get_prs(from_branch=branch_name, from_user="bioconda")
+        if pullreqs:
+            if len(pullreqs) > 1:
                 logger.error("Multiple PRs updating %s: %s",
                              recipe,
-                             ", ".join(str(pr['number']) for pr in prs))
-            for pr in prs:
+                             ", ".join(str(pull['number']) for pull in pullreqs))
+            for pull in pullreqs:
                 logger.debug("Found PR %i updating %s: %s",
-                             pr["number"], recipe, pr["title"])
+                             pull["number"], recipe, pull["title"])
             # update the PR if title or body changed
-            pr = prs[0]
-            args = {}
-            if body != pr["body"]:
-                args["body"] = body
-            if title != pr["title"]:
-                args["title"] = title
-            if args:
-                prs = await self.gh.modify_issue(number=pr['number'], **args)
-                if prs:
+            pull = pullreqs[0]
+            if body == pull["body"]:
+                body = None
+            if title == pull["title"]:
+                title = None
+            if not (body is None and title is None):
+                if await self.ghub.modify_issue(number=pull['number'], body=body, title=title):
                     logger.info("Updated PR %i updating %s to %s",
-                                pr['number'], recipe, recipe.version)
+                                pull['number'], recipe, recipe.version)
                 else:
-                    logger.error("Failed to update PR %i with %s",
-                                 pr['number'], args)
+                    logger.error("Failed to update PR %i with title=%s and body=%s",
+                                 pull['number'], title, body)
             else:
                 logger.debug("Not updating PR %i updating %s - no changes",
-                             pr['number'], recipe)
+                             pull['number'], recipe)
 
             raise self.UpdateInProgress(recipe)
 
         # check for matching closed PR (=> update rejected)
-        prs = await self.gh.get_prs(from_branch=branch_name, state=self.gh.STATE.closed)
-        if any(recipe.version in pr['title'] for pr in prs):
+        pullreqs = await self.ghub.get_prs(from_branch=branch_name, state=self.ghub.STATE.closed)
+        if any(recipe.version in pull['title'] for pull in pullreqs):
             raise self.UpdateRejected(recipe)
 
         # finally, create new PR
-        pr = await self.gh.create_pr(title=title,
-                                     from_branch=branch_name,
-                                     body=body)
-        if not pr:
+        pull = await self.ghub.create_pr(title=title,
+                                         from_branch=branch_name,
+                                         body=body)
+        if not pull:
             raise self.FailedToCreatePR(recipe)
 
         # set labels (can't do that in create_pr as they are part of issue API)
-        await self.gh.modify_issue(number=pr['number'], labels=labels)
+        await self.ghub.modify_issue(number=pull['number'], labels=labels)
 
-        logger.info("Created PR %i updating %s to %s", pr['number'], recipe, recipe.version)
+        logger.info("Created PR %i updating %s to %s", pull['number'], recipe, recipe.version)
         return recipe
 
 
 class MaxUpdates(Filter):
     """Terminate loop after **max_updates** Recipes have been updated."""
-    def __init__(self, scanner, max_updates: int = 0) -> None:
+    def __init__(self, scanner: Scanner, max_updates: int = 0) -> None:
         super().__init__(scanner)
         self.max = max_updates
         self.count = 0
         logger.warning("Will exit after %s updated recipes", max_updates)
 
-    async def apply(self, recipe):
+    async def apply(self, recipe: Recipe) -> Recipe:
         self.count += 1
         if self.max and self.count == self.max:
             logger.warning("Reached update limit %s", self.count)

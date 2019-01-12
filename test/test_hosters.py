@@ -110,7 +110,9 @@ class TestHoster:
         if not 'release_links' in self.case and not 'release_json' in self.case:
             pytest.xfail("No release_links or release_json in test case")
 
-        versions_data = event_loop.run_until_complete(self.instance.get_versions(self))
+        versions_data = event_loop.run_until_complete(
+            self.instance.get_versions(self, self.case['version'])
+        )
         versions = [item['version'] for item in versions_data]
         assert sorted(versions) == sorted(self.case['parsed_versions']), \
             self.msg("Incorrect versions found on page")

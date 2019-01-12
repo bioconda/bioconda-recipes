@@ -5,18 +5,18 @@ import logging
 
 from copy import copy
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 import gidgethub
 import gidgethub.aiohttp
 import aiohttp
 
-from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 #: State for Github Issues
-IssueState = Enum("IssueState", "open closed all")
+IssueState = Enum("IssueState", "open closed all")  # pylint: disable=invalid-name
 
 
 class GitHubHandler:
@@ -51,6 +51,11 @@ class GitHubHandler:
     def create_api_object(self, *args, **kwargs):
         """Create API object"""
 
+    def get_file_relurl(self, path: str, branch_name: str = "master") -> str:
+        """Format domain relative url for **path** on **branch_name**"""
+        return "/{user}/{repo}/tree/{branch_name}/{path}".format(
+            branch_name=branch_name, path=path, **self.var_default)
+
     async def login(self, *args, **kwargs):
         """Log into API (fills `self.username`)"""
 
@@ -73,6 +78,7 @@ class GitHubHandler:
         logger.debug("User %s IS a member of %s", username, var_data['user'])
         return True
 
+    # pylint: disable=too-many-arguments
     async def get_prs(self,
                       from_branch: Optional[str] = None,
                       from_user: Optional[str] = None,
@@ -105,6 +111,7 @@ class GitHubHandler:
 
         return await self.api.getitem(self.PULLS, var_data)
 
+    # pylint: disable=too-many-arguments
     async def create_pr(self, title: str,
                         from_branch: Optional[str] = None,
                         from_user: Optional[str] = None,
@@ -168,11 +175,11 @@ class GitHubHandler:
         if self.dry_run:
             logger.info("Would modify PR %s", number)
             if title:
-                logger.debug("New title: %s", title)
+                logger.info("New title: %s", title)
             if labels:
-                logger.debug("New labels: %s", labels)
+                logger.info("New labels: %s", labels)
             if body:
-                logger.debug("New Body:\n%s\n", body)
+                logger.info("New Body:\n%s\n", body)
 
             return {'number': number}
         logger.info("Modifying PR %s", number)
