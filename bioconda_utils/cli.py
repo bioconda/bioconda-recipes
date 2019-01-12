@@ -655,12 +655,12 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
     from . import update
     from . import githandler
     from . import hosters
-    scanner = update.Scanner(recipe_folder, packages, config,
+    scanner = update.Scanner(recipe_folder, packages,
                              cache and cache + "_scan.pkl",
                              max_inflight=parallel,
                              status_fn=recipe_status)
     if not ignore_blacklists:
-        scanner.add(update.ExcludeBlacklisted)
+        scanner.add(update.ExcludeBlacklisted, config)
     if exclude_subrecipes != "never":
         scanner.add(update.ExcludeSubrecipe,
                     always=exclude_subrecipes == "always")

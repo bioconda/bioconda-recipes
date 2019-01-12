@@ -118,15 +118,8 @@ class Scanner():
     USER_AGENT = "bioconda/bioconda-utils"
 
     def __init__(self, recipe_folder: str, packages: List[str],
-                 config: str, cache_fn: str = None, max_inflight: int = 100,
+                 cache_fn: str = None, max_inflight: int = 100,
                  status_fn: str = None) -> None:
-        with open(config, "r") as config_file:
-            #: config
-            self.config = yaml.load(config_file)
-            self.config['blacklists'] = [
-                os.path.join(os.path.dirname(config), bl)
-                for bl in self.config['blacklists']
-            ]
         #: folder containing recipes
         self.recipe_folder: str = recipe_folder
         #: glob expressions
@@ -429,11 +422,13 @@ class ExcludeBlacklisted(Filter):
         template = "is blacklisted"
         level = logging.DEBUG
 
-    def __init__(self, scanner):
+    def __init__(self, scanner, config_fn: str) -> None:
         super().__init__(scanner)
-        self.blacklisted = utils.get_blacklist(
-            scanner.config["blacklists"],
-            scanner.recipe_folder)
+        with open(config_fn, "r") as config_fdes:
+            config = yaml.load(config_fdes)
+        blacklists = [os.path.join(os.path.dirname(config_fn), bl)
+                      for bl in config['blacklists']]
+        self.blacklisted = utils.get_blacklist(blacklists, scanner.recipe_folder)
         logger.warning("Excluding %i blacklisted recipes", len(self.blacklisted))
 
     async def apply(self, recipe):
