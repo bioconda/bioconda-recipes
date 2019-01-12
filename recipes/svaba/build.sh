@@ -9,6 +9,6 @@ cd ..
 export C_INCLUDE_PATH=$PREFIX/include
 export LIBRARY_PATH=$PREFIX/lib
 
-./configure
+./configure --prefix=$PREFIX
 make
 make install
