@@ -22,6 +22,7 @@ except ModuleNotFoundError:
     from ruamel_yaml.constructor import DuplicateKeyError
 
 from . import utils
+from .async import EndProcessingItem
 
 
 yaml = YAML(typ="rt")  # pylint: disable=invalid-name
@@ -35,28 +36,8 @@ for digit in '0123456789':
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-class RecipeError(Exception):
-    """Raised to indicate processing of Recipe failed"""
-    __slots__ = ['recipe', 'args']
-    template = "broken: %s"
-    level = logging.INFO
-
-    def __init__(self, recipe: "Recipe", *args) -> None:
-        super().__init__(recipe, *args)
-        self.recipe = recipe
-        self.args = args
-
-    def log(self, uselogger=logger, level=None):
-        """Print message using provided logging func"""
-        if not level:
-            level = self.level
-        uselogger.log(level, "Recipe %s " + self.template, self.recipe, *self.args)
-
-    @property
-    def name(self):
-        """Class name of RecipeError"""
-        return self.__class__.__name__
-
+class RecipeError(EndProcessingItem):
+    pass
 
 class Recipe():
     """Represents a recipe (meta.yaml) in editable form
