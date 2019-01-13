@@ -836,9 +836,16 @@ def autobump(recipe_folder, config, packages='*', cache=None,
     if git_handler:
         git_handler.close()
 
+@arg('--loglevel', default='info', help='Log level')
+@arg("--port", default=8080, help='Set the port number to run on')
+def run_bot(loglevel='info', port=8080):
+    """Launches the Bioconda bot app locally"""
+    utils.setup_logger('bioconda_utils', loglevel)
+    from . import bot
+    bot.run_app(port)
 
 def main():
     argh.dispatch_commands([
         build, dag, dependent, lint, duplicates, update_pinning,
-        bioconductor_skeleton, clean_cran_skeleton, autobump
+        bioconductor_skeleton, clean_cran_skeleton, autobump, run_bot
     ])
