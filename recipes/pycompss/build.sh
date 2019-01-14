@@ -21,7 +21,9 @@ export CXX_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 
 export CXXFLAGS="-DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
-export LDFLAGS="-L${BOOST_LIBRARY_DIR} ${LIBS}"
+export LDFLAGS="-L${BOOST_LIBRARY_DIR} -L$PREFIX/lib ${LIBS}"
+
+export CFLAGS="-I$PREFIX/include"
 
 # Make sure only Python3 bindings are installed to not
 # accidentally hit /usr/bin/python2 from the base image
