@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ppiData_0.16.0.tar.gz"
+FN="ppiData_0.18.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/experiment/src/contrib/ppiData_0.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ppiData_0.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ppidata/bioconductor-ppidata_0.16.0_src_all.tar.gz"
+  "http://bioconductor.org/packages/3.7/data/experiment/src/contrib/ppiData_0.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ppiData_0.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ppidata/bioconductor-ppidata_0.18.0_src_all.tar.gz"
 )
-MD5="9f3e9e544de3c60739e33c77c110f4ea"
+MD5="277d47ac92b8255e643f3b155d7a9d9d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

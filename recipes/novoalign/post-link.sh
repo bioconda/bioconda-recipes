@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e -o pipefail
-
 MSGS=$PREFIX/.messages.txt
 touch $MSGS
 
@@ -26,5 +24,5 @@ msg '---------------------------------------------------------------------------
 # They made an exception for Bioconda (and Homebrew), with the condition that
 # each user installation through Bioconda trigger an access to Novocraft's website,
 # so they can track commercial users.
-curl --silent -L http://www.novocraft.com/bioconda/license.txt >> $MSGS 2>&1
+curl --fail --silent -L http://www.novocraft.com/bioconda/license.txt >> $MSGS 2>&1
 msg '======================== End of novoalign information ======================================'

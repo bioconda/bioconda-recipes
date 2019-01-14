@@ -12,7 +12,7 @@ set -u
 source .circleci/common.sh
 
 # Set path
-echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> $BASH_ENV
+echo "export PATH=\"$WORKSPACE/miniconda/bin:$PATH\"" >> $BASH_ENV
 source $BASH_ENV
 
 # Make sure the CircleCI config is up to date.
@@ -31,7 +31,7 @@ fi
 git remote remove $UPSTREAM_REMOTE
 
 
-if ! type bioconda-utils > /dev/null || [[ $BOOTSTRAP == "true" ]]; then
+if ! type bioconda-utils 2> /dev/null || [[ $BOOTSTRAP == "true" ]]; then
     echo "Setting up bioconda-utils..."
 
     # setup conda and bioconda-utils if not loaded from cache
@@ -51,15 +51,16 @@ if ! type bioconda-utils > /dev/null || [[ $BOOTSTRAP == "true" ]]; then
 
     # step 2: setup channels
     $WORKSPACE/miniconda/bin/conda config --system --add channels defaults
-    $WORKSPACE/miniconda/bin/conda config --system --add channels conda-forge
     $WORKSPACE/miniconda/bin/conda config --system --add channels bioconda
+    $WORKSPACE/miniconda/bin/conda config --system --add channels conda-forge
 
     # step 3: install bioconda-utils
     $WORKSPACE/miniconda/bin/conda install -y git pip --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements.txt
     $WORKSPACE/miniconda/bin/pip install git+https://github.com/bioconda/bioconda-utils.git@$BIOCONDA_UTILS_TAG
 
     # step 4: configure local channel
-    $WORKSPACE/miniconda/bin/conda index $WORKSPACE/miniconda/conda-bld/linux-64 $WORKSPACE/miniconda/conda-bld/osx-64 $WORKSPACE/miniconda/conda-bld/noarch
+    mkdir -p $WORKSPACE/miniconda/conda-bld/{noarch,linux-64,osx-64}
+    $WORKSPACE/miniconda/bin/conda index $WORKSPACE/miniconda/conda-bld
     $WORKSPACE/miniconda/bin/conda config --system --add channels file://$WORKSPACE/miniconda/conda-bld
 
     # step 5: cleanup

@@ -1,6 +1,6 @@
-{% set version = "2.34.0" %}
+{% set version = "2.36.0" %}
 {% set name = "ACME" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,22 +8,26 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 2644d22e9892b6e0d7fcecfd9fddbefcfa502306be195ff3559f4e5ab867fad8
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 68f30578cc39397ebe5d1d4cd0d46daa4a1d99af0d15b78abb9bd777369a3227
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
-    - 'bioconductor-biobase >=2.5.5'
-    - bioconductor-biocgenerics
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
     - r-base
   run:
-    - 'bioconductor-biobase >=2.5.5'
-    - bioconductor-biocgenerics
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'

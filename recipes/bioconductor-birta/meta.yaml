@@ -1,6 +1,6 @@
-{% set version = "1.22.0" %}
+{% set version = "1.24.0" %}
 {% set name = "birta" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,24 +8,29 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 904f9543c80b054efe3c5c472b955e86ca2d7eb821cb3fad2d5f20cb5a7c8dff
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 7bb2ddab319fc6d155912eb285acb1258f7842d030965ee2267b2937546cdcc0
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
-    - bioconductor-biobase
-    - bioconductor-limma
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-limma >=3.36.5,<3.38.0'
     - r-base
     - r-mass
   run:
-    - bioconductor-biobase
-    - bioconductor-limma
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-limma >=3.36.5,<3.38.0'
     - r-base
     - r-mass
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -33,7 +38,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Expression levels of mRNA molecules are regulated by different processes, comprising inhibition or activation by transcription factors and post-transcriptional degradation by microRNAs. birta (Bayesian Inference of Regulation of Transcriptional Activity) uses the regulatory networks of TFs and miRNAs together with mRNA and miRNA expression data to predict switches in regulatory activity between two conditions. A Bayesian network is used to model the regulatory structure and Markov-Chain-Monte-Carlo is applied to sample the activity states.'
-
 extra:
   identifiers:
     - biotools:birta
