@@ -23,8 +23,13 @@ export CPP_INCLUDE_PATH=${PREFIX}/include
 export CXXFLAGS="-DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
 export LDFLAGS="-L${BOOST_LIBRARY_DIR} ${LIBS}"
 
+# Make sure only Python3 bindings are installed to not
+# accidentally hit /usr/bin/python2 from the base image
+sed -i 's,Bindings/python false,Bindings/python false false 3,' install
+
 # Run the COMPSs install script
-./install
+./install ${PREFIX}
 
 # TODO: Set up equivalent of /etc/profile.d/compss.sh
 # in ./etc/conda/activate.d
+
