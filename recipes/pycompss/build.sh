@@ -25,7 +25,7 @@ export LDFLAGS="-L${BOOST_LIBRARY_DIR} ${LIBS}"
 
 # Make sure only Python3 bindings are installed to not
 # accidentally hit /usr/bin/python2 from the base image
-sed -i 's,Bindings/python false,Bindings/python false false 3,' install
+sed -i 's,Bindings/python false,Bindings/python false false python3,' install
 
 # Run the COMPSs install script
 ./install ${PREFIX}
