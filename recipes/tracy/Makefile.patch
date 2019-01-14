@@ -1,7 +1,7 @@
-diff --git a/a/Makefile b/b/Makefile
-index be6fabb6d..5f6be1209 100644
---- a/a/Makefile
-+++ b/b/Makefile
+diff --git a/Makefile b/Makefile
+index 3b5b3fc..c91137d 100644
+--- a/Makefile
++++ b/Makefile
 @@ -1,74 +1,23 @@
  DEBUG ?= 0
  STATIC ?= 0
@@ -10,7 +10,7 @@ index be6fabb6d..5f6be1209 100644
 -PWD = $(shell pwd)
 -SDSL_ROOT ?= ${PWD}/src/sdslLite/
 -EBROOTHTSLIB ?= ${PWD}/src/htslib/
--JSONLIB ?= ${PWD}/src/nlohmann/
+-JLIB ?= ${PWD}/src/jlib/
 -
 -# Install dir
 -prefix = ${PWD}
@@ -19,9 +19,9 @@ index be6fabb6d..5f6be1209 100644
 -
  # Flags
 -CXX=g++
--CXXFLAGS += -std=c++11 -isystem ${JSONLIB} -isystem ${EBROOTHTSLIB} -isystem ${SDSL_ROOT}/include -pedantic -W -Wall -fvisibility=hidden
+-CXXFLAGS += -std=c++11 -isystem ${JLIB} -isystem ${EBROOTHTSLIB} -isystem ${SDSL_ROOT}/include -pedantic -W -Wall -fvisibility=hidden
 -LDFLAGS += -L${SDSL_ROOT}/lib -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time -lsdsl -ldivsufsort -ldivsufsort64 -ldl -L${EBROOTHTSLIB} -L${EBROOTHTSLIB}/lib -lpthread
-+CXXFLAGS += -std=c++11 -isystem ${PREFIX} -isystem ${BOOST_ROOT} -isystem ${PREFIX}/nlohmann/ -pedantic -W -Wall -Wno-unknown-pragmas -D__STDC_LIMIT_MACROS -fno-strict-aliasing
++CXXFLAGS += -std=c++11 -isystem ${PREFIX} -isystem ${BOOST_ROOT} -pedantic -W -Wall -Wno-unknown-pragmas -D__STDC_LIMIT_MACROS -fno-strict-aliasing
 +LDFLAGS += -L${PREFIX}/lib -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time -lsdsl -ldivsufsort -ldivsufsort64 -ldl
  
 -ifeq (${STATIC}, 1)
@@ -46,7 +46,7 @@ index be6fabb6d..5f6be1209 100644
 +LDFLAGS += -lhts -lz -llzma -lbz2
 +CXXFLAGS += -O3 -fno-tree-vectorize -DNDEBUG
  
- 
+-
 -# External sources
 -SDSLSOURCES = $(wildcard src/sdsl/lib/*.cpp)
  TRACYSOURCES = $(wildcard src/*.cpp) $(wildcard src/*.h)
@@ -81,6 +81,6 @@ index be6fabb6d..5f6be1209 100644
 -
 -distclean: clean
 -	rm -f ${BUILT_PROGRAMS}
--
--.PHONY: clean distclean install all
 +	rm -f $(TARGETS) $(TARGETS:=.o)
+ 
+-.PHONY: clean distclean install all
