@@ -652,6 +652,8 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
     Updates recipes in recipe_folder
     """
     utils.setup_logger('bioconda_utils', loglevel)
+    # load an register config
+    utils.load_config(config)
     from . import update
     from . import githandler
     from . import githubhandler

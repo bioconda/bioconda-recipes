@@ -2,14 +2,14 @@ import os
 import os.path as op
 from collections import defaultdict
 from jinja2.sandbox import SandboxedEnvironment
-from bioconda_utils.utils import RepoData
+from bioconda_utils.utils import RepoData, load_config
 from sphinx.util import logging as sphinx_logging
 from sphinx.util import status_iterator
 from sphinx.util.parallel import ParallelTasks, parallel_available, make_chunks
 from sphinx.util.rst import escape as rst_escape
 from sphinx.util.osutil import ensuredir
 from sphinx.jinja2glue import BuiltinTemplateLoader
-from distutils.version import LooseVersion
+from conda.exports import VersionOrder
 
 # Aquire a logger
 try:
@@ -157,10 +157,9 @@ def generate_readme(folder, repodata, renderer):
             # Not a folder
             continue
         try:
-            LooseVersion(sf)
-        except ValueError:
-            logger.error("'{}' does not look like a proper version!"
-                         "".format(sf))
+            VersionOrder(sf)
+        except e:
+            logger.error(str(e))
             continue
         versions.append(sf)
 
@@ -184,13 +183,15 @@ def generate_readme(folder, repodata, renderer):
 
     name = metadata.name()
     versions_in_channel = repodata.get_versions(name)
+    sorted_versions = sorted(versions_in_channel.keys(), key=VersionOrder, reverse=True)
+
 
     # Format the README
     template_options = {
         'name': name,
         'about': (metadata.get_section('about') or {}),
         'extra': (metadata.get_section('extra') or {}),
-        'versions': versions_in_channel,
+        'versions': sorted_versions,
         'gh_recipes': 'https://github.com/bioconda/bioconda-recipes/tree/master/recipes/',
         'recipe_path': op.dirname(op.relpath(metadata.meta_path, RECIPE_DIR)),
         'Package': '<a href="recipes/{0}/README.html">{0}</a>'.format(name)
@@ -202,7 +203,8 @@ def generate_readme(folder, repodata, renderer):
         template_options)
 
     recipes = []
-    for version, version_info in sorted(versions_in_channel.items()):
+    for version in sorted_versions:
+        version_info = versions_in_channel[version]
         t = template_options.copy()
         t.update({
             'Linux': '<i class="fa fa-linux"></i>' if 'linux' in version_info else '',
@@ -220,6 +222,7 @@ def generate_recipes(app):
     the collected data.
     """
     renderer = Renderer(app)
+    load_config(os.path.join(os.path.dirname(__file__), "config.yaml"))
     repodata = RepoData()
     recipes = []
     recipe_dirs = os.listdir(RECIPE_DIR)
