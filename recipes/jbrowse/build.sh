@@ -10,6 +10,10 @@ chmod a+x $PREFIX/etc/conda/deactivate.d/jbrowse-sourcedir.sh
 
 cd $SRC_DIR
 
+./setup.sh
+
+cat setup.log
+
 mkdir -p $PREFIX/bin/
 cp bin/*.pl $PREFIX/bin/
 chmod a+x $PREFIX/bin/*.pl
