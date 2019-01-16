@@ -1,3 +1,7 @@
 #!/bin/bash
-sed -i.bak 's/==/>=/' requirements.txt
-$PYTHON setup.py install --single-version-externally-managed --root=/
+
+set -eu -o pipefail
+
+#sed -i.bak 's/==/>=/' requirements.txt
+$PYTHON -m pip install . --no-deps --ignore-installed -vv 
+
