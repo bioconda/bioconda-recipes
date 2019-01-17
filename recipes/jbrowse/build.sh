@@ -10,10 +10,20 @@ chmod a+x $PREFIX/etc/conda/deactivate.d/jbrowse-sourcedir.sh
 
 cd $SRC_DIR
 
+# Doing a full setup as we need to include some plugins, because it's not possible yet to load them at runtime
+# See https://github.com/GMOD/jbrowse/issues/1288
+# When/If this issue is fixed, we should get back to a quicker install from pre-compiled package:
+# see https://github.com/bioconda/bioconda-recipes/tree/a2fc63ddb0a762e49c22255ff6916d7704ebd65c/recipes/jbrowse
+
 # Add BlastView plugin
 git clone https://github.com/TAMU-CPT/blastview.git plugins/BlastView/
 echo "[ plugins.BlastView ]" >> jbrowse.conf
 echo "location = ../plugin/BlastView/" >> jbrowse.conf
+
+# Add GCContent plugin
+git clone https://github.com/elsiklab/gccontent.git plugins/GCContent/
+echo "[ plugins.GCContent ]" >> jbrowse.conf
+echo "location = ../plugin/GCContent/" >> jbrowse.conf
 
 ./setup.sh
 rm -rf node_modules/ browser/ build/ css/ extlib/ src/ tests/ utils/ website/ setup.log
