@@ -11,8 +11,7 @@ chmod a+x $PREFIX/etc/conda/deactivate.d/jbrowse-sourcedir.sh
 cd $SRC_DIR
 
 ./setup.sh
-
-cat setup.log
+rm -rf node_modules/ browser/ build/ css/ extlib/ src/ tests/ utils/ website/ setup.log
 
 mkdir -p $PREFIX/bin/
 cp bin/*.pl $PREFIX/bin/
