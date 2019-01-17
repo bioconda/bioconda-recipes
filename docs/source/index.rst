@@ -91,7 +91,10 @@ found in the `defaults` channel.
 
     conda config --add channels defaults
     conda config --add channels bioconda
+    conda config --add channels conda-forge/label/cf201901
     conda config --add channels conda-forge
+
+Note that the channel ``conda-forge/label/cf201901`` is meant as a fallback that is temporally needed, until all bioconda packages have been updated to work with the new default compiler toolchain of conda and conda-forge, which was switched to GCC 7 in January 2019.
 
 3. Install packages
 -------------------
