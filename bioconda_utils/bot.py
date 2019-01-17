@@ -72,12 +72,19 @@ class TokenManager:
             }
             token_utf8 = jwt.encode(payload, self.app_key, algorithm="RS256")
             self._jwt = token_utf8.decode("utf-8")
+            logger.info("Created new JWT valid for %i minutes", self.jwt_period)
+        else:
+            logger.info("Reusing JWT valid for %i minutes",
+                        (self._jwt_expires - now)/60)
         return self._jwt
 
     async def get_auth_token(self, event):
         installation_id = event.data['installation']['id']
         expires, token = self.installation_tokens.get(installation_id, (0, ''))
-        if expires and expires < int(time.time()) - 60:
+        now = int(time.time())
+        if expires and expires < now - 60:
+            logger.info("Using token for %i valid for %i minutes",
+                        installation_id, (expires - now)/60)
             return token
 
         try:
@@ -95,6 +102,9 @@ class TokenManager:
         expires = time.mktime(time.strptime(res['expires_at'][:-1], "%Y-%m-%dT%H:%M:%S"))
         token = res['token']
         self.installation_tokens[installation_id] = (expires, token)
+        logger.info("Create new token for %i valid for %i minutes",
+                    installation_id, (expires - now)/60)
+
         return token
 
     async def get_github_api(self, event):
