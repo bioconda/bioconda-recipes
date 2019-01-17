@@ -7,6 +7,6 @@ export BOOST_ROOT="${PREFIX}"
   --disable-perl \
   --disable-doxygen-doc
 
-make -j
-make check
+make -j V=1
+make check V=1
 make install
