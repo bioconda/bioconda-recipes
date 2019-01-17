@@ -2,14 +2,18 @@
 
 import abc
 import logging
+import time
 
 from copy import copy
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
+import aiohttp
+import cachetools
 import gidgethub
 import gidgethub.aiohttp
-import aiohttp
+import gidgethub.sansio
+import jwt
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -30,7 +34,9 @@ class GitHubHandler:
     """
     PULLS = "/repos/{user}/{repo}/pulls{/number}{?head,base,state}"
     ISSUES = "/repos/{user}/{repo}/issues{/number}"
+    COMMENTS = "/repos/{user}/{repo}/issues/{number}/comments"
     ORG_MEMBERS = "/orgs/{user}/members{/username}"
+
 
     STATE = IssueState
 
@@ -46,6 +52,15 @@ class GitHubHandler:
         # filled in by login():
         self.api: gidgethub.abc.GitHubAPI = None
         self.username: str = None
+
+    @property
+    def rate_limit(self) -> gidgethub.sansio.RateLimit:
+        """Last recorded rate limit data"""
+        return self.api.rate_limit
+
+    def set_oauth_token(self, token: str) -> None:
+        """Update oauth token for the wrapped GitHubAPI object"""
+        self.api.oauth_token = token
 
     @abc.abstractmethod
     def create_api_object(self, *args, **kwargs):
@@ -188,6 +203,25 @@ class GitHubHandler:
         logger.info("Modifying PR %s", number)
         return await self.api.patch(self.ISSUES, var_data, data=data)
 
+    async def create_comment(self, number: int, body: str) -> int:
+        """Create issue comment
+
+        Arguments:
+          number: Issue number
+          body: Comment content
+        """
+        var_data = copy(self.var_default)
+        var_data["number"] = str(number)
+        data = {
+            'body': body
+        }
+        if self.dry_run:
+            logger.info("Would create comment on issue #%i", number)
+            return -1
+        logger.info("Creating comment on issue #%i", number)
+        res = await self.api.post(self.COMMENTS, var_data, data=data)
+        return res['id']
+
 
 class AiohttpGitHubHandler(GitHubHandler):
     """GitHubHandler using Aiohttp for HTTP requests
@@ -201,3 +235,127 @@ class AiohttpGitHubHandler(GitHubHandler):
         self.api = gidgethub.aiohttp.GitHubAPI(
             session, requester, oauth_token=self.token
         )
+
+
+class Event(gidgethub.sansio.Event):
+    """Adds **get(path)** method to Github Webhook event"""
+    def get(self, path: str) -> str:
+        """Get subkeys from even data using slash separated path"""
+        data = self.data
+        try:
+            for item in path.split("/"):
+                data = data[item]
+        except KeyError:
+            raise KeyError(f"No '{path}' in event type {self.event}") from None
+        return data
+
+
+class GitHubAppHandler:
+    """Handles interaction with Github as App"""
+
+    #: Github API url for creating an access token for a specific installation
+    #: of an app.
+    INSTALLATION_TOKEN = "/app/installations/{installation_id}/access_tokens"
+
+    #: Lifetime of JWT in seconds
+    JWT_RENEW_PERIOD = 600
+
+    def __init__(self, session: aiohttp.ClientSession,
+                 app_name: str, app_key: str, app_id: str) -> None:
+        #: Name of app
+        self.name = app_name
+
+        #: Our client session
+        self._session = session
+        #: Cache for GET queries
+        self._cache = cachetools.LRUCache(maxsize=500)
+        #: Authorization key
+        self._app_key = app_key
+        #: ID of app
+        self._app_id = app_id
+        #: JWT and its expiry
+        self._jwt: Tuple[int, str] = (0, "")
+        #: OAUTH tokens for installations
+        self._tokens: Dict[str, Tuple[int, str]] = {}
+        #: GitHubHandlers for each installation
+        self._handlers: Dict[Tuple[str, str], GitHubHandler] = {}
+
+        # Failing early is best - check that we can generate a JWT
+        self.get_app_jwt()
+
+    def get_app_jwt(self) -> str:
+        """Returns JWT authenticating as this app"""
+        now = int(time.time())
+        expires, token = self._jwt
+        if not expires or expires < now + 60:
+            expires = now + self.JWT_RENEW_PERIOD
+            payload = {
+                'iat': now,
+                'exp': expires,
+                'iss': self._app_id,
+            }
+            token_utf8 = jwt.encode(payload, self._app_key, algorithm="RS256")
+            token = token_utf8.decode("utf-8")
+            self._jwt = (expires, token)
+            msg = "Created new"
+        else:
+            msg = "Reusing"
+
+        logger.info("%s JWT valid for %i minutes", msg, (expires - now)/60)
+        return token
+
+    @staticmethod
+    def parse_isotime(timestr: str) -> int:
+        """Converts UTC ISO 8601 time stamp to seconds in epoch"""
+        if timestr[-1] != 'Z':
+            raise ValueError(f"Time String '%s' not in UTC")
+        return int(time.mktime(time.strptime(timestr[:-1], "%Y-%m-%dT%H:%M:%S")))
+
+    async def get_installation_token(self, event: Event) -> str:
+        """Returns OAUTH token for installation referenced in **event**"""
+        installation = event.get('installation/id')
+        now = int(time.time())
+        expires, token = self._tokens.get(installation, (0, ''))
+        if not expires or expires < now + 60:
+            api = gidgethub.aiohttp.GitHubAPI(self._session, self.name)
+            try:
+                res = await api.post(
+                    self.INSTALLATION_TOKEN,
+                    {'installation_id': installation},
+                    data=b"",
+                    accept="application/vnd.github.machine-man-preview+json",
+                    jwt=self.get_app_jwt()
+                )
+            except gidgethub.BadRequest:
+                logger.exception("Failed to get installation token for %s",
+                                 event.get('installation'))
+                raise
+
+            expires = self.parse_isotime(res['expires_at'])
+            token = res['token']
+            self._tokens[installation] = (expires, token)
+            msg = "Created new"
+        else:
+            msg = "Reusing"
+
+        logger.info("%s token for %i valid for %i minutes",
+                    msg, installation, (expires - now)/60)
+        return token
+
+    async def get_github_api(self, event: Event) -> GitHubHandler:
+        """Returns the GitHubHandler for the installation the event came from"""
+        installation = event.get('installation/id')
+        user = event.get('repository/owner/login')
+        repo = event.get('repository/name')
+        handler_key = (installation, repo)
+        api = self._handlers.get(handler_key)
+        if api:
+            # update oauth token (ours expire)
+            api.set_oauth_token(await self.get_installation_token(event))
+        else:
+            api = AiohttpGitHubHandler(
+                await self.get_installation_token(event),
+                to_user=user, to_repo=repo, dry_run=False)
+            api.create_api_object(self._session, self.name)
+            self._handlers[handler_key] = api
+        return api
