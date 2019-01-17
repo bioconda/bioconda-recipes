@@ -5,8 +5,7 @@ export BOOST_ROOT="${PREFIX}"
 ./configure \
   --prefix=${PREFIX} \
   --disable-perl \
-  --disable-doxygen-doc \
-  --disable-program
+  --disable-doxygen-doc
 
 make -j
 make check
