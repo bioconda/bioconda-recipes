@@ -76,19 +76,6 @@ def tqdm(*args, **kwargs):
     return _tqdm.tqdm(*args, **kwargs)
 
 
-log_stream_handler = TqdmHandler()
-log_stream_handler.setFormatter(ColoredFormatter(
-        "%(asctime)s %(log_color)sBIOCONDA %(levelname)s%(reset)s %(message)s",
-        datefmt="%H:%M:%S",
-        reset=True,
-        log_colors={
-            'DEBUG': 'cyan',
-            'INFO': 'green',
-            'WARNING': 'yellow',
-            'ERROR': 'red',
-            'CRITICAL': 'red',
-        }))
-
 
 def ensure_list(obj):
     """Wraps **obj** in a list if necessary
@@ -137,12 +124,28 @@ def wraps(func):
     return wrapper_wrapper
 
 
-
-def setup_logger(name, loglevel=None):
+def setup_logger(name, loglevel=None, prefix="BIOCONDA ",
+                 msgfmt=("%(asctime)s"
+                         "%(log_color)s{prefix}%(levelname)s%(reset)s "
+                         "%(message)s"),
+                 datefmt="%H:%M:%S "):
     logger = logging.getLogger(name)
     logger.propagate = False
     if loglevel:
         logger.setLevel(getattr(logging, loglevel.upper()))
+
+    log_stream_handler = TqdmHandler()
+    log_stream_handler.setFormatter(ColoredFormatter(
+        msgfmt.format(prefix=prefix),
+        datefmt=datefmt,
+        reset=True,
+        log_colors={
+            'DEBUG': 'cyan',
+            'INFO': 'green',
+            'WARNING': 'yellow',
+            'ERROR': 'red',
+            'CRITICAL': 'red',
+        }))
     logger.addHandler(log_stream_handler)
     return logger
 
