@@ -10,6 +10,11 @@ chmod a+x $PREFIX/etc/conda/deactivate.d/jbrowse-sourcedir.sh
 
 cd $SRC_DIR
 
+# Add BlastView plugin
+git clone https://github.com/TAMU-CPT/blastview.git plugins/BlastView/
+echo "[ plugins.BlastView ]" >> jbrowse.conf
+echo "location = ../plugin/BlastView/" >> jbrowse.conf
+
 ./setup.sh
 rm -rf node_modules/ browser/ build/ css/ extlib/ src/ tests/ utils/ website/ setup.log
 
