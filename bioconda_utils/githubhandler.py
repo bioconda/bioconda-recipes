@@ -37,7 +37,7 @@ class GitHubHandler:
     def __init__(self, token: str,
                  dry_run: bool = False,
                  to_user: str = "bioconda",
-                 to_repo: str = "bioconnda-recipes") -> None:
+                 to_repo: str = "bioconda-recipes") -> None:
         self.token = token
         self.dry_run = dry_run
         self.var_default = {'user': to_user,
