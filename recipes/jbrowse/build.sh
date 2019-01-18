@@ -25,6 +25,21 @@ git clone https://github.com/elsiklab/gccontent.git plugins/GCContent/
 echo "[ plugins.GCContent ]" >> jbrowse.conf
 echo "location = ../plugin/GCContent/" >> jbrowse.conf
 
+# Add ComboTrackSelector plugin
+git clone https://github.com/Arabidopsis-Information-Portal/ComboTrackSelector.git plugins/ComboTrackSelector/
+echo "[ plugins.ComboTrackSelector ]" >> jbrowse.conf
+echo "location = ../plugin/ComboTrackSelector/" >> jbrowse.conf
+
+# Add MultiBigWig plugin
+git clone https://github.com/elsiklab/multibigwig.git plugins/MultiBigWig/
+echo "[ plugins.MultiBigWig ]" >> jbrowse.conf
+echo "location = ../plugin/MultiBigWig/" >> jbrowse.conf
+
+# Add bookmarks plugin
+git clone https://github.com/TAMU-CPT/bookmarks-jbrowse.git plugins/bookmarks/
+echo "[ plugins.bookmarks ]" >> jbrowse.conf
+echo "location = ../plugin/bookmarks/" >> jbrowse.conf
+
 ./setup.sh
 rm -rf node_modules/ browser/ build/ css/ extlib/ src/ tests/ utils/ website/ setup.log
 
