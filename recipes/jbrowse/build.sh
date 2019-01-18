@@ -44,7 +44,10 @@ echo "location = ../plugin/bookmarks/" >> jbrowse.conf
 export HOME=/tmp
 
 ./setup.sh
-rm -rf node_modules/ browser/ build/ css/ extlib/ src/ tests/ utils/ website/ setup.log
+
+# Remove temp dirs
+rm -rf node_modules/ browser/ build/ css/ extlib/ tests/ utils/ website/ setup.log
+rm -rf plugins/BlastView plugins/GCContent/ plugins/ComboTrackSelector/ plugins/MultiBigWig/ plugins/bookmarks/
 
 mkdir -p $PREFIX/bin/
 cp bin/*.pl $PREFIX/bin/
