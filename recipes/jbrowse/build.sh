@@ -40,6 +40,9 @@ git clone https://github.com/TAMU-CPT/bookmarks-jbrowse.git plugins/bookmarks/
 echo "[ plugins.bookmarks ]" >> jbrowse.conf
 echo "location = ../plugin/bookmarks/" >> jbrowse.conf
 
+# For cpanm on osx
+export HOME=/tmp
+
 ./setup.sh
 rm -rf node_modules/ browser/ build/ css/ extlib/ src/ tests/ utils/ website/ setup.log
 
