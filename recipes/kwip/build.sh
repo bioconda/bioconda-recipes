@@ -10,5 +10,5 @@ cd $SRC_DIR
 mkdir build && cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=${BINARY_HOME}
 make
-ctest --verbose
+ctest
 make install
