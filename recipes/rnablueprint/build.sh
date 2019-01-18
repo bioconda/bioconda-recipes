@@ -8,5 +8,5 @@ export BOOST_ROOT="${PREFIX}"
   --disable-doxygen-doc
 
 make -j
-make check -j
+make check
 make install
