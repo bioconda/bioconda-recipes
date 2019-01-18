@@ -2,10 +2,13 @@
 
 import logging
 import os
+import subprocess
+import time
 from typing import Dict, Callable
 
 import aiohttp
 from aiohttp import web
+from celery import Celery
 import gidgethub.routing
 
 from . import utils
@@ -16,9 +19,33 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 event_routes = gidgethub.routing.Router()  # pylint: disable=invalid-name
 web_routes = web.RouteTableDef()  # pylint: disable=invalid-name
+celery = Celery()  # pylint: disable=invalid-name
+
+# Celery must be configured at module level to catch worker as well
+# Settings are suggestions from CloudAMPQ
+celery.conf.update(
+    broker_url=os.environ.get('CLOUDAMQP_URL'),
+    broker_pool_limit=2,  # need two so we can inspect
+    broker_heartbeat=None,
+    broker_connection_timeout=30,
+    result_backend=None,
+    event_queue_expires=60,
+    worker_prefetch_multiplier=1,
+    worker_concurrency=1
+)
 
 
-BOT_NAME = "BiocondaBot"
+BOT_NAME = "Bioconda-Bot"
+
+
+@celery.task(acks_late=True)
+def sleep(seconds, msg):
+    """Demo task that just sleeps for a given number of seconds"""
+    logger.info("Sleeping for %i seconds: %s", seconds, msg)
+    for second in range(seconds):
+        time.sleep(1)
+        logger.info("Slept for %i seconds: %s", second, msg)
+    logger.info("Waking: %s", msg)
 
 
 class CommandDispatch:
@@ -49,6 +76,11 @@ async def hello_to_you(event, ghapi):
     await ghapi.create_comment(issue_number, msg)
 
 
+@command_routes.register("sleep")
+async def schedule_sleep(event, ghapi, *args):
+    """Another demo command. This one triggers the sleep task via celery"""
+    sleep.apply_async((20, args[0]))
+
 @event_routes.register("issue_comment", action="created")
 async def comment_created(event, ghapi, *args, **_kwargs):
     """Dispatches @bioconda-bot commands
@@ -59,9 +91,12 @@ async def comment_created(event, ghapi, *args, **_kwargs):
     commands = [
         line.lower().split()[1:]
         for line in event.data['comment']['body'].splitlines()
-        if line.startswith(f'@{BOT_NAME} ')
+        if line.startswith(f'@{BOT_NAME.lower()} ')
     ]
+    if not commands:
+        logger.info("No command in comment")
     for cmd, *args in commands:
+        logger.info("Dispatching %s - %s", cmd, args)
         await command_routes.dispatch(cmd, event, ghapi, *args)
 
 
@@ -107,15 +142,59 @@ async def show_status(request):
     This is rendered at eg https://bioconda.herokuapps.com/
     """
     try:
+        logger.info("Status: getting celery data")
         msg = f"""
         Running version {VERSION}
 
         {request.app.get('gh_rate_limit')}
+
         """
+        worker_status = celery.control.inspect(timeout=0.1)
+        for worker in worker_status.ping().keys():
+            active = worker_status.active(worker)
+            reserved = worker_status.reserved(worker)
+            msg += f"""
+            Worker: {worker}
+            active: {len(active[worker])}
+            queued: {len(reserved[worker])}
+            """
+
         return web.Response(text=msg)
     except Exception:  # pylint: disable=broad-except
         logger.exception("Failure in show status")
         return web.Response(status=500)
+
+
+def init_celery(app, loglevel):
+    """Launches celery worker and sets up teardown procedures"""
+    proc = subprocess.Popen([
+        'celery',
+        '-A', 'bioconda_utils.bot',
+        'worker',
+        '-l', loglevel,
+        '--without-heartbeat',
+        '-c', '1',
+    ])
+    app['celery_worker'] = proc
+    async def collect_worker(app):
+        logger.info("Terminating worker: sending shutdown")
+        celery.control.broadcast('shutdown')
+        proc = app['celery_worker']
+        wait = 10
+        if proc.poll() is None:
+            for second in range(wait):
+                logger.info("Terminating worker: waiting %i/%i", second, wait)
+                time.sleep(1)
+                if proc.poll() is not None:
+                    break
+            else:
+                logger.info("Terminating worker: failed. Sending kill signal")
+                proc.kill()
+        logger.info("Terminating worker: collecting process")
+        app['celery_worker'].wait()
+        logger.info("Terminating worker: done")
+
+    app.on_shutdown.append(collect_worker)
 
 
 async def init_app():
@@ -129,7 +208,8 @@ async def init_app():
       --reload
     """
 
-    utils.setup_logger('bioconda_utils', 'INFO', prefix="")
+    loglevel = 'INFO'
+    utils.setup_logger('bioconda_utils', loglevel, prefix="")
     logger.info("Starting bot (version=%s)", VERSION)
 
     app = web.Application()
@@ -151,6 +231,9 @@ async def init_app():
 
     # Add routes collected above
     app.add_routes(web_routes)
+
+    init_celery(app, loglevel)
+
     return app
 
 
