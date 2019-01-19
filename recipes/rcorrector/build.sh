@@ -12,4 +12,4 @@ sed -i.bak 's/CXXFLAGS=.*//' Makefile
 make
 mkdir -p $PREFIX/bin
 cp -R rcorrector run_rcorrector.pl $PREFIX/bin
-chmod -x $PREFIX/bin/run_rcorrector.pl
+chmod +x $PREFIX/bin/run_rcorrector.pl

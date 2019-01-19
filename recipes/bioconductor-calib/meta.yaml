@@ -1,6 +1,6 @@
-{% set version = "1.44.0" %}
+{% set version = "1.46.0" %}
 {% set name = "CALIB" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,20 +8,25 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: e5d5ee39cd065928595f94f5e580c71ab0cbf978f511a0186a9e01d500a7d6d8
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 5cf0010419dda41f2ea4e5e04b9edee580d491275d709ff0476febb4e2d693e2
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
-    - bioconductor-limma
+    - 'bioconductor-limma >=3.36.5,<3.38.0'
     - r-base
   run:
-    - bioconductor-limma
+    - 'bioconductor-limma >=3.36.5,<3.38.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -29,7 +34,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
   summary: 'This package contains functions for normalizing spotted microarray data, based on a physically motivated calibration model. The model parameters and error distributions are estimated from external control spikes.'
-
 extra:
   identifiers:
     - biotools:calib

@@ -1,4 +1,7 @@
-{% set version = '3.1.0' %}
+{% set version = '3.1.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-aroma.affymetrix
@@ -6,51 +9,59 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/aroma.affymetrix_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/aroma.affymetrix/aroma.affymetrix_{{ version }}.tar.gz
-  sha256: 03c0d30c2e636409d527c0d4253d792218bba133681d5d334d19350c32ae8bea
+    - {{ cran_mirror }}/src/contrib/aroma.affymetrix_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/aroma.affymetrix/aroma.affymetrix_{{ version }}.tar.gz
+  sha256: 5c896d3e6ef45d11b7e2df6dff51d07d277d565b36cb537c93ecc0bd54e354f4
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+
+  number: 0
+  skip: true  # [win32]
 
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
+  build:
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
     - r-mass
-    - r-r.cache >=0.12.0
+    - r-r.cache >=0.13.0
     - r-r.devices >=2.15.1
     - r-r.filesets >=2.11.0
     - r-r.methodss3 >=1.7.1
     - r-r.oo >=1.21.0
-    - r-r.utils >=2.5.0
+    - r-r.utils >=2.6.0
     - r-aroma.apd >=0.6.0
-    - r-aroma.core >=3.1.0
+    - r-aroma.core >=3.1.1
     - r-future
     - r-listenv
-    - r-matrixstats >=0.51.0
+    - r-matrixstats >=0.52.2
 
   run:
     - r-base
     - r-mass
-    - r-r.cache >=0.12.0
+    - r-r.cache >=0.13.0
     - r-r.devices >=2.15.1
     - r-r.filesets >=2.11.0
     - r-r.methodss3 >=1.7.1
     - r-r.oo >=1.21.0
-    - r-r.utils >=2.5.0
+    - r-r.utils >=2.6.0
     - r-aroma.apd >=0.6.0
-    - r-aroma.core >=3.1.0
+    - r-aroma.core >=3.1.1
     - r-future
     - r-listenv
-    - r-matrixstats >=0.51.0
+    - r-matrixstats >=0.52.2
 
 test:
   commands:
-    - $R -e "library('aroma.affymetrix')"
+
+    - $R -e "library('aroma.affymetrix')"           # [not win]
+    - "\"%R%\" -e \"library('aroma.affymetrix')\""  # [win]
 
 about:
   home: http://www.aroma-project.org/, https://github.com/HenrikBengtsson/aroma.affymetrix
@@ -61,3 +72,12 @@ about:
     Aroma Framework has successfully been used in studies to process tens of thousands
     of arrays.  This package has actively been used since 2006.
   license_family: LGPL
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

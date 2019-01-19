@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PFAM.db_3.5.0.tar.gz"
+FN="PFAM.db_3.6.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/PFAM.db_3.5.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/PFAM.db_3.5.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pfam.db/bioconductor-pfam.db_3.5.0_src_all.tar.gz"
+  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/PFAM.db_3.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PFAM.db_3.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pfam.db/bioconductor-pfam.db_3.6.0_src_all.tar.gz"
 )
-MD5="1f3bc8e59cabb4e481073aa7326781d2"
+MD5="84bf0f03fdf923d0be6d1c9eb18d54fb"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

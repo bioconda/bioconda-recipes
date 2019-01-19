@@ -1,3 +1,5 @@
+#!/bin/bash
+
 RM_DIR=${PREFIX}/share/RepeatMasker
 RM_OTHER_PROGRAMS="DateRepeats DupMasker ProcessRepeats RepeatProteinMask util/queryRepeatDatabase.pl util/queryTaxonomyDatabase.pl util/rmOutToGFF3.pl util/calcDivergenceFromAlign.pl util/createRepeatLandscape.pl util/dupliconToSVG.pl util/getRepeatMaskerBatch.pl util/rmOut2Fasta.pl util/trfMask util/rmToUCSCTables.pl"
 RM_PROGRAMS="RepeatMasker $RM_OTHER_PROGRAMS"
@@ -7,7 +9,7 @@ mkdir -p ${RM_DIR}
 cp -r * ${RM_DIR}
 for name in ${RM_PROGRAMS} ; do
   # sed -i 's$^#!.*perl.*$#!/usr/bin/env perl$g;' ${RM_DIR}/${name}
-  LANG=C sed -i'' -e 's/^#!.*perl.*$/#!\/usr\/bin\/env perl/g' ${RM_DIR}/${name}
+  LC_ALL=C sed -i'' -e 's/^#!.*perl.*$/#!\/usr\/bin\/env perl/g' ${RM_DIR}/${name}
 done
 
 cp ${RECIPE_DIR}/RepeatMaskerConfig.pm ${RM_DIR}/RepeatMaskerConfig.pm

@@ -1,30 +1,30 @@
 {% set name = "phame" %}
-{% set version = "1.0" %}
-{% set hash = "097eba4637aca15bd1ccb2133e875728cefd6899d0c7050f4a00d83cfa7ff01b" %}
+{% set version = "1.0.3" %}
+{% set hash = "026b5c54ff9fe121fefd222dc2f9912da34a9395a04d26f7e468aca5adcd1703" %}
 
 package:
   name: {{ name }}
-  version: "{{ version | replace('-', '_') }}"
+  version: "{{ version }}"
 
 source:
   sha256: {{ hash }}
-  # url: https://github.com/mshakya/{{ name }}/archive/{{ version }}.tar.gz
-  url: https://github.com/mshakya/PhaME-1/archive/0.4.1.tar.gz
+  url: https://github.com/mshakya/{{ name }}/archive/{{ version }}.tar.gz
 
 build:
   number: 0
-  skip: true # [osx]
+  # skip: true # [osx]
 
 requirements:
   run:
     - perl
+    - perl-statistics-distributions >=1.02
     - perl-getopt-long >=2.50
     - perl-file-path >=2.12
     - perl-io-handle >=1.35
     - perl-parallel-forkmanager >=1.17
-    - perl-statistics-distributions >=1.02
     - perl-app-cpanminus >=1.7039
     - perl-io-handle >=1.28
+    - perl-bioperl >=1.7.2
     - cmake >=3.0.1
     - bwa >=0.7.12
     - samtools >=1.7
@@ -36,31 +36,24 @@ requirements:
     - bowtie2 >=2.3.4.1
     - muscle >=3.8.31
     - paml >=4.9
-    - openmpi >=3.1.0
+    - openmpi >=3.1.0 # [not osx] 
     - curl >=7.60.0 
-    - hyphy >=2.3.12
+    - hyphy >=2.3.12 # [not osx]
     - mafft >=7.313
+    - iqtree >=1.6.7
 
 test:
   commands:
     - perl --version
     - which perl
-    - which runPhaME
-    - runPhaME -h
-    - which bwa
-    - which bcftools
-    - which samtools
-    - which bcftools
-    - which mummer
-    - which FastTree
-    - which bowtie2
-    - which muscle
+    - phame -h
+    - phame --vcheck
 
 
 about:
   home: https://github.com/LANL-Bioinformatics/PhaME
-  license: GPL2
-  summary: From raw reads to trees, Whole genome SNP phylogenetics across the tree of life
+  license: GPLV2
+  summary: A tool to derive SNP matrices and phylogenetic tree from raw reads, contigs, and full genomes.
 
 extra:
   identifiers:

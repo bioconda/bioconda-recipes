@@ -1,6 +1,10 @@
 #!/bin/bash
 set -eu
 
-mkdir -p $PREFIX/bin
-chmod a+x sambamba_v*
-cp sambamba_v* $PREFIX/bin/sambamba
+export C_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
+
+make
+make test
+mkdir -p ${PREFIX}/bin
+cp bin/sambamba ${PREFIX}/bin/sambamba

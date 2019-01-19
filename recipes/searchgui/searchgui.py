@@ -13,7 +13,8 @@ import shutil
 from os import access
 from os import getenv
 from os import X_OK
-jar_file = 'SearchGUI-3.3.3.jar'
+
+jar_file = 'SearchGUI-3.3.10.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 

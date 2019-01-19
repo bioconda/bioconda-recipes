@@ -1,4 +1,7 @@
-{% set version = '0.11' %}
+{% set version = '0.11.5' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-maldiquantforeign
@@ -6,11 +9,13 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/MALDIquantForeign_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/MALDIquantForeign/MALDIquantForeign_{{ version }}.tar.gz
-  sha256: 08fcb27e344af23d67c8a17d2a7ab4eff1862c2adbe31fa85a7b34f22d755385
+    - {{ cran_mirror }}/src/contrib/MALDIquantForeign_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/MALDIquantForeign/MALDIquantForeign_{{ version }}.tar.gz
+  sha256: 31422da4ab767132bd045c3961e54f11aa4e8e704bcbc2ccc74785095bddd863
 
 build:
+  merge_build_host: True  # [win]
+
   number: 1
 
   rpaths:
@@ -18,6 +23,9 @@ build:
     - lib/
 
 requirements:
+  build:
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
     - r-maldiquant >=1.16.4
@@ -38,7 +46,9 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('MALDIquantForeign')"
+
+    - $R -e "library('MALDIquantForeign')"           # [not win]
+    - "\"%R%\" -e \"library('MALDIquantForeign')\""  # [win]
 
 about:
   home: http://strimmerlab.org/software/maldiquant/ https://github.com/sgibb/MALDIquantForeign/
@@ -47,3 +57,12 @@ about:
     7.5, CDF, mMass MSD) and writing (tab, csv, mMass MSD, mzML, imzML) different file
     formats of mass spectrometry data into/from 'MALDIquant' objects.
   license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak
