@@ -47,7 +47,7 @@ export HOME=/tmp
 
 # Remove temp dirs
 rm -rf node_modules/ browser/ build/ css/ extlib/ tests/ utils/ website/ setup.log
-rm -rf plugins/BlastView plugins/GCContent/ plugins/ComboTrackSelector/ plugins/MultiBigWig/ plugins/bookmarks/
+rm -rf plugins/MultiBigWig/test/
 
 mkdir -p $PREFIX/bin/
 cp bin/*.pl $PREFIX/bin/
