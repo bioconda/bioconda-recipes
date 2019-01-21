@@ -30,7 +30,7 @@ git clone https://github.com/Arabidopsis-Information-Portal/ComboTrackSelector.g
 echo "[ plugins.ComboTrackSelector ]" >> jbrowse.conf
 echo "location = ../plugin/ComboTrackSelector/" >> jbrowse.conf
 cd plugins/ComboTrackSelector/
-patch -p1 < $RECIPE_DIR/ComboTrackSelector.patch
+patch -p1 < $RECIPE_DIR/combotrackselector.patch
 cd ../../
 
 # Add MultiBigWig plugin
