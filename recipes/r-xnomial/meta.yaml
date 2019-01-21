@@ -1,17 +1,22 @@
 {% set version = '1.0.4' %}
 
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-xnomial
   version: {{ version|replace("-", "_") }}
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/XNomial_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/XNomial/XNomial_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/XNomial_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/XNomial/XNomial_{{ version }}.tar.gz
   sha256: e6237f79d96f02bb30af1cf055ae9f70541abba34ce045a9d4359b5304189dd7
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+
+  number: 2
 
   rpaths:
     - lib/R/lib/
@@ -19,17 +24,26 @@ build:
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('c') }}        # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
 
   host:
     - r-base
 
   run:
     - r-base
+    - {{native}}gcc-libs         # [win]
 
 test:
   commands:
-    - $R -e "library('XNomial')"
+
+    - $R -e "library('XNomial')"           # [not win]
+    - "\"%R%\" -e \"library('XNomial')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=XNomial
@@ -44,3 +58,12 @@ about:
     A histogram of the test statistic can also be plotted and compared with the asymptotic
     curve.
   license_family: GPL
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

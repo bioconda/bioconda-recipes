@@ -1,33 +1,40 @@
-{% set version = "1.28.0" %}
+{% set version = "1.30.0" %}
 {% set name = "snpStats" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
+{% set sha256 = "7a2d19beee640bba9f48f8c13d9ca69f5be3085c2b280c0ce2711450ad7bcd47" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
+
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 396e0afa44629a84f8a3b9cd2b623f905dc82a71ca0a803711944301ade738f5
+  sha256: {{ sha256 }}
+
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+
 requirements:
   host:
-    - bioconductor-biocgenerics
-    - bioconductor-zlibbioc
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-zlibbioc >=1.26.0,<1.28.0'
     - r-base
     - r-matrix
     - r-survival
   run:
-    - bioconductor-biocgenerics
-    - bioconductor-zlibbioc
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-zlibbioc >=1.26.0,<1.28.0'
     - r-base
     - r-matrix
     - r-survival
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -35,7 +42,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Classes and statistical methods for large SNP association studies. This extends the earlier snpMatrix package, allowing for uncertainty in genotypes.'
-
 extra:
   identifiers:
     - biotools:snpstats
