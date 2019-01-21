@@ -1,4 +1,4 @@
 #!/bin/bash -e
 
 # build statically linked binary with Rust
-cargo install --path . --root $PREFIX
+RUST_BACKTRACE=1 LIBRARY_PATH=$PREFIX cargo install --root $PREFIX
