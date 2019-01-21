@@ -1,7 +1,7 @@
 #!/bin/bash
 export C_INCLUDE_PATH=$PREFIX/include
 target=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-version=94
+version=95
 mkdir -p $target
 mkdir -p $PREFIX/bin
 
