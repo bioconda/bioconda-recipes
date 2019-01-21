@@ -1,0 +1,45 @@
+{% set version = "1.0.0" %}
+{% set name = "BiocNeighbors" %}
+{% set bioc = "3.8" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 654e4deee2cadb9901f8137142719b16
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: testthat, BiocStyle, knitr, rmarkdown, FNN, RcppAnnoy
+# SystemRequirements: C++11
+requirements:
+  host:
+    - 'bioconductor-biocparallel >=1.16.0,<1.17.0'
+    - 'bioconductor-s4vectors >=0.20.0,<0.21.0'
+    - r-base
+    - r-rcpp
+    - r-rcppannoy
+  run:
+    - 'bioconductor-biocparallel >=1.16.0,<1.17.0'
+    - 'bioconductor-s4vectors >=0.20.0,<0.21.0'
+    - r-base
+    - r-rcpp
+    - r-rcppannoy
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Implements exact and approximate methods for nearest neighbor detection, in a framework that allows them to be easily switched within Bioconductor packages or workflows. The exact algorithm is implemented using pre-clustering with the k-means algorithm, as described by Wang (2012). This is faster than conventional kd-trees for neighbor searching in higher (> 20) dimensional data. The approximate method uses the Annoy algorithm. Functions are also provided to search for all neighbors within a given distance. Parallelization is achieved for all methods using the BiocParallel framework.'
+
