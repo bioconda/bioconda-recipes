@@ -3,6 +3,7 @@
 ## BUILD WITH APPROPRIATE ENVIRONMENT VARIABLES
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
+sed -i -e 's/realpath/readlink/g' Makefile
 make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
 
 ## MAKE EXECUTABLES EXECUTABLE!
