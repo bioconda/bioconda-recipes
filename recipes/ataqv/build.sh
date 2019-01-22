@@ -2,9 +2,9 @@
 
 ## MODIFY REALPATH CALL IN MAKEFILE
 if [[ $OSTYPE == darwin* ]]; then
-    sed -i.bak -e 's/realpath/readlink/g' Makefile
-elif [[ $OSTYPE == linux* ]]; then
     sed -i.bak -e 's/realpath -e/readlink/g' Makefile
+elif [[ $OSTYPE == linux* ]]; then
+    sed -i -e 's/realpath/readlink/g' Makefile
 else
   echo "Unsupported OS: $OSTYPE"
 fi
