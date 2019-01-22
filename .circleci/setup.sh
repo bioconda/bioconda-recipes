@@ -12,7 +12,7 @@ set -u
 source .circleci/common.sh
 
 # Set path
-echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> $BASH_ENV
+echo "export PATH=\"$WORKSPACE/miniconda/bin:$PATH\"" >> $BASH_ENV
 source $BASH_ENV
 
 # Make sure the CircleCI config is up to date.
@@ -52,6 +52,7 @@ if ! type bioconda-utils 2> /dev/null || [[ $BOOTSTRAP == "true" ]]; then
     # step 2: setup channels
     $WORKSPACE/miniconda/bin/conda config --system --add channels defaults
     $WORKSPACE/miniconda/bin/conda config --system --add channels bioconda
+    $WORKSPACE/miniconda/bin/conda config --system --add channels conda-forge/label/cf201901
     $WORKSPACE/miniconda/bin/conda config --system --add channels conda-forge
 
     # step 3: install bioconda-utils
