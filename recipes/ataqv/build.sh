@@ -1,9 +1,17 @@
 #!/bin/bash
 
-## BUILD WITH APPROPRIATE ENVIRONMENT VARIABLES
+## MODIFY REALPATH CALL IN MAKEFILE
+if [[ $OSTYPE == darwin* ]]; then
+    sed -i.bak -e 's/realpath/readlink/g' Makefile
+elif [[ $OSTYPE == linux* ]]; then
+    sed -i.bak -e 's/realpath -e/readlink/g' Makefile
+else
+  echo "Unsupported OS: $OSTYPE"
+fi
+
+## SET APPROPRIATE ENVIRONMENT VARIABLES AND BUILD
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
-sed -i -e 's/realpath/readlink/g' Makefile
 make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
 
 ## MAKE EXECUTABLES EXECUTABLE!
