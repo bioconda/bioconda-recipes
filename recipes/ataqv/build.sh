@@ -2,7 +2,7 @@
 
 ## MODIFY REALPATH CALL IN MAKEFILE
 if [[ $OSTYPE == darwin* ]]; then
-    sed -i.bak -e 's/realpath -e/readlink/g' Makefile
+    sed -i.bak -e 's/realpath/greadlink/g' Makefile
 elif [[ $OSTYPE == linux* ]]; then
     sed -i -e 's/realpath/readlink/g' Makefile
 else
