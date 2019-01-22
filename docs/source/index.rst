@@ -1,8 +1,3 @@
-.. bioconda documentation master file, created by
-   sphinx-quickstart on Sat Nov  5 15:36:41 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 .. image:: bioconda.png
 
 **Bioconda** is a channel for the `conda
@@ -167,4 +162,3 @@ Contents:
     faqs
     build-system
     cb3
-    changes
