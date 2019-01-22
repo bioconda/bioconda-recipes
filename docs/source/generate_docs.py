@@ -31,8 +31,6 @@ RECIPE_DIR = op.join(op.dirname(BASE_DIR), 'bioconda-recipes', 'recipes')
 OUTPUT_DIR = op.join(BASE_DIR, 'recipes')
 
 
-
-
 def as_extlink_filter(text):
     """Jinja2 filter converting identifier (list) to extlink format
 
@@ -247,8 +245,7 @@ def generate_recipes(app):
         tasks = ParallelTasks(nproc)
         chunks = make_chunks(recipe_dirs, nproc)
 
-        def process_chunk(data):
-            chunk, repodata = data
+        def process_chunk(_chunk):
             _recipes = []
             for folder in chunk:
                 if not op.isdir(op.join(RECIPE_DIR, folder)):
@@ -258,14 +255,14 @@ def generate_recipes(app):
                 _recipes.extend(generate_readme(folder, repodata, renderer))
             return _recipes
 
-        def merge_chunk(data, res):
+        def merge_chunk(_chunk, res):
             recipes.extend(res)
 
         for chunk in status_iterator(
                 chunks,
                 'Generating package READMEs with {} threads...'.format(nproc),
                 "purple", len(chunks), app.verbosity):
-            tasks.add_task(process_chunk, (chunk, repodata), merge_chunk)
+            tasks.add_task(process_chunk, chunk, merge_chunk)
         logger.info("waiting for workers...")
         tasks.join()
 
