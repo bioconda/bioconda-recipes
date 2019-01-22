@@ -237,6 +237,10 @@ def generate_recipes(app):
                 recipe_dirs,
                 'Generating package READMEs...',
                 "purple", len(recipe_dirs), app.verbosity):
+            if not op.isdir(op.join(RECIPE_DIR, folder)):
+                logger.error("Item '%s' in recipes folder is not a folder",
+                             folder)
+                continue
             recipes.extend(generate_readme(folder, repodata, renderer))
     else:
         tasks = ParallelTasks(nproc)
@@ -245,6 +249,10 @@ def generate_recipes(app):
         def process_chunk(chunk):
             _recipes = []
             for folder in chunk:
+                if not op.isdir(op.join(RECIPE_DIR, folder)):
+                    logger.error("Item '%s' in recipes folder is not a folder",
+                                 folder)
+                    continue
                 _recipes.extend(generate_readme(folder, repodata, renderer))
             return _recipes
 
