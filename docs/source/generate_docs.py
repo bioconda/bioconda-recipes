@@ -224,6 +224,7 @@ def generate_recipes(app):
     renderer = Renderer(app)
     load_config(os.path.join(os.path.dirname(__file__), "config.yaml"))
     repodata = RepoData()
+    repodata.df  # force loading
     recipes = []
     recipe_dirs = os.listdir(RECIPE_DIR)
 
@@ -237,25 +238,34 @@ def generate_recipes(app):
                 recipe_dirs,
                 'Generating package READMEs...',
                 "purple", len(recipe_dirs), app.verbosity):
+            if not op.isdir(op.join(RECIPE_DIR, folder)):
+                logger.error("Item '%s' in recipes folder is not a folder",
+                             folder)
+                continue
             recipes.extend(generate_readme(folder, repodata, renderer))
     else:
         tasks = ParallelTasks(nproc)
         chunks = make_chunks(recipe_dirs, nproc)
 
-        def process_chunk(chunk):
+        def process_chunk(data):
+            chunk, repodata = data
             _recipes = []
             for folder in chunk:
+                if not op.isdir(op.join(RECIPE_DIR, folder)):
+                    logger.error("Item '%s' in recipes folder is not a folder",
+                                 folder)
+                    continue
                 _recipes.extend(generate_readme(folder, repodata, renderer))
             return _recipes
 
-        def merge_chunk(chunk, res):
+        def merge_chunk(data, res):
             recipes.extend(res)
 
         for chunk in status_iterator(
                 chunks,
                 'Generating package READMEs with {} threads...'.format(nproc),
                 "purple", len(chunks), app.verbosity):
-            tasks.add_task(process_chunk, chunk, merge_chunk)
+            tasks.add_task(process_chunk, (chunk, repodata), merge_chunk)
         logger.info("waiting for workers...")
         tasks.join()
 

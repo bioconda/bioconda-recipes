@@ -693,7 +693,7 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
 
     if create_pr:
         token = os.environ.get("GITHUB_TOKEN")
-        if not token:
+        if not token and not dry_run:
             logger.critical("GITHUB_TOKEN required to create PRs")
             exit(1)
         github_handler = githubhandler.AiohttpGitHubHandler(
