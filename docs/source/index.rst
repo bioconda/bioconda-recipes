@@ -136,6 +136,8 @@ Core
 * `Jillian Rowe <https://github.com/jerowe>`_
 * `Renan Valieris <https://github.com/rvalieris>`_
 * `Marcel Bargull <https://github.com/mbargull>`_
+* `Devon Ryan <https://github.com/dpryan79>`_
+* `Elmar Pruesse <https://github.com/epruesse>`_
 
 Others
 ------
