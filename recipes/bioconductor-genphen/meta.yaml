@@ -1,0 +1,47 @@
+{% set version = "1.10.0" %}
+{% set name = "genphen" %}
+{% set bioc = "3.8" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: c7be09e60a56d52fcdffa12b85b6e028
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  host:
+    - 'bioconductor-biostrings >=2.50.0,<2.51.0'
+    - r-base
+    - r-doparallel
+    - r-e1071
+    - r-foreach
+    - r-ranger
+    - r-rstan
+  run:
+    - 'bioconductor-biostrings >=2.50.0,<2.51.0'
+    - r-base
+    - r-doparallel
+    - r-e1071
+    - r-foreach
+    - r-ranger
+    - r-rstan
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'Genetic association studies are an essential tool for studying the relationship between genotypes and phenotypes. With genphen we can quantify the association between genotypes and phenotypes using a hybrid method which uses statistical learning techniques such as random forest and support vector machines, and Bayesian inference using hierarchical models.'
+
