@@ -1,6 +1,6 @@
-{% set version = "1.12.0" %}
+{% set version = "1.14.2" %}
 {% set name = "BiocParallel" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,10 +8,11 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 0de25aa5c7a1b1cce8da0d5f42a00eaccc50de1edf4ab30174833ecd851dcf8e
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: d5c568362f06b36494d54f4134a7ac06b45fe2a10236fcdaed9e58288c2a8bd2
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
@@ -20,7 +21,6 @@ requirements:
     - {{ compiler('fortran') }}
   host:
     - r-base
-    # not specified in DESCRIPTION, but complains during build
     - r-bh
     - r-futile.logger
     - r-snow
@@ -29,6 +29,10 @@ requirements:
     - r-bh
     - r-futile.logger
     - r-snow
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -36,7 +40,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL-2 | GPL-3'
   summary: 'This package provides modified versions and novel implementation of functions for parallel evaluation, tailored to use with Bioconductor objects.'
-
 extra:
   identifiers:
     - biotools:biocparallel

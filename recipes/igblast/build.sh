@@ -41,5 +41,5 @@ mv edit_imgt_file.pl $PREFIX/bin/
 
 for IGBLAST_DIR in internal_data optional_file; do
     mkdir -p $SHARE_DIR/$IGBLAST_DIR
-    wget -nv -r -nH --cut-dirs=5 -X Entries,Repository,Root -P $SHARE_DIR/$IGBLAST_DIR $IGBLAST_ADDRESS/$IGBLAST_DIR
+    wget -nv -r -nH --cut-dirs=5 -X Entries,Repository,Root,CVS -P $SHARE_DIR/$IGBLAST_DIR $IGBLAST_ADDRESS/$IGBLAST_DIR
 done

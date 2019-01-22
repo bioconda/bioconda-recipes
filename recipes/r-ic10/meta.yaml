@@ -1,26 +1,37 @@
-{% set version = '1.1.3' %}
+{% set version = '1.4.2' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-ic10
-  version: {{ version }}
+  version: {{ version|replace("-", "_") }}
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/iC10_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/iC10/iC10_{{ version }}.tar.gz
-  sha256: b02f4f1e4cedd894eec2b5f807b94f0f61ec92c2453bf9777dadfe4324cfb4a5
+    - {{ cran_mirror }}/src/contrib/iC10_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/iC10/iC10_{{ version }}.tar.gz
+  sha256: 86075b562b78d609f0ddf729f4d624f35e8fc2e907deadd51a15bbe5a1c6fd5c
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+
+  number: 0
+  skip: true  # [win32]
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
+  build:
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
     - r-ic10trainingdata
     - r-pamr
+
   run:
     - r-base
     - r-ic10trainingdata
@@ -28,14 +39,25 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('iC10')"
+
+    - $R -e "library('iC10')"           # [not win]
+    - "\"%R%\" -e \"library('iC10')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=iC10
   license: GPL-3
   summary: Implementation of the classifier described in the paper 'Genome-driven integrated
     classification of breast cancer validated in over 7,500 samples' (Ali HR et al.,
-    Genome Biology 2014). It uses copy number and/or expression from breast cancer data,
+    Genome Biology 2014). It uses copy number and/or expression form breast cancer data,
     trains a pamr classifier (Tibshirani et al.) with the features available and predicts
     the iC10 group.
   license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

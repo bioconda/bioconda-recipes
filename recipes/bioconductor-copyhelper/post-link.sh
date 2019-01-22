@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="CopyhelpeR_1.10.0.tar.gz"
+FN="CopyhelpeR_1.12.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/experiment/src/contrib/CopyhelpeR_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/CopyhelpeR_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-copyhelper/bioconductor-copyhelper_1.10.0_src_all.tar.gz"
+  "http://bioconductor.org/packages/3.7/data/experiment/src/contrib/CopyhelpeR_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/CopyhelpeR_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-copyhelper/bioconductor-copyhelper_1.12.0_src_all.tar.gz"
 )
-MD5="03e42db6682fe395328a0ef01505833b"
+MD5="5a1d068158d3fb73abaf6ca93ee994b0"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

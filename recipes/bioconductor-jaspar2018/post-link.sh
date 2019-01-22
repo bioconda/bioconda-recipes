@@ -1,10 +1,10 @@
 #!/bin/bash
-FN="JASPAR2018_1.0.0.tar.gz"
+FN="JASPAR2018_1.1.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.6/bioc/src/contrib/JASPAR2018_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-jaspar2018/bioconductor-jaspar2018_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.7/bioc/src/contrib/JASPAR2018_1.1.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-jaspar2018/bioconductor-jaspar2018_1.1.0_src_all.tar.gz"
 )
-MD5="dbc27f8cd378d3ab40c1cc679de28f48"
+MD5="7f6d748701d83294d6138b265657712a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
