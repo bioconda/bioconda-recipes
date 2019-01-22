@@ -11,6 +11,7 @@ SHA256="b0d12da6aa072b7279e2c82afd09152f33dd016f5204a8ef055196f5e501ae19"
 
 SUCCESS=0
 
+# Make directory for staging.
 mkdir -p $STAGING
 
 # Download tarball.
