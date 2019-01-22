@@ -1,4 +1,4 @@
 #!/bin/sh
 set -x -e
-
-cpanm -f Bio::Tradis
+HOME=/tmp
+cpanm -f Bio::Tradis@1.4.1
