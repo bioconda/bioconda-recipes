@@ -1,6 +1,6 @@
-{% set version = "1.34.0" %}
+{% set version = "1.36.0" %}
 {% set name = "MotIV" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,39 +8,38 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 06be19672eea04d778970040805097e8cc6543acbea476c5f5bd2231f8fa7353
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: da12f8071ef2e9bb2dd5dea46073e22b4981dbc2f1913a41774f2325580eb68f
 build:
-  ## Library not loaded: @rpath/libc++.1.dylib
-  skip: True  # [osx]
-  number: 2
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - 'bioconductor-biocgenerics >=0.1.0'
-    - 'bioconductor-biostrings >=1.24.0'
-    - 'bioconductor-iranges >=1.13.5'
-    - bioconductor-rgadem
-    - bioconductor-s4vectors
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-biostrings >=2.48.0,<2.50.0'
+    - 'bioconductor-iranges >=2.14.12,<2.16.0'
+    - 'bioconductor-rgadem >=2.28.0,<2.30.0'
+    - 'bioconductor-s4vectors >=0.18.3,<0.20.0'
     - r-base
     - r-lattice
-    - gsl
     - openblas
   run:
-    - 'bioconductor-biocgenerics >=0.1.0'
-    - 'bioconductor-biostrings >=1.24.0'
-    - 'bioconductor-iranges >=1.13.5'
-    - bioconductor-rgadem
-    - bioconductor-s4vectors
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-biostrings >=2.48.0,<2.50.0'
+    - 'bioconductor-iranges >=2.14.12,<2.16.0'
+    - 'bioconductor-rgadem >=2.28.0,<2.30.0'
+    - 'bioconductor-s4vectors >=0.18.3,<0.20.0'
     - r-base
     - r-lattice
-    - gsl
     - openblas
-
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -48,7 +47,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'This package makes use of STAMP for comparing a set of motifs to a given database (e.g. JASPAR). It can also be used to visualize motifs, motif distributions, modules and filter motifs.'
-
 extra:
   identifiers:
     - biotools:motiv

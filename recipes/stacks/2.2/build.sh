@@ -11,8 +11,12 @@ fi
 
 export CXXFLAGS="${CXXFLAGS} -std=c++11"
 
-./configure --prefix=$PREFIX --enable-bam
+./configure --prefix="$PREFIX" --enable-bam
 make
 make install
 # copy missing scripts
-cp -p scripts/{convert_stacks.pl,extract_interpop_chars.pl} $PREFIX/bin/
+cp -p scripts/{convert_stacks.pl,extract_interpop_chars.pl} "$PREFIX/bin/"
+
+# fix a bug in ref_map v2.2 is fixed
+sed -i -e "s/_alpha/-alpha/" "$PREFIX"/bin/ref_map.pl
+

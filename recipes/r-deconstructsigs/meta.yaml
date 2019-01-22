@@ -1,5 +1,8 @@
 {% set version = '1.8.0.1' %}
 
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-deconstructsigs
   version: {{ version|replace("-", "_") }}
@@ -19,6 +22,8 @@ build:
     - lib/
 
 requirements:
+  build:
+    - {{posix}}zip               # [win]
   host:
     - r-base
     - bioconductor-bsgenome
@@ -34,12 +39,23 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('deconstructSigs')"
+
+    - $R -e "library('deconstructSigs')"           # [not win]
+    - "\"%R%\" -e \"library('deconstructSigs')\""  # [win]
 
 about:
-  home: https
+  home: https://github.com/raerose01/deconstructSigs
   license: GPL (>= 2)
   summary: Takes sample information in the form of the fraction of mutations in each of 96 trinucleotide
     contexts and identifies the weighted combination of published signatures that, when
     summed, most closely reconstructs the mutational profile.
   license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

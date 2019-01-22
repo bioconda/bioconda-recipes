@@ -1,6 +1,6 @@
-{% set version = "1.36.0" %}
+{% set version = "1.38.0" %}
 {% set name = "flowFP" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.7" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -8,26 +8,31 @@ package:
 source:
   url:
     - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 0ea942db120bf59f09c43cc407c5c3845d6628da12bb16571dff5ed52f48fc4e
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 13eb62a9485c55e63c4fa957c86046872957cbcc8e01224f26c9165ebe2a5533
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   host:
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.1.6'
-    - bioconductor-flowcore
-    - bioconductor-flowviz
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-flowcore >=1.46.2,<1.48.0'
+    - 'bioconductor-flowviz >=1.44.0,<1.46.0'
     - r-base
   run:
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.1.6'
-    - bioconductor-flowcore
-    - bioconductor-flowviz
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-flowcore >=1.46.2,<1.48.0'
+    - 'bioconductor-flowviz >=1.44.0,<1.46.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -35,7 +40,6 @@ about:
   home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Fingerprint generation of flow cytometry data, used to facilitate the application of machine learning and datamining tools for flow cytometry.'
-
 extra:
   identifiers:
     - biotools:flowfp
