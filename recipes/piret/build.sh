@@ -1,3 +1,4 @@
 #!/bin/bash
 
-$PYTHON setup.py install
+cp -R bin/* $PREFIX/bin
+#$PYTHON setup.py install
