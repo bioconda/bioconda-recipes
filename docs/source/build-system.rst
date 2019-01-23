@@ -54,13 +54,13 @@ Configure the environment
       bioconda-utils, sets the correct channel order
 
 - Run linting on changed recipes
-  - This is triggered by the ``bioconda-recipes: .circleci/config.yml`` "lint"
-    job, which runs ``bioconda-utils: bioconda_utils/cli.py`` and
-    ``bioconda_utils/linting.py``
+    - This is triggered by the ``bioconda-recipes: .circleci/config.yml`` "lint"
+      job, which runs ``bioconda-utils: bioconda_utils/cli.py`` and
+      ``bioconda_utils/linting.py``
 
 - Build recipes
-  - Triggered by the ``bioconda-recipes: .circleci/config.yaml`` "test-linux"
-    job, which runs ``bioconda-utils build``. This performs the next steps.
+    - Triggered by the ``bioconda-recipes: .circleci/config.yaml`` "test-linux"
+      job, which runs ``bioconda-utils build``. This performs the next steps.
 
 - Filter recipes to only focus on recipes that satisfy the following criteria:
     - changed recently (we use a ``git diff`` command to identify these
@@ -80,6 +80,7 @@ Configure the environment
 - Topologically sort changed recipes, and build them one-by-one in the Docker
   container. This runs ``conda-build`` on the recipe while also specifying the
   correct environment variables.
+
     - The conda-build directory is exported to the docker container to a temp
       file and added as a channel. This way, packages built by one container
       will be visible to containers building subsequent packages in the same

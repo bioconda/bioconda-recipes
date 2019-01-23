@@ -72,7 +72,7 @@ Nevertheless, the local test should capture most problems, such that it is highl
 encouraged to first run a local test in order to save quota on Circle CI.
 
 How are dependencies pinned to particular versions?
--------------------------------------------------
+---------------------------------------------------
 
 In some cases a recipe may need to pin the version of a dependency.
 A global set of default versions to pin against is shared with conda-forge and
