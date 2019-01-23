@@ -6,9 +6,9 @@ bioinformatics software. Bioconda consists of:
 
 - a `repository of recipes <https://github.com/bioconda/bioconda-recipes>`_ hosted on GitHub
 - a `build system <https://github.com/bioconda/bioconda-utils>`_ that turns these recipes into conda packages
-- a `repository of more than 3000 bioinformatics packages
+- a `repository of more than 6000 bioinformatics packages
   <https://anaconda.org/bioconda/>`_ ready to use with ``conda install``
-- Over 250 contributors that add, modify, update and maintain the recipes
+- over 600 contributors and 450 members who add, modify, update and maintain the recipes
 
 The conda package manager makes installing software a vastly more
 streamlined process. Conda is a combination of other package managers you may
@@ -139,9 +139,11 @@ Core
 * `Devon Ryan <https://github.com/dpryan79>`_
 * `Elmar Pruesse <https://github.com/epruesse>`_
 
-Others
-------
-Bioconda has over 250 contributors, see `here <https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
+Team
+----
+
+Bioconda has over 600 (as of 2019/1) `contributors
+<https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
 
 
 Contributor documentation
