@@ -222,7 +222,8 @@ def generate_recipes(app):
     renderer = Renderer(app)
     load_config(os.path.join(os.path.dirname(__file__), "config.yaml"))
     repodata = RepoData()
-    repodata.df  # force loading
+    repodata.set_cache(op.join(app.env.doctreedir, 'RepoDataCache.csv'))
+    repodata.df  # force loading repodata to avoid duplicate loads from threads
     recipes = []
     recipe_dirs = os.listdir(RECIPE_DIR)
 
