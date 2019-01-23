@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+# Workaround for spurious numpy warning message
+# ".../importlib/_bootstrap.py:219: RuntimeWarning: numpy.dtype size \
+# changed, may indicate binary incompatibility. Expected 96, got 88"
+import warnings
+warnings.filterwarnings("ignore", message="numpy.dtype size changed")
+
 import sys
 import os
 import shlex
