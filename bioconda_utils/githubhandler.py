@@ -61,8 +61,11 @@ class GitHubHandler:
 
         self.create_api_object(*args, **kwargs)
 
-        user = await self.api.getitem("/user")
-        self.username = user["login"]
+        if not self.token:
+            self.username = "UNKNOWN [no token]"
+        else:
+            user = await self.api.getitem("/user")
+            self.username = user["login"]
 
     async def is_member(self, username) -> bool:
         """Check if **username** is member of current org"""
