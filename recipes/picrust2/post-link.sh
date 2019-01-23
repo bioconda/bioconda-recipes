@@ -3,7 +3,7 @@
 FN="picrust2-2.0.4-b.tar.gz"
 TARBALL_DIR="picrust2-2.0.4-b"
 URL="https://github.com/picrust/picrust2/releases/download/v2.0.4-b/picrust2-2.0.4-b.tar.gz"
-
+ 
 # Create staging area.
 STAGING=$PREFIX/staging
 TARBALL=$STAGING/$FN
