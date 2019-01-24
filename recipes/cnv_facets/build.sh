@@ -9,7 +9,7 @@ FACETS_GIT_REF=`grep -P ' *^FACETS_REF' install/install_pkgs.R \
 
 $R -e "devtools::install_github('mskcc/facets', ref= '$FACETS_GIT_REF', lib= NULL, repos= 'https://cran.r-project.org')"
 
-$R -e 'install.packages(c("jsonlite", "argparse"), lib= NULL, repos= "https://cran.r-project.org")'
+$R -e 'install.packages(c("argparse"), lib= NULL, repos= "https://cran.r-project.org")'
 
 mkdir -p $PREFIX/bin
 chmod a+x bin/cnv_facets.R
