@@ -18,24 +18,18 @@ class GitHandler():
     """GitPython abstraction
 
     Arguments:
-      recipe_folder: Base folder containing recipes (needed to determine
-                     location of git repo).
+      folder: path pointing inside repo
       dry_run: Don't push anything to remote
     """
-    def __init__(self, recipe_folder: str,
+    def __init__(self, folder: str,
                  dry_run=False,
                  upstream='bioconda/bioconda-recipes',
                  origin='bioconda/bioconda-recipes') -> None:
         #: current repository
-        self.repo = git.Repo(recipe_folder, search_parent_directories=True)
+        self.repo = git.Repo(folder, search_parent_directories=True)
         if self.repo.is_dirty():
             raise RuntimeError("Repository is in dirty state. Bailing out")
 
-        abs_recipe_folder = os.path.abspath(recipe_folder)
-        abs_repo_root = os.path.abspath(self.repo.working_dir)
-
-        #: recipe folder relative to git root
-        self.rel_recipe_folder = abs_recipe_folder[len(abs_repo_root):].lstrip("/")
         #: don't push
         self.dry_run = dry_run
         #: Semaphore for things that mess with workding directory
@@ -73,10 +67,9 @@ class GitHandler():
     async def branch_is_current(self, branch, path: str, master="master") -> bool:
         """Checks if **branch** has the most recent commit modifying **path**
         as compared to **master**"""
-        rpath = os.path.join(self.rel_recipe_folder, path)
         proc = await asyncio.create_subprocess_exec(
             'git', 'log', '-1', '--oneline', '--decorate',
-            f'{master}...{branch.name}', '--', rpath,
+            f'{master}...{branch.name}', '--', path,
             stdout=asyncio.subprocess.PIPE)
         stdout, _ = await proc.communicate()
         return branch.name in stdout.decode('ascii')
