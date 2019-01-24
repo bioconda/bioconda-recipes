@@ -1,6 +1,6 @@
 #!/bin/sh
 make
-mkdir $PREFIX/bin
+mkdir -p $PREFIX/bin
 mv bowtie $PREFIX/bin
 mv bowtie-build $PREFIX/bin
 mv bowtie-inspect $PREFIX/bin
