@@ -7,6 +7,7 @@ export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
 cd $SRC_DIR
+sed -i -e 's/-march=native//' CMakeLists.txt
 mkdir build && cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=${BINARY_HOME}
 make
