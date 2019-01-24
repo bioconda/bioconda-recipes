@@ -1,4 +1,6 @@
 #!/bin/bash
+cat /opt/conda/conda_build_config.yaml
+
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R
