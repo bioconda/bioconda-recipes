@@ -23,6 +23,8 @@ tophat2 \
 tophat-fusion-post \
 tophat_reports \
 "
+directories="sortedcontainers intervaltree"
 pythonfiles="tophat bed_to_juncs contig_to_chr_coords sra_to_solid tophat-fusion-post"
 
 for i in $binaries; do cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
+for d in $directories; do cp -r $d $PREFIX/bin; done
