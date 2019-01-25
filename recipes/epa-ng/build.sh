@@ -7,12 +7,7 @@ export M4=m4
 if [ "$(uname)" == Darwin ] ; then
     CXXFLAGS="$CXXFLAGS -fopenmp -pthread"
     CFLAGS="$CFLAGS -fopenmp -pthread"
-
-    # Can turn off PREFETCH in CMakeLists.txt as a crude fix.
-    #sed -i '.tmp' 's/ENABLE_PREFETCH  ON/ENABLE_PREFETCH  OFF/' CMakeLists.txt
 fi
-
-export CMAKE_INSTALL_PREFIX="$PREFIX $CMAKE_PLATFORM_FLAGS[@] $SRC_DIR"
 
 make  
 
