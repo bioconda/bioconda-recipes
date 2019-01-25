@@ -369,7 +369,7 @@ class Recipe():
             replacements += 1
         return replacements
 
-    def reset_buildnumber(self):
+    def reset_buildnumber(self, n: int=0):
         """Resets the build number
 
         If the build number is missing, it is added after build.
@@ -386,7 +386,7 @@ class Recipe():
                 raise MissingBuild(self)
 
         line = self.meta_yaml[lineno]
-        line = re.sub("number: [0-9]+", "number: 0", line)
+        line = re.sub("number: [0-9]+", "number: "+str(n), line)
         self.meta_yaml[lineno] = line
 
     def get_raw_range(self, path):
