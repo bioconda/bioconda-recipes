@@ -5,16 +5,15 @@ One-time setup
 
 Git and GitHub (one-time setup)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-If you are a bioconda team member (having been added by posting in issue #1),
+If you are a bioconda team member (having been added by posting in `issue #1`_),
 then you have push access to the repo. In this case you can clone the
-bioconda-recipes repo::
+bioconda-recipes repo.
 
 Decide whether you'll work on a clone or a fork.
 
 Choose a clone if:
 
-- You are a bioconda team member (post on `issue #1
-  <https://github.com/bioconda/bioconda-recipes/issues/1>`_ if you'd like to
+- You are a bioconda team member (post on `issue #1`_ if you'd like to
   join). Team members have write access to branches other than the master
   branch.
 
@@ -75,8 +74,9 @@ Installation instructions can be found `here
 
 Request to be added to the bioconda team (optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-While not required, you can be added to the bioconda by posting in `Issue #1
-<https://github.com/bioconda/recipes/issues/1>`_. Members of the bioconda team
-can merge their own recipes once tests pass, though we ask that first-time
-contributions and anything out of the ordinary be reviewed by the
-@bioconda/core team.
+While not required, you can be added to the bioconda by posting in
+`issue #1`_. Members of the bioconda team can merge their own recipes
+once tests pass, though we ask that first-time contributions and
+anything out of the ordinary be reviewed by the @bioconda/core team.
+
+.. _`issue #1`: https://github.com/bioconda/recipes/issues/1
