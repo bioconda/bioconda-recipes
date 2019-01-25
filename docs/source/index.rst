@@ -1,8 +1,3 @@
-.. bioconda documentation master file, created by
-   sphinx-quickstart on Sat Nov  5 15:36:41 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 .. image:: bioconda.png
 
 **Bioconda** is a channel for the `conda
@@ -11,9 +6,9 @@ bioinformatics software. Bioconda consists of:
 
 - a `repository of recipes <https://github.com/bioconda/bioconda-recipes>`_ hosted on GitHub
 - a `build system <https://github.com/bioconda/bioconda-utils>`_ that turns these recipes into conda packages
-- a `repository of more than 3000 bioinformatics packages
+- a `repository of more than 6000 bioinformatics packages
   <https://anaconda.org/bioconda/>`_ ready to use with ``conda install``
-- Over 250 contributors that add, modify, update and maintain the recipes
+- over 600 contributors and 450 members who add, modify, update and maintain the recipes
 
 The conda package manager makes installing software a vastly more
 streamlined process. Conda is a combination of other package managers you may
@@ -27,7 +22,13 @@ add additional channels from which to install software packages not available
 in the defaults channel. Bioconda is one such channel specializing in
 bioinformatics software.
 
-When using Bioconda please **cite our article** `Grüning, Björn, Ryan Dale, Andreas Sjödin, Brad A. Chapman, Jillian Rowe, Christopher H. Tomkins-Tinch, Renan Valieris, the Bioconda Team, and Johannes Köster. 2018. "Bioconda: Sustainable and Comprehensive Software Distribution for the Life Sciences". Nature Methods, 2018 <https://doi.org/10.1038/s41592-018-0046-7>`_.
+When using Bioconda please **cite our article**:
+
+  Grüning, Björn, Ryan Dale, Andreas Sjödin, Brad A. Chapman, Jillian
+  Rowe, Christopher H. Tomkins-Tinch, Renan Valieris, the Bioconda
+  Team, and Johannes Köster. 2018. "Bioconda: Sustainable and
+  Comprehensive Software Distribution for the Life Sciences". Nature
+  Methods, 2018 doi::doi:`10.1038/s41592-018-0046-7`.
 
 Bioconda has been acknowledged by NATURE in their
 `technology blog <http://blogs.nature.com/naturejobs/2017/11/03/techblog-bioconda-promises-to-ease-bioinformatics-software-installation-woes/>`_.
@@ -141,10 +142,14 @@ Core
 * `Jillian Rowe <https://github.com/jerowe>`_
 * `Renan Valieris <https://github.com/rvalieris>`_
 * `Marcel Bargull <https://github.com/mbargull>`_
+* `Devon Ryan <https://github.com/dpryan79>`_
+* `Elmar Pruesse <https://github.com/epruesse>`_
 
-Others
-------
-Bioconda has over 250 contributors, see `here <https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
+Team
+----
+
+Bioconda has over 600 (as of 2019/1) `contributors
+<https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
 
 
 Contributor documentation
@@ -167,4 +172,3 @@ Contents:
     faqs
     build-system
     cb3
-    changes

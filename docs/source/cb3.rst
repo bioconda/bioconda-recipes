@@ -140,7 +140,7 @@ After:
 .. seealso::
 
     - The `compiler tools
-      <https://conda.io/docs/user-guide/tasks/build-packages/compiler-tools.html>_
+      <https://conda.io/docs/user-guide/tasks/build-packages/compiler-tools.html>`_
       section of the conda docs has much more info.
 
     - The default compiler options are defined by conda-build in the
