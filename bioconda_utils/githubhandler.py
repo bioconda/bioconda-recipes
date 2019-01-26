@@ -33,6 +33,7 @@ class GitHubHandler:
       to_repo: Target repository within **to_user**
     """
     PULLS = "/repos/{user}/{repo}/pulls{/number}{?head,base,state}"
+    PULL_FILES = "/repos/{user}/{repo}/pulls/{number}/files"
     ISSUES = "/repos/{user}/{repo}/issues{/number}"
     COMMENTS = "/repos/{user}/{repo}/issues/{number}/comments"
     ORG_MEMBERS = "/orgs/{user}/members{/username}"
@@ -221,6 +222,11 @@ class GitHubHandler:
         logger.info("Creating comment on issue #%i", number)
         res = await self.api.post(self.COMMENTS, var_data, data=data)
         return res['id']
+
+    async def get_pr_modified_files(self, number: int) -> List[Dict[str, Any]]:
+        var_data = copy(self.var_default)
+        var_data["number"] = str(number)
+        return await self.api.getitem(self.PULL_FILES, var_data)
 
 
 class AiohttpGitHubHandler(GitHubHandler):
