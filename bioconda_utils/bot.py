@@ -2,6 +2,7 @@
 
 import logging
 import os
+import re
 import subprocess
 import time
 from typing import Dict, Callable
@@ -20,6 +21,8 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 event_routes = gidgethub.routing.Router()  # pylint: disable=invalid-name
 web_routes = web.RouteTableDef()  # pylint: disable=invalid-name
 celery = Celery()  # pylint: disable=invalid-name
+BOT_NAME = "BiocondaBot"
+BOT_ALIAS_RE = re.compile(r'@bioconda[- ]?bot', re.IGNORECASE)
 
 # Celery must be configured at module level to catch worker as well
 # Settings are suggestions from CloudAMPQ
@@ -34,8 +37,6 @@ celery.conf.update(
     worker_concurrency=1
 )
 
-
-BOT_NAME = "Bioconda-Bot"
 
 
 @celery.task(acks_late=True)
@@ -91,7 +92,7 @@ async def comment_created(event, ghapi, *args, **_kwargs):
     commands = [
         line.lower().split()[1:]
         for line in event.data['comment']['body'].splitlines()
-        if line.startswith(f'@{BOT_NAME.lower()} ')
+        if BOT_ALIAS_RE.match(line)
     ]
     if not commands:
         logger.info("No command in comment")
