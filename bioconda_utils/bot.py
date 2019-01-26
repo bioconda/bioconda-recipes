@@ -1,15 +1,19 @@
 """Bioconda Bot"""
 
+import abc
+import asyncio
 import logging
 import os
 import re
 import subprocess
 import time
 from typing import Dict, Callable
+from functools import wraps
 
 import aiohttp
 from aiohttp import web
 from celery import Celery
+from celery import Task as _Task
 import gidgethub.routing
 
 from . import utils
@@ -20,9 +24,92 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 event_routes = gidgethub.routing.Router()  # pylint: disable=invalid-name
 web_routes = web.RouteTableDef()  # pylint: disable=invalid-name
-celery = Celery()  # pylint: disable=invalid-name
+
+
 BOT_NAME = "BiocondaBot"
 BOT_ALIAS_RE = re.compile(r'@bioconda[- ]?bot', re.IGNORECASE)
+
+class Task(_Task):
+    """Task class with support for async tasks
+
+    We override celery.Task with our own version, with some extra
+    features and defaults:
+
+    - Since we already use a lot of async stuff elsewhere, it's useful
+      to allow the ``run`` method of tasks be ``async``. This Task
+      class detects if the method provided is a coroutine and runs it
+      inside the asyncio event loop.
+
+      >>> @app.task()
+      >>> async def mytask(self, bind=True):
+      >>>    await self.async_init()
+      >>>    ...
+
+    - Provide access to a GitHubAppHandler instance shared at least
+      within the worker process.
+
+      This is a little tedious. Since the task may be spawned some
+      time after the webook that created it was triggered, the tokens
+      we got inside the webserver may have timed out. In an attempt to
+      avoid wasting API calls to create those tokens continuously, the
+      Task class maintains a copy.
+
+    - Default to `acks_late = True`. The reason we use Celery at all
+      is so that spawned tasks can survive a shutdown of the app.
+
+    """
+    #: Our tasks should be re-run if they don't finish
+    acks_late = True
+
+    #: Access the Github API
+    ghapi: GitHubAppHandler = None
+
+    #: Stores the async run method when the sync run wrapper is installed
+    _async_run = None
+
+    def __call__(self, *args, **kwargs):
+        """Intercept call to task"""
+        logger.error("Calling %s(%s %s)", self.name, args, kwargs)
+        super().__call__(*args, **kwargs)
+
+    def bind(self, app=None):
+        """Intercept binding of task to (celery) app
+
+        Here we take the half-finished generated Task class and
+        replace the async run method with a sync run method that
+        executes the original method inside the asyncio loop.
+        """
+        if asyncio.iscoroutinefunction(self.run):
+            @wraps(self.run)
+            def sync_run(*args, **kwargs):
+                self.loop.run_until_complete(self._async_run(*args, **kwargs))
+            self._async_run, self.run = self.run, sync_run
+
+            if not self.loop.is_running():
+                self.loop.run_until_complete(self.async_init())
+        super().bind(app)
+
+    async def async_init(self):
+        """Init things that need to be run inside the loop"""
+        if not self.ghapi:
+            self.ghapi = init_githubhandler(aiohttp.ClientSession())
+
+    @abc.abstractmethod
+    def run(self, *args, **kwargs):
+        """The tasks actual run method."""
+
+    @property
+    def loop(self):
+        """Get the async loop - creating a new one if necessary"""
+        try:
+            return asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            return loop
+
+
+celery = Celery(task_cls=Task)  # pylint: disable=invalid-name
 
 # Celery must be configured at module level to catch worker as well
 # Settings are suggestions from CloudAMPQ
