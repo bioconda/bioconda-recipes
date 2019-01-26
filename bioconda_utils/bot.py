@@ -197,6 +197,17 @@ def init_celery(app, loglevel):
     app.on_shutdown.append(collect_worker)
 
 
+def init_githubhandler(session):
+    """Prepare Github API Handler"""
+    app_key = os.environ.get("APP_KEY_PEM")
+    if not app_key:
+        raise ValueError("Environment variable APP_KEY_PEM empty or not set")
+    app_id = os.environ.get("APP_ID")
+    if not app_id:
+        raise ValueError("Environment variable APP_ID empty or not set")
+    return GitHubAppHandler(session, BOT_NAME, app_key, app_id)
+
+
 def init_gpg():
     """Install GPG key from environment"""
     gpg_key = os.environ.get("GPG_KEY")
@@ -240,14 +251,7 @@ async def init_app():
         await app['client_session'].close()
     app.on_shutdown.append(close_session)
 
-    # Prepare App Handler
-    app_key = os.environ.get("APP_KEY_PEM")
-    if not app_key:
-        raise ValueError("Environment variable APP_KEY_PEM empty or not set")
-    app_id = os.environ.get("APP_ID")
-    if not app_id:
-        raise ValueError("Environment variable APP_ID empty or not set")
-    app['ghapi'] = GitHubAppHandler(app['client_session'], BOT_NAME, app_key, app_id)
+    app['ghapi'] = init_githubhandler(app['client_session'])
 
     # Add routes collected above
     app.add_routes(web_routes)
