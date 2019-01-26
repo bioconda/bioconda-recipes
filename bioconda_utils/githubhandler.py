@@ -251,7 +251,7 @@ class Event(gidgethub.sansio.Event):
         try:
             for item in path.split("/"):
                 data = data[item]
-        except KeyError:
+        except (KeyError, TypeError):
             raise KeyError(f"No '{path}' in event type {self.event}") from None
         return data
 
