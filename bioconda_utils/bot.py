@@ -120,7 +120,10 @@ async def webhook_dispatch(request):
             return web.Response(status=200)
 
         ghapi = await request.app['ghapi'].get_github_api(event)
-        await event_routes.dispatch(event, ghapi)
+        try:
+            await event_routes.dispatch(event, ghapi)
+        except Exception:  # pylint: disable=broad-except
+            logger.exception("Failed to dispatch %s", event.delivery_id)
         request.app['gh_rate_limit'] = ghapi.rate_limit
 
         try:
