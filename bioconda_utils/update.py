@@ -754,7 +754,8 @@ class GitWriteRecipe(GitFilter):
             async with aiofiles.open(recipe.path, "w",
                                      encoding="utf-8") as fdes:
                 await fdes.write(recipe.dump())
-            changed = self.git.commit_and_push_changes(recipe, branch_name)
+            msg = f"Update {recipe} to {recipe.version}"
+            changed = self.git.commit_and_push_changes([recipe.path], branch_name, msg)
         if changed:
             # CircleCI appears to have problems picking up on our PRs. Let's wait
             # a while before we create the PR, so the pushed branch has time to settle.
