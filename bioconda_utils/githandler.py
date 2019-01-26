@@ -51,7 +51,6 @@ class GitHandlerBase():
         #: Semaphore for things that mess with workding directory
         self.lock_working_dir = asyncio.Semaphore(1)
 
-
     def close(self):
         """Release resources allocated"""
         self.repo.close()
@@ -98,8 +97,6 @@ class GitHandlerBase():
         """Finds fork remote branch named **branch_name**"""
         if branch_name in self.fork_remote.refs:
             return self.fork_remote.refs[branch_name]
-        logger.error("Branch %s not found!", branch_name)
-        logger.info("  Have branches: %s", self.fork_remote.refs)
         return None
 
     def read_from_branch(self, branch, file_name: str) -> str:
@@ -182,7 +179,8 @@ class GitHandler(GitHandlerBase):
 
         ## Update the local repo
         logger.warning("Checking out master")
-        self.get_local_branch("master").checkout()
+        self.master = self.get_local_branch("master")
+        self.master.checkout()
         logger.info("Updating master to latest project master")
         self.home_remote.pull("master")
         logger.info("Updating and pruning remotes")
