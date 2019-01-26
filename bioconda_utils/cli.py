@@ -843,15 +843,21 @@ def autobump(recipe_folder, config, packages='*', cache=None,
         git_handler.close()
 
 @arg('--loglevel', default='info', help='Log level')
-@arg("--port", default=8080, help='Set the port number to run on')
-def run_bot(loglevel='info', port=8080):
-    """Launches the Bioconda bot app locally"""
+def bot(loglevel='info'):
+    """Locally accedd bioconda-bot command API
+
+    To run the bot locally, use:
+
+    $ gunicorn bioconda_utils.bot:init_app --worker-class aiohttp.worker.GunicornWebWorker
+
+    You can append --reload to have gunicorn reload if any of the python files change.
+    """
     utils.setup_logger('bioconda_utils', loglevel)
-    from . import bot
-    bot.run_app(port)
+
+    logger.error("Nothing here yet")
 
 def main():
     argh.dispatch_commands([
         build, dag, dependent, lint, duplicates, update_pinning,
-        bioconductor_skeleton, clean_cran_skeleton, autobump, run_bot
+        bioconductor_skeleton, clean_cran_skeleton, autobump, bot
     ])
