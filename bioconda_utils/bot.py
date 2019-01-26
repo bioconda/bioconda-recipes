@@ -197,6 +197,24 @@ def init_celery(app, loglevel):
     app.on_shutdown.append(collect_worker)
 
 
+def init_gpg():
+    """Install GPG key from environment"""
+    gpg_key = os.environ.get("GPG_KEY")
+    if not gpg_key:
+        raise ValueError("Envionment variable GPG_KEY empty or not set")
+    proc = subprocess.run(['gpg', '--import'],
+                          input=gpg_key, stderr=subprocess.PIPE,
+                          encoding='ascii', check=True)
+    for line in proc.stderr.splitlines():
+        match = re.match(r'gpg: key ([\dA-F]{16}): secret key imported', line)
+        if match:
+            key = match.group(1)
+            break
+    else:
+        raise ValueError(f"Unable to import GPG key: {proc.stderr}")
+    return key
+
+
 async def init_app():
     """Initialize App
 
@@ -211,6 +229,8 @@ async def init_app():
     loglevel = 'INFO'
     utils.setup_logger('bioconda_utils', loglevel, prefix="")
     logger.info("Starting bot (version=%s)", VERSION)
+
+    _gpg_key = init_gpg()
 
     app = web.Application()
 
