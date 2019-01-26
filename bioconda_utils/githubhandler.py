@@ -317,9 +317,10 @@ class GitHubAppHandler:
             raise ValueError(f"Time String '%s' not in UTC")
         return int(time.mktime(time.strptime(timestr[:-1], "%Y-%m-%dT%H:%M:%S")))
 
-    async def get_installation_token(self, event: Event) -> str:
+    async def get_installation_token(self, installation: str, name: str = None) -> str:
         """Returns OAUTH token for installation referenced in **event**"""
-        installation = event.get('installation/id')
+        if name is None:
+            name = installation
         now = int(time.time())
         expires, token = self._tokens.get(installation, (0, ''))
         if not expires or expires < now + 60:
@@ -333,8 +334,7 @@ class GitHubAppHandler:
                     jwt=self.get_app_jwt()
                 )
             except gidgethub.BadRequest:
-                logger.exception("Failed to get installation token for %s",
-                                 event.get('installation'))
+                logger.exception("Failed to get installation token for %s", name)
                 raise
 
             expires = self.parse_isotime(res['expires_at'])
@@ -357,10 +357,10 @@ class GitHubAppHandler:
         api = self._handlers.get(handler_key)
         if api:
             # update oauth token (ours expire)
-            api.set_oauth_token(await self.get_installation_token(event))
+            api.set_oauth_token(await self.get_installation_token(installation))
         else:
             api = AiohttpGitHubHandler(
-                await self.get_installation_token(event),
+                await self.get_installation_token(installation),
                 to_user=user, to_repo=repo, dry_run=False)
             api.create_api_object(self._session, self.name)
             self._handlers[handler_key] = api
