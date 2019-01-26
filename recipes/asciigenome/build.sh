@@ -5,11 +5,8 @@ mkdir -p $outdir
 mkdir -p $PREFIX/bin
 
 # To be removed after shebang is fixed is ASCIIGenome repository
-mv ASCIIGenome ASCIIGenome.tmp
-sed 's|#!/bin/sh|#!/bin/bash|' ASCIIGenome.tmp > ASCIIGenome
-rm ASCIIGenome.tmp
+sed 's|#!/bin/sh|#!/bin/bash|' ASCIIGenome > $outdir/ASCIIGenome
 
 cp ASCIIGenome.jar $outdir
-cp ASCIIGenome $outdir
 chmod a+x $outdir/ASCIIGenome
 ln -s $outdir/ASCIIGenome $PREFIX/bin
