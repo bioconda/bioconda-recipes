@@ -11,4 +11,5 @@ CXX14=$CXX
 LDFLAGS='-L$PREFIX/lib'
 CPPFLAGS='-I$PREFIX/include'
 PREFIX=$PREFIX" > ~/.R/Makevars
+
 $R CMD INSTALL --build .
