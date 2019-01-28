@@ -7,5 +7,6 @@ FC=$FC
 CXX=$CXX
 CXX98=$CXX
 CXX11=$CXX
-CXX14=$CXX" > ~/.R/Makevars
+CXX14=$CXX
+CFLAGS='-std=c99'" > ~/.R/Makevars
 $R CMD INSTALL --build .
