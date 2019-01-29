@@ -42,9 +42,6 @@ tar -C $STAGING -zxvf $TARBALL
 PYTHON_INSTALL_DIR=`python -c "import site; print(site.getsitepackages()[0])"`
 
 mv $STAGING/$TARBALL_DIR/picrust2/default_files $PYTHON_INSTALL_DIR/picrust2
-mv $STAGING/$TARBALL_DIR/picrust2/MinPath $PYTHON_INSTALL_DIR/picrust2
-mv $STAGING/$TARBALL_DIR/picrust2/Rscripts $PYTHON_INSTALL_DIR/picrust2
 
 # Remove staging directory.
 rm -r $STAGING
-
