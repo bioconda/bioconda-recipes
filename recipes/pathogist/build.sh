@@ -1,3 +1,4 @@
-cp -R ${SRC_DIR}/pathogist ${PREFIX}/bin
-cp ${SRC_DIR}/PATHOGIST ${PREFIX}/bin
-chmod +x ${PREFIX}/bin/PATHOGIST
+#!/bin/bash
+
+cp $RECIPE_DIR/setup.py ./
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt
