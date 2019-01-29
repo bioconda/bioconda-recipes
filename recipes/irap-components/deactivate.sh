@@ -1,5 +1,3 @@
-#!/bin/sh
-  
 # Restore the value of passed env var <myvar> from a backup variable
 # BAK_<myvar> and unset the backup variable.
 restore_env_var() {
