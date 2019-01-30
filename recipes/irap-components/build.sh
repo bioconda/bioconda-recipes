@@ -15,8 +15,6 @@ export IRAP_DIR=$PREFIX/bin/irap
 #$SRC_DIR/scripts/irap_install.sh -s $SRC_DIR -c $PREFIX/bin/irap
 
 cp -rp $SRC_DIR $PREFIX/bin/irap
-sh_location=$(which sh)
-ln -s $sh_location /bin/sh
 chmod +x $PREFIX/bin/irap
 
 # Run tests
