@@ -1,3 +1,5 @@
+#!/bin/sh
+  
 # Unset the passed env var <myvar>, backing up its value in BAK_<myvar>.
 backup_env_var() {
     local var_name
