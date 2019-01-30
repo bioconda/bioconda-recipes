@@ -16,6 +16,7 @@ export IRAP_DIR=$PREFIX/bin/irap
 
 cp -rp $SRC_DIR $PREFIX/bin/irap
 chmod +x $PREFIX/bin/irap
+ln -s $PREFIX/bin/irap/scripts/irap $PREFIX/bin/irap
 
 # Run tests
 source "$RECIPE_DIR/activate.sh"           
