@@ -29,8 +29,10 @@ bioconda recipe checklist
 Stable urls
 ~~~~~~~~~~~
 While supported by conda, `git_url` and `git_rev` are not as stable as a git
-tarball. Ideally a github repo should have tagged releases that are accessible
-as tarballs from the "releases" section of the github repo.
+tarball. Ideally, a github repo should have tagged releases that are accessible
+as tarballs from the "releases" section of the github repo. Correspondingly, a
+bitbucket repo should have have tagged versions that are accessible as tarballs
+from the "Downloads" -> "tags" section of the bitbucket repo.
 
 TODO: additional info on the various R and bioconductor URLs
 
