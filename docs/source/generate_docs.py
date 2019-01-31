@@ -202,13 +202,13 @@ def generate_readme(folder, repodata, renderer):
     versions = []
     for version in sorted_versions:
         version_info = versions_in_channel[version]
-        version = template_options.copy()
-        version.update({
+        version_tpl = template_options.copy()
+        version_tpl.update({
             'Linux': '<i class="fa fa-linux"></i>' if 'linux' in version_info else '',
             'OSX': '<i class="fa fa-apple"></i>' if 'osx' in version_info else '',
             'Version': version
         })
-        versions.append(version)
+        versions.append(version_tpl)
     return versions
 
 
