@@ -173,6 +173,7 @@ def generate_readme(folder, repodata, renderer):
         else:
             logger.error("No 'meta.yaml' found in %s", folder)
             return []
+    meta_relpath = meta_fname[len(RECIPE_DIR):]
 
     # Read the meta.yaml file(s)
     try:
@@ -192,7 +193,7 @@ def generate_readme(folder, repodata, renderer):
         'extra': (metadata.get_section('extra') or {}),
         'versions': sorted_versions,
         'gh_recipes': 'https://github.com/bioconda/bioconda-recipes/tree/master/recipes/',
-        'recipe_path': meta_fname,
+        'recipe_path': meta_relpath,
         'Package': '<a href="recipes/{0}/README.html">{0}</a>'.format(folder)
     }
 
@@ -201,13 +202,13 @@ def generate_readme(folder, repodata, renderer):
     versions = []
     for version in sorted_versions:
         version_info = versions_in_channel[version]
-        version = template_options.copy()
-        version.update({
+        version_tpl = template_options.copy()
+        version_tpl.update({
             'Linux': '<i class="fa fa-linux"></i>' if 'linux' in version_info else '',
             'OSX': '<i class="fa fa-apple"></i>' if 'osx' in version_info else '',
             'Version': version
         })
-        versions.append(version)
+        versions.append(version_tpl)
     return versions
 
 
