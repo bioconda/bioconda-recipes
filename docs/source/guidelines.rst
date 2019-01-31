@@ -271,7 +271,9 @@ package available on CRAN and is *case-sensitive*. Either run that command
 in the ``recipes`` dir or move the recipe it creates to ``recipes``. The
 recipe name will have an ``r-`` prefix and will be converted to
 lowercase. Typically can be used without modification, though
-dependencies may also need recipes.
+dependencies may also need recipes. For further details on skeleton entries, you
+can also refer to the `cran skeleton template
+<https://github.com/conda/conda-build/blob/master/conda_build/skeletons/cran.py>`_.
 
 Please remove any unnecessary comments and delete the ``bld.bat`` file which is
 used only on Windows.
