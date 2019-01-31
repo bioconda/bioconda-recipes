@@ -227,6 +227,8 @@ in the meta.yaml`
 <http://conda.pydata.org/docs/building/meta-yaml.html#patches>`_.
 
 
+.. _r-cran:
+
 R (CRAN)
 --------
 
@@ -303,6 +305,23 @@ though dependencies may also need recipes. Recipes for dependencies with an
 
 - typical bioconductor recipe: `bioconductor-limma/meta.yaml
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/bioconductor-limma>`_
+
+R (other sources)
+----------------
+
+If a package is only provided in a public repository (e.g. at github or
+bitbucket) or via some other website, first check with the authors of the
+package, if they are planning to publish it on CRAN or Bioconductor. This is
+always preferable, as it will ensure quality control and permanent availability
+at a stable URL, and can warrant waiting for such a publication. If this is not
+planned, you should check if a tagged version is available in a public repo (see
+:ref:`infos on stable URLs  <stable-url>` above) or if the authors are willing
+to generate one. Only if none of this succeeds, the risk of the source
+repository or website disappearing should be taken.
+
+Once you have obtained a :ref:`stable URL <stable-url>` to the package, follow
+the :ref:`guidelines for R packages on CRAN <r-cran>` above and adjust the URL
+and checksum accordingly.
 
 Java
 ----
