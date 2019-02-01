@@ -956,7 +956,7 @@ def load_config(path):
 
     default_config = {
         'blacklists': [],
-        'channels': ['conda-forge', 'conda-forge/label/cf201901', 'bioconda', 'defaults'],
+        'channels': ['conda-forge', 'bioconda', 'defaults'],
         'requirements': None,
         'upload_channel': 'bioconda'
     }
