@@ -268,7 +268,7 @@ def build_recipes(
 
     if check_channels is None:
         if config['channels']:
-            check_channels = config['channels'][:2]
+            check_channels = [c for c in config['channels'] if c != "defaults"]
         else:
             check_channels = []
 
