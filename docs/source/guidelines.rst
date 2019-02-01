@@ -29,8 +29,10 @@ bioconda recipe checklist
 Stable urls
 ~~~~~~~~~~~
 While supported by conda, `git_url` and `git_rev` are not as stable as a git
-tarball. Ideally a github repo should have tagged releases that are accessible
-as tarballs from the "releases" section of the github repo.
+tarball. Ideally, a github repo should have tagged releases that are accessible
+as tarballs from the "releases" section of the github repo. Correspondingly, a
+bitbucket repo should have have tagged versions that are accessible as tarballs
+from the "Downloads" -> "tags" section of the bitbucket repo.
 
 TODO: additional info on the various R and bioconductor URLs
 
@@ -227,6 +229,8 @@ in the meta.yaml`
 <http://conda.pydata.org/docs/building/meta-yaml.html#patches>`_.
 
 
+.. _r-cran:
+
 R (CRAN)
 --------
 
@@ -267,7 +271,9 @@ package available on CRAN and is *case-sensitive*. Either run that command
 in the ``recipes`` dir or move the recipe it creates to ``recipes``. The
 recipe name will have an ``r-`` prefix and will be converted to
 lowercase. Typically can be used without modification, though
-dependencies may also need recipes.
+dependencies may also need recipes. For further details on skeleton entries, you
+can also refer to the `cran skeleton template
+<https://github.com/conda/conda-build/blob/master/conda_build/skeletons/cran.py>`_.
 
 Please remove any unnecessary comments and delete the ``bld.bat`` file which is
 used only on Windows.
@@ -303,6 +309,23 @@ though dependencies may also need recipes. Recipes for dependencies with an
 
 - typical bioconductor recipe: `bioconductor-limma/meta.yaml
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/bioconductor-limma>`_
+
+R (other sources)
+----------------
+
+If a package is only provided in a public repository (e.g. at github or
+bitbucket) or via some other website, first check with the authors of the
+package, if they are planning to publish it on CRAN or Bioconductor. This is
+always preferable, as it will ensure quality control and permanent availability
+at a stable URL, and can warrant waiting for such a publication. If this is not
+planned, you should check if a tagged version is available in a public repo (see
+:ref:`infos on stable URLs  <stable-url>` above) or if the authors are willing
+to generate one. Only if none of this succeeds, the risk of the source
+repository or website disappearing should be taken.
+
+Once you have obtained a :ref:`stable URL <stable-url>` to the package, follow
+the :ref:`guidelines for R packages on CRAN <r-cran>` above and adjust the URL
+and checksum accordingly.
 
 Java
 ----
