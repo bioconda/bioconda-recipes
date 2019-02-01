@@ -13,7 +13,10 @@ from itertools import product, chain, groupby
 import logging
 import datetime
 from threading import Event, Thread
+from typing import Sequence
 from pathlib import PurePath
+import json
+import warnings
 
 from conda_build import api
 from conda.exports import VersionOrder
@@ -26,8 +29,36 @@ import yaml
 import jinja2
 from jinja2 import Environment, PackageLoader
 from colorlog import ColoredFormatter
+import pandas as pd
+import tqdm as _tqdm
+import asyncio
+import aiohttp
+import backoff
 
-log_stream_handler = logging.StreamHandler()
+
+class TqdmHandler(logging.StreamHandler):
+    """Tqdm aware logging StreamHandler
+    Passes all log writes through tqdm to allow progress bars
+    and log messages to coexist without clobbering terminal
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+         # initialise internal tqdm lock so that we can use tqdm.write
+        _tqdm.tqdm(disable=True, total=0)
+    def emit(self, record):
+        _tqdm.tqdm.write(self.format(record))
+
+
+def tqdm(*args, **kwargs):
+    """Wrapper around TQDM handling disable"""
+    enable = (sys.stderr.isatty()
+              and os.environ.get("TERM", "") != "dumb"
+              and os.environ.get("CIRCLECI", "") != "true")
+    kwargs['disable'] = not enable
+    return _tqdm.tqdm(*args, **kwargs)
+
+
+log_stream_handler = TqdmHandler()
 log_stream_handler.setFormatter(ColoredFormatter(
         "%(asctime)s %(log_color)sBIOCONDA %(levelname)s%(reset)s %(message)s",
         datefmt="%H:%M:%S",
@@ -41,6 +72,19 @@ log_stream_handler.setFormatter(ColoredFormatter(
         }))
 
 
+def ensure_list(obj):
+    """Wraps **obj** in a list if necessary
+
+    >>> ensure_list("one")
+    ["one"]
+    >>> ensure_list(["one", "two"])
+    ["one", "two"]
+    """
+    if isinstance(obj, Sequence) and not isinstance(obj, str):
+        return obj
+    return [obj]
+
+
 def setup_logger(name, loglevel=None):
     logger = logging.getLogger(name)
     logger.propagate = False
@@ -52,11 +96,30 @@ def setup_logger(name, loglevel=None):
 
 logger = setup_logger(__name__)
 
+
+class JinjaSilentUndefined(jinja2.Undefined):
+    def _fail_with_undefined_error(self, *args, **kwargs):
+        return ""
+
+    __add__ = __radd__ = __mul__ = __rmul__ = __div__ = __rdiv__ = \
+        __truediv__ = __rtruediv__ = __floordiv__ = __rfloordiv__ = \
+        __mod__ = __rmod__ = __pos__ = __neg__ = __call__ = \
+        __getitem__ = __lt__ = __le__ = __gt__ = __ge__ = __int__ = \
+        __float__ = __complex__ = __pow__ = __rpow__ = \
+        _fail_with_undefined_error
+
+
 jinja = Environment(
     loader=PackageLoader('bioconda_utils', 'templates'),
     trim_blocks=True,
     lstrip_blocks=True
 )
+
+
+jinja_silent_undef = Environment(
+    undefined=JinjaSilentUndefined
+)
+
 
 # Patterns of allowed environment variables that are allowed to be passed to
 # conda-build.
@@ -173,7 +236,8 @@ def load_all_meta(recipe, config=None, finalize=True):
                                                 )]
 
 
-def load_meta_fast(recipe):
+
+def load_meta_fast(recipe, env=None):
     """
     Given a package name, find the current meta.yaml file, parse it, and return
     the dict.
@@ -183,25 +247,15 @@ def load_meta_fast(recipe):
     recipe : str
         Path to recipe (directory containing the meta.yaml file)
 
-    config : str or dict
-        Config YAML or dict
+    env: Optional[dict]
+        Variables to expand
     """
-    class SilentUndefined(jinja2.Undefined):
-        def _fail_with_undefined_error(self, *args, **kwargs):
-            return ""
-
-        __add__ = __radd__ = __mul__ = __rmul__ = __div__ = __rdiv__ = \
-            __truediv__ = __rtruediv__ = __floordiv__ = __rfloordiv__ = \
-            __mod__ = __rmod__ = __pos__ = __neg__ = __call__ = \
-            __getitem__ = __lt__ = __le__ = __gt__ = __ge__ = __int__ = \
-            __float__ = __complex__ = __pow__ = __rpow__ = \
-            _fail_with_undefined_error
+    if not env:
+        env = {}
 
     pth = os.path.join(recipe, 'meta.yaml')
-    jinja_env = jinja2.Environment(undefined=SilentUndefined)
-    content = jinja_env.from_string(
-        open(pth, 'r', encoding='utf-8').read()).render({})
-    meta = yaml.load(content)
+    template = jinja_silent_undef.from_string(open(pth, 'r', encoding='utf-8').read())
+    meta = yaml.load(template.render(env))
     return meta
 
 
@@ -535,11 +589,11 @@ def get_recipes(recipe_folder, package="*"):
     if isinstance(package, str):
         package = [package]
     for p in package:
-        logger.debug(
-            "get_recipes(%s, package='%s'): %s", recipe_folder, package, p)
+        logger.debug("get_recipes(%s, package='%s'): %s",
+                     recipe_folder, package, p)
         path = os.path.join(recipe_folder, p)
         for new_dir in glob.glob(path):
-            for dir_path,dir_names,file_names in os.walk(new_dir):
+            for dir_path, dir_names, file_names in os.walk(new_dir):
                 if "meta.yaml" in file_names:
                     yield dir_path
 
@@ -584,88 +638,8 @@ def get_latest_recipes(recipe_folder, config, package="*"):
                 yield sorted_versions[-1]
 
 
-def get_channel_repodata(channel='bioconda', platform=None):
-    """
-    Returns the parsed JSON repodata for a channel from conda.anaconda.org.
-
-    A tuple of dicts is returned, (repodata, noarch_repodata). The first is the
-    repodata for the provided platform, and the second is the noarch repodata,
-    which will be the same for a channel no matter what the platform.
-
-    Parameters
-    ----------
-    channel : str
-        Channel to retrieve packages for
-
-    platform : None | linux | osx
-        Platform (OS) to retrieve packages for from `channel`. If None, use the
-        currently-detected platform.
-    """
-    url_template = 'https://conda.anaconda.org/{channel}/{arch}/repodata.json'
-    if (
-        (platform == 'linux') or
-        (platform is None and sys.platform.startswith("linux"))
-    ):
-        arch = 'linux-64'
-    elif (
-        (platform == 'osx') or
-        (platform is None and sys.platform.startswith("darwin"))
-    ):
-        arch = 'osx-64'
-    else:
-        raise ValueError(
-            'Unsupported OS: bioconda only supports linux and osx.')
-
-    url = url_template.format(channel=channel, arch=arch)
-    repodata = requests.get(url)
-    if repodata.status_code != 200:
-        raise requests.HTTPError(
-            '{0.status_code} {0.reason} for {1}'
-            .format(repodata, url))
-
-    noarch_url = url_template.format(channel=channel, arch='noarch')
-    noarch_repodata = requests.get(noarch_url)
-    if noarch_repodata.status_code != 200:
-        raise requests.HTTPError(
-            '{0.status_code} {0.reason} for {1}'
-            .format(noarch_repodata, noarch_url))
-    return repodata.json(), noarch_repodata.json()
-
-
-PackageKey = namedtuple('PackageKey', ('name', 'version', 'build_number'))
-PackageBuild = namedtuple('PackageBuild', ('subdir', 'build_id'))
-
-
 class DivergentBuildsError(Exception):
     pass
-
-
-def get_channel_packages(channel='bioconda', platform=None):
-    """
-    Return a PackageKey -> set(PackageBuild) mapping.
-    Retrieves the existing packages for a channel from conda.anaconda.org.
-
-    Parameters
-    ----------
-    channel : str
-        Channel to retrieve packages for
-
-    platform : None | linux | osx
-        Platform (OS) to retrieve packages for from `channel`. If None, use the
-        currently-detected platform.
-    """
-    repodata, noarch_repodata = get_channel_repodata(
-        channel=channel, platform=platform)
-    channel_packages = defaultdict(set)
-    for repo in (repodata, noarch_repodata):
-        subdir = repo['info']['subdir']
-        for package in repo['packages'].values():
-            pkg_key = PackageKey(
-                package['name'], package['version'], package['build_number'])
-            pkg_build = PackageBuild(subdir, package['build'])
-            channel_packages[pkg_key].add(pkg_build)
-    channel_packages.default_factory = None
-    return channel_packages
 
 
 def _string_or_float_to_integer_python(s):
@@ -817,56 +791,54 @@ def _meta_subdir(meta):
     return 'noarch' if meta.noarch or meta.noarch_python else meta.config.host_subdir
 
 
-def _get_pkg_key_build_meta_map(metas):
-    key_build_meta = defaultdict(dict)
-    for meta in metas:
-        pkg_key = PackageKey(meta.name(), meta.version(), int(meta.build_number() or 0))
-        pkg_build = PackageBuild(_meta_subdir(meta), meta.build_id())
-        key_build_meta[pkg_key][pkg_build] = meta
-    key_build_meta.default_factory = None
-    return key_build_meta
 
-
-def check_recipe_skippable(recipe, channel_packages, force=False):
+def check_recipe_skippable(recipe, check_channels):
     """
     Return True if the same number of builds (per subdir) defined by the recipe
-    are already in channel_packages (and force is False).
+    are already in channel_packages.
     """
-    if force:
-        return False
     platform, metas = _load_platform_metas(recipe, finalize=False)
-    key_build_meta = _get_pkg_key_build_meta_map(metas)
-    num_existing_pkg_builds = sum(
-        (
-            Counter(
-                (pkg_key, pkg_build.subdir)
-                for pkg_build in channel_packages.get(pkg_key, set())
-            )
-            for pkg_key in key_build_meta.keys()
-        ),
-        Counter()
+    packages =  set(
+        (meta.name(), meta.version(), int(meta.build_number() or 0))
+        for meta in metas
+    )
+    r = RepoData()
+    num_existing_pkg_builds = Counter(
+        (name, version, build_number, subdir)
+        for name, version, build_number in packages
+        for subdir in r.get_package_data("subdir", name=name, version=version,
+                                         build_number=build_number,
+                                         channels=check_channels, native=True)
     )
     if num_existing_pkg_builds == Counter():
         # No packages with same version + build num in channels: no need to skip
         return False
-    num_new_pkg_builds = sum(
-        (
-            Counter((pkg_key, pkg_build.subdir) for pkg_build in build_meta.keys())
-            for pkg_key, build_meta in key_build_meta.items()
-        ),
-        Counter()
+    num_new_pkg_builds = Counter(
+        (meta.name(), meta.version(), int(meta.build_number()) or 0, _meta_subdir(meta))
+        for meta in metas
     )
     return num_new_pkg_builds == num_existing_pkg_builds
 
 
-def _filter_existing_packages(metas, channel_packages):
+def _filter_existing_packages(metas, check_channels):
     new_metas = []  # MetaData instances of packages not yet in channel
     existing_metas = []  # MetaData instances of packages already in channel
     divergent_builds = set()  # set of Dist (i.e., name-version-build) strings
 
-    key_build_meta = _get_pkg_key_build_meta_map(metas)
+    key_build_meta = defaultdict(dict)
+    for meta in metas:
+        pkg_key = (meta.name(), meta.version(), int(meta.build_number() or 0))
+        pkg_build = (_meta_subdir(meta), meta.build_id())
+        key_build_meta[pkg_key][pkg_build] = meta
+
+    r = RepoData()
     for pkg_key, build_meta in key_build_meta.items():
-        existing_pkg_builds = channel_packages.get(pkg_key, set())
+        existing_pkg_builds = set(r.get_package_data(['subdir', 'build'],
+                                                     name=pkg_key[0],
+                                                     version=pkg_key[1],
+                                                     build_number=pkg_key[2],
+                                                     channels=check_channels,
+                                                     native=True))
         for pkg_build, meta in build_meta.items():
             if pkg_build not in existing_pkg_builds:
                 new_metas.append(meta)
@@ -874,18 +846,19 @@ def _filter_existing_packages(metas, channel_packages):
                 existing_metas.append(meta)
         for divergent_build in (existing_pkg_builds - set(build_meta.keys())):
             divergent_builds.add(
-                '-'.join((pkg_key.name, pkg_key.version, divergent_build.build_id)))
+                '-'.join((pkg_key[0], pkg_key[1], divergent_build[1])))
     return new_metas, existing_metas, divergent_builds
 
 
-def get_package_paths(recipe, channel_packages, force=False):
-    if check_recipe_skippable(recipe, channel_packages, force):
-        # NB: If we skip early here, we don't detect possible divergent builds.
-        logger.info(
-            'FILTER: not building recipe %s because '
-            'the same number of builds are in channel(s) and it is not forced.',
-            recipe)
-        return []
+def get_package_paths(recipe, check_channels, force=False):
+    if not force:
+        if check_recipe_skippable(recipe, check_channels):
+            # NB: If we skip early here, we don't detect possible divergent builds.
+            logger.info(
+                'FILTER: not building recipe %s because '
+                'the same number of builds are in channel(s) and it is not forced.',
+                recipe)
+            return []
     platform, metas = _load_platform_metas(recipe, finalize=True)
 
     # The recipe likely defined skip: True
@@ -903,7 +876,7 @@ def get_package_paths(recipe, channel_packages, force=False):
                 return []
 
     new_metas, existing_metas, divergent_builds = (
-        _filter_existing_packages(metas, channel_packages))
+        _filter_existing_packages(metas, check_channels))
 
     if divergent_builds:
         raise DivergentBuildsError(*sorted(divergent_builds))
@@ -919,22 +892,6 @@ def get_package_paths(recipe, channel_packages, force=False):
         build_metas = new_metas
     return list(chain.from_iterable(
         api.get_output_file_paths(meta) for meta in build_metas))
-
-
-def get_all_channel_packages(channels):
-    """
-    Return a PackageKey -> set(PackageBuild) mapping.
-    """
-    if channels is None:
-        channels = []
-
-    all_channel_packages = defaultdict(set)
-    for channel in channels:
-        channel_packages = get_channel_packages(channel=channel)
-        for pkg_key, pkg_builds in channel_packages.items():
-            all_channel_packages[pkg_key].update(pkg_builds)
-    all_channel_packages.default_factory = None
-    return all_channel_packages
 
 
 def get_blacklist(blacklists, recipe_folder):
@@ -999,7 +956,7 @@ def load_config(path):
 
     default_config = {
         'blacklists': [],
-        'channels': [],
+        'channels': ['conda-forge', 'conda-forge/label/cf201901', 'bioconda', 'defaults'],
         'requirements': None,
         'upload_channel': 'bioconda'
     }
@@ -1009,7 +966,15 @@ def load_config(path):
         config['channels'] = get_list('channels')
 
     default_config.update(config)
+
+    # register config object in RepoData
+    RepoData.register_config(default_config)
+
     return default_config
+
+
+class BiocondaUtilsWarning(UserWarning):
+    pass
 
 
 def modified_recipes(git_range, recipe_folder, config_file):
@@ -1100,3 +1065,305 @@ class Progress:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.stop.set()
         self.thread.join()
+
+
+class AsyncRequests:
+    """Download a bunch of files in parallel
+
+    This is not really a class, more a name space encapsulating a bunch of calls.
+    """
+    #: Identify ourselves
+    USER_AGENT = "bioconda/bioconda-utils"
+    #: Max connections to each server
+    CONNECTIONS_PER_HOST = 4
+
+    @classmethod
+    def fetch(cls, urls, descs, cb, datas):
+        """Fetch data from URLs.
+
+        This will use asyncio to manage a pool of connections at once, speeding
+        up download as compared to iterative use of ``requests`` significantly.
+        It will also retry on non-permanent HTTP error codes (i.e. 429, 502,
+        503 and 504).
+
+        Args:
+          urls: List of URLS
+          descs: Matching list of descriptions (for progress display)
+          cb: As each download is completed, data is passed through this function.
+              Use to e.g. offload json parsing into download loop.
+        """
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        task = asyncio.ensure_future(cls._async_fetch(urls, descs, cb, datas))
+
+        try:
+            loop.run_until_complete(task)
+        except KeyboardInterrupt:
+            task.cancel()
+            loop.run_forever()
+            task.exception()
+
+        return task.result()
+
+    @classmethod
+    async def _async_fetch(cls, urls, descs, cb, datas):
+        conn = aiohttp.TCPConnector(limit_per_host=cls.CONNECTIONS_PER_HOST)
+        async with aiohttp.ClientSession(
+                connector=conn,
+                headers={'User-Agent': cls.USER_AGENT}
+        ) as session:
+            coros = [
+                asyncio.ensure_future(cls._async_fetch_one(session, url, desc, cb, data))
+                for url, desc, data in zip(urls, descs, datas)
+            ]
+            with tqdm(asyncio.as_completed(coros),
+                      total=len(coros),
+                      desc="Downloading", unit="files") as t:
+                result = [await coro for coro in t]
+        return result
+
+    @staticmethod
+    @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
+                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
+    async def _async_fetch_one(session, url, desc, cb, data):
+        result = []
+        async with session.get(url) as resp:
+            resp.raise_for_status()
+            size = int(resp.headers.get("Content-Length", 0))
+            with tqdm(total=size, unit='B', unit_scale=True, unit_divisor=1024,
+                      desc=desc, miniters=1,
+                      disable=logger.getEffectiveLevel() > logging.INFO
+            ) as progress:
+                while True:
+                    block = await resp.content.read(1024*16)
+                    if not block:
+                        break
+                    progress.update(len(block))
+                    result.append(block)
+        if cb:
+            return cb(b"".join(result), data)
+        else:
+            return b"".join(result)
+
+
+class RepoData:
+    """Singleton providing access to package directory on anaconda cloud
+
+    If the first call provides a filename as **cache** argument, the
+    file is used to cache the directory in CSV format.
+
+    Data structure:
+
+    Each **channel** hosted at anaconda cloud comprises a number of
+    **subdirs** in which the individual package files reside. The
+    **subdirs** can be one of **noarch**, **osx-64** and **linux-64**
+    for Bioconda. (Technically ``(noarch|(linux|osx|win)-(64|32))``
+    appears to be the schema).
+
+    For **channel/subdir** (aka **channel/platform**) combination, a
+    **repodata.json** contains a **package** key describing each
+    package file with at least the following information:
+
+    name: Package name (lowercase, alphanumeric + dash)
+
+    version: Version (no dash, PEP440)
+
+    build_number: Non negative integer indicating packaging revisions
+
+    build: String comprising hash of pinned dependencies and build
+      number. Used to distinguish different builds of the same
+      package/version combination.
+
+    depends: Runtime requirements for package as list of strings. We
+      do not currently load this.
+
+    arch: Architecture key (x86_64). Not used by conda and not loaded
+      here.
+
+    platform: Platform of package (osx, linux, noarch). Optional
+      upstream, not used by conda. We generate this from the subdir
+      information to have it available.
+
+
+    Repodata versions:
+
+    The version is indicated by the key **repodata_version**, with
+    absence of that key indication version 0.
+
+    In version 0, the **info** key contains the **subdir**,
+    **platform**, **arch**, **default_python_version** and
+    **default_numpy_version** keys. In version 1 it only contains the
+    **subdir** key.
+
+    In version 1, a key **removed** was added, listing packages
+    removed from the repository.
+
+    """
+
+    REPODATA_URL = 'https://conda.anaconda.org/{channel}/{subdir}/repodata.json'
+    REPODATA_LABELED_URL = 'https://conda.anaconda.org/{channel}/label/{label}/{subdir}/repodata.json'
+    REPODATA_DEFAULTS_URL = 'https://repo.anaconda.com/pkgs/main/{subdir}/repodata.json'
+
+    _load_columns = ['build', 'build_number', 'name', 'version']
+
+    #: Columns available in internal dataframe
+    columns = _load_columns + ['channel', 'subdir', 'platform']
+    #: Platforms loaded
+    platforms = ['linux', 'osx', 'noarch']
+    # config object
+    config = None
+
+    @classmethod
+    def register_config(cls, config):
+        cls.config = config
+
+    __instance = None
+    def __new__(cls):
+        """Makes RepoData a singleton"""
+        if RepoData.__instance is None:
+            assert RepoData.config is not None, ("bug: ensure to load config "
+                                                 "before instantiating RepoData.")
+            RepoData.__instance = object.__new__(cls)
+        return RepoData.__instance
+
+    def __init__(self):
+        self.cache_file = None
+        self._df = None
+
+    def set_cache(self, cache):
+        if self._df is not None:
+            warnings.warn("RepoData cache set after first use", BiocondaUtilsWarning)
+        else:
+            self.cache_file = cache
+
+    @property
+    def channels(self):
+        """Return channels to load."""
+        return self.config["channels"]
+
+    @property
+    def df(self):
+        if self._df is None:
+            self._df = self._load_channel_dataframe()
+        return self._df
+
+    def _make_repodata_url(self, channel, platform):
+        if channel == "defaults":
+            # caveat: this only gets defaults main, not 'free', 'r' or 'pro'
+            url_template = self.REPODATA_DEFAULTS_URL
+        else:
+            url_template = self.REPODATA_URL
+
+        url = url_template.format(channel=channel,
+                                  subdir=self.platform2subdir(platform))
+        return url
+
+    def _load_channel_dataframe(self):
+        if self.cache_file is not None and os.path.exists(self.cache_file):
+            logger.info("Loading repodata from cache %s", self.cache_file)
+            return pd.read_table(self.cache_file)
+
+        repos = list(product(self.channels, self.platforms))
+        urls = [self._make_repodata_url(c, p) for c, p in repos]
+        descs = ["{}/{}".format(c, p) for c, p in repos]
+
+        def to_dataframe(json_data, meta_data):
+            channel, platform = meta_data
+            repo = json.loads(json_data)
+            df = pd.DataFrame.from_dict(repo['packages'], 'index',
+                                        columns=self._load_columns)
+            # Ensure that version is always a string.
+            df['version'] = df['version'].astype(str)
+            df['channel'] = channel
+            df['platform'] = platform
+            df['subdir'] = repo['info']['subdir']
+            return df
+
+        dfs = AsyncRequests.fetch(urls, descs, to_dataframe, repos)
+        res = pd.concat(dfs)
+
+        if self.cache_file is not None:
+            res.to_csv(self.cache_file, sep='\t')
+
+        return res
+
+    @staticmethod
+    def native_platform():
+        if sys.platform.startswith("linux"):
+            return "linux"
+        if sys.platform.startswith("darwin"):
+            return "osx"
+        raise ValueError("Running on unsupported platform")
+
+    @staticmethod
+    def platform2subdir(platform):
+        if platform == 'linux':
+            return 'linux-64'
+        elif platform == 'osx':
+            return 'osx-64'
+        elif platform == 'noarch':
+            return 'noarch'
+        else:
+            raise ValueError(
+                'Unsupported platform: bioconda only supports linux, osx and noarch.')
+
+
+
+    def get_versions(self, name):
+        """Get versions available for package
+
+        Args:
+          name: package name
+
+        Returns:
+          Dictionary mapping version numbers to list of architectures
+          e.g. {'0.1': ['linux'], '0.2': ['linux', 'osx'], '0.3': ['noarch']}
+        """
+        # called from doc generator
+        packages = self.df[self.df.name == name][['version', 'platform']]
+        versions = packages.groupby('version').agg(lambda x: list(set(x)))
+        return versions['platform'].to_dict()
+
+    def get_latest_versions(self, channel):
+        """Get the latest version for each package in **channel**"""
+        # called from pypi module
+        packages = self.df[self.df.channel == channel]['version']
+        def max_vers(x):
+            return max(VersionOrder(v) for v in x)
+        vers = packages.groupby('name').agg(max_vers)
+
+    def get_package_data(self, key, channels=None, name=None, version=None,
+                         build_number=None, platform=None, native=False):
+        """Get **key** for each package in **channels**
+
+        If **key** is a string, returns list of strings.
+        If **key** is a list of string, returns tuple iterator.
+        """
+        if native:
+            platform = ['noarch', self.native_platform()]
+
+        if version is not None:
+            version = str(version)
+
+        df = self.df
+        for col, val in (
+                ('name', name),
+                ('channel', channels),
+                ('version', version),
+                ('build_number', build_number),
+                ('platform', platform),
+        ):
+            if val is None:
+                continue
+            if isinstance(val, list) or isinstance(val, tuple):
+                df = df[df[col].isin(val)]
+            else:
+                df = df[df[col] == val]
+
+        if isinstance(key, str):
+            return list(df[key])
+        return df[key].itertuples(index=False)

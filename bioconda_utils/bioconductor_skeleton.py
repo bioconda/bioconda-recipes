@@ -14,6 +14,7 @@ import logging
 import bs4
 import pyaml
 import requests
+import yaml
 
 from . import utils
 from . import cran_skeleton
@@ -22,7 +23,7 @@ logging.getLogger("requests").setLevel(logging.WARNING)
 
 logger = utils.setup_logger(__name__)
 
-base_url = 'http://bioconductor.org/packages/'
+base_url = 'https://bioconductor.org/packages/'
 
 # Packages that might be specified in the DESCRIPTION of a package as
 # dependencies, but since they're built-in we don't need to specify them in
@@ -52,23 +53,24 @@ def bioconductor_versions():
     Returns a list of available Bioconductor versions scraped from the
     Bioconductor site.
     """
-    regex = re.compile('^/packages/(?P<version>\d+\.\d+)/$')
-    url = 'https://www.bioconductor.org/about/release-announcements/#release-versions'
+    url = "https://bioconductor.org/config.yaml"
     response = requests.get(url)
-    soup = bs4.BeautifulSoup(response.content, 'html.parser')
-    versions = []
-    for a in soup.find_all('a', href=True):
-        ref = a.attrs['href']
-        m = regex.search(ref)
-        if m:
-            versions.append(m.group('version'))
+    bioc_config = yaml.load(response.text)
+    versions = list(bioc_config["r_ver_for_bioc_ver"].keys())
     versions = sorted(versions, key=float, reverse=True)
     return versions
 
 
-def latest_bioconductor_version():
+def latest_bioconductor_release_version():
     """
-    Latest Bioconductor version scraped from the Bioconductor site.
+    Latest Bioconductor release version.
+    """
+    return bioconductor_versions()[1]
+
+
+def latest_bioconductor_devel_version():
+    """
+    Latest Bioconductor version in development.
     """
     return bioconductor_versions()[0]
 
@@ -221,8 +223,46 @@ def find_best_bioc_version(package, version):
     )
 
 
+def fetchPackages(bioc_version):
+    """
+    Return a dictionary of all bioconductor packages in a given release:
+
+    {package: {Version: "version",
+               Depends: [list],
+               Suggests: [list],
+               MD5sum: "hash",
+               License: "foo",
+               Description: "Something...",
+               NeedsCompilation: boolean},
+              ...
+    }
+    """
+    d = dict()
+    packages_urls = [(os.path.join(base_url, bioc_version, 'bioc', 'VIEWS'), 'bioc'),
+                     (os.path.join(base_url, bioc_version, 'data', 'annotation', 'VIEWS'), 'data/annotation'),
+                     (os.path.join(base_url, bioc_version, 'data', 'experiment', 'VIEWS'), 'data/experiment')]
+    for url, prefix in packages_urls:
+        req = requests.get(url)
+        if not req.ok:
+            sys.exit("ERROR: Could not fetch {}!\n".format(url))
+        for pkg in req.text.strip().split("\n\n"):
+            pkgDict = dict()
+            lastKey = None
+            for line in pkg.split("\n"):
+                if line.startswith(" "):
+                    pkgDict[lastKey] += " {}".format(line.strip())
+                    pkgDict[lastKey] = pkgDict[lastKey].strip()  # Prevent prepending a space when content begins on the next line
+                elif ":" in line:
+                    idx = line.index(":")
+                    lastKey = line[:idx]
+                    pkgDict[lastKey] = line[idx + 2:].strip()
+            pkgDict['URLprefix'] = prefix.strip()
+            d[pkgDict['Package']] = pkgDict
+    return d
+
+
 class BioCProjectPage(object):
-    def __init__(self, package, bioc_version=None, pkg_version=None):
+    def __init__(self, package, bioc_version=None, pkg_version=None, packages=None):
         """
         Represents a single Bioconductor package page and provides access to
         scraped data.
@@ -234,7 +274,6 @@ class BioCProjectPage(object):
         self.package = package
         self.package_lower = package.lower()
         self._md5 = None
-        self._sha256 = None
         self._cached_tarball = None
         self._dependencies = None
         self.build_number = 0
@@ -246,99 +285,45 @@ class BioCProjectPage(object):
         self._bioconductor_tarball_url = None
         self.is_data_package = False
         self.package_lower = package.lower()
+        self.version = pkg_version
+        self.extra = None
 
         # If no version specified, assume the latest
         if not self.bioc_version:
             if not self._pkg_version:
-                self.bioc_version = latest_bioconductor_version()
+                self.bioc_version = latest_bioconductor_release_version()
             else:
                 self.bioc_version = find_best_bioc_version(self.package, self._pkg_version)
-        htmls = {
-            'regular_package': os.path.join(
-                base_url, self.bioc_version, 'bioc', 'html', package
-                + '.html'),
-            'annotation_package': os.path.join(
-                base_url, self.bioc_version, 'data', 'annotation', 'html',
-                package + '.html'),
-            'experiment_package': os.path.join(
-                base_url, self.bioc_version, 'data', 'experiment', 'html',
-                package + '.html'),
-        }
-        tried = []
-        for label, url in htmls.items():
-            request = requests.get(url)
-            tried.append(url)
-            if request:
-                break
+
+        # Fetch a list of all packages, so dependency versions can be calculated
+        if not packages:
+            self.packages = fetchPackages(self.bioc_version)
+        else:
+            self.packages = packages
+
+        if package not in self.packages:
+            raise PackageNotFoundError('{} does not exist in this bioconductor release!'.format(package))
+
+        if not pkg_version:
+            self.version = self.packages[package]['Version']
+        self.depends_on_gcc = False
+
+        # Determine the URL
+        url = os.path.join(base_url, self.bioc_version, self.packages[package]['URLprefix'], 'html', package + '.html')
+        request = requests.get(url)
 
         if not request:
             raise PageNotFoundError(
                 'Could not find HTML page for {0.package}. Tried: '
-                '{1}'.format(self, ', '.join(tried)))
+                '{1}'.format(self, url))
 
         # Since we provide the "short link" we will get redirected. Using
         # requests allows us to keep track of the final destination URL,
         # which we need for reconstructing the tarball URL.
         self.url = request.url
-            
-        # If no version has been provided, the following code finds the latest
-        # version by finding and scraping the HTML page for the package's
-        # "Details" table.
 
-        if self._pkg_version is not None:
-            self.version = self._pkg_version
-
-        else:
-            htmls = {
-                'regular_package': os.path.join(
-                    base_url, self.bioc_version, 'bioc', 'html',
-                    package + '.html'),
-                'annotation_package': os.path.join(
-                    base_url, self.bioc_version, 'data', 'annotation', 'html',
-                    package + '.html'),
-                'experiment_package': os.path.join(
-                    base_url, self.bioc_version, 'data', 'experiment', 'html',
-                    package + '.html'),
-            }
-            tried = []
-            for label, url in htmls.items():
-                request = requests.get(url)
-                tried.append(url)
-                if request:
-                    break
-
-            if not request:
-                raise PageNotFoundError(
-                    'Could not find HTML page for {0.package}. Tried: '
-                    '{1}'.format(self, ', '.join(tried)))
-
-            # Since we provide the "short link" we will get redirected. Using
-            # requests allows us to keep track of the final destination URL,
-            # which we need for reconstructing the tarball URL.
-            self.url = request.url
-
-            # The table at the bottom of the page has the info we want. An
-            # earlier draft of this script parsed the dependencies from the
-            # details table.  That's still an option if we need a double-check
-            # on the DESCRIPTION fields. For now, we're grabbing the version
-            # information from the table.
-            soup = bs4.BeautifulSoup(request.content, 'html.parser')
-            details_table = soup.find_all(attrs={'class': 'details'})[0]
-
-            parsed_html_version = None
-            for td in details_table.findAll('td'):
-                if td.getText() == 'Version':
-                    parsed_html_version = td.findNext().getText()
-                    break
-
-            if parsed_html_version is None:
-                raise ValueError(
-                    "Could not scrape latest version information from "
-                    "{0}".format(self.url))
-
-            self.version = parsed_html_version
-
-        self.depends_on_gcc = False
+        if self.packages[package]['URLprefix'] != 'bioc':
+            self.is_data_package = True
 
     @property
     def bioarchive_url(self):
@@ -374,39 +359,15 @@ class BioCProjectPage(object):
         """
         Return the url to the tarball from the bioconductor site.
         """
-        url = bioconductor_tarball_url(self.package, self.version, self.bioc_version)
+        url = os.path.join(base_url, self.bioc_version, self.packages[self.package]['URLprefix'], self.packages[self.package]['source.ver'])
         response = requests.head(url)
         if response.status_code == 200:
-            return url
-
-    @property
-    def bioconductor_annotation_data_url(self):
-        """
-        Return the url to the tarball from the bioconductor site.
-        """
-        url = bioconductor_annotation_data_url(self.package, self.version, self.bioc_version)
-        response = requests.head(url)
-        if response.status_code == 200:
-            self.is_data_package = True
-            return url
-
-    @property
-    def bioconductor_experiment_data_url(self):
-        """
-        Return the url to the tarball from the bioconductor site.
-        """
-        url = bioconductor_experiment_data_url(self.package, self.version, self.bioc_version)
-        response = requests.head(url)
-        if response.status_code == 200:
-            self.is_data_package = True
             return url
 
     @property
     def tarball_url(self):
         if not self._tarball_url:
             urls = [self.bioconductor_tarball_url,
-                    self.bioconductor_annotation_data_url,
-                    self.bioconductor_experiment_data_url,
                     self.bioarchive_url,
                     self.cargoport_url]
             for url in urls:
@@ -440,8 +401,8 @@ class BioCProjectPage(object):
         Downloads the tarball to the `cached_bioconductor_tarballs` dir if one
         hasn't already been downloaded for this package.
 
-        This is because we need the whole tarball to get the DESCRIPTION file
-        and to generate an md5 hash, so we might as well save it somewhere.
+        This is because we need the whole tarball to determine which compilers
+        are needed.
         """
         if self._cached_tarball:
             return self._cached_tarball
@@ -468,56 +429,52 @@ class BioCProjectPage(object):
     @property
     def description(self):
         """
-        Extract the DESCRIPTION file from the tarball and parse it.
+        The "Description" from the VIEW file
         """
-        t = tarfile.open(self.cached_tarball)
-        d = t.extractfile(os.path.join(self.package, 'DESCRIPTION')).read()
-        self._contents = d
-        c = configparser.ConfigParser(strict=False)
-
-        # On-spec config files need a "section", but the DESCRIPTION file
-        # doesn't have one. So we just add a fake section, and let the
-        # configparser module take care of the details of parsing.
-        c.read_string('[top]\n' + d.decode('UTF-8'))
-        e = c['top']
-
-        # Glue together newlines
-        for k in e.keys():
-            e[k] = e[k].replace('\n', ' ')
-
-        return dict(e)
+        return self.packages[self.package]['Description']
 
     @property
     def license(self):
-        return self.description['license']
+        return self.packages[self.package]['License']
 
     @property
     def imports(self):
         """
-        List of "imports" from the DESCRIPTION file
+        List of "imports" from the VIEW file
         """
         try:
-            return [i.strip() for i in self.description['imports'].replace(' ', '').split(',')]
+            return [i.strip() for i in self.packages[self.package]['Imports'].replace(' ', '').split(',')]
+        except KeyError:
+            return []
+
+    @property
+    def systemrequirements(self):
+        """
+        List of "SystemRequirements" from the VIEW file
+        """
+        try:
+            print(self.packages[self.package]['SystemRequirements'])
+            return self.packages[self.package]['SystemRequirements']
         except KeyError:
             return []
 
     @property
     def depends(self):
         """
-        List of "depends" from the DESCRIPTION file
+        List of "depends" from the VIEW file
         """
         try:
-            return [i.strip() for i in self.description['depends'].replace(' ', '').split(',')]
+            return [i.strip() for i in self.packages[self.package]['Depends'].replace(' ', '').split(',')]
         except KeyError:
             return []
 
     @property
     def linkingto(self):
         """
-        List of "linkingto" from the DESCRIPTION file
+        List of "linkingto" from the VIEW file
         """
         try:
-            return [i.strip() for i in self.description['linkingto'].replace(' ', '').split(',')]
+            return [i.strip() for i in self.packages[self.package]['LinkingTo'].replace(' ', '').split(',')]
         except KeyError:
             return []
 
@@ -549,6 +506,27 @@ class BioCProjectPage(object):
             else:
                 raise ValueError("Found {0} toks: {1}".format(len(toks), toks))
         return results
+
+    def pin_version(self, name):
+        """
+        Given a package name, return the version pin string.
+
+        For example, if version 1.2.3 is in the current bioconductor release,
+        then return >=1.2.0,<1.3.0.
+
+        The following have 2 digit versions:
+          - BSgenome.Vvinifera.URGI.IGGP8X
+          - DO.db
+          - BSgenome.Vvinifera.URGI.IGGP12Xv0
+          - BSgenome.Vvinifera.URGI.IGGP12Xv2
+        """
+        v = str(self.packages[name]['Version'])
+        # There are a few packages with only major.minor versions!
+        s = v.split(".")
+        if len(s) == 3:
+            return ">={}.{}.0,<{}.{}.0".format(s[0], s[1], s[0], int(s[1]) + 1)
+        else:
+            return "{}.{}".format(s[0], s[1])
 
     @property
     def dependencies(self):
@@ -586,10 +564,10 @@ class BioCProjectPage(object):
 
             # Try finding the dependency on the bioconductor site; if it can't
             # be found then we assume it's in CRAN.
-            try:
-                BioCProjectPage(name, bioc_version=self.bioc_version)
+            if name in self.packages:
                 prefix = 'bioconductor-'
-            except PageNotFoundError:
+                version = self.pin_version(name)
+            else:
                 prefix = 'r-'
 
             logger.info('{0:>12} dependency: name="{1}" version="{2}"'.format(
@@ -618,9 +596,18 @@ class BioCProjectPage(object):
             else:
                 dependency_mapping[prefix + name.lower() + version] = name
 
+        # Check SystemRequirements in the DESCRIPTION file to make sure
+        # packages with such reqquirements are provided correct recipes.
+        if (self.packages[self.package].get('SystemRequirements') is not None):
+            logger.warning(
+                "The 'SystemRequirements' {} are needed".format(
+                    self.packages[self.package].get('SystemRequirements')) +
+                " by the recipe for the package to work as intended."
+            )
+
         if (
-            (self.description.get('needscompilation', 'no') == 'yes') or
-            (self.description.get('linkingto', None) is not None)
+            (self.packages[self.package].get('NeedsCompilation', 'no') == 'yes') or
+            (self.packages[self.package].get('LinkingTo', None) is not None)
         ):
             # Modified from conda_build.skeletons.cran
             #
@@ -679,21 +666,19 @@ class BioCProjectPage(object):
         Calculate the md5 hash of the tarball so it can be filled into the
         meta.yaml.
         """
-        if self._md5 is None:
-            self._md5 = hashlib.md5(
-                open(self.cached_tarball, 'rb').read()).hexdigest()
-        return self._md5
+        return self.packages[self.package]['MD5sum']
 
-    @property
-    def sha256(self):
+    def pacified_description(self):
         """
-        Calculate the sha256 hash of the tarball so it can be filled into the
-        meta.yaml.
+        Linting will fail if GIT_, HG_, or SVN_ appear in the description.
+        This usually isn't an issue, except some microarray annotation packages
+        include HG_ in their summaries. The goal is to simply remove _ in such
+        cases.
         """
-        if self._sha256 is None:
-            self._sha256 = hashlib.sha256(
-                open(self.cached_tarball, 'rb').read()).hexdigest()
-        return self._sha256
+        description = self.packages[self.package]['Description']
+        for vcs in ['HG', 'SVN', 'GIT']:
+            description = description.replace('{}_'.format(vcs), '{} '.format(vcs))
+        return description
 
     @property
     def meta_yaml(self):
@@ -736,9 +721,6 @@ class BioCProjectPage(object):
             [
                 # keep the one that was found
                 self.bioconductor_tarball_url,
-                self.bioconductor_annotation_data_url,
-                self.bioconductor_experiment_data_url,
-
                 # use the built URL, regardless of whether it was found or not.
                 # bioaRchive and cargo-port cache packages but only after the
                 # first recipe is built.
@@ -763,9 +745,8 @@ class BioCProjectPage(object):
             ),
             (
                 'source', OrderedDict((
-                    ('fn', '{{ name }}_{{ version }}.tar.gz'),
                     ('url', url),
-                    ('sha256', self.sha256),
+                    ('md5', self.md5),
                 )),
             ),
             (
@@ -795,17 +776,32 @@ class BioCProjectPage(object):
                 'about', OrderedDict((
                     ('home', sub_placeholders(self.url)),
                     ('license', self.license),
-                    ('summary', self.description['description']),
+                    ('summary', self.pacified_description()),
                 )),
             ),
         ))
 
+        if self.extra:
+            d['extra'] = self.extra
+
         if self._cb3_build_reqs:
             d['requirements']['build'] = []
+        else:
+            d['build']['noarch'] = 'generic'
         for k, v in self._cb3_build_reqs.items():
             d['requirements']['build'].append(k + '_' + "PLACEHOLDER")
 
         rendered = pyaml.dumps(d, width=1e6).decode('utf-8')
+
+        # Add Suggests: and SystemRequirements:
+        renderedsplit = rendered.split('\n')
+        idx = renderedsplit.index('requirements:')
+        if self.packages[self.package].get('SystemRequirements', None):
+            renderedsplit.insert(idx, '# SystemRequirements: {}'.format(self.packages[self.package]['SystemRequirements']))
+        if self.packages[self.package].get('Suggests', None):
+            renderedsplit.insert(idx, '# Suggests: {}'.format(self.packages[self.package]['Suggests']))
+        rendered = '\n'.join(renderedsplit) + '\n'
+
         rendered = (
             '{% set version = "' + self.version + '" %}\n' +
             '{% set name = "' + self.package + '" %}\n' +
@@ -878,7 +874,7 @@ def write_recipe_recursive(proj, seen_dependencies, recipe_dir, config, force,
 
 def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
                  pkg_version=None, versioned=False, recursive=False, seen_dependencies=None,
-                 skip_if_in_channels=None):
+                 packages=None, skip_if_in_channels=None):
     """
     Write the meta.yaml and build.sh files. If the package is detected to be
     a data package (bsed on the detected URL from Bioconductor), then also
@@ -916,12 +912,16 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
         Dependencies to skip and will be updated with any packages built by
         this function. Used internally when `recursive=True`.
 
+    packages : dict
+        A dictionary, as returned by fetchPackages(), of all packages in a
+        given bioconductor release and their versions.
+
     skip_if_in_channels : list or None
         List of channels whose existing packages will be automatically added to
         `seen_dependencies`. Only has an effect if `recursive=True`.
     """
     config = utils.load_config(config)
-    proj = BioCProjectPage(package, bioc_version, pkg_version)
+    proj = BioCProjectPage(package, bioc_version, pkg_version, packages=packages)
     logger.info('Making recipe for: {}'.format(package))
 
     if seen_dependencies is None:
@@ -930,13 +930,9 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
     if recursive:
         # get a list of existing packages in channels
         if skip_if_in_channels is not None:
-            for channel in skip_if_in_channels:
-                logger.info('Downloading channel repodata for %s', channel)
-                for repodata in utils.get_channel_repodata(channel):
-                    for pkg in repodata['packages'].values():
-                        name = pkg['name']
-                        if name.startswith(('r-', 'bioconductor-')):
-                            seen_dependencies.update([name])
+            for name in set(utils.RepoData().get_package_data("name", channels=skip_if_in_channels)):
+                if name.startswith(('r-', 'bioconductor-')):
+                    seen_dependencies.add(name)
 
         write_recipe_recursive(proj, seen_dependencies, recipe_dir, config,
                                force, bioc_version, pkg_version, versioned,
@@ -959,8 +955,8 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
     # *has* changed, then bump the version number.
     meta_file = os.path.join(recipe_dir, 'meta.yaml')
     if os.path.exists(meta_file):
-        updated_meta = utils.load_first_metadata(proj.meta_yaml).meta
-        current_meta = utils.load_first_metadata(meta_file).meta
+        updated_meta = utils.load_first_metadata(proj.meta_yaml, finalize=False).meta
+        current_meta = utils.load_first_metadata(meta_file, finalize=False).meta
 
         # pop off the version and build numbers so we can compare the rest of
         # the dicts
@@ -975,6 +971,9 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
             (updated_meta != current_meta)
         ):
             proj.build_number = int(current_build_number) + 1
+        if 'extra' in current_meta:
+            exclude = set(['final', 'copy_test_source_files'])
+            proj.extra = {x: y for x, y in current_meta['extra'].items() if x not in exclude}
 
     with open(os.path.join(recipe_dir, 'meta.yaml'), 'w') as fout:
         fout.write(open(proj.meta_yaml).read())
@@ -986,6 +985,13 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
                 #!/bin/bash
                 mv DESCRIPTION DESCRIPTION.old
                 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
+                mkdir -p ~/.R
+                echo -e "CC=$CC
+                FC=$FC
+                CXX=$CXX
+                CXX98=$CXX
+                CXX11=$CXX
+                CXX14=$CXX" > ~/.R/Makevars
                 $R CMD INSTALL --build .'''
                 )
             )
@@ -994,8 +1000,6 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
         urls = [
             '"{0}"'.format(u) for u in [
                 proj.bioconductor_tarball_url,
-                proj.bioconductor_annotation_data_url,
-                proj.bioconductor_experiment_data_url,
                 bioarchive_url(proj.package, proj.version, proj.bioc_version),
                 cargoport_url(proj.package, proj.version, proj.bioc_version),
                 proj.cargoport_url

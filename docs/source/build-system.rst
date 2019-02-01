@@ -54,13 +54,13 @@ Configure the environment
       bioconda-utils, sets the correct channel order
 
 - Run linting on changed recipes
-  - This is triggered by the ``bioconda-recipes: .circleci/config.yml`` "lint"
-    job, which runs ``bioconda-utils: bioconda_utils/cli.py`` and
-    ``bioconda_utils/linting.py``
+    - This is triggered by the ``bioconda-recipes: .circleci/config.yml`` "lint"
+      job, which runs ``bioconda-utils: bioconda_utils/cli.py`` and
+      ``bioconda_utils/linting.py``
 
 - Build recipes
-  - Triggered by the ``bioconda-recipes: .circleci/config.yaml`` "test-linux"
-    job, which runs ``bioconda-utils build``. This performs the next steps.
+    - Triggered by the ``bioconda-recipes: .circleci/config.yaml`` "test-linux"
+      job, which runs ``bioconda-utils build``. This performs the next steps.
 
 - Filter recipes to only focus on recipes that satisfy the following criteria:
     - changed recently (we use a ``git diff`` command to identify these
@@ -80,6 +80,7 @@ Configure the environment
 - Topologically sort changed recipes, and build them one-by-one in the Docker
   container. This runs ``conda-build`` on the recipe while also specifying the
   correct environment variables.
+
     - The conda-build directory is exported to the docker container to a temp
       file and added as a channel. This way, packages built by one container
       will be visible to containers building subsequent packages in the same
@@ -106,7 +107,7 @@ Configure the environment
         - report the successful test back to the GitHub PR, at which time it
           can be merged into the master branch
     - if we are on the master branch:
-        - upload the built conda package to anaconda.org
+        - upload the built conda package to anaconda.org, with an optional label
         - upload the BusyBox container to quay.io
 
 As soon as the package is uploaded to anaconda.org, it is available for
@@ -146,3 +147,12 @@ successfully built, our work is saved and we can start the next build where we
 left off. Failing tests are fixed in another round of commits, and these
 changes are then pushed to ``bulk`` and the process repeats. Once ``bulk`` is
 fully successful, a PR is opened to merge the changes into master.
+
+Labels
+------
+
+If the ``BIOCONDA_LABEL`` environment variable is set, then all uploads will
+have that label assigned to them, rather than ``main``. Consequently, they can
+only be installed by adding ``-c bioconda/BIOCONDA_LABEL`` to the channels,
+where ``BIOCONDA_LABEL`` is whatever that environment variable is set to. Note
+that uploads of biocontainers to quay.io will still occur!

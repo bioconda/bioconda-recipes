@@ -268,7 +268,7 @@ def build_recipes(
 
     if check_channels is None:
         if config['channels']:
-            check_channels = [config['channels'][0]]
+            check_channels = config['channels'][:2]
         else:
             check_channels = []
 
@@ -291,14 +291,10 @@ def build_recipes(
     logger.debug('recipes: %s', recipes)
 
     if lint_args is not None:
-        df = lint_args.df
-        if df is None:
-            logger.info("Downloading channel information to use for linting")
-            df = linting.channel_dataframe(channels=['conda-forge', 'defaults'])
         lint_exclude = (lint_args.exclude or ())
         if 'already_in_bioconda' not in lint_exclude:
             lint_exclude = tuple(lint_exclude) + ('already_in_bioconda',)
-        lint_args = linting.LintArgs(df, lint_exclude, lint_args.registry)
+        lint_args = linting.LintArgs(lint_exclude, lint_args.registry)
 
     dag, name2recipes = utils.get_dag(recipes, config=orig_config, blacklist=blacklist)
     recipe2name = {}
@@ -386,7 +382,6 @@ def build_recipes(
     skipped_recipes = []
     all_success = True
     failed_uploads = []
-    channel_packages = utils.get_all_channel_packages(check_channels)
 
     for recipe in recipes:
         recipe_success = True
@@ -403,7 +398,7 @@ def build_recipes(
 
         logger.info('Determining expected packages')
         try:
-            pkg_paths = utils.get_package_paths(recipe, channel_packages,
+            pkg_paths = utils.get_package_paths(recipe, check_channels,
                                                 force=force)
         except utils.DivergentBuildsError as e:
             logger.error(
@@ -467,7 +462,7 @@ def build_recipes(
             for pkg in pkg_paths:
                 # upload build
                 if anaconda_upload:
-                    if not upload.anaconda_upload(pkg, label):
+                    if not upload.anaconda_upload(pkg, label=label):
                         failed_uploads.append(pkg)
             if mulled_upload_target and keep_mulled_test:
                 for img in res.mulled_images:

@@ -144,6 +144,9 @@ def clean_yaml_file(package, no_windows):
         # Remove file license
         lines = filter_lines_regex(lines, r' [+|] file LICEN[SC]E', '')
 
+        # Remove file name lines, which aren't needed as of conda-build3
+        lines = filter_lines_regex(lines, r'^\s+fn:\s*.*$', '')
+
         # Replace GPL2 or GPL3 string created by conda skeleton cran with long
         # format
         lines = filter_lines_regex(lines, gpl2_short, gpl2_long)

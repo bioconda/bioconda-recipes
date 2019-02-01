@@ -3,28 +3,7 @@ import glob
 import os
 import re
 
-import pandas
-import numpy as np
-
-
-def _subset_df(recipe, meta, df):
-    """
-    Helper function to get the subset of `df` for this recipe.
-    """
-    if df is None:
-        # TODO: this is just a mockup; is there a better way to get the set of
-        # expected columns from a channel dump?
-        return pandas.DataFrame(
-            np.nan, index=[],
-            columns=['channel', 'name', 'version', 'build_number'])
-
-    name = meta.get_value('package/name')
-    version = meta.get_value('package/version')
-
-    return df[
-        (df.name == name) &
-        (df.version == version)
-    ]
+from . import utils
 
 
 def _get_deps(meta, section=None):
@@ -83,24 +62,29 @@ def _has_compilers(meta):
 
 
 def lint_multiple_metas(lint_function):
-    def lint_metas(recipe, metas, df, *args, **kwargs):
+    def lint_metas(recipe, metas, *args, **kwargs):
         lint = partial(lint_function, recipe)
         for meta in metas:
-            ret = lint(meta, df, *args, **kwargs)
+            ret = lint(meta, *args, **kwargs)
             if ret is not None:
+                ret['output'] = meta.name()
                 return ret
     lint_metas.__name__ = lint_function.__name__
     return lint_metas
 
 
 @lint_multiple_metas
-def in_other_channels(recipe, meta, df):
+def in_other_channels(recipe, meta):
     """
     Does the package exist in any other non-bioconda channels?
     """
-    results = _subset_df(recipe, meta, df)
-    channels = set(results.channel).difference(['bioconda'])
-    if len(channels):
+    channels = set(utils.RepoData().get_package_data(
+        key="channel",
+        name=meta.get_value("package/name"),
+        version=meta.get_value("package/version")
+    ))
+    channels.discard('bioconda')
+    if channels:
         return {
             'exists_in_channels': channels,
             'fix': 'consider deprecating',
@@ -108,14 +92,17 @@ def in_other_channels(recipe, meta, df):
 
 
 @lint_multiple_metas
-def already_in_bioconda(recipe, meta, df):
+def already_in_bioconda(recipe, meta):
     """
     Does the package exist in bioconda?
     """
-    results = _subset_df(recipe, meta, df)
-    build_number = int(meta.get_value('build/number', 0))
-    build_results = results[results.build_number == build_number]
-    channels = set(build_results.channel)
+    channels = utils.RepoData().get_package_data(
+        key="channel",
+        name=meta.get_value("package/name"),
+        version=meta.get_value("package/version"),
+        build_number=meta.get_value("build/number", 0)
+    )
+
     if 'bioconda' in channels:
         return {
             'already_in_bioconda': True,
@@ -124,7 +111,7 @@ def already_in_bioconda(recipe, meta, df):
 
 
 @lint_multiple_metas
-def missing_home(recipe, meta, df):
+def missing_home(recipe, meta):
     if not meta.get_value('about/home'):
         return {
             'missing_home': True,
@@ -133,7 +120,7 @@ def missing_home(recipe, meta, df):
 
 
 @lint_multiple_metas
-def missing_summary(recipe, meta, df):
+def missing_summary(recipe, meta):
     if not meta.get_value('about/summary'):
         return {
             'missing_summary': True,
@@ -142,7 +129,7 @@ def missing_summary(recipe, meta, df):
 
 
 @lint_multiple_metas
-def missing_license(recipe, meta, df):
+def missing_license(recipe, meta):
     if not meta.get_value('about/license'):
         return {
             'missing_license': True,
@@ -151,7 +138,7 @@ def missing_license(recipe, meta, df):
 
 
 @lint_multiple_metas
-def missing_tests(recipe, meta, df):
+def missing_tests(recipe, meta):
     test_files = ['run_test.py', 'run_test.sh', 'run_test.pl']
     if not meta.get_section('test'):
         if not any([os.path.exists(os.path.join(recipe, f)) for f in
@@ -163,7 +150,7 @@ def missing_tests(recipe, meta, df):
 
 
 @lint_multiple_metas
-def missing_hash(recipe, meta, df):
+def missing_hash(recipe, meta):
     # could be a meta-package if no source section or if None
     sources = meta.get_section('source')
     if not sources:
@@ -181,7 +168,7 @@ def missing_hash(recipe, meta, df):
 
 
 @lint_multiple_metas
-def uses_git_url(recipe, meta, df):
+def uses_git_url(recipe, meta):
     sources = meta.get_section('source')
     if not sources:
         # metapackage?
@@ -198,7 +185,7 @@ def uses_git_url(recipe, meta, df):
 
 
 @lint_multiple_metas
-def uses_perl_threaded(recipe, meta, df):
+def uses_perl_threaded(recipe, meta):
     if 'perl-threaded' in _get_deps(meta):
         return {
             'depends_on_perl_threaded': True,
@@ -207,7 +194,7 @@ def uses_perl_threaded(recipe, meta, df):
 
 
 @lint_multiple_metas
-def uses_javajdk(recipe, meta, df):
+def uses_javajdk(recipe, meta):
     if 'java-jdk' in _get_deps(meta):
         return {
             'depends_on_java-jdk': True,
@@ -216,7 +203,7 @@ def uses_javajdk(recipe, meta, df):
 
 
 @lint_multiple_metas
-def uses_setuptools(recipe, meta, df):
+def uses_setuptools(recipe, meta):
     if 'setuptools' in _get_deps(meta, 'run'):
         return {
             'depends_on_setuptools': True,
@@ -225,7 +212,7 @@ def uses_setuptools(recipe, meta, df):
         }
 
 
-def has_windows_bat_file(recipe, metas, df):
+def has_windows_bat_file(recipe, metas):
     if len(glob.glob(os.path.join(recipe, '*.bat'))) > 0:
         return {
             'bat_file': True,
@@ -234,7 +221,7 @@ def has_windows_bat_file(recipe, metas, df):
 
 
 @lint_multiple_metas
-def should_be_noarch(recipe, meta, df):
+def should_be_noarch(recipe, meta):
     deps = _get_deps(meta)
     if (
         (not _has_compilers(meta)) and
@@ -253,12 +240,14 @@ def should_be_noarch(recipe, meta, df):
 
 
 @lint_multiple_metas
-def should_not_be_noarch(recipe, meta, df):
+def should_not_be_noarch(recipe, meta):
     if (
         _has_compilers(meta) or
         meta.get_value('build/skip', False)
     ) and (
         'noarch' in (meta.get_section('build') or {})
+    ) and (
+        meta.get_value('build/noarch', False)
     ):
         print("error")
         return {
@@ -268,7 +257,7 @@ def should_not_be_noarch(recipe, meta, df):
 
 
 @lint_multiple_metas
-def setup_py_install_args(recipe, meta, df):
+def setup_py_install_args(recipe, meta):
     if 'setuptools' not in _get_deps(meta, 'build'):
         return
 
@@ -298,7 +287,7 @@ def setup_py_install_args(recipe, meta, df):
 
 
 @lint_multiple_metas
-def invalid_identifiers(recipe, meta, df):
+def invalid_identifiers(recipe, meta):
     try:
         identifiers = meta.get_value('extra/identifiers', [])
         if not isinstance(identifiers, list):
@@ -316,7 +305,7 @@ def invalid_identifiers(recipe, meta, df):
         return
 
 
-def deprecated_numpy_spec(recipe, metas, df):
+def deprecated_numpy_spec(recipe, metas):
     with open(os.path.join(recipe, "meta.yaml")) as recipe:
         if re.search("numpy( )+x\.x", recipe.read()):
             return {'deprecated_numpy_spec': True,
@@ -325,7 +314,7 @@ def deprecated_numpy_spec(recipe, metas, df):
 
 
 @lint_multiple_metas
-def should_not_use_fn(recipe, meta, df):
+def should_not_use_fn(recipe, meta):
     sources = meta.get_section('source')
     if not sources:
         return
@@ -341,7 +330,7 @@ def should_not_use_fn(recipe, meta, df):
 
 
 @lint_multiple_metas
-def should_use_compilers(recipe, meta, df):
+def should_use_compilers(recipe, meta):
     deps = _get_deps(meta)
     if (
         ('gcc' in deps) or
@@ -357,7 +346,7 @@ def should_use_compilers(recipe, meta, df):
 
 
 @lint_multiple_metas
-def compilers_must_be_in_build(recipe, meta, df):
+def compilers_must_be_in_build(recipe, meta):
     if (
 
         any(['toolchain' in i for i in _get_deps(meta, 'run')]) or
@@ -371,7 +360,7 @@ def compilers_must_be_in_build(recipe, meta, df):
         }
 
 
-#def bioconductor_37(recipe, meta, df):
+#def bioconductor_37(recipe, meta):
 #    for line in open(os.path.join(recipe, 'meta.yaml')):
 #        if ('{% set bioc = "3.7" %}' in line) or ('{% set bioc = "release" %}' in line):
 #            return {

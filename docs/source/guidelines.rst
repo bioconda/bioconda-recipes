@@ -18,11 +18,9 @@ bioconda recipe checklist
 - Package is appropriate for bioconda (:ref:`details <appropriate-for-bioconda>`)
 - If the recipe installs custom wrapper scripts, usage notes should be added to
   ``extra -> notes`` in the ``meta.yaml``.
-- **Update 7 Feb 2018**: Previously we had recommended that if the recipe is
-  a pure Python package, it should be marked as a `"noarch"
+- **Update 21 Jan 2019**:  Recipes that contain pure Python packages should be marked as a `"noarch"
   <https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_
-  package (:ref:`details <noarch>`). However due to technical incompatibilies
-  we can't do this -- so please DO NOT use ``"noarch"`` for now.
+  (:ref:`details <noarch>`).
 - **Update 7 Mar 2018**: When patching a recipe, please provide details on how
   you tried to address the problem upstream (:ref:`details <patching>`)
 
@@ -31,8 +29,10 @@ bioconda recipe checklist
 Stable urls
 ~~~~~~~~~~~
 While supported by conda, `git_url` and `git_rev` are not as stable as a git
-tarball. Ideally a github repo should have tagged releases that are accessible
-as tarballs from the "releases" section of the github repo.
+tarball. Ideally, a github repo should have tagged releases that are accessible
+as tarballs from the "releases" section of the github repo. Correspondingly, a
+bitbucket repo should have have tagged versions that are accessible as tarballs
+from the "Downloads" -> "tags" section of the bitbucket repo.
 
 TODO: additional info on the various R and bioconductor URLs
 
@@ -229,6 +229,8 @@ in the meta.yaml`
 <http://conda.pydata.org/docs/building/meta-yaml.html#patches>`_.
 
 
+.. _r-cran:
+
 R (CRAN)
 --------
 
@@ -240,9 +242,7 @@ R (CRAN)
 .. note::
 
     Using the ``conda skeleton cran`` method results in a recipe intended to be
-    built for Windows as well, with lines like:
-
-    .. code-block:: yaml
+    built for Windows as well, with lines like::
 
          {% set posix = 'm2-' if win else '' %}
          {% set native = 'm2w64-' if win else '' %}
@@ -271,7 +271,9 @@ package available on CRAN and is *case-sensitive*. Either run that command
 in the ``recipes`` dir or move the recipe it creates to ``recipes``. The
 recipe name will have an ``r-`` prefix and will be converted to
 lowercase. Typically can be used without modification, though
-dependencies may also need recipes.
+dependencies may also need recipes. For further details on skeleton entries, you
+can also refer to the `cran skeleton template
+<https://github.com/conda/conda-build/blob/master/conda_build/skeletons/cran.py>`_.
 
 Please remove any unnecessary comments and delete the ``bld.bat`` file which is
 used only on Windows.
@@ -308,6 +310,23 @@ though dependencies may also need recipes. Recipes for dependencies with an
 - typical bioconductor recipe: `bioconductor-limma/meta.yaml
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/bioconductor-limma>`_
 
+R (other sources)
+----------------
+
+If a package is only provided in a public repository (e.g. at github or
+bitbucket) or via some other website, first check with the authors of the
+package, if they are planning to publish it on CRAN or Bioconductor. This is
+always preferable, as it will ensure quality control and permanent availability
+at a stable URL, and can warrant waiting for such a publication. If this is not
+planned, you should check if a tagged version is available in a public repo (see
+:ref:`infos on stable URLs  <stable-url>` above) or if the authors are willing
+to generate one. Only if none of this succeeds, the risk of the source
+repository or website disappearing should be taken.
+
+Once you have obtained a :ref:`stable URL <stable-url>` to the package, follow
+the :ref:`guidelines for R packages on CRAN <r-cran>` above and adjust the URL
+and checksum accordingly.
+
 Java
 ----
 
@@ -318,9 +337,9 @@ already had a wrapper script, but `peptide-shaker
 <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/peptide-shaker>`_
 did not.
 
-New recipes should use the ``openjdk`` package from `conda-forge
-<https://github.com/conda-forge/openjdk-feedstock>`_
-, the java-jdk package from bioconda is deprecated.
+New recipes should use the ``openjdk`` package from conda-forge `(recipe feedstock)
+<https://github.com/conda-forge/openjdk-feedstock>`_,
+the java-jdk package from bioconda is deprecated.
 
 JAR files should go in ``$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM``.
 A wrapper script should be placed here as well, and symlinked to
@@ -350,6 +369,14 @@ script can be simplified. An example of this simplification is
 If the recipe was created with ``conda skeleton cpan``, the tests are
 likely sufficient. Otherwise, test the import of modules (see the
 ``imports`` section of the ``meta.yaml`` files in above examples).
+
+Additionally, if the recipe was created with ``conda skeleton cpan``, several modifications
+are necessary to satisfy bioconda policies:
+
+- remove the ``bld.bat`` script
+- remove the ``source/fn`` entry in ``meta.yaml``
+- the ``requirements/build`` keyword in ``meta.yaml`` should be changed to
+  ``requirements/host``
 
 C/C++
 -----

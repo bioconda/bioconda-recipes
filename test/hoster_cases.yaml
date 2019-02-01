@@ -1,0 +1,474 @@
+# This file contains the test cases validating the Hoster subclasses
+#
+# - Top-level names the Hoster class (e.g. Bioarchive) and contains a list
+# - Each list item is a test case
+# - test cases have these parameters:
+#   case: give a name to this case
+#   url: the URL from the recipe that should be recognized by this hoster
+#   version: the version it should recognize in that URL
+#   release_url: the URL that should be fetched for new releases
+#   release_links: example links that would be on releases page (list)
+#   release_json (alternative to links): example json data on release page (as yaml)
+#   parsed_versions: list of versions expected to parse from release page data
+
+
+Bioarchive:
+  - case: normal
+    url: https://bioarchive.galaxyproject.org/a4Base_1.28.0.tar.gz
+    version: 1.28.0
+    release_url:
+      - https://bioarchive.galaxyproject.org/api/a4Base.json
+    release_json:
+      info:
+        Version: 1.25.0
+      versions:
+        - 1.25.0
+        - 1.24.0
+    parsed_versions:
+        - 1.25.0
+Bioconductor:
+  - case: normal
+    url: http://bioconductor.org/packages/3.7/bioc/src/contrib/a4Base_1.28.0.tar.gz
+    version: 1.28.0
+    release_url:
+      - https://bioconductor.org/packages/3.7/bioc/html/a4Base.html
+    release_links:
+      - https://bioconductor.org/packages/3.7/bioc/src/contrib/a4Base_1.28.0.tar.gz
+      - https://bioconductor.org/packages/3.7/bioc/bin/macosx/el-capitan/contrib/3.5/a4Base_1.28.0.tgz
+      - https://bioconductor.org/packages/a4Base/
+    parsed_versions:
+      - 1.28.0
+CPAN:
+  - case: metacpan
+    url: https://cpan.metacpan.org/authors/id/L/LD/LDS/AcePerl-1.92.tar.gz
+    version: '1.92'
+    release_url:
+      - https://fastapi.metacpan.org/v1/release/AcePerl
+    release_json:
+      version: '1.92'
+      download_url: https://cpan.metacpan.org/authors/id/L/LD/LDS/AcePerl-1.92.tar.gz
+      dependency:
+        - phase: runtime
+          module: Cache::Cache
+          version: '1.03'
+          relationship: requires
+        - phase: runtime
+          module: Digest::MD5
+          version: 2
+          relationship: requires
+    parsed_versions:
+      - '1.92'
+  - case: cpan
+    url: http://www.cpan.org/authors/id/L/LD/LDS/Bio-SamTools-1.43.tar.gz
+    version: '1.43'
+    release_url:
+      - https://fastapi.metacpan.org/v1/release/Bio-SamTools
+    release_json:
+      version: '1.43'
+      download_url: http://www.cpan.org/authors/id/L/LD/LDS/Bio-SamTools-1.43.tar.gz
+      dependency:
+        - phase: configure
+          module: Module::Build
+          version: '0.42'
+          relationship: requires
+        - phase: runtime
+          module: perl
+          version: '5.008'
+          relationship: requires
+        - phase: runtime
+          module: Bio::Root::Version,
+          version: '1.006009001'
+          relationship : requires
+        - phase: build
+          module: ExtUtils::CBuilder
+          version: 0
+          relationship: requires
+    parsed_versions:
+      - '1.43'
+  - case: search.cpan
+    url: http://search.cpan.org/CPAN/authors/id/B/BI/BINGOS/Archive-Tar-2.32.tar.gz
+    version: '2.32'
+    release_url:
+      - https://fastapi.metacpan.org/v1/release/Archive-Tar
+    release_json:
+      version: '2.32'
+      download_url: http://search.cpan.org/CPAN/authors/id/B/BI/BINGOS/Archive-Tar-2.32.tar.gz
+      dependency:
+        - phase: build
+          version: 0
+          module: ExtUtils::MakeMaker
+          relationship: requires
+        - module: IO::Compress::Gzip
+          version: 2.015
+          phase: runtime
+          relationship: requires
+        - relationship: requires
+          phase: runtime
+          version: 1.01
+          module: IO::Zlib
+        - version: 2.015
+          module: Compress::Zlib
+          phase: runtime
+          relationship: requires
+        - module: perl
+          version: 5.00503
+          phase: runtime
+          relationship: requires
+        - phase: runtime
+          relationship: requires
+          version: 0
+          module: Test::More
+        - phase: runtime
+          relationship: requires
+          module: IO::Compress::Bzip2
+          version: 2.015
+        - version: 0.82
+          module: File::Spec
+          relationship: requires
+          phase: runtime
+        - version: 2.015
+          module: IO::Compress::Base
+          relationship: requires
+          phase: runtime
+        - version: 2.26
+          module: Test::Harness
+          phase: runtime
+          relationship: requires
+        - module: ExtUtils::MakeMaker
+          version: 0
+          phase: configure
+          relationship: requires
+    parsed_versions:
+      - '2.32'
+CRAN:
+  - case: normal
+    url: https://cran.r-project.org/src/contrib/ASICS_1.0.1.tar.gz
+    version: 1.0.1
+    release_url:
+      - https://crandb.r-pkg.org/ASICS/all
+    release_json:
+      latest: 1.0.1
+      versions:
+        1.0.1:
+          Depends:
+            R: '>= 2.14'
+          Imports:
+            doParallel: '*'
+            ggplot2: '*'
+            foreach: '*'
+            methods: '*'
+            parallel: '*'
+            plyr: '*'
+            quadprog: '*'
+            zoo: '*'
+    parsed_versions:
+      - 1.0.1
+  - case: archived
+    url: https://cran.r-project.org/src/contrib/Archive/ASICS/ASICS_1.0.1.tar.gz
+    version: 1.0.1
+    release_url:
+      - https://crandb.r-pkg.org/ASICS/all
+    release_json:
+      latest: 1.5.15
+      versions:
+        1.0.1:
+          Depends:
+            R: '>= 2.14'
+          Imports:
+            doParallel: '*'
+            ggplot2: '*'
+            foreach: '*'
+            methods: '*'
+            parallel: '*'
+            plyr: '*'
+            quadprog: '*'
+            zoo: '*'
+        1.5.15:
+          Depends:
+            R: '>= 2.14'
+          Imports:
+            doParallel: '*'
+            ggplot2: '*'
+            foreach: '*'
+            methods: '*'
+            parallel: '*'
+            plyr: '*'
+            quadprog: '*'
+            zoo: '*'
+    parsed_versions:
+      - 1.0.1
+      - 1.5.15
+CargoPort: 
+  - case: normal
+    url: https://depot.galaxyproject.org/software/bioconductor-a4base/bioconductor-a4base_1.28.0_src_all.tar.gz
+    version: 1.28.0
+    release_url:
+      - https://depot.galaxyproject.org/software/bioconductor-a4base
+    release_links:
+      - https://depot.galaxyproject.org/software/bioconductor-a4base/bioconductor-a4base_1.28.0_src_all.tar.gz
+      - https://depot.galaxyproject.org/software/bioconductor-a4base/bioconductor-a4base_1.26.0_src_all.tar.gz
+    parsed_versions:
+      - 1.28.0
+      - 1.26.0
+GithubRelease: 
+  - case: normal
+    url: https://github.com/epruesse/SINA/releases/download/v1.2.0/sina-1.2.0.tar.gz
+    version: 1.2.0
+    release_url:
+      - https://github.com/epruesse/SINA/releases
+    release_links:
+      - /epruesse/SINA/releases/download/v1.4.0/sina-1.4.0-linux.tar.gz
+      - /epruesse/SINA/releases/download/v1.4.0/sina-1.4.0-macos.tar.gz
+      - /epruesse/SINA/releases/download/v1.4.0/sina-1.4.0.tar.gz
+      - /epruesse/SINA/archive/v1.4.0.tar.gz
+      - /epruesse/SINA/archive/v1.4.0.zip
+      - /epruesse/SINA/releases/download/v1.1.0/sina-1.1.0.tar.gz
+      - /epruesse/SINA/archive/v1.1.0.tar.gz
+      - /epruesse/SINA/archive/v1.1.0.zip
+    parsed_versions: [1.4.0, 1.4.0, 1.4.0, 1.1.0]
+  - case: jar-file
+    url: https://github.com/bpet/sctrrgns/releases/download/v0.2/ScttrRgns-assm-0.2.jar
+    version: '0.2'
+    release_url:
+      - https://github.com/bpet/sctrrgns/releases
+  - case: dot-in-project-name
+    url: https://github.com/cpb/bcb.va/releases/download/v0.2.6/bcb.va-0.2.6-st.jar
+    version: 0.2.6
+    release_url:
+      - https://github.com/cpb/bcb.va/releases
+  - case: no-file-extension
+    url: https://github.com/bp/duphold/releases/download/v0.0.9/duphold
+    version: 0.0.9
+    release_url:
+      - https://github.com/bp/duphold/releases
+  - case: underscore-in-project-name
+    url: https://github.com/ag/fx_tkt/releases/download/0.0.14/fx_tkt-0.0.14.tar.bz2
+    version: 0.0.14
+    release_url:
+      - https://github.com/ag/fx_tkt/releases
+GithubReleaseAttachment: 
+  - url: https://github.com/arshajii/ema/files/2241867/ema-v0.6.2.tar.gz
+    version: 0.6.2
+    release_url:
+      - https://github.com/arshajii/ema/releases
+    release_links:
+        - /arshajii/ema/archive/v0.6.2.tar.gz
+        - https://github.com/arshajii/ema/files/2241867/ema-v0.6.2.tar.gz
+    parsed_versions: [0.6.2]
+GithubRepoStore: 
+  - case: normal
+    url: https://github.com/dkoboldt/varscan/raw/master/VarScan.v2.4.3.jar
+    version: 2.4.3
+    release_url:
+      - https://github.com/dkoboldt/varscan/tree/master/
+  - case: with-subdir
+    url: https://github.com/bgruening/d_store/raw/master/blkbst/blkbst-0.0.1.1.tar.gz
+    version: 0.0.1.1
+    release_url:
+      - https://github.com/bgruening/d_store/tree/master/blkbst/
+  - case: on-raw-domain
+    url: https://raw.githubusercontent.com/sequana/rsc/master/software/shstr-2.6.tar.gz
+    version: '2.6'
+    release_url:
+      - https://github.com/sequana/rsc/tree/master/software/
+  - case: using-commit-checksum
+    url: https://github.com/es/crt/raw/9a5977ff59bbc6319bd4b0fb06ccea414492d064/crt-3.0.jar
+    version: '3.0'
+    release_url:
+      - https://github.com/es/crt/tree/master/
+  - case: blob-with-parameter-raw
+    url: https://github.com/BT-Tek/pkgs/blob/master/swlk2/SWlk-2.91.tar.gz?raw
+    version: '2.91'
+    release_url:
+      - https://github.com/BT-Tek/pkgs/tree/master/swlk2/
+#  - case: prefix-with-trailing-number
+#    url: https://github.com/BT-Tek/pkgs/blob/master/swlk2/SWlk2-2.91.tar.gz?raw
+#    version: '2.91'
+#  - case: with-suffix
+#    url: https://github.com/BT-Tek/pkgs/blob/master/swlk2/SWlk2-2.91-lin.tar.gz?raw
+#    version: '2.91'
+GithubTag: 
+  - case: normal
+    url: https://github.com/epruesse/SINA/archive/v1.2.0.tar.gz
+    version: 1.2.0
+    release_url:
+      - https://github.com/epruesse/SINA/tags
+    release_links:
+      - /epruesse/SINA/archive/v1.2.0.tar.gz
+      - /epruesse/SINA/archive/v1.2.0.zip
+      - /epruesse/SINA/archive/v1.1.0.tar.gz
+      - /epruesse/SINA/archive/v1.1.0.zip
+    parsed_versions:
+      - 1.2.0
+  - case: with-prefix
+    url: https://github.com/abaizan/kodoja/archive/kodoja-v0.0.9.tar.gz
+    version: 0.0.9
+    release_url:
+      - https://github.com/abaizan/kodoja/tags
+    release_links:
+      - /abaizan/kodoja/archive/kodoja-v0.1.9.tar.gz
+      - /abaizan/kodoja/archive/kodoja-v0.1.9.zip
+      - /abaizan/kodoja/archive/kodoja-v0.0.9.tar.gz
+      - /abaizan/kodoja/archive/kodoja-v0.0.9.zip
+      - /abaizan/kodoja/archive/kodoja-v0.0.8.tar.gz
+      - /abaizan/kodoja/archive/kodoja-v0.0.8.zip
+    parsed_versions:
+      - 0.0.9
+      - 0.1.9
+  - case: version-with-underscore
+    url: https://github.com/BenLangmead/bowtie/archive/v1.2.2_p1.zip
+    version: 1.2.2_p1
+    release_url:
+      - https://github.com/BenLangmead/bowtie/tags
+    release_links:
+      - /BenLangmead/bowtie/archive/v1.2.3.tar.gz
+      - /BenLangmead/bowtie/archive/v1.2.3.zip
+      - /BenLangmead/bowtie/archive/v1.2.2_p1.tar.gz
+      - /BenLangmead/bowtie/archive/v1.2.2_p1.zip
+      - /BenLangmead/bowtie/archive/v1.2.2.tar.gz
+      - /BenLangmead/bowtie/archive/v1.2.2.zip
+    parsed_versions:
+      - 1.2.3
+      - 1.2.2_p1
+  - case: prefix-without-separator
+    url: https://github.com/HRGV/phyloFlash/archive/pf3.0b1.tar.gz
+    version: 3.0b1
+    release_url:
+      - https://github.com/HRGV/phyloFlash/tags
+    release_links:
+      - /HRGV/phyloFlash/archive/pf3.0.tar.gz
+      - /HRGV/phyloFlash/archive/pf3.0b1.tar.gz
+    parsed_versions:
+      - '3.0'
+      - 3.0b1
+PyPi:
+  - case: pythonhosted-sha
+    url: https://files.pythonhosted.org/packages/e0/15/a57179e855d4185e36bb83e982718260acf1334ac892e856cc18950d368a/anvio-5.2.tar.gz
+    version: '5.2'
+    release_url:
+      - https://pypi.org/pypi/anvio/json
+  - case: pypi-author
+    url: https://pypi.io/packages/source/a/abeona/abeona-1.2.3.tar.gz
+    version: 1.2.3
+    release_url:
+      - https://pypi.org/pypi/abeona/json
+  - case: pypi-sha
+    url: https://pypi.python.org/packages/33/5d/327aed4a90b315f886bcae96ee85149b275e48061b95a51da5f224841fb9/alignlib-lite-0.3.tar.gz
+    version: '0.3'
+    release_url:
+      - https://pypi.org/pypi/alignlib-lite/json
+SourceForge:
+  - case: normal
+    url: http://downloads.sourceforge.net/project/bbmap/BBMap_38.22.tar.gz
+    version: '38.22'
+    release_url:
+      - https://sourceforge.net/projects/bbmap/files/
+    release_links:
+      - https://sourceforge.net/projects/bbmap/files/BBMap_38.32.tar.gz/download
+      - https://sourceforge.net/projects/bbmap/files/BBMap_38.22.tar.gz/download
+      - https://sourceforge.net/projects/bbmap/files/BBMap_28.31_java7.tar.gz/download
+    parsed_versions: ['38.32', '38.22', '28.31_java7']
+BitBucketTag:
+  - case: normal
+    url: https://bitbucket.org/biobakery/kneaddata/get/0.7.0.tar.gz
+    version: 0.7.0
+    release_url:
+      - https://bitbucket.org/biobakery/kneaddata/downloads/?tab=tags
+      - https://bitbucket.org/biobakery/kneaddata/downloads/?tab=branches
+    release_links:
+      - /biobakery/kneaddata/get/0.7.2.tar.gz
+      - /biobakery/kneaddata/get/0.7.0.tar.gz
+      - /biobakery/kneaddata/get/default.tar.gz
+    parsed_versions: ['0.7.2', '0.7.0']
+  - case: vtag
+    url: https://bitbucket.org/biobakery/kneaddata/get/v0.7.0.tar.gz
+    version: 0.7.0
+    release_url:
+      - https://bitbucket.org/biobakery/kneaddata/downloads/?tab=tags
+      - https://bitbucket.org/biobakery/kneaddata/downloads/?tab=branches
+    release_links:
+      - /biobakery/kneaddata/get/v0.7.2.tar.gz
+      - /biobakery/kneaddata/get/v0.7.0.tar.gz
+      - /biobakery/kneaddata/get/0.5.0.tar.gz
+      - /biobakery/kneaddata/get/default.tar.gz
+    parsed_versions: ['0.7.2', '0.7.0']
+  - case: branch
+    url: https://bitbucket.org/caseywdunn/biolite/get/release-1.1.0.zip
+    version: 1.1.0
+    release_url:
+      - https://bitbucket.org/caseywdunn/biolite/downloads/?tab=tags
+      - https://bitbucket.org/caseywdunn/biolite/downloads/?tab=branches
+    release_links:
+      - https://bitbucket.org/caseywdunn/biolite/get/release-1.2.0.zip
+      - https://bitbucket.org/caseywdunn/biolite/get/release-1.2.0.tar.gz
+      - https://bitbucket.org/caseywdunn/biolite/get/release-1.2.5.tar.gz
+      - https://bitbucket.org/caseywdunn/biolite/get/release-1.1.0.zip
+    parsed_versions: ['1.2.0', '1.1.0']
+BitBucketDownload:
+  - case: normal
+    url: https://bitbucket.org/biobakery/maaslin/downloads/Maaslin_0.0.4.tar.gz
+    version: 0.0.4
+    release_url:
+      - https://bitbucket.org/biobakery/maaslin/downloads/?tab=downloads
+    release_links:
+      - /biobakery/maaslin/downloads/maaslin_demo.csv
+      - /biobakery/maaslin/downloads/Maaslin_0.0.5.tar.gz
+      - /biobakery/maaslin/downloads/Maaslin_0.0.4.tar.gz
+    parsed_versions: ['0.0.5', '0.0.4']
+GitlabTag:
+  - case: old
+    url: https://gitlab.com/chrjan/seq-seq-pan/repository/v1.0.1/archive.tar.gz
+    version: 1.0.1
+    release_url:
+      - https://gitlab.com/chrjan/seq-seq-pan/tags
+    release_links:
+      - /chrjan/seq-seq-pan/-/archive/v1.0.1/seq-seq-pan-v1.0.1.tar.gz
+      - /chrjan/seq-seq-pan/-/archive/v1.0.0/seq-seq-pan-v1.0.0.tar.gz
+    parsed_versions: [1.0.1]
+  - case: new
+    url: https://gitlab.com/chrjan/seq-seq-pan/-/archive/v1.0.1/seq-seq-pan-v1.0.1.tar.gz
+    version: 1.0.1
+    release_url:
+      - https://gitlab.com/chrjan/seq-seq-pan/tags
+    release_links:
+      - /chrjan/seq-seq-pan/-/archive/v1.0.2/seq-seq-pan-v1.0.2.tar.gz
+      - /chrjan/seq-seq-pan/-/archive/v1.0.1/seq-seq-pan-v1.0.1.tar.gz
+    parsed_versions: ['1.0.2', '1.0.1']
+  - case: subgroup
+    url: https://gitlab.com/chrjan/group/seq-seq-pan/-/archive/v1.0.1/seq-seq-pan-v1.0.1.tar.gz
+    version: 1.0.1
+    release_url:
+      - https://gitlab.com/chrjan/group/seq-seq-pan/tags
+    release_links:
+      - /chrjan/group/seq-seq-pan/-/archive/v1.0.1/seq-seq-pan-v1.0.1.tar.gz
+      - /chrjan/group/seq-seq-pan/-/archive/v1.0.0/seq-seq-pan-v1.0.0.tar.gz
+    parsed_versions: ['1.0.1']
+FTPHoster:
+  - case: normal
+    url: ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.1.0-OSX_x86_64.zip
+    version: 2.1.0
+    release_url:
+      - ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/
+    release_links:
+      - /pub/infphilo/hisat2/downloads/hisat2-2.1.0-OSX_x86_64.zip
+      - /pub/infphilo/hisat2/downloads/hisat2-2.1.0-Linux_x86_64.zip
+      - /pub/infphilo/hisat2/downloads/hisat2-2.2.0-OSX_x86_64.zip
+      - /pub/infphilo/hisat2/downloads/hisat2-2.2.0-Linux_x86_64.zip
+    parsed_versions: ['2.2.0', '2.1.0']
+  - case: custom
+    url: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/10.2.20181018/edirect.tar.gz
+    version: 10.2.20181018
+    release_url:
+      - ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/
+    release_links:
+      - /entrez/entrezdirect/versions/10.2.20181018
+      - /entrez/entrezdirect/versions/10.2.20181118
+      - /entrez/entrezdirect/versions/10.2.20181218
+    parsed_versions:
+      - 10.2.20181018
+      - 10.2.20181118
+      - 10.2.20181218
+    override:
+      url: "ftp://{host}/{link}/edirect.tar.gz"
+      link: "{path}{version}$"
+

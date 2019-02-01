@@ -96,7 +96,7 @@ def test_pkg_version():
     assert b.version == '1.14.1'
     assert b.bioc_version == '3.4'
     assert b.bioconductor_tarball_url == (
-        'http://bioconductor.org/packages/3.4/bioc/src/contrib/DESeq2_1.14.1.tar.gz')
+        'https://bioconductor.org/packages/3.4/bioc/src/contrib/DESeq2_1.14.1.tar.gz')
     assert b.bioarchive_url is None
     assert b.cargoport_url == (
         'https://depot.galaxyproject.org/software/bioconductor-deseq2/bioconductor-deseq2_1.14.1_src_all.tar.gz')  # noqa: E501: line too long
@@ -106,7 +106,7 @@ def test_pkg_version():
     assert b.version == '3.18.1'
     assert b.bioc_version == '3.5'
     assert b.bioconductor_tarball_url == (
-        'http://bioconductor.org/packages/3.5/bioc/src/contrib/edgeR_3.18.1.tar.gz')
+        'https://bioconductor.org/packages/3.5/bioc/src/contrib/edgeR_3.18.1.tar.gz')
     assert b.bioarchive_url is None
     assert b.cargoport_url == (
         'https://depot.galaxyproject.org/software/bioconductor-edger/bioconductor-edger_3.18.1_src_all.tar.gz')  # noqa: E501: line too long
@@ -155,7 +155,7 @@ def test_experiment_data(tmpdir):
 def test_nonexistent_pkg(tmpdir):
 
     # no such package exists in the current bioconductor
-    with pytest.raises(bioconductor_skeleton.PageNotFoundError):
+    with pytest.raises(bioconductor_skeleton.PackageNotFoundError):
         bioconductor_skeleton.write_recipe(
             'nonexistent', str(tmpdir), config, recursive=True)
 
