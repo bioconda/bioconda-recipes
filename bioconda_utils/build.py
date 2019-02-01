@@ -255,9 +255,7 @@ def build_recipes(
 
     check_channels : list
         Channels to check to see if packages already exist in them. If None,
-        then defaults to the highest-priority channel (that is,
-        `config['channels'][0]`). If this list is empty, then do not check any
-        channels.
+        then defaults to every channel in the config file except "defaults".
 
     lint_args : linting.LintArgs | None
         If not None, then apply linting just before building.
@@ -268,7 +266,7 @@ def build_recipes(
 
     if check_channels is None:
         if config['channels']:
-            check_channels = config['channels'][:2]
+            check_channels = [c for c in config['channels'] if c != "defaults"]
         else:
             check_channels = []
 
