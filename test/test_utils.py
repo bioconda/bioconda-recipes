@@ -759,8 +759,8 @@ def test_build_container_default_gcc(tmpdir):
               version: 0.1
             test:
               commands:
-                - gcc --version
-                - 'gcc --version | grep "gcc (GCC) 4.8.2 20140120 (Red Hat 4.8.2-15)"'
+                - $CC --version
+                - '$CC --version | grep 4.85'
         """, from_string=True)
     r.write_recipes()
 
