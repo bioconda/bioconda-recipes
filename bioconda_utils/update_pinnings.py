@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-from conda_build.metadata import MetaData
-from conda_build import render
-from conda_build import variants
 from conda_build import api
 import re
 import sys
@@ -28,7 +25,6 @@ def already_built(r, name, version, buildstring):
              (r.version == version) &
              (r.build == buildstring)].shape[0] > 0:
         return True
-    print("checked for {} version {} with buildstring {}".format(name, version, buildstring))
     return False
 
 
@@ -65,14 +61,10 @@ def should_be_bumped(recipe, build_config, repodata):
     3: conda-build returned an error while rendering the recipe.
     """
     status = 0
-    m = MetaData(recipe, build_config)
     try:
-        # for renderedMeta, _, _ in render.distribute_variants(m, variants.get_package_variants(recipe, config=build_config)):
         for renderedMeta, _, _ in api.render(recipe, config=build_config, permit_unsatisfiable_variants=False):
             if renderedMeta.skip():
                 continue
-            # FIXME This gives funky results for things like ascat albatradis and afterqc
-            # Also, builds that should be skipped aren't (asqcan)!
             buildID = renderedMeta.build_id()  # e.g., py36h47cebea_1 or 0
             # This doesn't work for noarch: python, which is just py_0 or pyhXXXX_1
             # However those won't ever need to be rebuilt due to only a python version change
@@ -90,8 +82,6 @@ def should_be_bumped(recipe, build_config, repodata):
     except:
         print(sys.exc_info()[1])
         status = 3
-    if status == 2:
-        print("{} hash due to {}, original buildID is {}".format(recipe, renderedMeta.get_hash_contents(), renderedMeta.build_id()))
     return status
 
 

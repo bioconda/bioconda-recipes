@@ -533,14 +533,14 @@ def update_pinning(recipe_folder, config, packages="*", skip_if_in_channels=['bi
                 hadErrors.add(recipe)
 
     # Print some information
-    logger.info("Packages requiring the following:")
-    logger.info("  No build number change needed: {}".format(updated[0]))
-    logger.info("  A rebuild for a new python version: {}".format(updated[1]))
-    logger.info("  A build number increment: {}".format(updated[2]))
+    print("Packages requiring the following:")
+    print("  No build number change needed: {}".format(updated[0]))
+    print("  A rebuild for a new python version: {}".format(updated[1]))
+    print("  A build number increment: {}".format(updated[2]))
     if updated[3]:
-        logger.info("{} packages produced an error in conda-build: {}".format(updated[3], list(hadErrors)))
+        print("{} packages produced an error in conda-build: {}".format(updated[3], list(hadErrors)))
     if len(bumpErrors):
-        logger.info("The build numbers in the following recipes could not be incremented: {}".format(list(bumpErrors)))
+        print("The build numbers in the following recipes could not be incremented: {}".format(list(bumpErrors)))
 
 
 @arg('recipe_folder', help='Path to recipes directory')
