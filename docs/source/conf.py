@@ -138,8 +138,15 @@ html_sidebars = {
     '**': [
         'about.html',
         'navigation.html',
+        'index.html',
         'searchbox.html',
     ]
+}
+
+html_context = {
+    'extra_nav_items': {
+        'Bioconda @ Github' : 'https://github.com/bioconda/bioconda-recipes',
+    }
 }
 
 # Additional templates that should be rendered to pages, maps page names to
