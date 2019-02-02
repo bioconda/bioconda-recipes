@@ -749,7 +749,7 @@ def test_build_empty_extra_container():
 
 @pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')
 @pytest.mark.long_running
-def test_build_container_default_gcc(tmpdir):
+def test_build_container_no_default_gcc(tmpdir):
     r = Recipes(
         """
         one:
@@ -759,8 +759,7 @@ def test_build_container_default_gcc(tmpdir):
               version: 0.1
             test:
               commands:
-                - $CC --version
-                - '$CC --version | grep 4.85'
+                - ! gcc --version
         """, from_string=True)
     r.write_recipes()
 
