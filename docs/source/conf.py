@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
+import datetime
 import os
+import sys
+
 import sphinx_rtd_theme
+
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -41,7 +44,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Bioconda'
-copyright = '2016, The Bioconda Team'
+copyright = '2016-{}, The Bioconda Team'.format(datetime.datetime.now().year)
 author = 'The Bioconda Team'
 language = None
 
