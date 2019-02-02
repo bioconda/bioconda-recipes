@@ -147,6 +147,7 @@ html_sidebars = {
 html_context = {
     'extra_nav_items': {
         'Bioconda @ Github' : 'https://github.com/bioconda/bioconda-recipes',
+        'Recipe Index': 'conda-recipe_index',
     }
 }
 

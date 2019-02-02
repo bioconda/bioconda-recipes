@@ -5,12 +5,21 @@ This module builds the documentation for our recipes
 
 import os
 import os.path as op
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple, Optional
 
 from jinja2.sandbox import SandboxedEnvironment
 
+from sphinx import addnodes
+from docutils import nodes
+from docutils.parsers import rst
+from docutils.statemachine import StringList
+from sphinx.domains import Domain, ObjType, Index
+from sphinx.directives import ObjectDescription
+from sphinx.environment import BuildEnvironment
+from sphinx.roles import XRefRole
 from sphinx.util import logging as sphinx_logging
 from sphinx.util import status_iterator
+from sphinx.util.nodes import make_refnode
 from sphinx.util.parallel import ParallelTasks, parallel_available, make_chunks
 from sphinx.util.rst import escape as rst_escape
 from sphinx.util.osutil import ensuredir
@@ -145,6 +154,196 @@ class Renderer:
         return True
 
 
+class CondaObjectDescription(ObjectDescription):
+    typename = "[UNKNOWN]"
+
+    option_spec = {
+        'arch': rst.directives.unchanged,
+        'badges': rst.directives.unchanged,
+        'replaces_section_title': rst.directives.flag
+    }
+
+    def handle_signature(self, sig: str, signode: addnodes.desc) -> str:
+        """Transform signature into RST nodes"""
+        signode += addnodes.desc_annotation(self.typename, self.typename + " ")
+        signode += addnodes.desc_name(sig, sig)
+
+        if 'badges' in self.options:
+            badges = addnodes.desc_annotation()
+            badges['classes'] += ['badges']
+            content = StringList([self.options['badges']])
+            self.state.nested_parse(content, 0, badges)
+            signode += badges
+
+
+        if 'replaces_section_title' in self.options:
+            section = self.state.parent
+            if isinstance(section, nodes.section):
+                title = section[-1]
+                if isinstance(title, nodes.title):
+                    section.remove(title)
+                else:
+                    signode += self.state.document.reporter.warning(
+                        "%s:%s:: must follow section directly to replace section title"
+                        % (self.domain, self.objtype), line = self.lineno
+                    )
+            else:
+                signode += self.state.document.reporter.warning(
+                    "%s:%s:: must be in section to replace section title"
+                    % (self.domain, self.objtype), line = self.lineno
+                )
+
+        return sig
+
+    def add_target_and_index(self, name: str, sig: str,
+                             signodes: addnodes.desc) -> None:
+        """Add to index and to domain data"""
+        target_name = "-".join((self.objtype, name))
+        if target_name not in self.state.document.ids:
+            signodes['names'].append(target_name)
+            signodes['ids'].append(target_name)
+            signodes['first'] = (not self.names)
+            self.state.document.note_explicit_target(signodes)
+            objects = self.env.domaindata[self.domain]['objects']
+            key = (self.objtype, name)
+            if key in objects:
+                self.env.warn(
+                    self.env.docname,
+                    "Duplicate entry {} {} at {} (other in {})".format(
+                        self.objtype, name, self.lineno,
+                        self.env.doc2path(objects[key][0])))
+            objects[key] = (self.env.docname, target_name)
+
+        index_text = self.get_index_text(name)
+        if index_text:
+            self.indexnode['entries'].append(('single', index_text, target_name, '', None))
+
+    def get_index_text(self, name: str) -> str:
+        return "{} ({})".format(name, self.objtype)
+
+
+class CondaRecipe(CondaObjectDescription):
+    typename = "Recipe"
+
+
+class CondaPackage(CondaObjectDescription):
+    typename = "Package"
+
+
+class RecipeIndex(Index):
+    name = "recipe_index"
+    localname = "Recipe Index"
+    shortname = "Recipes"
+
+    def generate(self, docnames: Optional[List[str]] = None):
+        content = {}
+
+        objects = sorted(self.domain.data['objects'].items())
+        for (typ, name), (docname, labelid) in objects:
+            if docnames and docname not in docnames:
+                continue
+            entries = content.setdefault(name[0].lower(), [])
+            subtype = 0 # 1 has subentries, 2 is subentry
+            entries.append((
+                name, subtype, docname, labelid, 'extra', 'qualifier', 'description'
+            ))
+
+        collapse = True
+        return sorted(content.items()), collapse
+
+
+class CondaDomain(Domain):
+    """Domain for Conda Packages"""
+    name = "conda"
+    label = "Conda"
+
+    object_types = {
+        # ObjType(name, *roles, **attrs)
+        'recipe': ObjType('recipe', 'recipe'),
+        'package': ObjType('package', 'package'),
+    }
+    directives = {
+        'recipe': CondaRecipe,
+        'package': CondaPackage,
+    }
+    roles = {
+        'recipe': XRefRole(),
+        'package': XRefRole(),
+    }
+    initial_data = {
+        'objects': {},  #: (type, name) -> docname, labelid
+    }
+    indices = [
+        RecipeIndex
+    ]
+
+    def clear_doc(self, docname: str):
+        # docs copied from Domain class
+        """Remove traces of a document in the domain-specific inventories."""
+        if 'objects' not in self.data:
+            return
+        to_remove = [
+            key for (key, (stored_docname, _)) in self.data['objects'].items()
+            if docname == stored_docname
+        ]
+        for key  in to_remove:
+            del self.data['objects'][key]
+
+    def resolve_xref(self, env: BuildEnvironment, fromdocname: str,
+                     builder, typ, target, node, contnode):
+        # docs copied from Domain class
+        """Resolve the pending_xref *node* with the given *typ* and *target*.
+
+        This method should return a new node, to replace the xref node,
+        containing the *contnode* which is the markup content of the
+        cross-reference.
+
+        If no resolution can be found, None can be returned; the xref node will
+        then given to the :event:`missing-reference` event, and if that yields no
+        resolution, replaced by *contnode*.
+
+        The method can also raise :exc:`sphinx.environment.NoUri` to suppress
+        the :event:`missing-reference` event being emitted.
+        """
+        for objtype in self.objtypes_for_role(typ):
+            if (objtype, target) in self.data['objects']:
+                return make_refnode(
+                    builder, fromdocname,
+                    self.data['objects'][objtype, target][0],
+                    self.data['objects'][objtype, target][1],
+                    contnode, target + ' ' + objtype)
+        return None  # triggers missing-reference
+
+    def get_objects(self):
+        # docs copied from Domain class
+        """Return an iterable of "object descriptions", which are tuples with
+        five items:
+
+        * `name`     -- fully qualified name
+        * `dispname` -- name to display when searching/linking
+        * `type`     -- object type, a key in ``self.object_types``
+        * `docname`  -- the document where it is to be found
+        * `anchor`   -- the anchor name for the object
+        * `priority` -- how "important" the object is (determines placement
+          in search results)
+
+          - 1: default priority (placed before full-text matches)
+          - 0: object is important (placed before default-priority objects)
+          - 2: object is unimportant (placed after full-text matches)
+          - -1: object should not show up in search at all
+        """
+        for (typ, name), (docname, ref) in self.data['objects'].items():
+            dispname = "Recipe '{}'".format(name)
+            yield name, dispname, typ, docname, ref, 1
+
+    def merge_domaindata(self, docnames: List[str], otherdata: Dict) -> None:
+        """Merge in data regarding *docnames* from a different domaindata
+        inventory (coming from a subprocess in parallel builds).
+        """
+        for (typ, name), (docname, ref) in otherdata['objects'].items():
+            if docname in docnames:
+                self.data['objects'][typ, name] = (docname, ref)
+
 def generate_readme(folder, repodata, renderer):
     """Generates README.rst for the recipe in folder
 
@@ -278,6 +477,7 @@ def generate_recipes(app):
 
 def setup(app):
     """Set up sphinx extension"""
+    app.add_domain(CondaDomain)
     app.connect('builder-inited', generate_recipes)
     return {
         'version': "0.0.0",
