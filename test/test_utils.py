@@ -749,7 +749,8 @@ def test_build_empty_extra_container():
 
 @pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')
 @pytest.mark.long_running
-def test_build_container_default_gcc(tmpdir):
+@pytest.mark.xfail
+def test_build_container_no_default_gcc(tmpdir):
     r = Recipes(
         """
         one:
@@ -760,7 +761,6 @@ def test_build_container_default_gcc(tmpdir):
             test:
               commands:
                 - gcc --version
-                - 'gcc --version | grep "gcc (GCC) 4.8.2 20140120 (Red Hat 4.8.2-15)"'
         """, from_string=True)
     r.write_recipes()
 

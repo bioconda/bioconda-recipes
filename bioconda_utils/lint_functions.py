@@ -349,6 +349,10 @@ def should_use_compilers(recipe, meta):
 def compilers_must_be_in_build(recipe, meta):
     if (
 
+        any(['gcc_impl_linux-64' in i for i in _get_deps(meta, 'run')]) or
+        any(['gcc_impl_linux-64' in i for i in _get_deps(meta, 'host')]) or
+        any(['clang_osx-64' in i for i in _get_deps(meta, 'run')]) or
+        any(['clang_osx-64' in i for i in _get_deps(meta, 'host')]) or
         any(['toolchain' in i for i in _get_deps(meta, 'run')]) or
         any(['toolchain' in i for i in _get_deps(meta, 'host')])
     ):

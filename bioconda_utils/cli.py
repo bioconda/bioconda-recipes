@@ -20,6 +20,7 @@ from . import linting
 from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import cran_skeleton
+from .update_pinnings import should_be_bumped, bump_recipe
 
 logger = logging.getLogger(__name__)
 
@@ -447,7 +448,13 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
     """
     Export the DAG of packages to a graph format file for visualization
     """
-    dag, name2recipes = utils.get_dag(utils.get_recipes(recipe_folder, packages), config)
+    dag, name2recipes = utils.get_dag(utils.get_recipes(recipe_folder, "*"), config)
+    if packages != "*":
+        filterNodes= set(packages)
+        for package in packages:
+            for child in nx.ancestors(dag, package):
+                filterNodes.add(child)
+        dag = nx.subgraph(dag, filterNodes)
     if hide_singletons:
         for node in nx.nodes(dag):
             if dag.degree(node) == 0:
@@ -475,6 +482,65 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
             recipes = [recipe for package in singletons for recipe in
                        name2recipes[package]]
             print('\n'.join(recipes) + '\n')
+
+
+@arg('recipe_folder', help='Path to recipes directory')
+@arg('config', help='Path to yaml file specifying the configuration')
+@arg('--packages',
+     nargs="+",
+     help='Glob for package[s] to update, as needed due to a change in pinnings')
+@arg('--skip-if-in-channels',
+     nargs='*',
+     help="""Skip updating/bumping packges that are already built with
+     compatible pinnings in one of the given channels.""")
+@arg('--bump-only-python',
+     help="""Bump package build numbers even if the only applicable pinning
+     change is the python version. This is generally required unless you plan
+     on building everything.""")
+def update_pinning(recipe_folder, config, packages="*", skip_if_in_channels=['bioconda', 'bioconda/label/gcc7'], bump_only_python=False):
+    """
+    Bump a package build number and all dependencies as required due to a change in pinnings
+    """
+    bioconda_cfg = utils.load_config(config)
+    bioconda_cfg['channels'] = skip_if_in_channels
+    repodata = utils.RepoData().df # Can this be quiet?
+    blacklist = utils.get_blacklist(bioconda_cfg.get('blacklists'), recipe_folder)
+    build_config = utils.load_conda_build_config()
+    build_config.trim_skip = True
+
+    dag, name2recipes = utils.get_dag(utils.get_recipes(recipe_folder, '*') , config, blacklist=blacklist)
+    if packages != "*":
+        filterNodes= set(packages)
+        for package in packages:
+            for child in nx.ancestors(dag, package):
+                filterNodes.add(child)
+        dag = nx.subgraph(dag, filterNodes)
+
+    updated = [0, 0, 0, 0]
+    hadErrors = set()
+    bumpErrors = set()
+    for node in nx.nodes(dag):
+        for recipe in name2recipes[node]:
+            # This should all go in a different module
+            status = should_be_bumped(recipe, build_config, repodata)
+            updated[status] += 1
+            if bump_only_python and status == 1:
+                status = 2
+            if status == 2:
+                if not bump_recipe(recipe):
+                    bumpErrors.add(recipe)
+            if status == 3:
+                hadErrors.add(recipe)
+
+    # Print some information
+    print("Packages requiring the following:")
+    print("  No build number change needed: {}".format(updated[0]))
+    print("  A rebuild for a new python version: {}".format(updated[1]))
+    print("  A build number increment: {}".format(updated[2]))
+    if updated[3]:
+        print("{} packages produced an error in conda-build: {}".format(updated[3], list(hadErrors)))
+    if len(bumpErrors):
+        print("The build numbers in the following recipes could not be incremented: {}".format(list(bumpErrors)))
 
 
 @arg('recipe_folder', help='Path to recipes directory')
@@ -709,6 +775,6 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
 
 def main():
     argh.dispatch_commands([
-        build, dag, dependent, lint, duplicates,
+        build, dag, dependent, lint, duplicates, update_pinning,
         bioconductor_skeleton, clean_cran_skeleton, autobump
     ])

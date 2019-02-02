@@ -31,7 +31,6 @@ if [[ ! -d $WORKSPACE/miniconda ]]; then
 
     conda config --system --add channels defaults
     conda config --system --add channels bioconda
-    conda config --system --add channels conda-forge/label/cf201901
     conda config --system --add channels conda-forge
 
     # step 3: install bioconda-utils and test requirements
