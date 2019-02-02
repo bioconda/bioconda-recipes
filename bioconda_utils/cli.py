@@ -567,6 +567,9 @@ def dependent(
     if dependencies and reverse_dependencies:
         raise ValueError(
             '`dependencies` and `reverse_dependencies` are mutually exclusive')
+    if not any([dependencies, reverse_dependencies]):
+        raise ValueError(
+            'One of `--dependencies` or `--reverse-dependencies` is required.')
 
     utils.setup_logger('bioconda_utils', loglevel)
 
@@ -580,7 +583,7 @@ def dependent(
     pkgs = []
     for pkg in packages:
         pkgs.extend(list(func(d, pkg)))
-    print('\n'.join(sorted(pkgs)))
+    print('\n'.join(sorted(list(set(pkgs)))))
 
 
 @arg('package', help='''Bioconductor package name. This is case-sensitive, and
