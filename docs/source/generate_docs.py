@@ -81,10 +81,10 @@ def underline_filter(text):
     return text + "\n" + "=" * len(text)
 
 
-def escape_filter(text):
+def rst_escape_filter(text):
     """Jinja2 filter escaping RST symbols in text
 
-    >>> excape_filter("running `cmd.sh`")
+    >>> rst_excape_filter("running `cmd.sh`")
     "running \`cmd.sh\`"
     """
     if text:
@@ -105,7 +105,7 @@ class Renderer:
         template_loader = BuiltinTemplateLoader()
         template_loader.init(app.builder)
         template_env = SandboxedEnvironment(loader=template_loader)
-        template_env.filters['escape'] = escape_filter
+        template_env.filters['rst_escape'] = escape_filter
         template_env.filters['underline'] = underline_filter
         template_env.filters['as_extlink'] = as_extlink_filter
         self.env = template_env
