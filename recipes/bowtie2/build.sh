@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LDFLAGS=""
-make static-libs && make STATIC_BUILD=1
+make CXX=$CXX CPP=$CXX CC=$CC LDLIBS="-L$PREFIX/lib -lz -ltbb -ltbbmalloc -lpthread"
 
 binaries="\
 bowtie2 \
@@ -25,6 +25,8 @@ if [ $PY3_BUILD -eq 3 ]; then
     done
 fi
 
+ls -l 
+exit 1
 for i in $binaries; do
     cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i
 done
