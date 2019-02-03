@@ -25,8 +25,6 @@ if [ $PY3_BUILD -eq 3 ]; then
     done
 fi
 
-ls -l 
-exit 1
 for i in $binaries; do
     cp $i $PREFIX/bin && chmod +x $PREFIX/bin/$i
 done
