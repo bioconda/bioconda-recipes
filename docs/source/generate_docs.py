@@ -42,6 +42,7 @@ BASE_DIR = op.dirname(op.abspath(__file__))
 RECIPE_DIR = op.join(op.dirname(BASE_DIR), 'bioconda-recipes', 'recipes')
 OUTPUT_DIR = op.join(BASE_DIR, 'recipes')
 RECIPE_BASE_URL = 'https://github.com/bioconda/bioconda-recipes/tree/master/recipes/'
+CONDA_FORGE_FORMAT = 'https://github.com/conda-forge/{}-feedstock'
 
 
 def as_extlink_filter(text):
@@ -315,6 +316,14 @@ class CondaDomain(Domain):
         The method can also raise :exc:`sphinx.environment.NoUri` to suppress
         the :event:`missing-reference` event being emitted.
         """
+        # Keep a copy of the repodata object in the env to speed up
+        # parallel builds (otherwise `writing output` is confined to 1 thread)
+        if not hasattr(env, 'conda_forge_packages') or True:
+            pkgs = set(RepoData().get_package_data('name', channels='conda-forge'))
+            env.conda_forge_packages = pkgs
+        else:
+            pkgs = env.conda_forge_packages
+
         for objtype in self.objtypes_for_role(typ):
             if (objtype, target) in self.data['objects']:
                 return make_refnode(
@@ -322,6 +331,13 @@ class CondaDomain(Domain):
                     self.data['objects'][objtype, target][0],
                     self.data['objects'][objtype, target][1],
                     contnode, target + ' ' + objtype)
+            elif objtype == "package":
+                if target in pkgs:
+                    uri = CONDA_FORGE_FORMAT.format(target)
+                    node = nodes.reference('','',internal=False, refuri=uri)
+                    node += contnode
+                    return node
+
         return None  # triggers missing-reference
 
     def get_objects(self):
