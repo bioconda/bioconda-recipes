@@ -419,7 +419,7 @@ def generate_recipes(app):
     the collected data.
     """
     renderer = Renderer(app)
-    load_config(os.path.join(os.path.dirname(__file__), "config.yaml"))
+    load_config(os.path.join(os.path.dirname(RECIPE_DIR), "config.yml"))
     repodata = RepoData()
     repodata.set_cache(op.join(app.env.doctreedir, 'RepoDataCache.csv'))
     # force loading repodata to avoid duplicate loads from threads
