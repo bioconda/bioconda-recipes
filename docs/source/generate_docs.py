@@ -28,6 +28,7 @@ from sphinx.jinja2glue import BuiltinTemplateLoader
 from conda.exports import VersionOrder
 
 from bioconda_utils.utils import RepoData, load_config
+from bioconda_utils.recipe import Recipe, RecipeError
 
 # Aquire a logger
 try:
@@ -35,13 +36,6 @@ try:
 except AttributeError:  # not running within sphinx
     import logging
     logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
-
-try:
-    from conda_build.metadata import MetaData
-    from conda_build.exceptions import UnableToParse
-except Exception:
-    logging.exception("Failed to import MetaData")
-    raise
 
 
 BASE_DIR = op.dirname(op.abspath(__file__))
@@ -373,24 +367,20 @@ def generate_readme(folder, repodata, renderer):
         else:
             logger.error("No 'meta.yaml' found in %s", folder)
             return []
-    meta_relpath = meta_fname[len(RECIPE_DIR):]
+    meta_relpath = meta_fname[len(RECIPE_DIR)+1:]
 
     # Read the meta.yaml file(s)
     try:
-        metadata = MetaData(meta_fname)
-    except UnableToParse:
-        logger.error("Failed to parse recipe %s", meta_fname)
+        recipe = Recipe.from_file(RECIPE_DIR, meta_fname)
+    except RecipeError as e:
+        logger.error("Unable to process %s: %s", meta_fname, e)
         return []
-
-    name = metadata.name()
-    versions_in_channel = repodata.get_versions(name)
-    sorted_versions = sorted(versions_in_channel.keys(), key=VersionOrder, reverse=True)
 
     # Format the README
     template_options = {
-        'name': name,
-        'about': (metadata.get_section('about') or {}),
-        'extra': (metadata.get_section('extra') or {}),
+        'name': recipe.name,
+        'about': recipe.get('about'),
+        'extra': recipe.get('extra'),
         'versions': sorted_versions,
         'recipe_path': meta_relpath,
         'Package': '<a href="recipes/{0}/README.html">{0}</a>'.format(folder)
@@ -398,6 +388,7 @@ def generate_readme(folder, repodata, renderer):
     }
 
     renderer.render_to_file(output_file, 'readme.rst_t', template_options)
+    return []
 
     versions = []
     for version in sorted_versions:
