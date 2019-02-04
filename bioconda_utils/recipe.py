@@ -280,6 +280,12 @@ class Recipe():
         """The version of the package build by this recipe"""
         return str(self.meta["package"]["version"])
 
+    def __getitem__(self, key):
+        return self.meta[key]
+
+    def get(self, key, default=None):
+        return self.meta.get(key, default)
+
     @property
     def package_names(self) -> List[str]:
         """List of the packages built by this recipe (including outputs)"""
