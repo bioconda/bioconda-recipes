@@ -54,7 +54,7 @@ mkdir $BOOST_BUILT
 popd
 
 # build spydrpick, statically linking boost manually
-curl -o FindTBB.cmake https://raw.githubusercontent.com/Kitware/VTK/master/CMake/FindTBB.cmake
+curl -o ${SRC_DIR}/FindTBB.cmake https://raw.githubusercontent.com/Kitware/VTK/master/CMake/FindTBB.cmake
 export CMAKE_MODULE_PATH=${SRC_DIR}
 mkdir build && pushd build
 cmake -DBoost_INCLUDE_DIR=${BOOST_BUILT}/include -DBoost_LIBRARY_DIR=${BOOST_BUILT}/lib ..
