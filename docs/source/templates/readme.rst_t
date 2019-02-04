@@ -6,7 +6,6 @@
 
 .. conda:recipe:: {{recipe.reldir}}
    :replaces_section_title:
-   :badges: |downloads|
 
    {{ (about.summary or "") | rst_escape | indent(3)}}
 
@@ -16,7 +15,6 @@
    {% endif %}
    {%- if about.dev_url and about.dev_url != about.home %}
    :developer docs: {{ about.dev_url }}
-   :versions: {{versions | join(", ") }}
    {%- endif %}
    :license: {{ [about.license_family, about.license]
                 | reject('undefined') | join(' / ') | rst_link(about.license_url) }}
@@ -25,27 +23,41 @@
 	    {%- endfor %}
    {%- if extra.identifiers %}
    :links: {{ extra.identifiers | as_extlink | join(", ") }}
-   :docker: |docker|
    {%- endif %}
 
    {{ (about.description or "") | rst_escape | indent(3) }}
 
-Installation
-------------
+{% for package in packages %}
+.. conda:package:: {{package.name}}
 
-.. highlight: bash
+   |downloads_{{package.name}}| |docker_{{package.name}}|
 
-With an activated Bioconda channel (see :ref:`set-up-channels`), install with::
+   :versions: {{ package.versions | join(", ") }}
 
-   conda install {{ name }}
+   .. rubric:: Installation
 
-and update with::
+   With an activated Bioconda channel (see :ref:`set-up-channels`), install with::
 
-   conda update {{ name }}
+      conda install {{ package.name }}
 
-or use the docker container::
+   and update with::
 
-   docker pull quay.io/repository/biocontainers/{{ name }}
+      conda update {{  package.name }}
+
+   or use the docker container::
+
+      docker pull quay.io/repository/biocontainers/{{ package.name }}
+
+
+.. |required_by_{{package.name}}| conda:required_by:: {{package.name}}
+.. |downloads_{{package.name}}| image:: https://img.shields.io/conda/dn/bioconda/{{package.name}}.svg?style=flat
+   :alt:   (downloads)
+.. |docker_{{package.name}}| image:: https://quay.io/repository/biocontainers/{{ name }}/status
+   :target: https://quay.io/repository/biocontainers/{{ name }}
+
+
+{% endfor %}
+
 
 {% if extra.notes %}
 Notes
@@ -66,10 +78,7 @@ Render an |install-with-bioconda| badge with the following MarkDown::
 
    [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/{{ name }}/README.html)
 
-.. |downloads| image:: https://anaconda.org/bioconda/{{ name }}/badges/downloads.svg
-               :target: https://anaconda.org/bioconda/{{ name }}
-.. |docker| image:: https://quay.io/repository/biocontainers/{{ name }}/status
-                :target: https://quay.io/repository/biocontainers/{{ name }}
 .. |install-with-bioconda| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat
+   :target: http://bioconda.github.io/recipes/{{ name }}/README.html
 
 

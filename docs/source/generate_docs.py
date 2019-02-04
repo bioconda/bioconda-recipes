@@ -392,30 +392,27 @@ def generate_readme(folder, repodata, renderer):
         return []
 
     # Format the README
+    packages = []
+    for package in sorted(list(set(recipe.package_names))):
+        versions_in_channel = set(repodata.get_package_data('version', channels='bioconda', name=package))
+        sorted_versions = sorted(versions_in_channel, key=VersionOrder, reverse=True)
+
+        packages.append({
+            'name': package,
+            'versions': sorted_versions,
+        })
+
     template_options = {
         'name': recipe.name,
         'about': recipe.get('about'),
         'extra': recipe.get('extra'),
-        'versions': sorted_versions,
         'recipe': recipe,
         'gh_recipes': RECIPE_BASE_URL,
+        'packages': packages,
     }
 
     renderer.render_to_file(output_file, 'readme.rst_t', template_options)
     return []
-
-    versions = []
-    for version in sorted_versions:
-        version_info = versions_in_channel[version]
-        version_tpl = template_options.copy()
-        version_tpl.update({
-            'Linux': '<i class="fa fa-linux"></i>' if 'linux' in version_info else '',
-            'OSX': '<i class="fa fa-apple"></i>' if 'osx' in version_info else '',
-            'Version': version
-        })
-        versions.append(version_tpl)
-    return versions
-
 
 def generate_recipes(app):
     """
