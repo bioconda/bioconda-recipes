@@ -127,8 +127,13 @@ class Recipe():
 
     @property
     def path(self):
-        """Full path to `meta.yaml``"""
+        """Full path to ``meta.yaml``"""
         return os.path.join(self.basedir, self.reldir, "meta.yaml")
+
+    @property
+    def relpath(self):
+        """Relative path to ``meta.yaml`` (from ``basedir``)"""
+        return os.path.join(self.reldir, "meta.yaml")
 
     @property
     def config(self):
