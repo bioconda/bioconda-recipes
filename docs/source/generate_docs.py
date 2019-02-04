@@ -397,9 +397,19 @@ def generate_readme(folder, repodata, renderer):
         versions_in_channel = set(repodata.get_package_data('version', channels='bioconda', name=package))
         sorted_versions = sorted(versions_in_channel, key=VersionOrder, reverse=True)
 
+        if sorted_versions:
+            depends = [
+                depstring.split(' ', 1) if ' ' in depstring else (depstring, '')
+                for depstring in
+                repodata.get_package_data('depends', name=package, version=sorted_versions[0])[0]
+            ]
+        else:
+            depends = []
+
         packages.append({
             'name': package,
             'versions': sorted_versions,
+            'depends' : depends,
         })
 
     template_options = {
