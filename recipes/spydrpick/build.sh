@@ -22,6 +22,7 @@ python2 tools/boostdep/depinst/depinst.py iostreams --include example
 python2 tools/boostdep/depinst/depinst.py system --include example
 python2 tools/boostdep/depinst/depinst.py timer --include example
 python2 tools/boostdep/depinst/depinst.py chrono --include example
+git submodule update -q --init libs/accumulators
 
 CXXFLAGS="${CXXFLAGS} -fPIC"
 INCLUDE_PATH="${PREFIX}/include"
