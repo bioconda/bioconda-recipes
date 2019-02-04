@@ -61,7 +61,7 @@ export CMAKE_MODULE_PATH=${SRC_DIR}
 
 # build spydrpick
 mkdir build && pushd build
-cmake -DBoost_INCLUDE_DIR=${BOOST_BUILT}/include -DBoost_LIBRARY_DIR=${BOOST_BUILT}/lib ..
+cmake -DTBB_ROOT=${PREFIX} -DBoost_INCLUDE_DIR=${BOOST_BUILT}/include -DBoost_LIBRARY_DIR=${BOOST_BUILT}/lib ..
 make
 install ${PREFIX}/bin bin/aracne bin/SpydrPick
 popd
