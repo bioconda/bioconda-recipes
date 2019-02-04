@@ -466,14 +466,6 @@ def generate_recipes(app):
         logger.info("waiting for workers...")
         tasks.join()
 
-    updated = renderer.render_to_file("source/recipes.rst", "recipes.rst_t", {
-        'recipes': recipes,
-        # order of columns in the table; must be keys in template_options
-        'keys': ['Package', 'Version', 'License', 'Linux', 'OSX']
-    })
-    if updated:
-        logger.info("Updated source/recipes.rst")
-
 
 def setup(app):
     """Set up sphinx extension"""
