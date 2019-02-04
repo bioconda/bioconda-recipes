@@ -155,6 +155,21 @@ class Recipe():
         self.render()
         return self
 
+    @classmethod
+    def from_file(cls, recipe_dir, recipe_fname) -> "Recipe":
+        """Create new `Recipe` object from file
+
+        Args:
+           recipe_dir: Path to recipes folder
+           recipe_fname: Relative path to recipe (folder or meta.yaml)
+        """
+        if recipe_fname.endswith("meta.yaml"):
+            recipe_fname = os.path.dirname(recipe_fname)
+        recipe = cls(recipe_fname, recipe_dir)
+        with open(os.path.join(recipe_dir, recipe_fname, 'meta.yaml')) as text:
+            recipe.load_from_string(text.read())
+        return recipe
+
     def set_original(self) -> None:
         """Store the current state of the recipe as "original" version"""
         self.orig = copy(self)
