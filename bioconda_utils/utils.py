@@ -1217,6 +1217,9 @@ class RepoData:
     # config object
     config = None
 
+    cache_file = None
+    _df = None
+
     @classmethod
     def register_config(cls, config):
         cls.config = config
@@ -1229,10 +1232,6 @@ class RepoData:
                                                  "before instantiating RepoData.")
             RepoData.__instance = object.__new__(cls)
         return RepoData.__instance
-
-    def __init__(self):
-        self.cache_file = None
-        self._df = None
 
     def set_cache(self, cache):
         if self._df is not None:
