@@ -47,6 +47,7 @@ except Exception:
 BASE_DIR = op.dirname(op.abspath(__file__))
 RECIPE_DIR = op.join(op.dirname(BASE_DIR), 'bioconda-recipes', 'recipes')
 OUTPUT_DIR = op.join(BASE_DIR, 'recipes')
+RECIPE_BASE_URL = 'https://github.com/bioconda/bioconda-recipes/tree/master/recipes/'
 
 
 def as_extlink_filter(text):
@@ -391,9 +392,9 @@ def generate_readme(folder, repodata, renderer):
         'about': (metadata.get_section('about') or {}),
         'extra': (metadata.get_section('extra') or {}),
         'versions': sorted_versions,
-        'gh_recipes': 'https://github.com/bioconda/bioconda-recipes/tree/master/recipes/',
         'recipe_path': meta_relpath,
         'Package': '<a href="recipes/{0}/README.html">{0}</a>'.format(folder)
+        'gh_recipes': RECIPE_BASE_URL,
     }
 
     renderer.render_to_file(output_file, 'readme.rst_t', template_options)
