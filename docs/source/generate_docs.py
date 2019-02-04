@@ -106,7 +106,7 @@ class Renderer:
         template_loader = BuiltinTemplateLoader()
         template_loader.init(app.builder)
         template_env = SandboxedEnvironment(loader=template_loader)
-        template_env.filters['rst_escape'] = escape_filter
+        template_env.filters['rst_escape'] = rst_escape_filter
         template_env.filters['underline'] = underline_filter
         template_env.filters['as_extlink'] = as_extlink_filter
         template_env.filters['rst_link'] = rst_link_filter
