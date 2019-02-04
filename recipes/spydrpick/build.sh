@@ -13,6 +13,8 @@ git clone --depth 50 https://github.com/boostorg/iostreams.git libs/iostreams
 git clone --depth 50 https://github.com/boostorg/system.git libs/system
 git clone --depth 50 https://github.com/boostorg/timer.git libs/timer
 git clone --depth 50 https://github.com/boostorg/chrono.git libs/chrono
+git submodule update -q --init libs/accumulators
+git submodule update -q --init libs/functional
 git submodule update -q --init tools/boostdep
 git submodule update -q --init tools/build
 git submodule update -q --init tools/inspect
@@ -22,7 +24,8 @@ python2 tools/boostdep/depinst/depinst.py iostreams --include example
 python2 tools/boostdep/depinst/depinst.py system --include example
 python2 tools/boostdep/depinst/depinst.py timer --include example
 python2 tools/boostdep/depinst/depinst.py chrono --include example
-git submodule update -q --init libs/accumulators
+python2 tools/boostdep/depinst/depinst.py accumulators --include example
+python2 tools/boostdep/depinst/depinst.py functional --include example
 
 CXXFLAGS="${CXXFLAGS} -fPIC"
 INCLUDE_PATH="${PREFIX}/include"
