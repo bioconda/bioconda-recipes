@@ -27,7 +27,7 @@ python2 tools/boostdep/depinst/depinst.py chrono --include example
 python2 tools/boostdep/depinst/depinst.py accumulators --include example
 python2 tools/boostdep/depinst/depinst.py functional --include example
 
-CXXFLAGS="${CXXFLAGS} -fPIC"
+CXXFLAGS="${CXXFLAGS} -fPIC -static-libstdc++"
 INCLUDE_PATH="${PREFIX}/include"
 LIBRARY_PATH="${PREFIX}/lib"
 LINKFLAGS="${LINKFLAGS} -L${LIBRARY_PATH}"
