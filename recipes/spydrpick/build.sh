@@ -56,6 +56,7 @@ popd
 # set up other dependencies
 rmdir externals/apegrunt
 git clone https://github.com/santeripuranen/apegrunt.git externals/apegrunt
+pushd externals/apegrunt && git checkout fded9d18f02b9d2d38ea260a847fef7c35e6b4fa && popd
 curl -o ${SRC_DIR}/FindTBB.cmake https://raw.githubusercontent.com/Kitware/VTK/master/CMake/FindTBB.cmake
 export CMAKE_MODULE_PATH=${SRC_DIR}
 
