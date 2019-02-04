@@ -4,9 +4,8 @@
 # see
 # https://github.com/conda-forge/boost-cpp-feedstock/blob/master/recipe/build.sh
 # https://github.com/boostorg/program_options/blob/develop/.travis.yml
-git clone https://github.com/boostorg/boost.git boost
+git clone --depth 1 --single-branch --branch boost-1.69.0 https://github.com/boostorg/boost.git boost
 pushd boost
-git checkout tags/boost-1.69.0
 rmdir libs/program_options libs/filesystem libs/iostreams libs/system libs/timer libs/chrono
 git clone --depth 50 https://github.com/boostorg/program_options.git libs/program_options
 git clone --depth 50 https://github.com/boostorg/filesystem.git libs/filesystem
