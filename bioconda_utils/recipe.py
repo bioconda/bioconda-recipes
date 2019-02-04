@@ -183,7 +183,7 @@ class Recipe():
         if not block_left:
             return None  # never the whole yaml
         lines = text.splitlines()
-        block_height = None
+        block_height = 0
         variants: Dict[str, List[str]] = defaultdict(list)
 
         for block_height, line in enumerate(lines[block_top:]):
