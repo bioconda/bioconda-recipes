@@ -58,11 +58,10 @@ rmdir externals/apegrunt
 git clone https://github.com/santeripuranen/apegrunt.git externals/apegrunt
 curl -o ${SRC_DIR}/FindTBB.cmake https://raw.githubusercontent.com/Kitware/VTK/master/CMake/FindTBB.cmake
 export CMAKE_MODULE_PATH=${SRC_DIR}
-export TBB_ROOT=${PREFIX}
 
 # build spydrpick
 mkdir build && pushd build
-cmake -DBoost_INCLUDE_DIR=${BOOST_BUILT}/include -DBoost_LIBRARY_DIR=${BOOST_BUILT}/lib ..
+cmake -DTBB_ROOT=${PREFIX} -DBoost_INCLUDE_DIR=${BOOST_BUILT}/include -DBoost_LIBRARY_DIR=${BOOST_BUILT}/lib ..
 make
 install ${PREFIX}/bin bin/aracne bin/SpydrPick
 popd
