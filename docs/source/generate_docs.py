@@ -87,6 +87,13 @@ def rst_escape_filter(text):
     return text
 
 
+def prefixes_filter(text, split):
+    path = []
+    for part in text.split(split):
+        path.append(part)
+        yield {'path': split.join(path), 'part': part}
+
+
 def rst_link_filter(text, url):
     if url:
         return "`{} <{}>`_".format(text, url)
@@ -109,6 +116,7 @@ class Renderer:
         template_env.filters['rst_escape'] = rst_escape_filter
         template_env.filters['underline'] = underline_filter
         template_env.filters['as_extlink'] = as_extlink_filter
+        template_env.filters['prefixes'] = prefixes_filter
         template_env.filters['rst_link'] = rst_link_filter
         self.env = template_env
         self.templates: Dict[str, Any] = {}
@@ -389,8 +397,7 @@ def generate_readme(folder, repodata, renderer):
         'about': recipe.get('about'),
         'extra': recipe.get('extra'),
         'versions': sorted_versions,
-        'recipe_path': meta_relpath,
-        'Package': '<a href="recipes/{0}/README.html">{0}</a>'.format(folder)
+        'recipe': recipe,
         'gh_recipes': RECIPE_BASE_URL,
     }
 
