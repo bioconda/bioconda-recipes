@@ -23,6 +23,7 @@ from sphinx.util.nodes import make_refnode
 from sphinx.util.parallel import ParallelTasks, parallel_available, make_chunks
 from sphinx.util.rst import escape as rst_escape
 from sphinx.util.osutil import ensuredir
+from sphinx.util.docutils import SphinxDirective
 from sphinx.jinja2glue import BuiltinTemplateLoader
 
 from conda.exports import VersionOrder
@@ -230,15 +231,22 @@ class CondaObjectDescription(ObjectDescription):
             self.indexnode['entries'].append(('single', index_text, target_name, '', None))
 
     def get_index_text(self, name: str) -> str:
+        """This yields the text with which the object is entered into the index."""
         return "{} ({})".format(name, self.objtype)
+
+    def before_content(self):
+        """We register ourselves in the `ref_context` so that a later
+        call to :depends:`packagename` knows within which package
+        the dependency was added"""
+        self.env.ref_context['conda:'+self.typename] = self.names[-1]
 
 
 class CondaRecipe(CondaObjectDescription):
-    typename = "Recipe"
+    typename = "recipe"
 
 
 class CondaPackage(CondaObjectDescription):
-    typename = "Package"
+    typename = "package"
 
 
 class RecipeIndex(Index):
@@ -263,6 +271,66 @@ class RecipeIndex(Index):
         return sorted(content.items()), collapse
 
 
+class DependsXRefRole(XRefRole):
+    """Special XRefRole that adds a "back reference"
+
+    This role will be used to reference packages using
+    ``:conda:depends:`pkg``` rather than ``:conda:package:`pkg```. It
+    differs in that it registers the dependency with the `backrefs`
+    data in the `conda` domain.
+
+    """
+    def process_link(self, env, refnode, has_explicit_title, title, target):
+        source = env.ref_context['conda:package']
+        backrefs = env.domains['conda'].data['backrefs'].setdefault(target, set())
+        backrefs.add((env.docname, source))
+        return super().process_link(env, refnode, has_explicit_title, title, target)
+
+
+class RequiredByDirective(SphinxDirective):
+    """Directive rendering a list of references to packages that included calls
+    to `DependsXrefRole` via ``:conda:depends:`pkg```.
+
+    This directive works by adding a `pending_xref` which will only be resolved
+    at the very end via the `missing_reference` hook.
+    """
+    required_arguments = 1
+    def run(self):
+        package = self.arguments[0]
+        backref = addnodes.pending_xref(
+            '',
+            refdomain="conda",
+            reftype='requiredby', refexplicit=False,
+            reftarget=package, refdoc=self.env.docname
+        )
+        backref += nodes.inline('', '')
+        return [backref]
+
+
+def resolve_required_by_xrefs(app, env, node, contnode):
+    """Now that all recipes and packages have been parsed, we are called here
+    for each `pending_xref` node that sphinx has not been able to resolve.
+
+    We handle specifically the `requiredby` reftype created by the
+    `RequiredByDirective`, replacing the node with a series of reference nodes
+    pointing to the package pages that "depended" on the package.
+    """
+
+    if node['reftype'] == 'requiredby' and node['refdomain'] == 'conda':
+        target = node['reftarget']
+        docname = node['refdoc']
+        backrefs = env.domains['conda'].data['backrefs'].get(target, set())
+        newnode = nodes.inline('', '')
+        for back_docname, back_target in backrefs:
+            if len(newnode):
+                newnode += nodes.inline('', ', ')
+            name_node = nodes.literal(back_target, back_target,
+                                      classes=['xref', 'backref'])
+            newnode += make_refnode(app.builder, docname,
+                                    back_docname, back_target, name_node)
+        return newnode
+
+
 class CondaDomain(Domain):
     """Domain for Conda Packages"""
     name = "conda"
@@ -276,13 +344,16 @@ class CondaDomain(Domain):
     directives = {
         'recipe': CondaRecipe,
         'package': CondaPackage,
+        'required_by': RequiredByDirective,
     }
     roles = {
         'recipe': XRefRole(),
         'package': XRefRole(),
+        'depends': DependsXRefRole(),  # also refs package, but adds backref
     }
     initial_data = {
         'objects': {},  #: (type, name) -> docname, labelid
+        'backrefs': {}  #: package_name -> docname, package_name
     }
     indices = [
         RecipeIndex
@@ -316,6 +387,14 @@ class CondaDomain(Domain):
         The method can also raise :exc:`sphinx.environment.NoUri` to suppress
         the :event:`missing-reference` event being emitted.
         """
+        # 'depends' role is handled just like a 'package' here (resolves the same)
+        if typ == 'depends':
+            typ = 'package'
+
+        # 'requiredby' role type is deferred to missing_references stage
+        if typ == 'requiredby':
+            return None
+
         # Keep a copy of the repodata object in the env to speed up
         # parallel builds (otherwise `writing output` is confined to 1 thread)
         if not hasattr(env, 'conda_forge_packages') or True:
@@ -369,6 +448,11 @@ class CondaDomain(Domain):
         for (typ, name), (docname, ref) in otherdata['objects'].items():
             if docname in docnames:
                 self.data['objects'][typ, name] = (docname, ref)
+        for key, data in otherdata['backrefs'].items():
+            if docname in docnames:
+                xdata = self.data['backrefs'].setdefault(key, set())
+                xdata |= data
+
 
 def generate_readme(folder, repodata, renderer):
     """Generates README.rst for the recipe in folder
@@ -500,6 +584,7 @@ def setup(app):
     """Set up sphinx extension"""
     app.add_domain(CondaDomain)
     app.connect('builder-inited', generate_recipes)
+    app.connect('missing-reference', resolve_required_by_xrefs)
     return {
         'version': "0.0.0",
         'parallel_read_safe': True,
