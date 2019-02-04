@@ -27,10 +27,10 @@ python2 tools/boostdep/depinst/depinst.py chrono --include example
 python2 tools/boostdep/depinst/depinst.py accumulators --include example
 python2 tools/boostdep/depinst/depinst.py functional --include example
 
-CXXFLAGS="${CXXFLAGS} -fPIC -static-libstdc++"
+CXXFLAGS="${CXXFLAGS} -fPIC"
 INCLUDE_PATH="${PREFIX}/include"
 LIBRARY_PATH="${PREFIX}/lib"
-LINKFLAGS="${LINKFLAGS} -L${LIBRARY_PATH}"
+LINKFLAGS="${LINKFLAGS} -static-libstdc++ -static-libgcc -L${LIBRARY_PATH}"
 
 cat <<EOF > tools/build/src/site-config.jam
 using gcc : : ${CXX} ;
@@ -67,6 +67,6 @@ export CMAKE_MODULE_PATH=${SRC_DIR}
 # build spydrpick
 mkdir build && pushd build
 cmake -DTBB_ROOT=${PREFIX} -DBoost_INCLUDE_DIR=${BOOST_BUILT}/include -DBoost_LIBRARY_DIR=${BOOST_BUILT}/lib ..
-make
+make VERBOSE=1
 install ${PREFIX}/bin bin/aracne bin/SpydrPick
 popd
