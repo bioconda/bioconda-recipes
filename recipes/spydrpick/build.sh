@@ -54,10 +54,7 @@ mkdir $BOOST_BUILT
 popd
 
 # build spydrpick, statically linking boost manually
-pushd externals
-git submodule update -q --init apegrunt
-popd
-
+git submodule update -q --init externals/apegrunt
 curl -o ${SRC_DIR}/FindTBB.cmake https://raw.githubusercontent.com/Kitware/VTK/master/CMake/FindTBB.cmake
 export CMAKE_MODULE_PATH=${SRC_DIR}
 
