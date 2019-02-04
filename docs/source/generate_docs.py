@@ -87,6 +87,12 @@ def rst_escape_filter(text):
     return text
 
 
+def rst_link_filter(text, url):
+    if url:
+        return "`{} <{}>`_".format(text, url)
+    return text
+
+
 class Renderer:
     """Jinja2 template renderer
 
@@ -103,6 +109,7 @@ class Renderer:
         template_env.filters['rst_escape'] = escape_filter
         template_env.filters['underline'] = underline_filter
         template_env.filters['as_extlink'] = as_extlink_filter
+        template_env.filters['rst_link'] = rst_link_filter
         self.env = template_env
         self.templates: Dict[str, Any] = {}
 
