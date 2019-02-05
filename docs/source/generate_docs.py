@@ -450,15 +450,17 @@ class CondaDomain(Domain):
 
         for objtype in self.objtypes_for_role(typ):
             if (objtype, target) in self.data['objects']:
-                return make_refnode(
+                node = make_refnode(
                     builder, fromdocname,
                     self.data['objects'][objtype, target][0],
                     self.data['objects'][objtype, target][1],
                     contnode, target + ' ' + objtype)
+                node.set_class('conda-package')
+                return node
             elif objtype == "package":
                 if target in pkgs:
                     uri = CONDA_FORGE_FORMAT.format(target)
-                    node = nodes.reference('','',internal=False, refuri=uri)
+                    node = nodes.reference('','',internal=False, refuri=uri, classes=['conda-forge'])
                     node += contnode
                     return node
 
