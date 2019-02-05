@@ -8,7 +8,7 @@ export LIBRARY_PATH="${PREFIX}/lib"
 
 # Compile and install. Replace gcc with $CC
 
-sed -i.bak "s/gcc/\$CC/g" Makefile
+sed -i.bak "s/gcc/\$\(CC\)/g" src/Makefile
 make
 make install
 
