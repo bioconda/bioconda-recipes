@@ -2,8 +2,6 @@
 
 python3 setup.py install --single-version-externally-managed --record=record.txt
 
-conda install -c ambermd ambertools 
-
 mkdir -p $PREFIX/bin
 
 chmod u+x $SP_DIR/biobb_analysis/gromacs/rms.py
