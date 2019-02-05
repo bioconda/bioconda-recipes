@@ -12,3 +12,5 @@ cp $SP_DIR/biobb_analysis/gromacs/rms.py $PREFIX/bin/rms
 
 chmod u+x $SP_DIR/biobb_analysis/ambertools/cpptraj.py
 cp $SP_DIR/biobb_analysis/ambertools/cpptraj.py $PREFIX/bin/cpptraj
+
+conda install -y  -c ambermd ambertools
