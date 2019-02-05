@@ -432,21 +432,12 @@ class CondaDomain(Domain):
         The method can also raise :exc:`sphinx.environment.NoUri` to suppress
         the :event:`missing-reference` event being emitted.
         """
-        # 'depends' role is handled just like a 'package' here (resolves the same)
         if typ == 'depends':
+            # 'depends' role is handled just like a 'package' here (resolves the same)
             typ = 'package'
-
-        # 'requiredby' role type is deferred to missing_references stage
-        if typ == 'requiredby':
+        elif typ == 'requiredby':
+            # 'requiredby' role type is deferred to missing_references stage
             return None
-
-        # Keep a copy of the repodata object in the env to speed up
-        # parallel builds (otherwise `writing output` is confined to 1 thread)
-        if not hasattr(env, 'conda_forge_packages') or True:
-            pkgs = set(RepoData().get_package_data('name', channels='conda-forge'))
-            env.conda_forge_packages = pkgs
-        else:
-            pkgs = env.conda_forge_packages
 
         for objtype in self.objtypes_for_role(typ):
             if (objtype, target) in self.data['objects']:
@@ -457,10 +448,20 @@ class CondaDomain(Domain):
                     contnode, target + ' ' + objtype)
                 node.set_class('conda-package')
                 return node
-            elif objtype == "package":
+
+            if objtype == "package":
+                # Avoid going through the entire repodata CF - we cache a set of the
+                # packages available via conda-forge here.
+                if not hasattr(env, 'conda_forge_packages'):
+                    pkgs = set(RepoData().get_package_data('name', channels='conda-forge'))
+                    env.conda_forge_packages = pkgs
+                else:
+                    pkgs = env.conda_forge_packages
+
                 if target in pkgs:
                     uri = CONDA_FORGE_FORMAT.format(target)
-                    node = nodes.reference('','',internal=False, refuri=uri, classes=['conda-forge'])
+                    node = nodes.reference('', '', internal=False,
+                                           refuri=uri, classes=['conda-forge'])
                     node += contnode
                     return node
 
