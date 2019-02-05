@@ -542,21 +542,27 @@ def generate_readme(folder, repodata, renderer):
     # Format the README
     packages = []
     for package in sorted(list(set(recipe.package_names))):
-        versions_in_channel = set(repodata.get_package_data('version', channels='bioconda', name=package))
-        sorted_versions = sorted(versions_in_channel, key=VersionOrder, reverse=True)
+        versions_in_channel = set(repodata.get_package_data(['version', 'build_number'],
+                                                            channels='bioconda', name=package))
+        sorted_versions = sorted(versions_in_channel,
+                                 key=lambda x: (VersionOrder(x[0]), x[1]),
+                                 reverse=True)
 
         if sorted_versions:
             depends = [
                 depstring.split(' ', 1) if ' ' in depstring else (depstring, '')
                 for depstring in
-                repodata.get_package_data('depends', name=package, version=sorted_versions[0])[0]
+                repodata.get_package_data('depends', name=package,
+                                          version=sorted_versions[0][0],
+                                          build_number=sorted_versions[0][1],
+                )[0]
             ]
         else:
             depends = []
 
         packages.append({
             'name': package,
-            'versions': sorted_versions,
+            'versions': ['-'.join(str(w) for w in v) for v in sorted_versions],
             'depends' : depends,
         })
 
