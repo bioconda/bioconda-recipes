@@ -11,7 +11,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 # Compile and install. Replace gcc with $CC
 
 sed -i.bak "s/gcc/\$\(CC\)/g" src/Makefile
-make CFLAGS=-L${PREFIX}/lib
+export CFLAGS="$CFLAGS -L${PREFIX}/lib"
 make install
 
 # Copy executables into prefix
