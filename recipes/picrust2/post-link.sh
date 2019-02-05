@@ -1,13 +1,13 @@
 #!/bin/bash
 
-FN="picrust2-2.0.4-b.tar.gz"
-TARBALL_DIR="picrust2-2.0.4-b"
-URL="https://github.com/picrust/picrust2/releases/download/v2.0.4-b/picrust2-2.0.4-b.tar.gz"
- 
+FN="v2.1.0-b.tar.gz"
+TARBALL_DIR="picrust2-2.1.0-b"
+URL="https://github.com/picrust/picrust2/archive/v2.1.0-b.tar.gz"
+SHA256="45291f457c660b73f179a9c1c9004075b519269334d397952fd3ca1f892cd1ad" 
+
 # Create staging area.
 STAGING=$PREFIX/staging
 TARBALL=$STAGING/$FN
-SHA256="b0d12da6aa072b7279e2c82afd09152f33dd016f5204a8ef055196f5e501ae19"
 
 SUCCESS=0
 
@@ -36,7 +36,7 @@ if [[ $SUCCESS != 1 ]]; then
   exit 1
 fi
 
-# Copy required Rscripts and default database files to appropriate folders.
+# Move default database files to expected directory.
 tar -C $STAGING -zxvf $TARBALL
 
 PYTHON_INSTALL_DIR=`python -c "import site; print(site.getsitepackages()[0])"`
@@ -45,3 +45,4 @@ mv $STAGING/$TARBALL_DIR/picrust2/default_files $PYTHON_INSTALL_DIR/picrust2
 
 # Remove staging directory.
 rm -r $STAGING
+
