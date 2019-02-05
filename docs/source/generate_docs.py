@@ -19,6 +19,7 @@ from sphinx.environment import BuildEnvironment
 from sphinx.roles import XRefRole
 from sphinx.util import logging as sphinx_logging
 from sphinx.util import status_iterator
+from sphinx.util.docfields import Field, GroupedField
 from sphinx.util.nodes import make_refnode
 from sphinx.util.parallel import ParallelTasks, parallel_available, make_chunks
 from sphinx.util.rst import escape as rst_escape
@@ -166,7 +167,85 @@ class Renderer:
         return True
 
 
+class RequirementsField(GroupedField):
+    """Field Type for ``.. conda:package::`` for specifying dependencies
+
+    This does two things different than `GroupedField`:
+
+    - No `--` inserted between argument and value
+    - Entry added to domain data ``backrefs`` so that we can
+      use the requirements to collect required-by data later.
+    """
+    def make_field(self, types, domain, items, env=None):
+        fieldname = nodes.field_name('', self.label)
+        listnode = self.list_type()
+        for fieldarg, content in items:
+            par = nodes.paragraph()
+            par.extend(self.make_xrefs(self.rolename, domain, fieldarg,
+                                       addnodes.literal_strong, env=env))
+            if content and content[0].astext():
+                par += nodes.Text(' ')
+                par += content
+            listnode += nodes.list_item('', par)
+
+            source = env.ref_context['conda:package']
+            backrefs = env.domains['conda'].data['backrefs'].setdefault(fieldarg, set())
+            backrefs.add((env.docname, source))
+
+        fieldbody = nodes.field_body('', listnode)
+        return nodes.field('', fieldname, fieldbody)
+
+
+class RequiredByField(Field):
+    """Field Type for directive ``.. conda:package::`` for showing required-by
+
+    This just creates the field name and field body with a `pending_xref` in the
+    body that will later be filled with the reverse dependencies by
+    `resolve_required_by_xrefs`
+    """
+    def make_field(self, types, domain, item, env=None):
+        fieldname = nodes.field_name('', self.label)
+        backref = addnodes.pending_xref(
+            '',
+            refdomain="conda",
+            reftype='requiredby', refexplicit=False,
+            reftarget=env.ref_context['conda:package'],
+            refdoc=env.docname
+        )
+        backref += nodes.inline('', '')
+        fieldbody = nodes.field_body('', backref)
+        return nodes.field('', fieldname, fieldbody)
+
+
+def resolve_required_by_xrefs(app, env, node, contnode):
+    """Now that all recipes and packages have been parsed, we are called here
+    for each `pending_xref` node that sphinx has not been able to resolve.
+
+    We handle specifically the `requiredby` reftype created by the
+    `RequiredByField` fieldtype allowed in ``conda:package::`
+    directives, where we replace the `pendinf_ref` node with a bullet
+    list of reference nodes pointing to the package pages that
+    "depended" on the package.
+    """
+    if node['reftype'] == 'requiredby' and node['refdomain'] == 'conda':
+        target = node['reftarget']
+        docname = node['refdoc']
+        backrefs = env.domains['conda'].data['backrefs'].get(target, set())
+        listnode = nodes.bullet_list()
+        for back_docname, back_target in backrefs:
+            par = nodes.paragraph()
+            name_node = addnodes.literal_strong(back_target, back_target,
+                                      classes=['xref', 'backref'])
+            refnode = make_refnode(app.builder, docname,
+                                   back_docname, back_target, name_node)
+            refnode.set_class('conda-package')
+            par += refnode
+            listnode += nodes.list_item('', par)
+        return listnode
+
+
 class CondaObjectDescription(ObjectDescription):
+    """Base class for `ObjectDescription`s in the `CondaDomain`"""
     typename = "[UNKNOWN]"
 
     option_spec = {
@@ -242,11 +321,39 @@ class CondaObjectDescription(ObjectDescription):
 
 
 class CondaRecipe(CondaObjectDescription):
+    """Directive ``.. conda:recipe::`` describing a Recipe
+    """
     typename = "recipe"
 
 
 class CondaPackage(CondaObjectDescription):
+    """Directive ``.. conda:package::`` describing a Package
+
+    This directive takes two specialized field types, ``requirements``
+    and ``depends``:
+
+    ```
+    .. conda:package:: mypkg1
+
+       :depends mypkg2: 2.0
+       :depends mypkg3:
+       :requirements:
+    ```
+
+    `:depends pkgname: [version]`
+       Adds a dependency to the package.
+
+    `:requirements:`
+       Lists packages which referenced this package via `:depends pkgname:`
+
+    """
     typename = "package"
+    doc_field_types = [
+        RequiredByField('requirements', names=('requirements',),
+                        label=u'Required\u00a0By', has_arg=False),
+        RequirementsField('depends', names=('depends', 'dependencies', 'deps'),
+                          label="Depends", rolename='depends'),
+    ]
 
 
 class RecipeIndex(Index):
@@ -271,66 +378,6 @@ class RecipeIndex(Index):
         return sorted(content.items()), collapse
 
 
-class DependsXRefRole(XRefRole):
-    """Special XRefRole that adds a "back reference"
-
-    This role will be used to reference packages using
-    ``:conda:depends:`pkg``` rather than ``:conda:package:`pkg```. It
-    differs in that it registers the dependency with the `backrefs`
-    data in the `conda` domain.
-
-    """
-    def process_link(self, env, refnode, has_explicit_title, title, target):
-        source = env.ref_context['conda:package']
-        backrefs = env.domains['conda'].data['backrefs'].setdefault(target, set())
-        backrefs.add((env.docname, source))
-        return super().process_link(env, refnode, has_explicit_title, title, target)
-
-
-class RequiredByDirective(SphinxDirective):
-    """Directive rendering a list of references to packages that included calls
-    to `DependsXrefRole` via ``:conda:depends:`pkg```.
-
-    This directive works by adding a `pending_xref` which will only be resolved
-    at the very end via the `missing_reference` hook.
-    """
-    required_arguments = 1
-    def run(self):
-        package = self.arguments[0]
-        backref = addnodes.pending_xref(
-            '',
-            refdomain="conda",
-            reftype='requiredby', refexplicit=False,
-            reftarget=package, refdoc=self.env.docname
-        )
-        backref += nodes.inline('', '')
-        return [backref]
-
-
-def resolve_required_by_xrefs(app, env, node, contnode):
-    """Now that all recipes and packages have been parsed, we are called here
-    for each `pending_xref` node that sphinx has not been able to resolve.
-
-    We handle specifically the `requiredby` reftype created by the
-    `RequiredByDirective`, replacing the node with a series of reference nodes
-    pointing to the package pages that "depended" on the package.
-    """
-
-    if node['reftype'] == 'requiredby' and node['refdomain'] == 'conda':
-        target = node['reftarget']
-        docname = node['refdoc']
-        backrefs = env.domains['conda'].data['backrefs'].get(target, set())
-        newnode = nodes.inline('', '')
-        for back_docname, back_target in backrefs:
-            if len(newnode):
-                newnode += nodes.inline('', ', ')
-            name_node = nodes.literal(back_target, back_target,
-                                      classes=['xref', 'backref'])
-            newnode += make_refnode(app.builder, docname,
-                                    back_docname, back_target, name_node)
-        return newnode
-
-
 class CondaDomain(Domain):
     """Domain for Conda Packages"""
     name = "conda"
@@ -344,12 +391,10 @@ class CondaDomain(Domain):
     directives = {
         'recipe': CondaRecipe,
         'package': CondaPackage,
-        'required_by': RequiredByDirective,
     }
     roles = {
         'recipe': XRefRole(),
         'package': XRefRole(),
-        'depends': DependsXRefRole(),  # also refs package, but adds backref
     }
     initial_data = {
         'objects': {},  #: (type, name) -> docname, labelid
