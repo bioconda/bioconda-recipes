@@ -1,11 +1,4 @@
 #!/bin/sh
 
-export C_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-make STATIC=1 all
 mkdir -p $PREFIX/bin
-cp src/tracy $PREFIX/bin
+cp tracy_v0.5.1_linux_x86_64bit $PREFIX/bin/tracy
