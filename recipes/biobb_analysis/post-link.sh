@@ -1,2 +1,2 @@
-echo "To install Ambertools please excecute:\n
-      conda install -y  -c ambermd ambertools"
+echo "Installing Ambertools:"
+conda install -y  -c ambermd ambertools
