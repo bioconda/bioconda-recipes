@@ -11,5 +11,5 @@ then
 fi
 
 cp ${SRC_DIR}/scripts/* ${PREFIX}/bin/
-make install CXX="$CPP $CMAKE_CXX_FLAGS -I$PREFIX/include -L$PREFIX/lib" prefix=${PREFIX}
+make install CXX="g++ $CMAKE_CXX_FLAGS -I$PREFIX/include -L$PREFIX/lib" prefix=${PREFIX}
 chmod +x ${PREFIX}/bin/*
