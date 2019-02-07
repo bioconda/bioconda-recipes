@@ -1,70 +1,88 @@
-.. _`{{ name }}`:
-
-{{ name | underline }}
-
-|downloads|
-
-{{ about.summary | escape }}
-
-============= ===========
-Home          {{ about.home }}
-Versions      {{ versions | join(", ") }}
-License       {{ about.license }}
-Recipe        {{ gh_recipes }}{{ recipe_path }}
-{% if about.doc_url and about.doc_url != about.home %}
-Documentation {{ about.doc_url }}
-{% endif %}
-{% if about.dev_url %}
-Development   {{ about.dev_url }}
-{% endif %}
-{% if extra.identifiers %}
-Links         {{ extra.identifiers | as_extlink | join(", ") }}
-{% endif %}
-============= ===========
-
-{{ about.description | escape }}
-
-Installation
-------------
-
+.. title:: Package Recipe '{{name}}'
 .. highlight: bash
 
-With an activated Bioconda channel (see :ref:`set-up-channels`), install with::
 
-   conda install {{ name }}
+{{name | underline}}
 
-and update with::
+.. conda:recipe:: {{recipe.reldir}}
+   :replaces_section_title:
 
-   conda update {{ name }}
+   {{ (about.summary or "") | rst_escape | indent(3)}}
+
+   :homepage: {{ about.home }}
+   {%- if about.doc_url and about.doc_url != about.home %}
+   :documentation: {{ about.doc_url }}
+   {% endif %}
+   {%- if about.dev_url and about.dev_url != about.home %}
+   :developer docs: {{ about.dev_url }}
+   {%- endif %}
+   :license: {{ [about.license_family, about.license]
+                | reject('undefined') | join(' / ') | rst_link(about.license_url) }}
+   :recipe: {% for part in recipe.relpath|prefixes('/') -%}
+   	    /`{{part.part}} <{{gh_recipes + part.path}}>`_
+	    {%- endfor %}
+   {%- if extra.identifiers %}
+   :links: {{ extra.identifiers | as_extlink | join(", ") }}
+   {%- endif %}
+
+   {{ (about.description or "") | rst_escape | indent(3) }}
+
+{% for package in packages %}
+.. conda:package:: {{package.name}}
+
+   |downloads_{{package.name}}| |docker_{{package.name}}|
+
+   :versions: {{ package.versions | join(", ") }}
+
+   :depends: {% for dep in package.depends %}:conda:package:`{{dep[0]}}` {{dep[1]}} {% endfor %}
+
+   :required~by: |required_by_{{package.name}}|
+
+   .. rubric:: Installation
+
+   With an activated Bioconda channel (see :ref:`set-up-channels`), install with::
+
+      conda install {{ package.name }}
+
+   and update with::
+
+      conda update {{  package.name }}
+
+   or use the docker container::
+
+      docker pull quay.io/repository/biocontainers/{{ package.name }}
+
+
+.. |required_by_{{package.name}}| conda:required_by:: {{package.name}}
+.. |downloads_{{package.name}}| image:: https://img.shields.io/conda/dn/bioconda/{{package.name}}.svg?style=flat
+   :alt:   (downloads)
+.. |docker_{{package.name}}| image:: https://quay.io/repository/biocontainers/{{ name }}/status
+   :target: https://quay.io/repository/biocontainers/{{ name }}
+
+
+{% endfor %}
+
 
 {% if extra.notes %}
 Notes
 -----
 {%- if extra.notes is string %}
-{{ extra.notes | escape }}
+{{ extra.notes | rst_escape }}
 {% else %}
 {%- for note in extra.notes %}
-- {{ note | escape }}
+- {{ note | rst_escape }}
 {% endfor -%}
 {% endif -%}
 {% endif %}
 
-|docker|
-
-A Docker container is available at https://quay.io/repository/biocontainers/{{ name }}.
-
 Link to this page
 -----------------
 
-Render an |badge| badge with the following Markdown::
+Render an |install-with-bioconda| badge with the following MarkDown::
 
-   [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io/recipes/{{ name }}/README.html)
+   [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/{{ name }}/README.html)
 
-.. |badge| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square
-           :target: http://bioconda.github.io/recipes/{{ name }}/README.html
-.. |downloads| image:: https://anaconda.org/bioconda/{{ name }}/badges/downloads.svg
-               :target: https://anaconda.org/bioconda/{{ name }}
-.. |docker| image:: https://quay.io/repository/biocontainers/{{ name }}/status
-                :target: https://quay.io/repository/biocontainers/{{ name }}
+.. |install-with-bioconda| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat
+   :target: http://bioconda.github.io/recipes/{{ name }}/README.html
 
 

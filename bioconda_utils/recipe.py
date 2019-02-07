@@ -127,8 +127,13 @@ class Recipe():
 
     @property
     def path(self):
-        """Full path to `meta.yaml``"""
+        """Full path to ``meta.yaml``"""
         return os.path.join(self.basedir, self.reldir, "meta.yaml")
+
+    @property
+    def relpath(self):
+        """Relative path to ``meta.yaml`` (from ``basedir``)"""
+        return os.path.join(self.reldir, "meta.yaml")
 
     @property
     def config(self):
@@ -150,6 +155,21 @@ class Recipe():
         self.render()
         return self
 
+    @classmethod
+    def from_file(cls, recipe_dir, recipe_fname) -> "Recipe":
+        """Create new `Recipe` object from file
+
+        Args:
+           recipe_dir: Path to recipes folder
+           recipe_fname: Relative path to recipe (folder or meta.yaml)
+        """
+        if recipe_fname.endswith("meta.yaml"):
+            recipe_fname = os.path.dirname(recipe_fname)
+        recipe = cls(recipe_fname, recipe_dir)
+        with open(os.path.join(recipe_dir, recipe_fname, 'meta.yaml')) as text:
+            recipe.load_from_string(text.read())
+        return recipe
+
     def set_original(self) -> None:
         """Store the current state of the recipe as "original" version"""
         self.orig = copy(self)
@@ -163,7 +183,7 @@ class Recipe():
         if not block_left:
             return None  # never the whole yaml
         lines = text.splitlines()
-        block_height = None
+        block_height = 0
         variants: Dict[str, List[str]] = defaultdict(list)
 
         for block_height, line in enumerate(lines[block_top:]):
@@ -274,6 +294,12 @@ class Recipe():
     def version(self) -> str:
         """The version of the package build by this recipe"""
         return str(self.meta["package"]["version"])
+
+    def __getitem__(self, key):
+        return self.meta[key]
+
+    def get(self, key, default=None):
+        return self.meta.get(key, default)
 
     @property
     def package_names(self) -> List[str]:

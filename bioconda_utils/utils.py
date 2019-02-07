@@ -1208,7 +1208,7 @@ class RepoData:
     REPODATA_LABELED_URL = 'https://conda.anaconda.org/{channel}/label/{label}/{subdir}/repodata.json'
     REPODATA_DEFAULTS_URL = 'https://repo.anaconda.com/pkgs/main/{subdir}/repodata.json'
 
-    _load_columns = ['build', 'build_number', 'name', 'version']
+    _load_columns = ['build', 'build_number', 'name', 'version', 'depends']
 
     #: Columns available in internal dataframe
     columns = _load_columns + ['channel', 'subdir', 'platform']
@@ -1216,6 +1216,9 @@ class RepoData:
     platforms = ['linux', 'osx', 'noarch']
     # config object
     config = None
+
+    cache_file = None
+    _df = None
 
     @classmethod
     def register_config(cls, config):
@@ -1229,10 +1232,6 @@ class RepoData:
                                                  "before instantiating RepoData.")
             RepoData.__instance = object.__new__(cls)
         return RepoData.__instance
-
-    def __init__(self):
-        self.cache_file = None
-        self._df = None
 
     def set_cache(self, cache):
         if self._df is not None:
@@ -1265,7 +1264,7 @@ class RepoData:
     def _load_channel_dataframe(self):
         if self.cache_file is not None and os.path.exists(self.cache_file):
             logger.info("Loading repodata from cache %s", self.cache_file)
-            return pd.read_table(self.cache_file)
+            return pd.read_pickle(self.cache_file)
 
         repos = list(product(self.channels, self.platforms))
         urls = [self._make_repodata_url(c, p) for c, p in repos]
@@ -1287,7 +1286,7 @@ class RepoData:
         res = pd.concat(dfs)
 
         if self.cache_file is not None:
-            res.to_csv(self.cache_file, sep='\t')
+            res.to_pickle(self.cache_file)
 
         return res
 

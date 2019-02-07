@@ -5,20 +5,31 @@ This module builds the documentation for our recipes
 
 import os
 import os.path as op
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple, Optional
 
 from jinja2.sandbox import SandboxedEnvironment
 
+from sphinx import addnodes
+from docutils import nodes
+from docutils.parsers import rst
+from docutils.statemachine import StringList
+from sphinx.domains import Domain, ObjType, Index
+from sphinx.directives import ObjectDescription
+from sphinx.environment import BuildEnvironment
+from sphinx.roles import XRefRole
 from sphinx.util import logging as sphinx_logging
 from sphinx.util import status_iterator
+from sphinx.util.nodes import make_refnode
 from sphinx.util.parallel import ParallelTasks, parallel_available, make_chunks
 from sphinx.util.rst import escape as rst_escape
 from sphinx.util.osutil import ensuredir
+from sphinx.util.docutils import SphinxDirective
 from sphinx.jinja2glue import BuiltinTemplateLoader
 
 from conda.exports import VersionOrder
 
 from bioconda_utils.utils import RepoData, load_config
+from bioconda_utils.recipe import Recipe, RecipeError
 
 # Aquire a logger
 try:
@@ -27,17 +38,12 @@ except AttributeError:  # not running within sphinx
     import logging
     logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
-try:
-    from conda_build.metadata import MetaData
-    from conda_build.exceptions import UnableToParse
-except Exception:
-    logging.exception("Failed to import MetaData")
-    raise
-
 
 BASE_DIR = op.dirname(op.abspath(__file__))
 RECIPE_DIR = op.join(op.dirname(BASE_DIR), 'bioconda-recipes', 'recipes')
 OUTPUT_DIR = op.join(BASE_DIR, 'recipes')
+RECIPE_BASE_URL = 'https://github.com/bioconda/bioconda-recipes/tree/master/recipes/'
+CONDA_FORGE_FORMAT = 'https://github.com/conda-forge/{}-feedstock'
 
 
 def as_extlink_filter(text):
@@ -72,14 +78,27 @@ def underline_filter(text):
     return text + "\n" + "=" * len(text)
 
 
-def escape_filter(text):
+def rst_escape_filter(text):
     """Jinja2 filter escaping RST symbols in text
 
-    >>> excape_filter("running `cmd.sh`")
+    >>> rst_excape_filter("running `cmd.sh`")
     "running \`cmd.sh\`"
     """
     if text:
         return rst_escape(text)
+    return text
+
+
+def prefixes_filter(text, split):
+    path = []
+    for part in text.split(split):
+        path.append(part)
+        yield {'path': split.join(path), 'part': part}
+
+
+def rst_link_filter(text, url):
+    if url:
+        return "`{} <{}>`_".format(text, url)
     return text
 
 
@@ -96,9 +115,11 @@ class Renderer:
         template_loader = BuiltinTemplateLoader()
         template_loader.init(app.builder)
         template_env = SandboxedEnvironment(loader=template_loader)
-        template_env.filters['escape'] = escape_filter
+        template_env.filters['rst_escape'] = rst_escape_filter
         template_env.filters['underline'] = underline_filter
         template_env.filters['as_extlink'] = as_extlink_filter
+        template_env.filters['prefixes'] = prefixes_filter
+        template_env.filters['rst_link'] = rst_link_filter
         self.env = template_env
         self.templates: Dict[str, Any] = {}
 
@@ -145,6 +166,294 @@ class Renderer:
         return True
 
 
+class CondaObjectDescription(ObjectDescription):
+    typename = "[UNKNOWN]"
+
+    option_spec = {
+        'arch': rst.directives.unchanged,
+        'badges': rst.directives.unchanged,
+        'replaces_section_title': rst.directives.flag
+    }
+
+    def handle_signature(self, sig: str, signode: addnodes.desc) -> str:
+        """Transform signature into RST nodes"""
+        signode += addnodes.desc_annotation(self.typename, self.typename + " ")
+        signode += addnodes.desc_name(sig, sig)
+
+        if 'badges' in self.options:
+            badges = addnodes.desc_annotation()
+            badges['classes'] += ['badges']
+            content = StringList([self.options['badges']])
+            self.state.nested_parse(content, 0, badges)
+            signode += badges
+
+
+        if 'replaces_section_title' in self.options:
+            section = self.state.parent
+            if isinstance(section, nodes.section):
+                title = section[-1]
+                if isinstance(title, nodes.title):
+                    section.remove(title)
+                else:
+                    signode += self.state.document.reporter.warning(
+                        "%s:%s:: must follow section directly to replace section title"
+                        % (self.domain, self.objtype), line = self.lineno
+                    )
+            else:
+                signode += self.state.document.reporter.warning(
+                    "%s:%s:: must be in section to replace section title"
+                    % (self.domain, self.objtype), line = self.lineno
+                )
+
+        return sig
+
+    def add_target_and_index(self, name: str, sig: str,
+                             signodes: addnodes.desc) -> None:
+        """Add to index and to domain data"""
+        target_name = "-".join((self.objtype, name))
+        if target_name not in self.state.document.ids:
+            signodes['names'].append(target_name)
+            signodes['ids'].append(target_name)
+            signodes['first'] = (not self.names)
+            self.state.document.note_explicit_target(signodes)
+            objects = self.env.domaindata[self.domain]['objects']
+            key = (self.objtype, name)
+            if key in objects:
+                self.env.warn(
+                    self.env.docname,
+                    "Duplicate entry {} {} at {} (other in {})".format(
+                        self.objtype, name, self.lineno,
+                        self.env.doc2path(objects[key][0])))
+            objects[key] = (self.env.docname, target_name)
+
+        index_text = self.get_index_text(name)
+        if index_text:
+            self.indexnode['entries'].append(('single', index_text, target_name, '', None))
+
+    def get_index_text(self, name: str) -> str:
+        """This yields the text with which the object is entered into the index."""
+        return "{} ({})".format(name, self.objtype)
+
+    def before_content(self):
+        """We register ourselves in the `ref_context` so that a later
+        call to :depends:`packagename` knows within which package
+        the dependency was added"""
+        self.env.ref_context['conda:'+self.typename] = self.names[-1]
+
+
+class CondaRecipe(CondaObjectDescription):
+    typename = "recipe"
+
+
+class CondaPackage(CondaObjectDescription):
+    typename = "package"
+
+
+class RecipeIndex(Index):
+    name = "recipe_index"
+    localname = "Recipe Index"
+    shortname = "Recipes"
+
+    def generate(self, docnames: Optional[List[str]] = None):
+        content = {}
+
+        objects = sorted(self.domain.data['objects'].items())
+        for (typ, name), (docname, labelid) in objects:
+            if docnames and docname not in docnames:
+                continue
+            entries = content.setdefault(name[0].lower(), [])
+            subtype = 0 # 1 has subentries, 2 is subentry
+            entries.append((
+                name, subtype, docname, labelid, 'extra', 'qualifier', 'description'
+            ))
+
+        collapse = True
+        return sorted(content.items()), collapse
+
+
+class DependsXRefRole(XRefRole):
+    """Special XRefRole that adds a "back reference"
+
+    This role will be used to reference packages using
+    ``:conda:depends:`pkg``` rather than ``:conda:package:`pkg```. It
+    differs in that it registers the dependency with the `backrefs`
+    data in the `conda` domain.
+
+    """
+    def process_link(self, env, refnode, has_explicit_title, title, target):
+        source = env.ref_context['conda:package']
+        backrefs = env.domains['conda'].data['backrefs'].setdefault(target, set())
+        backrefs.add((env.docname, source))
+        return super().process_link(env, refnode, has_explicit_title, title, target)
+
+
+class RequiredByDirective(SphinxDirective):
+    """Directive rendering a list of references to packages that included calls
+    to `DependsXrefRole` via ``:conda:depends:`pkg```.
+
+    This directive works by adding a `pending_xref` which will only be resolved
+    at the very end via the `missing_reference` hook.
+    """
+    required_arguments = 1
+    def run(self):
+        package = self.arguments[0]
+        backref = addnodes.pending_xref(
+            '',
+            refdomain="conda",
+            reftype='requiredby', refexplicit=False,
+            reftarget=package, refdoc=self.env.docname
+        )
+        backref += nodes.inline('', '')
+        return [backref]
+
+
+def resolve_required_by_xrefs(app, env, node, contnode):
+    """Now that all recipes and packages have been parsed, we are called here
+    for each `pending_xref` node that sphinx has not been able to resolve.
+
+    We handle specifically the `requiredby` reftype created by the
+    `RequiredByDirective`, replacing the node with a series of reference nodes
+    pointing to the package pages that "depended" on the package.
+    """
+
+    if node['reftype'] == 'requiredby' and node['refdomain'] == 'conda':
+        target = node['reftarget']
+        docname = node['refdoc']
+        backrefs = env.domains['conda'].data['backrefs'].get(target, set())
+        newnode = nodes.inline('', '')
+        for back_docname, back_target in backrefs:
+            if len(newnode):
+                newnode += nodes.inline('', ', ')
+            name_node = nodes.literal(back_target, back_target,
+                                      classes=['xref', 'backref'])
+            newnode += make_refnode(app.builder, docname,
+                                    back_docname, back_target, name_node)
+        return newnode
+
+
+class CondaDomain(Domain):
+    """Domain for Conda Packages"""
+    name = "conda"
+    label = "Conda"
+
+    object_types = {
+        # ObjType(name, *roles, **attrs)
+        'recipe': ObjType('recipe', 'recipe'),
+        'package': ObjType('package', 'package'),
+    }
+    directives = {
+        'recipe': CondaRecipe,
+        'package': CondaPackage,
+        'required_by': RequiredByDirective,
+    }
+    roles = {
+        'recipe': XRefRole(),
+        'package': XRefRole(),
+        'depends': DependsXRefRole(),  # also refs package, but adds backref
+    }
+    initial_data = {
+        'objects': {},  #: (type, name) -> docname, labelid
+        'backrefs': {}  #: package_name -> docname, package_name
+    }
+    indices = [
+        RecipeIndex
+    ]
+
+    def clear_doc(self, docname: str):
+        # docs copied from Domain class
+        """Remove traces of a document in the domain-specific inventories."""
+        if 'objects' not in self.data:
+            return
+        to_remove = [
+            key for (key, (stored_docname, _)) in self.data['objects'].items()
+            if docname == stored_docname
+        ]
+        for key  in to_remove:
+            del self.data['objects'][key]
+
+    def resolve_xref(self, env: BuildEnvironment, fromdocname: str,
+                     builder, typ, target, node, contnode):
+        # docs copied from Domain class
+        """Resolve the pending_xref *node* with the given *typ* and *target*.
+
+        This method should return a new node, to replace the xref node,
+        containing the *contnode* which is the markup content of the
+        cross-reference.
+
+        If no resolution can be found, None can be returned; the xref node will
+        then given to the :event:`missing-reference` event, and if that yields no
+        resolution, replaced by *contnode*.
+
+        The method can also raise :exc:`sphinx.environment.NoUri` to suppress
+        the :event:`missing-reference` event being emitted.
+        """
+        # 'depends' role is handled just like a 'package' here (resolves the same)
+        if typ == 'depends':
+            typ = 'package'
+
+        # 'requiredby' role type is deferred to missing_references stage
+        if typ == 'requiredby':
+            return None
+
+        # Keep a copy of the repodata object in the env to speed up
+        # parallel builds (otherwise `writing output` is confined to 1 thread)
+        if not hasattr(env, 'conda_forge_packages') or True:
+            pkgs = set(RepoData().get_package_data('name', channels='conda-forge'))
+            env.conda_forge_packages = pkgs
+        else:
+            pkgs = env.conda_forge_packages
+
+        for objtype in self.objtypes_for_role(typ):
+            if (objtype, target) in self.data['objects']:
+                return make_refnode(
+                    builder, fromdocname,
+                    self.data['objects'][objtype, target][0],
+                    self.data['objects'][objtype, target][1],
+                    contnode, target + ' ' + objtype)
+            elif objtype == "package":
+                if target in pkgs:
+                    uri = CONDA_FORGE_FORMAT.format(target)
+                    node = nodes.reference('','',internal=False, refuri=uri)
+                    node += contnode
+                    return node
+
+        return None  # triggers missing-reference
+
+    def get_objects(self):
+        # docs copied from Domain class
+        """Return an iterable of "object descriptions", which are tuples with
+        five items:
+
+        * `name`     -- fully qualified name
+        * `dispname` -- name to display when searching/linking
+        * `type`     -- object type, a key in ``self.object_types``
+        * `docname`  -- the document where it is to be found
+        * `anchor`   -- the anchor name for the object
+        * `priority` -- how "important" the object is (determines placement
+          in search results)
+
+          - 1: default priority (placed before full-text matches)
+          - 0: object is important (placed before default-priority objects)
+          - 2: object is unimportant (placed after full-text matches)
+          - -1: object should not show up in search at all
+        """
+        for (typ, name), (docname, ref) in self.data['objects'].items():
+            dispname = "Recipe '{}'".format(name)
+            yield name, dispname, typ, docname, ref, 1
+
+    def merge_domaindata(self, docnames: List[str], otherdata: Dict) -> None:
+        """Merge in data regarding *docnames* from a different domaindata
+        inventory (coming from a subprocess in parallel builds).
+        """
+        for (typ, name), (docname, ref) in otherdata['objects'].items():
+            if docname in docnames:
+                self.data['objects'][typ, name] = (docname, ref)
+        for key, data in otherdata['backrefs'].items():
+            if docname in docnames:
+                xdata = self.data['backrefs'].setdefault(key, set())
+                xdata |= data
+
+
 def generate_readme(folder, repodata, renderer):
     """Generates README.rst for the recipe in folder
 
@@ -173,44 +482,47 @@ def generate_readme(folder, repodata, renderer):
         else:
             logger.error("No 'meta.yaml' found in %s", folder)
             return []
-    meta_relpath = meta_fname[len(RECIPE_DIR):]
+    meta_relpath = meta_fname[len(RECIPE_DIR)+1:]
 
     # Read the meta.yaml file(s)
     try:
-        metadata = MetaData(meta_fname)
-    except UnableToParse:
-        logger.error("Failed to parse recipe %s", meta_fname)
+        recipe = Recipe.from_file(RECIPE_DIR, meta_fname)
+    except RecipeError as e:
+        logger.error("Unable to process %s: %s", meta_fname, e)
         return []
 
-    name = metadata.name()
-    versions_in_channel = repodata.get_versions(name)
-    sorted_versions = sorted(versions_in_channel.keys(), key=VersionOrder, reverse=True)
-
     # Format the README
+    packages = []
+    for package in sorted(list(set(recipe.package_names))):
+        versions_in_channel = set(repodata.get_package_data('version', channels='bioconda', name=package))
+        sorted_versions = sorted(versions_in_channel, key=VersionOrder, reverse=True)
+
+        if sorted_versions:
+            depends = [
+                depstring.split(' ', 1) if ' ' in depstring else (depstring, '')
+                for depstring in
+                repodata.get_package_data('depends', name=package, version=sorted_versions[0])[0]
+            ]
+        else:
+            depends = []
+
+        packages.append({
+            'name': package,
+            'versions': sorted_versions,
+            'depends' : depends,
+        })
+
     template_options = {
-        'name': name,
-        'about': (metadata.get_section('about') or {}),
-        'extra': (metadata.get_section('extra') or {}),
-        'versions': sorted_versions,
-        'gh_recipes': 'https://github.com/bioconda/bioconda-recipes/tree/master/recipes/',
-        'recipe_path': meta_relpath,
-        'Package': '<a href="recipes/{0}/README.html">{0}</a>'.format(folder)
+        'name': recipe.name,
+        'about': recipe.get('about'),
+        'extra': recipe.get('extra'),
+        'recipe': recipe,
+        'gh_recipes': RECIPE_BASE_URL,
+        'packages': packages,
     }
 
     renderer.render_to_file(output_file, 'readme.rst_t', template_options)
-
-    versions = []
-    for version in sorted_versions:
-        version_info = versions_in_channel[version]
-        version_tpl = template_options.copy()
-        version_tpl.update({
-            'Linux': '<i class="fa fa-linux"></i>' if 'linux' in version_info else '',
-            'OSX': '<i class="fa fa-apple"></i>' if 'osx' in version_info else '',
-            'Version': version
-        })
-        versions.append(version_tpl)
-    return versions
-
+    return []
 
 def generate_recipes(app):
     """
@@ -219,7 +531,7 @@ def generate_recipes(app):
     the collected data.
     """
     renderer = Renderer(app)
-    load_config(os.path.join(os.path.dirname(__file__), "config.yaml"))
+    load_config(os.path.join(os.path.dirname(RECIPE_DIR), "config.yml"))
     repodata = RepoData()
     repodata.set_cache(op.join(app.env.doctreedir, 'RepoDataCache.csv'))
     # force loading repodata to avoid duplicate loads from threads
@@ -267,18 +579,12 @@ def generate_recipes(app):
         logger.info("waiting for workers...")
         tasks.join()
 
-    updated = renderer.render_to_file("source/recipes.rst", "recipes.rst_t", {
-        'recipes': recipes,
-        # order of columns in the table; must be keys in template_options
-        'keys': ['Package', 'Version', 'License', 'Linux', 'OSX']
-    })
-    if updated:
-        logger.info("Updated source/recipes.rst")
-
 
 def setup(app):
     """Set up sphinx extension"""
+    app.add_domain(CondaDomain)
     app.connect('builder-inited', generate_recipes)
+    app.connect('missing-reference', resolve_required_by_xrefs)
     return {
         'version': "0.0.0",
         'parallel_read_safe': True,

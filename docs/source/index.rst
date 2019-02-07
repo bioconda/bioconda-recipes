@@ -165,7 +165,6 @@ Contents:
 .. toctree::
     :maxdepth: 3
 
-    recipes
     contributing
     updating
     linting
