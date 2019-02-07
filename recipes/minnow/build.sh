@@ -5,6 +5,7 @@ export LDFLAGS="-L$PREFIX/lib"
 
 export CPATH=${PREFIX}/include
 
+
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
