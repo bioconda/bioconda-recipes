@@ -4,7 +4,7 @@
 ## (mac or linux)
 ##
 CXXFLAGS="$CXXFLAGS -w"; # suppress warnings
-LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
+# LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";  # embeds library rpath into statically linked binary = obsolete
 CXX=g++;
 CC=gcc;
 if [ `uname` == Darwin ] ; then
