@@ -1,0 +1,65 @@
+{% set version = "2.0.1" %}
+{% set sha256 = "3dbf2283b963237df1181fe4ecfae2fc2cbb6bfde97c01052655a0c508f505bd" %}
+
+package:
+  name: metagenome-atlas
+  version: {{ version }}
+
+source:
+  url: https://github.com/metagenome-atlas/atlas/archive/v{{ version }}.tar.gz # [linux]
+  sha256: {{ sha256 }}  # [linux]
+
+build:
+  skip: True  # [osx]
+  number: 0
+  entry_points:
+    - atlas=atlas.main:cli
+
+requirements:
+  build:
+    - python=3.6
+    - setuptools
+    - snakemake=5.4
+    - pandas=0.23
+    - click=7
+    - ruamel.yaml=0.15
+    - biopython>=1.70
+    - git # this is apparently needed for snakemake
+  run:
+    - python=3.6
+    - snakemake=5.4
+    - pandas=0.23
+    - click=7
+    - ruamel.yaml=0.15
+    - biopython>=1.70
+    - bbmap=37.78
+    - git
+
+test:
+  imports:
+    atlas
+  # commands:
+  #   - atlas --version
+  #   - atlas init --help
+  #   - atlas run --help
+# extra:
+#   container:
+#     # click requires a unicode locale when used with Python 3
+#     # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+#     extended-base: true
+
+about:
+  home: https://github.com/metagenome-atlas
+  license: BSD-3-Clause
+  license_family: BSD
+  summary: |
+    ATLAS - Three commands to start analysing your metagenome data
+  dev_url: https://github.com/metagenome-atlas/atlas
+  doc_url: https://metagenome-atlas.rtfd.io
+extra:
+  recipe-maintainers:
+    - silask
+    - brwnj
+#  identifiers:
+#    - biotools:Spades
+#    - doi:10.1089/cmb.2012.0021
