@@ -4,6 +4,7 @@
 ## (mac or linux)
 ##
 CXXFLAGS="$CXXFLAGS -w"; # suppress warnings
+LDFLAGS="$LDFLAGS";
 # LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";  # embeds library rpath into statically linked binary = obsolete
 CXX=g++;
 CC=gcc;
@@ -27,6 +28,9 @@ CONFIGURE_MULTITHREADING="--disable-multithreading"
 else ## linux
 CONFIGURE_MULTITHREADING=""
 fi
+
+ls $PREFIX/lib/pkgconfig/*.pc
+cat $PREFIX/lib/pkgconfig/RNA*.pc
 
 ./configure --prefix=$PREFIX \
             --with-vrna=$PREFIX \
