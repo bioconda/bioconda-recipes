@@ -1,0 +1,40 @@
+{% set name = "cwl_runner" %}
+{% set version = "1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 803ff93d63efd4f08198a41a4c39a1d22df220afd92bfb9bf69071dc45552100
+
+build:
+  number: 0
+  entry_points:
+    - cwl-runner=cwltool.main:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  host:
+    - cwltool
+    - pip
+    - python
+  run:
+    - cwltool
+    - python
+
+test:
+  commands:
+    - cwl-runner --help
+
+about:
+  home: https://github.com/common-workflow-language/common-workflow-language
+  license: Apache 2.0
+  license_family: APACHE
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE.txt'
+  summary: "This provides an alternate entry point to cwltool allowing cwl-runner to be used as an implementation-agnostic script interpreter."
+
+extra:
+  recipe-maintainers:
+    - npavlovikj
