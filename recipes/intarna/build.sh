@@ -28,13 +28,6 @@ else ## linux
 CONFIGURE_MULTITHREADING=""
 fi
 
-# DEBUG ###########################
-echo "DEBUG: checking pkgconfig search path:"
-pkg-config --variable pc_path pkg-config
-echo "DEBUG: PKG_CONFIG_PATH = $PKG_CONFIG_PATH"
-echo "DEBUG: PREFIX = $PREFIX"
-###################################
-
 ./configure --prefix=$PREFIX \
             --with-vrna=$PREFIX \
             --with-boost=$PREFIX \
