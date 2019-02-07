@@ -1,39 +1,43 @@
-{% set version = "1.0" %}
+{% set version = "1.6" %}
 
 package:
-  name: HLA-LA
+  name: sammie
   version: {{ version }}
 
 build:
   number: 2
 
 source:
-  url: https://github.com/DiltheyLab/HLA-LA/archive/v{{ version }}.tar.gz
-  sha256: 0f7cb1bb1c68cc9a091521b518e640566d1c09d28e07919f9524b344898a135f
+  url: https://github.com/samtools/samtools/releases/download/{{ version }}/samtools-{{ version }}.tar.bz2
+  sha256: ee5cd2c8d158a5969a6db59195ff90923c662000816cc0c41a190b2964dbe49e
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
   host:
-    - boost
-    - bamtools
+    # ncurses not compatible with samtools, see note in build.sh
+    #- ncurses
     - zlib
-
+    - bzip2
+    - curl
+    - xz
   run:
-    - boost
-    - bamtools
+    #- ncurses
     - zlib
+    - bzip2
+    - curl
+    - xz
 
 about:
-  home: https://github.com/DiltheyLab/HLA-LA
-  license: GPL
-  summary: High-accuracy HLA type inference from WGS, WES< short and long reads.
+  home: https://github.com/samtools/samtools
+  license: MIT
+  summary: Tools for dealing with SAM, BAM and CRAM files
 
 test:
   commands:
-    - ../bin/HLA-LA --action testBinary
+    - samtools --help
 
 extra:
   identifiers:
-- biotools:HLA-LA
+- biotools:samtools
+
