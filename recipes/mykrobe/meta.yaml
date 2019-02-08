@@ -1,40 +1,46 @@
+{% set version = "0.6.1" %}
+
 package:
-  name: mykrobe
-  version: "0.5.6"
+    name   : mykrobe
+    version: {{ version }}
 
 source:
-  url: https://github.com/iqbal-lab/Mykrobe-predictor/archive/933301d9f1e673a2a282255426a885ef72e67c07.tar.gz
-  sha256: adcf75a8e873192047921947ef6c367fadee9dff09637f0acad7a4c9c4bcf53e
+    url    : https://github.com/Mykrobe-tools/mykrobe/archive/{{ version }}.tar.gz
+    sha256 : 5452abf82cb5d3930afc2bc20eaa07b0463403218a1534f036b256dc22aea802
+    md5    : 2650bfab3caa6ac9e142fb19d55f5604
 
 build:
-  # dependency mykatlas currently not built for osx
-  skip: True  # [osx]
-  number: 1
-  entry_points:
-    - mykrobe = mykrobe.mykrobe_predictor:main
+    number: 0
+    skip: True  # [py27]
+    entry_points:
+        - mykrobe = mykrobe.cli:main
 
 requirements:
-  host:
-    - python
-    - setuptools
+    build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - wget
+        - zlib
+    host:
+        - python
+        - setuptools
+        - zlib
+    run:
+        - python
+        - mongodb>3.0
+        - zlib
 
-
-  run:
-    - python
-    - mykatlas
-    - ga4ghmongo
-    - mongoengine
-    - future
 test:
-  # Python imports
-  imports:
-    - mykrobe
-  commands:
-    - mykrobe --help
-
+    imports:
+        - mykrobe
+    source_files:
+        - tests/
+        - src/mykrobe/data/
+    requires:
+        - pytest
 
 about:
-  home: https://github.com/iqbal-lab/Mykrobe-predictor
-  license: Custom non-commercial license
-  license_file: LICENSE
-  summary: 'Rapid antibiotic-resistance predictions from genome sequence data for Staphylococcus aureus and Mycobacterium tuberculosis.'
+    home: https://github.com/Mykrobe-tools/mykrobe
+    license: MIT
+    license_file: LICENSE
+    summary: 'Rapid antibiotic-resistance predictions from genome sequence data for Staphylococcus aureus and Mycobacterium tuberculosis.'
