@@ -5,13 +5,10 @@
 ##
 CXXFLAGS="$CXXFLAGS -w"; # suppress warnings
 LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
-CXX=g++;
-CC=gcc;
+
 if [ `uname` == Darwin ] ; then
     CXXFLAGS="$CXXFLAGS -stdlib=libc++"
     LDFLAGS="$LDFLAGS -stdlib=libc++"
-    CXX=clang++;
-    CC=clang;
 else ## linux
     # add -fopenmp to compilation due to viennarna setup
     CXXFLAGS="$CXXFLAGS -fopenmp"
@@ -37,4 +34,5 @@ fi
             ${extra_config_options}
             
 make
+make tests -j 2
 make install
