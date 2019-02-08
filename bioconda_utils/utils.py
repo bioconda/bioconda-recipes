@@ -564,12 +564,10 @@ def get_dag(recipes, config, blacklist=None, restrict=True):
     logger.info("Generating DAG")
     recipes = list(recipes)
     metadata = []
-    for i, recipe in enumerate(sorted(recipes)):
+    for recipe in tqdm(sorted(recipes), desc="Loading Recipes"):
         try:
             meta = load_meta_fast(recipe)
             metadata.append((meta, recipe))
-            if i % 100 == 0:
-                logger.info("Inspected {} of {} recipes".format(i, len(recipes)))
         except Exception:
             raise ValueError('Problem inspecting {0}'.format(recipe))
     if blacklist is None:
