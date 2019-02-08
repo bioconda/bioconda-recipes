@@ -29,6 +29,11 @@ logger = logging.getLogger(__name__)
 def enable_logging(default_loglevel='info'):
     """Decorator setting up logging for argh command
 
+    - Adds the parameter ``--loglevel`` with a default of ``info``
+      and sets up the logging handlers appropriately.
+    - Adds the paremeter ``--pdb`` (or ``-P``) to enable dropping
+      into PDB if an unhandled exception is encountered.
+
     >>> @enable_logging()
     >>> def command():
     >>>   pass
@@ -42,10 +47,18 @@ def enable_logging(default_loglevel='info'):
     """
     def decorator(func):
         @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
+        @arg('-P', '--pdb', help="Drop into debugger on exception")
         @wraps(func)
         def wrapper(*args, loglevel=default_loglevel, pdb=False, **kwargs):
             utils.setup_logger('bioconda_utils', loglevel)
-            func(*args, **kwargs)
+            try:
+                func(*args, **kwargs)
+            except Exception as e:
+                if pdb:
+                    import pdb
+                    pdb.post_mortem()
+                else:
+                    raise
         return wrapper
     return decorator
 
