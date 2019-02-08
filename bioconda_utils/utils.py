@@ -34,7 +34,7 @@ import tqdm as _tqdm
 import asyncio
 import aiohttp
 import backoff
-
+from boltons.funcutils import FunctionBuilder
 
 class TqdmHandler(logging.StreamHandler):
     """Tqdm aware logging StreamHandler
@@ -83,6 +83,42 @@ def ensure_list(obj):
     if isinstance(obj, Sequence) and not isinstance(obj, str):
         return obj
     return [obj]
+
+
+def wraps(func):
+    """Custom wraps() function for decorators
+
+    This one differs from functiools.wraps and boltons.funcutils.wraps in
+    that it allows *adding* keyword arguments to the function signature.
+
+    >>> def decorator(func):
+    >>>   @wraps(func)
+    >>>   def wrapper(*args, extra_param=None, **kwargs):
+    >>>      print("Called with extra_param=%s" % extra_param)
+    >>>      func(*args, **kwargs)
+    >>>   return wrapper
+    >>>
+    >>> @decorator()
+    >>> def test(arg1, arg2, arg3='default'):
+    >>>     pass
+    >>>
+    >>> test('val1', 'val2', extra_param='xyz')
+    """
+
+    fb = FunctionBuilder.from_func(func)
+    def wrapper_wrapper(wrapper_func):
+        fb_wrapper = FunctionBuilder.from_func(wrapper_func)
+        fb.kwonlyargs += fb_wrapper.kwonlyargs
+        fb.kwonlydefaults.update(fb_wrapper.kwonlydefaults)
+        fb.body = 'return _call(%s)' % fb.get_invocation_str()
+        logger.error("building %s: %s", func, fb.body)
+        execdict = dict(_call=wrapper_func, _func=func)
+        fully_wrapped = fb.get_func(execdict)
+        fully_wrapped.__wrapped__ = func
+        return fully_wrapped
+
+    return wrapper_wrapper
+
 
 
 def setup_logger(name, loglevel=None):

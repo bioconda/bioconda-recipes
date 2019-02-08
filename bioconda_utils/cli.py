@@ -5,7 +5,6 @@ import os
 import shlex
 import logging
 from collections import defaultdict
-from functools import wraps
 
 import argh
 from argh import arg
@@ -48,7 +47,7 @@ def enable_logging(default_loglevel='info'):
     def decorator(func):
         @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
         @arg('-P', '--pdb', help="Drop into debugger on exception")
-        @wraps(func)
+        @utils.wraps(func)
         def wrapper(*args, loglevel=default_loglevel, pdb=False, **kwargs):
             utils.setup_logger('bioconda_utils', loglevel)
             try:
