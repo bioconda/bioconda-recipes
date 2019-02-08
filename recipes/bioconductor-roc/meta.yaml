@@ -1,21 +1,27 @@
-{% set version = "1.54.0" %}
+{% set version = "1.58.0" %}
 {% set name = "ROC" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.8" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: bb693efdc8b5114d3e0a55982776eb89fad2ee7f3cf947b490557f80479ac028
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: d7a7d3f092af4fbba537c070c6f0efc0
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: Biobase
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
   run:
@@ -24,11 +30,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'utilities for ROC, with uarray focus'
-
 extra:
   identifiers:
     - biotools:roc
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-roc
+    path: recipes/bioconductor-roc
+    version: 1.56.0
+

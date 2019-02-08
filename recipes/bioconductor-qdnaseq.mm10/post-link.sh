@@ -1,10 +1,11 @@
 #!/bin/bash
-FN="QDNAseq.mm10_1.8.0.tar.gz"
+FN="QDNAseq.mm10_1.12.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/experiment/src/contrib/QDNAseq.mm10_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-qdnaseq.mm10/bioconductor-qdnaseq.mm10_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/QDNAseq.mm10_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/QDNAseq.mm10_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-qdnaseq.mm10/bioconductor-qdnaseq.mm10_1.12.0_src_all.tar.gz"
 )
-MD5="dbbf1cb5ab643feaa7e0c2e5b8902c90"
+MD5="3557bc3a5f5820eb17d7a643730ed314"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,27 +1,30 @@
 {% set version = '0.7.0' %}
 
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-rvertnet
   version: {{ version|replace("-", "_") }}
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/rvertnet_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/rvertnet/rvertnet_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/rvertnet_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/rvertnet/rvertnet_{{ version }}.tar.gz
   sha256: f2e1d78067bbafa0a641a0af43adf832a94bf2382151f261006907f18b8ce307
 
-
 build:
-  merge_build_host: True
-  number: 1
-  noarch: generic
-
+  merge_build_host: True  # [win]
+  number: 3
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{posix}}zip               # [win]
+
+  host:
     - r-base
     - r-crul >=0.5.2
     - r-dplyr >=0.5.0
@@ -39,14 +42,24 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('rvertnet')"
 
+    - $R -e "library('rvertnet')"           # [not win]
+    - "\"%R%\" -e \"library('rvertnet')\""  # [win]
 
 about:
   home: https://github.com/ropensci/rvertnet
-  license: MIT + file LICENSE
+  license: MIT
   summary: Retrieve, map and summarize data from the 'VertNet.org'  archives (<http://vertnet.org/>).  Functions
     allow searching by many  parameters, including 'taxonomic' names, places, and dates.
     In addition,  there is an interface for conducting spatially delimited searches,
     and  another for requesting large 'datasets' via email.
   license_family: MIT
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

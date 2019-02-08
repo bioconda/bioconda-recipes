@@ -14,9 +14,9 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 # tabix missing library https://github.com/ekg/tabixpp/issues/5
 # Uses newline trick for OSX from: http://stackoverflow.com/a/24299845/252589
-sed -i.bak 's/SUBDIRS=./SUBDIRS=.\'$'\n''LOBJS=tabix.o/' tabixpp/Makefile
-sed -i.bak 's/-ltabix//' Makefile
-sed -i.bak 's/make/make -e/' Makefile
+#sed -i.bak 's/SUBDIRS=./SUBDIRS=.\'$'\n''LOBJS=tabix.o/' tabixpp/Makefile
+#sed -i.bak 's/-ltabix//' Makefile
+#sed -i.bak 's/make/make -e/' Makefile
 
 make -e
 

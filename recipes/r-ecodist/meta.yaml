@@ -1,38 +1,60 @@
 {% set version = '2.0.1' %}
 
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-ecodist
   version: {{ version|replace("-", "_") }}
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/ecodist_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/ecodist/ecodist_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/ecodist_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/ecodist/ecodist_{{ version }}.tar.gz
   sha256: afb099c4484dbeef913bd187cb23ce805df56958431bffc27e392db244d9f112
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+  number: 3
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('c') }}        # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
 
   host:
     - r-base
 
   run:
     - r-base
+    - {{native}}gcc-libs         # [win]
 
 test:
   commands:
-    - $R -e "library('ecodist')"
+
+    - $R -e "library('ecodist')"           # [not win]
+    - "\"%R%\" -e \"library('ecodist')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=ecodist
-  license: 'GPL (>= 2)'
+  license: GPL (>= 2)
   summary: Dissimilarity-based analysis functions including ordination and Mantel test functions,
     intended for use with spatial and community data.
   license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

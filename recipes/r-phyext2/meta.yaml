@@ -1,24 +1,32 @@
 {% set version = '0.0.4' %}
 
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-phyext2
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: phyext2_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/phyext2_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/phyext2/phyext2_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/phyext2_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/phyext2/phyext2_{{ version }}.tar.gz
   sha256: 2ba35543bf7b4bfab5d41ad4de2ff2a1ac78ce0f07c0d736a0d4a58adf0c0749
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+
+  number: 3
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{posix}}zip               # [win]
+
+  host:
     - r-base
     - r-ape
     - r-phylobase
@@ -30,7 +38,9 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('phyext2')"
+
+    - $R -e "library('phyext2')"           # [not win]
+    - "\"%R%\" -e \"library('phyext2')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=phyext2
@@ -40,3 +50,12 @@ about:
     provides classes and methods which help users manipulate branch-annotated trees
     (as in 'SigTree'); also provides support for a few other extra features.
   license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

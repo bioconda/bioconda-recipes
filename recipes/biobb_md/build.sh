@@ -4,9 +4,6 @@ python3 setup.py install --single-version-externally-managed --record=record.txt
 
 mkdir -p $PREFIX/bin
 
-chmod u+x $SP_DIR/biobb_md/gromacs/cluster.py
-cp $SP_DIR/biobb_md/gromacs/cluster.py $PREFIX/bin/cluster
-
 chmod u+x $SP_DIR/biobb_md/gromacs/editconf.py
 cp $SP_DIR/biobb_md/gromacs/editconf.py $PREFIX/bin/editconf
 
@@ -27,9 +24,6 @@ cp $SP_DIR/biobb_md/gromacs/mdrun.py $PREFIX/bin/mdrun
 
 chmod u+x $SP_DIR/biobb_md/gromacs/pdb2gmx.py
 cp $SP_DIR/biobb_md/gromacs/pdb2gmx.py $PREFIX/bin/pdb2gmx
-
-chmod u+x $SP_DIR/biobb_md/gromacs/rms.py
-cp $SP_DIR/biobb_md/gromacs/rms.py $PREFIX/bin/rms
 
 chmod u+x $SP_DIR/biobb_md/gromacs/solvate.py
 cp $SP_DIR/biobb_md/gromacs/solvate.py $PREFIX/bin/solvate
