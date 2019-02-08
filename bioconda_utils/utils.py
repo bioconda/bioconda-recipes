@@ -36,6 +36,10 @@ import aiohttp
 import backoff
 from boltons.funcutils import FunctionBuilder
 
+
+logger = logging.getLogger(__name__)
+
+
 class TqdmHandler(logging.StreamHandler):
     """Tqdm aware logging StreamHandler
     Passes all log writes through tqdm to allow progress bars
@@ -50,11 +54,24 @@ class TqdmHandler(logging.StreamHandler):
 
 
 def tqdm(*args, **kwargs):
-    """Wrapper around TQDM handling disable"""
-    enable = (sys.stderr.isatty()
-              and os.environ.get("TERM", "") != "dumb"
-              and os.environ.get("CIRCLECI", "") != "true")
-    kwargs['disable'] = not enable
+    """Wrapper around TQDM handling disable
+
+    Logging is disabled if:
+
+    - ``TERM`` is set to ``dumb``
+    - ``CIRCLECI`` is set to ``true``
+    - the effective log level of the is lower than set via ``loglevel``
+
+    Args:
+      loglevel: logging loglevel (the number, so logging.INFO)
+      logger: local logger (in case it has different effective log level)
+    """
+    term_ok = (sys.stderr.isatty()
+               and os.environ.get("TERM", "") != "dumb"
+               and os.environ.get("CIRCLECI", "") != "true")
+    loglevel_ok = (kwargs.get('logger', logger).getEffectiveLevel()
+                   <= kwargs.get('loglevel', logging.INFO))
+    kwargs['disable'] = not (term_ok and loglevel_ok)
     return _tqdm.tqdm(*args, **kwargs)
 
 
@@ -111,7 +128,6 @@ def wraps(func):
         fb.kwonlyargs += fb_wrapper.kwonlyargs
         fb.kwonlydefaults.update(fb_wrapper.kwonlydefaults)
         fb.body = 'return _call(%s)' % fb.get_invocation_str()
-        logger.error("building %s: %s", func, fb.body)
         execdict = dict(_call=wrapper_func, _func=func)
         fully_wrapped = fb.get_func(execdict)
         fully_wrapped.__wrapped__ = func
@@ -128,9 +144,6 @@ def setup_logger(name, loglevel=None):
         logger.setLevel(getattr(logging, loglevel.upper()))
     logger.addHandler(log_stream_handler)
     return logger
-
-
-logger = setup_logger(__name__)
 
 
 class JinjaSilentUndefined(jinja2.Undefined):

@@ -535,7 +535,7 @@ def update_pinning(recipe_folder, config, packages="*",
     """
     bioconda_cfg = utils.load_config(config)
     bioconda_cfg['channels'] = skip_if_in_channels
-    repodata = utils.RepoData().df # Can this be quiet?
+    repodata = utils.RepoData().df
     blacklist = utils.get_blacklist(bioconda_cfg.get('blacklists'), recipe_folder)
     build_config = utils.load_conda_build_config()
     build_config.trim_skip = True
