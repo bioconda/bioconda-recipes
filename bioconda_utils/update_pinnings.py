@@ -1,15 +1,25 @@
-#!/usr/bin/env python
-from conda_build import api
 import re
 import sys
 import os.path
+import logging
+
+from conda_build import api
+from .utils import RepoData
+
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
+
+
 buildNumberRegex = re.compile("^( +number: +)(\d+)(.*?)$")
 buildNumberJinja = re.compile("^({% +set build +=.+?)(\d+)(.*?%})")
 
-def already_bumped(r, name, version, buildNumber):
-    rsub = r.loc[(r.name == name) &
-             (r.platform != "osx") &
-             (r.version == version)]
+
+def already_bumped(name, version, buildNumber):
+    r = RepoData().df
+    rsub = r.loc[
+        (r.name == name) &
+        (r.platform != "osx") &
+        (r.version == version)
+    ]
     if rsub.shape[0] == 0:
         # The version was never built, it doesn't explicitly require bumping
         return True
@@ -19,19 +29,23 @@ def already_bumped(r, name, version, buildNumber):
     return False
 
 
-def already_built(r, name, version, buildstring):
-    if r.loc[(r.name == name) &
-             (r.platform != "osx") &
-             (r.version == version) &
-             (r.build == buildstring)].shape[0] > 0:
+def already_built(name, version, buildstring):
+    r = RepoData().df
+    if  r.loc[
+            (r.name == name) &
+            (r.platform != "osx") &
+            (r.version == version) &
+            (r.build == buildstring)].shape[0] > 0:
         return True
     return False
 
 
-def only_python(r, name, version, buildstring):
-    s = r.loc[(r.name == name) &
-              (r.platform != "osx") &
-              (r.version == version)]
+def only_python(name, version, buildstring):
+    r = RepoData().df
+    s = r.loc[
+        (r.name == name) &
+        (r.platform != "osx") &
+        (r.version == version)]
     if s.shape[0] == 0:
         # Version doesn't exist in linux/noarch
         return False
@@ -48,7 +62,7 @@ def only_python(r, name, version, buildstring):
     return False
 
 
-def should_be_bumped(recipe, build_config, repodata):
+def should_be_bumped(recipe, build_config):
     """
     Determine if a given recipe should have its build number increments
     (bumped) due to a recent change in pinnings.
@@ -62,7 +76,8 @@ def should_be_bumped(recipe, build_config, repodata):
     """
     status = 0
     try:
-        for renderedMeta, _, _ in api.render(recipe, config=build_config, permit_unsatisfiable_variants=False):
+        rendered = api.render(recipe, config=build_config, permit_unsatisfiable_variants=False)
+        for renderedMeta, _, _ in rendered:
             if renderedMeta.skip():
                 continue
             buildID = renderedMeta.build_id()  # e.g., py36h47cebea_1 or 0
@@ -70,17 +85,17 @@ def should_be_bumped(recipe, build_config, repodata):
             # However those won't ever need to be rebuilt due to only a python version change
             buildID_nopy = buildID[4:] if buildID.startswith("py") else buildID
 
-            if already_bumped(repodata, renderedMeta.name(), renderedMeta.version(), renderedMeta.build_number()):
+            if already_bumped(renderedMeta.name(), renderedMeta.version(), renderedMeta.build_number()):
                 # Don't double bump
                 continue
-            if already_built(repodata, renderedMeta.name(), renderedMeta.version(), buildID):
+            if already_built(renderedMeta.name(), renderedMeta.version(), buildID):
                 continue
-            if only_python(repodata, renderedMeta.name(), renderedMeta.version(), buildID_nopy):
+            if only_python(renderedMeta.name(), renderedMeta.version(), buildID_nopy):
                 status = max(1, status)
                 continue
             status = max(2, status)
-    except:
-        print(sys.exc_info()[1])
+    except Exception:
+        logger.exception("Failed to check if recipe %s should be bumped")
         status = 3
     return status
 

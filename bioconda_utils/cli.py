@@ -530,17 +530,17 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
 def update_pinning(recipe_folder, config, packages="*",
                    skip_if_in_channels=['bioconda', 'bioconda/label/gcc7'],
                    bump_only_python=False):
-    """
-    Bump a package build number and all dependencies as required due to a change in pinnings
+    """Bump a package build number and all dependencies as required due
+    to a change in pinnings
     """
     bioconda_cfg = utils.load_config(config)
     bioconda_cfg['channels'] = skip_if_in_channels
-    repodata = utils.RepoData().df
     blacklist = utils.get_blacklist(bioconda_cfg.get('blacklists'), recipe_folder)
     build_config = utils.load_conda_build_config()
     build_config.trim_skip = True
 
-    dag, name2recipes = utils.get_dag(utils.get_recipes(recipe_folder, '*') , config, blacklist=blacklist)
+    dag, name2recipes = utils.get_dag(utils.get_recipes(recipe_folder, '*'),
+                                      config, blacklist=blacklist)
     if packages != "*":
         filterNodes= set(packages)
         for package in packages:
@@ -554,7 +554,7 @@ def update_pinning(recipe_folder, config, packages="*",
     for node in nx.nodes(dag):
         for recipe in name2recipes[node]:
             # This should all go in a different module
-            status = should_be_bumped(recipe, build_config, repodata)
+            status = should_be_bumped(recipe, build_config)
             updated[status] += 1
             if bump_only_python and status == 1:
                 status = 2
