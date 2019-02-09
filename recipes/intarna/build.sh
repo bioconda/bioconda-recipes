@@ -5,20 +5,14 @@
 ##
 CXXFLAGS="$CXXFLAGS -w"; # suppress warnings
 LDFLAGS="$LDFLAGS -Wl,-rpath ${PREFIX}/lib";
-CXX=g++;
-CC=gcc;
 if [ `uname` == Darwin ] ; then
     CXXFLAGS="$CXXFLAGS -stdlib=libc++"
     LDFLAGS="$LDFLAGS -stdlib=libc++"
-    CXX=clang++;
-    CC=clang;
 else ## linux
     # add -fopenmp to compilation due to viennarna setup
     CXXFLAGS="$CXXFLAGS -fopenmp"
 fi
 
-export CC=${CC}
-export CXX=${CXX}
 export CXXFLAGS=${CXXFLAGS}
 export LDFLAGS=${LDFLAGS}
 
