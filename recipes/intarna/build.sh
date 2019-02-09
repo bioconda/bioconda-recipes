@@ -33,6 +33,6 @@ fi
             --with-boost-libdir=$PREFIX/lib \
             ${extra_config_options}
             
-make
+make -j 2
 make tests -j 2
 make install
