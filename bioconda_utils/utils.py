@@ -17,6 +17,7 @@ from typing import Sequence
 from pathlib import PurePath
 import json
 import warnings
+from multiprocessing import Pool
 
 from conda_build import api
 from conda.exports import VersionOrder
@@ -286,26 +287,28 @@ def load_all_meta(recipe, config=None, finalize=True):
 
 
 
-def load_meta_fast(recipe, env=None):
+def load_meta_fast(recipe: str, env=None):
     """
     Given a package name, find the current meta.yaml file, parse it, and return
     the dict.
 
-    Parameters
-    ----------
-    recipe : str
-        Path to recipe (directory containing the meta.yaml file)
+    Args:
+      recipe: Path to recipe (directory containing the meta.yaml file)
+      env: Optional variables to expand
 
-    env: Optional[dict]
-        Variables to expand
+    Returns:
+      Tuple of original recipe string and rendered dict
     """
     if not env:
         env = {}
 
-    pth = os.path.join(recipe, 'meta.yaml')
-    template = jinja_silent_undef.from_string(open(pth, 'r', encoding='utf-8').read())
-    meta = yaml.load(template.render(env))
-    return meta
+    try:
+        pth = os.path.join(recipe, 'meta.yaml')
+        template = jinja_silent_undef.from_string(open(pth, 'r', encoding='utf-8').read())
+        meta = yaml.load(template.render(env))
+        return (meta, recipe)
+    except Exception:
+        raise ValueError('Problem inspecting {0}'.format(recipe))
 
 
 def load_conda_build_config(platform=None, trim_skip=True):
@@ -532,6 +535,11 @@ def get_deps(recipe=None, meta=None, build=True):
     return all_deps
 
 
+def threads_to_use():
+    """Returns the number of cores we are allowed to run on"""
+    return len(os.sched_getaffinity(0))
+
+
 def get_dag(recipes, config, blacklist=None, restrict=True):
     """
     Returns the DAG of recipe paths and a dictionary that maps package names to
@@ -564,12 +572,14 @@ def get_dag(recipes, config, blacklist=None, restrict=True):
     logger.info("Generating DAG")
     recipes = list(recipes)
     metadata = []
-    for recipe in tqdm(sorted(recipes), desc="Loading Recipes"):
-        try:
-            meta = load_meta_fast(recipe)
-            metadata.append((meta, recipe))
-        except Exception:
-            raise ValueError('Problem inspecting {0}'.format(recipe))
+
+    with Pool(threads_to_use()) as pool:
+        metadata = list(tqdm(
+            pool.imap_unordered(load_meta_fast, recipes),
+            desc="Loading Recipes",
+            total=len(recipes)
+        ))
+
     if blacklist is None:
         blacklist = set()
 
