@@ -540,6 +540,15 @@ def threads_to_use():
     return len(os.sched_getaffinity(0))
 
 
+def parallel_iter(func, items, desc):
+    with Pool(threads_to_use()) as pool:
+        yield from tqdm(
+            pool.imap_unordered(func, items),
+            desc=desc,
+            total=len(items)
+        )
+
+
 def get_dag(recipes, config, blacklist=None, restrict=True):
     """
     Returns the DAG of recipe paths and a dictionary that maps package names to
@@ -571,14 +580,7 @@ def get_dag(recipes, config, blacklist=None, restrict=True):
     """
     logger.info("Generating DAG")
     recipes = list(recipes)
-    metadata = []
-
-    with Pool(threads_to_use()) as pool:
-        metadata = list(tqdm(
-            pool.imap_unordered(load_meta_fast, recipes),
-            desc="Loading Recipes",
-            total=len(recipes)
-        ))
+    metadata = list(parallel_iter(load_meta_fast, recipes, "Loading Recipes"))
 
     if blacklist is None:
         blacklist = set()
