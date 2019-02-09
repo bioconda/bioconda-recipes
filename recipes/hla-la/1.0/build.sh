@@ -12,6 +12,7 @@ sed -i.bak 's/BOOST_LIB = $(BOOST_PATH)/BOOST_LIB = $(PREFIX)/g' makefile
 sed -i.bak 's/BAMTOOLS_INCLUDE = $(BAMTOOLS_PATH)\/include\/bamtools/BAMTOOLS_INCLUDE = ${PREFIX}\/include\/bamtools/g' makefile
 sed -i.bak 's/BAMTOOLS_LIB = $(BAMTOOLS_PATH)\/lib64//g' makefile
 sed -i.bak 's/BAMTOOLS_SRC = $(BAMTOOLS_PATH)\/src//g' makefile
+sed -i.bak 's/-lbamtools/\${PREFIX}\/lib\/libbamtools.a/g' makefile
 sed -i.bak 's/^workingDir=.*//g' paths.ini
 sed -i.bak 's/^workingDir_HLA_ASM=.*//g' paths.ini
 
