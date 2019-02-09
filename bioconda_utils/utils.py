@@ -1293,6 +1293,11 @@ class RepoData:
 
     @property
     def df(self):
+        """Internal Pandas DataFrame object
+
+        Try not to use this ... the point of this class is to be able to
+        change the structure in which the data is held.
+        """
         if self._df is None:
             self._df = self._load_channel_dataframe()
         return self._df
@@ -1382,10 +1387,11 @@ class RepoData:
             return max(VersionOrder(v) for v in x)
         vers = packages.groupby('name').agg(max_vers)
 
-    def get_package_data(self, key, channels=None, name=None, version=None,
-                         build_number=None, platform=None, native=False):
+    def get_package_data(self, key=None, channels=None, name=None, version=None,
+                         build_number=None, platform=None, build=None, native=False):
         """Get **key** for each package in **channels**
 
+        If **key** is not give, returns bool whether there are matches.
         If **key** is a string, returns list of strings.
         If **key** is a list of string, returns tuple iterator.
         """
@@ -1396,12 +1402,17 @@ class RepoData:
             version = str(version)
 
         df = self.df
+        # We iteratively drill down here, starting with the (probably)
+        # most specific columns. Filtering this way on a large data frame
+        # is much faster than executing the comparisons for all values
+        # every time, in particular if we are looking at a specific package.
         for col, val in (
-                ('name', name),
-                ('channel', channels),
-                ('version', version),
-                ('build_number', build_number),
-                ('platform', platform),
+                ('name', name),         # thousands of different values
+                ('build', build),       # build string should vary a lot
+                ('version', version),   # still pretty good variety
+                ('channel', channels),  # 3 values
+                ('platform', platform), # 3 values
+                ('build_number', build_number), # most values 0
         ):
             if val is None:
                 continue
@@ -1410,6 +1421,8 @@ class RepoData:
             else:
                 df = df[df[col] == val]
 
+        if key is None:
+            return not df.empty
         if isinstance(key, str):
             return list(df[key])
         return df[key].itertuples(index=False)
