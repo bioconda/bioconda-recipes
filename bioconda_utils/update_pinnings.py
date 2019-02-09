@@ -14,52 +14,46 @@ buildNumberJinja = re.compile("^({% +set build +=.+?)(\d+)(.*?%})")
 
 
 def already_bumped(name, version, buildNumber):
-    r = RepoData().df
-    rsub = r.loc[
-        (r.name == name) &
-        (r.platform != "osx") &
-        (r.version == version)
-    ]
-    if rsub.shape[0] == 0:
-        # The version was never built, it doesn't explicitly require bumping
-        return True
-    if buildNumber > max(rsub.build_number):
-        # Already bumped
-        return True
-    return False
+    """Checks if recipe does not need to be bumped (again)
+
+    That is the case if all packages existing for the name/version
+    combination have a build number smaller than the one the recipe
+    currently has.
+
+    (If there is no package at all yet, "all" is true)
+
+    Ignores osx.
+    """
+    return all(
+        num < buildNumber
+        for num in RepoData().get_package_data(
+        'build_number',
+        name=name, platform=['linux', 'noarch'], version=version)
+    )
 
 
 def already_built(name, version, buildstring):
-    r = RepoData().df
-    if  r.loc[
-            (r.name == name) &
-            (r.platform != "osx") &
-            (r.version == version) &
-            (r.build == buildstring)].shape[0] > 0:
-        return True
-    return False
+    """Checks if we have an exact match to name/version/buildstring
+
+    Ignores osx.
+    """
+    return RepoData().get_package_data(
+        name=name, platform=['linux', 'noarch'], version=version,
+        build=buildstring)
 
 
 def only_python(name, version, buildstring):
-    r = RepoData().df
-    s = r.loc[
-        (r.name == name) &
-        (r.platform != "osx") &
-        (r.version == version)]
-    if s.shape[0] == 0:
-        # Version doesn't exist in linux/noarch
-        return False
-    build_set = set()
-    for b in s.build:
-        bs = b.split("_")
-        if bs[0].startswith("py"):
-            build_set.add(bs[0][4:])
-        else:
-            build_set.add(bs[0])
-    if buildstring in build_set:
-        return True
-    # Version exists, but build doesn't
-    return False
+    """Checks if we have an exact or `py[23]_` prefixed match to
+    name/version/buildstring
+
+    Ignores osx.
+    """
+    return any(
+        (bs.startswith("py") and bs[4:] == buildstring) or bs == buildstring
+        for bs in RepoData().get_package_data(
+                'build',
+                name=name, platform=['linux', 'noarch'], version=version)
+    )
 
 
 def should_be_bumped(recipe, build_config):
