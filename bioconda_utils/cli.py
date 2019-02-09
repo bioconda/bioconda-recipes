@@ -518,7 +518,7 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
 @arg('--packages',
      nargs="+",
      help='Glob for package[s] to update, as needed due to a change in pinnings')
-@arg('--skip-if-in-channels',
+@arg('--skip-additional-channels',
      nargs='*',
      help="""Skip updating/bumping packges that are already built with
      compatible pinnings in one of the given channels.""")
@@ -528,13 +528,15 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
      on building everything.""")
 @enable_logging()
 def update_pinning(recipe_folder, config, packages="*",
-                   skip_if_in_channels=['bioconda', 'bioconda/label/gcc7'],
+                   skip_additional_channels=None,
                    bump_only_python=False):
     """Bump a package build number and all dependencies as required due
     to a change in pinnings
     """
-    bioconda_cfg = utils.load_config(config)
-    bioconda_cfg['channels'] = skip_if_in_channels
+    cfg = utils.load_config(config)
+    if skip_additional_channels:
+        cfg['channels'] += skip_additional_channels
+
     blacklist = utils.get_blacklist(bioconda_cfg.get('blacklists'), recipe_folder)
     dag, name2recipes = utils.get_dag(utils.get_recipes(recipe_folder, '*'),
                                       config, blacklist=blacklist)
