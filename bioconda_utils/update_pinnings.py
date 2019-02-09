@@ -2,9 +2,13 @@ import re
 import sys
 import os.path
 import logging
+import collections
+from contextlib import redirect_stdout, redirect_stderr
 
 from conda_build import api
-from .utils import RepoData
+import networkx as nx
+
+from .utils import RepoData, load_conda_build_config, parallel_iter
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -70,7 +74,10 @@ def should_be_bumped(recipe, build_config):
     """
     status = 0
     try:
-        rendered = api.render(recipe, config=build_config, permit_unsatisfiable_variants=False)
+        with open("/dev/null", "w") as devnull:
+            with redirect_stdout(devnull), redirect_stderr(devnull):
+                # api.render uses print WAYYY too much
+                rendered = api.render(recipe, config=build_config, permit_unsatisfiable_variants=False)
         for renderedMeta, _, _ in rendered:
             if renderedMeta.skip():
                 continue
@@ -92,6 +99,23 @@ def should_be_bumped(recipe, build_config):
         logger.exception("Failed to check if recipe %s should be bumped")
         status = 3
     return status
+
+
+def _call_should_be_bumped(arg):
+    return should_be_bumped(*arg), arg[0]
+
+
+def iter_recipes_to_bump(dag, name2recipes, bump_only_python):
+    build_config = load_conda_build_config()
+    build_config.trim_skip = True
+
+    recipes = [(recipe, build_config)
+               for node in nx.nodes(dag)
+               for recipe in name2recipes[node]]
+
+    RepoData().df  # trigger load
+
+    yield from parallel_iter(_call_should_be_bumped,recipes, "Iterating")
 
 
 def bump_recipe(recipe):

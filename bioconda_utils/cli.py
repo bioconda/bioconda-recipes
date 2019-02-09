@@ -20,7 +20,7 @@ from . import linting
 from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import cran_skeleton
-from .update_pinnings import should_be_bumped, bump_recipe
+from .update_pinnings import bump_recipe, iter_recipes_to_bump
 
 logger = logging.getLogger(__name__)
 
@@ -536,9 +536,6 @@ def update_pinning(recipe_folder, config, packages="*",
     bioconda_cfg = utils.load_config(config)
     bioconda_cfg['channels'] = skip_if_in_channels
     blacklist = utils.get_blacklist(bioconda_cfg.get('blacklists'), recipe_folder)
-    build_config = utils.load_conda_build_config()
-    build_config.trim_skip = True
-
     dag, name2recipes = utils.get_dag(utils.get_recipes(recipe_folder, '*'),
                                       config, blacklist=blacklist)
     if packages != "*":
@@ -551,17 +548,18 @@ def update_pinning(recipe_folder, config, packages="*",
     updated = [0, 0, 0, 0]
     hadErrors = set()
     bumpErrors = set()
-    for node in nx.nodes(dag):
-        for recipe in name2recipes[node]:
-            # This should all go in a different module
-            status = should_be_bumped(recipe, build_config)
-            updated[status] += 1
-            if bump_only_python and status == 1:
-                status = 2
-            if status == 2:
-                if not bump_recipe(recipe):
-                    bumpErrors.add(recipe)
+    for status, recipe in iter_recipes_to_bump(dag, name2recipes, bump_only_python):
+        updated[status] += 1
+        if bump_only_python and status == 1:
+            status = 2
+        if status == 2:
+            if not bump_recipe(recipe):
+                bumpErrors.add(recipe)
+                logger.info("Error bumping %s", recipe)
+            else:
+                logger.info("Needed to bump %s", recipe)
             if status == 3:
+                logger.info("Error inspecting %s", recipe)
                 hadErrors.add(recipe)
 
     # Print some information
