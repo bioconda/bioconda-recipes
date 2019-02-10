@@ -11,14 +11,16 @@ mkdir ../obj
 mkdir ../graphs
 
 mkdir ../localBamTools
-cd ../localBamTools
+
+pushd .
+pushd ../localBamTools
 git clone https://github.com/pezmaster31/bamtools
 mkdir bamtools/build
-cd bamtools/build  
+pushd bamtools/build  
 cmake -DCMAKE_INSTALL_PREFIX=../../install -DCMAKE_INSTALL_BINDIR=bin -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_INSTALL_INCLUDEDIR=include ..
 make
 make install
-cd ../../../src
+popd; popd; popd
 
 sed -i.bak 's/CXX    = g++//g' makefile
 sed -i.bak 's/BOOST_INCLUDE = $(BOOST_PATH)/BOOST_INCLUDE = $(PREFIX)/g' makefile
