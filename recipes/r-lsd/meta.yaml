@@ -1,4 +1,7 @@
-{% set version = '3.0' %}
+{% set version = '4.0-0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-lsd
@@ -6,17 +9,24 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/LSD_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/LSD/LSD_{{ version }}.tar.gz
-  sha256: 733c298d7d0df3d7d5cb9b334832c7d2537e8ee2689d25d09d9147c3d5183719
+    - {{ cran_mirror }}/src/contrib/LSD_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/LSD/LSD_{{ version }}.tar.gz
+  sha256: 038a9cc692c67141da066251110e326faf6e1751dd9b367f4d2c5a9bf91d573b
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+
+  number: 0
+  skip: true  # [win32]
 
   rpaths:
     - lib/R/lib/
     - lib/
+
 requirements:
+  build:
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
 
@@ -25,11 +35,21 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('LSD')"
+
+    - $R -e "library('LSD')"           # [not win]
+    - "\"%R%\" -e \"library('LSD')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=LSD
   license: Unlimited
-  summary: Create lots of colorful plots in a plethora of variations (try the LSD demotour()
-    )
+  summary: Create lots of colorful plots in a plethora of variations. Try the LSD demotour().
   license_family: MIT
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

@@ -1,9 +1,5 @@
 #!/bin/bash
-
-export C_INCLUDE_PATH=$PREFIX/include
-export LIBRARY_PATH=$PREFIX/lib
-
 mkdir -p $PREFIX/bin
 
-make
-cp minimap2 $PREFIX/bin
+make INCLUDES="-I$PREFIX/include" CFLAGS="-g -Wall -O2 -Wc++-compat -L$PREFIX/lib"
+cp minimap2 misc/paftools.js $PREFIX/bin

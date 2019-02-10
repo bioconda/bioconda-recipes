@@ -1,39 +1,55 @@
 {% set version = '0.2-2' %}
-{% set posix = '' %}
-{% set native = '' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-coenocliner
   version: {{ version|replace("-", "_") }}
 
 source:
-  url: {{ cran_mirror }}/src/contrib/coenocliner_{{ version }}.tar.gz
+  url:
+    - {{ cran_mirror }}/src/contrib/coenocliner_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/coenocliner/coenocliner_{{ version }}.tar.gz
   sha256: ae558be071d6362e48e942658bff35c21c80ac5c4af12b6b67a189ad46069064
 
 build:
-  number: 0
+  merge_build_host: True  # [win]
+
+  number: 2
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
+
   run:
     - r-base
 
 test:
   commands:
-    - $R -e "library('coenocliner')"
+
+    - $R -e "library('coenocliner')"           # [not win]
+    - "\"%R%\" -e \"library('coenocliner')\""  # [win]
 
 about:
   home: https://github.com/gavinsimpson/coenocliner/
   license: GPL-2
   summary: Simulate species occurrence and abundances (counts) along gradients.
   license_family: GPL2
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 
 extra:
   recipe-maintainers:
-    - nick-youngblut
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

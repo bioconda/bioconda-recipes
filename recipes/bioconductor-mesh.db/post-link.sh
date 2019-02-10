@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MeSH.db_1.9.0.tar.gz"
+FN="MeSH.db_1.11.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/MeSH.db_1.9.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MeSH.db_1.9.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mesh.db/bioconductor-mesh.db_1.9.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/MeSH.db_1.11.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MeSH.db_1.11.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.db/bioconductor-mesh.db_1.11.0_src_all.tar.gz"
 )
-MD5="8e29b2c99bc3aa3ee25bc8c581d3dac8"
+MD5="c6b74bfc2623be738b9ac6ed981f8810"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,24 +1,36 @@
 {% set version = '1.10.6' %}
 
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-sigtree
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: SigTree_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/SigTree_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/SigTree/SigTree_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/SigTree_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/SigTree/SigTree_{{ version }}.tar.gz
   sha256: 3ce57e37d1c328720bb3ffc8c1f349c62b22e4d4de132f988ce9a42cbf3af0a1
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+  number: 4
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{ compiler('c') }}        # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+
+  host:
     - r-base
     - r-mass
     - r-rcolorbrewer
@@ -27,10 +39,10 @@ requirements:
     - r-phylobase
     - bioconductor-phyloseq
     - r-vegan
-    - gcc
 
   run:
     - r-base
+    - {{native}}gcc-libs         # [win]
     - r-mass
     - r-rcolorbrewer
     - r-ape
@@ -41,7 +53,9 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('SigTree')"
+
+    - $R -e "library('SigTree')"           # [not win]
+    - "\"%R%\" -e \"library('SigTree')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=SigTree
@@ -51,3 +65,12 @@ about:
     tree (of class phylo) and a data frame (or matrix) of corresponding tip (OTU) labels
     and p-values.
   license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak
