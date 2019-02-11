@@ -32,6 +32,6 @@ if [[ $SUCCESS != 1 ]]; then
   exit 1
 
 tar -vxzf "$TARBALL"
-rm -fr src/mykrobe/data
-mv mykrobe-data src/mykrobe/data
+rm -fr "$PREFIX"/src/mykrobe/data
+mv mykrobe-data "$PREFIX"/src/mykrobe/data
 rm "$TARBALL"
