@@ -4,7 +4,8 @@ import sys
 import os
 import shlex
 import logging
-from collections import defaultdict
+from collections import defaultdict, Counter
+from functools import partial
 
 import argh
 from argh import arg
@@ -20,7 +21,7 @@ from . import linting
 from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import cran_skeleton
-from .update_pinnings import bump_recipe, iter_recipes_to_bump
+from . import update_pinnings
 
 logger = logging.getLogger(__name__)
 
@@ -533,46 +534,61 @@ def update_pinning(recipe_folder, config, packages="*",
     """Bump a package build number and all dependencies as required due
     to a change in pinnings
     """
-    cfg = utils.load_config(config)
+    config = utils.load_config(config)
     if skip_additional_channels:
-        cfg['channels'] += skip_additional_channels
-
-    blacklist = utils.get_blacklist(bioconda_cfg.get('blacklists'), recipe_folder)
-    dag, name2recipes = utils.get_dag(utils.get_recipes(recipe_folder, '*'),
-                                      config, blacklist=blacklist)
+        config['channels'] += skip_additional_channels
+    build_config = utils.load_conda_build_config()
+    blacklist = utils.get_blacklist(config.get('blacklists'), recipe_folder)
+    utils.RepoData().df  # trigger load
+    all_recipes = utils.get_recipes(recipe_folder, '*')
+    dag, name2recipes = utils.get_dag(all_recipes, config, blacklist=blacklist)
     if packages != "*":
-        filterNodes= set(packages)
-        for package in packages:
-            for child in nx.ancestors(dag, package):
-                filterNodes.add(child)
-        dag = nx.subgraph(dag, filterNodes)
+        dag = utils.filter_dag(dag, packages)
+    recipes = [recipe
+               for node in nx.nodes(dag)
+               for recipe in name2recipes[node]]
 
-    updated = [0, 0, 0, 0]
+    logger.warning("Considering %i packages build by %i recipes",
+                   len(dag), len(recipes))
+
+    stats = Counter()
     hadErrors = set()
     bumpErrors = set()
-    for status, recipe in iter_recipes_to_bump(dag, name2recipes, bump_only_python):
-        updated[status] += 1
-        if bump_only_python and status == 1:
-            status = 2
-        if status == 2:
-            if not bump_recipe(recipe):
+
+    needs_bump = partial(update_pinnings.check, build_config=build_config)
+
+    State = update_pinnings.State
+
+    for status, recipe in zip(utils.parallel_iter(needs_bump, recipes, "Processing..."), recipes):
+    #for status, recipe in zip((needs_bump(r) for r in recipes), recipes):
+        logger.debug("Recipe %s status: %s", recipe, status)
+        stats[status] += 1
+        if status.needs_bump(bump_only_python):
+            logger.info("Bumping %s", recipe)
+            res = update_pinnings.bump_recipe(recipe)
+            if not res:
+                logger.info("Bumping %s FAILED", recipe)
                 bumpErrors.add(recipe)
-                logger.info("Error bumping %s", recipe)
-            else:
-                logger.info("Needed to bump %s", recipe)
-            if status == 3:
-                logger.info("Error inspecting %s", recipe)
-                hadErrors.add(recipe)
+        elif status.failed():
+            logger.info("Failed to inspect %s", recipe)
+            hadErrors.add(recipe)
+        else:
+            logger.info('OK: %s', recipe)
 
     # Print some information
     print("Packages requiring the following:")
-    print("  No build number change needed: {}".format(updated[0]))
-    print("  A rebuild for a new python version: {}".format(updated[1]))
-    print("  A build number increment: {}".format(updated[2]))
-    if updated[3]:
-        print("{} packages produced an error in conda-build: {}".format(updated[3], list(hadErrors)))
-    if len(bumpErrors):
-        print("The build numbers in the following recipes could not be incremented: {}".format(list(bumpErrors)))
+    print(stats)
+    #print("  No build number change needed: {}".format(stats[STATE.ok]))
+    #print("  A rebuild for a new python version: {}".format(stats[STATE.bump_python]))
+    #print("  A build number increment: {}".format(stats[STATE.bump]))
+
+    if hadErrors:
+        print("{} packages produced an error "
+              "in conda-build: {}".format(len(hadErrors), list(hadErrors)))
+
+    if bumpErrors:
+        print("The build numbers in the following recipes "
+              "could not be incremented: {}".format(list(bumpErrors)))
 
 
 @arg('recipe_folder', help='Path to recipes directory')

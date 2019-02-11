@@ -543,7 +543,7 @@ def threads_to_use():
 def parallel_iter(func, items, desc):
     with Pool(threads_to_use()) as pool:
         yield from tqdm(
-            pool.imap_unordered(func, items),
+            pool.imap(func, items),
             desc=desc,
             total=len(items)
         )
@@ -629,6 +629,23 @@ def get_dag(recipes, config, blacklist=None, restrict=True):
         )
 
     return dag, name2recipe
+
+
+def filter_dag(dag, packages):
+    nodes = set()
+    for package in packages:
+        if package in nodes:
+            continue  # already got all ancestors
+        nodes.add(package)
+        try:
+            nodes |= nx.ancestors(dag, package)
+        except nx.exception.NetworkXError:
+            if package not in nx.nodes(dag):
+                logger.error("Can't find %s in dag", package)
+            else:
+                raise
+
+    return nx.subgraph(dag, nodes)
 
 
 def get_recipes(recipe_folder, package="*"):
