@@ -22,6 +22,7 @@ from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import cran_skeleton
 from . import update_pinnings
+from . import graph
 
 logger = logging.getLogger(__name__)
 
@@ -478,13 +479,9 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
     """
     Export the DAG of packages to a graph format file for visualization
     """
-    dag, name2recipes = utils.get_dag(utils.get_recipes(recipe_folder, "*"), config)
+    dag, name2recipes = graph.build(utils.get_recipes(recipe_folder, "*"), config)
     if packages != "*":
-        filterNodes= set(packages)
-        for package in packages:
-            for child in nx.ancestors(dag, package):
-                filterNodes.add(child)
-        dag = nx.subgraph(dag, filterNodes)
+        dag = graph.filter(dag, packages)
     if hide_singletons:
         for node in nx.nodes(dag):
             if dag.degree(node) == 0:
@@ -543,7 +540,7 @@ def update_pinning(recipe_folder, config, packages="*",
     all_recipes = utils.get_recipes(recipe_folder, '*')
     dag, name2recipes = utils.get_dag(all_recipes, config, blacklist=blacklist)
     if packages != "*":
-        dag = utils.filter_dag(dag, packages)
+        dag = graph.filter(dag, packages)
     recipes = [recipe
                for node in nx.nodes(dag)
                for recipe in name2recipes[node]]
@@ -619,7 +616,7 @@ def dependent(recipe_folder, config, restrict=False,
 
     utils.setup_logger('bioconda_utils', loglevel)
 
-    d, n2r = utils.get_dag(utils.get_recipes(recipe_folder, "*"), config, restrict=restrict)
+    d, n2r = graph.build(utils.get_recipes(recipe_folder, "*"), config, restrict=restrict)
 
     if reverse_dependencies is not None:
         func, packages = nx.algorithms.descendants, reverse_dependencies
