@@ -537,7 +537,10 @@ def get_deps(recipe=None, meta=None, build=True):
 
 def threads_to_use():
     """Returns the number of cores we are allowed to run on"""
-    return len(os.sched_getaffinity(0))
+    if hasattr(os, 'sched_getaffinity'):
+        return len(os.sched_getaffinity(0))
+    else:
+        return os.cpu_count()
 
 
 def parallel_iter(func, items, desc):
