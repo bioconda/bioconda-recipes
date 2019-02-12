@@ -313,7 +313,9 @@ class Recipe():
         """List of the packages built by this recipe (including outputs)"""
         packages = [self.name]
         if "outputs" in self.meta:
-            packages.extend(output['name'] for output in self.meta['outputs'])
+            packages.extend(output['name']
+                            for output in self.meta['outputs']
+                            if output != self.name)
         return packages
 
     def replace(self, before: str, after: str,
