@@ -161,7 +161,7 @@ class Recipe():
         return self
 
     @classmethod
-    def from_file(cls, recipe_dir, recipe_fname) -> "Recipe":
+    def from_file(cls, recipe_dir, recipe_fname, return_exceptions=False) -> "Recipe":
         """Create new `Recipe` object from file
 
         Args:
@@ -171,8 +171,13 @@ class Recipe():
         if recipe_fname.endswith("meta.yaml"):
             recipe_fname = os.path.dirname(recipe_fname)
         recipe = cls(recipe_fname, recipe_dir)
-        with open(os.path.join(recipe_dir, recipe_fname, 'meta.yaml')) as text:
-            recipe.load_from_string(text.read())
+        with open(os.path.join(recipe_fname, 'meta.yaml')) as text:
+            try:
+                recipe.load_from_string(text.read())
+            except Exception as exc:
+                if return_exceptions:
+                    return exc
+                raise
         return recipe
 
     def save(self):
@@ -496,3 +501,16 @@ class Recipe():
                 return conda_build.api.render(self.path, **kwargs)
             # raises conda_build.exceptions.DependencyNeedsBuildingError:
             # raises RuntimeError ('can't depend on itself')
+
+
+def load_parallel_iter(recipe_folder, packages):
+    recipes = list(utils.get_recipes(recipe_folder, packages))
+    for recipe in utils.parallel_iter(Recipe.from_file, recipes, "Loading Recipes...",
+                                      recipe_folder, return_exceptions=True):
+        if isinstance(recipe, RecipeError):
+            recipe.log()
+        elif isinstance(recipe, Exception):
+            logger.error("Could not load recipe %s", recipe)
+        else:
+            yield recipe
+
