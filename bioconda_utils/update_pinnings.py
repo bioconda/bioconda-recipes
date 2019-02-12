@@ -4,10 +4,6 @@ import os.path
 import logging
 import collections
 import enum
-from contextlib import redirect_stdout, redirect_stderr
-
-import conda_build.api
-import conda_build.exceptions
 
 import networkx as nx
 
@@ -73,13 +69,6 @@ def have_variant_but_for_python(meta):
     return bool(res)
 
 
-def render_safe(recipe, **kwargs):
-    """Wraps ``api.render`` in silencer"""
-    with open("/dev/null", "w") as devnull:
-        with redirect_stdout(devnull), redirect_stderr(devnull):
-            # api.render uses print WAYYY too much
-            return conda_build.api.render(recipe, **kwargs)
-
 
 class State(enum.Flag):
     #: Recipe had a failure rendering
@@ -110,10 +99,8 @@ def check(recipe, build_config) -> State:
     (bumped) due to a recent change in pinnings.
     """
     try:
-        rendered = render_safe(recipe, config=build_config,
-                               permit_unsatisfiable_variants=False)
-    #except conda_build.exceptions.DependencyNeedsBuildingError as exc:
-    #except RuntimeError ('can't depend on itself')
+        rendered = recipe.conda_render(config=build_config,
+                                       permit_unsatisfiable_variants=False)
     except Exception as exc:
         logger.debug("Exception rendering %s: %s", recipe, exc)
         return State.FAIL
@@ -129,6 +116,8 @@ def check(recipe, build_config) -> State:
         elif have_variant_but_for_python(meta):
             flags |= State.BUMP_PYTHON_ONLY
         else:
+            logger.info("Package %s=%s=%s missing!",
+                         meta.name(), meta.version(), meta.build_id())
             flags |= State.BUMP
     return flags
 

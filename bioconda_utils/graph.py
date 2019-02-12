@@ -91,6 +91,39 @@ def build(recipes, config, blacklist=None, restrict=True):
     return dag, name2recipe
 
 
+def build_from_recipes(recipes):
+    logger.info("Building Recipe DAG")
+
+    package2recipes = {}
+    recipe_list = []
+    for recipe in recipes:
+        for package in recipe.package_names:
+            package2recipes.setdefault(package, set()).add(recipe)
+            recipe_list.append(recipe)
+
+    dag = nx.DiGraph()
+    dag.add_nodes_from(recipe.reldir for recipe in recipes)
+    dag.add_edges_from(
+        (recipe2, recipe)
+        for recipe in recipe_list
+        for dep in recipe.get_deps()
+        for recipe2 in package2recipes.get(dep, [])
+    )
+
+    logger.info("Building Recipe DAG: done (%i nodes, %i edges)", len(dag), len(dag.edges()))
+    return dag
+
+
+def filter_recipe_dag(dag, names):
+    name_set = set(names)
+    nodes = set()
+    for recipe in dag:
+        if recipe.reldir in name_set and recipe not in nodes:
+            nodes.add(recipe)
+            nodes |= nx.ancestors(dag, recipe)
+    return nx.subgraph(dag, nodes)
+
+
 def filter(dag, packages):
     nodes = set()
     for package in packages:

@@ -547,15 +547,16 @@ def update_pinning(recipe_folder, config, packages="*",
     blacklist = utils.get_blacklist(config.get('blacklists'), recipe_folder)
 
     all_recipes = utils.get_recipes(recipe_folder, '*')
-    dag, name2recipes = utils.get_dag(all_recipes, config, blacklist=blacklist)
-    if packages != "*":
-        dag = graph.filter(dag, packages)
-    recipes = [recipe
-               for node in nx.nodes(dag)
-               for recipe in name2recipes[node]]
 
-    logger.warning("Considering %i packages build by %i recipes",
-                   len(dag), len(recipes))
+    from . import recipe
+    dag = graph.build_from_recipes(
+        recip for recip in recipe.load_parallel_iter(recipe_folder, "*")
+        if recip.reldir not in blacklist)
+
+    if packages != "*":
+        dag = graph.filter_recipe_dag(dag, packages)
+
+    logger.warning("Considering %i recipes", len(dag))
 
     stats = Counter()
     hadErrors = set()
@@ -565,21 +566,18 @@ def update_pinning(recipe_folder, config, packages="*",
 
     State = update_pinnings.State
 
-    for status, recipe in zip(utils.parallel_iter(needs_bump, recipes, "Processing..."), recipes):
-    #for status, recipe in zip((needs_bump(r) for r in recipes), recipes):
-        logger.debug("Recipe %s status: %s", recipe, status)
+    for status, recip in zip(utils.parallel_iter(needs_bump, dag, "Processing..."), dag):
+        logger.debug("Recipe %s status: %s", recip, status)
         stats[status] += 1
         if status.needs_bump(bump_only_python):
-            logger.info("Bumping %s", recipe)
-            res = update_pinnings.bump_recipe(recipe)
-            if not res:
-                logger.info("Bumping %s FAILED", recipe)
-                bumpErrors.add(recipe)
+            logger.info("Bumping %s", recip)
+            recip.reset_buildnumber(int(recip['build']['number'])+1)
+            recip.save()
         elif status.failed():
-            logger.info("Failed to inspect %s", recipe)
+            logger.info("Failed to inspect %s", recip)
             hadErrors.add(recipe)
         else:
-            logger.info('OK: %s', recipe)
+            logger.info('OK: %s', recip)
 
     # Print some information
     print("Packages requiring the following:")
