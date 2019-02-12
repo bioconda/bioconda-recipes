@@ -524,19 +524,28 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
      help="""Bump package build numbers even if the only applicable pinning
      change is the python version. This is generally required unless you plan
      on building everything.""")
+@arg('--cache', help='''To speed up debugging, use repodata cached locally in
+     the provided filename. If the file does not exist, it will be created the
+     first time.''')
 @enable_logging()
 def update_pinning(recipe_folder, config, packages="*",
                    skip_additional_channels=None,
-                   bump_only_python=False):
+                   bump_only_python=False,
+                   cache=None):
     """Bump a package build number and all dependencies as required due
     to a change in pinnings
     """
     config = utils.load_config(config)
     if skip_additional_channels:
         config['channels'] += skip_additional_channels
+
+    if cache:
+        utils.RepoData().set_cache(cache)
+    utils.RepoData().df  # trigger load
+
     build_config = utils.load_conda_build_config()
     blacklist = utils.get_blacklist(config.get('blacklists'), recipe_folder)
-    utils.RepoData().df  # trigger load
+
     all_recipes = utils.get_recipes(recipe_folder, '*')
     dag, name2recipes = utils.get_dag(all_recipes, config, blacklist=blacklist)
     if packages != "*":
