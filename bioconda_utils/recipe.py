@@ -173,6 +173,10 @@ class Recipe():
             recipe.load_from_string(text.read())
         return recipe
 
+    def save(self):
+        with open(self.path, "w", encoding="utf-8") as fdes:
+            fdes.write(self.dump())
+
     def set_original(self) -> None:
         """Store the current state of the recipe as "original" version"""
         self.orig = copy(self)
