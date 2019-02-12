@@ -18,12 +18,12 @@ cd $PREFIX/bin
 
 GATK_HOME=$(python -c "\
 import os
-print os.path.realpath(\"/\".join(os.readlink(\"gatk\").split(\"/\")[0:-1]))
+print(os.path.realpath(\"/\".join(os.readlink(\"gatk\").split(\"/\")[0:-1])))
 ")
 
 PICARD_HOME=$(python -c "\
 import os
-print os.path.realpath(\"/\".join(os.readlink(\"picard\").split(\"/\")[0:-1]))
+print(os.path.realpath(\"/\".join(os.readlink(\"picard\").split(\"/\")[0:-1])))
 ")
 
 echo '#!/bin/bash' > ctat_mutations
