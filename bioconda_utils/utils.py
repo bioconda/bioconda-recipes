@@ -10,6 +10,7 @@ import shutil
 import contextlib
 from collections import Counter, Iterable, defaultdict, namedtuple
 from itertools import product, chain, groupby
+from functools import partial
 import logging
 import datetime
 from threading import Event, Thread
@@ -542,10 +543,11 @@ def threads_to_use():
         return os.cpu_count()
 
 
-def parallel_iter(func, items, desc):
+def parallel_iter(func, items, desc, *args, **kwargs):
+    pfunc = partial(func, *args, **kwargs)
     with Pool(threads_to_use()) as pool:
         yield from tqdm(
-            pool.imap(func, items),
+            pool.imap(pfunc, items),
             desc=desc,
             total=len(items)
         )
