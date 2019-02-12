@@ -10,9 +10,11 @@ import os
 import re
 
 from collections import defaultdict
+from contextlib import redirect_stdout, redirect_stderr
 from copy import copy
 from typing import Any, Dict, List, Sequence, Optional, Pattern
 
+import conda_build.api
 
 try:
     from ruamel.yaml import YAML
@@ -487,3 +489,10 @@ class Recipe():
                          output.get('requirements', {}).values())
 
         return list(set(entry.split()[0] for lst in lists for entry in lst if entry))
+
+    def conda_render(self, **kwargs):
+        with open("/dev/null", "w") as devnull:
+            with redirect_stdout(devnull), redirect_stderr(devnull):
+                return conda_build.api.render(self.path, **kwargs)
+            # raises conda_build.exceptions.DependencyNeedsBuildingError:
+            # raises RuntimeError ('can't depend on itself')
