@@ -477,3 +477,13 @@ class Recipe():
             lines.append(self.meta_yaml[row])
         lines.append(self.meta_yaml[end_row][:end_col])
         return "\n".join(lines).strip()
+
+    def get_deps(self):
+        lists = [buildrunhost for buildrunhost in
+                 (self.get('requirements') or {}).values()
+                 if buildrunhost]
+        for output in self.get('outputs', []):
+            lists.extend(buildrunhost for buildrunhost in
+                         output.get('requirements', {}).values())
+
+        return list(set(entry.split()[0] for lst in lists for entry in lst if entry))
