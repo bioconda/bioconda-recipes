@@ -1,6 +1,7 @@
+:orphan:  .. only available via index, not via toctree
+
 .. title:: Package Recipe '{{name}}'
 .. highlight: bash
-
 
 {{name | underline}}
 
@@ -33,10 +34,10 @@
    |downloads_{{package.name}}| |docker_{{package.name}}|
 
    :versions: {{ package.versions | join(", ") }}
-
-   :depends: {% for dep in package.depends %}:conda:package:`{{dep[0]}}` {{dep[1]}} {% endfor %}
-
-   :required~by: |required_by_{{package.name}}|
+   {% for dependency in package.depends %}
+   :depends {{dependency[0]}}: {{dependency[1]}}
+   {% endfor %}
+   :requirements:
 
    .. rubric:: Installation
 
@@ -50,14 +51,16 @@
 
    or use the docker container::
 
-      docker pull quay.io/repository/biocontainers/{{ package.name }}
+      docker pull quay.io/repository/biocontainers/{{ package.name }}:<tag>
+
+   (see `{{package.name}}/tags`_ for valid values for ``<tag>``)
 
 
-.. |required_by_{{package.name}}| conda:required_by:: {{package.name}}
 .. |downloads_{{package.name}}| image:: https://img.shields.io/conda/dn/bioconda/{{package.name}}.svg?style=flat
    :alt:   (downloads)
 .. |docker_{{package.name}}| image:: https://quay.io/repository/biocontainers/{{ name }}/status
    :target: https://quay.io/repository/biocontainers/{{ name }}
+.. _`{{package.name}}/tags`: https://quay.io/repository/biocontainers/{{package.name}}?tab=tags
 
 
 {% endfor %}
@@ -84,5 +87,3 @@ Render an |install-with-bioconda| badge with the following MarkDown::
 
 .. |install-with-bioconda| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat
    :target: http://bioconda.github.io/recipes/{{ name }}/README.html
-
-
