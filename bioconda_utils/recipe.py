@@ -147,6 +147,9 @@ class Recipe():
     def __str__(self) -> str:
         return self.reldir
 
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__} "{self.reldir}"'
+
     def load_from_string(self, data) -> "Recipe":
         """Load and `render` recipe contents from disk"""
         self.meta_yaml = data.splitlines()
