@@ -35,6 +35,16 @@ else
     echo "Sucesss!"
 fi
 
+echo "====== Fixing Conda's Custom Buildchain not in PATH ===="
+
+mkdir _buildchain
+export PATH="$(pwd)/_buildchain:$PATH"
+[ -n $LD ] && ln -s $LD _buildchain/ld
+[ -n $GCC ] && ln -s $GCC _buildchain/gcc
+[ -n $GXX ] && ln -s $GCC _buildchain/g++
+[ -n $AR ] && ln -s $AR _buildchain/ar
+
+
 echo "====== PREPARING CONFIG ========"
 # ARB stores build settings in config.makefile. Create one from template:
 cp config.makefile.template config.makefile
