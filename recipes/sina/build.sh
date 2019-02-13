@@ -9,7 +9,7 @@ export MAKEFLAGS=-j$CPU_COUNT
     --with-arbhome=$PREFIX/lib/arb \
     --with-boost=$PREFIX \
     --with-boost-libdir=$PREFIX/lib \
-    | (cat config.log; false)
+    || (cat config.log; false)
 
 make
 make check
