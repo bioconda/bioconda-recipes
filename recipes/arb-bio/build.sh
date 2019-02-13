@@ -18,21 +18,23 @@ case `uname` in
 	;;
 esac
 
-echo "====== Fixing Conda-Forge's Perl ======"
 
 wrong_prefix="$(perl -V | sed -rn "s|\s+cc='([^']+)/bin/.*|\1|p")"
-good_prefix="${CXX%/bin/*}"
-echo "Replacing"
-echo "  $wrong_prefix"
-echo "with"
-echo "  $good_prefix"
-grep -rlI "$wrong_prefix" $(perl -e 'print "@INC"') | \
-    sort -u |\
-    xargs sed -ibak "s|$wrong_prefix|$good_prefix|g"
-if perl -V | grep "$wrong_prefix"; then
-   echo "Failed to fix paths - expect breakage below"
-else
-    echo "Sucesss!"
+if [ -n "$wrong_prefix"]; then
+    echo "====== Fixing Conda-Forge's Perl ======"
+    good_prefix="${CXX%/bin/*}"
+    echo "Replacing"
+    echo "  $wrong_prefix"
+    echo "with"
+    echo "  $good_prefix"
+    grep -rlI "$wrong_prefix" $(perl -e 'print "@INC"') | \
+	sort -u |\
+	xargs sed -ibak "s|$wrong_prefix|$good_prefix|g"
+    if perl -V | grep "$wrong_prefix"; then
+	echo "Failed to fix paths - expect breakage below"
+    else
+	echo "Sucesss!"
+    fi
 fi
 
 echo "====== Fixing Conda's Custom Buildchain not in PATH ===="
