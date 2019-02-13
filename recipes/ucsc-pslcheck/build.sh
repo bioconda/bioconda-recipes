@@ -1,12 +1,16 @@
 #!/bin/bash
-
-export MACHTYPE=x86_64
-export BINDIR=$(pwd)/bin
-mkdir -p $BINDIR
-(cd kent/src/lib && make)
-(cd kent/src/jkOwnLib && make)
-(cd kent/src/hg/lib && make)
-(cd kent/src/hg/pslCheck && make)
-mkdir -p $PREFIX/bin
-cp bin/pslCheck $PREFIX/bin
-chmod +x $PREFIX/bin/pslCheck
+mkdir -p "$PREFIX/bin"
+if [ "$(uname)" == "Darwin" ]; then
+    cp pslCheck "$PREFIX/bin"
+else
+    export MACHTYPE=x86_64
+    export BINDIR=$(pwd)/bin
+    mkdir -p "$BINDIR"
+    (cd kent/src/lib && make)
+    (cd kent/src/htslib && make)
+    (cd kent/src/jkOwnLib && make)
+    (cd kent/src/hg/lib && make)
+    (cd kent/src/hg/pslCheck && make)
+    cp bin/pslCheck "$PREFIX/bin"
+fi
+chmod +x "$PREFIX/bin/pslCheck"

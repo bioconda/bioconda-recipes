@@ -1,0 +1,39 @@
+{% set version = "1.0.1" %}
+
+package:
+  name: seq-seq-pan
+  version: {{ version }}
+
+source:
+  url: https://gitlab.com/chrjan/seq-seq-pan/repository/v{{ version }}/archive.tar.gz
+  md5: 3d2b2c835d9a7f8412551e9462202c60
+
+build:
+  number: 1
+  skip: True # [osx or py27]
+
+requirements:
+  host: 
+    - python
+
+  run:
+    - python
+    - biopython ==1.69
+    - blat ==35
+    - snakemake
+    - openjdk
+    - argparse
+    - mauvealigner ==1.2.0
+
+test:
+  commands:
+    - seq-seq-pan -h > /dev/null
+    - seq-seq-pan-wga --no-hooks --config workdir=$PREFIX/opt/seq-seq-pan/example/minimal genomefile=genome_list.txt outfilename=ssp_example -n > /dev/null
+    - java -jar $PREFIX/opt/seq-seq-pan/java/XMFAConsensus/XMFAconsensus_majorityvote.jar -h > /dev/null
+    - seq-seq-pan-consensus -h > /dev/null
+    - seq-seq-pan-genomedescription -h >/dev/null
+
+about:
+  home: https://gitlab.com/chrjan/seq-seq-pan
+  license: FreeBSD
+  summary: seq-seq-pan is a workflow for the SEQuential alignment of SEQuences to build a PAN-genome data structure and a whole-genome-alignment.

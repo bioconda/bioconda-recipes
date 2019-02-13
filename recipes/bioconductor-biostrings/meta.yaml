@@ -1,33 +1,45 @@
+{% set version = "2.48.0" %}
+{% set name = "Biostrings" %}
+{% set bioc = "3.7" %}
+
 package:
-  name: bioconductor-biostrings
-  version: 2.40.2
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: Biostrings_2.40.2.tar.gz
-  url: http://archive.ubuntu.com/ubuntu/pool/universe/r/r-bioc-biostrings/r-bioc-biostrings_2.40.2.orig.tar.gz
-  md5: a2bfabeda6578c2dcd2c8129b293ddf9
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: d244dd2dbe1fdaff293b07d6a9009f7fea49742dc252535f6cfea02941220b85
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - 'bioconductor-biocgenerics >=0.15.6'
-    - 'bioconductor-iranges >=2.5.27'
-    - 'bioconductor-s4vectors >=0.10.1'
-    - 'bioconductor-xvector >=0.11.6'
-    - r
+  host:
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-iranges >=2.14.12,<2.16.0'
+    - 'bioconductor-s4vectors >=0.18.3,<0.20.0'
+    - 'bioconductor-xvector >=0.20.0,<0.22.0'
+    - r-base
   run:
-    - 'bioconductor-biocgenerics >=0.15.6'
-    - 'bioconductor-iranges >=2.5.27'
-    - 'bioconductor-s4vectors >=0.10.1'
-    - 'bioconductor-xvector >=0.11.6'
-    - r
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-iranges >=2.14.12,<2.16.0'
+    - 'bioconductor-s4vectors >=0.18.3,<0.20.0'
+    - 'bioconductor-xvector >=0.20.0,<0.22.0'
+    - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
-    - '$R -e "library(''Biostrings'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/Biostrings.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Memory efficient string containers, string matching algorithms, and other
-    utilities, for fast manipulation of large biological sequences or sets of sequences.'
+  summary: 'Memory efficient string containers, string matching algorithms, and other utilities, for fast manipulation of large biological sequences or sets of sequences.'
+extra:
+  identifiers:
+    - biotools:biostrings
+    - doi:10.1038/nmeth.3252

@@ -1,80 +1,66 @@
 package:
   name: bcbio-nextgen
-  version: '1.0.1'
+  version: '1.1.3a'
 
 build:
-  number: 1
-  skip: True # [not py27]
+  number: 0
+  skip: true # [not py27]
 
 source:
-  fn: bcbio-nextgen-1.0.1.tar.gz
-  url: https://pypi.python.org/packages/77/ba/29c493ef6f10eff436102d19f75989d6cd970cb2e7f915f246fbaa945b14/bcbio-nextgen-1.0.1.tar.gz
-  md5: b0734f467cd511ca629ed739fb08495c
-  # Avoids bug in 1.0.1 which checks for bgzip and causes hangs on Illumina bgzip inputs for grabix
-  patches:
-    - alignprep.diff
-  #fn: bcbio-nextgen-0f9d85a.tar.gz
-  #url: https://github.com/chapmanb/bcbio-nextgen/archive/0f9d85a.tar.gz
+  #url: https://pypi.io/packages/source/b/bcbio-nextgen/bcbio-nextgen-1.1.2.tar.gz
+  url: https://github.com/bcbio/bcbio-nextgen/archive/fc4427c.tar.gz
+  sha256: 9978be5ce6a325a262d9c9e45b3040a1558a080f11dacad1f5c66a0919c5dca9
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
+    - pip
   run:
     - python
-    - argparse [py26]
     - arrow
-    - azure
+    - beautifulsoup4
     - bioblend
     - biopython
     - boto
-    - click
     - cython
     - cyvcf2
+    - dnapi
     - fabric
     - fadapa
+    - geneimpacts
     - gffutils
-    - ipyparallel >=4.0,<5.0
-    - ipython-cluster-helper >=0.5.2
-    - ipywidgets
-    - joblib
-    - libsodium >=0.4,<1.0
+    - h5py
+    - htslib
+    - ipyparallel >=6.0.2
+    - ipython-cluster-helper >=0.6.1
+    - joblib >=0.12
     - logbook
-    - lxml
     - matplotlib
+    - mock
     - msgpack-python
-    - numpy
-    - openpyxl
     - openssl
     - pandas
-    - path.py
-    - patsy
     - pip
     - py
     - pycrypto
     - pytest
-    - pytest-cov
-    - pytest-marks
+    - pytest-cov >=2.5.1
     - pytest-mock
     - progressbar
     - psutil
-    - python-dateutil
+    - python-dateutil >=2.5.0
     - pybedtools
-    - pysam
+    - pysam >=0.13.0
     - pyvcf
     - pyyaml
-    - pyzmq
-    - reportlab
     - requests
     - scipy
     - seaborn
     - seqcluster
-    - sh
-    - sqlalchemy
     - statsmodels
     - tabulate
     - toolz
-    - tornado
     - yamllint
 
 test:
@@ -86,13 +72,19 @@ test:
     # ImportError: dlopen(zmq/backend/cython/constants.so, 2): Library not loaded: @rpath/./libzmq.4.dylib
     #   Referenced from: /zmq/backend/cython/constants.so
     #     Reason: image not found
-    #- bcbio.distributed.ipython
+    - bcbio.distributed.ipython # [not osx]
   commands:
-    - bcbio_nextgen.py -h
-    - bcbio_setup_genome.py -h
-    - bcbio_prepare_samples.py -h
+    # click requires a unicode locale
+    - LANG=C.UTF-8 bcbio_nextgen.py -h
+    - LANG=C.UTF-8 bcbio_setup_genome.py -h
+    - LANG=C.UTF-8 bcbio_prepare_samples.py -h
 
 about:
   home: https://github.com/chapmanb/bcbio-nextgen
   license: MIT
   summary: Validated, scalable, community developed variant calling, RNA-seq and small RNA analysis
+
+extra:
+  identifiers:
+    - biotools:bcbio-nextgen
+    - doi:10.1093/bioinformatics/btv061

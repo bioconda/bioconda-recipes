@@ -5,24 +5,44 @@ about:
 
 package:
   name: gromacs
-  version: 4.6.5
+  version: 2018.4
 
 build:
   number: 0
+#  skip: True  # [osx]
 
+# See http://manual.gromacs.org/documentation/
+# for latest release. Note that version scheme changed from
+# 5.1 to 2016.x and 2018.x
 source:
-  fn: gromacs-4.6.5.tar.gz
-  url: ftp://ftp.gromacs.org/pub/gromacs/gromacs-4.6.5.tar.gz
-  md5: 184a537ea52429dbc2a681f98b46ed84
+  url: http://ftp.gromacs.org/pub/gromacs/gromacs-2018.4.tar.gz
+  md5: 7bede4c1a656531fc43b95805e9a5a94
+  sha256: 6f2ee458c730994a8549d6b4f601ecfc9432731462f8bd4ffa35d330d9aaa891
 
 requirements:
   build:
-    - gcc  # [linux]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
     - cmake
+  host:
+    - openmp # [linux]
+    - ocl-icd  # [linux]
+    - libhwloc 1.*
+    - fftw
+    - perl
+    - python >=2.7,<3
   run:
-    - libgcc  # [linux]
+    - ocl-icd # [linux]
+    - openmp # [linux]
+    - fftw
+    - libhwloc 1.*
 
 test:
   commands:
-    - mdrun -version
+    - gmx -version
+
+
+extra:
+  identifiers:
+    - biotools:gromacs
+    - doi:10.1016/j.softx.2015.06.001
+    - rrid:RRID:SCR_014565

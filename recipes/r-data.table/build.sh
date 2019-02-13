@@ -1,13 +1,9 @@
-#!/bin/bash
-
-# R refuses to build packages that mark themselves as Priority: Recommended
-mv DESCRIPTION DESCRIPTION.old
-grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
-
-$R CMD INSTALL --build .
-
-# Add more build steps here, if they are necessary.
-
-# See
-# http://docs.continuum.io/conda/build.html
-# for a list of environment variables that are set during the build process.
+if [[ $target_platform =~ linux.* ]] || [[ $target_platform == win-32 ]] || [[ $target_platform == win-64 ]] || [[ $target_platform == osx-64 ]]; then
+  export DISABLE_AUTOBREW=1
+  mv DESCRIPTION DESCRIPTION.old
+  grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
+  $R CMD INSTALL --build .
+else
+  mkdir -p $PREFIX/lib/R/library/data.table
+  mv * $PREFIX/lib/R/library/data.table
+fi

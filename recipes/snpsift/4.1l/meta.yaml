@@ -1,3 +1,8 @@
+{% set snpeff_ver = "v4_1l" %}
+# NOTE: if the version contains a trailing letter, use the <d>.<d>.1<l> format
+{% set version = "4.1l" %}
+{% set  md5= "43dd4b41f3223bbb4cc094ec5c5e2aac" %}
+
 about:
   home: 'http://snpeff.sourceforge.net/SnpSift.html'
   license: "LGPLv3"
@@ -5,21 +10,30 @@ about:
 
 package:
   name: snpsift
-  version: '4.1l'
+  version: {{ version }}
 
 build:
-  number: 1
+  number: 3
   skip: False
+  noarch: generic
 
 source:
-  fn: snpEff_v4_1l_core.zip
-  md5: 43dd4b41f3223bbb4cc094ec5c5e2aac
-  url: http://downloads.sourceforge.net/project/snpeff/snpEff_v4_1l_core.zip
+  url: http://downloads.sourceforge.net/project/snpeff/snpEff_{{snpeff_ver}}_core.zip
+  md5: {{ md5 }}
 
 requirements:
   run:
-      - java-jdk
+    - openjdk
+    - python
 
 test:
-    commands:
-      - SnpSift 2>&1 > /dev/null | grep "SnpSift version 4.1l"
+  commands:
+    - SnpSift 2>&1 > /dev/null | grep "SnpSift version 4.1l"
+    - echo | SnpSift filter "(CHROM == '2')" >/dev/null 2>&1
+    - touch a.vcf && echo | SnpSift annotate a.vcf
+
+extra:
+  notes: 'Note that the package version is slightly different from upstream, this is to make sure conda will order the package versions correctly.'
+  identifiers:
+    - biotools:SnpSift
+    - doi:10.3389/fgene.2012.00035

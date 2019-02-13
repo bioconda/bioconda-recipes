@@ -1,22 +1,56 @@
+{% set version = "10.2" %}
+{% set date = "20181018" %}
+{% set sha256 = "27b2c777c8eab9a9716d167b71e2017edcf98c29d80a040d8c78ddffa2222e24" %}
+
 package:
   name: entrez-direct
-  version: "5.80"
+  version: {{ version }}
 
 build:
   number: 0
 
 source:
-  fn: edirect.tar.gz
-  url: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/2016-12-09/edirect.tar.gz
-  sha256: 0dfa43446d19c608fa322b33a3f07bdeebd7287f33d84e335c1b37509693835a
+  url: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/edirect.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+  - xtract.patch
 
 requirements:
-  build:
-  - perl-threaded
+  host:
+  - perl
+  - perl-html-parser
+  - perl-html-tagset
+  - perl-html-tree
+  - perl-http-cookies
+  - perl-http-date
+  - perl-http-message
+  - perl-http-negotiate
+  - perl-io-socket-ssl
+  - perl-lwp-mediatypes
+  - perl-lwp-protocol-https
+  - perl-net-http
+  - perl-uri
+  - perl-www-robotrules
+  - perl-mozilla-ca
+  - perl-xml-simple
 
   run:
-  - perl-threaded
+  - perl
+  - perl-html-parser
+  - perl-html-tagset
+  - perl-html-tree
+  - perl-http-cookies
+  - perl-http-date
+  - perl-http-message
+  - perl-http-negotiate
+  - perl-io-socket-ssl
+  - perl-lwp-mediatypes
   - perl-lwp-protocol-https
+  - perl-net-http
+  - perl-uri
+  - perl-www-robotrules
+  - perl-mozilla-ca
+  - perl-xml-simple
 
 test:
   commands:
@@ -32,9 +66,9 @@ test:
     - enotify --help
     - esummary --help
     - entrez-phrase-search --help
+    - xtract -version
 
 about:
-  home: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/2016-03-23/README
+  home: ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/versions/{{ version }}.{{ date }}/README
   license: PUBLIC DOMAIN
   summary: Entrez Direct (EDirect) is an advanced method for accessing the NCBI's set of interconnected databases (publication, sequence, structure, gene, variation, expression, etc.) from a UNIX terminal window. Functions take search terms from command-line arguments. Individual operations are combined to build multi-step queries. Record retrieval and formatting normally complete the process.
-

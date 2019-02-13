@@ -1,68 +1,76 @@
+{% set version = '2.1.4' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-gbm
-  version: "2.1.1"
+  version: {{ version|replace("-", "_") }}
 
 source:
-  fn: gbm_2.1.1.tar.gz
   url:
-    - http://cran.r-project.org/src/contrib/gbm_2.1.1.tar.gz
-    - http://cran.r-project.org/src/contrib/Archive/gbm/gbm_2.1.1.tar.gz
-  md5: 8126037a1a9a216735db074d04d362ed
+    - {{ cran_mirror }}/src/contrib/gbm_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/gbm/gbm_{{ version }}.tar.gz
+  sha256: 91fe50345f94a42a75a789cc2c05e489610c109508896479725df810920ee152
 
 build:
-  # This is required to make R link correctly on Linux.
+  merge_build_host: True  # [win]
+
+  number: 0
+  skip: true  # [win32]
+
   rpaths:
     - lib/R/lib/
     - lib/
 
-# Suggests: RUnit
 requirements:
   build:
-    - r
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}      # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - r-gridextra
     - r-lattice
     - r-survival
-    - gcc                 # [not osx]
-    - llvm                # [osx]
 
   run:
-    - r
+    - r-base
+    - {{native}}gcc-libs         # [win]
+    - r-gridextra
     - r-lattice
     - r-survival
-    - libgcc    # [not osx]
 
 test:
   commands:
-    # You can put additional test commands to be run here.
-    - $R -e "library('gbm')"
+
+    - $R -e "library('gbm')"           # [not win]
+    - "\"%R%\" -e \"library('gbm')\""  # [win]
 
 about:
-  home: http://code.google.com/p/gradientboostedmodels/
-  license: GPL (>= 2) | file LICENSE
-  summary: An implementation of extensions to Freund and Schapire's AdaBoost algorithm and Friedman's
-    gradient boosting machine. Includes regression methods for least squares, absolute
-    loss, t-distribution loss, quantile regression, logistic, multinomial logistic,
-    Poisson, Cox proportional hazards partial likelihood, AdaBoost exponential loss,
-    Huberized hinge loss, and Learning to Rank measures (LambdaMart).
+  home: https://github.com/gbm-developers/gbm
+  license: GPL (>= 2)
+  summary: An implementation of extensions to Freund and Schapire's AdaBoost  algorithm and Friedman's
+    gradient boosting machine. Includes regression  methods for least squares, absolute
+    loss, t-distribution loss, quantile  regression, logistic, multinomial logistic,
+    Poisson, Cox proportional hazards  partial likelihood, AdaBoost exponential loss,
+    Huberized hinge loss, and  Learning to Rank measures (LambdaMart). Originally developed
+    by Greg Ridgeway.
   license_family: GPL3
-
-# The original CRAN metadata for this package was:
-
-# Package: gbm
-# Version: 2.1.1
-# Date: 2015-03-10
-# Title: Generalized Boosted Regression Models
-# Author: Greg Ridgeway <gregridgeway@gmail.com> with contributions from others
-# Maintainer: Harry Southworth <harry.southworth@gmail.com>
-# Depends: R (>= 2.9.0), survival, lattice, splines, parallel
-# Suggests: RUnit
-# Description: An implementation of extensions to Freund and Schapire's AdaBoost algorithm and Friedman's gradient boosting machine. Includes regression methods for least squares, absolute loss, t-distribution loss, quantile regression, logistic, multinomial logistic, Poisson, Cox proportional hazards partial likelihood, AdaBoost exponential loss, Huberized hinge loss, and Learning to Rank measures (LambdaMart).
-# License: GPL (>= 2) | file LICENSE
-# URL: http://code.google.com/p/gradientboostedmodels/
-# Packaged: 2015-03-11 07:56:18 UTC; ripley
-# NeedsCompilation: yes
-# Repository: CRAN
-# Date/Publication: 2015-03-11 09:02:32
-
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
+  license_file: '{{ environ["PREFIX"] }}\/lib\/R\/share\/licenses\/GPL-3'  # [unix]
+  license_file: '{{ environ["PREFIX"] }}\R\share\licenses\GPL-3'  # [win]
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

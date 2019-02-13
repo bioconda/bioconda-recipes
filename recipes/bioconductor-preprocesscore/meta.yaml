@@ -1,24 +1,38 @@
+{% set version = "1.42.0" %}
+{% set name = "preprocessCore" %}
+{% set bioc = "3.7" %}
+
 package:
-  name: bioconductor-preprocesscore
-  version: 1.34.0
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: preprocessCore_1.34.0.tar.gz
-  url: https://bioarchive.galaxyproject.org/preprocessCore_1.34.0.tar.gz
-  md5: 845eddebdf2c68a93103622ac9cc31a1
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 7371a739d3481544c2e95e956d873fcc03e8f03e4761fd573d3b95747ec8caa9
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - r
+  host:
+    - r-base
   run:
-    - r
+    - r-base
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - make
 test:
   commands:
-    - '$R -e "library(''preprocessCore'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/preprocessCore.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>= 2)'
-  summary: 'A library of core preprocessing routines'
+  summary: 'A library of core preprocessing routines.'
+extra:
+  identifiers:
+    - biotools:preprocesscore
+    - doi:10.1038/nmeth.3252

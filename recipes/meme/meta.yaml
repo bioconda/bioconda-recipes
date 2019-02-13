@@ -1,61 +1,92 @@
-about:
-    home: http://alternate.meme-suite.org/
-    license: Custom
-    license_file: COPYING
-    summary: Motif based sequence Analysis tools
+{% set version = "5.0.2" %}
 
 package:
-    name: meme
-    version: 4.11.2
+  name: meme
+  version: {{ version }}
+
+source:
+  url: http://alternate.meme-suite.org/meme-software/{{ version }}/meme-{{ version }}.tar.gz
+  sha256: 5840bbfbfdf303c2707cad30f9a80b463cffed6ddcb5fa4a77451625532b23b7
+  patches:
+    - mast.patch
 
 build:
-    number: 0
-    skip: True  # [not py27]
-    detect_binary_files_with_prefix: True
+  number: 5
+  detect_binary_files_with_prefix: True
 
 requirements:
-    build:
-        - gcc # [not osx]
-        - llvm # [osx]
-        - yaml
-        - python
-        - perl
-        - ghostscript
-        - zlib
-        - libxslt
-        - libxml2
-        - expat
-        - perl-xml-parser
-        - perl-app-cpanminus
-        - perl-yaml
-        - perl-xml-simple
-        - perl-html-template
-        - perl-cgi
-    run:
-        - libgcc # [not osx]
-        - yaml
-        - expat
-        - python
-        - perl
-        - zlib
-        - libxslt
-        - libxml2
-        - ghostscript
-        - perl-xml-parser
-        - perl-yaml
-        - perl-xml-simple
-        - perl-html-template
-        - perl-cgi
-source:
-    fn: meme_4.11.2.tar.gz
-    url: http://alternate.meme-suite.org/meme-software/4.11.2/meme_4.11.2.tar.gz
-    sha1: 317c230772b62ae3a44d2e7dcc2466eadedf6662
-    patches:
-        - mast.patch
+  build:
+    - {{ compiler('c') }}
+  host:
+    - yaml
+    - python
+    - perl
+    - ghostscript
+    - zlib
+    - xz
+    - libxslt
+    - libxml2
+    - expat
+    - perl-xml-parser
+    - perl-app-cpanminus
+    - perl-module-build
+    - perl-yaml
+    - perl-xml-simple
+    - perl-html-template
+    - perl-cgi
+    - perl-html-parser
+    - perl-html-tree
+    - perl-math-cdf
+    - perl-log-log4perl
+    - perl-json
+    - perl-file-which
+    - openmpi
+  run:
+    - yaml
+    - expat
+    - python
+    - perl
+    - zlib
+    - xz
+    - libxslt
+    - libxml2
+    - ghostscript
+    - perl-xml-parser
+    - perl-yaml
+    - perl-xml-simple
+    - perl-html-template
+    - perl-cgi
+    - perl-html-parser
+    - perl-html-tree
+    - perl-math-cdf
+    - perl-log-log4perl
+    - perl-json
+    - perl-file-which
+    - openmpi
 
 test:
-    commands:
-        - meme -version
-        - mast -version
-        - meme-chip 2>&1 | grep FIMO > /dev/null
-        - centrimo 2>&1 | grep maxreg > /dev/null
+  commands:
+    - meme -version
+    - meme-chip -version
+    - glam2 -version
+    - tomtom -version
+    - centrimo -version
+    - ame -version
+    - spamo -version
+    - gomo -version
+    - fimo -version
+    - mast -version
+    - mcast -version
+    - glam2scan -version
+    - momo simple -version
+
+about:
+  home: http://alternate.meme-suite.org/
+  license: Custom
+  license_file: COPYING
+  summary: Motif based sequence Analysis tools
+
+extra:
+  container:
+    # openmpi needs ssh/rsh
+    extended-base: true

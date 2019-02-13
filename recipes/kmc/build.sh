@@ -1,9 +1,13 @@
 #!/bin/bash
 
-set -efu -o pipefail
+set -x -e -o pipefail
+
+echo HERE IS THE ENV
+env
 
 export CPPFLAGS="-I${PREFIX}/include"
 export LDFLAGS="-L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS}"
 
 chmod u+x ${SRC_DIR}/configure
 chmod u+x ${SRC_DIR}/build-aux/ar-lib
@@ -22,7 +26,9 @@ mkdir -p build
 pushd build
 
 ${SRC_DIR}/configure --prefix=$PREFIX
-make install
+make -j${CPU_COUNT} install
 popd
 
-
+mv $PREFIX/bin/kmc_prog $PREFIX/bin/kmc
+mv $PREFIX/bin/kmc_tools_prog $PREFIX/bin/kmc_tools
+mv $PREFIX/bin/kmc_dump_prog $PREFIX/bin/kmc_dump

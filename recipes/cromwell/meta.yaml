@@ -1,24 +1,41 @@
-about:
-    home: https://github.com/broadinstitute/cromwell
-    license: "BSD"
-    summary: "A Workflow Management System geared towards scientific workflows described in WDL"
+{% set version = "36" %}
+{% set sha256 = "6e668caa2568510312ede7a3f75f4880937a2542c2697e44f43d50e04f9ca581" %}
+
 package:
-    name: cromwell
-    version: 0.23
+  name: cromwell
+  version: 0.{{ version }}
+
 build:
+  noarch: python
   number: 0
+
 source:
-    fn: cromwell-0.23.zip
-    url: https://github.com/broadinstitute/cromwell/archive/23.zip
-    md5: f7e21993550afeb30b29bd2ae874c369
+  url: https://github.com/broadinstitute/cromwell/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
 requirements:
-  build:
-    - java-jdk >=8
+  host:
+    - openjdk >=8,<9
     - sbt
     - scala
   run:
-    - java-jdk >=8
+    - openjdk >=8,<9
+    - python
+    - findutils  
 
 test:
-    commands:
-      - cromwell --help 2>&1 | grep "Given a WDL file"
+  commands:
+    - cromwell --version 2>&1 | grep "cromwell"
+    - womtool --help 2>&1 | grep "Usage"
+
+about:
+  home: https://github.com/broadinstitute/cromwell
+  license: "BSD"
+  summary: "A Workflow Management System geared towards scientific workflows described in WDL"
+
+extra:
+  identifiers:
+    - biotools:cromwell
+  recipe-maintainers:
+    - notestaff
+    - tomkinsc

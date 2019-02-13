@@ -1,0 +1,39 @@
+# NOTE: Currently we require a modified version of Porechop with downgraded
+# SeqAn to compile with the latest GCC available in conda (4.8).
+#
+# When GCC 4.9 or later is available on conda, the source metadata should be
+# updated to point to the latest mainstream Porechop release.
+
+{% set version = "0.2.3_seqan2.1.1" %}
+
+package:
+  name: porechop
+  version: {{ version }}
+
+source:
+  url: https://github.com/rrwick/Porechop/archive/v0.2.3-C++11.tar.gz
+  sha256: 817371dceed77e583e387e9ca7c10214c0faff7c0a89320d60a66efdc6c0d35a
+
+build:
+  number: 3
+  skip: True # [py27]
+  entry_points:
+    - porechop = porechop.porechop:main
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - setuptools
+  run:
+    - python
+
+test:
+  commands:
+    - porechop -h
+
+about:
+  home: https://github.com/rrwick/Porechop
+  license: GPL-3.0-only AND BSD-3-Clause
+  summary: Adapter removal and demultiplexing of Oxford Nanopore reads

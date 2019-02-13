@@ -1,12 +1,16 @@
 #!/bin/bash
-
-export MACHTYPE=x86_64
-export BINDIR=$(pwd)/bin
-mkdir -p $BINDIR
-(cd kent/src/lib && make)
-(cd kent/src/jkOwnLib && make)
-(cd kent/src/hg/lib && make)
-(cd kent/src/hg/mouseStuff/axtToMaf && make)
-mkdir -p $PREFIX/bin
-cp bin/axtToMaf $PREFIX/bin
-chmod +x $PREFIX/bin/axtToMaf
+mkdir -p "$PREFIX/bin"
+if [ "$(uname)" == "Darwin" ]; then
+    cp axtToMaf "$PREFIX/bin"
+else
+    export MACHTYPE=x86_64
+    export BINDIR=$(pwd)/bin
+    mkdir -p "$BINDIR"
+    (cd kent/src/lib && make)
+    (cd kent/src/htslib && make)
+    (cd kent/src/jkOwnLib && make)
+    (cd kent/src/hg/lib && make)
+    (cd kent/src/hg/mouseStuff/axtToMaf && make)
+    cp bin/axtToMaf "$PREFIX/bin"
+fi
+chmod +x "$PREFIX/bin/axtToMaf"

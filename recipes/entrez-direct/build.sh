@@ -3,4 +3,5 @@
 mv * "$PREFIX/bin/"
 mkdir -p "$PREFIX/home"
 export HOME="$PREFIX/home"
-sh "$PREFIX/bin/setup.sh"
+sh ${PREFIX}/bin/setup.sh
+

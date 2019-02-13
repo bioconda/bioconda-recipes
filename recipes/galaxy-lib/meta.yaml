@@ -1,40 +1,43 @@
+{% set name = "galaxy-lib" %}
+{% set version = "18.9.1" %}
+
 package:
-  name: galaxy-lib
-  version: "17.1.2"
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  fn: galaxy-lib-17.1.2.tar.gz
-  url: https://pypi.python.org/packages/48/49/9e39d0b9a43dde2828d8c57c487df6ba805a2453d52db6a6e283aa3b0ffa/galaxy-lib-17.1.2.tar.gz
-  md5: c830f1acf16d471a112df024e0b5326f
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: ad15ba1820a3df528497156299d86694053e37aa2333ce4053a14f4d30f80d63
 
 build:
-  preserve_egg_dir: True
+  noarch: python
   number: 0
   entry_points:
+    - galaxy-tool-test=galaxy.tools.verify.script:main
     - mulled-build=galaxy.tools.deps.mulled.mulled_build:main
     - mulled-build-channel=galaxy.tools.deps.mulled.mulled_build_channel:main
+    - mulled-search=galaxy.tools.deps.mulled.mulled_search:main
     - mulled-build-tool=galaxy.tools.deps.mulled.mulled_build_tool:main
     - mulled-build-files=galaxy.tools.deps.mulled.mulled_build_files:main
-  script: $PYTHON setup.py install
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
 
 requirements:
-  build:
-    - python
+  host:
+    - pip
+    - python  <3.7
     - setuptools
-    - pyyaml
-    - six >=1.9.0
-    - markupsafe
-
   run:
-    - python
+    - python  <3.7
     - six >=1.9.0
+    - docutils
+    - packaging
     - pyyaml
     - markupsafe
 
 test:
-  # Python imports
   imports:
     - galaxy
+    - galaxy.containers
     - galaxy.exceptions
     - galaxy.jobs
     - galaxy.jobs.metrics
@@ -48,22 +51,27 @@ test:
     - galaxy.tools.deps.mulled
     - galaxy.tools.deps.resolvers
     - galaxy.tools.linters
+    - galaxy.tools.locations
     - galaxy.tools.parser
-    - galaxy.tools.toolbox
-    - galaxy.tools.toolbox.filters
-    - galaxy.tools.toolbox.lineages
+    ##- galaxy.tools.toolbox
+    ##- galaxy.tools.toolbox.filters
+    ##- galaxy.tools.toolbox.lineages
     - galaxy.tools.verify
     - galaxy.tools.verify.asserts
     - galaxy.util
-
+    - galaxy.util.logging
+    - galaxy.util.path
   commands:
+    - galaxy-tool-test --help
     - mulled-build --help
     - mulled-build-channel --help
+    - mulled-search --help
     - mulled-build-tool --help
     - mulled-build-files --help
 
 about:
   home: https://github.com/galaxyproject/galaxy-lib
   license: Academic Free License (AFL)
-  summary: 'Subset of Galaxy (http://galaxyproject.org/) core code base designed to be used a library.'
+  summary: Subset of Galaxy (http://galaxyproject.org/) core code base designed to
+    be used a library.
   license_family: Apache

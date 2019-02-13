@@ -1,29 +1,42 @@
+{% set INTARNA_VERSION = "2.3.1" %}
+{% set VRNA_VERSION = "2.4.9" %}
+
 package:
   name: intarna
-  version: "1.2.5"
+  version: {{INTARNA_VERSION}}
 
 about:
   home: http://www.bioinf.uni-freiburg.de/Software
-  license: GPL
-  license_file: COPYING
-  summary: Efficient target prediction incorporating accessibility of interaction sites
+  license: MIT
+  summary: Efficient RNA-RNA interaction prediction incorporating seeding and accessibility of interacting sites
 
 build:
-  number: 2
-  skip: True # [osx]
+  number: 0
 
 source:
-  fn: intarna-1.2.5.tar.gz
-  url: "http://www.bioinf.uni-freiburg.de/Software/IntaRNA/intarna-1.2.5.tar.gz"
-  sha256: 919a37b14774df6238ee6e7f9fe8879be7dcbabad2e5e765641a46092a48433b
+  url: "https://github.com/BackofenLab/IntaRNA/releases/download/v{{INTARNA_VERSION}}/intaRNA-{{INTARNA_VERSION}}.tar.gz"
+  sha256: ee674ea3d50b272e5a5831e467c94abbdefa327a1faae9420ad137663055d8e8
 
 requirements:
   build:
-    - viennarna <=1.8.5
-    - gcc # [linux]
+    - {{ compiler('c') }}
+  host:
+    - boost
+    # general requirements
+    - viennarna {{VRNA_VERSION}}*
+    - pkgconfig
+    - doxygen
+    - perl
   run:
-    - libgcc # [linux]
+    - boost
+    # for old interface wrapper
+    - perl
 
 test:
   commands:
     - IntaRNA -h
+    - IntaRNA -t CCCCCCCCGGGGGGGGGGGGGG -q CCCCCCC
+
+extra:
+  identifiers:
+    - biotools:intarna

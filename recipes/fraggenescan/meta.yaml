@@ -7,7 +7,6 @@ package:
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: http://downloads.sourceforge.net/project/fraggenescan/{{ name }}{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
@@ -15,32 +14,32 @@ source:
     - util_lib.c.patch
 
 build:
-  number: 0
+  number: 2
 
 requirements:
   build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
 
   run:
     - perl
-    - libgcc  # [not osx]
 
 test:
   commands:
-    - command -v FragGeneScan
-    - command -v run_FragGeneScan.pl
+    - "FragGeneScan &> /dev/null || [[ \"$?\" == 1 ]]"
+    - "run_FragGeneScan.pl &> /dev/null || [[ \"$?\" == 1 ]]"
 
 about:
   home: "https://sourceforge.net/projects/fraggenescan/"
   license: "BSD"
   summary: "FragGeneScan is an application for finding (fragmented) genes in short reads."
   description: |
-     FragGeneScan is an application for finding (fragmented) genes in short
-     reads. It can also be applied to predict prokaryotic genes in incomplete
-     assemblies or complete genomes.
+    FragGeneScan is an application for finding (fragmented) genes in short
+    reads. It can also be applied to predict prokaryotic genes in incomplete
+    assemblies or complete genomes.
 
 extra:
   maintainers:
     - keuv-grvl
   doi: 10.1093/nar/gkq747
+  identifiers:
+    - biotools:fraggenescan

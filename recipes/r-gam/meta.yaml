@@ -1,63 +1,69 @@
+{% set version = '1.16' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-gam
-  version: "1.14"
+  version: {{ version|replace("-", "_") }}
 
 source:
-  fn: gam_1.14.tar.gz
   url:
-    - http://cran.r-project.org/src/contrib/gam_1.14.tar.gz
-    - http://cran.r-project.org/src/contrib/Archive/gam/gam_1.14.tar.gz
-  md5: '6f34c6b3b6133d28c8715102b52b4e86'
+    - {{ cran_mirror }}/src/contrib/gam_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/gam/gam_{{ version }}.tar.gz
+  sha256: 020532e49e59b8691dbbdd44fdaee6c0cf7334708b3080c24706140edf238f2e
 
 build:
-  # This is required to make R link correctly on Linux.
+  merge_build_host: True  # [win]
+
+  number: 0
+  skip: true  # [win32]
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - r
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('fortran') }}  # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
     - r-foreach
-    - gcc   
 
   run:
-    - r
+    - r-base
+    - {{native}}gcc-libs         # [win]
     - r-foreach
-    - libgcc    # [not osx]
 
 test:
   commands:
-    # You can put additional test commands to be run here.
-    - $R -e "library('gam')" # [not win]
 
+    - $R -e "library('gam')"           # [not win]
+    - "\"%R%\" -e \"library('gam')\""  # [win]
 
 about:
-  home: https://cran.r-project.org/web/packages/gam/index.html
+  home: https://CRAN.R-project.org/package=gam
   license: GPL-2
   summary: Functions for fitting and working with generalized additive models, as described in
     chapter 7 of "Statistical Models in S" (Chambers and Hastie (eds), 1991), and "Generalized
     Additive Models" (Hastie and Tibshirani, 1990).
   license_family: GPL2
-
-# The original CRAN metadata for this package was:
-
-# Package: gam
-# Type: Package
-# Title: Generalized Additive Models
-# Date: 2016-09-09
-# Version: 1.14
-# Author: Trevor Hastie
-# Description: Functions for fitting and working with generalized additive models, as described in chapter 7 of "Statistical Models in S" (Chambers and Hastie (eds), 1991), and "Generalized Additive Models" (Hastie and Tibshirani, 1990).
-# Maintainer: Trevor Hastie <hastie@stanford.edu>
-# Depends: stats, splines, foreach
-# Suggests: akima
-# License: GPL-2
-# NeedsCompilation: yes
-# Packaged: 2016-09-10 01:16:06 UTC; hastie
-# Repository: CRAN
-# Date/Publication: 2016-09-10 18:02:23
-
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
+  license_file: '{{ environ["PREFIX"] }}\/lib\/R\/share\/licenses\/GPL-2'  # [unix]
+  license_file: '{{ environ["PREFIX"] }}\R\share\licenses\GPL-2'  # [win]
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

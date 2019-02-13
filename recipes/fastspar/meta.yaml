@@ -1,0 +1,57 @@
+{% set name = "fastspar" %}
+{% set version = "0.0.7" %}
+{% set sha256 = "af401ac1bc2894aa8aff136aa42066b8b309a40b1bca1bfe6ec119d46f5c7ddf" %}
+
+package:
+  name: {{name}}
+  version: {{version}}
+
+source:
+  url: https://github.com/scwatts/{{name}}/archive/v{{version}}.tar.gz
+  sha256: {{sha256}}
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+    - autoconf
+    - automake
+  host:
+    - gsl
+    - armadillo >=6.7
+    - openblas
+    - openmp >=4.0
+    - gnu-getopt # [osx]
+
+  run:
+    - gsl
+    - {{ pin_compatible('armadillo', min_pin='x.x', max_pin='x') }}
+    - openblas
+    - openmp >=4.0
+    - gnu-getopt # [osx]
+
+test:
+  commands:
+    - fastspar --help
+
+about:
+  home: https://github.com/scwatts/fastspar
+  license: GPLv3
+  license_file: LICENSE
+  summary: Rapid and scalable correlation estimation for compositional data
+  description: |
+    ``FastSpar`` is a C++ implementation of the SparCC algorithm
+    which is up to several thousand times faster than the original
+    Python2 release and uses much less memory. The ``FastSpar``
+    implementation provides threading support and a *p*-value
+    estimator which accounts for the possibility of repetitious data
+    permutations.
+
+extra:
+  identifiers:
+    - doi:https://doi.org/10.1101/272583 # arxiv preprint
+    - doi:https://doi.org/10.1371/journal.pcbi.1002687 # original SparCC method
+

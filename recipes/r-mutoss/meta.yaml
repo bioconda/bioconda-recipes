@@ -1,31 +1,41 @@
+{% set version = '0.1-12' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-mutoss
-  # Note that conda versions cannot contain -, so any -'s in the version have
-  # been replaced with _'s.
-  version: "0.1_10"
+  version: {{ version|replace("-", "_") }}
 
 source:
-  fn: mutoss_0.1-10.tar.gz
   url:
-    - http://cran.r-project.org/src/contrib/mutoss_0.1-10.tar.gz
-    - http://cran.r-project.org/src/contrib/Archive/mutoss/mutoss_0.1-10.tar.gz
+    - {{ cran_mirror }}/src/contrib/mutoss_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/mutoss/mutoss_{{ version }}.tar.gz
+  sha256: 2889ae3d502157592697124eb86adc14911e2b7fdaa7204743a376b1eeb967fa
 
 build:
+  merge_build_host: True  # [win]
+
+  number: 0
+  skip: true  # [win32]
+
   rpaths:
     - lib/R/lib/
     - lib/
 
-# Suggests: fdrtool, qvalue, RUnit, lattice
 requirements:
   build:
-    - r
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
     - r-multcomp >=1.1_0
     - bioconductor-multtest >=2.2.0
     - r-mvtnorm
     - r-plotrix
 
   run:
-    - r
+    - r-base
     - r-multcomp >=1.1_0
     - bioconductor-multtest >=2.2.0
     - r-mvtnorm
@@ -33,35 +43,23 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('mutoss')" # [not win]
-    - "\"%R%\" -e \"library('mutoss')\"" # [win]
+
+    - $R -e "library('mutoss')"           # [not win]
+    - "\"%R%\" -e \"library('mutoss')\""  # [win]
 
 about:
-  home: http://mutoss.r-forge.r-project.org/
+  home: https://github.com/kornl/mutoss/
   license: GPL
-  summary: The Mutoss package and accompanying mutossGUI package are designed to ease the application
-    and comparison of multiple hypothesis testing procedures.
-
-# The original CRAN metadata for this package was:
-
-# Package: mutoss
-# Type: Package
-# Title: Unified Multiple Testing Procedures
-# Version: 0.1-10
-# Author: MuToss Coding Team (Berlin 2010), Gilles Blanchard, Thorsten Dickhaus, Niklas Hack, Frank Konietschke, Kornelius Rohmeyer,  Jonathan Rosenblatt, Marsel Scheer, Wiebke Werft
-# Maintainer: Kornelius Rohmeyer <rohmeyer@small-projects.de>
-# Description: The Mutoss package and accompanying mutossGUI package are designed to ease the application and comparison of multiple hypothesis testing procedures.
-# Depends: R (>= 2.10.0), mvtnorm
-# Suggests: fdrtool, qvalue, RUnit, lattice
-# Imports: plotrix, multtest (>= 2.2.0), multcomp (>= 1.1-0), methods
-# License: GPL
-# LazyLoad: yes
-# URL: http://mutoss.r-forge.r-project.org/
-# NeedsCompilation: no
-# Packaged: 2015-04-02 15:02:49 UTC; kornel
-# Repository: CRAN
-# Date/Publication: 2015-04-02 17:52:00
-
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
+  summary: Designed to ease the application and comparison of multiple hypothesis testing procedures
+    for FWER, gFWER, FDR and FDX. Methods are  standardized and usable by the accompanying
+    'mutossGUI'.
+  license_family: GPL
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

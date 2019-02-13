@@ -1,6 +1,6 @@
 package:
   name: igblast
-  version: "1.5.0"
+  version: "1.10.0"
 
 about:
   home: http://www.ncbi.nlm.nih.gov/projects/igblast/
@@ -8,25 +8,37 @@ about:
   summary: A tool for analyzing immunoglobulin (IG) and T cell receptor (TR) sequences.
 
 source:
-  fn: ncbi-igblast-1.5.0-x64-linux.tar.gz  # [linux]
-  fn: ncbi-igblast-1.5.0-universal-macosx.tar.gz  # [osx]
-  md5: 984de09c68701cc75dd49c8935aa78a1  # [linux]
-  md5: 22cdb563a11cc41a753a5b4d7043e2d7  # [osx]
-  url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/1.5.0/ncbi-igblast-1.5.0-x64-linux.tar.gz  # [linux]
-  url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/1.5.0/ncbi-igblast-1.5.0-universal-macosx.tar.gz  # [osx]
+  sha256: a811a9b2487a8ea1f7162a4c338c1f5a898b6b0788bc30d36a3f11a77db14a76  # [linux]
+  sha256: c573299c2c99b6f5660b52e9e2d2ad80a404bfe2426c1f7870fd64269e7d40e9  # [osx]
+  url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/1.10.0/ncbi-igblast-1.10.0-x64-linux.tar.gz  # [linux]
+  url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/1.10.0/ncbi-igblast-1.10.0-x64-macosx.tar.gz  # [osx]
 
 build:
-  number: 2
+  number: 0
 
 requirements:
   build:
-    - gnu-wget
+    - {{ compiler('c') }}
     - patchelf  # [linux]
-  run:
-    - perl-threaded >=5.8.8
-    - libgcc  # [linux]
+    - gnu-wget
+  host:
     - zlib
-
+    - bzip2
+    - libidn11
+    - libxml2
+  run:
+    - zlib
+    - bzip2
+    - libidn11
+    - libxml2
+    - perl
+    - gnutls  # [osx]
 test:
   commands:
-    - igblastn -h > /dev/null 2>&1
+    - igblastn -h
+    - igblastp -h
+    - makeblastdb -h
+
+extra:
+  identifiers:
+    - biotools:igblast

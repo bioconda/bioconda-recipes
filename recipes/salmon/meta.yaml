@@ -1,37 +1,46 @@
+{% set version="0.12.0" %}
+
 build:
-  number: 2
-  # XXX OSX currently failing due to problem with bundled shared libraries
-  skip: True # [osx]
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+  number: 1
 
 about:
-    home: https://github.com/COMBINE-lab/salmon
-    license: GPLv3
-    summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using lightweight alignments
+  home: https://github.com/COMBINE-lab/salmon
+  license: GPLv3
+  summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using lightweight alignments
+
 package:
-    name: salmon
-    version: 0.7.2
+  name: salmon
+  version: {{ version }}
+
 source:
-  fn: SalmonBeta-0.7.2_OSX_10.11.tar.gz # [osx]
-  url: https://github.com/COMBINE-lab/salmon/releases/download/v0.7.2/SalmonBeta-0.7.2_OSX_10.11.tar.gz # [osx]
-  sha256: 4e832696826e04f8f02c3ce2645b5aeda09fafa4ff97dc0a785ef023003e26c1 # [osx]
-  fn: salmon-v0.7.2.tar.gz # [linux]
-  url: https://github.com/COMBINE-lab/salmon/archive/v0.7.2.tar.gz # [linux]
-  sha256: d35147663d349a6c28bcabf51e85d5a45f24273be1c4cda76173ffa15bd68d0a
+  url: https://github.com/COMBINE-lab/salmon/archive/v{{ version }}.tar.gz
+  # work on develop until everything compiles cleanly
+  #url: https://github.com/COMBINE-lab/salmon/archive/develop.tar.gz
+  md5: 2f07447c0070d1e22fb2b3879eaca810
+  #patches: salmon_cmake.patch
 
 requirements:
   build:
     - autoconf
-    - boost {{CONDA_BOOST}}*
     - cmake
-    - tbb
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - libboost 
+    - icu 
     - zlib
     - bzip2
+    - unzip
+    - jemalloc >=5.1.0
+    - tbb-devel
   run:
-    - boost {{CONDA_BOOST}}*
+    - libboost 
+    - icu 
+    - jemalloc >=5.1.0
     - tbb
     - zlib
     - bzip2
+
 test:
-    commands:
-      - salmon --help
+  commands:
+    - salmon --help

@@ -1,50 +1,47 @@
+{% set name = "planemo" %}
+{% set version = "0.57.1" %}
+
 package:
-  name: planemo
-  version: "0.34.1"
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  fn: planemo-0.34.1.tar.gz
-  url: https://pypi.python.org/packages/99/3c/6f1004343bad1e79106eb47030a055b02655e08137f55036ca13f71f55cc/planemo-0.34.1.tar.gz
-  md5: cdb907816e915acaa873f61522166739
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 2346ebef56797d3fc1987b9baaeec8512f3426bb000e1a261791cd70da2efbc3
 
 build:
-  preserve_egg_dir: True
-  skip: True # [py3k]
+  number: 0
+  noarch: python
   entry_points:
     - planemo=planemo.cli:planemo
-
-  number: 1
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
 
 requirements:
-  build:
+  host:
+    - pip
     - python
-    - setuptools
-    - six
-    - click
-    - pyaml
-    - bioblend >=0.8.0
-    - jinja2
-    - virtualenv
-    - galaxy-lib >=16.7.10
-    - aenum
-
   run:
-    - python
-    - setuptools
-    - six
-    - glob2
-    - click
-    - pyaml
-    - bioblend >=0.8.0
-    - jinja2
-    - virtualenv
-    - galaxy-lib >=16.7.10
     - aenum
+    - bioblend >=0.10.0
+    - click
+    - docutils
+    - ephemeris
+    - galaxy-lib >=18.5.15
+    - glob2
+    - gxformat2
+    - jinja2
+    - lxml  # for planemo lint
+    - oyaml
+    - pyaml
+    - python
+    - pyyaml
+    - six >=1.7.0
+    - virtualenv
 
 test:
-  # Python imports
   imports:
     - planemo
+    - planemo.bioconda_scripts
     - planemo.commands
     - planemo.conda_verify
     - planemo.cwl
@@ -58,10 +55,10 @@ test:
     - planemo.shed
     - planemo.shed2tap
     - planemo.test
+    - planemo.training
     - planemo.xml
 
   commands:
-
     - planemo --help
 
 about:
@@ -69,3 +66,8 @@ about:
   license: Academic Free License (AFL)
   summary: 'Command-line utilities to assist in building tools for the Galaxy project (http://galaxyproject.org/).'
   license_family: Apache
+
+extra:
+  container:
+    # click requires a Unicode locale
+    extended-base: True

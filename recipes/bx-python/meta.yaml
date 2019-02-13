@@ -1,58 +1,70 @@
+{% set name = "bx-python" %}
+{% set version = "0.8.2" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "faeb0c7c9fcb2f95c4fc1995af4f45287641deee43a01659bd30fe95c5d37386" %}
+
 package:
-  name: bx-python
-  version: '0.7.3'
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  #hg_url: https://bitbucket.org/james_taylor/bx-python
-  fn: bx-python-0.7.3.tar.gz
-  url: https://pypi.python.org/packages/source/b/bx-python/bx-python-0.7.3.tar.gz
-  md5: d8c50c01c9e421bae0bbdbfa00fef6e4
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 1
-  skip: True # [not py27]
+  number: 0
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir -vvv ."
 
 requirements:
   build:
-    - python
-    - setuptools
+    - {{ compiler('c') }}
+  host:
     - cython
-    - nose
-    - numpy x.x
-
-  run:
+    - numpy
+    - pip
     - python
+    - python-lzo
     - setuptools
-    - numpy x.x
+    - six
+    - zlib
+  run:
+    - numpy
+    - python
+    - python-lzo
+    - six
 
 test:
   imports:
-    - bx.align.sitemask
-    - bx.tabular
-    - bx.intervals
+    - bx
     - bx.align
-    - bx.bbi
-    - bx.bbi.bigwig_file
-    - bx.cookbook
+    - bx.align.sitemask
+    - bx.align.tools
     - bx.arrays
-    - bx.motif.io
-    - bx.seq
+    - bx.bbi
+    - bx.cookbook
+    - bx.intervals
     - bx.intervals.operations
-    - bx.pwm
+    - bx.intseq
     - bx.misc
     - bx.motif
-    - bx.phylo
+    - bx.motif.io
     - bx.motif.logo
+    - bx.phylo
+    - bx.pwm
+    - bx.seq
+    - bx.tabular
     - bx_extras
-    - bx.align.tools
-    - bx
-    - bx.intseq
-
   requires:
-    # Put any additional test requirements here.  For example
     - nose
 
 about:
-  home: http://bitbucket.org/james_taylor/bx-python/wiki/Home
+  home: https://github.com/bxlab/bx-python
   license: MIT
-  summary: Toolkit to enable rapid implementation of genome scale analyses.
+  license_family: MIT
+  license_file: 'LICENSE'
+  summary: Tools for manipulating biological data, particularly multiple sequence alignments
+
+extra:
+  container:
+    extended-base: true

@@ -1,32 +1,45 @@
+{% set version = "2.26.0" %}
+{% set name = "rhdf5" %}
+{% set bioc = "3.8" %}
+
 package:
-  name: bioconductor-rhdf5
-  version: 2.16.0
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: rhdf5_2.16.0.tar.gz
-  url: https://bioarchive.galaxyproject.org/rhdf5_2.16.0.tar.gz
-  md5: e583de82b6ac3dbd69d7ea1fd50c3c08
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 75cedfb5317f0d5e835779722a453fd7
 build:
   number: 0
-  skip: True # [osx]
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: bit64, BiocStyle, knitr, rmarkdown, testthat
 requirements:
-  build:
-    - bioconductor-zlibbioc
-    - r
+  host:
+    - 'bioconductor-rhdf5lib >=1.4.0,<1.5.0'
+    - r-base
   run:
-    - bioconductor-zlibbioc
-    - r
+    - 'bioconductor-rhdf5lib >=1.4.0,<1.5.0'
+    - r-base
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
-    - '$R -e "library(''rhdf5'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/rhdf5.html
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'This R/Bioconductor package provides an interface between HDF5 and R.
-    HDF5''s main features are the ability to store and access very large and/or complex
-    datasets and a wide variety of metadata on mass storage (disk) through a completely
-    portable file format. The rhdf5 package is thus suited for the exchange of large
-    and/or complex datasets between R and other software package, and for letting
-    R applications work on datasets that are larger than the available RAM.'
+  summary: 'This package provides an interface between HDF5 and R. HDF5''s main features are the ability to store and access very large and/or complex datasets and a wide variety of metadata on mass storage (disk) through a completely portable file format. The rhdf5 package is thus suited for the exchange of large and/or complex datasets between R and other software package, and for letting R applications work on datasets that are larger than the available RAM.'
+extra:
+  identifiers:
+    - biotools:rhdf5
+  parent_recipe:
+    name: bioconductor-rhdf5
+    path: recipes/bioconductor-rhdf5
+    version: 2.24.0
+

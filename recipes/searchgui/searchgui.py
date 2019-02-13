@@ -13,7 +13,8 @@ import shutil
 from os import access
 from os import getenv
 from os import X_OK
-jar_file = 'SearchGUI-3.2.5.jar'
+
+jar_file = 'SearchGUI-3.3.10.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
@@ -86,7 +87,7 @@ def main():
     (mem_opts, prop_opts, pass_args, exec_dir) = jvm_opts(sys.argv[1:])
     jar_dir = exec_dir if exec_dir else real_dirname(sys.argv[0])
 
-    if pass_args != [] and pass_args[0].startswith('eu'):
+    if pass_args != [] and (pass_args[0].startswith('eu') or pass_args[0].startswith('com')):
         jar_arg = '-cp'
     else:
         jar_arg = '-jar'

@@ -1,0 +1,64 @@
+{% set version="1.19.1" %}
+{% set name="TitanCNA" %}
+{% set bioc="3.6" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url: https://github.com/gavinha/TitanCNA/archive/e214ca3.tar.gz
+    # - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    # - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    # - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 990137a1b3ae6c6a94fb3ee7735171188393b34006d5053f6eb9746ea47ee82a
+build:
+  number: 4
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  host:
+    - r-base 3.4.1
+    - perl # for adding in correct path references to scripts
+    - 'bioconductor-genomeinfodb >=1.8.7'
+    - 'bioconductor-genomicranges >=1.24.3'
+    - 'bioconductor-iranges >=2.6.1'
+    - 'bioconductor-rsamtools >=1.20.4'
+    - 'bioconductor-variantannotation >=1.18.7'
+    - 'r-foreach >=1.4.3'
+    - r-data.table
+    - r-dplyr
+    - r-optparse
+    - r-domc
+    - bioconductor-snpchip
+    - r-stringr
+  run:
+    - r-base 3.4.1
+    - 'bioconductor-genomeinfodb >=1.8.7'
+    - 'bioconductor-genomicranges >=1.24.3'
+    - 'bioconductor-iranges >=2.6.1'
+    - 'bioconductor-rsamtools >=1.24.0'
+    - 'bioconductor-variantannotation >=1.18.7'
+    - 'r-foreach >=1.4.3'
+    - r-data.table
+    - r-dplyr
+    - r-optparse
+    - r-domc
+    - bioconductor-snpchip
+    - r-stringr
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+    - titanCNA.R -h 2>&1 | grep Usage
+    - titanCNA_selectSolution.R -h 2>&1 | grep Usage
+about:
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Hidden Markov model to segment and predict regions of subclonal copy number alterations (CNA) and loss of heterozygosity (LOH), and estimate cellular prevalenece of clonal clusters in tumour whole genome sequencing data.'
+
+extra:
+  identifiers:
+    - biotools:titancna

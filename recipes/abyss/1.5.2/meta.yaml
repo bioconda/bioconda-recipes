@@ -1,0 +1,49 @@
+{% set version = "1.5.2" %}
+
+package:
+  name: abyss
+  version: {{ version }}
+
+build:
+  number: 6
+
+source:
+  url: https://github.com/bcgsc/abyss/releases/download/{{ version }}/abyss-{{ version }}.tar.gz
+  md5: 10d6d72d1a915e618d41a5cbbcf2364c
+  patches:
+    - osx-std_string_length-no-export.patch  # can be removed for "abyss >2.0.2"
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - boost
+    - sparsehash
+    - sqlite
+    - openmpi
+
+  run:
+    - bwa
+    - sqlite
+    - make
+    - openmpi
+
+test:
+  commands:
+    - ABYSS-P --version | grep -q "{{ version }}"
+    - ABYSS --version | grep -q "{{ version }}"
+    - abyss-pe help | grep -q "Assemble reads into contigs and scaffolds"
+
+about:
+  home: http://www.bcgsc.ca/platform/bioinfo/software/abyss
+  license: GPL3
+  license_file: LICENSE
+  summary: Assembly By Short Sequences - a de novo, parallel, paired-end sequence assembler
+
+extra:
+  container:
+    # openmpi needs ssh/rsh
+    extended-base: true
+  identifiers:
+    - biotools:abyss
+    - doi:10.1101/gr.089532.108

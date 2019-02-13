@@ -12,16 +12,16 @@ sed -i.bak 's#misc/varfilter.py##g' Makefile
 # Remove rdynamic which can cause build issues on OSX
 # https://sourceforge.net/p/samtools/mailman/message/34699333/
 sed -i.bak 's/ -rdynamic//g' Makefile
-sed -i.bak 's/ -rdynamic//g' htslib-1.3.1/configure
+sed -i.bak 's/ -rdynamic//g' htslib-$PKG_VERSION/configure
 
-export CPPFLAGS="-I$PREFIX/include"
+export CPPFLAGS="-DHAVE_LIBDEFLATE -I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
-cd htslib*
-./configure --prefix=$PREFIX --enable-libcurl CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
-make
-cd ..
-# Problem with ncurses from default channel we now get in bioconda so skip tview
 # https://github.com/samtools/samtools/issues/577
-./configure --prefix=$PREFIX --enable-libcurl --without-curses
-make install prefix=$PREFIX LIBS+=-lcrypto LIBS+=-lcurl
+if [[ "$(uname)" == "Linux" ]] ; then
+    export LDFLAGS="$LDFLAGS -Wl,--add-needed"
+fi
+
+./configure CPPFLAGS="$CPPFLAGS" --prefix=$PREFIX --enable-libcurl LDFLAGS="$LDFLAGS"
+make all LIBS+=-lcrypto LIBS+=-lcurl
+make install

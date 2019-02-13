@@ -1,31 +1,42 @@
+{% set version = "1.8.0" %}
+{% set name = "ROTS" %}
+{% set bioc = "3.7" %}
+
 package:
-  name: bioconductor-rots
-  version: 1.0.0
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: ROTS_1.0.0.tar.gz
-  url: https://bioarchive.galaxyproject.org/ROTS_1.0.0.tar.gz
-  md5: 4891e471a606cc72998bd0d87da0066d
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: e3620525682a1e0c80efbeeab9e6035e881b7f01e152cf2e8c064d6f156e5b8a
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - bioconductor-biobase
-    - r
+  host:
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - r-base
     - r-rcpp
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
-    - bioconductor-biobase
-    - r
+    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - r-base
     - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
-    - '$R -e "library(''ROTS'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/ROTS.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'Calculates the Reproducibility-Optimized Test Statistic (ROTS) for differential
-    testing in omics data.'
+  summary: 'Calculates the Reproducibility-Optimized Test Statistic (ROTS) for differential testing in omics data.'
+extra:
+  identifiers:
+    - biotools:rots
+    - doi:10.1109/tcbb.2007.1078

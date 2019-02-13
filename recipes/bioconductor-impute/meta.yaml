@@ -1,27 +1,38 @@
+{% set version = "1.54.0" %}
+{% set name = "impute" %}
+{% set bioc = "3.7" %}
+
 package:
-  name: bioconductor-impute
-  version: 1.46.0
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: impute_1.46.0.tar.gz
-  url: https://bioarchive.galaxyproject.org/impute_1.46.0.tar.gz
-  md5: 8d0adfd6536a82a0c39cea3c5783ffe4
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: 19129a57c912280fae17c345174d3d6dd93c79875e300dc7b24f608a95bb6cb4
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - r
-    - gcc # [linux]
-    - llvm # [osx]
+  host:
+    - r-base
   run:
-    - r
-    - libgcc
+    - r-base
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+    - make
 test:
   commands:
-    - '$R -e "library(''impute'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/impute.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'Imputation for microarray data (currently KNN only)'
+extra:
+  identifiers:
+    - biotools:impute
+    - doi:10.1007/978-3-642-57489-4_7

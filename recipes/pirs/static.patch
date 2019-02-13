@@ -1,0 +1,54 @@
+--- pirs-2.0.2/src/pirs/gccMakefile	2016-08-14 00:10:03.000000000 -0500
++++ pirs-2.0.2/src/pirs/gccMakefile.new	2018-02-28 01:43:06.733340624 -0600
+@@ -1,9 +1,7 @@
+-CFLAGS = -pipe -mtune=generic -msse2 -fopenmp -DSFMT_MEXP=19937 -DHAVE_CONFIG_H -DPKGDATADIR='"/usr/local/share/pirs"' -I. -I.. -ISFMT-src-1.4
++CFLAGS = -pipe -mtune=generic -msse2 -fopenmp -DSFMT_MEXP=19937 -DHAVE_CONFIG_H -DPKGDATADIR='"${PREFIX}/share/pirs"' -I. -I.. -ISFMT-src-1.4
+ 
+ ifeq ($(shell uname -s),Darwin)
+-CFLAGS += -march=core2 -Bstatic -L/opt/local/lib -I/opt/local/include
+-else
+-CFLAGS += -static
++CFLAGS += -march=core2 -L${PREFIX}/lib -I${PREFIX}/include
+ endif
+ 
+ #GCC_VERSION := `gcc -dumpversion`
+@@ -17,8 +15,8 @@
+ 
+ ifeq ($(GCC_MAJOR),4)
+ ifeq ($(shell expr 2.4 \<= $(GCC4_VER)),1)
+-CFLAGS += -march=native
+-CPPFLAGS += -march=native
++CFLAGS += -march=core2
++CPPFLAGS += -march=core2
+ endif
+ ifeq ($(shell expr 3.6 \<= $(GCC4_VER)),1)
+ #CPPFLAGS += -std=c++0x
+@@ -34,7 +32,7 @@
+ WARNFLAGS = -Wfloat-equal -Wall
+ SOURCES = $(foreach d,$(SRCDIRS),$(wildcard $(addprefix $(d)/*,$(SRCEXTS))))
+ 
+-# g++ -DHAVE_CONFIG_H -I. -DSFMT_MEXP=19937 -DPKGDATADIR='"/usr/local/share/pirs"' -Wall -Wextra -msse2  -fopenmp -g -O2 *.cpp SFMT-src-1.4/SFMT.c -lz
++# g++ -DHAVE_CONFIG_H -I. -DSFMT_MEXP=19937 -DPKGDATADIR='"${PREFIX}/share/pirs"' -Wall -Wextra -msse2  -fopenmp -g -O2 *.cpp SFMT-src-1.4/SFMT.c -lz
+ 
+ all: pirs
+ 	@echo Souce Files:[$(SOURCES)]
+--- pirs-2.0.2/src/stator/gcContCvgBias/Makefile	2016-08-14 00:10:03.000000000 -0500
++++ pirs-2.0.2/src/stator/gcContCvgBias/Makefile.new	2018-02-28 01:44:18.549945732 -0600
+@@ -1,7 +1,5 @@
+ ifeq ($(shell uname -s),Darwin)
+-CPPFLAGS += -march=core2 -Bstatic -L/opt/local/lib -I/opt/local/include
+-else
+-CPPFLAGS += -static
++CPPFLAGS += -march=core2 -L${PREFIX}/lib -I${PREFIX}/include
+ endif
+ 
+ GCC_VERSION := $(shell gcc -dumpversion)
+@@ -10,7 +8,7 @@
+ 
+ ifeq ($(GCC_MAJOR),4)
+ ifeq ($(shell expr 2.4 \<= $(GCC4_VER)),1)
+-CPPFLAGS += -march=native
++CPPFLAGS += -march=core2
+ endif
+ ifeq ($(shell expr 3.6 \<= $(GCC4_VER)),1)
+ CPPFLAGS += -std=c++0x

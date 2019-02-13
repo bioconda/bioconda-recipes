@@ -1,44 +1,50 @@
 package:
   name: whatshap
-  version: "0.13"
+  version: "0.17"
 
 about:
   home: https://whatshap.readthedocs.io/
   license: MIT License
   summary: 'phase genomic variants using DNA sequencing reads (haplotype assembly)'
 
+build:
+  number: 0
+
 source:
-  fn: whatshap-0.13.tar.gz
-  url: https://pypi.python.org/packages/e2/f3/c71cb4bc3ba3b1234ee0c5fe729c60440164e07437695ca09c61750e0e11/whatshap-0.13.tar.gz
-  md5: 6c9c8b7d6138b60a5a070f0de59f576f
+  url: https://files.pythonhosted.org/packages/79/11/79da12b8c23f43b00fab8a6206f75cc1cc8c1902ff30eca53c17abe2f633/whatshap-0.17.tar.gz
+  sha256: 8ad1c66789fe5fe957b3695902dae3c3fd4e67f79b9e349b92b532e9ff618933
 
 requirements:
-  # To do: Pinnng of the setuptools version is a workaround. Try to remove it.
   build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
+  host:
     - python
-    - setuptools ==23
-    - pysam <0.9.0
+    - pip
+    - setuptools
+    - pysam >=0.14
     - pyvcf
     - pyfaidx
     - xopen
+    - networkx
   run:
-    - libgcc  # [not osx]
     - python
-    - setuptools ==23
-    - pysam <0.9.0
+    - pysam >=0.14
     - pyvcf
     - pyfaidx
     - xopen
+    - networkx
 
 build:
   skip: True  # [not py3k]
-  script: python3 setup.py install  # [not osx]
-  script: CFLAGS="-stdlib=libc++" python3 setup.py install  # [osx]
+  script: python -m pip install --no-deps --ignore-installed .
 
 test:
   imports:
     - whatshap
   commands:
     - whatshap --help > /dev/null
+
+extra:
+  identifiers:
+    - biotools:whatshap
+    - doi:10.1089/cmb.2014.0157

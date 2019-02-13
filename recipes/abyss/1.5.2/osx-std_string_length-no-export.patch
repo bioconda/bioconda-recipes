@@ -1,0 +1,25 @@
+--- MergePaths/PathConsensus.cpp.orig	2017-11-22 21:12:27.777282838 +0100
++++ MergePaths/PathConsensus.cpp	2017-11-22 21:13:44.742889962 +0100
+@@ -507,6 +507,13 @@
+ 	return path;
+ }
+ 
++template <typename Seq>
++struct GetLength {
++    size_t operator()(const Seq& sequence) {
++        return sequence.length();
++    }
++};
++
+ /* Resolve ambiguous region using multiple alignment of all paths in
+  * `solutions'.
+  */
+@@ -589,7 +596,7 @@
+ 
+ 	vector<unsigned> lengths(amb_seqs.size());
+ 	transform(amb_seqs.begin(), amb_seqs.end(), lengths.begin(),
+-			mem_fun_ref(&string::length));
++			GetLength<Sequence>());
+ 	unsigned minLength = *min_element(lengths.begin(), lengths.end());
+ 	unsigned maxLength = *max_element(lengths.begin(), lengths.end());
+ 	float lengthRatio = (float)minLength / maxLength;

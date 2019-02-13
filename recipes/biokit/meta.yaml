@@ -1,80 +1,71 @@
+{% set version = "0.4.4" %}
+
 package:
   name: biokit
-  version: "0.2.1"
+  version: {{ version }}
 
 source:
-  fn: biokit-0.2.1.tar.gz
-  url: https://pypi.python.org/packages/source/b/biokit/biokit-0.2.1.tar.gz
-  md5: 0608be2d07b8b77356b61a5cf5e298cf
-#  patches:
-   # List any patch files here
-   # - fix.patch
+  url: https://pypi.io/packages/source/b/biokit/biokit-{{ version }}.tar.gz
+  sha256: c45f13b6653887b38e061279abdd562f4e6ed170ff0d551aba576e42f1954c85
 
 build:
-  skip: False
-  #number: 1
+  skip: True # [py34]
+  number: 0
 
+# Set xmltodict >= 0.10.2 to use conda-forge version instead of bioconda
+# Same with easydev
 requirements:
-  build:
+  host:
     - python
     - setuptools
-    - easydev >=0.9.11
+    - easydev >=0.9.34
     - pandas
-    - bioservices >=1.4.5
     - colormap
     - scipy
+    - xmltodict
+    - numpydoc
+    - bioservices
+    - mesalib
+    - biopython
+    - pyyaml
+    - colorlog
 
   run:
     - python
-    - easydev >=0.9.11
+    - easydev >=0.9.34
     - pandas
-    - bioservices >=1.4.5
+    - bioservices >=1.4.16
     - colormap
     - scipy
+    - xmltodict
+    - numpydoc
+    - bioservices
+    - matplotlib
+    - mesalib
+    #- xz
+    #- libxcb
+    - biopython
+    - pyyaml
+    - colorlog
 
+# Could not manage to import it without an libXext issue from conda-forge ? and
+# matplotlib v1.5.3 or v2.0.0. Hopefully, this will be resolved in the future
 test:
-  # Python imports
   imports:
     - biokit
-    - biokit.data
-    - biokit.data.viz
-    - biokit.goid
-    - biokit.io
-    - biokit.misc
-    - biokit.network
-    - biokit.rtools
-    - biokit.sequence
-    - biokit.services
-    - biokit.stats
-    - biokit.taxonomy
-    - biokit.viz
-    - test
-    - test.io
-    - test.network
-    - test.rtools
-    - test.sequence
-    - test.services
-    - test.stats
-    - test.taxonomy
-    - test.viz
-
-  # commands:
-    # You can put test commands to be run here.  Use this to test that the
-    # entry points work.
-
-
-  # You can also put a file called run_test.py in the recipe that will be run
-  # at test time.
-
-  # requires:
-    # Put any additional test requirements here.  For example
-    # - nose
 
 about:
-  home: ['http://pypi.python.org/pypi/biokit']
-  license: BSD License
-  summary: 'Access to Biological Web Services from Python'
+  home: http://pypi.python.org/pypi/biokit
+  license: BSD
+  summary: 'Set of visualisation and analysis tools for biological data sets'
 
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
+extra:
+  container:
+    # needs libGL.so.1
+    extended-base: true
+  skip-lints:
+    - uses_setuptools
+
+
+
+

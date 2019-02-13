@@ -1,45 +1,54 @@
-{% set name = "unicycler" %}
-{% set version = "0.2.0" %}
+{% set version = "0.4.7" %}
+{% set sha256 = "a8cf65e46dc2694b0fbd4e9190c73a1f300921457aadfab27a1792b785620d63" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: unicycler
+  version: '{{ version }}'
+
+source:
+  - url: https://github.com/rrwick/Unicycler/archive/v{{ version }}.tar.gz
+    sha256: '{{ sha256 }}'
+    patches:
+      - Makefile.patch  #[linux]
+      - misc.py.patch
+  - url: https://github.com/seqan/seqan/archive/seqan-v2.4.0.tar.gz
+    sha256: 'd7084d17729214003e84818e0280a16f223c8f1c6a30eeef040c27e0c0047bd7'
+    folder: 'seqan'
 
 build:
   number: 0
-  skip: True # [py27]
-
-source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://github.com/rrwick/Unicycler/archive/v{{ version }}.tar.gz
-  md5: 9068ab42f6532cd9bac0a658b7aed0c8
 
 requirements:
   build:
-  - python
-  - setuptools
-  - gcc 
-
+    - '{{ compiler("c") }}'
+    - '{{ compiler("cxx") }}'
+  host:
+    - python >=3.4,!=3.7
+    - pip
+    - zlib
   run:
-  - python
-  - libgcc  
-  - spades >=3.6.2
-  - pilon
-  - java-jdk
-  - bowtie2
-  - samtools >=1.0
-  - blast 
-  - freebayes
+    - python >=3.4,!=3.7
+    - spades >=3.6.2
+    - pilon
+    - openjdk
+    - bowtie2
+    - samtools >=1.0
+    - blast
+    - freebayes
+    - racon
+    - miniasm
+    - zlib
 
 test:
   commands:
-    - unicycler -h 
-    - unicycler_align -h 
-    - unicycler_check -h
-    - unicycler_polish -h
+    - COLUMNS=80 unicycler -h
+    - COLUMNS=80 unicycler_align -h
+    - COLUMNS=80 unicycler_check -h
+    - COLUMNS=80 unicycler_polish -h
 
 about:
   home: https://github.com/rrwick/Unicycler
   license: GPL-3.0
+  license_family: GPL
   license_file: LICENSE
-  summary: 'Hybrid assembly pipeline for bacterial genomes'
+  summary: Hybrid assembly pipeline for bacterial genomes

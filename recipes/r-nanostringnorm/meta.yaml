@@ -1,90 +1,58 @@
+{% set version = '1.2.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-nanostringnorm
-  # Note that conda versions cannot contain -, so any -'s in the version have
-  # been replaced with _'s.
-  version: "1.1.21"
+  version: {{ version|replace("-", "_") }}
 
 source:
-  fn: NanoStringNorm_1.1.21.tar.gz
   url:
-    - http://cran.r-project.org/src/contrib/NanoStringNorm_1.1.21.tar.gz
-    - http://cran.r-project.org/src/contrib/Archive/NanoStringNorm/NanoStringNorm_1.1.21.tar.gz
-
-
-  # You can add a hash for the file here, like md5 or sha1
-  # md5: 49448ba4863157652311cc5ea4fea3ea
-  # sha1: 3bcfbee008276084cbb37a2b453963c61176a322
-  # patches:
-   # List any patch files here
-   # - fix.patch
+    - {{ cran_mirror }}/src/contrib/NanoStringNorm_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/NanoStringNorm/NanoStringNorm_{{ version }}.tar.gz
+  sha256: f2d4773a67c609a85ad12635252310e1e190444a66997d07665544def3862117
 
 build:
-  # If this is a new build for the same version, increment the build
-  # number. If you do not include this key, it defaults to 0.
-  number: 1
-
-  # This is required to make R link correctly on Linux.
+  merge_build_host: True  # [win]
+  number: 0
+  skip: true  # [win32]
   rpaths:
     - lib/R/lib/
     - lib/
 
-# Suggests: googleVis (>= 0.2.14), lme4, RUnit (>= 0.4.26)
 requirements:
   build:
-    - r
+    - {{posix}}zip               # [win]
+  host:
+    - r-base
+    - r-xml >=3.98_1.5
     - r-gdata >=2.8.2
     - bioconductor-vsn >=3.22.0
-    - r-googlevis
-    - r-lme4
-    - r-runit
-
   run:
-    - r
+    - r-base
+    - r-xml >=3.98_1.5
     - r-gdata >=2.8.2
     - bioconductor-vsn >=3.22.0
-    - r-googlevis
-    - r-lme4
-    - r-runit
 
 test:
   commands:
-    # You can put additional test commands to be run here.
-    - $R -e "library('NanoStringNorm')" # [not win]
-    - "\"%R%\" -e \"library('NanoStringNorm')\"" # [win]
 
-  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
-  # in the recipe that will be run at test time.
-
-  # requires:
-    # Put any additional test requirements here.
+    - $R -e "library('NanoStringNorm')"           # [not win]
+    - "\"%R%\" -e \"library('NanoStringNorm')\""  # [win]
 
 about:
-  #home:
+  home: https://CRAN.R-project.org/package=NanoStringNorm
   license: GPL-2
   summary: A set of tools for normalizing, diagnostics and visualization of NanoString nCounter
     data.
-
-# The original CRAN metadata for this package was:
-
-# Package: NanoStringNorm
-# Type: Package
-# Title: Normalize NanoString miRNA and mRNA Data
-# Version: 1.1.21
-# Date: 2015-11-17
-# Author: Daryl M. Waggott
-# Maintainer: Paul Boutros <Paul.Boutros@oicr.on.ca>
-# Depends: R (>= 2.14.0), gdata (>= 2.8.2), vsn (>= 3.22.0)
-# Imports: methods
-# Suggests: googleVis (>= 0.2.14), lme4, RUnit (>= 0.4.26)
-# Description: A set of tools for normalizing, diagnostics and visualization of NanoString nCounter data.
-# License: GPL-2
-# LazyLoad: yes
-# LazyData: yes
-# NeedsCompilation: no
-# Packaged: 2015-11-17 17:01:34 UTC; hbabaran
-# Repository: CRAN
-# Date/Publication: 2015-11-18 09:31:04
-
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
+  license_family: GPL2
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

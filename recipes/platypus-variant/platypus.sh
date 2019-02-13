@@ -1,8 +1,7 @@
 #!/bin/bash
-# VarScan executable shell script
+# Platypus executable shell script
 set -eu -o pipefail
 
-set -o pipefail
 export LC_ALL=en_US.UTF-8
 
 # Find original directory of bash script, resovling symlinks

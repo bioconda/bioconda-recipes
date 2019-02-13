@@ -1,10 +1,12 @@
+{% set version="94.5" %}
+
 package:
   name: ensembl-vep
-  version: '87.6'
+  version: {{ version }}
 
 source:
-  fn: vep-87_6.tar.gz
-  url: https://github.com/Ensembl/ensembl-vep/archive/release/87.6.tar.gz
+  url: https://github.com/Ensembl/ensembl-vep/archive/release/{{ version }}.tar.gz
+  sha256: 2ca9675b0775e21725ee0d0f1058a8f31fc2fdd9520e7bf11c70f3f19cb4ba94
 
 build:
   number: 0
@@ -13,16 +15,16 @@ build:
 requirements:
   build:
     - curl
+    - perl
     - perl-archive-zip
     - perl-lwp-simple
-    - perl-threaded
     - unzip
-    - zlib
+    - perl-dbi
   run:
+    - perl
     - htslib
-    - perl-bioperl ==1.6.924 4
-    - perl-bio-db-hts
-    - perl-cgi
+    - perl-bioperl >=1.7.2
+    - perl-bio-db-hts >=2.7
     - perl-dbi
     - perl-dbd-mysql
     - perl-io-compress
@@ -30,14 +32,15 @@ requirements:
     - perl-perlio-gzip
     - perl-sereal
     - perl-set-intervaltree
-    - perl-threaded
-
+    - unzip
 
 test:
   commands:
-     - ensembl_vep.pl --help
-     - ensembl_convert_cache.pl --help
-     - ensembl_vep_install.pl --help
+    - vep --help
+    - vep_convert_cache --help
+    - vep_install --help
+    - haplo --help
+    - variant_recoder --help
 
 about:
   home: http://www.ensembl.org/info/docs/tools/vep/index.html
@@ -47,18 +50,16 @@ about:
 extra:
   notes: |
     This package installs only the variant effect predictor (VEP) library
-    code. To install data libraries, you can use the 'ensembl_vep_install.pl' command
+    code. To install data libraries, you can use the 'vep_install' command
     installed along with it. For example, to install the VEP library for human
-    hg19/GRCh37 to a directory
+    GRCh38 to a directory
 
-    ensembl_vep_install.pl -a cf -s homo_sapiens -y GRCh37 -c /output/path/to/hg19/vep
-    ensembl_vep_convert_cache.pl -species homo_sapiens -version 86_GRCh37 -d /output/path/to/hg19/vep
+    vep_install -a cf -s homo_sapiens -y GRCh38 -c /output/path/to/GRCh38/vep --CONVERT
 
-    (note that ensembl_vep_install.pl is renamed from INSTALL.pl
-     and ensembl_vep_convert_cache.pl from covert_cache.pl
+    (note that vep_install is renamed from INSTALL.pl
      to avoid having generic script names in the PATH)
 
-    The convert cache step is not required but improves lookup speeds during
+    The --CONVERT flag is not required but improves lookup speeds during
     runs. See the VEP documentation for more details
 
-    http://useast.ensembl.org/info/docs/tools/vep/script/vep_cache.html
+    http://www.ensembl.org/info/docs/tools/vep/script/vep_cache.html

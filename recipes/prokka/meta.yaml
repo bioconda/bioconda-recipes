@@ -1,37 +1,53 @@
+{% set version = "1.13.4" %}
+{% set sha256 = "19a699effe3fd38b3b50007473634161a1749eb7af00d1a67c42afa20446e5e3" %}
+
 package:
   name: prokka
-  version: "1.11"
+  version: '{{ version }}'
 
 source:
-  git_url: https://github.com/tseemann/prokka
-  git_rev: v1.11
+  url: https://github.com/tseemann/prokka/archive/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
   number: 0
 
 requirements:
   build:
-    - perl-bioperl
-
-  run:
-    - aragorn
-    - barrnap >=0.7
-    - blast
+    - perl-bioperl  >=1.7.2
+    - blast >=2.7.1
+    - infernal >=1.1.2
     - hmmer >=3.1b2
-    - infernal >=1.1.1
-    - minced
-    - parallel
-    - perl-bioperl
+  run:
+    - perl
+    - aragorn >=1.2
+    - barrnap >=0.7
+    - blast >=2.7.1
+    - hmmer >=3.1b2
+    - infernal >=1.1.2
+    - minced >=0.3
+    - parallel >=20180522
+    - perl-bioperl  >=1.7.2
     - perl-xml-simple
-    - prodigal
-    - tbl2asn
+    - prodigal >=2.6
+    - tbl2asn >=25.6
 
 test:
   commands:
-    - prokka --version
     - prokka --listdb
+    - prokka --version
+    - blastp -help
+    - barrnap --help 2>&1 | grep Options
+    - prodigal -h
+    - tbl2asn --help
 
 about:
   home: http://www.vicbioinformatics.com/software.prokka.shtml
   license: GPLv2
+  license_family: GPL
   summary: A tool for the rapid annotation of prokaryotic genomes
+  dev_url: https://github.com/tseemann/prokka
+
+extra:
+  identifiers:
+    - biotools:prokka

@@ -1,43 +1,56 @@
-package:
-  name: pepr
-  version: "1.0.9"
-
-source:
-  fn: PePr-1.0.9.tar.gz
-  url: https://pypi.python.org/packages/source/P/PePr/PePr-1.0.9.tar.gz
-  md5: 44e22c04debe105d37131bd6522ab6d1
-  patches:
-    - setuppy.patch
-    - peprpy.patch
+{% set version = "1.1.24" %}
 
 build:
-  number: 0
-  skip: True # [py3k or osx]
+  number: 1
+
+package:
+  name: pepr
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/p/pepr/PePr-{{ version }}.tar.gz
+  md5: 7780fed1e8e5aeef933d5df3f3392f0d
+  patches:
+    - setup.py.patch
+
   entry_points:
-    - PePr.py = pepr.PePr:main
+    - PePr=PePr.PePr:argless_main
+    - PePr-preprocess=PePr.PePr:pre_processing_module
+    - PePr-postprocess=PePr.post_processing.post_process_PePr:post_processing_module
+  number: 1
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
     - numpy >=1.6.0
     - scipy >=0.14.0
     - pysam
+    - sharedmem
 
   run:
     - python
     - numpy >=1.6.0
     - scipy >=0.14.0
     - pysam
+    - sharedmem
 
 test:
   imports:
-    - pepr
+    - PePr
+    - PePr.post_processing
+#    - PePr.pre_processing
+#    - PePr.utilities
 
   commands:
-    - PePr.py -h > /dev/null
-  
+    - PePr --help
+    - PePr-preprocess --help
+    - PePr-postprocess --help
+
 about:
-  home: https://code.google.com/p/pepr-chip-seq/
+  home: https://github.com/shawnzhangyx/PePr/
   license: GNU General Public License v3 (GPLv3)
   summary: 'Peak-calling and Prioritization pipeline for replicated ChIP-Seq data'
+  license_family: GPL
+
+

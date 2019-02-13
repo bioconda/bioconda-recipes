@@ -1,36 +1,51 @@
+{% set version = "1.14.0" %}
+{% set name = "flowDensity" %}
+{% set bioc = "3.7" %}
+
 package:
-  name: bioconductor-flowdensity
-  version: 1.6.0
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: flowDensity_1.6.0.tar.gz
-  url: https://bioarchive.galaxyproject.org/flowDensity_1.6.0.tar.gz
-  md5: c9c7d1e7415d6e49556a33a06c28a6a0
+  url:
+    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  sha256: 0519b8fa0530cdc533f8443697c47afbda2854325a9b0bbba18c6e13feadfd0a
 build:
-  skip: True # [osx]
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# The geos dependency gets around an incompatible dependency somewhere
 requirements:
-  build:
-    - bioconductor-flowcore
-    - r
+  host:
+    - 'bioconductor-flowcore >=1.46.2,<1.48.0'
+    - 'bioconductor-flowworkspace >=3.28.2,<3.30.0'
+    - r-base
     - r-car
-    - r-geomap
     - r-gplots
     - r-rfoc
+    - r-rgeos
+    - r-sp
+    - geos 3.6.2
   run:
-    - bioconductor-flowcore
-    - r
+    - 'bioconductor-flowcore >=1.46.2,<1.48.0'
+    - 'bioconductor-flowworkspace >=3.28.2,<3.30.0'
+    - r-base
     - r-car
-    - r-geomap
     - r-gplots
     - r-rfoc
+    - r-rgeos
+    - r-sp
+    - geos 3.6.2
 test:
   commands:
-    - '$R -e "library(''flowDensity'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/flowDensity.html
+  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'This package provides tools for automated sequential gating analogous
-    to the manual gating strategy based on the density of the data.'
+  summary: 'This package provides tools for automated sequential gating analogous to the manual gating strategy based on the density of the data.'
+extra:
+  identifiers:
+    - biotools:flowdensity
+    - doi:10.1093/bioinformatics/btu677

@@ -1,0 +1,38 @@
+--- /dev/null	2017-01-23 13:48:09.000000000 -0800
++++ makefile.new	2017-01-23 13:23:28.000000000 -0800
+@@ -0,0 +1,35 @@
++# usage: make -f maxbin.new
++
++# Config
++DEBUG 		:= 0
++BUILDDIR	:= build
++# End config
++
++CXX				:= g++
++CXXFLAGS	:= -MMD -Wall -Wextra -ansi -pedantic -std=c++11
++LDFLAGS		:= -lpthread
++INC				:= -I.
++SOURCES 	:= $(wildcard *.cpp)
++OBJECTS		:= $(SOURCES:%.cpp=$(BUILDDIR)/%.o)
++EXECUTABLE:= MaxBin
++
++ifneq ($(DEBUG),0)
++	CXXFLAGS += -g -O0
++else
++	CXXFLAGS += -O3
++endif
++
++all: $(EXECUTABLE)
++
++$(EXECUTABLE): $(OBJECTS)
++	$(CXX) -o $@ $^ $(LDFLAGS)
++
++$(BUILDDIR)/%.o: %.cpp
++	mkdir -p $(BUILDDIR)
++	$(CXX) $(CXXFLAGS) $(INC) -o $@ -c $<
++
++clean:
++	rm -r $(BUILDDIR) $(EXECUTABLE)
++
++DEPS		:= $(OBJECTS:.o=.d)
++-include $(DEPS)

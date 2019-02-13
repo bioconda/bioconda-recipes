@@ -1,26 +1,34 @@
+{% set version = "2.1" %}
+
 package:
   name: mash
-  version: '1.1'
+  version: {{ version }}
 
 source:
-  fn: mash-OSX64-v1.1.tar.gz # [osx]
-  md5: eb2b54926b1f2dfc58e01dcfd3edb931 # [osx]
-  url: https://github.com/marbl/Mash/releases/download/v1.1/mash-OSX64-v1.1.tar.gz # [osx]
-  fn: mash-Linux64-v1.1.tar.gz # [linux64]
-  md5: 9539aa9b494934b17afbf1d1b4821bf4 # [linux64]
-  url: https://github.com/marbl/Mash/releases/download/v1.1/mash-Linux64-v1.1.tar.gz # [linux64]
+  url: https://github.com/marbl/Mash/archive/v{{ version }}.tar.gz
+  sha256: 38ed8483d7c650ef580c54ca4f8158068248b25aedab19f92eeaea153a4fb534
 
 build:
   number: 0
 
 requirements:
-  run:
-    - libgcc
+  build:
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+  host:
     - zlib
-    #- capnp
+    - capnproto
+    - gsl
+    - openblas
+  run:
+    - zlib
+    - capnproto
+    - gsl
+    - openblas
 test:
   commands:
-    - "mash -h &> /dev/null"
+    - mash -h
 
 about:
   home: https://github.com/marbl/Mash

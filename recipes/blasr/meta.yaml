@@ -1,41 +1,46 @@
-{% set version = "5.2p1" %}
+{% set name = "blasr" %}
+{% set version = "5.3.2" %}
+{% set sha256 = "5ddad0897d15b1e0ec7d1b2a22f050d8c93846aeb27bb335ff47247c1a4a4f6e" %}
 
 package:
-  name: blasr
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 0
-  skip: True # [not py27 or osx]
-
 source:
-#  fn: blasr_{{ version }}.tar.gz
-#  url: https://github.com/PacificBiosciences/blasr/archive/061bd35783637f511bdec6c237a2f8d1c0514e6e.tar.gz
-#  md5: 257828868b17903608b010c7b2966d51
-
-  git_url: https://github.com/PacificBiosciences/blasr.git
-  git_rev: 061bd35783637f511bdec6c237a2f8d1c0514e6e
-
-  patches:
-      - blasr.patch
-requirements:
-  build:
-  - gcc # [not osx]
-  - llvm # [osx]
-  - hdf5
-  - git 
-
-  run:
-  - libgcc # [not osx]
-  - hdf5
-
-test:
-  commands:
-    - blasr --version
+  url: https://github.com/PacificBiosciences/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 about:
   home: https://github.com/PacificBiosciences/blasr
   license: BSD-3-Clause-Clear
-  license_file: LICENSE
   summary: BLASR - The PacBio long read aligner
 
+extra:
+  recipe-maintainers:
+    - pb-dseifert
+    - mhsieh
+
+build:
+  number: 5
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - meson >=0.48.1
+    - ninja
+    - pkg-config
+  host:
+    - boost
+    - zlib
+    - hdf5
+    - blasr_libcpp 5.3.1*
+    - pbbam 0.19.0*
+  run:
+    - hdf5
+    - blasr_libcpp 5.3.1*
+    - pbbam 0.19.0*
+
+test:
+  commands:
+    - blasr --version
+    - sawriter --help

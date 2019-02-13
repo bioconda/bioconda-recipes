@@ -1,11 +1,7 @@
 #!/bin/bash
 
-$PYTHON setup.py install
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+export CPATH=${PREFIX}/include
 
-# Add more build steps here, if they are necessary.
-
-cp swga/bin/* $PREFIX/bin/
-
-# See
-# http://docs.continuum.io/conda/build.html
-# for a list of environment variables that are set during the build process.
+python -m pip install --no-deps --ignore-installed .

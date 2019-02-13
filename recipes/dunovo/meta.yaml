@@ -1,0 +1,45 @@
+{% set version = "2.15" %}
+
+package:
+  name: dunovo
+  version: {{ version }}
+
+source:
+  url: https://github.com/galaxyproject/dunovo/archive/v{{ version }}.tar.gz
+  sha256: 1cf02bcc37cc641a20bdf5e20c2b3b98d4dccd43b1182830cb1a9e7d173d1a78
+
+build:
+  number: 1
+  skip: True  # [py3k or osx]
+
+requirements:
+  build:
+    - make
+    - {{ compiler('c') }}
+  host:
+    - python
+    - wget
+
+  run:
+    - python
+    - mafft 7.221
+    - bowtie >=1.1.2
+    - networkx <2.0
+    - paste
+    - gawk
+
+test:
+  commands:
+    - 'correct.py --version > /dev/null'
+    - 'align-families.py --version > /dev/null'
+    - 'make-consensi.py --version > /dev/null'
+    - 'precheck.py --help > /dev/null'
+    - 'trimmer.py --help > /dev/null'
+  imports:
+    - networkx
+
+about:
+  home: https://github.com/galaxyproject/dunovo
+  license: GPLv2
+  license_file: LICENSE.txt
+  summary: "Du Novo: A pipeline for processing duplex sequencing data."
