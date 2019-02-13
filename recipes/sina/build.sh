@@ -1,7 +1,8 @@
 #!/bin/bash
 
 export LDFLAGS="$LDFLAGS -Wl,-rpath -Wl,$PREFIX/lib"
-export MAKEFLAGS=-j$CPU_COUNT
+export MAKEFLAGS="-j$CPU_COUNT"
+export CXXFLAGS="$CXXFLAGS -std=c++14"
 
 ./configure \
     --prefix=$PREFIX \
@@ -14,5 +15,3 @@ export MAKEFLAGS=-j$CPU_COUNT
 make
 make check
 make install
-
-
