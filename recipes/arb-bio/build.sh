@@ -50,11 +50,13 @@ export XML_INCLUDES=$(pkg-config --cflags xerces-c)
 export XINCLUDES=$(pkg-config --cflags x11)
 
 make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX -j$CPU_COUNT build \
-    | sed 's|'$PREFIX'|$PREFIX|g' > build.log || (cat build.log; false)
+
+#| sed 's|'$PREFIX'|$PREFIX|g' > build.log || (cat build.log; false)
 
 # create tarballs (picks the necessary files out of build tree)
 make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX tarfile_quick \
-    | sed 's|'$PREFIX'|$PREFIX|g' > build.log || (cat build.log; false)
+ 
+#| sed 's|'$PREFIX'|$PREFIX|g' > build.log || (cat build.log; false)
 
 echo "====== FINISHED BUILD ========"
 
