@@ -9,5 +9,5 @@ export CPPFLAGS="-I${PREFIX}/include"
 export CFLAGS="-I${PREFIX}/include"
 
 export C_INCLUDE_PATH=$PREFIX/include
-make
+make CC=$CC
 make install prefix=$PREFIX/bin
