@@ -27,9 +27,16 @@ def test_cran_write_recipe_no_windows(tmpdir):
             assert '[win]' in line
 
 
-def test_bioc_write_recipe_skip_in_condaforge(tmpdir):
+@pytest.fixture(scope="module")
+def bioc_fetch():
+    release = bioconductor_skeleton.latest_bioconductor_release_version()
+    return bioconductor_skeleton.fetchPackages(release)
+
+
+def test_bioc_write_recipe_skip_in_condaforge(tmpdir, bioc_fetch):
     bioconductor_skeleton.write_recipe(
         'edgeR', recipe_dir=str(tmpdir), config=config, recursive=True,
+        packages=bioc_fetch,
         skip_if_in_channels=['conda-forge'])
 
     for pkg in [
@@ -41,9 +48,10 @@ def test_bioc_write_recipe_skip_in_condaforge(tmpdir):
         assert not tmpdir.join(pkg).exists()
 
 
-def test_bioc_write_recipe_no_skipping(tmpdir):
+def test_bioc_write_recipe_no_skipping(tmpdir, bioc_fetch):
     bioconductor_skeleton.write_recipe(
         'edgeR', recipe_dir=str(tmpdir), config=config, recursive=True,
+        packages=bioc_fetch,
         skip_if_in_channels=None)
 
     for pkg in [
@@ -56,12 +64,12 @@ def test_bioc_write_recipe_no_skipping(tmpdir):
         assert tmpdir.join(pkg).exists()
 
 
-def test_meta_contents(tmpdir):
+def test_meta_contents(tmpdir, bioc_fetch):
     config = {
         'channels': ['conda-forge', 'bioconda', 'defaults']
     }
     bioconductor_skeleton.write_recipe(
-        'edgeR', recipe_dir=str(tmpdir), config=config, recursive=False)
+        'edgeR', recipe_dir=str(tmpdir), config=config, recursive=False, packages=bioc_fetch)
 
     edger_meta = utils.load_first_metadata(str(tmpdir.join('bioconductor-edger'))).meta
     assert 'r-rcpp' in edger_meta['requirements']['run']
@@ -132,8 +140,8 @@ def test_bioarchive_exists():
     assert b.bioarchive_url == 'https://bioarchive.galaxyproject.org/DESeq_1.26.0.tar.gz'
 
 
-def test_annotation_data(tmpdir):
-    bioconductor_skeleton.write_recipe('AHCytoBands', str(tmpdir), config, recursive=True)
+def test_annotation_data(tmpdir, bioc_fetch):
+    bioconductor_skeleton.write_recipe('AHCytoBands', str(tmpdir), config, recursive=True, packages=bioc_fetch)
     meta = utils.load_first_metadata(str(tmpdir.join('bioconductor-ahcytobands'))).meta
     assert 'wget' in meta['requirements']['run']
     assert len(meta['source']['url']) == 3
@@ -142,8 +150,8 @@ def test_annotation_data(tmpdir):
     assert tmpdir.join('bioconductor-ahcytobands', 'pre-unlink.sh').exists()
 
 
-def test_experiment_data(tmpdir):
-    bioconductor_skeleton.write_recipe('affydata', str(tmpdir), config, recursive=True)
+def test_experiment_data(tmpdir, bioc_fetch):
+    bioconductor_skeleton.write_recipe('affydata', str(tmpdir), config, recursive=True, packages=bioc_fetch)
     meta = utils.load_first_metadata(str(tmpdir.join('bioconductor-affydata'))).meta
     assert 'wget' in meta['requirements']['run']
     assert len(meta['source']['url']) == 3
@@ -152,28 +160,28 @@ def test_experiment_data(tmpdir):
     assert tmpdir.join('bioconductor-affydata', 'pre-unlink.sh').exists()
 
 
-def test_nonexistent_pkg(tmpdir):
+def test_nonexistent_pkg(tmpdir, bioc_fetch):
 
     # no such package exists in the current bioconductor
     with pytest.raises(bioconductor_skeleton.PackageNotFoundError):
         bioconductor_skeleton.write_recipe(
-            'nonexistent', str(tmpdir), config, recursive=True)
+            'nonexistent', str(tmpdir), config, recursive=True, packages=bioc_fetch)
 
     # package exists, but not this version
     with pytest.raises(bioconductor_skeleton.PackageNotFoundError):
         bioconductor_skeleton.write_recipe(
-            'DESeq', str(tmpdir), config, recursive=True, pkg_version='5000')
+            'DESeq', str(tmpdir), config, recursive=True, pkg_version='5000', packages=bioc_fetch)
 
 
-def test_overwrite(tmpdir):
+def test_overwrite(tmpdir, bioc_fetch):
     bioconductor_skeleton.write_recipe(
-        'edgeR', recipe_dir=str(tmpdir), config=config, recursive=False)
+        'edgeR', recipe_dir=str(tmpdir), config=config, recursive=False, packages=bioc_fetch)
 
     # Same thing with force=False returns ValueError
     with pytest.raises(ValueError):
         bioconductor_skeleton.write_recipe(
-            'edgeR', recipe_dir=str(tmpdir), config=config, recursive=False)
+            'edgeR', recipe_dir=str(tmpdir), config=config, recursive=False, packages=bioc_fetch)
 
     # But same thing with force=True is OK
     bioconductor_skeleton.write_recipe(
-        'edgeR', recipe_dir=str(tmpdir), config=config, recursive=False, force=True)
+        'edgeR', recipe_dir=str(tmpdir), config=config, recursive=False, force=True, packages=bioc_fetch)
