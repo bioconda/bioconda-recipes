@@ -8,7 +8,8 @@ export MAKEFLAGS=-j$CPU_COUNT
     --disable-docs \
     --with-arbhome=$PREFIX/lib/arb \
     --with-boost=$PREFIX \
-    --with-boost-libdir=$PREFIX/lib
+    --with-boost-libdir=$PREFIX/lib \
+    | (cat config.log; false)
 
 make
 make check
