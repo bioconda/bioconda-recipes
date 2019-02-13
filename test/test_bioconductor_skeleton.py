@@ -141,7 +141,7 @@ def test_bioarchive_exists():
 
 
 def test_annotation_data(tmpdir, bioc_fetch):
-    bioconductor_skeleton.write_recipe('AHCytoBands', str(tmpdir), config, recursive=True, packages=bioc_fetch)
+    bioconductor_skeleton.write_recipe('AHCytoBands', str(tmpdir), config, recursive=False, packages=bioc_fetch)
     meta = utils.load_first_metadata(str(tmpdir.join('bioconductor-ahcytobands'))).meta
     assert 'wget' in meta['requirements']['run']
     assert len(meta['source']['url']) == 3
@@ -151,7 +151,7 @@ def test_annotation_data(tmpdir, bioc_fetch):
 
 
 def test_experiment_data(tmpdir, bioc_fetch):
-    bioconductor_skeleton.write_recipe('affydata', str(tmpdir), config, recursive=True, packages=bioc_fetch)
+    bioconductor_skeleton.write_recipe('affydata', str(tmpdir), config, recursive=False, packages=bioc_fetch)
     meta = utils.load_first_metadata(str(tmpdir.join('bioconductor-affydata'))).meta
     assert 'wget' in meta['requirements']['run']
     assert len(meta['source']['url']) == 3
