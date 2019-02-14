@@ -99,8 +99,10 @@ def check(recipe, build_config) -> State:
     (bumped) due to a recent change in pinnings.
     """
     try:
+        logger.debug("Calling Conda to render %s", recipe)
         rendered = recipe.conda_render(config=build_config,
                                        permit_unsatisfiable_variants=False)
+        logger.debug("Finished rendering %s", recipe)
     except Exception as exc:
         logger.debug("Exception rendering %s: %s", recipe, exc)
         return State.FAIL
