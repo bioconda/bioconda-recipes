@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # This script downloads the panel data that mykrobe uses for its predictions
 
 cd "$PREFIX" || exit 1
