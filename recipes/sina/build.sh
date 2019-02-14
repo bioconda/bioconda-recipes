@@ -2,7 +2,6 @@
 
 export LDFLAGS="$LDFLAGS -Wl,-rpath -Wl,$PREFIX/lib"
 export MAKEFLAGS="-j$CPU_COUNT"
-export CXXFLAGS="$CXXFLAGS -std=c++14"
 
 ./configure \
     --prefix=$PREFIX \
