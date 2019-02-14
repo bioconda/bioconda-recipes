@@ -18,6 +18,35 @@ case `uname` in
 	;;
 esac
 
+
+wrong_prefix="$(perl -V | sed -rn "s|\s+cc='([^']+)/bin/.*|\1|p")"
+if [ -n "$wrong_prefix" ]; then
+    echo "====== Fixing Conda-Forge's Perl ======"
+    good_prefix="${CXX%/bin/*}"
+    echo "Replacing"
+    echo "  $wrong_prefix"
+    echo "with"
+    echo "  $good_prefix"
+    grep -rlI "$wrong_prefix" $(perl -e 'print "@INC"') | \
+	sort -u |\
+	xargs sed -ibak "s|$wrong_prefix|$good_prefix|g"
+    if perl -V | grep "$wrong_prefix"; then
+	echo "Failed to fix paths - expect breakage below"
+    else
+	echo "Sucesss!"
+    fi
+fi
+
+echo "====== Fixing Conda's Custom Buildchain not in PATH ===="
+
+mkdir _buildchain
+export PATH="$(pwd)/_buildchain:$PATH"
+[ -n $LD ] && ln -s $LD _buildchain/ld
+[ -n $GCC ] && ln -s $GCC _buildchain/gcc
+[ -n $GXX ] && ln -s $GCC _buildchain/g++
+[ -n $AR ] && ln -s $AR _buildchain/ar
+
+
 echo "====== PREPARING CONFIG ========"
 # ARB stores build settings in config.makefile. Create one from template:
 cp config.makefile.template config.makefile
@@ -50,11 +79,11 @@ export XML_INCLUDES=$(pkg-config --cflags xerces-c)
 export XINCLUDES=$(pkg-config --cflags x11)
 
 make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX -j$CPU_COUNT build \
-    | sed 's|'$PREFIX'|$PREFIX|g' > build.log || (cat build.log; false)
+ | sed 's|'$PREFIX'|$PREFIX|g' #> build.log || (cat build.log; false)
 
 # create tarballs (picks the necessary files out of build tree)
 make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX tarfile_quick \
-    | sed 's|'$PREFIX'|$PREFIX|g' > build.log || (cat build.log; false)
+ | sed 's|'$PREFIX'|$PREFIX|g' #> build.log || (cat build.log; false)
 
 echo "====== FINISHED BUILD ========"
 
