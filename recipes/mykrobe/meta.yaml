@@ -12,14 +12,14 @@ source:
 build:
     number: 0
     skip: True  # [py27]
-    script: "{{ PYTHON }} -m pip install . --no-deps -vv"
     entry_points:
         - mykrobe = mykrobe.cli:main
 
 requirements:
     build:
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
+        - gcc <5.0  # {{ compiler('cxx') }} might be too new now with 7.3
+        - autoconf
+        - automake
     host:
         - python
         - pip
@@ -29,16 +29,16 @@ requirements:
         - python
         - mongodb >3.0
         - wget
+        - zlib
 
 test:
-    imports:
-        - mykrobe
-    requires:
-        - pytest
-        - mongodb>3.0
-    source_files:
-        - tests/
-        - src/mykrobe/data/
+    commands:
+        - mykrobe --version
+        - mykrobe --help
+        - mykrobe predict --help
+        - mykrobe variants --help
+        - mykrobe genotype --help
+        - 'mccortex31 2>&1 | head -n2 | grep "^usage: "'
 
 about:
     home: https://github.com/Mykrobe-tools/mykrobe
