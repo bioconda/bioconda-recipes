@@ -1,4 +1,4 @@
-#!/bin/bash
+-Wall -g -O3 -pthread#!/bin/bash
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
@@ -9,5 +9,5 @@ export CPPFLAGS="-I${PREFIX}/include"
 export CFLAGS="-I${PREFIX}/include"
 
 export C_INCLUDE_PATH=$PREFIX/include
-make CC=$CC
+make CC=$CC OPTS="-I$PREFIX/include -L$PREFIX/lib -Wall -g -O3 -pthread"
 make install prefix=$PREFIX/bin
