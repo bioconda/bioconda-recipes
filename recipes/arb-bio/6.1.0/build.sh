@@ -46,6 +46,11 @@ export PATH="$(pwd)/_buildchain:$PATH"
 [ -n $GXX ] && ln -s $GCC _buildchain/g++
 [ -n $AR ] && ln -s $AR _buildchain/ar
 
+echo "==== Fixing #!/usr/bin/perl ===="
+
+find . -name \*.pl -o -name \*.amc | \
+    xargs sed -ibak "s|/usr/bin/perl|$(which perl)|g"
+
 
 echo "====== PREPARING CONFIG ========"
 # ARB stores build settings in config.makefile. Create one from template:
