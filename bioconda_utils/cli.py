@@ -519,7 +519,8 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
 @arg('--skip-additional-channels',
      nargs='*',
      help="""Skip updating/bumping packges that are already built with
-     compatible pinnings in one of the given channels.""")
+     compatible pinnings in one of the given channels in addition to those
+     listed in 'config'.""")
 @arg('--bump-only-python',
      help="""Bump package build numbers even if the only applicable pinning
      change is the python version. This is generally required unless you plan
