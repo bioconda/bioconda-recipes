@@ -1,4 +1,4 @@
--Wall -g -O3 -pthread#!/bin/bash
+#!/bin/bash
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
