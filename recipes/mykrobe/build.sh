@@ -1,7 +1,7 @@
 #!/bin/bash
 set -x
 
-export CFLAGS="-I$PREFIX/include"
+export CFLAGS="-I$PREFIX/include -fPIC"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
