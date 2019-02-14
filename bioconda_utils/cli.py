@@ -28,30 +28,27 @@ logger = logging.getLogger(__name__)
 
 
 def enable_logging(default_loglevel='info'):
-    """Decorator setting up logging for argh command
-
-    - Adds the parameter ``--loglevel`` with a default of ``info``
-      and sets up the logging handlers appropriately.
-    - Adds the paremeter ``--pdb`` (or ``-P``) to enable dropping
-      into PDB if an unhandled exception is encountered.
-
-    >>> @enable_logging()
-    >>> def command():
-    >>>   pass
-
-    >>> @enable_logging('warn')
-    >>> def command():
-    >>>   pass
+    """Adds the parameter ``--loglevel`` and sets up logging
 
     Args:
       default_loglevel: loglevel used when --loglevel is not passed
     """
     def decorator(func):
         @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
+        @utils.wraps(func)
+        def wrapper(*args, loglevel=default_loglevel, **kwargs):
+            utils.setup_logger('bioconda_utils', loglevel)
+            func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def enable_debugging():
+    """Adds the paremeter ``--pdb`` (or ``-P``) to enable dropping into PDB"""
+    def decorator(func):
         @arg('-P', '--pdb', help="Drop into debugger on exception")
         @utils.wraps(func)
-        def wrapper(*args, loglevel=default_loglevel, pdb=False, **kwargs):
-            utils.setup_logger('bioconda_utils', loglevel)
+        def wrapper(*args, pdb=False, **kwargs):
             try:
                 func(*args, **kwargs)
             except Exception as e:
@@ -60,6 +57,18 @@ def enable_logging(default_loglevel='info'):
                     pdb.post_mortem()
                 else:
                     raise
+        return wrapper
+    return decorator
+
+
+def enable_threads():
+    """Adds the paremeter ``--threads`` (or ``-t``) to limit parallelism"""
+    def decorator(func):
+        @arg('-t', '--threads', help="Limit maximum number of processes used.")
+        @utils.wraps(func)
+        def wrapper(*args, threads=16, **kwargs):
+            utils.set_max_threads(threads)
+            func(*args, **kwargs)
         return wrapper
     return decorator
 
@@ -529,6 +538,8 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
      the provided filename. If the file does not exist, it will be created the
      first time.''')
 @enable_logging()
+@enable_threads()
+@enable_debugging()
 def update_pinning(recipe_folder, config, packages="*",
                    skip_additional_channels=None,
                    bump_only_python=False,
