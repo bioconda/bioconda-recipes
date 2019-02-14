@@ -1,0 +1,184 @@
+{% set version = "6.1.0beta_r17491" %}
+{% set sha256 = "5bf91ae9847f479b5c564da479ad08a0d91a426947f964a9e6b6555b2eedf6ca" %}
+
+package:
+  name: arb-bio
+  version: {{ version }}
+
+source:
+  url: http://download.arb-home.de/special/manual-builds/2018_10_19/arb-r17491-source.tgz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - pkg-config
+    - time
+    - lynx
+    - xorg-makedepend
+    - sed >=4.4
+    - tar
+    - perl
+    - coreutils  # for gnu readlink
+    - patchelf  # [linux]
+  host:
+    - openmotif-dev
+    - glib
+    - gettext
+    - pthread-stubs
+    - xorg-libxi
+    - xorg-libxp
+    - xorg-libxaw
+    - xorg-libxpm
+    - xorg-libxmu
+    - libtiff
+    - libxslt
+    - libpng
+    - xerces-c
+    - perl
+    - boost-cpp
+
+test:
+  requires:
+    - conda
+  commands:
+    # most tests are in `run_test.sh`
+    - if command -v conda; then conda inspect linkages -p $PREFIX $PKG_NAME; fi
+    - if command -v conda; then conda inspect objects -p $PREFIX $PKG_NAME; fi   # [osx]
+    - which arb
+    - which arb_pt_server
+
+outputs:
+  - name: libarbdb
+    script: install_libarbdb.sh
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+      host:
+        - glib
+        # We must have perl in the host sections of all output packages because
+        # `pin_compatible` will fail otherwise. Probably another bug.
+        - perl
+      run:
+        - gettext
+        - {{ pin_compatible("glib", max_pin="x") }}
+    build:
+      run_exports:
+        - {{ pin_subpackage("libarbdb", exact=True) }}
+  - name: arb-bio-tools
+    script: install_tools.sh
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+      host:
+        - glib
+        - perl # see above
+      run:
+        - {{ pin_subpackage("libarbdb", exact=True) }}
+
+  - name: arb-bio
+    script: install_main.sh
+    requirements:
+      # We have to restate everything we used above in the top level requirements here.
+      # Lacking proper documentation of anything in conda build 3, all of this is trial
+      # and error. The run dependencies stated at the top level are not applied to the
+      # arb-bio output even though it shares the name with the toplevel.
+      # We also can't use YAML anchors to reference what we wrote above because conda
+      # build breaks YAML by parsing the outputs section again at a later point.
+      # Horrible mess....
+      build:
+        - {{ compiler('cxx') }}
+        - pkg-config
+        - time
+        - lynx
+        - xorg-makedepend
+        - sed >=4.4
+        - tar
+      host:
+        - openmotif-dev
+        - glib
+        - gettext
+        - pthread-stubs
+        - xorg-libxi
+        - xorg-libxp
+        - xorg-libxaw
+        - xorg-libxpm
+        - xorg-libxmu
+        - libtiff
+        - libxslt
+        - libpng
+        - xerces-c
+        - perl
+      run:
+        - {{ pin_subpackage('arb-bio-tools', exact=True) }}
+        # We build a binary perl module. ABI compatability seems to be maintained
+        # at minor version (5.26.x), so we pin accordingly:
+        - {{ pin_compatible("perl", max_pin="x.x") }}
+        - gettext
+        - openmotif
+        - xorg-libxi
+        - xorg-libxmu
+        - xorg-libxp
+        - xorg-libxaw
+        - xorg-libxpm
+        - xorg-libxft
+        - xorg-libxt
+        - libpng
+        # tools:
+        - gnuplot
+        - muscle
+        - mafft
+        - raxml
+        - mrbayes
+        - phylip
+        - phyml 3.2.0*
+        - fasttree
+        - sed >=4.4
+        - xfig
+        - fig2dev
+  - name: arb-bio-devel
+    script: install_devel.sh
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+      run:
+        - {{ pin_subpackage('arb-bio', exact=True) }}
+        - openmotif-dev
+
+about:
+  home: http://www.arb-home.de
+  dev_url: http://bugs.arb-home.de/
+  doc_url: http://www.arb-home.de/documentation.html
+  license: ARB
+  licence_file: arb_LICENSE.txt
+  summary: ARB 6 Sequence Analysis Suite
+  description: |
+    "ARB (ARBor, Latin: tree): A software environment for maintaining
+    databases of molecular sequences and additional information, and
+    for analyzing the sequence data, with emphasis on phylogeny
+    reconstruction.
+
+    The programs have primarily been developed for ribosomal
+    ribonucleic acid (rRNA) sequences and, therefore, contain special
+    tools for alignment and analysis of these structures. However,
+    other molecular sequence data can also be handled. Protein gene
+    sequences and predicted protein primary structures as well as
+    protein secondary structures can be stored in the same database.
+
+    The ARB package is designed for graphical user interface. Program
+    control and data display are available in a hierarchical set of
+    windows and subwindows. The majority of operations can be
+    controlled using the mouse for moving the pointer and the left
+    mouse button for initiating and performing operations"
+
+extra:
+  identifiers:
+    - biotools:arb
+    - doi:10.1002/9781118010518.ch46
+  recipe-maintainers:
+    - epruesse
+  skip-lints:
+    - should_not_be_noarch  # false positive, `noarch: False` added by CB3 for outputs
