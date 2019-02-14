@@ -1020,11 +1020,6 @@ def test_nested_recipes(config_fixture):
             build.sh: |
                 #!/bin/bash
                 ## Empty script
-        deeper/deeper/deeper/deeper:
-            meta.yaml: |
-                package:
-                    name: deeper
-                    version: "0.1"
         F/I/V/E/deep:
             meta.yaml: |
                 package:
@@ -1035,21 +1030,6 @@ def test_nested_recipes(config_fixture):
                         - python 3.6
                     run:
                         - python 3.6
-        S/I/X/De/e/ep:
-            meta.yaml: |
-                package:
-                    name: ep
-                    version: "0.1"
-        S/E/V/E/N/D/eep:
-            meta.yaml: |
-                package:
-                    name: eep
-                    version: "0.1"
-        T/W/E/N/T/Y/N/E/S/T/D/I/R/E/C/T/O/R/Y/DEEP:
-            meta.yaml: |
-                package:
-                    name: twentydeep
-                    version: "0.1"
         """, from_string=True)
     r.write_recipes()
 
@@ -1063,7 +1043,7 @@ def test_nested_recipes(config_fixture):
     )
     assert build_results
 
-    assert len(list(utils.get_recipes(r.basedir))) == 8
+    assert len(list(utils.get_recipes(r.basedir))) == 4
 
     for k, v in r.recipe_dirs.items():
         for i in utils.built_package_paths(v):
