@@ -226,8 +226,9 @@ class TempGitHandler(GitHandlerBase):
             safe_fork_url = url_format.format(userpass=safe_userpass, path=fork)
             logger.warning("Adding remote fork %s", safe_fork_url)
             fork_remote = repo.create_remote("fork", fork_url)
-            fork_remote.fetch()
-
+            logger.warning("Fetching remote fork %s", safe_fork_url)
+            fork_remote.fetch(depth=1)
+        logger.warning("Finished setting up repo in %s", self.tempdir)
         super().__init__(repo, dry_run, home, fork)
 
     def close(self) -> None:
