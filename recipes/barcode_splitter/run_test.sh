@@ -8,6 +8,6 @@ if [ "$STDOUTTESTONE" != "barcode_splitter version" ]; then
   exit 1
 fi
 
-echo $STDOUTTESTONE
+echo "Version output looks good."
 
 exit 0
