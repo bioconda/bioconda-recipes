@@ -12,5 +12,5 @@ export MAKEFLAGS="-j$CPU_COUNT"
     || (cat config.log; false)
 
 make
-make check
+make check || (cat test-suite.log; false)
 make install
