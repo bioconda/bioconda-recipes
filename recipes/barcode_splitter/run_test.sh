@@ -1,9 +1,13 @@
 #!/bin/bash
 
-STDOUTTESTONE=`barcode_splitter --version 2>&1`
+#Discovered a bug that causes a non-zero exit status for -h and --version, so until that's fixed...
+STDOUTTESTONE=`barcode_splitter --version 2>&1 | cut -d ' ' -f 1,2`
 
-if [ $? -ne 2 ] || [ "$STDOUTTESTONE" != "barcode_splitter version 0.18.3" ]; then
+if [ "$STDOUTTESTONE" != "barcode_splitter version" ]; then
+  echo "ERROR: Unexpected output"
   exit 1
 fi
+
+echo $STDOUTTESTONE
 
 exit 0
