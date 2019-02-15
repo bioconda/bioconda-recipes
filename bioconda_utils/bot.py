@@ -7,7 +7,8 @@ import os
 import re
 import subprocess
 import time
-from typing import Dict, Callable
+from collections import namedtuple
+from typing import Dict, Callable, Optional
 from functools import wraps
 
 import aiohttp
@@ -179,38 +180,66 @@ async def command_sleep(_event, _ghapi, *args):
     sleep.apply_async((20, args[0]))
 
 
+PRInfo = namedtuple('PRInfo', 'installation user repo ref recipes')
+
+
+async def get_pr_info(ghapi, event) -> Optional[PRInfo]:
+    if 'pull_request' not in event.get('issue'):
+        return None
+    issue_number = int(event.get('issue/number'))
+    prs = await ghapi.get_prs(number=issue_number)
+    user = prs['head']['user']['login']
+    repo = prs['head']['repo']['name']
+    ref = prs['head']['ref']
+
+    files = await ghapi.get_pr_modified_files(number=issue_number)
+    recipes = [item['filename'] for item in files
+               if item['filename'].endswith('/meta.yaml')]
+    installation = event.get('installation/id')
+
+    return PRInfo(installation, user, repo, ref, recipes)
+
+
+class PrBranch:
+    def __init__(self, ghapi, pr_info):
+        self.ghapi = ghapi
+        self.pr_info = pr_info
+        self.cwd = None
+        self.git = None
+
+    async def __aenter__(self):
+        token = await self.ghapi.get_installation_token(self.pr_info.installation)
+        self.git = TempGitHandler(password=token,
+                                  fork=self.pr_info.user + "/" + self.pr_info.repo)
+        self.git.set_user(BOT_NAME, BOT_EMAIL)
+
+        self.cwd = os.getcwd()
+        os.chdir(self.git.tempdir.name)
+
+        branch = self.git.create_local_branch(self.pr_info.ref)
+        branch.checkout()
+        return self.git
+
+    async def __aexit__(self, exc_type, exc, tb):
+        os.chdir(self.cwd)
+        self.git.close()
+
+
 @celery.task(bind=True, acks_late=True)
-async def bump(self: Task, installation, user, repo, ref, recipes):
+async def bump(self: Task, pr_info_dict: Dict):
     """Bump the build number in each recipe"""
-    logger.info("Processing bump command")
-    logger.info("  User=%s Repo=%s Ref=%s Recipes=%s", user, repo, ref, recipes)
-    token = await self.ghapi.get_installation_token(installation)
-    git = TempGitHandler(password=token,
-                         fork=user + "/" + repo)
-    git.set_user(BOT_NAME, BOT_EMAIL)
-    cwd = os.getcwd()
+    pr_info = PRInfo(**pr_info_dict)
+    logger.info("Processing bump command: %s", pr_info)
+    async with PrBranch(self.ghapi, pr_info) as git:
+        for meta_fn in pr_info.recipes:
+            recipe = Recipe.from_file('recipes', meta_fn)
+            buildno = int(recipe.meta['build']['number']) + 1
+            recipe.reset_buildnumber(buildno)
+            recipe.save()
+        msg = f"Bump {recipe} buildno to {buildno}"
+        if not git.commit_and_push_changes(pr_info.recipes, pr_info.ref, msg, sign=True):
+            logger.error("Failed to push?!")
 
-    os.chdir(git.tempdir.name)
-    branch = git.create_local_branch(ref)
-    branch.checkout()
-    for meta_fn in recipes:
-        recipe_dir = os.path.dirname(meta_fn)
-        recipe_folder = os.path.dirname(recipe_dir)
-        recipe = Recipe(recipe_dir, recipe_folder)
-        logger.info("Reading %s", meta_fn)
-        with open(meta_fn) as fdes:
-            data = fdes.read()
-        recipe.load_from_string(data)
-        buildno = int(recipe.meta['build']['number']) + 1
-        recipe.reset_buildnumber(buildno)
-        with open(meta_fn, "w") as out:
-            out.write(recipe.dump())
-    msg = f"Bump {recipe} buildno to {buildno}"
-    if not git.commit_and_push_changes(recipes, ref, msg, sign=True):
-        logger.error("Failed to push?!")
-
-    os.chdir(cwd)
-    git.close()
 
 @command_routes.register("bump")
 async def command_bump(event, ghapi, *args):
@@ -226,36 +255,20 @@ async def command_bump(event, ghapi, *args):
     If we can't determine what and where to bump, post an error comment.
     """
     logger.info("Got bump command: %s", args)
-
-    user = ref = repo = None
-
     issue_number = int(event.get('issue/number'))
+    pr_info = await get_pr_info(ghapi, event)
 
-    # Determine user/repo/ref
-    if 'pull_request' in event.get('issue'):
-        prs = await ghapi.get_prs(number=issue_number)
-        user = prs['head']['user']['login']
-        repo = prs['head']['repo']['name']
-        ref = prs['head']['ref']
-        logger.info("Bumping: %s/%s:%s", user, repo, ref)
-
-        files = await ghapi.get_pr_modified_files(number=issue_number)
-        recipes = [item['filename'] for item in files
-                   if item['filename'].endswith('/meta.yaml')]
-    else:
+    if not pr_info:
         logger.error("Can't bump in %i - not a PR", issue_number)
         await ghapi.create_comment(issue_number, "I can only do this from a PR")
-        return
-
-    if not recipes:
+    elif not pr_info.recipes:
         await ghapi.create_comment(issue_number, "Which recipe? This PR does not seem to modif any")
-        return
+    elif len(pr_info.recipes) > 1:
+        await ghapi.create_comment(issue_number, "This PR modifies multiple recipes (unsupported).")
 
-    if len(recipes) > 1:
-        await ghapi.create_comment(issue_number, "This PR modifies multiple recipes.")
+    logger.error("sending: %s %s", type(pr_info), repr(pr_info))
+    bump.delay(pr_info)
 
-    installation = event.get('installation/id')
-    bump.apply_async((installation, user, repo, ref, recipes))
 
 
 @event_routes.register("issue_comment", action="created")
