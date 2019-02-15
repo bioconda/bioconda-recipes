@@ -14,6 +14,7 @@ import aiohttp
 from aiohttp import web
 from celery import Celery
 from celery import Task as _Task
+from celery.signals import worker_process_init
 import gidgethub.routing
 
 from . import utils
@@ -111,6 +112,11 @@ class Task(_Task):
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             return loop
+
+
+@worker_process_init.connect
+def worker_process_init(**kwargs):
+    logger.error("Started new worker: kwargs=%s", kwargs)
 
 
 celery = Celery(task_cls=Task)  # pylint: disable=invalid-name
