@@ -4,7 +4,8 @@ import sys
 import os
 import shlex
 import logging
-from collections import defaultdict
+from collections import defaultdict, Counter
+from functools import partial
 
 import argh
 from argh import arg
@@ -20,9 +21,56 @@ from . import linting
 from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import cran_skeleton
-from .update_pinnings import should_be_bumped, bump_recipe
+from . import update_pinnings
+from . import graph
 
 logger = logging.getLogger(__name__)
+
+
+def enable_logging(default_loglevel='info'):
+    """Adds the parameter ``--loglevel`` and sets up logging
+
+    Args:
+      default_loglevel: loglevel used when --loglevel is not passed
+    """
+    def decorator(func):
+        @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
+        @utils.wraps(func)
+        def wrapper(*args, loglevel=default_loglevel, **kwargs):
+            utils.setup_logger('bioconda_utils', loglevel)
+            func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def enable_debugging():
+    """Adds the paremeter ``--pdb`` (or ``-P``) to enable dropping into PDB"""
+    def decorator(func):
+        @arg('-P', '--pdb', help="Drop into debugger on exception")
+        @utils.wraps(func)
+        def wrapper(*args, pdb=False, **kwargs):
+            try:
+                func(*args, **kwargs)
+            except Exception as e:
+                if pdb:
+                    import pdb
+                    pdb.post_mortem()
+                else:
+                    raise
+        return wrapper
+    return decorator
+
+
+def enable_threads():
+    """Adds the paremeter ``--threads`` (or ``-t``) to limit parallelism"""
+    def decorator(func):
+        @arg('-t', '--threads', help="Limit maximum number of processes used.")
+        @utils.wraps(func)
+        def wrapper(*args, threads=16, **kwargs):
+            utils.set_max_threads(threads)
+            func(*args, **kwargs)
+        return wrapper
+    return decorator
 
 
 def select_recipes(packages, git_range, recipe_folder, config_filename, config, force):
@@ -83,21 +131,18 @@ def select_recipes(packages, git_range, recipe_folder, config_filename, config, 
 @arg('--dryrun', '-n', action='store_true', help='Only print removal plan.')
 @arg('--url', action='store_true', help='Print anaconda urls.')
 @arg('--channel', help="Channel to check for duplicates")
-@arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
+@enable_logging()
 def duplicates(config,
                strict_version=False,
                strict_build=False,
                dryrun=False,
                remove=False,
                url=False,
-               channel='bioconda',
-               loglevel='info'):
+               channel='bioconda'):
     """
     Detect packages in bioconda that have duplicates in the other defined
     channels.
     """
-    utils.setup_logger('bioconda_utils', loglevel)
-
     if remove and not strict_build:
         raise ValueError('Removing packages is only supported in case of '
                          '--strict-build.')
@@ -208,20 +253,17 @@ def duplicates(config,
 @arg('--full-report', action='store_true', help='''Default behavior is to
      summarize the linting results; use this argument to get the full
      results as a TSV printed to stdout.''')
-@arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
+@enable_logging()
 def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
          only=None, exclude=None, force=False, push_status=False, user='bioconda',
          commit=None, push_comment=False, pull_request=None,
-         repo='bioconda-recipes', git_range=None, full_report=False,
-         loglevel='info'):
+         repo='bioconda-recipes', git_range=None, full_report=False):
     """
     Lint recipes
 
     If --push-status is not set, reports a TSV of linting results to stdout.
     Otherwise pushes a commit status to the specified commit on github.
     """
-    utils.setup_logger('bioconda_utils', loglevel)
-
     if list_funcs:
         print('\n'.join([i.__name__ for i in lint_functions.registry]))
         sys.exit(0)
@@ -297,7 +339,6 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
      those packages matching --packages globs will be built.''')
 @arg('--docker', action='store_true',
      help='Build packages in docker container.')
-@arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
 @arg('--mulled-test', action='store_true', help="Run a mulled-build test on the built package")
 @arg('--mulled-upload-target', help="Provide a quay.io target to push mulled docker images to.")
 @arg('--build_script_template', help='''Filename to optionally replace build
@@ -325,6 +366,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
      already present in one of these channels will be skipped. The default is
      the first two channels specified in the config file. Note that this is
      ignored if you specify --git-range.''')
+@enable_logging()
 def build(
     recipe_folder,
     config,
@@ -333,7 +375,6 @@ def build(
     testonly=False,
     force=False,
     docker=None,
-    loglevel="info",
     mulled_test=False,
     build_script_template=None,
     pkg_dir=None,
@@ -345,8 +386,6 @@ def build(
     lint_exclude=None,
     check_channels=None,
 ):
-    utils.setup_logger('bioconda_utils', loglevel)
-
     cfg = utils.load_config(config)
     setup = cfg.get('setup', None)
     if setup:
@@ -444,17 +483,14 @@ def build(
 @arg('--hide-singletons',
      action='store_true',
      help='Hide singletons in the printed graph.')
+@enable_logging()
 def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False):
     """
     Export the DAG of packages to a graph format file for visualization
     """
-    dag, name2recipes = utils.get_dag(utils.get_recipes(recipe_folder, "*"), config)
+    dag, name2recipes = graph.build(utils.get_recipes(recipe_folder, "*"), config)
     if packages != "*":
-        filterNodes= set(packages)
-        for package in packages:
-            for child in nx.ancestors(dag, package):
-                filterNodes.add(child)
-        dag = nx.subgraph(dag, filterNodes)
+        dag = graph.filter(dag, packages)
     if hide_singletons:
         for node in nx.nodes(dag):
             if dag.degree(node) == 0:
@@ -489,58 +525,86 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
 @arg('--packages',
      nargs="+",
      help='Glob for package[s] to update, as needed due to a change in pinnings')
-@arg('--skip-if-in-channels',
+@arg('--skip-additional-channels',
      nargs='*',
      help="""Skip updating/bumping packges that are already built with
-     compatible pinnings in one of the given channels.""")
+     compatible pinnings in one of the given channels in addition to those
+     listed in 'config'.""")
 @arg('--bump-only-python',
      help="""Bump package build numbers even if the only applicable pinning
      change is the python version. This is generally required unless you plan
      on building everything.""")
-def update_pinning(recipe_folder, config, packages="*", skip_if_in_channels=['bioconda', 'bioconda/label/gcc7'], bump_only_python=False):
+@arg('--cache', help='''To speed up debugging, use repodata cached locally in
+     the provided filename. If the file does not exist, it will be created the
+     first time.''')
+@enable_logging()
+@enable_threads()
+@enable_debugging()
+def update_pinning(recipe_folder, config, packages="*",
+                   skip_additional_channels=None,
+                   bump_only_python=False,
+                   cache=None):
+    """Bump a package build number and all dependencies as required due
+    to a change in pinnings
     """
-    Bump a package build number and all dependencies as required due to a change in pinnings
-    """
-    bioconda_cfg = utils.load_config(config)
-    bioconda_cfg['channels'] = skip_if_in_channels
-    repodata = utils.RepoData().df # Can this be quiet?
-    blacklist = utils.get_blacklist(bioconda_cfg.get('blacklists'), recipe_folder)
+    config = utils.load_config(config)
+    if skip_additional_channels:
+        config['channels'] += skip_additional_channels
+
+    if cache:
+        utils.RepoData().set_cache(cache)
+    utils.RepoData().df  # trigger load
+
     build_config = utils.load_conda_build_config()
-    build_config.trim_skip = True
+    blacklist = utils.get_blacklist(config.get('blacklists'), recipe_folder)
 
-    dag, name2recipes = utils.get_dag(utils.get_recipes(recipe_folder, '*') , config, blacklist=blacklist)
+    all_recipes = utils.get_recipes(recipe_folder, '*')
+
+    from . import recipe
+    dag = graph.build_from_recipes(
+        recip for recip in recipe.load_parallel_iter(recipe_folder, "*")
+        if recip.reldir not in blacklist)
+
     if packages != "*":
-        filterNodes= set(packages)
-        for package in packages:
-            for child in nx.ancestors(dag, package):
-                filterNodes.add(child)
-        dag = nx.subgraph(dag, filterNodes)
+        dag = graph.filter_recipe_dag(dag, packages)
 
-    updated = [0, 0, 0, 0]
+    logger.warning("Considering %i recipes", len(dag))
+
+    stats = Counter()
     hadErrors = set()
     bumpErrors = set()
-    for node in nx.nodes(dag):
-        for recipe in name2recipes[node]:
-            # This should all go in a different module
-            status = should_be_bumped(recipe, build_config, repodata)
-            updated[status] += 1
-            if bump_only_python and status == 1:
-                status = 2
-            if status == 2:
-                if not bump_recipe(recipe):
-                    bumpErrors.add(recipe)
-            if status == 3:
-                hadErrors.add(recipe)
+
+    needs_bump = partial(update_pinnings.check, build_config=build_config)
+
+    State = update_pinnings.State
+
+    for status, recip in zip(utils.parallel_iter(needs_bump, dag, "Processing..."), dag):
+        logger.debug("Recipe %s status: %s", recip, status)
+        stats[status] += 1
+        if status.needs_bump(bump_only_python):
+            logger.info("Bumping %s", recip)
+            recip.reset_buildnumber(int(recip['build']['number'])+1)
+            recip.save()
+        elif status.failed():
+            logger.info("Failed to inspect %s", recip)
+            hadErrors.add(recipe)
+        else:
+            logger.info('OK: %s', recip)
 
     # Print some information
     print("Packages requiring the following:")
-    print("  No build number change needed: {}".format(updated[0]))
-    print("  A rebuild for a new python version: {}".format(updated[1]))
-    print("  A build number increment: {}".format(updated[2]))
-    if updated[3]:
-        print("{} packages produced an error in conda-build: {}".format(updated[3], list(hadErrors)))
-    if len(bumpErrors):
-        print("The build numbers in the following recipes could not be incremented: {}".format(list(bumpErrors)))
+    print(stats)
+    #print("  No build number change needed: {}".format(stats[STATE.ok]))
+    #print("  A rebuild for a new python version: {}".format(stats[STATE.bump_python]))
+    #print("  A build number increment: {}".format(stats[STATE.bump]))
+
+    if hadErrors:
+        print("{} packages produced an error "
+              "in conda-build: {}".format(len(hadErrors), list(hadErrors)))
+
+    if bumpErrors:
+        print("The build numbers in the following recipes "
+              "could not be incremented: {}".format(list(bumpErrors)))
 
 
 @arg('recipe_folder', help='Path to recipes directory')
@@ -556,11 +620,9 @@ def update_pinning(recipe_folder, config, packages="*", skip_if_in_channels=['bi
      help='''Restrict --dependencies to packages in `recipe_folder`. Has no
      effect if --reverse-dependencies, which always looks just in the recipe
      dir.''')
-@arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
-def dependent(
-    recipe_folder, config, restrict=False, dependencies=None, reverse_dependencies=None,
-    loglevel='warning',
-):
+@enable_logging()
+def dependent(recipe_folder, config, restrict=False,
+              dependencies=None, reverse_dependencies=None):
     """
     Print recipes dependent on a package
     """
@@ -573,7 +635,7 @@ def dependent(
 
     utils.setup_logger('bioconda_utils', loglevel)
 
-    d, n2r = utils.get_dag(utils.get_recipes(recipe_folder, "*"), config, restrict=restrict)
+    d, n2r = graph.build(utils.get_recipes(recipe_folder, "*"), config, restrict=restrict)
 
     if reverse_dependencies is not None:
         func, packages = nx.algorithms.descendants, reverse_dependencies
@@ -604,17 +666,16 @@ def dependent(
      with the specified version in --pkg-version, or if --pkg-version not
      specified, then finds the the latest package version in the latest
      Bioconductor version""")
-@arg('--loglevel', help='Log level')
 @arg('--recursive', action='store_true', help="""Creates the recipes for all
      Bioconductor and CRAN dependencies of the specified package.""")
 @arg('--skip-if-in-channels', nargs='*', help="""When --recursive is used, it will build
      *all* recipes. Use this argument to skip recursive building for packages
      that already exist in the packages listed here.""")
+@enable_logging('debug')
 def bioconductor_skeleton(
     recipe_folder, config, package, versioned=False, force=False,
-    pkg_version=None, bioc_version=None, loglevel='debug', recursive=False,
-    skip_if_in_channels=['conda-forge', 'bioconda'],
-):
+    pkg_version=None, bioc_version=None, recursive=False,
+    skip_if_in_channels=['conda-forge', 'bioconda']):
     """
     Build a Bioconductor recipe. The recipe will be created in the `recipes`
     directory and will be prefixed by "bioconductor-". If `--recursive` is set,
@@ -664,6 +725,7 @@ def bioconductor_skeleton(
      R package to Bioconda. After a CRAN skeleton is created, any
      Windows-related lines will be removed and the bld.bat file will be
      removed.""")
+@enable_logging()
 def clean_cran_skeleton(recipe, no_windows=False):
     """
     Cleans skeletons created by `conda skeleton cran`.
@@ -679,7 +741,6 @@ def clean_cran_skeleton(recipe, no_windows=False):
 
 @arg('recipe_folder', help='Path to recipes directory')
 @arg('config', help='Path to yaml file specifying the configuration')
-@arg('--loglevel', default='info', help='Log level')
 @arg('--packages',
      nargs="+",
      help='Glob for package[s] to show in DAG. Default is to show all '
@@ -709,7 +770,8 @@ def clean_cran_skeleton(recipe, no_windows=False):
 @arg("--max-updates", help='''Exit after ARG updates''')
 @arg("--parallel", help='''Maximum number of recipes to consider in parallel''')
 @arg("--dry-run", help='''Don't update remote git or github"''')
-def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
+@enable_logging()
+def autobump(recipe_folder, config, packages='*', cache=None,
              failed_urls=None, unparsed_urls=None, recipe_status=None,
              exclude_subrecipes=None, exclude_channels='conda-forge',
              ignore_blacklists=False,
@@ -720,7 +782,6 @@ def autobump(recipe_folder, config, loglevel='info', packages='*', cache=None,
     """
     Updates recipes in recipe_folder
     """
-    utils.setup_logger('bioconda_utils', loglevel)
     # load an register config
     utils.load_config(config)
     from . import update

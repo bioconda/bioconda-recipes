@@ -15,6 +15,7 @@ from . import docker_utils
 from . import pkg_test
 from . import upload
 from . import linting
+from . import graph
 
 logger = logging.getLogger(__name__)
 
@@ -294,7 +295,7 @@ def build_recipes(
             lint_exclude = tuple(lint_exclude) + ('already_in_bioconda',)
         lint_args = linting.LintArgs(lint_exclude, lint_args.registry)
 
-    dag, name2recipes = utils.get_dag(recipes, config=orig_config, blacklist=blacklist)
+    dag, name2recipes = graph.build(recipes, config=orig_config, blacklist=blacklist)
     recipe2name = {}
     for k, v in name2recipes.items():
         for i in v:

@@ -1,88 +1,127 @@
-#!/usr/bin/env python
-from conda_build import api
 import re
 import sys
 import os.path
+import logging
+import collections
+import enum
+
+import networkx as nx
+
+from .utils import RepoData, load_conda_build_config, parallel_iter
+
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
+
+
 buildNumberRegex = re.compile("^( +number: +)(\d+)(.*?)$")
 buildNumberJinja = re.compile("^({% +set build +=.+?)(\d+)(.*?%})")
 
-def already_bumped(r, name, version, buildNumber):
-    rsub = r.loc[(r.name == name) &
-             (r.platform != "osx") &
-             (r.version == version)]
-    if rsub.shape[0] == 0:
-        # The version was never built, it doesn't explicitly require bumping
-        return True
-    if buildNumber > max(rsub.build_number):
-        # Already bumped
-        return True
-    return False
+
+def will_build_variant(meta):
+    """Check if the recipe variant will be built as currently rendered"""
+    build_numbers = RepoData().get_package_data(
+        'build_number',
+        name=meta.name(), version=meta.version(),
+        platform=['linux', 'noarch'],
+    )
+    res = all(num < meta.build_number() for num in build_numbers)
+    if res:
+        logger.debug("Package %s=%s will be built already because %s < %s)",
+                     meta.name(), meta.version(),
+                     max(build_numbers) if build_numbers else "N/A",
+                     meta.build_number())
+    return res
 
 
-def already_built(r, name, version, buildstring):
-    if r.loc[(r.name == name) &
-             (r.platform != "osx") &
-             (r.version == version) &
-             (r.build == buildstring)].shape[0] > 0:
-        return True
-    return False
+def have_variant(meta):
+    """Checks if we have an exact match to name/version/buildstring
+    """
+    res = RepoData().get_package_data(
+        name=meta.name(), version=meta.version(), build=meta.build_id(),
+        platform=['linux', 'noarch']
+    )
+    if res:
+        logger.debug("Package %s=%s=%s exists",
+                     meta.name(), meta.version(), meta.build_id())
+    return res
 
 
-def only_python(r, name, version, buildstring):
-    s = r.loc[(r.name == name) &
-              (r.platform != "osx") &
-              (r.version == version)]
-    if s.shape[0] == 0:
-        # Version doesn't exist in linux/noarch
-        return False
-    build_set = set()
-    for b in s.build:
-        bs = b.split("_")
-        if bs[0].startswith("py"):
-            build_set.add(bs[0][4:])
-        else:
-            build_set.add(bs[0])
-    if buildstring in build_set:
-        return True
-    # Version exists, but build doesn't
-    return False
+def have_variant_but_for_python(meta):
+    """Checks if we have an exact or `py[23]_` prefixed match to
+    name/version/buildstring
+
+    Ignores osx.
+    """
+    def strip_py(build):
+        if build.startswith("py"):
+            return build[4:]
+        return build
+
+    builds = RepoData().get_package_data(
+        'build',
+        name=meta.name(), version=meta.version(),
+        platform=['linux', 'noarch']
+    )
+    res = [build for build in builds
+           if strip_py(build) == strip_py(meta.build_id())]
+    if res:
+        logger.debug("Package %s=%s has %s (want %s)",
+                     meta.name(), meta.version(), res, meta.build_id())
+    return bool(res)
 
 
-def should_be_bumped(recipe, build_config, repodata):
+
+class State(enum.Flag):
+    #: Recipe had a failure rendering
+    FAIL = enum.auto()
+    #: Recipe has a variant that will be skipped
+    SKIP = enum.auto()
+    #: Recipe has a variant that exists already
+    HAVE = enum.auto()
+    #: Recipe has a variant that was bumped already
+    BUMPED = enum.auto()
+    #: Recipe has a variant that needs bumping
+    BUMP = enum.auto()
+    #: Recipe has a variant that needs bumping only for python
+    BUMP_PYTHON_ONLY = enum.auto()
+
+    def needs_bump(self, bump_python_only=True):
+        if bump_python_only:
+            return self & (self.BUMP | self.BUMP_PYTHON_ONLY)
+        return self & self.BUMP
+
+    def failed(self):
+        return self & self.FAIL
+
+
+def check(recipe, build_config) -> State:
     """
     Determine if a given recipe should have its build number increments
     (bumped) due to a recent change in pinnings.
-
-    The output is an integer between 0 and 4:
-
-    0: A change in pinnings has no affect on the given recipe.
-    1: A bump is not explicitly needed, but a new python build is required.
-    2: A recipe's build number should be bumped.
-    3: conda-build returned an error while rendering the recipe.
     """
-    status = 0
     try:
-        for renderedMeta, _, _ in api.render(recipe, config=build_config, permit_unsatisfiable_variants=False):
-            if renderedMeta.skip():
-                continue
-            buildID = renderedMeta.build_id()  # e.g., py36h47cebea_1 or 0
-            # This doesn't work for noarch: python, which is just py_0 or pyhXXXX_1
-            # However those won't ever need to be rebuilt due to only a python version change
-            buildID_nopy = buildID[4:] if buildID.startswith("py") else buildID
+        logger.debug("Calling Conda to render %s", recipe)
+        rendered = recipe.conda_render(config=build_config,
+                                       permit_unsatisfiable_variants=False)
+        logger.debug("Finished rendering %s", recipe)
+    except Exception as exc:
+        logger.debug("Exception rendering %s: %s", recipe, exc)
+        return State.FAIL
 
-            if already_bumped(repodata, renderedMeta.name(), renderedMeta.version(), renderedMeta.build_number()):
-                # Don't double bump
-                continue
-            if already_built(repodata, renderedMeta.name(), renderedMeta.version(), buildID):
-                continue
-            if only_python(repodata, renderedMeta.name(), renderedMeta.version(), buildID_nopy):
-                status = max(1, status)
-                continue
-            status = max(2, status)
-    except:
-        print(sys.exc_info()[1])
-        status = 3
-    return status
+    flags = State(0)
+    for meta, _, _ in rendered:
+        if meta.skip():
+            flags |= State.SKIP
+        elif have_variant(meta):
+            flags |= State.HAVE
+        elif will_build_variant(meta):
+            flags |= State.BUMPED
+        elif have_variant_but_for_python(meta):
+            flags |= State.BUMP_PYTHON_ONLY
+        else:
+            logger.info("Package %s=%s=%s missing!",
+                         meta.name(), meta.version(), meta.build_id())
+            flags |= State.BUMP
+    return flags
 
 
 def bump_recipe(recipe):

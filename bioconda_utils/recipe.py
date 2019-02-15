@@ -10,9 +10,11 @@ import os
 import re
 
 from collections import defaultdict
+from contextlib import redirect_stdout, redirect_stderr
 from copy import copy
 from typing import Any, Dict, List, Sequence, Optional, Pattern
 
+import conda_build.api
 
 try:
     from ruamel.yaml import YAML
@@ -147,6 +149,9 @@ class Recipe():
     def __str__(self) -> str:
         return self.reldir
 
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__} "{self.reldir}"'
+
     def load_from_string(self, data) -> "Recipe":
         """Load and `render` recipe contents from disk"""
         self.meta_yaml = data.splitlines()
@@ -156,7 +161,7 @@ class Recipe():
         return self
 
     @classmethod
-    def from_file(cls, recipe_dir, recipe_fname) -> "Recipe":
+    def from_file(cls, recipe_dir, recipe_fname, return_exceptions=False) -> "Recipe":
         """Create new `Recipe` object from file
 
         Args:
@@ -166,9 +171,18 @@ class Recipe():
         if recipe_fname.endswith("meta.yaml"):
             recipe_fname = os.path.dirname(recipe_fname)
         recipe = cls(recipe_fname, recipe_dir)
-        with open(os.path.join(recipe_dir, recipe_fname, 'meta.yaml')) as text:
-            recipe.load_from_string(text.read())
+        with open(os.path.join(recipe_fname, 'meta.yaml')) as text:
+            try:
+                recipe.load_from_string(text.read())
+            except Exception as exc:
+                if return_exceptions:
+                    return exc
+                raise
         return recipe
+
+    def save(self):
+        with open(self.path, "w", encoding="utf-8") as fdes:
+            fdes.write(self.dump())
 
     def set_original(self) -> None:
         """Store the current state of the recipe as "original" version"""
@@ -306,7 +320,9 @@ class Recipe():
         """List of the packages built by this recipe (including outputs)"""
         packages = [self.name]
         if "outputs" in self.meta:
-            packages.extend(output['name'] for output in self.meta['outputs'])
+            packages.extend(output['name']
+                            for output in self.meta['outputs']
+                            if output != self.name)
         return packages
 
     def replace(self, before: str, after: str,
@@ -369,7 +385,7 @@ class Recipe():
             replacements += 1
         return replacements
 
-    def reset_buildnumber(self):
+    def reset_buildnumber(self, n: int=0):
         """Resets the build number
 
         If the build number is missing, it is added after build.
@@ -386,7 +402,7 @@ class Recipe():
                 raise MissingBuild(self)
 
         line = self.meta_yaml[lineno]
-        line = re.sub("number: [0-9]+", "number: 0", line)
+        line = re.sub("number: [0-9]+", "number: "+str(n), line)
         self.meta_yaml[lineno] = line
 
     def get_raw_range(self, path):
@@ -468,3 +484,33 @@ class Recipe():
             lines.append(self.meta_yaml[row])
         lines.append(self.meta_yaml[end_row][:end_col])
         return "\n".join(lines).strip()
+
+    def get_deps(self):
+        lists = [buildrunhost for buildrunhost in
+                 (self.get('requirements') or {}).values()
+                 if buildrunhost]
+        for output in self.get('outputs', []):
+            lists.extend(buildrunhost for buildrunhost in
+                         output.get('requirements', {}).values())
+
+        return list(set(entry.split()[0] for lst in lists for entry in lst if entry))
+
+    def conda_render(self, **kwargs):
+        with open("/dev/null", "w") as devnull:
+            with redirect_stdout(devnull), redirect_stderr(devnull):
+                return conda_build.api.render(self.path, **kwargs)
+            # raises conda_build.exceptions.DependencyNeedsBuildingError:
+            # raises RuntimeError ('can't depend on itself')
+
+
+def load_parallel_iter(recipe_folder, packages):
+    recipes = list(utils.get_recipes(recipe_folder, packages))
+    for recipe in utils.parallel_iter(Recipe.from_file, recipes, "Loading Recipes...",
+                                      recipe_folder, return_exceptions=True):
+        if isinstance(recipe, RecipeError):
+            recipe.log()
+        elif isinstance(recipe, Exception):
+            logger.error("Could not load recipe %s", recipe)
+        else:
+            yield recipe
+
