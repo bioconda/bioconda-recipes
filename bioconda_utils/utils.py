@@ -1292,6 +1292,9 @@ class RepoData:
 
         dfs = AsyncRequests.fetch(urls, descs, to_dataframe, repos)
         res = pd.concat(dfs)
+        for col in ('channel', 'platform', 'subdir', 'name', 'version', 'build'):
+            res[col] = res[col].astype('category')
+        res = res.reset_index(drop=True)
 
         if self.cache_file is not None:
             res.to_pickle(self.cache_file)
