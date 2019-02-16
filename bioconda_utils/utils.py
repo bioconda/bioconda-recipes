@@ -19,6 +19,7 @@ from pathlib import PurePath
 import json
 import warnings
 from multiprocessing import Pool
+from multiprocessing.pool import ThreadPool
 
 from conda_build import api
 from conda.exports import VersionOrder
@@ -1092,7 +1093,15 @@ class AsyncRequests:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
 
-        task = asyncio.ensure_future(cls._async_fetch(urls, descs, cb, datas))
+        if loop.is_running():
+            logger.warning("Running AsyncRequests.fetch from within running loop")
+            # Workaround the fact that asyncio's loop is marked as not-reentrant
+            # (it is apparently easy to patch, but not desired by the devs,
+            pool = ThreadPool(processes=1)
+            ares = pool.apply_async(cls.fetch, (urls, descs, cb, datas))
+            return ares.get()
+
+        task = asyncio.ensure_future(cls.async_fetch(urls, descs, cb, datas))
 
         try:
             loop.run_until_complete(task)
@@ -1104,7 +1113,7 @@ class AsyncRequests:
         return task.result()
 
     @classmethod
-    async def _async_fetch(cls, urls, descs, cb, datas):
+    async def async_fetch(cls, urls, descs, cb, datas):
         conn = aiohttp.TCPConnector(limit_per_host=cls.CONNECTIONS_PER_HOST)
         async with aiohttp.ClientSession(
                 connector=conn,
