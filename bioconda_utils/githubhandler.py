@@ -44,15 +44,25 @@ class GitHubHandler:
     def __init__(self, token: str,
                  dry_run: bool = False,
                  to_user: str = "bioconda",
-                 to_repo: str = "bioconda-recipes") -> None:
+                 to_repo: str = "bioconda-recipes",
+                 installation: int = None) -> None:
         self.token = token
         self.dry_run = dry_run
+        self.installation = installation
         self.var_default = {'user': to_user,
                             'repo': to_repo}
 
         # filled in by login():
         self.api: gidgethub.abc.GitHubAPI = None
         self.username: str = None
+
+    def to_dict(self):
+        return {
+            'dry_run': self.dry_run,
+            'to_user': self.var_default['user'],
+            'to_repo': self.var_default['repo'],
+            'installation': self.installation
+        }
 
     @property
     def rate_limit(self) -> gidgethub.sansio.RateLimit:
@@ -348,12 +358,10 @@ class GitHubAppHandler:
                     msg, installation, (expires - now)/60)
         return token
 
-    async def get_github_api(self, event: Event) -> GitHubHandler:
+    async def get_github_api(self, dry_run, to_user, to_repo, installation) -> GitHubHandler:
         """Returns the GitHubHandler for the installation the event came from"""
-        installation = event.get('installation/id')
-        user = event.get('repository/owner/login')
-        repo = event.get('repository/name')
-        handler_key = (installation, repo)
+
+        handler_key = (installation, to_repo)
         api = self._handlers.get(handler_key)
         if api:
             # update oauth token (ours expire)
@@ -361,7 +369,9 @@ class GitHubAppHandler:
         else:
             api = AiohttpGitHubHandler(
                 await self.get_installation_token(installation),
-                to_user=user, to_repo=repo, dry_run=False)
+                to_user=to_user, to_repo=to_repo, dry_run=dry_run,
+                installation=installation
+            )
             api.create_api_object(self._session, self.name)
             self._handlers[handler_key] = api
         return api
