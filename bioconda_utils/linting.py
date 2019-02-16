@@ -181,9 +181,8 @@ def lint(recipes: List[str], lint_args):
                 for source, skips in skip_sources:
                     if func.__name__ not in skips:
                         continue
-                    logger.info(
-                        '%s defines skip lint test %s for recipe %s'
-                        % (source, func.__name__, recipe))
+                    logger.info('%s defines skip lint test %s for recipe %s',
+                                source, func.__name__, recipe)
                 continue
             result = func(recipe, metas)
             if result:
