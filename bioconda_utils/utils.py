@@ -1097,9 +1097,9 @@ class AsyncRequests:
             logger.warning("Running AsyncRequests.fetch from within running loop")
             # Workaround the fact that asyncio's loop is marked as not-reentrant
             # (it is apparently easy to patch, but not desired by the devs,
-            pool = ThreadPool(processes=1)
-            ares = pool.apply_async(cls.fetch, (urls, descs, cb, datas))
-            return ares.get()
+            with ThreadPool(1) as pool:
+                res = pool.apply(cls.fetch, (urls, descs, cb, datas))
+            return res
 
         task = asyncio.ensure_future(cls.async_fetch(urls, descs, cb, datas))
 
