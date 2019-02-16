@@ -29,9 +29,6 @@ echo "location = ../plugin/GCContent/" >> jbrowse.conf
 git clone https://github.com/Arabidopsis-Information-Portal/ComboTrackSelector.git plugins/ComboTrackSelector/
 echo "[ plugins.ComboTrackSelector ]" >> jbrowse.conf
 echo "location = ../plugin/ComboTrackSelector/" >> jbrowse.conf
-cd plugins/ComboTrackSelector/
-patch -p1 < $RECIPE_DIR/combotrackselector.patch
-cd ../../
 
 # Add MultiBigWig plugin
 git clone https://github.com/elsiklab/multibigwig.git plugins/MultiBigWig/
