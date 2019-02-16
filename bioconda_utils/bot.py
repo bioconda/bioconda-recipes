@@ -20,7 +20,7 @@ import gidgethub.routing
 
 from . import utils
 from . import __version__ as VERSION
-from .githubhandler import GitHubAppHandler, Event
+from .githubhandler import GitHubAppHandler, GitHubHandler, Event
 from .githandler import TempGitHandler
 from .recipe import Recipe
 
@@ -68,7 +68,10 @@ class Task(_Task):
     acks_late = True
 
     #: Access the Github API
-    ghapi: GitHubAppHandler = None
+    ghapi: GitHubHandler = None
+
+    #: Access Github App API
+    ghappapi: GitHubAppHandler = None
 
     #: Stores the async run method when the sync run wrapper is installed
     _async_run = None
@@ -88,6 +91,7 @@ class Task(_Task):
         if asyncio.iscoroutinefunction(self.run):
             @wraps(self.run)
             def sync_run(*args, **kwargs):
+                self.loop.run_until_complete(self.async_pre_run(args, kwargs))
                 self.loop.run_until_complete(self._async_run(*args, **kwargs))
             self._async_run, self.run = self.run, sync_run
 
@@ -95,10 +99,19 @@ class Task(_Task):
                 self.loop.run_until_complete(self.async_init())
         super().bind(app)
 
+    async def async_pre_run(self, args, kwargs):
+        ghapi_data = kwargs.get('ghapi_data')
+        self.ghapi = await self.ghappapi.get_github_api(**ghapi_data)
+
     async def async_init(self):
         """Init things that need to be run inside the loop"""
-        if not self.ghapi:
-            self.ghapi = init_githubhandler(aiohttp.ClientSession())
+        if not self.ghappapi:
+            self.ghappapi = init_githubhandler(aiohttp.ClientSession())
+
+    def schedule(self, *args, ghapi=None, **kwargs):
+        return self.delay(*args,
+                          ghapi_data=ghapi.to_dict() if ghapi else None,
+                          **kwargs)
 
     @abc.abstractmethod
     def run(self, *args, **kwargs):
@@ -180,13 +193,15 @@ async def command_sleep(_event, _ghapi, *args):
     sleep.apply_async((20, args[0]))
 
 
-PRInfo = namedtuple('PRInfo', 'installation user repo ref recipes')
+PRInfo = namedtuple('PRInfo', 'installation user repo ref recipes issue_number')
 
 
 async def get_pr_info(ghapi, event) -> Optional[PRInfo]:
-    if 'pull_request' not in event.get('issue'):
-        return None
     issue_number = int(event.get('issue/number'))
+    if 'pull_request' not in event.get('issue'):
+        logger.error("Issue %s is not a PR", issue_number)
+        await ghapi.create_comment(issue_number, "I can only do this from a PR")
+        return None
     prs = await ghapi.get_prs(number=issue_number)
     user = prs['head']['user']['login']
     repo = prs['head']['repo']['name']
@@ -195,20 +210,23 @@ async def get_pr_info(ghapi, event) -> Optional[PRInfo]:
     files = await ghapi.get_pr_modified_files(number=issue_number)
     recipes = [item['filename'] for item in files
                if item['filename'].endswith('/meta.yaml')]
-    installation = event.get('installation/id')
+    if not recipes:
+        await ghapi.create_comment(issue_number, "This PR does not modify any recipes")
+        return None
 
-    return PRInfo(installation, user, repo, ref, recipes)
+    installation = event.get('installation/id')
+    return PRInfo(installation, user, repo, ref, recipes, issue_number)
 
 
 class PrBranch:
-    def __init__(self, ghapi, pr_info):
-        self.ghapi = ghapi
+    def __init__(self, ghappapi, pr_info):
+        self.ghappapi = ghappapi
         self.pr_info = pr_info
         self.cwd = None
         self.git = None
 
     async def __aenter__(self):
-        token = await self.ghapi.get_installation_token(self.pr_info.installation)
+        token = await self.ghappapi.get_installation_token(self.pr_info.installation)
         self.git = TempGitHandler(password=token,
                                   fork=self.pr_info.user + "/" + self.pr_info.repo)
         self.git.set_user(BOT_NAME, BOT_EMAIL)
@@ -226,11 +244,11 @@ class PrBranch:
 
 
 @celery.task(bind=True, acks_late=True)
-async def bump(self: Task, pr_info_dict: Dict):
+async def bump(self: "Task", pr_info_dict: "Dict", ghapi_data=None):
     """Bump the build number in each recipe"""
     pr_info = PRInfo(**pr_info_dict)
     logger.info("Processing bump command: %s", pr_info)
-    async with PrBranch(self.ghapi, pr_info) as git:
+    async with PrBranch(self.ghappapi, pr_info) as git:
         for meta_fn in pr_info.recipes:
             recipe = Recipe.from_file('recipes', meta_fn)
             buildno = int(recipe.meta['build']['number']) + 1
@@ -243,32 +261,42 @@ async def bump(self: Task, pr_info_dict: Dict):
 
 @command_routes.register("bump")
 async def command_bump(event, ghapi, *args):
-    """Bump the build number of a recipe
-
-    This needs to know which repo/branch to operate on and which
-    recipe to bump.
-
-    If we are on a PR, we commit to the repo/branch from which the PR
-    is coming. We inspect the PR to see which recipe's where changed,
-    if there is only one, it becomes the default.
-
-    If we can't determine what and where to bump, post an error comment.
-    """
+    """Bump the build number of a recipe    """
     logger.info("Got bump command: %s", args)
-    issue_number = int(event.get('issue/number'))
     pr_info = await get_pr_info(ghapi, event)
+    if pr_info:
+        bump.schedule(pr_info, ghapi=ghapi)
 
-    if not pr_info:
-        logger.error("Can't bump in %i - not a PR", issue_number)
-        await ghapi.create_comment(issue_number, "I can only do this from a PR")
-    elif not pr_info.recipes:
-        await ghapi.create_comment(issue_number, "Which recipe? This PR does not seem to modif any")
-    elif len(pr_info.recipes) > 1:
-        await ghapi.create_comment(issue_number, "This PR modifies multiple recipes (unsupported).")
 
-    logger.error("sending: %s %s", type(pr_info), repr(pr_info))
-    bump.delay(pr_info)
+@celery.task(bind=True, acks_late=True)
+async def lint(self: "Task", pr_info_dict: "Dict", ghapi_data=None):
+    """Lint each recipe"""
+    pr_info = PRInfo(**pr_info_dict)
+    logger.info("Processing lint command: %s", pr_info)
 
+    async with PrBranch(self.ghappapi, pr_info) as git:
+        utils.load_config('config.yml')
+        from bioconda_utils.linting import lint, LintArgs, markdown_report;
+        recipes = [r[:-len('/meta.yaml')] for r in pr_info.recipes]
+        df = lint(recipes, LintArgs())
+        msg = markdown_report(df)
+        await self.ghapi.create_comment(pr_info.issue_number, msg)
+    utils.RepoData()._df = None
+
+
+@command_routes.register("lint")
+async def command_lint(event, ghapi, *args):
+    """Lint the current recipe"""
+    logger.info("Got lint command: %s", args)
+    pr_info = await get_pr_info(ghapi, event)
+    if pr_info:
+        lint.schedule(pr_info, ghapi=ghapi)
+
+
+@command_routes.register("autobump")
+async def command_autobump(event, ghapi, *args):
+    """Run autobump on the listed recipes"""
+    logger.info("Got autobump command: %s", args)
 
 
 @event_routes.register("issue_comment", action="created")
@@ -309,7 +337,12 @@ async def webhook_dispatch(request):
         if event.event == "ping":
             return web.Response(status=200)
 
-        ghapi = await request.app['ghapi'].get_github_api(event)
+        ghapi = await request.app['ghappapi'].get_github_api(
+            dry_run=False,
+            installation=event.get('installation/id'),
+            to_user=event.get('repository/owner/login'),
+            to_repo=event.get('repository/name')
+        )
         try:
             await event_routes.dispatch(event, ghapi)
         except Exception:  # pylint: disable=broad-except
@@ -444,7 +477,7 @@ async def init_app():
         await app['client_session'].close()
     app.on_shutdown.append(close_session)
 
-    app['ghapi'] = init_githubhandler(app['client_session'])
+    app['ghappapi'] = init_githubhandler(app['client_session'])
 
     # Add routes collected above
     app.add_routes(web_routes)
