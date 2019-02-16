@@ -2,6 +2,7 @@ import os
 import re
 import itertools
 from collections import defaultdict, namedtuple
+from typing import List
 
 import pandas as pd
 import numpy as np
@@ -94,7 +95,7 @@ class LintArgs(namedtuple('LintArgs', (
         return super().__new__(cls, exclude, registry)
 
 
-def lint(recipes, lint_args):
+def lint(recipes: List[str], lint_args):
     """
     Parameters
     ----------
@@ -140,6 +141,7 @@ def lint(recipes, lint_args):
 
     hits = []
     for recipe in sorted(recipes):
+        logger.debug("Linting: %s", recipe)
         # Since lint functions need a parsed meta.yaml, checking for parsing
         # errors can't be a lint function.
         #
@@ -161,7 +163,6 @@ def lint(recipes, lint_args):
                  'severity': 'ERROR',
                  'info': result})
             continue
-        logger.debug('lint {}'.format(recipe))
 
         # skips defined in commit message
         skip_for_this_recipe = set(skip_dict[recipe])
@@ -215,6 +216,12 @@ def markdown_report(report=None):
     if report is None:
         tmpl = utils.jinja.get_template("lint_success.md")
         return tmpl.render()
-    else:
-        tmpl = utils.jinja.get_template("lint_failure.md")
-        return tmpl.render(report=report)
+
+    if 'check' in report:
+        # we have the unsummarized report
+        report = pd.DataFrame(dict(
+            failed_tests=report.groupby('recipe')['check'].agg('unique')
+        ))
+
+    tmpl = utils.jinja.get_template("lint_failure.md")
+    return tmpl.render(report=report)
