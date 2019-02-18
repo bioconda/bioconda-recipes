@@ -1,0 +1,80 @@
+{% set name = "medaka" %}
+{% set version = "0.5.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 42f5513deab90dd4c0982dcb27c9dc9da3246f72eb9796d54fee5e7b6b2a90a6
+
+build:
+  # keras is 2.7 or 3.6 only. We need py3: 3.6 is the only possibility
+  skip: True # [not py36]
+  number: 0
+  entry_points:
+    - medaka = medaka.medaka:main
+    - medaka_counts = medaka.medaka_counts:main
+    - medaka_data_path = medaka.common:print_data_path
+    - medaka_version_report = medaka:report_binaries
+
+requirements:
+  host:
+    - biopython
+    - cffi
+    - h5py ==2.7.1
+    - intervaltree >=3.0.0
+    - keras ==2.2.4
+    - numpy ==1.16.1
+    - pip
+    - pysam
+    - python
+    - tensorflow ==1.12.0
+    - htslib ==1.3.1
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+  build:
+    - {{ compiler('c') }}
+  run:
+    - biopython
+    - cffi
+    - h5py ==2.7.1
+    - intervaltree >=3.0.0
+    - keras ==2.2.4
+    - numpy ==1.16.1
+    - pysam
+    - python
+    - tensorflow ==1.12.0
+    - samtools ==1.3.1
+    - bcftools ==1.3.1
+    - minimap2 ==2.11
+    - htslib ==1.3.1
+    - bzip2
+    - xz
+    - zlib
+    - libdeflate
+
+test:
+  imports:
+    - medaka
+  commands:
+    - medaka --help
+    - medaka consensus --help
+    - medaka_data_path
+    - medaka_version_report
+
+about:
+  home: https://github.com/nanoporetech/medaka
+  license: Mozilla Public License 2.0
+  license_family: OTHER
+  license_file: LICENSE.md
+  summary: Neural network sequence error correction.
+  doc_url: https://nanoporetech.github.io/medaka/index.html
+  dev_url: https://github.com/nanoporetech/medaka
+
+extra:
+  recipe-maintainers:
+    - cjw85
