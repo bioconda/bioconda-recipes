@@ -1,0 +1,60 @@
+version: '3.4'
+services:
+  mq:
+    container_name: mq
+    hostname: mq    
+    image: rabbitmq:latest
+    networks:
+      - backend
+    environment:
+      RABBITMQ_ERLANG_COOKIE: 'secret cookie here'
+      #restart: on-failure  
+    tty: true
+  
+  web:
+    container_name: web
+    hostname: web
+    image: biocondabot
+    networks:
+      - backend
+    build:
+      context: ..
+      dockerfile: Dockerfile.web
+    command: >-
+       gunicorn 
+       --worker-class aiohttp.worker.GunicornWebWorker
+       --bind 0.0.0.0:80
+       bioconda_utils.bot:init_app
+       #(disable_internal_celery=True)
+    environment:
+      - PYTHONUNBUFFERED=true
+      - APP_KEY_PEM
+      - APP_ID
+      - GPG_KEY
+      - CLOUDAMQP_URL=amqp://mq:5672
+    ports:
+      - "8080:80"
+    depends_on:
+      - mq
+    #restart: on-failure
+  worker:
+    image: biocondabot
+    command: >-
+      celery worker
+      -l info
+      -A bioconda_utils.bot
+      --without-heartbeat
+    depends_on:
+      - mq
+    networks:
+      - backend
+    environment:
+      - PYTHONUNBUFFERED=true
+      - APP_KEY_PEM
+      - APP_ID
+      - GPG_KEY
+      - CLOUDAMQP_URL=amqp://mq:5672
+    #restart: on-failure
+
+networks:
+  backend:
