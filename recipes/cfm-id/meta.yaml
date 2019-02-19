@@ -7,23 +7,29 @@ source:
   fn: cfm-id_2.4_src_all.tar.gz
   url: https://depot.galaxyproject.org/software/cfm-id/cfm-id_2.4_src_all.tar.gz
   md5: c1bb46accac60c9640a553a4d210677c
+  patches:
+    # allow disabling build of bundled tools
+    - CMakeLists.patch
 
 build:
   number: 0
+  skip: True # [osx]
 
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm  # [osx]
+    - {{ compiler('cxx') }}
     - cmake
-    - boost {{CONDA_BOOST}}*
+  host:
+    - boost 1.57
     - lp_solve
-    - rdkit rdkit-2015.09.2
+    - rdkit ==2015.09.2
+#   - rdkit ==Release_2017_09
   run:
     - libgcc  # [not osx]
-    - boost {{CONDA_BOOST}}*
+    - boost 1.57
     - lp_solve
-    - rdkit rdkit-2015.09.2
+    - rdkit ==2015.09.2
+#   - rdkit ==Release_2017_09
 
 test:
   commands:
