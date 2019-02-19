@@ -1,26 +1,21 @@
 version: 2
+# trigger cache invalidation: 2018-09-16T22:39+00:00
 
 variables:
   restore_cache: &restore_cache
-    # TODO remove this temporal override before merging the PR into master
-    run: { command: echo 'ignoring cache' }
-    #restore_cache:
-    #  keys:
-    #    - miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
+    restore_cache:
+      keys:
+        - miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
   save_cache: &save_cache
-    # TODO remove this temporal override before merging the PR into master
-    run: { command: echo 'ignoring cache' }
-    #save_cache:
-    #  key: miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
-    #  paths:
-    #    - miniconda
+    save_cache:
+      key: miniconda-{{ checksum ".circleci/common.sh" }}-{{ checksum ".circleci/setup.sh" }}-{{ checksum ".circleci/config.yml" }}-{{ arch }}
+      paths:
+        - miniconda
   common: &common
     run:
       name: Download common definitions
       command: |
         curl -s https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh > .circleci/common.sh
-        # TODO remove this temporal override before merging the PR into master
-        echo -e 'MINICONDA_VER=4.4.10\nBIOCONDA_UTILS_TAG=cb3-migration' > .circleci/common.sh
   setup: &setup
     run:
       name: Setup bioconda-utils
@@ -51,6 +46,7 @@ variables:
             exit 1
         )
 
+
 jobs:
   # When running CircleCI locally, we put everything in one job.
   build:
@@ -63,27 +59,24 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-      - run:
-          name: Setup base system
-          command: |
-            cat >> $BASH_ENV <<EOF
-            if [[ \$- == *u* ]] ; then
-                set +u ; . /tmp/repo/docker-entrypoint-source ; set -u
-            else
-                . /tmp/repo/docker-entrypoint-source
-            fi
-            EOF
+      - run: echo ". /opt/conda/etc/profile.d/conda.sh" >> $BASH_ENV
+      - run: echo "conda activate" >> $BASH_ENV
       - *common
       - *setup
       - run:
           name: Linting
-          command: bioconda-utils lint --loglevel debug --full-report recipes config.yml --git-range master HEAD
+          command: |
+            bioconda-utils lint recipes config.yml \
+            --loglevel debug --full-report \
+            --git-range master HEAD
       - run:
           name: Testing
           # Currently, using --docker below causes a permission error on Fedora 27,
           # although it should be supported by the setup_remote_docker directive
           # above. A workaround or an upstream fix would be welcome.
-          command: bioconda-utils build recipes config.yml --git-range master HEAD
+          command: |
+            bioconda-utils build recipes config.yml \
+            --git-range master HEAD
 
   lint:
     <<: *linux
@@ -95,7 +88,10 @@ jobs:
       - *save_cache
       - run:
           name: Linting
-          command: bioconda-utils lint --loglevel debug --full-report recipes config.yml --git-range master HEAD
+          command: |
+            bioconda-utils lint recipes config.yml \
+            --loglevel debug --full-report \
+            --git-range master HEAD
 
   # build and test on linux
   test-linux:
@@ -108,7 +104,10 @@ jobs:
       - *save_cache
       - run:
           name: Building and testing
-          command: bioconda-utils build recipes config.yml --git-range master HEAD --docker --mulled-test --prelint
+          command: |
+            bioconda-utils build recipes config.yml \
+              --docker --mulled-test \
+              --git-range master HEAD
 
   # build and test on macos
   test-macos:
@@ -121,7 +120,9 @@ jobs:
       - *save_cache
       - run:
           name: Building and testing
-          command: bioconda-utils build recipes config.yml --git-range master HEAD --prelint
+          command: |
+            bioconda-utils build recipes config.yml \
+            --git-range master HEAD
 
   # build, test and upload on linux
   upload-linux:
@@ -136,8 +137,11 @@ jobs:
       # build only current commit (since we use squashed merging, this is safe)
       - run:
           name: Building, testing, and uploading
-          command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers --prelint --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1
-
+          command: |
+            bioconda-utils build recipes config.yml \
+              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
+              --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1 \
+              --prelint
   # build, test and upload on macos
   upload-macos:
     <<: *macos
@@ -151,7 +155,11 @@ jobs:
       # build only current commit (since we use squashed merging, this is safe)
       - run:
           name: Building, testing and uploading
-          command: bioconda-utils build recipes config.yml --anaconda-upload --prelint --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1
+          command: |
+            bioconda-utils build recipes config.yml \
+              --anaconda-upload \
+              --git-range $CIRCLE_SHA1~1 $CIRCLE_SHA1 \
+              --prelint
 
   # build, test and upload for bulk branch on linux
   bulk-linux:
@@ -165,7 +173,9 @@ jobs:
       - *save_cache
       - run:
           name: Building, testing, and uploading of all unpublished recipes
-          command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+          command: |
+            bioconda-utils build recipes config.yml \
+              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
 
   # build, test and upload for bulk branch on macos
   bulk-macos:
@@ -179,7 +189,9 @@ jobs:
       - *save_cache
       - run:
           name: Building, testing and uploading of all unpublished recipes
-          command: bioconda-utils build recipes config.yml --anaconda-upload
+          command: |
+            bioconda-utils build recipes config.yml \
+              --anaconda-upload
 
   # nightly build, test and upload of unpublished recipes on linux
   nightly-upload-linux:
@@ -193,7 +205,10 @@ jobs:
       - *save_cache
       - run:
           name: Building, testing, and uploading of all unpublished recipes
-          command: bioconda-utils build recipes config.yml --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers --prelint
+          command: |
+            bioconda-utils build recipes config.yml \
+              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
+              --prelint
 
   # nightly build, test and upload of unpublished recipes on macos
   nightly-upload-macos:
@@ -207,8 +222,10 @@ jobs:
       - *save_cache
       - run:
           name: Building, testing and uploading of all unpublished recipes
-          command: bioconda-utils build recipes config.yml --anaconda-upload --prelint
-
+          command: |
+            bioconda-utils build recipes config.yml \
+              --anaconda-upload \
+              --prelint
 
 
 workflows:
@@ -216,19 +233,17 @@ workflows:
   # workflow for testing pushes and PRs
   bioconda-test:
     jobs:
-      # Linting is now performed just before a recipe is built with
+      # Linting is now also performed just before a recipe is built with
       # bioconda-utils build --prelint.
-      # TODO: remove this section if --prelint ends up working well.
-      # - lint:
-      #     filters:
-      #       branches:
-      #         ignore:
-      #           - master
-      #           - bulk
+      - lint:
+          filters:
+            branches:
+              ignore:
+                - master
+                - bulk
       - test-linux:
-          # TODO: remove if --prelint ends up working well
-          # requires:
-          #   - lint
+          requires:
+            - lint
           filters:
             branches:
               ignore:
@@ -236,8 +251,7 @@ workflows:
                 - bulk
       - test-macos:
           requires:
-            # TODO: remove if --prelint ends up working well
-            # - lint
+            - lint
             - test-linux
           filters:
             branches:
@@ -258,20 +272,22 @@ workflows:
               only:
                 - master
   # workflow for bulk-updates
-  bioconda-upload-bulk:
+  bioconda-upload-bulk-linux:
     jobs:
       - bulk-linux:
           filters:
             branches:
               only:
                 - bulk
+  bioconda-upload-bulk-macos:
+    jobs:
       - bulk-macos:
           filters:
             branches:
               only:
                 - bulk
   # nightly workflow to capture missed recipes
-  bioconda-nightly-upload:
+  bioconda-nightly-upload-linux:
      triggers:
        - schedule:
            cron: "0 0 * * *"
@@ -281,4 +297,13 @@ workflows:
                  - master
      jobs:
        - nightly-upload-linux
+  bioconda-nightly-upload-macos:
+     triggers:
+       - schedule:
+           cron: "0 0 * * *"
+           filters:
+             branches:
+               only:
+                 - master
+     jobs:
        - nightly-upload-macos

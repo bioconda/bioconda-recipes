@@ -1,46 +1,46 @@
-{% set version = "1.0.2a1" %}
+{% set version = "1.1.2" %}
 
 package:
-  name: nasp
-  version: {{ version }}
+  name: 'nasp'
+  version: '{{ version }}'
 
 source:
-  url: https://github.com/TGenNorth/NASP/archive/00d22ec67cb513a5df3a0216b0537803e494505e.tar.gz
-  md5: cc220411742d7871875c38d1348e2fa0
+  url: https://github.com/TGenNorth/NASP/archive/v{{ version }}.tar.gz
+  sha256: 1aae08c9745b5201f6910fdec4c361940bfdd2bf47160805b758e8dce3e16f33
+  patches:
+    - duplicates.go.patch
 
 build:
-  skip: True # [py27]
-  entry_points:
-    - nasp = nasp.nasp:main
-    - format_fasta = nasp.format_fasta:main
-    - find_duplicates = nasp.find_duplicates:main
-    - convert_external_genome = nasp.convert_external_genome:main
-    - vcf_to_matrix = nasp.vcf_to_matrix:main
-  number: 3
+  skip: true  # [not linux]
+  number: 0
 
 requirements:
+  build:
+    - go
   host:
-    - python
-    - setuptools
-
+    - python >=3
+    - pip
   run:
-    - python
+    - python >=3
     - samtools <1.3
     - trimmomatic
-    - mummer >=3.23
+    - mummer
 
 test:
-  imports:
-    - nasp
-
   commands:
     - nasp --help
-    - format_fasta --help
-    - find_duplicates --help
-    - convert_external_genome --help
-    - vcf_to_matrix --help
+    - nasp matrix --help
 
 about:
-  home: https://github.com/TGenNorth/nasp
-  license: Academic and Research License
-  summary: The Northern Arizona SNP Pipeline (NASP)
+  home: 'https://github.com/TGenNorth/nasp'
+  license: 'Academic and Research License'
+  license_file: 'LICENSE.rst'
+  summary: 'NASP: an accurate, rapid method for the identification of SNPs in WGS datasets that supports flexible input and output formats'
+
+extra:
+  skip-lints:
+    - should_be_noarch
+  identifiers:
+    - doi:10.1099/mgen.0.000074
+  recipe-maintainers:
+    - corburn

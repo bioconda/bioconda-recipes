@@ -7,22 +7,20 @@ package:
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  md5: {{ md5 }}
   url: https://bitbucket.org/biobakery/metaphlan2/get/{{ version }}.tar.gz
+  md5: {{ md5 }}
 
 build:
-  number: 3
+  number: 4
   skip: True  # [not py27]
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
     - bowtie2 >=2.0.0
     - numpy
     - biom-format
-
   run:
     - python
     - setuptools
@@ -33,7 +31,8 @@ requirements:
     - biopython
     - pandas
     - pysam
-    - matplotlib
+    # metaphlan_hclust_heatmap.py has issues when matplotlib >= 2.0.0: https://bitbucket.org/biobakery/metaphlan2/issues/18/axisbg-deprecated-in
+    - matplotlib <2.0.0
     - scipy
     - requests
     - blast >=2.6.0
@@ -57,9 +56,8 @@ about:
   home: https://bitbucket.org/biobakery/metaphlan2
   license: MIT License
   license_family: MIT
-  readme: README.md
   license_file: license.txt
-  summary: >
+  summary: |
     MetaPhlAn is a computational tool for profiling the composition of microbial
     communities (Bacteria, Archaea, Eukaryotes and Viruses) from metagenomic
     shotgun sequencing data with species level resolution. From version 2.0

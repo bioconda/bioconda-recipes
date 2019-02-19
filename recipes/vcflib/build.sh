@@ -3,6 +3,11 @@
 export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=$PREFIX/include
 
+export LDFLAGS="-L$PREFIX/lib -L\$(LIB_DIR) -lvcflib -lhts -lpthread -lz -lm -llzma -lbz2"
+export INCLUDES="-Ihtslib -I$PREFIX/include -Itabixpp/htslib -I\$(INC_DIR) -L. -Ltabixpp/htslib"
+export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
+export CXXFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
+
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
 if [ "$(uname)" == "Darwin" ]; then
     sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' smithwaterman/Makefile
@@ -11,8 +16,9 @@ fi
 # Uses newline trick for OSX from: http://stackoverflow.com/a/24299845/252589
 sed -i.bak 's/SUBDIRS=./SUBDIRS=.\'$'\n''LOBJS=tabix.o/' tabixpp/Makefile
 sed -i.bak 's/-ltabix//' Makefile
+sed -i.bak 's/make/make -e/' Makefile
 
-make
+make -e
 
 mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin

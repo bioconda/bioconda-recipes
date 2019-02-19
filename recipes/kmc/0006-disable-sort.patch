@@ -1,0 +1,38 @@
+From 98f3f82bd97ae0aeb0403d8df5670adf7ec949e5 Mon Sep 17 00:00:00 2001
+From: Ilya Shlyakhter <ilya@broadinstitute.org>
+Date: Tue, 17 Jul 2018 23:05:49 -0400
+Subject: [PATCH 6/6] disable sort
+
+---
+ kmer_counter/kmc.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/kmer_counter/kmc.h b/kmer_counter/kmc.h
+index b6214b7..a8d5f61 100644
+--- a/kmer_counter/kmc.h
++++ b/kmer_counter/kmc.h
+@@ -1150,6 +1150,8 @@ template <typename KMER_T, unsigned SIZE, bool QUAKE_MODE> bool CKMC<KMER_T, SIZ
+ 	bool at_least_avx = iset >= 7;
+ 	std::transform(proc_name.begin(), proc_name.end(), proc_name.begin(), ::tolower);
+ 	bool is_xeon = proc_name.find("xeon") != string::npos;
++
++#if 0
+ 	if (is_xeon || (is_intel && at_least_avx))
+ 	{
+ 		if (iset >= 8)
+@@ -1162,10 +1164,12 @@ template <typename KMER_T, unsigned SIZE, bool QUAKE_MODE> bool CKMC<KMER_T, SIZ
+ 			sort_func = RadulsSort::RadixSortMSD_SSE2<KMER_T>;
+ 	}
+ 	else
++#endif
+ 	{
+ 		sort_func = RadixSort::RadixSortMSD<KMER_T, SIZE>;
+ 		CSmallSort<SIZE>::Adjust(384);
+ 	}
++
+ #endif
+ 
+ 	{
+-- 
+2.14.4
+

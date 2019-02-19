@@ -1,0 +1,67 @@
+{% set name = "sourcetracker" %}
+{% set version = "2.0.1" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "34cb7e38819ad14c792345231575611709920d325388f2fb5821b64581cd0ec7" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  entry_points:
+    - sourcetracker2=sourcetracker._cli:cli
+  noarch: python
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - numpy
+    - h5py
+    - biom-format >=2.1.5,<2.2.0
+    - click
+    - ipyparallel
+    - scikit-bio
+    - pandas
+  run:
+    - python
+    - setuptools
+    - numpy
+    - h5py
+    - biom-format >=2.1.5,<2.2.0
+    - click
+    - ipyparallel
+    - scikit-bio
+    - pandas
+
+test:
+  imports:
+    - sourcetracker
+  commands:
+    - sourcetracker2 gibbs --help
+
+about:
+  home: http://www.biota.com
+  license: modified BSD
+  license_family: BSD
+  license_file: ''
+  summary: Python implementation of the SourceTracker R package.
+  description: Python implementation of the SourceTracker R package.
+  doc_url: https://github.com/biota/sourcetracker2
+  dev_url: https://github.com/biota/sourcetracker2
+
+extra:
+  recipe-maintainers:
+    - nick-youngblut
+
+extra:
+  container:
+    # matplotlib depends on libGL.so.1 from the system
+    extended-base: true

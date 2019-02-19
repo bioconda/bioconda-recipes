@@ -1,0 +1,71 @@
+From 06662e9ef07e7fc6de02b92e29c5fbc934ff674d Mon Sep 17 00:00:00 2001
+From: Ilya Shlyakhter <ilya@broadinstitute.org>
+Date: Wed, 22 Aug 2018 13:58:36 -0400
+Subject: [PATCH] patches for compiling novo2maq
+
+---
+ novo2maq/Makefile    | 20 ++++++++++----------
+ novo2maq/novo2maq.cc |  2 +-
+ 2 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/novo2maq/Makefile b/novo2maq/Makefile
+index 6e6a9d2..a71b8d3 100644
+--- a/novo2maq/Makefile
++++ b/novo2maq/Makefile
+@@ -1,30 +1,30 @@
+-CC=			gcc
+-CXX=		g++
+-CFLAGS=		-g -Wall -O2 -m64 # comment out `-m64' for 32-bit compilation
+-CXXFLAGS=	$(CFLAGS)
++#CC=			gcc
++#CXX=		g++
++NOVO_CFLAGS=		-g -Wall -O2 -m64 # comment out `-m64' for 32-bit compilation
++NOVO_CXXFLAGS=	$(CFLAGS)
+ #DFLAGS=		-D_FASTMAP	
+-DFLAGS=		-D_FASTMAP -DMAQ_LONGREADS
++NOVO_CPPFLAGS=		-D_FASTMAP -DMAQ_LONGREADS
+ OBJS=		const.o \
+ 			maqmap.o \
+ 			novo2maq.o 
+ PROG=		novo2maq
+ VERSION=	MAQV0.6.8/NovoV2
+-LIBS=		-lz -lm
++NOVO_LDFLAGS=		-lz -lm
+ 
+ .SUFFIXES:.c .o .cc
+ 
+ .c.o:
+-		$(CC) -c $(CFLAGS) $(DFLAGS) $< -o $@
++		$(CC) -c $(NOVO_CFLAGS) $(CFLAGS) $(NOVO_CPPFLAGS) $(CPPFLAGS) $< -o $@
+ .cc.o:
+-		$(CXX) -c $(CXXFLAGS) $(DFLAGS) $< -o $@
++		$(CXX) -c $(NOVO_CXXFLAGS) $(CXXFLAGS) $(NOVO_CPPFLAGS) $(CPPFLAGS) $< -o $@
+ 
+ all:$(PROG) $(MANPAGE)
+ 
+ novo2maq:$(OBJS) main.o
+-		$(CXX) $(CXXFLAGS) $(DFLAGS) $(OBJS) main.o -o $@ $(LIBS)
++		$(CXX) $(NOVO_CXXFLAGS) $(CXXFLAGS) $(NOVO_CPPFLAGS) $(CPPFLAGS) $(OBJS) main.o $(NOVO_LDFLAGS) $(LDFLAGS) -o $@
+ 
+ main.o:main.c main.h
+-		$(CC) -c $(CFLAGS) $(DFLAGS) -DPACKAGE_VERSION=\"$(VERSION)\" main.c -o main.o
++		$(CC) -c $(NOVO_CFLAGS) $(CFLAGS) $(NOVO_CPPFLAGS) $(CPPFLAGS) -DPACKAGE_VERSION=\"$(VERSION)\" main.c -o main.o
+ 
+ const.o:const.h
+ 
+diff --git a/novo2maq/novo2maq.cc b/novo2maq/novo2maq.cc
+index 2e5d31f..3743fd5 100644
+--- a/novo2maq/novo2maq.cc
++++ b/novo2maq/novo2maq.cc
+@@ -410,7 +410,7 @@ static void novo2maq_core(FILE *fp_list, FILE *fp_novo, gzFile fp)
+                     }
+                 int n_mis = novomismatches(novo2[n_poly]);
+                 
+-                if (novo2[n_chr] == '\0' || !find_n_add(hash, novo2[n_chr]+1, &m1->seqid))
++                if (novo2[n_chr] == NULL || !find_n_add(hash, novo2[n_chr]+1, &m1->seqid))
+                     continue;                                        
+ 
+             
+-- 
+2.18.0
+

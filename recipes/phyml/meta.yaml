@@ -1,6 +1,6 @@
 {% set name = "PhyML" %}
-{% set version = "3.3.20170530" %}
-{% set sha256 = "f826726cd56b755be75f923abdf29aca8a9951d6af948cddbab40739a8f99f74" %}
+{% set version = "3.3.20180621" %}
+{% set sha256 = "a66c1c5758408578c34a17733f92db11a67aa572a06a9b5e3046009ee8bed0d3" %}
 
 package:
   name: {{ name | lower }}
@@ -10,25 +10,21 @@ source:
   url: https://github.com/stephaneguindon/{{ name | lower }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
   patches:
-    # remove broken include
-    - no_malloc_h.patch
-    # don't update version to current date
-    - pin_version.patch
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
     - {{ compiler('c') }}
     - autoconf
     - automake
+    - libtool
     - pkg-config
-    - openmpi 2.*
-    - beagle-lib
+  host:
+    - openmpi
   run:
-    - openmpi 2.*
-    - beagle-lib
+    - openmpi
 test:
   requirements:
     - conda
@@ -49,7 +45,8 @@ about:
   dev_url: https://github.com/stephaneguindon/phyml/
   license: GPLv2
   license_family: GPL
-  license_file: COPYING
+  #missing in current release, see https://github.com/stephaneguindon/phyml/issues/76
+  #license_file: COPYING 
   summary: Phylogenetic estimation using (Maximum) Likelihood
   description: |
     PhyML is a software that estimates maximum likelihood phylogenies from

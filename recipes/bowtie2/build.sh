@@ -1,10 +1,7 @@
 #!/bin/bash
-CPPFLAGS="$CPPFLAGS -I${PREFIX}/include"
-export CPPFLAGS
-LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
-export LDFLAGS
 
-make
+LDFLAGS=""
+make static-libs && make STATIC_BUILD=1
 
 binaries="\
 bowtie2 \

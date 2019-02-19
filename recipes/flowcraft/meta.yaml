@@ -1,27 +1,26 @@
 {% set name = "flowcraft" %}
-{% set version = "1.2.0.post1" %}
+{% set version = "1.4.0" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "dd6a29bb161f80f48c34d720961012c3d7c20b4ce87e318334f14a3056811db3" %}
+{% set hash_value = "77d9acaed50208c9bee0d9e0551951771dd0394cf2ef0b77509f46aaac840273" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 1
+  number: 0
   skip: True # [py27]
   entry_points:
     - flowcraft = flowcraft.flowcraft:main
   script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
     - pympler
@@ -36,13 +35,14 @@ requirements:
     - argparse
     - jinja2
     - requests
-    - nextflow >=0.27
+    - nextflow >=0.28
 
 test:
   imports:
     - flowcraft
     - flowcraft.generator
     - flowcraft.generator.components
+    - flowcraft.generator.recipes
     - flowcraft.templates
     - flowcraft.templates.flowcraft_utils
   commands:

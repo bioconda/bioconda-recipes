@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu -o pipefail
 
-outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+outdir=$PREFIX/share/$PKG_NAME
 mkdir -p $outdir
 mkdir -p $PREFIX/bin
 
@@ -10,11 +10,7 @@ sbt assembly
 
 # cromwell
 cp server/target/scala-*/cromwell-*.jar $outdir/cromwell.jar
-cp $RECIPE_DIR/cromwell.py $outdir/cromwell
-chmod +x $outdir/cromwell
-ln -s $outdir/cromwell $PREFIX/bin/cromwell
+cp $RECIPE_DIR/cromwell.py ${PREFIX}/bin/cromwell
 
 cp womtool/target/scala-*/womtool*.jar $outdir/womtool.jar
-cp $RECIPE_DIR/womtool.py $outdir/womtool
-chmod +x $outdir/womtool
-ln -s $outdir/womtool $PREFIX/bin/womtool
+cp $RECIPE_DIR/womtool.py ${PREFIX}/bin/womtool

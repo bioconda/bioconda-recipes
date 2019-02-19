@@ -15,15 +15,17 @@ from os import access, getenv, path, X_OK
 
 # Expected name of the VarScan JAR file.
 JAR_NAME = 'wdltool.jar'
+PKG_NAME = 'wdltool'
 
 # Default options passed to the `java` executable.
 DEFAULT_JVM_MEM_OPTS = ['-Xms512m', '-Xmx1g']
 
 
 def real_dirname(in_path):
-    """Returns the symlink-resolved, canonicalized directory-portion of
-    the given path."""
-    return path.dirname(path.realpath(in_path))
+    """Returns the path to the JAR file"""
+    realPath = os.path.dirname(os.path.realpath(in_path))
+    newPath = os.path.realpath(os.path.join(realPath, "..", "share", PKG_NAME))
+    return newPath
 
 
 def java_executable():

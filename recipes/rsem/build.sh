@@ -47,7 +47,7 @@ export CPPFLAGS="-I${PREFIX}/include"
 export CFLAGS="-I${PREFIX}/include"
 
 ########################################################
-### Prepare Samtools/Htslib 
+### Prepare Samtools/Htslib
 ########################################################
 
 sed -i.bak 's/^CPPFLAGS =$//g' samtools-1.3/Makefile
@@ -85,7 +85,7 @@ for i in $binaries; do
 done
 
 ########################################################
-### Do Perl Things 
+### Do Perl Things
 ########################################################
 
 
@@ -95,7 +95,7 @@ mv *.pm perl-build/lib
 mv rsem-calculate-expression perl-build
 mv rsem-control-fdr perl-build
 mv rsem-generate-data-matrix perl-build
-mv rsem-plot-transcript-wiggles perl-build 
+mv rsem-plot-transcript-wiggles perl-build
 mv rsem-prepare-reference perl-build
 mv rsem-run-ebseq perl-build
 cp ${RECIPE_DIR}/Build.PL perl-build
@@ -109,3 +109,5 @@ perl -i.bak -wpe 's[^#!.+][#!/usr/bin/env perl]' Build
 
 ./Build manifest
 ./Build install --installdirs site
+
+chmod u+rwx $PREFIX/bin/*

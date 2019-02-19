@@ -46,10 +46,13 @@ args = ap.parse_args()
 
 # This is the "common" step in the CircleCI config which gets the versions of
 # Miniconda and bioconda-utils that we're using.
-#urlretrieve(
-#    'https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh',
-#    filename='.circleci/common.sh')
+urlretrieve(
+    'https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh',
+    filename='.circleci/common.sh')
 
+# TODO: this mimics the override in the "common" job in .circleci/config.yaml
+with open('.circleci/common.sh', 'w') as fout:
+    fout.write("MINICONDA_VER=4.5.4\nBIOCONDA_UTILS_TAG=master\n")
 
 local_config_path = os.path.expanduser('~/.config/bioconda/activate')
 
@@ -67,29 +70,32 @@ def _write_custom_activate(install_path):
     activate = os.path.join(install_path, 'miniconda/bin/activate')
     lines = [i.rstrip() for i in open(activate)]
 
-    # Exact matches to lines we want to replace in the activate script, leading
-    # space included.
-    substitutions = [
-        (
-            '_CONDA_DIR=$(dirname "$_SCRIPT_LOCATION")',
-            '_CONDA_DIR="{0}/miniconda/bin"'.format(install_path)
-        ),
-        (
-            '                export PS1="(${CONDA_DEFAULT_ENV}) $PS1"',
-            '                export PS1="(BIOCONDA-UTILS) $PS1"',
-        )
-    ]
 
-    for orig, sub in substitutions:
-        # Be very picky so that we'll know if/when the activate script changes.
-        try:
-            pos = lines.index(orig)
-        except ValueError:
-            raise ValueError(
-                "Expecting '{0}' to be in {1} but couldn't find it"
-                .format(orig, activate)
+    # The following is code from cb2; disabling but keeping it around for now:
+    if 0:
+        # Exact matches to lines we want to replace in the activate script, leading
+        # space included.
+        substitutions = [
+            (
+                '_CONDA_DIR=$(dirname "$_SCRIPT_LOCATION")',
+                '_CONDA_DIR="{0}/miniconda/bin"'.format(install_path)
+            ),
+            (
+                '                export PS1="(${CONDA_DEFAULT_ENV}) $PS1"',
+                '                export PS1="(BIOCONDA-UTILS) $PS1"',
             )
-        lines[pos] = sub
+        ]
+
+        for orig, sub in substitutions:
+            # Be very picky so that we'll know if/when the activate script changes.
+            try:
+                pos = lines.index(orig)
+            except ValueError:
+                raise ValueError(
+                    "Expecting '{0}' to be in {1} but couldn't find it"
+                    .format(orig, activate)
+                )
+            lines[pos] = sub
 
     with open(local_config_path, 'w') as fout:
         for line in lines:
@@ -100,7 +106,7 @@ use_docker = "true"
 if args.no_docker:
     use_docker = "false"
 
-env = {'WORKSPACE': args.bootstrap, 'BOOTSTRAP': "true", 'USE_DOCKER': use_docker}
+env = {'WORKSPACE': args.bootstrap, 'BOOTSTRAP': "true", 'USE_DOCKER': use_docker, 'PATH': os.environ['PATH']}
 sp.check_call(['.circleci/setup.sh'], env=env)
 _write_custom_activate(args.bootstrap)
 
