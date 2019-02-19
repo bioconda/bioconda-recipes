@@ -29,6 +29,9 @@ echo "location = ../plugin/GCContent/" >> jbrowse.conf
 git clone https://github.com/Arabidopsis-Information-Portal/ComboTrackSelector.git plugins/ComboTrackSelector/
 echo "[ plugins.ComboTrackSelector ]" >> jbrowse.conf
 echo "location = ../plugin/ComboTrackSelector/" >> jbrowse.conf
+cd plugins/ComboTrackSelector/
+patch -p1 < $RECIPE_DIR/combotrackselector.patch
+cd ../../
 
 # Add MultiBigWig plugin
 git clone https://github.com/elsiklab/multibigwig.git plugins/MultiBigWig/
@@ -39,6 +42,12 @@ echo "location = ../plugin/MultiBigWig/" >> jbrowse.conf
 git clone https://github.com/TAMU-CPT/bookmarks-jbrowse.git plugins/bookmarks/
 echo "[ plugins.bookmarks ]" >> jbrowse.conf
 echo "location = ../plugin/bookmarks/" >> jbrowse.conf
+
+# Add NeatFeatures tracktypes
+echo "[ plugins.NeatCanvasFeatures ]" >> jbrowse.conf
+echo "location = ../plugin/NeatCanvasFeatures/" >> jbrowse.conf
+echo "[ plugins.NeatHTMLFeatures ]" >> jbrowse.conf
+echo "location = ../plugin/NeatHTMLFeatures/" >> jbrowse.conf
 
 # For cpanm on osx
 export HOME=/tmp
