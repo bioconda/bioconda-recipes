@@ -26,6 +26,8 @@ import os
 print(os.path.realpath(\"/\".join(os.readlink(\"picard\").split(\"/\")[0:-1])))
 ")
 
+ls $ctat_mutations_INSTALL_PATH
+
 echo '#!/bin/bash' > ctat_mutations
 echo "export PICARD_HOME=$PICARD_HOME" >> ctat_mutations
 echo "export GATK_HOME=$GATK_HOME" >> ctat_mutations
