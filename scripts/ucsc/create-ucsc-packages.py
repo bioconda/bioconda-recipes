@@ -323,3 +323,4 @@ for block in parse_footer('FOOTER'):
         fout.write(open('include.patch').read())
 
 sys.stderr.write('\n')
+os.remove('FOOTER')
