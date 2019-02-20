@@ -60,13 +60,16 @@ popd
 # set up other dependencies
 rmdir externals/apegrunt
 git clone https://github.com/santeripuranen/apegrunt.git externals/apegrunt
-pushd externals/apegrunt && git checkout fded9d18f02b9d2d38ea260a847fef7c35e6b4fa && popd
-export CMAKE_MODULE_PATH=${RECIPE_DIR}
+pushd externals/apegrunt
+git checkout d37e6047bf06ffe4567a640d0d4086dbd1895209
+git apply ${RECIPE_DIR}/0001-use-no-apple-in-apegrunt.patch
+popd
 
 # build spydrpick
+export CMAKE_MODULE_PATH=${RECIPE_DIR}
 mkdir build && pushd build
 cmake -DTBB_ROOT=${PREFIX} -DBoost_INCLUDE_DIR=${BOOST_BUILT}/include -DBoost_LIBRARY_DIR=${BOOST_BUILT}/lib ..
 make VERBOSE=1
 install -d ${PREFIX}/bin
-install bin/aracne bin/SpydrPick ${PREFIX}/bin
+install bin/SpydrPick ${PREFIX}/bin
 popd
