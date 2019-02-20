@@ -6,4 +6,4 @@ if [ "$(uname)" == "Darwin" ]; then
 else
     cp kent/src/utils/userApps/fetchChromSizes $PREFIX/bin
 fi
-    chmod +x $PREFIX/bin/fetchChromSizes
+chmod +x $PREFIX/bin/fetchChromSizes

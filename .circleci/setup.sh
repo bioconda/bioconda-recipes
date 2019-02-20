@@ -26,7 +26,7 @@ if ! git diff --quiet HEAD...$UPSTREAM_REMOTE/master -- .circleci/; then
     echo 'You can do this, e.g., by running:'
     echo '  git fetch https://github.com/bioconda/bioconda-recipes.git master'
     echo '  git merge FETCH_HEAD'
-    # exit 1
+    exit 1
 fi
 git remote remove $UPSTREAM_REMOTE
 

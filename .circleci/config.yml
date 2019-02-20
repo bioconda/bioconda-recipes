@@ -15,7 +15,7 @@ variables:
     run:
       name: Download common definitions
       command: |
-        curl -s https://raw.githubusercontent.com/bioconda/bioconda-common/gcc7/common.sh > .circleci/common.sh
+        curl -s https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh > .circleci/common.sh
   setup: &setup
     run:
       name: Setup bioconda-utils
@@ -28,19 +28,6 @@ variables:
       LANG: en_US.UTF-8
   linux: &linux
     machine: true
-  macos_bulk: &macos_bulk
-    macos:
-      xcode: "8.3.3"
-    environment:
-      LC_ALL: en_US.UTF-8
-      LANG: en_US.UTF-8
-      BIOCONDA_LABEL: gcc7
-      CF_COMPILER_STACK: comp7
-  linux_bulk: &linux_bulk
-    machine: true
-    environment:
-      BIOCONDA_LABEL: gcc7
-      CF_COMPILER_STACK: comp7
   skip_fork: &skip_fork
     run:
       name: Check for fork
@@ -176,7 +163,7 @@ jobs:
 
   # build, test and upload for bulk branch on linux
   bulk-linux:
-    <<: *linux_bulk
+    <<: *linux
     steps:
       - *fail_fork
       - checkout
@@ -188,13 +175,11 @@ jobs:
           name: Building, testing, and uploading of all unpublished recipes
           command: |
             bioconda-utils build recipes config.yml \
-              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers \
-              --packages "bioconductor-*" "r-*" \
-              --check-channels conda-forge/label/gcc7 bioconda/label/gcc7 bioconda
+              --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
 
   # build, test and upload for bulk branch on macos
   bulk-macos:
-    <<: *macos_bulk
+    <<: *macos
     steps:
       - *fail_fork
       - checkout
@@ -206,9 +191,7 @@ jobs:
           name: Building, testing and uploading of all unpublished recipes
           command: |
             bioconda-utils build recipes config.yml \
-              --anaconda-upload \
-              --packages "bioconductor-*" "r-*" \
-              --check-channels conda-forge/label/gcc7 bioconda/label/gcc7 bioconda
+              --anaconda-upload
 
   # nightly build, test and upload of unpublished recipes on linux
   nightly-upload-linux:
