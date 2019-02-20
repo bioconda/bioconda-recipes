@@ -34,4 +34,6 @@ echo "export GATK_HOME=$GATK_HOME" >> ctat_mutations
 echo "echo \"PICARD_HOME is \$PICARD_HOME\"" >> ctat_mutations
 echo "echo \"GATK_HOME is \$GATK_HOME\"" >> ctat_mutations
 echo "$ctat_mutations_INSTALL_PATH/ctat_mutations \$@" >> ctat_mutations
+
+ls $PREFIX/bin
 chmod a+x ctat_mutations
