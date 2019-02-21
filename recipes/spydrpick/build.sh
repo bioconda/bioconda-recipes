@@ -61,7 +61,7 @@ popd
 rmdir externals/apegrunt
 git clone https://github.com/santeripuranen/apegrunt.git externals/apegrunt
 pushd externals/apegrunt
-git checkout d37e6047bf06ffe4567a640d0d4086dbd1895209
+git checkout 889986582ab6be9e1edfc307e7cfc25a705cfa2b
 git apply ${RECIPE_DIR}/0001-use-no-apple-in-apegrunt.patch ${RECIPE_DIR}/0002-AVX-to-SSE3-in-apegrunt.patch
 popd
 
