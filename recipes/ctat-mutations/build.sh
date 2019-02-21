@@ -14,8 +14,6 @@ cp -R ctat_mutations PyLib mutation_lib_prep plugins src testing LICENSE.txt REA
 #change permissions on ctat_mutations
 chmod a+x $ctat_mutations_INSTALL_PATH/ctat_mutations
 
-ls $ctat_mutations_INSTALL_PATH
-
 cd $PREFIX/bin
 
 GATK_HOME=$(python -c "\
