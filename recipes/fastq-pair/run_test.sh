@@ -8,4 +8,4 @@ cp left.fastq right.fastq sha256sums $TMPDIR
 cd $TMPDIR
 
 fastq_pair left.fastq right.fastq
-sha256sum -c sha256sums
+shasum -p -a 256 -c sha256sums
