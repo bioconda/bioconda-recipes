@@ -10,7 +10,6 @@ set -u
 # Common definitions from latest bioconda-utils master have to be downloaded before setup.sh is executed.
 # This file can be used to set BIOCONDA_UTILS_TAG and MINICONDA_VER.
 source .circleci/common.sh
-conda install git
 
 # Set path
 echo "export PATH=\"$WORKSPACE/miniconda/bin:$PATH\"" >> $BASH_ENV
