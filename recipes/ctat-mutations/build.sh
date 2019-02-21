@@ -14,6 +14,8 @@ cp -R ctat_mutations PyLib mutation_lib_prep plugins src testing LICENSE.txt REA
 #change permissions on ctat_mutations
 chmod a+x $ctat_mutations_INSTALL_PATH/ctat_mutations
 
+ls $ctat_mutations_INSTALL_PATH
+
 cd $PREFIX/bin
 
 GATK_HOME=$(python -c "\
@@ -26,8 +28,6 @@ import os
 print(os.path.realpath(\"/\".join(os.readlink(\"picard\").split(\"/\")[0:-1])))
 ")
 
-ls $ctat_mutations_INSTALL_PATH
-
 echo '#!/bin/bash' > ctat_mutations
 echo "export PICARD_HOME=$PICARD_HOME" >> ctat_mutations
 echo "export GATK_HOME=$GATK_HOME" >> ctat_mutations
@@ -35,5 +35,4 @@ echo "echo \"PICARD_HOME is \$PICARD_HOME\"" >> ctat_mutations
 echo "echo \"GATK_HOME is \$GATK_HOME\"" >> ctat_mutations
 echo "$ctat_mutations_INSTALL_PATH/ctat_mutations \$@" >> ctat_mutations
 
-ls $PREFIX/bin
 chmod a+x ctat_mutations
