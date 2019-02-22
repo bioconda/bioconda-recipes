@@ -17,9 +17,9 @@ cd build
 cmake .. -DLPSOLVE_INCLUDE_DIR="${PREFIX}/include/lpsolve" \
         -DLPSOLVE_LIBRARY_DIR="${PREFIX}/lib" \
         -DBoost_INCLUDE_DIR="${PREFIX}/include" \
-	-DBOOST_LIBRARYDIR="${PREFIX}/lib" \
+        -DBOOST_LIBRARYDIR="${PREFIX}/lib" \
         -DRDKIT_INCLUDE_DIR="${PREFIX}/include/rdkit" \
-	-DRDKIT_INCLUDE_EXT_DIR="${PREFIX}/include/rdkit/External" 
+        -DRDKIT_INCLUDE_EXT_DIR="${PREFIX}/include/rdkit/External" 
 #-DINCLUDE_TESTS=ON -DINCLUDE_TRAIN=ON \
 #-DRDKIT_LIBRARIES="${PREFIX}/lib"
 
@@ -28,5 +28,4 @@ make install
 
 # cp binaries 
 # cfm-annotate, cfm-id, cfm-id-precomputed, cfm-predict, compute-stats, fraggraph-gen, ISOTOPE.DAT
-# TODO what is the DAT file
 cp ../bin/* "$PREFIX"/bin/
