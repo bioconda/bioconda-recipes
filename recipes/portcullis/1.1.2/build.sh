@@ -13,7 +13,13 @@ export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
 # Build boost
-./build_boost.sh
+# ./build_boost.sh
+cd deps/boost
+./bootstrap.sh --prefix=build --with-libraries=chrono,exception,program_options,timer,filesystem,system,stacktrace
+./b2 --ignore-site-config headers
+./b2 --ignore-site-config cxxflags="-fPIC" link=static install
+cd ../..
+
 ./autogen.sh
 ./configure --disable-silent-rules --disable-dependency-tracking --prefix=$PREFIX
 make V=1
