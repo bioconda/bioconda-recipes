@@ -6,6 +6,7 @@ export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 export CFLAGS="-I$PREFIX/include -fPIC"
+export CXXFLAGS="-I$PREFIX/include -fPIC"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 export CPPFLAGS="-I$PREFIX/include"
