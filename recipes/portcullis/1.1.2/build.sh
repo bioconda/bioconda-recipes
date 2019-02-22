@@ -12,7 +12,7 @@ export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
 # Build boost
-# ./build_boost.sh
+./build_boost.sh
 ./autogen.sh
 ./configure --disable-silent-rules --disable-dependency-tracking --prefix=$PREFIX
 make V=1
