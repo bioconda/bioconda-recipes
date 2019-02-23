@@ -17,7 +17,7 @@ export LDFLAGS="-L$PREFIX/lib"
 cd deps/boost
 ./bootstrap.sh --prefix=build --with-libraries=chrono,exception,program_options,timer,filesystem,system,stacktrace
 ./b2 --ignore-site-config headers
-./b2 --ignore-site-config cxxflags="-fPIC" link=static install
+./b2 --ignore-site-config cxxflags="-fPIC --std=c++11 -no-pie" link=static install
 cd ../..
 
 ./autogen.sh
