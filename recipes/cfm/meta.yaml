@@ -1,16 +1,18 @@
-{% set CONDA_BOOST = "1.66" %}
 package:
-  name: cfm-id
+  name: cfm
   version: "33"
 
 source:
   # the download is a mirror of a snapshot of 
   # https://sourceforge.net/code-snapshots/svn/c/cf/cfm-id/code/cfm-id-code-r33-cfm.zip
   # which is only present for 24h or so
-  url: https://depot.galaxyproject.org/software/cfm/cfm_r33_src_all.zip
-  md5: f02c79016eae6ad95413213509513eed
-  patches:
-    - CMakeLists.patch
+  - url: https://depot.galaxyproject.org/software/cfm/cfm_r33_src_all.zip
+    sha256: 6518e70d2acf995d95d610312b234b5a69ee13ba0eed4836235ce32d73e32e35
+    patches:
+      - CMakeLists.patch
+  - url: https://depot.galaxyproject.org/software/cfm/cfm-train-example_r33_src_all.zip
+    sha256: 248f4b67b29690779e6aaee0a3dbe73d90945a88fe7cdb0cc93f9b65be09ef2d
+    folder: train-example
 
 build:
   number: 0
@@ -33,11 +35,10 @@ test:
   source_files:
     - example_candidates.txt
     - example_spec.txt
-  files:
-    - param_output.log
-    - param_config.txt
+    - train-example/example_output/param_output1.log
+    - train-example/example_param_config.txt
   commands:
-    - cfm-id example_spec.txt AN_ID example_candidates.txt 5 10.0 0.01 0.001 param_output.log_absent param_config.txt_absent DotProduct
+    - cfm-id example_spec.txt AN_ID example_candidates.txt 5 10.0 0.01 0.001 param_output1.log example_param_config.txt DotProduct
 about:
   home: https://sourceforge.net/p/cfm-id/wiki/Home/
   license: GPL-2
