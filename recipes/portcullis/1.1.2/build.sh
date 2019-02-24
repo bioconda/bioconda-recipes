@@ -5,12 +5,11 @@ set -x -e
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
-export CFLAGS="-I$PREFIX/include -fPIC"
-export CXXFLAGS="-I$PREFIX/include -fPIC"
-export LDFLAGS="-L$PREFIX/lib"
+export CFLAGS="-I$PREFIX/include -fPIC -fno-pie"
+export CXXFLAGS="-I$PREFIX/include -fPIC -fno-pie"
+export LDFLAGS="-L$PREFIX/lib -fPIC -fno-pie"
 export CPATH=${PREFIX}/include
-export CPPFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+export CPPFLAGS="-I$PREFIX/include -fPIC -fno-pie"
 
 # Build boost
 # ./build_boost.sh
