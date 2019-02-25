@@ -1,0 +1,28 @@
+diff --git a/setup.py b/setup.py
+index 84347c8..a2c0f0d 100644
+--- a/setup.py
++++ b/setup.py
+@@ -55,20 +55,15 @@ install_requirements(missing_requirements(requires))
+ 
+ excludes = ['irods', 'plugin']
+ 
+-sources = [x for x in glob.glob('htslib/*.c') if not any(e in x for e in excludes)] + glob.glob('htslib/cram/*.c')
+-# these have main()'s
+-sources = [x for x in sources if not x.endswith(('htsfile.c', 'tabix.c', 'bgzip.c'))]
+-sources.append('cyvcf2/helpers.c')
+-
+ import numpy as np
+ import platform
+ from Cython.Distutils import build_ext
+ 
+ cmdclass = {'build_ext': build_ext}
+ extension = [Extension("cyvcf2.cyvcf2",
+-                        ["cyvcf2/cyvcf2.pyx"] + sources,
+-                        libraries=['z', 'bz2', 'lzma', 'curl', 'ssl'] + (['crypt'] if platform.system() != 'Darwin' else []),
+-                        include_dirs=['htslib', 'cyvcf2', np.get_include()])]
++                        ["cyvcf2/cyvcf2.pyx", "cyvcf2/helpers.c"],
++                        libraries=['z', 'bz2', 'lzma', 'curl', 'ssl', 'hts'] + (['crypt'] if platform.system() != 'Darwin' else []),
++                        include_dirs=['cyvcf2', np.get_include()])]
+ 
+ 
+ setup(
