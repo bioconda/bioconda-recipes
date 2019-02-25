@@ -20,7 +20,7 @@ cmake .. -DLPSOLVE_INCLUDE_DIR="${PREFIX}/include/lpsolve" \
         -DBOOST_LIBRARYDIR="${PREFIX}/lib" \
         -DRDKIT_INCLUDE_DIR="${PREFIX}/include/rdkit" \
         -DRDKIT_INCLUDE_EXT_DIR="${PREFIX}/include/rdkit/External" 
-#-DINCLUDE_TESTS=ON -DINCLUDE_TRAIN=ON \
+        -DINCLUDE_TESTS=ON -DINCLUDE_TRAIN=ON \
 #-DRDKIT_LIBRARIES="${PREFIX}/lib"
 
 make 
