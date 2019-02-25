@@ -7,7 +7,7 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 export CFLAGS="-I$PREFIX/include -fPIC -fno-pie"
 export CXXFLAGS="-I$PREFIX/include -fPIC -fno-pie"
-export LDFLAGS="-L$PREFIX/lib -fPIC -fno-pie"
+export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 export CPPFLAGS="-I$PREFIX/include -fPIC -fno-pie"
 
