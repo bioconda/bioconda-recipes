@@ -452,7 +452,7 @@ def init_gpg():
     return key
 
 
-async def init_app():
+async def init_app(disable_internal_celery=True):
     """Initialize App
 
     This function is the entry point for wrappers that take an app factory
@@ -482,7 +482,8 @@ async def init_app():
     # Add routes collected above
     app.add_routes(web_routes)
 
-    init_celery(app, loglevel)
+    if not disable_internal_celery:
+        init_celery(app, loglevel)
 
     return app
 
