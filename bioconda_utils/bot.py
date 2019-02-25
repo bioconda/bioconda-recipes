@@ -423,22 +423,29 @@ def init_celery(app, loglevel):
     app.on_shutdown.append(collect_worker)
 
 
+def get_secret(name):
+    try:
+        with open(os.environ[name + "_FILE"]) as secret_file:
+            return secret_file.read()
+    except (FileNotFoundError, PermissionError, KeyError):
+        try:
+            return os.environ[name]
+        except KeyError:
+            raise ValueError(
+                f"Missing secrets: configure {name} or {name}_FILE to contain or point at secret"
+            ) from None
+
+
 def init_githubhandler(session):
     """Prepare Github API Handler"""
-    app_key = os.environ.get("APP_KEY_PEM")
-    if not app_key:
-        raise ValueError("Environment variable APP_KEY_PEM empty or not set")
-    app_id = os.environ.get("APP_ID")
-    if not app_id:
-        raise ValueError("Environment variable APP_ID empty or not set")
+    app_key = get_secret("APP_KEY")
+    app_id = get_secret("APP_ID")
     return GitHubAppHandler(session, BOT_NAME, app_key, app_id)
 
 
 def init_gpg():
     """Install GPG key from environment"""
-    gpg_key = os.environ.get("GPG_KEY")
-    if not gpg_key:
-        raise ValueError("Envionment variable GPG_KEY empty or not set")
+    gpg_key = get_secret("CODE_SIGNING_KEY")
     proc = subprocess.run(['gpg', '--import'],
                           input=gpg_key, stderr=subprocess.PIPE,
                           encoding='ascii', check=True)
