@@ -173,16 +173,21 @@ testing.
 Updating recipes for a pinning change
 =====================================
 
-For compatibility reasons, sometimes packages need to be built for specific versions of dependency (e.g., R, Python, or boost). The packages produced for a particular version of a dependency are said to be "pinned" to that dependency version. Bioconda has project wide pinnings for many common dependencies, such as numpy, R, and boost. These pinnings allow for consistency between package and facilitates adding multiple packages to the same conda environment (due to not requiring differing boost versions, for example). These pinnings are largely inherited from the [conda-forge project](https://github.com/conda-forge/conda-forge-pinning-feedstock) and bioconda then uses a particular version of them. On rare occasions these pinnings are updated (e.g., changing compiler versions, or updating the supported versions of Python) and many packages need to be updated project-wide to account for this. To facilitate such updates, `bioconda-utils` now has an `update-pinning` subcommand. To use this, first create a conda environment with bioconda-utils:
+For compatibility reasons, sometimes packages need to be built for specific versions of dependency (e.g., R, Python, or boost). The packages produced for a particular version of a dependency are said to be *pinned* to that dependency version. 
+
+Bioconda has project wide pinnings for many common dependencies, such as numpy, R, and boost. These pinnings allow for consistency between package and facilitates adding multiple packages to the same conda environment (due to not requiring differing boost versions, for example). These pinnings are largely inherited from the `conda-forge project
+<https://github.com/conda-forge/conda-forge-pinning-feedstock>`_ and Bioconda then uses a particular version of them. 
+
+On rare occasions these pinnings are updated (e.g., changing compiler versions, or updating the supported versions of Python) and many packages need to be updated project-wide to account for this. To facilitate such updates, ``bioconda-utils`` now has an ``update-pinning`` subcommand. To use this, first create a conda environment with bioconda-utils:
 
 .. code-block:: bash
 
     $ conda create -n bioconda-utils conda=4.5.11 python=3.6
     $ source activate bioconda-utils
     $ conda install -y git pip --file https://raw.githubusercontent.com/bioconda/bioconda-utils/master/bioconda_utils/bioconda_utils-requirements.txt
-    $ pip install https://github.com/bioconda/bioconda-utils
+    $ pip install git+https://github.com/bioconda/bioconda-utils
 
-You then have an environment with the most recent version of `bioconda-utils`. We will use deepTools as an example to show how to update a package and all of its dependencies as needed due to a change in pinnings. First ensure you're in the bioconda-recipes repository and then:
+You then have an environment with the most recent version of ``bioconda-utils``. Below we use *deepTools* as an example to show how to update a package and all of its dependencies as needed due to a change in pinnings. First ensure you're in the ``bioconda-recipes`` repository and then:
 
 .. code-block:: bash
 
@@ -216,4 +221,4 @@ You then have an environment with the most recent version of `bioconda-utils`. W
 	modified:   recipes/samtools/1.6/meta.yaml
 	modified:   recipes/samtools/meta.yaml
 
-This incremented the build number for the deepTools package as well as all of its dependencies. Note that the 2 dependencies not updated were skipped because it was determined that they were unaffected by the dependency change. In most cases the `--bump-only-python` should be used. This results in packages that simply need a rebuild due to a change in Python version to have their build numbers incremented. Such packages would eventually be built anyway, but this facilitates the update process.
+This incremented the build number for the deepTools package as well as all of its dependencies. Note that the 2 dependencies not updated were skipped because it was determined that they were unaffected by the dependency change. In most cases the ``--bump-only-python`` should be used. This results in packages that simply need a rebuild due to a change in Python version to have their build numbers incremented. Such packages would eventually be built anyway, but this facilitates the update process.
