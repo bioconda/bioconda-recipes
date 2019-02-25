@@ -5,7 +5,7 @@ set -x -e
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
-export CFLAGS="-I$PREFIX/include -fPIC -fno-pie"
+export CFLAGS="-I$PREFIX/include"
 export CXXFLAGS="-I$PREFIX/include -fPIC -fno-pie"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
@@ -16,7 +16,7 @@ export CPPFLAGS="-I$PREFIX/include -fPIC -fno-pie"
 cd deps/boost
 ./bootstrap.sh --prefix=build --with-libraries=chrono,exception,program_options,timer,filesystem,system,stacktrace
 ./b2 --ignore-site-config headers
-./b2 --ignore-site-config cxxflags="-fPIC -fno-pie --std=c++11" link=static install
+./b2 --ignore-site-config cxxflags="$CXXFLAGS" link=static install
 cd ../..
 
 ./autogen.sh
