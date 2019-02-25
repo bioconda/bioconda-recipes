@@ -43,6 +43,12 @@ git clone https://github.com/TAMU-CPT/bookmarks-jbrowse.git plugins/bookmarks/
 echo "[ plugins.bookmarks ]" >> jbrowse.conf
 echo "location = ../plugin/bookmarks/" >> jbrowse.conf
 
+# Add NeatFeatures tracktypes
+echo "[ plugins.NeatCanvasFeatures ]" >> jbrowse.conf
+echo "location = ../plugin/NeatCanvasFeatures/" >> jbrowse.conf
+echo "[ plugins.NeatHTMLFeatures ]" >> jbrowse.conf
+echo "location = ../plugin/NeatHTMLFeatures/" >> jbrowse.conf
+
 # For cpanm on osx
 export HOME=/tmp
 
