@@ -182,17 +182,18 @@ upstream changes.
 
 Python
 ------
-
-.. note::
-
-    If you have conda-build 3 installed locally and use ``conda skeleton``,
-    please see :ref:`cb3-recipes-in-cb2`.
-
 If a Python package is available on PyPI, use ``conda skeleton pypi
 <packagename>`` to create a recipe, then remove the ``bld.bat`` and any extra
 comments in ``meta.yaml`` and ``build.sh``. The test that is automatically
 added is probably sufficient. The exception is when the package also installs
 a command-line tool, in which case that should be tested as well.
+
+.. note::
+
+   Make sure you have a conda-build version 3.x when running
+   ``conda skeleton pypi <packagename>``. If you are still using conda-build
+   2.x, either update your conda-build package, or follow the migration
+   guidelines in :ref:`cb3-main`.
 
 - typical ``import`` check: `pysam
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/pysam>`_
@@ -311,7 +312,7 @@ though dependencies may also need recipes. Recipes for dependencies with an
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/bioconductor-limma>`_
 
 R (other sources)
-----------------
+-----------------
 
 If a package is only provided in a public repository (e.g. at github or
 bitbucket) or via some other website, first check with the authors of the

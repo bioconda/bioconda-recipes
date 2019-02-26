@@ -1,3 +1,5 @@
+.. _cb3-main:
+
 Conda build v3
 --------------
 
