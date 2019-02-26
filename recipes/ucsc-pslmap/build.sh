@@ -8,6 +8,7 @@ mkdir -p "$BINDIR"
 (cd kent/src/jkOwnLib && make)
 (cd kent/src/hg/lib && make)
 export LD_LIBRARY_PATH=$PREFIX/lib
+export LIBRARY_PATH=$PREFIX/lib
 (cd kent/src/utils/stringify && make)
 (cd kent/src/hg/utils/pslMap && make)
 cp bin/pslMap "$PREFIX/bin"
