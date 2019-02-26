@@ -126,8 +126,12 @@ dev suffixes, see `here
 
 "Noarch" packages
 ~~~~~~~~~~~~~~~~~
-**Update 7 Feb 2018** For now please DO NOT use ``noarch`` until technical
-compatibility issues are resolved.
+A `noarch` package must be created for pure python packages. To do so,
+add ``noarch: python`` to the ``build`` section of the ``meta.yaml`` file.
+
+.. Deprecated again
+... **Update 7 Feb 2018** For now please DO NOT use ``noarch`` until technical
+.. compatibility issues are resolved.
 
 .. Deprecated advice:
 .. A ``noarch`` package can be created for pure Python packages, data packages, or
