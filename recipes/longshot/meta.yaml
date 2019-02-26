@@ -1,0 +1,39 @@
+{% set version = "0.3.2" %}
+# this file is taken from the rust-bio recipe
+# https://github.com/bioconda/bioconda-recipes/blob/master/recipes/rust-bio-tools/meta.yaml
+
+package:
+  name: longshot
+  version: {{version}}
+
+build:
+  number: 0
+
+source:
+  url: https://github.com/pjedge/longshot/archive/{{ version }}.tar.gz
+  sha256: 6010ebde6934dace6498b25970faee3c0d28f11ef504e306980e359af29757a7
+
+requirements:
+  build:
+    - rust >=1.32
+    - {{ compiler('c') }}  # [not osx]
+    - {{ compiler('cxx') }}  # [not osx]
+    - clang_osx-64 # [osx]
+    - clangxx_osx-64 # [osx]
+    - pkg-config  # [osx]
+  host:
+    - zlib
+    - clangdev
+  run:
+    - zlib
+
+test:
+  commands:
+    - longshot --help
+    - longshot --version
+
+about:
+  home: https://github.com/pjedge/longshot
+  license: MIT
+  summary: |
+    Diploid SNV caller for error-prone reads.
