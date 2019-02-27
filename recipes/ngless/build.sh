@@ -13,7 +13,7 @@ export CPATH=${CONDA_PREFIX}/include
 mkdir -p fake-home
 export HOME=$PWD/fake-home
 export STACK_ROOT="$HOME/.stack"
-stack setup --local-bin-path ${CONDA_PREFIX}/bin
+stack setup --ghc-variant integersimple --local-bin-path ${CONDA_PREFIX}/bin
 make install WGET="wget --no-check-certificate" prefix=$CONDA_PREFIX
 
 #cleanup
