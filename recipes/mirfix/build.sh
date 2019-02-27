@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cp scripts/* ${PREFIX}/bin/.
+cp scripts/* ${PREFIX}/bin/
