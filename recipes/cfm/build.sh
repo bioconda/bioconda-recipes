@@ -29,5 +29,5 @@ make install
 #>&2 tree ..
 
 # cp binaries 
-#cp ../bin/cfm-* ../bin/compute-stats ../bin/fraggraph-gen ../bin/ISOTOPE.DAT "$PREFIX"/bin/
+cp -r ../bin/* $PREFIX/bin/
 
