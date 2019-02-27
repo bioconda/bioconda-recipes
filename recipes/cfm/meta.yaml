@@ -9,9 +9,9 @@ source:
   - url: https://depot.galaxyproject.org/software/cfm/cfm_r33_src_all.zip
     sha256: 6518e70d2acf995d95d610312b234b5a69ee13ba0eed4836235ce32d73e32e35
     patches:
-      - CMakeLists.patch
-  - url: https://depot.galaxyproject.org/software/cfm/cfm-train-example_r33_src_all.zip
-    sha256: 248f4b67b29690779e6aaee0a3dbe73d90945a88fe7cdb0cc93f9b65be09ef2d
+      - source.patch
+  - url: https://depot.galaxyproject.org/software/cfm-train-example/cfm-train-example_r33_src_all.zip
+    sha256: 1e17dd6cda69800e457b30af41356341fb9dec4ec362b477bf1c5a2469348c44
     folder: train-example
 
 build:
@@ -24,13 +24,12 @@ requirements:
   host:
     - boost-cpp
     - liblbfgs =1.10
-    - lp_solve
+    - lp_solve =5.5
     - mpich2
     - rdkit ==2018.09.1
   run:
     - boost-cpp
-    - liblbfgs =1.10
-    - lp_solve
+    - lp_solve =5.5
     - mpich2
     - rdkit ==2018.09.1
 
@@ -42,7 +41,12 @@ test:
     - train-example/example_output/param_output1.log
     - train-example/example_param_config.txt
   commands:
-    - cfm-id example_spec.txt AN_ID example_candidates.txt 5 10.0 0.01 0.001 param_output1.log example_param_config.txt DotProduct
+    - cfm-id example_spec.txt AN_ID example_candidates.txt 5 10.0 0.01 0.001 train-example/example_output/param_output1.log train-example/example_param_config.txt DotProduct
+    - fraggraph-gen CC 2 + fullgraph
+    - fraggraph-gen CC 2 "*" fragonly
+    - cfm-test
+    - mpiexec -n 2 cfm-test
+
 about:
   home: https://sourceforge.net/p/cfm-id/wiki/Home/
   license: GPL-2
