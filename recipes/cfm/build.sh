@@ -12,7 +12,7 @@ cp "$PREFIX/include/rdkit/GraphMol/inchi.h" "$PREFIX/include/rdkit/External/INCH
 mkdir build
 cd build
 
-cmake .. -DCFM_OUTPUT_DIR="${PREFIX}/" \
+cmake .. -DCFM_OUTPUT_DIR="${PREFIX}/bin/" \
         -DLPSOLVE_INCLUDE_DIR="${PREFIX}/include/lpsolve" \
         -DLPSOLVE_LIBRARY_DIR="${PREFIX}/lib" \
         -DBoost_INCLUDE_DIR="${PREFIX}/include" \
@@ -23,11 +23,15 @@ cmake .. -DCFM_OUTPUT_DIR="${PREFIX}/" \
         -DINCLUDE_TESTS=ON -DINCLUDE_TRAIN=ON
 #-DRDKIT_LIBRARIES="${PREFIX}/lib"
 
-make -j$CPU_COUNT;
-make install
+make -j$CPU_COUNT VERBOSE=1;
+make install VERBOSE=1;
 
-#>&2 tree ..
+>&2 echo "----------"
+>&2 ls ../
+
+>&2 echo "----------"
+>&2 ls ./
 
 # cp binaries 
-cp -r ../bin/* $PREFIX/bin/
+>&2 which cfm-id
 

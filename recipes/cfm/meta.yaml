@@ -6,6 +6,11 @@ source:
   # the download is a mirror of a snapshot of 
   # https://sourceforge.net/code-snapshots/svn/c/cf/cfm-id/code/cfm-id-code-r33-cfm.zip
   # which is only present for 24h or so
+  #
+  # patch: - comment tests with missing data
+  # - bugfix in cfm-code/EM.cpp (cerr -> endl)
+  # - fix for tools that try to access ISOTOPE.DAT or the tests folder at the working 
+  #   dir (prepend $CFM_OUTPUT_DIR with the help of macros)
   - url: https://depot.galaxyproject.org/software/cfm/cfm_r33_src_all.zip
     sha256: 6518e70d2acf995d95d610312b234b5a69ee13ba0eed4836235ce32d73e32e35
     patches:
@@ -25,12 +30,12 @@ requirements:
     - boost-cpp
     - liblbfgs =1.10
     - lp_solve =5.5
-    - mpich2
+    - mpich
     - rdkit ==2018.09.1
   run:
     - boost-cpp
     - lp_solve =5.5
-    - mpich2
+    - mpich
     - rdkit ==2018.09.1
 
 # files taken from https://sourceforge.net/p/cfm-id/code/HEAD/tree/supplementary_material/cfm-train_example/train_example/
@@ -44,6 +49,7 @@ test:
     - cfm-id example_spec.txt AN_ID example_candidates.txt 5 10.0 0.01 0.001 train-example/example_output/param_output1.log train-example/example_param_config.txt DotProduct
     - fraggraph-gen CC 2 + fullgraph
     - fraggraph-gen CC 2 "*" fragonly
+#     - echo "TEST" > testfile
     - cfm-test
     - mpiexec -n 2 cfm-test
 
