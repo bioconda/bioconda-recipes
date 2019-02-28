@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LDFLAGS=""
-make static-libs && make STATIC_BUILD=1
+make CXX=$CXX CPP=$CXX CC=$CC LDLIBS="-L$PREFIX/lib -lz -ltbb -ltbbmalloc -lpthread"
 
 binaries="\
 bowtie2 \
