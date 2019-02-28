@@ -1,0 +1,58 @@
+{% set version = '1.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-metstat
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/MetStaT_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/MetStaT/MetStaT_{{ version }}.tar.gz
+  sha256: 77c25984193ebbaee80596ebfedc9bf9c1c142ba0a25d542a99376144d7f0010
+
+build:
+  merge_build_host: True  # [win]
+  number: 2
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - r-mass
+    - r-abind
+    - r-pls
+
+  run:
+    - r-base
+    - r-mass
+    - r-abind
+    - r-pls
+
+test:
+  commands:
+
+    - $R -e "library('MetStaT')"           # [not win]
+    - "\"%R%\" -e \"library('MetStaT')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=MetStaT
+  license: Apache License (== 2.0)
+  summary: A diverse collection of metabolomics related statistical tools.
+  license_family: APACHE
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak
