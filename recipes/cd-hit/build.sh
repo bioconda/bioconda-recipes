@@ -5,6 +5,7 @@ export CPPFLAGS="-I$PREFIX/include"
 export CXXFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
+sed -i.bak 's/^CC =$//g' Makefile
 
 #cat > test-openmp.cc <<END
 #include <omp.h>
@@ -17,7 +18,7 @@ else
   OPENMP_SUPPORTED=no
 fi
 
-make -e openmp=$OPENMP_SUPPORTED
+make openmp=$OPENMP_SUPPORTED
 
 mkdir -p $PREFIX/bin
 make install PREFIX=$PREFIX/bin
