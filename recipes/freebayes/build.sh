@@ -24,7 +24,7 @@ sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' filevercmp/Makefile
 
 make -e
 
-cp tabix/tabix.hpp ../src
+cp tabixpp/tabix.hpp ../src
 
 cd ../src
 
