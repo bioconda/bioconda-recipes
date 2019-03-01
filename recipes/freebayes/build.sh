@@ -20,14 +20,25 @@ export CXXFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
 cd vcflib
 
 sed -i.bak 's/ld/$(LD)/' smithwaterman/Makefile
-sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' filevercmp/Makefile
+#sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' filevercmp/Makefile
+
+cd smithwaterman
 
 make -e
+
+cd ../tabixpp
+
+make -e
+
+cd ..
 
 cp tabixpp/tabix.hpp ../src
 
 cd ../src
 
+sed -i.bak 's/^CXX=.*$//g' Makefile
+sed -i.bak 's/^C=gcc//g' Makefile
+sed -i.bak 's:INCLUDE =:INCLUDE = $PREFIX/include:' Makefile
 
 # Set exports.
 export CFLAGS="-I$PREFIX/include"
