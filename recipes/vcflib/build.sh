@@ -13,7 +13,7 @@ export CXXFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
 
 #sed -i.bak 's/$</$< $(LDFLAGS)/g' smithwaterman/Makefile
 sed -i.bak 's/ld/$(LD)/' smithwaterman/Makefile
-
+sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' filevercmp/Makefile
 
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
 if [ "$(uname)" == "Darwin" ]; then
