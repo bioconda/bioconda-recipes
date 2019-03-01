@@ -38,6 +38,7 @@ cd ../src
 
 sed -i.bak 's/^CXX=.*$//g' Makefile
 sed -i.bak 's/^C=gcc//g' Makefile
+sed -i.bak 's/C)/CC)/' Makefile
 #sed -i.bak 's:INCLUDE =:INCLUDE = $PREFIX/include:' Makefile
 
 # Set exports.
