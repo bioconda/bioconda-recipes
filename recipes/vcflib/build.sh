@@ -9,7 +9,9 @@ export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
 export CXXFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
 
 #sed -i.bak 's/CFFFLAGS:= -O3/CFFFLAGS=-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x/' smithwaterman/Makefile
-sed -i.bak 's/CFLAGS/CXXFLAGS/g' smithwaterman/Makefile
+#sed -i.bak 's/CFLAGS/CXXFLAGS/g' smithwaterman/Makefile
+
+sed -i.bak 's/$</$< $(LDFLAGS)/g' smithwaterman/Makefile
 
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
 if [ "$(uname)" == "Darwin" ]; then
