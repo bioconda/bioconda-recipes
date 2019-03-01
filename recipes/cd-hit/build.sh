@@ -1,6 +1,8 @@
 #!/bin/sh
 
 export CFLAGS="-I$PREFIX/include"
+export CPPFLAGS="-I$PREFIX/include"
+export CXXFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
 
@@ -15,7 +17,7 @@ else
   OPENMP_SUPPORTED=no
 fi
 
-make openmp=$OPENMP_SUPPORTED
+make -e openmp=$OPENMP_SUPPORTED
 
 mkdir -p $PREFIX/bin
 make install PREFIX=$PREFIX/bin
