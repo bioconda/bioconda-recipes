@@ -8,6 +8,7 @@ export INCLUDES="-Ihtslib -I$PREFIX/include -Itabixpp/htslib -I\$(INC_DIR) -L. -
 export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
 export CXXFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
 
+sed -i.bak 's/CFLAGS:= -O3/CFLAGS=-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x/" smithwaterman/Makefile
 
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
 if [ "$(uname)" == "Darwin" ]; then
