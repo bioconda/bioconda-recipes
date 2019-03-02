@@ -23,7 +23,6 @@ sed -i.bak 's/ld/$(LD)/' smithwaterman/Makefile
 #sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' filevercmp/Makefile
 
 cd smithwaterman
-
 make -e
 
 cd ../tabixpp
@@ -33,18 +32,16 @@ make -e
 cd ..
 
 cp tabixpp/tabix.hpp ../src
+#cd ../SeqLib/htslib/
+#make
+#cd ../
 
-cd ../SeqLib/htslib/
-make
+#export CC=${CC}
+#export CXX=${CXX}
+#export CXXFLAGS=${CXXFLAGS}
+#export LDFLAGS="-L$PREFIX/lib"
 
-cd ../
-
-export CC=${CC}
-export CXX=${CXX}
-export CXXFLAGS=${CXXFLAGS}
-export LDFLAGS="-L$PREFIX/lib"
-
-./configure --prefix=$PREFIX 
+#./configure --prefix=$PREFIX 
 
 cd ../src
 
@@ -61,7 +58,7 @@ export LIBRARY_PATH=${PREFIX}/lib
 
 # Make autoversion.
 make autoversion
-make -e CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
+make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
 cd ..
 
 # Translate for Python 3 if needed.
