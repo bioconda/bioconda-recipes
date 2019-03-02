@@ -20,16 +20,18 @@ export CXXFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
 cd vcflib
 
 sed -i.bak 's/ld/$(LD)/' smithwaterman/Makefile
-#sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' filevercmp/Makefile
-
-cd smithwaterman
-make -e
-
-cd ../tabixpp
+sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' filevercmp/Makefile
 
 make -e
 
-cd ..
+#cd smithwaterman
+#make -e
+
+#cd ../tabixpp
+
+#make -e
+
+#cd ..
 
 cp tabixpp/tabix.hpp ../src
 #cd ../SeqLib/htslib/
