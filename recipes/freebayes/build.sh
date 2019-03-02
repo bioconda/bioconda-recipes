@@ -38,8 +38,13 @@ cd ../SeqLib/htslib/
 make
 
 cd ../
-./configure CC=$CC CXX=$CXX --prefix=$PREFIX
-make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" 
+
+export CC=${CC}
+export CXX=${CXX}
+export CXXFLAGS=${CXXFLAGS}
+export LDFLAGS="-L$PREFIX/lib"
+
+./configure --prefix=$PREFIX 
 
 cd ../src
 
