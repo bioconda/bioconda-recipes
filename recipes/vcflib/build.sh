@@ -18,6 +18,10 @@ sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' filevercmp/Makefile
 # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14
 if [ "$(uname)" == "Darwin" ]; then
     sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' smithwaterman/Makefile
+    export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
+    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' vcflib/intervaltree/Makefile
+    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' Makefile
+    
 fi
 # tabix missing library https://github.com/ekg/tabixpp/issues/5
 # Uses newline trick for OSX from: http://stackoverflow.com/a/24299845/252589
@@ -29,3 +33,14 @@ make -e
 
 mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin
+
+
+if [ "$(uname)" == "Darwin" ]; then
+    # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14.
+    sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/g' vcflib/smithwaterman/Makefile
+    export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
+
+    # Patch vcflib: fix for missing <thread> include.
+    
+    
+fi
