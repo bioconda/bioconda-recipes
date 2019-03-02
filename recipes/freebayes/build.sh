@@ -39,7 +39,7 @@ cd ../src
 sed -i.bak 's/^CXX=.*$//g' Makefile
 sed -i.bak 's/^C=gcc//g' Makefile
 sed -i.bak 's/C)/CC)/' Makefile
-#sed -i.bak "s:INCLUDE =:INCLUDE = -I$PREFIX/include:" Makefile
+sed -i.bak "s:INCLUDE =:INCLUDE = -I$PREFIX/include:" Makefile
 #sed -i.bak 's/make/make -e/g' Makefile
 
 
@@ -51,7 +51,7 @@ export LIBRARY_PATH=${PREFIX}/lib
 
 # Make autoversion.
 make autoversion
-make -e CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
+make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
 cd ..
 
 # Translate for Python 3 if needed.
