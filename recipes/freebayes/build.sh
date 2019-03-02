@@ -63,7 +63,7 @@ sed -i.bak "s:LIBS):LIBS) -L$LIBRARY_PATH:g" Makefile
 
 # Make autoversion.
 make autoversion
-make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" CFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -g -I$PREFIX/include -L$PREFIX/lib"
+make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" CFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -g -fPIC -I$PREFIX/include -L$PREFIX/lib"
 cd ..
 
 # Translate for Python 3 if needed.
