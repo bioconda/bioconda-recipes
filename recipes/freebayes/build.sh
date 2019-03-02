@@ -34,7 +34,10 @@ cd ..
 
 cp tabixpp/tabix.hpp ../src
 
-cd ../SeqLib 
+cd ../SeqLib/htslib/
+make
+
+cd ../
 ./configure
 make
 
