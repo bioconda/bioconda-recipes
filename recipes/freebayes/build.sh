@@ -49,7 +49,8 @@ export LIBRARY_PATH=${PREFIX}/lib
 
 # Make autoversion.
 make autoversion
-make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
+#make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
+make -e
 cd ..
 
 # Translate for Python 3 if needed.
