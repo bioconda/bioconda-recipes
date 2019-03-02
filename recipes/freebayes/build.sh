@@ -43,12 +43,13 @@ sed -i.bak 's/C)/CC)/' Makefile
 
 # Set exports.
 export CFLAGS="-I$PREFIX/include"
-export CXXFLAGS="${CXXFLAGS} -I$PREFIX/include"
+export C_INCLUDE_PATH=$PREFIX/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
 # Make autoversion.
 make autoversion
-make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" CXXFLAGS="${CXXFLAGS}"
+make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib"
 cd ..
 
 # Translate for Python 3 if needed.
