@@ -57,7 +57,7 @@ export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
-sed -i.bak 's:LIBS):LIBS) ($LIBRARY_PATH):g' Makefile
+sed -i.bak "s:LIBS):LIBS) $LIBRARY_PATH:g" Makefile
 
 
 
