@@ -24,26 +24,7 @@ sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' filevercmp/Makefile
 
 make -e
 
-#cd smithwaterman
-#make -e
-
-#cd ../tabixpp
-
-#make -e
-
-#cd ..
-
 cp tabixpp/tabix.hpp ../src
-#cd ../SeqLib/htslib/
-#make
-#cd ../
-
-#export CC=${CC}
-#export CXX=${CXX}
-#export CXXFLAGS=${CXXFLAGS}
-#export LDFLAGS="-L$PREFIX/lib"
-
-#./configure --prefix=$PREFIX 
 
 cd ../src
 
@@ -60,8 +41,6 @@ export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
 sed -i.bak "s:LIBS):LIBS) -L$LIBRARY_PATH:g" Makefile
-
-
 
 # Make autoversion.
 make autoversion
