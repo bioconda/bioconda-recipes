@@ -34,13 +34,3 @@ make -e
 mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin
 
-
-if [ "$(uname)" == "Darwin" ]; then
-    # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14.
-    sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/g' vcflib/smithwaterman/Makefile
-    export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
-
-    # Patch vcflib: fix for missing <thread> include.
-    
-    
-fi
