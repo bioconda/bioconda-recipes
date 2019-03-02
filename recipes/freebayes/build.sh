@@ -40,6 +40,8 @@ sed -i.bak 's/^CXX=.*$//g' Makefile
 sed -i.bak 's/^C=gcc//g' Makefile
 sed -i.bak 's/C)/CC)/' Makefile
 sed -i.bak 's:INCLUDE =:INCLUDE = -I$PREFIX/include:' Makefile
+sed -i.bak 's/make/make -e/g' Makefile
+
 
 # Set exports.
 export CFLAGS="-I$PREFIX/include"
