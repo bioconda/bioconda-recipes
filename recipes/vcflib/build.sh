@@ -19,7 +19,7 @@ sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' filevercmp/Makefile
 if [ "$(uname)" == "Darwin" ]; then
     sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/' smithwaterman/Makefile
     export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
-    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' vcflib/intervaltree/Makefile
+    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' /intervaltree/Makefile
     sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' Makefile
     
 fi
