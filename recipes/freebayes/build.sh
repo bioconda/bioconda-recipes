@@ -39,7 +39,7 @@ make
 
 cd ../
 ./configure
-make
+make CPPFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" 
 
 cd ../src
 
