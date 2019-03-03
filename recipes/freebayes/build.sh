@@ -6,7 +6,7 @@ if [ "$(uname)" == "Darwin" ]; then
     export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
     sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' vcflib/intervaltree/Makefile
     sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' vcflib/Makefile
-    sed -i.bak 's/if ( n_data/if ( \*n_data/' /vcflib/src/cdflib.cpp
+    sed -i.bak 's/if ( n_data/if ( \*n_data/' vcflib/src/cdflib.cpp
 fi
 
 
