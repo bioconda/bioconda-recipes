@@ -4,9 +4,9 @@ if [ "$(uname)" == "Darwin" ]; then
     # MacOSX Build fix: https://github.com/chapmanb/homebrew-cbl/issues/14.
     sed -i.bak 's/LDFLAGS=-Wl,-s/LDFLAGS=/g' vcflib/smithwaterman/Makefile
     export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
-    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' intervaltree/Makefile
-    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' Makefile
-    sed -i.bak 's/if ( n_data/if ( \*n_data/' src/cdflib.cpp
+    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' vcflib/intervaltree/Makefile
+    sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' vcflib/Makefile
+    sed -i.bak 's/if ( n_data/if ( \*n_data/' /vcflib/src/cdflib.cpp
 fi
 
 
