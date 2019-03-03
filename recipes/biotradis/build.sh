@@ -1,4 +1,8 @@
 #!/bin/sh
 set -x -e
-HOME=/tmp
-cpanm -f Bio::Tradis@1.4.1
+mkdir -p $PREFIX/bin
+mkdir -p $PREFIX/lib
+
+cp -r bin/* $PREFIX/bin
+cp -r lib/* $PREFIX/lib
+
