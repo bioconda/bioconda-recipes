@@ -21,6 +21,7 @@ if [ "$(uname)" == "Darwin" ]; then
     export CXXFLAGS="${CXXFLAGS} -std=c++11 -stdlib=libc++"
     sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' intervaltree/Makefile
     sed -i.bak 's/-std=c++0x/-std=c++11 -stdlib=libc++/g' Makefile
+    sed -i.bak 's/if ( n_data/if ( \*n_data/' src/cdflib.cpp
     
 fi
 # tabix missing library https://github.com/ekg/tabixpp/issues/5
