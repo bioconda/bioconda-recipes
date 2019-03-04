@@ -1,0 +1,43 @@
+{% set name = "sequenza-utils" %}
+{% set version = "2.1.9999b0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: c011630692b24a9750fee8b25c725d62d9cd8e342e8ffcbff2b9efd904e4e92b
+
+build:
+  number: 0
+  entry_points:
+    - sequenza-utils = sequenza.commands:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - pip
+    - python
+  run:
+    - python
+    # the following are needed for certain commands
+    - samtools
+    - tabix
+
+test:
+  imports:
+    - sequenza
+    - sequenza.programs
+  commands:
+    - sequenza-utils --help
+
+about:
+  home: http://sequenza-utils.readthedocs.org
+  license: GNU General Public v3 (GPLv3)
+  license_family: GPL3
+  summary: Analysis of cancer sequencing samples, utilities for the R package sequenza
+
