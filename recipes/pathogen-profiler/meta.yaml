@@ -1,0 +1,43 @@
+{% set name = "pathogen-profiler" %}
+{% set version = "0.1" %}
+{% set sha256 = "cd9e9d55a05e162482996a589386f81450b089d3a40aa516675b7b0b3d9e51e2" %}
+
+package:
+  name: {{name}}
+  version: {{version}}
+
+source:
+  url: https://github.com/jodyphelan/{{name}}/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
+
+build:
+  script: python -m pip install --no-deps --ignore-installed .
+  noarch: python
+  number: 1
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - trimmomatic
+    - bwa
+    - bowtie2
+    - minimap2
+    - parallel
+    - samtools=1.9
+    - bcftools=1.9
+    - tqdm
+
+test:
+  imports:
+    - pathogenprofiler
+  commands:
+    - splitchr.py -h
+
+about:
+  home: https://github.com/jodyphelan/{{ name }}
+  license: GPL3
+  license_file: LICENSE
+  summary: Library giving access to classes and functions to create a profiling tool to look for mutations from NGS data.
