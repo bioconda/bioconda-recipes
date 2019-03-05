@@ -5,7 +5,7 @@ package:
 source:
   # the download is a mirror of a snapshot of 
   # https://sourceforge.net/code-snapshots/svn/c/cf/cfm-id/code/cfm-id-code-r33-cfm.zip
-  # which is only present for 24h or so
+  # which is only present for ~24h
   #
   # patch: - comment tests with missing data
   # - bugfix in cfm-code/EM.cpp (cerr -> endl)
@@ -38,20 +38,29 @@ requirements:
     - mpich
     - rdkit ==2018.09.1
 
-# files taken from https://sourceforge.net/p/cfm-id/code/HEAD/tree/supplementary_material/cfm-train_example/train_example/
+# - real tests currently only for fraggraph-gen and the test binary
+# - other binaries need to much memory with the available test data which is most likely the 
+#   reason for the failing bioconda CI tests 
+# - current test files are taken from https://sourceforge.net/p/cfm-id/code/HEAD/tree/supplementary_material/cfm-train_example/train_example/
+#   The MPI test would probably need configuration on the bioconda side to run. Currently fails with: 
+# `PID_nem_tcp_init(379).............: gethostbyname failed, static.162.252.209.104.cyberlynk.net (errno 1)`
 test:
-  source_files:
-    - example_candidates.txt
-    - example_spec.txt
-    - train-example/example_output/param_output1.log
-    - train-example/example_param_config.txt
+#   source_files:
+#     - example_candidates.txt
+#     - example_spec.txt
+#     - train-example/example_output/param_output1.log
+#     - train-example/example_param_config.txt
   commands:
-    - cfm-id example_spec.txt AN_ID example_candidates.txt 5 10.0 0.01 0.001 train-example/example_output/param_output1.log train-example/example_param_config.txt DotProduct
+#     - cfm-id example_spec.txt AN_ID example_candidates.txt 5 10.0 0.01 0.001 train-example/example_output/param_output1.log train-example/example_param_config.txt DotProduct
+    - which cfm-annotate
+    - which cfm-id
+    - which cfm-id-precomputed
+    - which cfm-predict
+    - which cfm-train
     - fraggraph-gen CC 2 + fullgraph
     - fraggraph-gen CC 2 "*" fragonly
-#     - echo "TEST" > testfile
     - cfm-test
-    - mpiexec -n 2 cfm-test
+    - mpiexec -launcher fork -n 2 cfm-test
 
 about:
   home: https://sourceforge.net/p/cfm-id/wiki/Home/
