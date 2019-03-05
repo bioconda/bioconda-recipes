@@ -1,13 +1,13 @@
 #!/bin/bash
 MEME_ETC_DIR=${PREFIX}/etc
-cpanm YAML
-cpanm HTML::PullParser
-cpanm XML::Simple
-cpanm CGI
-cpanm HTML::Template
-cpanm HTML::Parse
-cpanm CGI::Application
-cpanm XML::Parser::Expat --configure-args "EXPATLIBPATH=$PREFIX/lib" --configure-args "EXPATHINCPATH=$PREFIX/include"
+HOME=/tmp cpanm YAML
+HOME=/tmp cpanm HTML::PullParser
+HOME=/tmp cpanm XML::Simple
+HOME=/tmp cpanm CGI
+HOME=/tmp cpanm HTML::Template
+HOME=/tmp cpanm HTML::Parse
+HOME=/tmp cpanm CGI::Application
+HOME=/tmp cpanm XML::Parser::Expat --configure-args "EXPATLIBPATH=$PREFIX/lib" --configure-args "EXPATHINCPATH=$PREFIX/include"
 
 ./configure --prefix="$PREFIX" --with-gnu-ld
 
