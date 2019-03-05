@@ -1,11 +1,15 @@
 #!/bin/bash
-set -e
 MEME_ETC_DIR=${PREFIX}/etc
-HOME=/tmp cpanm CGI::Application
-HOME=/tmp cpanm XML::Parser::Expat --configure-args "EXPATLIBPATH=$PREFIX/lib" --configure-args "EXPATHINCPATH=$PREFIX/include"
-perl scripts/dependencies.pl
+cpanm YAML
+cpanm HTML::PullParser
+cpanm XML::Simple
+cpanm CGI
+cpanm HTML::Template
+cpanm HTML::Parse
+cpanm CGI::Application
+cpanm XML::Parser::Expat --configure-args "EXPATLIBPATH=$PREFIX/lib" --configure-args "EXPATHINCPATH=$PREFIX/include"
 
-./configure --prefix="$PREFIX"
+./configure --prefix="$PREFIX" --with-gnu-ld
 
 make clean
 make AM_CFLAGS='-DNAN="(0.0/0.0)"'
