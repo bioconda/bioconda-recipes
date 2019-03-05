@@ -18,12 +18,3 @@ make AM_CFLAGS='-DNAN="(0.0/0.0)"'
 
 make install
 
-ln -s $PREFIX/libexec/meme*/* $PREFIX/bin/
-
-# if building with python3,
-# modify meme-chip script to use python3 version of DREME
-if [ $PY3K==1 ]; then
-    sed -i.bak  '994s/dreme/dreme-py3/' $PREFIX/bin/meme-chip
-    rm $PREFIX/bin/meme-chip.bak
-fi
-
