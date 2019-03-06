@@ -1,15 +1,16 @@
-package:
-  name: meme
-  version: 4.8.1
-
 source:
-  url: http://alternate.meme-suite.org/meme-software/4.8.1/meme_4.8.1.tar.gz
-  sha256: c3ad3ca26bc2a7130c5eceb64e1745275c317a5469e98fc8759a9e56babccb8c
+  url: http://alternate.meme-suite.org/meme-software/4.11.1/meme_4.11.1.tar.gz
+  md5: 8d04213c4feddf31d4f620060fdc6b97
   patches:
     - mast.patch
 
+package:
+  name: meme
+  version: 4.11.1
+
 build:
-  number: 0
+  number: 4
+  skip: True  # [osx  or py3k]
   detect_binary_files_with_prefix: True
 
 requirements:
@@ -17,49 +18,34 @@ requirements:
     - {{ compiler('c') }}
   host:
     - yaml
-    - python =2.7
+    - python
     - perl
-    - ghostscript
+    - ghostscript   #[linux]
     - zlib
     - libxslt
     - libxml2
     - expat
-    - perl-xml-parser
+    - perl-xml-parser #[linux]
     - perl-app-cpanminus
-    - perl-yaml
-    - perl-xml-simple
-    - perl-html-template
-    - perl-cgi
   run:
     - yaml
     - expat
-    - python =2.7
+    - python
     - perl
     - zlib
-    - xz
     - libxslt
     - libxml2
-    - ghostscript
-    - perl-xml-parser
-    - perl-yaml
-    - perl-xml-simple
-    - perl-cgi
-    - perl-html-template
+    - ghostscript   #[linux]
+    - perl-xml-parser #[linux]
 
 test:
   commands:
-    - meme -version
-    - mast -version
-    - meme-chip 2>&1 | grep FIMO > /dev/null
-    - centrimo 2>&1 | grep maxreg > /dev/null
+    - "meme -h 2>&1 | grep fraction > /dev/null"
+    - "meme-chip 2>&1 | grep FIMO > /dev/null"
+    - "centrimo 2>&1 | grep maxreg > /dev/null"
 
 about:
-  home: http://alternate.meme-suite.org/
+  home: http://alternate.meme-suite.org
   license: Custom
   license_file: COPYING
   summary: Motif based sequence Analysis tools
-
-extra:
-  container:
-    # openmpi needs ssh/rsh
-    extended-base: true
