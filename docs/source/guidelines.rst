@@ -129,24 +129,8 @@ dev suffixes, see `here
 A `noarch` package must be created for pure python packages. To do so,
 add ``noarch: python`` to the ``build`` section of the ``meta.yaml`` file.
 
-.. Deprecated again
-... **Update 7 Feb 2018** For now please DO NOT use ``noarch`` until technical
-.. compatibility issues are resolved.
-
-.. Deprecated advice:
-.. A ``noarch`` package can be created for pure Python packages, data packages, or
-   packages that do not require compilation. This single ``noarch`` package can be
-   used across multiple platforms, which saves on build time and saves on storage
-   space on the bioconda channel.
-
-.. For pure Python packages, add ``noarch: python`` to the ``build`` section.
-
-.. For other generic packages (like a data package), add ``noarch: generic`` to
-   the ``build`` section.
-
-.. See `here
-   <https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_ for
-   more details.
+ For other generic packages (like a data package), add ``noarch: generic`` to
+  the ``build`` section.
 
 Dependencies
 ~~~~~~~~~~~~
@@ -207,7 +191,7 @@ a command-line tool, in which case that should be tested as well.
 
 
 By default, Python recipes (those that have `python` listed as a dependency)
-must be successfully built and tested on Python 2.7, 3.4, and 3.5 in order to
+must be successfully built and tested on Python 2.7, 3.6, and 3.7 in order to
 pass. However, many Python packages are not fully compatible across all Python
 versions. Use the `preprocessing selectors
 <http://conda.pydata.org/docs/building/meta-yaml.html#preprocessing-selectors>`_
@@ -219,15 +203,15 @@ following:
 
 .. code-block:: yaml
 
-    build:
-      skip: True  # [not py27]
+    host:
+      -   python <3
 
-Or a package that only runs on Python 3.4 and 3.5:
+Or a package that only runs on Python 3.6 and 3.7:
 
 .. code-block:: yaml
 
-    build:
-      skip: True # [py27]
+    host:
+      - python >=3
 
 Alternatively, for straightforward compatibility fixes you can apply a `patch
 in the meta.yaml`
