@@ -1,12 +1,12 @@
 #!/bin/bash
 
 MEME_ETC_DIR=${PREFIX}/etc
-#cpanm YAML
-#cpanm HTML::PullParser
-#cpanm XML::Simple
+HOME=/tmp cpanm YAML
+HOME=/tmp cpanm HTML::PullParser
+HOME=/tmp cpanm XML::Simple
 HOME=/tmp cpanm CGI
 HOME=/tmp cpanm HTML::Template
-#cpanm HTML::Parse
+HOME=/tmp cpanm HTML::Parse
 HOME=/tmp cpanm CGI::Application
 HOME=/tmp cpanm XML::Parser::Expat --configure-args "EXPATLIBPATH=$PREFIX/lib" --configure-args "EXPATHINCPATH=$PREFIX/include"
 perl scripts/dependencies.pl
