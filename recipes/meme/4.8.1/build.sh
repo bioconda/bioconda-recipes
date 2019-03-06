@@ -2,7 +2,7 @@
 
 MEME_ETC_DIR=${PREFIX}/etc
 HOME=/tmp cpanm YAML
-HOME=/tmp cpanm HTML::PullParser
+HOME=/tmp cpanm --force HTML::PullParser
 HOME=/tmp cpanm XML::Simple
 HOME=/tmp cpanm CGI
 HOME=/tmp cpanm HTML::Template
