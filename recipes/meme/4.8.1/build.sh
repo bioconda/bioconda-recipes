@@ -4,8 +4,8 @@ MEME_ETC_DIR=${PREFIX}/etc
 #cpanm YAML
 #cpanm HTML::PullParser
 #cpanm XML::Simple
-#cpanm CGI
-#cpanm HTML::Template
+HOME=/tmp cpanm CGI
+HOME=/tmp cpanm HTML::Template
 #cpanm HTML::Parse
 HOME=/tmp cpanm CGI::Application
 HOME=/tmp cpanm XML::Parser::Expat --configure-args "EXPATLIBPATH=$PREFIX/lib" --configure-args "EXPATHINCPATH=$PREFIX/include"
