@@ -126,23 +126,11 @@ dev suffixes, see `here
 
 "Noarch" packages
 ~~~~~~~~~~~~~~~~~
-**Update 7 Feb 2018** For now please DO NOT use ``noarch`` until technical
-compatibility issues are resolved.
+A `noarch` package must be created for pure python packages. To do so,
+add ``noarch: python`` to the ``build`` section of the ``meta.yaml`` file.
 
-.. Deprecated advice:
-.. A ``noarch`` package can be created for pure Python packages, data packages, or
-   packages that do not require compilation. This single ``noarch`` package can be
-   used across multiple platforms, which saves on build time and saves on storage
-   space on the bioconda channel.
-
-.. For pure Python packages, add ``noarch: python`` to the ``build`` section.
-
-.. For other generic packages (like a data package), add ``noarch: generic`` to
-   the ``build`` section.
-
-.. See `here
-   <https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_ for
-   more details.
+ For other generic packages (like a data package), add ``noarch: generic`` to
+  the ``build`` section.
 
 Dependencies
 ~~~~~~~~~~~~
@@ -182,17 +170,18 @@ upstream changes.
 
 Python
 ------
-
-.. note::
-
-    If you have conda-build 3 installed locally and use ``conda skeleton``,
-    please see :ref:`cb3-recipes-in-cb2`.
-
 If a Python package is available on PyPI, use ``conda skeleton pypi
 <packagename>`` to create a recipe, then remove the ``bld.bat`` and any extra
 comments in ``meta.yaml`` and ``build.sh``. The test that is automatically
 added is probably sufficient. The exception is when the package also installs
 a command-line tool, in which case that should be tested as well.
+
+.. note::
+
+   Make sure you have a conda-build version 3.x when running
+   ``conda skeleton pypi <packagename>``. If you are still using conda-build
+   2.x, either update your conda-build package, or follow the migration
+   guidelines in :ref:`cb3-main`.
 
 - typical ``import`` check: `pysam
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/pysam>`_
@@ -202,7 +191,7 @@ a command-line tool, in which case that should be tested as well.
 
 
 By default, Python recipes (those that have `python` listed as a dependency)
-must be successfully built and tested on Python 2.7, 3.4, and 3.5 in order to
+must be successfully built and tested on Python 2.7, 3.6, and 3.7 in order to
 pass. However, many Python packages are not fully compatible across all Python
 versions. Use the `preprocessing selectors
 <http://conda.pydata.org/docs/building/meta-yaml.html#preprocessing-selectors>`_
@@ -214,15 +203,15 @@ following:
 
 .. code-block:: yaml
 
-    build:
-      skip: True  # [not py27]
+    host:
+      -   python <3
 
-Or a package that only runs on Python 3.4 and 3.5:
+Or a package that only runs on Python 3.6 and 3.7:
 
 .. code-block:: yaml
 
-    build:
-      skip: True # [py27]
+    host:
+      - python >=3
 
 Alternatively, for straightforward compatibility fixes you can apply a `patch
 in the meta.yaml`
@@ -311,7 +300,7 @@ though dependencies may also need recipes. Recipes for dependencies with an
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/bioconductor-limma>`_
 
 R (other sources)
-----------------
+-----------------
 
 If a package is only provided in a public repository (e.g. at github or
 bitbucket) or via some other website, first check with the authors of the

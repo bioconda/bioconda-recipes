@@ -143,7 +143,7 @@ def test_bioarchive_exists():
 def test_annotation_data(tmpdir, bioc_fetch):
     bioconductor_skeleton.write_recipe('AHCytoBands', str(tmpdir), config, recursive=False, packages=bioc_fetch)
     meta = utils.load_first_metadata(str(tmpdir.join('bioconductor-ahcytobands'))).meta
-    assert 'wget' in meta['requirements']['run']
+    assert any(dep.startswith('curl ') for dep in meta['requirements']['run'])
     assert len(meta['source']['url']) == 3
     assert not tmpdir.join('bioconductor-ahcytobands', 'build.sh').exists()
     assert tmpdir.join('bioconductor-ahcytobands', 'post-link.sh').exists()
@@ -153,7 +153,7 @@ def test_annotation_data(tmpdir, bioc_fetch):
 def test_experiment_data(tmpdir, bioc_fetch):
     bioconductor_skeleton.write_recipe('affydata', str(tmpdir), config, recursive=False, packages=bioc_fetch)
     meta = utils.load_first_metadata(str(tmpdir.join('bioconductor-affydata'))).meta
-    assert 'wget' in meta['requirements']['run']
+    assert any(dep.startswith('curl ') for dep in meta['requirements']['run'])
     assert len(meta['source']['url']) == 3
     assert not tmpdir.join('bioconductor-affydata', 'build.sh').exists()
     assert tmpdir.join('bioconductor-affydata', 'post-link.sh').exists()
