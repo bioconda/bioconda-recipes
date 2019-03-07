@@ -2,7 +2,9 @@
 
 mkdir -p $PREFIX/bin
 
+# Build lastz and lastz_D (lastz_D uses floating-point scores
 make
+# Build lastz_32, which uses 32-bit positions index and can handle genomes larger than 2Gb
 make lastz_32
 
 chmod +x src/lastz
