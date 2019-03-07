@@ -4,7 +4,6 @@ URLS=(
   "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/BSgenome.Ecoli.NCBI.20080805_1.3.1000.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Ecoli.NCBI.20080805_1.3.1000.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.ecoli.ncbi.20080805/bioconductor-bsgenome.ecoli.ncbi.20080805_1.3.1000_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.ecoli.ncbi.20080805/bioconductor-bsgenome.ecoli.ncbi.20080805_1.3.1000_src_all.tar.gz"
 )
 MD5="c653e9cbee3faeb6fd5759b7575f234d"
 
@@ -17,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
