@@ -1,5 +1,27 @@
 version: '3.7'
 
+volumes:
+  rabbitmq-data:
+  traefik-certs:
+
+networks:
+  backend:
+    internal: true
+  frontend:
+    internal: false
+
+
+secrets:
+  app_id:
+    file: secrets/app_id.txt
+  app_key:
+    file: secrets/app_key.pem
+  code_sign_key:
+    file: secrets/code_sign_key.asc
+  erlang_cookie:
+    file: secrets/erlang_cookie.txt
+
+
 x-app-common: &app-common
   image: biocondabot
   networks:
@@ -45,11 +67,13 @@ services:
        --bind 0.0.0.0:80
        bioconda_utils.bot:init_app
        #(disable_internal_celery=True)
-       //ports:
-         //- "80:80"
-    expose: [80]
     depends_on:
       - mq
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.port: 80
+        traefik.frontend.rule: Host:biocondabot.pruesse.net
 
   worker:
     <<: *app-common
@@ -76,25 +100,50 @@ services:
     command: >-
       flower
       --broker=amqp://mq:5672
-      --port=8888
-    ports:  
-      - 8888:8888
+      --port=8080
+      --url_prefix=flower
     networks:
       - backend
-      
-networks:
-  backend:
+    depends_on:
+      - mq
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.port: 8080
+        traefik.frontend.rule: "Host: biocondabot.pruesse.net; PathPrefixStrip: /flower"
 
-secrets:
-  app_id:
-    file: secrets/app_id.txt
-  app_key:
-    file: secrets/app_key.pem
-  code_sign_key:
-    file: secrets/code_sign_key.asc
-  erlang_cookie:
-    file: secrets/erlang_cookie.txt
-
-volumes:
-  rabbitmq-data:
+  frontend:
+    image: traefik
+    command: >-
+      --api
+      --docker
+      --docker.swarmMode
+      --docker.exposedByDefault=false
+      --docker.watch
+      --docker.domain=biocondabot.pruesse.net
+      --entryPoints="Name:http Address::80 Redirect.EntryPoint:https"
+      --entryPoints="Name:https Address::443 TLS"
+      --defaultentrypoints=http,https
+      --logLevel=INFO
+      --acme
+      --acme.entryPoint=https
+      --acme.httpChallenge
+      --acme.httpChallenge.entrypoint=http
+      --acme.domains=biocondabot.pruesse.net
+      --acme.email=info@pruesse.net
+      --acme.storage=acme/certs.json
+      --acme.acmelogging
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /dev/null:/traefik.toml
+      - traefik-certs:/acme
+    networks:
+      - backend
+    deploy:
+      labels:
+        traefik.port: 8080
+        traefik.frontend.rule: Host:biocondabot.pruesse.net;PathPrefixStrip:/traefik/
 
