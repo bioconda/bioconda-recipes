@@ -376,7 +376,7 @@ async def show_status(request):
 
         """
         worker_status = celery.control.inspect(timeout=0.1)
-        for worker in worker_status.ping().keys():
+        for worker in sorted(worker_status.ping().keys()):
             active = worker_status.active(worker)
             reserved = worker_status.reserved(worker)
             msg += f"""
