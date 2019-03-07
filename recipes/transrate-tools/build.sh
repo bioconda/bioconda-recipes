@@ -2,7 +2,7 @@
 
 set -ef -o pipefail
 
-wget https://raw.githubusercontent.com/blahah/transrate-tools/master/LICENSE
+curl -O https://raw.githubusercontent.com/blahah/transrate-tools/master/LICENSE
 
 export CPPFLAGS="$CPPFLAGS -I${PREFIX}/include -I${PREFIX}/include/bamtools"
 
