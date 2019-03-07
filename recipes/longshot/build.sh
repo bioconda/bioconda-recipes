@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-# this build script is taken from the rust-bio recipe
+# this build script is taken from the rust-bio-tools recipe
 # https://github.com/bioconda/bioconda-recipes/blob/master/recipes/rust-bio-tools/build.sh
 
 # taken from yacrd recipe, see: https://github.com/bioconda/bioconda-recipes/blob/2b02c3db6400499d910bc5f297d23cb20c9db4f8/recipes/yacrd/build.sh
