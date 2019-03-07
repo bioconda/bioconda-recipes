@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #zlib headers for minimap
-sed -i.bak "8i CFLAGS+=-L$PREFIX/lib" lib/minimap2/Makefile
-sed -i.bak "9i INCLUDES+=-I$PREFIX/include" lib/minimap2/Makefile
+sed -i.bak "8iCFLAGS+=-L$PREFIX/lib" lib/minimap2/Makefile
+sed -i.bak "9iINCLUDES+=-I$PREFIX/include" lib/minimap2/Makefile
 
 #zlib headers for flye binaries
 export CXXFLAGS="-I$PREFIX/include"
