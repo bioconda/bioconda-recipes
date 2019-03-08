@@ -1,15 +1,11 @@
 version: '3.7'
 
 volumes:
-  rabbitmq-data:
-  traefik-certs:
+  rabbitmq-data:  # persists items in the queue
+  traefik-certs:  # persists SSL certs to avoid re-issuing on restart
 
 networks:
   backend:
-    internal: true
-  frontend:
-    internal: false
-
 
 secrets:
   app_id:
@@ -21,18 +17,28 @@ secrets:
   erlang_cookie:
     file: secrets/erlang_cookie.txt
 
-
+# common parameters for web and worker services using the
+# bioconda-utils code base
 x-app-common: &app-common
   image: biocondabot
   networks:
     - backend
   environment:
+    # make sure python doesn't try to buffer stdout/stderr
+    # (we want to see all log messages right away)
     - PYTHONUNBUFFERED=true
+    # Path to secret key for signing JWTs to authenticate as Github App
     - APP_KEY_FILE=/run/secrets/app_key
+    # Path to github App ID (not actually secret)
     - APP_ID_FILE=/run/secrets/app_id
+    # Path to GPG key for signing commits
+    # (This key is registered with a bot account, not the app,
+    #  as github apps have no email they can't have a commit signing key)
     - CODE_SIGNING_KEY_FILE=/run/secrets/code_sign_key
+    # Points to the AMQP message queue server
     - CLOUDAMQP_URL=amqp://mq:5672
   secrets:
+    # See above
     - app_key
     - app_id
     - code_sign_key
@@ -40,6 +46,7 @@ x-app-common: &app-common
     - mq
 
 services:
+  ## Message Queue
   mq:
     hostname: mq    
     image: rabbitmq:latest
@@ -54,7 +61,8 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
       - backend
-  
+
+  ## Bioconda-Utils web app
   web:
     <<: *app-common
     hostname: web
@@ -71,10 +79,14 @@ services:
       - mq
     deploy:
       labels:
+        # Export this on Traefik to outside
         traefik.enable: "true"
+        # This container runs on port 80
         traefik.port: 80
+        # And should be mapped to https://biocondabot.pruesse.net
         traefik.frontend.rule: Host:biocondabot.pruesse.net
 
+  ## Bioconda-Utils workers handling tasks scheduled from web app
   worker:
     <<: *app-common
     command: >-
@@ -84,17 +96,23 @@ services:
       --without-heartbeat
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 2  # let's have 2 for now
 
+  ## Check services for updates to containers
   shepherd:
     image: mazzolino/shepherd:0.3.0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - SLEEP_TIME=5m  # check every 5 minutes
+      - BLACKLIST_SERVICES="shepherd"  # things not to check
     deploy:
       placement:
         constraints:
-        - node.role == manager
+        - node.role == manager  # must run on manager node
 
+  ## Celery monitoring tool
+  # We map this to /flower using traefik
   flower:
     image: mher/flower
     command: >-
@@ -112,6 +130,13 @@ services:
         traefik.port: 8080
         traefik.frontend.rule: "Host: biocondabot.pruesse.net; PathPrefixStrip: /flower"
 
+  ## Traefik frontent gateway
+  # - Handles SSL encryption
+  # - Maps outside domain/path to inside services
+  # Note: Traefik can't do HTTP content rewriting for url rewrites.
+  #       E.g. flower needs to be told that it will be exposed as http://host/flower/...
+  #       rather than http://host/..., so that it can point links to resources (css, images)
+  #       to the right place.
   frontend:
     image: traefik
     command: >-
