@@ -15,7 +15,7 @@ import aiohttp
 from aiohttp import web
 from celery import Celery
 from celery import Task as _Task
-from celery.signals import worker_process_init, celery_init
+from celery.signals import worker_process_init, celeryd_init
 import gidgethub.routing
 
 from . import utils
