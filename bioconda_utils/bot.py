@@ -15,7 +15,7 @@ import aiohttp
 from aiohttp import web
 from celery import Celery
 from celery import Task as _Task
-from celery.signals import worker_process_init
+from celery.signals import worker_process_init, celery_init
 import gidgethub.routing
 
 from . import utils
@@ -129,8 +129,13 @@ class Task(_Task):
 
 
 @worker_process_init.connect
-def worker_process_init(**kwargs):
+def setup_new_worker_process(**kwargs):
     logger.error("Started new worker: kwargs=%s", kwargs)
+
+
+@celeryd_init.connect
+def setup_new_celery_process(sender=None, conf=None, **kwargs):
+    init_gpg()
 
 
 celery = Celery(task_cls=Task)  # pylint: disable=invalid-name
