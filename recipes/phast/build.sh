@@ -2,8 +2,10 @@
 
 mkdir -p $PREFIX/bin
 
+echo ORIGIN = $ORIGIN
+
 cd src
-make CLAPACKPATH=$ORIGIN/lib
+make CLAPACKPATH=$ORIGIN
 
 cd ..
 chmod +x bin/dless
