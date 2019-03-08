@@ -505,7 +505,19 @@ def init_gpg():
     return key
 
 
-async def init_app(disable_internal_celery=True):
+async def init_app_internal_celery():
+    """Initialize app and launch internal celery worker
+
+    This isn't simply a flag for `init_app` because async app factories
+    cannot (easily) receive parameters from the gunicorn commandline.
+    """
+    app = await init_app()
+    loglevel = 'INFO'
+    init_celery(app, loglevel)
+    return app
+
+
+async def init_app():
     """Initialize App
 
     This function is the entry point for wrappers that take an app factory
@@ -534,9 +546,6 @@ async def init_app(disable_internal_celery=True):
 
     # Add routes collected above
     app.add_routes(web_routes)
-
-    if not disable_internal_celery:
-        init_celery(app, loglevel)
 
     return app
 

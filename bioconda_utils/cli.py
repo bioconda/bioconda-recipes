@@ -848,10 +848,11 @@ def bot(loglevel='info'):
 
     To run the bot locally, use:
 
-    $ gunicorn bioconda_utils.bot:init_app --worker-class aiohttp.worker.GunicornWebWorker
+    $ gunicorn bioconda_utils.bot:init_app_internal_celery --worker-class aiohttp.worker.GunicornWebWorker
 
     You can append --reload to have gunicorn reload if any of the python files change.
     """
+
     utils.setup_logger('bioconda_utils', loglevel)
 
     logger.error("Nothing here yet")
