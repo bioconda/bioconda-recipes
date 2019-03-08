@@ -3,7 +3,7 @@
 mkdir -p $PREFIX/bin
 
 cd src
-make
+make CLACKPATH=$ORIGIN/lib
 
 cd ..
 chmod +x bin/dless
