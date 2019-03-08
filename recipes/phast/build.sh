@@ -17,7 +17,6 @@ chmod +x bin/phyloFit
 chmod +x bin/phyloBoot
 chmod +x bin/phyloP
 chmod +x bin/prequel
-chmod +x bin/util
 
 mv bin/dless $PREFIX/bin
 mv bin/exoniphy $PREFIX/bin
@@ -28,7 +27,6 @@ mv bin/phyloFit $PREFIX/bin
 mv bin/phyloBoot $PREFIX/bin
 mv bin/phyloP $PREFIX/bin
 mv bin/prequel $PREFIX/bin
-mv bin/util $PREFIX/bin
 
 
 # Build lastz and lastz_D (lastz_D uses floating-point scores
