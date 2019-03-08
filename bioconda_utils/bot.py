@@ -88,34 +88,50 @@ class Task(_Task):
         replace the async run method with a sync run method that
         executes the original method inside the asyncio loop.
         """
-        if asyncio.iscoroutinefunction(self.run):
+        if asyncio.iscoroutinefunction(self.run):  # only for async funcs
             @wraps(self.run)
             def sync_run(*args, **kwargs):
                 self.loop.run_until_complete(self.async_pre_run(args, kwargs))
                 self.loop.run_until_complete(self._async_run(*args, **kwargs))
+
+            # swap run method with wrapper defined above
             self._async_run, self.run = self.run, sync_run
 
             if not self.loop.is_running():
                 self.loop.run_until_complete(self.async_init())
         super().bind(app)
 
-    async def async_pre_run(self, args, kwargs):
-        ghapi_data = kwargs.get('ghapi_data')
-        self.ghapi = await self.ghappapi.get_github_api(**ghapi_data)
-
     async def async_init(self):
-        """Init things that need to be run inside the loop"""
+        """Init things that need to be run inside the loop
+
+        This happens during binding -> on load.
+        """
         if not self.ghappapi:
             self.ghappapi = init_githubhandler(aiohttp.ClientSession())
 
+    async def async_pre_run(self, args, kwargs):
+        """Per-call async initialization
+
+        Prepares the `ghapi` property for tasks using ghapi_data added
+        to arguments via `schedule()`.
+        """
+        ghapi_data = kwargs.get('ghapi_data')
+        self.ghapi = await self.ghappapi.get_github_api(**ghapi_data)
+
     def schedule(self, *args, ghapi=None, **kwargs):
+        """Alternative to `delay` serializing `ghapi` object to be
+        initialized by `async_pre_run`.
+
+        We do this so that the celery tasks have a functioning ghapi object
+        matching the ghapi used by the github event handlers.
+        """
         return self.delay(*args,
                           ghapi_data=ghapi.to_dict() if ghapi else None,
                           **kwargs)
 
     @abc.abstractmethod
     def run(self, *args, **kwargs):
-        """The tasks actual run method."""
+        """The tasks actual run method. Will be replaced during bind"""
 
     @property
     def loop(self):
@@ -128,25 +144,44 @@ class Task(_Task):
             return loop
 
 
+celery = Celery(task_cls=Task)  # pylint: disable=invalid-name
+
+
 @worker_process_init.connect
 def setup_new_worker_process(**kwargs):
+    """This hook is called every time a celery process starts a new worker
+
+    Does nothing at this time - just here as a reminder that we can hook
+    into that part of setup if necessary
+    """
     logger.error("Started new worker: kwargs=%s", kwargs)
 
 
 @celeryd_init.connect
 def setup_new_celery_process(sender=None, conf=None, **kwargs):
+    """This hook is called when a celery worker is initialized
+
+    Here we make sure that the GPG signing key is installed
+    """
     init_gpg()
 
-
-celery = Celery(task_cls=Task)  # pylint: disable=invalid-name
 
 # Celery must be configured at module level to catch worker as well
 # Settings are suggestions from CloudAMPQ
 celery.conf.update(
+    # Set the URL to the AMQP broker using environment variable
     broker_url=os.environ.get('CLOUDAMQP_URL'),
-    broker_pool_limit=2,  # need two so we can inspect
+
+    # Limit the number of connections to the pool. This should
+    # be 2 when running on Heroku to avoid running out of free
+    # connections on CloudAMPQ.
+    #
+    # broker_pool_limit=2,  # need two so we can inspect
+
     broker_heartbeat=None,
     broker_connection_timeout=30,
+
+    # We don't feed back our tasks results
     result_backend=None,
     event_queue_expires=60,
     worker_prefetch_multiplier=1,
@@ -155,7 +190,12 @@ celery.conf.update(
 
 
 class CommandDispatch:
-    """Another router, this one is for commands to the bot"""
+    """Decorator based router handling bot commands
+
+    >>> @command_routes.register("hello")
+    >>> def command_hello(event, ghapi, *args):
+    >>>     logger.info("Got command 'hello %s'", " ".join(args))
+    """
     def __init__(self):
         self.mapping: Dict[str, Callable] = {}
 
@@ -170,11 +210,12 @@ class CommandDispatch:
         return await self.mapping[cmd](*args, **kwargs)
 
 
+# Router for bot commands received as issue comments
 command_routes = CommandDispatch()  # pylint: disable=invalid-name
 
 
 @command_routes.register("hello")
-async def hello_to_you(event, ghapi):
+async def command_hello(event, ghapi):
     """Simple demo function answering to hello"""
     comment_author = event.get("comment/user/login")
     issue_number = int(event.get("issue/number"))
