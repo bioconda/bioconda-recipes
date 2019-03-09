@@ -37,7 +37,8 @@ class PrBranch:
         logger.error("Prepping branch %s", self.pr_info)
         token = await self.ghappapi.get_installation_token(self.pr_info.installation)
         self.git = TempGitHandler(password=token,
-                                  fork=self.pr_info.user + "/" + self.pr_info.repo)
+                                  fork_user=self.pr_info.user,
+                                  fork_repo=self.pr_info.repo)
         self.git.set_user(BOT_NAME, BOT_EMAIL)
 
         self.cwd = os.getcwd()

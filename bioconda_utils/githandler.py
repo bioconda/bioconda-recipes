@@ -97,7 +97,10 @@ class GitHandlerBase():
         """Finds fork remote branch named **branch_name**"""
         if branch_name in self.fork_remote.refs:
             return self.fork_remote.refs[branch_name]
-        return None
+        for remote_ref in self.fork_remote.fetch(branch_name, depth=1):
+            if remote_ref.remote_ref_path == branch_name:
+                return remote_ref.ref
+        return None  # fixme - raise?
 
     def read_from_branch(self, branch, file_name: str) -> str:
         """Reads contents of file **file_name** from git branch **branch**"""
@@ -199,37 +202,40 @@ class TempGitHandler(GitHandlerBase):
     def __init__(self,
                  username: str = None,
                  password: str = None,
-                 url_format="https://{userpass}github.com/{path}.git",
-                 home="bioconda/bioconda-recipes",
-                 fork=None, dry_run=False) -> None:
+                 url_format="https://{userpass}github.com/{user}/{repo}.git",
+                 home_user="bioconda",
+                 home_repo="bioconda-recipes",
+                 fork_user=None,
+                 fork_repo=None,
+                 dry_run=False) -> None:
         userpass = ""
-        safe_userpass = ""
         if password is not None and username is None:
             username = "x-access-token"
         if username is not None:
-            safe_userpass = userpass = username
+            userpass = username
             if password is not None:
                 userpass += ":" + password
-                safe_userpass += ":XXXXXX"
             userpass += "@"
-            safe_userpass += "@"
 
         self.tempdir = tempfile.TemporaryDirectory()
 
-        home_url = url_format.format(userpass=userpass, path=home)
-        safe_home_url = url_format.format(userpass=safe_userpass, path=home)
-        logger.warning("Cloning %s to %s", safe_home_url, self.tempdir.name)
+        def censor(string):
+            return string.replace(password, "******")
+
+        home_url = url_format.format(userpass=userpass,
+                                     user=home_user, repo=home_repo)
+        logger.warning("Cloning %s to %s", censor(home_url), self.tempdir.name)
         repo = git.Repo.clone_from(home_url, self.tempdir.name, depth=1)
 
-        if fork is not None:
-            fork_url = url_format.format(userpass=userpass, path=fork)
-            safe_fork_url = url_format.format(userpass=safe_userpass, path=fork)
-            logger.warning("Adding remote fork %s", safe_fork_url)
-            fork_remote = repo.create_remote("fork", fork_url)
-            logger.warning("Fetching remote fork %s", safe_fork_url)
-            fork_remote.fetch(depth=1)
+        if fork_repo is not None:
+            fork_url = url_format.format(userpass=userpass, user=fork_user, repo=fork_repo)
+            if fork_url != home_url:
+                logger.warning("Adding remote fork %s", censor(fork_url))
+                fork_remote = repo.create_remote("fork", fork_url)
+        else:
+            fork_url = None
         logger.warning("Finished setting up repo in %s", self.tempdir)
-        super().__init__(repo, dry_run, home, fork)
+        super().__init__(repo, dry_run, home_url, fork_url)
 
     def close(self) -> None:
         """Remove temporary clone and cleanup resources"""
