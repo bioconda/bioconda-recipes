@@ -539,6 +539,7 @@ _max_threads = 1
 
 
 def set_max_threads(n):
+    global _max_threads
     _max_threads = n
 
 
@@ -555,7 +556,7 @@ def parallel_iter(func, items, desc, *args, **kwargs):
     pfunc = partial(func, *args, **kwargs)
     with Pool(threads_to_use()) as pool:
         yield from tqdm(
-            pool.imap(pfunc, items),
+            pool.imap_unordered(pfunc, items),
             desc=desc,
             total=len(items)
         )
