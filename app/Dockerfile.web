@@ -34,6 +34,6 @@ RUN pip wheel /tmp/repo
 FROM bioconda_base
 COPY --from=builder /wheels /wheels
 RUN pip install -f /wheels bioconda_utils
-CMD PYTHONUNBUFFERED=1 gunicorn bioconda_utils.bot:init_app \
+CMD PYTHONUNBUFFERED=1 gunicorn bioconda_utils.bot.web:start_with_celery \
     --worker-class aiohttp.worker.GunicornWebWorker --bind 0.0.0.0:$PORT
 
