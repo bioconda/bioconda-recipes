@@ -65,23 +65,24 @@ async def start_with_celery():
     ])
     app['celery_worker'] = proc
     async def collect_worker(app):
-        logger.info("Terminating worker: sending shutdown")
-        import celery
-        celery.control.broadcast('shutdown')
+        # We don't use celery.broadcast('shutdown') as that seems to trigger
+        # an immediate reload. Instead, just send a sigterm.
         proc = app['celery_worker']
+        logger.info("Terminating celery worker: sending sigterm")
+        proc.terminate()
         wait = 10
         if proc.poll() is None:
             for second in range(wait):
-                logger.info("Terminating worker: waiting %i/%i", second, wait)
+                logger.info("Terminating celery worker: waiting %i/%i", second, wait)
                 time.sleep(1)
                 if proc.poll() is not None:
                     break
             else:
-                logger.info("Terminating worker: failed. Sending kill signal")
+                logger.info("Terminating celery worker: failed. Sending sigkill")
                 proc.kill()
-        logger.info("Terminating worker: collecting process")
+        logger.info("Terminating celery worker: collecting process")
         app['celery_worker'].wait()
-        logger.info("Terminating worker: done")
+        logger.info("Terminating celery worker: done")
 
     app.on_shutdown.append(collect_worker)
 
