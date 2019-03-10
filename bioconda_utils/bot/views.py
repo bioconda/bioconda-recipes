@@ -4,12 +4,12 @@ HTTP Views (pages)
 
 import logging
 
-import celery
 from aiohttp import web
 
 from .events import event_routes
 from ..githubhandler import Event
 from .. import __version__ as VERSION
+from .worker import celery
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 web_routes = web.RouteTableDef()  # pylint: disable=invalid-name
