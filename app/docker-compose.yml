@@ -20,7 +20,7 @@ secrets:
 # common parameters for web and worker services using the
 # bioconda-utils code base
 x-app-common: &app-common
-  image: biocondabot
+  image: epruesse/biocondabot:latest
   networks:
     - backend
   environment:
@@ -84,7 +84,7 @@ services:
         # This container runs on port 80
         traefik.port: 80
         # And should be mapped to https://biocondabot.pruesse.net
-        traefik.frontend.rule: Host:biocondabot.pruesse.net
+        traefik.frontend.rule: "Host: biocondabot.pruesse.net,localhost"
 
   ## Bioconda-Utils workers handling tasks scheduled from web app
   worker:
@@ -128,7 +128,7 @@ services:
       labels:
         traefik.enable: "true"
         traefik.port: 8080
-        traefik.frontend.rule: "Host: biocondabot.pruesse.net; PathPrefixStrip: /flower"
+        traefik.frontend.rule: "Host: biocondabot.pruesse.net,localhost; PathPrefixStrip: /flower"
 
   ## Traefik frontent gateway
   # - Handles SSL encryption
@@ -170,5 +170,5 @@ services:
     deploy:
       labels:
         traefik.port: 8080
-        traefik.frontend.rule: Host:biocondabot.pruesse.net;PathPrefixStrip:/traefik/
+        traefik.frontend.rule: Host:biocondabot.pruesse.net,localhost;PathPrefixStrip:/traefik/
 
