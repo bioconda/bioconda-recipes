@@ -633,8 +633,6 @@ def dependent(recipe_folder, config, restrict=False,
         raise ValueError(
             'One of `--dependencies` or `--reverse-dependencies` is required.')
 
-    utils.setup_logger('bioconda_utils', loglevel)
-
     d, n2r = graph.build(utils.get_recipes(recipe_folder, "*"), config, restrict=restrict)
 
     if reverse_dependencies is not None:
