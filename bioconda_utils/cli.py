@@ -694,7 +694,6 @@ def bioconductor_skeleton(
         and submit to conda-forge.
 
     """
-    utils.setup_logger('bioconda_utils', loglevel)
     seen_dependencies = set()
 
     if package == "update-all-packages":
