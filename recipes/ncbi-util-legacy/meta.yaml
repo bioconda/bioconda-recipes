@@ -10,6 +10,9 @@ source:
   url: ftp://ftp.ncbi.nih.gov/toolbox/ncbi_tools/ncbi.tar.gz
   sha256: {{ sha256 }}
   folder: ncbi
+  patches: 
+    - dev.patch
+
 build:
   number: 6
 
@@ -17,29 +20,48 @@ requirements:
   build:
     - {{ compiler('c') }}
   host:
+    - gmp
     - gnutls
+    - openmotif
     - tcsh
   run:
+    - gmp
+    - gnutls
+    - openmotif
+    - tcsh
 
-# test:
-#   files:
-#     - test.fa
-#     - testdatabase.fa
-#   commands:
-#     # (see run_tests.sh for remainder of tests)
-#     - blastn -help
-#     - blastp -help
-#     - makeblastdb -help
-#     # test that BLAST ignores LD_LIBRARY_PATH
-#     - touch libstdc++.so.6; LD_LIBRARY_PATH=. makeblastdb -help && rm libstdc++.so.6
-#     # - update_blastdb.pl --help (disabled as it now starts a pager, stalling forever)
+# many tools have exit code 1 for printing usage info so they don't work here.
+# leaving them here also for documentation which commands are available
+test:
+  commands:
+#     - asn2ff - > /dev/null
+    - asn2gb - > /dev/null
+    - asn2idx - > /dev/null
+#     - asn2xml - > /dev/null
+#     - asndhuff - > /dev/null
+#     - asntool - > /dev/null
+#     - blastcl3 - > /dev/null
+    - cdscan - > /dev/null
+#     - checksub - > /dev/null
+#     - debruijn - > /dev/null
+    - demo_regexp "a.c" "xyzabcxyz" > /dev/null
+    - demo_regexp_grep --help > /dev/null
+#     - entrcmd - > /dev/null
+#     - errhdr - > /dev/null
+#     - fa2htgs - > /dev/null
+#     - findspl - > /dev/null
+    - gene2xml - > /dev/null
+#     - getmesh - > /dev/null
+#     - getpub - > /dev/null
+#     - gil2bin - > /dev/null
+#     - idfetch - > /dev/null
+#     - indexpub - > /dev/null
+#     - makeset - > /dev/null
+    - echo "ATCG\nACTG"|ncbisort > /dev/null
+    - tbl2asn - > /dev/null
+#     - vecscreen - > /dev/null
 
 about:
-  home: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs
+  home: ftp://ftp.ncbi.nih.gov/toolbox/ncbi_tools/ 
   license: Public Domain
-  summary: BLAST+ is a new suite of BLAST tools that utilizes the NCBI C++ Toolkit.
-
-extra:
-  identifiers:
-    - biotools:blast
-    - doi:10.1016/S0022-2836(05)80360-2
+  summary: NCBI software development toolkit
