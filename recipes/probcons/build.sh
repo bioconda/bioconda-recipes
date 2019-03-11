@@ -8,15 +8,12 @@
 # $PKG_BUILDNUM The build number of the package
 #
 
-#patch the missing libraries
-sed -i '26i#include <cstring>' Main.cc
-sed -i '21i#include <cstring>' CompareToRef.cc
-sed -i '21i#include <cstring>' ProjectPairwise.cc
+set -eu -o pipefail
 
 make
 
 
-# install tcoffee in the target bin directory 
+# install probcons in the target bin directory 
 mkdir -p $PREFIX/bin
 cp probcons $PREFIX/bin
 cp compare $PREFIX/bin
