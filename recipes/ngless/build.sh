@@ -14,7 +14,9 @@ export CPATH="${CPATH} ${PREFIX}/include"
 mkdir -p fake-home
 export HOME=$PWD/fake-home
 export STACK_ROOT="$HOME/.stack"
-stack setup --system-ghc --local-bin-path ${PREFIX}/bin
+export STACKOPTS="--local-bin-path ${PREFIX}/bin --extra-include-dirs ${PREFIX}/include --extra-lib-dirs ${PREFIX}/lib"
+
+stack setup
 make install WGET="wget --no-check-certificate" prefix=$PREFIX
 
 #cleanup
