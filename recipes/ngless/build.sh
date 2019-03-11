@@ -16,7 +16,7 @@ export HOME=$PWD/fake-home
 export STACK_ROOT="$HOME/.stack"
 export STACKOPTS="--local-bin-path ${PREFIX}/bin --extra-include-dirs ${PREFIX}/include --extra-lib-dirs ${PREFIX}/lib"
 
-stack setup
+stack setup --ghc-build standard
 make install WGET="wget --no-check-certificate" prefix=$PREFIX
 
 #cleanup
