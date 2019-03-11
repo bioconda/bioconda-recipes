@@ -255,14 +255,17 @@ class AiohttpGitHubHandler(GitHubHandler):
 
 class Event(gidgethub.sansio.Event):
     """Adds **get(path)** method to Github Webhook event"""
-    def get(self, path: str) -> str:
+    def get(self, path: str, altvalue=KeyError) -> str:
         """Get subkeys from even data using slash separated path"""
         data = self.data
         try:
             for item in path.split("/"):
                 data = data[item]
         except (KeyError, TypeError):
-            raise KeyError(f"No '{path}' in event type {self.event}") from None
+            if altvalue == KeyError:
+                raise KeyError(f"No '{path}' in event type {self.event}") from None
+            else:
+                return altvalue
         return data
 
 
