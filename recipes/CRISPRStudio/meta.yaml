@@ -1,36 +1,37 @@
-{% set version ="1.0" %}
+{% set version ="1" %}
 
 package:
- name: crispr-studio
+ name: crispr_studio
  version: {{ version }}
 
 source:
- url: https://github.com/moineaulab/CRISPRStudio/archive/v1.tar.gz
- sha256: 23cb08bdb851c473ba6275e40e9fdd9aedcb6590d1f53cc04cae776fb39e2fa8
+ - url: https://github.com/moineaulab/CRISPRStudio/archive/v1.tar.gz
+   sha256: 23cb08bdb851c473ba6275e40e9fdd9aedcb6590d1f53cc04cae776fb39e2fa8 
+ - url: http://faculty.virginia.edu/wrpearson/fasta/CURRENT/fasta-36.3.8g-linux64.tar.gz
+   sha256: 8aafc7cfff7286282439bafba327aa432ae4bba1917f2c96b0dc3e4433af4699
+   folder: tools
 
 build:
- number: 0 
- entry_points:
-  - crispr-studio = CRISPR_Studio:main
+ number: 0
 
 requirements:
+ build:
+  - {{ compiler('c') }} 
  host:
-  - python
- run:
-  - python 3
+  - pip
+  - scikit-bio >=0.5
+  - pandas >=0.24.1
   - scipy
-  - numpy
-  - pandas
- 
+  - numpy >=1.16
+ run:
+  - numpy >=1.16
+  - pandas >=0.24.1
+
 test:
  commands:
-  - cd ../work_moved_crispr-studio-1.0-py36_0_linux-64
-  - pip install scipy numpy pandas scikit-bio
-  - ./CRISPR_Studio -h
+  - CRISPR_Studio -h
 
-
-about:
+ about:
  home: https://github.com/moineaulab/CRISPRStudio
  license: GPL-3.0
- license_file: LICENSE
  summary: CRISPRStudio is a program developed to facilitate and accelerate CRISPR array visualization
