@@ -1,6 +1,7 @@
 """Highlevel API for managing PRs on Github"""
 
 import abc
+import datetime
 import logging
 import time
 
@@ -22,6 +23,20 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 #: State for Github Issues
 IssueState = Enum("IssueState", "open closed all")  # pylint: disable=invalid-name
 
+#: State of Github Check Run
+CheckRunStatus = Enum("CheckRunState", "queued in_progress completed")
+
+#: Conclusion of Github Check Run
+CheckRunConclusion = Enum("CheckRunConclusion",
+                          "success failure neutral cancelled timed_out action_required")
+
+
+def iso_now() -> str:
+    """Creates ISO 8601 timestamp in format
+    ``YYYY-MM-DDTHH:MM:SSZ`` as required by Github
+    """
+    return datetime.datetime.utcnow().replace(microsecond=0).isoformat()+'Z'
+
 
 class GitHubHandler:
     """Handles interaction with GitHub
@@ -37,7 +52,7 @@ class GitHubHandler:
     ISSUES = "/repos/{user}/{repo}/issues{/number}"
     COMMENTS = "/repos/{user}/{repo}/issues/{number}/comments"
     ORG_MEMBERS = "/orgs/{user}/members{/username}"
-
+    CHECK_RUN = "/repos/{user}/{repo}/check-runs{/id}"
 
     STATE = IssueState
 
@@ -237,6 +252,39 @@ class GitHubHandler:
         var_data = copy(self.var_default)
         var_data["number"] = str(number)
         return await self.api.getitem(self.PULL_FILES, var_data)
+
+    async def create_check_run(self, name: str, head_sha: str):
+        var_data = copy(self.var_default)
+        data = {
+            'name': name,
+            'head_sha': head_sha,
+        }
+        accept = "application/vnd.github.antiope-preview+json"
+        result = await self.api.post(self.CHECK_RUN, var_data, data=data, accept=accept)
+        return int(result.get('id'))
+
+    async def modify_check_run(self, number: int,
+                               status: CheckRunStatus = None,
+                               conclusion: CheckRunConclusion = None,
+                               output_title: str = None,
+                               output_summary: str = None,
+                               output_text: str = None):
+        var_data = copy(self.var_default)
+        var_data['id'] = str(number)
+        data = {}
+        if status is not None:
+            data['status'] = status.name.lower()
+        if conclusion is not None:
+            data['conclusion'] = conclusion.name.lower()
+            data['completed_at'] = iso_now()
+        if output_title:
+            data['output'] = {
+                'title': output_title,
+                'summary': output_summary or "",
+                'text': output_text or "",
+            }
+        accept = "application/vnd.github.antiope-preview+json"
+        return await self.api.patch(self.CHECK_RUN, var_data, data=data, accept=accept)
 
 
 class AiohttpGitHubHandler(GitHubHandler):
