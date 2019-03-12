@@ -7,8 +7,9 @@ import re
 
 import gidgethub.routing
 
-from .commands import command_routes, get_pr_info
+from .commands import command_routes
 from .tasks import lint_check, PRInfo
+from .config import APP_ID
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -42,58 +43,49 @@ async def demo_using_status(_event, _ghapi):
     logger.warning("Status - not handling")
 
 
-@event_routes.register("check_suite")
-async def check_suite(event, ghapi):
-    """Handle check suite event
+async def create_check_run(event, ghapi):
+    """Create a new check run"""
+    try:
+        head_sha = event.get("check_suite/head_sha")
+    except KeyError:
+        head_sha = event.get("check_run/head_sha")
+    check_run_number = await ghapi.create_check_run("Linting Recipe(s)", head_sha)
+    logger.warning("Created check run %s", check_run_number)
 
-    If the action is not ``completed`` but ``requested`` (by a commit)
-    or ``rerequested`` (manually), we create a new **check run** an
-    queue a task to lint the PR
-    """
 
-    action = event.get('action')
-    if action not in ['requested', 'rerequested']:
-        return
-    head_sha = event.get("check_suite/head_sha")
-    if not head_sha:
-        logger.error("Check_suite event has no head_sha?!")
-        return
-    prs = event.get("check_suite/pull_requests", [])
+async def initiate_check_run(event, ghapi):
+    check_run_number = event.get('check_run/id')
+    head_sha = event.get('check_run/head_sha')
+    prs = event.get('check_run/check_suite/pull_requests')
+
     if not prs:
-        logger.error("Check_suite event had no associated pull requests (merge?)")
-
-    # As per API, a check run, identified by the commit sha, can have multiple PRs
-    # from different repos associated with it. Not quite sure when that can happen,
-    # so we log it as error for now:
-    if len(prs) > 1:
-        logger.error("Multiple PRs in check run - using only first")
+        ghapi.modify_check_run(check_run_number,
+                               status=CheckRunStatus.completed,
+                               conclusion=CheckRunConclusion.neutral,
+                               output_title="No PRs associated",
+                               outout_summary="Merges commits are not linted")
+        return
 
     issue_number = prs[0]['number']
-
     pr = await ghapi.get_prs(number=int(issue_number))
     if not pr:
+        ghapi.modify_check_run(check_run_number,
+                               status=CheckRunStatus.completed,
+                               conclusion=CheckRunConclusion.neutral,
+                               output_title="PR not found",
+                               outout_summary="PR {} not found?".format(issue_number))
         logger.error("No PRs with number %s?", pr['number'])
         return
 
     files = await ghapi.get_pr_modified_files(number=issue_number)
     recipes = [item['filename'] for item in files
                if item['filename'].endswith('/meta.yaml')]
-
-    check_run_number = await ghapi.create_check_run("Linting modified recipes", head_sha)
-    logger.warning("Created check run %s", check_run_number)
-
     if not recipes:
-        logger.warning("Created check run %s", check_run_number)
         ghapi.modify_check_run(check_run_number,
                                status=CheckRunStatus.completed,
                                conclusion=CheckRunConclusion.success,
                                output_title="No recipes modified by PR",
-                               output_summary="Didn't do anything",
-                               output_text=
-                               "While it's true that all modified recipes are in "
-                               "good condition, it's also true that all of them are in "
-                               "bad condition. Not having found any problems, I'm waving you "
-                               "past me, so I can ponder that logical conundrum.")
+                               output_summary="No need to check anything.")
         return
 
     user = pr['head']['user']['login']
@@ -102,3 +94,31 @@ async def check_suite(event, ghapi):
     pr_info = PRInfo(event.get('installation/id'), user, repo, ref, recipes, issue_number)
 
     lint_check.schedule(pr_info, head_sha, check_run_number, ghapi=ghapi)
+
+
+@event_routes.register("check_suite")
+async def handle_check_suite(event, ghapi):
+    """Handle check suite event
+    """
+    action = event.get('action')
+    if action not in ['requested', 'rerequested']:
+        return
+
+    prs = event.get("check_suite/pull_requests", [])
+    if not prs:
+        logger.error("Check_suite event had no associated pull requests (merge?)")
+        return
+
+    await create_check_run(event, ghapi)
+
+@event_routes.register("check_run")
+async def handle_check_run(event, ghapi):
+    """Handle check run event"""
+    # Ignore check runs coming from other apps
+    if event.get("check_run/app/id") != int(APP_ID):
+        return
+    action = event.get('action')
+    if action == "rerequested":
+        await create_check_run(event, ghapi)
+    elif action == "created":
+        await initiate_check_run(event, ghapi)
