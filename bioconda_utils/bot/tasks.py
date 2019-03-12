@@ -108,11 +108,26 @@ async def lint_check(self: "AsyncTask", pr_info_dict: "Dict", head_sha: str,
         title = "Some recipes had problems"
         summary = "Please fix the listed issues"
 
+    annotations = []
+    for index, row in df.iterrows():
+        check = row['check']
+        info = row['info']
+        recipe = row['recipe']
+        annotations.append({
+            'path': recipe + '/meta.yaml',
+            'start_line': info.get('start_line', 1),
+            'end_line': info.get('end_line', 1),
+            'annotation_level': 'failure',
+            'title': check,
+            'message': info['fix']
+        })
+
     await self.ghapi.modify_check_run(check_run_number,
                                       status=CheckRunStatus.completed,
                                       conclusion=conclusion,
                                       output_title=title, output_summary=summary,
-                                      output_text=msg)
+                                      output_text=msg,
+                                      output_annotations=annotations)
 
 
 @celery.task(acks_late=True)

@@ -10,6 +10,7 @@ import ruamel_yaml as yaml
 
 from . import utils
 from . import lint_functions
+from .recipe import Recipe
 
 import logging
 logger = logging.getLogger(__name__)
@@ -142,6 +143,9 @@ def lint(recipes: List[str], lint_args):
     hits = []
     for recipe in sorted(recipes):
         logger.debug("Linting: %s", recipe)
+
+        recipe_obj = Recipe.from_file("recipes", recipe)
+
         # Since lint functions need a parsed meta.yaml, checking for parsing
         # errors can't be a lint function.
         #
@@ -184,7 +188,7 @@ def lint(recipes: List[str], lint_args):
                     logger.info('%s defines skip lint test %s for recipe %s',
                                 source, func.__name__, recipe)
                 continue
-            result = func(recipe, metas)
+            result = func(recipe_obj, metas)
             if result:
                 hits.append(
                     {'recipe': recipe,

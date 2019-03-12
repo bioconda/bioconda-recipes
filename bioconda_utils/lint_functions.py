@@ -44,7 +44,7 @@ def _has_preprocessing_selector(recipe):
     # regex from
     # https://github.com/conda/conda-build/blob/cce72a95c61b10abc908ab1acf1e07854a236a75/conda_build/metadata.py#L107
     sel_pat = re.compile(r'(.+?)\s*(#.*)?\[([^\[\]]+)\](?(2).*)$')
-    for line in open(os.path.join(recipe, 'meta.yaml')):
+    for line in open(recipe.path):
         line = line.rstrip()
         if line.startswith('#'):
             continue
@@ -60,6 +60,14 @@ def _has_compilers(meta):
         for dep in build_deps
     )
 
+def _mark_lines(data, recipe, section):
+    sl, sc, el, ec = recipe.get_raw_range(section)
+    if ec == 0:
+        el = el - 1
+    data['start_line'] = sl
+    data['end_line'] = el
+    return data
+
 
 def lint_multiple_metas(lint_function):
     def lint_metas(recipe, metas, *args, **kwargs):
@@ -74,7 +82,7 @@ def lint_multiple_metas(lint_function):
 
 
 @lint_multiple_metas
-def in_other_channels(recipe, meta):
+def in_other_channels(_recipe, meta):
     """
     Does the package exist in any other non-bioconda channels?
     """
@@ -92,7 +100,7 @@ def in_other_channels(recipe, meta):
 
 
 @lint_multiple_metas
-def already_in_bioconda(recipe, meta):
+def already_in_bioconda(_recipe, meta):
     """
     Does the package exist in bioconda?
     """
@@ -113,44 +121,48 @@ def already_in_bioconda(recipe, meta):
 @lint_multiple_metas
 def missing_home(recipe, meta):
     if not meta.get_value('about/home'):
-        return {
+        data = {
             'missing_home': True,
             'fix': 'add about:home',
         }
+        return _mark_lines(data, recipe, 'about')
 
 
 @lint_multiple_metas
 def missing_summary(recipe, meta):
     if not meta.get_value('about/summary'):
-        return {
+        data = {
             'missing_summary': True,
             'fix': 'add about:summary',
         }
+        return _mark_lines(data, recipe, 'about')
 
 
 @lint_multiple_metas
 def missing_license(recipe, meta):
     if not meta.get_value('about/license'):
-        return {
+        data = {
             'missing_license': True,
-            'fix': 'add about:license'
+            'fix': 'add about:license',
         }
+        return _mark_lines(data, recipe, 'about')
 
 
 @lint_multiple_metas
 def missing_tests(recipe, meta):
     test_files = ['run_test.py', 'run_test.sh', 'run_test.pl']
     if not meta.get_section('test'):
-        if not any([os.path.exists(os.path.join(recipe, f)) for f in
+        if not any([os.path.exists(os.path.join(recipe.dir, f)) for f in
                     test_files]):
-            return {
+            data = {
                 'no_tests': True,
                 'fix': 'add basic tests',
             }
+            return data
 
 
 @lint_multiple_metas
-def missing_hash(recipe, meta):
+def missing_hash(_recipe, meta):
     # could be a meta-package if no source section or if None
     sources = meta.get_section('source')
     if not sources:
@@ -161,10 +173,11 @@ def missing_hash(recipe, meta):
     for source in sources:
         if not any(source.get(checksum)
                    for checksum in ('md5', 'sha1', 'sha256')):
-            return {
+            data = {
                 'missing_hash': True,
                 'fix': 'add md5, sha1, or sha256 hash to "source" section',
             }
+            return _mark_lines(data, recipe, 'source')
 
 
 @lint_multiple_metas
@@ -178,14 +191,15 @@ def uses_git_url(recipe, meta):
 
     for source in sources:
         if 'git_url' in source:
-            return {
+            data = {
                 'uses_git_url': True,
                 'fix': 'use tarballs whenever possible',
             }
+            return _mark_lines(data, recipe, 'source/git_url')
 
 
 @lint_multiple_metas
-def uses_perl_threaded(recipe, meta):
+def uses_perl_threaded(_recipe, meta):
     if 'perl-threaded' in _get_deps(meta):
         return {
             'depends_on_perl_threaded': True,
@@ -194,7 +208,7 @@ def uses_perl_threaded(recipe, meta):
 
 
 @lint_multiple_metas
-def uses_javajdk(recipe, meta):
+def uses_javajdk(_recipe, meta):
     if 'java-jdk' in _get_deps(meta):
         return {
             'depends_on_java-jdk': True,
@@ -203,7 +217,7 @@ def uses_javajdk(recipe, meta):
 
 
 @lint_multiple_metas
-def uses_setuptools(recipe, meta):
+def uses_setuptools(_recipe, meta):
     if 'setuptools' in _get_deps(meta, 'run'):
         return {
             'depends_on_setuptools': True,
@@ -213,7 +227,7 @@ def uses_setuptools(recipe, meta):
 
 
 def has_windows_bat_file(recipe, metas):
-    if len(glob.glob(os.path.join(recipe, '*.bat'))) > 0:
+    if len(glob.glob(os.path.join(recipe.dir, '*.bat'))) > 0:
         return {
             'bat_file': True,
             'fix': 'remove windows .bat files'
@@ -233,10 +247,11 @@ def should_be_noarch(recipe, meta):
     ) and (
         'noarch' not in (meta.get_section('build') or {})
     ):
-        return {
+        data = {
             'should_be_noarch': True,
             'fix': 'add "build: noarch" section',
         }
+        return _mark_lines(data, recipe, 'build')
 
 
 @lint_multiple_metas
@@ -249,11 +264,11 @@ def should_not_be_noarch(recipe, meta):
     ) and (
         meta.get_value('build/noarch', False)
     ):
-        print("error")
-        return {
+        data = {
             'should_not_be_noarch': True,
             'fix': 'remove "build: noarch" section',
         }
+        return _mark_lines(data, recipe, 'build/noarch')
 
 
 @lint_multiple_metas
@@ -274,7 +289,7 @@ def setup_py_install_args(recipe, meta):
     ):
         return err
 
-    build_sh = os.path.join(recipe, 'build.sh')
+    build_sh = os.path.join(recipe.dir, 'build.sh')
     if not os.path.exists(build_sh):
         return
 
@@ -287,7 +302,7 @@ def setup_py_install_args(recipe, meta):
 
 
 @lint_multiple_metas
-def invalid_identifiers(recipe, meta):
+def invalid_identifiers(_recipe, meta):
     try:
         identifiers = meta.get_value('extra/identifiers', [])
         if not isinstance(identifiers, list):
@@ -306,15 +321,15 @@ def invalid_identifiers(recipe, meta):
 
 
 def deprecated_numpy_spec(recipe, metas):
-    with open(os.path.join(recipe, "meta.yaml")) as recipe:
-        if re.search("numpy( )+x\.x", recipe.read()):
+    with open(recipe.path) as raw:
+        if re.search("numpy( )+x\.x", raw.read()):
             return {'deprecated_numpy_spec': True,
                     'fix': 'omit x.x as pinning of numpy is now '
                            'handled automatically'}
 
 
 @lint_multiple_metas
-def should_not_use_fn(recipe, meta):
+def should_not_use_fn(_recipe, meta):
     sources = meta.get_section('source')
     if not sources:
         return
@@ -330,7 +345,7 @@ def should_not_use_fn(recipe, meta):
 
 
 @lint_multiple_metas
-def should_use_compilers(recipe, meta):
+def should_use_compilers(_recipe, meta):
     deps = _get_deps(meta)
     if (
         ('gcc' in deps) or
@@ -346,9 +361,8 @@ def should_use_compilers(recipe, meta):
 
 
 @lint_multiple_metas
-def compilers_must_be_in_build(recipe, meta):
+def compilers_must_be_in_build(_recipe, meta):
     if (
-
         any(['gcc_impl_linux-64' in i for i in _get_deps(meta, 'run')]) or
         any(['gcc_impl_linux-64' in i for i in _get_deps(meta, 'host')]) or
         any(['clang_osx-64' in i for i in _get_deps(meta, 'run')]) or
@@ -364,8 +378,8 @@ def compilers_must_be_in_build(recipe, meta):
         }
 
 
-#def bioconductor_37(recipe, meta):
-#    for line in open(os.path.join(recipe, 'meta.yaml')):
+#def bioconductor_37(_recipe, meta):
+#    for line in open(recipe.path):
 #        if ('{% set bioc = "3.7" %}' in line) or ('{% set bioc = "release" %}' in line):
 #            return {
 #                'bioconductor_37': True,

@@ -268,12 +268,15 @@ class GitHubHandler:
                                conclusion: CheckRunConclusion = None,
                                output_title: str = None,
                                output_summary: str = None,
-                               output_text: str = None):
+                               output_text: str = None,
+                               output_annotations: Dict = None):
         var_data = copy(self.var_default)
         var_data['id'] = str(number)
         data = {}
         if status is not None:
             data['status'] = status.name.lower()
+            if status == CheckRunStatus.in_progress:
+                data['started_at'] = iso_now()
         if conclusion is not None:
             data['conclusion'] = conclusion.name.lower()
             data['completed_at'] = iso_now()
@@ -283,6 +286,8 @@ class GitHubHandler:
                 'summary': output_summary or "",
                 'text': output_text or "",
             }
+            if output_annotations:
+                data['output']['annotations']=output_annotations
         accept = "application/vnd.github.antiope-preview+json"
         return await self.api.patch(self.CHECK_RUN, var_data, data=data, accept=accept)
 
