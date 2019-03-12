@@ -5,7 +5,7 @@ wget https://github.com/simongog/sdsl-lite/releases/download/v2.1.1/sdsl-lite-2.
 tar xf sdsl-lite-2.1.1.tar.gz.offline.install.gz
 pushd sdsl-lite-2.1.1
 mkdir static-build
-CXXFLAGS="${CXXFLAGS} std=gnu++1z"
+CXXFLAGS="${CXXFLAGS} -std=gnu++1z"
 ./install.sh static-build
 popd
 
