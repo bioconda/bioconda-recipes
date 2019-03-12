@@ -25,6 +25,6 @@ mv scripts/R_scripts/titanCNA.R $outdir/scripts/R_scripts/titanCNA.R
 chmod a+x $outdir/scripts/R_scripts/*.R
 ln -s $outdir/scripts/R_scripts/titanCNA.R $PREFIX/bin
 ln -s $outdir/scripts/R_scripts/titanCNA_selectSolution.R $PREFIX/bin
--
+
 # Retrieve external data we want to link into the run
 wget --no-check-certificate -O $outdir/data/cytoBand_hg38.txt https://raw.githubusercontent.com/broadinstitute/ichorCNA/master/inst/extdata/cytoBand_hg38.txt
