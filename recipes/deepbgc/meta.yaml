@@ -1,0 +1,71 @@
+{% set name = "deepbgc" %}
+{% set version = "0.1.2" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "57946da7fe55b0a82b1d9b8737769db62c4fad4bc6ca75766442d36f63086d2d" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  entry_points:
+    - deepbgc = deepbgc.main:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    - python>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*
+    - setuptools
+    - argparse
+    - biopython>=1.70 # support for structured comments from version 1.70
+    - scikit-learn==0.18.2 # needed for antiSMASH compatibility
+    - pandas>=0.24.1
+    - numpy>=1.16.1
+    - keras>=2.2.4
+    - tensorflow==1.12.0
+    - matplotlib>=2.2.3
+    - appdirs>=1.4.3
+    - pytest>=4.3.0
+    - pytest-mock>=1.10.1
+    - appdirs>=1.4.3
+  run:
+    - python>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*
+    - argparse
+    - biopython>=1.70 # support for structured comments from version 1.70
+    - scikit-learn==0.18.2 # needed for antiSMASH compatibility
+    - pandas>=0.24.1
+    - numpy>=1.16.1
+    - keras>=2.2.4
+    - tensorflow==1.12.0
+    - matplotlib>=2.2.3
+    - appdirs>=1.4.3
+    - hmmer ==3.1b2 # needed for antiSMASH compatibility
+    - prodigal
+
+test:
+  imports:
+    - deepbgc
+    - deepbgc.command
+    - deepbgc.models
+    - deepbgc.output
+    - deepbgc.output.evaluation
+    - deepbgc.pipeline
+  commands:
+    - deepbgc --help
+    - deepbgc info
+
+about:
+  home: https://github.com/Merck/DeepBGC
+  license: MIT
+  license_family: MIT
+  summary: DeepBGC - Biosynthetic Gene Cluster detection and classification
+
+extra:
+  recipe-maintainers: ''
