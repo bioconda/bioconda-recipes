@@ -1,28 +1,42 @@
 {% set name = "shapeshifter" %}
-{% set version = "1.1.0" %}
+{% set version = "1.1.1" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "9679af30022df7eeeafa11d9f8dd62408417bb439efb343f272de615eadacd33" %}
 
 package:
-  name: "{{ name|lower }}"
-  version: "{{ version }}"
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: dea83a20033b75e35cd4483b8703d322f81315a448133615f9254d75a03c1924
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
 
 build:
   noarch: python
   number: 0
-  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
   host:
-    - pip
     - python >=3
-  run:
+    - setuptools
     - pandas
     - pyarrow
-    - python
+    - numpy ==1.15.4
     - sqlalchemy
+    - xlsxwriter
+    - xlrd
+    - nbformat
+  run:
+    - python
+    - pandas
+    - pyarrow
+    - numpy ==1.15.4
+    - sqlalchemy
+    - xlsxwriter
+    - xlrd
+    - nbformat
 
 test:
   imports:
@@ -34,9 +48,11 @@ test:
 about:
   home: https://github.com/srp33/ShapeShifter
   license: MIT
-  summary: A tool for managing and transforming large data sets
+  license_family: MIT
+  summary: A tool for managing large datasets
 
 extra:
-  recipe-maintainers:
+  recipe-maintainers: 
     - srp33
     - frytime32
+        
