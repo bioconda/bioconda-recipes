@@ -10,4 +10,6 @@ mccortex 31 build -k 5 --sample test_sample -1 test.fa test.ctx > /dev/null
 set +o pipefail
 mccortex 31 2>&1 | grep -F 'usage: mccortex31 <command> [options] <args>' > /dev/null
 mccortex 63 2>&1 | grep -F 'usage: mccortex63 <command> [options] <args>' > /dev/null
+mccortex 95 2>&1 | grep -F 'usage: mccortex95 <command> [options] <args>' > /dev/null
+mccortex 127 2>&1 | grep -F 'usage: mccortex127 <command> [options] <args>' > /dev/null
 set -o pipefail
