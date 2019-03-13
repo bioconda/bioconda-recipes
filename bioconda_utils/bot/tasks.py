@@ -109,18 +109,19 @@ async def lint_check(self: "AsyncTask", pr_info_dict: "Dict", head_sha: str,
         summary = "Please fix the listed issues"
 
     annotations = []
-    for index, row in df.iterrows():
-        check = row['check']
-        info = row['info']
-        recipe = row['recipe']
-        annotations.append({
-            'path': recipe + '/meta.yaml',
-            'start_line': info.get('start_line', 1),
-            'end_line': info.get('end_line', 1),
-            'annotation_level': 'failure',
-            'title': check,
-            'message': info['fix']
-        })
+    if df is not None:
+        for index, row in df.iterrows():
+            check = row['check']
+            info = row['info']
+            recipe = row['recipe']
+            annotations.append({
+                'path': recipe + '/meta.yaml',
+                'start_line': info.get('start_line', 1),
+                'end_line': info.get('end_line', 1),
+                'annotation_level': 'failure',
+                'title': check,
+                'message': info['fix']
+            })
 
     await self.ghapi.modify_check_run(check_run_number,
                                       status=CheckRunStatus.completed,
