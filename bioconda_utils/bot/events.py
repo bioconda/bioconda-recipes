@@ -64,7 +64,7 @@ async def initiate_check_run(event, ghapi):
                                status=CheckRunStatus.completed,
                                conclusion=CheckRunConclusion.neutral,
                                output_title="No PRs associated",
-                               outout_summary="Merges commits are not linted")
+                               output_summary="Merges commits are not linted")
         return
 
     issue_number = prs[0]['number']
@@ -75,7 +75,7 @@ async def initiate_check_run(event, ghapi):
                                status=CheckRunStatus.completed,
                                conclusion=CheckRunConclusion.neutral,
                                output_title="PR not found",
-                               outout_summary="PR {} not found?".format(issue_number))
+                               output_summary="PR {} not found?".format(issue_number))
         logger.error("No PRs with number %s?", pr['number'])
         return
 
