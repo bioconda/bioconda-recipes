@@ -59,6 +59,7 @@ async def initiate_check_run(event, ghapi):
     prs = event.get('check_run/check_suite/pull_requests')
 
     if not prs:
+        logger.error("initiate_check_run: no prs (%s)", head_sha)
         ghapi.modify_check_run(check_run_number,
                                status=CheckRunStatus.completed,
                                conclusion=CheckRunConclusion.neutral,
@@ -67,6 +68,7 @@ async def initiate_check_run(event, ghapi):
         return
 
     issue_number = prs[0]['number']
+    logger.error("initiate_check_run: getting prs for issue %s", issue_number)
     pr = await ghapi.get_prs(number=int(issue_number))
     if not pr:
         ghapi.modify_check_run(check_run_number,
@@ -103,12 +105,6 @@ async def handle_check_suite(event, ghapi):
     action = event.get('action')
     if action not in ['requested', 'rerequested']:
         return
-
-    prs = event.get("check_suite/pull_requests", [])
-    if not prs:
-        logger.error("Check_suite event had no associated pull requests (merge?)")
-        return
-
     await create_check_run(event, ghapi)
 
 @event_routes.register("check_run")

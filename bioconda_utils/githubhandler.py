@@ -10,6 +10,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
 import aiohttp
+import backoff
 import cachetools
 import gidgethub
 import gidgethub.aiohttp
@@ -123,6 +124,7 @@ class GitHubHandler:
         return True
 
     # pylint: disable=too-many-arguments
+    @backoff.on_exception(backoff.fibo, gidgethub.BadRequest, max_tries=14)
     async def get_prs(self,
                       from_branch: Optional[str] = None,
                       from_user: Optional[str] = None,
