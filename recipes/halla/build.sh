@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+echo ${PY_VER}
 if [[ "${PY_VER}" =~ 3 ]]
 then
     for i in halla/*.py
