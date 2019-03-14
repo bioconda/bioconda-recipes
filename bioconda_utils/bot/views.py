@@ -21,29 +21,36 @@ async def webhook_dispatch(request):
     try:
         body = await request.read()
         event = Event.from_http(request.headers, body)
-        logger.info('GH delivery ID %s', event.delivery_id)
-
         # Respond to liveness check
         if event.event == "ping":
             return web.Response(status=200)
 
+        # Log Event
+        installation = event.get('installation/id', 'N/A')
+        to_user = event.get('repository/owner/login', 'N/A')
+        to_repo = event.get('repository/name', 'N/A')
+        logger.info("Received GH Event '%s' (%s) for %s (%s/%s)",
+                    event.event, event.delivery_id,
+                    installation, to_user, to_repo)
+
+        # Get GithubAPI object for this installation
         ghapi = await request.app['ghappapi'].get_github_api(
-            dry_run=False,
-            installation=event.get('installation/id'),
-            to_user=event.get('repository/owner/login'),
-            to_repo=event.get('repository/name')
+            dry_run=False, installation=installation, to_user=to_user, to_repo=to_repo
         )
+
+        # Dispatch the Event
         try:
             await event_routes.dispatch(event, ghapi)
+            logger.info("Event '%s' (%s) done", event.event, event.delivery_id)
         except Exception:  # pylint: disable=broad-except
             logger.exception("Failed to dispatch %s", event.delivery_id)
         request.app['gh_rate_limit'] = ghapi.rate_limit
 
         try:
-            logger.warning('GH requests remaining: %s', ghapi.rate_limit.remaining)
-
+            events_remaining = ghapi.rate_limit.remaining
         except AttributeError:
-            logger.warning('Could not get number of remaining GH requests')
+            events_remaining = "Unknown"
+        logger.info('GH requests remaining: %s', events_remaining)
 
         return web.Response(status=200)
     except Exception:  # pylint: disable=broad-except
