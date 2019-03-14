@@ -2,7 +2,7 @@
 
 
 env
-if [ $PY3K -eq 3 ]
+if [ $PY3K -eq 1 ]
 then
     for i in halla/*.py
     do
