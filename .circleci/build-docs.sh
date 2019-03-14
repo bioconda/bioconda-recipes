@@ -58,9 +58,7 @@ rm -r *
 
 # build docs and copy over to tmpdir
 cd ${DOCSOURCE}
-# TODO: reenable "-j2" when docs build fine
-make clean html SPHINXOPTS=-T 2>&1 | grep -v "WARNING: nonlocal image URL found:"
-# make clean html SPHINXOPTS="-j2" 2>&1 | grep -v "WARNING: nonlocal image URL found:"
+make clean html SPHINXOPTS="-T -j2" 2>&1 | grep -v "WARNING: nonlocal image URL found:"
 cp -r ${DOCHTML}/* $STAGING
 
 # commit and push
