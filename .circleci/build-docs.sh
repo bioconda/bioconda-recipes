@@ -61,12 +61,15 @@ cd ${DOCSOURCE}
 make clean html SPHINXOPTS="-T -j2" 2>&1 | grep -v "WARNING: nonlocal image URL found:"
 cp -r ${DOCHTML}/* $STAGING
 
-# commit and push
-cd $STAGING
-touch .nojekyll
-git add .nojekyll
+# add README.md
+cp $DOCSOURCE/README.md $STAGING
+
+# add .nojekyll
+touch $STAGING/.nojekyll
+
 
 # committing with no changes results in exit 1, so check for that case first.
+cd $STAGING
 if git diff --quiet; then
     echo "No changes to push -- exiting cleanly"
     exit 0
