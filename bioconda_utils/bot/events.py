@@ -72,6 +72,10 @@ async def initiate_check_run(event, ghapi):
                                output_summary="Merge commits are not linted")
         return
 
+    if len(prs) > 1:
+        logger.error("initiate_check_run: multiple prs (choosing first)")
+        logger.info("all PRs: %s", prs)
+
     issue_number = prs[0]['number']
     logger.error("initiate_check_run: getting prs for issue %s", issue_number)
     pr = await ghapi.get_prs(number=int(issue_number))
