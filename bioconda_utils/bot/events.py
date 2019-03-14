@@ -56,7 +56,12 @@ async def create_check_run(event, ghapi):
 async def initiate_check_run(event, ghapi):
     check_run_number = event.get('check_run/id')
     head_sha = event.get('check_run/head_sha')
-    prs = event.get('check_run/check_suite/pull_requests')
+    all_prs = event.get('check_run/check_suite/pull_requests')
+
+    # remove output PRs (e.g. created by backstroke-bot)
+    repository_id = event.get('repository/id')
+    prs = [pr for pr in all_prs
+           if pr['base']['repo']['id'] != repository_id]
 
     if not prs:
         logger.error("initiate_check_run: no prs (%s)", head_sha)
@@ -64,7 +69,7 @@ async def initiate_check_run(event, ghapi):
                                status=CheckRunStatus.completed,
                                conclusion=CheckRunConclusion.neutral,
                                output_title="No PRs associated",
-                               output_summary="Merges commits are not linted")
+                               output_summary="Merge commits are not linted")
         return
 
     issue_number = prs[0]['number']
