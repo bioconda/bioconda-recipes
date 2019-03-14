@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-env
-if [ $PY3K -eq 1 ]
+PYVER = `python -V | cut -f 2 -d " " | cut -f 1 -d "."`  # Returns the python major version
+if [ $PYVER -eq 3 ]
 then
     for i in halla/*.py
     do
