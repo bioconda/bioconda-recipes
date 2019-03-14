@@ -1,8 +1,8 @@
 #!/bin/bash
 
-PY3_BUILD="${PY_VER%.*}"
 
-if [ $PY3_BUILD -eq 3 ]
+env
+if [ $PY3K -eq 3 ]
 then
     for i in halla/*.py
     do
