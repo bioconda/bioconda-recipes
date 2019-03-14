@@ -375,7 +375,7 @@ class GitHubAppHandler:
         else:
             msg = "Reusing"
 
-        logger.info("%s JWT valid for %i minutes", msg, (expires - now)/60)
+        logger.debug("%s JWT valid for %i minutes", msg, (expires - now)/60)
         return token
 
     @staticmethod
