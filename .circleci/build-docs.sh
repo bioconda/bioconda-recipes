@@ -80,7 +80,7 @@ fi
 
 # Add, commit, and push
 echo ".*" >> .gitignore
-git config user.name "Travis CI"
+git config user.name "{GITHUB_USERNAME}"
 git config user.email "${GITHUB_USERNAME}@users.noreply.github.com"
 git add -A .
 git commit --all -m "Updated docs to commit ${SHA}."
