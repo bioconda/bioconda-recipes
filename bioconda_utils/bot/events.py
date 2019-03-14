@@ -58,10 +58,10 @@ async def initiate_check_run(event, ghapi):
     head_sha = event.get('check_run/head_sha')
     all_prs = event.get('check_run/check_suite/pull_requests')
 
-    # remove output PRs (e.g. created by backstroke-bot)
+    # filter to include only PRs **to** us
     repository_id = event.get('repository/id')
     prs = [pr for pr in all_prs
-           if pr['base']['repo']['id'] != repository_id]
+           if pr['base']['repo']['id'] == repository_id]
 
     if not prs:
         logger.error("initiate_check_run: no prs (%s)", head_sha)
