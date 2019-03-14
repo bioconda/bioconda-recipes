@@ -109,6 +109,7 @@ class AsyncTask(Task):
         We do this so that the celery tasks have a functioning ghapi object
         matching the ghapi used by the github event handlers.
         """
+        logger.info("Scheduled call to %s", self.name)
         return self.delay(*args,
                           ghapi_data=ghapi.to_dict() if ghapi else None,
                           **kwargs)
