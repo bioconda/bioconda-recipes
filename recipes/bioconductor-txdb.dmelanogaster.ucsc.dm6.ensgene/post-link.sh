@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="TxDb.Dmelanogaster.UCSC.dm6.ensGene_3.4.1.tar.gz"
+FN="TxDb.Dmelanogaster.UCSC.dm6.ensGene_3.4.4.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/TxDb.Dmelanogaster.UCSC.dm6.ensGene_3.4.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/TxDb.Dmelanogaster.UCSC.dm6.ensGene_3.4.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.dmelanogaster.ucsc.dm6.ensgene/bioconductor-txdb.dmelanogaster.ucsc.dm6.ensgene_3.4.1_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.dmelanogaster.ucsc.dm6.ensgene/bioconductor-txdb.dmelanogaster.ucsc.dm6.ensgene_3.4.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/TxDb.Dmelanogaster.UCSC.dm6.ensGene_3.4.4.tar.gz"
+  "https://bioarchive.galaxyproject.org/TxDb.Dmelanogaster.UCSC.dm6.ensGene_3.4.4.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.dmelanogaster.ucsc.dm6.ensgene/bioconductor-txdb.dmelanogaster.ucsc.dm6.ensgene_3.4.4_src_all.tar.gz"
 )
-MD5="539737dcb0b3d6d0134f5fe2ecf4e835"
+MD5="7cad715c42d1f960c0e54905ec6612d7"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

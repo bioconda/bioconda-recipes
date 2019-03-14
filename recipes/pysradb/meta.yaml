@@ -1,8 +1,8 @@
 {% set name = "pysradb" %}
-{% set version = "0.3.0" %}
+{% set version = "0.9.0" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "f8d26b37a1424f642c938654a01c4ae02d2758c9fcc6af2cbb4b291e88c3d8dd" %}
+{% set hash_value = "65e2270ced9f1d654c04090153490ca0102102a94b465edb0e618db8976cf2e2" %}
 
 
 package:
@@ -15,15 +15,17 @@ source:
 
 build:
   number: 0
+  entry_points:
+    - pysradb=pysradb.cli:parse_args
   script: python setup.py install --single-version-externally-managed --record=record.txt
-  noarch: python
+  skip: True # [py27]
 
 requirements:
   host:
     - python
     - setuptools
     - pandas >=0.23.4
-    - tqdm  >=4.28
+    - tqdm >=4.28
   run:
     - python
     - pandas >=0.23.4
@@ -32,7 +34,9 @@ requirements:
 test:
   imports:
     - pysradb
-    - pysradb.pysradb
+    - pysradb.sradb
+  commands:
+    - pysradb | grep "Query NGS metadata"
 
 about:
   home: https://github.com/saketkc/pysradb
