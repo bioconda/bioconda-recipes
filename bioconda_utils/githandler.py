@@ -102,6 +102,9 @@ class GitHandlerBase():
                 return remote_ref.ref
         return None  # fixme - raise?
 
+    def get_latest_master(self):
+        return self.home_remote.fetch('master')[0].commit
+
     def read_from_branch(self, branch, file_name: str) -> str:
         """Reads contents of file **file_name** from git branch **branch**"""
         abs_file_name = os.path.abspath(file_name)
@@ -113,17 +116,20 @@ class GitHandlerBase():
         rel_file_name = abs_file_name[len(abs_repo_root):].lstrip("/")
         return (branch.commit.tree / rel_file_name).data_stream.read().decode("utf-8")
 
-    def create_local_branch(self, branch_name: str):
+    def create_local_branch(self, branch_name: str, remote_branch: str = None):
         """Creates local branch from remote **branch_name**"""
-        remote_branch = self.get_remote_branch(branch_name)
-        self.repo.create_head(branch_name, remote_branch.commit)
+        if remote_branch is None:
+            remote_branch = self.get_remote_branch(branch_name)
+        else:
+            remote_branch = self.get_remote_branch(remote_branch)
+        self.repo.create_head(branch_name, remote_branch)
         return self.get_local_branch(branch_name)
 
     def prepare_branch(self, branch_name: str) -> None:
         """Checks out **branch_name**, creating it from home remote master if needed"""
         if branch_name not in self.repo.heads:
             logger.info("Creating new branch %s", branch_name)
-            from_commit = self.home_remote.fetch('master')[0].commit
+            from_commit = self.get_latest_master()
             self.repo.create_head(branch_name, from_commit)
         logger.info("Checking out branch %s", branch_name)
         branch = self.repo.heads[branch_name]
