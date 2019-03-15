@@ -122,6 +122,8 @@ class GitHandlerBase():
             remote_branch = self.get_remote_branch(branch_name)
         else:
             remote_branch = self.get_remote_branch(remote_branch)
+        if remote_branch is None:
+            return None
         self.repo.create_head(branch_name, remote_branch)
         return self.get_local_branch(branch_name)
 
