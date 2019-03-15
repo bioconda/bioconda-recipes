@@ -6,6 +6,7 @@ export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
+# This is equivalent to https://github.com/gpertea/stringtie/blob/master/prepDE.py
 wget http://ccb.jhu.edu/software/stringtie/dl/prepDE.py
 
 make release
@@ -13,7 +14,7 @@ mkdir -p $PREFIX/bin
 mv stringtie $PREFIX/bin
 
 if [ "$PY3K" == 1 ]; then
-    2to3 -w prepDE.py
+    2to3 -w --no-diffs prepDE.py
 fi
 sed -i.bak 's|/usr/bin/env python2|/usr/bin/env python|' prepDE.py
 mv prepDE.py $PREFIX/bin
