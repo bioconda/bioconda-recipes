@@ -5,7 +5,7 @@ git submodule update
 
 export CXXFLAGS="-std=c++11"
 export INCLUDE_PATH=${PREFIX}/include
-
+export GSL_INCLUDE_DIRS=${PREFIX}/include
 
 make
 mkdir -p $PREFIX/bin
