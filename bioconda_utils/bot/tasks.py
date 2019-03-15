@@ -26,8 +26,14 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 PRInfo = namedtuple('PRInfo', 'installation user repo ref recipes issue_number')
 
 
+# We can't use contextlib.contextmanager because these are async and
+# asyncontextmanager is only available in Python >3.7
 
 class PrBranch:
+    """Async context manager checking out branch for a PR
+
+    This context manager allows making commits.
+    """
     def __init__(self, ghappapi, pr_info):
         self.ghappapi = ghappapi
         self.pr_info = pr_info
@@ -54,6 +60,52 @@ class PrBranch:
         self.git.close()
 
 
+class Checkout:
+    """Async context manager checking out specific commit
+
+    Since we don't know the branch (head) we can't make commits.
+
+    Returns `None` if the checkout failed, otherwise the TempGitHandler object
+
+    >>> with Checkout(...) as git:
+    >>>   if None:
+    >>>      print("checkout failed")
+    >>>   else:
+    >>>      for filename in git.list_changed_files(git.get_latest_master):
+    """
+    def __init__(self, ghappapi, installation, user, repo, ref, branch_name="unknown"):
+        self.ghappapi = ghappapi
+        self.installation = installation
+        self.user = user
+        self.repo = repo
+        self.ref = ref
+        self.branch_name = branch_name
+        self.orig_cwd = None
+        self.git = None
+
+    async def __aenter__(self):
+        logger.info("Checking out %s/%s:%s as %s",
+                    self.user, self.repo, self.ref, self.branch_name)
+        token = await self.ghappapi.get_installation_token(self.installation)
+        try:
+            self.git = TempGitHandler(password=token,
+                                      home_user=self.user, home_repo=self.repo)
+            self.orig_cwd = os.getcwd()
+            os.chdir(self.git.tempdir.name)
+            branch = self.git.create_local_branch(self.branch_name, self.ref)
+            if not branch:
+                raise RuntimeError(
+                    f"Failed to checkout {self.user}/{self.repo}:{self.ref}")
+            branch.checkout()
+            return self.git
+        except Exception as exc:
+            return None
+
+    async def __aexit__(self, _exc_type, _exc, _tb):
+        if self.orig_cwd:
+            os.chdir(self.orig_cwd)
+        if self.git:
+            self.git.close()
 @celery.task(bind=True, acks_late=True)
 async def bump(self: "AsyncTask", pr_info_dict: "Dict", ghapi_data=None):
     """Bump the build number in each recipe"""
