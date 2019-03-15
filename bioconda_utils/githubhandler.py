@@ -65,6 +65,8 @@ class GitHubHandler:
         self.token = token
         self.dry_run = dry_run
         self.installation = installation
+        self.user = to_user
+        self.repo = to_repo
         self.var_default = {'user': to_user,
                             'repo': to_repo}
 
@@ -75,8 +77,8 @@ class GitHubHandler:
     def to_dict(self):
         return {
             'dry_run': self.dry_run,
-            'to_user': self.var_default['user'],
-            'to_repo': self.var_default['repo'],
+            'to_user': self.user,
+            'to_repo': self.repo,
             'installation': self.installation
         }
 
