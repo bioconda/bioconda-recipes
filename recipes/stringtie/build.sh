@@ -3,7 +3,6 @@
 export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=$PREFIX/include
 export LINKER="$CXX"
-export LDFLAGS="$LDFLAGS"
 export CXXFLAGS="$CPPFLAGS"
 
 make release
