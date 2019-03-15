@@ -196,6 +196,7 @@ class GitHandler(GitHandlerBase):
         self.prev_active_branch.checkout()
         super().close()
 
+
 class TempGitHandler(GitHandlerBase):
     """GitHandler for working with temporary working directories created on the fly
     """
@@ -220,6 +221,8 @@ class TempGitHandler(GitHandlerBase):
         self.tempdir = tempfile.TemporaryDirectory()
 
         def censor(string):
+            if password is None:
+                return string
             return string.replace(password, "******")
 
         home_url = url_format.format(userpass=userpass,
