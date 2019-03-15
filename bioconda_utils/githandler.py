@@ -267,8 +267,8 @@ class TempGitHandler(GitHandlerBase):
 
         home_url = url_format.format(userpass=userpass,
                                      user=home_user, repo=home_repo)
-        logger.warning("Cloning %s to %s", censor(home_url), self.tempdir.name)
-        repo = git.Repo.clone_from(home_url, self.tempdir.name, depth=1)
+        logger.info("Cloning %s to %s", censor(home_url), self.tempdir.name)
+        repo = git.Repo.clone_from(home_url, self.tempdir.name,  depth=1)
 
         if fork_repo is not None:
             fork_url = url_format.format(userpass=userpass, user=fork_user, repo=fork_repo)
@@ -277,11 +277,11 @@ class TempGitHandler(GitHandlerBase):
                 fork_remote = repo.create_remote("fork", fork_url)
         else:
             fork_url = None
-        logger.warning("Finished setting up repo in %s", self.tempdir)
+        logger.info("Finished setting up repo in %s", self.tempdir)
         super().__init__(repo, dry_run, home_url, fork_url)
 
     def close(self) -> None:
         """Remove temporary clone and cleanup resources"""
         super().close()
-        logger.warning("Removing repo from %s", self.tempdir.name)
+        logger.info("Removing repo from %s", self.tempdir.name)
         self.tempdir.cleanup()

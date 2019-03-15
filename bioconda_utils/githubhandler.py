@@ -416,8 +416,8 @@ class GitHubAppHandler:
         else:
             msg = "Reusing"
 
-        logger.info("%s token for %i valid for %i minutes",
-                    msg, installation, (expires - now)/60)
+        logger.debug("%s token for %i valid for %i minutes",
+                     msg, installation, (expires - now)/60)
         return token
 
     async def get_github_api(self, dry_run, to_user, to_repo, installation) -> GitHubHandler:
