@@ -106,6 +106,14 @@ class Checkout:
             os.chdir(self.orig_cwd)
         if self.git:
             self.git.close()
+
+
+@celery.task(bind=True, acks_late=True)
+async def create_check_run(self: "AsyncTask", head_sha: str, ghapi_data=None):
+    check_run_number = await self.ghapi.create_check_run("Linting Recipe(s)", head_sha)
+    logger.warning("Created check run %s", check_run_number)
+
+
 @celery.task(bind=True, acks_late=True)
 async def bump(self: "AsyncTask", pr_info_dict: "Dict", ghapi_data=None):
     """Bump the build number in each recipe"""
@@ -142,15 +150,51 @@ async def lint(self: "AsyncTask", pr_info_dict: "Dict", ghapi_data=None):
 
 
 @celery.task(bind=True, acks_late=True)
-async def lint_check(self: "AsyncTask", pr_info_dict: "Dict", head_sha: str,
-                     check_run_number: int, ghapi_data=None):
-    """Lint each recipe"""
-    pr_info = PRInfo(**pr_info_dict)
-    logger.info("Starting lint check: %s", pr_info)
-    await self.ghapi.modify_check_run(check_run_number,
-                                      status=CheckRunStatus.in_progress)
-    # FIXME: check if current sha is head_sha, if not, cancel
-    df, msg = await do_lint(self.ghappapi, pr_info)
+async def lint_check(self: "AsyncTask",
+                     check_run_number: int,
+                     ref: str,
+                     ghapi_data=None):
+    """Execute linter
+    """
+    ref_label = ref[:8] if len(ref) >= 40 else ref
+    logger.info("Starting lint check for %s", ref_label)
+    await self.ghapi.modify_check_run(
+        check_run_number, status=CheckRunStatus.in_progress)
+
+    async with Checkout(self.ghappapi, self.ghapi.installation,
+                        self.ghapi.user, self.ghapi.repo, ref) as git:
+        if not git:
+            await self.ghapi.modify_check_run(
+                check_run_number,
+                status=CheckRunStatus.completed,
+                conclusion=CheckRunConclusion.cancelled,
+                output_title=
+                f"Failed to check out "
+                f"{self.ghapi.user}/{self.ghapi.repo}:{ref_label}"
+            )
+            return
+
+        recipes = [fn[:-len('/meta.yaml')]
+                   for fn in git.list_changed_files()
+                   if fn.endswith('/meta.yaml')]
+        if not recipes:
+            await  self.ghapi.modify_check_run(
+                check_run_number,
+                status=CheckRunStatus.completed,
+                conclusion=CheckRunConclusion.neutral,
+                output_title="No recipes modified",
+                output_summary=
+                "This branch does not modify any recipes! "
+                "Please make sure this is what you intend. Upon merge, "
+                "no packages would be built."
+            )
+            return
+
+        utils.load_config('config.yml')
+        from bioconda_utils.linting import lint as _lint, LintArgs, markdown_report
+        df = _lint(recipes, LintArgs())
+
+    annotations = []
     if df is None:
         conclusion = CheckRunConclusion.success
         title = "All recipes in good condition"
@@ -160,9 +204,7 @@ async def lint_check(self: "AsyncTask", pr_info_dict: "Dict", head_sha: str,
         title = "Some recipes had problems"
         summary = "Please fix the listed issues"
 
-    annotations = []
-    if df is not None:
-        for index, row in df.iterrows():
+        for _, row in df.iterrows():
             check = row['check']
             info = row['info']
             recipe = row['recipe']
@@ -175,12 +217,14 @@ async def lint_check(self: "AsyncTask", pr_info_dict: "Dict", head_sha: str,
                 'message': info['fix']
             })
 
-    await self.ghapi.modify_check_run(check_run_number,
-                                      status=CheckRunStatus.completed,
-                                      conclusion=conclusion,
-                                      output_title=title, output_summary=summary,
-                                      output_text=msg,
-                                      output_annotations=annotations)
+    await self.ghapi.modify_check_run(
+        check_run_number,
+        status=CheckRunStatus.completed,
+        conclusion=conclusion,
+        output_title=title,
+        output_summary=summary,
+        output_text=markdown_report(df),
+        output_annotations=annotations)
 
 
 @celery.task(acks_late=True)
