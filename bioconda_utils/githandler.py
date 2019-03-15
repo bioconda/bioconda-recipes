@@ -125,6 +125,40 @@ class GitHandlerBase():
         self.repo.create_head(branch_name, remote_branch)
         return self.get_local_branch(branch_name)
 
+    def get_merge_base(self, ref):
+        """Determines the merge base for master and **ref**
+
+        See git merge-base.
+
+        This should return the commit at which **ref** split from
+        master and from which point on changes would be merged.
+        """
+        for depth in (0, 1, 10, 50, 100, 200):
+            if depth:
+                self.fork_remote.fetch(ref, depth=depth)
+                self.home_remote.fetch('master', depth=depth)
+            merge_bases = self.repo.merge_base(self.home_remote.refs.master, ref)
+            if merge_bases: break
+            logger.debug("No merge base found for %s and master at depth %i", ref, depth)
+        else:
+            logger.error("No merge base found for %s and master", ref)
+            return None
+        if len(merge_bases) > 1:
+            logger.error("Multiple merge bases found for %s and master: %s",
+                         ref, merge_bases)
+        return merge_bases[0]
+
+    def list_changed_files(self, ref):
+        """Lists the files added or modified between origin/master and **ref**
+
+        For moved/renamed files only the new name is listed. Deleted
+        files are omitted.
+        """
+        merge_base = self.get_merge_base(ref)
+        for diffobj in merge_base.diff(ref):
+            if not diffobj.deleted_file:
+                yield diffobj.b_path
+
     def prepare_branch(self, branch_name: str) -> None:
         """Checks out **branch_name**, creating it from home remote master if needed"""
         if branch_name not in self.repo.heads:
