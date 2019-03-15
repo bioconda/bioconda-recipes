@@ -148,12 +148,13 @@ class GitHandlerBase():
         """
         if not ref:
             ref = self.repo.active_branch.commit
-        for depth in (0, 1, 10, 50, 100, 200):
+        for depth in (0, 50, 200):
             if depth:
                 self.fork_remote.fetch(ref, depth=depth)
                 self.home_remote.fetch('master', depth=depth)
             merge_bases = self.repo.merge_base(self.home_remote.refs.master, ref)
-            if merge_bases: break
+            if merge_bases:
+                break
             logger.debug("No merge base found for %s and master at depth %i", ref, depth)
         else:
             logger.error("No merge base found for %s and master", ref)
