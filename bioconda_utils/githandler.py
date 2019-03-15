@@ -97,7 +97,18 @@ class GitHandlerBase():
         """Finds fork remote branch named **branch_name**"""
         if branch_name in self.fork_remote.refs:
             return self.fork_remote.refs[branch_name]
-        for remote_ref in self.fork_remote.fetch(branch_name, depth=1):
+        for depth in (0, 50, 200):
+            try:
+                if depth > 0:
+                    self.fork_remote.fetch(depth=depth)
+                remote_refs = self.fork_remote.fetch(branch_name, depth=depth)
+                break
+            except git.GitCommandError as exc:
+                pass
+        else:
+            logger.info("Failed to fetch %s", branch_name)
+            return None
+        for remote_ref in remote_refs:
             if remote_ref.remote_ref_path == branch_name:
                 return remote_ref.ref
         return None  # fixme - raise?
