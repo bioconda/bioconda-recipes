@@ -273,7 +273,9 @@ class GitHubHandler:
                                output_title: str = None,
                                output_summary: str = None,
                                output_text: str = None,
-                               output_annotations: Dict = None):
+                               output_annotations: List[Dict] = None):
+        logger.info("Modifying check run %i: status=%s conclusion=%s title=%s",
+                    number, status.name, conclusion.name if conclusion else "N/A", output_title)
         var_data = copy(self.var_default)
         var_data['id'] = str(number)
         data = {}
