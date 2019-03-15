@@ -2,9 +2,9 @@
 
 export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=$PREFIX/include
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
+export LINKER="$CXX"
+export LDFLAGS="$LDFLAGS -L$PREFIX/samtools-0.1.18"
+export CXXFLAGS="$CPPFLAGS"
 
 make release
 mkdir -p $PREFIX/bin
