@@ -1,0 +1,69 @@
+package:
+  name: cfm
+  version: "33"
+
+source:
+  # the download is a mirror of a snapshot of 
+  # https://sourceforge.net/code-snapshots/svn/c/cf/cfm-id/code/cfm-id-code-r33-cfm.zip
+  # which is only present for ~24h
+  #
+  # patch: - comment tests with missing data
+  # - bugfix in cfm-code/EM.cpp (cerr -> endl)
+  # - fix for tools that try to access ISOTOPE.DAT or the tests folder at the working 
+  #   dir (prepend $CFM_OUTPUT_DIR with the help of macros)
+  - url: https://depot.galaxyproject.org/software/cfm/cfm_r33_src_all.zip
+    sha256: 6518e70d2acf995d95d610312b234b5a69ee13ba0eed4836235ce32d73e32e35
+    patches:
+      - source.patch
+  - url: https://depot.galaxyproject.org/software/cfm-train-example/cfm-train-example_r33_src_all.zip
+    sha256: 1e17dd6cda69800e457b30af41356341fb9dec4ec362b477bf1c5a2469348c44
+    folder: train-example
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - boost-cpp
+    - liblbfgs =1.10
+    - lp_solve =5.5
+    - mpich
+    - rdkit ==2018.09.1
+  run:
+    - boost-cpp
+    - lp_solve =5.5
+    - mpich
+    - rdkit ==2018.09.1
+
+# - real tests currently only for fraggraph-gen and the test binary
+# - other binaries need to much memory with the available test data which is most likely the 
+#   reason for the failing bioconda CI tests 
+# - current test files are taken from https://sourceforge.net/p/cfm-id/code/HEAD/tree/supplementary_material/cfm-train_example/train_example/
+#   The MPI test would probably need configuration on the bioconda side to run. Currently fails with: 
+# `PID_nem_tcp_init(379).............: gethostbyname failed, static.162.252.209.104.cyberlynk.net (errno 1)`
+test:
+#   source_files:
+#     - example_candidates.txt
+#     - example_spec.txt
+#     - train-example/example_output/param_output1.log
+#     - train-example/example_param_config.txt
+  commands:
+#     - cfm-id example_spec.txt AN_ID example_candidates.txt 5 10.0 0.01 0.001 train-example/example_output/param_output1.log train-example/example_param_config.txt DotProduct
+    - which cfm-annotate
+    - which cfm-id
+    - which cfm-id-precomputed
+    - which cfm-predict
+    - which cfm-train
+    - fraggraph-gen CC 2 + fullgraph
+    - fraggraph-gen CC 2 "*" fragonly
+    - cfm-test
+    - mpiexec -launcher fork -n 2 cfm-test # [not osx]
+
+about:
+  home: https://sourceforge.net/p/cfm-id/wiki/Home/
+  license: GPL-2
+  summary: 'Tools for applying Competitive Fragmentation Modeling (CFM) to spectrum prediction and metabolite identification tasks, as well as a tools for fragment generation and peak annotation.'
+  license_file: license.txt
