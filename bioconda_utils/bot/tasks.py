@@ -26,79 +26,65 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 PRInfo = namedtuple('PRInfo', 'installation user repo ref recipes issue_number')
 
 
-# We can't use contextlib.contextmanager because these are async and
-# asyncontextmanager is only available in Python >3.7
-
-class PrBranch:
-    """Async context manager checking out branch for a PR
-
-    This context manager allows making commits.
-    """
-    def __init__(self, ghappapi, pr_info):
-        self.ghappapi = ghappapi
-        self.pr_info = pr_info
-        self.cwd = None
-        self.git = None
-
-    async def __aenter__(self):
-        logger.error("Prepping branch %s", self.pr_info)
-        token = await self.ghappapi.get_installation_token(self.pr_info.installation)
-        self.git = TempGitHandler(password=token,
-                                  fork_user=self.pr_info.user,
-                                  fork_repo=self.pr_info.repo)
-        self.git.set_user(BOT_NAME, BOT_EMAIL)
-
-        self.cwd = os.getcwd()
-        os.chdir(self.git.tempdir.name)
-
-        branch = self.git.create_local_branch(self.pr_info.ref)
-        branch.checkout()
-        return self.git
-
-    async def __aexit__(self, exc_type, exc, tb):
-        os.chdir(self.cwd)
-        self.git.close()
-
-
 class Checkout:
-    """Async context manager checking out specific commit
+    # We can't use contextlib.contextmanager because these are async and
+    # asyncontextmanager is only available in Python >3.7
+    """Async context manager checking out git repo
 
-    Since we don't know the branch (head) we can't make commits.
+    Args:
+      ref: optional sha checksum to checkout (only if issue_number not given)
+      issue_number: optional issue number to checkout (only of ref not given)
 
     Returns `None` if the checkout failed, otherwise the TempGitHandler object
 
-    >>> with Checkout(...) as git:
-    >>>   if None:
+    >>> with Checkout(ghapi, issue_number) as git:
+    >>>   if git is None:
     >>>      print("checkout failed")
     >>>   else:
-    >>>      for filename in git.list_changed_files(git.get_latest_master):
+    >>>      for filename in git.list_changed_files():
     """
-    def __init__(self, ghappapi, installation, user, repo, ref, branch_name="unknown"):
-        self.ghappapi = ghappapi
-        self.installation = installation
-        self.user = user
-        self.repo = repo
-        self.ref = ref
-        self.branch_name = branch_name
+    def __init__(self, ghapi, ref=None, issue_number=None):
+        self.ghapi = ghapi
         self.orig_cwd = None
         self.git = None
+        self.ref = ref
+        self.issue_number = issue_number
 
     async def __aenter__(self):
-        logger.info("Checking out %s/%s:%s as %s",
-                    self.user, self.repo, self.ref, self.branch_name)
-        token = await self.ghappapi.get_installation_token(self.installation)
         try:
-            self.git = TempGitHandler(password=token,
-                                      home_user=self.user, home_repo=self.repo)
+            if self.issue_number:
+                prs = await self.ghapi.get_prs(number=self.issue_number)
+                fork_user = prs['head']['user']['login']
+                fork_repo = prs['head']['repo']['name']
+                branch_name = prs['head']['ref']
+                ref = None
+            else:
+                fork_user = None
+                fork_repo = None
+                branch_name = "unknown"
+                ref = self.ref
+
+            self.git = TempGitHandler(
+                password=self.ghapi.token,
+                home_user=self.ghapi.user,
+                home_repo=self.ghapi.repo,
+                fork_user=fork_user,
+                fork_repo=fork_repo
+            )
+
+            self.git.set_user(BOT_NAME, BOT_EMAIL)
+
             self.orig_cwd = os.getcwd()
             os.chdir(self.git.tempdir.name)
-            branch = self.git.create_local_branch(self.branch_name, self.ref)
+
+            branch = self.git.create_local_branch(branch_name, ref)
             if not branch:
-                raise RuntimeError(
-                    f"Failed to checkout {self.user}/{self.repo}:{self.ref}")
+                raise RuntimeError(f"Failed to checkout branch {branch_name} from {self.git}")
             branch.checkout()
+
             return self.git
         except Exception as exc:
+            logger.exception(f"Error while checking out with {self.ghapi}")
             return None
 
     async def __aexit__(self, _exc_type, _exc, _tb):
@@ -108,77 +94,64 @@ class Checkout:
             self.git.close()
 
 
-@celery.task(bind=True, acks_late=True)
-async def create_check_run(self: "AsyncTask", head_sha: str, ghapi_data=None):
-    check_run_number = await self.ghapi.create_check_run("Linting Recipe(s)", head_sha)
+@celery.task(acks_late=True, ignore_result=False)
+async def get_latest_pr_commit(issue_number: int, ghapi):
+    """Returns last commit"""
+    commit = {'sha': None}
+    async for commit in await ghapi.iter_pr_commits(issue_number):
+        pass
+    return commit['sha']
+
+
+@celery.task(acks_late=True)
+async def create_check_run(head_sha: str, ghapi):
+    logger.error("create_check_run: %s %s", head_sha, ghapi)
+    check_run_number = await ghapi.create_check_run("Linting Recipe(s)", head_sha)
     logger.warning("Created check run %s", check_run_number)
 
 
-@celery.task(bind=True, acks_late=True)
-async def bump(self: "AsyncTask", pr_info_dict: "Dict", ghapi_data=None):
+@celery.task(acks_late=True)
+async def bump(issue_number: int, ghapi):
     """Bump the build number in each recipe"""
-    pr_info = PRInfo(**pr_info_dict)
-    logger.info("Processing bump command: %s", pr_info)
-    async with PrBranch(self.ghappapi, pr_info) as git:
-        for meta_fn in pr_info.recipes:
+    logger.info("Processing bump command: %s", issue_number)
+    async with Checkout(ghapi, issue_number=issue_number) as git:
+        if not git:
+            logger.error("Failed to checkout")
+            return
+        recipes = git.get_changed_recipes()
+        for meta_fn in recipes:
             recipe = Recipe.from_file('recipes', meta_fn)
             buildno = int(recipe.meta['build']['number']) + 1
             recipe.reset_buildnumber(buildno)
             recipe.save()
         msg = f"Bump {recipe} buildno to {buildno}"
-        if not git.commit_and_push_changes(pr_info.recipes, pr_info.ref, msg, sign=True):
+        if not git.commit_and_push_changes(recipes, None, msg, sign=True):
             logger.error("Failed to push?!")
 
 
-async def do_lint(ghappapi, pr_info):
-    async with PrBranch(ghappapi, pr_info) as git:
-        utils.load_config('config.yml')
-        from bioconda_utils.linting import lint as _lint, LintArgs, markdown_report
-        recipes = [r[:-len('/meta.yaml')] for r in pr_info.recipes]
-        df = _lint(recipes, LintArgs())
-        msg = markdown_report(df)
-    return df, msg
-
-
-@celery.task(bind=True, acks_late=True)
-async def lint(self: "AsyncTask", pr_info_dict: "Dict", ghapi_data=None):
-    """Lint each recipe"""
-    pr_info = PRInfo(**pr_info_dict)
-    logger.info("Processing lint command: %s", pr_info)
-    df, msg = await do_lint(self.ghappapi, pr_info)
-    await self.ghapi.create_comment(pr_info.issue_number, msg)
-
-
-@celery.task(bind=True, acks_late=True)
-async def lint_check(self: "AsyncTask",
-                     check_run_number: int,
-                     ref: str,
-                     ghapi_data=None):
+@celery.task(acks_late=True)
+async def lint_check(check_run_number: int, ref: str, ghapi):
     """Execute linter
     """
     ref_label = ref[:8] if len(ref) >= 40 else ref
     logger.info("Starting lint check for %s", ref_label)
-    await self.ghapi.modify_check_run(
-        check_run_number, status=CheckRunStatus.in_progress)
+    await ghapi.modify_check_run(check_run_number, status=CheckRunStatus.in_progress)
 
-    async with Checkout(self.ghappapi, self.ghapi.installation,
-                        self.ghapi.user, self.ghapi.repo, ref) as git:
+    async with Checkout(ghapi, ref=ref) as git:
         if not git:
-            await self.ghapi.modify_check_run(
+            await ghapi.modify_check_run(
                 check_run_number,
                 status=CheckRunStatus.completed,
                 conclusion=CheckRunConclusion.cancelled,
                 output_title=
                 f"Failed to check out "
-                f"{self.ghapi.user}/{self.ghapi.repo}:{ref_label}"
+                f"{ghapi.user}/{ghapi.repo}:{ref_label}"
             )
             return
 
-        recipes = [fn[:-len('/meta.yaml')]
-                   for fn in git.list_changed_files()
-                   if fn.endswith('/meta.yaml')]
+        recipes = git.get_changed_recipes()
         if not recipes:
-            await  self.ghapi.modify_check_run(
+            await ghapi.modify_check_run(
                 check_run_number,
                 status=CheckRunStatus.completed,
                 conclusion=CheckRunConclusion.neutral,
@@ -217,7 +190,7 @@ async def lint_check(self: "AsyncTask",
                 'message': info['fix']
             })
 
-    await self.ghapi.modify_check_run(
+    await ghapi.modify_check_run(
         check_run_number,
         status=CheckRunStatus.completed,
         conclusion=conclusion,
