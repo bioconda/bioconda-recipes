@@ -45,7 +45,7 @@ async def handle_check_suite(event, ghapi):
     if action not in ['requested', 'rerequested']:
         return
     head_sha = event.get("check_suite/head_sha")
-    create_check_run.schedule(head_sha, ghapi=ghapi)
+    create_check_run.apply_ascync((head_sha, ghapi))
 
 
 @event_routes.register("check_run")
@@ -57,7 +57,7 @@ async def handle_check_run(event, ghapi):
     head_sha = event.get("check_run/head_sha")
     action = event.get('action')
     if action == "rerequested":
-        create_check_run.schedule(head_sha, ghapi=ghapi)
+        create_check_run.apply_async((head_sha, ghapi))
     elif action == "created":
         check_run_number = event.get('check_run/id')
-        lint_check.schedule(check_run_number, head_sha, ghapi=ghapi)
+        lint_check.apply_async((check_run_number, head_sha, ghapi))
