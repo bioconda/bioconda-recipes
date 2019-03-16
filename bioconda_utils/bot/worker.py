@@ -80,7 +80,7 @@ class AsyncTask(Task):
             def sync_run(*args, **kwargs):
                 args = list(args)
                 self.loop.run_until_complete(self.async_pre_run(args, kwargs))
-                self.loop.run_until_complete(self._async_run(*args, **kwargs))
+                return self.loop.run_until_complete(self._async_run(*args, **kwargs))
 
             # swap run method with wrapper defined above
             self._async_run, self.run = self.run, sync_run
@@ -185,7 +185,7 @@ celery.conf.update(
     broker_connection_timeout=30,
 
     # We don't feed back our tasks results
-    result_backend=None,
+    result_backend='rpc://',
     event_queue_expires=60,
     worker_prefetch_multiplier=1,
     worker_concurrency=1,
