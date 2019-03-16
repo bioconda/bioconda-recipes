@@ -186,6 +186,12 @@ class GitHandlerBase():
             if not diffobj.deleted_file:
                 yield diffobj.b_path
 
+    def get_changed_recipes(self, ref=None):
+        """Returns list of recipes in which the meta.yaml has changed"""
+        return [fn[:-len('/meta.yaml')]
+                   for fn in self.list_changed_files()
+                   if fn.endswith('/meta.yaml')]
+
     def prepare_branch(self, branch_name: str) -> None:
         """Checks out **branch_name**, creating it from home remote master if needed"""
         if branch_name not in self.repo.heads:
