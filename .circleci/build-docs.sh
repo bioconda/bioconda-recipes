@@ -58,17 +58,18 @@ rm -r *
 
 # build docs and copy over to tmpdir
 cd ${DOCSOURCE}
-# TODO: reenable "-j2" when docs build fine
-make clean html SPHINXOPTS=-T 2>&1 | grep -v "WARNING: nonlocal image URL found:"
-# make clean html SPHINXOPTS="-j2" 2>&1 | grep -v "WARNING: nonlocal image URL found:"
+make clean html SPHINXOPTS="-T -j2" 2>&1 | grep -v "WARNING: nonlocal image URL found:"
 cp -r ${DOCHTML}/* $STAGING
 
-# commit and push
-cd $STAGING
-touch .nojekyll
-git add .nojekyll
+# add README.md
+cp $DOCSOURCE/README.md $STAGING
+
+# add .nojekyll
+touch $STAGING/.nojekyll
+
 
 # committing with no changes results in exit 1, so check for that case first.
+cd $STAGING
 if git diff --quiet; then
     echo "No changes to push -- exiting cleanly"
     exit 0
@@ -82,7 +83,7 @@ fi
 
 # Add, commit, and push
 echo ".*" >> .gitignore
-git config user.name "Travis CI"
+git config user.name "{GITHUB_USERNAME}"
 git config user.email "${GITHUB_USERNAME}@users.noreply.github.com"
 git add -A .
 git commit --all -m "Updated docs to commit ${SHA}."
