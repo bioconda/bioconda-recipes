@@ -45,7 +45,7 @@ async def handle_check_suite(event, ghapi):
     if action not in ['requested', 'rerequested']:
         return
     head_sha = event.get("check_suite/head_sha")
-    create_check_run.apply_ascync((head_sha, ghapi))
+    create_check_run.apply_async((head_sha, ghapi))
 
 
 @event_routes.register("check_run")
