@@ -75,6 +75,9 @@ class GitHubHandler:
         self.api: gidgethub.abc.GitHubAPI = None
         self.username: str = None
 
+    def __str__(self):
+        return f"{self.__class__.__name__}({self.user}/{self.repo})"
+
     def for_json(self):
         return {
             '__module__': self.__module__,

@@ -55,6 +55,15 @@ class GitHandlerBase():
         """Release resources allocated"""
         self.repo.close()
 
+    def __str__(self):
+        def get_name(remote):
+            url = next(remote.urls)
+            return url[url.rfind('/', 0, url.rfind('/'))+1:]
+        name = get_name(self.home_remote)
+        if self.fork_remote != self.home_remote:
+            name = f"{name} <- {get_name(self.fork_remote)}"
+        return f"{self.__class__.__name__}({name})"
+
     def get_remote(self, desc: str):
         """Finds first remote containing **desc** in one of its URLs"""
         if desc in [r.name for r in self.repo.remotes]:
