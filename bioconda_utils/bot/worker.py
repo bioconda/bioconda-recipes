@@ -108,7 +108,6 @@ class AsyncTask(Task):
         """
         for num, arg in enumerate(args):
             if isinstance(arg, GitHubHandler):
-                logger.error("replacing api")
                 args[num] = await self.ghappapi.get_github_api(
                     False, arg.user, arg.repo,
                     arg.installation)
