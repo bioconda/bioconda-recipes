@@ -50,6 +50,7 @@ class GitHubHandler:
     """
     PULLS = "/repos/{user}/{repo}/pulls{/number}{?head,base,state}"
     PULL_FILES = "/repos/{user}/{repo}/pulls/{number}/files"
+    PULL_COMMITS = "/repos/{user}/{repo}/pulls/{number}/commits"
     ISSUES = "/repos/{user}/{repo}/issues{/number}"
     COMMENTS = "/repos/{user}/{repo}/issues/{number}/comments"
     ORG_MEMBERS = "/orgs/{user}/members{/username}"
@@ -158,6 +159,12 @@ class GitHubHandler:
             var_data['state'] = state.name.lower()
 
         return await self.api.getitem(self.PULLS, var_data)
+
+    async def iter_pr_commits(self, number: int):
+        """Create iterator over commits in a PR"""
+        var_data = copy(self.var_default)
+        var_data['number'] = str(number)
+        return self.api.getiter(self.PULL_COMMITS, var_data)
 
     # pylint: disable=too-many-arguments
     async def create_pr(self, title: str,
