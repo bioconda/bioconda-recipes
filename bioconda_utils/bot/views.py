@@ -73,15 +73,19 @@ async def show_status(request):
 
         """
         worker_status = celery.control.inspect(timeout=0.1)
-        for worker in sorted(worker_status.ping().keys()):
-            active = worker_status.active(worker)
-            reserved = worker_status.reserved(worker)
-            msg += f"""
-            Worker: {worker}
-            active: {len(active[worker])}
-            queued: {len(reserved[worker])}
+        if not worker_status:
+            text += """
+            no workers online
             """
-
+        else:
+            for worker in sorted(worker_status.ping().keys()):
+                active = worker_status.active(worker)
+                reserved = worker_status.reserved(worker)
+                msg += f"""
+                Worker: {worker}
+                active: {len(active[worker])}
+                queued: {len(reserved[worker])}
+                """
         return web.Response(text=msg)
     except Exception:  # pylint: disable=broad-except
         logger.exception("Failure in show status")
