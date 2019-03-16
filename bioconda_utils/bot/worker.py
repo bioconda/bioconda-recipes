@@ -11,11 +11,15 @@ import time
 from functools import wraps
 import subprocess
 from typing import TYPE_CHECKING
+from importlib import import_module
 
 import aiohttp
 
 from celery import Celery, Task
 from celery.signals import celeryd_init
+
+from kombu import serialization
+import simplejson
 
 from ..githubhandler import GitHubAppHandler, GitHubHandler
 from .config import APP_ID, APP_KEY, CODE_SIGNING_KEY, BOT_NAME
@@ -74,6 +78,7 @@ class AsyncTask(Task):
         if asyncio.iscoroutinefunction(self.run):  # only for async funcs
             @wraps(self.run)
             def sync_run(*args, **kwargs):
+                args = list(args)
                 self.loop.run_until_complete(self.async_pre_run(args, kwargs))
                 self.loop.run_until_complete(self._async_run(*args, **kwargs))
 
@@ -98,21 +103,15 @@ class AsyncTask(Task):
 
         Prepares the `ghapi` property for tasks using ghapi_data added
         to arguments via `schedule()`.
-        """
-        ghapi_data = kwargs.get('ghapi_data')
-        self.ghapi = await self.ghappapi.get_github_api(**ghapi_data)
 
-    def schedule(self, *args, ghapi=None, **kwargs):
-        """Alternative to `delay` serializing `ghapi` object to be
-        initialized by `async_pre_run`.
-
-        We do this so that the celery tasks have a functioning ghapi object
-        matching the ghapi used by the github event handlers.
+        FIXME: doesn't replace kwargs
         """
-        logger.info("Scheduled call to %s", self.name)
-        return self.delay(*args,
-                          ghapi_data=ghapi.to_dict() if ghapi else None,
-                          **kwargs)
+        for num, arg in enumerate(args):
+            if isinstance(arg, GitHubHandler):
+                logger.error("replacing api")
+                args[num] = await self.ghappapi.get_github_api(
+                    False, arg.user, arg.repo,
+                    arg.installation)
 
     @abc.abstractmethod
     def run(self, *args, **kwargs):
@@ -129,10 +128,46 @@ class AsyncTask(Task):
             return loop
 
 
+def custom_dumps(s):
+    """Serialize **s** to JSON accepting **for_json** serializer method"""
+    return simplejson.dumps(s, for_json=True)
+
+
+def custom_loads(s):
+    """Deserialize **s** recreating objects
+
+    JSON objects (dicts) containing a __type__ and a __module__
+    field are turned into objects by loading and instantiating
+    the type, passing the result dict from obj.for_json() to
+    __init__().
+    """
+    def decode(obj):
+        if isinstance(obj, dict):
+            try:
+                typ = obj.pop('__type__')
+                mod = import_module(obj.pop('__module__'))
+                klass = getattr(mod, typ)
+                return klass(**obj)
+            except KeyError:
+                    pass
+        return obj
+    return simplejson.loads(s, object_hook=decode)
+
+# Register a custom serializer. We do this so we can conveniently
+# transfer objects without resorting to pickling.
+serialization.register('custom_json',
+                       custom_dumps, custom_loads,
+                       content_type='application/x-bioconda-json',
+                       content_encoding='utf8')
+
+
+# Instantiate Celery app, setting our AsyncTask as default
+# task class and loading the tasks from tasks.py
 celery = Celery(
     task_cls=AsyncTask,
     include=['bioconda_utils.bot.tasks']
 )  # pylint: disable=invalid-name
+
 
 # Celery must be configured at module level to catch worker as well
 # Settings are suggestions from CloudAMPQ
@@ -153,7 +188,9 @@ celery.conf.update(
     result_backend=None,
     event_queue_expires=60,
     worker_prefetch_multiplier=1,
-    worker_concurrency=1
+    worker_concurrency=1,
+    task_serializer = 'custom_json',
+    accept_content = ['custom_json', 'json']
     #task_acks_late=true
 )
 

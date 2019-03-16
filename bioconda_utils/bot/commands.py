@@ -79,7 +79,7 @@ async def command_bump(event, ghapi, *args):
     logger.info("Got bump command: %s", args)
     pr_info = await get_pr_info(ghapi, event)
     if pr_info:
-        bump.schedule(pr_info, ghapi=ghapi)
+        bump.apply_async(pr_info, ghapi)
 
 
 @command_routes.register("lint")
@@ -88,7 +88,7 @@ async def command_lint(event, ghapi, *args):
     logger.info("Got lint command: %s", args)
     pr_info = await get_pr_info(ghapi, event)
     if pr_info:
-        lint.schedule(pr_info, ghapi=ghapi)
+        lint.schedule(pr_info, ghapi)
 
 
 @command_routes.register("autobump")

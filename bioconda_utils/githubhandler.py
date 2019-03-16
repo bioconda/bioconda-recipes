@@ -58,7 +58,7 @@ class GitHubHandler:
 
     STATE = IssueState
 
-    def __init__(self, token: str,
+    def __init__(self, token: str = None,
                  dry_run: bool = False,
                  to_user: str = "bioconda",
                  to_repo: str = "bioconda-recipes",
@@ -75,13 +75,18 @@ class GitHubHandler:
         self.api: gidgethub.abc.GitHubAPI = None
         self.username: str = None
 
-    def to_dict(self):
+    def for_json(self):
         return {
+            '__module__': self.__module__,
+            '__type__': self.__class__.__qualname__,
             'dry_run': self.dry_run,
             'to_user': self.user,
             'to_repo': self.repo,
             'installation': self.installation
         }
+
+    def __to_json__(self):
+        return self.for_json()
 
     @property
     def rate_limit(self) -> gidgethub.sansio.RateLimit:
