@@ -203,6 +203,8 @@ class GitHandlerBase():
         Returns:
           Boolean indicating whether there were changes committed
         """
+        if branch_name is None:
+            branch_name = self.repo.active_branch.name
         self.repo.index.add(files)
         if not self.repo.index.diff("HEAD"):
             return False
