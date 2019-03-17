@@ -322,7 +322,7 @@ def invalid_identifiers(_recipe, meta):
 
 def deprecated_numpy_spec(recipe, metas):
     with open(recipe.path) as raw:
-        if re.search("numpy( )+x\.x", raw.read()):
+        if re.search(r"numpy( )+x\.x", raw.read()):
             return {'deprecated_numpy_spec': True,
                     'fix': 'omit x.x as pinning of numpy is now '
                            'handled automatically'}
