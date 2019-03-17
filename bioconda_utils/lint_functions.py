@@ -186,19 +186,19 @@ def missing_hash(recipe, meta):
 @lint_multiple_metas
 def uses_git_url(recipe, meta):
     sources = meta.get_section('source')
+    data = {
+        'uses_git_url': True,
+        'fix': 'use tarballs whenever possible',
+    }
     if not sources:
         # metapackage?
         return
     if isinstance(sources, dict):
-        sources = [sources]
-
-    for source in sources:
-        if 'git_url' in source:
-            data = {
-                'uses_git_url': True,
-                'fix': 'use tarballs whenever possible',
-            }
+        if 'git_url' in sources:
             return _mark_lines(data, recipe, 'source/git_url')
+    for num, source in enumerate(sources):
+        if 'git_url' in source:
+            return _mark_lines(data, recipe, f'source/{num}/git_url')
 
 
 @lint_multiple_metas
