@@ -49,6 +49,7 @@ locally::
 Then add the main bioconda-recipes repo as an upstream remote to more easily
 update your branch with the upstream master branch::
 
+    cd bioconda-recipes
     git remote add upstream https://github.com/bioconda/bioconda-recipes.git
 
 .. _circleci-client:
