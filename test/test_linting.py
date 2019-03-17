@@ -129,6 +129,7 @@ def test_lint_skip_in_recipe():
                 - missing_home
                 - missing_license
                 - no_tests
+                - in_other_channels  # avoid triggering RepoData load
         ''', from_string=True)
     r.write_recipes()
     res = linting.lint(r.recipe_dirs.values(), linting.LintArgs(),
