@@ -96,7 +96,7 @@ class LintArgs(namedtuple('LintArgs', (
         return super().__new__(cls, exclude, registry)
 
 
-def lint(recipes: List[str], lint_args):
+def lint(recipes: List[str], lint_args, basedir="recipes"):
     """
     Parameters
     ----------
@@ -144,7 +144,7 @@ def lint(recipes: List[str], lint_args):
     for recipe in sorted(recipes):
         logger.debug("Linting: %s", recipe)
 
-        recipe_obj = Recipe.from_file("recipes", recipe)
+        recipe_obj = Recipe.from_file(basedir, recipe)
 
         # Since lint functions need a parsed meta.yaml, checking for parsing
         # errors can't be a lint function.
