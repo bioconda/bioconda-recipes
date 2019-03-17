@@ -162,7 +162,7 @@ def missing_tests(recipe, meta):
 
 
 @lint_multiple_metas
-def missing_hash(_recipe, meta):
+def missing_hash(recipe, meta):
     # could be a meta-package if no source section or if None
     sources = meta.get_section('source')
     if not sources:
