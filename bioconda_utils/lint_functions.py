@@ -61,7 +61,10 @@ def _has_compilers(meta):
     )
 
 def _mark_lines(data, recipe, section):
-    sl, sc, el, ec = recipe.get_raw_range(section)
+    try:
+        sl, sc, el, ec = recipe.get_raw_range(section)
+    except KeyError:
+        sl, sc, el, ec = 1, 1, 1, 1
     if ec == 0:
         el = el - 1
     data['start_line'] = sl
