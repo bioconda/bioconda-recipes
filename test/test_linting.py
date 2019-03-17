@@ -953,10 +953,6 @@ def test_compilers_must_be_in_build():
                       - python
                     run:
                       - python
-                  package:
-                    name: a
-                    version: 0.1
-                  requirements:
                     build:
                       - {{ compiler ('c') }}
             ''',
