@@ -39,7 +39,7 @@ Each package added to Bioconda also has a corresponding Docker  `BioContainer
 **Browse packages in the Bioconda channel:** :ref:`recipes`
 
 **Browse BioContainer packages:** `Biocontainers Registry UI
-<https://biocontainers.pro/registry/#/>`_
+<https://biocontainers.pro/#/registry>`_
 
 ----
 
