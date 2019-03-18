@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+# Workaround for spurious numpy warning message
+# ".../importlib/_bootstrap.py:219: RuntimeWarning: numpy.dtype size \
+# changed, may indicate binary incompatibility. Expected 96, got 88"
+import warnings
+warnings.filterwarnings("ignore", message="numpy.dtype size changed")
+
 import sys
 import os
 import shlex
@@ -833,9 +839,23 @@ def autobump(recipe_folder, config, packages='*', cache=None,
     if git_handler:
         git_handler.close()
 
+@arg('--loglevel', default='info', help='Log level')
+def bot(loglevel='info'):
+    """Locally accedd bioconda-bot command API
+
+    To run the bot locally, use:
+
+    $ gunicorn bioconda_utils.bot:init_app_internal_celery --worker-class aiohttp.worker.GunicornWebWorker
+
+    You can append --reload to have gunicorn reload if any of the python files change.
+    """
+
+    utils.setup_logger('bioconda_utils', loglevel)
+
+    logger.error("Nothing here yet")
 
 def main():
     argh.dispatch_commands([
         build, dag, dependent, lint, duplicates, update_pinning,
-        bioconductor_skeleton, clean_cran_skeleton, autobump
+        bioconductor_skeleton, clean_cran_skeleton, autobump, bot
     ])

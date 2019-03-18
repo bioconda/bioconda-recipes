@@ -1,6 +1,7 @@
 from helpers import Recipes
 from bioconda_utils import lint_functions
 from bioconda_utils import linting, utils
+from bioconda_utils.recipe import Recipe
 
 
 def run_lint(
@@ -39,7 +40,7 @@ def run_lint(
         r.write_recipes()
         assert len(r.recipe_dirs) == 1
         name = list(r.recipe_dirs.keys())[0]
-        recipe = r.recipe_dirs[name]
+        recipe = Recipe.from_file(r.basedir, r.recipe_dirs[name])
         metas = []
         for platform in ["linux", "osx"]:
             config = utils.load_conda_build_config(platform=platform, trim_skip=False)
@@ -72,7 +73,9 @@ def test_empty_build_section():
     registry = [lint_functions.should_be_noarch, lint_functions.should_not_be_noarch]
     res = linting.lint(
         r.recipe_dirs.values(),
-        linting.LintArgs(registry=registry))
+        linting.LintArgs(registry=registry),
+        basedir=r.basedir
+    )
     assert res is None
 
 
@@ -90,7 +93,8 @@ def test_lint_skip_in_recipe():
     r.write_recipes()
     res = linting.lint(
         r.recipe_dirs.values(),
-        linting.LintArgs(registry=[lint_functions.missing_home]))
+        linting.LintArgs(registry=[lint_functions.missing_home]),
+        basedir=r.basedir)
     assert res is not None
 
     # should now pass with the extra:skip-lints (only linting for `missing_home`)
@@ -108,7 +112,8 @@ def test_lint_skip_in_recipe():
     r.write_recipes()
     res = linting.lint(
         r.recipe_dirs.values(),
-        linting.LintArgs(registry=[lint_functions.missing_home]))
+        linting.LintArgs(registry=[lint_functions.missing_home]),
+        basedir=r.basedir)
     assert res is None
 
     # should pass; minimal recipe needs to skip these lints
@@ -124,9 +129,11 @@ def test_lint_skip_in_recipe():
                 - missing_home
                 - missing_license
                 - no_tests
+                - in_other_channels  # avoid triggering RepoData load
         ''', from_string=True)
     r.write_recipes()
-    res = linting.lint(r.recipe_dirs.values(), linting.LintArgs())
+    res = linting.lint(r.recipe_dirs.values(), linting.LintArgs(),
+        basedir=r.basedir)
     assert res is not None
 
 
@@ -946,10 +953,6 @@ def test_compilers_must_be_in_build():
                       - python
                     run:
                       - python
-                  package:
-                    name: a
-                    version: 0.1
-                  requirements:
                     build:
                       - {{ compiler ('c') }}
             ''',

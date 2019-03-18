@@ -2,6 +2,7 @@ import os
 import re
 import itertools
 from collections import defaultdict, namedtuple
+from typing import List
 
 import pandas as pd
 import numpy as np
@@ -9,6 +10,7 @@ import ruamel_yaml as yaml
 
 from . import utils
 from . import lint_functions
+from .recipe import Recipe
 
 import logging
 logger = logging.getLogger(__name__)
@@ -94,7 +96,7 @@ class LintArgs(namedtuple('LintArgs', (
         return super().__new__(cls, exclude, registry)
 
 
-def lint(recipes, lint_args):
+def lint(recipes: List[str], lint_args, basedir="recipes"):
     """
     Parameters
     ----------
@@ -140,6 +142,10 @@ def lint(recipes, lint_args):
 
     hits = []
     for recipe in sorted(recipes):
+        logger.debug("Linting: %s", recipe)
+
+        recipe_obj = Recipe.from_file(basedir, recipe)
+
         # Since lint functions need a parsed meta.yaml, checking for parsing
         # errors can't be a lint function.
         #
@@ -161,7 +167,6 @@ def lint(recipes, lint_args):
                  'severity': 'ERROR',
                  'info': result})
             continue
-        logger.debug('lint {}'.format(recipe))
 
         # skips defined in commit message
         skip_for_this_recipe = set(skip_dict[recipe])
@@ -180,11 +185,10 @@ def lint(recipes, lint_args):
                 for source, skips in skip_sources:
                     if func.__name__ not in skips:
                         continue
-                    logger.info(
-                        '%s defines skip lint test %s for recipe %s'
-                        % (source, func.__name__, recipe))
+                    logger.info('%s defines skip lint test %s for recipe %s',
+                                source, func.__name__, recipe)
                 continue
-            result = func(recipe, metas)
+            result = func(recipe_obj, metas)
             if result:
                 hits.append(
                     {'recipe': recipe,
@@ -215,6 +219,12 @@ def markdown_report(report=None):
     if report is None:
         tmpl = utils.jinja.get_template("lint_success.md")
         return tmpl.render()
-    else:
-        tmpl = utils.jinja.get_template("lint_failure.md")
-        return tmpl.render(report=report)
+
+    if 'check' in report:
+        # we have the unsummarized report
+        report = pd.DataFrame(dict(
+            failed_tests=report.groupby('recipe')['check'].agg('unique')
+        ))
+
+    tmpl = utils.jinja.get_template("lint_failure.md")
+    return tmpl.render(report=report)

@@ -19,6 +19,7 @@ from pathlib import PurePath
 import json
 import warnings
 from multiprocessing import Pool
+from multiprocessing.pool import ThreadPool
 
 from conda_build import api
 from conda.exports import VersionOrder
@@ -76,19 +77,6 @@ def tqdm(*args, **kwargs):
     return _tqdm.tqdm(*args, **kwargs)
 
 
-log_stream_handler = TqdmHandler()
-log_stream_handler.setFormatter(ColoredFormatter(
-        "%(asctime)s %(log_color)sBIOCONDA %(levelname)s%(reset)s %(message)s",
-        datefmt="%H:%M:%S",
-        reset=True,
-        log_colors={
-            'DEBUG': 'cyan',
-            'INFO': 'green',
-            'WARNING': 'yellow',
-            'ERROR': 'red',
-            'CRITICAL': 'red',
-        }))
-
 
 def ensure_list(obj):
     """Wraps **obj** in a list if necessary
@@ -137,12 +125,28 @@ def wraps(func):
     return wrapper_wrapper
 
 
-
-def setup_logger(name, loglevel=None):
+def setup_logger(name, loglevel=None, prefix="BIOCONDA ",
+                 msgfmt=("%(asctime)s"
+                         "%(log_color)s{prefix}%(levelname)s%(reset)s "
+                         "%(message)s"),
+                 datefmt="%H:%M:%S "):
     logger = logging.getLogger(name)
     logger.propagate = False
     if loglevel:
         logger.setLevel(getattr(logging, loglevel.upper()))
+
+    log_stream_handler = TqdmHandler()
+    log_stream_handler.setFormatter(ColoredFormatter(
+        msgfmt.format(prefix=prefix),
+        datefmt=datefmt,
+        reset=True,
+        log_colors={
+            'DEBUG': 'cyan',
+            'INFO': 'green',
+            'WARNING': 'yellow',
+            'ERROR': 'red',
+            'CRITICAL': 'red',
+        }))
     logger.addHandler(log_stream_handler)
     return logger
 
@@ -1090,7 +1094,15 @@ class AsyncRequests:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
 
-        task = asyncio.ensure_future(cls._async_fetch(urls, descs, cb, datas))
+        if loop.is_running():
+            logger.warning("Running AsyncRequests.fetch from within running loop")
+            # Workaround the fact that asyncio's loop is marked as not-reentrant
+            # (it is apparently easy to patch, but not desired by the devs,
+            with ThreadPool(1) as pool:
+                res = pool.apply(cls.fetch, (urls, descs, cb, datas))
+            return res
+
+        task = asyncio.ensure_future(cls.async_fetch(urls, descs, cb, datas))
 
         try:
             loop.run_until_complete(task)
@@ -1102,7 +1114,7 @@ class AsyncRequests:
         return task.result()
 
     @classmethod
-    async def _async_fetch(cls, urls, descs, cb, datas):
+    async def async_fetch(cls, urls, descs, cb, datas):
         conn = aiohttp.TCPConnector(limit_per_host=cls.CONNECTIONS_PER_HOST)
         async with aiohttp.ClientSession(
                 connector=conn,
@@ -1281,6 +1293,9 @@ class RepoData:
 
         dfs = AsyncRequests.fetch(urls, descs, to_dataframe, repos)
         res = pd.concat(dfs)
+        for col in ('channel', 'platform', 'subdir', 'name', 'version', 'build'):
+            res[col] = res[col].astype('category')
+        res = res.reset_index(drop=True)
 
         if self.cache_file is not None:
             res.to_pickle(self.cache_file)
