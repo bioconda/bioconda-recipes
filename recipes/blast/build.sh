@@ -6,6 +6,7 @@ export CFLAGS="$CFLAGS -O2"
 export CXXFLAGS="$CXXFLAGS -O2"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export AR="$AR rv"
 
 if test x"`uname`" = x"Linux"; then
     # only add things needed; not supported by OSX ld
