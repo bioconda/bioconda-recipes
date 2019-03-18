@@ -102,17 +102,19 @@ class GitHandlerBase():
             return self.repo.branches[branch_name]
         return None
 
-    def get_remote_branch(self, branch_name: str):
+    def get_remote_branch(self, branch_name: str, try_fetch=False):
         """Finds fork remote branch named **branch_name**"""
         if branch_name in self.fork_remote.refs:
             return self.fork_remote.refs[branch_name]
+        if not try_fetch:
+            return None
         for depth in (0, 50, 200):
             try:
                 if depth > 0:
                     self.fork_remote.fetch(depth=depth)
                 remote_refs = self.fork_remote.fetch(branch_name, depth=depth)
                 break
-            except git.GitCommandError as exc:
+            except git.GitCommandError:
                 pass
         else:
             logger.info("Failed to fetch %s", branch_name)
@@ -120,7 +122,6 @@ class GitHandlerBase():
         for remote_ref in remote_refs:
             if remote_ref.remote_ref_path == branch_name:
                 return remote_ref.ref
-        return None  # fixme - raise?
 
     def get_latest_master(self):
         return self.home_remote.fetch('master')[0].commit
@@ -139,9 +140,9 @@ class GitHandlerBase():
     def create_local_branch(self, branch_name: str, remote_branch: str = None):
         """Creates local branch from remote **branch_name**"""
         if remote_branch is None:
-            remote_branch = self.get_remote_branch(branch_name)
+            remote_branch = self.get_remote_branch(branch_name, try_fetch=True)
         else:
-            remote_branch = self.get_remote_branch(remote_branch)
+            remote_branch = self.get_remote_branch(remote_branch, try_fetch=True)
         if remote_branch is None:
             return None
         self.repo.create_head(branch_name, remote_branch)
