@@ -1,77 +1,78 @@
-{% set version="3.14.0" %}
+{% set name = "toil" %}
+{% set version = "3.18.0" %}
+
 package:
-  name: toil
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/t/toil/toil-{{ version }}.tar.gz
-  #url: https://github.com/BD2KGenomics/toil/archive/226abc7.tar.gz
-  md5: 5c44aec8d5f12ae123fb77ef0f3a021f
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 5c1bc99fad0a9c854bd8064c3d6a39a407e802b7a77bfed85d4f199fb58a941c
 
 build:
-  number: 2
-  skip: True # [not py27]
+  number: 0
+  skip: True  # [not py27]
+  entry_points:
+    - toil = toil.utils.toilMain:main
+    - _toil_worker = toil.worker:main
+    - cwltoil = toil.cwl.cwltoil:main [cwl]
+    - toil-cwl-runner = toil.cwl.cwltoil:main [cwl]
+    - toil-wdl-runner = toil.wdl.toilwdl:main
+    - _toil_mesos_executor = toil.batchSystems.mesos.executor:main [mesos]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
   host:
-    - python
-    - setuptools
-    - six
+    - dill >=0.2.7.1
+    - docker >=2.5.1
     - future
-    - bd2k-python-lib ==1.14a1.dev37
-    - dill ==0.2.5
-    - psutil
-    - cgcloud-lib
-    - boto >=2.38.0
-    - futures # [py27]
-    - azure
-    - cwltool ==1.0.20180130110340
-    - gcs-oauth2-boto-plugin ==1.9
-    - pynacl ==1.1.2
-    - docker-py >=2.5.1
-    - galaxy-lib >=17.9.3
+    - pip
+    - psutil >=3.0.1
+    - pytest >=3.7.4
+    - pytest-cov >=2.5.1
+    - python
+    - python-dateutil
     - requests >=2.18.4
-    # schema-salad pinned deps
-    - cachecontrol >=0.11.7,<0.12
-    - mistune >=0.7.3,<0.8
-    - rdflib >=4.2.2
-    - rdflib-jsonld >=0.3.0
-    - ruamel.yaml >=0.12.4,<0.15
-    - typing >=3.5.3,<3.6
-
+    - six >=1.10.0
   run:
-    - python
-    - six
+    - dill >=0.2.7.1
+    - docker >=2.5.1
     - future
-    - bd2k-python-lib ==1.14a1.dev37
-    - dill
-    - psutil
-    - cgcloud-lib
-    - boto >=2.38.0
-    - futures # [py27]
-    - azure
-    - cwltool ==1.0.20180130110340
-    - gcs-oauth2-boto-plugin ==1.9
-    - pynacl ==1.1.2
-    - docker-py >=2.5.1
-    - galaxy-lib >=17.9.3
+    - psutil >=3.0.1
+    - pytest >=3.7.4
+    - pytest-cov >=2.5.1
+    - python
+    - python-dateutil
     - requests >=2.18.4
-    # schema-salad pinned deps
-    - cachecontrol >=0.11.7,<0.12
-    - mistune >=0.7.3,<0.8
-    - rdflib >=4.2.2
-    - rdflib-jsonld >=0.3.0
-    - ruamel.yaml >=0.12.4,<0.15
-    - typing >=3.5.3,<3.6
+    - six >=1.10.0
 
 test:
+  imports:
+    - toil
+    - toil.batchSystems
+    - toil.batchSystems.mesos
+    - toil.batchSystems.mesos.test
+    - toil.cwl
+    - toil.jobStores
+    - toil.jobStores.aws
+    - toil.lib
+    - toil.lib.encryption
+    - toil.provisioners
+    - toil.provisioners.aws
+    - toil.provisioners.azure
+    - toil.test
+    - toil.utils
+    - toil.wdl
   commands:
-    # Bug in Toil --help in 3.14.0 release, missing __doc__
-    # - toil --help
-    - toil --version
+    - toil --help
+    - _toil_worker --help
     - cwltoil --help
+    - toil-cwl-runner --help
+    - toil-wdl-runner --help
+    - _toil_mesos_executor --help
 
 about:
   home: https://github.com/BD2KGenomics/toil
-  license: Apache 2.0
-  summary: A scalable, efficient, cross-platform and easy-to-use workflow engine in pure Python
+  license: Apache Software
+  license_family: APACHE
+  summary: Pipeline management software for clusters.
