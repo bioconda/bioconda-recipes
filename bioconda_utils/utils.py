@@ -309,7 +309,7 @@ def load_meta_fast(recipe: str, env=None):
     try:
         pth = os.path.join(recipe, 'meta.yaml')
         template = jinja_silent_undef.from_string(open(pth, 'r', encoding='utf-8').read())
-        meta = yaml.load(template.render(env))
+        meta = yaml.safe_load(template.render(env))
         return (meta, recipe)
     except Exception:
         raise ValueError('Problem inspecting {0}'.format(recipe))
@@ -473,7 +473,7 @@ class EnvMatrix:
         """
         if isinstance(env, str):
             with open(env) as f:
-                self.env = yaml.load(f)
+                self.env = yaml.safe_load(f)
         else:
             self.env = env
         for key, val in self.env.items():
@@ -738,14 +738,14 @@ def newly_unblacklisted(config_file, recipe_folder, git_range):
     # config file and then all the original blacklists it had listed
     previous = set()
     orig_config = file_from_commit(git_range[0], config_file)
-    for bl in yaml.load(orig_config)['blacklists']:
+    for bl in yaml.safe_load(orig_config)['blacklists']:
         with open('.tmp.blacklist', 'w', encoding='utf8') as fout:
             fout.write(file_from_commit(git_range[0], bl))
         previous.update(get_blacklist(['.tmp.blacklist'], recipe_folder))
         os.unlink('.tmp.blacklist')
 
     current = get_blacklist(
-        yaml.load(
+        yaml.safe_load(
             file_from_commit(git_range[1], config_file))['blacklists'],
         recipe_folder)
     results = previous.difference(current)
@@ -915,11 +915,11 @@ def validate_config(config):
         directly.
     """
     if not isinstance(config, dict):
-        config = yaml.load(open(config))
+        config = yaml.safe_load(open(config))
     fn = pkg_resources.resource_filename(
         'bioconda_utils', 'config.schema.yaml'
     )
-    schema = yaml.load(open(fn))
+    schema = yaml.safe_load(open(fn))
     validate(config, schema)
 
 
@@ -941,7 +941,7 @@ def load_config(path):
     else:
         def relpath(p):
             return os.path.join(os.path.dirname(path), p)
-        config = yaml.load(open(path))
+        config = yaml.safe_load(open(path))
 
     def get_list(key):
         # always return empty list, also if NoneType is defined in yaml

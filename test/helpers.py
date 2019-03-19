@@ -92,10 +92,10 @@ class Recipes(object):
 
         if from_string:
             self.data = dedent(data)
-            self.recipes = yaml.load(data)
+            self.recipes = yaml.safe_load(data)
         else:
             self.data = os.path.join(os.path.dirname(__file__), data)
-            self.recipes = yaml.load(open(self.data))
+            self.recipes = yaml.safe_load(open(self.data))
 
     def write_recipes(self):
         basedir = tempfile.mkdtemp()
