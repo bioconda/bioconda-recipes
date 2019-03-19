@@ -18,3 +18,10 @@ cp `cat $SRC_DIR/.sepp/main.config | grep "^path" -m 1 | cut -d "=" -f 2 | xargs
 # configure run-sepp.sh for qiime2 fragment-insertion
 mv -v sepp-package/run-sepp.sh $PREFIX/bin/run-sepp.sh
 patch $PREFIX/bin/run-sepp.sh < relocate.run-sepp.sh.patch
+
+# copy files for tests to shared conda directory
+mkdir -p $PREFIX/share/sepp/ref/
+cp -v test/unittest/data/q2-fragment-insertion/input_fragments.fasta $PREFIX/share/sepp/ref/
+cp -v test/unittest/data/q2-fragment-insertion/reference_alignment_tiny.fasta $PREFIX/share/sepp/ref/
+cp -v test/unittest/data/q2-fragment-insertion/reference_phylogeny_tiny.nwk $PREFIX/share/sepp/ref/
+cp -v test/unittest/data/q2-fragment-insertion/RAxML_info-reference-gg-raxml-bl.info $PREFIX/share/sepp/ref/
