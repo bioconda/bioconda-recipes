@@ -1,28 +1,43 @@
-build:
-  number: 2
+{% set version = "0.7.6" %}
 
 package:
   name: smalt
-  version: "0.7.6"
+  version: {{ version }}
+
 source:
-  url: https://sourceforge.net/projects/smalt/files/smalt-0.7.6-static.tar.gz
-  md5: 57ed011836fda8fb5e34604dd1858b5e
+  url: https://sourceforge.net/projects/smalt/files/smalt-{{ version }}-static.tar.gz
+  sha256: a1c1967909c0af5c4036cb5ec004ecc1470eef1d5d3ba4c9884d9d3dfe498d3c
+
+build:
+  number: 2
+
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - libtool
     - pkg-config
+    - automake
+    - autoconf
+    - make
+    
   host:
     - bambamc
     - zlib
-    - python >=2.6,<3   # used by 'make check'
-    - samtools          # used by 'make check'
+    - python <3   # used by 'make check'
+    - samtools    # used by 'make check'
+    - clangdev  # [osx]
+    - libcxx 4.0.*  # [osx]
+
   run:
     - bambamc
     - zlib
+    - libcxx >=4.0  # [osx]
+    - openmp >=4.0  # [osx]
+    
 test:
   commands:
-    - smalt version 2>&1 | grep "SMALT - Sequence Mapping and Alignment Tool" > /dev/null
+    - smalt version 2>&1 | grep "SMALT - Sequence Mapping and Alignment Tool" 
 
 about:
   home: http://www.sanger.ac.uk/science/tools/smalt-0
