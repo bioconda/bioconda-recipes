@@ -1,28 +1,53 @@
-{% set version = "0.1.0" %}
-{% set sha256 = "aaae54246a7c86043925fc3ef4a5c27ab20d9791ebb8ab4ebe300fe264f7ffed" %}
+{% set version = "0.2.0" %}
+{% set sha256 = "8a6bf7d28df9b48957d0c338a8660a0d1eb6039bfbc7710a295049c626d61bbf" %}
 package:
   name: sepp
   version: '{{version}}'
 
 source:
-  url: https://github.com/sjanssen2/sepp/archive/{{version}}.tar.gz
-  sha256: '{{sha256}}'
+  - url: https://github.com/sjanssen2/sepp/archive/{{version}}.tar.gz
+    sha256: '{{sha256}}'
+  - path: relocate.main.config.patch
+  - path: relocate.run-sepp.sh.patch
 
 build:
   number: 0
 
 requirements:
   build:
-    - python >= 3.5
-    - java-jdk
+    - python >=3
+    - openjdk [unix]
+    # I figure it is not ideal to request such a specific version of dendropy.
+    # However, if I don't the arch independent version is chosen, causing the
+    # conda build process to complain that setuptools of python can't find it
+    # and thus starts downloading via pip - which causes an error in the build 
+    # process. I am happy for suggestions.
+    - dendropy ==4.2.0=py35_0
+
+  run:
+    - python >=3
+    - openjdk [unix]
+    - dendropy ==4.2.0=py35_0
+    # TODO: source bundled binaries as conda packages. But e.g. pplacer is not
+    # available for OSX.
 
 test:
+  files:
+    - ./test/unittest/data/q2-fragment-insertion/input_fragments.fasta
+    - ./test/unittest/data/q2-fragment-insertion/reference_alignment_tiny.fasta
+    - ./test/unittest/data/q2-fragment-insertion/reference_phylogeny_tiny.nwk
+    - ./test/unittest/data/q2-fragment-insertion/RAxML_info-reference-gg-raxml-bl.info
   commands:
     - run_sepp.py --help
-
+    - run_tipp.py --help
+    - run_upp.py --help
+    - run-sepp.sh input_fragments.fasta testrun_tiny -a reference_alignment_tiny.fasta -t reference_phylogeny_tiny.nwk -r RAxML_info-reference-gg-raxml-bl.info -x 1
+    - grep "f__Halomonadaceae" testrun_tiny_placement.tog.relabelled.tre
+    - grep "testseqd" testrun_tiny_placement.tog.relabelled.tre
+    
 about:
   home: https://github.com/smirarab/sepp
-  license: unknown
+  license: GPLv3
   summary: SATe-enabled phylogenetic placement
 
 extra:
