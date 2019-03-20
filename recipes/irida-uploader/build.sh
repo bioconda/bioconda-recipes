@@ -1,4 +1,6 @@
 #!/bin/bash
-which pip
-pip search rauth==0.7.3
-make
+mkdir -p $PREFIX/bin/irida_uploader
+cp -a * ${PREFIX}/bin/irida_uploader
+python3 -m venv $PREFIX/bin/.virtualenv
+ln -s $PREFIX/bin/irida_uploader/upload_run.py $PREFIX/bin/irida-uploader
+chmod +x $PREFIX/bin/irida-uploader
