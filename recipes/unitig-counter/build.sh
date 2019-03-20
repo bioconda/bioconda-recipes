@@ -70,5 +70,6 @@ popd
 mkdir build && pushd build
 cmake -DCMAKE_BUILD_TYPE=Release -DBoost_INCLUDE_DIR=${BOOST_BUILT}/include -DBoost_LIBRARY_DIR=${BOOST_BUILT}/lib -DCMAKE_INSTALL_PREFIX=$PREFIX ..
 make VERBOSE=1
-make install
+install -d $PREFIX/bin
+install unitig-counter cdbg-ops ext/gatb-core/bin/Release/gatb-h5dump $PREFIX/bin
 popd
