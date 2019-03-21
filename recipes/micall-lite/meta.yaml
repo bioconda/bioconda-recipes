@@ -1,0 +1,38 @@
+{% set name = "MiCall-Lite" %}
+{% set version = "0.7.4" %}
+{% set sha256 = "0745db094ef09cac027a453c78681ae099a538f404ad2b50afe90391521d4505" %}
+
+package:
+    name: {{ name|lower }}
+    version: {{ version }}
+
+source:
+  url: https://github.com/PoonLab/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: python
+  script: "$PYTHON setup.py install --single-version-externally-managed --record=record.txt"
+  
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+  run:
+    - python
+    - python-levenshtein
+    - bowtie2
+
+test:
+  commandss:
+      - micall -h
+
+about:
+    home: https://github.com/PoonLab/MiCall-Lite
+    license: GNU Affero General Public License v3.0
+    license_file: LICENSE.txt
+    summary: |
+      A bioinformatic pipeline for mapping FASTQ data to a set of reference
+      sequences to generate consensus sequences, variant calls and coverage maps.
