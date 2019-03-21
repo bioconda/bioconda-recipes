@@ -1,8 +1,5 @@
 {% set version = '1.0.5' %}
 
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
-
 package:
   name: r-dartr
   version: {{ version|replace("-", "_") }}
@@ -14,19 +11,13 @@ source:
   sha256: fc2b5643ef222ac20e62c5899f8f36b5ba92bf9146b7a5e25457d7ac789fb3f5
 
 build:
-  merge_build_host: True  # [win]
-
-  number: 0
-  skip: true  # [win32]
-
+  number: 1
+  noarch: generic
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
-  build:
-    - {{posix}}zip               # [win]
-
   host:
     - r-base
     - r-dbi
@@ -58,7 +49,6 @@ requirements:
     - r-stringr
     - r-tidyr
     - r-vegan
-
   run:
     - r-base
     - r-dbi
@@ -93,9 +83,7 @@ requirements:
 
 test:
   commands:
-
-    - $R -e "library('dartR')"           # [not win]
-    - "\"%R%\" -e \"library('dartR')\""  # [win]
+    - $R -e "library('dartR')"
 
 about:
   home: https://CRAN.R-project.org/package=dartR
@@ -112,15 +100,8 @@ about:
     facilitate transfer of data between genlight/genind objects and newhybrids, related,
     phylip, structure, faststructure packages.
   license_family: GPL2
+
 extra:
   container:
     # needed for libGL.so.1
     extended-base: true
-  recipe-maintainers:
-    - MathiasHaudgaard
-    - FrodePedersen
-    - ArneKr
-    - johanneskoester
-    - bgruening
-    - daler
-    - jdblischak
