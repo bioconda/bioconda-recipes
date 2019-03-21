@@ -8,8 +8,6 @@ aclocal
 autoconf
 automake --add-missing
 
-export CC=${GCC}
-export CXX=${GXX}
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib"
