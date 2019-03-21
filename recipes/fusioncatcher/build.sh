@@ -6,8 +6,8 @@ cp bin/* ${PREFIX}/bin/
 cp etc/configuration.cfg ${PREFIX}/etc/
 
 # copy script to download database
-chmod +x ${RECIPE_DIR}/download-db.sh
-cp ${RECIPE_DIR}/download-db.sh ${PREFIX}/bin
+chmod +x ${RECIPE_DIR}/download-human-db.sh
+cp ${RECIPE_DIR}/download-human-db.sh ${PREFIX}/bin
 
 # create folder for database download
 target=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}
