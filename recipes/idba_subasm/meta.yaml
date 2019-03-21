@@ -1,0 +1,41 @@
+{% set name = "idba_subasm" %}
+{% set version = "1.1.3a1" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/abishara/idba/archive/{{ version }}.tar.gz
+  sha256: 2f19ecc6423f8685a6e0248f90b9a63e06e5c44cd19f00fb2ad56ab3da15cd7d
+
+build:
+  number: 0
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - autoconf
+    - automake 1.15
+    - make
+    - binutils
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+  host:
+    - gawk
+    - python
+    - perl
+  run:
+    - python
+    - perl
+    - llvm-openmp  # [osx]
+
+test:
+  commands:
+    - idba_subasm --help 2>&1 | grep "Iterative de Bruijn Graph Assembler"
+
+about:
+    home: https://github.com/abishara/idba
+    license: GPL2
+    summary: 'Fork of IDBA with modifications to perform subassembly for the read cloud metagenomic assembler Athena'
