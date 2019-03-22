@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# ignore sepp's own dependencie of dendropy, since this is already installed via conda.
+# Due to being a noarch package, setup.py is unable to see it and would otherwise try to install,
+# which fails due to conda build restrictions.
+patch setup.py < nodeps.setup.py.patch
+
 python setup.py config -c
 
 # ensure SEPP's configuration file is at the correct location ...
