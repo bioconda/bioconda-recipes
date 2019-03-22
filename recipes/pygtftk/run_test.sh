@@ -15,6 +15,7 @@ do
 	nosetests --with-doctest $i
 done
 
-gtftk -p > gtftk_test.bats
-bats -t gtftk_test.bats
-rm -f gtftk_test.bats
+# bats tests skipped to save biconda CI resources.
+#gtftk -p > gtftk_test.bats
+#bats -t gtftk_test.bats
+#rm -f gtftk_test.bats
