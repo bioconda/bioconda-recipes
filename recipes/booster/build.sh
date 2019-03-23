@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd $SRC_DIR/src
-make
+make CC=$CC
 
 mkdir -p $PREFIX/bin
 cp booster $PREFIX/bin
