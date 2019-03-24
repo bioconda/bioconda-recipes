@@ -25,3 +25,7 @@ fi
 ./configure CPPFLAGS="$CPPFLAGS" --prefix=$PREFIX --enable-libcurl LDFLAGS="$LDFLAGS"
 make all LIBS+=-lcrypto LIBS+=-lcurl
 make install
+
+# Copy bam.h and other files in bam directory
+mkdir -p $PREFIX/include/bam
+mv ./* $PREFIX/include/bam/
