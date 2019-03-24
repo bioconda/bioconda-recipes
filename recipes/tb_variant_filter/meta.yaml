@@ -1,0 +1,54 @@
+{% set name = "tb_variant_filter" %}
+{% set version = "0.0.1" %}
+{% set sha256 = "6626275d82a6a49e8a4e3cff26b224b16889fbbb5baeb49be907df0eb02f3b45" %}
+{% set author = "pvanheus" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/{{ author }}/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  skip: True  # [py<37]
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python >=3.7
+    - intervaltree
+    - lxml
+    - pandas
+    - vcfpy
+    - requests
+    - py2neo >=4.2.0
+
+test:
+  requires:
+    - pytest
+  imports:
+    - tb_variant_filter
+    - tb_variant_filter.cli
+    - tb_variant_filter.filters
+    - tb_variant_filter.masks
+  source_files:
+    - test/*
+  commands:
+    - python -mpytest
+
+about:
+  home: http://github.com/{{ author }}/{{ name }}
+  license: GPL-3.0
+  license_family: GPL
+  license_file: COPYING
+  summary: 'VCF variant filter optimised for filter M. tuberculosis H37Rv variants'
+  description: |
+    tb_variant_filter filters variants in VCF filters, with a focus on the kinds of filtering
+    done with variants found relative to M. tuberculosis H37Rv
