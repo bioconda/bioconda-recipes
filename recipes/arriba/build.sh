@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # compile Arriba
-make HTSLIB="$PREFIX/lib" CXXFLAGS="-pthread -std=c++0x -O2 -Isource -I$PREFIX/include/htslib -I$PREFIX/include" LDFLAGS="-L$PREFIX/lib -ldl -ldeflate -lz -llzma -lbz2"
+make CPPFLAGS="-I$PREFIX/include -I$PREFIX/include/htslib" LDFLAGS="-L$PREFIX/lib" bioconda
 
 # copy executables
 mkdir -p "$PREFIX/bin"
