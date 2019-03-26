@@ -28,5 +28,5 @@ fi
 
 tar -vxzf "$TARBALL"
 rm -fr "$PREFIX"/src/mykrobe/data
-mv mykrobe-data "$PREFIX"/src/mykrobe/data
+cp -r mykrobe-data/* "$PREFIX"/lib/python3.6/site-packages/mykrobe/data
 rm "$TARBALL"
