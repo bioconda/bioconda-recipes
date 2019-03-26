@@ -12,24 +12,17 @@ else
     export LD_LIBRARY_PATH="${PREFIX}/lib"
 fi
 
-perl -V
-wrong_prefix="$(perl -V | sed -rn "s|\s+cc='([^']+)/bin/.*|\1|p")"
-if test -n "$wrong_prefix"; then
-  echo "Perl has broken build env prefix. Fixing..."
-  good_prefix="${CC%/bin/*}"
-  echo "Replacing"
-  echo "  $wrong_prefix"
-  echo "with"
-  echo "  $good_prefix"
-  grep -rlI "$wrong_prefix" $(perl -e 'print "@INC"') | \
-      sort -u |\
-      xargs sed -ibak "s|$wrong_prefix|$good_prefix|g"
-  if perl -V | grep "$wrong_prefix"; then
-     echo "Failed to fix paths - expect breakage below"
-  else
-      echo "Sucesss!"
-  fi
-fi
+# A few things need to be changed.
+# Config.pm holds the compiler in cc
+# ./lib/5.26.2/x86_64-linux-thread-multi/Config.pm
+#     cc => '${CC}'
+# Config_heavy.pl holds the cflags in ccflags
+# ./lib/5.26.2/x86_64-linux-thread-multi/Config_heavy.pl
+#     ccflags ='${CFLAGS}'
+dname=`find $PREFIX/lib -name Config_heavy.pl -print | xargs dirname`
+sed -i.bak "s|^    cc => .*$|    cc => '${CC}',|" ${dname}/Config.pm
+sed -i.bak "s|^    ccflags =.*$|    ccflags ='${CFLAGS}'|" ${dname}/Config_heavy.pl
+
 perl -V
 
 # If it has Build.PL use that, otherwise use Makefile.PL
