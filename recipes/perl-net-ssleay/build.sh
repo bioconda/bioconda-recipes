@@ -12,17 +12,14 @@ else
     export LD_LIBRARY_PATH="${PREFIX}/lib"
 fi
 
-# A few things need to be changed.
-# Config.pm holds the compiler in cc
-# ./lib/5.26.2/x86_64-linux-thread-multi/Config.pm
-#     cc => '${CC}'
-# Config_heavy.pl holds the cflags in ccflags
-# ./lib/5.26.2/x86_64-linux-thread-multi/Config_heavy.pl
-#     ccflags ='${CFLAGS}'
+# Fix pollution from the perl build environment
 export CFLAGS="-I/usr/include $CFLAGS"
 dname=`find $PREFIX/lib -name Config_heavy.pl -print | xargs dirname`
 sed -i.bak "s|^    cc => .*$|    cc => '${CC}',|" ${dname}/Config.pm
 sed -i.bak "s|^ccflags=.*$|ccflags='${CFLAGS}'|;s|^ld=.*$|ld='${CC}'|;s|^cppflags=.*$|cppflags='${CFLAGS}'|;" ${dname}/Config_heavy.pl
+
+# clean up
+rm -f ${dname}/Config.pm.bak ${dname}/Config_heavy.pl.bak
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
