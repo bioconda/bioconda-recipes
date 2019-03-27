@@ -23,8 +23,8 @@ rm -f ${dname}/Config.pm.bak ${dname}/Config_heavy.pl.bak
 
 # This is only needed due to using a prerelease version
 sed -i.bak "s/1.86_09/1.86/" lib/Net/SSLeay.pm
-sed -i.bak "s/1.86_09/1.86/" lib/Net/Handle.pm
-rm lib/Net/*.bak
+sed -i.bak "s/1.86_09/1.86/" lib/Net/SSLeay/Handle.pm
+rm lib/Net/SSLeay.pm.bak lib/Net/SSLeay/Handle.pm.bak
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
