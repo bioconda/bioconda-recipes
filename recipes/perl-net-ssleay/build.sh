@@ -34,7 +34,7 @@ elif [ -f Makefile.PL ]; then
     # Fix pollution from the perl build environment
     sed -i.bak "s|^LDLOADLIBS = .*$|LDLOADLIBS = -L$PREFIX/lib -lssl -lcrypto -lz -lpthread|;s|/home/conda/feedstock_root/build_artifacts/perl_1550669032175/_build_env|$BUILD_PREFIX|g" Makefile
     make
-    #make test
+    make test
     make install
 else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
