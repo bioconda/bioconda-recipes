@@ -1,0 +1,44 @@
+{% set version = "2.26.0" %}
+{% set name = "GeneSelectMMD" %}
+{% set bioc = "3.8" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: d3e9c106d9ae273e16d315dc1e37f123
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: ALL
+requirements:
+  host:
+    - 'bioconductor-biobase >=2.42.0,<2.43.0'
+    - 'bioconductor-limma >=3.38.0,<3.39.0'
+    - r-base
+    - r-mass
+    - r-survival
+  run:
+    - 'bioconductor-biobase >=2.42.0,<2.43.0'
+    - 'bioconductor-limma >=3.38.0,<3.39.0'
+    - r-base
+    - r-mass
+    - r-survival
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'Gene selection based on a mixture of marginal distributions'
+
