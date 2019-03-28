@@ -1,0 +1,25 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 3b0caf14..548b74cc 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -189,9 +189,17 @@ endif(NOT ${OPENMP_FOUND})
+ #-------------------------------------------------------------------------------
+ # default installation prefix
+ #-------------------------------------------------------------------------------
+-set(INSTALL_PREFIX /usr/local CACHE PATH "Installation prefix")
+-set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX} CACHE INTERNAL "Installation prefix" FORCE)
+-set(DEFAULT_LIBRARIES dl pthread)
++if(NOT DEFINED CMAKE_INSTALL_PREFIX)
++    set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation prefix")
++endif()
++if(NOT DEFINED INSTALL_PREFIX)
++    set(INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} CACHE INTERNAL "Installation prefix" FORCE)
++endif()
++if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
++    set(DEFAULT_LIBRARIES pthread)
++else(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
++    set(DEFAULT_LIBRARIES dl pthread)
++endif(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+ 
+ #-------------------------------------------------------------------------------
+ # LIBCurl support

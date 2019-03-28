@@ -1,0 +1,51 @@
+{% set version = '2.1.2' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-sequenza
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/sequenza_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/sequenza/sequenza_{{ version }}.tar.gz
+  sha256: ae074c880dfa3b3e9d3ebead6bd8cbf493b1c1ebd96c5a23e621af8d4d926a38
+
+build:
+  merge_build_host: True  # [win]
+  number: 2
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - bioconductor-copynumber
+    - r-base
+    - r-squash
+
+  run:
+    - bioconductor-copynumber
+    - r-base
+    - r-squash
+
+test:
+  commands:
+    - $R -e "library('sequenza')"           # [not win]
+    - "\"%R%\" -e \"library('sequenza')\""  # [win]
+
+about:
+  home: http://cbs.dtu.dk/biotools/sequenza/
+
+  license: GPL-3
+  summary: Tools to analyze genomic sequencing data from paired normal-tumor samples, including
+    cellularity and ploidy estimation; mutation and copy number (allele-specific and
+    total copy number) detection, quantification  and visualization.
+  license_family: GPL3
+  license_file: {{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3
+
+extra:
+  identifiers:
+    - doi:10.1093/annonc/mdu479

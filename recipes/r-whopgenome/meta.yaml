@@ -1,7 +1,7 @@
 {% set version = '0.9.7' %}
-{% set name = 'r-whopgenome' %}
-{% set posix = '' %}
-{% set native = '' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-whopgenome
@@ -14,31 +14,37 @@ source:
   sha256: 58bb001a831eff64955e424f07de7775d4d463d9674fc7743a0f795b7a6a47f5
 
 build:
-  number: 0
-  # This is required to make R link correctly on Linux.
+  merge_build_host: True  # [win]
+
+  number: 2
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}      # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+
   host:
-    - r-base 3.3*
-    - r-dbi
-    - bioconductor-annotationdbi
-    - r-rmysql
+    - r-base
+
   run:
-    - r-base 3.3*
-    - r-dbi
-    - bioconductor-annotationdbi
-    - r-rmysql
+    - r-base
+    - {{native}}gcc-libs         # [win]
 
 test:
   commands:
-    - $R -e "library('WhopGenome')"
+
+    - $R -e "library('WhopGenome')"           # [not win]
+    - "\"%R%\" -e \"library('WhopGenome')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=WhopGenome
@@ -49,3 +55,12 @@ about:
     to genome annotation from UCSC and Bioconductor and gene ontology data from AmiGO
     and is capable to read, modify and write PLINK .PED-format pedigree files.
   license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak
