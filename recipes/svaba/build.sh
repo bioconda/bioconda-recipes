@@ -3,7 +3,7 @@
 rm -fr SeqLib
 git clone --recursive https://github.com/walaj/SeqLib.git
 cd SeqLib
-git checkout d12cf224f7a488b913eabbcf54a215e17238032c
+git checkout f7a89a127409a3f52fdf725fa74e5438c68e48fb
 git submodule update --recursive
 cd ..
 
