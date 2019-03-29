@@ -10,6 +10,6 @@ cd ..
 export C_INCLUDE_PATH=$PREFIX/include
 export LIBRARY_PATH=$PREFIX/lib
 
-./configure -fPIC --prefix=$PREFIX
-make
+./configure --prefix=$PREFIX
+make -fPIC
 make install
