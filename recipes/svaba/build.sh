@@ -7,9 +7,6 @@ git checkout f7a89a127409a3f52fdf725fa74e5438c68e48fb
 git submodule update --recursive
 cd ..
 
-export C_INCLUDE_PATH=$PREFIX/include
-export LIBRARY_PATH=$PREFIX/lib
-
 ./configure --prefix=$PREFIX
 make
 make install
