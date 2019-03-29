@@ -1,0 +1,67 @@
+{% set version="1.0.1" %}
+{% set sha256="de98f8470c691eb445a948ed6ac9d44d2183e4257820e5315916497eb13c7b82" %}
+
+package:
+  name: 'mtsv'
+  version: {{ version }}
+
+source:
+  url: https://github.com/FofanovLab/MTSv/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  skip: true  # [osx]
+  entry_points:
+    - mtsv = mtsv.main:main
+    - mtsv_setup = mtsv.mtsv_prep.main:main
+    - mtsv_plugin = mtsv.mtsv_plugin.main:main
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - rust>=1.24.0
+  host:
+    - zlib
+    - python<=3.6
+    - setuptools
+
+  run:
+    - python<=3.6
+    - snakemake>=4.1.0
+    - pandas>=0.20.3
+    - ete3
+    - biopython
+    - scipy
+    - six
+    - numpy
+    - pyyaml
+    - click
+    - zlib
+    - wgfast
+
+test:
+  imports:
+    - mtsv
+  commands:
+    - mtsv --help > /dev/null
+    - mtsv_setup --help > /dev/null
+    - mtsv_plugin --help > /dev/null
+    - mtsv-build --help > /dev/null
+    - mtsv-readprep --help > /dev/null
+    - mtsv-binner --help > /dev/null
+    - mtsv-signature --help > /dev/null
+    - mtsv-chunk --help > /dev/null
+    - mtsv-collapse --help > /dev/null
+    - mtsv-tree-build --help > /dev/null
+
+
+about:
+  home: https://github.com/FofanovLab/MTSv
+  summary: MTSv is a suite of metagenomic binning and analysis tools.
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  
+extra:
+  recipe_maintainers: tfursten
