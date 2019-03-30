@@ -8,7 +8,7 @@ cp -R $SRC_DIR/src ${FGMP_HOME}
 cp -R $SRC_DIR/utils ${FGMP_HOME}
 cp $SRC_DIR/README.md ${FGMP_HOME}
 cp -R $SRC_DIR/data ${FGMP_HOME}
-cp $SRC_DIR/fgmp.config ${FGMP_HOME}
+# cp $SRC_DIR/fgmp.config ${FGMP_HOME}
 cp -R $SRC_DIR/lib ${FGMP_HOME}
 cp -R $SRC_DIR/sample ${FGMP_HOME}
 cp -R $SRC_DIR/sample_output ${FGMP_HOME}
