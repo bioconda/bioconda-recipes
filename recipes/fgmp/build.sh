@@ -1,22 +1,17 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/src
-mkdir -p $PREFIX/utils
-mkdir -p $PREFIX/lib
-mkdir -p $PREFIX/data
-mkdir -p $PREFIX/sample
-mkdir -p $PREFIX/bin
+FGMP_HOME=$PREFIX/opt/fgmp-${PKG_VERSION}
 
-cp $SRC_DIR/src/* $PREFIX/src
-cp -r $SRC_DIR/utils/* $PREFIX/utils
+# why not use rsync?
+cp -R $SRC_DIR/src ${FGMP_HOME}
+cp -R $SRC_DIR/utils ${FGMP_HOME}
+cp $SRC_DIR/README.md ${FGMP_HOME}
+cp -R $SRC_DIR/data ${FGMP_HOME}
+cp $SRC_DIR/fgmp.config ${FGMP_HOME}
+cp -R $SRC_DIR/lib ${FGMP_HOME}
+cp -R $SRC_DIR/sample ${FGMP_HOME}
+cp -R $SRC_DIR/sample_output ${FGMP_HOME}
 
-chmod 755 $PREFIX/src/*
-chmod 755 $PREFIX/utils/*
-chmod 755 $PREFIX/lib/*
-chmod 755 $PREFIX/bin
+chmod 755 -R ${FGMP_HOME}/src ${FGMP_HOME}/utils ${FGMP_HOME}/lib ${FGMP_HOME}/bin
 
-cp $SRC_DIR/README.md $PREFIX
-cp $SRC_DIR/data/* $PREFIX/data
-cp $SRC_DIR/fgmp.config $PREFIX
-cp $SRC_DIR/lib/FGMP.pm $PREFIX/lib
-cp $SRC_DIR/sample/* $PREFIX/sample
+ln -s ${FGMP_HOME}/src/fgmp.pl ${FGMP_HOME}/fgmp
