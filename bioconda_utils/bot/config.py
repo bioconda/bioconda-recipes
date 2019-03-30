@@ -6,6 +6,11 @@ import os
 import re
 
 def get_secret(name):
+    """Load a secret from file or env
+
+    Either provide ``{name}_FILE`` or ``{name}`` in the environment to
+    configure the value for ``{name}``.
+    """
     try:
         with open(os.environ[name + "_FILE"]) as secret_file:
             return secret_file.read().strip()
@@ -38,3 +43,6 @@ BOT_ALIAS_RE = re.compile(r'@bioconda[- ]?bot', re.IGNORECASE)
 #: Email address used in commits. Needs to match the account under
 #: which the CODE_SIGNING_KEY was registered.
 BOT_EMAIL = "47040946+BiocondaBot@users.noreply.github.com"
+
+#: Time in seconds after which repodata should be reloaded
+REPODATA_TIMEOUT = 300

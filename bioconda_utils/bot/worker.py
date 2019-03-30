@@ -7,10 +7,8 @@ import asyncio
 import logging
 import os
 import re
-import time
 from functools import wraps
 import subprocess
-from typing import TYPE_CHECKING
 from importlib import import_module
 
 import aiohttp
@@ -22,7 +20,8 @@ from kombu import serialization
 import simplejson
 
 from ..githubhandler import GitHubAppHandler, GitHubHandler
-from .config import APP_ID, APP_KEY, CODE_SIGNING_KEY, BOT_NAME
+from ..utils import RepoData
+from .config import APP_ID, APP_KEY, CODE_SIGNING_KEY, BOT_NAME, REPODATA_TIMEOUT
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -201,6 +200,7 @@ def setup_new_celery_process(sender=None, conf=None, **kwargs):
     Here we make sure that the GPG signing key is installed
     """
     install_gpg_key()
+    RepoData().set_timeout(REPODATA_TIMEOUT)
 
 
 def install_gpg_key():
