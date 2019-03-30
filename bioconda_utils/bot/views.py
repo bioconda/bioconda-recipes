@@ -10,6 +10,7 @@ from .events import event_routes
 from ..githubhandler import Event
 from .. import __version__ as VERSION
 from .worker import celery
+from .config import APP_SECRET
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 web_routes = web.RouteTableDef()  # pylint: disable=invalid-name
@@ -20,7 +21,11 @@ async def webhook_dispatch(request):
     """Accepts webhooks from Github and dispatches them to event handlers"""
     try:
         body = await request.read()
-        event = Event.from_http(request.headers, body)
+        secret = APP_SECRET
+        if secret == "IGNORE":
+            logger.error("IGNORING WEBHOOK SECRET (DEBUG MODE)")
+            secret = None
+        event = Event.from_http(request.headers, body, secret=secret)
         # Respond to liveness check
         if event.event == "ping":
             return web.Response(status=200)

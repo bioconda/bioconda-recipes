@@ -7,10 +7,8 @@ import asyncio
 import logging
 import os
 import re
-import time
 from functools import wraps
 import subprocess
-from typing import TYPE_CHECKING
 from importlib import import_module
 
 import aiohttp
@@ -22,7 +20,8 @@ from kombu import serialization
 import simplejson
 
 from ..githubhandler import GitHubAppHandler, GitHubHandler
-from .config import APP_ID, APP_KEY, CODE_SIGNING_KEY, BOT_NAME
+from ..utils import RepoData
+from .config import APP_ID, APP_KEY, CODE_SIGNING_KEY, BOT_NAME, REPODATA_TIMEOUT
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -78,9 +77,9 @@ class AsyncTask(Task):
         if asyncio.iscoroutinefunction(self.run):  # only for async funcs
             @wraps(self.run)
             def sync_run(*args, **kwargs):
-                args = list(args)
-                self.loop.run_until_complete(self.async_pre_run(args, kwargs))
-                return self.loop.run_until_complete(self._async_run(*args, **kwargs))
+                largs = list(args)  # need list so that pre-run can modify
+                self.loop.run_until_complete(self.async_pre_run(largs, kwargs))
+                return self.loop.run_until_complete(self._async_run(*largs, **kwargs))
 
             # swap run method with wrapper defined above
             self._async_run, self.run = self.run, sync_run
@@ -98,7 +97,7 @@ class AsyncTask(Task):
             self.ghappapi = GitHubAppHandler(aiohttp.ClientSession(), BOT_NAME,
                                              APP_KEY, APP_ID)
 
-    async def async_pre_run(self, args, kwargs):
+    async def async_pre_run(self, args, _kwargs):
         """Per-call async initialization
 
         Prepares the `ghapi` property for tasks using ghapi_data added
@@ -113,7 +112,7 @@ class AsyncTask(Task):
                     arg.installation)
 
     @abc.abstractmethod
-    def run(self, *args, **kwargs):
+    def run(self, *_args, **_kwargs):
         """The tasks actual run method. Will be replaced during bind"""
 
     @property
@@ -127,12 +126,12 @@ class AsyncTask(Task):
             return loop
 
 
-def custom_dumps(s):
+def custom_dumps(string):
     """Serialize **s** to JSON accepting **for_json** serializer method"""
-    return simplejson.dumps(s, for_json=True)
+    return simplejson.dumps(string, for_json=True)
 
 
-def custom_loads(s):
+def custom_loads(string):
     """Deserialize **s** recreating objects
 
     JSON objects (dicts) containing a __type__ and a __module__
@@ -148,9 +147,9 @@ def custom_loads(s):
                 klass = getattr(mod, typ)
                 return klass(**obj)
             except KeyError:
-                    pass
+                pass
         return obj
-    return simplejson.loads(s, object_hook=decode)
+    return simplejson.loads(string, object_hook=decode)
 
 # Register a custom serializer. We do this so we can conveniently
 # transfer objects without resorting to pickling.
@@ -162,10 +161,10 @@ serialization.register('custom_json',
 
 # Instantiate Celery app, setting our AsyncTask as default
 # task class and loading the tasks from tasks.py
-celery = Celery(
+celery = Celery(  # pylint: disable=invalid-name
     task_cls=AsyncTask,
     include=['bioconda_utils.bot.tasks']
-)  # pylint: disable=invalid-name
+)
 
 
 # Celery must be configured at module level to catch worker as well
@@ -188,19 +187,20 @@ celery.conf.update(
     event_queue_expires=60,
     worker_prefetch_multiplier=1,
     worker_concurrency=1,
-    task_serializer = 'custom_json',
-    accept_content = ['custom_json', 'json']
+    task_serializer='custom_json',
+    accept_content=['custom_json', 'json']
     #task_acks_late=true
 )
 
 
 @celeryd_init.connect
-def setup_new_celery_process(sender=None, conf=None, **kwargs):
+def setup_new_celery_process(sender=None, conf=None, **_kwargs):
     """This hook is called when a celery worker is initialized
 
     Here we make sure that the GPG signing key is installed
     """
     install_gpg_key()
+    RepoData().set_timeout(REPODATA_TIMEOUT)
 
 
 def install_gpg_key():

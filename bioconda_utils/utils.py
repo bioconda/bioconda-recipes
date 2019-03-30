@@ -1223,6 +1223,10 @@ class RepoData:
 
     cache_file = None
     _df = None
+    _df_ts = None
+
+    #: default lifetime for repodata cache
+    cache_timeout = 60*60*8
 
     @classmethod
     def register_config(cls, config):
@@ -1243,6 +1247,10 @@ class RepoData:
         else:
             self.cache_file = cache
 
+    def set_timeout(self, timeout):
+        """Set the timeout after which the repodata should be reloaded"""
+        self.cache_timeout = timeout
+
     @property
     def channels(self):
         """Return channels to load."""
@@ -1255,8 +1263,14 @@ class RepoData:
         Try not to use this ... the point of this class is to be able to
         change the structure in which the data is held.
         """
-        if self._df is None:
+        if self._df_ts is not None:
+            seconds = (datetime.datetime.now() - self._df_ts).seconds
+        else:
+            seconds = 0
+
+        if self._df is None or seconds > self.cache_timeout:
             self._df = self._load_channel_dataframe()
+            self._df_ts = datetime.datetime.now()
         return self._df
 
     def _make_repodata_url(self, channel, platform):
@@ -1270,11 +1284,23 @@ class RepoData:
                                   subdir=self.platform2subdir(platform))
         return url
 
-    def _load_channel_dataframe(self):
+    def _load_channel_dataframe_cached(self):
         if self.cache_file is not None and os.path.exists(self.cache_file):
-            logger.info("Loading repodata from cache %s", self.cache_file)
-            return pd.read_pickle(self.cache_file)
+            ts = datetime.datetime.fromtimestamp(os.path.getmtime(self.cache_file))
+            seconds = (datetime.datetime.now() - ts).seconds
+            if seconds <= self.cache_timeout:
+                logger.info("Loading repodata from cache %s", self.cache_file)
+                return pd.read_pickle(self.cache_file)
+            else:
+                logger.info("Repodata cache file too old. Reloading")
 
+        res = self._load_channel_dataframe()
+
+        if self.cache_file is not None:
+            res.to_pickle(self.cache_file)
+        return res
+
+    def _load_channel_dataframe(self):
         repos = list(product(self.channels, self.platforms))
         urls = [self._make_repodata_url(c, p) for c, p in repos]
         descs = ["{}/{}".format(c, p) for c, p in repos]
@@ -1296,9 +1322,6 @@ class RepoData:
         for col in ('channel', 'platform', 'subdir', 'name', 'version', 'build'):
             res[col] = res[col].astype('category')
         res = res.reset_index(drop=True)
-
-        if self.cache_file is not None:
-            res.to_pickle(self.cache_file)
 
         return res
 

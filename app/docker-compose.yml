@@ -12,6 +12,8 @@ secrets:
     file: secrets/app_id.txt
   app_key:
     file: secrets/app_key.pem
+  app_secret:
+    file: secrets/app_secret.txt
   code_sign_key:
     file: secrets/code_sign_key.asc
   erlang_cookie:
@@ -31,6 +33,8 @@ x-app-common: &app-common
     - APP_KEY_FILE=/run/secrets/app_key
     # Path to github App ID (not actually secret)
     - APP_ID_FILE=/run/secrets/app_id
+    # Path to secret for SHA signing of incoming webhooks
+    - APP_SECRET_FILE=/run/secrets/app_secret
     # Path to GPG key for signing commits
     # (This key is registered with a bot account, not the app,
     #  as github apps have no email they can't have a commit signing key)
@@ -41,6 +45,7 @@ x-app-common: &app-common
     # See above
     - app_key
     - app_id
+    - app_secret
     - code_sign_key
   depends_on:
     - mq
@@ -61,6 +66,10 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
       - backend
+    deploy:
+      resources:
+        limits:
+          memory: 200M
 
   ## Bioconda-Utils web app
   web:
@@ -85,6 +94,9 @@ services:
         traefik.port: 80
         # And should be mapped to https://biocondabot.pruesse.net
         traefik.frontend.rule: "HostRegexp: {subdomain:biocondabot.*}.pruesse.net,localhost"
+      resources:
+        limits:
+          memory: 200M
 
   ## Bioconda-Utils workers handling tasks scheduled from web app
   worker:
@@ -97,6 +109,9 @@ services:
     deploy:
       mode: replicated
       replicas: 2  # let's have 2 for now
+      resources:
+        limits:
+          memory: 700M
 
   ## Check services for updates to containers
   shepherd:
@@ -110,6 +125,9 @@ services:
       placement:
         constraints:
         - node.role == manager  # must run on manager node
+      resources:
+        limits:
+          memory: 20M
 
   ## Celery monitoring tool
   # We map this to /flower using traefik
@@ -129,6 +147,9 @@ services:
         traefik.enable: "true"
         traefik.port: 8080
         traefik.frontend.rule: "Host: biocondabot.pruesse.net,localhost; PathPrefixStrip: /flower"
+      resources:
+        limits:
+          memory: 100M
 
   ## Traefik frontent gateway
   # - Handles SSL encryption
@@ -171,4 +192,7 @@ services:
       labels:
         traefik.port: 8080
         traefik.frontend.rule: Host:biocondabot.pruesse.net,localhost;PathPrefixStrip:/traefik/
+      resources:
+        limits:
+          memory: 50M
 
