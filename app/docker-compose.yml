@@ -66,6 +66,10 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
       - backend
+    deploy:
+      resources:
+        limits:
+          memory: 200M
 
   ## Bioconda-Utils web app
   web:
@@ -90,6 +94,9 @@ services:
         traefik.port: 80
         # And should be mapped to https://biocondabot.pruesse.net
         traefik.frontend.rule: "HostRegexp: {subdomain:biocondabot.*}.pruesse.net,localhost"
+      resources:
+        limits:
+          memory: 200M
 
   ## Bioconda-Utils workers handling tasks scheduled from web app
   worker:
@@ -102,6 +109,9 @@ services:
     deploy:
       mode: replicated
       replicas: 2  # let's have 2 for now
+      resources:
+        limits:
+          memory: 700M
 
   ## Check services for updates to containers
   shepherd:
@@ -115,6 +125,9 @@ services:
       placement:
         constraints:
         - node.role == manager  # must run on manager node
+      resources:
+        limits:
+          memory: 20M
 
   ## Celery monitoring tool
   # We map this to /flower using traefik
@@ -134,6 +147,9 @@ services:
         traefik.enable: "true"
         traefik.port: 8080
         traefik.frontend.rule: "Host: biocondabot.pruesse.net,localhost; PathPrefixStrip: /flower"
+      resources:
+        limits:
+          memory: 100M
 
   ## Traefik frontent gateway
   # - Handles SSL encryption
@@ -176,4 +192,7 @@ services:
       labels:
         traefik.port: 8080
         traefik.frontend.rule: Host:biocondabot.pruesse.net,localhost;PathPrefixStrip:/traefik/
+      resources:
+        limits:
+          memory: 50M
 
