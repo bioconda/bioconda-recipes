@@ -8,7 +8,7 @@ import re
 def get_secret(name):
     try:
         with open(os.environ[name + "_FILE"]) as secret_file:
-            return secret_file.read()
+            return secret_file.read().strip()
     except (FileNotFoundError, PermissionError, KeyError):
         try:
             return os.environ[name]
