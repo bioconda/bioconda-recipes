@@ -1,6 +1,7 @@
 #!/bin/bash
 
 FGMP_HOME=$PREFIX/opt/fgmp-${PKG_VERSION}
+mkdir -p $FGMP_HOME
 
 # why not use rsync?
 cp -R $SRC_DIR/src ${FGMP_HOME}
