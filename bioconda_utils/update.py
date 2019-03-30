@@ -218,7 +218,7 @@ class ExcludeBlacklisted(Filter):
     def __init__(self, scanner, config_fn: str) -> None:
         super().__init__(scanner)
         with open(config_fn, "r") as config_fdes:
-            config = yaml.load(config_fdes)
+            config = yaml.safe_load(config_fdes)
         blacklists = [os.path.join(os.path.dirname(config_fn), bl)
                       for bl in config['blacklists']]
         self.blacklisted = utils.get_blacklist(blacklists, scanner.recipe_folder)

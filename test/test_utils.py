@@ -592,7 +592,7 @@ def test_rendering_sandboxing():
             tmp = tempfile.mkdtemp()
             target = 'info/recipe/meta.yaml'
             t.extract(target, path=tmp)
-            contents = yaml.load(open(os.path.join(tmp, target)).read())
+            contents = yaml.safe_load(open(os.path.join(tmp, target)).read())
             assert contents['extra']['var2'] == 'conda-val-here', contents
 
 
