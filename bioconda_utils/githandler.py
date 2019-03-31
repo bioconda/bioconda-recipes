@@ -141,7 +141,8 @@ class GitHandlerBase():
                 f"File {abs_file_name} not inside {abs_repo_root}"
             )
         rel_file_name = abs_file_name[len(abs_repo_root):].lstrip("/")
-        return (branch.commit.tree / rel_file_name).data_stream.read().decode("utf-8")
+        commit = getattr(branch, 'commit', branch)
+        return (commit.tree / rel_file_name).data_stream.read().decode("utf-8")
 
     def create_local_branch(self, branch_name: str, remote_branch: str = None):
         """Creates local branch from remote **branch_name**"""
