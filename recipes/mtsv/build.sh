@@ -10,7 +10,6 @@ export CC=$GCC
 export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="${CC}"
 C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib RUST_BACKTRACE=1 cargo build --release --verbose
 $GXX -std=c++11 -pthread ../mtsv_prep/taxidtool.cpp -o mtsv-db-build
-cp mtsv-db-build $PREFIX
 
 binaries="\
 mtsv-build \
@@ -22,7 +21,7 @@ mtsv-signature \
 mtsv-tree-build \
 "
 
-for i in $binaries; do cp $SRC_DIR/mtsv/ext/target/release/$i $PREFIX; done
+for i in $binaries; do cp $SRC_DIR/mtsv/ext/target/release/$i $PREFIX/bin; done
 
 cd $SRC_DIR
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
