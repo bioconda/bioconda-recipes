@@ -20,7 +20,7 @@ mtsv-collapse \
 mtsv-signature \
 mtsv-tree-build \
 "
-
+# move binaries to bin
 for i in $binaries; do cp $SRC_DIR/mtsv/ext/target/release/$i $PREFIX/bin; done
 
 cd $SRC_DIR
