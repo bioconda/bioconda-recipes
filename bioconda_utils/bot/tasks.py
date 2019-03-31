@@ -167,15 +167,19 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
         from bioconda_utils.linting import lint as _lint, LintArgs, markdown_report
         df = _lint(recipes, LintArgs())
 
+    summary = "Linted recipes:\n"
+    for recipe in recipes:
+        summary += " - `{}`\n".format(recipe)
+    summary += "\n"
     annotations = []
     if df is None:
         conclusion = CheckRunConclusion.success
         title = "All recipes in good condition"
-        summary = "No problems found"
+        summary += "No problems found."
     else:
         conclusion = CheckRunConclusion.failure
         title = "Some recipes had problems"
-        summary = "Please fix the listed issues"
+        summary += "Please fix the issues listed below."
 
         for _, row in df.iterrows():
             check = row['check']
