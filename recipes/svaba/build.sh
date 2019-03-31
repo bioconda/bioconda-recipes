@@ -3,8 +3,7 @@
 rm -fr SeqLib
 git clone --recursive https://github.com/walaj/SeqLib.git
 
-ln -s $PREFIX/include/zlib.h SeqLib/src/
-ln -s $PREFIX/include/zconf.h SeqLib/src/
+export PATH="$PATH:$PREFIX/include/"
 
 export C_INCLUDE_PATH=$PREFIX/include
 export LIBRARY_PATH=$PREFIX/lib
