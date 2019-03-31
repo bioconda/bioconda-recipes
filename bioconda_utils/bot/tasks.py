@@ -12,7 +12,7 @@ from .worker import celery
 from .config import BOT_NAME, BOT_EMAIL
 from .. import utils
 from ..recipe import Recipe
-from ..githandler import TempGitHandler
+from ..githandler import TempBiocondaRepo
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
 
 if TYPE_CHECKING:
@@ -64,7 +64,7 @@ class Checkout:
                 branch_name = "unknown"
                 ref = self.ref
 
-            self.git = TempGitHandler(
+            self.git = TempBiocondaRepo(
                 password=self.ghapi.token,
                 home_user=self.ghapi.user,
                 home_repo=self.ghapi.repo,
@@ -79,7 +79,7 @@ class Checkout:
 
             branch = self.git.create_local_branch(branch_name, ref)
             if not branch:
-                raise RuntimeError(f"Failed to checkout branch {branch_name} from {self.git}")
+                raise RuntimeError(f"Failed to find {branch_name}:{ref} in {self.git}")
             branch.checkout()
 
             return self.git

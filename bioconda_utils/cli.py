@@ -760,7 +760,7 @@ def autobump(recipe_folder, config, packages='*', cache=None,
                     always=exclude_subrecipes == "always")
     git_handler = None
     if check_branch or create_branch or create_pr or only_active:
-        git_handler = githandler.GitHandler(recipe_folder, dry_run)
+        git_handler = githandler.BiocondaRepo(recipe_folder, dry_run)
         git_handler.checkout_master()
         if only_active:
             scanner.add(update.ExcludeNoActiveUpdate, git_handler)

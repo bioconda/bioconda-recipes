@@ -266,41 +266,7 @@ class GitHandlerBase():
                 writer.set_value("user", "signingkey", key)
 
 
-class GitHandler(GitHandlerBase):
-    """GitHandler for working with a pre-existing local checkout of bioconda-recipes
-
-    Restores the branch active when created upon calling `close()`.
-    """
-    def __init__(self, folder: str=".",
-                 dry_run=False,
-                 home='bioconda/bioconda-recipes',
-                 fork=None,
-                 allow_dirty=True) -> None:
-        repo = git.Repo(folder, search_parent_directories=True)
-        super().__init__(repo, dry_run, home, fork, allow_dirty)
-
-        #: Branch to restore after running
-        self.prev_active_branch = self.repo.active_branch
-        self.master = self.get_local_branch("master")
-
-    def checkout_master(self):
-        """Check out master branch (original branch restored by `close()`)"""
-        logger.warning("Checking out master")
-        self.master.checkout()
-        logger.info("Updating master to latest project master")
-        self.home_remote.pull("master")
-        logger.info("Updating and pruning remotes")
-        self.home_remote.fetch(prune=True)
-        self.fork_remote.fetch(prune=True)
-
-    def close(self) -> None:
-        """Release resources allocated"""
-        logger.warning("Switching back to %s", self.prev_active_branch.name)
-        self.prev_active_branch.checkout()
-        super().close()
-
-
-class BiocondaRepoHandler(GitHandler):
+class BiocondaRepoMixin(GitHandlerBase):
     """Githandler with logic specific to Bioconda Repo"""
 
     #: location of recipes folder within repo
@@ -393,7 +359,41 @@ class BiocondaRepoHandler(GitHandler):
         return list(tobuild)
 
 
-class TempGitHandler(BiocondaRepoHandler):
+class GitHandler(GitHandlerBase):
+    """GitHandler for working with a pre-existing local checkout of bioconda-recipes
+
+    Restores the branch active when created upon calling `close()`.
+    """
+    def __init__(self, folder: str=".",
+                 dry_run=False,
+                 home='bioconda/bioconda-recipes',
+                 fork=None,
+                 allow_dirty=True) -> None:
+        repo = git.Repo(folder, search_parent_directories=True)
+        super().__init__(repo, dry_run, home, fork, allow_dirty)
+
+        #: Branch to restore after running
+        self.prev_active_branch = self.repo.active_branch
+        self.master = self.get_local_branch("master")
+
+    def checkout_master(self):
+        """Check out master branch (original branch restored by `close()`)"""
+        logger.warning("Checking out master")
+        self.master.checkout()
+        logger.info("Updating master to latest project master")
+        self.home_remote.pull("master")
+        logger.info("Updating and pruning remotes")
+        self.home_remote.fetch(prune=True)
+        self.fork_remote.fetch(prune=True)
+
+    def close(self) -> None:
+        """Release resources allocated"""
+        logger.warning("Switching back to %s", self.prev_active_branch.name)
+        self.prev_active_branch.checkout()
+        super().close()
+
+
+class TempGitHandler(GitHandlerBase):
     """GitHandler for working with temporary working directories created on the fly
     """
     def __init__(self,
@@ -441,3 +441,10 @@ class TempGitHandler(BiocondaRepoHandler):
         super().close()
         logger.info("Removing repo from %s", self.tempdir.name)
         self.tempdir.cleanup()
+
+
+class BiocondaRepo(GitHandler, BiocondaRepoMixin):
+    pass
+
+class TempBiocondaRepo(TempGitHandler, BiocondaRepoMixin):
+    pass
