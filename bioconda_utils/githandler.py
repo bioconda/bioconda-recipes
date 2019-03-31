@@ -29,14 +29,16 @@ class GitHandlerBase():
       dry_run: Don't push anything to remote
       home: string occurring in remote url marking primary project repo
       fork: string occurring in remote url marking forked repo
+      allow_dirty: don't bail out if repo is dirty
     """
     def __init__(self, repo: git.Repo,
                  dry_run: bool,
                  home='bioconda/bioconda-recipes',
-                 fork=None) -> None:
+                 fork=None,
+                 allow_dirty=False) -> None:
         #: GitPython Repo object representing our repository
         self.repo: git.Repo = repo
-        if self.repo.is_dirty():
+        if not allow_dirty and self.repo.is_dirty():
             raise RuntimeError("Repository is in dirty state. Bailing out")
         #: Dry-Run mode - don't push or commit anything
         self.dry_run = dry_run
@@ -267,12 +269,13 @@ class GitHandler(GitHandlerBase):
 
     Restores the branch active when created upon calling `close()`.
     """
-    def __init__(self, folder: str,
+    def __init__(self, folder: str=".",
                  dry_run=False,
                  home='bioconda/bioconda-recipes',
-                 fork=None) -> None:
+                 fork=None,
+                 allow_dirty=True) -> None:
         repo = git.Repo(folder, search_parent_directories=True)
-        super().__init__(repo, dry_run, home, fork)
+        super().__init__(repo, dry_run, home, fork, allow_dirty)
 
         #: Branch to restore after running
         self.prev_active_branch = self.repo.active_branch
