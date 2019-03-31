@@ -102,6 +102,10 @@ class GitHandlerBase():
         """Finds local branch named **branch_name**"""
         if branch_name in self.repo.branches:
             return self.repo.branches[branch_name]
+        try:
+            return self.repo.commit(branch_name)
+        except git.BadName:
+            pass
         return None
 
     def get_remote_branch(self, branch_name: str, try_fetch=False):
