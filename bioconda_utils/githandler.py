@@ -148,21 +148,36 @@ class GitHandlerBase():
         self.repo.create_head(branch_name, remote_branch)
         return self.get_local_branch(branch_name)
 
-    def get_merge_base(self, ref=None):
-        """Determines the merge base for master and **ref**
+    def get_merge_base(self, ref=None, other=None):
+        """Determines the merge base for **other** and **ref**
 
-        See git merge-base.
+        See git merge-base. Returns the commit at which **ref** split
+        from **other** and from which point on changes would be
+        merged.
 
-        This should return the commit at which **ref** split from
-        master and from which point on changes would be merged.
+        Args:
+          ref: One of the two tips for which a merge base is sought.
+               Defaults to the currently checked out HEAD. This is the
+               second argument to ``git merge-base``.
+          other: One of the two tips for which a merge base is sought.
+               Defaults to ``origin/master`` (``home_remote``). This is
+               the first argument to ``git merge-base``.
+
+        Returns:
+          The first merge base for the two references provided if found.
+          May return `None` if no merge base was found. This may for
+          example be the case if branches were deleted or if the
+          repository is shallow and the merge base commit not available.
         """
         if not ref:
             ref = self.repo.active_branch.commit
+        if not other:
+            other = self.home_remote.refs.master
         for depth in (0, 50, 200):
             if depth:
                 self.fork_remote.fetch(ref, depth=depth)
                 self.home_remote.fetch('master', depth=depth)
-            merge_bases = self.repo.merge_base(self.home_remote.refs.master, ref)
+            merge_bases = self.repo.merge_base(other, ref)
             if merge_bases:
                 break
             logger.debug("No merge base found for %s and master at depth %i", ref, depth)
@@ -174,15 +189,21 @@ class GitHandlerBase():
                          ref, merge_bases)
         return merge_bases[0]
 
-    def list_changed_files(self, ref=None):
-        """Lists the files added or modified between origin/master and **ref**
+    def list_changed_files(self, ref=None, other=None):
+        """Lists files that would be added/modified by merge of **other** into **ref**
 
-        For moved/renamed files only the new name is listed. Deleted
-        files are omitted.
+        See also `get_merge_base()`.
+
+        Args:
+          ref: Defaults to `HEAD` (active branch), one of the tips compared
+          other: Defaults to `origin/master`, other tip compared
+
+        Returns:
+          Generator over modified or created (**not deleted**) files.
         """
         if not ref:
             ref = self.repo.active_branch.commit
-        merge_base = self.get_merge_base(ref)
+        merge_base = self.get_merge_base(ref, other)
         for diffobj in merge_base.diff(ref):
             if not diffobj.deleted_file:
                 yield diffobj.b_path
