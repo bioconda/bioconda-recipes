@@ -104,9 +104,15 @@ async def get_latest_pr_commit(issue_number: int, ghapi):
 
 
 @celery.task(acks_late=True)
-async def create_check_run(head_sha: str, ghapi):
-    logger.error("create_check_run: %s %s", head_sha, ghapi)
-    check_run_number = await ghapi.create_check_run("Linting Recipe(s)", head_sha)
+async def create_check_run(head_sha: str, ghapi, recreate=True,):
+    LINT_CHECK_NAME="Linting Recipe(s)"
+    if not recreate:
+        for check_run in await ghapi.get_check_runs(head_sha):
+            if check_run.get('name') == LINT_CHECK_NAME:
+                logger.warning("Check run for %s exists - not recreating",
+                               head_sha)
+                return
+    check_run_number = await ghapi.create_check_run(LINT_CHECK_NAME, head_sha)
     logger.warning("Created check run %s", check_run_number)
 
 
