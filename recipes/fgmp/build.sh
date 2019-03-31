@@ -15,6 +15,6 @@ cp -R $SRC_DIR/lib ${FGMP_HOME}
 cp -R $SRC_DIR/sample ${FGMP_HOME}
 cp -R $SRC_DIR/sample_output ${FGMP_HOME}
 
-chmod 755 -R ${FGMP_HOME}/src ${FGMP_HOME}/utils ${FGMP_HOME}/lib
+chmod -R 755 ${FGMP_HOME}/src ${FGMP_HOME}/utils ${FGMP_HOME}/lib
 
 ln -s ${FGMP_HOME}/src/fgmp.pl ${PREFIX}/bin/fgmp
