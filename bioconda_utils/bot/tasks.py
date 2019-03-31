@@ -149,7 +149,7 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
             )
             return
 
-        recipes = git.get_changed_recipes()
+        recipes = git.get_recipes_to_build()
         if not recipes:
             await ghapi.modify_check_run(
                 check_run_number,
