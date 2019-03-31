@@ -3,9 +3,11 @@ version: '3.7'
 volumes:
   rabbitmq-data:  # persists items in the queue
   traefik-certs:  # persists SSL certs to avoid re-issuing on restart
+  esdata:
 
 networks:
   backend:
+  logging:
 
 secrets:
   app_id:
@@ -101,6 +103,7 @@ services:
   ## Bioconda-Utils workers handling tasks scheduled from web app
   worker:
     <<: *app-common
+    hostname: worker
     command: >-
       celery worker
       -l info
@@ -108,13 +111,14 @@ services:
       --without-heartbeat
     deploy:
       mode: replicated
-      replicas: 2  # let's have 2 for now
+      replicas: 1  # let's have 2 for now
       resources:
         limits:
           memory: 700M
 
   ## Check services for updates to containers
   shepherd:
+    hostname: shepherd
     image: mazzolino/shepherd:0.3.0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -133,6 +137,7 @@ services:
   # We map this to /flower using traefik
   flower:
     image: mher/flower
+    hostname: flower
     command: >-
       flower
       --broker=amqp://mq:5672
@@ -160,6 +165,7 @@ services:
   #       to the right place.
   frontend:
     image: traefik
+    hostname: traefik
     command: >-
       --api
       --docker
@@ -179,6 +185,7 @@ services:
       --acme.email=info@pruesse.net
       --acme.storage=acme/certs.json
       --acme.acmelogging
+      --accessLog
     ports:
       - "80:80"
       - "443:443"
@@ -196,3 +203,68 @@ services:
         limits:
           memory: 50M
 
+
+## ELK Stack - needs a TON of memory (like 8GB, definitely more than the ec2 has)
+#  elasticsearch:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:6.7.0
+#    hostname: elasticsearch
+#    environment:
+#      - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
+#    command:
+#      - elasticsearch
+#    volumes:
+#      - esdata:/usr/share/elasticsearch/data
+#    networks:
+#      - logging
+#    deploy:
+#      replicas: 1
+#
+#  logstash:
+#    image: docker.elastic.co/logstash/logstash:6.7.0
+#    hostname: logstash
+#    depends_on:
+#      - elasticsearch
+#    environment:
+#      - "LS_JAVA_OPTS=-Xms128m -Xmx128m"
+#    command: >-
+#      logstash -e '
+#        input { udp { port => 5000 codec => json } }
+#        filter { if [docker][hostname] =~ /^logstash/ { drop { } } }
+#        output { stdout { } elasticsearch { hosts => "elasticsearch:9200" } }
+#        '
+#    networks:
+#      - logging
+#    deploy:
+#      replicas: 1
+#
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana:6.7.0
+#    hostname: kibana
+#    #image: bitnami/kibana
+#    networks:
+#      - logging
+#      - backend
+#    environment:
+#        - SERVER_REWRITEBASEPATH=false
+#        - SERVER_BASEPATH=/kibana
+#        - ELASTICSEARCH_URL=http://elasticsearch:9200
+#    depends_on:
+#      - elasticsearch
+#    deploy:
+#      labels:
+#        traefik.enable: "true"
+#        traefik.port: 5601
+#        traefik.frontend.rule: Host:biocondabot.pruesse.net,localhost;PathPrefixStrip:/kibana
+#      replicas: 1
+#
+#  logspout:
+#    image: bekt/logspout-logstash
+#    hostname: logspout
+#    environment:
+#      ROUTE_URIS: logstash://logstash:5000
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    networks:
+#      - logging
+#    depends_on:
+#      - logstash
