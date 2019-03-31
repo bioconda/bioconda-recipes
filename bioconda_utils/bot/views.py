@@ -34,8 +34,10 @@ async def webhook_dispatch(request):
         installation = event.get('installation/id')
         to_user = event.get('repository/owner/login')
         to_repo = event.get('repository/name')
-        logger.info("Received GH Event '%s' (%s) for %s (%s/%s)",
-                    event.event, event.delivery_id,
+        action = event.get('action', None)
+        logger.info("Received GH Event '%s%s' (%s) for %s (%s/%s)",
+                    event.event, "/"+action if action else '',
+                    event.delivery_id,
                     installation, to_user, to_repo)
 
         # Get GithubAPI object for this installation
