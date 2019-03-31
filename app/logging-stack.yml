@@ -17,7 +17,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.7.0
     hostname: elasticsearch
     environment:
-      - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
     command:
       - elasticsearch
     volumes:
@@ -34,9 +34,9 @@ services:
     depends_on:
       - elasticsearch
     environment:
-      - "LS_JAVA_OPTS=-Xms128m -Xmx128m"
+      - "LS_JAVA_OPTS=-Xms256m -Xmx256m"
     command: >-
-      logstash -e '
+      logstash --quiet -e '
         input { udp { port => 5000 codec => json } }
         filter { if [docker][hostname] =~ /^logstash/ { drop { } } }
         output { stdout { } elasticsearch { hosts => "elasticsearch:9200" } }
