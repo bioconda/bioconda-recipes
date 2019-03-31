@@ -7,6 +7,9 @@ import tempfile
 from typing import List
 
 import git
+import yaml
+
+from . import utils
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -215,12 +218,6 @@ class GitHandlerBase():
             if not diffobj.deleted_file:
                 yield diffobj.b_path
 
-    def get_changed_recipes(self, ref=None):
-        """Returns list of recipes in which the meta.yaml has changed"""
-        return [fn[:-len('/meta.yaml')]
-                   for fn in self.list_changed_files()
-                   if fn.endswith('/meta.yaml')]
-
     def prepare_branch(self, branch_name: str) -> None:
         """Checks out **branch_name**, creating it from home remote master if needed"""
         if branch_name not in self.repo.heads:
@@ -303,7 +300,100 @@ class GitHandler(GitHandlerBase):
         super().close()
 
 
-class TempGitHandler(GitHandlerBase):
+class BiocondaRepoHandler(GitHandler):
+    """Githandler with logic specific to Bioconda Repo"""
+
+    #: location of recipes folder within repo
+    recipes_folder = "recipes"
+
+    #: location of configuration file within repo
+    config_file = "config.yml"
+
+    def get_changed_recipes(self, ref=None, other=None, files=None):
+        """Returns list of modified recipes
+
+        Args:
+          ref: See `get_merge_base`. Defaults to HEAD
+          other: See `get_merge_base`. Defaults to origin/master
+          files: List of files to consider. Defaults to ``meta.yaml``
+                 and ``build.sh``
+        Result:
+          List of unique recipe folders with changes. Path is from repo
+          root (e.g. ``recipes/blast``). Recipes outside of
+          ``recipes_folder`` are ignored.
+        """
+        if files is None:
+            files = ['meta.yaml', 'build.sh']
+        changed = set()
+        for path in self.list_changed_files(ref, other):
+            if not path.startswith(self.recipes_folder):
+                continue  # skip things outside the recipes folder
+            for fname in files:
+                if os.path.basename(path) == fname:
+                    changed.add(os.path.dirname(path))
+        return list(changed)
+
+    def get_blacklisted(self, ref=None):
+        """Get blacklisted recipes as of **ref**
+
+        Args:
+          ref: Name of branch or commit (HEAD~1 is allowed), defaults to
+               currently checked out branch
+        Returns:
+          `set` of blacklisted recipes (full path to repo root)
+        """
+        if ref is None:
+            branch = self.repo.active_branch
+        elif isinstance(ref, str):
+            branch = self.get_local_branch(ref)
+        else:
+            branch = ref
+        config_data = self.read_from_branch(branch, self.config_file)
+        config = yaml.safe_load(config_data)
+        blacklists = config['blacklists']
+        blacklisted = set()
+        for blacklist in blacklists:
+            blacklist_data = self.read_from_branch(branch, blacklist)
+            for line in blacklist_data.splitlines():
+                if line.startswith("#") or not line.strip():
+                    continue
+                recipe_folder, _, _ = line.partition(" #")
+                blacklisted.add(recipe_folder.strip())
+        return blacklisted
+
+    def get_unblacklisted(self, ref=None, other=None):
+        """Get recipes unblacklisted by a merge of **ref** into **other**
+
+        Args:
+          ref: Branch or commit or reference, defaults to current branch
+          other: Same as **ref**, defaults to ``origin/master``
+
+        Returns:
+          `set` of unblacklisted recipes (full path to repo root)
+        """
+        merge_base = self.get_merge_base(ref, other)
+        orig_blacklist = self.get_blacklisted(merge_base)
+        cur_blacklist = self.get_blacklisted(ref)
+        return orig_blacklist.difference(cur_blacklist)
+
+    def get_recipes_to_build(self, ref=None, other=None):
+        """Returns `list` of recipes to build for merge of **ref** into **other**
+
+        This includes all recipes returned by `get_changed_recipes` and
+        all newly unblacklisted, extant recipes within `recipes_folder`
+
+        Returns:
+          `list` of recipes that should be built
+        """
+        tobuild = set(self.get_changed_recipes(ref, other))
+        tobuild.update([recipe
+                        for recipe in self.get_unblacklisted(ref, other)
+                        if recipe.startswith(self.recipes_folder)
+                        and os.path.exists(recipe)])
+        return list(tobuild)
+
+
+class TempGitHandler(BiocondaRepoHandler):
     """GitHandler for working with temporary working directories created on the fly
     """
     def __init__(self,
