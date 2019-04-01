@@ -35,8 +35,9 @@ async def webhook_dispatch(request):
         to_user = event.get('repository/owner/login')
         to_repo = event.get('repository/name')
         action = event.get('action', None)
+        action_msg = '/' + action if action else ''
         logger.info("Received GH Event '%s%s' (%s) for %s (%s/%s)",
-                    event.event, "/"+action if action else '',
+                    event.event, action_msg,
                     event.delivery_id,
                     installation, to_user, to_repo)
 
@@ -48,7 +49,7 @@ async def webhook_dispatch(request):
         # Dispatch the Event
         try:
             await event_routes.dispatch(event, ghapi)
-            logger.info("Event '%s' (%s) done", event.event, event.delivery_id)
+            logger.info("Event '%s%s' (%s) done", event.event, action_msg, event.delivery_id)
         except Exception:  # pylint: disable=broad-except
             logger.exception("Failed to dispatch %s", event.delivery_id)
         request.app['gh_rate_limit'] = ghapi.rate_limit

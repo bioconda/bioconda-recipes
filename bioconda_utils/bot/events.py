@@ -26,15 +26,16 @@ async def handle_comment_created(event, ghapi, *args, **_kwargs):
     This function watches for comments on issues. Lines starting with
     an @mention of the bot are considered commands and dispatched.
     """
+    issue_number = str(event.get('issue/number', "NA"))
     commands = [
         line.lower().split()[1:]
-        for line in event.data['comment']['body'].splitlines()
+        for line in event.get('comment/body', '').splitlines()
         if BOT_ALIAS_RE.match(line)
     ]
     if not commands:
-        logger.info("No command in comment")
+        logger.info("No command in comment on #%s", issue_number)
     for cmd, *args in commands:
-        logger.info("Dispatching %s - %s", cmd, args)
+        logger.info("Dispatching command from #%s: '%s' %s", issue_number, cmd, args)
         await command_routes.dispatch(cmd, event, ghapi, *args)
 
 
@@ -46,6 +47,7 @@ async def handle_check_suite(event, ghapi):
     if action not in ['requested', 'rerequested']:
         return
     head_sha = event.get("check_suite/head_sha")
+    logger.info("Schedulig create_check_run for %s", head_sha)
     create_check_run.apply_async((head_sha, ghapi))
 
 
