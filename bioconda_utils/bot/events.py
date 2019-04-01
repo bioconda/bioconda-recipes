@@ -47,8 +47,8 @@ async def handle_check_suite(event, ghapi):
     if action not in ['requested', 'rerequested']:
         return
     head_sha = event.get("check_suite/head_sha")
-    logger.info("Schedulig create_check_run for %s", head_sha)
     create_check_run.apply_async((head_sha, ghapi))
+    logger.info("Scheduled create_check_run for %s", head_sha)
 
 
 @event_routes.register("check_run")
@@ -61,9 +61,11 @@ async def handle_check_run(event, ghapi):
     action = event.get('action')
     if action == "rerequested":
         create_check_run.apply_async((head_sha, ghapi))
+        logger.info("Scheduled create_check_run for %s", head_sha)
     elif action == "created":
         check_run_number = event.get('check_run/id')
         lint_check.apply_async((check_run_number, head_sha, ghapi))
+        logger.info("Scheduled lint_check for %s %s", check_run_number, head_sha)
 
 
 @event_routes.register("pull_request", action="open")
@@ -71,6 +73,7 @@ async def handle_pull_request_open(event, ghapi):
     head_sha = event.get('pull_request/head/sha')
     await asyncio.sleep(5)
     create_check_run.s(head_sha, ghapi, recreate=False).apply_async()
+    logger.info("Scheduled create_check_run(recreate=False) for %s", head_sha)
 
 
 @event_routes.register("pull_request", action="reopen")

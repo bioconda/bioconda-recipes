@@ -83,7 +83,7 @@ class Checkout:
             branch.checkout()
 
             return self.git
-        except Exception as exc:
+        except Exception:
             logger.exception(f"Error while checking out with {self.ghapi}")
             return None
 
@@ -100,12 +100,16 @@ async def get_latest_pr_commit(issue_number: int, ghapi):
     commit = {'sha': None}
     async for commit in await ghapi.iter_pr_commits(issue_number):
         pass
+    logger.info("Latest SHA on #%s is %s", issue_number, commit['sha'])
     return commit['sha']
 
 
 @celery.task(acks_late=True)
-async def create_check_run(head_sha: str, ghapi, recreate=True,):
-    LINT_CHECK_NAME="Linting Recipe(s)"
+async def create_check_run(head_sha: str, ghapi, recreate=True):
+    if head_sha is None:
+        logger.info("Not creating check_run, SHA is None")
+        return
+    LINT_CHECK_NAME = "Linting Recipe(s)"
     if not recreate:
         for check_run in await ghapi.get_check_runs(head_sha):
             if check_run.get('name') == LINT_CHECK_NAME:
@@ -113,7 +117,7 @@ async def create_check_run(head_sha: str, ghapi, recreate=True,):
                                head_sha)
                 return
     check_run_number = await ghapi.create_check_run(LINT_CHECK_NAME, head_sha)
-    logger.warning("Created check run %s", check_run_number)
+    logger.warning("Created check run %s for %s", check_run_number, head_sha)
 
 
 @celery.task(acks_late=True)
