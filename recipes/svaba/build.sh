@@ -11,6 +11,8 @@ done
 export C_INCLUDE_PATH=$PREFIX/include
 export LIBRARY_PATH=$PREFIX/lib
 
+export CXXFLAGS="$CXXFLAGS -fPIC"
+
 ./configure CXXFLAGS=-fPIC --prefix=$PREFIX
 make
 make install
