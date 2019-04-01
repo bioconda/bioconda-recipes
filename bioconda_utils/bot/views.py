@@ -32,8 +32,8 @@ async def webhook_dispatch(request):
 
         # Log Event
         installation = event.get('installation/id')
-        to_user = event.get('repository/owner/login')
-        to_repo = event.get('repository/name')
+        to_user = event.get('repository/owner/login', None)
+        to_repo = event.get('repository/name', None)
         action = event.get('action', None)
         action_msg = '/' + action if action else ''
         logger.info("Received GH Event '%s%s' (%s) for %s (%s/%s)",
