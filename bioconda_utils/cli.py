@@ -79,49 +79,6 @@ def enable_threads():
     return decorator
 
 
-def select_recipes(packages, git_range, recipe_folder, config_filename, config, force):
-    if git_range:
-        modified = utils.modified_recipes(git_range, recipe_folder, config_filename)
-        if not modified:
-            logger.info('No recipe modified according to git, exiting.')
-            return []
-
-        # Recipes with changed `meta.yaml` or `build.sh` files
-        changed_recipes = [
-            os.path.dirname(f) for f in modified
-            if os.path.basename(f) in ['meta.yaml', 'build.sh'] and
-            os.path.exists(f)
-        ]
-        logger.info(
-            'Recipes to consider according to git: \n{}'.format('\n '.join(changed_recipes)))
-    else:
-        changed_recipes = []
-
-    blacklisted_recipes = utils.get_blacklist(config['blacklists'], recipe_folder)
-
-    selected_recipes = list(utils.get_recipes(recipe_folder, packages))
-    _recipes = []
-    for recipe in selected_recipes:
-        stripped = os.path.relpath(recipe, recipe_folder)
-        if stripped in blacklisted_recipes and recipe in changed_recipes:
-            logger.warning('%s is blacklisted but also has changed. Consider '
-                           'removing from blacklist if you want to build it', recipe)
-        if force:
-            _recipes.append(recipe)
-            logger.debug('forced: %s', recipe)
-            continue
-        if stripped in blacklisted_recipes:
-            logger.debug('blacklisted: %s', recipe)
-            continue
-        if git_range:
-            if recipe not in changed_recipes:
-                continue
-        _recipes.append(recipe)
-        logger.debug(recipe)
-
-    logger.info('Recipes to lint:\n{}'.format('\n '.join(_recipes)))
-    return _recipes
-
 # NOTE:
 #
 # A package is the name of the software package, like `bowtie`.
@@ -287,7 +244,8 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
     config_filename = config
     config = utils.load_config(config)
 
-    _recipes = select_recipes(packages, git_range, recipe_folder, config_filename, config, force)
+    _recipes = linting.select_recipes(packages, git_range, recipe_folder,
+                                      config_filename, config, force)
 
     lint_args = linting.LintArgs(exclude=exclude, registry=registry)
     report = linting.lint(_recipes, lint_args)
@@ -802,7 +760,8 @@ def autobump(recipe_folder, config, packages='*', cache=None,
                     always=exclude_subrecipes == "always")
     git_handler = None
     if check_branch or create_branch or create_pr or only_active:
-        git_handler = githandler.GitHandler(recipe_folder, dry_run)
+        git_handler = githandler.BiocondaRepo(recipe_folder, dry_run)
+        git_handler.checkout_master()
         if only_active:
             scanner.add(update.ExcludeNoActiveUpdate, git_handler)
         scanner.add(update.GitLoadRecipe, git_handler)

@@ -3,9 +3,11 @@ version: '3.7'
 volumes:
   rabbitmq-data:  # persists items in the queue
   traefik-certs:  # persists SSL certs to avoid re-issuing on restart
+  esdata:
 
 networks:
   backend:
+  logging:
 
 secrets:
   app_id:
@@ -101,6 +103,7 @@ services:
   ## Bioconda-Utils workers handling tasks scheduled from web app
   worker:
     <<: *app-common
+    hostname: worker
     command: >-
       celery worker
       -l info
@@ -108,13 +111,14 @@ services:
       --without-heartbeat
     deploy:
       mode: replicated
-      replicas: 2  # let's have 2 for now
+      replicas: 1  # let's have 2 for now
       resources:
         limits:
           memory: 700M
 
   ## Check services for updates to containers
   shepherd:
+    hostname: shepherd
     image: mazzolino/shepherd:0.3.0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -133,6 +137,7 @@ services:
   # We map this to /flower using traefik
   flower:
     image: mher/flower
+    hostname: flower
     command: >-
       flower
       --broker=amqp://mq:5672
@@ -160,6 +165,7 @@ services:
   #       to the right place.
   frontend:
     image: traefik
+    hostname: traefik
     command: >-
       --api
       --docker
@@ -179,6 +185,7 @@ services:
       --acme.email=info@pruesse.net
       --acme.storage=acme/certs.json
       --acme.acmelogging
+      --accessLog
     ports:
       - "80:80"
       - "443:443"
@@ -195,4 +202,5 @@ services:
       resources:
         limits:
           memory: 50M
+
 

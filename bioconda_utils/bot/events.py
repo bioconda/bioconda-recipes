@@ -4,11 +4,12 @@ Github Events
 
 import logging
 import re
+import asyncio
 
 import gidgethub.routing
 
 from .commands import command_routes
-from .tasks import lint_check, create_check_run
+from .tasks import lint_check, create_check_run, get_latest_pr_commit
 from .config import APP_ID
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
 
@@ -61,3 +62,20 @@ async def handle_check_run(event, ghapi):
     elif action == "created":
         check_run_number = event.get('check_run/id')
         lint_check.apply_async((check_run_number, head_sha, ghapi))
+
+
+@event_routes.register("pull_request", action="open")
+async def handle_pull_request_open(event, ghapi):
+    head_sha = event.get('pull_request/head/sha')
+    await asyncio.sleep(5)
+    create_check_run.s(head_sha, ghapi, recreate=False).apply_async()
+
+
+@event_routes.register("pull_request", action="reopen")
+async def handle_pull_request_reopen(event, ghapi):
+    return await handle_pull_request_open(event, ghapi)
+
+
+@event_routes.register("pull_request", action="synchronize")
+async def handle_pull_request_sync(event, ghapi):
+    return await handle_pull_request_open(event, ghapi)

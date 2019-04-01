@@ -12,7 +12,7 @@ from .worker import celery
 from .config import BOT_NAME, BOT_EMAIL
 from .. import utils
 from ..recipe import Recipe
-from ..githandler import TempGitHandler
+from ..githandler import TempBiocondaRepo
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
 
 if TYPE_CHECKING:
@@ -64,7 +64,7 @@ class Checkout:
                 branch_name = "unknown"
                 ref = self.ref
 
-            self.git = TempGitHandler(
+            self.git = TempBiocondaRepo(
                 password=self.ghapi.token,
                 home_user=self.ghapi.user,
                 home_repo=self.ghapi.repo,
@@ -79,7 +79,7 @@ class Checkout:
 
             branch = self.git.create_local_branch(branch_name, ref)
             if not branch:
-                raise RuntimeError(f"Failed to checkout branch {branch_name} from {self.git}")
+                raise RuntimeError(f"Failed to find {branch_name}:{ref} in {self.git}")
             branch.checkout()
 
             return self.git
@@ -104,9 +104,15 @@ async def get_latest_pr_commit(issue_number: int, ghapi):
 
 
 @celery.task(acks_late=True)
-async def create_check_run(head_sha: str, ghapi):
-    logger.error("create_check_run: %s %s", head_sha, ghapi)
-    check_run_number = await ghapi.create_check_run("Linting Recipe(s)", head_sha)
+async def create_check_run(head_sha: str, ghapi, recreate=True,):
+    LINT_CHECK_NAME="Linting Recipe(s)"
+    if not recreate:
+        for check_run in await ghapi.get_check_runs(head_sha):
+            if check_run.get('name') == LINT_CHECK_NAME:
+                logger.warning("Check run for %s exists - not recreating",
+                               head_sha)
+                return
+    check_run_number = await ghapi.create_check_run(LINT_CHECK_NAME, head_sha)
     logger.warning("Created check run %s", check_run_number)
 
 
@@ -149,7 +155,7 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
             )
             return
 
-        recipes = git.get_changed_recipes()
+        recipes = git.get_recipes_to_build()
         if not recipes:
             await ghapi.modify_check_run(
                 check_run_number,
@@ -167,15 +173,19 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
         from bioconda_utils.linting import lint as _lint, LintArgs, markdown_report
         df = _lint(recipes, LintArgs())
 
+    summary = "Linted recipes:\n"
+    for recipe in recipes:
+        summary += " - `{}`\n".format(recipe)
+    summary += "\n"
     annotations = []
     if df is None:
         conclusion = CheckRunConclusion.success
         title = "All recipes in good condition"
-        summary = "No problems found"
+        summary += "No problems found."
     else:
         conclusion = CheckRunConclusion.failure
         title = "Some recipes had problems"
-        summary = "Please fix the listed issues"
+        summary += "Please fix the issues listed below."
 
         for _, row in df.iterrows():
             check = row['check']

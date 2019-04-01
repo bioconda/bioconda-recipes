@@ -1009,20 +1009,7 @@ def modified_recipes(git_range, recipe_folder, config_file):
         ]
     )
 
-    # In versions >2 git expands globs. But if it's older than that we need to
-    # run the command using shell=True to get the shell to expand globs.
-    shell = False
-    p = run(['git', '--version'])
-    matches = re.match(r'^git version (?P<version>[\d\.]*)(?:.*)$', p.stdout)
-    git_version = matches.group("version")
-    if git_version < LooseVersion('2'):
-        logger.warn(
-            'git version (%s) is < 2.0. Running git diff using shell=True. '
-            'Please consider upgrading git', git_version)
-        cmds = ' '.join(cmds)
-        shell = True
-
-    p = run(cmds, shell=shell)
+    p = run(cmds, shell=False)
 
     modified = [
         os.path.join(recipe_folder, m)

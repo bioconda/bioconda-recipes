@@ -55,6 +55,7 @@ class GitHubHandler:
     COMMENTS = "/repos/{user}/{repo}/issues/{number}/comments"
     ORG_MEMBERS = "/orgs/{user}/members{/username}"
     CHECK_RUN = "/repos/{user}/{repo}/check-runs{/id}"
+    GET_CHECK_RUNS = "/repos/{user}/{repo}/commits/{commit}/check-runs"
 
     STATE = IssueState
 
@@ -314,6 +315,13 @@ class GitHubHandler:
                 data['output']['annotations']=output_annotations
         accept = "application/vnd.github.antiope-preview+json"
         return await self.api.patch(self.CHECK_RUN, var_data, data=data, accept=accept)
+
+    async def get_check_runs(self, sha: str):
+        var_data = copy(self.var_default)
+        var_data['commit'] = sha
+        accept = "application/vnd.github.antiope-preview+json"
+        res = await self.api.getitem(self.GET_CHECK_RUNS, var_data, accept=accept)
+        return res['check_runs']
 
 
 class AiohttpGitHubHandler(GitHubHandler):
