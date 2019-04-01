@@ -107,7 +107,7 @@ def already_in_bioconda(recipe, _meta):
     """
     Does the package exist in bioconda?
     """
-    if utils.check_skippable(recipe.dir, ['bioconda']):
+    if utils.check_recipe_skippable(recipe.dir, ['bioconda']):
         return {
             'already_in_bioconda': True,
             'fix': 'bump version or build number'
