@@ -103,18 +103,11 @@ def in_other_channels(_recipe, meta):
 
 
 @lint_multiple_metas
-def already_in_bioconda(_recipe, meta):
+def already_in_bioconda(recipe, _meta):
     """
     Does the package exist in bioconda?
     """
-    channels = utils.RepoData().get_package_data(
-        key="channel",
-        name=meta.get_value("package/name"),
-        version=meta.get_value("package/version"),
-        build_number=meta.get_value("build/number", 0)
-    )
-
-    if 'bioconda' in channels:
+    if utils.check_skippable(recipe.dir, ['bioconda']):
         return {
             'already_in_bioconda': True,
             'fix': 'bump version or build number'
@@ -392,9 +385,7 @@ def compilers_must_be_in_build(_recipe, meta):
 
 registry = (
     in_other_channels,
-
-    # disabling for now until we get better per-OS version detection
-    # already_in_bioconda,
+    already_in_bioconda,
     missing_tests,
     missing_home,
     missing_license,

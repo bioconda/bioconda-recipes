@@ -83,12 +83,13 @@ a bioconda-specific patch is required. However it is almost always better to
 fix or update the recipe in the other channel. Note that the package in the
 bioconda channel will remain in order to maintain reproducibility.
 
-`already_in_bioconda` (currently disabled)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`already_in_bioconda`
+~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: The current package version, build, and platform
 (linux/osx) already exists in the bioconda channel.
 
-Rationale: This acts as an early warning to bump version or build numbers.
+Rationale: This change does not trigger the build of any packages, leading
+to a mismatch between the recipe and our package archive.
 
 How to resolve: Increase the version number or `build number
 <https://conda.io/docs/building/meta-yaml.html#build-number-and-string>`_ as
