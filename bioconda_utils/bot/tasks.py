@@ -208,13 +208,3 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
         output_summary=summary,
         output_text=markdown_report(df),
         output_annotations=annotations)
-
-
-@celery.task(acks_late=True)
-def sleep(seconds, msg):
-    """Demo task that just sleeps for a given number of seconds"""
-    logger.info("Sleeping for %i seconds: %s", seconds, msg)
-    for second in range(seconds):
-        time.sleep(1)
-        logger.info("Slept for %i seconds: %s", second, msg)
-    logger.info("Waking: %s", msg)

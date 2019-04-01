@@ -50,12 +50,6 @@ async def command_hello(event, ghapi):
     return True
 
 
-@command_routes.register("sleep")
-async def command_sleep(_event, _ghapi, *args):
-    """Another demo command. This one triggers the sleep task via celery"""
-    sleep.apply_async((20, args[0]))
-
-
 @command_routes.register("bump")
 async def command_bump(event, ghapi, *_args):
     """Bump the build number of a recipe    """
