@@ -108,10 +108,11 @@ def already_in_bioconda(recipe, _meta):
     Does the package exist in bioconda?
     """
     if utils.check_recipe_skippable(recipe.dir, ['bioconda']):
-        return {
+        data = {
             'already_in_bioconda': True,
             'fix': 'bump version or build number'
         }
+        return _mark_lines(data, recipe, 'build/number')
 
 
 @lint_multiple_metas
