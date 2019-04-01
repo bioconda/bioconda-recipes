@@ -9,9 +9,9 @@ import asyncio
 import gidgethub.routing
 
 from .commands import command_routes
-from .tasks import lint_check, create_check_run, get_latest_pr_commit
+from .tasks import lint_check, create_check_run
 from .config import APP_ID
-from ..githubhandler import CheckRunStatus, CheckRunConclusion
+
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 event_routes = gidgethub.routing.Router()  # pylint: disable=invalid-name

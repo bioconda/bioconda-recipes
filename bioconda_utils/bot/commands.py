@@ -3,9 +3,9 @@ Bot commands issued via issue/pull-request comments
 """
 
 import logging
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict
 
-from .tasks import bump, create_check_run, get_latest_pr_commit, sleep
+from .tasks import bump, create_check_run, get_latest_pr_commit
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
