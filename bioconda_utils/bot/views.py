@@ -81,7 +81,7 @@ async def show_status(request):
         """
         worker_status = celery.control.inspect(timeout=0.1)
         if not worker_status:
-            text += """
+            msg += """
             no workers online
             """
         else:
