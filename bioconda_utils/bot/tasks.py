@@ -173,6 +173,7 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
             )
             return
 
+        # Here we call the actual linter code
         utils.load_config('config.yml')
         from bioconda_utils.linting import lint as _lint, LintArgs, markdown_report
         df = _lint(recipes, LintArgs())
