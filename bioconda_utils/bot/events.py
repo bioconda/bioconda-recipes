@@ -57,8 +57,12 @@ async def handle_check_run(event, ghapi):
     action = event.get('action')
     app_owner = event.get("check_run/check_suite/app/owner/login", None)
     head_sha = event.get("check_run/head_sha")
+    event_repo = event.get("repository/id")
     if action == "completed" and app_owner == "circleci":
         for pr in event.get("check_run/check_suite/pull_requests", []):
+            if pr["base"]["repo"]["id"] != event_repo:
+                # PR away from us, not to us
+                continue
             pr_number = pr["number"]
             check_circle_artifacts.s(pr_number, ghapi).apply_async()
             logger.info("Scheduled check_circle_artifacts on #%s", pr_number)
