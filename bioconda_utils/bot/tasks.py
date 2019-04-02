@@ -218,7 +218,7 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
 
 @celery.task(acks_late=True)
 async def check_circle_artifacts(pr_number: int, ghapi):
-    logger.error("#%s on %s", pr_number, ghapi)
+    logger.error("Starting check for artifacts on #%s as of %s", pr_number, ghapi)
     pr = await ghapi.get_prs(number=pr_number)
     head_ref = pr['head']['ref']
     head_sha = pr['head']['sha']
@@ -245,14 +245,12 @@ async def check_circle_artifacts(pr_number: int, ghapi):
     packages = []
     archs = {}
     for artifact in artifacts:
-        if artifact.endswith("repodata.json"):
-            logger.error("Got location: %s", artifact)
         if artifact.endswith(".tar.bz2"):
             base, _, fname = artifact.rpartition("/")
             repo, _, arch = base.rpartition("/")
             if base + "/repodata.json" in artifacts:
                 if repo not in archs:
-                    archs[repo]=set()
+                    archs[repo] = set()
                 archs[repo].add(arch)
                 packages.append((arch, fname, artifact,
                                  "[repodata.json]({}/repodata.json)".format(base)))

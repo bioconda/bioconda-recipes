@@ -76,19 +76,13 @@ async def handle_check_run(event, ghapi):
         logger.info("Scheduled lint_check for %s %s", check_run_number, head_sha)
 
 
-@event_routes.register("pull_request", action="open")
-async def handle_pull_request_open(event, ghapi):
+@event_routes.register("pull_request")
+async def handle_pull_request(event, ghapi):
+    action = event.get('action')
+    pr_number = event.get('number')
     head_sha = event.get('pull_request/head/sha')
-    await asyncio.sleep(5)
-    create_check_run.s(head_sha, ghapi, recreate=False).apply_async()
-    logger.info("Scheduled create_check_run(recreate=False) for %s", head_sha)
-
-
-@event_routes.register("pull_request", action="reopen")
-async def handle_pull_request_reopen(event, ghapi):
-    return await handle_pull_request_open(event, ghapi)
-
-
-@event_routes.register("pull_request", action="synchronize")
-async def handle_pull_request_sync(event, ghapi):
-    return await handle_pull_request_open(event, ghapi)
+    logger.info("Handling pull_request/%s #%s (%s)", action, pr_number, head_sha)
+    if 'action' in ('open', 'reopen', 'synchronize'):
+        await asyncio.sleep(5)
+        create_check_run.s(head_sha, ghapi, recreate=False).apply_async()
+        logger.info("Scheduled create_check_run(recreate=False) for %s", head_sha)
