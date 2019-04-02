@@ -1,25 +1,30 @@
-{% set version = "0.1" %}
+{% set name = "taxsbp" %}
+{% set version = "0.1.1" %}
 
 package:
-  name: taxsbp
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  - url: https://github.com/pirovc/taxsbp/archive/V{{ version }}.tar.gz
-    md5: ec962ac77a6409b01cd983460d6562e8
-  - url: https://files.pythonhosted.org/packages/c9/fe/56782753922a195d332d419949f889c1d59cab7b1780db2351bd8b99501c/binpacking-1.3.tar.gz
-    sha256: e8e04302b8e421cd202aed1c76e004d617c71031379db14b4118ffa8c9e39c25
+  url: https://github.com/pirovc/{{ name }}/archive/{{ name }}_v{{ version }}.tar.gz
+  sha256: f2a220c9d3c404abac9ad4063a8bc1db88abaf997c07e6d623aa668d885c97fc
 
 build:
   number: 0
+  script: "$PYTHON setup.py install --single-version-externally-managed --record=record.txt"
+  entry_points:
+    - taxsbp = taxsbp.TaxSBP:main
 
 requirements:
   run:
     - python # [py>=35]
- 
+    - binpacking >=1.3
+
 test:
+  imports:
+    - taxsbp
   commands:
-    - echo "ok"
+    - taxsbp --help
 
 about:
   home: https://github.com/pirovc/taxsbp
