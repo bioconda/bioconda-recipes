@@ -78,11 +78,22 @@ async def handle_check_run(event, ghapi):
 
 @event_routes.register("pull_request")
 async def handle_pull_request(event, ghapi):
+    """
+
+    pull_request can have the following actions:
+    - assigned / unassigned
+    - review_requested / review_request_removed
+    - labeled / unlabeled
+    - opened / closed / reopened
+    - edited
+    - ready_for_review
+    - synchronize
+    """
     action = event.get('action')
     pr_number = event.get('number')
     head_sha = event.get('pull_request/head/sha')
     logger.info("Handling pull_request/%s #%s (%s)", action, pr_number, head_sha)
-    if 'action' in ('open', 'reopen', 'synchronize'):
+    if 'action' in ('opened', 'reopened', 'synchronize'):
         await asyncio.sleep(5)
         create_check_run.s(head_sha, ghapi, recreate=False).apply_async()
         logger.info("Scheduled create_check_run(recreate=False) for %s", head_sha)
