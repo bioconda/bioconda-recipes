@@ -18,3 +18,5 @@ sed -i 's|CFLAGS   =|CFLAGS=-fPIC|g' SeqLib/htslib/Makefile
 ./configure CXXFLAGS=-fPIC --prefix=$PREFIX
 make
 make install
+
+mv src/svaba/svaba $PREFIX/bin
