@@ -30,5 +30,5 @@ pwd -P
 
 echo ""
 
-echo "Contents of src:"
-find src/
+echo "Contents of working directory:"
+find .
