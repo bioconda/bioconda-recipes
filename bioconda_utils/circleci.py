@@ -1,4 +1,5 @@
 import abc
+import logging
 from typing import Any, Mapping, Optional, Tuple
 import uritemplate
 import urllib
@@ -6,6 +7,8 @@ import json
 
 import aiohttp
 
+
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 class CircleAPI(abc.ABC):
     CIRCLE_API = "https://circleci.com/api/v1.1"
@@ -57,13 +60,15 @@ class CircleAPI(abc.ABC):
         headers['content-length'] = str(len(body))
         status, headers, response = await self._request(method, url, headers, body)
         if status == 404:
-            return False
+            logger.error("Got 404 for %s", url)
+            return []
         if response:
             return json.loads(response.decode(charset))
         return response.decode(charset)
 
     async def list_artifacts(self, build_number: int):
-        var_data = self.var_data.update({'build_num': build_number})
+        var_data = self.var_data
+        var_data['build_num'] = build_number
         res = await self._make_request('GET', self.LIST_ARTIFACTS, var_data)
         return [item['url'] for item in res]
 
