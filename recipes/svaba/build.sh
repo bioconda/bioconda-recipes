@@ -11,6 +11,7 @@ done
 export C_INCLUDE_PATH=$PREFIX/include
 export LIBRARY_PATH=$PREFIX/lib
 
+sed -i 's|CFLAGS=|CFLAGS=-fPIC|g' SeqLib/bwa/Makefile
 sed -i 's|CFLAGS=|CFLAGS=-fPIC|g' SeqLib/fermi-lite/Makefile
 sed -i 's|CFLAGS   =|CFLAGS=-fPIC|g' SeqLib/htslib/Makefile
 
