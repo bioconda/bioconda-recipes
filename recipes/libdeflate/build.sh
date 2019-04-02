@@ -4,10 +4,12 @@ export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
 if [ `uname` == Darwin ]; then
-  sed -i.bak s/-soname=.*$/-install_name=libdeflate.dylib/ Makefile
+  sed -i.bak -e 's/.so.$(SOVERSION)/.$(SOVERSION).dylib' \
+    -e 's/-Wl,-soname=libdeflate$(SHARED_LIB_SUFFIX)/-install_name libdeflate$(SHARED_LIB_SUFFIX)/' \
+    Makefile
 fi
 
-make
+make V=1
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 mkdir -p $PREFIX/include
