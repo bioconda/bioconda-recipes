@@ -19,4 +19,16 @@ sed -i 's|CFLAGS   =|CFLAGS=-fPIC|g' SeqLib/htslib/Makefile
 make
 make install
 
-mv src/svaba/svaba $PREFIX/bin
+echo "#################"
+echo "### DEBUGGING ###"
+echo "#################"
+
+echo ""
+
+echo "Current working directory:"
+pwd -P
+
+echo ""
+
+echo "Contents of src:"
+find src/
