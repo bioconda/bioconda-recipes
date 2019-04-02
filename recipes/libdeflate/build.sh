@@ -3,6 +3,10 @@
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
+if [ `uname` == Darwin ]; then
+  sed -i.bak s/-soname=/-install_name=/ Makefile
+fi
+
 make
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
