@@ -9,7 +9,7 @@ import asyncio
 import gidgethub.routing
 
 from .commands import command_routes
-from .tasks import lint_check, create_check_run
+from .tasks import lint_check, create_check_run, check_circle_artifacts
 from .config import APP_ID
 
 
@@ -54,11 +54,19 @@ async def handle_check_suite(event, ghapi):
 @event_routes.register("check_run")
 async def handle_check_run(event, ghapi):
     """Handle check run event"""
+    action = event.get('action')
+    app_owner = event.get("check_run/check_suite/app/owner/login", None)
+    head_sha = event.get("check_run/head_sha")
+    if action == "completed" and app_owner == "circleci":
+        for pr in event.get("check_run/check_suite/pull_requests", []):
+            pr_number = pr["number"]
+            check_circle_artifacts.s(pr_number, ghapi).apply_async()
+            logger.info("Scheduled check_circle_artifacts on #%s", pr_number)
+
     # Ignore check runs coming from other apps
     if event.get("check_run/app/id") != int(APP_ID):
         return
-    head_sha = event.get("check_run/head_sha")
-    action = event.get('action')
+
     if action == "rerequested":
         create_check_run.apply_async((head_sha, ghapi))
         logger.info("Scheduled create_check_run for %s", head_sha)

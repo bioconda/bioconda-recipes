@@ -14,6 +14,7 @@ from .. import utils
 from ..recipe import Recipe
 from ..githandler import TempBiocondaRepo
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
+from ..circleci import AsyncCircleAPI
 
 if TYPE_CHECKING:
     from .worker import AsyncTask
@@ -213,3 +214,77 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
         output_summary=summary,
         output_text=markdown_report(df),
         output_annotations=annotations)
+
+
+@celery.task(acks_late=True)
+async def check_circle_artifacts(pr_number: int, ghapi):
+    logger.error("#%s on %s", pr_number, ghapi)
+    pr = await ghapi.get_prs(number=pr_number)
+    head_ref = pr['head']['ref']
+    head_sha = pr['head']['sha']
+    head_repo = pr['head']['repo']['name']
+
+    capi = AsyncCircleAPI(ghapi.session)
+    if head_repo == "bioconda-recipes":
+        path = head_ref
+    else:
+        path = "pull/{}".format(pr_number)
+
+    recent_builds = await capi.list_recent_builds(path)
+
+    current_builds = [
+        build["build_num"]
+        for build in recent_builds
+        if build["vcs_revision"] == head_sha
+    ]
+
+    artifacts = []
+    for buildno in current_builds:
+        artifacts.extend(await capi.list_artifacts(buildno))
+
+    packages = []
+    archs = {}
+    for artifact in artifacts:
+        if artifact.endswith("repodata.json"):
+            logger.error("Got location: %s", artifact)
+        if artifact.endswith(".tar.bz2"):
+            base, _, fname = artifact.rpartition("/")
+            repo, _, arch = base.rpartition("/")
+            if base + "/repodata.json" in artifacts:
+                if repo not in archs:
+                    archs[repo]=set()
+                archs[repo].add(arch)
+                packages.append((arch, fname, artifact,
+                                 "[repodata.json]({}/repodata.json)".format(base)))
+            else:
+                packages.append((arch, fname, artifact, ""))
+
+    table = ("Arch | Package | Repodata\n"
+             "-|-|-\n" +
+             "\n".join(["{} | [{}]({}) | {}".format(*p) for p in packages])
+             )
+
+    commands = "\n".join([
+        " - For packages in {}:\n   ```\n   conda install -c {} <package name>\n   ```"
+        "".format(' and '.join(p[1]), p[0])
+        for p in archs.items()
+    ])
+
+    msg = f"""
+Packages built on CircleCI are ready for inspection:
+
+{table}
+
+You may also use `conda` to install these:
+
+{commands}
+"""
+
+    msg_head, _ , _ = msg.partition("\n")
+    async for comment in await ghapi.iter_comments(pr_number):
+        if comment['body'].startswith(msg_head):
+            logger.error(comment)
+            await ghapi.update_comment(comment["id"], msg)
+            break
+    else:
+        await ghapi.create_comment(pr_number, msg)
