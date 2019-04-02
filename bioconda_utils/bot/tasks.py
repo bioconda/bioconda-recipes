@@ -257,28 +257,9 @@ async def check_circle_artifacts(pr_number: int, ghapi):
             else:
                 packages.append((arch, fname, artifact, ""))
 
-    table = ("Arch | Package | Repodata\n"
-             "-|-|-\n" +
-             "\n".join(["{} | [{}]({}) | {}".format(*p) for p in packages])
-             )
-
-    commands = "\n".join([
-        " - For packages in {}:\n   ```\n   conda install -c {} <package name>\n   ```"
-        "".format(' and '.join(p[1]), p[0])
-        for p in archs.items()
-    ])
-
-    msg = f"""
-Packages built on CircleCI are ready for inspection:
-
-{table}
-
-You may also use `conda` to install these:
-
-{commands}
-"""
-
-    msg_head, _ , _ = msg.partition("\n")
+    tpl = utils.jinja.get_template("artifacts.md")
+    msg = tpl.render(packages=packages, archs=args)
+    msg_head, _, _ = msg.partition("\n")
     async for comment in await ghapi.iter_comments(pr_number):
         if comment['body'].startswith(msg_head):
             logger.error(comment)
