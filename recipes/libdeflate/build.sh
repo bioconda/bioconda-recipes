@@ -4,7 +4,7 @@ export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
 if [ `uname` == Darwin ]; then
-  sed -i.bak s/-soname=/-install_name=/ Makefile
+  sed -i.bak s/-soname=.*$/-install_name=libdeflate.dylib/ Makefile
 fi
 
 make
