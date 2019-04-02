@@ -1,3 +1,4 @@
+<!-- BiocondaBot Artifacts Message (this line used to identify post) -->
 {% if packages %}
 Packages built on CircleCI are ready for inspection:
 
