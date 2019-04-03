@@ -11,6 +11,9 @@ wget https://sourceforge.net/projects/osra/files/openbabel-patched/openbabel-2.3
 tar -xzf openbabel-2.3.2-patched.tgz
 grep -rl 'set(libs ${libs} c)' openbabel-2.3.2-patched | xargs sed -i 's/set(libs ${libs} c)/set(libs ${libs} c m)/g'
 cd openbabel-2.3.2-patched
+
+sed -i.bak 's|boost/tr1/|boost/|g' include/openbabel/obmolecformat.h
+
 mkdir build && cd build
 cmake -DBUILD_GUI=OFF -DCMAKE_INSTALL_PREFIX=$PREFIX -DPYTHON_BINDINGS=ON -DMINIMAL_BUILD=ON ../
 make -j2
