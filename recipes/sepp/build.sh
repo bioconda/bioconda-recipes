@@ -16,9 +16,9 @@ patch $PREFIX/share/sepp/.sepp/main.config < relocate.main.config.patch
 
 python setup.py install --prefix=${PREFIX}
 
-# copy bundled binaries into $PREFIX/bin/
+# copy bundled binaries, but hmmer which should be provided by conda, into $PREFIX/bin/
 mkdir -p $PREFIX/bin/
-cp `cat $SRC_DIR/.sepp/main.config | grep "^path" -m 1 | cut -d "=" -f 2 | xargs dirname`/* $PREFIX/bin/
+cp `cat $SRC_DIR/.sepp/main.config | grep "^path" -m 1 | grep -v "hmm" | cut -d "=" -f 2 | xargs dirname`/* $PREFIX/bin/
 
 # configure run-sepp.sh for qiime2 fragment-insertion
 mv -v sepp-package/run-sepp.sh $PREFIX/bin/run-sepp.sh
