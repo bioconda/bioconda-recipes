@@ -5,7 +5,7 @@ outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 mkdir -p $PREFIX/bin
 cp -R * $outdir/
-cp $RECIPE_DIR/PepGenome.py $outdir/PepGenome
+cp $RECIPE_DIR/pepgenome.py $outdir/pepgenome
 ls -l $outdir
-ln -s $outdir/PepGenome $PREFIX/bin
-chmod 0755 "${PREFIX}/bin/PepGenome"
+ln -s $outdir/pepgenome $PREFIX/bin
+chmod 0755 "${PREFIX}/bin/pepgenome"
