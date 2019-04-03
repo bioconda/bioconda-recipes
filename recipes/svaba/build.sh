@@ -29,6 +29,7 @@ echo "Current working directory:"
 pwd -P
 
 echo ""
+echo ""
 
 echo "Contents of working directory:"
 find .
