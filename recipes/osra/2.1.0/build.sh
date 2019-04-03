@@ -15,7 +15,6 @@ cd openbabel-2.3.2-patched
 sed -i.bak 's|boost/tr1/|boost/|g' include/openbabel/obmolecformat.h
 sed -i.bak 's|std::tr1|std::|g' include/openbabel/obmolecformat.h
 
-
 mkdir build && cd build
 cmake -DBUILD_GUI=OFF -DCMAKE_INSTALL_PREFIX=$PREFIX -DPYTHON_BINDINGS=ON -DMINIMAL_BUILD=ON ../
 make -j2
