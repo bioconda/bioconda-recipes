@@ -218,7 +218,7 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
 
 @celery.task(acks_late=True)
 async def check_circle_artifacts(pr_number: int, ghapi):
-    logger.error("Starting check for artifacts on #%s as of %s", pr_number, ghapi)
+    logger.info("Starting check for artifacts on #%s as of %s", pr_number, ghapi)
     pr = await ghapi.get_prs(number=pr_number)
     head_ref = pr['head']['ref']
     head_sha = pr['head']['sha']
@@ -262,7 +262,6 @@ async def check_circle_artifacts(pr_number: int, ghapi):
     msg_head, _, _ = msg.partition("\n")
     async for comment in await ghapi.iter_comments(pr_number):
         if comment['body'].startswith(msg_head):
-            logger.error(comment)
             await ghapi.update_comment(comment["id"], msg)
             break
     else:
