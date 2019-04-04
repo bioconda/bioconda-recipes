@@ -203,7 +203,7 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
                 'end_line': info.get('end_line', 1),
                 'annotation_level': 'failure',
                 'title': check,
-                'message': info['fix']
+                'message': info.get('fix') or str(info)
             })
 
     await ghapi.modify_check_run(

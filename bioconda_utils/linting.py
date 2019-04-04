@@ -191,7 +191,7 @@ def lint(recipes: List[str], lint_args, basedir="recipes"):
         try:
             recipe_obj = Recipe.from_file(basedir, recipe)
         except RecipeError as exc:
-            result = {'load_recipe':  str(exc)}
+            result = {'load_recipe':  str(exc), 'fix': str(exc)}
             line = getattr(exc, 'line', None)
             if line is not None:
                 result['start_line'] = result['end_line'] = line
@@ -221,7 +221,7 @@ def lint(recipes: List[str], lint_args, basedir="recipes"):
                 'recipe': recipe,
                 'check': 'parse_error',
                 'severity': 'ERROR',
-                'info': {'parse_error': str(exc)}
+                'info': {'parse_error': str(exc), 'fix': str(exc)}
             })
             continue
 
