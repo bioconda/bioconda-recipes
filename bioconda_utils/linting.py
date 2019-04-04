@@ -10,7 +10,7 @@ import ruamel_yaml as yaml
 
 from . import utils
 from . import lint_functions
-from .recipe import Recipe
+from .recipe import Recipe, RecipeError
 
 import logging
 logger = logging.getLogger(__name__)
@@ -188,7 +188,16 @@ def lint(recipes: List[str], lint_args, basedir="recipes"):
     for recipe in sorted(recipes):
         logger.debug("Linting: %s", recipe)
 
-        recipe_obj = Recipe.from_file(basedir, recipe)
+        try:
+            recipe_obj = Recipe.from_file(basedir, recipe)
+        except RecipeError as exc:
+            hits.append({
+                'recipe': recipe,
+                'check': 'load_recipe',
+                'severity': 'ERROR',
+                'info': {'load_recipe':  str(exc)}
+            })
+            continue
 
         # Since lint functions need a parsed meta.yaml, checking for parsing
         # errors can't be a lint function.
@@ -202,14 +211,14 @@ def lint(recipes: List[str], lint_args, basedir="recipes"):
                 config = utils.load_conda_build_config(platform=platform, trim_skip=False)
                 metas.extend(utils.load_all_meta(recipe, config=config, finalize=False))
         except (
-            yaml.scanner.ScannerError, yaml.constructor.ConstructorError
-        ) as e:
-            result = {'parse_error': str(e)}
-            hits.append(
-                {'recipe': recipe,
-                 'check': 'parse_error',
-                 'severity': 'ERROR',
-                 'info': result})
+                yaml.scanner.ScannerError, yaml.constructor.ConstructorError, SystemExit
+        ) as exc:
+            hits.append({
+                'recipe': recipe,
+                'check': 'parse_error',
+                'severity': 'ERROR',
+                'info': {'parse_error': str(exc)}
+            })
             continue
 
         # skips defined in commit message

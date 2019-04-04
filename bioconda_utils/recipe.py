@@ -75,6 +75,14 @@ class HasSelector(RecipeError):
     template = "has selector in line %i (replace failed)"
 
 
+class MissingMetaYaml(RecipeError):
+    """Raised when FileNotFoundError is encountered
+
+    self.item is NOT a Recipe but a str here
+    """
+    template = "has missing file `meta.yaml`"
+
+
 class Recipe():
     """Represents a recipe (meta.yaml) in editable form
 
@@ -179,10 +187,15 @@ class Recipe():
         with open(os.path.join(recipe_fname, 'meta.yaml')) as text:
             try:
                 recipe.load_from_string(text.read())
+            except FileNotFoundError:
+                exc = MissingMetaYaml(recipe_fname)
+                if return_exceptions:
+                    return exc
+                raise exc
             except Exception as exc:
                 if return_exceptions:
                     return exc
-                raise
+                raise exc
         return recipe
 
     def save(self):
