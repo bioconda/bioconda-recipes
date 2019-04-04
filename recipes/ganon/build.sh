@@ -33,5 +33,5 @@ make
 ctest -VV .
 
 mkdir -p ${PREFIX}/bin
-cp ${SRC_DIR}/ganon ${SRC_DIR}/build/ganon-build ${SRC_DIR}/build/ganon-classify ${PREFIX}/bin/
+cp ${SRC_DIR}/ganon ${SRC_DIR}/build/ganon-build ${SRC_DIR}/build/ganon-classify ${SRC_DIR}/scripts/ganon-get-len-taxid.sh ${PREFIX}/bin/
 
