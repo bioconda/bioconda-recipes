@@ -38,8 +38,8 @@ grep "src/svaba/svaba" Makefile.in
 
 echo ""
 
-sed -i 's|mkdir -p bin && mv src/svaba/svaba bin|mv bin/svaba $PREFIX/bin|g' Makefile.am
-sed -i 's|mkdir -p bin && mv src/svaba/svaba bin|mv bin/svaba $PREFIX/bin|g' Makefile.in
+sed -i 's|mkdir -p bin && mv src/svaba/svaba bin||g' Makefile.am
+sed -i 's|mkdir -p bin && mv src/svaba/svaba bin||g' Makefile.in
 
 echo "Moving in Makefiles after sed"
 
