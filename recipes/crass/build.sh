@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# This is needed to pick up the zlib libraries for some reason
-export LDFLAGS=-L${CONDA_PREFIX}/lib
 ./autogen.sh
-./configure --prefix=${PREFIX} --with-xerces=${CONDA_PREFIX}
+./configure --prefix=${PREFIX} --with-xerces=${PREFIX} CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS"
 make
 make install
