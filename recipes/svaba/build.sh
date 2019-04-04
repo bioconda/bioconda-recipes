@@ -56,6 +56,6 @@ echo "#######################"
 
 echo ""
 
-find . -name svaba | grep bin
+find .
 
 echo "#######################"
