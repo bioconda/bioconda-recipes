@@ -76,7 +76,7 @@ async def command_lint(event, ghapi, *args):
 async def command_recheck(event, ghapi, *args):
     issue_number = int(event.get("issue/number"))
     # queue check for artifacts
-    check_circle_artifacts.s(issue_number).apply_async()
+    check_circle_artifacts.s(issue_number, ghapi).apply_async()
     logger.info("Scheduled 'check_circle_artifacts' for #%s", issue_number)
     # queue lint check
     (
