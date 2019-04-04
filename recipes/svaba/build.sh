@@ -15,6 +15,9 @@ sed -i 's|CFLAGS=|CFLAGS=-fPIC|g' SeqLib/bwa/Makefile
 sed -i 's|CFLAGS=|CFLAGS=-fPIC|g' SeqLib/fermi-lite/Makefile
 sed -i 's|CFLAGS   =|CFLAGS=-fPIC|g' SeqLib/htslib/Makefile
 
+sed -i 's|mkdir -p bin && mv src/svaba/svaba bin|mv bin/svaba $PREFIX/bin|g' Makefile.am
+sed -i 's|mkdir -p bin && mv src/svaba/svaba bin|mv bin/svaba $PREFIX/bin|g' Makefile.in
+
 ./configure CXXFLAGS=-fPIC --prefix=$PREFIX
 make
 make install
