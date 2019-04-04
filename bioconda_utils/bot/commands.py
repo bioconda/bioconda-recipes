@@ -70,3 +70,18 @@ async def command_lint(event, ghapi, *args):
     logger.info("Scheduled 'create_check_run' for latest commit in #%s",
                 issue_number)
     return True
+
+
+@command_routes.register("recheck")
+async def command_recheck(event, ghapi, *args):
+    issue_number = int(event.get("issue/number"))
+    # queue check for artifacts
+    check_circle_artifacts.s(issue_number).apply_async()
+    logger.info("Scheduled 'check_circle_artifacts' for #%s", issue_number)
+    # queue lint check
+    (
+        get_latest_pr_commit.s(issue_number, ghapi) |
+        create_check_run.s(ghapi)
+    ).apply_async()
+    logger.info("Scheduled 'create_check_run' for latest commit in #%s",
+                issue_number)
