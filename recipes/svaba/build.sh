@@ -33,8 +33,8 @@ echo ""
 
 echo "Moving in Makefiles before sed"
 
-grep "bin/svaba" Makefile.am
-grep "bin/svaba" Makefile.in
+grep "src/svaba/svaba" Makefile.am
+grep "src/svaba/svaba" Makefile.in
 
 echo ""
 
