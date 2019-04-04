@@ -29,24 +29,8 @@ echo ""
 echo "Contents of working directory:"
 find .
 
-echo ""
-
-echo "Moving in Makefiles before sed"
-
-grep "src/svaba/svaba" Makefile.am
-grep "src/svaba/svaba" Makefile.in
-
-echo ""
-
 sed -i 's|mkdir -p bin && mv src/svaba/svaba bin||g' Makefile.am
 sed -i 's|mkdir -p bin && mv src/svaba/svaba bin||g' Makefile.in
-
-echo "Moving in Makefiles after sed"
-
-grep "bin/svaba" Makefile.am
-grep "bin/svaba" Makefile.in
-
-echo ""
 
 ./configure CXXFLAGS=-fPIC --prefix=$PREFIX
 
