@@ -16,6 +16,8 @@ from typing import Any, Dict, List, Sequence, Optional, Pattern
 
 import conda_build.api
 
+import jinja2
+
 try:
     from ruamel.yaml import YAML
     from ruamel.yaml.constructor import DuplicateKeyError
@@ -81,6 +83,19 @@ class MissingMetaYaml(RecipeError):
     self.item is NOT a Recipe but a str here
     """
     template = "has missing file `meta.yaml`"
+
+
+class RenderFailure(RecipeError):
+    """Raised on Jinja rendering problems
+
+    May have self.line
+    """
+    def __init__(self, item, message, line=None):
+        self.line = line
+        if line is not None:
+            message += " (at line %i)" % line
+        super().__init__(item, message)
+    template = "failed to render in Jinja2. Error was: %s"
 
 
 class Recipe():
@@ -262,9 +277,14 @@ class Recipe():
         # This function exists because the template cannot be pickled.
         # Storing it means the recipe cannot be pickled, which in turn
         # means we cannot pass it to ProcessExecutors.
-        return utils.jinja_silent_undef.from_string(
-            "\n".join(self.meta_yaml)
-        )
+        try:
+            return utils.jinja_silent_undef.from_string(
+                "\n".join(self.meta_yaml)
+            )
+        except jinja2.exceptions.TemplateSyntaxError as exc:
+            raise RenderFailure(self, exc.message, exc.lineno)
+        except jinja2.exceptions.TemplateError as exc:
+            raise RenderFailure(self, exc.message)
 
     def get_simple_modules(self):
         """Yield simple replacement values from template
