@@ -221,7 +221,8 @@ def lint(recipes: List[str], lint_args, basedir="recipes"):
                 'recipe': recipe,
                 'check': 'parse_error',
                 'severity': 'ERROR',
-                'info': {'parse_error': str(exc), 'fix': str(exc), '_exc': type(exc)}
+                'info': {'parse_error': str(exc), 'fix': str(exc), '_exc': type(exc),
+                         'test1': getattr(exc, 'code', None), 'test2': exc.args }
             })
             continue
 
