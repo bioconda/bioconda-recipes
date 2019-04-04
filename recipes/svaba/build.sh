@@ -49,8 +49,22 @@ grep "bin/svaba" Makefile.in
 echo ""
 
 ./configure CXXFLAGS=-fPIC --prefix=$PREFIX
+
+echo "##################"
+echo "# CONFIGURE DONE #"
+echo "##################"
+
 make
+
+echo "#############"
+echo "# MAKE DONE #"
+echo "#############"
+
 make install
+
+echo "#####################"
+echo "# MAKE INSTALL DONE #"
+echo "#####################"
 
 echo "#######################"
 echo "# WHERE IS THE BINARY #"
