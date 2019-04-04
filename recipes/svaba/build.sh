@@ -46,8 +46,18 @@ echo "Moving in Makefiles after sed"
 grep "bin/svaba" Makefile.am
 grep "bin/svaba" Makefile.in
 
-echo
+echo ""
 
 ./configure CXXFLAGS=-fPIC --prefix=$PREFIX
 make
 make install
+
+echo "#######################"
+echo "# WHERE IS THE BINARY #"
+echo "#######################"
+
+echo ""
+
+find . -name svaba | grep bin
+
+echo "#######################"
