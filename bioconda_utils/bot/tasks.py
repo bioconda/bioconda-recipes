@@ -237,6 +237,7 @@ async def check_circle_artifacts(pr_number: int, ghapi):
         for build in recent_builds
         if build["vcs_revision"] == head_sha
     ]
+    logger.info("Found builds %s for #%s", current_builds, pr_number)
 
     artifacts = []
     for buildno in current_builds:
