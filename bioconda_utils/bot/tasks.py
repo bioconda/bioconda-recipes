@@ -239,14 +239,15 @@ async def check_circle_artifacts(pr_number: int, ghapi):
     pr = await ghapi.get_prs(number=pr_number)
     head_ref = pr['head']['ref']
     head_sha = pr['head']['sha']
-    head_repo = pr['head']['repo']['name']
+    head_user = pr['head']['repo']['owner']['login']
 
     capi = AsyncCircleAPI(ghapi.session)
-    if head_repo == "bioconda-recipes":
+    if head_user == ghapi.user:
         path = head_ref
     else:
         path = "pull/{}".format(pr_number)
 
+    capi.debug_once = True
     recent_builds = await capi.list_recent_builds(path)
 
     current_builds = [
@@ -293,10 +294,10 @@ async def trigger_circle_rebuild(pr_number: int, ghapi):
     pr = await ghapi.get_prs(number=pr_number)
     head_ref = pr['head']['ref']
     head_sha = pr['head']['sha']
-    head_repo = pr['head']['repo']['name']
+    head_user = pr['head']['repo']['owner']['login']
 
     capi = AsyncCircleAPI(ghapi.session, token=CIRCLE_TOKEN)
-    if head_repo == "bioconda-recipes":
+    if head_user == ghapi.user:
         path = head_ref
     else:
         path = "pull/{}".format(pr_number)
