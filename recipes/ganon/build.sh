@@ -1,9 +1,5 @@
 #!/bin/bash
 
-set -x -e
-
-ls -lah ${SRC_DIR}/*
-
 mv ${SRC_DIR}/seqan ${SRC_DIR}/ganon/libs/
 mv ${SRC_DIR}/sdsl-lite ${SRC_DIR}/ganon/libs/
 
