@@ -254,7 +254,7 @@ async def check_circle_artifacts(pr_number: int, ghapi):
         for build in recent_builds
         if build["vcs_revision"] == head_sha
     ]
-    logger.info("Found builds %s for #%s", current_builds, pr_number)
+    logger.info("Found builds %s for #%s (%s total)", current_builds, pr_number, len(recent_builds))
 
     artifacts = []
     for buildno in current_builds:
@@ -276,7 +276,8 @@ async def check_circle_artifacts(pr_number: int, ghapi):
                 packages.append((arch, fname, artifact, ""))
 
     tpl = utils.jinja.get_template("artifacts.md")
-    msg = tpl.render(packages=packages, archs=archs)
+    msg = tpl.render(packages=packages, archs=archs,
+                     current_builds=current_builds, recent_builds=recent_builds)
     msg_head, _, _ = msg.partition("\n")
     async for comment in await ghapi.iter_comments(pr_number):
         if comment['body'].startswith(msg_head):

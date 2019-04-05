@@ -1,5 +1,9 @@
 <!-- BiocondaBot Artifacts Message (this line used to identify post) -->
-{% if packages %}
+{% if not recent_builds %}
+No recent builds available on CircleCI at this time.
+{% elif not current_builds %}
+No builds for the latest commit available on CircleCI.
+{% elif packages %}
 Packages built on CircleCI are ready for inspection:
 
 Arch | Package | Repodata
