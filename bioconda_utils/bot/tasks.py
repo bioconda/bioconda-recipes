@@ -11,7 +11,7 @@ from collections import namedtuple
 from typing import TYPE_CHECKING
 
 from .worker import celery
-from .config import BOT_NAME, BOT_EMAIL
+from .config import BOT_NAME, BOT_EMAIL, CIRCLE_TOKEN
 from .. import utils
 from ..recipe import Recipe
 from ..githandler import TempBiocondaRepo
@@ -285,3 +285,21 @@ async def check_circle_artifacts(pr_number: int, ghapi):
             break
     else:
         await ghapi.create_comment(pr_number, msg)
+
+
+@celery.task(acks_late=True)
+async def trigger_circle_rebuild(pr_number: int, ghapi):
+    logger.info("Triggering rebuild of #%s", pr_number)
+    pr = await ghapi.get_prs(number=pr_number)
+    head_ref = pr['head']['ref']
+    head_sha = pr['head']['sha']
+    head_repo = pr['head']['repo']['name']
+
+    capi = AsyncCircleAPI(ghapi.session, token=CIRCLE_TOKEN)
+    if head_repo == "bioconda-recipes":
+        path = head_ref
+    else:
+        path = "pull/{}".format(pr_number)
+
+    res = await capi.trigger_rebuild(path, head_sha)
+    logger.warning("Trigger_rebuild call returned with %s", res)

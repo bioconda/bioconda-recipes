@@ -5,7 +5,10 @@ Bot commands issued via issue/pull-request comments
 import logging
 from typing import Callable, Dict
 
-from .tasks import bump, create_check_run, get_latest_pr_commit, check_circle_artifacts
+from .tasks import (
+    bump, create_check_run, get_latest_pr_commit, check_circle_artifacts,
+    trigger_circle_rebuild
+)
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -85,3 +88,10 @@ async def command_recheck(event, ghapi, *args):
     ).apply_async()
     logger.info("Scheduled 'create_check_run' for latest commit in #%s",
                 issue_number)
+
+
+@command_routes.register("rebuild")
+async def command_rebuild(event, ghapi, *args):
+    issue_number = int(event.get("issue/number"))
+    trigger_circle_rebuild.s(issue_number, ghapi).apply_async()
+    logger.info("Scheduled 'trigger_circle_rebuild' for #%s", issue_number)
