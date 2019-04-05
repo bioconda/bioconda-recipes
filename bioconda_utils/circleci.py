@@ -62,9 +62,14 @@ class CircleAPI(abc.ABC):
         if status == 404:
             logger.error("Got 404 for %s", url)
             return []
-        if response:
-            return json.loads(response.decode(charset))
-        return response.decode(charset)
+        response_text = response.decode(charset)
+        try:
+            return json.loads(response_text)
+        except json.decoder.JSONDecodeError as exc:
+            logger.error("Call to '%s' yielded text '%s' - not JSON",
+                         url.replace(self.token, "******"),
+                         response_text.replace(self.token, "******"))
+        return response_text
 
     async def list_artifacts(self, build_number: int):
         var_data = self.var_data
