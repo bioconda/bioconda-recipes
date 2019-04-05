@@ -6,6 +6,8 @@ if [[ $(uname) == Darwin ]]; then
         export CXXFLAGS="${CXXFLAGS} -stdlib=libc++"
 fi
 
+git submodule update --init --recursive
+
 curdir=$(pwd)
 
 mkdir -p build
