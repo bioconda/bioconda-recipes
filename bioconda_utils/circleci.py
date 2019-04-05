@@ -26,6 +26,7 @@ class CircleAPI(abc.ABC):
         self.vcs_type = vcs_type
         self.username = username
         self.project = project
+        self.debug_once = False
 
     @property
     def var_data(self):
@@ -58,7 +59,17 @@ class CircleAPI(abc.ABC):
             body = json.dumps(data).encode(charset)
             headers['content-type'] = "application/json; charset=" + charset
         headers['content-length'] = str(len(body))
-        status, headers, response = await self._request(method, url, headers, body)
+        status, res_headers, response = await self._request(method, url, headers, body)
+
+        if self.debug_once:
+            self.debug_once = False
+            logger.error("Called %s / %s", method, url)
+            logger.error("Headers: %s", headers)
+            logger.error("Body: %s", body)
+            logger.error("Result Status: %s", status)
+            logger.error("Result Headers: %s", res_headers)
+            logger.error("Response: %s", response.decode(charset))
+
         if status == 404:
             logger.error("Got 404 for %s", url)
             return []
