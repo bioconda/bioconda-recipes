@@ -34,6 +34,7 @@ class CircleAPI(abc.ABC):
             'vcs_type': self.vcs_type,
             'username': self.username,
             'project': self.project,
+            'circle_token': self.token,
         }
 
     @abc.abstractmethod
@@ -46,7 +47,7 @@ class CircleAPI(abc.ABC):
                             data: Any = None,
                             accept: str = "application/json") -> Any:
         """Make HTTP request"""
-        url = ''.join((self.CIRCLE_API, url, "{?circle-token}"))
+        url = ''.join((self.CIRCLE_API, url, "{?circle_token}"))
         url = uritemplate.expand(url, var_dict=var_dict)
         headers = {}
         headers['accept'] = accept
