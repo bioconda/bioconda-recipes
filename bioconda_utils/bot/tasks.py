@@ -4,7 +4,9 @@ Celery Tasks
 
 import logging
 import os
+import sys
 import time
+import types
 from collections import namedtuple
 from typing import TYPE_CHECKING
 
@@ -177,7 +179,22 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
         # Here we call the actual linter code
         utils.load_config('config.yml')
         from bioconda_utils.linting import lint as _lint, LintArgs, markdown_report
-        df = _lint(recipes, LintArgs())
+
+        # Workaround celery/billiard messing with sys.exit
+        if isinstance(sys.exit, types.FunctionType):
+            def new_exit(args=None):
+                raise SystemExit(args)
+            (sys.exit, old_exit) = (new_exit, sys.exit)
+
+            try:
+                df = _lint(recipes, LintArgs())
+            except SystemExit as exc:
+                old_exit(exc.args)
+            finally:
+                sys.exit = old_exit
+
+        else:
+            df = _lint(recipes, LintArgs())
 
     summary = "Linted recipes:\n"
     for recipe in recipes:
