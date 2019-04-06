@@ -10,7 +10,7 @@ import ruamel_yaml as yaml
 
 from . import utils
 from . import lint_functions
-from .recipe import Recipe
+from .recipe import Recipe, RecipeError
 
 import logging
 logger = logging.getLogger(__name__)
@@ -188,7 +188,20 @@ def lint(recipes: List[str], lint_args, basedir="recipes"):
     for recipe in sorted(recipes):
         logger.debug("Linting: %s", recipe)
 
-        recipe_obj = Recipe.from_file(basedir, recipe)
+        try:
+            recipe_obj = Recipe.from_file(basedir, recipe)
+        except RecipeError as exc:
+            result = {'load_recipe':  str(exc), 'fix': str(exc)}
+            line = getattr(exc, 'line', None)
+            if line is not None:
+                result['start_line'] = result['end_line'] = line
+            hits.append({
+                'recipe': recipe,
+                'check': 'load_recipe',
+                'severity': 'ERROR',
+                'info': result
+            })
+            continue
 
         # Since lint functions need a parsed meta.yaml, checking for parsing
         # errors can't be a lint function.
@@ -202,14 +215,15 @@ def lint(recipes: List[str], lint_args, basedir="recipes"):
                 config = utils.load_conda_build_config(platform=platform, trim_skip=False)
                 metas.extend(utils.load_all_meta(recipe, config=config, finalize=False))
         except (
-            yaml.scanner.ScannerError, yaml.constructor.ConstructorError
-        ) as e:
-            result = {'parse_error': str(e)}
-            hits.append(
-                {'recipe': recipe,
-                 'check': 'parse_error',
-                 'severity': 'ERROR',
-                 'info': result})
+                yaml.scanner.ScannerError, yaml.constructor.ConstructorError, SystemExit
+        ) as exc:
+            hits.append({
+                'recipe': recipe,
+                'check': 'parse_error',
+                'severity': 'ERROR',
+                'info': {'parse_error': str(exc), 'fix': str(exc), '_exc': type(exc),
+                         'test1': getattr(exc, 'code', None), 'test2': exc.args }
+            })
             continue
 
         # skips defined in commit message

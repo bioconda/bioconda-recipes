@@ -52,7 +52,8 @@ class GitHubHandler:
     PULL_FILES = "/repos/{user}/{repo}/pulls/{number}/files"
     PULL_COMMITS = "/repos/{user}/{repo}/pulls/{number}/commits"
     ISSUES = "/repos/{user}/{repo}/issues{/number}"
-    COMMENTS = "/repos/{user}/{repo}/issues/{number}/comments"
+    ISSUE_COMMENTS = "/repos/{user}/{repo}/issues/{number}/comments"
+    COMMENTS = "/repos/{user}/{repo}/issues/comments{/comment_id}"
     ORG_MEMBERS = "/orgs/{user}/members{/username}"
     CHECK_RUN = "/repos/{user}/{repo}/check-runs{/id}"
     GET_CHECK_RUNS = "/repos/{user}/{repo}/commits/{commit}/check-runs"
@@ -139,7 +140,7 @@ class GitHubHandler:
         return True
 
     # pylint: disable=too-many-arguments
-    @backoff.on_exception(backoff.fibo, gidgethub.BadRequest, max_tries=14)
+    @backoff.on_exception(backoff.fibo, gidgethub.BadRequest, max_tries=10)
     async def get_prs(self,
                       from_branch: Optional[str] = None,
                       from_user: Optional[str] = None,
@@ -268,7 +269,32 @@ class GitHubHandler:
             logger.info("Would create comment on issue #%i", number)
             return -1
         logger.info("Creating comment on issue #%i", number)
-        res = await self.api.post(self.COMMENTS, var_data, data=data)
+        res = await self.api.post(self.ISSUE_COMMENTS, var_data, data=data)
+        return res['id']
+
+    async def iter_comments(self, number: int) -> List[Dict[str, Any]]:
+        """List comments for issue"""
+        var_data = copy(self.var_default)
+        var_data["number"] = str(number)
+        return self.api.getiter(self.ISSUE_COMMENTS, var_data)
+
+    async def update_comment(self, number: int, body: str) -> int:
+        """Update issue comment
+
+        Arguments:
+          number: Comment number (NOT PR NUMBER!)
+          body: Comment content
+        """
+        var_data = copy(self.var_default)
+        var_data["comment_id"] = str(number)
+        data = {
+            'body': body
+        }
+        if self.dry_run:
+            logger.info("Would update comment %i",  number)
+            return -1
+        logger.info("Updating comment %i", number)
+        res = await self.api.patch(self.COMMENTS, var_data, data=data)
         return res['id']
 
     async def get_pr_modified_files(self, number: int) -> List[Dict[str, Any]]:
@@ -336,6 +362,7 @@ class AiohttpGitHubHandler(GitHubHandler):
         self.api = gidgethub.aiohttp.GitHubAPI(
             session, requester, oauth_token=self.token
         )
+        self.session = session
 
 
 class Event(gidgethub.sansio.Event):

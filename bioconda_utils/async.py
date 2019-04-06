@@ -43,6 +43,9 @@ class EndProcessingItem(Exception):
             level = self.level
         uselogger.log(level, str(self.item) + " " + self.template, *self.args)
 
+    def __str__(self):
+        return (str(self.item) + " " + self.template) % tuple(self.args)
+
     @property
     def name(self):
         """Name of class"""

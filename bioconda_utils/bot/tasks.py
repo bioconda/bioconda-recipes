@@ -4,16 +4,19 @@ Celery Tasks
 
 import logging
 import os
+import sys
 import time
+import types
 from collections import namedtuple
 from typing import TYPE_CHECKING
 
 from .worker import celery
-from .config import BOT_NAME, BOT_EMAIL
+from .config import BOT_NAME, BOT_EMAIL, CIRCLE_TOKEN
 from .. import utils
 from ..recipe import Recipe
 from ..githandler import TempBiocondaRepo
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
+from ..circleci import AsyncCircleAPI
 
 if TYPE_CHECKING:
     from .worker import AsyncTask
@@ -83,7 +86,7 @@ class Checkout:
             branch.checkout()
 
             return self.git
-        except Exception as exc:
+        except Exception:
             logger.exception(f"Error while checking out with {self.ghapi}")
             return None
 
@@ -100,12 +103,16 @@ async def get_latest_pr_commit(issue_number: int, ghapi):
     commit = {'sha': None}
     async for commit in await ghapi.iter_pr_commits(issue_number):
         pass
+    logger.info("Latest SHA on #%s is %s", issue_number, commit['sha'])
     return commit['sha']
 
 
 @celery.task(acks_late=True)
-async def create_check_run(head_sha: str, ghapi, recreate=True,):
-    LINT_CHECK_NAME="Linting Recipe(s)"
+async def create_check_run(head_sha: str, ghapi, recreate=True):
+    if head_sha is None:
+        logger.info("Not creating check_run, SHA is None")
+        return
+    LINT_CHECK_NAME = "Linting Recipe(s)"
     if not recreate:
         for check_run in await ghapi.get_check_runs(head_sha):
             if check_run.get('name') == LINT_CHECK_NAME:
@@ -113,7 +120,7 @@ async def create_check_run(head_sha: str, ghapi, recreate=True,):
                                head_sha)
                 return
     check_run_number = await ghapi.create_check_run(LINT_CHECK_NAME, head_sha)
-    logger.warning("Created check run %s", check_run_number)
+    logger.warning("Created check run %s for %s", check_run_number, head_sha)
 
 
 @celery.task(acks_late=True)
@@ -169,9 +176,25 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
             )
             return
 
+        # Here we call the actual linter code
         utils.load_config('config.yml')
         from bioconda_utils.linting import lint as _lint, LintArgs, markdown_report
-        df = _lint(recipes, LintArgs())
+
+        # Workaround celery/billiard messing with sys.exit
+        if isinstance(sys.exit, types.FunctionType):
+            def new_exit(args=None):
+                raise SystemExit(args)
+            (sys.exit, old_exit) = (new_exit, sys.exit)
+
+            try:
+                df = _lint(recipes, LintArgs())
+            except SystemExit as exc:
+                old_exit(exc.args)
+            finally:
+                sys.exit = old_exit
+
+        else:
+            df = _lint(recipes, LintArgs())
 
     summary = "Linted recipes:\n"
     for recipe in recipes:
@@ -197,7 +220,7 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
                 'end_line': info.get('end_line', 1),
                 'annotation_level': 'failure',
                 'title': check,
-                'message': info['fix']
+                'message': info.get('fix') or str(info)
             })
 
     await ghapi.modify_check_run(
@@ -211,10 +234,74 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
 
 
 @celery.task(acks_late=True)
-def sleep(seconds, msg):
-    """Demo task that just sleeps for a given number of seconds"""
-    logger.info("Sleeping for %i seconds: %s", seconds, msg)
-    for second in range(seconds):
-        time.sleep(1)
-        logger.info("Slept for %i seconds: %s", second, msg)
-    logger.info("Waking: %s", msg)
+async def check_circle_artifacts(pr_number: int, ghapi):
+    logger.info("Starting check for artifacts on #%s as of %s", pr_number, ghapi)
+    pr = await ghapi.get_prs(number=pr_number)
+    head_ref = pr['head']['ref']
+    head_sha = pr['head']['sha']
+    head_user = pr['head']['repo']['owner']['login']
+
+    capi = AsyncCircleAPI(ghapi.session)
+    if head_user == ghapi.user:
+        path = head_ref
+    else:
+        path = "pull/{}".format(pr_number)
+
+    capi.debug_once = True
+    recent_builds = await capi.list_recent_builds(path)
+
+    current_builds = [
+        build["build_num"]
+        for build in recent_builds
+        if build["vcs_revision"] == head_sha
+    ]
+    logger.info("Found builds %s for #%s (%s total)", current_builds, pr_number, len(recent_builds))
+
+    artifacts = []
+    for buildno in current_builds:
+        artifacts.extend(await capi.list_artifacts(buildno))
+
+    packages = []
+    archs = {}
+    for artifact in artifacts:
+        if artifact.endswith(".tar.bz2"):
+            base, _, fname = artifact.rpartition("/")
+            repo, _, arch = base.rpartition("/")
+            if base + "/repodata.json" in artifacts:
+                if repo not in archs:
+                    archs[repo] = set()
+                archs[repo].add(arch)
+                packages.append((arch, fname, artifact,
+                                 "[repodata.json]({}/repodata.json)".format(base)))
+            else:
+                packages.append((arch, fname, artifact, ""))
+
+    tpl = utils.jinja.get_template("artifacts.md")
+    msg = tpl.render(packages=packages, archs=archs,
+                     current_builds=current_builds, recent_builds=recent_builds)
+    msg_head, _, _ = msg.partition("\n")
+    async for comment in await ghapi.iter_comments(pr_number):
+        if comment['body'].startswith(msg_head):
+            await ghapi.update_comment(comment["id"], msg)
+            break
+    else:
+        await ghapi.create_comment(pr_number, msg)
+
+
+@celery.task(acks_late=True)
+async def trigger_circle_rebuild(pr_number: int, ghapi):
+    logger.info("Triggering rebuild of #%s", pr_number)
+    pr = await ghapi.get_prs(number=pr_number)
+    head_ref = pr['head']['ref']
+    head_sha = pr['head']['sha']
+    head_user = pr['head']['repo']['owner']['login']
+
+    capi = AsyncCircleAPI(ghapi.session, token=CIRCLE_TOKEN)
+    if head_user == ghapi.user:
+        path = head_ref
+    else:
+        path = "pull/{}".format(pr_number)
+
+    capi.debug_once = True
+    res = await capi.trigger_rebuild(path, head_sha)
+    logger.warning("Trigger_rebuild call returned with %s", res)

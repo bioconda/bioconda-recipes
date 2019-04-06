@@ -34,6 +34,9 @@ APP_SECRET = get_secret("APP_SECRET")
 #: GPG key for signing git commits
 CODE_SIGNING_KEY = get_secret("CODE_SIGNING_KEY")
 
+#: CircleCI Token
+CIRCLE_TOKEN = get_secret("CIRCLE_TOKEN")
+
 #: Name of bot
 BOT_NAME = "BiocondaBot"
 

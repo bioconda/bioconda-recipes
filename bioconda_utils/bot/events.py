@@ -9,9 +9,9 @@ import asyncio
 import gidgethub.routing
 
 from .commands import command_routes
-from .tasks import lint_check, create_check_run, get_latest_pr_commit
+from .tasks import lint_check, create_check_run, check_circle_artifacts
 from .config import APP_ID
-from ..githubhandler import CheckRunStatus, CheckRunConclusion
+
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 event_routes = gidgethub.routing.Router()  # pylint: disable=invalid-name
@@ -26,15 +26,16 @@ async def handle_comment_created(event, ghapi, *args, **_kwargs):
     This function watches for comments on issues. Lines starting with
     an @mention of the bot are considered commands and dispatched.
     """
+    issue_number = str(event.get('issue/number', "NA"))
     commands = [
         line.lower().split()[1:]
-        for line in event.data['comment']['body'].splitlines()
+        for line in event.get('comment/body', '').splitlines()
         if BOT_ALIAS_RE.match(line)
     ]
     if not commands:
-        logger.info("No command in comment")
+        logger.info("No command in comment on #%s", issue_number)
     for cmd, *args in commands:
-        logger.info("Dispatching %s - %s", cmd, args)
+        logger.info("Dispatching command from #%s: '%s' %s", issue_number, cmd, args)
         await command_routes.dispatch(cmd, event, ghapi, *args)
 
 
@@ -47,35 +48,56 @@ async def handle_check_suite(event, ghapi):
         return
     head_sha = event.get("check_suite/head_sha")
     create_check_run.apply_async((head_sha, ghapi))
+    logger.info("Scheduled create_check_run for %s", head_sha)
 
 
 @event_routes.register("check_run")
 async def handle_check_run(event, ghapi):
     """Handle check run event"""
+    action = event.get('action')
+    app_owner = event.get("check_run/check_suite/app/owner/login", None)
+    head_sha = event.get("check_run/head_sha")
+    event_repo = event.get("repository/id")
+    if action == "completed" and app_owner == "circleci":
+        for pr in event.get("check_run/check_suite/pull_requests", []):
+            if pr["base"]["repo"]["id"] != event_repo:
+                # PR away from us, not to us
+                continue
+            pr_number = pr["number"]
+            check_circle_artifacts.s(pr_number, ghapi).apply_async()
+            logger.info("Scheduled check_circle_artifacts on #%s", pr_number)
+
     # Ignore check runs coming from other apps
     if event.get("check_run/app/id") != int(APP_ID):
         return
-    head_sha = event.get("check_run/head_sha")
-    action = event.get('action')
+
     if action == "rerequested":
         create_check_run.apply_async((head_sha, ghapi))
+        logger.info("Scheduled create_check_run for %s", head_sha)
     elif action == "created":
         check_run_number = event.get('check_run/id')
         lint_check.apply_async((check_run_number, head_sha, ghapi))
+        logger.info("Scheduled lint_check for %s %s", check_run_number, head_sha)
 
 
-@event_routes.register("pull_request", action="open")
-async def handle_pull_request_open(event, ghapi):
+@event_routes.register("pull_request")
+async def handle_pull_request(event, ghapi):
+    """
+
+    pull_request can have the following actions:
+    - assigned / unassigned
+    - review_requested / review_request_removed
+    - labeled / unlabeled
+    - opened / closed / reopened
+    - edited
+    - ready_for_review
+    - synchronize
+    """
+    action = event.get('action')
+    pr_number = event.get('number')
     head_sha = event.get('pull_request/head/sha')
-    await asyncio.sleep(5)
-    create_check_run.s(head_sha, ghapi, recreate=False).apply_async()
-
-
-@event_routes.register("pull_request", action="reopen")
-async def handle_pull_request_reopen(event, ghapi):
-    return await handle_pull_request_open(event, ghapi)
-
-
-@event_routes.register("pull_request", action="synchronize")
-async def handle_pull_request_sync(event, ghapi):
-    return await handle_pull_request_open(event, ghapi)
+    logger.info("Handling pull_request/%s #%s (%s)", action, pr_number, head_sha)
+    if action in ('opened', 'reopened', 'synchronize'):
+        await asyncio.sleep(5)
+        create_check_run.s(head_sha, ghapi, recreate=False).apply_async()
+        logger.info("Scheduled create_check_run(recreate=False) for %s", head_sha)
