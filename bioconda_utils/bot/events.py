@@ -1,5 +1,5 @@
 """
-Github Events
+Handlers for incoming Github Events
 """
 
 import logging

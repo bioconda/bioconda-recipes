@@ -1,5 +1,5 @@
 """
-HTTP Views (pages)
+HTTP Views (accepts and parses webhooks)
 """
 
 import logging

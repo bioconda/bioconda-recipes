@@ -1,4 +1,7 @@
-#!/usr/bin/env python
+"""
+Bioconda Utils Command Line Interface
+
+"""
 
 # Workaround for spurious numpy warning message
 # ".../importlib/_bootstrap.py:219: RuntimeWarning: numpy.dtype size \

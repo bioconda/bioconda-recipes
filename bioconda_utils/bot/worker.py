@@ -1,5 +1,5 @@
 """
-Celery Worker
+Celery Worker Setup
 """
 
 import abc

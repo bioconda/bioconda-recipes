@@ -1,3 +1,7 @@
+"""
+CircleCI Web-API Bindings
+"""
+
 import abc
 import logging
 from typing import Any, Mapping, Optional, Tuple

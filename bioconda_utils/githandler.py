@@ -1,4 +1,4 @@
-"""Abstraction layer handling git actions"""
+"""Wrappers for interacting with ``git``"""
 
 import asyncio
 import logging

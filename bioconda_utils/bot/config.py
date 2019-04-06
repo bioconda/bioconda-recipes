@@ -1,9 +1,10 @@
 """
-Access to configuration, hardcoded and from environ
+Bot configuration variables
 """
 
 import os
 import re
+import sys
 
 def get_secret(name):
     """Load a secret from file or env
@@ -18,6 +19,9 @@ def get_secret(name):
         try:
             return os.environ[name]
         except KeyError:
+            if os.path.basename(sys.argv[0]) == 'sphinx-build':
+                # We won't have nor need secrets when building docs
+                return None
             raise ValueError(
                 f"Missing secrets: configure {name} or {name}_FILE to contain or point at secret"
             ) from None

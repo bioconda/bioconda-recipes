@@ -1,4 +1,4 @@
-"""Bioconda Bot"""
+"""AioHTTP Web Server Setup"""
 
 import logging
 import subprocess

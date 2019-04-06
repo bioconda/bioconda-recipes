@@ -1,3 +1,7 @@
+"""
+Deploy Artifacts to Anaconda and Quay
+"""
+
 import os
 import subprocess as sp
 import logging

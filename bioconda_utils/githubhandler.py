@@ -1,4 +1,4 @@
-"""Highlevel API for managing PRs on Github"""
+"""Wrappers for Github Web-API Bindings"""
 
 import abc
 import datetime
@@ -410,9 +410,6 @@ class GitHubAppHandler:
         self._tokens: Dict[str, Tuple[int, str]] = {}
         #: GitHubHandlers for each installation
         self._handlers: Dict[Tuple[str, str], GitHubHandler] = {}
-
-        # Failing early is best - check that we can generate a JWT
-        self.get_app_jwt()
 
     def get_app_jwt(self) -> str:
         """Returns JWT authenticating as this app"""

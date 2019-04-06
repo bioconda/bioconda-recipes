@@ -1,5 +1,8 @@
-#!/usr/bin/env python
+"""
+Utility Functions and Classes
 
+This module collects small pieces of code used throughout `bioconda_utils`.
+"""
 import os
 import re
 import glob

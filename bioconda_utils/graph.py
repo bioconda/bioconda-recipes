@@ -1,3 +1,7 @@
+"""
+Construction and Manipulation of Package/Recipe Graphs
+"""
+
 import logging
 import networkx as nx
 

@@ -1,3 +1,7 @@
+"""
+Determine which packages need updates after pinning change
+"""
+
 import re
 import sys
 import os.path

@@ -171,3 +171,4 @@ Contents:
     faqs
     build-system
     cb3
+    developer

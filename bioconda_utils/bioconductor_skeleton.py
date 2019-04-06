@@ -1,5 +1,6 @@
-#!/usr/bin/env python
-
+"""
+Conda Skeleton for Bioconductor Recipes
+"""
 import shutil
 import tempfile
 import configparser

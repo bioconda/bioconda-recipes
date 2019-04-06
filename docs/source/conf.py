@@ -30,6 +30,10 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.extlinks',
+
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
+    'sphinxcontrib.napoleon'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -61,7 +65,7 @@ exclude_patterns = ['build']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
-#default_role = None
+default_role = "any"
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 #add_function_parentheses = True
@@ -288,3 +292,10 @@ extlinks = {
    'biotools': ('https://bio.tools/%s', ''),
    'doi': ('https://doi.org/%s', ''),
 }
+
+# autogenerate autodoc stubs via autosummary
+autosummary_generate = True
+
+# placate assertion in utils.RepoData()
+from bioconda_utils import utils
+utils.load_config('../bioconda-recipes/config.yml')

@@ -1,3 +1,7 @@
+"""
+Lint Checks for Recipe Linter
+"""
+
 from functools import partial
 import glob
 import os

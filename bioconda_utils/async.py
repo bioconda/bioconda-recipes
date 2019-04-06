@@ -1,4 +1,4 @@
-"""Provides utilities for async processing"""
+"""Utilities for Asynchronous Processing"""
 
 import abc
 import asyncio
@@ -208,7 +208,7 @@ class AsyncRequests():
         """Fetch content at **url** and return as text
 
         - On non-permanent errors (429, 502, 503, 504), the GET is retried 10 times with
-        increasing wait times according to fibonacci series.
+          increasing wait times according to fibonacci series.
         - Permanent errors raise a ClientResponseError
         """
         if self.cache and url in self.cache["url_text"]:

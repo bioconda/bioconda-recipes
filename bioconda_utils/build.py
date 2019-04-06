@@ -1,3 +1,7 @@
+"""
+Package Builder
+"""
+
 import subprocess as sp
 from itertools import chain
 from collections import defaultdict, namedtuple

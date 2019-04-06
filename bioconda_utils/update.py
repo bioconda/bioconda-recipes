@@ -7,7 +7,7 @@ Overview:
   objects for each recipe.
 
 - The `Recipe` handles reading, modification and writing of
-   ``meta.yaml`` files.
+  ``meta.yaml`` files.
 
 - The filters `ExcludeSubrecipe` and `ExcludeOtherChannel` exclude
   recipes in sub folders and present in other channels as configured.
@@ -38,7 +38,7 @@ Rationale (for all those imports):
 
 - We use `ruamel.yaml` to know where in a ``.yaml`` file a value is
   defined. Ideally, we would extend its round-trip type to handle the
-  `# [exp]` line selectors and at least simple parts of Jinja2
+  ``# [exp]`` line selectors and at least simple parts of Jinja2
   template expansion.
 
 """

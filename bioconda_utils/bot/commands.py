@@ -1,5 +1,5 @@
 """
-Bot commands issued via issue/pull-request comments
+Handlers for user commmands (``@biocondabot do this``)
 """
 
 import logging

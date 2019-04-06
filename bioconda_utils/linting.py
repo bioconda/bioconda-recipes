@@ -1,3 +1,7 @@
+"""
+Recipe Linter
+"""
+
 import os
 import re
 import itertools
