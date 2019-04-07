@@ -286,12 +286,17 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'conda.io': ('https://conda.io/en/latest', None),
+    'conda-build': ('https://conda.io/projects/conda-build/en/latest/', None),
+    'conda': ('https://conda.io/projects/conda/en/latest/', None),
+}
 
 # We are using the `extlinks` extension to render links for identifiers:
 extlinks = {
-   'biotools': ('https://bio.tools/%s', ''),
-   'doi': ('https://doi.org/%s', ''),
+    'biotools': ('https://bio.tools/%s', ''),
+    'doi': ('https://doi.org/%s', ''),
 }
 
 # autogenerate autodoc stubs via autosummary
