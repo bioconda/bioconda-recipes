@@ -113,9 +113,9 @@ Here is an example that will replace the first line of a file
 It turns out that the version of `autoconf` that is packaged in the defaults
 channel still uses the hard-coded Perl. So if a tool uses `autoconf` for
 building, it is likely you will see this error and it will need some ``sed``
-commands. See `here
-<https://github.com/bioconda/bioconda-recipes/blob/4bc02d7b4d784c923481d8808ed83e048c01d3bb/recipes/exparna/build.sh>`_
-for an example to work from.
+commands. See `recipes/exparna/build.sh`_ for an example to work from.
+
+.. _`recipes/exparna/build.sh`: https://github.com/bioconda/bioconda-recipes/blob/4bc02d7b4d784c923481d8808ed83e048c01d3bb/recipes/exparna/build.sh
 
 .. _mulled-build-troubleshooting:
 
@@ -152,12 +152,12 @@ should only be used as a last resort. Cases where the extended base has been
 needed are:
 
 - Unicode support is required (especially if a package uses the ``click``
-  Python package under Python 3; see for example comments `here
-  <https://github.com/bioconda/bioconda-recipes/pull/5541#issuecomment-323755800>`_
-  and `here
-  <https://github.com/bioconda/bioconda-recipes/pull/6094#issuecomment-332272936>`_).
+  Python package under Python 3; see for example comments in `PR #5541`_ and `PR #6094`_).
 - ``libGL.so.1`` dependency
 - ``openssl`` dependency, e.g., through ``openmpi``
+
+.. _`PR #5541`: https://github.com/bioconda/bioconda-recipes/pull/5541#issuecomment-323755800
+.. _`PR #6094`: https://github.com/bioconda/bioconda-recipes/pull/6094#issuecomment-332272936
 
 To use the extended container, add the following to a recipe's ``meta.yaml``:
 

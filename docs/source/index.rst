@@ -1,26 +1,31 @@
 .. image:: bioconda.png
 
 **Bioconda** is a channel for the `conda
-<http://conda.pydata.org/docs/intro.html>`_  package manager specializing in
-bioinformatics software. Bioconda consists of:
+<http://conda.pydata.org/docs/intro.html>`_ package manager
+specializing in bioinformatics software. Bioconda consists of:
 
-- a `repository of recipes <https://github.com/bioconda/bioconda-recipes>`_ hosted on GitHub
-- a `build system <https://github.com/bioconda/bioconda-utils>`_ that turns these recipes into conda packages
+- a `repository of recipes
+  <https://github.com/bioconda/bioconda-recipes>`_ hosted on GitHub
+- a `build system <https://github.com/bioconda/bioconda-utils>`_ that
+  turns these recipes into conda packages
 - a `repository of more than 6000 bioinformatics packages
-  <https://anaconda.org/bioconda/>`_ ready to use with ``conda install``
-- over 600 contributors and 450 members who add, modify, update and maintain the recipes
+  <https://anaconda.org/bioconda/>`_ ready to use with ``conda
+  install``
+- over 600 contributors and 450 members who add, modify, update and
+  maintain the recipes
 
 The conda package manager makes installing software a vastly more
-streamlined process. Conda is a combination of other package managers you may
-have encountered, such as pip, CPAN, CRAN, Bioconductor, apt-get, and homebrew.
-Conda is both language- and OS-agnostic, and can be used to install C/C++,
-Fortran, Go, R, Python, Java etc programs on Linux, Mac OSX, and Windows.
+streamlined process. Conda is a combination of other package managers
+you may have encountered, such as pip, CPAN, CRAN, Bioconductor,
+apt-get, and homebrew.  Conda is both language- and OS-agnostic, and
+can be used to install C/C++, Fortran, Go, R, Python, Java etc
+programs on Linux, Mac OSX, and Windows.
 
 Conda allows separation of packages into repositories, or `channels`.
-The main `defaults` channel has a large number of common packages. Users can
-add additional channels from which to install software packages not available
-in the defaults channel. Bioconda is one such channel specializing in
-bioinformatics software.
+The main `defaults` channel has a large number of common
+packages. Users can add additional channels from which to install
+software packages not available in the defaults channel. Bioconda is
+one such channel specializing in bioinformatics software.
 
 When using Bioconda please **cite our article**:
 
