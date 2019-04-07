@@ -33,7 +33,8 @@ extensions = [
 
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
-    'sphinxcontrib.napoleon'
+    'sphinxcontrib.napoleon',
+    'celery.contrib.sphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
