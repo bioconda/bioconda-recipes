@@ -298,11 +298,12 @@ class CondaObjectDescription(ObjectDescription):
             objects = self.env.domaindata[self.domain]['objects']
             key = (self.objtype, name)
             if key in objects:
-                self.env.warn(
-                    self.env.docname,
-                    "Duplicate entry {} {} at {} (other in {})".format(
-                        self.objtype, name, self.lineno,
-                        self.env.doc2path(objects[key][0])))
+                if hasattr(self.env, 'warn'):
+                    self.env.warn(
+                        self.env.docname,
+                        "Duplicate entry {} {} at {} (other in {})".format(
+                            self.objtype, name, self.lineno,
+                            self.env.doc2path(objects[key][0])))
             objects[key] = (self.env.docname, target_name)
 
         index_text = self.get_index_text(name)
