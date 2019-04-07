@@ -1,18 +1,19 @@
 .. image:: bioconda.png
 
-**Bioconda** is a channel for the `conda
-<http://conda.pydata.org/docs/intro.html>`_ package manager
+**Bioconda** is a channel for the conda_ package manager
 specializing in bioinformatics software. Bioconda consists of:
 
-- a `repository of recipes
-  <https://github.com/bioconda/bioconda-recipes>`_ hosted on GitHub
-- a `build system <https://github.com/bioconda/bioconda-utils>`_ that
-  turns these recipes into conda packages
-- a `repository of more than 6000 bioinformatics packages
-  <https://anaconda.org/bioconda/>`_ ready to use with ``conda
-  install``
-- over 600 contributors and 450 members who add, modify, update and
+- a `repository of recipes`_ hosted on GitHub
+- a `build system`_ turning these recipes into conda packages
+- a `repository of packages`_ containing over 6000 bioinformatics
+  packages ready to use with ``conda install``
+- over 600 contributors and 500 members who add, modify, update and
   maintain the recipes
+
+.. _conda: https://conda.io/en/latest/index.html
+.. _`repository of recipes`: https://github.com/bioconda/bioconda-recipes
+.. _`build system`: https://github.com/bioconda/bioconda-utils
+.. _`repository of packages`: https://anacoda.org/bioconda/
 
 The conda package manager makes installing software a vastly more
 streamlined process. Conda is a combination of other package managers
@@ -21,8 +22,8 @@ apt-get, and homebrew.  Conda is both language- and OS-agnostic, and
 can be used to install C/C++, Fortran, Go, R, Python, Java etc
 programs on Linux, Mac OSX, and Windows.
 
-Conda allows separation of packages into repositories, or `channels`.
-The main `defaults` channel has a large number of common
+Conda allows separation of packages into repositories, or ``channels``.
+The main ``defaults`` channel has a large number of common
 packages. Users can add additional channels from which to install
 software packages not available in the defaults channel. Bioconda is
 one such channel specializing in bioinformatics software.
@@ -35,16 +36,20 @@ When using Bioconda please **cite our article**:
   Comprehensive Software Distribution for the Life Sciences". Nature
   Methods, 2018 doi::doi:`10.1038/s41592-018-0046-7`.
 
-Bioconda has been acknowledged by NATURE in their
-`technology blog <http://blogs.nature.com/naturejobs/2017/11/03/techblog-bioconda-promises-to-ease-bioinformatics-software-installation-woes/>`_.
+Bioconda has been acknowledged by NATURE in their `technology blog`_.
 
-Each package added to Bioconda also has a corresponding Docker  `BioContainer
-<https://biocontainers.pro>`_ automatically created and uploaded to Quay.io.
+.. _`technology blog`: http://blogs.nature.com/naturejobs/2017/11/03/techblog-bioconda-promises-to-ease-bioinformatics-software-installation-woes
+
+Each package added to Bioconda also has a corresponding Docker
+`BioContainer`_ automatically created and uploaded to `Quay.io`_. A
+list of these and other containers can be found at the `Biocontainers
+Registry`_.
+
+.. _`BioContainer`: https://biocontainers.pro
+.. _`Quay.io`: https://quay.io/organization/biocontainers
+.. _`BioContainers Registry`: https://biocontainers.pro/#/registry
 
 **Browse packages in the Bioconda channel:** :ref:`recipes`
-
-**Browse BioContainer packages:** `Biocontainers Registry UI
-<https://biocontainers.pro/#/registry>`_
 
 ----
 
@@ -89,8 +94,8 @@ other channels bioconda depends on. **It is important to add them in this
 order** so that the priority is set correctly (that is, conda-forge is highest
 priority).
 
-The `conda-forge` channel contains many general-purpose packages not already
-found in the `defaults` channel.
+The `conda-forge`_ channel contains many general-purpose packages not already
+found in the ``defaults`` channel.
 
 
 ::
@@ -98,6 +103,9 @@ found in the `defaults` channel.
     conda config --add channels defaults
     conda config --add channels bioconda
     conda config --add channels conda-forge
+
+.. _`conda-forge`: https://conda-forge.org
+
 
 3. Install packages
 -------------------
