@@ -51,7 +51,7 @@ class AsyncTask(Task):
       avoid wasting API calls to create those tokens continuously, the
       Task class maintains a copy.
 
-    - Default to `acks_late = True`. The reason we use Celery at all
+    - Default to ``acks_late = True``. The reason we use Celery at all
       is so that spawned tasks can survive a shutdown of the app.
 
     """
@@ -100,8 +100,7 @@ class AsyncTask(Task):
     async def async_pre_run(self, args, _kwargs):
         """Per-call async initialization
 
-        Prepares the `ghapi` property for tasks using ghapi_data added
-        to arguments via `schedule()`.
+        Prepares the `ghapi` property for tasks.
 
         FIXME: doesn't replace kwargs
         """
