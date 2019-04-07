@@ -28,6 +28,7 @@ class CommandDispatch:
         """Decorator adding decorated function to dispatcher"""
         def decorator(func):
             self.mapping[cmd] = func
+            return func
         return decorator
 
     async def dispatch(self, cmd, *args, **kwargs):
