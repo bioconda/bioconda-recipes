@@ -242,8 +242,7 @@ class UpdateVersion(Filter):
      3. fetch url
      4. hoster extracts (link,version) pairs
      5. select newest
-     4. update sources
-
+     6. update sources
     """
 
     class Metapackage(EndProcessingItem):

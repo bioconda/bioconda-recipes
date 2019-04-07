@@ -77,7 +77,7 @@ ZLIB errors
 When building the package, you may get an error saying that zlib.h
 can't be found -- despite having zlib listed in the dependencies. The
 reason is that the location of :conda:package:`zlib` often has to be
-specified in the `build.sh` script, which can be done like this:
+specified in the ``build.sh`` script, which can be done like this:
 
 .. code-block:: bash
 
@@ -90,10 +90,11 @@ Or sometimes:
 
     export CPATH=${PREFIX}/include
 
-Sometimes Makefiles may specify these locations, in which case they need to be
-edited. See the `samtools` recipe for an example of this. It may take some
-tinkering to get the recipe to build; if it doesn't seem to work then please
-submit an issue or notify ``@bioconda/core`` for advice.
+Sometimes Makefiles may specify these locations, in which case they
+need to be edited. See the `samtools recipe` recipe for an
+example of this. It may take some tinkering to get the recipe to
+build; if it doesn't seem to work then please submit an issue or
+notify ``@bioconda/core`` for advice.
 
 .. _perl-or-python-not-found:
 

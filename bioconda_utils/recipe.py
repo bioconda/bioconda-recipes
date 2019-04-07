@@ -52,7 +52,7 @@ class DuplicateKey(RecipeError):
     does not allow those, but the PyYAML parser silently overwrites
     previous keys.
 
-    For duplicate keys that are a result of `# [osx]` style line selectors,
+    For duplicate keys that are a result of ``# [osx]`` style line selectors,
     `Recipe` attempts to resolve them as a list of dictionaries instead.
     """
     template = "has duplicate key"
@@ -74,7 +74,7 @@ class MissingBuild(RecipeError):
 
 
 class HasSelector(RecipeError):
-    """Raised when recplacements fail due to `# [cond]` line selectors
+    """Raised when recplacements fail due to ``# [cond]`` line selectors
     FIXME: This should no longer be an error
     """
     template = "has selector in line %i (replace failed)"

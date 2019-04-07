@@ -121,7 +121,7 @@ def clean_skeleton_files(package, no_windows=True):
 
 def clean_yaml_file(package, no_windows):
     """
-    Cleans the YAML file output by `conda skeleton cran` to make it conda-forge
+    Cleans the YAML file output by ``conda skeleton cran`` to make it conda-forge
     compatible.
 
     Parameters

@@ -244,7 +244,7 @@ R (CRAN)
 
     The bioconda channel does not build for Windows. To keep recipes
     streamlined, please remove the "set posix" and "set native" lines described
-    above and convert the `test:commands:` block to only:
+    above and convert the ``test:commands:`` block to only:
 
     .. code-block:: yaml
 
@@ -369,8 +369,8 @@ C/C++
 
 Build tools (e.g., ``autoconf``) and compilers (e.g., ``gcc``) should be
 specified in the build requirements. Compilers are handled via a special macro.
-E.g., `{{ compiler('c')}}` ensures that the correct version of ``gcc`` is used.
-For the C++ variant ``g++``, you need to use `{{ compiler('cxx') }}`.
+E.g., ``{{ compiler('c')}}`` ensures that the correct version of ``gcc`` is used.
+For the C++ variant ``g++``, you need to use ``{{ compiler('cxx') }}``.
 These rules apply for both Linux and macOS.
 
 Conda distinguishes between dependencies needed for building (the ``build`` section),

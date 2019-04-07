@@ -133,7 +133,7 @@ class LintArgs(namedtuple('LintArgs', (
 ))):
     """
     exclude : list
-        List of function names in `registry` to skip globally. When running on
+        List of function names in ``registry`` to skip globally. When running on
         CI, this will be merged with anything else detected from the commit
         message or LINT_SKIP environment variable using the special string
         "[skip lint <function name> for <recipe name>]". While those other
@@ -142,7 +142,7 @@ class LintArgs(namedtuple('LintArgs', (
 
     registry : list or tuple
         List of functions to apply to each recipe. If None, defaults to
-        `lint_functions.registry`.
+        `bioconda_utils.lint_functions.registry`.
     """
     def __new__(cls, exclude=None, registry=None):
         return super().__new__(cls, exclude, registry)

@@ -65,16 +65,24 @@ class GitHubHandler:
                  to_user: str = "bioconda",
                  to_repo: str = "bioconda-recipes",
                  installation: int = None) -> None:
+        #: API Bearer Token
         self.token = token
+        #: If set, no actual modifying actions are taken
         self.dry_run = dry_run
+        #: The installation ID if this instance is connected to an App
         self.installation = installation
+        #: Owner of the Repo
         self.user = to_user
+        #: Name of the Repo
         self.repo = to_repo
+        #: Default variables for API calls
         self.var_default = {'user': to_user,
                             'repo': to_repo}
 
         # filled in by login():
+        #: Gidgethub API object
         self.api: gidgethub.abc.GitHubAPI = None
+        #: Login username
         self.username: str = None
 
     def __str__(self):
@@ -115,7 +123,7 @@ class GitHubHandler:
             branch_name=branch_name, path=path, **self.var_default)
 
     async def login(self, *args, **kwargs):
-        """Log into API (fills `self.username`)"""
+        """Log into API (fills `username`)"""
 
         self.create_api_object(*args, **kwargs)
 

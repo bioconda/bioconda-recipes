@@ -130,7 +130,7 @@ Testing ``bioconda-utils`` locally
 ----------------------------------
 
 Follow the instructions at :ref:`bootstrap` to create a separate Miniconda
-installation using the ``bootstrap.py`` script in the `bioconda-recipes` repo.
+installation using the ``bootstrap.py`` script in the ``bioconda-recipes`` repo.
 
 Then, in the activated environment, install the bioconda-utils test
 requirements, from the top-level directory of the ``bioconda-utils`` repo.

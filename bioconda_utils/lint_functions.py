@@ -387,7 +387,7 @@ def compilers_must_be_in_build(_recipe, meta):
 #                'fix': 'Need to wait until R 3.5 conda package is available',
 #            }
 
-
+#: Registry of lint functions
 registry = (
     in_other_channels,
     already_in_bioconda,

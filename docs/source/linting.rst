@@ -275,7 +275,7 @@ How to resolve: Ensure that the section is of the following format::
         - biotools:Snakemake
 
 In particular, ensure that each identifier starts with a type
-(`doi`, `biotools`, ...), followed by a colon and the identifier.
+(``doi``, ``biotools``, ...), followed by a colon and the identifier.
 Whitespace is not allowed.
 
 ``deprecated_numpy_spec``
@@ -338,7 +338,7 @@ accepts three arguments:
   [build, build_number, name, version, license, platform, channel].
 
 We need ``recipe`` because some lint functions check files (e.g.,
-`has_windows_bat_file`). We need ``meta`` because even though we can parse it
+``has_windows_bat_file``). We need ``meta`` because even though we can parse it
 from ``recipe`` within each lint function, it's faster if we parse the meta.yaml
 once and pass it to many lint functions. We need ``df`` because we need channel
 info to figure out if a version or build number needs to be bumped relative to

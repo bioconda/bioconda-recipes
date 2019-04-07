@@ -19,7 +19,7 @@ In the end the workflow is:
 
     - build a custom docker container (assumed to already have conda installed)
       where the requirements in
-      `bioconda-utils/bioconda-utils_requirements.txt` have been conda
+      ``bioconda-utils/bioconda-utils_requirements.txt`` have been conda
       installed.
 
     - mount the host's conda-bld to a read/write temporary dir in the container
@@ -141,7 +141,7 @@ def dummy_recipe():
     Builds a throwaway recipe in a temp dir.
 
     The best way to figure out where a recipe will be built seems to be by
-    running `conda build --output $RECIPE`, but this means a recipe has to
+    running ``conda build --output $RECIPE``, but this means a recipe has to
     exist. This creates a minimal meta.yaml file in a temp dir that can be used
     as an example recipe.
 
@@ -234,32 +234,32 @@ class RecipeBuilder(object):
             and any recipes successfully built by the container will be added
             here.
 
-            Otherwise, use `pkg_dir` as a common host directory used across
+            Otherwise, use **pkg_dir** as a common host directory used across
             multiple runs of this RecipeBuilder object.
 
         pkg_dir : str or None
             Specify where packages should appear on the host.
 
-            If `pkg_dir` is None, then a temporary directory will be
+            If **pkg_dir** is None, then a temporary directory will be
             created once for each RecipeBuilder instance and that directory
             will be used for each call to `RecipeBuilder.build()`. This allows
             subsequent recipes built by the container to see previous built
             recipes without polluting the host's conda-bld directory.
 
-            If `pkg_dir` is a string, then it will be created if needed and
+            If **pkg_dir** is a string, then it will be created if needed and
             this directory will be used store all built packages on the host
             instead of the temp dir.
 
-            If the above argument `use_host_conda_bld` is True, then the value
-            of `pkg_dir` will be ignored and the host's conda-bld directory
+            If the above argument **use_host_conda_bld** is `True`, then the value
+            of **pkg_dir** will be ignored and the host's conda-bld directory
             will be used.
 
-            In all cases, `pkg_dir` will be mounted to `container_staging` in
+            In all cases, **pkg_dir** will be mounted to **container_staging** in
             the container.
 
         keep_image : bool
             By default, the built docker image will be removed when done,
-            freeing up storage space.  Set keep_image=True to disable this
+            freeing up storage space.  Set ``keep_image=True`` to disable this
             behavior.
 
         image_build_dir : str or None
@@ -267,7 +267,7 @@ class RecipeBuilder(object):
             instead of a temporary one. For testing purposes only.
 
         docker_base_image : str or None
-            Name of base image that can be used in `dockerfile_template`.
+            Name of base image that can be used in **dockerfile_template**.
             Defaults to 'bioconda/bioconda-utils-build-env:2019-02-01'
         """
         self.tag = tag
