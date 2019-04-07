@@ -226,17 +226,17 @@ def find_best_bioc_version(package, version):
 
 def fetchPackages(bioc_version):
     """
-    Return a dictionary of all bioconductor packages in a given release:
+    Return a dictionary of all bioconductor packages in a given release::
 
-    {package: {Version: "version",
-               Depends: [list],
-               Suggests: [list],
-               MD5sum: "hash",
-               License: "foo",
-               Description: "Something...",
-               NeedsCompilation: boolean},
-              ...
-    }
+        {package: {Version: "version",
+                   Depends: [list],
+                   Suggests: [list],
+                   MD5sum: "hash",
+                   License: "foo",
+                   Description: "Something...",
+                   NeedsCompilation: boolean},
+                  ...
+        }
     """
     d = dict()
     packages_urls = [(os.path.join(base_url, bioc_version, 'bioc', 'VIEWS'), 'bioc'),
@@ -893,7 +893,7 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
     config : str or dict
 
     force : bool
-        If True, then recipes will get overwritten. If `recursive` is also
+        If True, then recipes will get overwritten. If **recursive** is also
         True, *all* recipes created will get overwritten.
 
     bioc_version : str
@@ -911,7 +911,7 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
 
     seen_dependencies : set
         Dependencies to skip and will be updated with any packages built by
-        this function. Used internally when `recursive=True`.
+        this function. Used internally when ``recursive=True``.
 
     packages : dict
         A dictionary, as returned by fetchPackages(), of all packages in a
@@ -919,7 +919,7 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
 
     skip_if_in_channels : list or None
         List of channels whose existing packages will be automatically added to
-        `seen_dependencies`. Only has an effect if `recursive=True`.
+        **seen_dependencies**. Only has an effect if ``recursive=True``.
     """
     config = utils.load_config(config)
     proj = BioCProjectPage(package, bioc_version, pkg_version, packages=packages)
