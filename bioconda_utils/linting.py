@@ -1,5 +1,63 @@
 """
 Recipe Linter
+
+QC checks (linter) for recipes, returning a TSV of issues identified.
+
+The strategy here is to use simple functions that do a single check on
+a recipe. When run on a single recipe it can be used for linting new
+contributions; when run on all recipes it helps highlight entire classes of
+problems to be addressed.
+
+See the `lint_functions` module for these.
+
+After writing the function, register it in the global ``registry`` dict,
+``lint_functions.registry``.
+
+The output is a TSV where the "info" column contains the dicts returned by
+each check function, and this column is expanded into multiple extra colums.
+While this results in a lot of NaNs, it makes it easy to drop non-interesting
+cases with pandas, e.g.,
+
+.. code:: python
+
+   recipes_with_missing_tests = df.dropna(subset=['no_tests'])
+
+or
+
+.. code:: python
+
+    def not_in_bioconda(x):
+        if not isinstance(x, set):
+            return np.nan
+        res = set(x).difference(['bioconda'])
+        if len(res):
+            return(res)
+        return np.nan
+
+    df['other'] = df.exists_in_channel.apply(not_in_bioconda)
+    other_channels = df[['recipe', 'other']].dropna()
+
+
+TODO:
+~~~~~
+
+- check version and build number against master branch. I think there's stuff
+  in bioconductor updating to handle this sort of thing. Also bioconda_utils
+  has utils for checking against master branch.
+
+  - if version changed, ensure build number is 0
+  - if version unchanged, ensure build number incremented
+
+- currently we don't pay attention to py27/py3. It would be nice to handle
+  that.
+
+- how to define valid licenses?
+  (conda_build.metadata.ensure_valid_license_family is for family)
+
+- gcc/llvm have their respective preprocessing selectors
+
+- excessive comments (from skeletons?)
+
 """
 
 import os
@@ -19,60 +77,6 @@ from .recipe import Recipe, RecipeError
 import logging
 logger = logging.getLogger(__name__)
 
-"""
-QC checks (linter) for recipes, returning a TSV of issues identified.
-
-The strategy here is to use simple functions that do a single check on
-a recipe. When run on a single recipe it can be used for linting new
-contributions; when run on all recipes it helps highlight entire classes of
-problems to be addressed.
-
-See the `lint_functions` module for these.
-
-After writing the function, register it in the global `registry` dict,
-`lint_functions.registry`.
-
-The output is a TSV where the "info" column contains the dicts returned by
-each check function, and this column is expanded into multiple extra colums.
-While this results in a lot of NaNs, it makes it easy to drop non-interesting
-cases with pandas, e.g.,
-
-   recipes_with_missing_tests = df.dropna(subset=['no_tests'])
-
-or
-
-    def not_in_bioconda(x):
-        if not isinstance(x, set):
-            return np.nan
-        res = set(x).difference(['bioconda'])
-        if len(res):
-            return(res)
-        return np.nan
-
-    df['other'] = df.exists_in_channel.apply(not_in_bioconda)
-    other_channels = df[['recipe', 'other']].dropna()
-
-
----------------------------------------------------------------------------
-TODO:
-
-- check version and build number against master branch. I think there's stuff
-  in bioconductor updating to handle this sort of thing. Also bioconda_utils
-  has utils for checking against master branch.
-
-  - if version changed, ensure build number is 0
-  - if version unchanged, ensure build number incremented
-
-- currently we don't pay attention to py27/py3. It would be nice to handle
-  that.
-
-- how to define valid licenses?
-  (conda_build.metadata.ensure_valid_license_family is for family)
-
-- gcc/llvm have their respective preprocessing selectors
-
-- excessive comments (from skeletons?)
-"""
 
 
 usage = """

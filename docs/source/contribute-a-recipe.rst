@@ -163,7 +163,7 @@ If
 * the recipe is doing something non-standard or
 * it adds a new package
 
-please ask `@bioconda/core` for a review. If you are a member
+please ask ``@bioconda/core`` for a review. If you are a member
 of the bioconda team and none of above criteria apply, feel free to merge your
 recipe once the tests pass.
 

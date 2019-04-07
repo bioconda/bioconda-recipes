@@ -39,9 +39,9 @@ locally like this without having to make a commit::
 Skipping persistently on a per-recipe basis
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Sometimes a recipe will always fail linting. For example, in rare cases the
-source for a recipe may only be available as a `git_url` or may require
-`setuptools` as a runtime dependency. In these cases, add an `extra:
-skip-lints` list to the ``meta.yaml`` indicating which lints should be
+source for a recipe may only be available as a ``git_url`` or may require
+`setuptools` as a runtime dependency. In these cases, add an ``extra:
+skip-lints`` list to the ``meta.yaml`` indicating which lints should be
 skipped, for example::
 
     extra:
@@ -54,7 +54,7 @@ skipped, for example::
 Recipes duplicated in conda-forge
 ---------------------------------
 
-Sometimes when adding or updating a recipe in a pull request to `conda-forge`
+Sometimes when adding or updating a recipe in a pull request to ``conda-forge``
 the conda-forge linter will warn that a recipe with the same name already
 exists in bioconda. When this happens, usually the best thing to do is:
 
@@ -67,8 +67,8 @@ exists in bioconda. When this happens, usually the best thing to do is:
 Linting functions
 -----------------
 
-`in_other_channels`
-~~~~~~~~~~~~~~~~~~~
+``in_other_channels``
+~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: The package exists in another dependent channel (currently
 conda-forge and defaults). This often happens when a general-use package
 was added to bioconda first but was subsequently added to one of the more
@@ -83,8 +83,8 @@ a bioconda-specific patch is required. However it is almost always better to
 fix or update the recipe in the other channel. Note that the package in the
 bioconda channel will remain in order to maintain reproducibility.
 
-`already_in_bioconda`
-~~~~~~~~~~~~~~~~~~~~~
+``already_in_bioconda``
+~~~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: The current package version, build, and platform
 (linux/osx) already exists in the bioconda channel.
 
@@ -95,8 +95,8 @@ How to resolve: Increase the version number or `build number
 <https://conda.io/docs/building/meta-yaml.html#build-number-and-string>`_ as
 appropriate.
 
-`missing_home`
-~~~~~~~~~~~~~~
+``missing_home``
+~~~~~~~~~~~~~~~~
 Reason for failing: No homepage URL.
 
 Rationale: We want to make sure users can get additional information about
@@ -107,8 +107,8 @@ homepage is an unambiguous original source.
 How to resolve: Add the url in the `about section
 <https://conda.io/docs/building/meta-yaml.html#about-section>`_.
 
-`missing_summary`
-~~~~~~~~~~~~~~~~~
+``missing_summary``
+~~~~~~~~~~~~~~~~~~~
 Reason for failing: Missing a summary.
 
 Rationale: We want to provide a minimal amount of information about the
@@ -117,8 +117,8 @@ package.
 How to resolve: add a short descriptive summary in the `about
 section <https://conda.io/docs/building/meta-yaml.html#about-section>`_.
 
-`missing_license`
-~~~~~~~~~~~~~~~~~
+``missing_license``
+~~~~~~~~~~~~~~~~~~~
 Reason for failing: No license provided.
 
 Rationale: We need to ensure that adding the package to bioconda does not
@@ -128,8 +128,8 @@ How to resolve: Add the license in the `about section
 <https://conda.io/docs/building/meta-yaml.html#about-section>`_. There are some
 ways of accommodating some licenses; see the GATK package for one method.
 
-`missing_tests`
-~~~~~~~~~~~~~~~
+``missing_tests``
+~~~~~~~~~~~~~~~~~
 Reason for failing: No tests provided.
 
 Rationale: We need at least minimal tests to ensure the programs can be found
@@ -138,8 +138,8 @@ on the path to catch basic installation errors.
 How to resolve: Add basic tests to ensure the software gets installed; see
 :ref:`tests` for more info.
 
-`missing_hash`
-~~~~~~~~~~~~~~
+``missing_hash``
+~~~~~~~~~~~~~~~~
 Reason for failing: Missing a hash in the source section.
 
 Rationale: Hashes ensure that the source is downloaded correctly without being
@@ -149,8 +149,8 @@ How to resolve: Add a hash in the `source section
 <https://conda.io/docs/building/meta-yaml.html#source-section>`_. See
 :ref:`hashes` for more info.
 
-`should_be_noarch`
-~~~~~~~~~~~~~~~~~~
+``should_be_noarch``
+~~~~~~~~~~~~~~~~~~~~
 Reason for failing: The package should be labelled as ``noarch``.
 
 Rationale: A ``noarch`` package should be created for pure Python packages,
@@ -167,8 +167,8 @@ generic packages (like a data package), add ``noarch: generic`` to the
 <https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_ for
 more details.
 
-`should_not_be_noarch`
-~~~~~~~~~~~~~~~~~~~~~~
+``should_not_be_noarch``
+~~~~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: The package should **not** be labelled as ``noarch``.
 
 Rationale: The package defines gcc as a dependency, or it contains a build/skip
@@ -179,8 +179,8 @@ Python versions. This is typically not the case if you skip a Python version.
 
 How to resolve: Remove the ``noarch`` statement.
 
-`uses_git_url`
-~~~~~~~~~~~~~~
+``uses_git_url``
+~~~~~~~~~~~~~~~~
 Reason for failing: The source section uses a git URL.
 
 Rationale: While this is supported by conda, we prefer
@@ -192,8 +192,8 @@ How to resolve: Use a direct URL. Ideally a github repo should have tagged
 releases that are accessible as tarballs from the "releases" section of the
 github repo.
 
-`uses_perl_threaded`
-~~~~~~~~~~~~~~~~~~~~
+``uses_perl_threaded``
+~~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: The recipe has a dependency of ``perl-threaded``.
 
 Rationale: Previously bioconda used ``perl-threaded`` as a dependency for Perl
@@ -202,8 +202,8 @@ is updated, it will fail this check.
 
 How to resolve: Change ``perl-threaded`` to ``perl``.
 
-`uses_javajdk`
-~~~~~~~~~~~~~~
+``uses_javajdk``
+~~~~~~~~~~~~~~~~
 Reason for failing: The recipe has a dependency of ``java-jdk``.
 
 Rationale: Previously bioconda used ``java-jdk`` as a dependency for Java
@@ -212,8 +212,8 @@ recipes is updated, it will fail this check.
 
 How to resolve: Change ``java-jdk`` to ``openjdk``.
 
-`uses_setuptools` (currently disabled)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``uses_setuptools`` (currently disabled)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: The recipe has ``setuptools`` as a run dependency.
 
 Rationale: ``setuptools`` is typically used to install dependencies for Python
@@ -229,8 +229,8 @@ To avoid this, make sure to carry ``console_scripts`` entry points from
 ``setup.py`` over to ``meta.yaml`` to replace them with scripts created by
 ``conda``/``conda-build`` which don't require ``pkg_resources``.
 
-`has_windows_bat_file`
-~~~~~~~~~~~~~~~~~~~~~~
+``has_windows_bat_file``
+~~~~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: The recipe includes a ``.bat`` file.
 
 Rationale: Often when using one of the skeleton commands (``conda skeleton
@@ -240,8 +240,8 @@ clutter we try to remove them.
 
 How to resolve: Remove the ``.bat`` file from the recipe.
 
-`setup_py_install_args`
-~~~~~~~~~~~~~~~~~~~~~~~
+``setup_py_install_args``
+~~~~~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: The recipe has ``setuptools`` as a build dependency, but
 ``build.sh`` needs to use certain arguments when running ``setup.py``.
 
@@ -260,8 +260,8 @@ to::
 
     $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
-`invalid_identifiers`
-~~~~~~~~~~~~~~~~~~~~~
+``invalid_identifiers``
+~~~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: The recipe has an ``extra -> identifiers`` section with an
 invalid format.
 
@@ -278,8 +278,8 @@ In particular, ensure that each identifier starts with a type
 (`doi`, `biotools`, ...), followed by a colon and the identifier.
 Whitespace is not allowed.
 
-`deprecated_numpy_spec`
-~~~~~~~~~~~~~~~~~~~~~~~
+``deprecated_numpy_spec``
+~~~~~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: The recipe contains ``numpy x.x`` in build or run requirements.
 
 Rationale: This kind of version pinning is deprecated, and numpy pinning is now
@@ -287,16 +287,16 @@ handled automatically by the system.
 
 How to resolve: Remove the ``x.x``.
 
-`should_not_use_fn`
-~~~~~~~~~~~~~~~~~~~
+``should_not_use_fn``
+~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: Recipe contains a ``fn:`` key in the ``source:`` section
 
 Rationale: Conda-build 3 no longer requres ``fn:``, and it is redundant with ``url:``.
 
 How to resolve: Remove the ``source: fn:`` key.
 
-`should_use_compilers`
-~~~~~~~~~~~~~~~~~~~~~~
+``should_use_compilers``
+~~~~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: The recipe has one of ``gcc``, ``llvm``, ``libgfortran``, or ``libgcc`` as dependencies.
 
 Rationale: Conda-build 3 now uses compiler tools, which are more up-to-date and
@@ -304,8 +304,8 @@ better-supported.
 
 How to resolve: Use ``{{ compiler() }}`` variables. See :ref:`compiler-tools` for details.
 
-`compilers_must_be_in_build`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``compilers_must_be_in_build``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Reason for failing: A ``{{ compiler() }}`` varaiable was found, but not in the ``build:`` section.
 
 Rational: The compiler tools must not be in ``host:`` or ``run:`` sections.
@@ -314,8 +314,8 @@ How to resolve: Move ``{{ compiler() }}`` variables to the ``build:`` section.
 
 
 ..
-    `bioconductor_37`
-    ~~~~~~~~~~~~~~~~~
+    ``bioconductor_37``
+    ~~~~~~~~~~~~~~~~~~~
     Reason for failing: The recipe specifies Bioconductor 3.7 or "release".
 
     Rationale: We cannot update Bioconductor packages yet -- see `#8947
@@ -331,16 +331,16 @@ For developers adding new linting functions:
 Lint functions are defined in ``bioconda_utils.lint_functions``. Each function
 accepts three arguments:
 
-- `recipe`, the path to the recipe
-- `meta`, the meta.yaml file parsed into a dictionary
-- `df`, a dataframe channel info, typically as returned from
-  `linting.channel_dataframe` and is expected to have the following columns:
+- ``recipe``, the path to the recipe
+- ``meta``, the meta.yaml file parsed into a dictionary
+- ``df``, a dataframe channel info, typically as returned from
+  ``linting.channel_dataframe`` and is expected to have the following columns:
   [build, build_number, name, version, license, platform, channel].
 
-We need `recipe` because some lint functions check files (e.g.,
-`has_windows_bat_file`). We need `meta` because even though we can parse it
-from `recipe` within each lint function, it's faster if we parse the meta.yaml
-once and pass it to many lint functions. We need `df` because we need channel
+We need ``recipe`` because some lint functions check files (e.g.,
+`has_windows_bat_file`). We need ``meta`` because even though we can parse it
+from ``recipe`` within each lint function, it's faster if we parse the meta.yaml
+once and pass it to many lint functions. We need ``df`` because we need channel
 info to figure out if a version or build number needs to be bumped relative to
 what's already in the channel.
 

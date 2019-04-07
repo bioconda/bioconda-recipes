@@ -12,35 +12,32 @@ Overview:
 - The filters `ExcludeSubrecipe` and `ExcludeOtherChannel` exclude
   recipes in sub folders and present in other channels as configured.
 
+- The filter `ExcludeNoActiveUpdate` excludes packages that don't
+  already have an ongoing autobump update.
+
+- The filters `LoadRecipe` and `GitLoadRecipe` fill the stub
+  Recipe with content.
+
 - The filter `UpdateVersion` determines available upstream verions
   using `Hoster` and its subclasses, selects the most recent,
   acceptable version and uses `Recipe` to replace
 
-- The filter `UpdateChecksum` downloads the modified source URLs
+- The filter `FetchUpstreamDependencies` gathers additional
+  dependencies not found by the `UpdateVersion` filter. (Currently,
+  that's only trying to get Python deps by loading the ``setup.py``)
+
+- The filter `UpdateChecksums` downloads the modified source URLs
   and updates the checksums for each source of a recipe.
 
-- The filter `CommitToBranch` commits the changes made to each recipe
-  to individual branches.
+- The filter `WriteRecipe` or the filter `GitWriteRecipe` are used to
+  write the recipe back, either to the current folder structure, or
+  the git repo and creating a branch.
 
-- The filter `WriteRecipe` (alternate to `CommitToBranch` simply
-  writes changes to the current branch.
-
-- The filter `CreateGithubPR` creates pull requests on GitHub for
+- The filter `CreatePullRequest` creates pull requests on GitHub for
   changes made to per-recipe-branches.
 
-Rationale (for all those imports):
-
-- We use `asyncio` because it allows us to "to something else" while
-  we are waiting for one of the many remote servers to complete a
-  request (or fail to). As a consequence, we use `aiohttp` for HTTP
-  requests, `aiofiles` for file I/O and `gidget` to access the GitHub
-  API. Retrying is handled using decorators from `backoff`.
-
-- We use `ruamel.yaml` to know where in a ``.yaml`` file a value is
-  defined. Ideally, we would extend its round-trip type to handle the
-  ``# [exp]`` line selectors and at least simple parts of Jinja2
-  template expansion.
-
+- The filter `MaxUpdates` terminates the loop after a number of recipes
+  have come past it, to avoid too many PRs opened at once.
 """
 
 import abc
@@ -246,6 +243,7 @@ class UpdateVersion(Filter):
      4. hoster extracts (link,version) pairs
      5. select newest
      4. update sources
+
     """
 
     class Metapackage(EndProcessingItem):
@@ -612,7 +610,7 @@ class UpdateChecksums(Filter):
 
 
 class GitFilter(Filter):
-    """Base class for `Filter`s needing access to the git repo
+    """Base class for `Filter` types needing access to the git repo
 
     Arguments:
        scanner: Scanner we are called from
@@ -631,10 +629,10 @@ class GitFilter(Filter):
         """Render branch name from recipe
 
         - Replace dashes with underscores (GitPython does not like dash)
-        - Replace slashes with `.d/` slash as Git will use directories when separating
-          parts with slashes, so `bump/toolx` cannot be a branch at the same time as
-         `bump/toolx/1.2.x`.
-          Note: this will break if we have `recipe/x` and `recipe/x.d` in the repo.
+        - Replace slashes with ``.d/`` slash as Git will use directories when separating
+          parts with slashes, so ``bump/toolx`` cannot be a branch at the same time as
+          ``bump/toolx/1.2.x``.
+          Note: this will break if we have ``recipe/x`` and ``recipe/x.d`` in the repo.
         """
         return f"{cls.branch_prefix}{recipe.reldir.replace('-', '_').replace('/', '.d/')}"
 
@@ -801,11 +799,11 @@ class CreatePullRequest(GitFilter):
         """Renders a "diff" of the recipes upstream dependencies.
 
         This relies on the 'depends' data structure in the recipe's
-        ``version_data`. This structure is expected to be a dict with
+        ``version_data``. This structure is expected to be a dict with
         two keys 'host' and 'run', each of which contain dict of
         package to version dependency mappings. The 'depends' data can
         be created by the **hoster** (currently done by CPAN and CRAN)
-        or filled in later by the `FetchUpstreamDependcies` filter
+        or filled in later by the `FetchUpstreamDependencies` filter
         (currently for PyPi).
         """
         diffset: Dict[str, Set[str]] = {'host': set(), 'run': set()}

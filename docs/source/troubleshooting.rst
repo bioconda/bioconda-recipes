@@ -4,10 +4,10 @@ Troubleshooting failed recipes
 
 Reading bioconda-utils logs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-For failed recipes, usually the easiest thing to do is find the first `BIOCONDA
-ERROR`, and start reading the output below that line. The stdout and stderr for
-that failed build will end with the next `BIOCONDA` log line, likely
-a `BIOCONDA BUILD START` or `BIOCONDA BUILD SUMMARY` line.
+For failed recipes, usually the easiest thing to do is find the first ``BIOCONDA
+ERROR``, and start reading the output below that line. The stdout and stderr for
+that failed build will end with the next ``BIOCONDA`` log line, likely
+a ``BIOCONDA BUILD START`` or ``BIOCONDA BUILD SUMMARY`` line.
 Note that there are two tests: the tests performed by conda in the main
 environment, and if they pass, the mulled-build tests performed in a minimal
 docker container. For working with failures in mulled-build tests, see
@@ -73,10 +73,11 @@ then change it to this:
 
 ZLIB errors
 ~~~~~~~~~~~
-When building the package, you may get an error saying that zlib.h can't be
-found -- despite having zlib listed in the dependencies. The reason is that the
-location of `zlib` often has to be specified in the `build.sh` script, which
-can be done like this:
+
+When building the package, you may get an error saying that zlib.h
+can't be found -- despite having zlib listed in the dependencies. The
+reason is that the location of :conda:package:`zlib` often has to be
+specified in the `build.sh` script, which can be done like this:
 
 .. code-block:: bash
 
@@ -92,7 +93,7 @@ Or sometimes:
 Sometimes Makefiles may specify these locations, in which case they need to be
 edited. See the `samtools` recipe for an example of this. It may take some
 tinkering to get the recipe to build; if it doesn't seem to work then please
-submit an issue or notify `@bioconda/core` for advice.
+submit an issue or notify ``@bioconda/core`` for advice.
 
 .. _perl-or-python-not-found:
 

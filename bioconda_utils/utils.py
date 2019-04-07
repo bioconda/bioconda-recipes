@@ -47,8 +47,9 @@ logger = logging.getLogger(__name__)
 
 class TqdmHandler(logging.StreamHandler):
     """Tqdm aware logging StreamHandler
-    Passes all log writes through tqdm to allow progress bars
-    and log messages to coexist without clobbering terminal
+
+    Passes all log writes through tqdm to allow progress bars and log
+    messages to coexist without clobbering terminal
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -229,7 +230,7 @@ def temp_env(env):
     """
     Context manager to temporarily set os.environ.
 
-    Used to send values in `env` to processes that only read the os.environ,
+    Used to send values in **env** to processes that only read the os.environ,
     for example when filling in meta.yaml with jinja2 template variables.
 
     All values are converted to string before sending to os.environ
@@ -249,7 +250,7 @@ def temp_env(env):
 def sandboxed_env(env):
     """
     Context manager to temporarily set os.environ, only allowing env vars from
-    the existing `os.environ` or the provided `env` that match
+    the existing `os.environ` or the provided **env** that match
     ENV_VAR_WHITELIST globs.
     """
     env = dict(env)
@@ -401,7 +402,7 @@ def run(cmds, env=None, mask=None, **kwargs):
     Wrapper around subprocess.run()
 
     Explicitly decodes stdout to avoid UnicodeDecodeErrors that can occur when
-    using the `universal_newlines=True` argument in the standard
+    using the ``universal_newlines=True`` argument in the standard
     subprocess.run.
 
     Also uses check=True and merges stderr with stdout. If a CalledProcessError
@@ -575,7 +576,7 @@ def get_recipes(recipe_folder, package="*"):
     """
     Generator of recipes.
 
-    Finds (possibly nested) directories containing a `meta.yaml` file.
+    Finds (possibly nested) directories containing a ``meta.yaml`` file.
 
     Parameters
     ----------
@@ -601,7 +602,7 @@ def get_latest_recipes(recipe_folder, config, package="*"):
     """
     Generator of recipes.
 
-    Finds (possibly nested) directories containing a `meta.yaml` file and returns
+    Finds (possibly nested) directories containing a ``meta.yaml`` file and returns
     the latest version of each recipe.
 
     Parameters
@@ -664,7 +665,7 @@ def built_package_paths(recipe):
     """
     Returns the path to which a recipe would be built.
 
-    Does not necessarily exist; equivalent to `conda build --output recipename`
+    Does not necessarily exist; equivalent to ``conda build --output recipename``
     but without the subprocess.
     """
     config = load_conda_build_config()
@@ -723,9 +724,9 @@ def newly_unblacklisted(config_file, recipe_folder, git_range):
         Path to recipe dir, needed by get_blacklist
 
     git_range : str or list
-        If str or single-item list. If 'HEAD' or ['HEAD'] or ['master',
-        'HEAD'], compares the current changes to master. If other commits are
-        specified, then use those commits directly via `git show`.
+        If str or single-item list. If ``'HEAD'`` or ``['HEAD']`` or ``['master',
+        'HEAD']``, compares the current changes to master. If other commits are
+        specified, then use those commits directly via ``git show``.
     """
 
     # 'HEAD' becomes ['HEAD'] and then ['master', 'HEAD'].
@@ -760,9 +761,9 @@ def changed_since_master(recipe_folder):
     """
     Return filenames changed since master branch.
 
-    Note that this uses `origin`, so if you are working on a fork of the main
-    repo and have added the main repo as `upstream`, then you'll have to do
-    a `git checkout master && git pull upstream master` to update your fork.
+    Note that this uses ``origin``, so if you are working on a fork of the main
+    repo and have added the main repo as ``upstream``, then you'll have to do
+    a ``git checkout master && git pull upstream master`` to update your fork.
     """
     p = run(['git', 'fetch', 'origin', 'master'])
     p = run(['git', 'diff', 'FETCH_HEAD', '--name-only'])
@@ -980,12 +981,12 @@ def modified_recipes(git_range, recipe_folder, config_file):
     """
     Returns files under the recipes dir that have been modified within the git
     range. Includes meta.yaml files for recipes that have been unblacklisted in
-    the git range. Filenames are returned with the `recipe_folder` included.
+    the git range. Filenames are returned with the ``recipe_folder`` included.
 
     git_range : list or tuple of length 1 or 2
-        For example, ['00232ffe', '10fab113'], or commonly ['master', 'HEAD']
-        or ['master']. If length 2, then the commits are provided to `git diff`
-        using the triple-dot syntax, `commit1...commit2`. If length 1, the
+        For example, ``['00232ffe', '10fab113']``, or commonly ``['master', 'HEAD']``
+        or ``['master']``. If length 2, then the commits are provided to ``git diff``
+        using the triple-dot syntax, ``commit1...commit2``. If length 1, the
         comparison is any changes in the working tree relative to the commit.
 
     recipe_folder : str

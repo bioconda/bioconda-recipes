@@ -29,7 +29,7 @@ need to create the entire bioconda-build system environment from scratch for
 each build.
 
 When testing locally with ``circleci build``, we use the
-`bioconda/bioconda-utils-build-env` Docker container to avoid changing the
+``bioconda/bioconda-utils-build-env`` Docker container to avoid changing the
 local system. This container is defined by `this Dockerfile
 <https://github.com/bioconda/bioconda-utils/blob/master/Dockerfile>`_.
 

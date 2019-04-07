@@ -25,7 +25,7 @@ additionally submit a pull request on your behalf:
       --create-pr
 
 By default, subrecipes  will be ignored for updating unless
-they specifically have the following in their `extra` block:
+they specifically have the following in their ``extra`` block:
 
 .. code-block:: yaml
 
@@ -33,9 +33,9 @@ they specifically have the following in their `extra` block:
       watch:
         enable: yes
 
-E.g., `packagename/meta.yaml` is the main recipe, and
-`packagename/0.5/meta.yaml` is a subrecipe. So `packagename/0.5/meta.yaml`
-needs the above `extra` block if it should ever be automatically updated.
+E.g., ``packagename/meta.yaml`` is the main recipe, and
+``packagename/0.5/meta.yaml`` is a subrecipe. So ``packagename/0.5/meta.yaml``
+needs the above ``extra`` block if it should ever be automatically updated.
 
 
 How it works
@@ -48,7 +48,7 @@ inner workings.
 The components
 ~~~~~~~~~~~~~~
 
-The `bioconda_utils.update.Recipe` object contains logic for finding and
+The `bioconda_utils.recipe.Recipe` object contains logic for finding and
 replacing text that may contain version information (such as within ``package:``
 and ``source:`` sections or Jinja set statements), for resetting build numbers,
 and for reading and writing recipes. Notably, reading and writing recipes here
@@ -62,9 +62,9 @@ handles other things like retrying after increasingly longer wait times when it
 encounters non-permanent HTTP errors.
 
 Subclasses of `bioconda_utils.update.Filter` are added to the scanner. They
-contain logic in their `apply` method. This method at least takes a recipe as
+contain logic in their ``apply`` method. This method at least takes a recipe as
 the first argument, and either returns a (possibly modified) recipe or raises
-a custom exception. The remainder of the `apply` function can do arbitrarily
+a custom exception. The remainder of the ``apply`` function can do arbitrarily
 complicated things, and will do so in the asyncio loop.
 
 Subclasses of `bioconda_utils.hosters.Hoster` use regular expressions to detect
@@ -76,7 +76,7 @@ Writing a filter
 ~~~~~~~~~~~~~~~~
 To add additional functionality to the scanner, create a filter in
 `bioconda_utils.update` and add it to the scanner in
-`bioconda_utils.cli.update()`. There are existing filters to exclude recipes
+`bioconda_utils.cli.autobump()`. There are existing filters to exclude recipes
 based on blacklist or subrecipe status, update a recipe based on the latest
 version found by a `Hoster` (see below), update checksums, figure out where to
 load a recipe from (i.e. master branch or an existing PR), create a new PR, and
@@ -107,7 +107,7 @@ be used to scan against existing recipes.
 
 Adding an attribute to the class with the suffix  ``_pattern`` allows the
 regular expression stored in that attribute to be subsituted into other regular
-expressions using `{placeholder}` format placeholders.
+expressions using ``{placeholder}`` format placeholders.
 
 Take, for example, the `Bioconductor` hoster which is commented here for
 explanation purposes:
@@ -155,7 +155,7 @@ To tie this all together:
   filter added, and because an `UpdateVersion` filter will check a recipe
   against all configured hosters, a Bioconductor recipe will match the above
   `url_pattern` for the `Bioconductor` hoster.
-- The hoster object will go to the site specified by `releases_format` and
+- The hoster object will go to the site specified by ``releases_format`` and
   scrape links that match `link_pattern`.
 - The `UpdateVersion` filter will inspect those links found by the hoster,
   figure out which is the most recent, and see if the existing recipe is

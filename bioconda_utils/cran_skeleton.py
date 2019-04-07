@@ -43,11 +43,11 @@ win32_string = 'number: 0\n  skip: true  # [win32]'
 def write_recipe(package, recipe_dir='.', recursive=False, force=False,
                  no_windows=False, **kwargs):
         """
-        Call out to to `conda skeleton cran`.
+        Call out to to ``conda skeleton cran``.
 
         Kwargs are accepted for uniformity with
         `bioconductor_skeleton.write_recipe`; the only one handled here is
-        `recursive`.
+        ``recursive``.
 
         Parameters
         ----------
@@ -57,16 +57,16 @@ def write_recipe(package, recipe_dir='.', recursive=False, force=False,
             "r-pkgname" conda package name.
 
         recipe_dir : str
-            Recipe will be created as a subdirectory in `recipe_dir`
+            Recipe will be created as a subdirectory in ``recipe_dir``
 
         recursive : bool
-            Add the `--recursive` argument to `conda skeleton cran` to
+            Add the ``--recursive`` argument to ``conda skeleton cran`` to
             recursively build CRAN recipes.
 
         force : bool
-            If True, then remove the directory `<recipe_dir>/<pkgname>`, where
-            `<pkgname>` the sanitized conda version of the package name,
-            regardless of which format was provided as `package`.
+            If True, then remove the directory ``<recipe_dir>/<pkgname>``, where
+            ``<pkgname>`` the sanitized conda version of the package name,
+            regardless of which format was provided as ``package``.
 
         no_windows : bool
             If True, then after creating the skeleton the files are then
@@ -101,7 +101,7 @@ def write_recipe(package, recipe_dir='.', recursive=False, force=False,
 
 def clean_skeleton_files(package, no_windows=True):
     """
-    Cleans output files created by `conda skeleton cran` to make them
+    Cleans output files created by ``conda skeleton cran`` to make them
     conda-forge compatible.
 
     Parameters
@@ -111,7 +111,7 @@ def clean_skeleton_files(package, no_windows=True):
         "r-pkgname" conda package name.
 
     no_windows : bool
-        If True, no bld.bat will be created and no `[win]` preprocess selectors
+        If True, no bld.bat will be created and no ``[win]`` preprocess selectors
         will be added to the yaml
     """
     clean_yaml_file(package, no_windows)
@@ -172,7 +172,7 @@ def clean_yaml_file(package, no_windows):
 
 def clean_build_file(package, no_windows=False):
     """
-    Cleans build.sh file created by `conda skeleton cran` to be compatible with
+    Cleans build.sh file created by ``conda skeleton cran`` to be compatible with
     conda-forge.
 
     Parameters
@@ -181,7 +181,7 @@ def clean_build_file(package, no_windows=False):
         Must be sanitized "r-pkgname" package name.
 
     no_windows : bool
-        Included for consistency with other `clean_*` functions; does not have
+        Included for consistency with other ``clean_*`` functions; does not have
         any effect for this function.
     """
 
@@ -206,7 +206,7 @@ def clean_build_file(package, no_windows=False):
 
 def clean_bld_file(package, no_windows):
     """
-    Cleans bld.bat file created by `conda skeleton cran` to be compatible with
+    Cleans bld.bat file created by ``conda skeleton cran`` to be compatible with
     conda-forge.
 
     Parameters
@@ -236,8 +236,8 @@ def clean_bld_file(package, no_windows):
 
 def filter_lines_regex(lines, regex, substitute):
     """
-    Substitutes `substitute` for every match to `regex` in each line of
-    `lines`.
+    Substitutes **substitute** for every match to **regex** in each line of
+    **lines**.
 
     Parameters
     ----------
@@ -251,7 +251,7 @@ def filter_lines_regex(lines, regex, substitute):
 
 def remove_empty_lines(lines):
     """
-    Removes consecutive empty lines in `lines`.
+    Removes consecutive empty lines in **lines**.
 
     Parameters
     ----------
