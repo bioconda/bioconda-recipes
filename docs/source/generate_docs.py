@@ -636,11 +636,33 @@ def generate_recipes(app):
         tasks.join()
 
 
+def add_ribbon(app, pagename, templatename, context, doctree):
+    if templatename != 'page.html':
+        return
+    if pagename.startswith('_autosummary') or pagename.startswith('_modules'):
+        _, _, path = pagename.partition('/')
+        path = path.replace('.', '/') + '.py'
+        repo = 'bioconda-utils'
+    elif pagename.startswith('recipes/') and pagename.endswith('/README'):
+        repo = 'bioconda-recipes'
+        path = pagename[:-len('README')] + 'meta.yaml'
+    else:
+        repo = 'bioconda-utils'
+        path = 'docs/source/' + os.path.relpath(doctree.get('source'), app.builder.srcdir)
+
+    context['git_ribbon_url'] = (f'https://github.com/bioconda/{repo}/'
+                                 f'edit/master/{path}')
+    context['git_ribbon_message'] = "Edit me on GitHub"
+
+
+
 def setup(app):
     """Set up sphinx extension"""
     app.add_domain(CondaDomain)
+    app.add_directive('autorecipes', AutoRecipesDirective)
     app.connect('builder-inited', generate_recipes)
     app.connect('missing-reference', resolve_required_by_xrefs)
+    app.connect('html-page-context', add_ribbon)
     return {
         'version': "0.0.0",
         'parallel_read_safe': True,
