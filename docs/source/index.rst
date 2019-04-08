@@ -13,7 +13,7 @@ specializing in bioinformatics software. Bioconda consists of:
 .. _conda: https://conda.io/en/latest/index.html
 .. _`repository of recipes`: https://github.com/bioconda/bioconda-recipes
 .. _`build system`: https://github.com/bioconda/bioconda-utils
-.. _`repository of packages`: https://anacoda.org/bioconda/
+.. _`repository of packages`: https://anancoda.org/bioconda/
 
 The conda package manager makes installing software a vastly more
 streamlined process. Conda is a combination of other package managers

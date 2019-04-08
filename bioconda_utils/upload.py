@@ -23,9 +23,7 @@ def anaconda_upload(package, token=None, label=None):
         this as the token for authenticating the anaconda client.
 
     label : str
-        Optional label to add, see
-        https://docs.continuum.io/anaconda-cloud/using#Uploading. Mostly useful
-        for testing.
+        Optional label to add
     """
     label_arg = []
     if label is not None:

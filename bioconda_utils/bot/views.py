@@ -68,9 +68,7 @@ async def webhook_dispatch(request):
 
 @web_routes.get("/")
 async def show_status(request):
-    """Shows the index page
-
-    This is rendered at eg https://bioconda.herokuapps.com/
+    """Shows the index page ('/')
     """
     try:
         logger.info("Status: getting celery data")
