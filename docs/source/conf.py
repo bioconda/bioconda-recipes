@@ -23,17 +23,18 @@ def setup(app):
 #needs_sphinx = '1.0'
 
 extensions = [
-    'generate_docs',
+    'bioconda_utils.sphinxext',
+
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.extlinks',
-
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
+
     'celery.contrib.sphinx',
 ]
 
@@ -302,6 +303,12 @@ extlinks = {
 # autogenerate autodoc stubs via autosummary
 autosummary_generate = True
 
-# placate assertion in utils.RepoData()
-from bioconda_utils import utils
-utils.load_config('../bioconda-recipes/config.yml')
+# Bioconda Sphinx Extension Config:
+# Git Url for repository containing recipes
+bioconda_repo_url = 'https://github.com/bioconda/bioconda-recipes.git'
+
+# Path within that repository to folder containing recipes
+# bioconda_recipes_path = 'recipes'
+
+# Path within that repository to bioconda config file
+# bioconda_config_file = 'config.yml'

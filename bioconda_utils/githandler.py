@@ -368,8 +368,18 @@ class GitHandler(GitHandlerBase):
                  dry_run=False,
                  home='bioconda/bioconda-recipes',
                  fork=None,
-                 allow_dirty=True) -> None:
-        repo = git.Repo(folder, search_parent_directories=True)
+                 allow_dirty=True,
+                 depth=1) -> None:
+        if os.path.exists(folder):
+            repo = git.Repo(folder, search_parent_directories=True)
+        else:
+            try:
+                os.mkdir(folder)
+                logger.error("cloning %s into %s", home, folder)
+                repo = git.Repo.clone_from(home, folder, depth=depth)
+            except git.GitCommandError:
+                os.rmdir(folder)
+                raise
         super().__init__(repo, dry_run, home, fork, allow_dirty)
 
         #: Branch to restore after running

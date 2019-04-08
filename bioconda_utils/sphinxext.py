@@ -32,6 +32,7 @@ from conda.exports import VersionOrder
 
 from bioconda_utils.utils import RepoData, load_config
 from bioconda_utils.recipe import Recipe, RecipeError
+from bioconda_utils.githandler import BiocondaRepo
 
 # Aquire a logger
 try:
@@ -41,9 +42,7 @@ except AttributeError:  # not running within sphinx
     logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-BASE_DIR = op.dirname(op.abspath(__file__))
-RECIPE_DIR = op.join(op.dirname(BASE_DIR), 'bioconda-recipes', 'recipes')
-OUTPUT_DIR = op.join(BASE_DIR, 'recipes')
+#BASE_DIR = op.dirname(op.abspath(__file__))
 RECIPE_BASE_URL = 'https://github.com/bioconda/bioconda-recipes/tree/master/recipes/'
 CONDA_FORGE_FORMAT = 'https://github.com/conda-forge/{}-feedstock'
 
@@ -526,7 +525,7 @@ class AutoRecipesDirective(rst.Directive):
         return [nodes.paragraph('')]
 
 
-def generate_readme(folder, repodata, renderer):
+def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
     """Generates README.rst for the recipe in folder
 
     Args:
@@ -539,13 +538,13 @@ def generate_readme(folder, repodata, renderer):
       which meta.yaml files exist in the recipe folder and its
       subfolders
     """
-    output_file = op.join(OUTPUT_DIR, folder, 'README.rst')
+    output_file = op.join(output_dir, folder, 'README.rst')
 
     # Select meta yaml
-    meta_fname = op.join(RECIPE_DIR, folder, 'meta.yaml')
+    meta_fname = op.join(recipe_basedir, folder, 'meta.yaml')
     if not op.exists(meta_fname):
-        for item in os.listdir(op.join(RECIPE_DIR, folder)):
-            dname = op.join(RECIPE_DIR, folder, item)
+        for item in os.listdir(op.join(recipe_basedir, folder)):
+            dname = op.join(recipe_basedir, folder, item)
             if op.isdir(dname):
                 fname = op.join(dname, 'meta.yaml')
                 if op.exists(fname):
@@ -554,11 +553,11 @@ def generate_readme(folder, repodata, renderer):
         else:
             logger.error("No 'meta.yaml' found in %s", folder)
             return []
-    meta_relpath = meta_fname[len(RECIPE_DIR)+1:]
+    meta_relpath = meta_fname[len(recipe_basedir)+1:]
 
     # Read the meta.yaml file(s)
     try:
-        recipe = Recipe.from_file(RECIPE_DIR, meta_fname)
+        recipe = Recipe.from_file(recipe_basedir, meta_fname)
     except RecipeError as e:
         logger.error("Unable to process %s: %s", meta_fname, e)
         return []
@@ -608,14 +607,24 @@ def generate_recipes(app):
     have a README.rst file generated and generate a recipes.rst from
     the collected data.
     """
-    renderer = Renderer(app)
-    load_config(os.path.join(os.path.dirname(RECIPE_DIR), "config.yml"))
+    source_dir = app.env.srcdir
+    doctree_dir = app.env.doctreedir  # .../build/doctrees
+    repo_dir = op.join(op.dirname(app.env.srcdir), "_bioconda_recipes")
+    recipe_basedir = op.join(repo_dir, app.config.bioconda_recipes_path)
+    repodata_cache_file = op.join(doctree_dir, 'RepoDataCache.pkl')
+    repo_config_file = os.path.join(repo_dir, app.config.bioconda_config_file)
+    output_dir = op.join(source_dir, 'recipes')
+
+    # Initialize Repo and point globals at the right place
+    repo = BiocondaRepo(folder=repo_dir, home=app.config.bioconda_repo_url)
+    repo.checkout_master()
+    load_config(repo_config_file)
     repodata = RepoData()
-    repodata.set_cache(op.join(app.env.doctreedir, 'RepoDataCache.csv'))
-    # force loading repodata to avoid duplicate loads from threads
+    repodata.set_cache(repodata_cache_file)
     repodata.df  # pylint: disable=pointless-statement
-    recipes: List[Dict[str, Any]] = []
-    recipe_dirs = os.listdir(RECIPE_DIR)
+
+    # Collect recipe names
+    recipe_dirs = os.listdir(recipe_basedir)
 
     if 'BIOCONDA_FILTER_RECIPES' in os.environ:
         limiter = os.environ['BIOCONDA_FILTER_RECIPES']
@@ -625,6 +634,9 @@ def generate_recipes(app):
             match = re.compile(limiter)
             recipe_dirs = [recipe for recipe in recipe_dirs
                            if match.search(recipe)]
+
+    renderer = Renderer(app)
+    recipes: List[Dict[str, Any]] = []
 
     if parallel_available and len(recipe_dirs) > 5:
         nproc = app.parallel
@@ -636,11 +648,11 @@ def generate_recipes(app):
                 recipe_dirs,
                 'Generating package READMEs...',
                 "purple", len(recipe_dirs), app.verbosity):
-            if not op.isdir(op.join(RECIPE_DIR, folder)):
+            if not op.isdir(op.join(recipe_basedir, folder)):
                 logger.error("Item '%s' in recipes folder is not a folder",
                              folder)
                 continue
-            recipes.extend(generate_readme(folder, repodata, renderer))
+            recipes.extend(generate_readme(recipe_basedir, output_dir, folder, repodata, renderer))
     else:
         tasks = ParallelTasks(nproc)
         chunks = make_chunks(recipe_dirs, nproc)
@@ -648,11 +660,11 @@ def generate_recipes(app):
         def process_chunk(chunk):
             _recipes: List[Dict[str, Any]] = []
             for folder in chunk:
-                if not op.isdir(op.join(RECIPE_DIR, folder)):
+                if not op.isdir(op.join(recipe_basedir, folder)):
                     logger.error("Item '%s' in recipes folder is not a folder",
                                  folder)
                     continue
-                _recipes.extend(generate_readme(folder, repodata, renderer))
+                _recipes.extend(generate_readme(recipe_basedir, output_dir, folder, repodata, renderer))
             return _recipes
 
         def merge_chunk(_chunk, res):
@@ -694,6 +706,9 @@ def setup(app):
     app.connect('builder-inited', generate_recipes)
     app.connect('missing-reference', resolve_required_by_xrefs)
     app.connect('html-page-context', add_ribbon)
+    app.add_config_value('bioconda_repo_url', '', 'env')
+    app.add_config_value('bioconda_recipes_path', 'recipes', 'env')
+    app.add_config_value('bioconda_config_file', 'config.yml', 'env')
     return {
         'version': "0.0.0",
         'parallel_read_safe': True,
