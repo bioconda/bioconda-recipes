@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="TxDb.Celegans.UCSC.ce11.refGene_3.4.3.tar.gz"
+FN="TxDb.Celegans.UCSC.ce11.refGene_3.4.4.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/TxDb.Celegans.UCSC.ce11.refGene_3.4.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/TxDb.Celegans.UCSC.ce11.refGene_3.4.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.celegans.ucsc.ce11.refgene/bioconductor-txdb.celegans.ucsc.ce11.refgene_3.4.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/TxDb.Celegans.UCSC.ce11.refGene_3.4.4.tar.gz"
+  "https://bioarchive.galaxyproject.org/TxDb.Celegans.UCSC.ce11.refGene_3.4.4.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.celegans.ucsc.ce11.refgene/bioconductor-txdb.celegans.ucsc.ce11.refgene_3.4.4_src_all.tar.gz"
 )
-MD5="62144dbefc0beb1bb1c2e0db3757179c"
+MD5="3952ad139ed6e3cc7d210cc994c53b3e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
