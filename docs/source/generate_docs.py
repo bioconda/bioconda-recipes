@@ -505,6 +505,26 @@ class CondaDomain(Domain):
         #        xdata |= data
 
 
+class AutoRecipesDirective(rst.Directive):
+    """FIXME: This does not yet do ANYTHING!
+
+    In theory, a directive like this should act as a hook for a repo
+    to generate stubs for, similar to other autoXYZ directives.
+    """
+    required_arguments = 0
+    optional_argument = 0
+    option_spec = {
+        'repo': rst.directives.unchanged,
+        'folder': rst.directives.unchanged,
+        'config': rst.directives.unchanged,
+    }
+    has_content = False
+
+    def run(self):
+        #self.env: BuildEnvironment = self.state.document.settings.env
+        return [nodes.paragraph('')]
+
+
 def generate_readme(folder, repodata, renderer):
     """Generates README.rst for the recipe in folder
 
