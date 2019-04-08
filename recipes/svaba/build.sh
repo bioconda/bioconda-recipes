@@ -44,12 +44,6 @@ echo "#############"
 echo "# MAKE DONE #"
 echo "#############"
 
-make install
-
-echo "#####################"
-echo "# MAKE INSTALL DONE #"
-echo "#####################"
-
 echo "#######################"
 echo "# WHERE IS THE BINARY #"
 echo "#######################"
