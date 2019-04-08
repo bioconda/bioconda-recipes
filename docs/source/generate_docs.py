@@ -193,6 +193,7 @@ class RequirementsField(GroupedField):
             backrefs.add((env.docname, source))
 
         fieldbody = nodes.field_body('', listnode)
+        fieldbody.set_class('field-list-wrapped')
         return nodes.field('', fieldname, fieldbody)
 
 
