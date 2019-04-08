@@ -50,6 +50,6 @@ echo "#######################"
 
 echo ""
 
-find .
+find $PREFIX -type f -name svaba
 
 echo "#######################"
