@@ -33,7 +33,7 @@ extensions = [
 
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
-    'sphinxcontrib.napoleon',
+    'sphinx.ext.napoleon',
     'celery.contrib.sphinx',
 ]
 
