@@ -5,6 +5,7 @@ This module builds the documentation for our recipes
 
 import os
 import os.path as op
+import re
 from typing import Any, Dict, List, Tuple, Optional
 
 from jinja2.sandbox import SandboxedEnvironment
@@ -615,6 +616,15 @@ def generate_recipes(app):
     repodata.df  # pylint: disable=pointless-statement
     recipes: List[Dict[str, Any]] = []
     recipe_dirs = os.listdir(RECIPE_DIR)
+
+    if 'BIOCONDA_FILTER_RECIPES' in os.environ:
+        limiter = os.environ['BIOCONDA_FILTER_RECIPES']
+        try:
+            recipe_dirs = recipe_dirs[:int(limiter)]
+        except ValueError:
+            match = re.compile(limiter)
+            recipe_dirs = [recipe for recipe in recipe_dirs
+                           if match.search(recipe)]
 
     if parallel_available and len(recipe_dirs) > 5:
         nproc = app.parallel
