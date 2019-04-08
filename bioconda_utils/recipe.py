@@ -1,4 +1,7 @@
-"""The **meta.yaml** format used by conda to describe how a package
+"""
+Editable Recipe (``meta.yaml``)
+
+The **meta.yaml** format used by conda to describe how a package
 is built has diverged from standard YAML format significantly. This
 module implements a class `Recipe` that in contrast to the **Meta**
 object resulting from parsing by **conda_build** offers functions to
@@ -49,7 +52,7 @@ class DuplicateKey(RecipeError):
     does not allow those, but the PyYAML parser silently overwrites
     previous keys.
 
-    For duplicate keys that are a result of `# [osx]` style line selectors,
+    For duplicate keys that are a result of ``# [osx]`` style line selectors,
     `Recipe` attempts to resolve them as a list of dictionaries instead.
     """
     template = "has duplicate key"
@@ -71,7 +74,7 @@ class MissingBuild(RecipeError):
 
 
 class HasSelector(RecipeError):
-    """Raised when recplacements fail due to `# [cond]` line selectors
+    """Raised when recplacements fail due to ``# [cond]`` line selectors
     FIXME: This should no longer be an error
     """
     template = "has selector in line %i (replace failed)"
@@ -369,12 +372,11 @@ class Recipe():
         """Runs string replace on parts of recipe text.
 
         - Lines considered are those containing Jinja set statements
-        (``{% set var="val" %}``) and those defining the top level
-        Mapping entries given by **within** (default:``package`` and
-        ``source``).
-
+          (``{% set var="val" %}``) and those defining the top level
+          Mapping entries given by **within** (default:``package`` and
+          ``source``).
         - Cowardly refuses to modify lines with ``# [expression]``
-        selectors.
+          selectors.
         """
         logger.debug("Trying to replace %s with %s", before, after)
 

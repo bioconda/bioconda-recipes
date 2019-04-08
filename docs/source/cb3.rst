@@ -178,10 +178,10 @@ Global pinning is the idea of making sure all recipes use the same versions of
 common libraries.  Problems arise when the build-time version does not match
 the install-time version. Furthermore, all packages installed into the same
 environment should have been built using the same version so that they can
-co-exist. For example, many bioinformatics tools have `zlib` as a dependency.
-The version of `zlib` used when building the package should be the same as the
+co-exist. For example, many bioinformatics tools have ``zlib`` as a dependency.
+The version of ``zlib`` used when building the package should be the same as the
 version used when installing the package into a new environment. This implies
-that we need to specify the `zlib` version in one place and have all recipes
+that we need to specify the ``zlib`` version in one place and have all recipes
 use that version.
 
 Previously we maintained a global, bioconda-specific pinning file (see

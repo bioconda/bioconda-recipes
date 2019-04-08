@@ -193,6 +193,7 @@ class RequirementsField(GroupedField):
             backrefs.add((env.docname, source))
 
         fieldbody = nodes.field_body('', listnode)
+        fieldbody.set_class('field-list-wrapped')
         return nodes.field('', fieldname, fieldbody)
 
 
@@ -298,11 +299,12 @@ class CondaObjectDescription(ObjectDescription):
             objects = self.env.domaindata[self.domain]['objects']
             key = (self.objtype, name)
             if key in objects:
-                self.env.warn(
-                    self.env.docname,
-                    "Duplicate entry {} {} at {} (other in {})".format(
-                        self.objtype, name, self.lineno,
-                        self.env.doc2path(objects[key][0])))
+                if hasattr(self.env, 'warn'):
+                    self.env.warn(
+                        self.env.docname,
+                        "Duplicate entry {} {} at {} (other in {})".format(
+                            self.objtype, name, self.lineno,
+                            self.env.doc2path(objects[key][0])))
             objects[key] = (self.env.docname, target_name)
 
         index_text = self.get_index_text(name)
@@ -496,10 +498,31 @@ class CondaDomain(Domain):
         for (typ, name), (docname, ref) in otherdata['objects'].items():
             if docname in docnames:
                 self.data['objects'][typ, name] = (docname, ref)
-        for key, data in otherdata['backrefs'].items():
-            if docname in docnames:
-                xdata = self.data['backrefs'].setdefault(key, set())
-                xdata |= data
+        # broken?
+        #for key, data in otherdata['backrefs'].items():
+        #    if docname in docnames:
+        #        xdata = self.data['backrefs'].setdefault(key, set())
+        #        xdata |= data
+
+
+class AutoRecipesDirective(rst.Directive):
+    """FIXME: This does not yet do ANYTHING!
+
+    In theory, a directive like this should act as a hook for a repo
+    to generate stubs for, similar to other autoXYZ directives.
+    """
+    required_arguments = 0
+    optional_argument = 0
+    option_spec = {
+        'repo': rst.directives.unchanged,
+        'folder': rst.directives.unchanged,
+        'config': rst.directives.unchanged,
+    }
+    has_content = False
+
+    def run(self):
+        #self.env: BuildEnvironment = self.state.document.settings.env
+        return [nodes.paragraph('')]
 
 
 def generate_readme(folder, repodata, renderer):
@@ -634,11 +657,33 @@ def generate_recipes(app):
         tasks.join()
 
 
+def add_ribbon(app, pagename, templatename, context, doctree):
+    if templatename != 'page.html':
+        return
+    if pagename.startswith('_autosummary') or pagename.startswith('_modules'):
+        _, _, path = pagename.partition('/')
+        path = path.replace('.', '/') + '.py'
+        repo = 'bioconda-utils'
+    elif pagename.startswith('recipes/') and pagename.endswith('/README'):
+        repo = 'bioconda-recipes'
+        path = pagename[:-len('README')] + 'meta.yaml'
+    else:
+        repo = 'bioconda-utils'
+        path = 'docs/source/' + os.path.relpath(doctree.get('source'), app.builder.srcdir)
+
+    context['git_ribbon_url'] = (f'https://github.com/bioconda/{repo}/'
+                                 f'edit/master/{path}')
+    context['git_ribbon_message'] = "Edit me on GitHub"
+
+
+
 def setup(app):
     """Set up sphinx extension"""
     app.add_domain(CondaDomain)
+    app.add_directive('autorecipes', AutoRecipesDirective)
     app.connect('builder-inited', generate_recipes)
     app.connect('missing-reference', resolve_required_by_xrefs)
+    app.connect('html-page-context', add_ribbon)
     return {
         'version': "0.0.0",
         'parallel_read_safe': True,

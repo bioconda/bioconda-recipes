@@ -1,4 +1,4 @@
-"""Abstraction layer handling git actions"""
+"""Wrappers for interacting with ``git``"""
 
 import asyncio
 import logging
@@ -205,8 +205,8 @@ class GitHandlerBase():
         See also `get_merge_base()`.
 
         Args:
-          ref: Defaults to `HEAD` (active branch), one of the tips compared
-          other: Defaults to `origin/master`, other tip compared
+          ref: Defaults to ``HEAD`` (active branch), one of the tips compared
+          other: Defaults to ``origin/master``, other tip compared
 
         Returns:
           Generator over modified or created (**not deleted**) files.

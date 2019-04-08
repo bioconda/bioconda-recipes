@@ -1,5 +1,5 @@
 """
-Celery Tasks
+Celery Tasks doing the actual work
 """
 
 import logging

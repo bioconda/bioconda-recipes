@@ -1,3 +1,7 @@
+"""
+Package Builder
+"""
+
 import subprocess as sp
 from itertools import chain
 from collections import defaultdict, namedtuple
@@ -70,7 +74,7 @@ def build(
         a build.
 
     channels : list
-        Channels to include via the `--channel` argument to conda-build. Higher
+        Channels to include via the ``--channel`` argument to conda-build. Higher
         priority channels should come first.
 
     docker_builder : docker_utils.RecipeBuilder object

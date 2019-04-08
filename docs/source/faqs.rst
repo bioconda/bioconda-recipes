@@ -32,11 +32,11 @@ Recipe vs package
 
 A *recipe* is a directory containing small set of files that defines name,
 version, dependencies, and URL for source code. A recipe typically contains
-a `meta.yaml` file that defines these settings and a `build.sh` script that
+a ``meta.yaml`` file that defines these settings and a ``build.sh`` script that
 builds the software. A recipe is converted into a *package* by running
-`conda-build` on the recipe. A package is a bgzipped tar file (`.tar.bz2`) that
+`conda-build` on the recipe. A package is a bgzipped tar file (``.tar.bz2``) that
 contains the built software. Packages are uploaded to anaconda.org so that
-users can install them with `conda install`.
+users can install them with ``conda install``.
 
 .. seealso::
 
@@ -57,12 +57,12 @@ a "build" means identifying any recipes that need to built, running
 How is Circle CI set up and configured?
 ---------------------------------------
 
-- `.circleci/config.yml` is read by the Circle CI worker.
+- ``.circleci/config.yml`` is read by the Circle CI worker.
 
-- The worker runs `.circleci/setup.sh`. This installs conda, adds
-  channels, and installs `bioconda-utils`
+- The worker runs ``.circleci/setup.sh``. This installs conda, adds
+  channels, and installs :doc:`bioconda-utils`
 
-- The worker runs tests defined in `.circleci/config.yml`.
+- The worker runs tests defined in ``.circleci/config.yml``.
 
 A local version of the Circle CI tests can be executed via the
 :ref:`Circle CI client <circleci-client>`. Note that this version lacks some
@@ -95,7 +95,7 @@ What's the lifecycle of a bioconda package?
 - Circle CI tests again, but this time after testing the built packages are
   uploaded to the bioconda channel on anaconda.org.
 - Users can now install the package just like any other conda package with
-  `conda install`.
+  ``conda install``.
 
 Once uploaded to anaconda.org, it is our intention to never delete any old
 packages. Even if a recipe in the bioconda repo is updated to a new version,
@@ -104,7 +104,7 @@ to sponsor the storage required by the bioconda channel.
 Nevertheless, it can sometimes happen that we have to mark packages as broken
 in order to avoid that they are accidentally pulled by the conda solver.
 In such a case it is only possible to install them by specifically considering
-the `broken` label, i.e.,
+the ``broken`` label, i.e.,
 
 .. code-block:: bash
 
@@ -130,7 +130,7 @@ Testing ``bioconda-utils`` locally
 ----------------------------------
 
 Follow the instructions at :ref:`bootstrap` to create a separate Miniconda
-installation using the ``bootstrap.py`` script in the `bioconda-recipes` repo.
+installation using the ``bootstrap.py`` script in the ``bioconda-recipes`` repo.
 
 Then, in the activated environment, install the bioconda-utils test
 requirements, from the top-level directory of the ``bioconda-utils`` repo.

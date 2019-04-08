@@ -8,12 +8,12 @@ bioconda recipe checklist
 - Source URL is stable (:ref:`details <stable-url>`)
 - sha256 or md5 hash included for source download (:ref:`details <hashes>`)
 - Appropriate build number (:ref:`details <buildnum>`)
-- `.bat` file for Windows removed (:ref:`details <bat-files>`)
+- ``.bat`` file for Windows removed (:ref:`details <bat-files>`)
 - Remove unnecessary comments (:ref:`details <comments-in-meta>`)
 - Adequate tests included (:ref:`details <tests>`)
 - Files created by the recipe follow the FSH (:ref:`details <fsh-section>`)
 - License allows redistribution and license is indicated in ``meta.yaml``
-- Package does not already exist in the `defaults` or `conda-forge`
+- Package does not already exist in the ``defaults`` or ``conda-forge``
   channels with some exceptions (:ref:`details <channel-exceptions>`)
 - Package is appropriate for bioconda (:ref:`details <appropriate-for-bioconda>`)
 - If the recipe installs custom wrapper scripts, usage notes should be added to
@@ -28,7 +28,7 @@ bioconda recipe checklist
 
 Stable urls
 ~~~~~~~~~~~
-While supported by conda, `git_url` and `git_rev` are not as stable as a git
+While supported by conda, ``git_url`` and ``git_rev`` are not as stable as a git
 tarball. Ideally, a github repo should have tagged releases that are accessible
 as tarballs from the "releases" section of the github repo. Correspondingly, a
 bitbucket repo should have have tagged versions that are accessible as tarballs
@@ -51,18 +51,17 @@ file to compute its sha256 hash, and copy this into the recipe, for example:
 
     wget -O- $URL | shasum -a 256
 
-Likewise use `md5sum` (Linux) or `md5` (OSX) on a file to compute its md5 hash,
+Likewise use ``md5sum`` (Linux) or ``md5`` (OSX) on a file to compute its md5 hash,
 and copy this into the recipe.
 
 .. _buildnum:
 
 Build numbers
 ~~~~~~~~~~~~~
-The build number (see `conda docs
-<http://conda.pydata.org/docs/building/meta-yaml.html#build-number-and-string>`_)
-can be used to trigger a new build for a package whose version has not changed.
-This is useful for fixing errors in recipes. The first recipe for a new version
-should always have a build number of 0.
+The build number (see `conda docs <conda-build:meta-build>`) can be
+used to trigger a new build for a package whose version has not
+changed.  This is useful for fixing errors in recipes. The first
+recipe for a new version should always have a build number of 0.
 
 .. _bat-files:
 
@@ -100,13 +99,13 @@ Existing package exceptions
 If a package already exists in one of the dependent channels but is broken or
 cannot be used as-is, please first consider fixing the package in that channel.
 If this is not possible, please indicate this in the PR and notify
-@bioconda/core in the PR.
+``@bioconda/core`` in the PR.
 
 .. _appropriate-for-bioconda:
 
 Packages appropriate for bioconda
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bioconda is a bioinformatics channel, so we prefer to host packages specific to
+Bioconda is a bioinformatics channel, so we prefer to host packages specific to
 this domain. If a bioinformatics recipe has more general dependencies, please
 consider opening a pull request with `conda-forge
 <https://conda-forge.github.io/#add_recipe>`_ which hosts general packages.
@@ -114,7 +113,7 @@ consider opening a pull request with `conda-forge
 The exception to this is with R packages. We are still coordinating with
 Anaconda and conda-forge about the best place to keep general R packages. In
 the meantime, R packages that are not specific to bioinformatics and that
-aren't already in the `conda-forge` channel can be added to bioconda.
+aren't already in the ``conda-forge`` channel can be added to bioconda.
 
 If uploading of an unreleased version is necessary, please follow the
 versioning scheme of conda for pre- and post-releases (e.g. using a, b, rc, and
@@ -135,18 +134,18 @@ add ``noarch: python`` to the ``build`` section of the ``meta.yaml`` file.
 Dependencies
 ~~~~~~~~~~~~
 
-There is currently no mechanism to define, in the `meta.yaml` file, that
+There is currently no mechanism to define, in the ``meta.yaml`` file, that
 a particular dependency should come from a particular channel. This means that
 a recipe must have its dependencies in one of the following:
 
 - as-yet-unbuilt recipes in the repo but that will be included in the PR
-- `bioconda` channel
-- `conda-forge` channel
+- ``bioconda`` channel
+- ``conda-forge`` channel
 - default Anaconda channel
 
 Otherwise, you will have to write the recipes for those dependencies and
-include them in the PR. One shortcut is to use `anaconda search -t conda
-<dependency name>` to look for other packages built by others. Inspecting those
+include them in the PR. One shortcut is to use ``anaconda search -t conda
+<dependency name>`` to look for other packages built by others. Inspecting those
 recipes can give some clues into building a version of the dependency for
 bioconda.
 
@@ -190,12 +189,11 @@ a command-line tool, in which case that should be tested as well.
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/chanjo>`_
 
 
-By default, Python recipes (those that have `python` listed as a dependency)
+By default, Python recipes (those that have ``python`` listed as a dependency)
 must be successfully built and tested on Python 2.7, 3.6, and 3.7 in order to
 pass. However, many Python packages are not fully compatible across all Python
-versions. Use the `preprocessing selectors
-<http://conda.pydata.org/docs/building/meta-yaml.html#preprocessing-selectors>`_
-in the meta.yaml file along with the `build/skip` entry to indicate that
+versions. Use the `preprocessing selectors <conda-build:preprocess-selectors>`
+in the meta.yaml file along with the ``build/skip`` entry to indicate that
 a recipe should be skipped.
 
 For example, a recipe that only runs on Python 2.7 should include the
@@ -214,8 +212,7 @@ Or a package that only runs on Python 3.6 and 3.7:
       - python >=3
 
 Alternatively, for straightforward compatibility fixes you can apply a `patch
-in the meta.yaml`
-<http://conda.pydata.org/docs/building/meta-yaml.html#patches>`_.
+in the meta.yaml <conda-build:meta-yaml>`.
 
 
 .. _r-cran:
@@ -247,7 +244,7 @@ R (CRAN)
 
     The bioconda channel does not build for Windows. To keep recipes
     streamlined, please remove the "set posix" and "set native" lines described
-    above and convert the `test:commands:` block to only:
+    above and convert the ``test:commands:`` block to only:
 
     .. code-block:: yaml
 
@@ -372,12 +369,12 @@ C/C++
 
 Build tools (e.g., ``autoconf``) and compilers (e.g., ``gcc``) should be
 specified in the build requirements. Compilers are handled via a special macro.
-E.g., `{{ compiler('c')}}` ensures that the correct version of `gcc` is used.
-For the C++ variant `g++`, you need to use `{{ compiler('cxx') }}`.
+E.g., ``{{ compiler('c')}}`` ensures that the correct version of ``gcc`` is used.
+For the C++ variant ``g++``, you need to use ``{{ compiler('cxx') }}``.
 These rules apply for both Linux and macOS.
 
-Conda distinguishes between dependencies needed for building (the `build` section),
-and dependencies needed during build time (the `host` section).
+Conda distinguishes between dependencies needed for building (the ``build`` section),
+and dependencies needed during build time (the ``host`` section).
 For example, the following
 
 

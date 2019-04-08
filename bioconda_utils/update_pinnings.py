@@ -1,3 +1,7 @@
+"""
+Determine which packages need updates after pinning change
+"""
+
 import re
 import sys
 import os.path
@@ -46,7 +50,7 @@ def have_variant(meta):
 
 
 def have_variant_but_for_python(meta):
-    """Checks if we have an exact or `py[23]_` prefixed match to
+    """Checks if we have an exact or ``py[23]_`` prefixed match to
     name/version/buildstring
 
     Ignores osx.

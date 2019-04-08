@@ -1,4 +1,4 @@
-"""Bioconda Bot"""
+"""AioHTTP Web Server Setup"""
 
 import logging
 import subprocess
@@ -50,7 +50,7 @@ async def start():
 async def start_with_celery():
     """Initialize app and launch internal celery worker
 
-    This isn't simply a flag for `init_app` because async app factories
+    This isn't simply a flag for `start` because async app factories
     cannot (easily) receive parameters from the gunicorn commandline.
     """
     app = await start()

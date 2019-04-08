@@ -1,21 +1,6 @@
-import os
-import re
-import itertools
-from collections import defaultdict, namedtuple
-from typing import List
-
-import pandas as pd
-import numpy as np
-import ruamel_yaml as yaml
-
-from . import utils
-from . import lint_functions
-from .recipe import Recipe, RecipeError
-
-import logging
-logger = logging.getLogger(__name__)
-
 """
+Recipe Linter
+
 QC checks (linter) for recipes, returning a TSV of issues identified.
 
 The strategy here is to use simple functions that do a single check on
@@ -25,17 +10,21 @@ problems to be addressed.
 
 See the `lint_functions` module for these.
 
-After writing the function, register it in the global `registry` dict,
-`lint_functions.registry`.
+After writing the function, register it in the global ``registry`` dict,
+``lint_functions.registry``.
 
 The output is a TSV where the "info" column contains the dicts returned by
 each check function, and this column is expanded into multiple extra colums.
 While this results in a lot of NaNs, it makes it easy to drop non-interesting
 cases with pandas, e.g.,
 
+.. code:: python
+
    recipes_with_missing_tests = df.dropna(subset=['no_tests'])
 
 or
+
+.. code:: python
 
     def not_in_bioconda(x):
         if not isinstance(x, set):
@@ -49,8 +38,8 @@ or
     other_channels = df[['recipe', 'other']].dropna()
 
 
----------------------------------------------------------------------------
 TODO:
+~~~~~
 
 - check version and build number against master branch. I think there's stuff
   in bioconductor updating to handle this sort of thing. Also bioconda_utils
@@ -68,7 +57,26 @@ TODO:
 - gcc/llvm have their respective preprocessing selectors
 
 - excessive comments (from skeletons?)
+
 """
+
+import os
+import re
+import itertools
+from collections import defaultdict, namedtuple
+from typing import List
+
+import pandas as pd
+import numpy as np
+import ruamel_yaml as yaml
+
+from . import utils
+from . import lint_functions
+from .recipe import Recipe, RecipeError
+
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 usage = """
@@ -125,7 +133,7 @@ class LintArgs(namedtuple('LintArgs', (
 ))):
     """
     exclude : list
-        List of function names in `registry` to skip globally. When running on
+        List of function names in ``registry`` to skip globally. When running on
         CI, this will be merged with anything else detected from the commit
         message or LINT_SKIP environment variable using the special string
         "[skip lint <function name> for <recipe name>]". While those other
@@ -134,7 +142,7 @@ class LintArgs(namedtuple('LintArgs', (
 
     registry : list or tuple
         List of functions to apply to each recipe. If None, defaults to
-        `lint_functions.registry`.
+        `bioconda_utils.lint_functions.registry`.
     """
     def __new__(cls, exclude=None, registry=None):
         return super().__new__(cls, exclude, registry)

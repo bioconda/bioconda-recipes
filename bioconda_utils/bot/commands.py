@@ -1,5 +1,5 @@
 """
-Bot commands issued via issue/pull-request comments
+Handlers for user commmands (``@biocondabot do this``)
 """
 
 import logging
@@ -28,6 +28,7 @@ class CommandDispatch:
         """Decorator adding decorated function to dispatcher"""
         def decorator(func):
             self.mapping[cmd] = func
+            return func
         return decorator
 
     async def dispatch(self, cmd, *args, **kwargs):

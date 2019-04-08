@@ -1,4 +1,7 @@
-#!/usr/bin/env python
+"""
+Bioconda Utils Command Line Interface
+
+"""
 
 # Workaround for spurious numpy warning message
 # ".../importlib/_bootstrap.py:219: RuntimeWarning: numpy.dtype size \
@@ -639,8 +642,8 @@ def bioconductor_skeleton(
     pkg_version=None, bioc_version=None, recursive=False,
     skip_if_in_channels=['conda-forge', 'bioconda']):
     """
-    Build a Bioconductor recipe. The recipe will be created in the `recipes`
-    directory and will be prefixed by "bioconductor-". If `--recursive` is set,
+    Build a Bioconductor recipe. The recipe will be created in the 'recipes'
+    directory and will be prefixed by "bioconductor-". If --recursive is set,
     then any R dependency recipes will be prefixed by "r-".
 
     These R recipes must be evaluated on a case-by-case basis to determine if
@@ -648,11 +651,11 @@ def bioconductor_skeleton(
     bioconda) or not (submit to conda-forge).
 
     Biology-related:
-        `bioconda-utils clean-cran-skeleton <recipe> --no-windows`
+        'bioconda-utils clean-cran-skeleton <recipe> --no-windows'
         and submit to Bioconda.
 
     Not bio-related:
-        `bioconda-utils clean-cran-skeleton <recipe>`
+        'bioconda-utils clean-cran-skeleton <recipe>'
         and submit to conda-forge.
 
     """
@@ -689,10 +692,10 @@ def bioconductor_skeleton(
 @enable_logging()
 def clean_cran_skeleton(recipe, no_windows=False):
     """
-    Cleans skeletons created by `conda skeleton cran`.
+    Cleans skeletons created by ``conda skeleton cran``.
 
-    Before submitting to conda-forge or Bioconda, recipes generated with `conda
-    skeleton cran` need to be cleaned up: comments removed, licenses fixed, and
+    Before submitting to conda-forge or Bioconda, recipes generated with ``conda
+    skeleton cran`` need to be cleaned up: comments removed, licenses fixed, and
     other linting.
 
     Use --no-windows for a Bioconda submission.

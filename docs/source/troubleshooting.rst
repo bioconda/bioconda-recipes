@@ -4,10 +4,10 @@ Troubleshooting failed recipes
 
 Reading bioconda-utils logs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-For failed recipes, usually the easiest thing to do is find the first `BIOCONDA
-ERROR`, and start reading the output below that line. The stdout and stderr for
-that failed build will end with the next `BIOCONDA` log line, likely
-a `BIOCONDA BUILD START` or `BIOCONDA BUILD SUMMARY` line.
+For failed recipes, usually the easiest thing to do is find the first ``BIOCONDA
+ERROR``, and start reading the output below that line. The stdout and stderr for
+that failed build will end with the next ``BIOCONDA`` log line, likely
+a ``BIOCONDA BUILD START`` or ``BIOCONDA BUILD SUMMARY`` line.
 Note that there are two tests: the tests performed by conda in the main
 environment, and if they pass, the mulled-build tests performed in a minimal
 docker container. For working with failures in mulled-build tests, see
@@ -73,10 +73,11 @@ then change it to this:
 
 ZLIB errors
 ~~~~~~~~~~~
-When building the package, you may get an error saying that zlib.h can't be
-found -- despite having zlib listed in the dependencies. The reason is that the
-location of `zlib` often has to be specified in the `build.sh` script, which
-can be done like this:
+
+When building the package, you may get an error saying that zlib.h
+can't be found -- despite having zlib listed in the dependencies. The
+reason is that the location of :conda:package:`zlib` often has to be
+specified in the ``build.sh`` script, which can be done like this:
 
 .. code-block:: bash
 
@@ -89,10 +90,11 @@ Or sometimes:
 
     export CPATH=${PREFIX}/include
 
-Sometimes Makefiles may specify these locations, in which case they need to be
-edited. See the `samtools` recipe for an example of this. It may take some
-tinkering to get the recipe to build; if it doesn't seem to work then please
-submit an issue or notify `@bioconda/core` for advice.
+Sometimes Makefiles may specify these locations, in which case they
+need to be edited. See the `samtools recipe` recipe for an
+example of this. It may take some tinkering to get the recipe to
+build; if it doesn't seem to work then please submit an issue or
+notify ``@bioconda/core`` for advice.
 
 .. _perl-or-python-not-found:
 
@@ -113,9 +115,9 @@ Here is an example that will replace the first line of a file
 It turns out that the version of `autoconf` that is packaged in the defaults
 channel still uses the hard-coded Perl. So if a tool uses `autoconf` for
 building, it is likely you will see this error and it will need some ``sed``
-commands. See `here
-<https://github.com/bioconda/bioconda-recipes/blob/4bc02d7b4d784c923481d8808ed83e048c01d3bb/recipes/exparna/build.sh>`_
-for an example to work from.
+commands. See `recipes/exparna/build.sh`_ for an example to work from.
+
+.. _`recipes/exparna/build.sh`: https://github.com/bioconda/bioconda-recipes/blob/4bc02d7b4d784c923481d8808ed83e048c01d3bb/recipes/exparna/build.sh
 
 .. _mulled-build-troubleshooting:
 
@@ -152,12 +154,12 @@ should only be used as a last resort. Cases where the extended base has been
 needed are:
 
 - Unicode support is required (especially if a package uses the ``click``
-  Python package under Python 3; see for example comments `here
-  <https://github.com/bioconda/bioconda-recipes/pull/5541#issuecomment-323755800>`_
-  and `here
-  <https://github.com/bioconda/bioconda-recipes/pull/6094#issuecomment-332272936>`_).
+  Python package under Python 3; see for example comments in `PR #5541`_ and `PR #6094`_).
 - ``libGL.so.1`` dependency
 - ``openssl`` dependency, e.g., through ``openmpi``
+
+.. _`PR #5541`: https://github.com/bioconda/bioconda-recipes/pull/5541#issuecomment-323755800
+.. _`PR #6094`: https://github.com/bioconda/bioconda-recipes/pull/6094#issuecomment-332272936
 
 To use the extended container, add the following to a recipe's ``meta.yaml``:
 

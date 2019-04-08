@@ -8,8 +8,8 @@ as simple as defining a regex to match the existing source URL, a
 formatting string creating the URL of the relases page and a regex
 to match links and extract their version.
 
-- We need to use `regex` rather than `re` to allow recursive matching
-  to manipulate capture groups in URL patterns as
+- We need to use :conda:package:`regex` rather than `re` to allow
+  recursive matching to manipulate capture groups in URL patterns as
   needed. (Technically, we could avoid this using a Snakemake wildcard
   type syntax to define the patterns - implementers welcome).
 
