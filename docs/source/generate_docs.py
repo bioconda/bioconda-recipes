@@ -497,10 +497,11 @@ class CondaDomain(Domain):
         for (typ, name), (docname, ref) in otherdata['objects'].items():
             if docname in docnames:
                 self.data['objects'][typ, name] = (docname, ref)
-        for key, data in otherdata['backrefs'].items():
-            if docname in docnames:
-                xdata = self.data['backrefs'].setdefault(key, set())
-                xdata |= data
+        # broken?
+        #for key, data in otherdata['backrefs'].items():
+        #    if docname in docnames:
+        #        xdata = self.data['backrefs'].setdefault(key, set())
+        #        xdata |= data
 
 
 def generate_readme(folder, repodata, renderer):
