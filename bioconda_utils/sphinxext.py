@@ -43,7 +43,6 @@ except AttributeError:  # not running within sphinx
 
 
 #BASE_DIR = op.dirname(op.abspath(__file__))
-RECIPE_BASE_URL = 'https://github.com/bioconda/bioconda-recipes/tree/master/recipes/'
 CONDA_FORGE_FORMAT = 'https://github.com/conda-forge/{}-feedstock'
 
 
@@ -112,7 +111,7 @@ class Renderer:
       - escape -- escape RST special characters
       - as_extlink -- convert (list of) identifiers to extlink references
     """
-    def __init__(self, app):
+    def __init__(self, app, extra_context):
         template_loader = BuiltinTemplateLoader()
         template_loader.init(app.builder)
         template_env = SandboxedEnvironment(loader=template_loader)
@@ -123,6 +122,7 @@ class Renderer:
         template_env.filters['rst_link'] = rst_link_filter
         self.env = template_env
         self.templates: Dict[str, Any] = {}
+        self.extra_context = extra_context
 
     def render(self, template_name, context):
         """Render a template file to string
@@ -153,7 +153,7 @@ class Renderer:
         Returns:
           True if a file was written
         """
-        content = self.render(template_name, context)
+        content = self.render(template_name, {**self.extra_context, **context})
 
         # skip if exists and unchanged:
         if os.path.exists(file_name):
@@ -594,12 +594,12 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
         'about': recipe.get('about'),
         'extra': recipe.get('extra'),
         'recipe': recipe,
-        'gh_recipes': RECIPE_BASE_URL,
         'packages': packages,
     }
 
     renderer.render_to_file(output_file, 'readme.rst_t', template_options)
     return []
+
 
 def generate_recipes(app):
     """
@@ -625,7 +625,6 @@ def generate_recipes(app):
 
     # Collect recipe names
     recipe_dirs = os.listdir(recipe_basedir)
-
     if 'BIOCONDA_FILTER_RECIPES' in os.environ:
         limiter = os.environ['BIOCONDA_FILTER_RECIPES']
         try:
@@ -635,7 +634,13 @@ def generate_recipes(app):
             recipe_dirs = [recipe for recipe in recipe_dirs
                            if match.search(recipe)]
 
-    renderer = Renderer(app)
+    # Set up renderer preparing recipe readme.rst files
+    recipe_base_url = "{base}/tree/master/{recipes}/".format(
+        base=app.config.bioconda_repo_url.rstrip(".git"),
+        recipes=app.config.bioconda_recipes_path
+    )
+    renderer = Renderer(app, {'gh_recipes': recipe_base_url})
+
     recipes: List[Dict[str, Any]] = []
 
     if parallel_available and len(recipe_dirs) > 5:
