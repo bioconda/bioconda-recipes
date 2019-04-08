@@ -1,0 +1,48 @@
+{% set version = "1.1.0" %}
+{% set sha256 = "b12536baad23e0b0adee2dfd9847d8af426d38f588d2f487fa4a530359ee3479" %}
+
+package:
+  name: arriba
+  version: {{ version }}
+
+source:
+  url: https://github.com/suhrig/arriba/releases/download/v{{ version }}/arriba_v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  skip: True # [osx]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - htslib >=1.8 # arriba
+    - zlib # BAM
+    - libdeflate # BAM
+    - xz # CRAM
+    - bzip2 # CRAM
+  run:
+    - htslib >=1.8 # arriba
+    - zlib # BAM
+    - libdeflate # BAM
+    - xz # CRAM
+    - bzip2 # CRAM
+    - star >=2.5.3a # run_arriba.sh
+    - samtools >=1.0 # run_arriba.sh
+    - r >=3.3.0 # draw_fusions.R
+    - bioconductor-genomicalignments # draw_fusions.R
+    - bioconductor-genomicranges # draw_fusions.R
+    - r-circlize # draw_fusions.R
+
+about:
+  home: https://github.com/suhrig/arriba
+  license: MIT
+  summary: Fast and accurate gene fusion detection from RNA-Seq data
+
+test:
+  commands:
+    - arriba -h > /dev/null
+    - draw_fusions.R 2>&1 | grep -q Usage
+
