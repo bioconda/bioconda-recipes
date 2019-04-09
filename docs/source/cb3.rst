@@ -71,9 +71,8 @@ After:
 
 .. seealso::
 
-    See the `requirements section
-    <https://conda.io/docs/user-guide/tasks/build-packages/define-metadata.html#requirements-section>`_
-    of the conda docs for more info.
+    See the `requirements section <conda-build:requirements>` of the
+    conda docs for more info.
 
 
 .. _compiler-tools:
@@ -141,19 +140,17 @@ After:
 
 .. seealso::
 
-    - The `compiler tools
-      <https://conda.io/docs/user-guide/tasks/build-packages/compiler-tools.html>`_
-      section of the conda docs has much more info.
+    - The `compiler tools <conda-build:compiler-tools>` section of the
+      conda docs has much more info.
 
     - The default compiler options are defined by conda-build in the
       `variants.DEFAULT_COMPILERS
       <https://github.com/conda/conda-build/blob/master/conda_build/variants.py#L42>`_
       variable.
 
-    - More details on "strong" and "weak" exports (using examples of libpng and
-      libgcc) can be found in the `export runtime requirements
-      <https://conda.io/docs/user-guide/tasks/build-packages/define-metadata.html#export-runtime-requirements>`_
-      conda documentation.
+    - More details on "strong" and "weak" exports (using examples of
+      libpng and libgcc) can be found in the `export runtime
+      requirements <conda-build:run_exports>` conda documentation.
 
 
 .. warning::
@@ -197,11 +194,11 @@ is the concept of "variants". Variants are a generalized way of specifying one
 or more specific versions, and they come with many weird and wonderful ways to
 specify constraints. Specifying variants generally takes the form of writing
 a YAML file. We have adopted the variants defined by conda-forge by installing
-their ``conda-forge-pinning`` conda package in our build environment.
+their `conda-forge-pinning` conda package in our build environment.
 Technically, that package unpacks the config YAML into our conda environment so
 that it can be used for building all recipes. You can see this file at
 `conda_build_config.yaml
-<https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/master/recipe/conda_build_config.yaml>`_
+<https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/master/recipe/conda_build_config.yaml>`_.
 
 The second major advance in conda-build 3 is the the concept of "run exports".
 The idea here is to specify that any time a dependency (``zlib``, in our running example)
@@ -256,9 +253,8 @@ After:
 
 .. seealso::
 
-    The `build variants
-    <https://conda.io/docs/user-guide/tasks/build-packages/variants.html#>`_
-    section of the conda docs has much more information.
+    The `conda-build:resources/variants` section of the conda docs has
+    much more information.
 
     We share the packages pinned by conda-forge, which can be found in their
     `conda_build_config.yaml

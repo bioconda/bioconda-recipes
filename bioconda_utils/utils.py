@@ -1,7 +1,7 @@
 """
 Utility Functions and Classes
 
-This module collects small pieces of code used throughout `bioconda_utils`.
+This module collects small pieces of code used throughout :py:mod:`bioconda_utils`.
 """
 import os
 import re

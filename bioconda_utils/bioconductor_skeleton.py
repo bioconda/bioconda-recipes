@@ -399,7 +399,7 @@ class BioCProjectPage(object):
     @property
     def cached_tarball(self):
         """
-        Downloads the tarball to the `cached_bioconductor_tarballs` dir if one
+        Downloads the tarball to the ``cached_bioconductor_tarballs`` dir if one
         hasn't already been downloaded for this package.
 
         This is because we need the whole tarball to determine which compilers
@@ -671,9 +671,9 @@ class BioCProjectPage(object):
 
     def pacified_description(self):
         """
-        Linting will fail if GIT_, HG_, or SVN_ appear in the description.
+        Linting will fail if ``GIT_``, ``HG_``, or ``SVN_`` appear in the description.
         This usually isn't an issue, except some microarray annotation packages
-        include HG_ in their summaries. The goal is to simply remove _ in such
+        include ``HG_`` in their summaries. The goal is to simply remove ``_`` in such
         cases.
         """
         description = self.packages[self.package]['Description']
@@ -695,11 +695,11 @@ class BioCProjectPage(object):
 
         However pyaml does not support comments, but if there are gcc and llvm
         dependencies then they need to be added with preprocessing selectors
-        for `# [linux]` and `# [osx]`.
+        for ``# [linux]`` and ``# [osx]``.
 
         We do this with a unique placeholder (not a jinja or $-based
         string.Template) so as to avoid conflicting with the conda jinja
-        templating or the `$R` in the test commands, and replace the text once
+        templating or the ``$R`` in the test commands, and replace the text once
         the yaml is written.
         """
 

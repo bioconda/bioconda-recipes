@@ -40,9 +40,9 @@ users can install them with ``conda install``.
 
 .. seealso::
 
-    The `conda package specification <http://conda.pydata.org/docs/spec.html>`_
-    has details on exactly what a package contains and how it is installed into
-    an environment.
+    The `conda-build:resources/package-spec` has details on exactly
+    what a package contains and how it is installed into an
+    environment.
 
 Continuous integration (Circle CI)
 ----------------------------------

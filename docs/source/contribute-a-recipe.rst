@@ -33,8 +33,8 @@ Check out a new branch (here the branch is arbitrarily named "my-recipe"):
     git checkout -b my-recipe
 
 and write one or more recipes. The `conda-build docs
-<http://conda.pydata.org/docs/building/recipe.html>`_ are the authoritative
-source for information on building a recipe.
+<conda-build:index>` are the authoritative source for information on
+building a recipe.
 
 Please familiarize yourself with the :ref:`guidelines` for details on
 bioconda-specific policies.
