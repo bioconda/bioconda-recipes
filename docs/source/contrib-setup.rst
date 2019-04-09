@@ -14,7 +14,7 @@ Decide whether you'll work on a clone or a fork.
 Choose a clone if:
 
 - You are a bioconda team member. Team members have write access to branches
-  other than the master branch.
+  other than the master branch and bulk.
 
 Choose a fork if:
 
@@ -74,4 +74,4 @@ Request to be added to the bioconda team (optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 While not required, you can be added to bioconda by pinging @bioconda/core in 
 a pull request. Members of the bioconda team can merge their own recipes
-once tests pass.
+once linting and testing steps.
