@@ -1,5 +1,5 @@
 :information_source:
-If this is your first pull request to Bioconda please ping @bioconda/core so it can be reviewed and to request being added as a member of the bioconda team.
+If this is your first pull request to Bioconda please ping `@bioconda/core` so it can be reviewed and to request being added as a member of the bioconda team.
 
 ----------------
 
