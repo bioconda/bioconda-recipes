@@ -30,6 +30,7 @@ Bioconda Utilities Package
    linting
    pkg_test
    recipe
+   sphinxext
    update
    update_pinnings
    upload
