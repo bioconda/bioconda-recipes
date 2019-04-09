@@ -598,7 +598,7 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
     }
 
     renderer.render_to_file(output_file, 'readme.rst_t', template_options)
-    return []
+    return [output_file]
 
 
 def generate_recipes(app):
@@ -644,7 +644,7 @@ def generate_recipes(app):
     )
     renderer = Renderer(app, {'gh_recipes': recipe_base_url})
 
-    recipes: List[Dict[str, Any]] = []
+    recipes: List[str] = []
 
     if parallel_available and len(recipe_dirs) > 5:
         nproc = app.parallel
@@ -685,6 +685,18 @@ def generate_recipes(app):
             tasks.add_task(process_chunk, chunk, merge_chunk)
         logger.info("waiting for workers...")
         tasks.join()
+
+    files_wanted = set(recipes)
+    for root, dirs, files in os.walk(output_dir, topdown=False):
+        for fname in files:
+            path = op.join(root, fname)
+            if path not in files_wanted:
+                os.unlink(path)
+        for dname in dirs:
+            try:
+                os.rmdir(op.join(root, dname))
+            except OSError:
+                pass
 
 
 def add_ribbon(app, pagename, templatename, context, doctree):
