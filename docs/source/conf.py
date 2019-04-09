@@ -31,6 +31,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.extlinks',
+    'sphinx.ext.autosectionlabel',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
@@ -300,6 +301,9 @@ extlinks = {
     'biotools': ('https://bio.tools/%s', ''),
     'doi': ('https://doi.org/%s', ''),
 }
+
+# add document name before automatic section title reference
+autosectionlabel_prefix_document = True
 
 # autogenerate autodoc stubs via autosummary
 autosummary_generate = True
