@@ -16,8 +16,6 @@ export LDFLAGS="$LDFLAGS -L${PREFIX}/lib"
 export LD_FLAGS="-L${PREFIX}/lib"
 export CMAKE_LD_FLAGS="-L${PREFIX}/lib"
 export CMAKE_LDFLAGS="-L${PREFIX}/lib"
-export CC=gcc
-export CXX=g++
 
 rm -rf bamtools
 mkdir -p bamtools
