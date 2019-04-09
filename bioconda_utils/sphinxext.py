@@ -73,7 +73,8 @@ def underline_filter(text):
     """Jinja2 filter adding =-underline to row of text
 
     >>> underline_filter("headline")
-    "headline\n========"
+    "headline\\n========"
+
     """
     return text + "\n" + "=" * len(text)
 
@@ -170,9 +171,9 @@ class Renderer:
 class RequirementsField(GroupedField):
     """Field Type for ``.. conda:package::`` for specifying dependencies
 
-    This does two things different than `GroupedField`:
+    This does two things different than ``GroupedField``:
 
-    - No `--` inserted between argument and value
+    - No ``--`` inserted between argument and value
     - Entry added to domain data ``backrefs`` so that we can
       use the requirements to collect required-by data later.
     """
@@ -200,7 +201,7 @@ class RequirementsField(GroupedField):
 class RequiredByField(Field):
     """Field Type for directive ``.. conda:package::`` for showing required-by
 
-    This just creates the field name and field body with a `pending_xref` in the
+    This just creates the field name and field body with a ``pending_xref`` in the
     body that will later be filled with the reverse dependencies by
     `resolve_required_by_xrefs`
     """
@@ -220,11 +221,11 @@ class RequiredByField(Field):
 
 def resolve_required_by_xrefs(app, env, node, contnode):
     """Now that all recipes and packages have been parsed, we are called here
-    for each `pending_xref` node that sphinx has not been able to resolve.
+    for each ``pending_xref`` node that sphinx has not been able to resolve.
 
-    We handle specifically the `requiredby` reftype created by the
-    `RequiredByField` fieldtype allowed in ``conda:package::`
-    directives, where we replace the `pendinf_ref` node with a bullet
+    We handle specifically the ``requiredby`` reftype created by the
+    `RequiredByField` fieldtype allowed in ``conda:package::``
+    directives, where we replace the ``pending_ref`` node with a bullet
     list of reference nodes pointing to the package pages that
     "depended" on the package.
     """
@@ -246,7 +247,7 @@ def resolve_required_by_xrefs(app, env, node, contnode):
 
 
 class CondaObjectDescription(ObjectDescription):
-    """Base class for `ObjectDescription`s in the `CondaDomain`"""
+    """Base class for ``ObjectDescription`` types in the `CondaDomain`"""
     typename = "[UNKNOWN]"
 
     option_spec = {
@@ -316,8 +317,8 @@ class CondaObjectDescription(ObjectDescription):
         return "{} ({})".format(name, self.objtype)
 
     def before_content(self):
-        """We register ourselves in the `ref_context` so that a later
-        call to :depends:`packagename` knows within which package
+        """We register ourselves in the ``ref_context`` so that a later
+        call to ``:depends:`packagename``` knows within which package
         the dependency was added"""
         self.env.ref_context['conda:'+self.typename] = self.names[-1]
 
@@ -334,19 +335,19 @@ class CondaPackage(CondaObjectDescription):
     This directive takes two specialized field types, ``requirements``
     and ``depends``:
 
-    ```
-    .. conda:package:: mypkg1
+    .. code:: rst
 
-       :depends mypkg2: 2.0
-       :depends mypkg3:
-       :requirements:
-    ```
+        .. conda:package:: mypkg1
 
-    `:depends pkgname: [version]`
+           :depends mypkg2: 2.0
+           :depends mypkg3:
+           :requirements:
+
+    ``:depends pkgname: [version]``
        Adds a dependency to the package.
 
-    `:requirements:`
-       Lists packages which referenced this package via `:depends pkgname:`
+    ``:requirements:``
+       Lists packages which referenced this package via ``:depends pkgname:``
 
     """
     typename = "package"
@@ -359,11 +360,14 @@ class CondaPackage(CondaObjectDescription):
 
 
 class RecipeIndex(Index):
+    """Index of Recipes"""
+
     name = "recipe_index"
     localname = "Recipe Index"
     shortname = "Recipes"
 
     def generate(self, docnames: Optional[List[str]] = None):
+        """build index"""
         content = {}
 
         objects = sorted(self.domain.data['objects'].items())
@@ -407,7 +411,6 @@ class CondaDomain(Domain):
     ]
 
     def clear_doc(self, docname: str):
-        # docs copied from Domain class
         """Remove traces of a document in the domain-specific inventories."""
         if 'objects' not in self.data:
             return
@@ -470,17 +473,14 @@ class CondaDomain(Domain):
         return None  # triggers missing-reference
 
     def get_objects(self):
-        # docs copied from Domain class
-        """Return an iterable of "object descriptions", which are tuples with
-        five items:
+        """Yields "object description" 5-tuples
 
-        * `name`     -- fully qualified name
-        * `dispname` -- name to display when searching/linking
-        * `type`     -- object type, a key in ``self.object_types``
-        * `docname`  -- the document where it is to be found
-        * `anchor`   -- the anchor name for the object
-        * `priority` -- how "important" the object is (determines placement
-          in search results)
+        ``name``:     fully qualified name
+        ``dispname``: name to display when searching/linking
+        ``type``:     object type, a key in ``self.object_types``
+        ``docname``:  the document where it is to be found
+        ``anchor``:   the anchor name for the object
+        ``priority``: search priority
 
           - 1: default priority (placed before full-text matches)
           - 0: object is important (placed before default-priority objects)
@@ -602,10 +602,13 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
 
 
 def generate_recipes(app):
-    """
-    Go through every folder in the `bioconda-recipes/recipes` dir,
-    have a README.rst file generated and generate a recipes.rst from
-    the collected data.
+    """Generates recipe RST files
+
+    - Checks out repository
+    - Prepares `RepoData`
+    - Selects recipes (if BIOCONDA_FILTER_RECIPES in environment)
+    - Dispatches calls to `generate_readme` for each recipe
+    - Removes old RST files
     """
     source_dir = app.env.srcdir
     doctree_dir = app.env.doctreedir  # .../build/doctrees
