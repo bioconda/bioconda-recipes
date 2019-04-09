@@ -680,6 +680,26 @@ def generate_recipes(app):
 
 
 def add_ribbon(app, pagename, templatename, context, doctree):
+    """Adds "Edit me on GitHub" Ribbon to pages
+
+    This hooks into ``html-page-context`` event and adds the parameters
+    ``git_ribbon_url`` and ``git_ribbon_message`` to the context from
+    which the HTML templates (``layout.html``) are expanded.
+
+    It understands three types of pages:
+
+    - ``_autosummary`` and ``_modules`` prefixed pages are assumed to
+      be code and link to the ``bioconda-utils`` repo
+    - ``recipes/*/README`` pages are assumed to be recipes and link
+      to the ``meta.yaml``
+    - all others are assumed to be RST docs and link to the ``docs/source/``
+      folder in ``bioconda-utils``
+
+    TODO:
+      Fix hardcoding of values, should be a mapping that comes from
+      ``conf.py``.
+
+    """
     if templatename != 'page.html':
         return
     if pagename.startswith('_autosummary') or pagename.startswith('_modules'):
@@ -698,7 +718,6 @@ def add_ribbon(app, pagename, templatename, context, doctree):
     context['git_ribbon_message'] = "Edit me on GitHub"
 
 
-
 def setup(app):
     """Set up sphinx extension"""
     app.add_domain(CondaDomain)
@@ -711,7 +730,7 @@ def setup(app):
     app.add_config_value('bioconda_config_file', 'config.yml', 'env')
     app.add_config_value('bioconda_other_channels', {}, 'env')
     return {
-        'version': "0.0.0",
+        'version': "0.0.1",
         'parallel_read_safe': True,
         'parallel_write_safe': True
     }
