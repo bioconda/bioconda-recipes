@@ -421,7 +421,14 @@ class CondaDomain(Domain):
         for key  in to_remove:
             del self.data['objects'][key]
 
-
+    def resolve_any_xref(self, env: BuildEnvironment, fromdocname: str,
+                         builder, target, node, contnode):
+        """Resolve references from "any" role."""
+        res = self.resolve_xref(env, fromdocname, builder, 'package', target, node, contnode)
+        if res:
+            return [('conda:package', res)]
+        else:
+            return []
 
     def resolve_xref(self, env: BuildEnvironment, fromdocname: str,
                      builder, role, target, node, contnode):
