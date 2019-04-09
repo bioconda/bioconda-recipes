@@ -123,15 +123,11 @@ Or a new environment can be created::
 4. Join the team
 ----------------
 
-Because our time is limited, the policy is to add a package if we need it ourselves.
-However, we invite anybody who wants to use Conda for bioinformatics to
-`join the team <https://github.com/bioconda/bioconda-recipes/issues/1>`_ and
-contribute new packages. To get started, have a look at our
-`recipes <https://github.com/bioconda/bioconda-recipes>`_ and the
-`Conda documentation <http://conda.pydata.org/docs/building/recipe.html#conda-recipe-files-overview>`_.
-If you don't want to join us permanently, you can also fork the
-`recipes <https://github.com/bioconda/bioconda-recipes>`_ repository and create
-pull requests.
+We invite all parties interested in adding/editing package recipes to join the bioconda team, 
+so that their pull requests don't require merging by the core team or other members. To do 
+so, please fork our `recipes <https://github.com/bioconda/bioconda-recipes>`_ have a read 
+through the `Conda documentation <http://conda.pydata.org/docs/building/recipe.html#conda-recipe-files-overview>`_. 
+If you ping `@bioconda/core` in a pull request we will review it and then add you to the team, if you desire.
 
 5. Spread the word
 ------------------
