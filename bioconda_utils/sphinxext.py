@@ -42,10 +42,6 @@ except AttributeError:  # not running within sphinx
     logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-#BASE_DIR = op.dirname(op.abspath(__file__))
-CONDA_FORGE_FORMAT = 'https://github.com/conda-forge/{}-feedstock'
-
-
 def as_extlink_filter(text):
     """Jinja2 filter converting identifier (list) to extlink format
 
@@ -444,20 +440,13 @@ class CondaDomain(Domain):
                 return node
 
             if objtype == "package":
-                # Avoid going through the entire repodata CF - we cache a set of the
-                # packages available via conda-forge here.
-                if not hasattr(env, 'conda_forge_packages'):
-                    pkgs = set(RepoData().get_package_data('name', channels='conda-forge'))
-                    env.conda_forge_packages = pkgs
-                else:
-                    pkgs = env.conda_forge_packages
-
-                if target in pkgs:
-                    uri = CONDA_FORGE_FORMAT.format(target)
-                    node = nodes.reference('', '', internal=False,
-                                           refuri=uri, classes=['conda-forge'])
-                    node += contnode
-                    return node
+                for channel, urlformat in env.app.config.bioconda_other_channels.items():
+                    if RepoData().get_package_data(channels=channel, name=target):
+                        uri = urlformat.format(target)
+                        node = nodes.reference('', '', internal=False,
+                                               refuri=uri, classes=[channel])
+                        node += contnode
+                        return node
 
         return None  # triggers missing-reference
 
@@ -611,9 +600,11 @@ def generate_recipes(app):
     repo = BiocondaRepo(folder=repo_dir, home=app.config.bioconda_repo_url)
     repo.checkout_master()
     load_config(repo_config_file)
+    logger.info("Preloading RepoData")
     repodata = RepoData()
     repodata.set_cache(repodata_cache_file)
     repodata.df  # pylint: disable=pointless-statement
+    logger.info("Preloading RepoData (done)")
 
     # Collect recipe names
     recipe_dirs = os.listdir(recipe_basedir)
@@ -718,6 +709,7 @@ def setup(app):
     app.add_config_value('bioconda_repo_url', '', 'env')
     app.add_config_value('bioconda_recipes_path', 'recipes', 'env')
     app.add_config_value('bioconda_config_file', 'config.yml', 'env')
+    app.add_config_value('bioconda_other_channels', {}, 'env')
     return {
         'version': "0.0.0",
         'parallel_read_safe': True,

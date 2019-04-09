@@ -322,3 +322,8 @@ bioconda_repo_url = 'https://github.com/bioconda/bioconda-recipes.git'
 
 # Path within that repository to bioconda config file
 # bioconda_config_file = 'config.yml'
+
+# Formats for linkout to other channels
+bioconda_other_channels = {
+    'conda-forge': 'https://github.com/conda-forge/{}-feedstock'
+}
