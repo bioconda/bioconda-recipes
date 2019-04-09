@@ -303,6 +303,15 @@ extlinks = {
 # autogenerate autodoc stubs via autosummary
 autosummary_generate = True
 
+# combine docstrings for __init__ and class:
+autoclass_content = "both"
+
+# keep order from file (options: alphabetical, groupwise (by type), source)
+autodoc_member_order = "source"
+
+# default flags for autodoc statements
+autodoc_default_flags = ['members', 'undoc-members', 'show-inheritance']
+
 # Bioconda Sphinx Extension Config:
 # Git Url for repository containing recipes
 bioconda_repo_url = 'https://github.com/bioconda/bioconda-recipes.git'
