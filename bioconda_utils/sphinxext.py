@@ -392,7 +392,7 @@ class CondaDomain(Domain):
     object_types = {
         # ObjType(name, *roles, **attrs)
         'recipe': ObjType('recipe', 'recipe'),
-        'package': ObjType('package', 'package'),
+        'package': ObjType('package', 'package', 'depends'),
     }
     directives = {
         'recipe': CondaRecipe,
@@ -421,30 +421,12 @@ class CondaDomain(Domain):
         for key  in to_remove:
             del self.data['objects'][key]
 
+
+
     def resolve_xref(self, env: BuildEnvironment, fromdocname: str,
-                     builder, typ, target, node, contnode):
-        # docs copied from Domain class
-        """Resolve the pending_xref *node* with the given *typ* and *target*.
-
-        This method should return a new node, to replace the xref node,
-        containing the *contnode* which is the markup content of the
-        cross-reference.
-
-        If no resolution can be found, None can be returned; the xref node will
-        then given to the :event:`missing-reference` event, and if that yields no
-        resolution, replaced by *contnode*.
-
-        The method can also raise :exc:`sphinx.environment.NoUri` to suppress
-        the :event:`missing-reference` event being emitted.
-        """
-        if typ == 'depends':
-            # 'depends' role is handled just like a 'package' here (resolves the same)
-            typ = 'package'
-        elif typ == 'requiredby':
-            # 'requiredby' role type is deferred to missing_references stage
-            return None
-
-        for objtype in self.objtypes_for_role(typ):
+                     builder, role, target, node, contnode):
+        """Resolve the ``pending_xref`` **node** with the given **role** and **target**."""
+        for objtype in self.objtypes_for_role(role) or []:
             if (objtype, target) in self.data['objects']:
                 node = make_refnode(
                     builder, fromdocname,
