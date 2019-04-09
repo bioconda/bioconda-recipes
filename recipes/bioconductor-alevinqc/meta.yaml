@@ -1,0 +1,61 @@
+{% set version = "0.99.4" %}
+{% set name = "alevinQC" %}
+{% set bioc = "3.8" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 45ee77d32f5c4a9823137e4d00636fb1
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: testthat, knitr, rmarkdown, vsn, pheatmap, RColorBrewer, IHW, apeglm, ashr, tximport, tximportData, readr, pbapply, airway, pasilla (>= 0.2.10)
+requirements:
+  host:
+    - r-base
+    - r-rmarkdown
+    - r-ggplot2
+    - r-ggally
+    - r-dplyr
+    - r-rjson
+    - r-shiny
+    - r-shinydashboard
+    - r-dt
+    - r-tximport 
+    - r-cowplot
+
+  run:
+    - r-base
+    - r-rmarkdown
+    - r-ggplot2
+    - r-ggally
+    - r-dplyr
+    - r-rjson
+    - r-shiny
+    - r-shinydashboard
+    - r-dt
+    - r-tximport 
+    - r-cowplot
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'LGPL (>= 3)'
+  summary: 'Generate QC reports summarizing the output from an alevin run. Reports can be generated as html or pdf files, or as shiny applications.'
+extra:
+  parent_recipe:
+    name: bioconductor-alevinQC
+    path: recipes/bioconductor-alevinqc
+    version: 0.99.4
