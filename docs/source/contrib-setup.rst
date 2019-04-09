@@ -14,7 +14,7 @@ Decide whether you'll work on a clone or a fork.
 Choose a clone if:
 
 - You are a bioconda team member. Team members have write access to branches
-  other than the master branch and bulk.
+  other than the master and bulk branches.
 
 Choose a fork if:
 
