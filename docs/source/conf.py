@@ -292,6 +292,7 @@ intersphinx_mapping = {
     'conda.io': ('https://conda.io/en/latest', None),
     'conda-build': ('https://conda.io/projects/conda-build/en/latest/', None),
     'conda': ('https://conda.io/projects/conda/en/latest/', None),
+    'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
 }
 
 # We are using the `extlinks` extension to render links for identifiers:
