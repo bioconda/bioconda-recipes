@@ -22,31 +22,8 @@ make \
     LDFLAGS="${LDFLAGS}" \
     ZLIB_PATH="${PREFIX/lib}"
 
-echo '#!/bin/bash -e
-
-# general
-LUMPY_HOME=~/lumpy-sv
-
-# HEXDUMP is used to determine if a file is a CRAM
-HEXDUMP=`which hexdump || true`
-
-LUMPY=`which lumpy || true`
-SAMBLASTER=`which samblaster || true`
-# either sambamba or samtools is required
-SAMBAMBA=`which sambamba || true`
-SAMTOOLS=`which samtools || true`
-
-# python 2.7 or newer, must have pysam, numpy installed
-PYTHON=`which python || true`
-
-# python scripts
-PAIREND_DISTRO=$LUMPY_HOME/scripts/pairend_distro.py
-BAMGROUPREADS=$LUMPY_HOME/scripts/bamkit/bamgroupreads.py
-BAMFILTERRG=$LUMPY_HOME/scripts/bamkit/bamfilterrg.py
-BAMLIBS=$LUMPY_HOME/scripts/bamkit/bamlibs.py
-' > $PREFIX/bin/lumpyexpress.config
-
 cp bin/* $PREFIX/bin
+cp $RECIPE_DIR/lumpyexpress.config $PREFIX/bin/lumpyexpress.config
 cp scripts/lumpyexpress $PREFIX/bin
 cp scripts/cnvanator_to_bedpes.py $PREFIX/bin
 
