@@ -13,18 +13,15 @@ Decide whether you'll work on a clone or a fork.
 
 Choose a clone if:
 
-- You are a bioconda team member (post on `issue #1`_ if you'd like to
-  join). Team members have write access to branches other than the master
-  branch.
-
-- You want to have other team members make changes directly to your branch
+- You are a bioconda team member. Team members have write access to branches
+  other than the master and bulk branches.
 
 Choose a fork if:
 
 - you are not yet a member of the bioconda team
 - you expect to do lots of testing or lots of troubleshooting. This will allow
   you to use your own quota on Circle CI, so your builds will likely happen
-  faster and you won't be consuming limited bioconda quota.
+  faster and you won't be consuming the limited bioconda quota.
 
 Using a clone
 +++++++++++++
@@ -75,9 +72,6 @@ Installation instructions can be found `here
 
 Request to be added to the bioconda team (optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-While not required, you can be added to the bioconda by posting in
-`issue #1`_. Members of the bioconda team can merge their own recipes
-once tests pass, though we ask that first-time contributions and
-anything out of the ordinary be reviewed by the @bioconda/core team.
-
-.. _`issue #1`: https://github.com/bioconda/recipes/issues/1
+While not required, you can be added to bioconda by pinging @bioconda/core in 
+a pull request. Members of the bioconda team can merge their own recipes
+once linting and testing steps.
