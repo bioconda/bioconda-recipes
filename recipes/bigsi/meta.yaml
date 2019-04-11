@@ -1,0 +1,61 @@
+{% set version = "0.3.1" %}
+{% set name = "BIGSI" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/Phelimb/{{ name|lower }}/archive/v{{ version }}.tar.gz
+  sha256: 877b7c016aaa084bdd36d097cb24d01e97b951ad142e40fad8ebc8e083da2478
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  entry_points:
+    - bigsi = bigsi.__main__:main
+
+requirements:
+  host:
+    - python >=3
+    - pip
+
+  run:
+    - python >=3
+    - cython
+    - bsddb3
+    - libdb
+    - hug
+    - numpy
+    - mmh3
+    - bitarray
+    - redis-py
+    - biopython
+    - pyyaml
+    - humanfriendly
+
+test:
+  imports:
+    - bigsi
+    - bigsi.bloom
+    - bigsi.cmds
+    - bigsi.utils
+    - bigsi.graph
+    - bigsi.storage
+    - bigsi.matrix
+    - bigsi.scoring
+    - bigsi.tests
+
+  commands:
+    - bigsi build -h
+
+about:
+  home: https://github.com/Phelimb/BIGSI
+  license: LICENSE
+  license_family: MIT
+  summary: 'BItsliced Genomic Signature Index [BIGSI]'
+
+extra:
+   identifiers:
+     - doi:10.1038/s41587-018-0010-1
