@@ -10,25 +10,30 @@ source:
     patches:
       - relocate.run-sepp.sh.patch
       - relocate.sepp.config.patch
+      # prevent python's setup to search for dendropy dependency via pip.
+      # Instead use dendropy provided by conda:
       - nodeps.setup.py.patch
 
 build:
   number: 0
-  ignore_prefix_files:
-    - bin/guppy
-    - bin/pplacer
 
 requirements:
   host:
-    - python
-    - pip
-    - dendropy
+    # no-arch package of dendropy does not work on osx:
+    # No such file or directory: '/Users/distiller/project/miniconda/conda-bld/sepp_1554794831372/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_plac/bin/python2.7': '/Users/distiller/project/miniconda/conda-bld/sepp_1554794831372/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_plac/bin/python2.7'
+    # thus, trying here to restrict to arch dependent combinations of dendropy and python for osx
+    - python [linux]
+    - dendropy [linux]
+    - python >=2.7,<3.7 [osx]
+    - dendropy >=4.0.3,<4.4 [osx]
     - openjdk
     - hmmer ==3.1b2
 
   run:
-    - python
-    - dendropy
+    - python [linux]
+    - dendropy [linux]
+    - python >=2.7,<3.7 [osx]
+    - dendropy >=4.0.3,<4.4 [osx]
     - openjdk
     - hmmer ==3.1b2
     # TODO: source bundled binaries as conda packages. 
@@ -54,4 +59,6 @@ extra:
   identifiers:
     - biotools:sepp
   skip-lints:
+    # necessary, because sepp is NOT platform independent:
+    # during build time, platform specific binaries for pplacer / guppy are copied into the PREFIX/bin dir
     - should_be_noarch
