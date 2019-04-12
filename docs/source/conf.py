@@ -5,8 +5,6 @@ import datetime
 import os
 import sys
 
-import sphinx_rtd_theme
-
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -23,17 +21,19 @@ def setup(app):
 #needs_sphinx = '1.0'
 
 extensions = [
-    'generate_docs',
+    'bioconda_utils.sphinxext',
+
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.extlinks',
-
+    'sphinx.ext.autosectionlabel',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
+    'sphinx_autodoc_typehints',  # must be loaded after napoleon
     'celery.contrib.sphinx',
 ]
 
@@ -291,6 +291,7 @@ intersphinx_mapping = {
     'conda.io': ('https://conda.io/en/latest', None),
     'conda-build': ('https://conda.io/projects/conda-build/en/latest/', None),
     'conda': ('https://conda.io/projects/conda/en/latest/', None),
+    'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
 }
 
 # We are using the `extlinks` extension to render links for identifiers:
@@ -299,9 +300,32 @@ extlinks = {
     'doi': ('https://doi.org/%s', ''),
 }
 
+# add document name before automatic section title reference
+autosectionlabel_prefix_document = True
+
 # autogenerate autodoc stubs via autosummary
 autosummary_generate = True
 
-# placate assertion in utils.RepoData()
-from bioconda_utils import utils
-utils.load_config('../bioconda-recipes/config.yml')
+# combine docstrings for __init__ and class:
+autoclass_content = "both"
+
+# keep order from file (options: alphabetical, groupwise (by type), source)
+autodoc_member_order = "source"
+
+# default flags for autodoc statements
+autodoc_default_flags = ['members', 'undoc-members', 'show-inheritance']
+
+# Bioconda Sphinx Extension Config:
+# Git Url for repository containing recipes
+bioconda_repo_url = 'https://github.com/bioconda/bioconda-recipes.git'
+
+# Path within that repository to folder containing recipes
+# bioconda_recipes_path = 'recipes'
+
+# Path within that repository to bioconda config file
+# bioconda_config_file = 'config.yml'
+
+# Formats for linkout to other channels
+bioconda_other_channels = {
+    'conda-forge': 'https://github.com/conda-forge/{}-feedstock'
+}

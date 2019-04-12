@@ -1,7 +1,7 @@
 """
 Utility Functions and Classes
 
-This module collects small pieces of code used throughout `bioconda_utils`.
+This module collects small pieces of code used throughout :py:mod:`bioconda_utils`.
 """
 import os
 import re
@@ -1260,7 +1260,7 @@ class RepoData:
             seconds = 0
 
         if self._df is None or seconds > self.cache_timeout:
-            self._df = self._load_channel_dataframe()
+            self._df = self._load_channel_dataframe_cached()
             self._df_ts = datetime.datetime.now()
         return self._df
 

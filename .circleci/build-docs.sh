@@ -58,7 +58,7 @@ rm -r *
 
 # build docs and copy over to tmpdir
 cd ${DOCSOURCE}
-make clean html SPHINXOPTS="-T -j2" 2>&1 | grep -v "WARNING: nonlocal image URL found:"
+make clean html SPHINXOPTS="-T -j1" 2>&1 | grep -v "WARNING: nonlocal image URL found:"
 cp -r ${DOCHTML}/* $STAGING
 
 # add README.md

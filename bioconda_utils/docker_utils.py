@@ -241,8 +241,8 @@ class RecipeBuilder(object):
             Specify where packages should appear on the host.
 
             If **pkg_dir** is None, then a temporary directory will be
-            created once for each RecipeBuilder instance and that directory
-            will be used for each call to `RecipeBuilder.build()`. This allows
+            created once for each `RecipeBuilder` instance and that directory
+            will be used for each call to `RecipeBuilder.build_recipe()`. This allows
             subsequent recipes built by the container to see previous built
             recipes without polluting the host's conda-bld directory.
 
@@ -445,7 +445,7 @@ class RecipeBuilder(object):
             Path to recipe that contains meta.yaml
 
         build_args : str
-            Additional arguments to `conda build`. For example --channel,
+            Additional arguments to ``conda build``. For example --channel,
             --skip-existing, etc
 
         env : dict

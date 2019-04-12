@@ -91,7 +91,7 @@ Or sometimes:
     export CPATH=${PREFIX}/include
 
 Sometimes Makefiles may specify these locations, in which case they
-need to be edited. See the `samtools recipe` recipe for an
+need to be edited. See the `samtools` recipe for an
 example of this. It may take some tinkering to get the recipe to
 build; if it doesn't seem to work then please submit an issue or
 notify ``@bioconda/core`` for advice.

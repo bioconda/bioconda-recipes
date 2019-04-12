@@ -71,12 +71,29 @@ class GitHandlerBase():
 
     def get_remote(self, desc: str):
         """Finds first remote containing **desc** in one of its URLs"""
+        # try if desc is the name
         if desc in [r.name for r in self.repo.remotes]:
             return self.repo.remotes[desc]
+
+        # perhaps it's an URL. If so, first apply insteadOf config
+        with self.repo.config_reader() as reader:
+            for section in reader.sections():
+                if section.startswith("url "):
+                    new = section.lstrip("url ").strip('"')
+                    try:
+                        old = reader.get(section, 'insteadOf')
+                        desc = desc.replace(old, new)
+                    except KeyError:
+                        pass
+        # now try if any remote matches the url
         remotes = [r for r in self.repo.remotes
                    if any(filter(lambda x: desc in x, r.urls))]
+
         if not remotes:
             raise KeyError(f"No remote matching '{desc}' found")
+        if len(remotes) > 1:
+            logger.warning("Multiple remotes found. Using first")
+
         return remotes[0]
 
     async def branch_is_current(self, branch, path: str, master="master") -> bool:
@@ -368,8 +385,18 @@ class GitHandler(GitHandlerBase):
                  dry_run=False,
                  home='bioconda/bioconda-recipes',
                  fork=None,
-                 allow_dirty=True) -> None:
-        repo = git.Repo(folder, search_parent_directories=True)
+                 allow_dirty=True,
+                 depth=1) -> None:
+        if os.path.exists(folder):
+            repo = git.Repo(folder, search_parent_directories=True)
+        else:
+            try:
+                os.mkdir(folder)
+                logger.error("cloning %s into %s", home, folder)
+                repo = git.Repo.clone_from(home, folder, depth=depth)
+            except git.GitCommandError:
+                os.rmdir(folder)
+                raise
         super().__init__(repo, dry_run, home, fork, allow_dirty)
 
         #: Branch to restore after running

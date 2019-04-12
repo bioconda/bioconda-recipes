@@ -222,8 +222,8 @@ R (CRAN)
 
 .. note::
 
-    If you have conda-build 3 installed locally and use ``conda skeleton``,
-    please see :ref:`cb3-recipes-in-cb2`.
+   The majority of R packages on CRAN are generic and should therefore be submitted
+   at Conda-Forge.
 
 .. note::
 
@@ -269,8 +269,6 @@ If the recipe was created using ``conda skeleton cran`` or the
 probably sufficient. Otherwise see the examples below to see how tests are
 performed for R packages.
 
-- typical R recipe from CRAN: `r-locfit
-  <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/r-locfit>`_
 - recipe for R package not on CRAN, also with patch: `spp
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/r-spp>`_
 

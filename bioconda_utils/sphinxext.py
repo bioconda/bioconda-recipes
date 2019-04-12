@@ -5,6 +5,7 @@ This module builds the documentation for our recipes
 
 import os
 import os.path as op
+import re
 from typing import Any, Dict, List, Tuple, Optional
 
 from jinja2.sandbox import SandboxedEnvironment
@@ -31,6 +32,7 @@ from conda.exports import VersionOrder
 
 from bioconda_utils.utils import RepoData, load_config
 from bioconda_utils.recipe import Recipe, RecipeError
+from bioconda_utils.githandler import BiocondaRepo
 
 # Aquire a logger
 try:
@@ -38,13 +40,6 @@ try:
 except AttributeError:  # not running within sphinx
     import logging
     logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
-
-
-BASE_DIR = op.dirname(op.abspath(__file__))
-RECIPE_DIR = op.join(op.dirname(BASE_DIR), 'bioconda-recipes', 'recipes')
-OUTPUT_DIR = op.join(BASE_DIR, 'recipes')
-RECIPE_BASE_URL = 'https://github.com/bioconda/bioconda-recipes/tree/master/recipes/'
-CONDA_FORGE_FORMAT = 'https://github.com/conda-forge/{}-feedstock'
 
 
 def as_extlink_filter(text):
@@ -74,7 +69,8 @@ def underline_filter(text):
     """Jinja2 filter adding =-underline to row of text
 
     >>> underline_filter("headline")
-    "headline\n========"
+    "headline\\n========"
+
     """
     return text + "\n" + "=" * len(text)
 
@@ -112,7 +108,7 @@ class Renderer:
       - escape -- escape RST special characters
       - as_extlink -- convert (list of) identifiers to extlink references
     """
-    def __init__(self, app):
+    def __init__(self, app, extra_context):
         template_loader = BuiltinTemplateLoader()
         template_loader.init(app.builder)
         template_env = SandboxedEnvironment(loader=template_loader)
@@ -123,6 +119,7 @@ class Renderer:
         template_env.filters['rst_link'] = rst_link_filter
         self.env = template_env
         self.templates: Dict[str, Any] = {}
+        self.extra_context = extra_context
 
     def render(self, template_name, context):
         """Render a template file to string
@@ -153,7 +150,7 @@ class Renderer:
         Returns:
           True if a file was written
         """
-        content = self.render(template_name, context)
+        content = self.render(template_name, {**self.extra_context, **context})
 
         # skip if exists and unchanged:
         if os.path.exists(file_name):
@@ -170,9 +167,9 @@ class Renderer:
 class RequirementsField(GroupedField):
     """Field Type for ``.. conda:package::`` for specifying dependencies
 
-    This does two things different than `GroupedField`:
+    This does two things different than ``GroupedField``:
 
-    - No `--` inserted between argument and value
+    - No ``--`` inserted between argument and value
     - Entry added to domain data ``backrefs`` so that we can
       use the requirements to collect required-by data later.
     """
@@ -200,7 +197,7 @@ class RequirementsField(GroupedField):
 class RequiredByField(Field):
     """Field Type for directive ``.. conda:package::`` for showing required-by
 
-    This just creates the field name and field body with a `pending_xref` in the
+    This just creates the field name and field body with a ``pending_xref`` in the
     body that will later be filled with the reverse dependencies by
     `resolve_required_by_xrefs`
     """
@@ -220,11 +217,11 @@ class RequiredByField(Field):
 
 def resolve_required_by_xrefs(app, env, node, contnode):
     """Now that all recipes and packages have been parsed, we are called here
-    for each `pending_xref` node that sphinx has not been able to resolve.
+    for each ``pending_xref`` node that sphinx has not been able to resolve.
 
-    We handle specifically the `requiredby` reftype created by the
-    `RequiredByField` fieldtype allowed in ``conda:package::`
-    directives, where we replace the `pendinf_ref` node with a bullet
+    We handle specifically the ``requiredby`` reftype created by the
+    `RequiredByField` fieldtype allowed in ``conda:package::``
+    directives, where we replace the ``pending_ref`` node with a bullet
     list of reference nodes pointing to the package pages that
     "depended" on the package.
     """
@@ -246,7 +243,7 @@ def resolve_required_by_xrefs(app, env, node, contnode):
 
 
 class CondaObjectDescription(ObjectDescription):
-    """Base class for `ObjectDescription`s in the `CondaDomain`"""
+    """Base class for ``ObjectDescription`` types in the `CondaDomain`"""
     typename = "[UNKNOWN]"
 
     option_spec = {
@@ -316,8 +313,8 @@ class CondaObjectDescription(ObjectDescription):
         return "{} ({})".format(name, self.objtype)
 
     def before_content(self):
-        """We register ourselves in the `ref_context` so that a later
-        call to :depends:`packagename` knows within which package
+        """We register ourselves in the ``ref_context`` so that a later
+        call to ``:depends:`packagename``` knows within which package
         the dependency was added"""
         self.env.ref_context['conda:'+self.typename] = self.names[-1]
 
@@ -334,19 +331,19 @@ class CondaPackage(CondaObjectDescription):
     This directive takes two specialized field types, ``requirements``
     and ``depends``:
 
-    ```
-    .. conda:package:: mypkg1
+    .. code:: rst
 
-       :depends mypkg2: 2.0
-       :depends mypkg3:
-       :requirements:
-    ```
+        .. conda:package:: mypkg1
 
-    `:depends pkgname: [version]`
+           :depends mypkg2: 2.0
+           :depends mypkg3:
+           :requirements:
+
+    ``:depends pkgname: [version]``
        Adds a dependency to the package.
 
-    `:requirements:`
-       Lists packages which referenced this package via `:depends pkgname:`
+    ``:requirements:``
+       Lists packages which referenced this package via ``:depends pkgname:``
 
     """
     typename = "package"
@@ -359,11 +356,14 @@ class CondaPackage(CondaObjectDescription):
 
 
 class RecipeIndex(Index):
+    """Index of Recipes"""
+
     name = "recipe_index"
     localname = "Recipe Index"
     shortname = "Recipes"
 
     def generate(self, docnames: Optional[List[str]] = None):
+        """build index"""
         content = {}
 
         objects = sorted(self.domain.data['objects'].items())
@@ -388,7 +388,7 @@ class CondaDomain(Domain):
     object_types = {
         # ObjType(name, *roles, **attrs)
         'recipe': ObjType('recipe', 'recipe'),
-        'package': ObjType('package', 'package'),
+        'package': ObjType('package', 'package', 'depends'),
     }
     directives = {
         'recipe': CondaRecipe,
@@ -407,7 +407,6 @@ class CondaDomain(Domain):
     ]
 
     def clear_doc(self, docname: str):
-        # docs copied from Domain class
         """Remove traces of a document in the domain-specific inventories."""
         if 'objects' not in self.data:
             return
@@ -418,30 +417,19 @@ class CondaDomain(Domain):
         for key  in to_remove:
             del self.data['objects'][key]
 
+    def resolve_any_xref(self, env: BuildEnvironment, fromdocname: str,
+                         builder, target, node, contnode):
+        """Resolve references from "any" role."""
+        res = self.resolve_xref(env, fromdocname, builder, 'package', target, node, contnode)
+        if res:
+            return [('conda:package', res)]
+        else:
+            return []
+
     def resolve_xref(self, env: BuildEnvironment, fromdocname: str,
-                     builder, typ, target, node, contnode):
-        # docs copied from Domain class
-        """Resolve the pending_xref *node* with the given *typ* and *target*.
-
-        This method should return a new node, to replace the xref node,
-        containing the *contnode* which is the markup content of the
-        cross-reference.
-
-        If no resolution can be found, None can be returned; the xref node will
-        then given to the :event:`missing-reference` event, and if that yields no
-        resolution, replaced by *contnode*.
-
-        The method can also raise :exc:`sphinx.environment.NoUri` to suppress
-        the :event:`missing-reference` event being emitted.
-        """
-        if typ == 'depends':
-            # 'depends' role is handled just like a 'package' here (resolves the same)
-            typ = 'package'
-        elif typ == 'requiredby':
-            # 'requiredby' role type is deferred to missing_references stage
-            return None
-
-        for objtype in self.objtypes_for_role(typ):
+                     builder, role, target, node, contnode):
+        """Resolve the ``pending_xref`` **node** with the given **role** and **target**."""
+        for objtype in self.objtypes_for_role(role) or []:
             if (objtype, target) in self.data['objects']:
                 node = make_refnode(
                     builder, fromdocname,
@@ -452,35 +440,25 @@ class CondaDomain(Domain):
                 return node
 
             if objtype == "package":
-                # Avoid going through the entire repodata CF - we cache a set of the
-                # packages available via conda-forge here.
-                if not hasattr(env, 'conda_forge_packages'):
-                    pkgs = set(RepoData().get_package_data('name', channels='conda-forge'))
-                    env.conda_forge_packages = pkgs
-                else:
-                    pkgs = env.conda_forge_packages
-
-                if target in pkgs:
-                    uri = CONDA_FORGE_FORMAT.format(target)
-                    node = nodes.reference('', '', internal=False,
-                                           refuri=uri, classes=['conda-forge'])
-                    node += contnode
-                    return node
+                for channel, urlformat in env.app.config.bioconda_other_channels.items():
+                    if RepoData().get_package_data(channels=channel, name=target):
+                        uri = urlformat.format(target)
+                        node = nodes.reference('', '', internal=False,
+                                               refuri=uri, classes=[channel])
+                        node += contnode
+                        return node
 
         return None  # triggers missing-reference
 
     def get_objects(self):
-        # docs copied from Domain class
-        """Return an iterable of "object descriptions", which are tuples with
-        five items:
+        """Yields "object description" 5-tuples
 
-        * `name`     -- fully qualified name
-        * `dispname` -- name to display when searching/linking
-        * `type`     -- object type, a key in ``self.object_types``
-        * `docname`  -- the document where it is to be found
-        * `anchor`   -- the anchor name for the object
-        * `priority` -- how "important" the object is (determines placement
-          in search results)
+        ``name``:     fully qualified name
+        ``dispname``: name to display when searching/linking
+        ``type``:     object type, a key in ``self.object_types``
+        ``docname``:  the document where it is to be found
+        ``anchor``:   the anchor name for the object
+        ``priority``: search priority
 
           - 1: default priority (placed before full-text matches)
           - 0: object is important (placed before default-priority objects)
@@ -525,7 +503,7 @@ class AutoRecipesDirective(rst.Directive):
         return [nodes.paragraph('')]
 
 
-def generate_readme(folder, repodata, renderer):
+def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
     """Generates README.rst for the recipe in folder
 
     Args:
@@ -538,13 +516,13 @@ def generate_readme(folder, repodata, renderer):
       which meta.yaml files exist in the recipe folder and its
       subfolders
     """
-    output_file = op.join(OUTPUT_DIR, folder, 'README.rst')
+    output_file = op.join(output_dir, folder, 'README.rst')
 
     # Select meta yaml
-    meta_fname = op.join(RECIPE_DIR, folder, 'meta.yaml')
+    meta_fname = op.join(recipe_basedir, folder, 'meta.yaml')
     if not op.exists(meta_fname):
-        for item in os.listdir(op.join(RECIPE_DIR, folder)):
-            dname = op.join(RECIPE_DIR, folder, item)
+        for item in os.listdir(op.join(recipe_basedir, folder)):
+            dname = op.join(recipe_basedir, folder, item)
             if op.isdir(dname):
                 fname = op.join(dname, 'meta.yaml')
                 if op.exists(fname):
@@ -553,11 +531,11 @@ def generate_readme(folder, repodata, renderer):
         else:
             logger.error("No 'meta.yaml' found in %s", folder)
             return []
-    meta_relpath = meta_fname[len(RECIPE_DIR)+1:]
+    meta_relpath = meta_fname[len(recipe_basedir)+1:]
 
     # Read the meta.yaml file(s)
     try:
-        recipe = Recipe.from_file(RECIPE_DIR, meta_fname)
+        recipe = Recipe.from_file(recipe_basedir, meta_fname)
     except RecipeError as e:
         logger.error("Unable to process %s: %s", meta_fname, e)
         return []
@@ -594,27 +572,59 @@ def generate_readme(folder, repodata, renderer):
         'about': recipe.get('about'),
         'extra': recipe.get('extra'),
         'recipe': recipe,
-        'gh_recipes': RECIPE_BASE_URL,
         'packages': packages,
     }
 
     renderer.render_to_file(output_file, 'readme.rst_t', template_options)
-    return []
+    return [output_file]
+
 
 def generate_recipes(app):
+    """Generates recipe RST files
+
+    - Checks out repository
+    - Prepares `RepoData`
+    - Selects recipes (if BIOCONDA_FILTER_RECIPES in environment)
+    - Dispatches calls to `generate_readme` for each recipe
+    - Removes old RST files
     """
-    Go through every folder in the `bioconda-recipes/recipes` dir,
-    have a README.rst file generated and generate a recipes.rst from
-    the collected data.
-    """
-    renderer = Renderer(app)
-    load_config(os.path.join(os.path.dirname(RECIPE_DIR), "config.yml"))
+    source_dir = app.env.srcdir
+    doctree_dir = app.env.doctreedir  # .../build/doctrees
+    repo_dir = op.join(op.dirname(app.env.srcdir), "_bioconda_recipes")
+    recipe_basedir = op.join(repo_dir, app.config.bioconda_recipes_path)
+    repodata_cache_file = op.join(doctree_dir, 'RepoDataCache.pkl')
+    repo_config_file = os.path.join(repo_dir, app.config.bioconda_config_file)
+    output_dir = op.join(source_dir, 'recipes')
+
+    # Initialize Repo and point globals at the right place
+    repo = BiocondaRepo(folder=repo_dir, home=app.config.bioconda_repo_url)
+    repo.checkout_master()
+    load_config(repo_config_file)
+    logger.info("Preloading RepoData")
     repodata = RepoData()
-    repodata.set_cache(op.join(app.env.doctreedir, 'RepoDataCache.csv'))
-    # force loading repodata to avoid duplicate loads from threads
+    repodata.set_cache(repodata_cache_file)
     repodata.df  # pylint: disable=pointless-statement
-    recipes: List[Dict[str, Any]] = []
-    recipe_dirs = os.listdir(RECIPE_DIR)
+    logger.info("Preloading RepoData (done)")
+
+    # Collect recipe names
+    recipe_dirs = os.listdir(recipe_basedir)
+    if 'BIOCONDA_FILTER_RECIPES' in os.environ:
+        limiter = os.environ['BIOCONDA_FILTER_RECIPES']
+        try:
+            recipe_dirs = recipe_dirs[:int(limiter)]
+        except ValueError:
+            match = re.compile(limiter)
+            recipe_dirs = [recipe for recipe in recipe_dirs
+                           if match.search(recipe)]
+
+    # Set up renderer preparing recipe readme.rst files
+    recipe_base_url = "{base}/tree/master/{recipes}/".format(
+        base=app.config.bioconda_repo_url.rstrip(".git"),
+        recipes=app.config.bioconda_recipes_path
+    )
+    renderer = Renderer(app, {'gh_recipes': recipe_base_url})
+
+    recipes: List[str] = []
 
     if parallel_available and len(recipe_dirs) > 5:
         nproc = app.parallel
@@ -626,11 +636,11 @@ def generate_recipes(app):
                 recipe_dirs,
                 'Generating package READMEs...',
                 "purple", len(recipe_dirs), app.verbosity):
-            if not op.isdir(op.join(RECIPE_DIR, folder)):
+            if not op.isdir(op.join(recipe_basedir, folder)):
                 logger.error("Item '%s' in recipes folder is not a folder",
                              folder)
                 continue
-            recipes.extend(generate_readme(folder, repodata, renderer))
+            recipes.extend(generate_readme(recipe_basedir, output_dir, folder, repodata, renderer))
     else:
         tasks = ParallelTasks(nproc)
         chunks = make_chunks(recipe_dirs, nproc)
@@ -638,11 +648,11 @@ def generate_recipes(app):
         def process_chunk(chunk):
             _recipes: List[Dict[str, Any]] = []
             for folder in chunk:
-                if not op.isdir(op.join(RECIPE_DIR, folder)):
+                if not op.isdir(op.join(recipe_basedir, folder)):
                     logger.error("Item '%s' in recipes folder is not a folder",
                                  folder)
                     continue
-                _recipes.extend(generate_readme(folder, repodata, renderer))
+                _recipes.extend(generate_readme(recipe_basedir, output_dir, folder, repodata, renderer))
             return _recipes
 
         def merge_chunk(_chunk, res):
@@ -656,8 +666,40 @@ def generate_recipes(app):
         logger.info("waiting for workers...")
         tasks.join()
 
+    files_wanted = set(recipes)
+    for root, dirs, files in os.walk(output_dir, topdown=False):
+        for fname in files:
+            path = op.join(root, fname)
+            if path not in files_wanted:
+                os.unlink(path)
+        for dname in dirs:
+            try:
+                os.rmdir(op.join(root, dname))
+            except OSError:
+                pass
+
 
 def add_ribbon(app, pagename, templatename, context, doctree):
+    """Adds "Edit me on GitHub" Ribbon to pages
+
+    This hooks into ``html-page-context`` event and adds the parameters
+    ``git_ribbon_url`` and ``git_ribbon_message`` to the context from
+    which the HTML templates (``layout.html``) are expanded.
+
+    It understands three types of pages:
+
+    - ``_autosummary`` and ``_modules`` prefixed pages are assumed to
+      be code and link to the ``bioconda-utils`` repo
+    - ``recipes/*/README`` pages are assumed to be recipes and link
+      to the ``meta.yaml``
+    - all others are assumed to be RST docs and link to the ``docs/source/``
+      folder in ``bioconda-utils``
+
+    TODO:
+      Fix hardcoding of values, should be a mapping that comes from
+      ``conf.py``.
+
+    """
     if templatename != 'page.html':
         return
     if pagename.startswith('_autosummary') or pagename.startswith('_modules'):
@@ -676,7 +718,6 @@ def add_ribbon(app, pagename, templatename, context, doctree):
     context['git_ribbon_message'] = "Edit me on GitHub"
 
 
-
 def setup(app):
     """Set up sphinx extension"""
     app.add_domain(CondaDomain)
@@ -684,8 +725,12 @@ def setup(app):
     app.connect('builder-inited', generate_recipes)
     app.connect('missing-reference', resolve_required_by_xrefs)
     app.connect('html-page-context', add_ribbon)
+    app.add_config_value('bioconda_repo_url', '', 'env')
+    app.add_config_value('bioconda_recipes_path', 'recipes', 'env')
+    app.add_config_value('bioconda_config_file', 'config.yml', 'env')
+    app.add_config_value('bioconda_other_channels', {}, 'env')
     return {
-        'version': "0.0.0",
+        'version': "0.0.1",
         'parallel_read_safe': True,
         'parallel_write_safe': True
     }

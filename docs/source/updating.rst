@@ -154,9 +154,9 @@ To tie this all together:
 - The scanner checks all recipes. Because it has the `UpdateVersion`
   filter added, and because an `UpdateVersion` filter will check a recipe
   against all configured hosters, a Bioconductor recipe will match the above
-  `url_pattern` for the `Bioconductor` hoster.
+  `Hoster.url_pattern` for the `Bioconductor` hoster.
 - The hoster object will go to the site specified by ``releases_format`` and
-  scrape links that match `link_pattern`.
+  scrape links that match `Hoster.link_pattern`.
 - The `UpdateVersion` filter will inspect those links found by the hoster,
   figure out which is the most recent, and see if the existing recipe is
   up-to-date. If a more recent link was found, use that and write the new

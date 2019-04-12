@@ -58,8 +58,7 @@ installing the Circle CI client allows you to test your recipes before pushing
 them by simulating the online Circle CI tests locally. Resolving problems
 locally before pushing changes will conserve online build time and quota.
 
-Installation instructions can be found `here
-<https://circleci.com/docs/2.0/local-cli/#installing-the-circleci-local-cli-on-macos-and-linux-distros>`_.
+Installation instructions can be found `here <https://circleci.com/docs/2.0/local-cli>`_.
 
 .. note::
 
