@@ -119,7 +119,7 @@ def multi_build(request, recipes_fixture, config_fixture):
     Builds the "one", "two", and "three" recipes.
     """
     if request.param:
-        docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
+        docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True, docker_base_image="bioconda-utils-build-env:latest")
         mulled_test = True
     else:
         docker_builder = None
