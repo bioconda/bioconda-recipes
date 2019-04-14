@@ -1,5 +1,5 @@
 :information_source:
-Bioconda has finished the [GCC7 migration](https://github.com/bioconda/bioconda-recipes/issues/13578). If you are dealing with C/C++ or Python package it can be that you need to rebuild other dependent packages. [Bioconda utils - update-pinning](https://bioconda.github.io/updating.html#updating-recipes-for-a-pinning-change) will assist you with that. If you have any questions please use [issue 13578](https://github.com/bioconda/bioconda-recipes/issues/13578).
+If this is your first pull request to Bioconda please ping `@bioconda/core` so it can be reviewed and to request being added as a member of the Bioconda team. Members of the Bioconda team are able to merge their own pull requests once tests and linting have passed.
 
 ----------------
 
