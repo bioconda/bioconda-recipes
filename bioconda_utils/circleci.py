@@ -45,7 +45,7 @@ class CircleAPI(abc.ABC):
     async def _request(self, method: str, url: str,
                        headers: Mapping[str, str],
                        body: bytes = b'') -> Tuple[int, Mapping[str, str], bytes]:
-        """Execute HTTP request (overriden by IO prividing subclass)"""
+        """Execute HTTP request (overriden by IO providing subclass)"""
 
     async def _make_request(self, method: str, url: str, var_dict: Mapping[str, str],
                             data: Any = None,
