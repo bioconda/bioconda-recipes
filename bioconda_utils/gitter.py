@@ -17,11 +17,57 @@ import uritemplate
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
+class User(NamedTuple):
+    """Gitter User"""
+    @classmethod
+    def from_dict(cls, data):
+        """Create `User` from `dict`"""
+        return cls(**data)
+
+    #: User ID
+    id: str
+    #: Gitter username (OAUTH - Github/Gitlab)
+    username: str
+    #: Gitter displayname (real name)
+    displayName: str
+    #: Profile URL (relative)
+    url: str
+    #: Avatar URL
+    avatarUrl: str
+    #: Small avatar URL
+    avatarUrlSmall: str
+    #: Medium avatar URL
+    avatarUrlMedium: str
+    #: Version
+    v: str
+    #: Gravatar Version (used to force cache flushing)
+    gv: str
+    #: List of OAUTH providers for user
+    providers: List[str] = None
+
+
+class Mention(NamedTuple):
+    """Gitter User Mention"""
+    @classmethod
+    def from_dict(cls, data):
+        """Create `User` from `dict`"""
+        return cls(**data)
+
+    #: User Name
+    screenName: str
+    #: User ID
+    userId: str
+    #: User IDs
+    userIds: List[str] = None
+
+
 class Message(NamedTuple):
     """Gitter Chat Message"""
     @classmethod
     def from_dict(cls, data):
         """Create `Message` from `dict`"""
+        if 'mentions' in data:
+            data['mentions'] = [Mention.from_dict(user) for user in data['mentions']]
         return cls(**data)
 
     #: Message ID
@@ -53,34 +99,6 @@ class Message(NamedTuple):
     #: Edit timestamp (ISO)
     editedAt: str = None
 
-
-class User(NamedTuple):
-    """Gitter User"""
-    @classmethod
-    def from_dict(cls, data):
-        """Create `User` from `dict`"""
-        return cls(**data)
-
-    #: User ID
-    id: str
-    #: Gitter username (OAUTH - Github/Gitlab)
-    username: str
-    #: Gitter displayname (real name)
-    displayName: str
-    #: Profile URL (relative)
-    url: str
-    #: Avatar URL
-    avatarUrl: str
-    #: Small avatar URL
-    avatarUrlSmall: str
-    #: Medium avatar URL
-    avatarUrlMedium: str
-    #: Version
-    v: str
-    #: Gravatar Version (used to force cache flushing)
-    gv: str
-    #: List of OAUTH providers for user
-    providers: List[str] = None
 
 
 class Room(NamedTuple):
