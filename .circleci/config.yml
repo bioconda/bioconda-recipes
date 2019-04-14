@@ -37,6 +37,10 @@ variables:
     run:
       name: Install bioconda-utils
       command: python setup.py install
+  build_docker_container: &build_docker_container
+    run:
+      name: Build the updated docker container
+      command: docker build -t bioconda-utils-build-env:latest ./
   autobump_run: &autobump_run
     name: Check recipes for new upstream releases
     command: |
@@ -63,6 +67,7 @@ jobs:
       - *setup
       - *save_cache
       - *install_bioconda_utils
+      - *build_docker_container
       - run:
           name: Testing
           command: py.test --duration=0 test/ -v --tb=native -m 'not long_running'
@@ -76,6 +81,7 @@ jobs:
       - *setup
       - *save_cache
       - *install_bioconda_utils
+      - *build_docker_container
       - run:
           name: Testing
           command: py.test --duration=0 test/ -v --tb=native -m 'long_running'

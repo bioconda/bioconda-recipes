@@ -268,7 +268,7 @@ class RecipeBuilder(object):
 
         docker_base_image : str or None
             Name of base image that can be used in **dockerfile_template**.
-            Defaults to 'bioconda/bioconda-utils-build-env:2019-02-01'
+            Defaults to 'bioconda/bioconda-utils-build-env:latest'
         """
         self.tag = tag
         self.requirements = requirements
@@ -277,7 +277,7 @@ class RecipeBuilder(object):
         self.dockerfile_template = dockerfile_template
         self.keep_image = keep_image
         if docker_base_image is None:
-            docker_base_image = 'bioconda/bioconda-utils-build-env:2019-02-01'
+            docker_base_image = 'bioconda/bioconda-utils-build-env:latest'
         self.docker_base_image = docker_base_image
 
         # To address issue #5027:
