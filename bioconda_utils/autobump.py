@@ -66,7 +66,7 @@ from pkg_resources import parse_version
 from . import utils
 from .utils import ensure_list
 from .recipe import Recipe
-from .async import AsyncFilter, AsyncPipeline, AsyncRequests, EndProcessingItem, EndProcessing
+from .aiopipe import AsyncFilter, AsyncPipeline, AsyncRequests, EndProcessingItem, EndProcessing
 
 if TYPE_CHECKING:
     from .githandler import GitHandler

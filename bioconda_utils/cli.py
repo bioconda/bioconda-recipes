@@ -748,43 +748,43 @@ def autobump(recipe_folder, config, packages='*', cache=None,
     """
     # load an register config
     utils.load_config(config)
-    from . import update
+    from . import autobump
     from . import githandler
     from . import githubhandler
     from . import hosters
-    scanner = update.Scanner(recipe_folder, packages,
-                             cache and cache + "_scan.pkl",
-                             max_inflight=parallel,
-                             status_fn=recipe_status)
+    scanner = autobump.Scanner(recipe_folder, packages,
+                               cache and cache + "_scan.pkl",
+                               max_inflight=parallel,
+                               status_fn=recipe_status)
     if not ignore_blacklists:
-        scanner.add(update.ExcludeBlacklisted, config)
+        scanner.add(autobump.ExcludeBlacklisted, config)
     if exclude_subrecipes != "never":
-        scanner.add(update.ExcludeSubrecipe,
+        scanner.add(autobump.ExcludeSubrecipe,
                     always=exclude_subrecipes == "always")
     git_handler = None
     if check_branch or create_branch or create_pr or only_active:
         git_handler = githandler.BiocondaRepo(recipe_folder, dry_run)
         git_handler.checkout_master()
         if only_active:
-            scanner.add(update.ExcludeNoActiveUpdate, git_handler)
-        scanner.add(update.GitLoadRecipe, git_handler)
+            scanner.add(autobump.ExcludeNoActiveUpdate, git_handler)
+        scanner.add(autobump.GitLoadRecipe, git_handler)
     else:
-        scanner.add(update.LoadRecipe)
+        scanner.add(autobump.LoadRecipe)
     if exclude_channels != ["none"]:
         if not isinstance(exclude_channels, list):
             exclude_channels = [exclude_channels]
-        scanner.add(update.ExcludeOtherChannel, exclude_channels,
+        scanner.add(autobump.ExcludeOtherChannel, exclude_channels,
                     cache and cache + "_repodata.txt")
 
-    scanner.add(update.UpdateVersion, hosters.Hoster.select_hoster, unparsed_urls)
+    scanner.add(autobump.UpdateVersion, hosters.Hoster.select_hoster, unparsed_urls)
     if not no_fetch_requirements:
-        scanner.add(update.FetchUpstreamDependencies)
-    scanner.add(update.UpdateChecksums, failed_urls)
+        scanner.add(autobump.FetchUpstreamDependencies)
+    scanner.add(autobump.UpdateChecksums, failed_urls)
 
     if create_branch or create_pr:
-        scanner.add(update.GitWriteRecipe, git_handler)
+        scanner.add(autobump.GitWriteRecipe, git_handler)
     else:
-        scanner.add(update.WriteRecipe)
+        scanner.add(autobump.WriteRecipe)
 
     if create_pr:
         token = os.environ.get("GITHUB_TOKEN")
@@ -793,10 +793,10 @@ def autobump(recipe_folder, config, packages='*', cache=None,
             exit(1)
         github_handler = githubhandler.AiohttpGitHubHandler(
             token, dry_run, "bioconda", "bioconda-recipes")
-        scanner.add(update.CreatePullRequest, git_handler, github_handler)
+        scanner.add(autobump.CreatePullRequest, git_handler, github_handler)
 
     if max_updates:
-        scanner.add(update.MaxUpdates, max_updates)
+        scanner.add(autobump.MaxUpdates, max_updates)
     scanner.run()
     if git_handler:
         git_handler.close()

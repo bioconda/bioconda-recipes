@@ -29,7 +29,7 @@ except ModuleNotFoundError:
     from ruamel_yaml.constructor import DuplicateKeyError
 
 from . import utils
-from .async import EndProcessingItem
+from .aiopipe import EndProcessingItem
 
 
 yaml = YAML(typ="rt")  # pylint: disable=invalid-name
