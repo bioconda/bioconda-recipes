@@ -350,11 +350,11 @@ class GitterAPI:
                                            {'roomId': room.id, 'messageId': msgid})
         return Message.from_dict(data)
 
-    async def send_message(self, room: Room, text: str) -> Message:
+    async def send_message(self, room: Room, text: str, *args: Any) -> Message:
         """Send a new message"""
         _, data = await self._make_request('POST', self._MESSAGES,
                                            {'roomId': room.id},
-                                           {'text': text})
+                                           {'text': text % args})
         return Message.from_dict(data)
 
     async def edit_message(self, room: Room, message: Message, text: str) -> Message:
