@@ -396,6 +396,9 @@ class GitHubAppHandler:
     #: of an app.
     INSTALLATION_TOKEN = "/app/installations/{installation_id}/access_tokens"
 
+    #: Get installation info
+    INSTALLATION = "/repos/{owner}/{repo}/installation"
+
     #: Lifetime of JWT in seconds
     JWT_RENEW_PERIOD = 600
 
@@ -478,8 +481,19 @@ class GitHubAppHandler:
                      msg, installation, (expires - now)/60)
         return token
 
-    async def get_github_api(self, dry_run, to_user, to_repo, installation) -> GitHubHandler:
+    async def get_installation_id(self, user, repo):
+        """Retrieve installation ID given user and repo"""
+        api = gidgethub.aiohttp.GitHubAPI(self._session, self.name)
+        res = await api.getitem(self.INSTALLATION,
+                                {'owner': user, 'repo': repo},
+                                accept="application/vnd.github.machine-man-preview+json",
+                                jwt=self.get_app_jwt())
+        return res['id']
+
+    async def get_github_api(self, dry_run, to_user, to_repo, installation=None) -> GitHubHandler:
         """Returns the GitHubHandler for the installation the event came from"""
+        if installation is None:
+            installation = await self.get_installation_id(to_user, to_repo)
 
         handler_key = (installation, to_repo)
         api = self._handlers.get(handler_key)
