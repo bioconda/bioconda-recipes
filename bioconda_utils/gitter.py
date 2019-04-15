@@ -56,7 +56,7 @@ class Mention(NamedTuple):
     #: User Name
     screenName: str
     #: User ID
-    userId: str
+    userId: str = None
     #: User IDs
     userIds: List[str] = None
 
