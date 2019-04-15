@@ -157,6 +157,8 @@ class Room(NamedTuple):
     noindex: str = None
     #: Unknown
     group: str = None
+    #: Version
+    v: str = None
 
 
 class GitterAPI:

@@ -41,6 +41,18 @@ CODE_SIGNING_KEY = get_secret("CODE_SIGNING_KEY")
 #: CircleCI Token
 CIRCLE_TOKEN = get_secret("CIRCLE_TOKEN")
 
+#: Gitter Token
+GITTER_TOKEN = get_secret("GITTER_TOKEN")
+
+#: Gitter Channels
+GITTER_CHANNELS = {
+    'bioconda/Lobby': 'bioconda/bioconda-recipes',
+    'bioconda/bot': 'bioconda/bioconda-recipes'
+}
+#GITTER_CHANNELS = {
+#    'bioconda/bot_test': 'epruesse/bioconda-recipes'
+#}
+
 #: Name of bot
 BOT_NAME = "BiocondaBot"
 
