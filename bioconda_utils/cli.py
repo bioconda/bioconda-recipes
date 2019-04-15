@@ -732,16 +732,18 @@ def clean_cran_skeleton(recipe, no_windows=False):
 @arg("--create-pr", action="store_true", help='''Create PR for each update.
      Implies create-branch.''')
 @arg("--max-updates", help='''Exit after ARG updates''')
+@arg("--no-shuffle", help='''Do not shuffle recipe order''')
 @arg("--parallel", help='''Maximum number of recipes to consider in parallel''')
 @arg("--dry-run", help='''Don't update remote git or github"''')
 @enable_logging()
+@enable_debugging()
 def autobump(recipe_folder, config, packages='*', cache=None,
              failed_urls=None, unparsed_urls=None, recipe_status=None,
              exclude_subrecipes=None, exclude_channels='conda-forge',
              ignore_blacklists=False,
              no_fetch_requirements=False,
              check_branch=False, create_branch=False, create_pr=False,
-             only_active=False,
+             only_active=False, no_shuffle=False,
              max_updates=0, parallel=100, dry_run=False):
     """
     Updates recipes in recipe_folder
@@ -752,12 +754,15 @@ def autobump(recipe_folder, config, packages='*', cache=None,
     from . import githandler
     from . import githubhandler
     from . import hosters
-    scanner = autobump.Scanner(recipe_folder, packages,
-                               cache and cache + "_scan.pkl",
+
+    recipe_source = autobump.RecipeSource(recipe_folder, packages, not no_shuffle)
+
+    scanner = autobump.Scanner(recipe_source,
+                               cache_fn=cache and cache + "_scan.pkl",
                                max_inflight=parallel,
                                status_fn=recipe_status)
     if not ignore_blacklists:
-        scanner.add(autobump.ExcludeBlacklisted, config)
+        scanner.add(autobump.ExcludeBlacklisted, recipe_folder, config)
     if exclude_subrecipes != "never":
         scanner.add(autobump.ExcludeSubrecipe,
                     always=exclude_subrecipes == "always")

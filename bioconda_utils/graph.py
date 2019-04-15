@@ -119,6 +119,7 @@ def build_from_recipes(recipes):
 
 
 def filter_recipe_dag(dag, names):
+    """Reduces **dag** to packages in **names** and their requirements"""
     name_set = set(names)
     nodes = set()
     for recipe in dag:

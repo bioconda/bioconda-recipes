@@ -49,7 +49,7 @@ import random
 from collections import defaultdict, Counter
 
 from urllib.parse import urlparse
-from typing import (Any, Dict, Iterator, List, Mapping, Optional, Sequence,
+from typing import (Any, Dict, Iterator, Iterable, List, Mapping, Optional, Sequence,
                     Set, Tuple, TYPE_CHECKING)
 
 import aiofiles
@@ -82,22 +82,40 @@ LegacyVersion = parse_version("").__class__  # pylint: disable=invalid-name
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
+class RecipeSource:
+    """Source for **Recipe** objects to feed into Scanner
+
+    Args:
+      packages: list of packages, may contain globs
+      shuffle: If true, package order will be randomized.
+    """
+    def __init__(self, recipe_base: str, packages: List[str], shuffle: bool=True) -> None:
+        self.recipe_base = recipe_base
+        self.recipe_dirs = utils.get_recipes(recipe_base, packages)
+        if shuffle:
+            self.recipe_dirs = list(self.recipe_dirs)
+            random.shuffle(self.recipe_dirs)
+
+    def __iter__(self) -> Iterator[Recipe]:
+        for recipe_dir in self.recipe_dirs:
+            yield Recipe(recipe_dir, self.recipe_base)
+
+
 class Scanner(AsyncPipeline[Recipe]):
     """Scans recipes and applies filters in asyncio loop
 
     Arguments:
-      recipe_folder: location of recipe directories
-      packages: glob pattern to select recipes
-      config: config.yaml (unused)
+      recipe_source: Iteratable providing Recipe stubs
+      cache_fn: Filename prefix for caching
+      max_inflight: Maximum number of packages processed asynchronously
+      status_fn: Filename for status output
     """
-    def __init__(self, recipe_folder: str, packages: List[str],
+    def __init__(self, recipe_source: Iterable[Recipe],
                  cache_fn: str = None, max_inflight: int = 100,
                  status_fn: str = None) -> None:
         super().__init__(max_inflight)
-        #: folder containing recipes
-        self.recipe_folder: str = recipe_folder
-        #: glob expressions
-        self.packages: List[str] = packages
+        #: recipe source
+        self.recipe_source = recipe_source
         #: counter to gather stats on various states
         self.stats: Counter = Counter()
         #: collect end status for each recipe
@@ -123,10 +141,7 @@ class Scanner(AsyncPipeline[Recipe]):
 
     def get_item_iterator(self) -> Iterator[Recipe]:
         """Return initial iterator over stub (unloaded) Recipes"""
-        recipes = list(utils.get_recipes(self.recipe_folder, self.packages))
-        random.shuffle(recipes)
-        return (Recipe(recipe_dir, self.recipe_folder)
-                for recipe_dir in recipes)
+        yield from self.recipe_source
 
     async def _async_run(self) -> bool:
         """Runner within async loop"""
@@ -212,13 +227,13 @@ class ExcludeBlacklisted(Filter):
         template = "is blacklisted"
         level = logging.DEBUG
 
-    def __init__(self, scanner, config_fn: str) -> None:
+    def __init__(self, scanner, recipe_base: str, config_fn: str) -> None:
         super().__init__(scanner)
         with open(config_fn, "r") as config_fdes:
             config = yaml.safe_load(config_fdes)
         blacklists = [os.path.join(os.path.dirname(config_fn), bl)
                       for bl in config['blacklists']]
-        self.blacklisted = utils.get_blacklist(blacklists, scanner.recipe_folder)
+        self.blacklisted = utils.get_blacklist(blacklists, recipe_base)
         logger.warning("Excluding %i blacklisted recipes", len(self.blacklisted))
 
     async def apply(self, recipe: Recipe) -> Recipe:
