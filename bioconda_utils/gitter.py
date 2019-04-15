@@ -162,7 +162,29 @@ class Room(NamedTuple):
 
 
 class GitterAPI:
-    """Sans-IO Base Class for Gitter API"""
+    """Sans-IO Base Class for Gitter API
+
+    .. rubric:: Methods
+
+    .. autosummary::
+
+       list_rooms
+       get_room
+       join_room
+       leave_room
+       edit_room
+       list_unread_items
+       mark_as_read
+       get_message
+       send_message
+       edit_message
+       list_groups
+       get_user
+       iter_chat
+
+    .. rubric:: Details
+
+    """
 
     #: Base URL for Gitter API calls
     _GITTER_API = "https://api.gitter.im/v1"
