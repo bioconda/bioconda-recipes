@@ -68,6 +68,8 @@ class Message(NamedTuple):
         """Create `Message` from `dict`"""
         if 'mentions' in data:
             data['mentions'] = [Mention.from_dict(user) for user in data['mentions']]
+        if 'fromUser' in data:
+            data['fromUser'] = User.from_dict(data['fromUser'])
         return cls(**data)
 
     #: Message ID
@@ -79,7 +81,7 @@ class Message(NamedTuple):
     #: Posting timestamp (ISO)
     sent: str
     #: User by whom message was sent
-    fromUser: str
+    fromUser: User
     #: Flag indicating whether we have read this
     unread: bool
     #: Number of users who read message
@@ -87,7 +89,7 @@ class Message(NamedTuple):
     #: URLs present in message
     urls: List[str]
     #: @mentions in message
-    mentions: List[str]
+    mentions: List[Mention]
     #: Github #ISSUE references in message
     issues: List[str]
     #: (Unused)
@@ -116,8 +118,6 @@ class Room(NamedTuple):
     name: str
     #: Room Topic
     topic: str
-    #: Flag marking personal chats
-    oneToOne: bool
     #: List of users joined in room
     userCount: int
     #: Number of unread mentions of current user
@@ -135,24 +135,28 @@ class Room(NamedTuple):
     unreadItems: int
     #: Gravatar URL
     avatarUrl: str
-    #: Last time (ISO) room was accessed
-    lastAccessTime: str
-    #: unknown
-    noindex: str
     #: unknown
     roomMember: str
     #: unknown
     groupId: str
     #: unknown
     public: str
+    #: Last time (ISO) room was accessed
+    lastAccessTime: str = None
     #: Flag marking this room as favorite
     favourite: bool = False
+    #: Flag marking personal chats
+    oneToOne: bool = None
     #: User if one-to-one
     user: User = None
     #: Room URI
     uri: str = None
     #: Unknown
     security: str = None
+    #: unknown
+    noindex: str = None
+    #: Unknown
+    group: str = None
 
 
 class GitterAPI:
@@ -163,11 +167,16 @@ class GitterAPI:
     #: Base URL for Streaming Gitter API calls
     _GITTER_STREAM_API = "https://stream.gitter.im/v1"
 
-    #: Streaming resource for chat messages
-    _LISTEN_MESSAGES = "/rooms/{room_id}/chatMessages"
-
-    #: Resource for room listing
-    _LIST_ROOMS = "/rooms"
+    #: Resource for chat messages (can stream)
+    _MESSAGES = "/rooms/{roomId}/chatMessages{/messageId}"
+    #: Resource for room listing / searching
+    _ROOMS = "/rooms{/roomId}"
+    #: Resource for rooms associated with user
+    _USER_ROOMS = "/user/{userId}/rooms"
+    #: Rsource for unread items
+    _UNREAD = "/user/{userId}/rooms/{roomId}/unreadItems"
+    #: Resource for rooms associated with user
+    _ROOM_USERS = "/rooms/{roomId}/users{/userId}"
     #: Resource for group listing
     _LIST_GROUPS = "/groups"
     #: Resource for current user
@@ -245,9 +254,6 @@ class GitterAPI:
             logger.error("Result Headers: %s", res_headers)
             logger.error("Response: %s", response.decode(charset))
 
-        if status == 404:
-            logger.error("Got 404 for %s", url)
-            return "", None
         response_text = response.decode(charset)
         try:
             return response_text, json.loads(response_text)
@@ -281,7 +287,7 @@ class GitterAPI:
         Args:
           name: Room name
         """
-        _, data = await self._make_request('GET', self._LIST_ROOMS, {})
+        _, data = await self._make_request('GET', self._ROOMS, {})
         if not data:
             return []
         rooms = [Room.from_dict(item) for item in data]
@@ -289,14 +295,82 @@ class GitterAPI:
             rooms = list(filter(lambda room: room.name == name, rooms))
         return rooms
 
+    async def get_room(self, uri: str) -> Room:
+        """Get a room using its URI"""
+        _, data = await self._make_request('POST', self._ROOMS, {}, {'uri': uri})
+        return Room.from_dict(data)
+
+    async def join_room(self, user: User, room: Room) -> None:
+        """Add **user** to a **room**"""
+        await self._make_request('POST', self._USER_ROOMS, {'userId': user.id},
+                                 {'id': room.id})
+
+    async def leave_room(self, user: User, room: Room) -> bool:
+        """Remove **user** from **room**"""
+        try:
+            await self._make_request('DELETE', self._ROOM_USERS,
+                                     {'roomId': room.id, 'userId': user.id})
+        except aiohttp.ClientResponseError as exc:
+            if exc.code in (404,):
+                return False
+        return True
+
+    async def edit_room(self, room: Room, topic: str = None, tags: str = None,
+                        noindex: bool = None) -> None:
+        """Set **topic**, **tags** or **noindex** for **room**"""
+        data = {}
+        if topic:
+            data['topic'] = topic
+        if tags:
+            data['tags'] = tags
+        if noindex:
+            data['noindex'] = str(noindex)
+        await self._make_request('PUT', self._ROOMS, {'roomId': room.id}, data)
+
+    async def list_unread_items(self, user: User, room: Room) -> Tuple[List[str], List[str]]:
+        """Get Ids for unread items of **user** in **room**
+
+        Returns:
+          Two lists of chat IDs are returned. The first are all unread mentions, the second only
+          those in which the user was @Mentioned.
+        """
+        _, data = await self._make_request('GET', self._UNREAD,
+                                           {'userId': user.id, 'roomId': room.id})
+        return data.get('chat', []), data.get('mention', [])
+
+    async def mark_as_read(self, user: User, room: Room, ids: List[str]) -> None:
+        """Mark chat messages listed in **ids** as read"""
+        await self._make_request('POST', self._UNREAD,
+                                 {'userId': user.id, 'roomId': room.id},
+                                 {'chat': ids})
+
+    async def get_message(self, room: Room, msgid: str) -> Message:
+        """Get a single message by its **id**"""
+        _, data = await self._make_request('GET', self._MESSAGES,
+                                           {'roomId': room.id, 'messageId': msgid})
+        return Message.from_dict(data)
+
+    async def send_message(self, room: Room, text: str) -> Message:
+        """Send a new message"""
+        _, data = await self._make_request('POST', self._MESSAGES,
+                                           {'roomId': room.id},
+                                           {'text': text})
+        return Message.from_dict(data)
+
+    async def edit_message(self, room: Room, message: Message, text: str) -> Message:
+        """Edit a message"""
+        _, data = await self._make_request('PUT', self._MESSAGES,
+                                           {'roomId': room.id, 'messageId': message.id},
+                                           {'text': text})
+        return Message.from_dict(data)
+
     async def list_groups(self):
         """Get list of current user's groups"""
         _, data = await self._make_request('GET', self._LIST_GROUPS, {})
         return data
 
     async def get_user(self) -> User:
-        """Get current user
-        """
+        """Get current user"""
         _, data = await self._make_request('GET', self._GET_USER, {})
         return User.from_dict(data)
 
@@ -309,8 +383,7 @@ class GitterAPI:
         Returns:
           async iterator over chat messages
         """
-        stream = self._make_stream_request('GET', self._LISTEN_MESSAGES,
-                                           {'room_id': room.id})
+        stream = self._make_stream_request('GET', self._MESSAGES, {'roomId': room.id})
         async for data in stream:
             yield Message.from_dict(data)
 
@@ -325,11 +398,13 @@ class AioGitterAPI(GitterAPI):
                        headers: Mapping[str, str],
                        body: bytes = b'') -> Tuple[int, Mapping[str, str], bytes]:
         async with self._session.request(method, url, headers=headers, data=body) as response:
+            response.raise_for_status()
             return response.status, response.headers, await response.read()
 
     async def _stream_request(self, method: str, url: str,
                               headers: Mapping[str, str],
                               body: bytes = b'') -> AsyncIterator[bytes]:
         async with self._session.request(method, url, headers=headers, data=body) as response:
+            response.raise_for_status()
             async for line_bytes in response.content:
                 yield line_bytes
