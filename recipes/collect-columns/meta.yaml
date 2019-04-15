@@ -1,0 +1,42 @@
+{% set name = "collect-columns" %}
+{% set version = "0.1.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: ae1af79383c4c1be12da8db48ca59c1eb7741e929b7d5638e247589cfb821b68
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - collect-columns=collect_columns.collect_columns:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - bcbio-gff
+    - biopython
+    - pandas >=0.23
+    - pip
+    - python >=3.5
+  run:
+    - bcbio-gff
+    - biopython
+    - pandas >=0.23
+    - python >=3.5
+
+test:
+  imports:
+    - collect_columns
+  commands:
+    - collect-columns --help
+
+about:
+  home: https://github.com/biowdl/collect-columns
+  license: MIT
+  license_family: MIT
+  summary: Retrieve a column for each in a set of tables, placing them in a single output table.
