@@ -11,7 +11,7 @@ import os
 import sys
 import subprocess
 from os import access, getenv, X_OK
-jar_file = 'DamageProfiler-0.4.5.jar'
+jar_file = 'DamageProfiler-0.4.6.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
