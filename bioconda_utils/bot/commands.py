@@ -49,9 +49,10 @@ command_routes = CommandDispatch()  # pylint: disable=invalid-name
 async def command_hello(ghapi, issue_number, user, *_args):
     """Simple demo function answering to hello"""
     msg = f"Hello @{user}!"
-    await ghapi.create_comment(issue_number, msg)
-    return f"I said hello on #{issue_number}"
-
+    if issue_number:
+        await ghapi.create_comment(issue_number, msg)
+        return f"I said hello on #{issue_number}"
+    return msg
 
 
 @command_routes.register("bump")
