@@ -27,6 +27,7 @@ async def handle_comment_created(event, ghapi, *args, **_kwargs):
     an @mention of the bot are considered commands and dispatched.
     """
     issue_number = str(event.get('issue/number', "NA"))
+    comment_author = event.get("comment/user/login", "")
     commands = [
         line.lower().split()[1:]
         for line in event.get('comment/body', '').splitlines()
@@ -36,7 +37,7 @@ async def handle_comment_created(event, ghapi, *args, **_kwargs):
         logger.info("No command in comment on #%s", issue_number)
     for cmd, *args in commands:
         logger.info("Dispatching command from #%s: '%s' %s", issue_number, cmd, args)
-        await command_routes.dispatch(cmd, event, ghapi, *args)
+        await command_routes.dispatch(cmd, ghapi, issue_number, comment_author, *args)
 
 
 @event_routes.register("check_suite")
