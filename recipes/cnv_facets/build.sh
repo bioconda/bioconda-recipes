@@ -3,7 +3,7 @@
 set -e
 
 # Work around https://github.com/bioconda/bioconda-recipes/issues/14421
-$r -e "source('https://bioconductor.org/biocLite.R'); biocLite('GenomeInfoDb')"
+$R -e "source('https://bioconductor.org/biocLite.R'); biocLite('GenomeInfoDb')"
 
 FACETS_GIT_REF=`grep -P ' *^FACETS_REF' install/install_pkgs.R \
 | sed 's/ //g; s/<-//; s/=//;' \
