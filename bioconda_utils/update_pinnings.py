@@ -126,34 +126,3 @@ def check(recipe, build_config) -> State:
                          meta.name(), meta.version(), meta.build_id())
             flags |= State.BUMP
     return flags
-
-
-def bump_recipe(recipe):
-    """
-    Increment the build number of a recipe
-
-    returns True on success and False on error (the build number couldn't be updated)
-    """
-    m = open(os.path.join(recipe, "meta.yaml")).read().split("\n")
-    found = False
-    for idx, line in enumerate(m):
-        matches = buildNumberRegex.match(line)
-        if matches:
-            found = True
-            buildNumber = int(matches.group(2))
-            m[idx] = "{}{}{}".format(matches.group(1), buildNumber + 1, matches.group(3))
-            break
-    if not found:
-        for idx, line in enumerate(m):
-            matches = buildNumberJinja.match(line)
-            if matches:
-                found = True
-                buildNumber = int(matches.group(2))
-                m[idx] = "{}{}{}".format(matches.group(1), buildNumber + 1, matches.group(3))
-                break
-
-    if found:
-        f = open(os.path.join(recipe, "meta.yaml"), "w")
-        f.write("\n".join(m))
-        return True
-    return False
