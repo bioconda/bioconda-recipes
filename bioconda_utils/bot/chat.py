@@ -108,13 +108,15 @@ class GitterListener:
             await self._api.send_message(room, "Hmm? Someone talking about me?", message.fromUser.username)
             return
         cmd, *args = command.split()
-        if args[-1][0] == '#':
-            try:
+        issue_number = None
+        try:
+            if args[-1][0] == '#':
                 issue_number = int(args[-1][1:])
                 args.pop()
-            except ValueError:
-                issue_number = None
-        response = await command_routes.dispatch(cmd, ghapi, issue_number, message.fromUser.username, *args)
+        except (ValueError, IndexError):
+            pass
+
+        response = await command_routes.dispatch(cmd.lower(), ghapi, issue_number, message.fromUser.username, *args)
         if response:
             await self._api.send_message(room, "@%s: %s", message.fromUser.username, response)
         else:
