@@ -5,6 +5,7 @@ import asyncio
 import logging
 import os
 import pickle
+import signal
 
 from concurrent.futures import ProcessPoolExecutor
 from hashlib import sha256
@@ -15,7 +16,7 @@ import aiohttp
 import aioftp
 import backoff
 
-from .utils import tqdm
+from .utils import tqdm, threads_to_use
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -71,13 +72,15 @@ class AsyncFilter(abc.ABC, Generic[ITEM]):
 class AsyncPipeline(Generic[ITEM]):
     """Processes items in an asyncio pipeline"""
 
-    def __init__(self, max_inflight: int = 100) -> None:
+    def __init__(self, max_inflight: int = 100, threads: int = None) -> None:
         try:  # get or create loop (threads don't have one)
             #: our asyncio loop
             self.loop = asyncio.get_event_loop()
         except RuntimeError:
             self.loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self.loop)
+        #: number of threads to use
+        self.threads = threads or threads_to_use()
         #: semaphore to limit io parallelism
         self.io_sem: asyncio.Semaphore = asyncio.Semaphore(1)
         #: must never run more than one conda at the same time
@@ -85,57 +88,98 @@ class AsyncPipeline(Generic[ITEM]):
         #: the filters successively applied to each item
         self.filters: List[AsyncFilter] = []
         #: executor running things in separate python processes
-        self.proc_pool_executor = ProcessPoolExecutor(3)
+        self.proc_pool_executor = ProcessPoolExecutor(self.threads)
         #: semaphore limiting the number of items processed concurrently
         self.limit_inflight = asyncio.Semaphore(max_inflight)
+
+        self._shutting_down = False
 
     def add(self, filt: Type[AsyncFilter[ITEM]], *args, **kwargs) -> None:
         """Adds `Filter` to this `Scanner`"""
         self.filters.append(filt(self, *args, **kwargs))
 
+    async def shutdown(self) -> None:
+        self._shutting_down = True
+        logger.error("Ctrl-C pressed - aborting...")
+        self.proc_pool_executor.shutdown()
+        tasks = [t for t in asyncio.Task.all_tasks() if t != asyncio.Task.current_task()]
+        for t in tasks:
+            t.cancel()
+        res_and_excs = await asyncio.gather(*tasks, return_exceptions=True)
+        self.loop.stop()
+
     def run(self) -> bool:
         """Enters the asyncio loop and manages shutdown."""
+        # We need to handle KeyboardInterrupt "manually" to get clean shutdown
+        # for the ProcessPoolExecutor
+        self.loop.add_signal_handler(signal.SIGINT, lambda: asyncio.ensure_future(self.shutdown()))
         try:
             task = asyncio.ensure_future(self._async_run())
             self.loop.run_until_complete(task)
             logger.warning("Finished update")
-        except (KeyboardInterrupt, EndProcessing) as exc:
-            if isinstance(exc, KeyboardInterrupt):
-                logger.error("Ctrl-C pressed - aborting...")
-            if isinstance(exc, EndProcessing):
-                logger.error("Terminating...")
-            task.cancel()
-            try:
-                self.loop.run_until_complete(task)
-            except asyncio.CancelledError:
-                pass
+        except asyncio.CancelledError:
+            pass
+        except EndProcessing as exc:
+            logger.error("Terminating...")
+            self.shutdown()
 
         for filt in self.filters:
             filt.finalize()
-        return task.result()
 
     @abc.abstractmethod
-    def get_item_iterator(self) -> Iterator[ITEM]:
-        """Load items"""
+    async def queue_items(self, queue):
+        pass
+
+    def get_item_count(self) -> int:
+        return 0
 
     async def _async_run(self) -> bool:
         """Runner within async loop"""
+        # call init functions on filters
         await asyncio.gather(*(filt.async_init() for filt in self.filters))
-        coros = [
-            asyncio.ensure_future(
-                self.process(item)
-            )
-            for item in self.get_item_iterator()
-        ]
+
+        # setup queues
+        source_q = asyncio.Queue()
+        progress_q = asyncio.Queue()
+        return_q = asyncio.Queue()
+
+        # setup progress monitor
+        tasks = []
+        tasks.append(asyncio.ensure_future(self.show_progress(progress_q, return_q)))
+
+        # setup workers
+        tasks.extend(asyncio.ensure_future(self.worker(source_q, progress_q))
+                     for n in range(self.threads))
+
+        # send items
+        await self.queue_items(source_q, return_q)
+
+        # wait for all items done
+        await source_q.join()
+        await progress_q.join()
+        await return_q.join()
+
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks)
+
+    async def show_progress(self, in_q, out_q) -> None:
+        with tqdm(total=self.get_item_count()) as progress:
+            while True:
+                item = await in_q.get()
+                progress.update(1)
+                await out_q.put(item)
+                in_q.task_done()
+
+    async def worker(self, in_q, out_q) -> None:
         try:
-            with tqdm(asyncio.as_completed(coros),
-                      total=len(coros)) as tcoros:
-                return all([await coro for coro in tcoros])
+            while True:
+                item = await in_q.get()
+                await self.process(item)
+                await out_q.put(item)
+                in_q.task_done()
         except asyncio.CancelledError:
-            for coro in coros:
-                coro.cancel()
-            await asyncio.wait(coros)
-            return False
+            return
 
     async def process(self, item: ITEM) -> bool:
         """Applies the filters to an item"""
@@ -149,7 +193,8 @@ class AsyncPipeline(Generic[ITEM]):
                 item_error.log(logger)
                 raise
             except Exception:  # pylint: disable=broad-except
-                logger.exception("While processing %s", item)
+                if not self._shutting_down:
+                    logger.exception("While processing %s", item)
                 return False
         return True
 

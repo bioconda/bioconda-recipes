@@ -1,3 +1,11 @@
+<!--
+creator: autobump 0.15.10
+type: version_bump
+recipe: {{r.name}}
+orig_version: {{r.orig.version}}
+new_version: {{r.version}}
+--!>
+
 Update `{{r.name}}`: **{{r.orig.version}}** &rarr; **{{r.version}}**
 
 ***

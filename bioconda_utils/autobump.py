@@ -44,6 +44,7 @@ import abc
 import asyncio
 import logging
 import os
+import pickle
 import random
 
 from collections import defaultdict, Counter
@@ -56,6 +57,8 @@ import aiofiles
 from aiohttp import ClientResponseError
 import yaml
 
+import networkx as nx
+
 import conda_build.variants
 import conda_build.config
 from conda.exports import MatchSpec, VersionOrder
@@ -64,8 +67,11 @@ import conda.exceptions
 from pkg_resources import parse_version
 
 from . import utils
+from . import update_pinnings
+from . import graph
 from .utils import ensure_list
 from .recipe import Recipe
+from .recipe import load_parallel_iter as recipes_load_parallel_iter
 from .aiopipe import AsyncFilter, AsyncPipeline, AsyncRequests, EndProcessingItem, EndProcessing
 
 if TYPE_CHECKING:
@@ -91,14 +97,74 @@ class RecipeSource:
     """
     def __init__(self, recipe_base: str, packages: List[str], shuffle: bool=True) -> None:
         self.recipe_base = recipe_base
-        self.recipe_dirs = utils.get_recipes(recipe_base, packages)
+        self.recipe_dirs = list(utils.get_recipes(recipe_base, packages))
         if shuffle:
-            self.recipe_dirs = list(self.recipe_dirs)
             random.shuffle(self.recipe_dirs)
+        logger.warning("Selected %i packages", len(self.recipe_dirs))
 
-    def __iter__(self) -> Iterator[Recipe]:
+    async def queue_items(self, send_q, return_q):
         for recipe_dir in self.recipe_dirs:
-            yield Recipe(recipe_dir, self.recipe_base)
+            await send_q.put(Recipe(recipe_dir, self.recipe_base))
+            while return_q.qsize():
+                try:
+                    item = return_q.get_nowait()
+                    return_q.task_done()
+                except asyncio.QueueEmpty:
+                    break
+
+    def get_item_count(self):
+        return len(self.recipe_dirs)
+
+
+class RecipeGraphSource(RecipeSource):
+    def __init__(self, recipe_base: str, packages: List[str], shuffle: bool,
+                 config: Dict[str, str], cache_fn: str=None) -> None:
+        super().__init__(recipe_base, packages, shuffle)
+        self.config = config
+        self.cache_fn = cache_fn
+        self.shuffle = shuffle
+        self.dag = self.load_graph()
+        if packages != '*':
+            self.dag = graph.filter_recipe_dag(self.dag, packages)
+        logger.warning("Graph contains %i packages (blacklist excluded)", len(self.dag))
+
+    async def queue_items(self, send_q, return_q):
+        # Build a copy of the graph we can meddle with
+        dag = self.dag.__class__()
+        dag.add_nodes_from(self.dag)
+        dag.add_edges_from(self.dag.edges())
+        # Keep set of recipes "in flight"
+        sent: Set[Recipe] = set()
+        while dag:
+            remaining_recipes = dag.nodes()
+            if self.shuffle:
+                random.shuffle(remaining_recipes)
+            for recipe in remaining_recipes:
+                if recipe not in sent and dag.in_degree(recipe) == 0:
+                    await send_q.put(recipe)
+                    sent.add(recipe)
+            item = await return_q.get()
+            dag.remove_node(item)
+            sent.remove(item)
+            return_q.task_done()
+
+    def get_item_count(self):
+        return len(self.dag)
+
+    def load_graph(self):
+        if self.cache_fn and os.path.exists(self.cache_fn):
+            with open(self.cache_fn, "rb") as stream:
+                dag = pickle.load(stream)
+        else:
+            blacklist = utils.get_blacklist(self.config.get('blacklists'), self.recipe_base)
+            dag = graph.build_from_recipes(
+                recipe for recipe in recipes_load_parallel_iter(self.recipe_base, "*")
+                if recipe.reldir not in blacklist
+            )
+            if self.cache_fn:
+                with open(self.cache_fn, "wb") as stream:
+                    pickle.dump(dag, stream)
+        return dag
 
 
 class Scanner(AsyncPipeline[Recipe]):
@@ -139,9 +205,11 @@ class Scanner(AsyncPipeline[Recipe]):
                     out.write('\t'.join(entry)+"\n")
         return res
 
-    def get_item_iterator(self) -> Iterator[Recipe]:
-        """Return initial iterator over stub (unloaded) Recipes"""
-        yield from self.recipe_source
+    async def queue_items(self, send_q, return_q):
+        await self.recipe_source.queue_items(send_q, return_q)
+
+    def get_item_count(self):
+        return self.recipe_source.get_item_count()
 
     async def _async_run(self) -> bool:
         """Runner within async loop"""
@@ -151,14 +219,16 @@ class Scanner(AsyncPipeline[Recipe]):
     async def process(self, recipe: Recipe) -> bool:
         """Applies the filters to a recipe"""
         try:
+            res = False
             if await super().process(recipe):
                 self.stats["Updated"] += 1
-                return True
+                res = True
             return False
         except EndProcessingItem as recipe_error:
             self.stats[recipe_error.name] += 1
             self.status.append((recipe.reldir, recipe_error.name))
-            return True
+            res = True
+        return res
 
 
 class Filter(AsyncFilter[Recipe]):
@@ -227,18 +297,51 @@ class ExcludeBlacklisted(Filter):
         template = "is blacklisted"
         level = logging.DEBUG
 
-    def __init__(self, scanner, recipe_base: str, config_fn: str) -> None:
+    def __init__(self, scanner: Scanner, recipe_base: str, config: Dict) -> None:
         super().__init__(scanner)
-        with open(config_fn, "r") as config_fdes:
-            config = yaml.safe_load(config_fdes)
-        blacklists = [os.path.join(os.path.dirname(config_fn), bl)
-                      for bl in config['blacklists']]
-        self.blacklisted = utils.get_blacklist(blacklists, recipe_base)
+        self.blacklisted = utils.get_blacklist(config.get('blacklists'), recipe_base)
         logger.warning("Excluding %i blacklisted recipes", len(self.blacklisted))
 
     async def apply(self, recipe: Recipe) -> Recipe:
         if recipe.reldir in self.blacklisted:
             raise self.Blacklisted(recipe)
+        return recipe
+
+
+class ExcludeDependencyPending(Filter):
+    """Filteres recipes having dependencies with pending updates"""
+    class DependencyPending(EndProcessingItem):
+        """A dependency of this recipe is pending rebuild"""
+        template = "deferred pending rebuild of dependencies: %s"
+
+    def __init__(self, scanner: Scanner, dag: nx.DiGraph) -> None:
+        self.scanner = scanner
+        self.dag = dag
+
+    async def apply(self, recipe: Recipe) -> Recipe:
+        pending_deps = [
+            dep for dep in nx.ancestors(self.dag, recipe)
+            if dep.meta != dep.orig.meta
+        ]
+        if pending_deps:
+            msg =  ", ".join(str(x) for x in pending_deps)
+            raise self.DependencyPending(recipe, msg)
+        return recipe
+
+
+class CheckPinning(Filter):
+    def __init__(self, scanner: Scanner, bump_only_python: bool) -> None:
+        self.scanner = scanner
+        self.build_config = utils.load_conda_build_config()
+        self.bump_only_python = bump_only_python
+
+    async def apply(self, recipe: Recipe) -> Recipe:
+        status = await self.scanner.run_sp(update_pinnings.check, recipe, self.build_config)
+        if status.needs_bump(self.bump_only_python):
+            buildno = int(recipe['build']['number']) + 1
+            logger.info("%s needs rebuild. Bumping buildnumber to %i", recipe, buildno)
+            recipe.reset_buildnumber(buildno)
+            recipe.render()
         return recipe
 
 
@@ -347,10 +450,13 @@ class UpdateVersion(Filter):
         else:
             recipe.orig.version_data = {}
 
-        # check if the recipe is up to date
+        # exit here if we found no new version
         if VersionOrder(latest) == VersionOrder(recipe.version):
-            if not recipe.on_branch:
-                raise self.UpToDate(recipe)
+            # continue pipeline if we have other edits
+            if recipe.on_branch or recipe.meta != recipe.orig.meta:
+                return recipe
+            # or finish this recipe as not needing modifications
+            raise self.UpToDate(recipe)
 
         # Update `url:`s without Jinja expressions (plain text)
         for fname in versions[latest]:
@@ -529,7 +635,11 @@ class FetchUpstreamDependencies(Filter):
 
 
 class UpdateChecksums(Filter):
-    """Download upstream source files, recompute checksum and update Recipe"""
+    """Download upstream source files, recompute checksum and update Recipe
+
+    FIXME:
+      Should ignore sources for which no change has been made.
+    """
 
     class NoValidUrls(EndProcessingItem):
         """Failed to download any file for a source to generate new checksum"""
@@ -565,6 +675,10 @@ class UpdateChecksums(Filter):
                 out.write("\n".join(self.failed_urls))
 
     async def apply(self, recipe: Recipe) -> Recipe:
+        if int(recipe.meta['build']['number']) > 0:
+            # Nothing to do - the recipe URLs did not change
+            return recipe
+
         sources = recipe.meta["source"]
         logger.info("Updating checksum for %s %s", recipe, recipe.version)
         if isinstance(sources, Mapping):
@@ -581,7 +695,7 @@ class UpdateChecksums(Filter):
         the same checksum (if the link is available).
 
         We don't fail if the link is not available as cargo-port will only update
-        after the recipe was built and uploaded.
+        after the recipe was built and uploaded
         """
         checksum_type = "none"
         for checksum_type in ("sha256", "sha1", "md5"):
