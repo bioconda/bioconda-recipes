@@ -71,7 +71,6 @@ def build(recipes, config, blacklist=None, restrict=True):
             return []
         return [dep.split()[0] for dep in deps if dep]
 
-
     def get_inner_deps(dependencies):
         dependencies = list(dependencies)
         for dep in dependencies:
@@ -88,7 +87,6 @@ def build(recipes, config, blacklist=None, restrict=True):
             for dep in set(chain(
                 get_inner_deps(get_deps(meta, "build")),
                 get_inner_deps(get_deps(meta, "host")),
-                get_inner_deps(get_deps(meta, "run")),
             ))
         )
 
