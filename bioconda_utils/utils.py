@@ -182,7 +182,6 @@ jinja_silent_undef = Environment(
 # Patterns of allowed environment variables that are allowed to be passed to
 # conda-build.
 ENV_VAR_WHITELIST = [
-    'CONDA_*',
     'PATH',
     'LC_*',
     'LANG',
@@ -191,7 +190,6 @@ ENV_VAR_WHITELIST = [
 
 # Of those that make it through the whitelist, remove these specific ones
 ENV_VAR_BLACKLIST = [
-    'CONDA_PREFIX',
 ]
 
 # Of those, also remove these when we're running in a docker container
