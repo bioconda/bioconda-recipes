@@ -773,7 +773,7 @@ def test_conda_forge_pins(caplog, config_fixture):
               version: 0.1
             requirements:
               run:
-                - zlib {{ zlib }}
+                - zlib
         """, from_string=True)
     r.write_recipes()
     build_result = build.build_recipes(
