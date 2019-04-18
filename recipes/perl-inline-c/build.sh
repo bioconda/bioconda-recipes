@@ -21,3 +21,5 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
+
+rm $PREFIX/bin/gcc
