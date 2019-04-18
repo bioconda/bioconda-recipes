@@ -574,7 +574,7 @@ def test_sandboxed():
     }
     with utils.sandboxed_env(env):
         print(os.environ)
-        assert os.environ('PATH') == '/foo/bar'
+        assert os.environ['PATH'] == '/foo/bar'
         assert 'CONDA_ARBITRARY_VAR' not in os.environ
         assert 'TRAVIS_ARBITRARY_VAR' not in os.environ
         assert 'GITHUB_TOKEN' not in os.environ
@@ -788,6 +788,7 @@ def test_conda_forge_pins(caplog, config_fixture):
 
     for k, v in r.recipe_dirs.items():
         for i in utils.built_package_paths(v):
+            print(os.listdir(os.path.dirname(i)))
             assert os.path.exists(i)
             ensure_missing(i)
 
