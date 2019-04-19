@@ -336,7 +336,8 @@ class CheckPinning(Filter):
         self.bump_only_python = bump_only_python
 
     async def apply(self, recipe: Recipe) -> Recipe:
-        status = await self.scanner.run_sp(update_pinnings.check, recipe, self.build_config)
+        status, metas = await self.scanner.run_sp(update_pinnings.check,
+                                                  recipe, self.build_config)
         if status.needs_bump(self.bump_only_python):
             buildno = int(recipe['build']['number']) + 1
             logger.info("%s needs rebuild. Bumping buildnumber to %i", recipe, buildno)
