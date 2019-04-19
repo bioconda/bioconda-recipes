@@ -756,7 +756,7 @@ def autobump(recipe_folder, config, packages='*', cache=None,
              no_fetch_requirements=False,
              check_branch=False, create_branch=False, create_pr=False,
              only_active=False, no_shuffle=False,
-             max_updates=0, parallel=10, dry_run=False,
+             max_updates=0, parallel=100, dry_run=False,
              no_check_pinnings=False, no_follow_graph=False,
              no_check_version_update=False,
              no_check_pending_deps=False, bump_only_python=False):
