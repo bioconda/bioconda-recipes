@@ -336,6 +336,23 @@ class CheckPinning(Filter):
         self.build_config = utils.load_conda_build_config()
         self.bump_only_python = bump_only_python
 
+    @staticmethod
+    def match_version(spec, version):
+        """Check if **version** satisfies **spec**
+
+        >>> match_version('>1.2,<1.3.0a0', '1.2.1')
+        True
+
+        Args:
+        spec: The version range specification
+        version: The version to test against the spec
+        Returns:
+        True if the spec is satisfied by the version.
+        """
+        mspec = MatchSpec(version=spec.replace(" ", ""))
+        return mspec.match({'name': '', 'build': '', 'build_number': 0,
+                            'version': version})
+
     async def apply(self, recipe: Recipe) -> Recipe:
         status, metas = await self.scanner.run_sp(update_pinnings.check,
                                                   recipe, self.build_config)
