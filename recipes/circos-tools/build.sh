@@ -2,7 +2,7 @@
 
 cd tools
 
-mkdir -p $PREFIX/bin/
+mkdir -p $PREFIX/bin/ $PREFIX/lib/
 cp binlinks/bin/binlinks $PREFIX/bin/
 cp bundlelinks/bin/bundlelinks $PREFIX/bin/
 cp calcdatarange/bin/calcdatarange $PREFIX/bin/
@@ -18,3 +18,4 @@ cp resample/bin/resample $PREFIX/bin/
 cp tableviewer/bin/make-conf $PREFIX/bin/
 cp tableviewer/bin/make-table $PREFIX/bin/
 cp tableviewer/bin/parse-table $PREFIX/bin/
+cp tableviewer/lib/* $PREFIX/lib/
