@@ -1,12 +1,14 @@
 <!--
-creator: autobump 0.15.10
-type: version_bump
+creator: autobump {{version}}
+type: {% block type %}{% endblock %}
 recipe: {{r.name}}
 orig_version: {{r.orig.version}}
+orig_build_number: {{r.orig.build_number}}
 new_version: {{r.version}}
+new_build_bumber: {{r.build_number}}
 --!>
 
-Update `{{r.name}}`: **{{r.orig.version}}** &rarr; **{{r.version}}**
+{% block header %}{% endblock%}
 
 ***
 
@@ -31,14 +33,6 @@ Upstream Author: {% if author_is_member -%}
 
 ***
 
-{% if dependency_diff %}
-**Note:** Upstream dependencies appear to have changed
-
-```diff
-{{dependency_diff}}
-```
-
-***
-{% endif %}
+{% block message %}{% endblock %}
 
 This pull request was automatically generated (see [docs](https://bioconda.github.io/updating.html)).

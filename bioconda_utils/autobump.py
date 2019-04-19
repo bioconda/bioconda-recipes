@@ -66,6 +66,7 @@ import conda.exceptions
 
 from pkg_resources import parse_version
 
+from . import __version__
 from . import utils
 from . import update_pinnings
 from . import graph
@@ -445,9 +446,9 @@ class UpdateVersion(Filter):
         latest = self.select_version(recipe.version, versions.keys())
 
         # add data for respective versions to recipe and recipe.orig
-        recipe.version_data = versions[latest]
+        recipe.version_data = versions[latest] or {}
         if recipe.orig.version in versions:
-            recipe.orig.version_data = versions[recipe.orig.version]
+            recipe.orig.version_data = versions[recipe.orig.version] or {}
         else:
             recipe.orig.version_data = {}
 
@@ -980,6 +981,8 @@ class CreatePullRequest(GitFilter):
         the account name from the source URL, so that we can add an @mention
         notifying the upstream author of the update.
         """
+        if not recipe.version_data:
+            return None
         for ver in recipe.version_data.values():
             if 'hoster' in ver and ver['hoster'].__class__.__name__.startswith('Github'):
                 return ver['vals']['account']
@@ -987,18 +990,26 @@ class CreatePullRequest(GitFilter):
 
     async def apply(self, recipe: Recipe) -> Recipe:
         branch_name = self.branch_name(recipe)
-        template = utils.jinja.get_template("bump_pr.md")
         author = self.get_github_author(recipe)
 
-        body = template.render({
+        if recipe.version != recipe.orig.version:
+            template_name = "autobump_bump_version_pr.md"
+        else:
+            template_name = "autobump_update_pinning.md"
+        template = utils.jinja.get_template(template_name)
+
+        context = template.new_context({
             'r': recipe,
             'recipe_relurl': self.ghub.get_file_relurl(recipe.dir, branch_name),
             'author': author,
             'author_is_member': await self.ghub.is_member(author),
             'dependency_diff': self.render_deps_diff(recipe),
+            'version': __version__
         })
-        labels = ["autobump"]
-        title = f"Update {recipe} to {recipe.version}"
+
+        labels = ''.join(template.blocks['labels'](context))
+        title = ''.join(template.blocks['title'](context))
+        body = template.render(context)
 
         # check if we already have an open PR (=> update in progress)
         pullreqs = await self.ghub.get_prs(from_branch=branch_name, from_user="bioconda")
