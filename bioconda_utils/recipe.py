@@ -134,6 +134,7 @@ class Recipe():
         if not recipe_dir.startswith(recipe_folder):
             raise RuntimeError(f"'{recipe_dir}' not inside '{recipe_folder}'")
 
+
         #: path to folder containing recipes
         self.basedir = recipe_folder
         #: relative path to recipe dir from folder containing recipes
@@ -349,6 +350,11 @@ class Recipe():
     def version(self) -> str:
         """The version of the package build by this recipe"""
         return str(self.meta["package"]["version"])
+
+    @property
+    def build_number(self) -> int:
+        """The current build number"""
+        return int(self.meta["build"]["number"])
 
     def __getitem__(self, key):
         return self.meta[key]

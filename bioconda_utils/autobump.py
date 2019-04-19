@@ -339,7 +339,7 @@ class CheckPinning(Filter):
         status, metas = await self.scanner.run_sp(update_pinnings.check,
                                                   recipe, self.build_config)
         if status.needs_bump(self.bump_only_python):
-            buildno = int(recipe['build']['number']) + 1
+            buildno = recipe.build_number
             logger.info("%s needs rebuild. Bumping buildnumber to %i", recipe, buildno)
             recipe.reset_buildnumber(buildno)
             recipe.render()
@@ -676,8 +676,9 @@ class UpdateChecksums(Filter):
                 out.write("\n".join(self.failed_urls))
 
     async def apply(self, recipe: Recipe) -> Recipe:
-        if int(recipe.meta['build']['number']) > 0:
+        if recipe.build_number > 0:
             # Nothing to do - the recipe URLs did not change
+            # FIXME: not the best way to test this
             return recipe
 
         sources = recipe.meta["source"]
