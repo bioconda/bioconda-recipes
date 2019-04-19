@@ -148,7 +148,7 @@ class Recipe():
         #: Lines of the raw recipe file
         self.meta_yaml: List[str] = []
         # Filled in by update filter
-        self.version_data: Dict[str, Any] = None
+        self.version_data: Dict[str, Any] = {}
         #: Original recipe before modifications (updated by load_from_string)
         self.orig: Recipe = copy(self)
         #: Whether the recipe was loaded from a branch (update in progress)
