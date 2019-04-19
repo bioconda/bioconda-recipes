@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd tools
+
 mkdir -p $PREFIX/bin/
 cp binlinks/bin/binlinks $PREFIX/bin/
 cp bundlelinks/bin/bundlelinks $PREFIX/bin/
