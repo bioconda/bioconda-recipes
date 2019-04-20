@@ -219,6 +219,7 @@ class Recipe():
                 if return_exceptions:
                     return exc
                 raise exc
+        recipe.set_original()
         return recipe
 
     def save(self):
