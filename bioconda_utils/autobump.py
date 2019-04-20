@@ -378,9 +378,9 @@ class CheckPinning(Filter):
         status, metas = await self.scanner.run_sp(update_pinnings.check,
                                                   recipe, self.build_config)
         if status.needs_bump(self.bump_only_python):
-            buildno = recipe.build_number
-            logger.info("%s needs rebuild. Bumping buildnumber to %i", recipe, buildno)
-            recipe.reset_buildnumber(buildno)
+            new_buildno = recipe.build_number + 1
+            logger.info("%s needs rebuild. Bumping buildnumber to %i", recipe, new_buildno)
+            recipe.reset_buildnumber(new_buildno)
             recipe.render()
         return recipe
 
