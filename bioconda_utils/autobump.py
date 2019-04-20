@@ -927,6 +927,9 @@ class GitWriteRecipe(GitFilter):
         template = "had no changes"
 
     async def apply(self, recipe: Recipe) -> Recipe:
+        if not recipe.is_modified():
+            raise self.NoChanges(recipe)
+
         branch_name = self.branch_name(recipe)
         changed = False
         async with self.git.lock_working_dir:

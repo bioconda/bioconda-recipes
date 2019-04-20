@@ -230,6 +230,9 @@ class Recipe():
         """Store the current state of the recipe as "original" version"""
         self.orig = deepcopy(self)
 
+    def is_modified(self) -> bool:
+        return self.meta_yaml != self.orig.meta_yaml
+
     def dump(self):
         """Dump recipe content"""
         return "\n".join(self.meta_yaml) + "\n"
