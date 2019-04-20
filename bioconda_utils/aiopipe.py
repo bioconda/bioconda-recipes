@@ -105,9 +105,10 @@ class AsyncPipeline(Generic[ITEM]):
         """Adds `Filter` to this `Scanner`"""
         self.filters.append(filt(self, *args, **kwargs))
 
-    async def shutdown(self) -> None:
+    async def shutdown(self, sig=None) -> None:
         self._shutting_down = True
-        logger.error("Ctrl-C pressed - aborting...")
+        if sig == signal.SIGINT:
+            logger.error("Ctrl-C pressed - aborting...")
         self.proc_pool_executor.shutdown()
         tasks = [t for t in asyncio.Task.all_tasks() if t != asyncio.Task.current_task()]
         for t in tasks:
@@ -119,7 +120,8 @@ class AsyncPipeline(Generic[ITEM]):
         """Enters the asyncio loop and manages shutdown."""
         # We need to handle KeyboardInterrupt "manually" to get clean shutdown
         # for the ProcessPoolExecutor
-        self.loop.add_signal_handler(signal.SIGINT, lambda: asyncio.ensure_future(self.shutdown()))
+        self.loop.add_signal_handler(signal.SIGINT,
+                                     lambda: asyncio.ensure_future(self.shutdown(signal.SIGINT)))
         try:
             task = asyncio.ensure_future(self._async_run())
             self.loop.run_until_complete(task)
@@ -128,7 +130,7 @@ class AsyncPipeline(Generic[ITEM]):
             pass
         except EndProcessing as exc:
             logger.error("Terminating...")
-            self.shutdown()
+            self.loop.run_until_complete(self.shutdown())
 
         for filt in self.filters:
             filt.finalize()
