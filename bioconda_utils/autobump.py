@@ -1049,7 +1049,7 @@ class CreatePullRequest(GitFilter):
         if recipe.version != recipe.orig.version:
             template_name = "autobump_bump_version_pr.md"
         else:
-            template_name = "autobump_update_pinning.md"
+            template_name = "autobump_update_pinning_pr.md"
         template = utils.jinja.get_template(template_name)
 
         context = template.new_context({
@@ -1061,7 +1061,7 @@ class CreatePullRequest(GitFilter):
             'version': __version__
         })
 
-        labels = ''.join(template.blocks['labels'](context))
+        labels = (''.join(template.blocks['labels'](context))).splitlines()
         title = ''.join(template.blocks['title'](context))
         body = template.render(context)
 
