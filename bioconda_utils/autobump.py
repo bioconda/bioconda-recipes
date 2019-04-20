@@ -250,7 +250,7 @@ class Filter(AsyncFilter[Recipe]):
 
 
 class ExcludeOtherChannel(Filter):
-    """Exclude recipes conflicting with other **channels**"""
+    """Exclude recipes in **channels**"""
 
     class OtherChannel(EndProcessingItem):
         """This recipe builds one or more packages that are also present
@@ -269,8 +269,7 @@ class ExcludeOtherChannel(Filter):
         self.other = set(repo.get_package_data('name', channels=channels))
 
     def get_info(self) -> str:
-        return (super().get_info().replace('**', '') +
-                f": {', '.join(self.channels)}")
+        return super().get_info().replace('**channels**', ', '.join(self.channels))
 
     async def apply(self, recipe: Recipe) -> None:
         if any(package in self.other
@@ -1093,7 +1092,7 @@ class CreatePullRequest(GitFilter):
 
 
 class MaxUpdates(Filter):
-    """Terminate loop after **max_updates** Recipes have been updated."""
+    """Terminate pipeline after **max_updates** recipes have been updated."""
     def __init__(self, scanner: Scanner, max_updates: int = 0) -> None:
         super().__init__(scanner)
         self.max_updates = max_updates
@@ -1101,7 +1100,7 @@ class MaxUpdates(Filter):
         logger.warning("Will exit after %s updated recipes", max_updates)
 
     def get_info(self) -> str:
-        return super().get_info() + f": {self.max_updates}"
+        return super().get_info().replace('**max_updates**', str(self.max_updates))
 
     async def apply(self, recipe: Recipe) -> None:
         self.count += 1
