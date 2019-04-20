@@ -8,6 +8,13 @@ import pickle
 import signal
 
 from concurrent.futures import ProcessPoolExecutor
+try:
+    from concurrent.futures import BrokenExecutor
+except ImportError:
+    # BrokenExecutor is new in Py3.7, 3.6 only has one of its
+    # subclasses, the BrokenProcessPool RuntimeError.
+    from concurrent.futures.process import BrokenProcessPool as BrokenExecutor
+
 from hashlib import sha256
 from urllib.parse import urlparse
 from typing import Dict, Iterator, List, Generic, Optional, Type, TypeVar
@@ -191,6 +198,10 @@ class AsyncPipeline(Generic[ITEM]):
                 return False
             except EndProcessingItem as item_error:
                 item_error.log(logger)
+                raise
+            except BrokenExecutor:
+                logger.exception("Fatal exception while processing %s", item)
+                # can't fix this - if one of the pools is done for, so are we
                 raise
             except Exception:  # pylint: disable=broad-except
                 if not self._shutting_down:
