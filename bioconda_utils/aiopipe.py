@@ -66,7 +66,7 @@ class AsyncFilter(abc.ABC, Generic[ITEM]):
         self.pipeline = pipeline
 
     @abc.abstractmethod
-    async def apply(self, recipe: ITEM) -> ITEM:
+    async def apply(self, recipe: ITEM):
         """Process a recipe. Returns False if processing should stop"""
 
     async def async_init(self) -> None:
@@ -193,7 +193,7 @@ class AsyncPipeline(Generic[ITEM]):
         async with self.limit_inflight:
             try:
                 for filt in self.filters:
-                    item = await filt.apply(item)
+                    await filt.apply(item)
             except asyncio.CancelledError:
                 return False
             except EndProcessingItem as item_error:

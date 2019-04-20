@@ -245,7 +245,7 @@ class Filter(AsyncFilter[Recipe]):
         return docline
 
     @abc.abstractmethod
-    async def apply(self, recipe: Recipe) -> Recipe:
+    async def apply(self, recipe: Recipe) -> None:
         """Process a recipe. Returns False if processing should stop"""
 
 
@@ -272,11 +272,10 @@ class ExcludeOtherChannel(Filter):
         return (super().get_info().replace('**', '') +
                 f": {', '.join(self.channels)}")
 
-    async def apply(self, recipe: Recipe) -> Recipe:
+    async def apply(self, recipe: Recipe) -> None:
         if any(package in self.other
                for package in recipe.package_names):
             raise self.OtherChannel(recipe)
-        return recipe
 
 
 class ExcludeSubrecipe(Filter):
@@ -295,12 +294,11 @@ class ExcludeSubrecipe(Filter):
         super().__init__(scanner)
         self.always_exclude = always
 
-    async def apply(self, recipe: Recipe) -> Recipe:
+    async def apply(self, recipe: Recipe) -> None:
         is_subrecipe = recipe.reldir.strip("/").count("/") > 0
         enabled = recipe.config.get("enable", False)
         if is_subrecipe and not (enabled and not self.always_exclude):
             raise self.IsSubRecipe(recipe)
-        return recipe
 
 
 class ExcludeBlacklisted(Filter):
@@ -321,10 +319,9 @@ class ExcludeBlacklisted(Filter):
         return (super().get_info() +
                 f": {', '.join(self.blacklists)} / {len(self.blacklisted)} recipes")
 
-    async def apply(self, recipe: Recipe) -> Recipe:
+    async def apply(self, recipe: Recipe) -> None:
         if recipe.reldir in self.blacklisted:
             raise self.Blacklisted(recipe)
-        return recipe
 
 
 class ExcludeDependencyPending(Filter):
@@ -338,7 +335,7 @@ class ExcludeDependencyPending(Filter):
         self.scanner = scanner
         self.dag = dag
 
-    async def apply(self, recipe: Recipe) -> Recipe:
+    async def apply(self, recipe: Recipe) -> None:
         pending_deps = [
             dep for dep in nx.ancestors(self.dag, recipe)
             if dep.is_modified()
@@ -346,7 +343,6 @@ class ExcludeDependencyPending(Filter):
         if pending_deps:
             msg =  ", ".join(str(x) for x in pending_deps)
             raise self.DependencyPending(recipe, msg)
-        return recipe
 
 
 class CheckPinning(Filter):
@@ -374,7 +370,7 @@ class CheckPinning(Filter):
         return mspec.match({'name': '', 'build': '', 'build_number': 0,
                             'version': version})
 
-    async def apply(self, recipe: Recipe) -> Recipe:
+    async def apply(self, recipe: Recipe) -> None:
         status, metas = await self.scanner.run_sp(update_pinnings.check,
                                                   recipe, self.build_config)
         if status.needs_bump(self.bump_only_python):
@@ -382,7 +378,6 @@ class CheckPinning(Filter):
             logger.info("%s needs rebuild. Bumping buildnumber to %i", recipe, new_buildno)
             recipe.reset_buildnumber(new_buildno)
             recipe.render()
-        return recipe
 
 
 class UpdateVersion(Filter):
@@ -458,7 +453,7 @@ class UpdateVersion(Filter):
         self.build_config: conda_build.config.Config = \
             utils.load_conda_build_config()
 
-    def finalize(self):
+    def finalize(self) -> None:
         """Save unparsed urls to file and print stats to log"""
         stats: Counter = Counter()
         for url in self.unparsed_urls:
@@ -473,7 +468,7 @@ class UpdateVersion(Filter):
             with open(self.unparsed_file, "w") as out:
                 out.write("\n".join(self.unparsed_urls))
 
-    async def apply(self, recipe: Recipe):
+    async def apply(self, recipe: Recipe) -> None:
         logger.debug("Checking for updates to %s - %s", recipe, recipe.version)
 
         # scan for available versions
@@ -492,11 +487,7 @@ class UpdateVersion(Filter):
 
         # exit here if we found no new version
         if VersionOrder(latest) == VersionOrder(recipe.version):
-            # continue pipeline if we have other edits
-            if recipe.on_branch or recipe.meta != recipe.orig.meta:
-                return recipe
-            # or finish this recipe as not needing modifications
-            raise self.UpToDate(recipe)
+            return
 
         # Update `url:`s without Jinja expressions (plain text)
         for fname in versions[latest]:
@@ -523,8 +514,6 @@ class UpdateVersion(Filter):
                                  ensure_list(osrc['url'])):
                 if url == ourl:
                     raise self.UrlNotVersioned(recipe)
-
-        return recipe
 
     async def get_version_map(self, recipe: Recipe):
         """Scan all source urls"""
@@ -661,7 +650,7 @@ class FetchUpstreamDependencies(Filter):
         self.build_config: conda_build.config.Config = \
             utils.load_conda_build_config()
 
-    async def apply(self, recipe: Recipe) -> Recipe:
+    async def apply(self, recipe: Recipe) -> None:
         await asyncio.gather(*[
             data["hoster"].get_deps(self.pipeline, self.build_config,
                                     recipe.name, data)
@@ -671,7 +660,6 @@ class FetchUpstreamDependencies(Filter):
             and "hoster" in data
             and hasattr(data["hoster"], "get_deps")
         ])
-        return recipe
 
 
 class UpdateChecksums(Filter):
@@ -727,20 +715,17 @@ class UpdateChecksums(Filter):
             with open(self.failed_file, "w") as out:
                 out.write("\n".join(self.failed_urls))
 
-    async def apply(self, recipe: Recipe) -> Recipe:
-        if recipe.build_number > 0:
-            # Nothing to do - the recipe URLs did not change
+    async def apply(self, recipe: Recipe) -> None:
+        if recipe.build_number == 0:
             # FIXME: not the best way to test this
-            return recipe
 
-        sources = recipe.meta["source"]
-        logger.info("Updating checksum for %s %s", recipe, recipe.version)
-        if isinstance(sources, Mapping):
-            sources = [sources]
-        for source_idx, source in enumerate(sources):
-            await self.update_source(recipe, source, source_idx)
-        recipe.render()
-        return recipe
+            sources = recipe.meta["source"]
+            logger.info("Updating checksum for %s %s", recipe, recipe.version)
+            if isinstance(sources, Mapping):
+                sources = [sources]
+            for source_idx, source in enumerate(sources):
+                await self.update_source(recipe, source, source_idx)
+            recipe.render()
 
     async def update_source(self, recipe: Recipe, source: Mapping, source_idx: int) -> None:
         """Updates one source
@@ -807,7 +792,7 @@ class GitFilter(Filter):
         self.git = git_handler
 
     @classmethod
-    def branch_name(cls, recipe):
+    def branch_name(cls, recipe: Recipe) -> str:
         """Render branch name from recipe
 
         - Replace dashes with underscores (GitPython does not like dash)
@@ -820,7 +805,7 @@ class GitFilter(Filter):
 
     # placate pylint by reiterating abstract method
     @abc.abstractmethod
-    async def apply(self, recipe: Recipe) -> Recipe:
+    async def apply(self, recipe: Recipe) -> None:
         pass
 
 
@@ -836,11 +821,10 @@ class ExcludeNoActiveUpdate(GitFilter):
         template = "is not currently being updated"
         level = logging.DEBUG
 
-    async def apply(self, recipe: Recipe) -> Recipe:
+    async def apply(self, recipe: Recipe) -> None:
         branch_name = self.branch_name(recipe)
         if not self.git.get_remote_branch(branch_name):
             raise self.NoActiveUpdate(recipe)
-        return recipe
 
 
 class LoadRecipe(Filter):
@@ -849,13 +833,12 @@ class LoadRecipe(Filter):
         super().__init__(scanner)
         self.sem = asyncio.Semaphore(10)
 
-    async def apply(self, recipe: Recipe) -> Recipe:
+    async def apply(self, recipe: Recipe) -> None:
         async with self.sem, \
                    aiofiles.open(recipe.path, encoding="utf-8") as fdes:
             recipe_text = await fdes.read()
-        recipe = await self.pipeline.run_sp(recipe.load_from_string, recipe_text)
+        recipe.load_from_string(recipe_text)
         recipe.set_original()
-        return recipe
 
 
 class GitLoadRecipe(GitFilter):
@@ -875,7 +858,7 @@ class GitLoadRecipe(GitFilter):
     - Otherwise load master
     """
 
-    async def apply(self, recipe: Recipe) -> Recipe:
+    async def apply(self, recipe: Recipe) -> None:
         branch_name = self.branch_name(recipe)
         remote_branch = self.git.get_remote_branch(branch_name)
         local_branch = self.git.get_local_branch(branch_name)
@@ -887,7 +870,7 @@ class GitLoadRecipe(GitFilter):
         logger.debug("Recipe %s: loading from master", recipe)
         recipe_text = await self.pipeline.run_io(self.git.read_from_branch,
                                                  self.git.master, recipe.path)
-        recipe = await self.pipeline.run_sp(recipe.load_from_string, recipe_text)
+        recipe.load_from_string(recipe_text)
         recipe.set_original()
 
         if remote_branch:
@@ -895,7 +878,7 @@ class GitLoadRecipe(GitFilter):
                 logger.info("Recipe %s: updating from remote %s", recipe, branch_name)
                 recipe_text = await self.pipeline.run_io(self.git.read_from_branch,
                                                          remote_branch, recipe.path)
-                recipe = await self.pipeline.run_sp(recipe.load_from_string, recipe_text)
+                recipe.load_from_string(recipe_text)
                 await self.pipeline.run_io(self.git.create_local_branch, branch_name)
                 recipe.on_branch = True
             else:
@@ -903,7 +886,6 @@ class GitLoadRecipe(GitFilter):
                 #       the branch.
                 logger.info("Recipe %s: deleting outdated remote %s", recipe, branch_name)
                 await self.pipeline.run_io(self.git.delete_remote_branch, branch_name)
-        return recipe
 
 
 class WriteRecipe(Filter):
@@ -912,11 +894,10 @@ class WriteRecipe(Filter):
         super().__init__(scanner)
         self.sem = asyncio.Semaphore(10)
 
-    async def apply(self, recipe: Recipe) -> Recipe:
+    async def apply(self, recipe: Recipe) -> None:
         async with self.sem, \
                    aiofiles.open(recipe.path, "w", encoding="utf-8") as fdes:
             await fdes.write(recipe.dump())
-        return recipe
 
 
 class GitWriteRecipe(GitFilter):
@@ -926,7 +907,7 @@ class GitWriteRecipe(GitFilter):
         """Recipe had no changes after applying updates"""
         template = "had no changes"
 
-    async def apply(self, recipe: Recipe) -> Recipe:
+    async def apply(self, recipe: Recipe) -> None:
         if not recipe.is_modified():
             raise self.NoChanges(recipe)
 
@@ -945,7 +926,6 @@ class GitWriteRecipe(GitFilter):
             await asyncio.sleep(10)  # let push settle before going on
         elif not recipe.on_branch:
             raise self.NoChanges(recipe)
-        return recipe
 
 
 class CreatePullRequest(GitFilter):
@@ -1042,7 +1022,7 @@ class CreatePullRequest(GitFilter):
                 return ver['vals']['account']
         return None
 
-    async def apply(self, recipe: Recipe) -> Recipe:
+    async def apply(self, recipe: Recipe) -> None:
         branch_name = self.branch_name(recipe)
         author = self.get_github_author(recipe)
 
@@ -1110,7 +1090,6 @@ class CreatePullRequest(GitFilter):
         await self.ghub.modify_issue(number=pull['number'], labels=labels)
 
         logger.info("Created PR %i updating %s to %s", pull['number'], recipe, recipe.version)
-        return recipe
 
 
 class MaxUpdates(Filter):
@@ -1124,9 +1103,8 @@ class MaxUpdates(Filter):
     def get_info(self) -> str:
         return super().get_info() + f": {self.max_updates}"
 
-    async def apply(self, recipe: Recipe) -> Recipe:
+    async def apply(self, recipe: Recipe) -> None:
         self.count += 1
         if self.max and self.count == self.max:
             logger.warning("Reached update limit %s", self.count)
             raise EndProcessing()
-        return recipe
