@@ -194,6 +194,9 @@ class Scanner(AsyncPipeline[Recipe]):
 
     def run(self) -> bool:
         """Runs scanner"""
+        logger.info("Running pipeline with these steps:")
+        for n, filt in enumerate(self.filters):
+            logger.info(" %i. %s", n+1, filt.get_info())
         res = super().run()
         logger.info("")
         logger.info("Recipe status statistics:")
@@ -236,13 +239,18 @@ class Filter(AsyncFilter[Recipe]):
     """Filter for Scanner - class exists primarily to silence mypy"""
     pipeline: Scanner
 
+    def get_info(self) -> str:
+        """Return description of filter for logging"""
+        docline, _, _ = self.__class__.__doc__.partition("\n")
+        return docline
+
     @abc.abstractmethod
     async def apply(self, recipe: Recipe) -> Recipe:
         """Process a recipe. Returns False if processing should stop"""
 
 
 class ExcludeOtherChannel(Filter):
-    """Filters recipes matching packages in other **channels**"""
+    """Exclude recipes conflicting with other **channels**"""
 
     class OtherChannel(EndProcessingItem):
         """This recipe builds one or more packages that are also present
@@ -253,11 +261,16 @@ class ExcludeOtherChannel(Filter):
     def __init__(self, scanner: Scanner, channels: Sequence[str],
                  cache: str) -> None:
         super().__init__(scanner)
+        self.channels = channels
         logger.info("Loading package lists for %s", channels)
         repo = utils.RepoData()
         if cache:
             repo.set_cache(cache)
         self.other = set(repo.get_package_data('name', channels=channels))
+
+    def get_info(self) -> str:
+        return (super().get_info().replace('**', '') +
+                f": {', '.join(self.channels)}")
 
     async def apply(self, recipe: Recipe) -> Recipe:
         if any(package in self.other
@@ -267,7 +280,7 @@ class ExcludeOtherChannel(Filter):
 
 
 class ExcludeSubrecipe(Filter):
-    """Filters sub-recipes
+    """Exclude sub-recipes
 
     Unless **always** is True, subrecipes specifically enabled via
     ``extra: watch: enable: yes`` will not be filtered.
@@ -291,7 +304,7 @@ class ExcludeSubrecipe(Filter):
 
 
 class ExcludeBlacklisted(Filter):
-    """Filters blacklisted recipes"""
+    """Exclude blacklisted recipes"""
 
     class Blacklisted(EndProcessingItem):
         """This recipe has been blacklisted (fails to build, see blacklist file)"""
@@ -300,8 +313,13 @@ class ExcludeBlacklisted(Filter):
 
     def __init__(self, scanner: Scanner, recipe_base: str, config: Dict) -> None:
         super().__init__(scanner)
-        self.blacklisted = utils.get_blacklist(config.get('blacklists'), recipe_base)
+        self.blacklists = config.get('blacklists')
+        self.blacklisted = utils.get_blacklist(self.blacklists, recipe_base)
         logger.warning("Excluding %i blacklisted recipes", len(self.blacklisted))
+
+    def get_info(self) -> str:
+        return (super().get_info() +
+                f": {', '.join(self.blacklists)} / {len(self.blacklisted)} recipes")
 
     async def apply(self, recipe: Recipe) -> Recipe:
         if recipe.reldir in self.blacklisted:
@@ -310,7 +328,8 @@ class ExcludeBlacklisted(Filter):
 
 
 class ExcludeDependencyPending(Filter):
-    """Filteres recipes having dependencies with pending updates"""
+    """Exclude recipes depending on packages in need of update"""
+
     class DependencyPending(EndProcessingItem):
         """A dependency of this recipe is pending rebuild"""
         template = "deferred pending rebuild of dependencies: %s"
@@ -331,6 +350,8 @@ class ExcludeDependencyPending(Filter):
 
 
 class CheckPinning(Filter):
+    """Bump recipes in need of rebuild after pinning changes"""
+
     def __init__(self, scanner: Scanner, bump_only_python: bool) -> None:
         self.scanner = scanner
         self.build_config = utils.load_conda_build_config()
@@ -365,7 +386,7 @@ class CheckPinning(Filter):
 
 
 class UpdateVersion(Filter):
-    """Checks for updates to a recipe
+    """Scan upstream for new releases and update recipe
 
     - In the most simple case, a package has a single URL which also indicates the version
     - Recipes may have alternative download locations
@@ -628,7 +649,7 @@ class UpdateVersion(Filter):
 
 
 class FetchUpstreamDependencies(Filter):
-    """Fetch requirements from upstream where possible
+    """Fetch additional upstream dependencies (PyPi)
 
     This currently only affects PyPi. Dependencies for Python packages are
     determined by ``setup.py`` at installation time and need not be static
@@ -654,7 +675,20 @@ class FetchUpstreamDependencies(Filter):
 
 
 class UpdateChecksums(Filter):
-    """Download upstream source files, recompute checksum and update Recipe
+    """Update source checksums
+
+    If the recipe has had a version change, all sources will be downloaded,
+    the checksums calculated and the recipe updated accordingly.
+
+    - Automatically moves packages from md5 to sha256.
+    - Aborts processing the recipe
+      - if the checksum did not change
+      - if there were no valid URLs
+      - if checksums do not match among alternate URLs for a source
+
+    Args:
+      failed_file: Store the list of URLs for which downloading failed to this
+                   file upon pipeline completion.
 
     FIXME:
       Should ignore sources for which no change has been made.
@@ -666,11 +700,11 @@ class UpdateChecksums(Filter):
 
     class SourceUrlMismatch(EndProcessingItem):
         """The URLs in a source point to different files after update"""
-        template = "has urls in source %i pointing to different files"
+        template = "has mismatching cheksums for alternate URLs in source %i"
 
     class ChecksumReplaceFailed(EndProcessingItem):
         """The checksum could not be updated after version bump"""
-        template = ": failed to replace checksum"
+        template = "- failed to replace checksum"
 
     class ChecksumUnchanged(EndProcessingItem):
         """The checksum did not change after version bump"""
@@ -791,7 +825,7 @@ class GitFilter(Filter):
 
 
 class ExcludeNoActiveUpdate(GitFilter):
-    """Allows only recipes that already have an update active
+    """Exclude recipes not currently undergoing an update
 
     Requires that the recipes are loaded from git - recipes with active
     updates are those for which a branch with commits newer than master
@@ -810,7 +844,7 @@ class ExcludeNoActiveUpdate(GitFilter):
 
 
 class LoadRecipe(Filter):
-    """Loads the Recipe from the filesystem"""
+    """Load the recipe from the filesystem"""
     def __init__(self, scanner: Scanner) -> None:
         super().__init__(scanner)
         self.sem = asyncio.Semaphore(10)
@@ -825,7 +859,7 @@ class LoadRecipe(Filter):
 
 
 class GitLoadRecipe(GitFilter):
-    """Loads `Recipe` from git repo
+    """Load recipe from git (honoring active branches)
 
     We have three locations for the recipe:
     1. master in upstream remote repo
@@ -873,7 +907,7 @@ class GitLoadRecipe(GitFilter):
 
 
 class WriteRecipe(Filter):
-    """Writes the Recipe to the filesystem"""
+    """Write recipe to filesystem"""
     def __init__(self, scanner: Scanner) -> None:
         super().__init__(scanner)
         self.sem = asyncio.Semaphore(10)
@@ -886,7 +920,7 @@ class WriteRecipe(Filter):
 
 
 class GitWriteRecipe(GitFilter):
-    """Writes `Recipe` to git repo"""
+    """Write recipe to per-recipe git branch"""
 
     class NoChanges(EndProcessingItem):
         """Recipe had no changes after applying updates"""
@@ -912,7 +946,7 @@ class GitWriteRecipe(GitFilter):
 
 
 class CreatePullRequest(GitFilter):
-    """Creates or Updates PR on GitHub"""
+    """Create or Update PR on GitHub"""
 
     class UpdateInProgress(EndProcessingItem):
         """The recipe has an active update PR"""
@@ -1083,6 +1117,9 @@ class MaxUpdates(Filter):
         self.max = max_updates
         self.count = 0
         logger.warning("Will exit after %s updated recipes", max_updates)
+
+    def get_info(self) -> str:
+        return super().get_info() + f": {self.max_updates}"
 
     async def apply(self, recipe: Recipe) -> Recipe:
         self.count += 1
