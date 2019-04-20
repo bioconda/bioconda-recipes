@@ -14,7 +14,7 @@ import re
 
 from collections import defaultdict
 from contextlib import redirect_stdout, redirect_stderr
-from copy import copy
+from copy import deepcopy
 from typing import Any, Dict, List, Sequence, Optional, Pattern
 
 import conda_build.api
@@ -154,7 +154,7 @@ class Recipe():
         # Filled in by update filter
         self.version_data: Dict[str, Any] = {}
         #: Original recipe before modifications (updated by load_from_string)
-        self.orig: Recipe = copy(self)
+        self.orig: Recipe = deepcopy(self)
         #: Whether the recipe was loaded from a branch (update in progress)
         self.on_branch: bool = False
 
@@ -227,7 +227,7 @@ class Recipe():
 
     def set_original(self) -> None:
         """Store the current state of the recipe as "original" version"""
-        self.orig = copy(self)
+        self.orig = deepcopy(self)
 
     def dump(self):
         """Dump recipe content"""
