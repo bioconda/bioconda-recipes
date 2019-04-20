@@ -38,7 +38,8 @@ def will_build_variant(meta: MetaData) -> bool:
         name=meta.name(), version=meta.version(),
         platform=['linux', 'noarch'],
     )
-    res = all(num < meta.build_number() for num in build_numbers)
+    current_num = int(meta.build_number())
+    res = all(num < current_num for num in build_numbers)
     if res:
         logger.debug("Package %s=%s will be built already because %s < %s)",
                      meta.name(), meta.version(),
