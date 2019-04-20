@@ -87,6 +87,10 @@ class MissingMetaYaml(RecipeError):
     """
     template = "has missing file `meta.yaml`"
 
+class CondaRenderFailure(RecipeError):
+    """Raised when conda_build.api.render fails"""
+    template = "could not be rendered by conda-build: %s"
+
 
 class RenderFailure(RecipeError):
     """Raised on Jinja rendering problems
@@ -542,9 +546,16 @@ class Recipe():
         return list(set(entry.split()[0] for lst in lists for entry in lst if entry))
 
     def conda_render(self, **kwargs):
-        with open("/dev/null", "w") as devnull:
-            with redirect_stdout(devnull), redirect_stderr(devnull):
-                return conda_build.api.render(self.path, **kwargs)
+        try:
+            with open("/dev/null", "w") as devnull:
+                with redirect_stdout(devnull), redirect_stderr(devnull):
+                    return conda_build.api.render(self.path, **kwargs)
+        except RuntimeError as exc:
+            if exc.args[0].startswith("Couldn't extract raw recipe text"):
+                line = self.meta_yaml[0]
+                if not line.startswith('package') or line.startswith('build'):
+                    raise CondaRenderFailure(self, "Must start with package or build section")
+
             # raises conda_build.exceptions.DependencyNeedsBuildingError:
             # raises RuntimeError ('can't depend on itself')
 
