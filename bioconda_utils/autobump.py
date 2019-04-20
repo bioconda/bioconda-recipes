@@ -1096,7 +1096,7 @@ class MaxUpdates(Filter):
     """Terminate loop after **max_updates** Recipes have been updated."""
     def __init__(self, scanner: Scanner, max_updates: int = 0) -> None:
         super().__init__(scanner)
-        self.max = max_updates
+        self.max_updates = max_updates
         self.count = 0
         logger.warning("Will exit after %s updated recipes", max_updates)
 
@@ -1105,6 +1105,6 @@ class MaxUpdates(Filter):
 
     async def apply(self, recipe: Recipe) -> None:
         self.count += 1
-        if self.max and self.count == self.max:
+        if self.max_updates and self.count == self.max_updates:
             logger.warning("Reached update limit %s", self.count)
             raise EndProcessing()
