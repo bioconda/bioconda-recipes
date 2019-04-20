@@ -341,7 +341,7 @@ class ExcludeDependencyPending(Filter):
     async def apply(self, recipe: Recipe) -> Recipe:
         pending_deps = [
             dep for dep in nx.ancestors(self.dag, recipe)
-            if dep.meta != dep.orig.meta
+            if dep.is_modified()
         ]
         if pending_deps:
             msg =  ", ".join(str(x) for x in pending_deps)
