@@ -7,7 +7,7 @@ orig_version: {{r.orig.version}}
 orig_build_number: {{r.orig.build_number}}
 new_version: {{r.version}}
 new_build_bumber: {{r.build_number}}
---!>
+-->
 
 {% block header %}{% endblock%}
 
