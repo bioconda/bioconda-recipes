@@ -715,7 +715,7 @@ class UpdateChecksums(Filter):
                 out.write("\n".join(self.failed_urls))
 
     async def apply(self, recipe: Recipe) -> None:
-        if recipe.build_number == 0:
+        if recipe.is_modified() and recipe.build_number == 0:
             # FIXME: not the best way to test this
 
             sources = recipe.meta["source"]
@@ -894,6 +894,8 @@ class WriteRecipe(Filter):
         self.sem = asyncio.Semaphore(10)
 
     async def apply(self, recipe: Recipe) -> None:
+        if not recipe.is_modified():
+            raise self.NoChanges(recipe)
         async with self.sem, \
                    aiofiles.open(recipe.path, "w", encoding="utf-8") as fdes:
             await fdes.write(recipe.dump())
@@ -1022,6 +1024,8 @@ class CreatePullRequest(GitFilter):
         return None
 
     async def apply(self, recipe: Recipe) -> None:
+        if not recipe.is_modified():
+            return
         branch_name = self.branch_name(recipe)
         author = self.get_github_author(recipe)
 
@@ -1103,6 +1107,8 @@ class MaxUpdates(Filter):
         return super().get_info().replace('**max_updates**', str(self.max_updates))
 
     async def apply(self, recipe: Recipe) -> None:
+        if not recipe.is_modified():
+            return
         self.count += 1
         if self.max_updates and self.count == self.max_updates:
             logger.warning("Reached update limit %s", self.count)
