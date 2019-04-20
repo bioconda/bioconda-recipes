@@ -14,7 +14,7 @@ from typing import List, Tuple, TYPE_CHECKING
 import networkx as nx
 
 # for type checking
-from .recipe import Recipe
+from .recipe import Recipe, RecipeError
 from conda_build.metadata import MetaData
 
 
@@ -144,6 +144,9 @@ def check(recipe: Recipe, build_config) -> Tuple[State, List[MetaData]]:
         metas = recipe.conda_render(config=build_config,
                                     permit_unsatisfiable_variants=False)
         logger.debug("Finished rendering %s", recipe)
+    except RecipeError as exc:
+        logger.error(exc)
+        return State.FAIL, []
     except Exception as exc:
         logger.exception("update_pinnings.check failed with exception in api.render(%s):", recipe)
         return State.FAIL, []
