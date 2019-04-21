@@ -54,8 +54,6 @@ from typing import (Any, Dict, Iterator, Iterable, List, Mapping, Optional, Sequ
                     Set, Tuple, TYPE_CHECKING)
 
 import aiofiles
-from aiohttp import ClientResponseError
-import yaml
 
 import networkx as nx
 
@@ -108,7 +106,7 @@ class RecipeSource:
             await send_q.put(Recipe(recipe_dir, self.recipe_base))
             while return_q.qsize():
                 try:
-                    item = return_q.get_nowait()
+                    return_q.get_nowait()
                     return_q.task_done()
                 except asyncio.QueueEmpty:
                     break
@@ -119,7 +117,7 @@ class RecipeSource:
 
 class RecipeGraphSource(RecipeSource):
     def __init__(self, recipe_base: str, packages: List[str], shuffle: bool,
-                 config: Dict[str, str], cache_fn: str=None) -> None:
+                 config: Dict[str, str], cache_fn: str = None) -> None:
         super().__init__(recipe_base, packages, shuffle)
         self.config = config
         self.cache_fn = cache_fn
@@ -920,6 +918,7 @@ class GitWriteRecipe(GitFilter):
                                      encoding="utf-8") as fdes:
                 await fdes.write(recipe.dump())
             msg = f"Update {recipe} to {recipe.version}"
+            ## FIXME: message should reflect pin vs version
             changed = self.git.commit_and_push_changes([recipe.path], branch_name, msg)
         if changed:
             # CircleCI appears to have problems picking up on our PRs. Let's wait
