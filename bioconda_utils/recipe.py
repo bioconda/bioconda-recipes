@@ -11,13 +11,16 @@ edit the meta.yaml.
 import logging
 import os
 import re
+import tempfile
 
 from collections import defaultdict
 from contextlib import redirect_stdout, redirect_stderr
 from copy import deepcopy
-from typing import Any, Dict, List, Sequence, Optional, Pattern
+from typing import Any, Dict, List, Sequence, Tuple, Optional, Pattern
+
 
 import conda_build.api
+from conda_build.metadata import MetaData
 
 import jinja2
 
@@ -157,6 +160,9 @@ class Recipe():
         self.orig: Recipe = deepcopy(self)
         #: Whether the recipe was loaded from a branch (update in progress)
         self.on_branch: bool = False
+        # for conda_render() and conda_release()
+        self._conda_meta = None
+        self._conda_tempdir = None
 
     @property
     def path(self):
@@ -549,19 +555,72 @@ class Recipe():
 
         return list(set(entry.split()[0] for lst in lists for entry in lst if entry))
 
-    def conda_render(self, **kwargs):
+    def conda_render(self, **kwargs) -> List[Tuple[MetaData, bool, bool]]:
+        """Handles calling conda_build.api.render
+
+        ``conda_build.api.render`` is fragile, loud and slow. Avoid using this
+        whenever you can.
+
+        This function will create a temporary directory, write out the
+        current ``meta.yaml`` contents, redirect stdout and stderr to silence
+        needless prints, ultimately call the `render` function, catching
+        various exceptions and rewriting them into `CondaRenderFailure`, then
+        cache the result.
+
+        Since the ``MetaData`` objects returned expect the on-disk `meta.yaml`
+        to persist (it can get reloaded later on), clients of this function
+        must **make sure to call `conda_release` once you are done** with those
+        objects.
+
+        Args:
+          kwargs: passed on to ``conda_build.api.render``
+
+        Raises:
+          `CondaRenderfailure`: Some of the exceptions raised are rewritten
+                                to simplify handling. The list will grow, but
+                                is likely incomplete.
+        Returns:
+          List of 3-tuples each comprising the rendered MetaData and the flags
+          ``needs_download`` and ``needs_render_in_env``.
+
+        FIXME:
+          Need to use **kwargs** to invalidate cache.
+        """
+        if self._conda_meta:
+            return self._conda_meta
+        self.conda_release()
+
+        self._conda_tempdir = tempfile.TemporaryDirectory()
+
+        with open(os.path.join(self._conda_tempdir.name, 'meta.yaml'), 'w') as tmpfile:
+                tmpfile.write(self.dump())
+
         try:
             with open("/dev/null", "w") as devnull:
                 with redirect_stdout(devnull), redirect_stderr(devnull):
-                    return conda_build.api.render(self.path, **kwargs)
+                    self._conda_meta = conda_build.api.render(self._conda_tempdir.name, **kwargs)
         except RuntimeError as exc:
             if exc.args[0].startswith("Couldn't extract raw recipe text"):
                 line = self.meta_yaml[0]
                 if not line.startswith('package') or line.startswith('build'):
                     raise CondaRenderFailure(self, "Must start with package or build section")
+            raise
+        except SystemExit as exc:
+            msg = exc.args[0]
+            if msg.startswith("Error: Failed to render jinja"):
+                msg = '; '.join(msg.splitlines()[1:]) if '\n' in msg else msg
+                raise CondaRenderFailure(self, f"Jinja2 Template Error: '{msg}'")
+            raise CondaRenderFailure(
+                self, f"Unknown SystemExit raised in Conda-Build Render API: '{msg}'")
+        return self._conda_meta
 
-            # raises conda_build.exceptions.DependencyNeedsBuildingError:
-            # raises RuntimeError ('can't depend on itself')
+    def conda_release(self):
+        """Releases resources acquired in `conda_render`"""
+        if self._conda_meta:
+            self._conda_meta = None
+        if self._conda_tempdir:
+            self._conda_tempdir.cleanup()
+            self._conda_tempdir = None
 
 
 def load_parallel_iter(recipe_folder, packages):

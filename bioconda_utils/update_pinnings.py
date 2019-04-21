@@ -9,16 +9,14 @@ import logging
 import collections
 import enum
 
-from typing import List, Tuple, TYPE_CHECKING
-
 import networkx as nx
+
+from .utils import RepoData, load_conda_build_config, parallel_iter
 
 # for type checking
 from .recipe import Recipe, RecipeError
 from conda_build.metadata import MetaData
 
-
-from .utils import RepoData, load_conda_build_config, parallel_iter
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -129,13 +127,14 @@ class State(enum.Flag):
         return self & self.FAIL
 
 
-def check(recipe: Recipe, build_config) -> Tuple[State, List[MetaData]]:
+def check(recipe: Recipe, build_config, keep_metas=False) -> State:
     """Determine if a given recipe should have its build number increments
     (bumped) due to a recent change in pinnings.
 
     Args:
       recipe: The recipe to check
       build_config: conda build config object
+      keep_metas: If true, `Recipe.conda_release` is not called
 
     Returns:
       Tuple of state and a list of rendered MetaYaml variant objects
@@ -147,10 +146,14 @@ def check(recipe: Recipe, build_config) -> Tuple[State, List[MetaData]]:
         logger.debug("Finished rendering %s", recipe)
     except RecipeError as exc:
         logger.error(exc)
-        return State.FAIL, []
+        return State.FAIL
     except Exception as exc:
         logger.exception("update_pinnings.check failed with exception in api.render(%s):", recipe)
-        return State.FAIL, []
+        return State.FAIL
+
+    if metas is None:
+        logger.error("Failed to render %s. Got 'None' from recipe.conda_render()", recipe)
+        return State.FAIL
 
     flags = State(0)
     for meta, _, _ in metas:
@@ -166,4 +169,6 @@ def check(recipe: Recipe, build_config) -> Tuple[State, List[MetaData]]:
             logger.info("Package %s=%s=%s missing!",
                          meta.name(), meta.version(), meta.build_id())
             flags |= State.BUMP
-    return flags, metas
+    if not keep_metas:
+        recipe.conda_release()
+    return flags
