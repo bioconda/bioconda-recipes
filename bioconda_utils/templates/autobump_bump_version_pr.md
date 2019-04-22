@@ -11,14 +11,12 @@ new version
 
 
 {% block header %}
-Update `{{r.name}}`: **{{r.orig.version}}** &rarr; **{{r.version}}**
+Update [`{{r.name}}`](https://bioconda.github.io/recipes/{{r.name}}/README.html): **{{r.orig.version}}** &rarr; **{{r.version}}**
 {% endblock %}
 
 
 {% block message %}
 {% if dependency_diff %}
-
-***
 
 **Note:** Upstream dependencies appear to have changed
 

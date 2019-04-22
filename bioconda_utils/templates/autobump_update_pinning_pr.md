@@ -12,7 +12,7 @@ Rebuild {{r.name}}{% if r.data.pinning %} ({{r.data.pinning | join(', ')}}){% en
 
 
 {% block header %}
-Rebuild `{{r.name}}` to update pinnings
+Rebuild [`{{r.name}}`](https://bioconda.github.io/recipes/{{r.name}}/README.html) to update pinnings
 {% endblock %}
 
 
