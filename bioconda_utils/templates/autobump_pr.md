@@ -11,7 +11,7 @@ new_build_bumber: {{r.build_number}}
 
 {% block header %}{% endblock%}
 
-[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/{r.name}/README.html) [![Conda](https://img.shields.io/conda/dn/bioconda/{{r.name}}.svg)](https://anaconda.org/bioconda/{{r.name}}/files)
+[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/{{r.name}}/README.html) [![Conda](https://img.shields.io/conda/dn/bioconda/{{r.name}}.svg)](https://anaconda.org/bioconda/{{r.name}}/files)
 
 Info | Link
 -----|-----
@@ -19,7 +19,7 @@ Recipe | [`{{r.dir}}`](https://github.com/{{recipe_relurl}}) (click to view/edit
 {% if r.version_data.values()|unique(attribute='releases_url') -%}
 Releases |
 {%- for version in r.version_data.values()|unique(attribute='releases_url') -%}
-[{{version.releases_url}}](version.releases_url){{"<br>" if not loop.last}}
+[{{version.releases_url}}]({{version.releases_url}}){{"<br>" if not loop.last}}
 {%- endfor %}
 {%- endif %}
 
