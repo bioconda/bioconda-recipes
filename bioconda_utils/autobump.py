@@ -48,12 +48,13 @@ import pickle
 import random
 
 from collections import defaultdict, Counter
-
+from functools import partial
 from urllib.parse import urlparse
-from typing import (Any, Dict, Iterator, Iterable, List, Mapping, Optional, Sequence,
+from typing import (Any, Dict, Iterable, List, Mapping, Optional, Sequence,
                     Set, Tuple, TYPE_CHECKING)
 
 import aiofiles
+from aiohttp import ClientResponseError
 
 import networkx as nx
 
@@ -68,7 +69,7 @@ from . import __version__
 from . import utils
 from . import update_pinnings
 from . import graph
-from .utils import ensure_list
+from .utils import ensure_list, RepoData
 from .recipe import Recipe
 from .recipe import load_parallel_iter as recipes_load_parallel_iter
 from .aiopipe import AsyncFilter, AsyncPipeline, AsyncRequests, EndProcessingItem, EndProcessing
@@ -349,6 +350,9 @@ class CheckPinning(Filter):
         self.scanner = scanner
         self.build_config = utils.load_conda_build_config()
         self.bump_only_python = bump_only_python
+        self.check_func = partial(update_pinnings.check,
+                                  build_config=self.build_config,
+                                  keep_metas=True)
 
     @staticmethod
     def match_version(spec, version):
@@ -368,13 +372,66 @@ class CheckPinning(Filter):
                             'version': version})
 
     async def apply(self, recipe: Recipe) -> None:
-        status, metas = await self.scanner.run_sp(update_pinnings.check,
-                                                  recipe, self.build_config)
+        status = await self.scanner.run_sp(self.check_func, recipe)
         if status.needs_bump(self.bump_only_python):
             new_buildno = recipe.build_number + 1
+            metas = recipe.conda_render(build_config=self.build_config)
+            recipe.data['pinning'] = self.find_reason(recipe, metas)
             logger.info("%s needs rebuild. Bumping buildnumber to %i", recipe, new_buildno)
             recipe.reset_buildnumber(new_buildno)
             recipe.render()
+
+    def find_reason(self, recipe, metas):
+        # Decypher variants:
+        pinnings = {}
+        for variant in metas:
+            variant0 = variant[0]
+            for var in variant0.get_used_vars():
+                pinnings.setdefault(var, set()).add(variant0.config.variant[var])
+        variants = {k: v for k, v in pinnings.items() if len(v)>1}
+        if variants:
+            logger.error("%s has variants: %s", recipe, variants)
+
+        # Extend incomplete pinned versions
+        # This is really only necessary because conda-forge pins zlib as 1.2, which
+        # doesn't exist and needs to be extended to 1.2.11.
+        resolved_vers = {}
+        for var, vers in pinnings.items():
+            avail_vers = RepoData().get_package_data('version', name=var)
+            if avail_vers:
+                resolved_vers[var] = list(set(
+                    avs for avs in list(set(avail_vers))
+                    for pvs in vers
+                    if avs.startswith(pvs)))
+            else:
+                resolved_vers[var] = vers
+
+        causes = {}
+        # Iterate over extant builds for this recipe at this version and build number
+        # It's one for noarch, two if osx and linux are built, more if we have
+        # variant pins such as for python.
+        package_data = RepoData().get_package_data(['build', 'depends', 'platform'],
+                                                   name=recipe.name,
+                                                   version=recipe.version,
+                                                   build_number=recipe.build_number)
+        for build_id, package_deps, platform in package_data:
+            build_causes = []
+            for item in package_deps:
+                package, _, constraint = item.partition(" ")
+                if not constraint or package not in pinnings:
+                    continue
+                if any(self.match_version(constraint, version)
+                       for version in resolved_vers[package]):
+                    continue
+                causes.setdefault(package, set()).add(
+                    f"Pin `{package} {','.join(pinnings[package])}` not within `{constraint}`"
+                )
+
+        if not causes:
+            compiler_pins = [i for k, v in pinnings.items() for i in v if 'compiler' in k]
+            if compiler_pins:
+                return {'compiler': set([f"Recompiling with {' / '.join(compiler_pins)}"])}
+        return causes
 
 
 class UpdateVersion(Filter):
@@ -884,8 +941,13 @@ class GitLoadRecipe(GitFilter):
                 logger.info("Recipe %s: deleting outdated remote %s", recipe, branch_name)
                 await self.pipeline.run_io(self.git.delete_remote_branch, branch_name)
 
+class WritingFilter:
+    class NoChanges(EndProcessingItem):
+        """Recipe had no changes after applying updates"""
+        template = "had no changes"
 
-class WriteRecipe(Filter):
+
+class WriteRecipe(Filter, WritingFilter):
     """Write recipe to filesystem"""
     def __init__(self, scanner: Scanner) -> None:
         super().__init__(scanner)
@@ -899,12 +961,8 @@ class WriteRecipe(Filter):
             await fdes.write(recipe.dump())
 
 
-class GitWriteRecipe(GitFilter):
+class GitWriteRecipe(GitFilter, WritingFilter):
     """Write recipe to per-recipe git branch"""
-
-    class NoChanges(EndProcessingItem):
-        """Recipe had no changes after applying updates"""
-        template = "had no changes"
 
     async def apply(self, recipe: Recipe) -> None:
         if not recipe.is_modified():
@@ -917,8 +975,12 @@ class GitWriteRecipe(GitFilter):
             async with aiofiles.open(recipe.path, "w",
                                      encoding="utf-8") as fdes:
                 await fdes.write(recipe.dump())
-            msg = f"Update {recipe} to {recipe.version}"
-            ## FIXME: message should reflect pin vs version
+            if recipe.version != recipe.orig.version:
+                msg = f"Update {recipe} to {recipe.version}"
+            elif recipe.build_number != recipe.orig.build_number:
+                msg = f"Bump {recipe} buildnumber"
+            else:
+                msg = f"Update {recipe}"
             changed = self.git.commit_and_push_changes([recipe.path], branch_name, msg)
         if changed:
             # CircleCI appears to have problems picking up on our PRs. Let's wait
@@ -1044,7 +1106,7 @@ class CreatePullRequest(GitFilter):
         })
 
         labels = (''.join(template.blocks['labels'](context))).splitlines()
-        title = ''.join(template.blocks['title'](context))
+        title = ''.join(template.blocks['title'](context)).replace('\n',' ')
         body = template.render(context)
 
         # check if we already have an open PR (=> update in progress)
@@ -1091,7 +1153,7 @@ class CreatePullRequest(GitFilter):
         # set labels (can't do that in create_pr as they are part of issue API)
         await self.ghub.modify_issue(number=pull['number'], labels=labels)
 
-        logger.info("Created PR %i updating %s to %s", pull['number'], recipe, recipe.version)
+        logger.info("Created PR %i: %s", pull['number'], title)
 
 
 class MaxUpdates(Filter):

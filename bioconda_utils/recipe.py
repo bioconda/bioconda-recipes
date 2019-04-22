@@ -160,6 +160,9 @@ class Recipe():
         self.orig: Recipe = deepcopy(self)
         #: Whether the recipe was loaded from a branch (update in progress)
         self.on_branch: bool = False
+        #: For passing data around
+        self.data: Dict[str, Any] = {}
+
         # for conda_render() and conda_release()
         self._conda_meta = None
         self._conda_tempdir = None
