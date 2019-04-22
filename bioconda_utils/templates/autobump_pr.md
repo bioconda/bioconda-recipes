@@ -1,7 +1,7 @@
 <!--
 creator: autobump {{version}}
-type: {% block type %}
-{% endblock %}
+type: {% block type %}{% endblock %}
+
 recipe: {{r.name}}
 orig_version: {{r.orig.version}}
 orig_build_number: {{r.orig.build_number}}
