@@ -1,0 +1,42 @@
+{% set version = "3.2.1" %}
+{% set name = "hmmer3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: http://eddylab.org/software/hmmer/hmmer-{{ version }}.tar.gz
+  sha256: a56129f9d786ec25265774519fc4e736bbc16e4076946dcbd7f2c16efc8e2b9c
+  patches:
+    - Makefile.in.patch
+
+build:
+  number: 0
+  script: ./configure --prefix=$PREFIX && make && make install --always-make
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  run:
+
+test:
+  commands:
+    - hmmsearch3 -h 2>&1 | grep "HMMER 3\." > /dev/null
+    - hmmalign3 -h 2>&1 | grep "HMMER 3\." > /dev/null
+    - hmmbuild3 -h 2>&1 | grep "HMMER 3\." > /dev/null
+    - hmmconvert3 -h 2>&1 | grep "HMMER 3\." > /dev/null
+    - hmmemit3 -h 2>&1 | grep "HMMER 3\." > /dev/null
+    - hmmfetch3 -h 2>&1
+    - hmmsearch3 -h 2>&1 | grep "HMMER 3\." > /dev/null
+
+
+about:
+  summary: 'Biosequence analysis using profile hidden Markov models'
+  home: http://hmmer.org/
+  license: BSD 3-Clause
+  license_file: LICENSE
+  notes: |
+    This package appends "3" to the all HMMER tool binary names,
+    allowing use in parallel with other versions of HMMER.
+
