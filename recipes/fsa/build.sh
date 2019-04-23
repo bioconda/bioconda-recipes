@@ -8,10 +8,6 @@
 # $PKG_BUILDNUM The build number of the package
 #
 
-
-ls
-# tar xvzf $PREFIX/fsa-1.15.9.tar.gz
-cd $PREFIX/fsa-1.15.9 
 ./configure
 make
 make install
