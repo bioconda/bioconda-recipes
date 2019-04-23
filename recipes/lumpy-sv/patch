@@ -1,0 +1,41 @@
+--- Makefile	2019-02-13 05:30:14.000000000 +0100
++++ Makefile	2019-02-13 05:30:14.000000000 +0100
+@@ -64,18 +64,12 @@
+ 		echo ""; \
+ 	done
+ 
+-lumpy_filter: htslib
++lumpy_filter:
+ 	[ -d $(BIN_DIR) ] || mkdir -p $(BIN_DIR)
+ 	$(MAKE) --no-print-directory -C src/filter/
+ 	cp src/filter/lumpy_filter $(BIN_DIR)
+ 
+ 
+-htslib:
+-	$(shell cd lib/htslib && autoreconf)
+-	cd lib/htslib && \
+-	./configure --disable-bz2 --disable-lzma --enable-libcurl
+-	CFLAGS="$(CFLAGS) -DBGZF" $(MAKE) -C lib/htslib --no-print-directory CFLAGS="-DBGZF_MT"
+-
+ lumpyexpress:
+ 	[ -d $(BIN_DIR) ] || mkdir -p $(BIN_DIR)
+ 	cp $(SCRIPTS_DIR)/lumpyexpress $(BIN_DIR)/lumpyexpress
+--- src/filter/Makefile	2019-02-13 05:30:14.000000000 +0100
++++ src/filter/Makefile	2019-02-13 05:30:14.000000000 +0100
+@@ -1,4 +1,4 @@
+ 
+ all:
+-	$(CC) -I../../lib/htslib/ -o lumpy_filter filter.c ../../lib/htslib/libhts.a -lcrypto -lcurl -lpthread -lz
++	$(CC) -I$(PREFIX)/include -L$(PREFIX)/lib -o lumpy_filter filter.c -lhts
+ 
+--- src/utils/sqlite3/Makefile	2019-02-13 05:30:14.000000000 +0100
++++ src/utils/sqlite3/Makefile2	2019-04-06 22:57:06.414110234 +0200
+@@ -20,7 +20,7 @@
+ 
+ $(BUILT_OBJECTS): $(SOURCES)
+ 	@echo "  * compiling" $(*F).c
+-	@gcc -c -o $@ $(*F).c 
++	@gcc -c -o $@ $(*F).c -fPIC
+ 
+ $(EXT_OBJECTS):
+ 	@$(MAKE) --no-print-directory -C -W $(INCLUDES)
