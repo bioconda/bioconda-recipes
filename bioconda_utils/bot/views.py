@@ -74,6 +74,7 @@ async def generic_webhook_dispatch(request):
         body = await request.read()
         logger.error("Got generic webhook for %s", source)
         logger.error("Data: %s", body)
+        return web.Response(status=200)
     except Exception: # pylint: disable=broad-except
         logger.exception("Failure in generic webhook dispatch")
         return web.Response(status=500)
