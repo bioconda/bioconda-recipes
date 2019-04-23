@@ -8,6 +8,10 @@
 # $PKG_BUILDNUM The build number of the package
 #
 
+mkdir -p $PREFIX/bin
+
 ./configure
 make
 make install
+
+cp fsa $PREFIX/bin
