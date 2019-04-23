@@ -10,7 +10,7 @@
 
 
 
-tar xvzf $PREFIX/fsa-1.15.9.tar.gz
+# tar xvzf $PREFIX/fsa-1.15.9.tar.gz
 cd $PREFIX/fsa-1.15.9 
 ./configure
 make
