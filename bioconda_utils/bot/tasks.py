@@ -247,7 +247,6 @@ async def check_circle_artifacts(pr_number: int, ghapi):
     else:
         path = "pull/{}".format(pr_number)
 
-    capi.debug_once = True
     recent_builds = await capi.list_recent_builds(path)
 
     current_builds = [
@@ -302,6 +301,5 @@ async def trigger_circle_rebuild(pr_number: int, ghapi):
     else:
         path = "pull/{}".format(pr_number)
 
-    capi.debug_once = True
     res = await capi.trigger_rebuild(path, head_sha)
     logger.warning("Trigger_rebuild call returned with %s", res)
