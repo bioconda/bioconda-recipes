@@ -17,7 +17,7 @@ web_routes = web.RouteTableDef()  # pylint: disable=invalid-name
 
 
 @web_routes.post('/_gh')
-async def webhook_dispatch(request):
+async def github_webhook_dispatch(request):
     """Accepts webhooks from Github and dispatches them to event handlers"""
     try:
         body = await request.read()
@@ -63,6 +63,19 @@ async def webhook_dispatch(request):
         return web.Response(status=200)
     except Exception:  # pylint: disable=broad-except
         logger.exception("Failure in webhook dispatch")
+        return web.Response(status=500)
+
+
+@web_routes.post('/hooks/{source}')
+async def generic_webhook_dispatch(request):
+    """Accepts webhooks and dumps them to the log, so we can see what we would be receiving"""
+    try:
+        source = request.match_info['source']
+        body = await request.read()
+        logger.error("Got generic webhook for %s", source)
+        logger.error("Data: %s", body)
+    except Exception: # pylint: disable=broad-except
+        logger.exception("Failure in generic webhook dispatch")
         return web.Response(status=500)
 
 
