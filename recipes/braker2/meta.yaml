@@ -1,0 +1,73 @@
+{% set name = "BRAKER2" %}
+{% set version = "2.1.2" %}
+{% set sha256 = "9f178c5fe64ae358dcba9936802d24e330312e698a3f7930d1f91e58974129d3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/Gaius-Augustus/BRAKER/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - path.patch
+
+build:
+  number: 2
+
+requirements:
+  run:
+    - python >=3
+    - biopython
+    - perl
+    - perl-app-cpanminus
+    - perl-hash-merge
+    - perl-parallel-forkmanager
+    - perl-scalar-util-numeric
+    - perl-yaml
+    - perl-class-data-inheritable
+    - perl-exception-class
+    - perl-test-pod
+    - perl-file-homedir
+    - perl-file-which
+    - perl-file-spec
+    - perl-list-util
+    - perl-logger-simple
+    - perl-module-load-conditional
+    - perl-posix
+    - augustus >=3.3.1
+    - bamtools >=2.5.1
+    - samtools >=1.7
+    - spaln >=2.3.1
+    - exonerate >=2.2.0
+    - blast >=2.2.31
+    - makehub
+    - eval
+      #    - genemark-et >=4.33
+      #    - genomethreader >=1.7.9
+
+test:
+  commands:
+    - align2hints.pl
+    - braker.pl
+    - downsample_traingenes.pl 2>&1 | grep "downsample_traingenes.pl" > /dev/null
+    - filterGenemark.pl
+    - filterIntronsFindStrand.pl
+    - findGenesInIntrons.pl 2>&1 | grep "findGenesInIntrons.pl" > /dev/null
+    - startAlign.pl
+
+about:
+  home: https://github.com/Gaius-Augustus/BRAKER
+  license: Artistic License
+  license_family: Other
+  license_file: "scripts/licence.txt"
+  summary: "BRAKER2 is an extension of BRAKER1 which allows for fully automated training of the gene prediction tools GeneMark-EX and AUGUSTUS from RNA-Seq and/or protein homology information, and that integrates the extrinsic evidence from RNA-Seq and protein homology information into the prediction."
+
+extra:
+  skip-lints:
+    - should_be_noarch
+  identifiers:
+    - doi:10.13140/RG.2.2.12857.62564
+  notes:
+    - GeneMark software can be used for free, but requires a license file and should be additionally installed on the machine where the BRAKER2 environment is.
+    - GenomeThreader software can be used for free, but all warranties are excluded and thus the user should additionally install it on the machine where the BRAKER2 environment is.
