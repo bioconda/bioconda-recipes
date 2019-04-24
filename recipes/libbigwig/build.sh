@@ -6,7 +6,7 @@ export LIBRARY_PATH=${PREFIX}/lib
 export LD_LIBRARY_PATH=${PREFIX}/lib
 
 cd $SRC_DIR
-make install prefix=$PREFIX/ CC=$CC LIBS="-L$PREFIX/lib -lcurl -lm -lz"
+make install prefix=$PREFIX/ CC=$CC CFLAGS="-g -Wall -O3 -Wsign-compare -L$PREFIX/lib -I$PREFIX/include"
 make test/testLocal
 cp bigWig.h $PREFIX/include
 cp -r libBigWig.a libBigWig.so $PREFIX/lib
