@@ -13,9 +13,3 @@ mkdir -p $PREFIX/bin
 ./configure --prefix=$HOME
 make
 make install
-
-ls
-
-ls bin
-
-cp bin/fsa $PREFIX/bin
