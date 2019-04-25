@@ -14,7 +14,7 @@ ln -s $DESTDIR/run_qc.py $PREFIX/bin/
 ln -s $DESTDIR/run_qc.py $PREFIX/bin/MAGpurify #alias
 
 # download database
-wget http://bit.ly/MAGpurify-db
-tar -jxvf MAGpurify-db-v1.0 # downloaded databse doesn't have .tar.bz2 file extension
-mv MAGpurify-db-v1.0 $DESTDIR
-export MAGPURIFYDB=$DESTDIR/MAGpurify-db-v1.0
+#wget http://bit.ly/MAGpurify-db
+#tar -jxvf MAGpurify-db-v1.0 # downloaded databse doesn't have .tar.bz2 file extension
+#mv MAGpurify-db-v1.0 $DESTDIR
+#export MAGPURIFYDB=$DESTDIR/MAGpurify-db-v1.0
