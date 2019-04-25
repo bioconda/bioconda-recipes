@@ -2,6 +2,7 @@
 
 # https://rt.perl.org/Public/Bug/Display.html?id=121017
 export OLDLDFLAGS="$LDFLAGS"
+export LDFLAGS=""
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
