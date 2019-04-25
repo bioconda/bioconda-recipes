@@ -14,4 +14,4 @@ mkdir -p $PREFIX/bin
 make
 make install
 
- cp $HOME/bin/fsa $PREFIX/bin
+ cp fsa $PREFIX/bin
