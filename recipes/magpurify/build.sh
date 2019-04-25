@@ -3,7 +3,7 @@
 
 
 
-# install 
+# install
 DESTDIR=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $DESTDIR
 cp run_qc.py $DESTDIR
@@ -14,6 +14,6 @@ ln -s $DESTDIR/run_qc.py $PREFIX/bin/
 ln -s $DESTDIR/run_qc.py $PREFIX/bin/MAGpurify #alias
 
 # unzip database
-tar -jxvf MAGpurify-db-v1.0.tar.bz2
+tar -jxvf MAGpurify-db-v1.0 # downloaded databse doesn't have .tar.bz2 file extension
 mv MAGpurify-db-v1.0 $DESTDIR
 export MAGPURIFYDB=$DESTDIR/MAGpurify-db-v1.0
