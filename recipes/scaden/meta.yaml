@@ -1,0 +1,53 @@
+{% set name = "scaden" %}
+{% set version = "0.9.0" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "c5c3c58aa9a9c36151dcbd746445ed038fbc33e7906529a2bbff1d84dcfb7239" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+  noarch: python
+
+requirements:
+  host:
+    - python
+    - pip
+    - twine
+  run:
+    - python
+    - pandas ==0.21
+    - numpy ==1.14.5
+    - scikit-learn
+    - scipy
+    - seaborn
+    - tensorflow ==1.10.0
+    - matplotlib
+    - scanpy
+    - tqdm
+    - click
+
+test:
+  imports:
+    - scaden
+    - scaden.model
+    - scaden.preprocessing
+  commands:
+    - scaden --help
+
+about:
+  home: https://github.com/KevinMenden/scaden
+  license: MIT
+  license_family: AGPL
+  summary: Cell type deconvolution using single cell data
+
+extra:
+  recipe-maintainers: 'Kevin Menden'
