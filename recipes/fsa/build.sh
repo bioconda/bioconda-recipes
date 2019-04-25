@@ -10,6 +10,8 @@
 
 mkdir -p $PREFIX/bin
 
-./configure --prefix=$HOME
+./configure --prefix=$PREFIX
 make
 make install
+
+which fsa
