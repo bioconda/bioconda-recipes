@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-export C_INCLUDE_PATH=${PREFIX}/include
+export C_INCLUDE_PATH=${PREFIX}/include/htslib
 export LIBRARY_PATH=${PREFIX}/lib
 #export HTSLIB_VERSION=1.7
 #wget --ca-certificate=$PREFIX/ssl/cert.pem -O htslib-${HTSLIB_VERSION}.tar.bz2 https://github.com/samtools/htslib/releases/download/${HTSLIB_VERSION}/htslib-${HTSLIB_VERSION}.tar.bz2
