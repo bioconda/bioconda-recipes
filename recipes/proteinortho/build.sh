@@ -17,6 +17,6 @@ export LIBRARY_PATH="${PREFIX}/lib"
 # echo $PATH
 
 make clean
-make all -j${CPU_COUNT}
+make CPP=$GXX LIBRARY_PATH=$LIBRARY_PATH INCLUDE_PATH=${PREFIX}/include all -j${CPU_COUNT}
 mkdir -p $PREFIX/bin
 make install PREFIX=$PREFIX/bin/
