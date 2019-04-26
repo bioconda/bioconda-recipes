@@ -9,7 +9,8 @@ export LIBRARY_PATH=${PREFIX}/lib
 #cd htslib-${HTSLIB_VERSION}
 #patch -p0 < $SRC_DIR/patches/htslibcramindex.diff
 #make
-cd ../c
+#cd ../c
+cd alleleCount-4.0.0/c/
 mkdir bin
 make OPTINC=-I$C_INCLUDE_PATH HTSLOC=$C_INCLUDE_PATH
 mkdir -p $PREFIX/bin
