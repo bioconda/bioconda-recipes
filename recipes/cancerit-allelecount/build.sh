@@ -11,6 +11,6 @@ export LIBRARY_PATH=${PREFIX}/lib
 #make
 cd ../c
 mkdir bin
-make #OPTINC=-I$SRC_DIR/htslib-${HTSLIB_VERSION} HTSLOC=$SRC_DIR/htslib-${HTSLIB_VERSION}
+make OPTINC=-I$C_INCLUDE_PATH HTSLOC=$C_INCLUDE_PATH
 mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin
