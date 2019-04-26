@@ -13,7 +13,7 @@ export LIBRARY_PATH=${PREFIX}/lib
 cd $SRC_DIR/c
 mkdir bin
 #Inject CC 
-sed -i 's/gcc/$CC/g' Makefile
+sed -i 's/gcc/${CC}/g' Makefile
 make OPTINC=-I$C_INCLUDE_PATH HTSLOC=$C_INCLUDE_PATH
 mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin
