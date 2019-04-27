@@ -64,7 +64,7 @@ async def handle_check_run(event, ghapi):
             if pr["base"]["repo"]["id"] != event_repo:
                 # PR away from us, not to us
                 continue
-            pr_number = pr["number"]
+            pr_number = int(pr["number"])
             check_circle_artifacts.s(pr_number, ghapi).apply_async()
             logger.info("Scheduled check_circle_artifacts on #%s", pr_number)
 
@@ -95,7 +95,7 @@ async def handle_pull_request(event, ghapi):
     - synchronize
     """
     action = event.get('action')
-    pr_number = event.get('number')
+    pr_number = int(event.get('number'))
     head_sha = event.get('pull_request/head/sha')
     logger.info("Handling pull_request/%s #%s (%s)", action, pr_number, head_sha)
     if action in ('opened', 'reopened', 'synchronize'):
