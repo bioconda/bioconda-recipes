@@ -65,7 +65,12 @@ jobs:
       - *install_bioconda_utils
       - run:
           name: Testing
-          command: py.test --duration=0 test/ -v --tb=native -m 'not long_running'
+          command: |
+            if git diff --name-only origin/master...$CIRCLE_SHA1 | grep -vE ^docs; then
+              py.test --duration=0 test/ -v --tb=native -m 'not long_running'
+            else
+              echo "Skipping pytest - only docs modified"
+            fi
           no_output_timeout: 1200
   test-linux (long_running):
     <<: *linux
@@ -78,7 +83,12 @@ jobs:
       - *install_bioconda_utils
       - run:
           name: Testing
-          command: py.test --duration=0 test/ -v --tb=native -m 'long_running'
+          command: |
+            if git diff --name-only origin/master...$CIRCLE_SHA1 | grep -vE ^docs; then
+              py.test --duration=0 test/ -v --tb=native -m 'long_running'
+            else
+              echo "Skipping pytest - only docs modified"
+            fi
           no_output_timeout: 1200
   test-macos:
     <<: *macos
@@ -91,7 +101,13 @@ jobs:
       - *install_bioconda_utils
       - run:
           name: Testing
-          command: py.test --duration=0 test/ -v -k "not docker" --tb=native
+          command: |
+            if git diff --name-only origin/master...$CIRCLE_SHA1 | grep -vE ^docs; then
+              py.test --duration=0 test/ -v -k "not docker" --tb=native
+            else
+              echo "Skipping pytest - only docs modified"
+            fi
+
           no_output_timeout: 1200
   build-docs:
     <<: *linux
