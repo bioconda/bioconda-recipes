@@ -428,7 +428,9 @@ class AioGitterAPI(GitterAPI):
     async def _stream_request(self, method: str, url: str,
                               headers: Mapping[str, str],
                               body: bytes = b'') -> AsyncIterator[bytes]:
-        async with self._session.request(method, url, headers=headers, data=body) as response:
+        timeout = aiohttp.ClientTimeout(total=3600, sock_read=60)
+        async with self._session.request(method, url, headers=headers, data=body,
+                                         timeout=timeout) as response:
             response.raise_for_status()
             async for line_bytes in response.content:
                 yield line_bytes
