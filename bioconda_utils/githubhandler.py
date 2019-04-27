@@ -31,6 +31,8 @@ CheckRunStatus = Enum("CheckRunState", "queued in_progress completed")
 CheckRunConclusion = Enum("CheckRunConclusion",
                           "success failure neutral cancelled timed_out action_required")
 
+#: Merge method
+MergeMethod = Enum("MergeMethod", "merge squash rebase")
 
 def iso_now() -> str:
     """Creates ISO 8601 timestamp in format
@@ -51,6 +53,7 @@ class GitHubHandler:
     PULLS = "/repos/{user}/{repo}/pulls{/number}{?head,base,state}"
     PULL_FILES = "/repos/{user}/{repo}/pulls/{number}/files"
     PULL_COMMITS = "/repos/{user}/{repo}/pulls/{number}/commits"
+    PULL_MERGE = "/repos/{user}/{repo}/pulls/{number}/merge"
     ISSUES = "/repos/{user}/{repo}/issues{/number}"
     ISSUE_COMMENTS = "/repos/{user}/{repo}/issues/{number}/comments"
     COMMENTS = "/repos/{user}/{repo}/issues/comments{/comment_id}"
@@ -230,6 +233,61 @@ class GitHubHandler:
             return {'number': -1}
         logger.info("Creating PR '%s'", title)
         return await self.api.post(self.PULLS, var_data, data=data)
+
+    async def merge_pr(self, number: int, title: str = None, message: str = None, sha: str = None,
+                           method: MergeMethod = MergeMethod.squash) -> Tuple[bool, str]:
+        """Merge a PR
+
+        Arguments:
+          number: PR Number
+          title: Title for the commit message
+          message: Message to append to automatic message
+          sha: SHA PR head must match
+          merge_method: `MergeMethod` to use. Defaults to squash.
+
+        Returns:
+          Tuple: True if successful and message
+        """
+        var_data = copy(self.var_default)
+        var_data['number'] = str(number)
+        data = {}
+        if title:
+            data['commit_title'] = title
+        if message:
+            data['commit_message'] = message
+        if sha:
+            data['sha'] = sha
+        if method:
+            data['merge_method'] = method.name
+
+        try:
+            logger.error("data %s", data)
+            res = await self.api.put(self.PULL_MERGE, var_data, data=data)
+            return True, res['message']
+        except gidgethub.BadRequest as exc:
+            if exc.status_code in (405, 409):
+                # not allowed / conflict
+                return False, exc.args[0]
+            raise
+
+    async def pr_is_merged(self, number) -> bool:
+        """Checks whether a PR has been merged
+
+        Arguments:
+          number: PR Number
+
+        Returns:
+          True if the PR has been merged.
+        """
+        var_data = copy(self.var_default)
+        var_data['number'] = str(number)
+        try:
+            await self.api.getitem(self.PULL_MERGE, var_data)
+            return True
+        except gidgethub.BadRequest as exc:
+            if exc.status_code == 404:
+                return False
+            raise
 
     async def modify_issue(self, number: int,
                            labels: Optional[List[str]] = None,
