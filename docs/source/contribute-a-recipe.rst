@@ -42,16 +42,14 @@ bioconda-specific policies.
 
 .. _test-locally:
 
-3. Test locally
-~~~~~~~~~~~~~~~
-
-*Updated April 2018 to describe the bootstrap.py method*
+3. Test locally (optional)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There are currently two options for local testing: 1) using the Circle CI
 client and 2) setting up a separate Miniconda installation and running
-bioconda-utils. The first is probably more straightforward; the second is more
-stringent, can be used for testing on MacOS, and allows the full customization
-of the bioconda-utils calls.
+bioconda-utils. The first is potentially simpler to set up but less flexible.
+
+.. note:: If you use the Circle CI client method and receive errors then please try ``bioconda-utils build`` instead.
 
 .. _cci_clent:
 
