@@ -8,6 +8,7 @@ from aiohttp import web
 
 from .events import event_routes
 from ..githubhandler import Event
+from ..circleci import SlackMessage
 from .. import __version__ as VERSION
 from .worker import celery
 from .config import APP_SECRET
@@ -65,6 +66,16 @@ async def github_webhook_dispatch(request):
         logger.exception("Failure in webhook dispatch")
         return web.Response(status=500)
 
+@web_routes.post('/hooks/circleci')
+async def generic_circleci_dispatch(request):
+    try:
+        body = await request.read()
+        msg = SlackMessage(request.headers, body)
+        logger.info("Got data from Circle: %s", msg)
+        return web.Response(status=200)
+    except Exception: # pylint: disable=broad-except
+        logger.exception("Failure in circle webhook dispatch")
+        return web.Response(status=500)
 
 @web_routes.post('/hooks/{source}')
 async def generic_webhook_dispatch(request):

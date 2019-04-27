@@ -8,6 +8,7 @@ from typing import Any, Mapping, Optional, Tuple
 import uritemplate
 import urllib
 import json
+import re
 
 import aiohttp
 
@@ -113,6 +114,35 @@ class CircleAPI(abc.ABC):
         return await self._make_request('POST', self.TRIGGER_REBUILD, self.var_data, data=data)
 
 
+class SlackMessage:
+    def __init__(self, headers: Mapping[str, str], data: bytes):
+        response_text = data.decode('utf-8')
+        try:
+            data = json.loads(response_text)
+        except json.decoder.JSONDecodeError as exc:
+            raise RuntimeError("Unable to decore CircleCI Slack message")
+        self.parsed = []
+        err=False
+        for attachment in data['attachments']:
+            text = attachment['text']
+            if text.startswith('Success:'):
+                success=True
+            elif text.startswith('Failed:'):
+                success=False
+            else:
+                err=True
+                continue
+            urls = {key: url for url, key in re.findall(r'<(http[^|>]+)\|([^>]+)>', text)}
+            self.parsed.append({
+                'urls': urls,
+                'success': success,
+            })
+
+    def __str__(self):
+        return '|'.join(f"success={x['success']} {':'.join(x['urls'].keys())}"
+                        for x in self.parsed)
+
+
 class AsyncCircleAPI(CircleAPI):
     def __init__(self, session: aiohttp.ClientSession, *args: Any, **kwargs: Any) -> None:
         self._session = session
@@ -123,3 +153,4 @@ class AsyncCircleAPI(CircleAPI):
                        body: bytes = b'') -> Tuple[int, Mapping[str, str], bytes]:
         async with self._session.request(method, url, headers=headers, data=body) as response:
             return response.status, response.headers, await response.read()
+
