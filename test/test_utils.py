@@ -94,7 +94,7 @@ def single_build(request, recipes_fixture):
     Builds the "one" recipe.
     """
     if request.param:
-        docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
+        docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True, docker_base_image="bioconda-utils-build-env:latest")
         mulled_test = True
     else:
         docker_builder = None
@@ -119,7 +119,7 @@ def multi_build(request, recipes_fixture, config_fixture):
     Builds the "one", "two", and "three" recipes.
     """
     if request.param:
-        docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
+        docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True, docker_base_image="bioconda-utils-build-env:latest")
         mulled_test = True
     else:
         docker_builder = None
@@ -217,7 +217,7 @@ def test_docker_builder_build(recipes_fixture):
     """
     Tests just the build_recipe method of a RecipeBuilder object.
     """
-    docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True)
+    docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True, docker_base_image="bioconda-utils-build-env:latest")
     pkgs = recipes_fixture.pkgs['one']
     docker_builder.build_recipe(
         recipes_fixture.recipe_dirs['one'], build_args='', env={})
@@ -229,6 +229,7 @@ def test_docker_builder_build(recipes_fixture):
 def test_docker_build_fails(recipes_fixture, config_fixture):
     "test for expected failure when a recipe fails to build"
     docker_builder = docker_utils.RecipeBuilder(
+        docker_base_image="bioconda-utils-build-env:latest",
         build_script_template="exit 1")
     assert docker_builder.build_script_template == 'exit 1'
     result = build.build_recipes(
@@ -523,7 +524,7 @@ def test_rendering_sandboxing():
 
     r.write_recipes()
     env = {
-        # First one is allowed, others are not
+        # None of these should be passed to the recipe
         'CONDA_ARBITRARY_VAR': 'conda-val-here',
         'TRAVIS_ARBITRARY_VAR': 'travis-val-here',
         'GITHUB_TOKEN': 'asdf',
@@ -562,42 +563,10 @@ def test_rendering_sandboxing():
             )
         assert "'GITHUB_TOKEN' is undefined" in str(excinfo.value)
 
-    r = Recipes(
-        """
-        two:
-          meta.yaml: |
-            package:
-              name: two
-              version: 0.1
-            extra:
-              var2: {{ CONDA_ARBITRARY_VAR }}
-
-    """, from_string=True)
-    r.write_recipes()
-
-    with utils.temp_env(env):
-        pkg_paths = utils.built_package_paths(r.recipe_dirs['two'])
-        for pkg in pkg_paths:
-            ensure_missing(pkg)
-
-        build.build(
-            recipe=r.recipe_dirs['two'],
-            recipe_folder='.',
-            pkg_paths=pkg_paths,
-            mulled_test=False,
-        )
-
-        for pkg in pkg_paths:
-            t = tarfile.open(pkg)
-            tmp = tempfile.mkdtemp()
-            target = 'info/recipe/meta.yaml'
-            t.extract(target, path=tmp)
-            contents = yaml.safe_load(open(os.path.join(tmp, target)).read())
-            assert contents['extra']['var2'] == 'conda-val-here', contents
-
 
 def test_sandboxed():
     env = {
+        'PATH': '/foo/bar',
         'CONDA_ARBITRARY_VAR': 'conda-val-here',
         'TRAVIS_ARBITRARY_VAR': 'travis-val-here',
         'GITHUB_TOKEN': 'asdf',
@@ -605,7 +574,8 @@ def test_sandboxed():
     }
     with utils.sandboxed_env(env):
         print(os.environ)
-        assert os.environ['CONDA_ARBITRARY_VAR'] == 'conda-val-here'
+        assert os.environ['PATH'] == '/foo/bar'
+        assert 'CONDA_ARBITRARY_VAR' not in os.environ
         assert 'TRAVIS_ARBITRARY_VAR' not in os.environ
         assert 'GITHUB_TOKEN' not in os.environ
         assert 'BUILDKITE_TOKEN' not in os.environ
@@ -818,6 +788,7 @@ def test_conda_forge_pins(caplog, config_fixture):
 
     for k, v in r.recipe_dirs.items():
         for i in utils.built_package_paths(v):
+            print(os.listdir(os.path.dirname(i)))
             assert os.path.exists(i)
             ensure_missing(i)
 

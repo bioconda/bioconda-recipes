@@ -16,10 +16,8 @@ from conda_build.metadata import MetaData
 
 logger = logging.getLogger(__name__)
 
-# Use Miniconda 4.3.27 for now to avoid running into an issue in
-# 'conda >4.4.7,<4.4.11': https://github.com/conda/conda/issues/6811
 # TODO: Make this configurable in bioconda_utils.build and bioconda_utils.cli.
-MULLED_CONDA_IMAGE = "continuumio/miniconda3:4.3.27"
+MULLED_CONDA_IMAGE = "continuumio/miniconda3:4.5.12"
 
 
 def get_tests(path):
