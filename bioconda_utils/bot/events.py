@@ -26,7 +26,7 @@ async def handle_comment_created(event, ghapi, *args, **_kwargs):
     This function watches for comments on issues. Lines starting with
     an @mention of the bot are considered commands and dispatched.
     """
-    issue_number = str(event.get('issue/number', "NA"))
+    issue_number = event.get('issue/number', "NA")
     comment_author = event.get("comment/user/login", "")
     commands = [
         line.lower().split()[1:]
