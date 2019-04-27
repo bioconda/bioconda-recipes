@@ -185,7 +185,11 @@ class GitHubHandler:
         """Create iterator over commits in a PR"""
         var_data = copy(self.var_default)
         var_data['number'] = str(number)
-        return self.api.getiter(self.PULL_COMMITS, var_data)
+        try:
+            async for item in self.api.getiter(self.PULL_COMMITS, var_data):
+                yield item
+        except gidgethub.GitHubException:
+            return
 
     # pylint: disable=too-many-arguments
     async def create_pr(self, title: str,

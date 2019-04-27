@@ -101,7 +101,7 @@ class Checkout:
 async def get_latest_pr_commit(issue_number: int, ghapi):
     """Returns last commit"""
     commit = {'sha': None}
-    async for commit in await ghapi.iter_pr_commits(issue_number):
+    async for commit in ghapi.iter_pr_commits(issue_number):
         pass
     logger.info("Latest SHA on #%s is %s", issue_number, commit['sha'])
     return commit['sha']
