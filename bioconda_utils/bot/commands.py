@@ -7,7 +7,7 @@ from typing import Callable, Dict
 
 from .tasks import (
     bump, create_check_run, get_latest_pr_commit, check_circle_artifacts,
-    trigger_circle_rebuild
+    trigger_circle_rebuild, merge_pr, post_result
 )
 
 
@@ -90,3 +90,13 @@ async def command_rebuild(ghapi, issue_number, _user, *_args):
     """Trigger rebuild of PR as of latest sha"""
     trigger_circle_rebuild.s(issue_number, ghapi).apply_async()
     return f"Scheduled triggering of rebuild for #{issue_number}"
+
+
+@command_routes.register("merge")
+async def command_merge(ghapi, issue_number, user, *_args):
+    """Merge PR"""
+    (
+        merge_pr.s(issue_number, user, ghapi) |
+        post_result.s(issue_number, "merge", user, ghapi)
+    ).apply_async()
+    return f"Scheduled merge of #{issue_number}"

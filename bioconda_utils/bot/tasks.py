@@ -8,7 +8,7 @@ import sys
 import time
 import types
 from collections import namedtuple
-from typing import TYPE_CHECKING
+from typing import Tuple
 
 from .worker import celery
 from .config import BOT_NAME, BOT_EMAIL, CIRCLE_TOKEN
@@ -17,10 +17,6 @@ from ..recipe import Recipe
 from ..githandler import TempBiocondaRepo
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
 from ..circleci import AsyncCircleAPI
-
-if TYPE_CHECKING:
-    from .worker import AsyncTask
-    from typing import Dict
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -303,3 +299,46 @@ async def trigger_circle_rebuild(pr_number: int, ghapi):
 
     res = await capi.trigger_rebuild(path, head_sha)
     logger.warning("Trigger_rebuild call returned with %s", res)
+
+
+@celery.task(acks_late=True, ignore_result=False)
+async def merge_pr(pr_number: int, user: str, ghapi) -> Tuple[bool, str]:
+    if not await ghapi.is_member(user):
+        return False, "I can only merge on behalf of members"
+
+    pr = await ghapi.get_prs(number=pr_number)
+    if pr['merged']:
+        return False, "PR has already been merged"
+    if not pr['mergeable']:
+        return "PR is not mergeable"
+    if pr['draft']:
+        return "PR is marked as draft"
+    pr_author = pr['user']['login']
+    merge_commit_sha = pr['merge_commit_sha']
+
+    coauthors: Set[str] = set()
+    last_sha: str = None
+    async for commit in ghapi.iter_pr_commits(issue_number):
+        last_sha = commit['sha']
+        if commit['author']['login'] == pr_author:
+            continue
+        name = commit['commit']['author']['name']
+        email = commit['commit']['author']['email']
+        coauthors.add(f"Co-authored-by: {name} <{email}>")
+
+    if merge_commit_sha != last_sha:
+        return "Most recent commit is not merge commit!?"
+
+    lines = []
+    lines.extend(list(coauthors))
+
+    return await ghapi.merge_pr(pr_number, sha=last_sha,
+                                message="\n".join(lines) if lines else None)
+
+
+@celery.task(acks_late=True, ignore_result=False)
+async def post_result(result: Tuple[bool, str], pr_number: int, prefix: str, user: str, ghapi) -> None:
+    status = "succeeded" if result[0] else "failed"
+    message = f"@{user}: Your request to {prefix} {status}: {result[1]}"
+    await ghapi.create_comment(pr_number, message)
+    logger.warning(message)
