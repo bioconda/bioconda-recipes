@@ -90,8 +90,10 @@ class GitterListener:
                 await asyncio.sleep(1)
         except asyncio.CancelledError:
             logger.error("%s: stopped listening in %s", self, room_name)
-            res = await self._api.leave_room(self._user, room)
-            logger.error("%s: left room %s", room_name)
+            async with aiohttp.ClientSession() as session:
+                self._api._session = session
+                res = await self._api.leave_room(self._user, room)
+                logger.error("%s: left room %s", self, room_name)
         except Exception:
             logger.exception("%s: exiting with uncaught exception", self)
             raise
