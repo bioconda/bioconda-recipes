@@ -18,6 +18,7 @@ from ..githandler import TempBiocondaRepo
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
 from ..circleci import AsyncCircleAPI
 
+from celery.exceptions import MaxRetriesExceededError
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -301,8 +302,8 @@ async def trigger_circle_rebuild(pr_number: int, ghapi):
     logger.warning("Trigger_rebuild call returned with %s", res)
 
 
-@celery.task(acks_late=True, ignore_result=False)
-async def merge_pr(pr_number: int, user: str, ghapi) -> Tuple[bool, str]:
+@celery.task(bind=True, acks_late=True, ignore_result=False)
+async def merge_pr(self, pr_number: int, user: str, ghapi) -> Tuple[bool, str]:
     if not await ghapi.is_member(user):
         if await ghapi.is_org():
             return False, "I can only merge on behalf of members"
@@ -310,10 +311,16 @@ async def merge_pr(pr_number: int, user: str, ghapi) -> Tuple[bool, str]:
     pr = await ghapi.get_prs(number=pr_number)
     if pr['merged']:
         return False, "PR has already been merged"
-    if not pr['mergeable']:
-        return False, "PR is not mergeable"
     if pr.get('draft'):
         return False, "PR is marked as draft"
+    if pr['mergeable'] is None:
+        try:
+            raise self.retry(countdown=10, max_retries=5)
+        except MaxRetriesExceededError:
+            return False, "PR cannot be merged at this time. Please try again later"
+    if not pr['mergeable']:
+        return False, "PR is not mergeable"
+
     pr_author = pr['user']['login']
 
     coauthors: Set[str] = set()
