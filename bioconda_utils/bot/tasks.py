@@ -318,7 +318,7 @@ async def merge_pr(pr_number: int, user: str, ghapi) -> Tuple[bool, str]:
 
     coauthors: Set[str] = set()
     last_sha: str = None
-    async for commit in ghapi.iter_pr_commits(issue_number):
+    async for commit in ghapi.iter_pr_commits(pr_number):
         last_sha = commit['sha']
         if commit['author']['login'] == pr_author:
             continue
