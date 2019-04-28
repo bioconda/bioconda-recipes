@@ -304,7 +304,8 @@ async def trigger_circle_rebuild(pr_number: int, ghapi):
 @celery.task(acks_late=True, ignore_result=False)
 async def merge_pr(pr_number: int, user: str, ghapi) -> Tuple[bool, str]:
     if not await ghapi.is_member(user):
-        return False, "I can only merge on behalf of members"
+        if await ghapi.is_org():
+            return False, "I can only merge on behalf of members"
 
     pr = await ghapi.get_prs(number=pr_number)
     if pr['merged']:

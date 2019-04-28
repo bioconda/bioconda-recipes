@@ -58,6 +58,7 @@ class GitHubHandler:
     ISSUE_COMMENTS = "/repos/{user}/{repo}/issues/{number}/comments"
     COMMENTS = "/repos/{user}/{repo}/issues/comments{/comment_id}"
     ORG_MEMBERS = "/orgs/{user}/members{/username}"
+    ORG = "/orgs/{user}"
     CHECK_RUN = "/repos/{user}/{repo}/check-runs{/id}"
     GET_CHECK_RUNS = "/repos/{user}/{repo}/commits/{commit}/check-runs"
 
@@ -148,6 +149,14 @@ class GitHubHandler:
             logger.debug("User %s is not a member of %s", username, var_data['user'])
             return False
         logger.debug("User %s IS a member of %s", username, var_data['user'])
+        return True
+
+    async def is_org(self) -> bool:
+        """Check if we are operating on an organization"""
+        try:
+            await self.api.getitem(self.ORG, self.var_default)
+        except gidgethub.BadRequest:
+            return False
         return True
 
     # pylint: disable=too-many-arguments
