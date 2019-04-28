@@ -311,7 +311,7 @@ async def merge_pr(pr_number: int, user: str, ghapi) -> Tuple[bool, str]:
         return False, "PR has already been merged"
     if not pr['mergeable']:
         return "PR is not mergeable"
-    if pr['draft']:
+    if pr.get('draft'):
         return "PR is marked as draft"
     pr_author = pr['user']['login']
     merge_commit_sha = pr['merge_commit_sha']

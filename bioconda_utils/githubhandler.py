@@ -182,7 +182,8 @@ class GitHubHandler:
         if state:
             var_data['state'] = state.name.lower()
 
-        return await self.api.getitem(self.PULLS, var_data)
+        accept = "application/vnd.github.shadow-cat-preview"  # for draft
+        return await self.api.getitem(self.PULLS, var_data, accept=accept)
 
     async def iter_pr_commits(self, number: int):
         """Create iterator over commits in a PR"""
