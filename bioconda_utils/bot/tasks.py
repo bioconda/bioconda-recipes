@@ -311,9 +311,9 @@ async def merge_pr(pr_number: int, user: str, ghapi) -> Tuple[bool, str]:
     if pr['merged']:
         return False, "PR has already been merged"
     if not pr['mergeable']:
-        return "PR is not mergeable"
+        return False, "PR is not mergeable"
     if pr.get('draft'):
-        return "PR is marked as draft"
+        return False, "PR is marked as draft"
     pr_author = pr['user']['login']
 
     coauthors: Set[str] = set()
