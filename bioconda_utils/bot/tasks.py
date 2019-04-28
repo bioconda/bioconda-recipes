@@ -315,7 +315,7 @@ async def merge_pr(self, pr_number: int, user: str, ghapi) -> Tuple[bool, str]:
         return False, "PR is marked as draft"
     if pr['mergeable'] is None:
         try:
-            raise self.retry(countdown=10, max_retries=5)
+            raise self.retry(countdown=20, max_retries=15)
         except MaxRetriesExceededError:
             return False, "PR cannot be merged at this time. Please try again later"
     if not pr['mergeable']:
