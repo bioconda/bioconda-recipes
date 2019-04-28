@@ -315,7 +315,6 @@ async def merge_pr(pr_number: int, user: str, ghapi) -> Tuple[bool, str]:
     if pr.get('draft'):
         return "PR is marked as draft"
     pr_author = pr['user']['login']
-    merge_commit_sha = pr['merge_commit_sha']
 
     coauthors: Set[str] = set()
     last_sha: str = None
@@ -327,9 +326,6 @@ async def merge_pr(pr_number: int, user: str, ghapi) -> Tuple[bool, str]:
         email = commit['commit']['author']['email']
         coauthors.add(f"Co-authored-by: {name} <{email}>")
 
-    if merge_commit_sha != last_sha:
-        return "Most recent commit is not merge commit!?"
-
     lines = []
     lines.extend(list(coauthors))
 
@@ -340,6 +336,6 @@ async def merge_pr(pr_number: int, user: str, ghapi) -> Tuple[bool, str]:
 @celery.task(acks_late=True, ignore_result=False)
 async def post_result(result: Tuple[bool, str], pr_number: int, prefix: str, user: str, ghapi) -> None:
     status = "succeeded" if result[0] else "failed"
-    message = f"@{user}: Your request to {prefix} {status}: {result[1]}"
+    message = f"@{user}, your request to {prefix} {status}: {result[1]}"
     await ghapi.create_comment(pr_number, message)
     logger.warning(message)
