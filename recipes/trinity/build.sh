@@ -17,6 +17,10 @@ TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
 cd $SRC_DIR
 
 make
+# The compilers aren't propogated
+cd trinity-plugins
+cd seqtk-trinity-0.0.2 && make CC=$CC && cd ..
+cd ..
 make plugins CC=$CC CXX=$CXX
 
 # remove the sample data
