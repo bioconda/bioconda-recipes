@@ -17,7 +17,7 @@ from conda_build.metadata import MetaData
 logger = logging.getLogger(__name__)
 
 # TODO: Make this configurable in bioconda_utils.build and bioconda_utils.cli.
-MULLED_CONDA_IMAGE = "dpryan79/mulled_container:latest"
+MULLED_CONDA_IMAGE = "quay.io/dpryan79/mulled_container:latest"
 
 
 def get_tests(path):
