@@ -53,7 +53,7 @@ update your branch with the upstream master branch::
 
 Install the Circle CI client (optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Our resources on CircleCI are limited and queue times may make it 
+Queue times on CircleCI may sometimes make it more convenient and
 faster to work on complex packages locally. You can execute an almost
 exact copy of our Linux build pipeline by `installing the CircleCI client
 locally <https://circleci.com/docs/2.0/local-cli>`_ and running it
@@ -68,7 +68,7 @@ of the build environment image::
     
 If the error persists, ask for help on our
 `Gitter channel <https://gitter.im/bioconda/Lobby>`_ and/or file an 
-issue against
+issue at
 `bioconda-utils <https://github.com/bioconda/bioconda-utils>`_.
 
 
