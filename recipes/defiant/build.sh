@@ -6,8 +6,6 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 
 mkdir -p ${PREFIX}/bin
 
-unzip defiant.zip
-
 # Fix defiant.c for OSX
 if [ `uname` == Darwin ]; then
     sed -i.bak 's/restrict argv\[\]/argv\[\]/g' defiant.c
