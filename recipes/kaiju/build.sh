@@ -11,7 +11,7 @@ mkdir -p $PREFIX/bin
 
 cd $SRC_DIR/src/
 
-make CC=$CC
+make CC=$CC CXX=$CXX CFLAGS="$CFLAGS -O3 -NDEBUG" CXXFLAGS="$CXXFLAGS -O3 -pthread -DNDEBUG"
 
 cd $SRC_DIR/bin/
 cp addTaxonNames $PREFIX/bin
