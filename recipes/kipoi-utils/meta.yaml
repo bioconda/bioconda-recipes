@@ -1,0 +1,64 @@
+{% set name = "kipoi-utils" %}
+{% set lowername = "kipoi_utils" %}
+{% set version = "0.1.12" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "19ee7e2d64673698854d12c811046fc1f212fa9c638b8493e04f4489ab873bdc" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ lowername }}/{{ lowername }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  noarch: python
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+  run:
+    - python
+    - pandas >=0.21.0
+    - tqdm
+    - attrs
+    - related
+    - six
+    - tqdm
+    - numpy
+
+test:
+  imports:
+    - kipoi_utils
+    - kipoi_utils.external
+    - kipoi_utils.external.related
+    - kipoi_utils.external.torch
+    - kipoi_utils.external.torchvision
+  requires:
+    - bumpversion
+    - coveralls
+    - pytest >=3.3.1
+    - pytest-cov
+    - pytest-pep8
+    - pytest-xdist
+    - wheel
+
+about:
+  home: https://github.com/kipoi/kipoi-utils
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: "kipoi-utils: utils used in various packages related to kipoi"
+  description: "kipoi-utils: utils used in various packages related to kipoi"
+  doc_url: https://github.com/kipoi/kipoi-utils
+  dev_url: https://github.com/kipoi/kipoi-utils
+
+extra:
+  recipe-maintainers:
+    - visze
