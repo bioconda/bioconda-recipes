@@ -50,6 +50,7 @@ variables:
       name: Copying packages
       when: always
       command: |
+        set +e  # Just to be safe. Don't want workflows to fail because of this.
         mkdir -p /tmp/artifacts/packages
         cd miniconda/conda-bld || exit 0
         find -name .cache | xargs rm -rf || true
@@ -59,9 +60,11 @@ variables:
         if command -V docker >/dev/null; then
           mkdir -p /tmp/artifacts/images
           cd /tmp/artifacts/images
-          docker image ls --format '{{.Repository}}:{{.Tag}} {{.ID}}' | grep biocontainers > containers.txt || true
-          cat containers.txt | xargs -n2 -P4 bash -c 'docker save $2 | gzip -c > "${1##*/}.tar.gz"' --
+          docker image ls --format '{{.Repository}}:{{.Tag}}' | \
+            (grep biocontainers || true) | \
+            xargs -n1 -P4 bash -c 'docker save $1 | gzip -c > "${1##*/}.tar.gz"' --
         fi
+        true
 
   store_artifacts: &store_artifacts
     store_artifacts:
