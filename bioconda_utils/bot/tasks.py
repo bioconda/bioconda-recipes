@@ -134,8 +134,7 @@ async def bump(issue_number: int, ghapi):
         recipes = git.get_changed_recipes()
         for meta_fn in recipes:
             recipe = Recipe.from_file('recipes', meta_fn)
-            buildno = int(recipe.meta['build']['number']) + 1
-            recipe.reset_buildnumber(buildno)
+            recipe.reset_buildnumber(recipe.build_number + 1)
             recipe.save()
         msg = f"Bump {recipe} buildno to {buildno}"
         if not git.commit_and_push_changes(recipes, None, msg, sign=True):

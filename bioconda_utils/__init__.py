@@ -13,8 +13,7 @@ Bioconda Utilities Package
 .. autosummary::
    :toctree:
 
-   cli
-   async
+   aiopipe
    bioconductor_skeleton
    build
    circleci
@@ -31,7 +30,7 @@ Bioconda Utilities Package
    pkg_test
    recipe
    sphinxext
-   update
+   autobump
    update_pinnings
    upload
    utils
