@@ -17,7 +17,7 @@ TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
 cd $SRC_DIR
 
 make
-make plugins
+make plugins CC=$CC CXX=$CXX
 
 # remove the sample data
 rm -rf $SRC_DIR/sample_data
