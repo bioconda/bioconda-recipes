@@ -4,13 +4,15 @@ No recent builds available on CircleCI at this time.
 {% elif not current_builds %}
 No builds for the latest commit available on CircleCI.
 {% elif packages %}
-Packages built on CircleCI are ready for inspection:
+Package(s) built on CircleCI are ready for inspection:
 
 Arch | Package | Repodata
 -----|---------|---------
 {% for package in packages %}
 {{package[0]}} | [{{package[1]}}]({{package[2]}}) | {{package[3]}}
 {% endfor %}
+
+***
 
 You may alsu use `conda` to install these:
 
@@ -20,6 +22,20 @@ You may alsu use `conda` to install these:
    conda install -c {{ arch[0] }} <package name>
    ```
 {% endfor %}
+
+{%if images %}
+
+***
+
+Docker image(s) built:
+
+Package | Tag | Install with `docker`
+--------|-----|----------------------
+{% for image in images %}
+[{{image.name}}]({{image.url}}) | {{image.tag}} | <details><summary>show</summary>`curl "{{image.url}}" \| gzip -dc \| docker load`
+{% endfor %}
+
+{% endif %}
 {% else %}
 CirleCI builds completed without yielding any package artifacts.
 {% endif %}

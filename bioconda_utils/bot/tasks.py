@@ -257,7 +257,9 @@ async def check_circle_artifacts(pr_number: int, ghapi):
     for buildno in current_builds:
         artifacts.extend(await capi.list_artifacts(buildno))
 
+    Image = namedtuple('Image', "url name tag")
     packages = []
+    images = []
     archs = {}
     for artifact in artifacts:
         if artifact.endswith(".tar.bz2"):
@@ -271,9 +273,13 @@ async def check_circle_artifacts(pr_number: int, ghapi):
                                  "[repodata.json]({}/repodata.json)".format(base)))
             else:
                 packages.append((arch, fname, artifact, ""))
+        if artifact.endswith(".tar.gz"):
+            _, _, fbase = artifact.rstrip(".tar.gz").rpartition("/")
+            name, _, tag = fbase.replace('%3A', ':').partition(":")
+            images.append(Image(artifact, name, tag))
 
     tpl = utils.jinja.get_template("artifacts.md")
-    msg = tpl.render(packages=packages, archs=archs,
+    msg = tpl.render(packages=packages, archs=archs, images=images,
                      current_builds=current_builds, recent_builds=recent_builds)
     msg_head, _, _ = msg.partition("\n")
     async for comment in await ghapi.iter_comments(pr_number):
