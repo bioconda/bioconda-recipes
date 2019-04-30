@@ -16,6 +16,15 @@ cp $SP_DIR/biobb_analysis/gromacs/gmx_energy.py $PREFIX/bin/gmx_energy
 chmod u+x $SP_DIR/biobb_analysis/gromacs/gmx_rgyr.py
 cp $SP_DIR/biobb_analysis/gromacs/gmx_rgyr.py $PREFIX/bin/gmx_rgyr
 
+chmod u+x $SP_DIR/biobb_analysis/gromacs/gmx_image.py
+cp $SP_DIR/biobb_analysis/gromacs/gmx_image.py $PREFIX/bin/gmx_image
+
+chmod u+x $SP_DIR/biobb_analysis/gromacs/gmx_trjconv_str.py
+cp $SP_DIR/biobb_analysis/gromacs/gmx_trjconv_str.py $PREFIX/bin/gmx_trjconv_str
+
+chmod u+x $SP_DIR/biobb_analysis/gromacs/gmx_trjconv_trj.py
+cp $SP_DIR/biobb_analysis/gromacs/gmx_trjconv_trj.py $PREFIX/bin/gmx_trjconv_trj
+
 chmod u+x $SP_DIR/biobb_analysis/ambertools/cpptraj_input.py
 cp $SP_DIR/biobb_analysis/ambertools/cpptraj_input.py $PREFIX/bin/cpptraj_input
 

@@ -1,0 +1,42 @@
+{% set name = "crass" %}
+{% set version = "1.0.1" %}
+{% set shasum = "7078bcccb7a16bf4f2e54590f25d85f36d27d1bbaa9f2c484d4eaa81a5ead930" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  sha256: {{ shasum }}
+  url: https://github.com/ctSkennerton/crass/archive/v{{ version }}.tar.gz
+  patches:
+    - patch
+
+build:
+  number: 0
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - autoconf >=2.61
+    - automake >=1.10
+  host:
+    - libtool >=2.2
+    - zlib
+    - xerces-c =3.1
+  run:
+    - libtool >=2.2
+    - xerces-c =3.1
+    - zlib
+
+test:
+  commands:
+    - "crass -h 2>&1 | grep crass &> /dev/null"
+    - "crass --version 2>&1 | grep crass &> /dev/null"
+
+about:
+  home: 'https://mummer4.github.io/'
+  license: "GNU General Public License v3.0"
+  summary: "Crass (The CRISPR Assembler) is a program that searches through raw metagenomic reads for Clustered Regularly Interspersed Short Palindromic Repeats"
