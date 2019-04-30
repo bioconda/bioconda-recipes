@@ -90,10 +90,10 @@ class GitHubHandler:
         self.username: str = None
 
     def __str__(self):
-        return f"{self.__class__.__name__}({self.user}/{self.repo})"
+        return f"{self.user}/{self.repo}"
 
     def __repr__(self):
-        return str(self)
+        return f"{self.__class__.__name__}({self.user}/{self.repo})"
 
     def for_json(self):
         return {
