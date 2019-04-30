@@ -24,7 +24,7 @@ get_submodule ET      0.2.2 NickSto       ET            11dc5cb02521a2260e6c88a8
 get_submodule bfx     0.2.0 NickSto       bfx           252d31dc260882f203d04624945c8abb4940f3ae4b03a5050182d23854488ef8
 
 # Inject compilers
-sed -i.bak 's#gcc#$CC#g' Makefile
+sed -i.bak 's#gcc#${CC}#g' Makefile
 
 # Compile binaries and move them to lib.
 make CC=$CC
