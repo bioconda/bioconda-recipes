@@ -47,7 +47,8 @@ command_routes = CommandDispatch()  # pylint: disable=invalid-name
 
 
 def permissions(member: Optional[bool] = None,
-                author: Optional[bool] = None):
+                author: Optional[bool] = None,
+                team: Optional[str] = None):
     """Decorator for commands checking for permissions
 
     Permissions are OR combined. Repeat the decorator to get AND.
@@ -76,6 +77,11 @@ def permissions(member: Optional[bool] = None,
                     ok = f"User is {negate}PR author"
                 else:
                     err += [f"{negate}author of the PR"]
+            if not ok and team is not None:
+                if await ghapi.is_team_member(user, team):
+                    ok = "User is member of {ghapi.user}/{team}"
+                else:
+                    err += [f"a member of {ghapi.user}/{team}"]
 
             msg = ok or f"Permission denied. You need to be {' or '.join(err)}."
 
@@ -140,7 +146,7 @@ async def command_rebuild(ghapi, issue_number, _user, *_args):
 
 @command_routes.register("merge")
 @permissions(member=True)
-@permissions(author=False)
+@permissions(author=False, team="core")
 async def command_merge(ghapi, issue_number, user, *_args):
     """Merge PR"""
     (
