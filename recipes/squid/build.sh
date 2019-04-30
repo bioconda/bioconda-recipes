@@ -21,11 +21,9 @@ export LDADD="${BAMTOOLS_LIBRARY_DIR}/libbamtools.a ${GLPK_LIBRARY_DIR}/libglpk.
 export LDLIBS="-L${LIBRARY_PATH} -lz -lm -g"
 
 if [[ "$(uname)" == Darwin ]]; then
-    export CC=clang
-    export CXX=clang++
     export DYLD_LIBRARY_PATH="${GLPK_LIBRARY_DIR}:${BAMTOOLS_LIBRARY_DIR}"
 fi
 
-make CXXFLAGS="${CXXFLAGS}" LDADD="${LDADD}" LDLIBS="${LDLIBS}"
+make CXX=$CXX CXXFLAGS="${CXXFLAGS}" LDADD="${LDADD}" LDLIBS="${LDLIBS}"
 
 cp bin/squid ${PREFIX}/bin
