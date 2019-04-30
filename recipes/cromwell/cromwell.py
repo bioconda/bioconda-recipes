@@ -13,7 +13,7 @@ import os
 from os import access, getenv, path, X_OK
 
 
-# Expected name of the VarScan JAR file.
+# Expected name of the JAR file.
 JAR_NAME = 'cromwell.jar'
 PKG_NAME = 'cromwell'
 
