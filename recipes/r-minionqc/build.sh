@@ -1,3 +1,4 @@
 #!/bin/bash
 
-$R CMD INSTALL --build .
+cp MinIONQC.R ${PREFIX}/bin/
+chmod a+x ${PREFIX}/bin/MinIONQC.R
