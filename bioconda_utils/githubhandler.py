@@ -7,7 +7,7 @@ import time
 
 from copy import copy
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, AsyncIterator, Dict, List, Optional, Tuple, Union
 
 import aiohttp
 import backoff
@@ -59,8 +59,10 @@ class GitHubHandler:
     COMMENTS = "/repos/{user}/{repo}/issues/comments{/comment_id}"
     ORG_MEMBERS = "/orgs/{user}/members{/username}"
     ORG = "/orgs/{user}"
+    ORG_TEAMS = "/orgs/{user}/teams{/team_slug}"
     CHECK_RUN = "/repos/{user}/{repo}/check-runs{/id}"
     GET_CHECK_RUNS = "/repos/{user}/{repo}/commits/{commit}/check-runs"
+    TEAMS_MEMBERSHIP = "/teams/{team_id}/memberships/{username}"
 
     STATE = IssueState
 
@@ -96,6 +98,7 @@ class GitHubHandler:
         return f"{self.__class__.__name__}({self.user}/{self.repo})"
 
     def for_json(self):
+        """Return JSON repesentation of object"""
         return {
             '__module__': self.__module__,
             '__type__': self.__class__.__qualname__,
@@ -137,8 +140,86 @@ class GitHubHandler:
             user = await self.api.getitem("/user")
             self.username = user["login"]
 
-    async def is_member(self, username) -> bool:
-        """Check if **username** is member of current org"""
+    async def iter_teams(self) -> AsyncIterator[Dict[str, Any]]:
+        """List organization teams
+
+        Returns:
+          Async iterator over dicts, containing **id**,
+          **name**, **slug**, **description**, etc.
+        """
+        async for team in self.api.getiter(self.ORG_TEAMS, self.var_default):
+            yield team
+
+    async def get_team_id(self, team_slug: str = None,
+                          team_name: str = None) -> Optional[int]:
+        """Get the Team ID from the Team slug
+
+        If both are set, **team_slug** is tried first.
+
+        Args:
+          team_slug: urlized team name, e.g. "justice-league" for "Justice League"
+          team_name: alternative, use normal name (requires extra API call internally)
+
+        Returns:
+          Team ID if found, otherwise `None`
+        """
+        if team_slug:
+            var_data = copy(self.var_default)
+            var_data['team_slug'] = team_slug
+            try:
+                team = await self.api.getitem(self.ORG_TEAMS, var_data)
+                if team and 'id' in team:
+                    return team['id']
+            except gidgethub.BadRequest as exc:
+                if exc.status_code != 404:
+                    raise
+
+        if team_name:
+            async for team in self.iter_teams():
+                if team.get('name') == team_name:
+                    return team.get('id')
+
+    async def is_team_member(self, username: str, team: Union[str, int]) -> bool:
+        """Check if user is a member of given team
+
+        Args:
+          username: Name of user to check
+          team: ID, Slug or Name of team to check
+        Returns:
+          True if the user is a member of the team
+        """
+        if isinstance(team, int):
+            team_id = team
+        else:
+            team_id = await self.get_team_id(team, team)
+            if not team:
+                logger.error("Could not find team for name '%s'", team)
+                return False
+
+        var_data = {
+            'username': username,
+            'team_id': team
+        }
+        accept = "application/vnd.github.hellcat-preview+json"
+        try:
+            data = await self.api.getitem(self.TEAMS_MEMBERSHIP, var_data, accept=accept)
+            if data['state'] == "active":
+                return True
+        except gidgethub.BadRequest as exc:
+            if exc.status_code != 404:
+                raise
+        return False
+
+    async def is_member(self, username: str, team: Optional[Union[str, int]] = None) -> bool:
+        """Check user membership
+
+        Args:
+          username: Name of user for whom to check membership
+          team: Name, Slug or ID of team to check
+        Returns:
+          True if the user is member of the organization, and, if **team**
+          is provided, if user is member of that team.
+        """
         if not username:
             return False
         var_data = copy(self.var_default)
@@ -149,6 +230,9 @@ class GitHubHandler:
             logger.debug("User %s is not a member of %s", username, var_data['user'])
             return False
         logger.debug("User %s IS a member of %s", username, var_data['user'])
+
+        if team:
+            return await self.is_team_member(username, team)
         return True
 
     async def is_org(self) -> bool:
