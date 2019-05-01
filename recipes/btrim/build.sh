@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make;
+make CXX=$CXX LDFLAGS="-L$PREFIX/lib -pthread -fopenmp"
 
 mkdir -p $PREFIX/bin
 cp btrim $PREFIX/bin
