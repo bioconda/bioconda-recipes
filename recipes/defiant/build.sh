@@ -13,7 +13,3 @@ ${CC} -o roi roi.c -lm -Wall -std=gnu11 -Wextra -pedantic -Wconversion $CFLAGS $
 # Copy binaries
 cp defiant ${PREFIX}/bin/defiant
 cp roi ${PREFIX}/bin/roi
-
-# Copy perl script
-chmod +x plot_results.pl
-cp plot_results.pl ${PREFIX}/bin/plot_results.pl
