@@ -198,7 +198,7 @@ class GitHubHandler:
 
         var_data = {
             'username': username,
-            'team_id': team
+            'team_id': team_id,
         }
         accept = "application/vnd.github.hellcat-preview+json"
         try:

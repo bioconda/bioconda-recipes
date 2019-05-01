@@ -79,7 +79,7 @@ def permissions(member: Optional[bool] = None,
                     err += [f"{negate}author of the PR"]
             if not ok and team is not None:
                 if await ghapi.is_team_member(user, team):
-                    ok = "User is member of {ghapi.user}/{team}"
+                    ok = f"User is member of {ghapi.user}/{team}"
                 else:
                     err += [f"a member of {ghapi.user}/{team}"]
 
