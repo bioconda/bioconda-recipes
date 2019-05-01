@@ -290,43 +290,47 @@ class GitHubHandler:
 
     # pylint: disable=too-many-arguments
     async def create_pr(self, title: str,
-                        from_branch: Optional[str] = None,
+                        from_branch: str,
                         from_user: Optional[str] = None,
                         to_branch: Optional[str] = "master",
                         body: Optional[str] = None,
-                        maintainer_can_modify: bool = True) -> Dict[Any, Any]:
+                        maintainer_can_modify: bool = True,
+                        draft: bool = False) -> Dict[Any, Any]:
         """Create new PR
 
         Arguments:
           title: Title of new PR
-          from_branch: Name of branch from which PR asks to pull
+          from_branch: Name of branch from which PR asks to pull (aka head)
           from_user: Name of user/org in from which to pull
-          to_branch: Name of branch into which to pull (default: master)
+          to_branch: Name of branch into which to pull (aka base, default: master)
           body: Body text of PR
           maintainer_can_modify: Whether to allow maintainer to modify from_branch
+          draft: whether PR is draft
         """
         var_data = copy(self.var_default)
         if not from_user:
             from_user = self.username
-        data: Dict[str, Any] = {'title': title,
-                                'body': '',
-                                'maintainer_can_modify': maintainer_can_modify}
-        if body:
-            data['body'] += body
-        if from_branch:
-            if from_user and from_user != self.username:
-                data['head'] = f"{from_user}:{from_branch}"
-            else:
-                data['head'] = from_branch
-        if to_branch:
-            data['base'] = to_branch
+        data: Dict[str, Any] = {
+            'title': title,
+            'base' : to_branch,
+            'body': body or '',
+            'maintainer_can_modify': maintainer_can_modify,
+            'draft': draft,
+        }
+
+        if from_user and from_user != self.username:
+            data['head'] = f"{from_user}:{from_branch}"
+        else:
+            data['head'] = from_branch
 
         logger.debug("PR data %s", data)
         if self.dry_run:
             logger.info("Would create PR '%s'", title)
             return {'number': -1}
         logger.info("Creating PR '%s'", title)
-        return await self.api.post(self.PULLS, var_data, data=data)
+
+        accept = "application/vnd.github.shadow-cat-preview"  # for draft
+        return await self.api.post(self.PULLS, var_data, data=data, accept=accept)
 
     async def merge_pr(self, number: int, title: str = None, message: str = None, sha: str = None,
                            method: MergeMethod = MergeMethod.squash) -> Tuple[bool, str]:
