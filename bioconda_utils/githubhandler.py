@@ -60,6 +60,7 @@ class GitHubHandler:
     COMMENTS          = "/repos/{user}/{repo}/issues/comments{/comment_id}"
     CHECK_RUN         = "/repos/{user}/{repo}/check-runs{/id}"
     GET_CHECK_RUNS    = "/repos/{user}/{repo}/commits/{commit}/check-runs"
+    GET_STATUSES      = "/repos/{user}/{repo}/commits/{commit}/statuses"
 
     ORG_MEMBERS       = "/orgs/{user}/members{/username}"
     ORG               = "/orgs/{user}"
@@ -362,7 +363,6 @@ class GitHubHandler:
             data['merge_method'] = method.name
 
         try:
-            logger.error("data %s", data)
             res = await self.api.put(self.PULL_MERGE, var_data, data=data)
             return True, res['message']
         except gidgethub.BadRequest as exc:
@@ -478,48 +478,6 @@ class GitHubHandler:
         var_data["number"] = str(number)
         return await self.api.getitem(self.PULL_FILES, var_data)
 
-    async def get_branch_protection(self, branch: str = "master") -> Dict[str, Any]:
-        """Retrieve protection settings for branch
-
-        Arguments:
-          branch: Branch for which to get protection settings
-
-        Returns:
-          Deep dict as example below. Protections not in place will not be present
-          in dict.
-
-          .. code-block:: yaml
-
-             required_status_checks:  # require status checks to pass
-                 strict: False        # require PR branch to be up to date with base
-                 contexts:            # list of status checks required
-                    - bioconda-test
-                 enforce_admins:      # admins, too, must follow rules
-                    - enabled: True
-             required_approving_review_count: 1  # 1 - 6 valid
-             dismiss_stale_reviews: False  # auto dismiss approval after push
-             require_code_owner_reviews: False
-             required_pull_request_reviews:  # require approving review
-                 dismissal_restrictions:  # specify who may dismiss reviews
-                    users:
-                      - login: bla
-                    teams:
-                      - id: 1
-                      - name: Bl Ub
-                      - slug: bl-ub
-             restrictions:             # specify who may push
-               users:
-                 - login: bla
-               teams:
-                 - id: 1
-        """
-        var_data = copy(self.var_default)
-        var_data["branch"] = branch
-        accept = "application/vnd.github.luke-cage-preview+json"
-        res = await self.api.getitem(self.BRANCH_PROTECTION, var_data, accept=accept)
-        logger.error("branch %s protected by: data=\n%s", branch, res)
-        return res
-
     async def create_check_run(self, name: str, head_sha: str,
                                details_url: str = None, external_id: str = None) -> int:
         """Create a check run
@@ -607,6 +565,100 @@ class GitHubHandler:
         accept = "application/vnd.github.antiope-preview+json"
         res = await self.api.getitem(self.GET_CHECK_RUNS, var_data, accept=accept)
         return res['check_runs']
+
+    async def get_statuses(self, sha: str) -> List[Dict[str, Any]]:
+        """List status checks for **sha**
+
+        Arguments:
+          sha: The commit SHA for which to find statuses
+        Returns:
+          List of status "objects"
+        """
+        var_data = copy(self.var_default)
+        var_data['commit'] = sha
+        return await self.api.getitem(self.GET_STATUSES, var_data)
+
+    async def get_branch_protection(self, branch: str = "master") -> Dict[str, Any]:
+        """Retrieve protection settings for branch
+
+        Arguments:
+          branch: Branch for which to get protection settings
+
+        Returns:
+          Deep dict as example below. Protections not in place will not be present
+          in dict.
+
+          .. code-block:: yaml
+
+             required_status_checks:  # require status checks to pass
+                 strict: False        # require PR branch to be up to date with base
+                 contexts:            # list of status checks required
+                    - bioconda-test
+                 enforce_admins:      # admins, too, must follow rules
+                    - enabled: True
+             required_approving_review_count: 1  # 1 - 6 valid
+             dismiss_stale_reviews: False  # auto dismiss approval after push
+             require_code_owner_reviews: False
+             required_pull_request_reviews:  # require approving review
+                 dismissal_restrictions:  # specify who may dismiss reviews
+                    users:
+                      - login: bla
+                    teams:
+                      - id: 1
+                      - name: Bl Ub
+                      - slug: bl-ub
+             restrictions:             # specify who may push
+               users:
+                 - login: bla
+               teams:
+                 - id: 1
+        """
+        var_data = copy(self.var_default)
+        var_data["branch"] = branch
+        accept = "application/vnd.github.luke-cage-preview+json"
+        res = await self.api.getitem(self.BRANCH_PROTECTION, var_data, accept=accept)
+        return res
+
+    async def check_protections(self, pr_number: int,
+                                head_sha: str = None) -> Tuple[Optional[bool], str]:
+        """Check whether PR meets protection requirements
+
+        Arguments:
+          pr_number: issue number of PR
+          head_sha: if given, check that this is still the latest sha
+        """
+        pr = await self.get_prs(number=pr_number)
+        # check that no new commits were made
+        if head_sha and head_sha != pr['head']['sha']:
+            return False, "Most recent SHA in PR differs"
+        head_sha = pr['head']['sha']
+        # check whether it's already merged
+        if pr['merged']:
+            return False, "PR has already been merged"
+        # check whether it's in draft state
+        if pr.get('draft'):
+            return False, "PR is marked as draft"
+        # check whether it's mergeable
+        if pr['mergeable'] is None:
+            return None, "PR mergability unknown. Retry again later."
+
+        # get required checks for target branch
+        protections = await self.get_branch_protection(pr['base']['ref'])
+        required_checks = set(protections.get('required_status_checks', {}).get('contexts', []))
+        logger.debug("Found required checks: %s", required_checks)
+
+        for status in await self.get_statuses(head_sha):
+            if status['state'] == 'success':
+                required_checks.discard(status['context'])
+        for check in await self.get_check_runs(head_sha):
+            logger.debug("Found check %s with state %s", check['name'], check.get('conclusion'))
+            if check.get('conclusion') == "success":
+                required_checks.discard(check['name'])
+        if required_checks:
+            logger.Info("Missing checks for #%s: %s", pr_number, required_checks)
+            return False, "Not all required checks have passed"
+
+        return True, "LGTM"
 
 
 class AiohttpGitHubHandler(GitHubHandler):
