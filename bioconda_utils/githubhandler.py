@@ -50,19 +50,22 @@ class GitHubHandler:
       to_user: Target User/Org for PRs
       to_repo: Target repository within **to_user**
     """
-    PULLS = "/repos/{user}/{repo}/pulls{/number}{?head,base,state}"
-    PULL_FILES = "/repos/{user}/{repo}/pulls/{number}/files"
-    PULL_COMMITS = "/repos/{user}/{repo}/pulls/{number}/commits"
-    PULL_MERGE = "/repos/{user}/{repo}/pulls/{number}/merge"
-    ISSUES = "/repos/{user}/{repo}/issues{/number}"
-    ISSUE_COMMENTS = "/repos/{user}/{repo}/issues/{number}/comments"
-    COMMENTS = "/repos/{user}/{repo}/issues/comments{/comment_id}"
-    ORG_MEMBERS = "/orgs/{user}/members{/username}"
-    ORG = "/orgs/{user}"
-    ORG_TEAMS = "/orgs/{user}/teams{/team_slug}"
-    CHECK_RUN = "/repos/{user}/{repo}/check-runs{/id}"
-    GET_CHECK_RUNS = "/repos/{user}/{repo}/commits/{commit}/check-runs"
-    TEAMS_MEMBERSHIP = "/teams/{team_id}/memberships/{username}"
+    PULLS             = "/repos/{user}/{repo}/pulls{/number}{?head,base,state}"
+    PULL_FILES        = "/repos/{user}/{repo}/pulls/{number}/files"
+    PULL_COMMITS      = "/repos/{user}/{repo}/pulls/{number}/commits"
+    PULL_MERGE        = "/repos/{user}/{repo}/pulls/{number}/merge"
+    BRANCH_PROTECTION = "/repos/{user}/{repo}/branches/{branch}/protection"
+    ISSUES            = "/repos/{user}/{repo}/issues{/number}"
+    ISSUE_COMMENTS    = "/repos/{user}/{repo}/issues/{number}/comments"
+    COMMENTS          = "/repos/{user}/{repo}/issues/comments{/comment_id}"
+    CHECK_RUN         = "/repos/{user}/{repo}/check-runs{/id}"
+    GET_CHECK_RUNS    = "/repos/{user}/{repo}/commits/{commit}/check-runs"
+
+    ORG_MEMBERS       = "/orgs/{user}/members{/username}"
+    ORG               = "/orgs/{user}"
+    ORG_TEAMS         = "/orgs/{user}/teams{/team_slug}"
+
+    TEAMS_MEMBERSHIP  = "/teams/{team_id}/memberships/{username}"
 
     STATE = IssueState
 
@@ -466,16 +469,80 @@ class GitHubHandler:
         return res['id']
 
     async def get_pr_modified_files(self, number: int) -> List[Dict[str, Any]]:
+        """Retrieve the list of files modified by the PR
+
+        Arguments:
+          number: PR issue number
+        """
         var_data = copy(self.var_default)
         var_data["number"] = str(number)
         return await self.api.getitem(self.PULL_FILES, var_data)
 
-    async def create_check_run(self, name: str, head_sha: str):
+    async def get_branch_protection(self, branch: str = "master") -> Dict[str, Any]:
+        """Retrieve protection settings for branch
+
+        Arguments:
+          branch: Branch for which to get protection settings
+
+        Returns:
+          Deep dict as example below. Protections not in place will not be present
+          in dict.
+
+          .. code-block:: yaml
+
+             required_status_checks:  # require status checks to pass
+                 strict: False        # require PR branch to be up to date with base
+                 contexts:            # list of status checks required
+                    - bioconda-test
+                 enforce_admins:      # admins, too, must follow rules
+                    - enabled: True
+             required_approving_review_count: 1  # 1 - 6 valid
+             dismiss_stale_reviews: False  # auto dismiss approval after push
+             require_code_owner_reviews: False
+             required_pull_request_reviews:  # require approving review
+                 dismissal_restrictions:  # specify who may dismiss reviews
+                    users:
+                      - login: bla
+                    teams:
+                      - id: 1
+                      - name: Bl Ub
+                      - slug: bl-ub
+             restrictions:             # specify who may push
+               users:
+                 - login: bla
+               teams:
+                 - id: 1
+        """
+        var_data = copy(self.var_default)
+        var_data["branch"] = branch
+        accept = "application/vnd.github.luke-cage-preview+json"
+        res = await self.api.getitem(self.BRANCH_PROTECTION, var_data, accept=accept)
+        logger.error("branch %s protected by: data=\n%s", branch, res)
+        return res
+
+    async def create_check_run(self, name: str, head_sha: str,
+                               details_url: str = None, external_id: str = None) -> int:
+        """Create a check run
+
+        Arguments:
+          name: The name of the check, e.g. `bioconda-test`
+          head_sha: The sha of the commit to check
+          details_url: URL for "View more details on <App name>" link
+          external_id: ID for us
+
+        Returns:
+          The ID of the check run.
+        """
         var_data = copy(self.var_default)
         data = {
             'name': name,
             'head_sha': head_sha,
         }
+        if details_url:
+            data['details_url'] = details_url
+        if external_id:
+            data['external_id'] = external_id
+
         accept = "application/vnd.github.antiope-preview+json"
         result = await self.api.post(self.CHECK_RUN, var_data, data=data, accept=accept)
         return int(result.get('id'))
@@ -486,7 +553,24 @@ class GitHubHandler:
                                output_title: str = None,
                                output_summary: str = None,
                                output_text: str = None,
-                               output_annotations: List[Dict] = None):
+                               output_annotations: List[Dict] = None) -> Dict['str', Any]:
+        """Modify a check runs
+
+        Arguments:
+          number: id number of check run
+          status: current status
+          conclusion: result of check run, needed if status is completed
+          output_title: title string for result window
+          output_summary: subtitle/summary string for result window (reqired if title given)
+          output_text: Markdown text for result window
+          annotations: List of annotated code pieces, each has to have ``path``,
+                       ``start_line`` and ``end_line``, ``annotation_level`` (``notice``,
+                       ``warning``, ``failure``), and a ``message``. May also have
+                        may have ``start_column`` and ``end_column`` (if only one line),
+                       ``title`` and ``raw_details``.
+        Returns:
+          Check run "object" as dict.
+        """
         logger.info("Modifying check run %i: status=%s conclusion=%s title=%s",
                     number, status.name, conclusion.name if conclusion else "N/A", output_title)
         var_data = copy(self.var_default)
@@ -506,11 +590,18 @@ class GitHubHandler:
                 'text': output_text or "",
             }
             if output_annotations:
-                data['output']['annotations']=output_annotations
+                data['output']['annotations'] = output_annotations
         accept = "application/vnd.github.antiope-preview+json"
         return await self.api.patch(self.CHECK_RUN, var_data, data=data, accept=accept)
 
-    async def get_check_runs(self, sha: str):
+    async def get_check_runs(self, sha: str) -> List[Dict[str, Any]]:
+        """List check runs for **sha**
+
+        Arguments:
+          sha: The commit SHA for which  to search for check runs
+        Returns:
+          List of check run "objects"
+        """
         var_data = copy(self.var_default)
         var_data['commit'] = sha
         accept = "application/vnd.github.antiope-preview+json"
