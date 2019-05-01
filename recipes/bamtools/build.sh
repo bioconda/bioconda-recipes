@@ -1,6 +1,7 @@
 #!/bin/bash
 
-sed -i'.bak' '14icmake_policy(SET CMP0042 NEW)' CMakeLists.txt
+sed -i.bak '14i\
+cmake_policy(SET CMP0042 NEW)\n' CMakeLists.txt
 export LD_LIBRARY_PATH=${PREFIX}/lib
 export LIBRARY_PATH=${PREFIX}/lib
 mkdir -p build
