@@ -21,6 +21,8 @@ cp ${RECIPE_DIR}/RepeatMaskerConfig.pm ${RM_DIR}/RepeatMaskerConfig.pm
 #makeblastdb -dbtype nucl -in ${RM_DIR}/Libraries/RepeatMasker.lib
 #makeblastdb -dbtype prot -in ${RM_DIR}/Libraries/RepeatPeps.lib
 
+gunzip ${RM_DIR}/Libraries/taxonomy.dat.gz
+
 
 cat <<END >>${PREFIX}/bin/RepeatMasker
 #!/bin/bash
