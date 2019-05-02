@@ -10,8 +10,8 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export BOOST_INCLUDE_DIR="${PREFIX}/include"
 export BOOST_LIBRARY_DIR="${PREFIX}/lib"
 
-export BAMTOOLS_INCLUDE_DIR="${PREFIX}/include/bamtools/"
-export BAMTOOLS_LIBRARY_DIR="${PREFIX}/lib/"
+export BAMTOOLS_INCLUDE_DIR="${BUILD_PREFIX}/include/bamtools/"
+export BAMTOOLS_LIBRARY_DIR="${BUILD_PREFIX}/lib/"
 
 export GLPK_INCLUDE_DIR="${PREFIX}/include"
 export GLPK_LIBRARY_DIR="${PREFIX}/lib"
@@ -21,8 +21,6 @@ export LDADD="${BAMTOOLS_LIBRARY_DIR}/libbamtools.a ${GLPK_LIBRARY_DIR}/libglpk.
 export LDLIBS="-L${LIBRARY_PATH} -lz -lm -g"
 
 if [[ "$(uname)" == Darwin ]]; then
-    export CC=clang
-    export CXX=clang++
     export DYLD_LIBRARY_PATH="${GLPK_LIBRARY_DIR}:${BAMTOOLS_LIBRARY_DIR}"
 fi
 
