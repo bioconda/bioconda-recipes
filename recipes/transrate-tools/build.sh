@@ -4,9 +4,8 @@ set -ef -o pipefail
 rm -rf bamtools
 mkdir -p bamtools/include
 ln -s $BUILD_PREFIX/lib bamtools/
-ln -s $BUILD_PREFIX/include/bamtools bamtools/include/
-ls bamtools/lib
-ls bamtools/include
+ln -s $BUILD_PREFIX/include/bamtools/api bamtools/include/
+ln -s $BUILD_PREFIX/include/bamtools/shared bamtools/include/
 mkdir -p build
 pushd build
 
