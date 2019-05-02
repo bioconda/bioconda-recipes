@@ -11,8 +11,7 @@ sed -i.bak 's/^#LDFLAGS.*//g' Makefile
 
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  #forced disabling of openmp for macos
-  make CC=$GXX
+  make 
 else
   make CC=$GXX
 fi
