@@ -2,7 +2,7 @@
 set -ef -o pipefail
 
 rm -rf bamtools
-mkdir -p bamtools/inclue
+mkdir -p bamtools/include
 ln -s $BUILD_PREFIX/lib bamtools/
 ln -s $BUILD_PREFIX/include/bamtools bamtools/include/
 ls bamtools/lib
