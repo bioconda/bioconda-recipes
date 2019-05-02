@@ -331,6 +331,8 @@ async def merge_pr(self, pr_number: int, ghapi) -> Tuple[bool, str]:
     else:
         branch = "pull/{}".format(pr_number)
 
+    lines = []
+
     capi = AsyncCircleAPI(ghapi.session, token=CIRCLE_TOKEN)
     artifacts = await capi.get_artifacts(branch, head_sha)
     files = []
@@ -373,18 +375,25 @@ async def merge_pr(self, pr_number: int, ghapi) -> Tuple[bool, str]:
         if not done:
             return False, "Failed to download archives. Please try again later"
 
+        uploaded = []
         for fname, dref in images:
             fpath = os.path.join(tmpdir, fname)
             ndref = "biocontainers/"+dref
             logger.error("Uploading: %s", ndref)
             skopeo_upload(fpath, ndref, creds=QUAY_LOGIN)
+            uploaded.append(ndref)
 
         for fname in packages:
             fpath = os.path.join(tmpdir, fname)
             if not anaconda_upload(fpath, token=ANACONDA_TOKEN):
                 return False, "Failed to upload package"
+            uploaded.append(fname)
 
-    lines = []
+        lines.append("")
+        lines.append("Package uploads complete: [ci skip]")
+        for pkg in uploaded:
+            lines.append(" - " + pkg)
+        lines.append("")
 
     # collect authors
     pr_author = pr['user']['login']
