@@ -9,7 +9,14 @@ export CPATH=${PREFIX}/include
 sed -i.bak 's/^CC =$//g' Makefile
 sed -i.bak 's/^#LDFLAGS.*//g' Makefile
 
-make CC=$GXX
+
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  #forced disabling of openmp for macos
+  make CC=$CC
+else
+  make CC=$GXX
+fi
 
 mkdir -p $PREFIX/bin 
 make install PREFIX=$PREFIX/bin 
