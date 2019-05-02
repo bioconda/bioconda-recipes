@@ -11,7 +11,7 @@ sed -i.bak 's/^CC =$//g' Makefile
 #include <omp.h>
 #END
 
-if g++ -o /dev/null -c test-openmp.cc 2>/dev/null
+if $CXX -o /dev/null -c test-openmp.cc 2>/dev/null
 then
   OPENMP_SUPPORTED=yes
 else
@@ -21,4 +21,4 @@ fi
 make openmp=$OPENMP_SUPPORTED
 
 mkdir -p $PREFIX/bin
-make install PREFIX=$PREFIX/bin
+make install PREFIX=$PREFIX/bin CXX=$CXX
