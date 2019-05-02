@@ -123,8 +123,6 @@ class CircleAPI(abc.ABC):
             res = [build for build in res if build["vcs_revision"] == sha]
         if skip_rebuilt:
             # try using 'retry_of` to remove builds
-            for build in res:
-                logger.error("%s", build['workflows'])
             rebuilt = set(build['retry_of'] for build in res if 'retry_of' in build)
             res = [build for build in res if build["build_num"] not in rebuilt]
 
