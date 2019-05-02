@@ -1,32 +1,32 @@
 {% set name = "pirs" %}
 {% set version = "2.0.2" %}
 
-about:
-  home: https://github.com/galaxy001/pirs
-  license: 'GPL-2.0'
-  summary: 'pIRS is a program for simulating Illumina PE reads.'
-
-build:
-  number: 2
-  skip: True # [osx]
-
 package:
   name: {{ name }}
   version: {{ version }}
 
+source:
+  url: https://github.com/galaxy001/pirs/archive/v{{ version }}.tar.gz
+  md5: 8ea08c5c0907ca829fec553ea051a338
+  patches:
+    - static.patch
+
+build:
+  number: 3
+  skip: True # [osx]
+
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
     - cmake
     - automake
   host:
     - zlib
     - boost
-    - libgfortran # [osx]
   run:
     - zlib
     - boost
-    - libgfortran # [osx]
     - perl
     - gnuplot
     - coreutils
@@ -35,12 +35,11 @@ requirements:
     - soapaligner
     - soapcoverage
 
-source:
-  url: https://github.com/galaxy001/pirs/archive/v{{ version }}.tar.gz
-  md5: 8ea08c5c0907ca829fec553ea051a338
-  patches:
-    - static.patch
-
 test:
   commands:
     - pirs --help 2>&1 | grep pirs > /dev/null
+
+about:
+  home: https://github.com/galaxy001/pirs
+  license: 'GPL-2.0'
+  summary: 'pIRS is a program for simulating Illumina PE reads.'
