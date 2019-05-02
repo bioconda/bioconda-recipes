@@ -8,15 +8,16 @@ export INCPATH=${PREFIX}/include
 #cd htslib-${HTSLIB_VERSION}
 #patch -p0 < $SRC_DIR/patches/htslibcramindex.diff
 #./configure --prefix=${PREFIX} --enable-libcurl --with-libdeflate --enable-plugins --enable-gcs --enable-s3
-#make install 
+#make install
 #cd ../c
 cd $SRC_DIR/c
 mkdir bin
-#Inject CC 
+#Inject CC
 sed -i 's/CC = gcc /compiler = ${CC} /g' Makefile
 sed -i 's/$(CC) /$(compiler) /g' Makefile
 #Force HTSLIb locations
 sed -i 's#HTSLOC?=$(HTSLIB)#HTSLOC=${PREFIX}/include/htslib#g' Makefile
-make #OPTINC=-I$PREFIX/include/htslib HTSLOC=$PREFIX/include/htslib
+sed -i 's#prefix=?/usr/local#prefix=${PREFIX}#g' Makefile
+make
 mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin
