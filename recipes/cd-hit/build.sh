@@ -11,6 +11,7 @@ sed -i.bak 's/^#LDFLAGS.*//g' Makefile
 
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
+  export C_INCLUDE_PATH=${C_INCLUDE_PATH}:${PREFIX}/include
   make 
 else
   make CC=$GXX
