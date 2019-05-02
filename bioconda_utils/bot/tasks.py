@@ -14,7 +14,7 @@ import tempfile
 import re
 
 from .worker import celery
-from .config import BOT_NAME, BOT_EMAIL, CIRCLE_TOKEN, QUAY_LOGIN
+from .config import BOT_NAME, BOT_EMAIL, CIRCLE_TOKEN, QUAY_LOGIN, ANACONDA_TOKEN
 from .. import utils
 from ..recipe import Recipe
 from ..githandler import TempBiocondaRepo
@@ -381,7 +381,7 @@ async def merge_pr(self, pr_number: int, ghapi) -> Tuple[bool, str]:
 
         for fname in packages:
             fpath = os.path.join(tmpdir, fname)
-            if not anaconda_upload(fpath):
+            if not anaconda_upload(fpath, token=ANACONDA_TOKEN):
                 return False, "Failed to upload package"
 
     lines = []
