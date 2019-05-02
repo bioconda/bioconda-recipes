@@ -80,7 +80,7 @@ def mulled_upload(image: str, quay_target: str) -> "subprocess.CompletedProcess"
 
 def skopeo_upload(image_file: str, target: str,
                   creds: str, registry: str = "quay.io",
-                  timeout: int = 180) -> "subprocess.CompletedProcess":
+                  timeout: int = 600) -> "subprocess.CompletedProcess":
     """
     Upload an image to docker registy
 
@@ -98,7 +98,7 @@ def skopeo_upload(image_file: str, target: str,
     """
     cmd = ['skopeo',
            '--insecure-policy', # disable policy checks
-           '--command-timeout', str(timeout),
+           '--command-timeout', str(timeout) + "s",
            'copy',
            'docker-archive:{}'.format(image_file),
            'docker://{}/{}'.format(registry, target),
