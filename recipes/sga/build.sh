@@ -1,4 +1,4 @@
 #!/bin/bash
 pushd $SRC_DIR/src
 ./autogen.sh
-./configure --prefix=$PREFIX --with-bamtools=${BUILD_PREFIX}  && make && make install
+./configure --prefix=$PREFIX --with-bamtools=${PREFIX}  && make && make install
