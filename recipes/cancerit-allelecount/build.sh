@@ -20,6 +20,6 @@ sed -i 's/CC = gcc /compiler = ${CC} /g' Makefile
 sed -i 's/$(CC) /$(compiler) /g' Makefile
 #Get rid of -lhts
 #sed -i 's/LIBS=-lhts -lpthread -lz -lbz2 -llzma -lm -ldl/LIBS= -lpthread -lz -lbz2 -llzma -lm -ldl/g' Makefile
-make OPTINC=-I$INCPATH HTSLOC=$HTSLIB
+make OPTINC=-I$INCPATH HTSLOC=$HTSLIB -I${PREFIX}/include -L${PREFIX}/lib
 mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin
