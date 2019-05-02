@@ -4,7 +4,7 @@ CircleCI Web-API Bindings
 
 import abc
 import logging
-from typing import Any, Mapping, Optional, Tuple
+from typing import Any, Mapping, Optional, Tuple, List
 import uritemplate
 import urllib
 import json
@@ -16,6 +16,8 @@ import aiohttp
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 class CircleAPI(abc.ABC):
+    """CircleCI API
+    """
     CIRCLE_API = "https://circleci.com/api/v1.1"
 
     LIST_ARTIFACTS = "/project/{vcs_type}/{username}/{project}/{build_num}/artifacts"
@@ -35,6 +37,7 @@ class CircleAPI(abc.ABC):
 
     @property
     def var_data(self):
+        """Defaults for this API instance"""
         return {
             'vcs_type': self.vcs_type,
             'username': self.username,
@@ -88,49 +91,110 @@ class CircleAPI(abc.ABC):
                          response_text.replace(self.token, "******"))
         return response_text
 
-    async def list_artifacts(self, build_number: int):
+    async def list_artifacts(self, build_number: int) -> List[Mapping[str, Any]]:
+        """Lists artifacts for build number
+
+        Returns:
+          List of artifacts described by ``path`` and ``url``
+        """
         var_data = self.var_data
         var_data['build_num'] = build_number
-        res = await self._make_request('GET', self.LIST_ARTIFACTS, var_data)
-        return [item['url'] for item in res]
+        return await self._make_request('GET', self.LIST_ARTIFACTS, var_data)
 
-    async def list_recent_builds(self, path: str):
-        """path must be 'pull/123' for fors and branchname for local
+    async def list_recent_builds(self, path: str, sha: str = None,
+                                 skip_rebuilt: bool = True) -> List[Mapping[str, Any]]:
+        """List recent builds for **path** (branch or pr)
 
-        returns list of dict:
-          build_num, has_artifacts, status, timedout, canceled, canceller,
-          workflows/job_name, vcs_revision, build_time_millis
+        Note: skip rebuild seems to only apply to jobs, not workflow reruns.
+
+        Arguments:
+          path: Must be ``pull/123` if on a fork, otherwise name of branch
+          sha: name of optional sha to filter by
+          skip_rebuilt: Skip artifacts from builds that have been rebuilt
+        Returns:
+          List of builds, each having ``build_num``, ``has_artifacts``, ``status``,
+          ``timeout``, `canceled``, `canceller``, ``workflows/job_name``,
+          ``vc_revision`, ``build_time_millis`
         """
         var_data = self.var_data
         var_data['path'] = path
         res = await self._make_request('GET', self.RECENT_BUILDS, var_data)
+        if sha is not None:
+            res = [build for build in res if build["vcs_revision"] == sha]
+        if skip_rebuilt:
+            # try using 'retry_of` to remove builds
+            for build in res:
+                logger.error("%s", build['workflows'])
+            rebuilt = set(build['retry_of'] for build in res if 'retry_of' in build)
+            res = [build for build in res if build["build_num"] not in rebuilt]
+
+            # now just pick the newest of each workflow_name/job_name
+            new_res = []
+            job_types = set()
+            for build in sorted(res, key=lambda build: build['build_num'], reverse=True):
+                job_type = (build['workflows']['workflow_name'],
+                            build['workflows']['job_name'])
+                if job_type in job_types:
+                    continue
+                job_types.add(job_type)
+                new_res.append(build)
+            res = new_res
         return res
 
     async def trigger_rebuild(self, branch: str, sha: str):
+        """Trigger rebuilding **sha** on **branch**.
+
+        Arguments:
+          branch: Must be ``pull/123`` if on fork, otherwise name of branch
+          sha: The SHA to rebuild
+        """
         data = {
             'revision': sha,
             'branch': branch
         }
         return await self._make_request('POST', self.TRIGGER_REBUILD, self.var_data, data=data)
 
+    async def get_artifacts(self, path: str, head_sha: str) -> List[Tuple[str, str, int]]:
+        """Get artifacts for specific branch and head_sha
+
+        For each artifact built for this sha, get the latest URL. Multiple builds
+        may exist e.g. if a rebuild was triggered.
+
+        Arguments:
+          path: Must be ``pull/123`` if on fork, otherwise name of branch
+          sha: The SHA to fetch artifacts for
+        Returns:
+          Mapping of relative path to full URL
+        """
+        build_numbers = [build["build_num"]
+                         for build in await self.list_recent_builds(path, head_sha)]
+        artifacts = []
+        for buildno in sorted(build_numbers):
+            artifacts.extend(
+                (artifact['path'], artifact['url'], buildno)
+                for artifact in await self.list_artifacts(buildno)
+            )
+        return artifacts
+
 
 class SlackMessage:
-    def __init__(self, headers: Mapping[str, str], data: bytes):
+    """Parses a Slack message as sent by CircleCI"""
+    def __init__(self, _headers: Mapping[str, str], data: bytes):
         response_text = data.decode('utf-8')
         try:
             data = json.loads(response_text)
-        except json.decoder.JSONDecodeError as exc:
+        except json.decoder.JSONDecodeError:
             raise RuntimeError("Unable to decore CircleCI Slack message")
         self.parsed = []
-        err=False
+        err = False
         for attachment in data['attachments']:
             text = attachment['text']
             if text.startswith('Success:'):
-                success=True
+                success = True
             elif text.startswith('Failed:'):
-                success=False
+                success = False
             else:
-                err=True
+                err = True
                 continue
             urls = {key: url for url, key in re.findall(r'<(http[^|>]+)\|([^>]+)>', text)}
             self.parsed.append({
@@ -144,6 +208,7 @@ class SlackMessage:
 
 
 class AsyncCircleAPI(CircleAPI):
+    """CircleCI API using `aiohttp`"""
     def __init__(self, session: aiohttp.ClientSession, *args: Any, **kwargs: Any) -> None:
         self._session = session
         super().__init__(*args, **kwargs)
@@ -153,4 +218,3 @@ class AsyncCircleAPI(CircleAPI):
                        body: bytes = b'') -> Tuple[int, Mapping[str, str], bytes]:
         async with self._session.request(method, url, headers=headers, data=body) as response:
             return response.status, response.headers, await response.read()
-

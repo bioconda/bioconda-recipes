@@ -8,7 +8,9 @@ import sys
 import time
 import types
 from collections import namedtuple
+from enum import Enum
 from typing import Tuple
+import re
 
 from .worker import celery
 from .config import BOT_NAME, BOT_EMAIL, CIRCLE_TOKEN
@@ -25,6 +27,13 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 PRInfo = namedtuple('PRInfo', 'installation user repo ref recipes issue_number')
 
+Image = namedtuple('Image', "url name tag")
+Package = namedtuple('Package', "arch fname url repodata_md")
+
+Arch = Enum('Arch', 'osx-64 linux-64 noarch')
+
+PACKAGE_RE = re.compile(r"(.*packages)/({})/(.+\.tar\.bz2)$".format('|'.join(a.name for a in Arch)))
+IMAGE_RE = re.compile(r".*images/(.+)(?::|%3A)(.+)\.tar\.gz$")
 
 class Checkout:
     # We can't use contextlib.contextmanager because these are async and
@@ -237,50 +246,41 @@ async def check_circle_artifacts(pr_number: int, ghapi):
     head_ref = pr['head']['ref']
     head_sha = pr['head']['sha']
     head_user = pr['head']['repo']['owner']['login']
+    # get path for Circle
+    if head_user == ghapi.user:
+        branch = head_ref
+    else:
+        branch = "pull/{}".format(pr_number)
 
     capi = AsyncCircleAPI(ghapi.session)
-    if head_user == ghapi.user:
-        path = head_ref
-    else:
-        path = "pull/{}".format(pr_number)
+    artifacts = await capi.get_artifacts(branch, head_sha)
+    artifact_urls = set(a[1] for a in artifacts)
 
-    recent_builds = await capi.list_recent_builds(path)
-
-    current_builds = [
-        build["build_num"]
-        for build in recent_builds
-        if build["vcs_revision"] == head_sha
-    ]
-    logger.info("Found builds %s for #%s (%s total)", current_builds, pr_number, len(recent_builds))
-
-    artifacts = []
-    for buildno in current_builds:
-        artifacts.extend(await capi.list_artifacts(buildno))
-
-    Image = namedtuple('Image', "url name tag")
     packages = []
     images = []
-    archs = {}
-    for artifact in artifacts:
-        if artifact.endswith(".tar.bz2"):
-            base, _, fname = artifact.rpartition("/")
-            repo, _, arch = base.rpartition("/")
-            if base + "/repodata.json" in artifacts:
-                if repo not in archs:
-                    archs[repo] = set()
-                archs[repo].add(arch)
-                packages.append((arch, fname, artifact,
-                                 "[repodata.json]({}/repodata.json)".format(base)))
-            else:
-                packages.append((arch, fname, artifact, ""))
-        if artifact.endswith(".tar.gz"):
-            _, _, fbase = artifact.rstrip(".tar.gz").rpartition("/")
-            name, _, tag = fbase.replace('%3A', ':').partition(":")
-            images.append(Image(artifact, name, tag))
+    repos = {}
+
+    for path, url, buildno in artifacts:
+        match = PACKAGE_RE.match(url)
+        if match:
+            # base     /fname
+            # repo/arch/fname
+            repo_url, arch, fname = match.groups()
+            repodata_url = '/'.join((repo_url, arch, 'repodata.json'))
+            repodata_md = ""
+            if repodata_url in artifact_urls:
+                repos.setdefault(repo_url, set()).add(arch)
+                repodata_md = "[repodata.json]({})".format(repodata_url)
+            packages.append(Package(arch, fname, url, repodata_md))
+            continue
+        match = IMAGE_RE.match(url)
+        if match:
+            name, tag = match.groups()
+            images.append(Image(url, name, tag))
 
     tpl = utils.jinja.get_template("artifacts.md")
-    msg = tpl.render(packages=packages, archs=archs, images=images,
-                     current_builds=current_builds, recent_builds=recent_builds)
+    msg = tpl.render(packages=packages, repos=repos, images=images)
+
     msg_head, _, _ = msg.partition("\n")
     async for comment in await ghapi.iter_comments(pr_number):
         if comment['body'].startswith(msg_head):
