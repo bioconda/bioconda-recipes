@@ -12,7 +12,7 @@ import sys
 import shutil
 import contextlib
 from collections import Counter, Iterable, defaultdict, namedtuple
-from itertools import product, chain, groupby
+from itertools import product, chain, groupby, zip_longest
 from functools import partial
 import logging
 import datetime
@@ -1103,15 +1103,21 @@ class AsyncRequests:
         return task.result()
 
     @classmethod
-    async def async_fetch(cls, urls, descs, cb, datas):
+    async def async_fetch(cls, urls, descs=None, cb=None, datas=None, fds=None):
+        if descs is None:
+            descs = []
+        if datas is None:
+            datas = []
+        if fds is None:
+            fds = []
         conn = aiohttp.TCPConnector(limit_per_host=cls.CONNECTIONS_PER_HOST)
         async with aiohttp.ClientSession(
                 connector=conn,
                 headers={'User-Agent': cls.USER_AGENT}
         ) as session:
             coros = [
-                asyncio.ensure_future(cls._async_fetch_one(session, url, desc, cb, data))
-                for url, desc, data in zip(urls, descs, datas)
+                asyncio.ensure_future(cls._async_fetch_one(session, url, desc, cb, data, fd))
+                for url, desc, data, fd in zip_longest(urls, descs, datas, fds)
             ]
             with tqdm(asyncio.as_completed(coros),
                       total=len(coros),
@@ -1122,7 +1128,7 @@ class AsyncRequests:
     @staticmethod
     @backoff.on_exception(backoff.fibo, aiohttp.ClientResponseError, max_tries=20,
                           giveup=lambda ex: ex.code not in [429, 502, 503, 504])
-    async def _async_fetch_one(session, url, desc, cb, data):
+    async def _async_fetch_one(session, url, desc, cb=None, data=None, fd=None):
         result = []
         async with session.get(url) as resp:
             resp.raise_for_status()
@@ -1136,7 +1142,10 @@ class AsyncRequests:
                     if not block:
                         break
                     progress.update(len(block))
-                    result.append(block)
+                    if fd:
+                        fd.write(block)
+                    else:
+                        result.append(block)
         if cb:
             return cb(b"".join(result), data)
         else:

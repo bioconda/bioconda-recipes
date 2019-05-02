@@ -150,7 +150,7 @@ async def command_rebuild(ghapi, issue_number, _user, *_args):
 async def command_merge(ghapi, issue_number, user, *_args):
     """Merge PR"""
     (
-        merge_pr.s(issue_number, user, ghapi) |
+        merge_pr.si(issue_number, ghapi) |
         post_result.s(issue_number, "merge", user, ghapi)
     ).apply_async()
     return f"Scheduled merge of #{issue_number}"
