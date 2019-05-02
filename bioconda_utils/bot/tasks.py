@@ -10,15 +10,17 @@ import types
 from collections import namedtuple
 from enum import Enum
 from typing import Tuple
+import tempfile
 import re
 
 from .worker import celery
-from .config import BOT_NAME, BOT_EMAIL, CIRCLE_TOKEN
+from .config import BOT_NAME, BOT_EMAIL, CIRCLE_TOKEN, QUAY_LOGIN
 from .. import utils
 from ..recipe import Recipe
 from ..githandler import TempBiocondaRepo
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
 from ..circleci import AsyncCircleAPI
+from ..upload import anaconda_upload, skopeo_upload
 
 from celery.exceptions import MaxRetriesExceededError
 
@@ -309,26 +311,83 @@ async def trigger_circle_rebuild(pr_number: int, ghapi):
 
 
 @celery.task(bind=True, acks_late=True, ignore_result=False)
-async def merge_pr(self, pr_number: int, user: str, ghapi) -> Tuple[bool, str]:
-    if not await ghapi.is_member(user):
-        if await ghapi.is_org():
-            return False, "I can only merge on behalf of members"
-
+async def merge_pr(self, pr_number: int, ghapi) -> Tuple[bool, str]:
     pr = await ghapi.get_prs(number=pr_number)
-    if pr['merged']:
-        return False, "PR has already been merged"
-    if pr.get('draft'):
-        return False, "PR is marked as draft"
-    if pr['mergeable'] is None:
+    state, message = await ghapi.check_protections(pr_number, pr['head']['sha'])
+    if state is None:
         try:
             raise self.retry(countdown=20, max_retries=15)
         except MaxRetriesExceededError:
             return False, "PR cannot be merged at this time. Please try again later"
-    if not pr['mergeable']:
-        return False, "PR is not mergeable"
+    if not state:
+        return state, message
 
+    head_ref = pr['head']['ref']
+    head_sha = pr['head']['sha']
+    head_user = pr['head']['repo']['owner']['login']
+    # get path for Circle
+    if head_user == ghapi.user:
+        branch = head_ref
+    else:
+        branch = "pull/{}".format(pr_number)
+
+    capi = AsyncCircleAPI(ghapi.session, token=CIRCLE_TOKEN)
+    artifacts = await capi.get_artifacts(branch, head_sha)
+    files = []
+    images = []
+    packages = []
+    for path, url, buildno in artifacts:
+        match = PACKAGE_RE.match(url)
+        if match:
+            repo_url, arch, fname = match.groups()
+            fpath = os.path.join(arch, fname)
+            files.append((url, fpath))
+            packages.append(fpath)
+            continue
+        match = IMAGE_RE.match(url)
+        if match:
+            name, tag = match.groups()
+            fname = f"{name}__{tag}.tar.gz"
+            files.append((url, fname))
+            images.append((fname, f"{name}:{tag}"))
+
+    logger.info("Downloading %s", ', '.join(f for _, f in files))
+    done = False
+    with tempfile.TemporaryDirectory() as tmpdir:
+        try:
+            fds = []
+            urls = []
+            for url,path in files:
+                fpath = os.path.join(tmpdir, path)
+                fdir = os.path.dirname(fpath)
+                if not os.path.exists(fdir):
+                    os.makedirs(fdir)
+                urls.append(url)
+                fds.append(open(fpath, "wb"))
+            await utils.AsyncRequests.async_fetch(urls, fds=fds)
+            done = True
+            logger.error("Done downloading")
+        finally:
+            for fd in fds:
+                fd.close()
+        if not done:
+            return False, "Failed to download archives. Please try again later"
+
+        for fname, dref in images:
+            fpath = os.path.join(tmpdir, fname)
+            ndref = "biocontainers/"+dref
+            logger.error("Uploading: %s", ndref)
+            skopeo_upload(fpath, ndref, creds=QUAY_LOGIN)
+
+        for fname in packages:
+            fpath = os.path.join(tmpdir, fname)
+            if not anaconda_upload(fpath):
+                return False, "Failed to upload package"
+
+    lines = []
+
+    # collect authors
     pr_author = pr['user']['login']
-
     coauthors: Set[str] = set()
     last_sha: str = None
     async for commit in ghapi.iter_pr_commits(pr_number):
@@ -338,17 +397,17 @@ async def merge_pr(self, pr_number: int, user: str, ghapi) -> Tuple[bool, str]:
         name = commit['commit']['author']['name']
         email = commit['commit']['author']['email']
         coauthors.add(f"Co-authored-by: {name} <{email}>")
-
-    lines = []
     lines.extend(list(coauthors))
 
-    return await ghapi.merge_pr(pr_number, sha=last_sha,
-                                message="\n".join(lines) if lines else None)
+    message = "\n".join(lines)
 
+    return  await ghapi.merge_pr(pr_number, sha=last_sha,
+                                 message="\n".join(lines) if lines else None)
 
-@celery.task(acks_late=True, ignore_result=False)
+@celery.task(acks_late=True, ignore_result=True)
 async def post_result(result: Tuple[bool, str], pr_number: int, prefix: str, user: str, ghapi) -> None:
+    logger.error("post result: result=%s, issue=%s", result, pr_number)
     status = "succeeded" if result[0] else "failed"
     message = f"@{user}, your request to {prefix} {status}: {result[1]}"
     await ghapi.create_comment(pr_number, message)
-    logger.warning(message)
+    logger.warning("message %s", message)
