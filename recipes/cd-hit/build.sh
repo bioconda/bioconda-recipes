@@ -11,14 +11,14 @@ sed -i.bak 's/^CC =$//g' Makefile
 #include <omp.h>
 #END
 
-if $CXX -o /dev/null -c test-openmp.cc 2>/dev/null
+if $CC -o /dev/null -c test-openmp.cc 2>/dev/null
 then
   OPENMP_SUPPORTED=yes
 else
   OPENMP_SUPPORTED=no
 fi
 
-make openmp=$OPENMP_SUPPORTED
+make openmp=$OPENMP_SUPPORTED CC=$CC
 
-mkdir -p $PREFIX/bin CXX=$CXX
+mkdir -p $PREFIX/bin 
 make install PREFIX=$PREFIX/bin 
