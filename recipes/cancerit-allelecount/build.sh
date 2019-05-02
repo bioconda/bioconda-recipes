@@ -18,5 +18,6 @@ sed -i 's/$(CC) /$(compiler) /g' Makefile
 #Get rid of -lhts
 #sed -i 's/LIBS=-lhts -lpthread -lz -lbz2 -llzma -lm -ldl/LIBS= -lpthread -lz -lbz2 -llzma -lm -ldl/g' Makefile
 make #-I${INCPATH} -L${LIBRARY_PATH}
+make OPTINC=-I$PREFIX/include/htslib HTSLOC=$PREFIX/include/htslib
 mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin
