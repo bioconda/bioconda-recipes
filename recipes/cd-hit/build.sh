@@ -20,5 +20,5 @@ fi
 
 make openmp=$OPENMP_SUPPORTED
 
-mkdir -p $PREFIX/bin
-make install PREFIX=$PREFIX/bin CXX=$CXX
+mkdir -p $PREFIX/bin CXX=$CXX
+make install PREFIX=$PREFIX/bin 
