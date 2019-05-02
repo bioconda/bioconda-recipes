@@ -11,8 +11,10 @@ sed -i.bak 's/^#LDFLAGS.*//g' Makefile
 
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  export C_INCLUDE_PATH=${C_INCLUDE_PATH}:${PREFIX}/include
-  make 
+  CCFLAGS="$CCFLAGS -Wl,-rpath ${PREFIX}/lib -L${PREFIX}/lib -I${PREFIX}/include -fopenmp"
+	LDFLAGS="$LDFLAGS -stdlib=libc++"
+  sed -i.bak 's/CCFLAGS = -fopenmp/CCFLAGS += -fopenmp/g' Makefile
+  make CC=clang++
 else
   make CC=$GXX
 fi
