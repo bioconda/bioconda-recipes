@@ -17,7 +17,10 @@ sed -i 's/CC = gcc /compiler = ${CC} /g' Makefile
 sed -i 's/$(CC) /$(compiler) /g' Makefile
 #Force HTSLIb locations
 sed -i 's#HTSLOC?=$(HTSLIB)#HTSLOC=${PREFIX}/include/htslib#g' Makefile
+<<<<<<< HEAD
 sed -i 's#prefix=?/usr/local#prefix=${PREFIX}#g' Makefile
+=======
+>>>>>>> 15e29a8ce645e730b15e2e8346f8d142ebf73db0
 make #OPTINC=-I$PREFIX/include/htslib HTSLOC=$PREFIX/include/htslib
 mkdir -p $PREFIX/bin
 cp bin/* $PREFIX/bin
