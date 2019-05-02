@@ -415,12 +415,15 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
     last_sha: str = None
     async for commit in ghapi.iter_pr_commits(pr_number):
         last_sha = commit['sha']
-        login = pr['author']['login']
-        if login != pr_author:
+        author_login = (commit['author'] or {}).get('login')
+        if author_login != pr_author:
             name = commit['commit']['author']['name']
             email = commit['commit']['author']['email']
             coauthors.add(f"Co-authored-by: {name} <{email}>")
-            coauthor_logins.add(login)
+            if author_login:
+                coauthor_logins.add("@"+author_login)
+            else:
+                coauthor_logins.add(name)
     lines.extend(list(coauthors))
 
     message = "\n".join(lines)
