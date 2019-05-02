@@ -6,3 +6,4 @@ sed -i.bak 's/10\.7/10.9/' configure.ac
 ./configure --prefix=$PREFIX
 make
 make install
+exit 1
