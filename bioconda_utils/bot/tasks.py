@@ -415,7 +415,7 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
     last_sha: str = None
     async for commit in ghapi.iter_pr_commits(pr_number):
         last_sha = commit['sha']
-        login = commit['author']['login']
+        login = pr['author']['login']
         if login != pr_author:
             name = commit['commit']['author']['name']
             email = commit['commit']['author']['email']
