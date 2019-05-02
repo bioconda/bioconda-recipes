@@ -9,7 +9,7 @@ import time
 import types
 from collections import namedtuple
 from enum import Enum
-from typing import Tuple
+from typing import Tuple, Set
 import tempfile
 import re
 
@@ -311,7 +311,7 @@ async def trigger_circle_rebuild(pr_number: int, ghapi):
 
 
 @celery.task(bind=True, acks_late=True, ignore_result=False)
-async def merge_pr(self, pr_number: int, ghapi) -> Tuple[bool, str]:
+async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, str]:
     pr = await ghapi.get_prs(number=pr_number)
     state, message = await ghapi.check_protections(pr_number, pr['head']['sha'])
     if state is None:
@@ -321,6 +321,9 @@ async def merge_pr(self, pr_number: int, ghapi) -> Tuple[bool, str]:
             return False, "PR cannot be merged at this time. Please try again later"
     if not state:
         return state, message
+
+    comment = "- Checks OK\n"
+    await ghapi.update_comment(comment_id, comment)
 
     head_ref = pr['head']['ref']
     head_sha = pr['head']['sha']
@@ -353,6 +356,9 @@ async def merge_pr(self, pr_number: int, ghapi) -> Tuple[bool, str]:
             files.append((url, fname))
             images.append((fname, f"{name}:{tag}"))
 
+    comment += "- Found {} packages and {} images to upload\n".format(len(packages), len(images))
+    await ghapi.update_comment(comment_id, comment)
+
     logger.info("Downloading %s", ', '.join(f for _, f in files))
     done = False
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -375,6 +381,9 @@ async def merge_pr(self, pr_number: int, ghapi) -> Tuple[bool, str]:
         if not done:
             return False, "Failed to download archives. Please try again later"
 
+        comment += "- Fetched binary data\n"
+        await ghapi.update_comment(comment_id, comment)
+
         uploaded = []
         for fname, dref in images:
             fpath = os.path.join(tmpdir, fname)
@@ -382,12 +391,16 @@ async def merge_pr(self, pr_number: int, ghapi) -> Tuple[bool, str]:
             logger.error("Uploading: %s", ndref)
             skopeo_upload(fpath, ndref, creds=QUAY_LOGIN)
             uploaded.append(ndref)
+            comment += "- Uploaded {}\n".format(ndref)
+            await ghapi.update_comment(comment_id, comment)
 
         for fname in packages:
             fpath = os.path.join(tmpdir, fname)
             if not anaconda_upload(fpath, token=ANACONDA_TOKEN):
                 return False, "Failed to upload package"
             uploaded.append(fname)
+            comment += "- Uploaded {}\n".format(fname)
+            await ghapi.update_comment(comment_id, comment)
 
         lines.append("")
         lines.append("Package uploads complete: [ci skip]")
@@ -398,23 +411,30 @@ async def merge_pr(self, pr_number: int, ghapi) -> Tuple[bool, str]:
     # collect authors
     pr_author = pr['user']['login']
     coauthors: Set[str] = set()
+    coauthor_logins: Set[str] = set()
     last_sha: str = None
     async for commit in ghapi.iter_pr_commits(pr_number):
         last_sha = commit['sha']
-        if commit['author']['login'] == pr_author:
-            continue
-        name = commit['commit']['author']['name']
-        email = commit['commit']['author']['email']
-        coauthors.add(f"Co-authored-by: {name} <{email}>")
+        login = commit['author']['login']
+        if login != pr_author:
+            name = commit['commit']['author']['name']
+            email = commit['commit']['author']['email']
+            coauthors.add(f"Co-authored-by: {name} <{email}>")
+            coauthor_logins.add(login)
     lines.extend(list(coauthors))
 
     message = "\n".join(lines)
+    comment += "- Creating squash merge"
+    if coauthors:
+        comment += " (with co-authors {})".format(", ".join(coauthor_logins))
+    comment += "\n"
+    await ghapi.update_comment(comment_id, comment)
 
     return  await ghapi.merge_pr(pr_number, sha=last_sha,
                                  message="\n".join(lines) if lines else None)
 
 @celery.task(acks_late=True, ignore_result=True)
-async def post_result(result: Tuple[bool, str], pr_number: int, prefix: str, user: str, ghapi) -> None:
+async def post_result(result: Tuple[bool, str], pr_number: int, comment_id: int, prefix: str, user: str, ghapi) -> None:
     logger.error("post result: result=%s, issue=%s", result, pr_number)
     status = "succeeded" if result[0] else "failed"
     message = f"@{user}, your request to {prefix} {status}: {result[1]}"
