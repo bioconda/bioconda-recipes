@@ -12,6 +12,7 @@ from enum import Enum
 from typing import Tuple, Set
 import tempfile
 import re
+import asyncio
 
 from .worker import celery
 from .config import BOT_NAME, BOT_EMAIL, CIRCLE_TOKEN, QUAY_LOGIN, ANACONDA_TOKEN
