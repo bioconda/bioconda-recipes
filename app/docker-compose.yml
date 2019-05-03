@@ -22,6 +22,12 @@ secrets:
     file: secrets/erlang_cookie.txt
   circle_token:
     file: secrets/circle_token.txt
+  gitter_token:
+    file: secrets/gitter_token.txt
+  anaconda_token:
+    file: secrets/anaconda_token.txt
+  quay_login:
+    file: secrets/quay_login.txt
 
 
 # common parameters for web and worker services using the
@@ -45,7 +51,13 @@ x-app-common: &app-common
     #  as github apps have no email they can't have a commit signing key)
     - CODE_SIGNING_KEY_FILE=/run/secrets/code_sign_key
     # CircleCI token
-    - CIRCLE_TOKEN_FILE=/run/secrets/circle_token.txt
+    - CIRCLE_TOKEN_FILE=/run/secrets/circle_token
+    # Gitter token
+    - GITTER_TOKEN_FILE=/run/secrets/gitter_token
+    # Anaconda token
+    - ANACONDA_TOKEN_FILE=/run/secrets/anaconda_token
+    # Quay login
+    - QUAY_LOGIN_FILE=/run/secrets/quay_login
     # Points to the AMQP message queue server
     - CLOUDAMQP_URL=amqp://mq:5672
   secrets:
@@ -55,6 +67,9 @@ x-app-common: &app-common
     - app_secret
     - code_sign_key
     - circle_token
+    - gitter_token
+    - anaconda_token
+    - quay_login
   depends_on:
     - mq
 
@@ -191,7 +206,8 @@ services:
       --acme.email=info@pruesse.net
       --acme.storage=acme/certs.json
       --acme.acmelogging
-      --accessLog
+# enable to see each access in the log
+#      --accessLog
     ports:
       - "80:80"
       - "443:443"

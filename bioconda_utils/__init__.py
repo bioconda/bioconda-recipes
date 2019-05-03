@@ -23,6 +23,7 @@ Bioconda Utilities Package
    githandler
    github_integration
    githubhandler
+   gitter
    graph
    hosters
    lint_functions

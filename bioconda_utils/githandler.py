@@ -216,7 +216,7 @@ class GitHandlerBase():
             logger.debug("No merge base found for %s and master at depth %i", ref, depth)
         else:
             logger.error("No merge base found for %s and master", ref)
-            return None
+            return None   # FIXME: This should raise
         if len(merge_bases) > 1:
             logger.error("Multiple merge bases found for %s and master: %s",
                          ref, merge_bases)

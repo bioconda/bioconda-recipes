@@ -8,26 +8,35 @@ import sys
 import time
 import types
 from collections import namedtuple
-from typing import TYPE_CHECKING
+from enum import Enum
+from typing import Tuple, Set
+import tempfile
+import re
+import asyncio
 
 from .worker import celery
-from .config import BOT_NAME, BOT_EMAIL, CIRCLE_TOKEN
+from .config import BOT_NAME, BOT_EMAIL, CIRCLE_TOKEN, QUAY_LOGIN, ANACONDA_TOKEN
 from .. import utils
 from ..recipe import Recipe
 from ..githandler import TempBiocondaRepo
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
 from ..circleci import AsyncCircleAPI
+from ..upload import anaconda_upload, skopeo_upload
 
-if TYPE_CHECKING:
-    from .worker import AsyncTask
-    from typing import Dict
-
+from celery.exceptions import MaxRetriesExceededError
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 PRInfo = namedtuple('PRInfo', 'installation user repo ref recipes issue_number')
 
+Image = namedtuple('Image', "url name tag")
+Package = namedtuple('Package', "arch fname url repodata_md")
+
+Arch = Enum('Arch', 'osx-64 linux-64 noarch')
+
+PACKAGE_RE = re.compile(r"(.*packages)/({})/(.+\.tar\.bz2)$".format('|'.join(a.name for a in Arch)))
+IMAGE_RE = re.compile(r".*images/(.+)(?::|%3A)(.+)\.tar\.gz$")
 
 class Checkout:
     # We can't use contextlib.contextmanager because these are async and
@@ -101,7 +110,7 @@ class Checkout:
 async def get_latest_pr_commit(issue_number: int, ghapi):
     """Returns last commit"""
     commit = {'sha': None}
-    async for commit in await ghapi.iter_pr_commits(issue_number):
+    async for commit in ghapi.iter_pr_commits(issue_number):
         pass
     logger.info("Latest SHA on #%s is %s", issue_number, commit['sha'])
     return commit['sha']
@@ -239,45 +248,41 @@ async def check_circle_artifacts(pr_number: int, ghapi):
     head_ref = pr['head']['ref']
     head_sha = pr['head']['sha']
     head_user = pr['head']['repo']['owner']['login']
+    # get path for Circle
+    if head_user == ghapi.user:
+        branch = head_ref
+    else:
+        branch = "pull/{}".format(pr_number)
 
     capi = AsyncCircleAPI(ghapi.session)
-    if head_user == ghapi.user:
-        path = head_ref
-    else:
-        path = "pull/{}".format(pr_number)
-
-    capi.debug_once = True
-    recent_builds = await capi.list_recent_builds(path)
-
-    current_builds = [
-        build["build_num"]
-        for build in recent_builds
-        if build["vcs_revision"] == head_sha
-    ]
-    logger.info("Found builds %s for #%s (%s total)", current_builds, pr_number, len(recent_builds))
-
-    artifacts = []
-    for buildno in current_builds:
-        artifacts.extend(await capi.list_artifacts(buildno))
+    artifacts = await capi.get_artifacts(branch, head_sha)
+    artifact_urls = set(a[1] for a in artifacts)
 
     packages = []
-    archs = {}
-    for artifact in artifacts:
-        if artifact.endswith(".tar.bz2"):
-            base, _, fname = artifact.rpartition("/")
-            repo, _, arch = base.rpartition("/")
-            if base + "/repodata.json" in artifacts:
-                if repo not in archs:
-                    archs[repo] = set()
-                archs[repo].add(arch)
-                packages.append((arch, fname, artifact,
-                                 "[repodata.json]({}/repodata.json)".format(base)))
-            else:
-                packages.append((arch, fname, artifact, ""))
+    images = []
+    repos = {}
+
+    for path, url, buildno in artifacts:
+        match = PACKAGE_RE.match(url)
+        if match:
+            # base     /fname
+            # repo/arch/fname
+            repo_url, arch, fname = match.groups()
+            repodata_url = '/'.join((repo_url, arch, 'repodata.json'))
+            repodata_md = ""
+            if repodata_url in artifact_urls:
+                repos.setdefault(repo_url, set()).add(arch)
+                repodata_md = "[repodata.json]({})".format(repodata_url)
+            packages.append(Package(arch, fname, url, repodata_md))
+            continue
+        match = IMAGE_RE.match(url)
+        if match:
+            name, tag = match.groups()
+            images.append(Image(url, name, tag))
 
     tpl = utils.jinja.get_template("artifacts.md")
-    msg = tpl.render(packages=packages, archs=archs,
-                     current_builds=current_builds, recent_builds=recent_builds)
+    msg = tpl.render(packages=packages, repos=repos, images=images)
+
     msg_head, _, _ = msg.partition("\n")
     async for comment in await ghapi.iter_comments(pr_number):
         if comment['body'].startswith(msg_head):
@@ -301,6 +306,157 @@ async def trigger_circle_rebuild(pr_number: int, ghapi):
     else:
         path = "pull/{}".format(pr_number)
 
-    capi.debug_once = True
     res = await capi.trigger_rebuild(path, head_sha)
     logger.warning("Trigger_rebuild call returned with %s", res)
+
+
+@celery.task(bind=True, acks_late=True, ignore_result=False)
+async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, str]:
+    pr = await ghapi.get_prs(number=pr_number)
+    state, message = await ghapi.check_protections(pr_number, pr['head']['sha'])
+    if state is None:
+        try:
+            raise self.retry(countdown=20, max_retries=15)
+        except MaxRetriesExceededError:
+            return False, "PR cannot be merged at this time. Please try again later"
+    if not state:
+        return state, message
+    comment = ("Upload & Merge started. Reload page to view progress.\n"
+               "- [x] Checks OK\n")
+    await ghapi.update_comment(comment_id, comment)
+
+    head_ref = pr['head']['ref']
+    head_sha = pr['head']['sha']
+    head_user = pr['head']['repo']['owner']['login']
+    # get path for Circle
+    if head_user == ghapi.user:
+        branch = head_ref
+    else:
+        branch = "pull/{}".format(pr_number)
+
+    lines = []
+
+    capi = AsyncCircleAPI(ghapi.session, token=CIRCLE_TOKEN)
+    artifacts = await capi.get_artifacts(branch, head_sha)
+    files = []
+    images = []
+    packages = []
+    for path, url, buildno in artifacts:
+        match = PACKAGE_RE.match(url)
+        if match:
+            repo_url, arch, fname = match.groups()
+            fpath = os.path.join(arch, fname)
+            files.append((url, fpath))
+            packages.append(fpath)
+            continue
+        match = IMAGE_RE.match(url)
+        if match:
+            name, tag = match.groups()
+            fname = f"{name}__{tag}.tar.gz"
+            files.append((url, fname))
+            images.append((fname, f"{name}:{tag}"))
+
+    if not files:
+        return False, "PR did not build any packages."
+
+    comment += "- [x] Fetching {} packages and {} images\n".format(len(packages), len(images))
+    await ghapi.update_comment(comment_id, comment)
+
+    logger.info("Downloading %s", ', '.join(f for _, f in files))
+    done = False
+    with tempfile.TemporaryDirectory() as tmpdir:
+        ### Download files
+        try:
+            fds = []
+            urls = []
+            for url,path in files:
+                fpath = os.path.join(tmpdir, path)
+                fdir = os.path.dirname(fpath)
+                if not os.path.exists(fdir):
+                    os.makedirs(fdir)
+                urls.append(url)
+                fds.append(open(fpath, "wb"))
+            await utils.AsyncRequests.async_fetch(urls, fds=fds)
+            done = True
+            logger.error("Done downloading")
+        finally:
+            for fd in fds:
+                fd.close()
+        if not done:
+            return False, "Failed to download archives. Please try again later"
+
+        ### Upload Images
+        uploaded = []
+        for fname, dref in images:
+            fpath = os.path.join(tmpdir, fname)
+            ndref = "biocontainers/"+dref
+            for _ in range(5):
+                logger.info("Uploading: %s", ndref)
+                if skopeo_upload(fpath, ndref, creds=QUAY_LOGIN):
+                    break
+                logger.warning("Skopeo upload failed, retrying in 5s...")
+                await asyncio.sleep(5)
+            else:
+                logger.warning("Skopeo upload failed, giving up")
+                return False, "Failed to upload image to Quay.io"
+            uploaded.append(ndref)
+            comment += "- [x] Uploaded image {}\n".format(ndref)
+            await ghapi.update_comment(comment_id, comment)
+
+        ### Upload Packages
+        for fname in packages:
+            fpath = os.path.join(tmpdir, fname)
+            for _ in range(5):
+                logger.info("Uploading: %s", fname)
+                if anaconda_upload(fpath, token=ANACONDA_TOKEN):
+                    break
+                logger.warning("Anaconda upload failed, retrying in 5s...")
+                await asyncio.sleep(5)
+            else:
+                logger.error("Anaconda upload failed, giving up.")
+                return False, "Failed to upload package to Anaconda"
+            uploaded.append(fname)
+            comment += "- [x] Uploaded package {}\n".format(fname)
+            await ghapi.update_comment(comment_id, comment)
+
+        lines.append("")
+        lines.append("Package uploads complete: [ci skip]")
+        for pkg in uploaded:
+            lines.append(" - " + pkg)
+        lines.append("")
+
+    # collect authors
+    pr_author = pr['user']['login']
+    coauthors: Set[str] = set()
+    coauthor_logins: Set[str] = set()
+    last_sha: str = None
+    async for commit in ghapi.iter_pr_commits(pr_number):
+        last_sha = commit['sha']
+        author_login = (commit['author'] or {}).get('login')
+        if author_login != pr_author:
+            name = commit['commit']['author']['name']
+            email = commit['commit']['author']['email']
+            coauthors.add(f"Co-authored-by: {name} <{email}>")
+            if author_login:
+                coauthor_logins.add("@"+author_login)
+            else:
+                coauthor_logins.add(name)
+    lines.extend(list(coauthors))
+
+    message = "\n".join(lines)
+    comment += "- Creating squash merge"
+    if coauthors:
+        comment += " (with co-authors {})".format(", ".join(coauthor_logins))
+    comment += "\n"
+    await ghapi.update_comment(comment_id, comment)
+
+    return  await ghapi.merge_pr(pr_number, sha=last_sha,
+                                 message="\n".join(lines) if lines else None)
+
+@celery.task(acks_late=True, ignore_result=True)
+async def post_result(result: Tuple[bool, str], pr_number: int, comment_id: int, prefix: str, user: str, ghapi) -> None:
+    logger.error("post result: result=%s, issue=%s", result, pr_number)
+    status = "succeeded" if result[0] else "failed"
+    message = f"@{user}, your request to {prefix} {status}: {result[1]}"
+    await ghapi.create_comment(pr_number, message)
+    logger.warning("message %s", message)
