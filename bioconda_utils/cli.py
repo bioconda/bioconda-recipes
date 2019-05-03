@@ -785,6 +785,8 @@ def autobump(recipe_folder, config, packages='*', cache=None,
                                cache_fn=cache and cache + "_scan.pkl",
                                max_inflight=parallel,
                                status_fn=recipe_status)
+    scanner.add(autobump.ExcludeDisabled)
+
     if not ignore_blacklists:
         scanner.add(autobump.ExcludeBlacklisted, recipe_folder, config_dict)
     if exclude_subrecipes != "never":
