@@ -395,8 +395,12 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
 
         for fname in packages:
             fpath = os.path.join(tmpdir, fname)
-            if not anaconda_upload(fpath, token=ANACONDA_TOKEN):
-                return False, "Failed to upload package"
+            for n in range(5):
+                res = anaconda_upload(fpath, token=ANACONDA_TOKEN)
+                if res == False:
+                    return False, "Failed to upload package"
+                logger.error("Anaconda upload failed, retrying in 5s...")
+                asyncio.sleep(5)
             uploaded.append(fname)
             comment += "- Uploaded {}\n".format(fname)
             await ghapi.update_comment(comment_id, comment)

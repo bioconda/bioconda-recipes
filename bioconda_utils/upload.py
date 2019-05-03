@@ -20,7 +20,8 @@ def anaconda_upload(package: str, token: str = None, label: str = None) -> bool:
              anaconda client.
       label: Optional label to add
     Returns:
-      True if the operation succeeded
+      True if the operation succeeded, False if it cannot succeed,
+      None if it should be retried
     Raises:
       subprocess.CalledProcessError
     """
@@ -53,6 +54,9 @@ def anaconda_upload(package: str, token: str = None, label: str = None) -> bool:
                 "UPLOAD WARNING: tried to upload package, got: "
                 "%s", e.stdout)
             return True
+        elif "Gateway Timeout" in e.stdout:
+            logger.warning("UPLOAD TEMP FAILURE: Gateway timeout")
+            return None
         else:
             logger.error('UPLOAD ERROR: command: %s', e.cmd)
             logger.error('UPLOAD ERROR: stdout+stderr: %s', e.stdout)
