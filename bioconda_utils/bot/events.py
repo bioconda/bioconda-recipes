@@ -26,7 +26,8 @@ async def handle_comment_created(event, ghapi, *args, **_kwargs):
     This function watches for comments on issues. Lines starting with
     an @mention of the bot are considered commands and dispatched.
     """
-    issue_number = str(event.get('issue/number', "NA"))
+    issue_number = event.get('issue/number', "NA")
+    comment_author = event.get("comment/user/login", "")
     commands = [
         line.lower().split()[1:]
         for line in event.get('comment/body', '').splitlines()
@@ -36,7 +37,7 @@ async def handle_comment_created(event, ghapi, *args, **_kwargs):
         logger.info("No command in comment on #%s", issue_number)
     for cmd, *args in commands:
         logger.info("Dispatching command from #%s: '%s' %s", issue_number, cmd, args)
-        await command_routes.dispatch(cmd, event, ghapi, *args)
+        await command_routes.dispatch(cmd, ghapi, issue_number, comment_author, *args)
 
 
 @event_routes.register("check_suite")
@@ -63,7 +64,7 @@ async def handle_check_run(event, ghapi):
             if pr["base"]["repo"]["id"] != event_repo:
                 # PR away from us, not to us
                 continue
-            pr_number = pr["number"]
+            pr_number = int(pr["number"])
             check_circle_artifacts.s(pr_number, ghapi).apply_async()
             logger.info("Scheduled check_circle_artifacts on #%s", pr_number)
 
@@ -94,7 +95,7 @@ async def handle_pull_request(event, ghapi):
     - synchronize
     """
     action = event.get('action')
-    pr_number = event.get('number')
+    pr_number = int(event.get('number'))
     head_sha = event.get('pull_request/head/sha')
     logger.info("Handling pull_request/%s #%s (%s)", action, pr_number, head_sha)
     if action in ('opened', 'reopened', 'synchronize'):

@@ -545,22 +545,18 @@ contributors have solved various problems:
   script (``gatk-register``) to copy in a user-supplied archive/binary to the
   conda environment
 
-Name collisions
----------------
-In some cases, there may be a name collision when writing a recipe. For example
-the `wget
-<https://github.com/bioconda/bioconda-recipes/tree/master/recipes/wget>`_
-recipe is for the standard command-line tool. There is also a Python package
-called ``wget`` `on PyPI <https://pypi.python.org/pypi/wget>`_. In this case,
-we prefixed the Python package with ``python-`` (see `python-wget
-<https://github.com/bioconda/bioconda-recipes/tree/master/recipes/python-wget>`_).
-A similar collision was resolved with `weblogo
+Name collisions (identical names)
+---------------------------------
+
+In rare cases, a new recipe may have an identical name as an existing conda, conda-forge, bioconda, or Python package. This sort of naming collision should be avoided. For example, the `weblogo
 <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/weblogo>`_
-and `python-weblogo
-<https://github.com/bioconda/bioconda-recipes/tree/master/recipes/python-weblogo>`_.
+recipe is for the standard command-line tool. There is also a Python package
+called ``weblogo`` `on PyPI <https://pypi.python.org/pypi/weblogo>`_. In this case, to reduce ambiguity
+we prefixed the Python package with ``python-`` (see `python-weblogo
+<https://github.com/bioconda/bioconda-recipes/tree/master/recipes/python-weblogo>`_).
 
 If in doubt about how to handle a naming collision, please submit an
-issue.
+issue, or ask ``@bioconda/core`` in a PR. 
 
 .. _tests:
 

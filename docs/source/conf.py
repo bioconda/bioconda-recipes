@@ -153,6 +153,8 @@ html_context = {
     'extra_nav_items': {
         'Bioconda @ Github' : 'https://github.com/bioconda/bioconda-recipes',
         'Recipe Index': 'conda-recipe_index',
+        '<img alt="Gitter" src="https://img.shields.io/gitter/room/bioconda/Lobby.svg">':
+        'https://gitter.im/bioconda/Lobby'
     }
 }
 
