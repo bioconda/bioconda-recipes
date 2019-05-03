@@ -11,11 +11,17 @@ export BOOST_LIBRARY_DIR=${PREFIX}/lib
 #export CXXFLAGS=" -std=c++11 -stdlib=libstdc++ -stdlib=libc++ -DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
 export CXXFLAGS=" -std=c++11  -DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR} -I${BUILD_PREFIX}/include/bamtools"
 export LDFLAGS="-L${BOOST_LIBRARY_DIR}"
+export BAMTOOLS="${BUILD_PREFIX}"
 
 mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/scripts
 mkdir -p ${PREFIX}/config
 
+# The Makefile doesn't propogate BAMTOOLS properly everywhere
+pushd auxprogs/bam2hints/
+${CXX} ${CXXFLAGS} -std=c++11 -DUSE_BOOST -I$BUILD_PREFIX/include/bamtools -DNDEBUG -D_FORTIFY_SOURCE=2 -c bam2hints.cc -o bam2hints.o
+${CXX} -std=c++11 -DUSE_BOOST -I$PREFIX/include -L$PREFIX/lib -I$BUILD_PREFIX/include/bamtools -Wall -O2 -o bam2hints bam2hints.o $BUILD_PREFIX/lib/libbamtools.a -lz
+popd
 
 ## Make the software
 
