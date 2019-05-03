@@ -2,7 +2,7 @@
 
 set -eu -o pipefail
 
-make -C squid-1.5j
+make -C squid-1.5j CC=$CC cc=$CC
 make
 
 mv sort-snos sort-snos.pl
