@@ -6,7 +6,7 @@ cmake ..
 make 
 cd ..
 cd src
-python setup.py install
+python setup.py build_ext --inplace
 
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
