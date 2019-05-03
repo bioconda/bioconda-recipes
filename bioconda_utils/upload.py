@@ -23,7 +23,7 @@ def anaconda_upload(package: str, token: str = None, label: str = None) -> bool:
       True if the operation succeeded, False if it cannot succeed,
       None if it should be retried
     Raises:
-      subprocess.CalledProcessError
+      ValueError
     """
     label_arg = []
     if label is not None:
@@ -51,16 +51,16 @@ def anaconda_upload(package: str, token: str = None, label: str = None) -> bool:
             # ignore error assuming that it is caused by
             # existing package
             logger.warning(
-                "UPLOAD WARNING: tried to upload package, got: "
+                "UPLOAD WARNING: tried to upload package, got:\n "
                 "%s", e.stdout)
             return True
         elif "Gateway Timeout" in e.stdout:
             logger.warning("UPLOAD TEMP FAILURE: Gateway timeout")
-            return None
+            return False
         else:
             logger.error('UPLOAD ERROR: command: %s', e.cmd)
             logger.error('UPLOAD ERROR: stdout+stderr: %s', e.stdout)
-            raise e
+            return False
 
 
 def mulled_upload(image: str, quay_target: str) -> "subprocess.CompletedProcess":
@@ -84,7 +84,7 @@ def mulled_upload(image: str, quay_target: str) -> "subprocess.CompletedProcess"
 
 def skopeo_upload(image_file: str, target: str,
                   creds: str, registry: str = "quay.io",
-                  timeout: int = 600) -> "subprocess.CompletedProcess":
+                  timeout: int = 600) -> bool:
     """
     Upload an image to docker registy
 
@@ -107,4 +107,11 @@ def skopeo_upload(image_file: str, target: str,
            'docker-archive:{}'.format(image_file),
            'docker://{}/{}'.format(registry, target),
            '--dest-creds', creds]
-    return utils.run(cmd, mask=creds.split(':'))
+    try:
+        utils.run(cmd, mask=creds.split(':'))
+        return True
+    except sp.CalledProcessError as exc:
+        logger.error("Failed to upload %s to %s", image_file, target)
+        for line in exc.stdout.splitlines():
+            logger.error("> %s", line)
+        return False
