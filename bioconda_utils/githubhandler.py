@@ -330,6 +330,11 @@ class GitHubHandler:
         logger.debug("PR data %s", data)
         if self.dry_run:
             logger.info("Would create PR '%s'", title)
+            if title:
+                logger.info(" title: %s", title)
+            if body:
+                logger.info(" body:\n%s\n", body)
+
             return {'number': -1}
         logger.info("Creating PR '%s'", title)
 

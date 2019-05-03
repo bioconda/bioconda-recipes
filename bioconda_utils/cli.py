@@ -525,8 +525,6 @@ def update_pinning(recipe_folder, config, packages="*",
     build_config = utils.load_conda_build_config()
     blacklist = utils.get_blacklist(config.get('blacklists'), recipe_folder)
 
-    all_recipes = utils.get_recipes(recipe_folder, '*')
-
     from . import recipe
     dag = graph.build_from_recipes(
         recip for recip in recipe.load_parallel_iter(recipe_folder, "*")
@@ -732,59 +730,96 @@ def clean_cran_skeleton(recipe, no_windows=False):
 @arg("--create-pr", action="store_true", help='''Create PR for each update.
      Implies create-branch.''')
 @arg("--max-updates", help='''Exit after ARG updates''')
+@arg("--no-shuffle", help='''Do not shuffle recipe order''')
 @arg("--parallel", help='''Maximum number of recipes to consider in parallel''')
 @arg("--dry-run", help='''Don't update remote git or github"''')
+@arg("--no-check-pinnings", help='''Don't check for pinning updates''')
+@arg("--no-follow-graph",
+     help='''Don't process recipes in graph order or add dependent recipes
+     to checks. Implies --no-skip-pending-deps.''')
+@arg("--no-check-pending-deps",
+     help='''Don't check for recipes having a dependency with a pending update.
+     Update all recipes, including those having deps in need or rebuild.''')
+@arg("--no-check-version-update",
+     help='''Don't check for version updates to recipes''')
+@arg('--bump-only-python',
+     help="""Bump package build numbers even if the only applicable pinning
+     change is the python version. This is generally required unless you plan
+     on building everything.""")
 @enable_logging()
+@enable_debugging()
+@enable_threads()
 def autobump(recipe_folder, config, packages='*', cache=None,
              failed_urls=None, unparsed_urls=None, recipe_status=None,
              exclude_subrecipes=None, exclude_channels='conda-forge',
              ignore_blacklists=False,
              no_fetch_requirements=False,
              check_branch=False, create_branch=False, create_pr=False,
-             only_active=False,
-             max_updates=0, parallel=100, dry_run=False):
+             only_active=False, no_shuffle=False,
+             max_updates=0, parallel=100, dry_run=False,
+             no_check_pinnings=False, no_follow_graph=False,
+             no_check_version_update=False,
+             no_check_pending_deps=False, bump_only_python=False):
     """
     Updates recipes in recipe_folder
     """
-    # load an register config
-    utils.load_config(config)
-    from . import update
+    # load and register config
+    config_dict = utils.load_config(config)
+    from . import autobump
     from . import githandler
     from . import githubhandler
     from . import hosters
-    scanner = update.Scanner(recipe_folder, packages,
-                             cache and cache + "_scan.pkl",
-                             max_inflight=parallel,
-                             status_fn=recipe_status)
+
+    if no_follow_graph:
+        recipe_source = autobump.RecipeSource(
+            recipe_folder, packages, not no_shuffle)
+        no_skip_pending_deps = True
+    else:
+        recipe_source = autobump.RecipeGraphSource(
+            recipe_folder, packages, not no_shuffle,
+            config_dict, cache_fn=cache and cache + "_dag.pkl")
+
+    scanner = autobump.Scanner(recipe_source,
+                               cache_fn=cache and cache + "_scan.pkl",
+                               max_inflight=parallel,
+                               status_fn=recipe_status)
     if not ignore_blacklists:
-        scanner.add(update.ExcludeBlacklisted, config)
+        scanner.add(autobump.ExcludeBlacklisted, recipe_folder, config_dict)
     if exclude_subrecipes != "never":
-        scanner.add(update.ExcludeSubrecipe,
+        scanner.add(autobump.ExcludeSubrecipe,
                     always=exclude_subrecipes == "always")
+    if not no_check_pending_deps:
+        scanner.add(autobump.ExcludeDependencyPending, recipe_source.dag)
+
     git_handler = None
     if check_branch or create_branch or create_pr or only_active:
         git_handler = githandler.BiocondaRepo(recipe_folder, dry_run)
         git_handler.checkout_master()
         if only_active:
-            scanner.add(update.ExcludeNoActiveUpdate, git_handler)
-        scanner.add(update.GitLoadRecipe, git_handler)
+            scanner.add(autobump.ExcludeNoActiveUpdate, git_handler)
+        scanner.add(autobump.GitLoadRecipe, git_handler)
     else:
-        scanner.add(update.LoadRecipe)
+        scanner.add(autobump.LoadRecipe)
+
     if exclude_channels != ["none"]:
         if not isinstance(exclude_channels, list):
             exclude_channels = [exclude_channels]
-        scanner.add(update.ExcludeOtherChannel, exclude_channels,
+        scanner.add(autobump.ExcludeOtherChannel, exclude_channels,
                     cache and cache + "_repodata.txt")
 
-    scanner.add(update.UpdateVersion, hosters.Hoster.select_hoster, unparsed_urls)
-    if not no_fetch_requirements:
-        scanner.add(update.FetchUpstreamDependencies)
-    scanner.add(update.UpdateChecksums, failed_urls)
+    if not no_check_pinnings:
+        scanner.add(autobump.CheckPinning, bump_only_python)
+
+    if not no_check_version_update:
+        scanner.add(autobump.UpdateVersion, hosters.Hoster.select_hoster, unparsed_urls)
+        if not no_fetch_requirements:
+            scanner.add(autobump.FetchUpstreamDependencies)
+        scanner.add(autobump.UpdateChecksums, failed_urls)
 
     if create_branch or create_pr:
-        scanner.add(update.GitWriteRecipe, git_handler)
+        scanner.add(autobump.GitWriteRecipe, git_handler)
     else:
-        scanner.add(update.WriteRecipe)
+        scanner.add(autobump.WriteRecipe)
 
     if create_pr:
         token = os.environ.get("GITHUB_TOKEN")
@@ -793,10 +828,10 @@ def autobump(recipe_folder, config, packages='*', cache=None,
             exit(1)
         github_handler = githubhandler.AiohttpGitHubHandler(
             token, dry_run, "bioconda", "bioconda-recipes")
-        scanner.add(update.CreatePullRequest, git_handler, github_handler)
+        scanner.add(autobump.CreatePullRequest, git_handler, github_handler)
 
     if max_updates:
-        scanner.add(update.MaxUpdates, max_updates)
+        scanner.add(autobump.MaxUpdates, max_updates)
     scanner.run()
     if git_handler:
         git_handler.close()
