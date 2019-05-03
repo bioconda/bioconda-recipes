@@ -9,7 +9,7 @@ export BOOST_INCLUDE_DIR=${PREFIX}/include
 export BOOST_LIBRARY_DIR=${PREFIX}/lib
 
 #export CXXFLAGS=" -std=c++11 -stdlib=libstdc++ -stdlib=libc++ -DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
-export CXXFLAGS=" -std=c++11  -DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
+export CXXFLAGS=" -std=c++11  -DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR} -I${BUILD_PREFIX}/include/bamtools"
 export LDFLAGS="-L${BOOST_LIBRARY_DIR}"
 
 mkdir -p ${PREFIX}/bin
@@ -21,9 +21,9 @@ mkdir -p ${PREFIX}/config
 
 if [ "$(uname)" == Darwin ] ; then
   # SQLITE disabled due to compile issue, see: https://svn.boost.org/trac10/ticket/13501
-  make CC="${CC}" CXX="${CXX}" COMPGENPRED=true
+  make CC="${CC}" CXX="${CXX}" COMPGENPRED=true BAMTOOLS=${BUILD_PREFIX} BAMTOOLS_CC=${CC} BAMTOOLS_CXX=${CXX}
 else
-  make CC="${CC}" CXX="${CXX}" COMPGENPRED=true SQLITE=true
+  make CC="${CC}" CXX="${CXX}" COMPGENPRED=true SQLITE=true BAMTOOLS=${BUILD_PREFIX} BAMTOOLS_CC=${CC} BAMTOOLS_CXX=${CXX}
 fi
 
 
