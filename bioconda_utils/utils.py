@@ -430,7 +430,7 @@ def run(cmds, env=None, mask=None, **kwargs):
         e.cmd = [do_mask(c) for c in e.cmd]
         logger.error('COMMAND FAILED: %s', ' '.join(e.cmd))
         logger.error('STDOUT+STDERR:\n%s', do_mask(e.stdout))
-        raise e
+        raise e from None
     return p
 
 
