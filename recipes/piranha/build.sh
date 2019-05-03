@@ -7,7 +7,7 @@ export CXXFLAGS="-I${INCLUDE_PATH} -L${LIBRARY_PATH}"
 
 autoconf
 ./configure --with-bam_tools_headers="$BAMTOOLS_INCLUDE_PATH" --with-bam_tools_library="$LIBRARY_PATH"
-make
+make CXX=${CXX}
 make test
 make install
 
