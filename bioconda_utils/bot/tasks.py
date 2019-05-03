@@ -321,8 +321,8 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
             return False, "PR cannot be merged at this time. Please try again later"
     if not state:
         return state, message
-
-    comment = "- Checks OK\n"
+    comment = ("Upload & Merge started. Reload page to view progress.\n"
+               "- [x] Checks OK\n")
     await ghapi.update_comment(comment_id, comment)
 
     head_ref = pr['head']['ref']
@@ -356,12 +356,16 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
             files.append((url, fname))
             images.append((fname, f"{name}:{tag}"))
 
-    comment += "- Found {} packages and {} images to upload\n".format(len(packages), len(images))
+    if not files:
+        return False, "PR did not build any packages."
+
+    comment += "- [x] Fetching {} packages and {} images\n".format(len(packages), len(images))
     await ghapi.update_comment(comment_id, comment)
 
     logger.info("Downloading %s", ', '.join(f for _, f in files))
     done = False
     with tempfile.TemporaryDirectory() as tmpdir:
+        ### Download files
         try:
             fds = []
             urls = []
@@ -381,29 +385,38 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
         if not done:
             return False, "Failed to download archives. Please try again later"
 
-        comment += "- Fetched binary data\n"
-        await ghapi.update_comment(comment_id, comment)
-
+        ### Upload Images
         uploaded = []
         for fname, dref in images:
             fpath = os.path.join(tmpdir, fname)
             ndref = "biocontainers/"+dref
-            logger.error("Uploading: %s", ndref)
-            skopeo_upload(fpath, ndref, creds=QUAY_LOGIN)
+            for _ in range(5):
+                logger.info("Uploading: %s", ndref)
+                if skopeo_upload(fpath, ndref, creds=QUAY_LOGIN):
+                    break
+                logger.warning("Skopeo upload failed, retrying in 5s...")
+                await asyncio.sleep(5)
+            else:
+                logger.warning("Skopeo upload failed, giving up")
+                return False, "Failed to upload image to Quay.io"
             uploaded.append(ndref)
-            comment += "- Uploaded {}\n".format(ndref)
+            comment += "- [x] Uploaded image {}\n".format(ndref)
             await ghapi.update_comment(comment_id, comment)
 
+        ### Upload Packages
         for fname in packages:
             fpath = os.path.join(tmpdir, fname)
-            for n in range(5):
-                res = anaconda_upload(fpath, token=ANACONDA_TOKEN)
-                if res == False:
-                    return False, "Failed to upload package"
-                logger.error("Anaconda upload failed, retrying in 5s...")
-                asyncio.sleep(5)
+            for _ in range(5):
+                logger.info("Uploading: %s", fname)
+                if anaconda_upload(fpath, token=ANACONDA_TOKEN):
+                    break
+                logger.warning("Anaconda upload failed, retrying in 5s...")
+                await asyncio.sleep(5)
+            else:
+                logger.error("Anaconda upload failed, giving up.")
+                return False, "Failed to upload package to Anaconda"
             uploaded.append(fname)
-            comment += "- Uploaded {}\n".format(fname)
+            comment += "- [x] Uploaded package {}\n".format(fname)
             await ghapi.update_comment(comment_id, comment)
 
         lines.append("")
