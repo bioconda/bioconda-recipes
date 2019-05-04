@@ -276,7 +276,31 @@ class ExcludeOtherChannel(Filter):
             raise self.OtherChannel(recipe)
 
 
-class ExcludeSubrecipe(Filter):
+class AutoBumpConfigMixin:
+    #: Name of key under ``extra`` containing config for autobump
+    EXTRA_CONFIG = "autobump"
+    #: Name of key under `EXTRA_CONFIG` to enable/disable autobump
+    ENABLE = "enable"
+
+    def get_config(self, recipe) -> Dict[Any, Any]:
+        """Returns the configuration dict from the recipe"""
+        return recipe.get("extra", {}).get(self.EXTRA_CONFIG, {})
+
+    def is_enabled(self, recipe) -> Optional[bool]:
+        """Checks if autobump is enabled for the recipe
+
+        The result is:
+
+        - `True` if the recipe is explicitly enabled (overriding e.g.
+          exclusion of sub-recipes).
+        - `False` if the recipe is explicitly disabled (e.g.
+          if it is written in a way that cannot be updated automatically)
+        - `None` if no explicit setting is present.
+        """
+        return self.get_config(recipe).get(self.ENABLE)
+
+
+class ExcludeSubrecipe(Filter, AutoBumpConfigMixin):
     """Exclude sub-recipes
 
     Unless **always** is True, subrecipes specifically enabled via
@@ -294,9 +318,22 @@ class ExcludeSubrecipe(Filter):
 
     async def apply(self, recipe: Recipe) -> None:
         is_subrecipe = recipe.reldir.strip("/").count("/") > 0
-        enabled = recipe.config.get("enable", False)
+        enabled = self.is_enabled(recipe) == True
         if is_subrecipe and not (enabled and not self.always_exclude):
             raise self.IsSubRecipe(recipe)
+
+
+class ExcludeDisabled(Filter, AutoBumpConfigMixin):
+    """Exclude recipes disabled via config"""
+
+    class IsDisabled(EndProcessingItem):
+        """This recipe was explicitly disabled"""
+        template = "is disabled for autobump"
+
+    async def apply(self, recipe: Recipe) -> None:
+        enabled = self.is_enabled(recipe)
+        if not enabled and enabled is not None:
+            raise self.IsDisabled(recipe)
 
 
 class ExcludeBlacklisted(Filter):
@@ -434,7 +471,7 @@ class CheckPinning(Filter):
         return causes
 
 
-class UpdateVersion(Filter):
+class UpdateVersion(Filter, AutoBumpConfigMixin):
     """Scan upstream for new releases and update recipe
 
     - In the most simple case, a package has a single URL which also indicates the version
@@ -602,7 +639,8 @@ class UpdateVersion(Filter):
 
         version_map: Dict[str, Dict[str, Any]] = defaultdict(dict)
         for url in urls:
-            hoster = self.hoster_factory(url, recipe.config.get("override", {}))
+            config = self.get_config(recipe)
+            hoster = self.hoster_factory(url, config.get("override", {}))
             if not hoster:
                 self.unparsed_urls += [url]
                 continue

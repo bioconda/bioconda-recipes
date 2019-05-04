@@ -29,7 +29,7 @@ DOCHTML=$DOCSOURCE/build/html
 # tmpdir to which built docs will be copied
 STAGING=/tmp/${GITHUB_USERNAME}-docs
 
-# Build docs only if travis-ci is testing this branch:
+# Deploy docs only from this branch (i.e. on commit)
 BUILD_DOCS_FROM_BRANCH="master"
 
 # ----------------------------------------------------------------------------
@@ -75,7 +75,7 @@ if git diff --quiet; then
     exit 0
 fi
 
-if [[ $CIRCLE_BRANCH != master ]]; then
+if [[ $CIRCLE_BRANCH != $BUILD_DOCS_FROM_BRANCH ]]; then
     echo "Not pushing docs because not on branch '$BUILD_DOCS_FROM_BRANCH'"
     exit 0
 fi

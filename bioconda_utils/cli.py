@@ -714,8 +714,10 @@ def clean_cran_skeleton(recipe, no_windows=False):
      building packages present in other channels. Set to 'none' to disable
      check.''')
 @arg('--ignore-blacklists', help='''Do not exclude recipes from blacklist''')
-@arg('--no-fetch-requirements', help='''Do not try to determine upstream
-     requirements''')
+@arg('--fetch-requirements',
+     help='''Try to fetch python requirements. Please note that this requires
+     downloading packages and executing setup.py, so presents a potential
+     security problem.''')
 @arg('--cache', help='''To speed up debugging, use repodata cached locally in
      the provided filename. If the file does not exist, it will be created
      the first time. Caution: The cache will not be updated if
@@ -753,7 +755,7 @@ def autobump(recipe_folder, config, packages='*', cache=None,
              failed_urls=None, unparsed_urls=None, recipe_status=None,
              exclude_subrecipes=None, exclude_channels='conda-forge',
              ignore_blacklists=False,
-             no_fetch_requirements=False,
+             fetch_requirements=False,
              check_branch=False, create_branch=False, create_pr=False,
              only_active=False, no_shuffle=False,
              max_updates=0, parallel=100, dry_run=False,
@@ -779,48 +781,71 @@ def autobump(recipe_folder, config, packages='*', cache=None,
             recipe_folder, packages, not no_shuffle,
             config_dict, cache_fn=cache and cache + "_dag.pkl")
 
+    # Setup scanning pipeline
     scanner = autobump.Scanner(recipe_source,
                                cache_fn=cache and cache + "_scan.pkl",
                                max_inflight=parallel,
                                status_fn=recipe_status)
+
+    # Always exclude recipes that were explicitly disabled
+    scanner.add(autobump.ExcludeDisabled)
+
+    # Exclude packages that are on the blacklist
     if not ignore_blacklists:
         scanner.add(autobump.ExcludeBlacklisted, recipe_folder, config_dict)
+
+    # Exclude sub-recipes
     if exclude_subrecipes != "never":
         scanner.add(autobump.ExcludeSubrecipe,
                     always=exclude_subrecipes == "always")
+
+    # Exclude recipes with dependencies pending an update
     if not no_check_pending_deps:
         scanner.add(autobump.ExcludeDependencyPending, recipe_source.dag)
 
+    # Load recipe
     git_handler = None
     if check_branch or create_branch or create_pr or only_active:
+        # We need to take the recipe from the git repo. This
+        # loads the bump/<recipe> branch if available
         git_handler = githandler.BiocondaRepo(recipe_folder, dry_run)
         git_handler.checkout_master()
         if only_active:
             scanner.add(autobump.ExcludeNoActiveUpdate, git_handler)
         scanner.add(autobump.GitLoadRecipe, git_handler)
     else:
+        # Just load from local file system
         scanner.add(autobump.LoadRecipe)
 
+    # Exclude recipes that are present in "other channels"
     if exclude_channels != ["none"]:
         if not isinstance(exclude_channels, list):
             exclude_channels = [exclude_channels]
         scanner.add(autobump.ExcludeOtherChannel, exclude_channels,
                     cache and cache + "_repodata.txt")
 
+    # Test if due to pinnings, the package hash would change and a rebuild
+    # has become necessary. If so, bump the buildnumber.
     if not no_check_pinnings:
         scanner.add(autobump.CheckPinning, bump_only_python)
 
+    # Check for new versions and update the SHA afterwards
     if not no_check_version_update:
         scanner.add(autobump.UpdateVersion, hosters.Hoster.select_hoster, unparsed_urls)
-        if not no_fetch_requirements:
+        if fetch_requirements:
+            # This attempts to determine dependencies exported by PyPi packages,
+            # requires running setup.py, so only enabled on request.
             scanner.add(autobump.FetchUpstreamDependencies)
         scanner.add(autobump.UpdateChecksums, failed_urls)
 
+    # Write the recipe. For making PRs, the recipe should be written to a branch
+    # of its own.
     if create_branch or create_pr:
         scanner.add(autobump.GitWriteRecipe, git_handler)
     else:
         scanner.add(autobump.WriteRecipe)
 
+    # Create a PR for the branch
     if create_pr:
         token = os.environ.get("GITHUB_TOKEN")
         if not token and not dry_run:
@@ -830,9 +855,14 @@ def autobump(recipe_folder, config, packages='*', cache=None,
             token, dry_run, "bioconda", "bioconda-recipes")
         scanner.add(autobump.CreatePullRequest, git_handler, github_handler)
 
+    # Terminate the scanning pipeline after x recipes have reached this point.
     if max_updates:
         scanner.add(autobump.MaxUpdates, max_updates)
+
+    # And go.
     scanner.run()
+
+    # Cleanup
     if git_handler:
         git_handler.close()
 

@@ -134,8 +134,6 @@ class Recipe():
         "compiler": lambda x: f"compiler_{x}",
     }
 
-    #: Name of key under ``extra`` containing config
-    EXTRA_CONFIG = "autobump"
 
     def __init__(self, recipe_dir, recipe_folder):
         if not recipe_dir.startswith(recipe_folder):
@@ -181,15 +179,6 @@ class Recipe():
     def dir(self):
         """Path to recipe folder"""
         return os.path.join(self.basedir, self.reldir)
-
-    @property
-    def config(self):
-        """Per-recipe configuration parameters
-
-        These are the values set in ``extra:`` under the key
-        defined as `Recipe.EXTRA_CONFIG` (default is ``watch``).
-        """
-        return self.meta.get("extra", {}).get(self.EXTRA_CONFIG, {})
 
     def __str__(self) -> str:
         return self.reldir
