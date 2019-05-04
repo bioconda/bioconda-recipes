@@ -2,6 +2,7 @@
 
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
+export LD_LIBRARY_PATH="${PREFIX}/lib"
 export BAMTOOLS_INCLUDE_PATH="${PREFIX}/include/bamtools"
 export CXXFLAGS="-I${INCLUDE_PATH} -L${LIBRARY_PATH}"
 
