@@ -2,9 +2,10 @@
 
 make
 mkdir -p $PREFIX/bin
+mkdir -p $PREFIX/opt/crispritz
 chmod 700 -R *
 cp crispritz.py $PREFIX/bin
-cp buildTST $PREFIX/bin
-cp searchTST $PREFIX/bin
-cp searchBruteForce $PREFIX/bin
-cp -R sourceCode/Python_Scripts/ $PREFIX/bin
+cp buildTST $PREFIX/opt/crispritz
+cp searchTST $PREFIX/opt/crispritz
+cp searchBruteForce $PREFIX/opt/crispritz
+cp -R sourceCode/Python_Scripts/ $PREFIX/opt/crispritz
