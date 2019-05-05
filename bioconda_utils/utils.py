@@ -23,6 +23,8 @@ import json
 import warnings
 from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
+import queue
+from typing import List, Dict, Any
 
 from conda_build import api
 from conda.exports import VersionOrder
@@ -395,43 +397,90 @@ def temp_os(platform):
         sys.platform = original
 
 
-def run(cmds, env=None, mask=None, **kwargs):
+def run(cmds: List[str], env: Dict[str, str]=None, mask: List[str]=None, live: bool=True,
+        mylogger: logging.Logger=logger, loglevel: int=logging.INFO,
+        **kwargs: Dict[Any, Any]) -> sp.CompletedProcess:
     """
-    Wrapper around subprocess.run()
+    Run a command (with logging, masking, etc)
 
-    Explicitly decodes stdout to avoid UnicodeDecodeErrors that can occur when
-    using the ``universal_newlines=True`` argument in the standard
-    subprocess.run.
+    - Explicitly decodes stdout to avoid UnicodeDecodeErrors that can occur when
+      using the ``universal_newlines=True`` argument in the standard
+      subprocess.run.
+    - Masks secrets
+    - Passed live output to `logging`
 
-    Also uses check=True and merges stderr with stdout. If a CalledProcessError
-    is raised, the output is decoded.
+    Arguments:
+      cmd: List of command and arguments
+      env: Optional environment for command
+      mask: List of terms to mask (secrets)
+      live: Whether output should be sent to log
+      kwargs: Additional arguments to `subprocess.Popen`
 
-    Returns the subprocess.CompletedProcess object.
+    Returns:
+      CompletedProcess object
+
+    Raises:
+      subprocess.CalledProcessError if the process failed
+      FileNotFoundError if the command could not be found
     """
-    try:
-        p = sp.run(cmds, stdout=sp.PIPE, stderr=sp.STDOUT, check=True, env=env,
-                   **kwargs)
-        p.stdout = p.stdout.decode(errors='replace')
-    except sp.CalledProcessError as e:
-        e.stdout = e.stdout.decode(errors='replace')
-        # mask command arguments
+    logq = queue.Queue()
 
-        def do_mask(arg):
-            if mask is None:
-                # caller has not considered masking, hide the entire command
-                # for security reasons
-                return '<hidden>'
-            elif mask is False:
-                # masking has been deactivated
-                return arg
-            for m in mask:
-                arg = arg.replace(m, '<hidden>')
+    def pushqueue(out, prefix, pipe):
+        """Reads from a pipe and pushes into a queue, pushing "None" to
+        indicate closed pipe"""
+        for line in iter(pipe.readline, b''):
+            out.put(prefix+line)
+        out.put(None)  # End-of-data-token
+
+    def do_mask(arg: List[str]) -> List[str]:
+        """Masks secrets in **arg**"""
+        if mask is None:
+            # caller has not considered masking, hide the entire command
+            # for security reasons
+            return '<hidden>'
+        if mask is False:
+            # masking has been deactivated
             return arg
-        e.cmd = [do_mask(c) for c in e.cmd]
-        logger.error('COMMAND FAILED: %s', ' '.join(e.cmd))
-        logger.error('STDOUT+STDERR:\n%s', do_mask(e.stdout))
-        raise e from None
-    return p
+        for mitem in mask:
+            arg = arg.replace(mitem, '<hidden>')
+        return arg
+
+    stashed_log = []
+    try:
+        # Fork off subprocess
+        proc = sp.Popen(cmds, stdout=sp.PIPE, stderr=sp.PIPE,
+                        bufsize=1, close_fds=True,
+                        env=env, **kwargs)
+        # Start threads reading stdout/stderr and pushing it into queue q
+        out_thread = Thread(target=pushqueue, args=(logq, b"(OUT) ", proc.stdout))
+        err_thread = Thread(target=pushqueue, args=(logq, b"(ERR) ", proc.stderr))
+        out_thread.daemon = True  # Do not wait for these threads to terminate
+        err_thread.daemon = True
+        out_thread.start()
+        err_thread.start()
+
+        # Read from queue
+        for _ in range(2):  # Run until we've got both `None` tokens
+            for line in iter(logq.get, None):
+                line = line.decode(errors='replace').rstrip()
+                line = do_mask([line])[0]
+                stashed_log.append(line)
+                if live:
+                    mylogger.log(loglevel, line)
+
+        proc.wait()  # process may still run after closing both STDOUT and STDERR
+
+        proc.stdout = "\n".join(stashed_log)
+        if proc.returncode != 0:
+            raise sp.CalledProcessError(proc.returncode, [do_mask(c) for c in cmds])
+    except sp.CalledProcessError as exc:
+        proc.stdout = "\n".join(stashed_log)
+        exc.cmd = [do_mask(c) for c in exc.cmd]
+        logger.error('COMMAND FAILED: %s', ' '.join(exc.cmd))
+        if not live:
+            logger.error('STDOUT+STDERR:\n%s', do_mask(exc.stdout))
+        raise exc from None
+    return proc
 
 
 def envstr(env):
