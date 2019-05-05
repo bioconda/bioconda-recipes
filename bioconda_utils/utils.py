@@ -17,14 +17,13 @@ from functools import partial
 import logging
 import datetime
 from threading import Event, Thread
-from typing import Sequence
+from typing import Sequence, List, Dict, Any, Union
 from pathlib import PurePath
 import json
 import warnings
 from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
 import queue
-from typing import List, Dict, Any
 
 from conda_build import api
 from conda.exports import VersionOrder
@@ -131,17 +130,57 @@ def wraps(func):
     return wrapper_wrapper
 
 
-def setup_logger(name, loglevel=None, prefix="BIOCONDA ",
-                 msgfmt=("%(asctime)s"
-                         "%(log_color)s{prefix}%(levelname)s%(reset)s "
-                         "%(message)s"),
-                 datefmt="%H:%M:%S "):
-    logger = logging.getLogger(name)
-    logger.propagate = False
-    if loglevel:
-        logger.setLevel(getattr(logging, loglevel.upper()))
+def setup_logger(name: str, loglevel: Union[str, int] = logging.INFO,
+                 logfile: str = None, logfile_level: Union[str, int] = logging.DEBUG,
+                 prefix: str = "BIOCONDA ",
+                 msgfmt: str = ("%(asctime)s"
+                                "%(log_color)s{prefix}%(levelname)s%(reset)s "
+                                "%(message)s"),
+                 datefmt: str ="%H:%M:%S ") -> logging.Logger:
+    """Set up logging for bioconda-utils
 
+    Args:
+      name: Module name for which to get a logger (``__name__``)
+      loglevel: Log level, can be name or int level
+      logfile: File to log to as well
+      logfile_level: Log level for file logging
+      prefix: Prefix to add to our log messages
+      msgfmt: Format for messages
+      datefmt: Format for dates
+
+    Returns:
+      A new logger
+    """
+    new_logger = logging.getLogger(name)
+
+    if logfile:
+        if isinstance(logfile_level, str):
+            logfile_level = getattr(logging, logfile_level.upper())
+        log_file_handler = logging.FileHandler(logfile)
+        log_file_handler.setLevel(logfile_level)
+        log_file_formatter = logging.Formatter(
+            msgfmt.replace("%(log_color)s", "").replace("%(reset)s", "").format(prefix=prefix),
+            datefmt=datefmt
+        )
+        log_file_handler.setFormatter(log_file_formatter)
+        new_logger.addHandler(log_file_handler)
+    else:
+        logfile_level = logging.FATAL
+
+    if isinstance(loglevel, str):
+        loglevel = getattr(logging, loglevel.upper())
+
+    # Base logger is set to the lowest of console or file logging
+    new_logger.setLevel(min(loglevel, logfile_level))
+
+    new_logger.propagate = False
+
+    # Console logging is passed through TqdmHandler so that the progress bar does not
+    # get broken by log lines emitted.
     log_stream_handler = TqdmHandler()
+    if loglevel:
+        log_stream_handler.setLevel(loglevel)
+
     log_stream_handler.setFormatter(ColoredFormatter(
         msgfmt.format(prefix=prefix),
         datefmt=datefmt,
@@ -153,8 +192,8 @@ def setup_logger(name, loglevel=None, prefix="BIOCONDA ",
             'ERROR': 'red',
             'CRITICAL': 'red',
         }))
-    logger.addHandler(log_stream_handler)
-    return logger
+    new_logger.addHandler(log_stream_handler)
+    return new_logger
 
 
 class JinjaSilentUndefined(jinja2.Undefined):
