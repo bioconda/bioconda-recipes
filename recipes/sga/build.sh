@@ -9,5 +9,5 @@ pushd $SRC_DIR/src
 
 ./autogen.sh
 ./configure --prefix=$PREFIX --with-bamtools=$PREFIX --with-sparsehash=$PREFIX
-make CC=${CC} CXX=${CXX} CXXFLAGS="$CXXFLAGS" CFLAGS="$CFLAGS"
+make
 make install
