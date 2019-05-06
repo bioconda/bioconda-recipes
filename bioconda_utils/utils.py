@@ -514,7 +514,7 @@ def run(cmds: List[str], env: Dict[str, str]=None, mask: List[str]=None, live: b
             out.put(prefix+line)
         out.put(None)  # End-of-data-token
 
-    def do_mask(arg: List[str]) -> List[str]:
+    def do_mask(arg: str) -> str:
         """Masks secrets in **arg**"""
         if mask is None:
             # caller has not considered masking, hide the entire command
@@ -545,7 +545,7 @@ def run(cmds: List[str], env: Dict[str, str]=None, mask: List[str]=None, live: b
         for _ in range(2):  # Run until we've got both `None` tokens
             for line in iter(logq.get, None):
                 line = line.decode(errors='replace').rstrip()
-                line = do_mask([line])[0]
+                line = do_mask(line)
                 stashed_log.append(line)
                 if live:
                     mylogger.log(loglevel, line)
