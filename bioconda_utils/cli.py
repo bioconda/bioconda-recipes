@@ -323,6 +323,8 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
      ignored.''')
 @arg('--anaconda-upload', action='store_true', help='''After building recipes, upload
      them to Anaconda. This requires $ANACONDA_TOKEN to be set.''')
+@arg('--build-image', action='store_true', help='''Build temporary docker build
+     image with conda/conda-build version matching local versions''')
 @arg('--keep-image', action='store_true', help='''After building recipes, the
      created Docker image is removed by default to save disk space. Use this
      argument to disable this behavior.''')
@@ -353,6 +355,7 @@ def build(
     pkg_dir=None,
     anaconda_upload=False,
     mulled_upload_target=None,
+    build_image=False,
     keep_image=False,
     lint=False,
     lint_only=None,
@@ -401,6 +404,7 @@ def build(
             pkg_dir=pkg_dir,
             use_host_conda_bld=use_host_conda_bld,
             keep_image=keep_image,
+            build_image=build_image,
         )
     else:
         docker_builder = None
