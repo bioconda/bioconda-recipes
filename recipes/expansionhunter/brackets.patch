@@ -1,0 +1,146 @@
+--- stats/WeightedPurityCalculator.cpp.old	2019-05-05 04:26:13.000000000 -0500
++++ stats/WeightedPurityCalculator.cpp	2019-05-05 04:37:07.000000000 -0500
+@@ -71,49 +71,49 @@
+     const int maxBaseAscii = 255;
+ 
+     const std::array<BaseCode, maxBaseAscii + 1> kReferenceBaseEncodingTable
+-        = { X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
++        = {{ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, A, B, C, D, X, X, G, H, X, X, K, X, M, N, X, X, X, R, S, T, X, V, W, X, Y, X, X, X, X, X, X,
+             X, A, X, C, X, X, X, G, X, X, X, X, X, X, X, X, X, X, X, X, T, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+-            X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };
++            X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X }};
+ 
+     const std::array<BaseCode, maxBaseAscii + 1> kQueryBaseEncodingTable
+-        = { X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
++        = {{ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, A, X, C, X, X, X, G, X, X, X, X, X, X, X, X, X, X, X, X, T, X, X, X, X, X, X, X, X, X, X, X,
+             X, a, X, c, X, X, X, g, X, X, X, X, X, X, X, X, X, X, X, X, t, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+-            X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };
++            X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X }};
+ 
+     const std::array<std::array<double, kMaxQueryBaseCode + 1>, kMaxReferenceBaseCode + 1>
+         kReferenceQueryCodeScoreLookupTable = {
+             // clang-format off
+           //    A    a     C    c     G    g     T    t     X
+-             {{ 1.0, 1.0, -1.0, 0.5, -1.0, 0.5, -1.0, 0.5, -1.0}, // A
+-              { 1.0, 1.0, -1.0, 0.5, -1.0, 0.5, -1.0, 0.5, -1.0}, // a
+-              {-1.0, 0.5,  1.0, 1.0, -1.0, 0.5, -1.0, 0.5, -1.0}, // C
+-              {-1.0, 0.5,  1.0, 1.0, -1.0, 0.5, -1.0, 0.5, -1.0}, // c
+-              {-1.0, 0.5, -1.0, 0.5,  1.0, 1.0, -1.0, 0.5, -1.0}, // G
+-              {-1.0, 0.5, -1.0, 0.5,  1.0, 1.0, -1.0, 0.5, -1.0}, // g
+-              {-1.0, 0.5, -1.0, 0.5, -1.0, 0.5,  1.0, 1.0, -1.0}, // T
+-              {-1.0, 0.5, -1.0, 0.5, -1.0, 0.5,  1.0, 1.0, -1.0}, // t
+-              {-1.0, 0.5, -1.0, 0.5, -1.0, 0.5, -1.0, 0.5, -1.0}, // X
+-              {-1.0, 0.5,  1.0, 1.0,  1.0, 1.0,  1.0, 1.0, -1.0}, // B
+-              { 1.0, 1.0, -1.0, 0.5,  1.0, 1.0,  1.0, 1.0, -1.0}, // D
+-              { 1.0, 1.0,  1.0, 1.0, -1.0, 0.5,  1.0, 1.0, -1.0}, // H
+-              {-1.0, 0.5, -1.0, 0.5,  1.0, 1.0,  1.0, 1.0, -1.0}, // K
+-              { 1.0, 1.0,  1.0, 1.0, -1.0, 0.5, -1.0, 0.5, -1.0}, // M
+-              { 1.0, 1.0,  1.0, 1.0,  1.0, 1.0,  1.0, 1.0, -1.0}, // N
+-              { 1.0, 1.0, -1.0, 0.5,  1.0, 1.0, -1.0, 0.5, -1.0}, // R
+-              {-1.0, 0.5,  1.0, 1.0,  1.0, 1.0, -1.0, 0.5, -1.0}, // S
+-              { 1.0, 1.0,  1.0, 1.0,  1.0, 1.0, -1.0, 0.5, -1.0}, // V
+-              { 1.0, 1.0, -1.0, 0.5, -1.0, 0.5,  1.0, 1.0, -1.0}, // W
+-              {-1.0, 0.5,  1.0, 1.0, -1.0, 0.5,  1.0, 1.0, -1.0}} // Y
++             {{{ 1.0, 1.0, -1.0, 0.5, -1.0, 0.5, -1.0, 0.5, -1.0}}, // A
++              {{ 1.0, 1.0, -1.0, 0.5, -1.0, 0.5, -1.0, 0.5, -1.0}}, // a
++              {{-1.0, 0.5,  1.0, 1.0, -1.0, 0.5, -1.0, 0.5, -1.0}}, // C
++              {{-1.0, 0.5,  1.0, 1.0, -1.0, 0.5, -1.0, 0.5, -1.0}}, // c
++              {{-1.0, 0.5, -1.0, 0.5,  1.0, 1.0, -1.0, 0.5, -1.0}}, // G
++              {{-1.0, 0.5, -1.0, 0.5,  1.0, 1.0, -1.0, 0.5, -1.0}}, // g
++              {{-1.0, 0.5, -1.0, 0.5, -1.0, 0.5,  1.0, 1.0, -1.0}}, // T
++              {{-1.0, 0.5, -1.0, 0.5, -1.0, 0.5,  1.0, 1.0, -1.0}}, // t
++              {{-1.0, 0.5, -1.0, 0.5, -1.0, 0.5, -1.0, 0.5, -1.0}}, // X
++              {{-1.0, 0.5,  1.0, 1.0,  1.0, 1.0,  1.0, 1.0, -1.0}}, // B
++              {{ 1.0, 1.0, -1.0, 0.5,  1.0, 1.0,  1.0, 1.0, -1.0}}, // D
++              {{ 1.0, 1.0,  1.0, 1.0, -1.0, 0.5,  1.0, 1.0, -1.0}}, // H
++              {{-1.0, 0.5, -1.0, 0.5,  1.0, 1.0,  1.0, 1.0, -1.0}}, // K
++              {{ 1.0, 1.0,  1.0, 1.0, -1.0, 0.5, -1.0, 0.5, -1.0}}, // M
++              {{ 1.0, 1.0,  1.0, 1.0,  1.0, 1.0,  1.0, 1.0, -1.0}}, // N
++              {{ 1.0, 1.0, -1.0, 0.5,  1.0, 1.0, -1.0, 0.5, -1.0}}, // R
++              {{-1.0, 0.5,  1.0, 1.0,  1.0, 1.0, -1.0, 0.5, -1.0}}, // S
++              {{ 1.0, 1.0,  1.0, 1.0,  1.0, 1.0, -1.0, 0.5, -1.0}}, // V
++              {{ 1.0, 1.0, -1.0, 0.5, -1.0, 0.5,  1.0, 1.0, -1.0}}, // W
++              {{-1.0, 0.5,  1.0, 1.0, -1.0, 0.5,  1.0, 1.0, -1.0}}} // Y
+             // clang-format on
+         };
+ 
+--- thirdparty/graph-tools-master/include/graphutils/BaseMatching.hh.old	2019-05-05 04:40:50.000000000 -0500
++++ thirdparty/graph-tools-master/include/graphutils/BaseMatching.hh	2019-05-05 04:42:46.000000000 -0500
+@@ -63,47 +63,47 @@
+     // Core bases A, C, G, T and degenerate bases B, D, H, K, M, N, S, R, V, W, Y all receive distinct codes. All other
+     // base symbols are coded as X, which is the code intended to mismatch everything.
+     const std::array<BaseCode, maxBaseAscii + 1> kReferenceBaseEncodingTable
+-        = { X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
++        = {{ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, A, B, C, D, X, X, G, H, X, X, K, X, M, N, X, X, X, R, S, T, X, V, W, X, Y, X, X, X, X, X, X,
+             X, A, X, C, X, X, X, G, X, X, X, X, X, X, X, X, X, X, X, X, T, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+-            X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };
++            X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X }};
+ 
+     // Core bases A, C, G, T all recieve distinct codes. All other base symbols are coded as X.
+     const std::array<BaseCode, maxBaseAscii + 1> kQueryBaseEncodingTable
+-        = { X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
++        = {{ X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, A, X, C, X, X, X, G, X, X, X, X, X, X, X, X, X, X, X, X, T, X, X, X, X, X, X, X, X, X, X, X,
+             X, A, X, C, X, X, X, G, X, X, X, X, X, X, X, X, X, X, X, X, T, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+             X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X,
+-            X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };
++            X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X }};
+ 
+     // We use the standard matching rules for degenerate bases. The X symbol corresponds to a mismatch
+     const std::array<std::array<bool, codes::kMaxQueryBaseCode + 1>, codes::kMaxReferenceBaseCode + 1>
+         kReferenceQueryCodeMatchLookupTable = {
+             // clang-format off
+           //   A      C      G      T      X
+-          { { true,  false, false, false, false }, // A
+-            { false, true,  false, false, false }, // C
+-            { false, false, true,  false, false }, // G
+-            { false, false, false, true,  false }, // T
+-            { false, false, false, false, false }, // X
+-            { false, true,  true,  true,  false }, // B
+-            { true,  false, true,  true,  false }, // D
+-            { true,  true,  false, true,  false }, // H
+-            { false, false, true,  true,  false }, // K
+-            { true,  true,  false, false, false }, // M
+-            { true,  true,  true,  true,  false }, // N
+-            { true,  false, true,  false, false }, // R
+-            { false, true,  true,  false, false }, // S
+-            { true,  true,  true,  false, false }, // V
+-            { true,  false, false, true,  false }, // W
+-            { false, true,  false, true,  false }  // Y
++          { {{ true,  false, false, false, false }}, // A
++            {{ false, true,  false, false, false }}, // C
++            {{ false, false, true,  false, false }}, // G
++            {{ false, false, false, true,  false }}, // T
++            {{ false, false, false, false, false }}, // X
++            {{ false, true,  true,  true,  false }}, // B
++            {{ true,  false, true,  true,  false }}, // D
++            {{ true,  true,  false, true,  false }}, // H
++            {{ false, false, true,  true,  false }}, // K
++            {{ true,  true,  false, false, false }}, // M
++            {{ true,  true,  true,  true,  false }}, // N
++            {{ true,  false, true,  false, false }}, // R
++            {{ false, true,  true,  false, false }}, // S
++            {{ true,  true,  true,  false, false }}, // V
++            {{ true,  false, false, true,  false }}, // W
++            {{ false, true,  false, true,  false }}  // Y
+             }
+             // clang-format on
+         };
