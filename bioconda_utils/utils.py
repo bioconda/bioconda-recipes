@@ -233,7 +233,9 @@ def setup_logger(name: str, loglevel: Union[str, int] = logging.INFO,
     new_logger.addHandler(log_stream_handler)
 
     # Add filter for `utils.run` to truncate after n lines emitted.
-    if log_command_max_lines:
+    # We do this here rather than in `utils.run` so that it can be configured
+    # from the CLI more easily
+    if log_command_max_lines is not None:
         log_filter = LogFuncFilter(run, "Command output truncated", log_command_max_lines)
         log_stream_handler.addFilter(log_filter)
     return new_logger
@@ -269,7 +271,8 @@ ENV_VAR_WHITELIST = [
     'PATH',
     'LC_*',
     'LANG',
-    'MACOSX_DEPLOYMENT_TARGET'
+    'MACOSX_DEPLOYMENT_TARGET',
+    'HTTPS_PROXY','HTTP_PROXY', 'https_proxy', 'http_proxy',
 ]
 
 # Of those that make it through the whitelist, remove these specific ones

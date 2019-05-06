@@ -50,8 +50,9 @@ def enable_logging(default_loglevel='info'):
         @utils.wraps(func)
         def wrapper(*args, loglevel=default_loglevel, logfile=None, logfile_level=None,
                     log_command_max_lines=None, **kwargs):
+            max_lines = int(log_command_max_lines) if log_command_max_lines else None
             utils.setup_logger('bioconda_utils', loglevel, logfile, logfile_level,
-                               int(log_command_max_lines))
+                               max_lines)
             func(*args, **kwargs)
         return wrapper
     return decorator
