@@ -130,8 +130,46 @@ def wraps(func):
     return wrapper_wrapper
 
 
+class LogFuncFilter:
+    """Logging filter capping the number of messages emitted from given function
+
+    Arguments:
+      func: The function for which to filter log messages
+      trunc_msg: The message to emit when logging is truncated, to inform user that
+                 messages will from now on be hidden.
+      max_lines: Max number of log messages to allow to pass
+      consectuctive: If try, filter applies to consectutive messages and resets
+                     if a message from a different source is encountered.
+
+    Fixme:
+      The implementation  assumes that **func** uses a logger initialized with
+      ``getLogger(__name__)``.
+    """
+    def __init__(self, func, trunc_msg: str = None, max_lines: int = 0,
+                 consecutive: bool = True) -> None:
+        self.func = func
+        self.max_lines = max_lines + 1
+        self.cur_max_lines = max_lines + 1
+        self.consecutive = consecutive
+        self.trunc_msg = trunc_msg
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        if record.name == self.func.__module__ and record.funcName == self.func.__name__:
+            if self.cur_max_lines > 1:
+                self.cur_max_lines -= 1
+                return True
+            if self.cur_max_lines == 1 and self.trunc_msg:
+                self.cur_max_lines -= 1
+                record.msg = self.trunc_msg
+                return True
+            return False
+        if self.consecutive:
+            self.cur_max_lines = self.max_lines
+        return True
+
 def setup_logger(name: str, loglevel: Union[str, int] = logging.INFO,
                  logfile: str = None, logfile_level: Union[str, int] = logging.DEBUG,
+                 log_command_max_lines = None,
                  prefix: str = "BIOCONDA ",
                  msgfmt: str = ("%(asctime)s"
                                 "%(log_color)s{prefix}%(levelname)s%(reset)s "
@@ -193,6 +231,11 @@ def setup_logger(name: str, loglevel: Union[str, int] = logging.INFO,
             'CRITICAL': 'red',
         }))
     new_logger.addHandler(log_stream_handler)
+
+    # Add filter for `utils.run` to truncate after n lines emitted.
+    if log_command_max_lines:
+        log_filter = LogFuncFilter(run, "Command output truncated", log_command_max_lines)
+        log_stream_handler.addFilter(log_filter)
     return new_logger
 
 

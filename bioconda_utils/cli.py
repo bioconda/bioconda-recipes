@@ -46,9 +46,12 @@ def enable_logging(default_loglevel='info'):
         @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
         @arg('--logfile', help="Write log to file")
         @arg('--logfile-level', help="Log level for log file")
+        @arg('--log-command-max-lines', help="Limit lines emitted for commands executed")
         @utils.wraps(func)
-        def wrapper(*args, loglevel=default_loglevel, logfile=None, logfile_level=None, **kwargs):
-            utils.setup_logger('bioconda_utils', loglevel, logfile, logfile_level)
+        def wrapper(*args, loglevel=default_loglevel, logfile=None, logfile_level=None,
+                    log_command_max_lines=None, **kwargs):
+            utils.setup_logger('bioconda_utils', loglevel, logfile, logfile_level,
+                               int(log_command_max_lines))
             func(*args, **kwargs)
         return wrapper
     return decorator
