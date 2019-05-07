@@ -58,7 +58,8 @@ def bioconductor_versions():
     response = requests.get(url)
     bioc_config = yaml.load(response.text)
     versions = list(bioc_config["r_ver_for_bioc_ver"].keys())
-    versions = sorted(versions, key=float, reverse=True)
+    # Handle semantic version sorting like 3.10 and 3.9
+    versions = sorted(versions, key=lambda v: list(map(int, v.split('.'))), reverse=True)
     return versions
 
 
