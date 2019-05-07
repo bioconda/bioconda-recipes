@@ -145,9 +145,8 @@ async def command_rebuild(ghapi, issue_number, _user, *_args):
 
 
 @command_routes.register("merge")
-#@permissions(member=True)
+@permissions(member=True)
 #@permissions(author=False, team="core")
-@permissions(team="core")
 async def command_merge(ghapi, issue_number, user, *_args):
     """Merge PR"""
     comment_id = await ghapi.create_comment(issue_number, "Scheduled Upload & Merge")
