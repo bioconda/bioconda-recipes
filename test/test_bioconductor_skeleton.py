@@ -152,7 +152,7 @@ def test_annotation_data(tmpdir, bioc_fetch):
 
 def test_experiment_data(tmpdir, bioc_fetch):
     bioconductor_skeleton.write_recipe('affyhgu133a2expr', str(tmpdir), config, recursive=False, packages=bioc_fetch)
-    meta = utils.load_first_metadata(str(tmpdir.join('bioconductor-affydata'))).meta
+    meta = utils.load_first_metadata(str(tmpdir.join('bioconductor-affyhgu133a2expr'))).meta
     assert any(dep.startswith('curl ') for dep in meta['requirements']['run'])
     assert len(meta['source']['url']) == 3
     assert not tmpdir.join('bioconductor-affydata', 'build.sh').exists()
