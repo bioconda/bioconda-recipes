@@ -17,12 +17,13 @@ from functools import partial
 import logging
 import datetime
 from threading import Event, Thread
-from typing import Sequence
+from typing import Sequence, List, Dict, Any, Union
 from pathlib import PurePath
 import json
 import warnings
 from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
+import queue
 
 from conda_build import api
 from conda.exports import VersionOrder
@@ -129,17 +130,95 @@ def wraps(func):
     return wrapper_wrapper
 
 
-def setup_logger(name, loglevel=None, prefix="BIOCONDA ",
-                 msgfmt=("%(asctime)s"
-                         "%(log_color)s{prefix}%(levelname)s%(reset)s "
-                         "%(message)s"),
-                 datefmt="%H:%M:%S "):
-    logger = logging.getLogger(name)
-    logger.propagate = False
-    if loglevel:
-        logger.setLevel(getattr(logging, loglevel.upper()))
+class LogFuncFilter:
+    """Logging filter capping the number of messages emitted from given function
 
+    Arguments:
+      func: The function for which to filter log messages
+      trunc_msg: The message to emit when logging is truncated, to inform user that
+                 messages will from now on be hidden.
+      max_lines: Max number of log messages to allow to pass
+      consectuctive: If try, filter applies to consectutive messages and resets
+                     if a message from a different source is encountered.
+
+    Fixme:
+      The implementation  assumes that **func** uses a logger initialized with
+      ``getLogger(__name__)``.
+    """
+    def __init__(self, func, trunc_msg: str = None, max_lines: int = 0,
+                 consecutive: bool = True) -> None:
+        self.func = func
+        self.max_lines = max_lines + 1
+        self.cur_max_lines = max_lines + 1
+        self.consecutive = consecutive
+        self.trunc_msg = trunc_msg
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        if record.name == self.func.__module__ and record.funcName == self.func.__name__:
+            if self.cur_max_lines > 1:
+                self.cur_max_lines -= 1
+                return True
+            if self.cur_max_lines == 1 and self.trunc_msg:
+                self.cur_max_lines -= 1
+                record.msg = self.trunc_msg
+                return True
+            return False
+        if self.consecutive:
+            self.cur_max_lines = self.max_lines
+        return True
+
+def setup_logger(name: str, loglevel: Union[str, int] = logging.INFO,
+                 logfile: str = None, logfile_level: Union[str, int] = logging.DEBUG,
+                 log_command_max_lines = None,
+                 prefix: str = "BIOCONDA ",
+                 msgfmt: str = ("%(asctime)s"
+                                "%(log_color)s{prefix}%(levelname)s%(reset)s "
+                                "%(message)s"),
+                 datefmt: str ="%H:%M:%S ") -> logging.Logger:
+    """Set up logging for bioconda-utils
+
+    Args:
+      name: Module name for which to get a logger (``__name__``)
+      loglevel: Log level, can be name or int level
+      logfile: File to log to as well
+      logfile_level: Log level for file logging
+      prefix: Prefix to add to our log messages
+      msgfmt: Format for messages
+      datefmt: Format for dates
+
+    Returns:
+      A new logger
+    """
+    new_logger = logging.getLogger(name)
+
+    if logfile:
+        if isinstance(logfile_level, str):
+            logfile_level = getattr(logging, logfile_level.upper())
+        log_file_handler = logging.FileHandler(logfile)
+        log_file_handler.setLevel(logfile_level)
+        log_file_formatter = logging.Formatter(
+            msgfmt.replace("%(log_color)s", "").replace("%(reset)s", "").format(prefix=prefix),
+            datefmt=datefmt
+        )
+        log_file_handler.setFormatter(log_file_formatter)
+        new_logger.addHandler(log_file_handler)
+    else:
+        logfile_level = logging.FATAL
+
+    if isinstance(loglevel, str):
+        loglevel = getattr(logging, loglevel.upper())
+
+    # Base logger is set to the lowest of console or file logging
+    new_logger.setLevel(min(loglevel, logfile_level))
+
+    new_logger.propagate = False
+
+    # Console logging is passed through TqdmHandler so that the progress bar does not
+    # get broken by log lines emitted.
     log_stream_handler = TqdmHandler()
+    if loglevel:
+        log_stream_handler.setLevel(loglevel)
+
     log_stream_handler.setFormatter(ColoredFormatter(
         msgfmt.format(prefix=prefix),
         datefmt=datefmt,
@@ -151,8 +230,15 @@ def setup_logger(name, loglevel=None, prefix="BIOCONDA ",
             'ERROR': 'red',
             'CRITICAL': 'red',
         }))
-    logger.addHandler(log_stream_handler)
-    return logger
+    new_logger.addHandler(log_stream_handler)
+
+    # Add filter for `utils.run` to truncate after n lines emitted.
+    # We do this here rather than in `utils.run` so that it can be configured
+    # from the CLI more easily
+    if log_command_max_lines is not None:
+        log_filter = LogFuncFilter(run, "Command output truncated", log_command_max_lines)
+        log_stream_handler.addFilter(log_filter)
+    return new_logger
 
 
 class JinjaSilentUndefined(jinja2.Undefined):
@@ -185,7 +271,8 @@ ENV_VAR_WHITELIST = [
     'PATH',
     'LC_*',
     'LANG',
-    'MACOSX_DEPLOYMENT_TARGET'
+    'MACOSX_DEPLOYMENT_TARGET',
+    'HTTPS_PROXY','HTTP_PROXY', 'https_proxy', 'http_proxy',
 ]
 
 # Of those that make it through the whitelist, remove these specific ones
@@ -395,43 +482,95 @@ def temp_os(platform):
         sys.platform = original
 
 
-def run(cmds, env=None, mask=None, **kwargs):
+def run(cmds: List[str], env: Dict[str, str]=None, mask: List[str]=None, live: bool=True,
+        mylogger: logging.Logger=logger, loglevel: int=logging.INFO,
+        **kwargs: Dict[Any, Any]) -> sp.CompletedProcess:
     """
-    Wrapper around subprocess.run()
+    Run a command (with logging, masking, etc)
 
-    Explicitly decodes stdout to avoid UnicodeDecodeErrors that can occur when
-    using the ``universal_newlines=True`` argument in the standard
-    subprocess.run.
+    - Explicitly decodes stdout to avoid UnicodeDecodeErrors that can occur when
+      using the ``universal_newlines=True`` argument in the standard
+      subprocess.run.
+    - Masks secrets
+    - Passed live output to `logging`
 
-    Also uses check=True and merges stderr with stdout. If a CalledProcessError
-    is raised, the output is decoded.
+    Arguments:
+      cmd: List of command and arguments
+      env: Optional environment for command
+      mask: List of terms to mask (secrets)
+      live: Whether output should be sent to log
+      kwargs: Additional arguments to `subprocess.Popen`
 
-    Returns the subprocess.CompletedProcess object.
+    Returns:
+      CompletedProcess object
+
+    Raises:
+      subprocess.CalledProcessError if the process failed
+      FileNotFoundError if the command could not be found
     """
-    try:
-        p = sp.run(cmds, stdout=sp.PIPE, stderr=sp.STDOUT, check=True, env=env,
-                   **kwargs)
-        p.stdout = p.stdout.decode(errors='replace')
-    except sp.CalledProcessError as e:
-        e.stdout = e.stdout.decode(errors='replace')
-        # mask command arguments
+    logq = queue.Queue()
 
-        def do_mask(arg):
-            if mask is None:
-                # caller has not considered masking, hide the entire command
-                # for security reasons
-                return '<hidden>'
-            elif mask is False:
-                # masking has been deactivated
-                return arg
-            for m in mask:
-                arg = arg.replace(m, '<hidden>')
+    def pushqueue(out, pipe):
+        """Reads from a pipe and pushes into a queue, pushing "None" to
+        indicate closed pipe"""
+        for line in iter(pipe.readline, b''):
+            out.put((pipe, line))
+        out.put(None)  # End-of-data-token
+
+    def do_mask(arg: str) -> str:
+        """Masks secrets in **arg**"""
+        if mask is None:
+            # caller has not considered masking, hide the entire command
+            # for security reasons
+            return '<hidden>'
+        if mask is False:
+            # masking has been deactivated
             return arg
-        e.cmd = [do_mask(c) for c in e.cmd]
-        logger.error('COMMAND FAILED: %s', ' '.join(e.cmd))
-        logger.error('STDOUT+STDERR:\n%s', do_mask(e.stdout))
-        raise e from None
-    return p
+        for mitem in mask:
+            arg = arg.replace(mitem, '<hidden>')
+        return arg
+
+    # bufsize=4 result of manual experimentation. Changing it can
+    # drop performance drastically.
+    with sp.Popen(cmds, stdout=sp.PIPE, stderr=sp.PIPE,
+                  close_fds=True, env=env, bufsize=4, **kwargs) as proc:
+        # Start threads reading stdout/stderr and pushing it into queue q
+        out_thread = Thread(target=pushqueue, args=(logq, proc.stdout))
+        err_thread = Thread(target=pushqueue, args=(logq, proc.stderr))
+        out_thread.daemon = True  # Do not wait for these threads to terminate
+        err_thread.daemon = True
+        out_thread.start()
+        err_thread.start()
+
+        output_lines = []
+        try:
+            for _ in range(2):  # Run until we've got both `None` tokens
+                for pipe, line in iter(logq.get, None):
+                    line = do_mask(line.decode(errors='replace').rstrip())
+                    output_lines.append(line)
+                    if live:
+                        if pipe == proc.stdout:
+                            prefix = "OUT"
+                        else:
+                            prefix = "ERR"
+                        mylogger.log(loglevel, "(%s) %s", prefix, line)
+        except Exception:
+            proc.kill()
+            proc.wait()
+            raise
+
+        output = "\n".join(output_lines)
+        returncode = proc.poll()
+        if isinstance(cmds, str):
+            masked_cmds = do_mask(cmds)
+        else:
+            masked_cmds = [do_mask(c) for c in cmds]
+        if returncode:
+            logger.error('COMMAND FAILED: %s', ' '.join(masked_cmds))
+            if not live:
+                logger.error('STDOUT+STDERR:\n%s', output)
+            raise sp.CalledProcessError(returncode, masked_cmds, output=output)
+        return sp.CompletedProcess(returncode, masked_cmds, output)
 
 
 def envstr(env):
@@ -700,7 +839,7 @@ def file_from_commit(commit, filename):
     if commit == 'HEAD':
         return open(filename).read()
 
-    p = run(['git', 'show', '{0}:{1}'.format(commit, filename)])
+    p = run(['git', 'show', '{0}:{1}'.format(commit, filename)], mask=False)
     return str(p.stdout)
 
 
@@ -763,8 +902,8 @@ def changed_since_master(recipe_folder):
     repo and have added the main repo as ``upstream``, then you'll have to do
     a ``git checkout master && git pull upstream master`` to update your fork.
     """
-    p = run(['git', 'fetch', 'origin', 'master'])
-    p = run(['git', 'diff', 'FETCH_HEAD', '--name-only'])
+    p = run(['git', 'fetch', 'origin', 'master'], mask=False)
+    p = run(['git', 'diff', 'FETCH_HEAD', '--name-only'], mask=False)
     return [
         os.path.dirname(os.path.relpath(i, recipe_folder))
         for i in p.stdout.splitlines(False)
@@ -1011,7 +1150,7 @@ def modified_recipes(git_range, recipe_folder, config_file):
         ]
     )
 
-    p = run(cmds, shell=False)
+    p = run(cmds, shell=False, mask=False)
 
     modified = [
         os.path.join(recipe_folder, m)

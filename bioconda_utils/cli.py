@@ -44,9 +44,15 @@ def enable_logging(default_loglevel='info'):
     """
     def decorator(func):
         @arg('--loglevel', help="Set logging level (debug, info, warning, error, critical)")
+        @arg('--logfile', help="Write log to file")
+        @arg('--logfile-level', help="Log level for log file")
+        @arg('--log-command-max-lines', help="Limit lines emitted for commands executed")
         @utils.wraps(func)
-        def wrapper(*args, loglevel=default_loglevel, **kwargs):
-            utils.setup_logger('bioconda_utils', loglevel)
+        def wrapper(*args, loglevel=default_loglevel, logfile=None, logfile_level=None,
+                    log_command_max_lines=None, **kwargs):
+            max_lines = int(log_command_max_lines) if log_command_max_lines else None
+            utils.setup_logger('bioconda_utils', loglevel, logfile, logfile_level,
+                               max_lines)
             func(*args, **kwargs)
         return wrapper
     return decorator
@@ -317,6 +323,8 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
      ignored.''')
 @arg('--anaconda-upload', action='store_true', help='''After building recipes, upload
      them to Anaconda. This requires $ANACONDA_TOKEN to be set.''')
+@arg('--build-image', action='store_true', help='''Build temporary docker build
+     image with conda/conda-build version matching local versions''')
 @arg('--keep-image', action='store_true', help='''After building recipes, the
      created Docker image is removed by default to save disk space. Use this
      argument to disable this behavior.''')
@@ -347,6 +355,7 @@ def build(
     pkg_dir=None,
     anaconda_upload=False,
     mulled_upload_target=None,
+    build_image=False,
     keep_image=False,
     lint=False,
     lint_only=None,
@@ -358,7 +367,7 @@ def build(
     if setup:
         logger.debug("Running setup: %s" % setup)
         for cmd in setup:
-            utils.run(shlex.split(cmd))
+            utils.run(shlex.split(cmd), mask=False)
 
     # handle git range
     if git_range and not force:
@@ -395,6 +404,7 @@ def build(
             pkg_dir=pkg_dir,
             use_host_conda_bld=use_host_conda_bld,
             keep_image=keep_image,
+            build_image=build_image,
         )
     else:
         docker_builder = None
