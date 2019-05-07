@@ -21,23 +21,38 @@ BOT_ALIAS_RE = re.compile(r'@bioconda[- ]?bot', re.IGNORECASE)
 
 @event_routes.register("issue_comment", action="created")
 async def handle_comment_created(event, ghapi, *args, **_kwargs):
-    """Dispatches @bioconda-bot commands
+    """Handles comments on issues
 
-    This function watches for comments on issues. Lines starting with
-    an @mention of the bot are considered commands and dispatched.
+    - dispatches @biocondabot commands
+    - re-iterates commenets from non-members attempting to @mention @bioconda/xxx
     """
     issue_number = event.get('issue/number', "NA")
     comment_author = event.get("comment/user/login", "")
+    comment_body = event.get("command/body", "")
+
+    # Ignore self mentions. This is important not only to avoid loops,
+    # but critical because we are repeating what non-members say below.
+    if BOT_ALIAS_RE.match('@'+comment_author):
+        return
+
     commands = [
         line.lower().split()[1:]
-        for line in event.get('comment/body', '').splitlines()
+        for line in comment_body.splitlines()
         if BOT_ALIAS_RE.match(line)
     ]
-    if not commands:
-        logger.info("No command in comment on #%s", issue_number)
     for cmd, *args in commands:
         logger.info("Dispatching command from #%s: '%s' %s", issue_number, cmd, args)
         await command_routes.dispatch(cmd, ghapi, issue_number, comment_author, *args)
+
+    if '@bioconda/' in comment_body and not ghapi.is_member(comment_author):
+        if '@bioconda/all' in comment_body:
+            return  # not pinging everyone
+        logger.info("Repeating comment from %s on #%s to allow ping")
+        quoted_msg = '\n'.join('> ' + line for line in comment_body.splitlines)
+        ghapi.create_comment(
+            issue_number,
+            f"Repeating comment from @{comment_author} to enable @mention:\n"
+            + quoted_msg)
 
 
 @event_routes.register("check_suite")
