@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ASICSdata_1.2.0.tar.gz"
+FN="ASICSdata_1.3.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/ASICSdata_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ASICSdata_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-asicsdata/bioconductor-asicsdata_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ASICSdata_1.3.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ASICSdata_1.3.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-asicsdata/bioconductor-asicsdata_1.3.0_src_all.tar.gz"
 )
-MD5="bb4f0522ab312de30adfa029a55e023b"
+MD5="fc5218beaa66f7596235a1893d1f2a8b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

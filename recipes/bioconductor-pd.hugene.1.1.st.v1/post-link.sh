@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.hugene.1.1.st.v1_3.14.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.hugene.1.1.st.v1_3.14.1.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.hugene.1.1.st.v1_3.14.1.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.hugene.1.1.st.v1_3.14.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.hugene.1.1.st.v1/bioconductor-pd.hugene.1.1.st.v1_3.14.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.hugene.1.1.st.v1/bioconductor-pd.hugene.1.1.st.v1_3.14.1_src_all.tar.gz"
 )
 MD5="7a17ee4f7d258792be1d21be7d03deb0"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

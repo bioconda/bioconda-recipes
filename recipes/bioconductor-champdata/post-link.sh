@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ChAMPdata_2.14.0.tar.gz"
+FN="ChAMPdata_2.15.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/ChAMPdata_2.14.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ChAMPdata_2.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-champdata/bioconductor-champdata_2.14.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ChAMPdata_2.15.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/ChAMPdata_2.15.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-champdata/bioconductor-champdata_2.15.1_src_all.tar.gz"
 )
-MD5="45ef9f402b16c268d28853e51b26ffd0"
+MD5="e76dbf09bda0103e10be4260369ad2ab"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

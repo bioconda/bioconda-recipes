@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RegParallel_1.0.0.tar.gz"
+FN="RegParallel_1.1.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/RegParallel_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RegParallel_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-regparallel/bioconductor-regparallel_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RegParallel_1.1.3.tar.gz"
+  "https://bioarchive.galaxyproject.org/RegParallel_1.1.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-regparallel/bioconductor-regparallel_1.1.3_src_all.tar.gz"
 )
-MD5="dbfebc547b8aaf83e060210498e8492a"
+MD5="74d2a58e763479804dff5b74f4154921"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

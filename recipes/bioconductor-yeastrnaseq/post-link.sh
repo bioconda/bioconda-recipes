@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="yeastRNASeq_0.20.0.tar.gz"
+FN="yeastRNASeq_0.21.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/yeastRNASeq_0.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/yeastRNASeq_0.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-yeastrnaseq/bioconductor-yeastrnaseq_0.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/yeastRNASeq_0.21.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/yeastRNASeq_0.21.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yeastrnaseq/bioconductor-yeastrnaseq_0.21.0_src_all.tar.gz"
 )
-MD5="a642a1c83917e78e156bc3841e609f7b"
+MD5="b29b06cd8c86e90890482c383370b7c9"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

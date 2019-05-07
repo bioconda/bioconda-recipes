@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="Fletcher2013b_1.18.0.tar.gz"
+FN="Fletcher2013b_1.19.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/Fletcher2013b_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/Fletcher2013b_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-fletcher2013b/bioconductor-fletcher2013b_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/Fletcher2013b_1.19.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/Fletcher2013b_1.19.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-fletcher2013b/bioconductor-fletcher2013b_1.19.0_src_all.tar.gz"
 )
-MD5="02757b2d756e7d7fb48641ad9a81aaf4"
+MD5="43f651f8b7b3e9d7c3a9e03441c53665"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

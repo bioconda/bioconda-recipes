@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.mu11ksuba_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.mu11ksuba_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.mu11ksuba_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.mu11ksuba_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.mu11ksuba/bioconductor-pd.mu11ksuba_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.mu11ksuba/bioconductor-pd.mu11ksuba_3.12.0_src_all.tar.gz"
 )
 MD5="56be58b3f444ccb9572dc4c3882964b2"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

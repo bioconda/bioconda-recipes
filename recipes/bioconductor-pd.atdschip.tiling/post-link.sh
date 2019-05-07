@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="pd.atdschip.tiling_0.20.0.tar.gz"
+FN="pd.atdschip.tiling_0.21.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/pd.atdschip.tiling_0.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/pd.atdschip.tiling_0.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pd.atdschip.tiling/bioconductor-pd.atdschip.tiling_0.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/pd.atdschip.tiling_0.21.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/pd.atdschip.tiling_0.21.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.atdschip.tiling/bioconductor-pd.atdschip.tiling_0.21.0_src_all.tar.gz"
 )
-MD5="4e8b33dcee82491454fb2954983fab60"
+MD5="2b108a5084389ea9c127da45c1ba303b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

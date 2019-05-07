@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="humanStemCell_0.22.0.tar.gz"
+FN="humanStemCell_0.23.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/humanStemCell_0.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/humanStemCell_0.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-humanstemcell/bioconductor-humanstemcell_0.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/humanStemCell_0.23.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/humanStemCell_0.23.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-humanstemcell/bioconductor-humanstemcell_0.23.0_src_all.tar.gz"
 )
-MD5="9c51c8672331f6416b56f0224b5e7494"
+MD5="04e982fe0e271216211ecd1e03c3ec26"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

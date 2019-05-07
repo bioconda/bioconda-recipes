@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ceu1kgv_0.24.0.tar.gz"
+FN="ceu1kgv_0.25.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/ceu1kgv_0.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ceu1kgv_0.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ceu1kgv/bioconductor-ceu1kgv_0.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ceu1kgv_0.25.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ceu1kgv_0.25.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ceu1kgv/bioconductor-ceu1kgv_0.25.0_src_all.tar.gz"
 )
-MD5="c972c7288208ef044f986bbfd8fab71c"
+MD5="0f8c12442b27886658ce509daf606dfb"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
