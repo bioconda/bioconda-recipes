@@ -530,12 +530,10 @@ def run(cmds: List[str], env: Dict[str, str]=None, mask: List[str]=None, live: b
             arg = arg.replace(mitem, '<hidden>')
         return arg
 
-    stashed_log = []
-    try:
-        # Fork off subprocess
-        proc = sp.Popen(cmds, stdout=sp.PIPE, stderr=sp.PIPE,
-                        bufsize=1, close_fds=True,
-                        env=env, **kwargs)
+    # bufsize=4 result of manual experimentation. Changing it can
+    # drop performance drastically.
+    with sp.Popen(cmds, stdout=sp.PIPE, stderr=sp.PIPE,
+                  close_fds=True, env=env, bufsize=4, **kwargs) as proc:
         # Start threads reading stdout/stderr and pushing it into queue q
         out_thread = Thread(target=pushqueue, args=(logq, b"(OUT) ", proc.stdout))
         err_thread = Thread(target=pushqueue, args=(logq, b"(ERR) ", proc.stderr))
@@ -544,28 +542,31 @@ def run(cmds: List[str], env: Dict[str, str]=None, mask: List[str]=None, live: b
         out_thread.start()
         err_thread.start()
 
-        # Read from queue
-        for _ in range(2):  # Run until we've got both `None` tokens
-            for line in iter(logq.get, None):
-                line = line.decode(errors='replace').rstrip()
-                line = do_mask(line)
-                stashed_log.append(line)
-                if live:
-                    mylogger.log(loglevel, line)
+        output_lines = []
+        try:
+            for _ in range(2):  # Run until we've got both `None` tokens
+                for line in iter(logq.get, None):
+                    line = do_mask(line.decode(errors='replace').rstrip())
+                    output_lines.append(line)
+                    if live:
+                        mylogger.log(loglevel, line)
+        except Exception:
+            proc.kill()
+            proc.wait()
+            raise
 
-        proc.wait()  # process may still run after closing both STDOUT and STDERR
-
-        proc.stdout = "\n".join(stashed_log)
-        if proc.returncode != 0:
-            raise sp.CalledProcessError(proc.returncode, [do_mask(c) for c in cmds])
-    except sp.CalledProcessError as exc:
-        proc.stdout = "\n".join(stashed_log)
-        exc.cmd = [do_mask(c) for c in exc.cmd]
-        logger.error('COMMAND FAILED: %s', ' '.join(exc.cmd))
-        if not live:
-            logger.error('STDOUT+STDERR:\n%s', do_mask(exc.stdout))
-        raise exc from None
-    return proc
+        output = "\n".join(output_lines)
+        returncode = proc.poll()
+        if isinstance(cmds, str):
+            masked_cmds = do_mask(cmds)
+        else:
+            masked_cmds = [do_mask(c) for c in cmds]
+        if returncode:
+            logger.error('COMMAND FAILED: %s', ' '.join(masked_cmds))
+            if not live:
+                logger.error('STDOUT+STDERR:\n%s', output)
+            raise sp.CalledProcessError(returncode, masked_cmds, output=output)
+        return sp.CompletedProcess(returncode, masked_cmds, output)
 
 
 def envstr(env):
