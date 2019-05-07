@@ -9,4 +9,4 @@ Thanks for opening your first pull request! As you're new to bioconda, please re
  - `@bioconda/rust` for Rust packages
  - `@bioconda/core` in other cases
 
-Please ping `@bioconda/core` when your pull request is passing tests and ready to be merged. If you would like to be added to the bioconda team (so you can merge your own pull requests once all tests have passed) please mention that to `@bioconda/core` and they'll happily add you.
+Please ping `@bioconda/core` when your pull request is passing tests and ready to be merged. If you would like to be added to the bioconda team (so you can merge your own pull requests once all tests have passed) please mention that to `@bioconda/core` and they'll happily add you to the bioconda group.
