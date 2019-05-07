@@ -510,11 +510,11 @@ def run(cmds: List[str], env: Dict[str, str]=None, mask: List[str]=None, live: b
     """
     logq = queue.Queue()
 
-    def pushqueue(out, prefix, pipe):
+    def pushqueue(out, pipe):
         """Reads from a pipe and pushes into a queue, pushing "None" to
         indicate closed pipe"""
         for line in iter(pipe.readline, b''):
-            out.put(prefix+line)
+            out.put((pipe, line))
         out.put(None)  # End-of-data-token
 
     def do_mask(arg: str) -> str:
@@ -535,8 +535,8 @@ def run(cmds: List[str], env: Dict[str, str]=None, mask: List[str]=None, live: b
     with sp.Popen(cmds, stdout=sp.PIPE, stderr=sp.PIPE,
                   close_fds=True, env=env, bufsize=4, **kwargs) as proc:
         # Start threads reading stdout/stderr and pushing it into queue q
-        out_thread = Thread(target=pushqueue, args=(logq, b"(OUT) ", proc.stdout))
-        err_thread = Thread(target=pushqueue, args=(logq, b"(ERR) ", proc.stderr))
+        out_thread = Thread(target=pushqueue, args=(logq, proc.stdout))
+        err_thread = Thread(target=pushqueue, args=(logq, proc.stderr))
         out_thread.daemon = True  # Do not wait for these threads to terminate
         err_thread.daemon = True
         out_thread.start()
@@ -545,11 +545,15 @@ def run(cmds: List[str], env: Dict[str, str]=None, mask: List[str]=None, live: b
         output_lines = []
         try:
             for _ in range(2):  # Run until we've got both `None` tokens
-                for line in iter(logq.get, None):
+                for pipe, line in iter(logq.get, None):
                     line = do_mask(line.decode(errors='replace').rstrip())
                     output_lines.append(line)
                     if live:
-                        mylogger.log(loglevel, line)
+                        if pipe == proc.stdout:
+                            prefix = "OUT"
+                        else:
+                            prefix = "ERR"
+                        mylogger.log(loglevel, "(%s) %s", prefix, line)
         except Exception:
             proc.kill()
             proc.wait()
@@ -835,7 +839,7 @@ def file_from_commit(commit, filename):
     if commit == 'HEAD':
         return open(filename).read()
 
-    p = run(['git', 'show', '{0}:{1}'.format(commit, filename)])
+    p = run(['git', 'show', '{0}:{1}'.format(commit, filename)], mask=False)
     return str(p.stdout)
 
 
@@ -898,8 +902,8 @@ def changed_since_master(recipe_folder):
     repo and have added the main repo as ``upstream``, then you'll have to do
     a ``git checkout master && git pull upstream master`` to update your fork.
     """
-    p = run(['git', 'fetch', 'origin', 'master'])
-    p = run(['git', 'diff', 'FETCH_HEAD', '--name-only'])
+    p = run(['git', 'fetch', 'origin', 'master'], mask=False)
+    p = run(['git', 'diff', 'FETCH_HEAD', '--name-only'], mask=False)
     return [
         os.path.dirname(os.path.relpath(i, recipe_folder))
         for i in p.stdout.splitlines(False)
@@ -1146,7 +1150,7 @@ def modified_recipes(git_range, recipe_folder, config_file):
         ]
     )
 
-    p = run(cmds, shell=False)
+    p = run(cmds, shell=False, mask=False)
 
     modified = [
         os.path.join(recipe_folder, m)

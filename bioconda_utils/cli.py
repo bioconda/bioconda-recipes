@@ -367,7 +367,7 @@ def build(
     if setup:
         logger.debug("Running setup: %s" % setup)
         for cmd in setup:
-            utils.run(shlex.split(cmd))
+            utils.run(shlex.split(cmd), mask=False)
 
     # handle git range
     if git_range and not force:
