@@ -327,15 +327,17 @@ class RecipeBuilder(object):
         self.cleanup()
 
     def _find_proxy_settings(self):
-        def get_caps_var(envvar):
+        res = {}
+        for var in ('http_proxy', 'https_proxy'):
             values = set([
-                os.environ.get(envvar, None),
-                os.environ.get(envvar.upper(), None)
+                os.environ.get(var, None),
+                os.environ.get(var.upper(), None)
             ]).difference([None])
             if len(values) == 1:
-                return next(iter(values))
-            raise ValueError(f"{envvar} and {envvar.upper()} have different values")
-        return {var: get_caps_var(var) for var in ('http_proxy', 'https_proxy')}
+                res[var] = next(iter(values))
+            elif len(values) > 1:
+                raise ValueError(f"{var} and {var.upper()} have different values")
+        return res
 
     def _build_image(self):
         """
