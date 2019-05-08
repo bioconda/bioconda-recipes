@@ -2,8 +2,7 @@
 
 set -eu -o pipefail
 
-PACKAGE_HOME=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-
+PACKAGE_HOME=$PREFIX/share/$PKG_NAME
 mkdir -p $PREFIX/bin
 mkdir -p $PACKAGE_HOME
 
