@@ -151,13 +151,13 @@ def test_annotation_data(tmpdir, bioc_fetch):
 
 
 def test_experiment_data(tmpdir, bioc_fetch):
-    bioconductor_skeleton.write_recipe('affydata', str(tmpdir), config, recursive=False, packages=bioc_fetch)
-    meta = utils.load_first_metadata(str(tmpdir.join('bioconductor-affydata'))).meta
+    bioconductor_skeleton.write_recipe('Affyhgu133A2Expr', str(tmpdir), config, recursive=False, packages=bioc_fetch)
+    meta = utils.load_first_metadata(str(tmpdir.join('bioconductor-affyhgu133a2expr'))).meta
     assert any(dep.startswith('curl ') for dep in meta['requirements']['run'])
     assert len(meta['source']['url']) == 3
-    assert not tmpdir.join('bioconductor-affydata', 'build.sh').exists()
-    assert tmpdir.join('bioconductor-affydata', 'post-link.sh').exists()
-    assert tmpdir.join('bioconductor-affydata', 'pre-unlink.sh').exists()
+    assert not tmpdir.join('bioconductor-affyhgu133a2expr', 'build.sh').exists()
+    assert tmpdir.join('bioconductor-affyhgu133a2expr', 'post-link.sh').exists()
+    assert tmpdir.join('bioconductor-affyhgu133a2expr', 'pre-unlink.sh').exists()
 
 
 def test_nonexistent_pkg(tmpdir, bioc_fetch):
