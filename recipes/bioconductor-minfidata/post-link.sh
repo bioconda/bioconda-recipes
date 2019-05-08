@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="minfiData_0.29.0.tar.gz"
+FN="minfiData_0.30.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/minfiData_0.29.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/minfiData_0.29.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-minfidata/bioconductor-minfidata_0.29.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/minfiData_0.30.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/minfiData_0.30.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-minfidata/bioconductor-minfidata_0.30.0_src_all.tar.gz"
 )
-MD5="c4086d5cc89f43d8ac79373faed45bcf"
+MD5="91b5668c839ed8fcca5ea36439c46473"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

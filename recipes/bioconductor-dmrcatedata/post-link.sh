@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="DMRcatedata_1.19.0.tar.gz"
+FN="DMRcatedata_1.20.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/DMRcatedata_1.19.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/DMRcatedata_1.19.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-dmrcatedata/bioconductor-dmrcatedata_1.19.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/DMRcatedata_1.20.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/DMRcatedata_1.20.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dmrcatedata/bioconductor-dmrcatedata_1.20.0_src_all.tar.gz"
 )
-MD5="4f2a2d4ec224d7f2a27b3872963e18ff"
+MD5="4401fe1a28b3d313d4ec38d5ca48b7fe"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

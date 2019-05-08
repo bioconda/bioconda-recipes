@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ListerEtAlBSseq_1.15.0.tar.gz"
+FN="ListerEtAlBSseq_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ListerEtAlBSseq_1.15.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ListerEtAlBSseq_1.15.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-listeretalbsseq/bioconductor-listeretalbsseq_1.15.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ListerEtAlBSseq_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ListerEtAlBSseq_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-listeretalbsseq/bioconductor-listeretalbsseq_1.16.0_src_all.tar.gz"
 )
-MD5="d484fdd236b654f32c3b3ef94aa1f4e8"
+MD5="65a04e46b826417c971c461fa1599ba2"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

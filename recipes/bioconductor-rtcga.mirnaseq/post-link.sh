@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RTCGA.miRNASeq_1.11.0.tar.gz"
+FN="RTCGA.miRNASeq_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RTCGA.miRNASeq_1.11.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RTCGA.miRNASeq_1.11.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rtcga.mirnaseq/bioconductor-rtcga.mirnaseq_1.11.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RTCGA.miRNASeq_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RTCGA.miRNASeq_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.mirnaseq/bioconductor-rtcga.mirnaseq_1.12.0_src_all.tar.gz"
 )
-MD5="c8741a065136a5009c00c6b550d35b81"
+MD5="8b0c9b1c5fb35170ec999dc1875194a9"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

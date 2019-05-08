@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="seqCNA.annot_1.19.0.tar.gz"
+FN="seqCNA.annot_1.20.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/seqCNA.annot_1.19.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/seqCNA.annot_1.19.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-seqcna.annot/bioconductor-seqcna.annot_1.19.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/seqCNA.annot_1.20.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/seqCNA.annot_1.20.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-seqcna.annot/bioconductor-seqcna.annot_1.20.0_src_all.tar.gz"
 )
-MD5="72a9d085e9f1bdb173c87d39c452854b"
+MD5="4a10eacbb147f709e82af786f2566def"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

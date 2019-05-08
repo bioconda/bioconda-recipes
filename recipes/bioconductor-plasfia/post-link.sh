@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="plasFIA_1.11.1.tar.gz"
+FN="plasFIA_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/plasFIA_1.11.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/plasFIA_1.11.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-plasfia/bioconductor-plasfia_1.11.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/plasFIA_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/plasFIA_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-plasfia/bioconductor-plasfia_1.12.0_src_all.tar.gz"
 )
-MD5="7da1f29e502e7f063b95be06f9ab0098"
+MD5="047cd501ce813df543a0e502d20cbbc5"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

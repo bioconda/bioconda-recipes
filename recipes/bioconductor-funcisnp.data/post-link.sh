@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="FunciSNP.data_1.19.0.tar.gz"
+FN="FunciSNP.data_1.20.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/FunciSNP.data_1.19.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/FunciSNP.data_1.19.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-funcisnp.data/bioconductor-funcisnp.data_1.19.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/FunciSNP.data_1.20.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/FunciSNP.data_1.20.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-funcisnp.data/bioconductor-funcisnp.data_1.20.0_src_all.tar.gz"
 )
-MD5="5fc19ee7b6b2e1b84fc8fa489d974541"
+MD5="693316a2d7cea94fbf95e20e011ae1be"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

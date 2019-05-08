@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ALLMLL_1.23.0.tar.gz"
+FN="ALLMLL_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ALLMLL_1.23.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ALLMLL_1.23.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-allmll/bioconductor-allmll_1.23.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ALLMLL_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ALLMLL_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-allmll/bioconductor-allmll_1.24.0_src_all.tar.gz"
 )
-MD5="c397ca62d9ad1061cf89816db7a3b621"
+MD5="90b0a2dc8092018739e3c8b195888311"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PepsNMRData_1.1.0.tar.gz"
+FN="PepsNMRData_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/PepsNMRData_1.1.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/PepsNMRData_1.1.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pepsnmrdata/bioconductor-pepsnmrdata_1.1.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/PepsNMRData_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PepsNMRData_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pepsnmrdata/bioconductor-pepsnmrdata_1.2.0_src_all.tar.gz"
 )
-MD5="6ed178c87eec6c7a6ed4542725a6e14d"
+MD5="4426ad09c50010889fece7df54bf184d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ChIC.data_1.3.32.tar.gz"
+FN="ChIC.data_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ChIC.data_1.3.32.tar.gz"
-  "https://bioarchive.galaxyproject.org/ChIC.data_1.3.32.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-chic.data/bioconductor-chic.data_1.3.32_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ChIC.data_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ChIC.data_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chic.data/bioconductor-chic.data_1.4.0_src_all.tar.gz"
 )
-MD5="d4bcdcdce39289d387775a4df9ca24fb"
+MD5="363188008f53ea5cab5ae873be14365a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

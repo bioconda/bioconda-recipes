@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PCHiCdata_1.11.0.tar.gz"
+FN="PCHiCdata_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/PCHiCdata_1.11.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/PCHiCdata_1.11.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pchicdata/bioconductor-pchicdata_1.11.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/PCHiCdata_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PCHiCdata_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pchicdata/bioconductor-pchicdata_1.12.0_src_all.tar.gz"
 )
-MD5="dcea3d94e7da3d58e4046ef799eabc6b"
+MD5="18936bf2c0bf4b12b969b6bf8141773a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="TabulaMurisData_1.1.1.tar.gz"
+FN="TabulaMurisData_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/TabulaMurisData_1.1.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/TabulaMurisData_1.1.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tabulamurisdata/bioconductor-tabulamurisdata_1.1.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/TabulaMurisData_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TabulaMurisData_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tabulamurisdata/bioconductor-tabulamurisdata_1.2.0_src_all.tar.gz"
 )
-MD5="b86867239ee0dcd3c0f033403f123ac7"
+MD5="ba5ccbb99aed729f12a3805313f53cd3"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

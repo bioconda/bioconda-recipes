@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="tofsimsData_1.11.0.tar.gz"
+FN="tofsimsData_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/tofsimsData_1.11.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/tofsimsData_1.11.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tofsimsdata/bioconductor-tofsimsdata_1.11.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/tofsimsData_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/tofsimsData_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tofsimsdata/bioconductor-tofsimsdata_1.12.0_src_all.tar.gz"
 )
-MD5="90c9a6c9cb3e12d2d74029edd03ceaf4"
+MD5="5d746a53346a01cbf016e711cc70bdd9"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

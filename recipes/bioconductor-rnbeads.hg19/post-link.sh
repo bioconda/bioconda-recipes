@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RnBeads.hg19_1.15.0.tar.gz"
+FN="RnBeads.hg19_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RnBeads.hg19_1.15.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RnBeads.hg19_1.15.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rnbeads.hg19/bioconductor-rnbeads.hg19_1.15.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RnBeads.hg19_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RnBeads.hg19_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rnbeads.hg19/bioconductor-rnbeads.hg19_1.16.0_src_all.tar.gz"
 )
-MD5="154a0a892d13ffe0156c8c974049d0e1"
+MD5="49124fe698070ac641edccd84738a403"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="JctSeqData_1.13.0.tar.gz"
+FN="JctSeqData_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/JctSeqData_1.13.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/JctSeqData_1.13.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-jctseqdata/bioconductor-jctseqdata_1.13.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/JctSeqData_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/JctSeqData_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-jctseqdata/bioconductor-jctseqdata_1.14.0_src_all.tar.gz"
 )
-MD5="872f2a31b85f7fc072b19c25deaccb99"
+MD5="26cbe5468815dbc5bb9d0e86c90cb88d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
