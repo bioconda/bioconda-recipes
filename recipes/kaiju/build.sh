@@ -11,7 +11,7 @@ mkdir -p $PREFIX/bin
 
 cd $SRC_DIR/src/
 
-make
+make CC=${CC} CXX=${CXX}
 
 cd $SRC_DIR/bin/
 cp kaiju-addTaxonNames $PREFIX/bin
