@@ -114,6 +114,6 @@ async def handle_pull_request(event, ghapi):
     head_sha = event.get('pull_request/head/sha')
     logger.info("Handling pull_request/%s #%s (%s)", action, pr_number, head_sha)
     if action in ('opened', 'reopened', 'synchronize'):
-        await asyncio.sleep(5)
+        await asyncio.sleep(30)
         create_check_run.s(head_sha, ghapi, recreate=False).apply_async()
         logger.info("Scheduled create_check_run(recreate=False) for %s", head_sha)
