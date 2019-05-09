@@ -229,30 +229,30 @@ R (CRAN)
 
 .. note::
 
-   Using the ``conda skeleton cran`` method results in a recipe intended to be
-   built for Windows as well, with lines like::
+    Using the ``conda skeleton cran`` method results in a recipe intended to be
+    built for Windows as well, with lines like::
 
-        {% set posix = 'm2-' if win else '' %}
-        {% set native = 'm2w64-' if win else '' %}
+         {% set posix = 'm2-' if win else '' %}
+         {% set native = 'm2w64-' if win else '' %}
 
-   and
+    and
 
-   .. code-block:: yaml
+    .. code-block:: yaml
 
-       test:
-         commands:
-           - $R -e "library('RNeXML')"  # [not win]
-           - "\"%R%\" -e \"library('RNeXML')\""  # [win]
+        test:
+          commands:
+            - $R -e "library('RNeXML')"  # [not win]
+            - "\"%R%\" -e \"library('RNeXML')\""  # [win]
 
-   The bioconda channel does not build for Windows. To keep recipes
-   streamlined, please remove the "set posix" and "set native" lines described
-   above and convert the ``test:commands:`` block to only:
+    The bioconda channel does not build for Windows. To keep recipes
+    streamlined, please remove the "set posix" and "set native" lines described
+    above and convert the ``test:commands:`` block to only:
 
-   .. code-block:: yaml
+    .. code-block:: yaml
 
-       test:
-         commands:
-           - $R -e "library('RNeXML')"
+        test:
+          commands:
+            - $R -e "library('RNeXML')"
 
 Use ``conda skeleton cran <packagename>`` where ``packagename`` is a
 package available on CRAN and is *case-sensitive*. Either run that command
