@@ -227,49 +227,49 @@ R (CRAN)
    Bioconda. If the CRAN package does not have a Bioconductor package dependency, it
    belongs in Conda-Forge.
 
- .. note::
+.. note::
 
-     Using the ``conda skeleton cran`` method results in a recipe intended to be
-     built for Windows as well, with lines like::
+   Using the ``conda skeleton cran`` method results in a recipe intended to be
+   built for Windows as well, with lines like::
 
-          {% set posix = 'm2-' if win else '' %}
-          {% set native = 'm2w64-' if win else '' %}
+        {% set posix = 'm2-' if win else '' %}
+        {% set native = 'm2w64-' if win else '' %}
 
-     and
+   and
 
-     .. code-block:: yaml
+   .. code-block:: yaml
 
-         test:
-           commands:
-             - $R -e "library('RNeXML')"  # [not win]
-             - "\"%R%\" -e \"library('RNeXML')\""  # [win]
+       test:
+         commands:
+           - $R -e "library('RNeXML')"  # [not win]
+           - "\"%R%\" -e \"library('RNeXML')\""  # [win]
 
-     The bioconda channel does not build for Windows. To keep recipes
-     streamlined, please remove the "set posix" and "set native" lines described
-     above and convert the ``test:commands:`` block to only:
+   The bioconda channel does not build for Windows. To keep recipes
+   streamlined, please remove the "set posix" and "set native" lines described
+   above and convert the ``test:commands:`` block to only:
 
-     .. code-block:: yaml
+   .. code-block:: yaml
 
-         test:
-           commands:
-             - $R -e "library('RNeXML')"
+       test:
+         commands:
+           - $R -e "library('RNeXML')"
 
- Use ``conda skeleton cran <packagename>`` where ``packagename`` is a
- package available on CRAN and is *case-sensitive*. Either run that command
- in the ``recipes`` dir or move the recipe it creates to ``recipes``. The
- recipe name will have an ``r-`` prefix and will be converted to
- lowercase. Typically can be used without modification, though
- dependencies may also need recipes. For further details on skeleton entries, you
- can also refer to the `cran skeleton template
- <https://github.com/conda/conda-build/blob/master/conda_build/skeletons/cran.py>`_.
+Use ``conda skeleton cran <packagename>`` where ``packagename`` is a
+package available on CRAN and is *case-sensitive*. Either run that command
+in the ``recipes`` dir or move the recipe it creates to ``recipes``. The
+recipe name will have an ``r-`` prefix and will be converted to
+lowercase. Typically can be used without modification, though
+dependencies may also need recipes. For further details on skeleton entries, you
+can also refer to the `cran skeleton template
+<https://github.com/conda/conda-build/blob/master/conda_build/skeletons/cran.py>`_.
 
- Please remove any unnecessary comments and delete the ``bld.bat`` file which is
- used only on Windows.
+Please remove any unnecessary comments and delete the ``bld.bat`` file which is
+used only on Windows.
 
- If the recipe was created using ``conda skeleton cran`` or the
- ``scripts/bioconductor_skeleton.py`` script, the default test is
- probably sufficient. Otherwise see the examples below to see how tests are
- performed for R packages.
+If the recipe was created using ``conda skeleton cran`` or the
+``scripts/bioconductor_skeleton.py`` script, the default test is
+probably sufficient. Otherwise see the examples below to see how tests are
+performed for R packages.
 
 - recipe for R package not on CRAN, also with patch: `spp
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/r-spp>`_
