@@ -97,7 +97,7 @@ def permissions(member: Optional[bool] = None,
 
 @command_routes.register("hello")
 async def command_hello(ghapi, issue_number, user, *_args):
-    """Simple demo function answering to hello"""
+    """Check whether the bot is listening. If it is, it will answer."""
     msg = f"Hello @{user}!"
     if issue_number:
         await ghapi.create_comment(issue_number, msg)
