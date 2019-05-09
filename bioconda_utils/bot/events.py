@@ -28,7 +28,7 @@ async def handle_comment_created(event, ghapi, *args, **_kwargs):
     """
     issue_number = event.get('issue/number', "NA")
     comment_author = event.get("comment/user/login", "")
-    comment_body = event.get("command/body", "")
+    comment_body = event.get("comment/body", "")
 
     # Ignore self mentions. This is important not only to avoid loops,
     # but critical because we are repeating what non-members say below.
