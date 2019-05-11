@@ -73,8 +73,8 @@ BINDIR=$PREFIX/bin
 mkdir -p $BINDIR
 mkdir -p $INSTALLDIR
 
-make
-make ebseq
+make CXX=$CXX
+make ebseq CXX=$CXX
 
 for i in $binaries; do cp $i $INSTALLDIR && chmod +x $INSTALLDIR/$(basename $i); done
 for i in $binaries; do
