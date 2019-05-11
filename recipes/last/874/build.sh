@@ -31,7 +31,7 @@ for i in $scripts; do cp $SRC_DIR/scripts/$i $PREFIX/bin && chmod +x $PREFIX/bin
 
 chmod +x $SRC_DIR/build/*
 export LIBRARY_PATH=${PREFIX}/lib
-make CXX="g++ $CMAKE_CXX_FLAGS -L${PREFIX}/lib"
+make CXX="$CXX $CMAKE_CXX_FLAGS -L${PREFIX}/lib"
 
 mkdir -p $PREFIX/bin
 for i in $binaries; do cp $SRC_DIR/src/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
