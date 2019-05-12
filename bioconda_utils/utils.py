@@ -1269,7 +1269,7 @@ class AsyncRequests:
                           giveup=lambda ex: ex.code not in [429, 502, 503, 504])
     async def _async_fetch_one(session, url, desc, cb=None, data=None, fd=None):
         result = []
-        async with session.get(url) as resp:
+        async with session.get(url, timeout=None) as resp:
             resp.raise_for_status()
             size = int(resp.headers.get("Content-Length", 0))
             with tqdm(total=size, unit='B', unit_scale=True, unit_divisor=1024,
