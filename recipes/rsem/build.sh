@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+set -x
 
 # main binaries
 make \
