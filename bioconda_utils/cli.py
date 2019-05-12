@@ -540,8 +540,7 @@ def update_pinning(recipe_folder, config, packages="*",
         recip for recip in recipe.load_parallel_iter(recipe_folder, "*")
         if recip.reldir not in blacklist)
 
-    if packages != "*":
-        dag = graph.filter_recipe_dag(dag, packages)
+    dag = graph.filter_recipe_dag(dag, packages, [])
 
     logger.warning("Considering %i recipes", len(dag))
 
@@ -713,10 +712,10 @@ def clean_cran_skeleton(recipe, no_windows=False):
 
 @arg('recipe_folder', help='Path to recipes directory')
 @arg('config', help='Path to yaml file specifying the configuration')
-@arg('--packages',
-     nargs="+",
-     help='Glob for package[s] to show in DAG. Default is to show all '
-     'packages. Can be specified more than once')
+@arg('--packages', nargs="+",
+     help='Glob(s) for package[s] to scan. Can be specified more than once')
+@arg('--exclude', nargs="+",
+     help='Globs for package[s] to exclude from scan. Can be specified more than once')
 @arg('--exclude-subrecipes', help='''By default, only subrecipes explicitly
      enabled for watch in meta.yaml are considered. Set to 'always' to
      exclude all subrecipes.  Set to 'never' to include all subrecipes''')
@@ -761,7 +760,7 @@ def clean_cran_skeleton(recipe, no_windows=False):
 @enable_logging()
 @enable_debugging()
 @enable_threads()
-def autobump(recipe_folder, config, packages='*', cache=None,
+def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
              failed_urls=None, unparsed_urls=None, recipe_status=None,
              exclude_subrecipes=None, exclude_channels='conda-forge',
              ignore_blacklists=False,
@@ -784,11 +783,11 @@ def autobump(recipe_folder, config, packages='*', cache=None,
 
     if no_follow_graph:
         recipe_source = autobump.RecipeSource(
-            recipe_folder, packages, not no_shuffle)
+            recipe_folder, packages, exclude, not no_shuffle)
         no_skip_pending_deps = True
     else:
         recipe_source = autobump.RecipeGraphSource(
-            recipe_folder, packages, not no_shuffle,
+            recipe_folder, packages, exclude, not no_shuffle,
             config_dict, cache_fn=cache and cache + "_dag.pkl")
 
     # Setup scanning pipeline

@@ -709,7 +709,7 @@ def parallel_iter(func, items, desc, *args, **kwargs):
 
 
 
-def get_recipes(recipe_folder, package="*"):
+def get_recipes(recipe_folder, package="*", exclude=None):
     """
     Generator of recipes.
 
@@ -725,12 +725,18 @@ def get_recipes(recipe_folder, package="*"):
     """
     if isinstance(package, str):
         package = [package]
+    if isinstance(exclude, str):
+        exclude = [exclude]
+    if exclude is None:
+        exclude = []
     for p in package:
         logger.debug("get_recipes(%s, package='%s'): %s",
                      recipe_folder, package, p)
         path = os.path.join(recipe_folder, p)
         for new_dir in glob.glob(path):
             for dir_path, dir_names, file_names in os.walk(new_dir):
+                if any(fnmatch.fnmatch(dir_path[len(recipe_folder):], pat) for pat in exclude):
+                    continue
                 if "meta.yaml" in file_names:
                     yield dir_path
 

@@ -95,9 +95,10 @@ class RecipeSource:
       packages: list of packages, may contain globs
       shuffle: If true, package order will be randomized.
     """
-    def __init__(self, recipe_base: str, packages: List[str], shuffle: bool=True) -> None:
+    def __init__(self, recipe_base: str, packages: List[str], exclude: List[str],
+                 shuffle: bool=True) -> None:
         self.recipe_base = recipe_base
-        self.recipe_dirs = list(utils.get_recipes(recipe_base, packages))
+        self.recipe_dirs = list(utils.get_recipes(recipe_base, packages, exclude))
         if shuffle:
             random.shuffle(self.recipe_dirs)
         logger.warning("Selected %i packages", len(self.recipe_dirs))
@@ -117,15 +118,14 @@ class RecipeSource:
 
 
 class RecipeGraphSource(RecipeSource):
-    def __init__(self, recipe_base: str, packages: List[str], shuffle: bool,
-                 config: Dict[str, str], cache_fn: str = None) -> None:
-        super().__init__(recipe_base, packages, shuffle)
+    def __init__(self, recipe_base: str, packages: List[str], exclude: List[str],
+                 shuffle: bool, config: Dict[str, str], cache_fn: str = None) -> None:
+        super().__init__(recipe_base, packages, exclude, shuffle)
         self.config = config
         self.cache_fn = cache_fn
         self.shuffle = shuffle
         self.dag = self.load_graph()
-        if packages != '*':
-            self.dag = graph.filter_recipe_dag(self.dag, packages)
+        self.dag = graph.filter_recipe_dag(self.dag, packages, exclude)
         logger.warning("Graph contains %i packages (blacklist excluded)", len(self.dag))
 
     async def queue_items(self, send_q, return_q):
