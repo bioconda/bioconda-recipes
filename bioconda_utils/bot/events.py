@@ -13,7 +13,7 @@ import re
 import gidgethub.routing
 
 from .commands import command_routes
-from .tasks import lint_check, create_check_run, check_circle_artifacts
+from . import tasks
 from .config import APP_ID
 
 
@@ -67,7 +67,7 @@ async def handle_check_suite(event, ghapi):
     if action not in ['requested', 'rerequested']:
         return
     head_sha = event.get("check_suite/head_sha")
-    create_check_run.apply_async((head_sha, ghapi))
+    tasks.create_check_run.apply_async((head_sha, ghapi))
     logger.info("Scheduled create_check_run for %s", head_sha)
 
 
@@ -84,7 +84,7 @@ async def handle_check_run(event, ghapi):
                 # PR away from us, not to us
                 continue
             pr_number = int(pr["number"])
-            check_circle_artifacts.s(pr_number, ghapi).apply_async()
+            tasks.check_circle_artifacts.s(pr_number, ghapi).apply_async()
             logger.info("Scheduled check_circle_artifacts on #%s", pr_number)
 
     # Ignore check runs coming from other apps
@@ -92,11 +92,11 @@ async def handle_check_run(event, ghapi):
         return
 
     if action == "rerequested":
-        create_check_run.apply_async((head_sha, ghapi))
+        tasks.create_check_run.apply_async((head_sha, ghapi))
         logger.info("Scheduled create_check_run for %s", head_sha)
     elif action == "created":
         check_run_number = event.get('check_run/id')
-        lint_check.apply_async((check_run_number, head_sha, ghapi))
+        tasks.lint_check.apply_async((check_run_number, head_sha, ghapi))
         logger.info("Scheduled lint_check for %s %s", check_run_number, head_sha)
 
 
@@ -118,5 +118,5 @@ async def handle_pull_request(event, ghapi):
     head_sha = event.get('pull_request/head/sha')
     logger.info("Handling pull_request/%s #%s (%s)", action, pr_number, head_sha)
     if action in ('opened', 'reopened', 'synchronize'):
-        create_check_run.s(head_sha, ghapi, recreate=False).apply_async(countdown=30)
+        tasks.create_check_run.s(head_sha, ghapi, recreate=False).apply_async(countdown=30)
         logger.info("Scheduled create_check_run(recreate=False) for %s", head_sha)
