@@ -4,7 +4,7 @@
 make \
     CXX=$CXX \
     CXXFLAGS="$CXXFLAGS" \
-    CPPFLAGS="$CPPFLAGS -I$PREFIX/include" \
+    CPPFLAGS="$CPPFLAGS -I$PREFIX/include -I." \
     SAMLIBS=$PREFIX/lib/libhts.so \
     SAMHEADERS=$PREFIX/include/htslib/sam.h \
     LDFLAGS="$LDFLAGS -L$PREFIX/lib" \
