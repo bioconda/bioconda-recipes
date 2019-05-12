@@ -2,6 +2,8 @@
 
 set -x -e
 
+CXX=$CXX
+
 pushd $SRC_DIR
 
 binaries="\
