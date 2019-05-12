@@ -1,4 +1,5 @@
 #!/bin/bash
+find / -name "libGL.so.1" -print
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R
