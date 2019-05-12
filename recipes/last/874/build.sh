@@ -26,8 +26,9 @@ last-dotplot \
 for i in $scripts; do cp $SRC_DIR/scripts/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
 
 chmod +x $SRC_DIR/build/*
-export LIBRARY_PATH=${PREFIX}/lib
-make CXX="$CXX" CXXFLAGS="${CXXFLAGS} -L${PREFIX}/lib"
+pushd src
+make CXX="$CXX" CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" LDFLAGS="-L${PREFIX}/lib -lz"
+popd
 
 mkdir -p $PREFIX/bin
 for i in $binaries; do cp $SRC_DIR/src/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
