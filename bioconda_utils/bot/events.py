@@ -1,5 +1,10 @@
 """
 Handlers for incoming Github Events
+
+Note:
+  The incoming webhook from Github is still open and unanswered
+  while these are processed. Commands should not do anything taking
+  more than milliseconds.
 """
 
 import logging
