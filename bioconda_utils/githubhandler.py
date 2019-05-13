@@ -145,8 +145,11 @@ class GitHubHandler:
         if not self.token:
             self.username = "UNKNOWN [no token]"
         else:
-            user = await self.api.getitem("/user")
-            self.username = user["login"]
+            try:
+                user = await self.api.getitem("/user")
+                self.username = user["login"]
+            except gidgethub.GitHubException:
+                pass
 
     async def iter_teams(self) -> AsyncIterator[Dict[str, Any]]:
         """List organization teams
