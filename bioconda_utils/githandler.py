@@ -128,7 +128,7 @@ class GitHandlerBase():
             pass
         return None
 
-    def get_remote_branch(self, branch_name: str, try_fetch=False):
+    def get_remote_branch(self, branch_name: str, try_fetch=True):
         """Finds fork remote branch named **branch_name**"""
         if branch_name in self.fork_remote.refs:
             return self.fork_remote.refs[branch_name]
