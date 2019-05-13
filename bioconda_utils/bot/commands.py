@@ -83,7 +83,7 @@ def permissions(member: Optional[bool] = None,
             msg = okmsg or f"Permission denied. You need to be {' or '.join(err)}."
 
             logger.warning("Access %s: %s wants to run %s on %s#%s ('%s')",
-                           "GRANTED" if ok else "DENIED",
+                           "GRANTED" if okmsg else "DENIED",
                            user, func.__name__, ghapi, issue_number, msg)
             if okmsg:
                 return await func(ghapi, issue_number, user, *args)
