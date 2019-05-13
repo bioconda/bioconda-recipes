@@ -273,7 +273,7 @@ class GitHubHandler:
           Number of PRs that **user** has opened so far
         """
         result = await self.search_issues(pr=True, author=user)
-        return result.get('total_count', 0):
+        return result.get('total_count', 0)
 
     async def is_org(self) -> bool:
         """Check if we are operating on an organization"""
