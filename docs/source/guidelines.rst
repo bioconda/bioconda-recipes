@@ -222,8 +222,10 @@ R (CRAN)
 
 .. note::
 
-   The majority of R packages on CRAN are generic and should therefore be submitted
-   at Conda-Forge.
+   Most R packages on CRAN should be submitted at Conda-Forge.
+   Specifically, if the CRAN package has a Bioconductor package dependency, it belongs in
+   Bioconda. If the CRAN package does not have a Bioconductor package dependency, it
+   belongs in Conda-Forge.
 
 .. note::
 
@@ -289,7 +291,8 @@ will be converted to lowercase.  Data packages will be detected automatically,
 and a post-link script (see https://github.com/bioconda/bioconda-utils/pull/169
 for details). Typically the resulting recipe can be used without modification,
 though dependencies may also need recipes. Recipes for dependencies with an
-``r-`` prefix should be created using ``conda skeleton cran``; see above.
+``r-`` prefix should be created at Conda-Forge unless the CRAN package has a
+Bioconductor dependency; see `R (CRAN)` above.
 
 - typical bioconductor recipe: `bioconductor-limma/meta.yaml
   <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/bioconductor-limma>`_
@@ -556,7 +559,7 @@ we prefixed the Python package with ``python-`` (see `python-weblogo
 <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/python-weblogo>`_).
 
 If in doubt about how to handle a naming collision, please submit an
-issue, or ask ``@bioconda/core`` in a PR. 
+issue, or ask ``@bioconda/core`` in a PR.
 
 .. _tests:
 
