@@ -1,51 +1,47 @@
+{% set name = "epic2" %}
+{% set version = "0.0.33" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "324b55a39b4b785019b35ff81fe33eb830b57bffb049159192cedc76ea95aa69" %}
+
 package:
-  name: epic2
-  version: "0.0.33"
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  url: https://files.pythonhosted.org/packages/01/36/15fb34fc9263dd434aa4b3703380e22b6273f59958c7449fa93d1290834a/epic2-0.0.33.tar.gz
-  sha256: 324b55a39b4b785019b35ff81fe33eb830b57bffb049159192cedc76ea95aa69
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
 
-build: 
+build:
   number: 0
-  skip: 
-    True  # [osx]
+  script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
   host:
     - python
-    - cython
     - setuptools
     - scipy
     - numpy
-    - pysam
     - natsort
-    - functools32  # [py27]
-    - htslib
-    - libdeflate
+    - cython
+    - pysam
+    - pandas
+    - pyranges
   run:
     - python
-    - cython
     - scipy
     - numpy
-    - pysam
     - natsort
-    - functools32 # [py27]
-    - htslib
-    - libdeflate
-
+    - cython
+    - pysam
+    - pandas
+    - pyranges
 
 test:
-  # Python imports
   imports:
     - epic2
-  commands:
-    - epic2 -h
 
 about:
   home: http://github.com/endrebak/epic2
   license: MIT
-  summary: 'Ultraperformant Chip-Seq broad domain finder based on SICER.'
+  summary: Ultraperformant ChIP-Seq broad peak/domain finder.
