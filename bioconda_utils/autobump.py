@@ -960,8 +960,10 @@ class GitLoadRecipe(GitFilter):
             self.git.delete_local_branch(local_branch)
 
         logger.debug("Recipe %s: loading from master", recipe)
-        recipe_text = await self.pipeline.run_io(self.git.read_from_branch,
-                                                 self.git.master, recipe.path)
+        recipe_text = await self.pipeline.run_io(
+            self.git.read_from_branch,
+            self.git.get_local_branch('master'),
+            recipe.path)
         recipe.load_from_string(recipe_text)
         recipe.set_original()
 

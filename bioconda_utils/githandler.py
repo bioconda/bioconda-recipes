@@ -407,12 +407,11 @@ class GitHandler(GitHandlerBase):
 
         #: Branch to restore after running
         self.prev_active_branch = self.repo.active_branch
-        self.master = self.get_local_branch("master")
 
     def checkout_master(self):
         """Check out master branch (original branch restored by `close()`)"""
         logger.warning("Checking out master")
-        self.master.checkout()
+        self.get_local_branch("master").checkout()
         logger.info("Updating master to latest project master")
         self.home_remote.pull("master")
         logger.info("Updating and pruning remotes")
