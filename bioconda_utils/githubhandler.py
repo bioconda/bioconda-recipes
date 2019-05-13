@@ -1,6 +1,7 @@
 """Wrappers for Github Web-API Bindings"""
 
 import abc
+import base64
 import datetime
 import logging
 import time
@@ -61,6 +62,7 @@ class GitHubHandler:
     CHECK_RUN         = "/repos/{user}/{repo}/check-runs{/id}"
     GET_CHECK_RUNS    = "/repos/{user}/{repo}/commits/{commit}/check-runs"
     GET_STATUSES      = "/repos/{user}/{repo}/commits/{commit}/statuses"
+    CONTENTS          = "/repos/{user}/{repo}/contents/{path}{?ref}"
 
     ORG_MEMBERS       = "/orgs/{user}/members{/username}"
     ORG               = "/orgs/{user}"
@@ -698,6 +700,33 @@ class GitHubHandler:
             return False, "Not all required checks have passed"
 
         return True, "LGTM"
+
+    async def get_contents(self, path: str, ref: str = None) -> str:
+        """Get contents of a file in repo
+
+        Arguments:
+          path: file path
+          ref: git reference (branch, commit, tag)
+
+        Returns:
+          The contents of the file
+
+        Raises:
+          RuntimeError if the content encoding is not understood.
+          (Should always be base64)
+        """
+        var_data = copy(self.var_default)
+        var_data['path'] = path
+        if ref:
+            var_data['ref'] = ref
+        else:
+            ref = 'master'
+        result = await self.api.getitem(self.CONTENTS, var_data)
+        if result['encoding'] != 'base64':
+            raise RuntimeError(f"Got unknown encoding for {self}/{path}:{ref}")
+        content_bytes = base64.b64decode(result['content'])
+        content = content_bytes.decode('utf-8')
+        return content
 
 
 class AiohttpGitHubHandler(GitHubHandler):
