@@ -210,8 +210,8 @@ class Scanner(AsyncPipeline[Recipe]):
         logger.info("SUM: %i", sum(self.stats.values()))
         if self.status_fn:
             with open(self.status_fn, "w") as out:
-                for entry in self.status:
-                    out.write('\t'.join(entry)+"\n")
+                for rname, result in self.status:
+                    out.write(f'{rname}\t{result.name}')
         return res
 
     async def queue_items(self, send_q, return_q):
@@ -235,7 +235,7 @@ class Scanner(AsyncPipeline[Recipe]):
             return False
         except EndProcessingItem as recipe_error:
             self.stats[recipe_error.name] += 1
-            self.status.append((recipe.reldir, recipe_error.name))
+            self.status.append((recipe.reldir, recipe_error))
             res = True
         return res
 
