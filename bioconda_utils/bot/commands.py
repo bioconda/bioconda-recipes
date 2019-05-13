@@ -156,6 +156,7 @@ async def command_merge(ghapi, issue_number, user, *_args):
 
 @command_routes.register("autobump")
 @permissions(member=True)
-async def command_autobump(ghapi, _issue_number, _user, args):
+async def command_autobump(ghapi, _issue_number, _user, *args):
     """Run Autobump on recipes"""
     tasks.run_autobump.s(args, ghapi).apply_async()
+    return f"Scheduled autobump check of recipe(s) {', '.join(args)}"
