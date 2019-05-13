@@ -68,6 +68,8 @@ class GitHubHandler:
 
     TEAMS_MEMBERSHIP  = "/teams/{team_id}/memberships/{username}"
 
+    SEARCH_ISSUES     = "/search/issues?q="
+
     STATE = IssueState
 
     def __init__(self, token: str = None,
@@ -238,6 +240,38 @@ class GitHubHandler:
         if team:
             return await self.is_team_member(username, team)
         return True
+
+    async def search_issues(self, author=None, pr=False, issue=False):
+        """Search issues/PRs on our repos
+
+        Arguments:
+          author: login name of user to search
+          pr: whether to consider only PRs
+          issue: whether to consider only non-PR issues
+        """
+        query = ["org:" + self.user]
+
+        if pr and not issue:
+            query += ["is:pr"]
+        elif issue and not pr:
+            query += ["is:issue"]
+
+        if author:
+            query += ["author:" + author]
+
+        return await self.api.getitem(self.SEARCH_ISSUES + '+'.join(query))
+
+    async def get_pr_count(self, user) -> int:
+        """Get the number of PRs opened by user
+
+        Arguments:
+          user: login of user to query
+
+        Returns:
+          Number of PRs that **user** has opened so far
+        """
+        result = await self.search_issues(pr=True, author=user)
+        return result.get('total_count', 0):
 
     async def is_org(self) -> bool:
         """Check if we are operating on an organization"""
