@@ -117,6 +117,9 @@ async def handle_pull_request(event, ghapi):
     pr_number = int(event.get('number'))
     head_sha = event.get('pull_request/head/sha')
     logger.info("Handling pull_request/%s #%s (%s)", action, pr_number, head_sha)
+    if action == "opened":
+        tasks.create_welcome_post(pr_number)
+
     if action in ('opened', 'reopened', 'synchronize'):
         tasks.create_check_run.s(head_sha, ghapi, recreate=False).apply_async(countdown=30)
         logger.info("Scheduled create_check_run(recreate=False) for %s", head_sha)

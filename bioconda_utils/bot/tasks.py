@@ -460,3 +460,18 @@ async def post_result(result: Tuple[bool, str], pr_number: int, comment_id: int,
     message = f"@{user}, your request to {prefix} {status}: {result[1]}"
     await ghapi.create_comment(pr_number, message)
     logger.warning("message %s", message)
+
+
+@celery.task(acks_late=True)
+async def create_welcome_post(pr_number: int, ghapi):
+    """Post welcome message for first timers"""
+    prq = await ghapi.get_prs(number=pr_number)
+    pr_author = prq['user']['login']
+    if await ghapi.get_pr_count(pr_author) > 1:
+        logger.error("PR %#s is not %s's first", pr_number, pr_author)
+        return
+    logger.error("PR %#s is %s's first PR - posting welcome msg", pr_number, pr_author)
+    message_tpl_str = await ghapi.get_contents(".github/welcome_new_contributor.md")
+    message_tpl = utils.jinja_silent_undef.from_string(message_tpl_str)
+    message = message_tpl.render(user=pr_author)
+    await ghapi.create_comment(pr_number, message)
