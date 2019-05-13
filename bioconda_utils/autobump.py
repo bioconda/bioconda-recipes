@@ -103,14 +103,20 @@ class RecipeSource:
         logger.warning("Selected %i packages", len(self.recipe_dirs))
 
     async def queue_items(self, send_q, return_q):
+        n_items = 0
         for recipe_dir in self.recipe_dirs:
             await send_q.put(Recipe(recipe_dir, self.recipe_base))
+            n_items += 1
             while return_q.qsize():
                 try:
                     return_q.get_nowait()
                     return_q.task_done()
+                    n_items -= 1
                 except asyncio.QueueEmpty:
                     break
+        for n in range(n_items):
+            await return_q.get()
+            return_q.task_done()
 
     def get_item_count(self):
         return len(self.recipe_dirs)
