@@ -97,7 +97,6 @@ class Checkout:
             os.chdir(self.git.tempdir.name)
 
             if not ref:
-                logger.error("here")
                 branch = self.git.get_local_branch(branch_name)
             else:
                 branch = self.git.create_local_branch(branch_name, ref)
