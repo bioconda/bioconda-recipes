@@ -58,7 +58,8 @@ def bioconductor_versions():
     response = requests.get(url)
     bioc_config = yaml.load(response.text)
     versions = list(bioc_config["r_ver_for_bioc_ver"].keys())
-    versions = sorted(versions, key=float, reverse=True)
+    # Handle semantic version sorting like 3.10 and 3.9
+    versions = sorted(versions, key=lambda v: list(map(int, v.split('.'))), reverse=True)
     return versions
 
 
@@ -344,7 +345,7 @@ class BioCProjectPage(object):
         it exists.
         """
         url = cargoport_url(self.package, self.version, self.bioc_version)
-        response = requests.get(url)
+        response = requests.head(url)
         if response.status_code == 404:
             # This is expected if this is a new package or an updated version.
             # Cargo Port will archive a working URL upon merging

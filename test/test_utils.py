@@ -30,6 +30,9 @@ TEST_LABEL = 'bioconda-utils-test'
 # any tests that depend on a fixture that uses PARAMS will run twice (once with
 # docker, once without). On OSX, only the non-docker runs.
 
+# Docker ref for build container
+DOCKER_BASE_IMAGE = "bioconda/bioconda-utils-build-env:latest"
+
 SKIP_DOCKER_TESTS = sys.platform.startswith('darwin')
 
 if SKIP_DOCKER_TESTS:
@@ -94,7 +97,9 @@ def single_build(request, recipes_fixture):
     Builds the "one" recipe.
     """
     if request.param:
-        docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True, docker_base_image="bioconda-utils-build-env:latest")
+        docker_builder = docker_utils.RecipeBuilder(
+            use_host_conda_bld=True,
+            docker_base_image=DOCKER_BASE_IMAGE)
         mulled_test = True
     else:
         docker_builder = None
@@ -119,7 +124,9 @@ def multi_build(request, recipes_fixture, config_fixture):
     Builds the "one", "two", and "three" recipes.
     """
     if request.param:
-        docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True, docker_base_image="bioconda-utils-build-env:latest")
+        docker_builder = docker_utils.RecipeBuilder(
+            use_host_conda_bld=True,
+            docker_base_image=DOCKER_BASE_IMAGE)
         mulled_test = True
     else:
         docker_builder = None
@@ -217,7 +224,9 @@ def test_docker_builder_build(recipes_fixture):
     """
     Tests just the build_recipe method of a RecipeBuilder object.
     """
-    docker_builder = docker_utils.RecipeBuilder(use_host_conda_bld=True, docker_base_image="bioconda-utils-build-env:latest")
+    docker_builder = docker_utils.RecipeBuilder(
+        use_host_conda_bld=True,
+        docker_base_image=DOCKER_BASE_IMAGE)
     pkgs = recipes_fixture.pkgs['one']
     docker_builder.build_recipe(
         recipes_fixture.recipe_dirs['one'], build_args='', env={})
@@ -227,9 +236,11 @@ def test_docker_builder_build(recipes_fixture):
 
 @pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')
 def test_docker_build_fails(recipes_fixture, config_fixture):
-    "test for expected failure when a recipe fails to build"
+    """
+    Test for expected failure when a recipe fails to build
+    """
     docker_builder = docker_utils.RecipeBuilder(
-        docker_base_image="bioconda-utils-build-env:latest",
+        docker_base_image=DOCKER_BASE_IMAGE,
         build_script_template="exit 1")
     assert docker_builder.build_script_template == 'exit 1'
     result = build.build_recipes(
@@ -244,12 +255,12 @@ def test_docker_build_fails(recipes_fixture, config_fixture):
 @pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')
 def test_docker_build_image_fails():
     template = (
-        """
-        FROM bioconda/bioconda-utils-build-env
+        f"""
+        FROM {DOCKER_BASE_IMAGE}
         RUN nonexistent command
         """)
     with pytest.raises(sp.CalledProcessError):
-        docker_utils.RecipeBuilder(dockerfile_template=template)
+        docker_utils.RecipeBuilder(dockerfile_template=template, build_image=True)
 
 
 def test_conda_purge_cleans_up():

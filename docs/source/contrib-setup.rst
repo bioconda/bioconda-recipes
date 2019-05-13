@@ -53,21 +53,24 @@ update your branch with the upstream master branch::
 
 Install the Circle CI client (optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-This is optional in the sense that you can still contribute without it, but
-installing the Circle CI client allows you to test your recipes before pushing
-them by simulating the online Circle CI tests locally. Resolving problems
-locally before pushing changes will conserve online build time and quota.
+Queue times on CircleCI may sometimes make it more convenient and
+faster to work on complex packages locally. You can execute an almost
+exact copy of our Linux build pipeline by `installing the CircleCI client
+locally <https://circleci.com/docs/2.0/local-cli>`_ and running it
+from the folder where your copy of **bioconda-recipes** resides::
 
-Installation instructions can be found `here <https://circleci.com/docs/2.0/local-cli>`_.
+    circleci build
 
-.. note::
+Should you encounter "weird" errors, try updating your local copy
+of the build environment image::
 
-    For contributors who have used ``simulate-travis.py`` for local testing:
-    our move from Travis-CI to Circle CI means that ``simulate-travis.py`` is
-    now deprecated.
+    docker pull bioconda/bioconda-utils-build-env:latest
+    
+If the error persists, ask for help on our
+`Gitter channel <https://gitter.im/bioconda/Lobby>`_ and/or file an 
+issue at
+`bioconda-utils <https://github.com/bioconda/bioconda-utils>`_.
 
-    Instead of ``simulate-travis.py``, please install the Circle CI client and
-    run ``circleci build``.
 
 Request to be added to the bioconda team (optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

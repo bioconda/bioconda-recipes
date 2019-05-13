@@ -51,7 +51,7 @@ help:
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILDDIR)/*
+	rm -rf $(BUILDDIR)/* _bioconda_recipes source/_autosummary source/recipes
 
 .PHONY: html
 html:

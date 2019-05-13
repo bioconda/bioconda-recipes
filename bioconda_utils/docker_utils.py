@@ -122,8 +122,8 @@ chown $HOST_USER:$HOST_USER {self.container_staging}/{arch}/*
 
 DOCKERFILE_TEMPLATE = \
 """
-FROM {self.docker_base_image}
-{self.proxies}
+FROM {docker_base_image}
+{proxies}
 RUN /opt/conda/bin/conda install -y conda={conda_ver} conda-build={conda_build_ver}
 """  # noqa: E122 continuation line missing indentation or outdented
 
@@ -190,8 +190,9 @@ class RecipeBuilder(object):
         use_host_conda_bld=False,
         pkg_dir=None,
         keep_image=False,
+        build_image=False,
         image_build_dir=None,
-        docker_base_image=None,
+        docker_base_image='bioconda/bioconda-utils-build-env:latest'
     ):
         """
         Class to handle building a custom docker container that can be used for
@@ -257,6 +258,11 @@ class RecipeBuilder(object):
             In all cases, **pkg_dir** will be mounted to **container_staging** in
             the container.
 
+        build_image : bool
+            Build a local layer on top of the **docker_base_image** layer using
+            **dockerfile_template**. This can be used to adjust the versions of
+            conda and conda-build in the build container.
+
         keep_image : bool
             By default, the built docker image will be removed when done,
             freeing up storage space.  Set ``keep_image=True`` to disable this
@@ -270,51 +276,15 @@ class RecipeBuilder(object):
             Name of base image that can be used in **dockerfile_template**.
             Defaults to 'bioconda/bioconda-utils-build-env:latest'
         """
-        self.tag = tag
         self.requirements = requirements
         self.conda_build_args = ""
         self.build_script_template = build_script_template
         self.dockerfile_template = dockerfile_template
         self.keep_image = keep_image
-        if docker_base_image is None:
-            docker_base_image = 'bioconda/bioconda-utils-build-env:latest'
+        self.build_image = build_image
+        self.image_build_dir = image_build_dir
         self.docker_base_image = docker_base_image
-
-        # To address issue #5027:
-        #
-        # https_proxy is the standard name, but conda looks for HTTPS_PROXY in all
-        # caps. So we look for both in the current environment. If both exist
-        # then ensure they have the same value; otherwise use whichever exists.
-        #
-        # Note that the proxy needs to be in the image when building it, and
-        # that the proxies need to be set before the conda install command. The
-        # position of `{self.proxies}` in `dockerfile_template` should reflect
-        # this.
-        _proxies = []
-        http_proxy = set([
-            os.environ.get('http_proxy', None),
-            os.environ.get('HTTP_PROXY', None)
-        ]).difference([None])
-
-        https_proxy = set([
-            os.environ.get('https_proxy', None),
-            os.environ.get('HTTPS_PROXY', None)
-        ]).difference([None])
-
-        if len(http_proxy) == 1:
-            proxy = list(http_proxy)[0]
-            _proxies.append('ENV http_proxy {0}'.format(proxy))
-            _proxies.append('ENV HTTP_PROXY {0}'.format(proxy))
-        elif len(http_proxy) > 1:
-            raise ValueError("http_proxy and HTTP_PROXY have different values")
-
-        if len(https_proxy) == 1:
-            proxy = list(https_proxy)[0]
-            _proxies.append('ENV https_proxy {0}'.format(proxy))
-            _proxies.append('ENV HTTPS_PROXY {0}'.format(proxy))
-        elif len(https_proxy) > 1:
-            raise ValueError("https_proxy and HTTPS_PROXY have different values")
-        self.proxies = '\n'.join(_proxies)
+        self.docker_temp_image = tag
 
         # find and store user info
         uid = os.getuid()
@@ -345,8 +315,8 @@ class RecipeBuilder(object):
         for i, config_file in enumerate(utils.get_conda_build_config_files()):
             dst_file = self._get_config_path(self.pkg_dir, i, config_file)
             shutil.copyfile(config_file.path, dst_file)
-
-        self._build_image(image_build_dir)
+        if self.build_image:
+            self._build_image()
 
     def _get_config_path(self, staging_prefix, i, config_file):
         src_basename = os.path.basename(config_file.path)
@@ -354,22 +324,34 @@ class RecipeBuilder(object):
         return os.path.join(staging_prefix, dst_basename)
 
     def __del__(self):
-        if not self.keep_image:
-            self.cleanup()
+        self.cleanup()
 
-    def _build_image(self, image_build_dir):
+    def _find_proxy_settings(self):
+        res = {}
+        for var in ('http_proxy', 'https_proxy'):
+            values = set([
+                os.environ.get(var, None),
+                os.environ.get(var.upper(), None)
+            ]).difference([None])
+            if len(values) == 1:
+                res[var] = next(iter(values))
+            elif len(values) > 1:
+                raise ValueError(f"{var} and {var.upper()} have different values")
+        return res
+
+    def _build_image(self):
         """
         Builds a new image with requirements installed.
         """
 
-        if image_build_dir is None:
+        if self.image_build_dir is None:
             # Create a temporary build directory since we'll be copying the
             # requirements file over
             build_dir = tempfile.mkdtemp()
         else:
-            build_dir = image_build_dir
+            build_dir = self.image_build_dir
 
-        logger.info('DOCKER: Building image "%s" from %s', self.tag, build_dir)
+        logger.info('DOCKER: Building image "%s" from %s', self.docker_temp_image, build_dir)
         with open(os.path.join(build_dir, 'requirements.txt'), 'w') as fout:
             if self.requirements:
                 fout.write(open(self.requirements).read())
@@ -379,9 +361,13 @@ class RecipeBuilder(object):
                     'bioconda_utils-requirements.txt')
                 ).read())
 
+        proxies = "\n".join("ENV {} {}".format(k, v)
+                            for k, v in self._find_proxy_settings())
+
         with open(os.path.join(build_dir, "Dockerfile"), 'w') as fout:
             fout.write(self.dockerfile_template.format(
-                self=self,
+                docker_base_image=self.docker_base_image,
+                proxies=proxies,
                 conda_ver=conda.__version__,
                 conda_build_ver=conda_build.__version__)
             )
@@ -409,14 +395,14 @@ class RecipeBuilder(object):
                     'docker', 'build',
                     # xref #5027
                     '--network', 'host',
-                    '-t', self.tag,
+                    '-t', self.docker_temp_image,
                     build_dir
             ]
         else:
             # Network flag was added in 1.13.0, do not add it for lower versions. xref #5387
             cmd = [
                     'docker', 'build',
-                    '-t', self.tag,
+                    '-t', self.docker_temp_image,
                     build_dir
             ]
 
@@ -426,11 +412,11 @@ class RecipeBuilder(object):
         except sp.CalledProcessError as e:
             logger.error(
                 'DOCKER FAILED: Error building docker container %s. ',
-                self.tag)
+                self.docker_temp_image)
             raise e
 
-        logger.info('DOCKER: Built docker image tag=%s', self.tag)
-        if image_build_dir is None:
+        logger.info('DOCKER: Built docker image tag=%s', self.docker_temp_image)
+        if self.image_build_dir is None:
             shutil.rmtree(build_dir)
         return p
 
@@ -495,10 +481,13 @@ class RecipeBuilder(object):
             '-v', '{0}:/opt/build_script.bash'.format(build_script),
             '-v', '{0}:{1}'.format(self.pkg_dir, self.container_staging),
             '-v', '{0}:{1}'.format(recipe_dir, self.container_recipe),
-        ] + env_list + [
-            self.tag,
-            '/bin/bash', '/opt/build_script.bash',
         ]
+        cmd += env_list
+        if self.build_image:
+            cmd += [self.docker_temp_image]
+        else:
+            cmd += [self.docker_base_image]
+        cmd += ['/bin/bash', '/opt/build_script.bash']
 
         logger.debug('DOCKER: cmd: %s', cmd)
         with utils.Progress():
@@ -506,5 +495,6 @@ class RecipeBuilder(object):
         return p
 
     def cleanup(self):
-        cmd = ['docker', 'rmi', self.tag]
-        utils.run(cmd, mask=False)
+        if self.build_image and not self.keep_image:
+            cmd = ['docker', 'rmi', self.docker_temp_image]
+            utils.run(cmd, mask=False)

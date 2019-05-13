@@ -6,8 +6,9 @@ import time
 
 import aiohttp
 
-from .config import BOT_NAME, APP_KEY, APP_ID
+from .config import BOT_NAME, APP_KEY, APP_ID, GITTER_TOKEN, GITTER_CHANNELS
 from .views import web_routes
+from .chat import GitterListener
 from .. import utils
 from ..githubhandler import GitHubAppHandler
 from .. import __version__ as VERSION
@@ -34,15 +35,22 @@ async def start():
 
     # Prepare persistent client session
     app['client_session'] = aiohttp.ClientSession()
-    async def close_session(app):
-        await app['client_session'].close()
-    app.on_shutdown.append(close_session)
-
     app['ghappapi'] = GitHubAppHandler(app['client_session'],
                                        BOT_NAME, APP_KEY, APP_ID)
 
+    app['gitter_listener'] = GitterListener(
+        app, GITTER_TOKEN, GITTER_CHANNELS, app['client_session'],
+        app['ghappapi'])
+
     # Add routes collected above
     app.add_routes(web_routes)
+
+    # Close session - this needs to be at the end of the
+    # on shutdown pieces so the client session remains available
+    # until everything is done.
+    async def close_session(app):
+        await app['client_session'].close()
+    app.on_shutdown.append(close_session)
 
     return app
 

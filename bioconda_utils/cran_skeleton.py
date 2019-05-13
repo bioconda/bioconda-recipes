@@ -84,7 +84,7 @@ def write_recipe(package, recipe_dir='.', recursive=False, force=False,
         if os.path.exists(outdir):
             if force:
                 logger.warning('Removing %s', outdir)
-                run(['rm', '-r', outdir])
+                run(['rm', '-r', outdir], mask=False)
             else:
                 logger.warning('%s exists, skipping', outdir)
                 return

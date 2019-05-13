@@ -162,7 +162,13 @@ class GitHandlerBase():
             )
         rel_file_name = abs_file_name[len(abs_repo_root):].lstrip("/")
         commit = getattr(branch, 'commit', branch)
-        return (commit.tree / rel_file_name).data_stream.read().decode("utf-8")
+        blob = commit.tree / rel_file_name
+        if blob:
+            return blob.data_stream.read().decode("utf-8")
+
+        logger.error("File %s not found on branch %s commit %s",
+                     rel_file_name, branch, commit)
+        return None
 
     def create_local_branch(self, branch_name: str, remote_branch: str = None):
         """Creates local branch from remote **branch_name**"""
@@ -210,7 +216,7 @@ class GitHandlerBase():
             logger.debug("No merge base found for %s and master at depth %i", ref, depth)
         else:
             logger.error("No merge base found for %s and master", ref)
-            return None
+            return None   # FIXME: This should raise
         if len(merge_bases) > 1:
             logger.error("Multiple merge bases found for %s and master: %s",
                          ref, merge_bases)
