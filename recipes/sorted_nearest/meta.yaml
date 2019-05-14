@@ -1,0 +1,39 @@
+{% set name = "sorted_nearest" %}
+{% set version = "0.0.18" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "578eec186d1d02670704a3fc2bc1090c6376ce4f2018d1dfa7374ab4209d5b02" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 1
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    {{ compiler('c') }}
+  host:
+    - python
+    - setuptools
+    - cython
+    - numpy>=1.16.3
+  run:
+    - python
+    - cython
+    - numpy>=1.16.3
+
+test:
+  imports:
+    - sorted_nearest
+
+about:
+  home: https://github.com/endrebak/sorted_nearest
+  license: BSD
+  summary: Find nearest interval.
