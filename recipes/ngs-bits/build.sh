@@ -5,8 +5,10 @@ ln -s $PREFIX/include htslib/include
 ln -s $PREFIX/lib htslib/lib
 
 #build
-export QMAKE_CXX=${CXX}
-make build_tools_release
+mkdir build
+cd build
+qmake ../src/tools.pro CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX=${CXX}
+make
 
 #remove test files from bin folder
 rm -rf bin/out bin/cpp*-TEST bin/tools-TEST
