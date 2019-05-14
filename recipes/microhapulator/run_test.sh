@@ -5,6 +5,6 @@ wget -O hg38.fasta.gz http://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg3
 gunzip hg38.fasta.gz
 faidx hg38.fasta chr1:100-150 > /dev/null
 
-pytest --cov=microhapulator --doctest-modules --pyargs microhapulator
+pytest -m 'not known_failing' --cov=microhapulator --pyargs microhapulator
 
 rm -f hg38.fasta
