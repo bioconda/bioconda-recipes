@@ -8,6 +8,7 @@ ln -s $PREFIX/lib htslib/lib
 mkdir build
 cd build
 qmake ../src/tools.pro CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX=${CXX}
+cat Makefile
 make
 
 #remove test files from bin folder
