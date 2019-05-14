@@ -5,6 +5,8 @@ ln -s $PREFIX/include htslib/include
 ln -s $PREFIX/lib htslib/lib
 
 #build
+qmake --version
+g++ --version
 make build_tools_release
 
 #remove test files from bin folder
