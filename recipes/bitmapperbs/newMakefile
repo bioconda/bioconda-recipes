@@ -1,7 +1,5 @@
 INCLUDES = -I${PREFIX}/include
 LIBS = -L${PREFIX}/lib
-#HTSLIB_INFO := $(shell cd htslib; make; make prefix=../htslib_aim install)
-HTSLIB_INFO := $(shell cd htslib; make -B --always-make CC=$(CC) CPPFLAGS="$(INCLUDES)" LDFLAGS="$(LDFLAGS)"; make prefix=../htslib_aim CC=$(CC) CPPFLAGS="$(INCLUDES)" LDFLAGS="$(LDFLAGS)" install) 
 
 AVX2_INFO := $(shell grep avx2 /proc/cpuinfo 1>/dev/null 2>&1; echo $$?)
 AVX2 =1
@@ -31,10 +29,9 @@ EXECUTABLE = bitmapperBS
 
 .ONESHELL:
 all: $(SOURCES) $(EXECUTABLE) FORCE
-	rm -rf *.o; cd libdivsufsort-2.0.1/; cmake -DCMAKE_BUILD_TYPE="Release" . ; make; cd ../pSAscan-0.1.0/src; make CC=$(CXX); cp psascan ../../; chmod 777 psascan
 
 $(EXECUTABLE): $(OBJECTS) FORCE
-	$(CXX) $(OBJECTS) $(INCLUDES) -o $@ $(LIBS) $(LDFLAGS) -lbz2 -llzma -lpthread
+	$(CXX) $(OBJECTS) $(INCLUDES) -o $@ $(LIBS) $(LDFLAGS)
 
 .c.o: FORCE
 	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@ 
