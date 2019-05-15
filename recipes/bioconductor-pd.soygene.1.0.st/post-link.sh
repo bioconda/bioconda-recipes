@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.soygene.1.0.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.soygene.1.0.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.soygene.1.0.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.soygene.1.0.st_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.soygene.1.0.st/bioconductor-pd.soygene.1.0.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.soygene.1.0.st/bioconductor-pd.soygene.1.0.st_3.12.0_src_all.tar.gz"
 )
 MD5="b264df0648ec35d04f91e0ef8e26ac95"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
