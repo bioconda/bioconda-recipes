@@ -7,9 +7,15 @@ ln -s $PREFIX/lib htslib/lib
 #build
 mkdir build
 cd build
-echo "QMAKE...";
-qmake ../src/tools.pro CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX=${CXX} -Wall -d
-echo "MAKE...";
+echo "QMAKE version..."
+qmake --version
+echo "cxx "
+echo ${CXX}
+echo "cxx version..."
+${CXX} --version
+echo "QMAKE..."
+qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX=${CXX} -Wall -d ../src/tools.pro
+echo "MAKE..."
 make
 
 #remove test files from bin folder
