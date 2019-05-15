@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="Rattus.norvegicus_1.3.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/Rattus.norvegicus_1.3.1.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/Rattus.norvegicus_1.3.1.tar.gz"
   "https://bioarchive.galaxyproject.org/Rattus.norvegicus_1.3.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rattus.norvegicus/bioconductor-rattus.norvegicus_1.3.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rattus.norvegicus/bioconductor-rattus.norvegicus_1.3.1_src_all.tar.gz"
 )
 MD5="5692fdeb0bc7f94e1db35f097cad99a9"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
