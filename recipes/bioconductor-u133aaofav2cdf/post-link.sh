@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="u133aaofav2cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/u133aaofav2cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/u133aaofav2cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/u133aaofav2cdf_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-u133aaofav2cdf/bioconductor-u133aaofav2cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-u133aaofav2cdf/bioconductor-u133aaofav2cdf_2.18.0_src_all.tar.gz"
 )
 MD5="716483ddb6664b8b7f0c58cd21136e8b"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
