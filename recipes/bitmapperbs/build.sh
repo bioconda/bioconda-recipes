@@ -1,7 +1,7 @@
 #!/bin/bash
 chmod +x htslib/version.sh
 
-make -f ${RECIPE_DIR}/newMakefile PREFIX=${PREFIX}
+make -f ${RECIPE_DIR}/newMakefile PREFIX=${PREFIX} CC=${CC} CXX=${CXX}
 
 mkdir -p ${PREFIX}/bin
 mv psascan ${PREFIX}/bin/
