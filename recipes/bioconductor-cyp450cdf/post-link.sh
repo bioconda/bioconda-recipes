@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="cyp450cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/cyp450cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/cyp450cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/cyp450cdf_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cyp450cdf/bioconductor-cyp450cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-cyp450cdf/bioconductor-cyp450cdf_2.18.0_src_all.tar.gz"
 )
 MD5="7923c4d24b7b654d0f59d52ed2258eb9"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
