@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="lumiHumanIDMapping_1.10.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/lumiHumanIDMapping_1.10.1.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/lumiHumanIDMapping_1.10.1.tar.gz"
   "https://bioarchive.galaxyproject.org/lumiHumanIDMapping_1.10.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lumihumanidmapping/bioconductor-lumihumanidmapping_1.10.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lumihumanidmapping/bioconductor-lumihumanidmapping_1.10.1_src_all.tar.gz"
 )
 MD5="007e5aa2f1596cc08d888ba6dce7148a"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
