@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="IlluminaHumanMethylation27kmanifest_0.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/IlluminaHumanMethylation27kmanifest_0.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/IlluminaHumanMethylation27kmanifest_0.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/IlluminaHumanMethylation27kmanifest_0.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-illuminahumanmethylation27kmanifest/bioconductor-illuminahumanmethylation27kmanifest_0.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminahumanmethylation27kmanifest/bioconductor-illuminahumanmethylation27kmanifest_0.4.0_src_all.tar.gz"
 )
 MD5="c4cdda637dccf85f193342c7262b02a6"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
