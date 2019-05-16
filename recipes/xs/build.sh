@@ -1,4 +1,4 @@
 #!/bin/bash
 make "CC=${CC}" "CFLAGS=${CFLAGS}"
-mkdir $PREFIX/bin/
+mkdir -p $PREFIX/bin/
 cp XS $PREFIX/bin/
