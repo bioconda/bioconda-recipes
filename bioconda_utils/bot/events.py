@@ -53,7 +53,7 @@ async def handle_comment_created(event, ghapi, *args, **_kwargs):
             return  # not pinging everyone
         logger.info("Repeating comment from %s on #%s to allow ping")
         quoted_msg = '\n'.join('> ' + line for line in comment_body.splitlines())
-        ghapi.create_comment(
+        await ghapi.create_comment(
             issue_number,
             f"Repeating comment from @{comment_author} to enable @mention:\n"
             + quoted_msg)
