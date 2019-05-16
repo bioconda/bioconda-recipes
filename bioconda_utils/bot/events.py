@@ -48,8 +48,8 @@ async def handle_comment_created(event, ghapi, *args, **_kwargs):
         logger.info("Dispatching command from #%s: '%s' %s", issue_number, cmd, args)
         await command_routes.dispatch(cmd, ghapi, issue_number, comment_author, *args)
 
-    if '@bioconda/' in comment_body and not ghapi.is_member(comment_author):
-        if '@bioconda/all' in comment_body:
+    if '@bioconda/' in comment_body.lower() and not await ghapi.is_member(comment_author):
+        if '@bioconda/all' in comment_body.lower():
             return  # not pinging everyone
         logger.info("Repeating comment from %s on #%s to allow ping")
         quoted_msg = '\n'.join('> ' + line for line in comment_body.splitlines)
