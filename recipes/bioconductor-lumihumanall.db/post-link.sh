@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="lumiHumanAll.db_1.22.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/lumiHumanAll.db_1.22.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/lumiHumanAll.db_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/lumiHumanAll.db_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lumihumanall.db/bioconductor-lumihumanall.db_1.22.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lumihumanall.db/bioconductor-lumihumanall.db_1.22.0_src_all.tar.gz"
 )
 MD5="ce7e219b50833ceab203f0bbfb11d917"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

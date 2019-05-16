@@ -1,0 +1,43 @@
+{% set version = "2.6" %}
+
+package:
+  name: 'illumina-utils'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/i/illumina-utils/illumina-utils-{{ version }}.tar.gz
+  sha256: '4ee7108d6ae67fc7d6c70bee4f775d38dfd921c10e4b020bd177838c649446ea'
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - matplotlib
+    - python-levenshtein
+    - numpy
+
+test:
+  imports:
+    - IlluminaUtils
+    - IlluminaUtils.lib
+    - IlluminaUtils.utils
+
+  commands:
+    - iu-merge-pairs -h
+    - iu-gen-configs -h
+    - iu-filter-quality-minoche -h
+    - iu-demultiplex -h
+    - iu-filter-merged-reads -h
+
+about:
+  home: https://github.com/meren/illumina-utils
+  license: GNU General Public v3 or later (GPLv3+)
+  license_family: GPL3
+  summary: A library and collection of scripts to work with Illumina paired-end data (for CASAVA 1.8+).

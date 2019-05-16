@@ -1,4 +1,4 @@
-{% set version = '0.71.0' %}
+{% set version = '0.79.0' %}
 
 {% set posix = 'm2-' if win else '' %}
 {% set native = 'm2w64-' if win else '' %}
@@ -11,27 +11,31 @@ source:
   url:
     - https://cran.r-project.org/src/contrib/gkmSVM_{{ version }}.tar.gz
     - https://cran.r-project.org/src/contrib/Archive/gkmSVM/gkmSVM_{{ version }}.tar.gz
-
-
-  sha256: 60825f7e91fae0ab49ce21731dda819da3dcdd34fa02607991a559e16a7ffdfe
+  sha256: e36b4a25f7dcb00cddf206bd22972bb61950eef27b3b5233f954b9edde9aaa11
 
 build:
   number: 1
-
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}      # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
 
   host:
     - r-base
-    - bioconductor-biocgenerics
-    - bioconductor-biostrings
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-biostrings >=2.48.0,<2.50.0'
     - bioconductor-genomeinfodb
-    - bioconductor-genomicranges
+    - 'bioconductor-genomicranges >=1.32.7,<1.34.0'
     - bioconductor-iranges
     - r-rocr
     - r-rcpp
@@ -42,10 +46,11 @@ requirements:
 
   run:
     - r-base
-    - bioconductor-biocgenerics
-    - bioconductor-biostrings
+    - {{native}}gcc-libs         # [win]
+    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-biostrings >=2.48.0,<2.50.0'
     - bioconductor-genomeinfodb
-    - bioconductor-genomicranges
+    - 'bioconductor-genomicranges >=1.32.7,<1.34.0'
     - bioconductor-iranges
     - r-rocr
     - r-rcpp
@@ -56,14 +61,23 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('gkmSVM')"  # [not win]
+
+    - $R -e "library('gkmSVM')"           # [not win]
     - "\"%R%\" -e \"library('gkmSVM')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=gkmSVM
   license: GPL (>= 2)
-  summary: 'Imports the ''gkmSVM'' v2.0 functionalities into R (www.beerlab.org/gkmsvm). It also
-    uses the ''kernlab'' library (separate R package by different authors) for various
-    SVM algorithms.   '
-
+  summary: Imports the 'gkmSVM' v2.0 functionalities into R <http://www.beerlab.org/gkmsvm/>
+    It also uses the 'kernlab' library (separate R package by different authors) for
+    various SVM algorithms.
   license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

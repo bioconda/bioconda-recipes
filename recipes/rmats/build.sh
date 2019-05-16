@@ -1,12 +1,21 @@
 #!/bin/bash
 
 mkdir $PREFIX/rMATS
-cp -R ./* $PREFIX/rMATS
 
-echo '#!/bin/bash' > $PREFIX/bin/RNASeq-MATS.py
-echo 'RMATS_INSTALL_DIR=$(dirname $(dirname "$0"))/rMATS' >> $PREFIX/bin/RNASeq-MATS.py
-echo 'python $RMATS_INSTALL_DIR/RNASeq-MATS.py "$@"' >> $PREFIX/bin/RNASeq-MATS.py
-chmod +x $PREFIX/bin/RNASeq-MATS.py
+if [[ "$(uname)" == "Darwin" ]]; then
+    SRCDIR="rMATS-turbo-Mac-UCS4"
+else
+    SRCDIR="rMATS-turbo-Linux-UCS4"
+fi
 
-rm -rf $PREFIX/rMATS/testData $PREFIX/rMATS/gtf
-rm $PREFIX/rMATS/testRun.sh
+cp -R $SRCDIR/* $PREFIX/rMATS
+chmod +x $PREFIX/rMATS/rmats.py
+ln -s $PREFIX/rMATS/rmats.py $PREFIX/bin/rmats.py
+ln -s $PREFIX/rMATS/rMATS_P/FDR.py $PREFIX/bin/FDR.py
+ln -s $PREFIX/rMATS/rMATS_P/inclusion_level.py $PREFIX/bin/inclusion_level.py
+ln -s $PREFIX/rMATS/rMATS_P/joinFiles.py $PREFIX/bin/joinFiles.py
+ln -s $PREFIX/rMATS/rMATS_P/paste.py $PREFIX/bin/paste.py
+
+# for backwards compatibility with the previous recipe, create a symlink named
+# for the previously-used executable
+ln -s $PREFIX/rMATS/rmats.py $PREFIX/bin/RNASeq-MATS.py

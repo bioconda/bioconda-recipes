@@ -1,4 +1,3 @@
-#!/bin/bash
 export BOOST_ROOT=${PREFIX}
 if [[ $(uname) == "Darwin" ]]; then
     export LDFLAGS=-L${PREFIX}/lib

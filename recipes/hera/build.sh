@@ -2,6 +2,7 @@
 
 mkdir -p $PREFIX/bin
 
+export LIBRARY_PATH=${PREFIX}/lib
 if [ `uname` == Darwin ]; then
   export CFLAGS="-I$PREFIX/include -fgnu89-inline -O2 -D USE_JEMALLOC  -w -lz -Wl,-rpath,${PREFIX}/lib"
 else

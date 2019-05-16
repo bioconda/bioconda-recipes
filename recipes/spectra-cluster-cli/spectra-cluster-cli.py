@@ -12,7 +12,7 @@ import sys
 from os import access
 from os import getenv
 from os import X_OK
-jar_file = 'spectra-cluster-cli-1.0.1.jar'
+jar_file = 'spectra-cluster-cli-1.1.2.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 

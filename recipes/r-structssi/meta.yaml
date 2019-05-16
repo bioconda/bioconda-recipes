@@ -1,32 +1,35 @@
-{% set name = 'structSSI' %}
 {% set version = '1.1.1' %}
 
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
-  name: r-{{ name|lower }}
+  name: r-structssi
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: {{ name }}_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/structSSI_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/structSSI/structSSI_{{ version }}.tar.gz
   sha256: bbcdeac4b9eb8545217d928796b22bb7ba2e75935053b840271e13865fae3c1b
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+  number: 4
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{posix}}zip               # [win]
+  host:
     - r-base
     - r-ggplot2
     - r-igraph
     - bioconductor-multtest
     - r-reshape2
     - r-rjson
-
   run:
     - r-base
     - r-ggplot2
@@ -37,7 +40,8 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('structSSI')"
+    - $R -e "library('structSSI')"           # [not win]
+    - "\"%R%\" -e \"library('structSSI')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=structSSI
@@ -45,3 +49,12 @@ about:
   summary: Performs multiple testing corrections that take specific structure of hypotheses into
     account.
   license_family: GPL2
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

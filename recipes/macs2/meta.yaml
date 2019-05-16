@@ -1,31 +1,38 @@
+{% set name = "macs2" %}
+{% set version = "2.1.2" %}
+
 package:
-  name: macs2
-  version: 2.1.1.20160309
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://pypi.python.org/packages/9f/99/a8ac96b357f6b0a6f559fe0f5a81bcae12b98579551620ce07c5183aee2c/MACS2-2.1.1.20160309.tar.gz
-  md5: 1cc2fab44b232992060c7ab592bf43fa
+  url: https://files.pythonhosted.org/packages/5e/32/0108a85d9a91c18413e8492bea631725cdbc20b45970ef63e8d0020ef2da/MACS2-2.1.2.1.tar.gz
+  sha256: 6ee9381bda61bacf65e2e31bde267cbcd61a1304457f8a00a0eb7632dd12419b
 
 build:
   number: 1
-  skip: True  # [py3k]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - "{{ compiler('c') }}"
   host:
-    - python
-    - numpy
+    - python <3
+    - pip
+    - numpy >=1.6
+    - r-base
   run:
-    - python
-    - numpy
+    - numpy >=1.6
+    - python <3
     - r-base
 
 test:
   commands:
-    - macs2 --version 2>&1 > /dev/null
+    - macs2 -h
 
 about:
-  home: https://github.com/taoliu/MACS/
-  license: BSD New
-  summary: MACS -- Model-based Analysis of ChIP-Seq
+  home: http://github.com/taoliu/MACS/
+  license: BSD
+  license_family: BSD
+  license_file: COPYING
+  summary: Model Based Analysis for ChIP-Seq data

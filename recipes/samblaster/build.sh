@@ -2,5 +2,6 @@
 
 BIN=$PREFIX/bin
 mkdir -p $BIN
-make
+sed -i.bak 's/CPPFLAGS = /CPPFLAGS = $(CXXFLAGS) /' Makefile
+make CPP=$CXX
 cp samblaster $BIN

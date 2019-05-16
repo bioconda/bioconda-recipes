@@ -1,24 +1,30 @@
-{% set version = '2.3' %}
+{% set version = '2.4' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-treesim
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: TreeSim_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/TreeSim_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/TreeSim/TreeSim_{{ version }}.tar.gz
-  sha256: d05817fc4da0d050e9a1416d8f2cdbc929a3f3354d703a9fd633f50bb9a828f9
+    - {{ cran_mirror }}/src/contrib/TreeSim_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/TreeSim/TreeSim_{{ version }}.tar.gz
+  sha256: 236d1971f8010577a15714c68f4b8deeda276014ff8792322d2ed8218ee8bf5a
 
 build:
-  number: 1
+  merge_build_host: True  # [win]
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{posix}}zip               # [win]
+
+  host:
     - r-base
     - r-ape
     - r-geiger
@@ -30,7 +36,9 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('TreeSim')"
+
+    - $R -e "library('TreeSim')"           # [not win]
+    - "\"%R%\" -e \"library('TreeSim')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=TreeSim
@@ -54,7 +62,17 @@ about:
     conditioned on either the number of sampled tips or the age. Furthermore, for a
     multitype-branching process with sequential sampling, trees on a fixed number of
     tips can be simulated using sim.bdtypes.stt.taxa(). This function further allows
-    to simulate under epidemiological models with an exposed class. The function 
-    sim.genespeciestree() simulates coalescent gene trees within birth-death species trees, 
-    and sim.genetree() simulates coalescent gene trees.
+    to simulate under epidemiological models with an exposed class. The function sim.genespeciestree()
+    simulates coalescent gene trees within birth-death species trees, and sim.genetree()
+    simulates coalescent gene trees.
   license_family: GPL2
+
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

@@ -1,6 +1,6 @@
 package:
   name: igblast
-  version: "1.7.0"
+  version: "1.10.0"
 
 about:
   home: http://www.ncbi.nlm.nih.gov/projects/igblast/
@@ -8,11 +8,10 @@ about:
   summary: A tool for analyzing immunoglobulin (IG) and T cell receptor (TR) sequences.
 
 source:
-  # Use sources on Linux, binaries on macOS
-  md5: 238857cff5de770ac3fc93d96526a247  # [linux]
-  md5: a28c6cab4c9706c330e6496f3450da9e  # [osx]
-  url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/1.7.0/ncbi-igblast-1.7.0-src.tar.gz  # [linux]
-  url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/1.7.0/ncbi-igblast-1.7.0-x64-macosx.tar.gz  # [osx]
+  sha256: a811a9b2487a8ea1f7162a4c338c1f5a898b6b0788bc30d36a3f11a77db14a76  # [linux]
+  sha256: c573299c2c99b6f5660b52e9e2d2ad80a404bfe2426c1f7870fd64269e7d40e9  # [osx]
+  url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/1.10.0/ncbi-igblast-1.10.0-x64-linux.tar.gz  # [linux]
+  url: ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/1.10.0/ncbi-igblast-1.10.0-x64-macosx.tar.gz  # [osx]
 
 build:
   number: 1
@@ -20,17 +19,25 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
+    - patchelf  # [linux]
+    - wget
   host:
-    - gnu-wget
-    - sqlite
-  run:
-    - perl
     - zlib
-    - sqlite
-
+    - bzip2
+    - libidn11
+    - libxml2
+  run:
+    - zlib
+    - bzip2
+    - libidn11
+    - libxml2
+    - perl
+    - gnutls  # [osx]
 test:
   commands:
     - igblastn -h
+    - igblastp -h
+    - makeblastdb -h
 
 extra:
   identifiers:

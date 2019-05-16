@@ -1,0 +1,40 @@
+{% set name = "SparCC" %}
+{% set version = "0.1.0" %}
+{% set commit = "3aff6141c3f1" %}
+{% set sha256 = "00f00acb700de381d79d9d4d244f9834eb7b223780b3d018533d0ef2c853d63e" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://bitbucket.org/yonatanf/sparcc/get/{{ commit }}.zip
+  sha256: {{ sha256 }}
+  patches:
+   - pseudopvals.patch  # https://bitbucket.org/yonatanf/sparcc/pull-requests/2/add-line-for-pseudopvalspy/diff
+
+build:
+  noarch: python
+  number: 0
+
+requirements:
+  run:
+    - python <3
+    - pandas
+    - numpy
+    - scipy
+  
+test:
+  commands:
+    - SparCC.py --help |grep SparCC
+    - PseudoPvals.py --help |grep PseudoPvals
+    - MakeBootstraps.py --help |grep MakeBootstraps
+
+about:
+  home: https://bitbucket.org/yonatanf/sparcc
+  license: MIT
+  license_file: readme.rst
+  summary: 'SparCC is a python module for computing correlations in compositional data (16S, metagenomics, etc).'
+extra:
+  identifiers:
+    - doi:10.1371/journal.pcbi.1002687

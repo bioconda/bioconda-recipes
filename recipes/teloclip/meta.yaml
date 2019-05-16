@@ -1,0 +1,48 @@
+{% set name = "teloclip" %}
+{% set version = "0.0.3" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "48b25ce0a3dce9f44bc2703ccbcb9738861c260568a9ce1f3687c4aca054b14d" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  skip: True # [py27]
+  number: 0
+  entry_points:
+    - teloclip=teloclip.run_self:main
+    - teloclip-extract=teloclip.run_extract:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - python
+    - setuptools
+  run:
+    - python
+
+test:
+  imports:
+    - teloclip
+  commands:
+    - teloclip --help
+    - teloclip-extract --help
+
+about:
+  home: https://github.com/Adamtaranto/teloclip
+  license: MIT License
+  license_family: MIT
+  license_file: ''
+  summary: A tool for the recovery of unassembled telomeres from soft-clipped read alignments.
+  description: ''
+  doc_url: ''
+  dev_url: ''
+
+extra:
+  recipe-maintainers: 'Adam Taranto'

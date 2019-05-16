@@ -39,6 +39,6 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 # Install and clean up
-ngsplotdb.py install "${TARBALL}" >> "${PREFIX}/.messages.txt" 2>&1
+ngsplotdb.py -y install "${TARBALL}" >> "${PREFIX}/.messages.txt" 2>&1
 rm $TARBALL
 rmdir $STAGING

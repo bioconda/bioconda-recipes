@@ -1,34 +1,33 @@
 {% set name = "PhyML" %}
 {% set version = "3.2.0" %}
-{% set sha256 = "9fec8fc26e69cad8d58bf2c9433b531754e4f026dc3464d07958b6c824783fde" %}
+{% set sha256 = "6c62447cdef95a38abe52e17653bb9ac67ef9e1c195bdfe699a554e4957f3d17" %}
 
 package:
   name: {{ name | lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/stephaneguindon/{{ name | lower }}/archive/v{{ version }}.tar.gz
+  url: http://http.debian.net/debian/pool/main/p/phyml/phyml_3.2.0+dfsg.orig.tar.gz
   sha256: {{ sha256 }}
   patches:
     # don't update version to current date
     - pin_version.patch
 
 build:
-  number: 1
+  number: 2
 
 requirements:
   build:
     - {{ compiler('c') }}
     - autoconf
     - automake
+    - libtool
     - pkg-config
-    - openmpi 2.*
-    - beagle-lib
-    - libtool
+  host:
+    - openmpi
   run:
-    - openmpi 2.*
-    - beagle-lib
-    - libtool
+    - openmpi
+
 test:
   requirements:
     - conda
@@ -42,7 +41,6 @@ test:
     #   - runs as root (--allow-run-as-root)
     #   - doesn't have rsh or ssh (-mca orte_rsh_agent /bin/true)
     - mpirun -mca orte_rsh_agent true --allow-run-as-root phyml-mpi --help | grep "PhyML {{ version }}"
-    - phyml-beagle --help | grep "PhyML {{ version }}"
 
 about:
   home: http://www.atgc-montpellier.fr/phyml/

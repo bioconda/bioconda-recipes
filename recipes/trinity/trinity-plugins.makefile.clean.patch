@@ -1,34 +1,35 @@
---- trinity-plugins/Makefile.old	2017-11-29 16:39:42.851726034 +0200
-+++ trinity-plugins/Makefile	2017-12-07 21:44:09.660947521 +0200
-@@ -7,11 +7,7 @@
+diff --git a/trinity-plugins/Makefile b/trinity-plugins/Makefile
+index 97f11cb..68e5841 100644
+--- a/trinity-plugins/Makefile
++++ b/trinity-plugins/Makefile
+@@ -9,19 +9,18 @@ TRIMMOMATIC_CODE=Trimmomatic-0.36
  
  
  
 -trinity_essentials: seqtk_target parafly_target trimmomatic_target
--
--trimmomatic_target:
--	ln -sf ${TRIMMOMATIC_CODE} Trimmomatic
--
 +trinity_essentials: seqtk_target parafly_target
  
+ trimmomatic_target:
+ 	ln -sf ${TRIMMOMATIC_CODE} Trimmomatic
+ 
+-
  seqtk_target:
- 	tar xvf seqtk-trinity.v0.0.2.tar.gz
-@@ -20,7 +16,7 @@
+ 	cd seqtk-trinity-0.0.2 && $(MAKE) CXX=$(CXX) CC=$(CC)
+ 	mv seqtk-trinity-0.0.2/seqtk-trinity ./BIN/.
  
  parafly_target:
  	tar -zxvf ${PARAFLY_CODE}.tar.gz && \
--	cd ${PARAFLY_CODE} && sh ./configure --prefix=`pwd` && $(MAKE) install && \
-+	cd ${PARAFLY_CODE} && sh ./configure --prefix=`pwd` CC=${PREFIX}/bin/gcc $(INCHWORM_CONFIGURE_FLAGS) CXX=${PREFIX}/bin/g++ CFLAGS="-fopenmp" CXXFLAGS="-fopenmp" && $(MAKE) install && \
+-	cd ${PARAFLY_CODE} && sh ./configure --prefix=`pwd` CXX=$(CXX) CC=$(CC) CFLAGS="-fopenmp" CXXFLAGS="-fopenmp" && $(MAKE) install && \
++	cd ${PARAFLY_CODE} && sh ./configure --prefix=`pwd` CXX=g++ CC=gcc CFLAGS="-fopenmp" CXXFLAGS="-fopenmp" && $(MAKE) install && \
  	cp bin/ParaFly ../BIN/
  
  
-@@ -40,7 +36,7 @@
+@@ -34,7 +33,7 @@ plugins: slclust_target collectl_target
  
- clean:
- 	rm -rf ./seqtk-trinity-0.0.2
--	cd scaffold_iworm_contigs && $(MAKE) clean
-+	#cd scaffold_iworm_contigs && $(MAKE) clean
- 	cd parafly-code && $(MAKE) clean
- 	rm -f ./parafly # rm symlink
- 	rm -f ./Trimmomatic # rm symlink
-
+ 
+ slclust_target:
+-	cd slclust && $(MAKE) CXX=$(CXX) CC=$(CC) install
++	cd slclust && $(MAKE) CXX=g++ CC=gcc install
+ 
+ collectl_target:
+ 	cd COLLECTL && tar xvf ${COLLECTL_CODE}.src.tar.gz && ln -sf ${COLLECTL_CODE} collectl

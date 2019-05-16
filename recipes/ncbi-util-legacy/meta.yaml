@@ -1,0 +1,68 @@
+{% set version = "6.1" %}
+{% set sha256 = "4b88aaad8f953b1b50bc7d06f3a5920f0d589d2c9a26c709199f8347905f5867" %}
+
+package:
+  name: ncbi-util-legacy
+  version: {{ version }}
+
+source:
+  # TODO url might not be stable
+  url: ftp://ftp.ncbi.nih.gov/toolbox/ncbi_tools/ncbi.tar.gz
+  sha256: {{ sha256 }}
+  folder: ncbi
+  patches: 
+    - dev.patch
+
+build:
+  number: 0
+  skip: true  # [osx]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - gmp
+    - gnutls
+    - openmotif
+    - tcsh
+  run:
+    - gmp
+    - gnutls
+    - openmotif
+    - tcsh
+
+# many tools have exit code 1 for printing usage info so they don't work here.
+# leaving them here also for documentation which commands are available
+test:
+  commands:
+#     - asn2ff - > /dev/null
+    - asn2gb - > /dev/null
+    - asn2idx - > /dev/null
+#     - asn2xml - > /dev/null
+#     - asndhuff - > /dev/null
+#     - asntool - > /dev/null
+#     - blastcl3 - > /dev/null
+    - cdscan - > /dev/null
+#     - checksub - > /dev/null
+#     - debruijn - > /dev/null
+    - demo_regexp "a.c" "xyzabcxyz" > /dev/null
+    - demo_regexp_grep --help > /dev/null
+#     - entrcmd - > /dev/null
+#     - errhdr - > /dev/null
+#     - fa2htgs - > /dev/null
+#     - findspl - > /dev/null
+    - gene2xml - > /dev/null
+#     - getmesh - > /dev/null
+#     - getpub - > /dev/null
+#     - gil2bin - > /dev/null
+#     - idfetch - > /dev/null
+#     - indexpub - > /dev/null
+#     - makeset - > /dev/null
+    - echo "ATCG\nACTG"|ncbisort > /dev/null
+    - tbl2asn - > /dev/null
+#     - vecscreen - > /dev/null
+
+about:
+  home: ftp://ftp.ncbi.nih.gov/toolbox/ncbi_tools/ 
+  license: Public Domain
+  summary: NCBI software development toolkit

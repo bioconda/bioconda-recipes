@@ -1,6 +1,6 @@
 {% set name = "SINA" %}
-{% set version = "1.3.1" %}
-{% set sha256 = "b085b3df4a2ce621af02eb7e38179bdacace91d872776ea45503f5d512874d5f" %}
+{% set version = "1.6.0" %}
+{% set sha256 = "2369ae3c6d55201c5a197dc5e57e7674403fee55664e3e4caf80212d081481bc" %}
 
 package:
   name: {{ name|lower }}
@@ -8,33 +8,64 @@ package:
 
 source:
   sha256: {{ sha256 }}
-  url: https://github.com/epruesse/SINA/releases/download/v{{version}}/sina-{{version}}.tar.bz2
+  url: https://github.com/epruesse/SINA/releases/download/v{{version}}/sina-{{version}}.tar.gz
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - pkg-config
+    - bc
   host:
-    - arb-bio
-    - boost
+    - arb-bio-devel
+    - boost-cpp
     - zlib
+    - tbb-devel
+    - glib
   run:
-    - arb-bio
-    - boost
+    - arb-bio-tools
+    - libarbdb
+    - boost-cpp
     - zlib
+    - tbb
+    - {{ pin_compatible('glib') }}
+
 test:
   commands:
     - sina --help
 
 about:
   home: https://github.com/epruesse/SINA
+  doc_url: https://sina.readthedocs.io
   license: GPLv3
   license_family: GPL
-  summary: |
-    SINA is a tool for aligning sequences with an existing multiple sequence
-    alignment (MSA) at high accuracy. It can also execute a homology search based
-    on the computed alignment and generate a per sequence classifications from the
-    search results.
+  license_url: https://raw.githubusercontent.com/epruesse/SINA/master/LICENSE
+  summary: Reference based multiple sequence alignment
+  description: |
+    SINA allows incorporating additional sequences into an existing
+    multiple sequence alignment (MSA) without modifying the original
+    alignment. While adding sequences to an MSA with SINA is usually
+    faster than re-computing the entire MSA from an augmented set of
+    unaligned sequences, the primary benefit lies in protecting
+    investments made into the original MSA such as manual curation of the
+    alignment, compute intensive phylogenetic tree reconstruction and
+    taxonomic annotation of the resulting phylogeny.
+
+    Additionally, SINA includes a homology search which uses the
+    previously computed alignment to determine the most similar
+    sequences. Based on the search results, a LCA based classification of
+    the query sequence can be computed using taxonomic classifications
+    assigned to the sequences comprising the reference MSA.
+
+    SINA is used to compute the small and large subunit ribosomal RNA
+    alignments provided by the SILVA_ project and is able to use the ARB_
+    format reference databases released by the project.
+
+extra:
+  recipe-maintainers:
+    - epruesse
+  identifiers:
+    - biotools:SINA
+    - doi:10.1093/bioinformatics/bts252

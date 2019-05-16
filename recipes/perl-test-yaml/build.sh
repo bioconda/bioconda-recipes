@@ -17,3 +17,5 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
+# Workaround https://github.com/conda/conda-build/issues/2824
+chmod u+w $PREFIX/bin/test-yaml

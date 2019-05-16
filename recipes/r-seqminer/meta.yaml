@@ -1,4 +1,7 @@
-{% set version = '6.0' %}
+{% set version = '7.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-seqminer
@@ -6,41 +9,64 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/seqminer_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/seqminer/seqminer_{{ version }}.tar.gz
-  sha256: 74e80b5ed7023fa7c7ba22b6b1ce31aba5fd05bd8ac61d55a065dcd80c0df214
+    - {{ cran_mirror }}/src/contrib/seqminer_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/seqminer/seqminer_{{ version }}.tar.gz
+  sha256: befa015f98096cc186fd3f9175935620e4adf78d73203950ba8e67c2e765cdcb
 
 build:
-  number: 1
-  # This is required to make R link correctly on Linux.
+  merge_build_host: True  # [win]
+
+  number: 0
+  skip: true  # [win32]
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - clangxx_osx-64  # [osx]
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}      # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}sed               # [win]
+    - {{posix}}grep              # [win]
+    - {{posix}}autoconf
+    - {{posix}}automake          # [not win]
+    - {{posix}}automake-wrapper  # [win]
+    - {{posix}}pkg-config
+    - {{posix}}make
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
 
   host:
     - r-base
-    - gmp
-    - zlib
-    - bzip2
 
   run:
     - r-base
-    - libcxx  # [osx]
-    - gmp
-    - zlib
-    - bzip2
+    - {{native}}gcc-libs         # [win]
 
 test:
   commands:
-    - $R -e "library('seqminer')"
+
+    - $R -e "library('seqminer')"           # [not win]
+    - "\"%R%\" -e \"library('seqminer')\""  # [win]
 
 about:
-  home: https://cran.r-project.org/web/packages/seqminer/index.html
-  license: GPL (>= 2)
-  summary: Integrate sequencing data (Variant call format, e.g. VCF or BCF) or meta-analysis results in R.
+  home: http://seqminer.genomic.codes
+  license: GPL
+  summary: Integrate sequencing data (Variant call format, e.g. VCF or BCF) or meta-analysis
+    results in R. This package can help you (1) read VCF/BCF files by chromosomal ranges
+    (e.g. 1:100-200); (2) read RareMETAL summary statistics files; (3) read tables from
+    a tabix-indexed files; (4) annotate VCF/BCF files; (5) create customized workflow
+    based on Makefile.
   license_family: GPL
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

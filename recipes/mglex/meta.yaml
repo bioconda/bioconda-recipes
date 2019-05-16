@@ -1,30 +1,26 @@
-{% set version = "0.2.0" %}
+{% set version = "0.2.1" %}
+{% set sha256 = "2a81a50c2f3ceb85a4f936ee7822c1249eeb74d46d4eca498201207d08788541" %}
 
 package:
   name: mglex
-  version: {{ version }}
+  version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/m/mglex/MGLEX-0.2.0.tar.gz
-  sha256: 2f5dcfd1e381f156558249e56da15df24a34d31f656da0b427c8d4cdb50fc246
+  url: https://pypi.io/packages/source/m/mglex/MGLEX-{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
-  number: 1
-  skip: True  # [py27]
+  noarch: python
+  number: 0
+  script: '{{ PYTHON }} -m pip install --no-deps --ignore-installed --no-cache-dir .'
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - python
-    - setuptools
+    - python >=3
+    - pip
     - setuptools_scm
-    - numpy >=1.8.2
-    - scipy >=0.13.3
-    - docopt >=0.6.2
-
   run:
-    - python
+    - python >=3
     - numpy >=1.8.2
     - scipy >=0.13.3
     - docopt >=0.6.2
@@ -34,9 +30,11 @@ test:
     - mglex
     - mglex.cli
     - mglex.models
+  commands:
+    - mglex-cli --help
 
 about:
   home: https://github.com/fungs/mglex
-  license: GNU General Public License v3 (GPLv3)
-  summary: 'MGLEX - MetaGenome Likelihood EXtractor'
-  license_family: GPL3
+  license: GPL-3.0
+  license_family: GPL
+  summary: MGLEX - MetaGenome Likelihood EXtractor

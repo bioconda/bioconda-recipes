@@ -1,18 +1,11 @@
 #!/bin/bash
 
 mkdir -p $PREFIX/bin
-
-# fix automake
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/aclocal
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/automake
-
-# fix autoconf
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autom4te
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoheader
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoreconf
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/ifnames
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoscan
-sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/autoupdate
+export CPP_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export CXX_INCLUDE_PATH=${PREFIX}/include
+export C_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
 
 ./autogen.sh
 ./configure --prefix=$PREFIX --with-sparsehash=$PREFIX
