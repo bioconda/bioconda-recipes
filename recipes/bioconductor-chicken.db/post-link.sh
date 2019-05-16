@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="chicken.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/chicken.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/chicken.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/chicken.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chicken.db/bioconductor-chicken.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-chicken.db/bioconductor-chicken.db_3.2.3_src_all.tar.gz"
 )
 MD5="e093b861c4688cf10e53a3124ee8bfc0"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

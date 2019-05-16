@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.rice_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.rice_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.rice_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.rice_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.rice/bioconductor-pd.rice_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.rice/bioconductor-pd.rice_3.12.0_src_all.tar.gz"
 )
 MD5="9c456981b3d0b99a96ac6c71e3eb7c8a"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
