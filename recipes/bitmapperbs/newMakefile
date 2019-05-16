@@ -1,7 +1,7 @@
 INCLUDES = -I${PREFIX}/include
 LIBS = -L${PREFIX}/lib
 
-HTSLIB_INFO := $(shell cd htslib; make -B --always-make CC=$(CC) CFLAGS="$(CFLAGS)" LDFLAGS="$(LIBS)"; make CC=$(CC) CFLAGS="$(CFLAGS)" LDFLAGS="$(LIBS)" prefix=../htslib_aim install ; mv ../htslib_aim/lib/libhts.so.1.9 ../htslib_aim/lib/libhtsBitMapperBS.so)
+HTSLIB_INFO := $(shell cd htslib; make -B --always-make CC=$(CC) CFLAGS="$(CFLAGS)" LDFLAGS="$(LIBS)"; make CC=$(CC) CFLAGS="$(CFLAGS)" LDFLAGS="$(LIBS)" prefix=../htslib_aim install)
 
 AVX2_INFO := $(shell grep avx2 /proc/cpuinfo 1>/dev/null 2>&1; echo $$?)
 AVX2 =1
@@ -12,8 +12,10 @@ CFLAGS = -w -c -msse4.2 -mpopcnt -fomit-frame-pointer -Winline -O3 -lz -I htslib
 LDFLAGS = -lm -lz -lpthread -O3 -mpopcnt -msse4.2 -lz -w -I htslib_aim/include -L htslib_aim -lhtsBitMapperBS -lbz2 -llzma
 else
 $(warning "CPU can support AVX2...")
-CFLAGS = -w -c -mavx2 -mpopcnt -fomit-frame-pointer -Winline -O3 -D __AVX2__ -I htslib_aim/include -L htslib_aim/lib -lhtsBitMapperBS -lbz2 -llzma
-LDFLAGS = -lm -lz -lpthread -O3 -mpopcnt -mavx2 -lz -w -D __AVX2__ -I htslib_aim/include -L htslib_aim/lib -lhtsBitMapperBS -lbz2 -llzma
+#CFLAGS = -w -c -mavx2 -mpopcnt -fomit-frame-pointer -Winline -O3 -D __AVX2__ -I htslib_aim/include -L htslib_aim/lib -lhtsBitMapperBS -lbz2 -llzma
+#LDFLAGS = -lm -lz -lpthread -O3 -mpopcnt -mavx2 -lz -w -D __AVX2__ -I htslib_aim/include -L htslib_aim/lib -lhtsBitMapperBS -lbz2 -llzma
+CFLAGS = -w -c -mavx2 -mpopcnt -fomit-frame-pointer -Winline -O3 -D __AVX2__ -I htslib_aim/include -lbz2 -llzma
+LDFLAGS = -lm -lz -lpthread -O3 -mpopcnt -mavx2 -lz -w -D __AVX2__ -I htslib_aim/include -lbz2 -llzma
 endif
 
 SOURCES = saca-k.cpp bwt.cpp Bitmapper_main.cpp Process_CommandLines.cpp Auxiliary.cpp Index.cpp Schema.cpp Process_sam_out.cpp Process_Reads.cpp Ref_Genome.cpp Levenshtein_Cal.cpp SAM_queue.cpp bam_prase.cpp
@@ -26,7 +28,7 @@ EXECUTABLE = bitmapperBS
 all: $(SOURCES) $(EXECUTABLE) FORCE
 
 $(EXECUTABLE): $(SOURCES) FORCE
-	$(CXX) $(SOURCES) $(INCLUDES) -o $@ $(LIBS) $(LDFLAGS)
+	$(CXX) $(SOURCES) $(INCLUDES) -o $@ htslib_aim/lib/libhts.a $(LIBS) $(LDFLAGS)
 
 .c.o: FORCE
 	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@ 
