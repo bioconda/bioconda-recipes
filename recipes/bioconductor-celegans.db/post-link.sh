@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="celegans.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/celegans.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/celegans.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/celegans.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-celegans.db/bioconductor-celegans.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-celegans.db/bioconductor-celegans.db_3.2.3_src_all.tar.gz"
 )
 MD5="fb4631ee29a20c20d5766aed4c04cac1"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
