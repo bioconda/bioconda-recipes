@@ -11,8 +11,7 @@ CXX=$CXX
 CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
-sed -i.bak "1652i\\
-  FC=\"gfortran\"" configure
+sed -i.bak "s#FC=`grep '^FC ' ${R_HOME}/etc${R_ARCH}/Makeconf|cut -c6-`#FC=\"gfortran\"#" configure
 $R CMD INSTALL --build .
 if [[ "$HOST" == *"linux-gnu" ]]; then
     rm ${PREFIX}/bin/gfortran
