@@ -1,5 +1,5 @@
 #!/bin/sh
-make
+make CC=${CC}
 mkdir -p $PREFIX/bin
 mkdir -p ${PREFIX}/share/snap
 mkdir -p ${PREFIX}/share/snap/bin
