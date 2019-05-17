@@ -80,7 +80,7 @@ def select_recipes(packages, git_range, recipe_folder, config_filename, config, 
     else:
         changed_recipes = []
 
-    blacklisted_recipes = utils.get_blacklist(config['blacklists'], recipe_folder)
+    blacklisted_recipes = utils.get_blacklist(config, recipe_folder)
 
     selected_recipes = list(utils.get_recipes(recipe_folder, packages))
     _recipes = []

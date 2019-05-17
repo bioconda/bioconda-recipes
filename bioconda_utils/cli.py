@@ -567,7 +567,7 @@ def update_pinning(recipe_folder, config, packages="*",
     utils.RepoData().df  # trigger load
 
     build_config = utils.load_conda_build_config()
-    blacklist = utils.get_blacklist(config.get('blacklists'), recipe_folder)
+    blacklist = utils.get_blacklist(config, recipe_folder)
 
     from . import recipe
     dag = graph.build_from_recipes(

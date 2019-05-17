@@ -267,7 +267,7 @@ def build_recipes(
     """
     orig_config = config
     config = utils.load_config(config)
-    blacklist = utils.get_blacklist(config['blacklists'], recipe_folder)
+    blacklist = utils.get_blacklist(config, recipe_folder)
 
     if check_channels is None:
         if config['channels']:

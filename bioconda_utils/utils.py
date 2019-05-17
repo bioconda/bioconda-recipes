@@ -888,12 +888,11 @@ def newly_unblacklisted(config_file, recipe_folder, git_range):
     for bl in yaml.safe_load(orig_config)['blacklists']:
         with open('.tmp.blacklist', 'w', encoding='utf8') as fout:
             fout.write(file_from_commit(git_range[0], bl))
-        previous.update(get_blacklist(['.tmp.blacklist'], recipe_folder))
+        previous.update(get_blacklist({'blacklists': '.tmp.blacklist'}, recipe_folder))
         os.unlink('.tmp.blacklist')
 
     current = get_blacklist(
-        yaml.safe_load(
-            file_from_commit(git_range[1], config_file))['blacklists'],
+        yaml.safe_load(file_from_commit(git_range[1], config_file)),
         recipe_folder)
     results = previous.difference(current)
     logger.info('Recipes newly unblacklisted:\n%s', '\n'.join(list(results)))
@@ -1037,10 +1036,10 @@ def get_package_paths(recipe, check_channels, force=False):
         api.get_output_file_paths(meta) for meta in build_metas))
 
 
-def get_blacklist(blacklists, recipe_folder):
+def get_blacklist(config: Dict[str, Any], recipe_folder: str) -> set:
     "Return list of recipes to skip from blacklists"
     blacklist = set()
-    for p in blacklists:
+    for p in config.get('blacklists', []):
         blacklist.update(
             [
                 os.path.relpath(i.strip(), recipe_folder)

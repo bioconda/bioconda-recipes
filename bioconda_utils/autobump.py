@@ -162,7 +162,7 @@ class RecipeGraphSource(RecipeSource):
             with open(self.cache_fn, "rb") as stream:
                 dag = pickle.load(stream)
         else:
-            blacklist = utils.get_blacklist(self.config.get('blacklists'), self.recipe_base)
+            blacklist = utils.get_blacklist(self.config, self.recipe_base)
             dag = graph.build_from_recipes(
                 recipe for recipe in recipes_load_parallel_iter(self.recipe_base, "*")
                 if recipe.reldir not in blacklist
@@ -353,7 +353,7 @@ class ExcludeBlacklisted(Filter):
     def __init__(self, scanner: Scanner, recipe_base: str, config: Dict) -> None:
         super().__init__(scanner)
         self.blacklists = config.get('blacklists')
-        self.blacklisted = utils.get_blacklist(self.blacklists, recipe_base)
+        self.blacklisted = utils.get_blacklist(config, recipe_base)
         logger.warning("Excluding %i blacklisted recipes", len(self.blacklisted))
 
     def get_info(self) -> str:
