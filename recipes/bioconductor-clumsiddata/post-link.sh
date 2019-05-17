@@ -41,6 +41,7 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 # Install and clean up
+echo "installing tarball"
 R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
 rm $TARBALL
 rmdir $STAGING
