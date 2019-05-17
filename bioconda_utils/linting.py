@@ -36,28 +36,6 @@ or
 
     df['other'] = df.exists_in_channel.apply(not_in_bioconda)
     other_channels = df[['recipe', 'other']].dropna()
-
-
-TODO:
-~~~~~
-
-- check version and build number against master branch. I think there's stuff
-  in bioconductor updating to handle this sort of thing. Also bioconda_utils
-  has utils for checking against master branch.
-
-  - if version changed, ensure build number is 0
-  - if version unchanged, ensure build number incremented
-
-- currently we don't pay attention to py27/py3. It would be nice to handle
-  that.
-
-- how to define valid licenses?
-  (conda_build.metadata.ensure_valid_license_family is for family)
-
-- gcc/llvm have their respective preprocessing selectors
-
-- excessive comments (from skeletons?)
-
 """
 
 import os
