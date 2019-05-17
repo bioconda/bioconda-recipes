@@ -238,9 +238,6 @@ def duplicates(config,
      multiple times.''')
 @arg('--exclude', nargs='+', help='''Exclude this linting function. Can be used
      multiple times.''')
-@arg('--force', action='store_true', help='''Force linting of packages. If
-     specified, --git-range will be ignored and only those packages matching
-     --packages globs will be linted.''')
 @arg('--push-status', action='store_true', help='''If set, the lint status will
      be sent to the current commit on github. Also needs --user and --repo to
      be set. Requires the env var GITHUB_TOKEN to be set. Note that pull
@@ -265,7 +262,7 @@ def duplicates(config,
      results as a TSV printed to stdout.''')
 @enable_logging()
 def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
-         only=None, exclude=None, force=False, push_status=False, user='bioconda',
+         only=None, exclude=None, push_status=False, user='bioconda',
          commit=None, push_comment=False, pull_request=None,
          repo='bioconda-recipes', git_range=None, full_report=False):
     """
