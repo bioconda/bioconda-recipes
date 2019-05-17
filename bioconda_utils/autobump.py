@@ -103,14 +103,20 @@ class RecipeSource:
         logger.warning("Selected %i packages", len(self.recipe_dirs))
 
     async def queue_items(self, send_q, return_q):
+        n_items = 0
         for recipe_dir in self.recipe_dirs:
             await send_q.put(Recipe(recipe_dir, self.recipe_base))
+            n_items += 1
             while return_q.qsize():
                 try:
                     return_q.get_nowait()
                     return_q.task_done()
+                    n_items -= 1
                 except asyncio.QueueEmpty:
                     break
+        for n in range(n_items):
+            await return_q.get()
+            return_q.task_done()
 
     def get_item_count(self):
         return len(self.recipe_dirs)
@@ -204,8 +210,8 @@ class Scanner(AsyncPipeline[Recipe]):
         logger.info("SUM: %i", sum(self.stats.values()))
         if self.status_fn:
             with open(self.status_fn, "w") as out:
-                for entry in self.status:
-                    out.write('\t'.join(entry)+"\n")
+                for rname, result in self.status:
+                    out.write(f'{rname}\t{result.name}')
         return res
 
     async def queue_items(self, send_q, return_q):
@@ -229,7 +235,7 @@ class Scanner(AsyncPipeline[Recipe]):
             return False
         except EndProcessingItem as recipe_error:
             self.stats[recipe_error.name] += 1
-            self.status.append((recipe.reldir, recipe_error.name))
+            self.status.append((recipe.reldir, recipe_error))
             res = True
         return res
 
@@ -960,8 +966,10 @@ class GitLoadRecipe(GitFilter):
             self.git.delete_local_branch(local_branch)
 
         logger.debug("Recipe %s: loading from master", recipe)
-        recipe_text = await self.pipeline.run_io(self.git.read_from_branch,
-                                                 self.git.master, recipe.path)
+        recipe_text = await self.pipeline.run_io(
+            self.git.read_from_branch,
+            self.git.get_local_branch('master'),
+            recipe.path)
         recipe.load_from_string(recipe_text)
         recipe.set_original()
 

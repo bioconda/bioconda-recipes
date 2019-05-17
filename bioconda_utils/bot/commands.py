@@ -6,10 +6,7 @@ import logging
 import functools
 from typing import Callable, Dict, Optional
 
-from .tasks import (
-    bump, create_check_run, get_latest_pr_commit, check_circle_artifacts,
-    trigger_circle_rebuild, merge_pr, post_result
-)
+from . import tasks
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -60,35 +57,35 @@ def permissions(member: Optional[bool] = None,
     def decorator(func):
         @functools.wraps(func)
         async def wrapper(ghapi, issue_number, user, *args):
-            ok = ""
+            okmsg = ""
             err = []
-            if not ok and member is not None:
+            if not okmsg and member is not None:
                 if await ghapi.is_member(user):
-                    ok = "User is member"
+                    okmsg = "User is member"
                 elif not await ghapi.is_org():
-                    ok = "Repo is not on Org"
+                    okmsg = "Repo is not on Org"
                 else:
                     err += [f"a member of {ghapi.user.capitalize()}"]
-            if not ok and author is not None:
-                pr = await ghapi.get_prs(number=issue_number)
-                pr_author = pr['user']['login']
+            if not okmsg and author is not None:
+                prq = await ghapi.get_prs(number=issue_number)
+                pr_author = prq['user']['login']
                 negate = "" if author else "not "
                 if (pr_author == user) == author:
-                    ok = f"User is {negate}PR author"
+                    okmsg = f"User is {negate}PR author"
                 else:
                     err += [f"{negate}author of the PR"]
-            if not ok and team is not None:
+            if not okmsg and team is not None:
                 if await ghapi.is_team_member(user, team):
-                    ok = f"User is member of {ghapi.user}/{team}"
+                    okmsg = f"User is member of {ghapi.user}/{team}"
                 else:
                     err += [f"a member of {ghapi.user}/{team}"]
 
-            msg = ok or f"Permission denied. You need to be {' or '.join(err)}."
+            msg = okmsg or f"Permission denied. You need to be {' or '.join(err)}."
 
             logger.warning("Access %s: %s wants to run %s on %s#%s ('%s')",
-                           "GRANTED" if ok else "DENIED",
+                           "GRANTED" if okmsg else "DENIED",
                            user, func.__name__, ghapi, issue_number, msg)
-            if ok:
+            if okmsg:
                 return await func(ghapi, issue_number, user, *args)
             return msg
         return wrapper
@@ -97,7 +94,7 @@ def permissions(member: Optional[bool] = None,
 
 @command_routes.register("hello")
 async def command_hello(ghapi, issue_number, user, *_args):
-    """Simple demo function answering to hello"""
+    """Check whether the bot is listening. If it is, it will answer."""
     msg = f"Hello @{user}!"
     if issue_number:
         await ghapi.create_comment(issue_number, msg)
@@ -109,7 +106,7 @@ async def command_hello(ghapi, issue_number, user, *_args):
 @permissions(member=True, author=True)
 async def command_bump(ghapi, issue_number, _user, *_args):
     """Bump the build number of a recipe    """
-    bump.apply_async((issue_number, ghapi))
+    tasks.bump.apply_async((issue_number, ghapi))
     return f"Scheduled bump of build number for #{issue_number}"
 
 
@@ -117,8 +114,8 @@ async def command_bump(ghapi, issue_number, _user, *_args):
 async def command_lint(ghapi, issue_number, _user, *_args):
     """Lint the current recipe"""
     (
-        get_latest_pr_commit.s(issue_number, ghapi) |
-        create_check_run.s(ghapi)
+        tasks.get_latest_pr_commit.s(issue_number, ghapi) |
+        tasks.create_check_run.s(ghapi)
     ).apply_async()
     return f"Scheduled creation of new check run for latest commit in #{issue_number}"
 
@@ -127,11 +124,11 @@ async def command_lint(ghapi, issue_number, _user, *_args):
 async def command_recheck(ghapi, issue_number, _user, *_args):
     """Trigger check_check_run and check_circle_artifacts"""
     # queue check for artifacts
-    check_circle_artifacts.s(issue_number, ghapi).apply_async()
+    tasks.check_circle_artifacts.s(issue_number, ghapi).apply_async()
     # queue lint check
     (
-        get_latest_pr_commit.s(issue_number, ghapi) |
-        create_check_run.s(ghapi)
+        tasks.get_latest_pr_commit.s(issue_number, ghapi) |
+        tasks.create_check_run.s(ghapi)
     ).apply_async()
     return f"Scheduled check run and circle artificats verification on #{issue_number}"
 
@@ -140,19 +137,26 @@ async def command_recheck(ghapi, issue_number, _user, *_args):
 @permissions(member=True, author=True)
 async def command_rebuild(ghapi, issue_number, _user, *_args):
     """Trigger rebuild of PR as of latest sha"""
-    trigger_circle_rebuild.s(issue_number, ghapi).apply_async()
+    tasks.trigger_circle_rebuild.s(issue_number, ghapi).apply_async()
     return f"Scheduled triggering of rebuild for #{issue_number}"
 
 
 @command_routes.register("merge")
-#@permissions(member=True)
+@permissions(member=True)
 #@permissions(author=False, team="core")
-@permissions(team="core")
 async def command_merge(ghapi, issue_number, user, *_args):
     """Merge PR"""
     comment_id = await ghapi.create_comment(issue_number, "Scheduled Upload & Merge")
     (
-        merge_pr.si(issue_number, comment_id, ghapi) |
-        post_result.s(issue_number, comment_id, "merge", user, ghapi)
+        tasks.merge_pr.si(issue_number, comment_id, ghapi) |
+        tasks.post_result.s(issue_number, comment_id, "merge", user, ghapi)
     ).apply_async()
     return f"Scheduled merge of #{issue_number}"
+
+
+@command_routes.register("autobump")
+@permissions(member=True)
+async def command_autobump(ghapi, _issue_number, _user, *args):
+    """Run Autobump on recipes"""
+    tasks.run_autobump.s(args, ghapi).apply_async()
+    return f"Scheduled autobump check of recipe(s) {', '.join(args)}"

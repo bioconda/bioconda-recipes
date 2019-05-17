@@ -1,6 +1,7 @@
 """Wrappers for Github Web-API Bindings"""
 
 import abc
+import base64
 import datetime
 import logging
 import time
@@ -61,12 +62,15 @@ class GitHubHandler:
     CHECK_RUN         = "/repos/{user}/{repo}/check-runs{/id}"
     GET_CHECK_RUNS    = "/repos/{user}/{repo}/commits/{commit}/check-runs"
     GET_STATUSES      = "/repos/{user}/{repo}/commits/{commit}/statuses"
+    CONTENTS          = "/repos/{user}/{repo}/contents/{path}{?ref}"
 
     ORG_MEMBERS       = "/orgs/{user}/members{/username}"
     ORG               = "/orgs/{user}"
     ORG_TEAMS         = "/orgs/{user}/teams{/team_slug}"
 
     TEAMS_MEMBERSHIP  = "/teams/{team_id}/memberships/{username}"
+
+    SEARCH_ISSUES     = "/search/issues?q="
 
     STATE = IssueState
 
@@ -141,8 +145,11 @@ class GitHubHandler:
         if not self.token:
             self.username = "UNKNOWN [no token]"
         else:
-            user = await self.api.getitem("/user")
-            self.username = user["login"]
+            try:
+                user = await self.api.getitem("/user")
+                self.username = user["login"]
+            except gidgethub.GitHubException:
+                pass
 
     async def iter_teams(self) -> AsyncIterator[Dict[str, Any]]:
         """List organization teams
@@ -238,6 +245,38 @@ class GitHubHandler:
         if team:
             return await self.is_team_member(username, team)
         return True
+
+    async def search_issues(self, author=None, pr=False, issue=False):
+        """Search issues/PRs on our repos
+
+        Arguments:
+          author: login name of user to search
+          pr: whether to consider only PRs
+          issue: whether to consider only non-PR issues
+        """
+        query = ["org:" + self.user]
+
+        if pr and not issue:
+            query += ["is:pr"]
+        elif issue and not pr:
+            query += ["is:issue"]
+
+        if author:
+            query += ["author:" + author]
+
+        return await self.api.getitem(self.SEARCH_ISSUES + '+'.join(query))
+
+    async def get_pr_count(self, user) -> int:
+        """Get the number of PRs opened by user
+
+        Arguments:
+          user: login of user to query
+
+        Returns:
+          Number of PRs that **user** has opened so far
+        """
+        result = await self.search_issues(pr=True, author=user)
+        return result.get('total_count', 0)
 
     async def is_org(self) -> bool:
         """Check if we are operating on an organization"""
@@ -664,6 +703,33 @@ class GitHubHandler:
             return False, "Not all required checks have passed"
 
         return True, "LGTM"
+
+    async def get_contents(self, path: str, ref: str = None) -> str:
+        """Get contents of a file in repo
+
+        Arguments:
+          path: file path
+          ref: git reference (branch, commit, tag)
+
+        Returns:
+          The contents of the file
+
+        Raises:
+          RuntimeError if the content encoding is not understood.
+          (Should always be base64)
+        """
+        var_data = copy(self.var_default)
+        var_data['path'] = path
+        if ref:
+            var_data['ref'] = ref
+        else:
+            ref = 'master'
+        result = await self.api.getitem(self.CONTENTS, var_data)
+        if result['encoding'] != 'base64':
+            raise RuntimeError(f"Got unknown encoding for {self}/{path}:{ref}")
+        content_bytes = base64.b64decode(result['content'])
+        content = content_bytes.decode('utf-8')
+        return content
 
 
 class AiohttpGitHubHandler(GitHubHandler):
