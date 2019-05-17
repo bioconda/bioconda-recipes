@@ -33,6 +33,7 @@ from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import cran_skeleton
 from . import update_pinnings
 from . import graph
+from .githandler import BiocondaRepo
 
 logger = logging.getLogger(__name__)
 
@@ -273,6 +274,9 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
     If --push-status is not set, reports a TSV of linting results to stdout.
     Otherwise pushes a commit status to the specified commit on github.
     """
+    config_filename = config
+    config = utils.load_config(config)
+
     if list_funcs:
         print('\n'.join([i.__name__ for i in lint_functions.registry]))
         sys.exit(0)
@@ -287,14 +291,29 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
             sys.stderr.write('No valid linting functions selected, exiting.\n')
             sys.exit(1)
 
-    config_filename = config
-    config = utils.load_config(config)
+    recipes = list(utils.get_recipes(recipe_folder, packages))
+    logger.info("Considering total of %s recipes%s.",
+                len(recipes), utils.ellipsize_recipes(recipes, recipe_folder))
 
-    _recipes = linting.select_recipes(packages, git_range, recipe_folder,
-                                      config_filename, config, force)
+    if git_range:
+        if len(git_range) > 2:
+            sys.exit("--git-range may have only one or two arguments")
+        if len(git_range) == 1:
+            ref = "HEAD"
+            other = git_range[0]
+        else:
+            other, ref = git_range
+        repo = BiocondaRepo(recipe_folder)
+        changed_recipes = repo.get_changed_recipes(ref, other)
+        logger.info("Constraining to %s git modified recipes%s.", len(changed_recipes),
+                    utils.ellipsize_recipes(changed_recipes, recipe_folder))
+        recipes = [recipe for recipe in recipes if recipe in set(changed_recipes)]
+        if len(recipes) != len(changed_recipes):
+            logger.info("Overlap was %s recipes%s.", len(recipes),
+                        utils.ellipsize_recipes(recipes, recipe_folder))
 
     lint_args = linting.LintArgs(exclude=exclude, registry=registry)
-    report = linting.lint(_recipes, lint_args)
+    report = linting.lint(recipes, lint_args)
 
     # The returned dataframe is in tidy format; summarize a bit to get a more
     # reasonable log
@@ -810,7 +829,6 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
     # load and register config
     config_dict = utils.load_config(config)
     from . import autobump
-    from . import githandler
     from . import githubhandler
     from . import hosters
 
@@ -850,7 +868,7 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
     if check_branch or create_branch or create_pr or only_active:
         # We need to take the recipe from the git repo. This
         # loads the bump/<recipe> branch if available
-        git_handler = githandler.BiocondaRepo(recipe_folder, dry_run)
+        git_handler = BiocondaRepo(recipe_folder, dry_run)
         git_handler.checkout_master()
         if only_active:
             scanner.add(autobump.ExcludeNoActiveUpdate, git_handler)
