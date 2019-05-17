@@ -1,35 +1,35 @@
---- Makefile	2018-07-24 15:44:34.000000000 -0400
-+++ Makefile	2018-08-08 12:29:51.490203658 -0400
+--- Makefile    2019-01-18 15:39:19.000000000 +0100
++++ Makefile_patched    2019-01-23 22:48:11.065068120 +0100
 @@ -8,7 +8,7 @@
  #
  
  #Basic flags every build needs
--LIBS=-lz
+-LIBS = -lz
 +LIBS=-lcrypto -lz -llzma -lbz2 -lcurl -ldeflate -ldl
  CXXFLAGS ?= -g -O3
- CXXFLAGS += -std=c++11 -fopenmp -fsigned-char
- CFLAGS ?= -O3 -std=c99
-@@ -46,19 +46,8 @@
-     EIGEN_CHECK=
+ CXXFLAGS += -std=c++11 -fopenmp -fsigned-char -D_FILE_OFFSET_BITS=64 #D_FILE_OFFSET_BITS=64 makes nanopolish work in 32 bit systems
+ CFLAGS ?= -O3 -std=c99 -fsigned-char -D_FILE_OFFSET_BITS=64 
+@@ -50,19 +50,8 @@
+     EIGEN_CHECK =
  endif
  
 -# Default to build and link the libhts submodule
 -ifeq ($(HTS), install)
--    HTS_LIB=./htslib/libhts.a
--    HTS_INCLUDE=-I./htslib
+-    HTS_LIB = ./htslib/libhts.a
+-    HTS_INCLUDE = -I./htslib
 -else
 -    # Use system-wide htslib
--    HTS_LIB=
--    HTS_INCLUDE=
+-    HTS_LIB =
+-    HTS_INCLUDE =
 -    LIBS += -lhts
 -endif
 -
  # Include the header-only fast5 library
--FAST5_INCLUDE=-I./fast5/include
-+#FAST5_INCLUDE=-I./fast5/include
+-FAST5_INCLUDE = -I./fast5/include
++#FAST5_INCLUDE = -I./fast5/include
  
  # Include the header-only eigen library
- EIGEN_INCLUDE=-I./eigen/
+ EIGEN_INCLUDE = -I./eigen/
 --- src/nanopolish_methyltrain.cpp	2018-07-24 15:44:34.000000000 -0400
 +++ src/nanopolish_methyltrain.cpp	2018-08-08 12:30:55.275433869 -0400
 @@ -42,7 +42,7 @@

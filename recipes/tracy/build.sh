@@ -1,9 +1,5 @@
 #!/bin/sh
 
-export CPP_INCLUDE_PATH=${PREFIX}/include
-export CXX_INCLUDE_PATH=${PREFIX}/include
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
-export LIBRARY_PATH=${PREFIX}/lib
-make all
 mkdir -p $PREFIX/bin
-cp src/tracy $PREFIX/bin
+cp tracy_v*_linux_x86_64bit $PREFIX/bin/tracy
+chmod 0755 ${PREFIX}/bin/tracy
