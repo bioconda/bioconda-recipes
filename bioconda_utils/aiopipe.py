@@ -170,7 +170,10 @@ class AsyncPipeline(Generic[ITEM]):
 
         for task in tasks:
             task.cancel()
-        await asyncio.gather(*tasks)
+        try:
+            await asyncio.gather(*tasks)
+        except asyncio.CancelledError:
+            pass
 
     async def show_progress(self, in_q, out_q) -> None:
         with tqdm(total=self.get_item_count()) as progress:

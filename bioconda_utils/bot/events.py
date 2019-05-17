@@ -1,15 +1,19 @@
 """
 Handlers for incoming Github Events
+
+Note:
+  The incoming webhook from Github is still open and unanswered
+  while these are processed. Commands should not do anything taking
+  more than milliseconds.
 """
 
 import logging
 import re
-import asyncio
 
 import gidgethub.routing
 
 from .commands import command_routes
-from .tasks import lint_check, create_check_run, check_circle_artifacts
+from . import tasks
 from .config import APP_ID
 
 
@@ -21,23 +25,38 @@ BOT_ALIAS_RE = re.compile(r'@bioconda[- ]?bot', re.IGNORECASE)
 
 @event_routes.register("issue_comment", action="created")
 async def handle_comment_created(event, ghapi, *args, **_kwargs):
-    """Dispatches @bioconda-bot commands
+    """Handles comments on issues
 
-    This function watches for comments on issues. Lines starting with
-    an @mention of the bot are considered commands and dispatched.
+    - dispatches @biocondabot commands
+    - re-iterates commenets from non-members attempting to @mention @bioconda/xxx
     """
     issue_number = event.get('issue/number', "NA")
     comment_author = event.get("comment/user/login", "")
+    comment_body = event.get("comment/body", "")
+
+    # Ignore self mentions. This is important not only to avoid loops,
+    # but critical because we are repeating what non-members say below.
+    if BOT_ALIAS_RE.match('@'+comment_author):
+        return
+
     commands = [
         line.lower().split()[1:]
-        for line in event.get('comment/body', '').splitlines()
+        for line in comment_body.splitlines()
         if BOT_ALIAS_RE.match(line)
     ]
-    if not commands:
-        logger.info("No command in comment on #%s", issue_number)
     for cmd, *args in commands:
         logger.info("Dispatching command from #%s: '%s' %s", issue_number, cmd, args)
         await command_routes.dispatch(cmd, ghapi, issue_number, comment_author, *args)
+
+    if '@bioconda/' in comment_body.lower() and not await ghapi.is_member(comment_author):
+        if '@bioconda/all' in comment_body.lower():
+            return  # not pinging everyone
+        logger.info("Repeating comment from %s on #%s to allow ping")
+        quoted_msg = '\n'.join('> ' + line for line in comment_body.splitlines())
+        await ghapi.create_comment(
+            issue_number,
+            f"Repeating comment from @{comment_author} to enable @mention:\n"
+            + quoted_msg)
 
 
 @event_routes.register("check_suite")
@@ -48,7 +67,7 @@ async def handle_check_suite(event, ghapi):
     if action not in ['requested', 'rerequested']:
         return
     head_sha = event.get("check_suite/head_sha")
-    create_check_run.apply_async((head_sha, ghapi))
+    tasks.create_check_run.apply_async((head_sha, ghapi))
     logger.info("Scheduled create_check_run for %s", head_sha)
 
 
@@ -65,7 +84,7 @@ async def handle_check_run(event, ghapi):
                 # PR away from us, not to us
                 continue
             pr_number = int(pr["number"])
-            check_circle_artifacts.s(pr_number, ghapi).apply_async()
+            tasks.check_circle_artifacts.s(pr_number, ghapi).apply_async()
             logger.info("Scheduled check_circle_artifacts on #%s", pr_number)
 
     # Ignore check runs coming from other apps
@@ -73,11 +92,11 @@ async def handle_check_run(event, ghapi):
         return
 
     if action == "rerequested":
-        create_check_run.apply_async((head_sha, ghapi))
+        tasks.create_check_run.apply_async((head_sha, ghapi))
         logger.info("Scheduled create_check_run for %s", head_sha)
     elif action == "created":
         check_run_number = event.get('check_run/id')
-        lint_check.apply_async((check_run_number, head_sha, ghapi))
+        tasks.lint_check.apply_async((check_run_number, head_sha, ghapi))
         logger.info("Scheduled lint_check for %s %s", check_run_number, head_sha)
 
 
@@ -98,7 +117,9 @@ async def handle_pull_request(event, ghapi):
     pr_number = int(event.get('number'))
     head_sha = event.get('pull_request/head/sha')
     logger.info("Handling pull_request/%s #%s (%s)", action, pr_number, head_sha)
+    if action == "opened":
+        tasks.create_welcome_post.s(pr_number, ghapi).apply_async()
+
     if action in ('opened', 'reopened', 'synchronize'):
-        await asyncio.sleep(5)
-        create_check_run.s(head_sha, ghapi, recreate=False).apply_async()
+        tasks.create_check_run.s(head_sha, ghapi, recreate=False).apply_async(countdown=30)
         logger.info("Scheduled create_check_run(recreate=False) for %s", head_sha)

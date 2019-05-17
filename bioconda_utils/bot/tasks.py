@@ -17,6 +17,8 @@ import asyncio
 from .worker import celery
 from .config import BOT_NAME, BOT_EMAIL, CIRCLE_TOKEN, QUAY_LOGIN, ANACONDA_TOKEN
 from .. import utils
+from .. import autobump
+from .. import hosters
 from ..recipe import Recipe
 from ..githandler import TempBiocondaRepo
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
@@ -70,11 +72,16 @@ class Checkout:
                 fork_repo = prs['head']['repo']['name']
                 branch_name = prs['head']['ref']
                 ref = None
-            else:
+            elif self.ref:
                 fork_user = None
                 fork_repo = None
                 branch_name = "unknown"
                 ref = self.ref
+            else:
+                fork_user = None
+                fork_repo = None
+                branch_name = "master"
+                ref = None
 
             self.git = TempBiocondaRepo(
                 password=self.ghapi.token,
@@ -89,7 +96,10 @@ class Checkout:
             self.orig_cwd = os.getcwd()
             os.chdir(self.git.tempdir.name)
 
-            branch = self.git.create_local_branch(branch_name, ref)
+            if not ref:
+                branch = self.git.get_local_branch(branch_name)
+            else:
+                branch = self.git.create_local_branch(branch_name, ref)
             if not branch:
                 raise RuntimeError(f"Failed to find {branch_name}:{ref} in {self.git}")
             branch.checkout()
@@ -460,3 +470,35 @@ async def post_result(result: Tuple[bool, str], pr_number: int, comment_id: int,
     message = f"@{user}, your request to {prefix} {status}: {result[1]}"
     await ghapi.create_comment(pr_number, message)
     logger.warning("message %s", message)
+
+
+@celery.task(acks_late=True)
+async def create_welcome_post(pr_number: int, ghapi):
+    """Post welcome message for first timers"""
+    prq = await ghapi.get_prs(number=pr_number)
+    pr_author = prq['user']['login']
+    if await ghapi.get_pr_count(pr_author) > 1:
+        logger.error("PR %#s is not %s's first", pr_number, pr_author)
+        return
+    logger.error("PR %#s is %s's first PR - posting welcome msg", pr_number, pr_author)
+    message_tpl_str = await ghapi.get_contents(".github/welcome_new_contributor.md")
+    message_tpl = utils.jinja_silent_undef.from_string(message_tpl_str)
+    message = message_tpl.render(user=pr_author)
+    await ghapi.create_comment(pr_number, message)
+
+
+@celery.task(acks_late=True)
+async def run_autobump(package_names, ghapi, *args):
+    async with Checkout(ghapi) as git:
+        if not git:
+            logger.error("failed to checkout master")
+            return
+        recipe_source = autobump.RecipeSource('recipes', package_names)
+        scanner = autobump.Scanner(recipe_source)
+        scanner.add(autobump.ExcludeSubrecipe)
+        scanner.add(autobump.GitLoadRecipe, git)
+        scanner.add(autobump.UpdateVersion, hosters.Hoster.select_hoster)
+        scanner.add(autobump.UpdateChecksums)
+        scanner.add(autobump.GitWriteRecipe, git)
+        scanner.add(autobump.CreatePullRequest, git, ghapi)
+        await scanner._async_run()
