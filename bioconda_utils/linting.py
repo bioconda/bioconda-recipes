@@ -107,7 +107,7 @@ def lint(recipes: List[str], lint_args, basedir="recipes"):
     else:
         # Obtain commit message from last commit.
         commit_message = utils.run(
-            ['git', 'log', '--format=%B', '-n', '1'], mask=False
+            ['git', 'log', '--format=%B', '-n', '1'], mask=False, loglevel=0
         ).stdout
 
     # For example the following text in the commit message will skip
