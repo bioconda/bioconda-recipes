@@ -15,6 +15,7 @@ import shlex
 import logging
 from collections import defaultdict, Counter
 from functools import partial
+import inspect
 
 import argh
 from argh import arg
@@ -77,12 +78,49 @@ def enable_debugging():
 
 
 def enable_threads():
-    """Adds the paremeter ``--threads`` (or ``-t``) to limit parallelism"""
+    """Adds the parameter ``--threads`` (or ``-t``) to limit parallelism"""
     def decorator(func):
         @arg('-t', '--threads', help="Limit maximum number of processes used.")
         @utils.wraps(func)
         def wrapper(*args, threads=16, **kwargs):
             utils.set_max_threads(threads)
+            func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def recipe_folder_and_config():
+    """Adds optional positional arguments recipe_folder and config
+
+    Requires that func has synopsis ``def x(recipe_folder, config,...)``.
+    """
+    def check_arg(args, idx, name, default):
+        val = args[idx]
+        if not val:
+            val = default
+        if not os.path.exists(val):
+            sys.exit(f"Argument '{name}' points to missing file '{val}'")
+        if val != args[idx]:
+            lst = list(args)
+            lst[idx] = val
+            return tuple(lst)
+        return args
+
+    def decorator(func):
+        args = inspect.getfullargspec(func).args
+        try:
+            recipe_folder_idx = args.index('recipe_folder')
+            config_idx = args.index('config')
+        except ValueError:
+            sys.exit(f"Function {func} must have 'recipe_folder' and 'config' args")
+        @arg('recipe_folder', nargs='?',
+             help='Path to folder containing recipes (default: recipes/)')
+        @arg('config', nargs='?',
+             help='Path to Bioconda config (default: config.yml)')
+        @utils.wraps(func)
+        def wrapper(*args, **kwargs):
+            args = check_arg(args, recipe_folder_idx, 'recipe_folder', 'recipes/')
+            args = check_arg(args, config_idx, 'config', 'config.yml')
             func(*args, **kwargs)
         return wrapper
     return decorator
@@ -184,8 +222,7 @@ def duplicates(config,
                 print(*spec, ','.join(dup_channels), sep='\t')
 
 
-@arg('recipe_folder', help='Path to top-level dir of recipes.')
-@arg('config', help='Path to yaml file specifying the configuration')
+@recipe_folder_and_config()
 @arg(
     '--packages',
     nargs="+",
@@ -293,8 +330,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
                 user, repo, pull_request, msg)
 
 
-@arg('recipe_folder', help='Path to top-level dir of recipes.')
-@arg('config', help='Path to yaml file specifying the configuration')
+@recipe_folder_and_config()
 @arg(
     '--packages',
     nargs="+",
@@ -445,8 +481,7 @@ def build(
     exit(0 if success else 1)
 
 
-@arg('recipe_folder', help='Path to recipes directory')
-@arg('config', help='Path to yaml file specifying the configuration')
+@recipe_folder_and_config()
 @arg('--packages',
      nargs="+",
      help='Glob for package[s] to show in DAG. Default is to show all '
@@ -497,8 +532,7 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
             print('\n'.join(recipes) + '\n')
 
 
-@arg('recipe_folder', help='Path to recipes directory')
-@arg('config', help='Path to yaml file specifying the configuration')
+@recipe_folder_and_config()
 @arg('--packages',
      nargs="+",
      help='Glob for package[s] to update, as needed due to a change in pinnings')
@@ -581,8 +615,7 @@ def update_pinning(recipe_folder, config, packages="*",
               "could not be incremented: {}".format(list(bumpErrors)))
 
 
-@arg('recipe_folder', help='Path to recipes directory')
-@arg('config', help='Path to yaml file specifying the configuration')
+@recipe_folder_and_config()
 @arg('--dependencies', nargs='+',
      help='''Return recipes in `recipe_folder` in the dependency chain for the
      packages listed here. Answers the question "what does PACKAGE need?"''')
@@ -624,8 +657,7 @@ def dependent(recipe_folder, config, restrict=False,
      must match the package name on the Bioconductor site. If "update-all-packages"
      is specified, then all packages in a given bioconductor release will be
      created/updated (--force is then implied).''')
-@arg('recipe_folder', help='Path to recipes directory')
-@arg('config', help='Path to yaml file specifying the configuration')
+@recipe_folder_and_config()
 @arg('--versioned', action='store_true', help='''If specified, recipe will be
      created in RECIPES/<package>/<version>''')
 @arg('--force', action='store_true', help='''Overwrite the contents of an
@@ -712,6 +744,7 @@ def clean_cran_skeleton(recipe, no_windows=False):
 
 @arg('recipe_folder', help='Path to recipes directory')
 @arg('config', help='Path to yaml file specifying the configuration')
+@recipe_folder_and_config()
 @arg('--packages', nargs="+",
      help='Glob(s) for package[s] to scan. Can be specified more than once')
 @arg('--exclude', nargs="+",
