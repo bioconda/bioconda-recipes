@@ -17,7 +17,7 @@ from functools import partial
 import logging
 import datetime
 from threading import Event, Thread
-from typing import Sequence, List, Dict, Any, Union
+from typing import Sequence, Collection, List, Dict, Any, Union
 from pathlib import PurePath
 import json
 import warnings
@@ -239,6 +239,32 @@ def setup_logger(name: str, loglevel: Union[str, int] = logging.INFO,
         log_filter = LogFuncFilter(run, "Command output truncated", log_command_max_lines)
         log_stream_handler.addFilter(log_filter)
     return new_logger
+
+
+def ellipsize_recipes(recipes: Collection[str], recipe_folder: str,
+                      n: int = 5, m: int = 50) -> str:
+    """Logging helper showing recipe list
+
+    Args:
+      recipes: List of recipes
+      recipe_folder: Folder name to strip from recipes.
+      n: Show at most this number of recipes, with "..." if more are found.
+      m: Don't show anything if more recipes than this
+         (pointless to show first 5 of 5000)
+    Returns:
+      A string like " (htslib, samtools, ...)" or ""
+    """
+    if not recipes or len(recipes) > m:
+        return ""
+    if len(recipes) > n:
+        if not isinstance(recipes, Sequence):
+            recipes = list(recipes)
+        recipes = recipes[:n]
+        append = ", ..."
+    else:
+        append = ""
+    return ' ('+', '.join(recipe.lstrip(recipe_folder).lstrip('/')
+                     for recipe in recipes) + append + ')'
 
 
 class JinjaSilentUndefined(jinja2.Undefined):
