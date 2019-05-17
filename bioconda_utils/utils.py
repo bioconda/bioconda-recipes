@@ -845,7 +845,8 @@ def file_from_commit(commit, filename):
     if commit == 'HEAD':
         return open(filename).read()
 
-    p = run(['git', 'show', '{0}:{1}'.format(commit, filename)], mask=False)
+    p = run(['git', 'show', '{0}:{1}'.format(commit, filename)], mask=False,
+            loglevel=0)
     return str(p.stdout)
 
 
@@ -907,8 +908,8 @@ def changed_since_master(recipe_folder):
     repo and have added the main repo as ``upstream``, then you'll have to do
     a ``git checkout master && git pull upstream master`` to update your fork.
     """
-    p = run(['git', 'fetch', 'origin', 'master'], mask=False)
-    p = run(['git', 'diff', 'FETCH_HEAD', '--name-only'], mask=False)
+    p = run(['git', 'fetch', 'origin', 'master'], mask=False, loglevel=0)
+    p = run(['git', 'diff', 'FETCH_HEAD', '--name-only'], mask=False, loglevel=0)
     return [
         os.path.dirname(os.path.relpath(i, recipe_folder))
         for i in p.stdout.splitlines(False)
@@ -1155,7 +1156,7 @@ def modified_recipes(git_range, recipe_folder, config_file):
         ]
     )
 
-    p = run(cmds, shell=False, mask=False)
+    p = run(cmds, shell=False, mask=False, loglevel=0)
 
     modified = [
         os.path.join(recipe_folder, m)
