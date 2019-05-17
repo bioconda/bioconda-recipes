@@ -556,6 +556,8 @@ def run(cmds: List[str], env: Dict[str, str]=None, mask: List[str]=None, live: b
             arg = arg.replace(mitem, '<hidden>')
         return arg
 
+    mylogger.log(loglevel, "Executing: '%s'", ' '.join(do_mask(arg) for arg in cmds))
+
     # bufsize=4 result of manual experimentation. Changing it can
     # drop performance drastically.
     with sp.Popen(cmds, stdout=sp.PIPE, stderr=sp.PIPE,
