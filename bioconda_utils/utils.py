@@ -1148,63 +1148,6 @@ class BiocondaUtilsWarning(UserWarning):
     pass
 
 
-def modified_recipes(git_range, recipe_folder, config_file):
-    """
-    Returns files under the recipes dir that have been modified within the git
-    range. Includes meta.yaml files for recipes that have been unblacklisted in
-    the git range. Filenames are returned with the ``recipe_folder`` included.
-
-    git_range : list or tuple of length 1 or 2
-        For example, ``['00232ffe', '10fab113']``, or commonly ``['master', 'HEAD']``
-        or ``['master']``. If length 2, then the commits are provided to ``git diff``
-        using the triple-dot syntax, ``commit1...commit2``. If length 1, the
-        comparison is any changes in the working tree relative to the commit.
-
-    recipe_folder : str
-        Top-level recipes dir in which to search for meta.yaml files.
-    """
-    orig_git_range = git_range[:]
-    if len(git_range) == 2:
-        git_range = '...'.join(git_range)
-    elif len(git_range) == 1 and isinstance(git_range, list):
-        git_range = git_range[0]
-    else:
-        raise ValueError('Expected 1 or 2 args for git_range; got {}'.format(git_range))
-
-    cmds = (
-        [
-            'git', 'diff', '--relative={}'.format(recipe_folder),
-            '--name-only',
-            git_range,
-            "--"
-        ] +
-        [
-            os.path.join(recipe_folder, '*'),
-            os.path.join(recipe_folder, '*', '*')
-        ]
-    )
-
-    p = run(cmds, shell=False, mask=False, loglevel=0)
-
-    modified = [
-        os.path.join(recipe_folder, m)
-        for m in p.stdout.strip().split('\n')
-    ]
-
-    # exclude recipes that were deleted in the git-range
-    existing = list(filter(os.path.exists, modified))
-
-    # if the only diff is that files were deleted, we can have ['recipes/'], so
-    # filter on existing *files*
-    existing = list(filter(os.path.isfile, existing))
-
-    unblacklisted = newly_unblacklisted(config_file, recipe_folder, orig_git_range)
-    unblacklisted = [os.path.join(recipe_folder, i, 'meta.yaml') for i in unblacklisted]
-    existing += unblacklisted
-
-    return existing
-
-
 class Progress:
     def __init__(self):
         self.thread = Thread(target=self.progress)

@@ -127,6 +127,26 @@ def recipe_folder_and_config():
     return decorator
 
 
+def get_recipes_to_build(git_range: Tuple[str], recipe_folder: str) -> List[str]:
+    """Gets list of modified recipes according to git_range and blacklist
+
+    See `githandler.get_recipes_to_build()`.
+
+    Arguments:
+      git_range: one or two-tuple containing "from" and "to" git refs,
+                 with "to" defaulting to "HEAD"
+    Returns:
+      List of recipes for which meta.yaml or build.sh was modified or
+      which were unblacklisted.
+    """
+    if not git_range or len(git_range) > 2:
+        sys.exit("--git-range may have only one or two arguments")
+    other = git_range[0]
+    ref = "HEAD" if len(git_range) == 1 else git_range[1]
+    repo = BiocondaRepo(recipe_folder)
+    return repo.get_recipes_to_build(ref, other)
+
+
 # NOTE:
 #
 # A package is the name of the software package, like `bowtie`.
@@ -293,15 +313,7 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
                 len(recipes), utils.ellipsize_recipes(recipes, recipe_folder))
 
     if git_range:
-        if len(git_range) > 2:
-            sys.exit("--git-range may have only one or two arguments")
-        if len(git_range) == 1:
-            ref = "HEAD"
-            other = git_range[0]
-        else:
-            other, ref = git_range
-        repo = BiocondaRepo(recipe_folder)
-        changed_recipes = repo.get_changed_recipes(ref, other)
+        changed_recipes = get_recipes_to_build(git_range, recipe_folder)
         logger.info("Constraining to %s git modified recipes%s.", len(changed_recipes),
                     utils.ellipsize_recipes(changed_recipes, recipe_folder))
         recipes = [recipe for recipe in recipes if recipe in set(changed_recipes)]
@@ -423,22 +435,10 @@ def build(
 
     # handle git range
     if git_range and not force:
-        modified = utils.modified_recipes(git_range, recipe_folder, config)
+        modified = get_recipes_to_build(git_range, recipe_folder)
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
             exit(0)
-        # obtain list of packages to build. `modified` will be a list of *all*
-        # files so we need to extract just the package names since
-        # build_recipes expects globs
-
-        packages = list(
-            set(
-                [
-                    os.path.dirname(os.path.relpath(f, recipe_folder))
-                    for f in modified
-                ]
-            )
-        )
         logger.info('Recipes modified according to git: {}'.format(' '.join(packages)))
 
     if docker:
