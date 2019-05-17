@@ -43,6 +43,6 @@ chmod a+x $PREFIX/bin/Plot_ANIheatmap.R
 
 pgcgap --version
 
-pgcgap --help
+#pgcgap --help
 
 pgcgap --check-external-programs
