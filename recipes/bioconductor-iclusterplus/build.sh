@@ -2,8 +2,7 @@
 mv DESCRIPTION DESCRIPTION.old
 grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
 mkdir -p ~/.R
-env
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
+if [[ "$HOST" == *"linux-gnu" ]]; then
     ln -s $FC ${PREFIX}/bin/gfortran
 fi
 echo -e "CC=$CC
@@ -15,6 +14,6 @@ CXX14=$CXX" > ~/.R/Makevars
 sed -i.bak "1652i\\
   FC=\"gfortran\"" configure
 $R CMD INSTALL --build .
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
+if [[ "$HOST" == *"linux-gnu" ]]; then
     rm ${PREFIX}/bin/gfortran
 fi
