@@ -809,7 +809,7 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
                     always=exclude_subrecipes == "always")
 
     # Exclude recipes with dependencies pending an update
-    if not no_check_pending_deps:
+    if not no_check_pending_deps and not no_follow_graph:
         scanner.add(autobump.ExcludeDependencyPending, recipe_source.dag)
 
     # Load recipe
