@@ -45,4 +45,4 @@ pgcgap --version
 
 #pgcgap --help
 
-pgcgap --check-external-programs
+#pgcgap --check-external-programs
