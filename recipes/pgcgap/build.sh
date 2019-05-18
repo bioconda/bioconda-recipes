@@ -2,15 +2,6 @@
 
 mkdir -p $PREFIX/bin
 
-#wget -c -r -nH -np -nd -R index.html -P ./ ftp://ftp.ncbi.nih.gov/pub/COG/COG2014/data/
-#gunzip prot2003-2014.fa.gz
-#makeblastdb -parse_seqids -in prot2003-2014.fa -input_type fasta -dbtype prot -out COG_2014
-#mv COG_2014.phr $PREFIX/bin/
-#mv COG_2014.pin $PREFIX/bin/
-#mv COG_2014.psq $PREFIX/bin/
-#mv cog2003-2014.csv $PREFIX/bin/
-#mv cognames2003-2014.tab $PREFIX/bin/
-#mv fun2003-2014.tab $PREFIX/bin/
 
 cp pgcgap.pl $PREFIX/bin/pgcgap
 cp Functions/Pan/plot_3Dpie.R $PREFIX/bin/
