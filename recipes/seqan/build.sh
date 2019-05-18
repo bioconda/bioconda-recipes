@@ -1,8 +1,6 @@
 #!/bin/bash
 
-mkdir -p $PREFIX/bin
-mkdir -p build
-cd build
-cmake .. -DSEQAN_BUILD_SYSTEM=SEQAN_RELEASE_LIBRARY
-
-make
+mkdir -p $PREFIX/include
+mkdir -p $PREFIX/share
+mv include/seqan $PREFIX/include
+mv include/share $PREFIX/share
