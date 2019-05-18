@@ -3,10 +3,12 @@ Construction and Manipulation of Package/Recipe Graphs
 """
 
 import logging
-import networkx as nx
 
 from collections import defaultdict
+from fnmatch import fnmatch
 from itertools import chain
+
+import networkx as nx
 
 from . import utils
 
@@ -116,12 +118,13 @@ def build_from_recipes(recipes):
     return dag
 
 
-def filter_recipe_dag(dag, names):
+def filter_recipe_dag(dag, include, exclude):
     """Reduces **dag** to packages in **names** and their requirements"""
-    name_set = set(names)
     nodes = set()
     for recipe in dag:
-        if recipe.reldir in name_set and recipe not in nodes:
+        if (recipe not in nodes
+            and any(fnmatch(recipe.reldir, p) for p in include)
+            and not any(fnmatch(recipe.reldir, p) for p in exclude)):
             nodes.add(recipe)
             nodes |= nx.ancestors(dag, recipe)
     return nx.subgraph(dag, nodes)
