@@ -1431,8 +1431,12 @@ class RepoData:
             df['subdir'] = repo['info']['subdir']
             return df
 
-        dfs = AsyncRequests.fetch(urls, descs, to_dataframe, repos)
-        res = pd.concat(dfs)
+        if urls:
+            dfs = AsyncRequests.fetch(urls, descs, to_dataframe, repos)
+            res = pd.concat(dfs)
+        else:
+            res = pd.DataFrame(columns=self.columns)
+
         for col in ('channel', 'platform', 'subdir', 'name', 'version', 'build'):
             res[col] = res[col].astype('category')
         res = res.reset_index(drop=True)
