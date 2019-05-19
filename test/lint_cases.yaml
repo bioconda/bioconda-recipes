@@ -1,0 +1,244 @@
+setup:
+  recipes_folder: recipes
+  config.yaml:
+    blacklists: []
+    channels: []
+
+  recipes:
+    one:
+      meta.yaml:
+        package:
+          name: one
+          version: 0.1
+        source:
+          url: https://somewhere
+          sha256: 123
+        build:
+          number: 0
+        test:
+          commands:
+            - do nothing
+        about:
+          license: BSD
+          home: https://elsewhere
+          summary: the_summary
+    two:
+      meta.yaml:
+        package:
+          name: two
+          version: 0.1
+        source:
+          - url: https://somewhere
+            sha256: 123
+          - url: https://elsewhere
+            sha256: abc
+        build:
+          number: 0
+        test:
+          commands:
+            - do nothing
+        about:
+          license: BSD
+          home: https://elsewhere
+          summary: the_summary
+
+
+tests:
+- name: minimal_recipe
+- name: empty_build_section
+  remove: build
+  expect: missing_build_number
+- name: missing_home
+  remove: about/home
+  expect: missing_home
+- name: missing_home_with_lint_skip
+  remove: about/home
+  add:
+    extra:
+      skip-lints:
+        - missing_home
+- name: passing_only_package
+  remove:
+    - source
+    - build
+    - test
+    - about
+  add:
+    extra:
+      skip-lints:
+        - missing_home
+        - missing_license
+        - missing_build_number
+        - missing_summary
+        - missing_tests
+        - no_tests
+- name: missing_home_empty_string
+  add: { about: { home: '' } }
+  expect: missing_home
+- name: missing_summary
+  remove: about/summary
+  expect: missing_summary
+- name: missing_summary_empty_string
+  add: { about: { summary: '' } }
+  expect: missing_summary
+- name: missing_license
+  remove: about/license
+  expect: missing_license
+- name: missing_license_empty_string
+  add: { about: { license: '' } }
+  expect: missing_license
+- name: missing_tests
+  remove: test
+  expect: missing_tests
+- name: missing_tests_empty_section
+  remove:
+    - test/commands
+  expect: missing_tests
+- name: missing_tests_but_runtest_py
+  remove: test
+  add_files:
+    run_test.py: ''
+- name: missing_tests_but_runtest_sh
+  remove: test
+  add_files:
+    run_test.sh: ''
+- name: missing_tests_but_runtest_pl
+  remove: test
+  add_files:
+    run_test.pl: ''
+- name: missing_tests_but_runtst_sh
+  remove: test
+  add_files:
+    run_tst.sh: ''
+  expect: missing_tests
+- name: missing_hash
+  remove: source/sha256
+  expect: missing_hash
+- name: md5_hash
+  remove: source/sha256
+  add: { source: { md5: abc } }
+- name: sha1_hash
+  remove: source/sha256
+  add: { source: { sha1: abc } }
+- name: no_source
+  remove: source
+- name: uses_git_url
+  remove: source/url
+  add: { source: { git_url: someurl } }
+  expect: uses_git_url
+- name: uses_perl_threaded_in_build
+  add: { requirements: { build: [perl-threaded] } }
+  expect: uses_perl_threaded
+- name: uses_perl_threaded_in_run
+  add: { requirements: { run: [perl-threaded] } }
+  expect: uses_perl_threaded
+- name: uses_perl_threaded_in_host
+  add: { requirements: { host: [perl-threaded] } }
+  expect: uses_perl_threaded
+- name: uses_perl_threaded_in_run_and_build
+  add: { requirements: { run: [perl-threaded], host: [perl-threaded] } }
+  expect: uses_perl_threaded
+- name: uses_openjdk_in_build
+  add: { requirements: { build: [openjdk] } }
+- name: uses_openjdk_in_build_and_run
+  add: { requirements: { run: [openjdk], build: [openjdk] } }
+- name: uses_javajdk_in_build
+  add: { requirements: { build: [java-jdk] } }
+  expect: uses_javajdk
+- name: uses_javajdk_in_run
+  add: { requirements: { run: [java-jdk] } }
+  expect: uses_javajdk
+- name: uses_openjdk_in_build_and_run
+  add: { requirements: { run: [java-jdk], build: [java-jdk] } }
+  expect: uses_javajdk
+- name: uses_setuptools_in_build
+  add: { requirements: { build: [setuptools] } }
+- name: uses_setuptools_in_run
+  add: { requirements: { run: [setuptools] } }
+  expect: uses_setuptools
+- name: uses_setuptools_in_run_and_build
+  add: { requirements: { run: [setuptools], build: [setuptools] } }
+  expect: uses_setuptools
+- name: has_windows_bat_file
+  add_files:
+    build.bat: ''
+  expect: has_windows_bat_file
+- name: has_windows_bat_file
+  add_files:
+    any.bat: ''
+  expect: has_windows_bat_file
+# FIXME: should_be_noarch without python
+- name: should_be_noarch_python
+  add: { requirements: { host: [python], run: [python] } }
+  expect: should_be_noarch_python
+- name: should_be_noarch_python_good
+  add: { build: { noarch: python }, requirements: { host: [python], run: [python] } }
+- name: should_be_noarch_python_good_skip
+  add:
+    build: { noarch: python, skip: false }
+    requirements: { host: [python], run: [python] }
+- name: should_not_be_noarch_compiler
+  add:
+    build: { noarch: python }
+    requirements: { build: [compiler_gcc]}
+  expect: should_not_be_noarch_compiler
+- name: should_not_be_noarch_skip
+  add:
+    build:
+      noarch: python
+      skip: True  # [osx]
+  expect: should_not_be_noarch_skip
+- name: setup_py_only_install_build_sh
+  add_files:
+    build.sh: |
+      $PYTHON setup.py install
+- name: setup_py_only_install_script
+  add:
+    build:
+      script: $PYTHON setup.py install
+- name: setup_py_correct_build_sh
+  add: { requirements: { build: [setuptools] } }
+  add_files:
+    build.sh: |
+      $PYTHON setup install  --single-version-externally-managed --report=a.txt
+- name: setup_py_correct_build_sh_wrapped
+  add: { requirements: { build: [setuptools] } }
+  add_files:
+    build.sh: |
+      $PYTHON setup install \\
+      --single-version-externally-managed --report=a.txt
+- name: setup_py_correct_build_sh_no_setuptools
+  add_files:
+    build.sh: |
+      $PYTHON setup install  --single-version-externally-managed --report=a.txt
+- name: setup_py_correct_script
+  add: { requirements: { build: [setuptools] } }
+  add_files:
+    build.sh: |
+      $PYTHON setup install  --single-version-externally-managed --report=a.txt
+- name: setup_py_incorrect_script
+  expect: setup_py_install_args
+  add:
+    requirements: { build: [setuptools] }
+    build:
+      script: $PYTHON setup.py install
+- name: setup_py_incorrect_build_sh
+  expect: setup_py_install_args
+  add: { requirements: { build: [setuptools] } }
+  add_files:
+    build.sh: |
+      $PYTHON setup.py install
+- name: extra_identifiers_ok
+  add: { extra: { identifiers: ['doi:123'] } }
+- name: extra_identifiers_not_list
+  expect: extra_identifiers_not_list
+  add: { extra: { identifiers: 'doi:123' } }
+- name: extra_identifiers_not_list
+  expect: extra_identifiers_not_list
+  add: { extra: { identifiers: { doi: 123 } } }
+- name: extra_identifiers_not_string
+  expect: extra_identifiers_not_string
+  add: { extra: { identifiers: [ { doi: 123} ] } }
+- name: extra_identifiers_missing_colon
+  expect: extra_identifiers_missing_colon
+  add: { extra: { identifiers: [ '123' ] } }
