@@ -108,9 +108,6 @@ class LintCheckMeta(abc.ABCMeta):
     def __str__(cls):
         return cls.__name__
 
-    def __repr__(cls):
-        return cls.__name__
-
 
 def get_checks():
     """Returns the registered lint checks"""
@@ -126,7 +123,9 @@ class LintCheck(metaclass=LintCheckMeta):
 
     def test(self):
         print('test')
-        
+
+    def __str__(self):
+        return self.__class__.__name__
 
     def run(self, recipe: Recipe) -> List[LintMessage]:
         """Run the check on a recipe. Called by Linter"""
