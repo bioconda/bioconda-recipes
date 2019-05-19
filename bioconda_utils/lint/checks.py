@@ -24,8 +24,6 @@ class in_other_channels(LintCheck):
     new home at conda-forge.
 
     """
-    severity = ERROR
-
     def check_recipe(self, recipe):
         channels = utils.RepoData().get_package_data(key="channel", name=recipe.name)
         if set(channels) - set(('bioconda',)):
@@ -40,8 +38,6 @@ class build_number_needs_bump(LintCheck):
     channel. Please increase the build number.
 
     """
-    severity = ERROR
-
     def check_recipe(self, recipe):
         bldnos = utils.RepoData().get_package_data(
             key="build_number",
@@ -58,8 +54,6 @@ class missing_build_number(LintCheck):
         build:
             number: 0
     """
-    severity = ERROR
-
     def check_recipe(self, recipe):
         if not recipe.get('build/number', ''):
             self.message(section='build')
@@ -74,8 +68,6 @@ class missing_home(LintCheck):
           home: <URL to homepage>
 
     """
-    severity = ERROR
-
     def check_recipe(self, recipe):
         if not recipe.get('about/home', ''):
             self.message(section='about')
@@ -90,8 +82,6 @@ class missing_summary(LintCheck):
          summary: One line briefly describing package
 
     """
-    severity = ERROR
-
     def check_recipe(self, recipe):
         if not recipe.get('about/summary', ''):
             self.message(section='about')
@@ -106,8 +96,6 @@ class missing_license(LintCheck):
            license: <name of license>
 
     """
-    severity = ERROR
-
     def check_recipe(self, recipe):
         if not recipe.get('about/license', ''):
             self.message(section='about')
@@ -133,7 +121,6 @@ class missing_tests(LintCheck):
     ``run_test.pl`` executing tests.
 
     """
-    severity = ERROR
     test_files = ['run_test.py', 'run_test.sh', 'run_test.pl']
 
     def check_recipe(self, recipe):
@@ -157,7 +144,6 @@ class missing_hash(LintCheck):
          sha256: checksum-value
 
     """
-    severity = ERROR
     checksum_names = ('md5', 'sha1', 'sha256')
 
     def check_source(self, source, section):
@@ -172,8 +158,6 @@ class uses_git_url(LintCheck):
     feature of conda.
 
     """
-    severity = ERROR
-
     def check_source(self, source, section):
         if 'git_url' in source:
             self.message(section=section + '/git_url')
@@ -185,8 +169,6 @@ class uses_perl_threaded(LintCheck):
     Please use ``perl`` instead.
 
     """
-    severity = ERROR
-
     def check_recipe(self, recipe):
         if 'perl-threaded' in recipe.get_deps():
             self.message()
@@ -198,8 +180,6 @@ class uses_javajdk(LintCheck):
     Please use ``openjdk` instead.
 
     """
-    severity = ERROR
-
     def check_recipe(self, recipe):
         if 'java-jdk' in recipe.get_deps():
             self.message()
@@ -258,8 +238,6 @@ class should_be_noarch_python(LintCheck):
     subset of packages.
 
     """
-    severity = ERROR
-
     def check_deps(self, deps):
         if 'python' not in deps:
             return  # not a python package
@@ -287,7 +265,6 @@ class should_not_use_skip_python(LintCheck):
     skips.
 
     """
-    severity = ERROR
     bad_skip_terms = ('py2k', 'py3k', 'python')
 
     def check_deps(self, deps):
@@ -311,8 +288,6 @@ class should_not_be_noarch_compiler(LintCheck):
     Please remove the ``build: noarch:`` section.
 
     """
-    severity = ERROR
-
     def check_deps(self, deps):
         if not any(dep.startswith('compiler_') for dep in deps):
             return  # not compiled
@@ -327,8 +302,6 @@ class should_not_be_noarch_skip(LintCheck):
     Recipes marked as ``noarch`` cannot use skip.
 
     """
-    severity = ERROR
-
     def check_recipe(self, recipe):
         if self.recipe.get('build/noarch', False) is False:
             return  # no noarch, or noarch=False
@@ -349,8 +322,6 @@ class setup_py_install_args(LintCheck):
     requires defines entrypoints in its ``setup.py``.
 
     """
-    severity = ERROR
-
     def _check_line(self, line: str) -> bool:
         """Check a line for a broken call to setup.py"""
         if 'setup.py install' not in line:
@@ -385,8 +356,6 @@ class extra_identifiers_not_list(LintCheck):
               - doi:123
 
     """
-    severity = ERROR
-
     def check_recipe(self, recipe):
         identifiers = recipe.get('extra/identifiers', None)
         if identifiers and not isinstance(identifiers, list):
@@ -405,7 +374,6 @@ class extra_identifiers_not_list(LintCheck):
     Note that there is no space around the colon
 
     """
-    severity = ERROR
 
     def check_recipe(self, recipe):
         identifiers = recipe.get('extra/identifiers', [])
@@ -424,7 +392,6 @@ class extra_identifiers_missing_colon(LintCheck):
               - doi:123
 
     """
-    severity = ERROR
 
     def check_recipe(self, recipe):
         identifiers = recipe.get('extra/identifiers', [])
@@ -439,7 +406,6 @@ class deprecated_numpy_spec(LintCheck):
     Please remove the ``x.x`` - pinning is now handled automatically.
 
     """
-    severity = ERROR
     def check_deps(self, deps):
         if 'numpy' not in deps:
             return
@@ -455,8 +421,6 @@ class should_not_use_fn(LintCheck):
     There is no need to specify the filename as the URL should give a name
     and it will in most cases be unpacked automatically.
     """
-    severity = ERROR
-
     def check_source(self, source, section):
         if 'fn' in source:
             self.message(section=section+'/fn')
@@ -481,7 +445,6 @@ class should_use_compilers(LintCheck):
     conda-build itself.
 
     """
-    severity = ERROR
     compilers = ('gcc', 'llvm', 'libgfortran', 'libgcc', 'go', 'cgo',
                  'toolchain')
 
@@ -498,8 +461,6 @@ class compilers_must_be_in_build(LintCheck):
     ``requirements: build:`` section.
 
     """
-    severity = ERROR
-
     def check_deps(self, deps):
         for dep in deps:
             if dep.startswith('compiler_'):
@@ -514,8 +475,6 @@ class recipe_is_blacklisted(LintCheck):
     If you are intending to repair this recipe, remove it from
     the build fail blacklist.
     """
-    severity = ERROR
-
     def __init__(self, linter):
         super().__init__(linter)
         self.blacklist = linter.get_blacklist()

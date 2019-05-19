@@ -116,7 +116,7 @@ def get_checks():
 
 class LintCheck(metaclass=LintCheckMeta):
     """Base class for lint checks"""
-    severity = None
+    severity = ERROR
     def __init__(self, _linter: 'Linter') -> None:
         self.messages: List[LintMessage] = []
         self.recipe: Recipe = None
