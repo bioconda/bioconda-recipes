@@ -46,7 +46,7 @@ class build_number_needs_bump(LintCheck):
         bldnos = utils.RepoData().get_package_data(
             key="build_number",
             name=recipe.name, version=recipe.version)
-        if recipe.build_number <= max(bldnos):
+        if bldnos and recipe.build_number <= max(bldnos):
             self.message('build/number')
 
 
