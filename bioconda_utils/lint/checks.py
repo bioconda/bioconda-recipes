@@ -50,6 +50,21 @@ class build_number_needs_bump(LintCheck):
             self.message('build/number')
 
 
+class missing_build_number(LintCheck):
+    """The recipe is missing a build number
+
+    Please add::
+
+        build:
+            number: 0
+    """
+    severity = ERROR
+
+    def check_recipe(self, recipe):
+        if not recipe.get('build/number', ''):
+            self.message(section='build')
+
+
 class missing_home(LintCheck):
     """The recipe is missing a homepage URL
 
