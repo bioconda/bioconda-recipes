@@ -196,7 +196,7 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
 
         # Here we call the actual linter code
         utils.load_config('config.yml')
-        from bioconda_utils.linting import lint as _lint, LintArgs, markdown_report
+        from bioconda_utils.linting import lint as _lint, markdown_report
 
         # Workaround celery/billiard messing with sys.exit
         if isinstance(sys.exit, types.FunctionType):
@@ -205,14 +205,13 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
             (sys.exit, old_exit) = (new_exit, sys.exit)
 
             try:
-                df = _lint(recipes, LintArgs())
+                df = _lint(recipes)
             except SystemExit as exc:
                 old_exit(exc.args)
             finally:
                 sys.exit = old_exit
-
         else:
-            df = _lint(recipes, LintArgs())
+            df = _lint(recipes)
 
     summary = "Linted recipes:\n"
     for recipe in recipes:

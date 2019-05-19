@@ -132,6 +132,8 @@ class Recipe():
     JINJA_VARS = {
         "cran_mirror": "https://cloud.r-project.org",
         "compiler": lambda x: f"compiler_{x}",
+        "pin_compatible": lambda x, max_pin=None, min_pin=None: f"{x}",
+        "cdt": lambda x: x
     }
 
 
@@ -365,8 +367,18 @@ class Recipe():
     def __getitem__(self, key):
         return self.meta[key]
 
-    def get(self, key, default=None):
-        return self.meta.get(key, default)
+    def get(self, key, default=KeyError):
+        data = self.meta
+        try:
+            for item in key.split('/'):
+                data = data[item]
+        except (KeyError, TypeError):
+            if default is not KeyError:
+                return default
+            raise KeyError(f"No '{key}' in Recipe {self}") from None
+        if default is not KeyError and data is None:
+            return default
+        return data
 
     @property
     def package_names(self) -> List[str]:
@@ -537,15 +549,25 @@ class Recipe():
         lines.append(self.meta_yaml[end_row][:end_col])
         return "\n".join(lines).strip()
 
-    def get_deps(self):
-        lists = [buildrunhost for buildrunhost in
-                 (self.get('requirements') or {}).values()
-                 if buildrunhost]
-        for output in self.get('outputs', []):
-            lists.extend(buildrunhost for buildrunhost in
-                         output.get('requirements', {}).values())
+    def get_deps(self, sections=None, output=True):
+        return list(self.get_deps_dict(sections, output).keys())
 
-        return list(set(entry.split()[0] for lst in lists for entry in lst if entry))
+    def get_deps_dict(self, sections=None, outputs=True):
+        if not sections:
+            sections = ('build', 'run', 'host')
+        check_paths = []
+        for section in sections:
+            check_paths.append(f'requirements/{section}')
+        if outputs:
+            for section in sections:
+                for n in range(len(self.get('outputs', []))):
+                    check_paths.append(f'outputs/{n}/requirements/{section}')
+        deps = {}
+        for path in check_paths:
+            for n, spec in enumerate(self.get(path, [])):
+                dep = spec.split()[0]
+                deps.setdefault(dep, []).append(f"{path}/{n}")
+        return deps
 
     def conda_render(self, **kwargs) -> List[Tuple[MetaData, bool, bool]]:
         """Handles calling conda_build.api.render

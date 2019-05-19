@@ -16,9 +16,10 @@ import logging
 from collections import defaultdict, Counter
 from functools import partial
 import inspect
+from typing import List, Tuple
 
 import argh
-from argh import arg
+from argh import arg, named
 import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
 import pandas
@@ -26,8 +27,7 @@ import pandas
 from . import utils
 from .build import build_recipes
 from . import docker_utils
-from . import lint_functions
-from . import linting
+from . import lint
 from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import cran_skeleton
@@ -69,6 +69,7 @@ def enable_debugging():
             try:
                 func(*args, **kwargs)
             except Exception as e:
+                logger.exception("Dropping into debugger")
                 if pdb:
                     import pdb
                     pdb.post_mortem()
@@ -252,9 +253,9 @@ def duplicates(config,
 @arg('--cache', help='''To speed up debugging, use repodata cached locally in
      the provided filename. If the file does not exist, it will be created the
      first time.''')
-@arg('--list-funcs', help='''List the linting functions to be used and then
+@arg('--list-checks', help='''List the linting functions to be used and then
      exit''')
-@arg('--only', nargs='+', help='''Only run this linting function. Can be used
+@arg('--only', nargs='+', help='''Only run these linting functions. Can be used
      multiple times.''')
 @arg('--exclude', nargs='+', help='''Exclude this linting function. Can be used
      multiple times.''')
@@ -281,7 +282,9 @@ def duplicates(config,
      summarize the linting results; use this argument to get the full
      results as a TSV printed to stdout.''')
 @enable_logging()
-def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
+@enable_debugging()
+@named('lint')
+def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
          only=None, exclude=None, push_status=False, user='bioconda',
          commit=None, push_comment=False, pull_request=None,
          repo='bioconda-recipes', git_range=None, full_report=False):
@@ -293,17 +296,17 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
     """
     config_filename = config
     config = utils.load_config(config)
+    registry = lint.get_checks()
 
-    if list_funcs:
-        print('\n'.join([i.__name__ for i in lint_functions.registry]))
+    if list_checks:
+        print('\n'.join(i.__name__ for i in registry))
         sys.exit(0)
 
     if cache is not None:
         utils.RepoData().set_cache(cache)
-    registry = lint_functions.registry
 
     if only is not None:
-        registry = list(filter(lambda x: x.__name__ in only, registry))
+        registry = list(filter(lambda x: str(x) in only, registry))
         if len(registry) == 0:
             sys.stderr.write('No valid linting functions selected, exiting.\n')
             sys.exit(1)
@@ -321,41 +324,15 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
             logger.info("Overlap was %s recipes%s.", len(recipes),
                         utils.ellipsize_recipes(recipes, recipe_folder))
 
-    lint_args = linting.LintArgs(exclude=exclude, registry=registry)
-    report = linting.lint(recipes, lint_args)
+    linter = lint.Linter(config, recipe_folder, exclude, only)
+    report = linter.lint(recipes)
 
-    # The returned dataframe is in tidy format; summarize a bit to get a more
-    # reasonable log
-    if report is not None:
-        pandas.set_option('max_colwidth', 500)
-        summarized = pandas.DataFrame(
-            dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
-        if not full_report:
-            logger.error('\n\nThe following recipes failed linting. See '
-                         'https://bioconda.github.io/linting.html for details:\n\n%s\n',
-                         summarized.to_string())
-        else:
-            report.to_csv(sys.stdout, sep='\t')
-
-        if push_status:
-            github_integration.update_status(
-                user, repo, commit, state='error', context='linting',
-                description='linting failed, see travis log', target_url=None)
-        if push_comment:
-            msg = linting.markdown_report(summarized)
-            github_integration.push_comment(
-                user, repo, pull_request, msg)
-        sys.exit(1)
-
+    if report:
+        print("The following problems have been found:\n")
+        for msg in report:
+            print(f"{msg.severity.name}: {msg.fname}:{msg.end_line}: {msg.check}: {msg.title}")
     else:
-        if push_status:
-            github_integration.update_status(
-                user, repo, commit, state='success', context='linting',
-                description='linting passed', target_url=None)
-        if push_comment:
-            msg = linting.markdown_report()
-            github_integration.push_comment(
-                user, repo, pull_request, msg)
+        print("All checks OK")
 
 
 @recipe_folder_and_config()
@@ -461,16 +438,16 @@ def build(
     else:
         docker_builder = None
 
+    lint_registry = None
     if lint:
-        registry = lint_functions.registry
         if lint_only is not None:
-            registry = tuple(func for func in registry if func.__name__ in lint_only)
+            lint_registry = tuple(func for func in lint_functions.registry
+                                  if func.__name__ in lint_only)
             if len(registry) == 0:
                 sys.stderr.write('No valid linting functions selected, exiting.\n')
                 sys.exit(1)
-        lint_args = linting.LintArgs(exclude=lint_exclude, registry=registry)
     else:
-        lint_args = None
+        lint_registry = ()
         if lint_only is not None:
             logger.warning('--lint-only has no effect unless --lint is specified.')
         if lint_exclude is not None:
@@ -490,7 +467,8 @@ def build(
         docker_builder=docker_builder,
         anaconda_upload=anaconda_upload,
         mulled_upload_target=mulled_upload_target,
-        lint_args=lint_args,
+        lint_registry=lint_registry,
+        lint_exclude=lint_exclude,
         check_channels=check_channels,
         label=label,
     )
@@ -923,6 +901,7 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
     if git_handler:
         git_handler.close()
 
+
 @arg('--loglevel', default='info', help='Log level')
 def bot(loglevel='info'):
     """Locally accedd bioconda-bot command API
@@ -940,6 +919,6 @@ def bot(loglevel='info'):
 
 def main():
     argh.dispatch_commands([
-        build, dag, dependent, lint, duplicates, update_pinning,
+        build, dag, dependent, do_lint, duplicates, update_pinning,
         bioconductor_skeleton, clean_cran_skeleton, autobump, bot
     ])
