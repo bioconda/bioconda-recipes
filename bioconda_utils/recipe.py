@@ -555,6 +555,8 @@ class Recipe():
     def get_deps_dict(self, sections=None, outputs=True):
         if not sections:
             sections = ('build', 'run', 'host')
+        else:
+            sections = utils.ensure_list(sections)
         check_paths = []
         for section in sections:
             check_paths.append(f'requirements/{section}')
