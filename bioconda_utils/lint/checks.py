@@ -400,6 +400,13 @@ class extra_identifiers_missing_colon(LintCheck):
                 self.message(section=f'extra/identifiers/{n}')
 
 
+class extra_skip_lints_not_list(LintCheck):
+    """The extra/skip-lints section must contain a list"""
+    def check_recipe(self, recipe):
+        if not isinstance(recipe.get('extra/skip-lints', []), list):
+            self.message(section='extra/skip-lints')
+
+
 class deprecated_numpy_spec(LintCheck):
     """The recipe contains a deprecated numpy spec
 

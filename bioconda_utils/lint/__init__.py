@@ -280,7 +280,10 @@ class Linter:
             return [message]
 
         skips = set(self.skip[recipe_name])
-        skips.update(recipe.get('extra/skip-lints', []))
+        if isinstance(recipe.get('extra/skip-lints', []), list):
+            # If they are not, the extra_skip_lints_not_list check
+            # will be found and issued.
+            checks_to_skip.update(recipe.get('extra/skip-lints', []))
 
         messages = []
         for check in self.checks:
