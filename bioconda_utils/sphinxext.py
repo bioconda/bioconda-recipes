@@ -51,6 +51,7 @@ from conda.exports import VersionOrder
 from bioconda_utils.utils import RepoData, load_config
 from bioconda_utils.recipe import Recipe, RecipeError
 from bioconda_utils.githandler import BiocondaRepo
+from bioconda_utils.lint import get_checks
 
 # Aquire a logger
 try:
@@ -751,8 +752,7 @@ class LintDescriptionDirective(rst.Directive):
     def run(self):
         # gather data
         check_name = self.arguments[0]
-        from .lint import checks
-        check = getattr(checks, check_name)
+        check = next(check for check in get_checks() if str(check) == check_name)
         _, lineno = inspect.getsourcelines(check)
         lineno += 1
         fname = inspect.getfile(check)
