@@ -2,5 +2,4 @@
 
 mkdir build && cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=${PREFIX}
-make test
-make install
+make all test install
