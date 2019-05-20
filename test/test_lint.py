@@ -67,7 +67,7 @@ def recipe(recipes_folder, case, recipe_data):
     if 'add' in case:
         dict_merge(recipe, case['add'])
 
-    recipe_folder = op.join(recipes_folder, recipe['package']['name'])
+    recipe_folder = op.join(recipes_folder, recipe_data['folder'])
     os.mkdir(recipe_folder)
 
     if 'add_files' in case:

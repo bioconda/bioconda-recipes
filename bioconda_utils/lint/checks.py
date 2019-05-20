@@ -439,7 +439,7 @@ class should_use_compilers(LintCheck):
     """The recipe requires a compiler directly
 
     Since version 3, ``conda-build`` uses a special syntax to require
-    compilers for a given language matching the architecture for 
+    compilers for a given language matching the architecture for
     which a package is being build. Please use::
 
         requirements:
@@ -491,3 +491,16 @@ class recipe_is_blacklisted(LintCheck):
     def check_recipe(self, recipe):
         if recipe.name in self.blacklist:
             self.message(section='package/name')
+
+
+class folder_and_package_name_must_match(LintCheck):
+    """The recipe folder and package name do not match.
+
+    For clarity, the name of the folder the ``meta.yaml`` resides,
+    in and the name of the toplevel package should match.
+    """
+    def check_recipe(self, recipe):
+        recipe_base_folder, _, _ = recipe.reldir.partition('/')
+        if recipe.name !=  recipe_base_folder:
+            self.message(section='package/name')
+        print(recipe.name, recipe.reldir, recipe_base_folder)
