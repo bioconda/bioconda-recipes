@@ -87,6 +87,7 @@ import os
 import re
 import itertools
 import logging
+import inspect
 from collections import defaultdict
 from enum import IntEnum
 from typing import Any, Dict, List, NamedTuple, Tuple
@@ -262,7 +263,9 @@ class LintCheck(metaclass=LintCheckMeta):
                    be added to the message
         """
         cls = self.__class__
-        title, body = cls.__doc__.split('\n', 1)
+        doc = inspect.getdoc(cls)
+        doc = doc.replace('::', ':').replace('``', '`')
+        title, _, body = doc.partition('\n')
         if section:
             try:
                 sl, sc, el, ec = self.recipe.get_raw_range(section)
@@ -282,7 +285,7 @@ class LintCheck(metaclass=LintCheckMeta):
                               check=cls,
                               severity=self.severity,
                               title=title.strip(),
-                              body=body.strip(),
+                              body=body,
                               fname=fname,
                               start_line=start_line,
                               end_line=end_line)

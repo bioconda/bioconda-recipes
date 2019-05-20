@@ -249,6 +249,10 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
     for recipe in recipes:
         summary += " - `{}`\n".format(recipe)
     summary += "\n"
+
+    details = ['Severity | Location | Check (links to docs) | Info ',
+               '---------|----------|-----------------------|------']
+
     annotations = []
     if res is False:
         conclusion = CheckRunConclusion.success
@@ -259,11 +263,10 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
         title = "Some recipes had problems"
         summary += "Please fix the issues listed below."
 
-    for msg in messages:
-        check = row['check']
-        info = row['info']
-        recipe = row['recipe']
+    url = 'https://bioconda.github.io/linting.html'
 
+    for msg in messages:
+        logger.error(msg)
         annotations.append({
             'path': msg.fname,
             'start_line': msg.start_line,
@@ -272,6 +275,12 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
             'title': msg.title,
             'message': msg.body,
         })
+        # 'raw_details' can also be sent as annotation, contents are hidden
+        # and unfold if 'raw details' blue button clicked.
+        details.append(
+            f'{msg.get_level()}|{msg.fname}:{msg.start_line}|'
+            f'[{msg.check}]({url}#{str(msg.check).replace("_","-")})|{msg.title}'
+        )
 
     await ghapi.modify_check_run(
         check_run_number,
@@ -279,7 +288,7 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
         conclusion=conclusion,
         output_title=title,
         output_summary=summary,
-        output_text=markdown_report(df),
+        output_text='\n'.join(details) if messages else None,
         output_annotations=annotations)
 
 
