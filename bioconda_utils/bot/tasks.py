@@ -1,5 +1,21 @@
 """
 Celery Tasks doing the actual work
+
+.. rubric:: Tasks
+
+.. autosummary::
+
+   get_latest_pr_commit
+   create_check_run
+   bump
+   lint_check
+   check_circle_artifacts
+   trigger_circle_rebuild
+   merge_pr
+   post_result
+   create_welcome_post
+   run_autobump
+
 """
 
 import logging
@@ -127,6 +143,13 @@ async def get_latest_pr_commit(issue_number: int, ghapi):
 
 @celery.task(acks_late=True)
 async def create_check_run(head_sha: str, ghapi, recreate=True):
+    """Creates a ``check_run`` on GitHub
+
+    Args:
+      head_sha: SHA of commit for which ``check_run`` will be created
+      recreate: If true, a new ``check_run`` will be created even if
+                one already exists
+    """
     if head_sha is None:
         logger.info("Not creating check_run, SHA is None")
         return
@@ -143,7 +166,11 @@ async def create_check_run(head_sha: str, ghapi, recreate=True):
 
 @celery.task(acks_late=True)
 async def bump(issue_number: int, ghapi):
-    """Bump the build number in each recipe"""
+    """Bump the build number in each recipe in PR
+
+    Args:
+      issue_number: Number of PR to bump recipes in
+    """
     logger.info("Processing bump command: %s", issue_number)
     async with Checkout(ghapi, issue_number=issue_number) as git:
         if not git:
@@ -162,6 +189,10 @@ async def bump(issue_number: int, ghapi):
 @celery.task(acks_late=True)
 async def lint_check(check_run_number: int, ref: str, ghapi):
     """Execute linter
+
+    Args:
+      check_run_number: ID of GitHub ``check_run``
+      ref: SHA of commit to check
     """
     ref_label = ref[:8] if len(ref) >= 40 else ref
     logger.info("Starting lint check for %s", ref_label)
@@ -251,6 +282,11 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
 
 @celery.task(acks_late=True)
 async def check_circle_artifacts(pr_number: int, ghapi):
+    """Checks for packages and images uploaded to CircleCI artifacts
+
+    Args:
+       pr_number: Number of PR to check
+    """
     logger.info("Starting check for artifacts on #%s as of %s", pr_number, ghapi)
     pr = await ghapi.get_prs(number=pr_number)
     head_ref = pr['head']['ref']
@@ -302,6 +338,11 @@ async def check_circle_artifacts(pr_number: int, ghapi):
 
 @celery.task(acks_late=True)
 async def trigger_circle_rebuild(pr_number: int, ghapi):
+    """Triggers a rebuild of the latest commit for a PR on CircleCI
+
+    Args:
+      pr_number: Number of Github PR
+    """
     logger.info("Triggering rebuild of #%s", pr_number)
     pr = await ghapi.get_prs(number=pr_number)
     head_ref = pr['head']['ref']
@@ -320,6 +361,18 @@ async def trigger_circle_rebuild(pr_number: int, ghapi):
 
 @celery.task(bind=True, acks_late=True, ignore_result=False)
 async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, str]:
+    """Merges a PR
+
+    - Downloads artifacts from CircleCI
+    - Uploads Docker images to Quay.io
+    - Uploads package to Anaconda.org
+    - Collects co-authors
+    - Merges with co-author trailer lines
+
+    Args:
+      pr_number: number of PR to merge
+      comment_id: ID of comment in PR to use for posting progress
+    """
     pr = await ghapi.get_prs(number=pr_number)
     state, message = await ghapi.check_protections(pr_number, pr['head']['sha'])
     if state is None:
@@ -373,7 +426,7 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
     logger.info("Downloading %s", ', '.join(f for _, f in files))
     done = False
     with tempfile.TemporaryDirectory() as tmpdir:
-        ### Download files
+        # Download files
         try:
             fds = []
             urls = []
@@ -393,7 +446,7 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
         if not done:
             return False, "Failed to download archives. Please try again later"
 
-        ### Upload Images
+        # Upload Images
         uploaded = []
         for fname, dref in images:
             fpath = os.path.join(tmpdir, fname)
@@ -411,7 +464,7 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
             comment += "- [x] Uploaded image {}\n".format(ndref)
             await ghapi.update_comment(comment_id, comment)
 
-        ### Upload Packages
+        # Upload Packages
         for fname in packages:
             fpath = os.path.join(tmpdir, fname)
             for _ in range(5):
@@ -458,11 +511,13 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
     comment += "\n"
     await ghapi.update_comment(comment_id, comment)
 
-    return  await ghapi.merge_pr(pr_number, sha=last_sha,
+    return await ghapi.merge_pr(pr_number, sha=last_sha,
                                  message="\n".join(lines) if lines else None)
 
+
 @celery.task(acks_late=True, ignore_result=True)
-async def post_result(result: Tuple[bool, str], pr_number: int, comment_id: int, prefix: str, user: str, ghapi) -> None:
+async def post_result(result: Tuple[bool, str], pr_number: int, comment_id: int,
+                      prefix: str, user: str, ghapi) -> None:
     logger.error("post result: result=%s, issue=%s", result, pr_number)
     status = "succeeded" if result[0] else "failed"
     message = f"@{user}, your request to {prefix} {status}: {result[1]}"
@@ -487,6 +542,11 @@ async def create_welcome_post(pr_number: int, ghapi):
 
 @celery.task(acks_late=True)
 async def run_autobump(package_names, ghapi, *args):
+    """Runs ``autobump`` on packages
+
+    Args:
+      package_names: List of package names to check for version updates
+    """
     async with Checkout(ghapi) as git:
         if not git:
             logger.error("failed to checkout master")
