@@ -1,6 +1,10 @@
 """
 Lint Checks for Recipe Linter
+
+See :py:mod:`bioconda_utils.lint` for an introduction to writing
+new checks or updating existing checks.
 """
+# (i.e., look into the __init__.py in this folder)
 
 import glob
 import os
