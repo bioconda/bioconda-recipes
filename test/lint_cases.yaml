@@ -242,3 +242,28 @@ tests:
 - name: extra_identifiers_missing_colon
   expect: extra_identifiers_missing_colon
   add: { extra: { identifiers: [ '123' ] } }
+- name: numpy_ok
+  add: { requirements: { build: [numpy], run: [numpy]} }
+- name: numpy_deprecated
+  expect: deprecated_numpy_spec
+  add: { requirements: { build: ['numpy x.x'], run: ['numpy x.x']} }
+- name: compiler_ok
+  add: { requirements: { build: ['{{compiler("c")}}'] } }
+- name: compiler_old_1
+  expect: should_use_compilers
+  add: { requirements: { build: ['gcc  # [linux]'] } }
+- name: compiler_old_2
+  expect: should_use_compilers
+  add: { requirements: { build: ['libgcc  # [linux]'] } }
+- name: compiler_old_3
+  expect: should_use_compilers
+  add: { requirements: { build: ['llvm  # [osx]'] } }
+- name: compiler_in_host
+  expect: compilers_must_be_in_build
+  add: { requirements: { host: ['{{compiler("c")}}'] } }
+- name: compiler_in_run
+  expect: compilers_must_be_in_build
+  add: { requirements: { run: ['{{compiler("c")}}'] } }
+- name: use_fn
+  expect: should_not_use_fn
+  add: { source: { fn: abc } }
