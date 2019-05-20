@@ -285,9 +285,9 @@ def duplicates(config,
 @enable_debugging()
 @named('lint')
 def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
-         only=None, exclude=None, push_status=False, user='bioconda',
-         commit=None, push_comment=False, pull_request=None,
-         repo='bioconda-recipes', git_range=None, full_report=False):
+            exclude=None, push_status=False, user='bioconda',
+            commit=None, push_comment=False, pull_request=None,
+            repo='bioconda-recipes', git_range=None, full_report=False):
     """
     Lint recipes
 
@@ -324,7 +324,7 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
             logger.info("Overlap was %s recipes%s.", len(recipes),
                         utils.ellipsize_recipes(recipes, recipe_folder))
 
-    linter = lint.Linter(config, recipe_folder, exclude, only)
+    linter = lint.Linter(config, recipe_folder, exclude)
     report = linter.lint(recipes)
 
     if report:
@@ -373,8 +373,6 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
      the linting functions to it. This can be used as an alternative to linting
      all recipes before any building takes place with the `bioconda-utils lint`
      command.''')
-@arg('--lint-only', nargs='+',
-     help='''Only run this linting function. Can be used multiple times.''')
 @arg('--lint-exclude', nargs='+',
      help='''Exclude this linting function. Can be used multiple times.''')
 @arg('--check-channels', nargs='+',
@@ -399,7 +397,6 @@ def build(
     build_image=False,
     keep_image=False,
     lint=False,
-    lint_only=None,
     lint_exclude=None,
     check_channels=None,
 ):
@@ -439,19 +436,8 @@ def build(
         docker_builder = None
 
     lint_registry = None
-    if lint:
-        if lint_only is not None:
-            lint_registry = tuple(func for func in lint_functions.registry
-                                  if func.__name__ in lint_only)
-            if len(registry) == 0:
-                sys.stderr.write('No valid linting functions selected, exiting.\n')
-                sys.exit(1)
-    else:
-        lint_registry = ()
-        if lint_only is not None:
-            logger.warning('--lint-only has no effect unless --lint is specified.')
-        if lint_exclude is not None:
-            logger.warning('--lint-exclude has no effect unless --lint is specified.')
+    if lint_exclude and not lint:
+        logger.warning('--lint-exclude has no effect unless --lint is specified.')
 
     label = os.getenv('BIOCONDA_LABEL', None)
     if label == "":
@@ -467,7 +453,7 @@ def build(
         docker_builder=docker_builder,
         anaconda_upload=anaconda_upload,
         mulled_upload_target=mulled_upload_target,
-        lint_registry=lint_registry,
+        lint=lint,
         lint_exclude=lint_exclude,
         check_channels=check_channels,
         label=label,

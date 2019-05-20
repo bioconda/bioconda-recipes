@@ -48,8 +48,7 @@ def build(
     channels=None,
     docker_builder=None,
     _raise_error=False,
-    lint_registry=None,
-    lint_exclude=None,
+    linter=None,
 ):
     """
     Build a single recipe for a single env
@@ -86,19 +85,17 @@ def build(
         Instead of returning a failed build result, raise the error instead.
         Used for testing.
 
-    //lint_args : linting.LintArgs | None
-        If not None, then apply linting just before building.
+    linter : linter | None
+        Linter to use for checking recipes
     """
 
-    if lint_args is not None:
+    if linter:
         logger.info('Linting recipe')
-        report = linting.lint([recipe], lint_args)
-        if report is not None:
-            summarized = pandas.DataFrame(
-                dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
-            logger.error('\n\nThe following recipes failed linting. See '
+        report = linter.lint([recipe])
+        if report:
+            logger.error('\n\nThe recipe %s failed linting. See '
                          'https://bioconda.github.io/linting.html for details:\n\n%s\n',
-                         summarized.to_string())
+                         recipe)
             return BuildResult(False, None)
 
     # Clean provided env and exisiting os.environ to only allow whitelisted env
@@ -216,7 +213,7 @@ def build_recipes(
     anaconda_upload=False,
     mulled_upload_target=None,
     check_channels=None,
-    lint_registry=None,
+    lint=None,
     lint_exclude=None,
 ):
     """
@@ -264,8 +261,8 @@ def build_recipes(
         Channels to check to see if packages already exist in them. If None,
         then defaults to every channel in the config file except "defaults".
 
-    lint_registry : list | None
-        List of linting functions to apply. If None, apply all, if empty, do not lint.
+    lint : bool | None
+        Whether to run linter
 
     lint_exclude : list | None
         List of linting functions to exclude.
@@ -298,12 +295,15 @@ def build_recipes(
 
     logger.debug('recipes: %s', recipes)
 
-    if lint_registry is None or len(lint_registry) > 0:
+    if lint:
         always_exclude = ('already_in_bioconda')
         if not lint_exclude:
             lint_exclude = always_exclude
         else:
             lint_exclude = tuple(set(lint_exclude) | set(always_exclude))
+        linter = lint.Linter(config, recipe_folder, lint_exclude)
+    else:
+        linter = None
 
     dag, name2recipes = graph.build(recipes, config=orig_config, blacklist=blacklist)
     recipe2name = {}
@@ -457,7 +457,7 @@ def build_recipes(
             force=force,
             channels=config['channels'],
             docker_builder=docker_builder,
-            lint_args=lint_args,
+            linter=linter
         )
 
         all_success &= res.success
