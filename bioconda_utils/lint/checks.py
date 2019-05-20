@@ -504,3 +504,23 @@ class folder_and_package_name_must_match(LintCheck):
         if recipe.name !=  recipe_base_folder:
             self.message(section='package/name')
         print(recipe.name, recipe.reldir, recipe_base_folder)
+
+
+class gpl_requires_license_distributed(LintCheck):
+    """The recipe packages GPL software but is missing copy of license.
+
+    The GPL requires that a copy of the license accompany all distributions
+    of the software. Please add::
+
+        about:
+            license_file: name_of_license_file
+
+    If the upstream tar ball does not include a copy, please ask the
+    authors of the software to add it to their distribution archive.
+    """
+    requires = [missing_license]
+
+    def check_recipe(self, recipe):
+        if 'gpl' in recipe.get('about/license').lower():
+            if not recipe.get('about/license_file', ''):
+                self.message('about/license')
