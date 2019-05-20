@@ -11,7 +11,7 @@ import os
 import re
 
 from .. import utils
-from . import LintCheck, ERROR, INFO
+from . import LintCheck, ERROR, WARNING, INFO
 
 
 class in_other_channels(LintCheck):
@@ -546,6 +546,7 @@ class gpl_requires_license_distributed(LintCheck):
     If the upstream tar ball does not include a copy, please ask the
     authors of the software to add it to their distribution archive.
     """
+    severity = WARNING
     requires = [missing_license]
 
     def check_recipe(self, recipe):
