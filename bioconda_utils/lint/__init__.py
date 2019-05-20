@@ -88,7 +88,7 @@ import re
 import itertools
 import logging
 from collections import defaultdict
-from enum import Enum
+from enum import IntEnum
 from typing import Any, Dict, List, NamedTuple, Tuple
 
 import pandas as pd
@@ -101,7 +101,7 @@ from ..recipe import Recipe, RecipeError
 logger = logging.getLogger(__name__)
 
 
-class Severity(Enum):
+class Severity(IntEnum):
     """Severities for lint checks"""
     #: Checks of this severity are purely informational
     INFO = 10
@@ -368,13 +368,13 @@ class Linter:
         return skip_dict
 
     def lint(self, recipe_names: List[str]) -> List[LintMessage]:
-        self._messages.append(
+        self._messages.extend(
             message
             for recipe in utils.tqdm(sorted(recipe_names))
             for message in self.lint_one(recipe)
         )
         return any(message.severity >= ERROR
-                   for messages in self._messages)
+                   for message in self._messages)
 
     def lint_one(self, recipe_name: str) -> List[LintMessage]:
         # FIXME: rewrite each RecipeError to proper LintMessage
@@ -398,7 +398,7 @@ class Linter:
             checks_to_skip.update(recipe.get('extra/skip-lints', []))
 
         # also skip dependent checks
-        for check in checks_to_skip:
+        for check in list(checks_to_skip):
             if check not in self.checks_dag:
                 logger.error("Skipping unknown check %s", check)
                 continue

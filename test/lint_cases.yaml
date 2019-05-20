@@ -15,6 +15,7 @@ setup:
           url: https://somewhere
           sha256: 123
         build:
+          noarch: True
           number: 0
         test:
           commands:
@@ -35,6 +36,7 @@ setup:
           - url: https://elsewhere
             sha256: abc
         build:
+          noarch: True
           number: 0
         test:
           commands:
@@ -49,7 +51,7 @@ tests:
 - name: minimal_recipe
 - name: empty_build_section
   remove: build
-  expect: missing_build_number
+  expect: [should_be_noarch, missing_build_number]
 - name: missing_home
   remove: about/home
   expect: missing_home
@@ -75,6 +77,7 @@ tests:
         - missing_tests
         - no_tests
         - gpl_requires_license_distributed
+        - should_be_noarch
 - name: missing_home_empty_string
   add: { about: { home: '' } }
   expect: missing_home
@@ -251,6 +254,7 @@ tests:
   expect: deprecated_numpy_spec
   add: { requirements: { build: ['numpy x.x'], run: ['numpy x.x']} }
 - name: compiler_ok
+  remove: build/noarch
   add: { requirements: { build: ['{{compiler("c")}}'] } }
 - name: compiler_old_1
   expect: should_use_compilers
@@ -263,9 +267,11 @@ tests:
   add: { requirements: { build: ['llvm  # [osx]'] } }
 - name: compiler_in_host
   expect: compilers_must_be_in_build
+  remove: build/noarch
   add: { requirements: { host: ['{{compiler("c")}}'] } }
 - name: compiler_in_run
   expect: compilers_must_be_in_build
+  remove: build/noarch
   add: { requirements: { run: ['{{compiler("c")}}'] } }
 - name: use_fn
   expect: should_not_use_fn

@@ -90,7 +90,9 @@ def linter(config_file, recipes_folder):
 @pytest.mark.parametrize('case', TEST_CASES, ids=TEST_CASE_IDS)
 @pytest.mark.parametrize('recipe_data', TEST_RECIPES, ids=TEST_RECIPE_IDS)
 def test_lint(linter, recipe, case):
-    messages = linter.lint([recipe])
+    linter.clear_messages()
+    linter.lint([recipe])
+    messages = linter.get_messages()
     expected = set(ensure_list(case.get('expect', [])))
     found = set()
     for msg in messages:

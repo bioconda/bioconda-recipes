@@ -269,7 +269,7 @@ class should_be_noarch(LintCheck):
     def check_deps(self, deps):
         if any(dep.startswith('compiler_') for dep in deps):
             return  # not compiled
-        if self.recipe.get('build/noarch', None) == 'python':
+        if self.recipe.get('build/noarch', None):
             return  # already marked noarch: python
         self.message(section='build')
 
