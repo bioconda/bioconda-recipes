@@ -248,6 +248,28 @@ class should_be_noarch_python(LintCheck):
         self.message(section='build')
 
 
+class should_be_noarch(LintCheck):
+    """The recipe should be build as ``noarch``
+
+    Please add::
+
+        build:
+          noarch: True
+
+    Packages that don't require a compiler to build are normally
+    architecture independent and go into the ``noarch`` subset of
+    packages.
+
+    """
+    requires = ['should_be_noarch_python']
+    def check_deps(self, deps):
+        if any(dep.startswith('compiler_') for dep in deps):
+            return  # not compiled
+        if self.recipe.get('build/noarch', None) == 'python':
+            return  # already marked noarch: python
+        self.message(section='build')
+
+
 class should_not_use_skip_python(LintCheck):
     """The recipe should be noarch and not use python based skipping
 

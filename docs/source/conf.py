@@ -315,7 +315,7 @@ autoclass_content = "both"
 autodoc_member_order = "source"
 
 # default flags for autodoc statements
-autodoc_default_flags = ['members', 'undoc-members', 'show-inheritance']
+autodoc_default_flags = ['members', 'show-inheritance']
 
 # autodoc_type_hints: set typing.TYPE_CHECKING to True while building docs
 set_type_checking_flag = True

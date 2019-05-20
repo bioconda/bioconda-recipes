@@ -23,6 +23,7 @@ To build the documentation locally, use e.g::
 import os
 import os.path as op
 import re
+import inspect
 from typing import Any, Dict, List, Tuple, Optional
 
 from jinja2.sandbox import SandboxedEnvironment
@@ -741,10 +742,54 @@ def add_ribbon(app, pagename, templatename, context, doctree):
     context['git_ribbon_message'] = "Edit me on GitHub"
 
 
+class LintDescriptionDirective(rst.Directive):
+    required_arguments = 1
+    optional_argument = 0
+    has_content = True
+    add_index = True
+
+    def run(self):
+        # gather data
+        check_name = self.arguments[0]
+        from .lint import checks
+        check = getattr(checks, check_name)
+        _, lineno = inspect.getsourcelines(check)
+        lineno += 1
+        fname = inspect.getfile(check)
+        doclines = inspect.getdoc(check).splitlines()
+        docline_src = [(fname, i)
+                       for i in range(lineno, lineno+len(doclines))]
+        lines = StringList(doclines, items=docline_src)
+
+        # create a new section with title
+        section = nodes.section(ids=[nodes.make_id(check_name)])
+        title_text = f'"``{check_name}``"'
+        title_nodes, messages = self.state.inline_text(title_text, self.lineno)
+        title = nodes.title(check_name, '', *title_nodes)
+        section += title
+
+        admonition = nodes.admonition()
+        title_text = doclines[0].rstrip('.')
+        title_nodes, messages = self.state.inline_text(title_text, lineno)
+        title = nodes.title(title_text, '', *title_nodes)
+        admonition += title
+        admonition += messages
+        self.state.nested_parse(lines[1:], 0, admonition)
+        section += admonition
+
+        # add remaining content of directive
+        par = nodes.paragraph()
+        self.state.nested_parse(self.content, self.content_offset, par)
+        section += par
+
+        return [section]
+
+
 def setup(app):
     """Set up sphinx extension"""
     app.add_domain(CondaDomain)
     app.add_directive('autorecipes', AutoRecipesDirective)
+    app.add_directive('lint-check', LintDescriptionDirective)
     app.connect('builder-inited', generate_recipes)
     app.connect('missing-reference', resolve_required_by_xrefs)
     app.connect('html-page-context', add_ribbon)

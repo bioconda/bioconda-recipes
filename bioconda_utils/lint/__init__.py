@@ -1,5 +1,70 @@
 """Recipe Linter
 
+Writing additional checks
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Lint checks are defined in :py:mod:`bioconda_utils.lint.checks` as
+subclasses of `LintCheck`. It might be easiest to have a look at that
+module and the already existing checks and go from there.
+
+Briefly, each class becomes a check by:
+
+- The class name becomes the name of the check in the documentation
+  and when skipping lints. The convention is to use lower case
+  separated by underscore.
+
+- The docstring is used to describe the check on the command line,
+  on Github when the check fails and in the documentation.
+
+  The first line is considered a title or one line summary used where
+  a brief description is needed. The remainder is a long desription
+  and should include brief help on how to fix the detected issue.
+
+- The class property ``severity`` defaults to ``ERROR`` but can be
+  set to ``INFO`` or ``WARNING`` for informative checks that
+  should not cause linting to fail.
+
+- The class property ``requires`` may contain a list of other check
+  classes that are required to have passed before this check is
+  executed. Use this to avoid duplicate errors presented, or to
+  ensure that asumptions made by your check are met by the recipe.
+
+- Each class is instantiated once per linting run. Do slow preparation
+  work in the constructor. E.g. the `recipe_is_blacklisted` check
+  loads and parses the blacklist here.
+
+- As each recipe is linted, your check will get called on three
+  functions: `check_recipe <LintCheck.check_recipe>`, `check_deps
+  <LintCheck.check_deps>` and `check_source <LintCheck.check_source>`.
+
+  The first is simply passed the `Recipe` object, which you can use to
+  inspect the recipe in question. The latter two are for convenience
+  and performance. The ``check_deps`` call receives a mapping of
+  all dependencies mentioned in the recipe to a list of locations
+  in which the dependency occurred. E.g.::
+
+    {'setuptools': ['requirements/run',
+                    'outputs/0/requirements/run']}
+
+  The ``check_sources`` is called for each source listed in the
+  recipe, whether ``source:`` is a dict or a source, eliminating the
+  need to repeat handling of these two cases in each check. The value
+  ``source`` passed is a dictionary of the source, the value
+  ``section`` a path to the source section.
+
+- When a check encounters an issue, it should use ``self.message()`` to
+  record the issue. The message is commonly modified with a path in
+  the meta data to point to the part of the ``meta.yaml`` that lead to
+  the error. This will be used to position annotations on github.
+
+  You can also provide an alternate filename (``fname``) and/or
+  specify the line number directly (``line``).
+
+
+
+Module Autodocs
+~~~~~~~~~~~~~~~
+
 .. rubric:: Environment Variables
 
 .. envvar:: LINT_SKIP
@@ -107,15 +172,16 @@ def get_checks():
 
 class LintCheck(metaclass=LintCheckMeta):
     """Base class for lint checks"""
-    severity = ERROR
-    requires = []
+
+    #: Severity of this check. Only ERROR causes a lint failure.
+    severity: Severity = ERROR
+
+    #: Checks that must have passed for this check to be executed.
+    requires: List['LintCheck'] = []
 
     def __init__(self, _linter: 'Linter') -> None:
         self.messages: List[LintMessage] = []
         self.recipe: Recipe = None
-
-    def test(self):
-        print('test')
 
     def __str__(self):
         return self.__class__.__name__
@@ -146,13 +212,38 @@ class LintCheck(metaclass=LintCheckMeta):
 
         Override this method in subclasses, using ``self.message()``
         to issue `LintMessage` as failures are encountered.
+
+        Args:
+          recipe: The recipe under test.
         """
 
     def check_source(self, source: Dict, section: str) -> None:
-        """Execute check on each source"""
+        """Execute check on each source
+
+        Args:
+          source: Dictionary containing the source section
+          section: Path to the section. Can be ``source`` or
+                   ``source/0`` (1,2,3...).
+        """
 
     def check_deps(self, deps: Dict[str, List[str]]) -> None:
-        """Execute check on recipe dependencies"""
+        """Execute check on recipe dependencies
+
+        Example format for **deps**::
+
+            {
+              'setuptools': ['requirements/run',
+                             'outputs/0/requirements/run/1'],
+              'compiler_cxx': ['requirements/build/0']
+            }
+
+        You can use the values in the list directly as ``section``
+        parameter to ``self.message()``.
+
+        Args:
+          deps: Dictionary mapping requirements occurring in the recipe
+                to their locations within the recipe.
+        """
 
     def message(self, section: str = None, fname: str = None, line=None) -> None:
         """Add a message to the lint results
