@@ -127,7 +127,7 @@ We invite all parties interested in adding/editing package recipes to join the b
 so that their pull requests don't require merging by the core team or other members. To do 
 so, please fork our `recipes <https://github.com/bioconda/bioconda-recipes>`_ have a read 
 through the `Conda documentation <http://conda.pydata.org/docs/building/recipe.html#conda-recipe-files-overview>`_. 
-If you ping `@bioconda/core` in a pull request we will review it and then add you to the team, if you desire.
+If you ping ``@bioconda/core`` in a pull request we will review it and then add you to the team, if you desire.
 
 5. Spread the word
 ------------------

@@ -527,7 +527,7 @@ class GitHubHandler:
         """Create a check run
 
         Arguments:
-          name: The name of the check, e.g. `bioconda-test`
+          name: The name of the check, e.g. ``bioconda-test``
           head_sha: The sha of the commit to check
           details_url: URL for "View more details on <App name>" link
           external_id: ID for us
@@ -568,7 +568,7 @@ class GitHubHandler:
           annotations: List of annotated code pieces, each has to have ``path``,
                        ``start_line`` and ``end_line``, ``annotation_level`` (``notice``,
                        ``warning``, ``failure``), and a ``message``. May also have
-                        may have ``start_column`` and ``end_column`` (if only one line),
+                       may have ``start_column`` and ``end_column`` (if only one line),
                        ``title`` and ``raw_details``.
         Returns:
           Check run "object" as dict.

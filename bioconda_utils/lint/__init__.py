@@ -1,41 +1,20 @@
-"""
-Recipe Linter
+"""Recipe Linter
 
-QC checks (linter) for recipes, returning a TSV of issues identified.
+.. rubric:: Environment Variables
 
-The strategy here is to use simple functions that do a single check on
-a recipe. When run on a single recipe it can be used for linting new
-contributions; when run on all recipes it helps highlight entire classes of
-problems to be addressed.
+.. envvar:: LINT_SKIP
 
-See the `lint_functions` module for these.
+   If set, will be parsed instead of the most recent commit. To skip
+   checks for specific recipes, add strings of the following form::
 
-After writing the function, register it in the global ``registry`` dict,
-``lint_functions.registry``.
+       [lint skip <check_name> for <recipe_name>]
 
-The output is a TSV where the "info" column contains the dicts returned by
-each check function, and this column is expanded into multiple extra colums.
-While this results in a lot of NaNs, it makes it easy to drop non-interesting
-cases with pandas, e.g.,
 
-.. code:: python
+.. autosummary::
+   :toctree:
 
-   recipes_with_missing_tests = df.dropna(subset=['no_tests'])
+   checks
 
-or
-
-.. code:: python
-
-    def not_in_bioconda(x):
-        if not isinstance(x, set):
-            return np.nan
-        res = set(x).difference(['bioconda'])
-        if len(res):
-            return(res)
-        return np.nan
-
-    df['other'] = df.exists_in_channel.apply(not_in_bioconda)
-    other_channels = df[['recipe', 'other']].dropna()
 """
 
 import abc
@@ -56,7 +35,18 @@ from ..recipe import Recipe, RecipeError
 
 logger = logging.getLogger(__name__)
 
-Severity = Enum("Severity", "INFO WARNING ERROR")  # pylint: disable=invalid-name
+
+class Severity(Enum):
+    """Severities for lint checks"""
+    #: Checks of this severity are purely informational
+    INFO = 10
+
+    #: Checks of this severity indicate possible problems
+    WARNING = 20
+
+    #: Checks of this severity must be fixed and will fail a recipe.
+    ERROR = 30
+
 INFO = Severity.INFO
 WARNING = Severity.WARNING
 ERROR = Severity.ERROR
@@ -208,6 +198,8 @@ class Linter:
     """Lint executor
 
     Arguments:
+      config: Configuration dict as provided by `utils.load_config()`.
+      recipe_folder: Folder which recipes are located.
       exclude: List of function names in ``registry`` to skip globally.
                When running on CI, this will be merged with anything
                else detected from the commit message or LINT_SKIP
@@ -216,9 +208,6 @@ class Linter:
                other mechanisms define skipping on a recipe-specific
                basis, this argument can be used to skip tests for all
                recipes. Use sparingly.
-      recipe_folder: Folder which recipes are located.
-      registry: List of functions to apply to each recipe. If None, 
-                defaults to `bioconda_utils.lint_functions.registry`.
     """
     def __init__(self, config, recipe_folder: str, exclude=None):
         self.config = config
@@ -247,7 +236,7 @@ class Linter:
     def load_skips(self):
         """Parses lint skips
 
-        If :env:`LINT_SKIP` or the most recent commit contains ``[
+        If :envvar:`LINT_SKIP` or the most recent commit contains ``[
         lint skip <check_name> for <recipe_name> ]``, that particular
         check will be skipped.
 

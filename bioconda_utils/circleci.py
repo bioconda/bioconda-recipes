@@ -108,13 +108,13 @@ class CircleAPI(abc.ABC):
         Note: skip rebuild seems to only apply to jobs, not workflow reruns.
 
         Arguments:
-          path: Must be ``pull/123` if on a fork, otherwise name of branch
+          path: Must be ``pull/123`` if on a fork, otherwise name of branch
           sha: name of optional sha to filter by
           skip_rebuilt: Skip artifacts from builds that have been rebuilt
         Returns:
           List of builds, each having ``build_num``, ``has_artifacts``, ``status``,
-          ``timeout``, `canceled``, `canceller``, ``workflows/job_name``,
-          ``vc_revision`, ``build_time_millis`
+          ``timeout``, ``canceled``, ``canceller``, ``workflows/job_name``,
+          ``vc_revision`, ``build_time_millis``
         """
         var_data = self.var_data
         var_data['path'] = path

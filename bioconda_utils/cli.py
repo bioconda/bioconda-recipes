@@ -131,7 +131,7 @@ def recipe_folder_and_config():
 def get_recipes_to_build(git_range: Tuple[str], recipe_folder: str) -> List[str]:
     """Gets list of modified recipes according to git_range and blacklist
 
-    See `githandler.get_recipes_to_build()`.
+    See `BiocondaRepoMixin.get_recipes_to_build()`.
 
     Arguments:
       git_range: one or two-tuple containing "from" and "to" git refs,

@@ -1,6 +1,23 @@
 """Bioconda-Utils sphinx extension
 
 This module builds the documentation for our recipes
+
+To build the documentation locally, use e.g::
+
+    make -C docs/ BIOCONDA_FILTER_RECIPES=10 SPHINXOPTS="-E" html
+
+.. rubric:: Environment Variables
+
+.. envvar:: BIOCONDA_FILTER_RECIPES
+
+   Use this environment variable to reduce the number of recipes for
+   which documentation pages are built. If set to an integer
+   (including 0), the first *n* recipes are included. Otherwise, the
+   contents are considered a regular expression recipes must match to
+   be included.
+
+
+
 """
 
 import os
@@ -87,6 +104,7 @@ def rst_escape_filter(text):
 
 
 def prefixes_filter(text, split):
+    """Jinja2 filter"""
     path = []
     for part in text.split(split):
         path.append(part)
@@ -94,6 +112,11 @@ def prefixes_filter(text, split):
 
 
 def rst_link_filter(text, url):
+    """Jinja2 filter creating RST link
+
+    >>> rst_link_filter("bla", "https://somewhere")
+    "`bla <https://somewhere>`_"
+    """
     if url:
         return "`{} <{}>`_".format(text, url)
     return text
@@ -584,7 +607,7 @@ def generate_recipes(app):
 
     - Checks out repository
     - Prepares `RepoData`
-    - Selects recipes (if BIOCONDA_FILTER_RECIPES in environment)
+    - Selects recipes (if `BIOCONDA_FILTER_RECIPES` in environment)
     - Dispatches calls to `generate_readme` for each recipe
     - Removes old RST files
     """

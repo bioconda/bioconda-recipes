@@ -35,10 +35,9 @@ PRInfo = namedtuple('PRInfo', 'installation user repo ref recipes issue_number')
 Image = namedtuple('Image', "url name tag")
 Package = namedtuple('Package', "arch fname url repodata_md")
 
-Arch = Enum('Arch', 'osx-64 linux-64 noarch')
-
-PACKAGE_RE = re.compile(r"(.*packages)/({})/(.+\.tar\.bz2)$".format('|'.join(a.name for a in Arch)))
+PACKAGE_RE = re.compile(r"(.*packages)/(osx-64|linux-64|noarch)/(.+\.tar\.bz2)$")
 IMAGE_RE = re.compile(r".*images/(.+)(?::|%3A)(.+)\.tar\.gz$")
+
 
 class Checkout:
     # We can't use contextlib.contextmanager because these are async and

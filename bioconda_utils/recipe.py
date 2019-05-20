@@ -583,7 +583,7 @@ class Recipe():
         various exceptions and rewriting them into `CondaRenderFailure`, then
         cache the result.
 
-        Since the ``MetaData`` objects returned expect the on-disk `meta.yaml`
+        Since the ``MetaData`` objects returned expect the on-disk ``meta.yaml``
         to persist (it can get reloaded later on), clients of this function
         must **make sure to call `conda_release` once you are done** with those
         objects.

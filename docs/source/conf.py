@@ -317,6 +317,9 @@ autodoc_member_order = "source"
 # default flags for autodoc statements
 autodoc_default_flags = ['members', 'undoc-members', 'show-inheritance']
 
+# autodoc_type_hints: set typing.TYPE_CHECKING to True while building docs
+set_type_checking_flag = True
+
 # Bioconda Sphinx Extension Config:
 # Git Url for repository containing recipes
 bioconda_repo_url = 'https://github.com/bioconda/bioconda-recipes.git'

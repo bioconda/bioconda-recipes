@@ -7,6 +7,7 @@ Bioconda Utilities Package
    :toctree:
 
    bioconda_utils.bot
+   bioconda_utils.lint
 
 .. rubric:: Submodules
 
@@ -26,8 +27,6 @@ Bioconda Utilities Package
    gitter
    graph
    hosters
-   lint_functions
-   linting
    pkg_test
    recipe
    sphinxext

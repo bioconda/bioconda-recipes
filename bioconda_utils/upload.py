@@ -63,11 +63,11 @@ def anaconda_upload(package: str, token: str = None, label: str = None) -> bool:
             return False
 
 
-def mulled_upload(image: str, quay_target: str) -> "subprocess.CompletedProcess":
+def mulled_upload(image: str, quay_target: str) -> sp.CompletedProcess:
     """
-    Upload the build Docker images to quay.io with 'mulled-build push'
+    Upload the build Docker images to quay.io with ``mulled-build push``.
 
-    Calls `mulled-build push <image> -n <quay_target>`
+    Calls ``mulled-build push <image> -n <quay_target>``
 
     Args:
       image: name of image to push
