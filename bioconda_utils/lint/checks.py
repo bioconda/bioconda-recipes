@@ -362,7 +362,7 @@ class extra_identifiers_not_list(LintCheck):
             self.message(section='extra/identifiers')
 
 
-class extra_identifiers_not_list(LintCheck):
+class extra_identifiers_not_string(LintCheck):
     """Each item in the extra/identifiers section must be a string
 
     Example::
@@ -374,6 +374,7 @@ class extra_identifiers_not_list(LintCheck):
     Note that there is no space around the colon
 
     """
+    requires = [extra_identifiers_not_list]
 
     def check_recipe(self, recipe):
         identifiers = recipe.get('extra/identifiers', [])
@@ -392,6 +393,7 @@ class extra_identifiers_missing_colon(LintCheck):
               - doi:123
 
     """
+    requires = [extra_identifiers_not_string]
 
     def check_recipe(self, recipe):
         identifiers = recipe.get('extra/identifiers', [])

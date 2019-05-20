@@ -49,6 +49,7 @@ from typing import Any, Dict, List, NamedTuple, Tuple
 
 import pandas as pd
 import ruamel_yaml as yaml
+import networkx as nx
 
 from .. import utils
 from ..recipe import Recipe, RecipeError
@@ -117,6 +118,8 @@ def get_checks():
 class LintCheck(metaclass=LintCheckMeta):
     """Base class for lint checks"""
     severity = ERROR
+    requires = []
+
     def __init__(self, _linter: 'Linter') -> None:
         self.messages: List[LintMessage] = []
         self.recipe: Recipe = None
@@ -197,7 +200,9 @@ class LintCheck(metaclass=LintCheckMeta):
 
         self.messages.append(message)
 
+
 from . import checks
+
 
 class Linter:
     """Lint executor
@@ -215,21 +220,26 @@ class Linter:
       registry: List of functions to apply to each recipe. If None, 
                 defaults to `bioconda_utils.lint_functions.registry`.
     """
-    def __init__(self, config, recipe_folder: str, exclude=None, include=None):
+    def __init__(self, config, recipe_folder: str, exclude=None):
         self.config = config
         self.recipe_folder = recipe_folder
         self.skip = self.load_skips()
-        exclude = set(exclude) if exclude is not None else None
-        include = set(include) if include is not None else None
-        self.checks = []
-        for check in get_checks():
-            # if we have include, it must be in include
-            if include is not None and str(check) not in include:
-                continue
-            # if we have exclude it most NOT be in exclude
-            if exclude is not None and str(check) in exclude:
-                continue
-            self.checks.append(check(self))
+        self.exclude = exclude or []
+
+        dag = nx.DiGraph()
+        dag.add_nodes_from(str(check) for check in get_checks())
+        dag.add_edges_from(
+            (str(check), str(check_dep))
+            for check in get_checks()
+            for check_dep in check.requires
+        )
+        self.checks_dag = dag
+
+        try:
+            self.checks_ordered = nx.topological_sort(dag, reverse=True)
+        except nx.NetworkXUnfeasible:
+            raise RunTimeError("Cycle in LintCheck requirements!")
+        self.check_instances = {str(check): check(self) for check in get_checks()}
 
     def get_blacklist(self):
         return utils.get_blacklist(self.config, self.recipe_folder)
@@ -268,6 +278,7 @@ class Linter:
                 for message in self.lint_one(recipe)]
 
     def lint_one(self, recipe_name: str) -> List[LintMessage]:
+        # FIXME: rewrite each RecipeError to proper LintMessage
         try:
             recipe = Recipe.from_file(self.recipe_folder, recipe_name)
         except RecipeError as exc:
@@ -279,19 +290,38 @@ class Linter:
                                   body=body)
             return [message]
 
-        skips = set(self.skip[recipe_name])
+        # collect checks to skip
+        checks_to_skip = set(self.skip[recipe_name])
+        checks_to_skip.update(self.exclude)
         if isinstance(recipe.get('extra/skip-lints', []), list):
             # If they are not, the extra_skip_lints_not_list check
             # will be found and issued.
             checks_to_skip.update(recipe.get('extra/skip-lints', []))
 
-        messages = []
-        for check in self.checks:
-            if str(check) in skips:
+        # also skip dependent checks
+        for check in checks_to_skip:
+            if check not in self.checks_dag:
+                logger.error("Skipping unknown check %s", check)
                 continue
-            messages.extend(check.run(recipe))
+            for check_dep in nx.descendants(self.checks_dag, check):
+                if check_dep not in checks_to_skip:
+                    logger.info("Disabling %s because %s is disabled",
+                                check_dep, check)
+                checks_to_skip.add(check_dep)
+
+        # run checks
+        messages = []
+        for check in self.checks_ordered:
+            if str(check) in checks_to_skip:
+                continue
+            res = self.check_instances[check].run(recipe)
+            if res:  # skip checks depending on failed checks
+                checks_to_skip.update(nx.ancestors(self.checks_dag, str(check)))
+            messages.extend(res)
+
         for message in messages:
             logger.debug(message)
+
         return messages
 
 
