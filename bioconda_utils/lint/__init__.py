@@ -57,6 +57,9 @@ Briefly, each class becomes a check by:
   the meta data to point to the part of the ``meta.yaml`` that lead to
   the error. This will be used to position annotations on github.
 
+  If a check never calls ``self.message()``, it is assumed to have
+  passed (=no errors generated).
+
   You can also provide an alternate filename (``fname``) and/or
   specify the line number directly (``line``).
 
