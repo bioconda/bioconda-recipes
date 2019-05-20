@@ -91,8 +91,8 @@ def build(
 
     if linter:
         logger.info('Linting recipe')
-        report = linter.lint([recipe])
-        if report:
+        linter.clear_messages()
+        if linter.lint([recipe]):
             logger.error('\n\nThe recipe %s failed linting. See '
                          'https://bioconda.github.io/linting.html for details:\n\n%s\n',
                          recipe)
@@ -296,7 +296,7 @@ def build_recipes(
     logger.debug('recipes: %s', recipes)
 
     if lint:
-        always_exclude = ('already_in_bioconda')
+        always_exclude = ('build_number_needs_bump')
         if not lint_exclude:
             lint_exclude = always_exclude
         else:

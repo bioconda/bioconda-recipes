@@ -296,7 +296,6 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
     """
     config_filename = config
     config = utils.load_config(config)
-    registry = lint.get_checks()
 
     if list_checks:
         print('\n'.join(i.__name__ for i in registry))
@@ -304,12 +303,6 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
 
     if cache is not None:
         utils.RepoData().set_cache(cache)
-
-    if only is not None:
-        registry = list(filter(lambda x: str(x) in only, registry))
-        if len(registry) == 0:
-            sys.stderr.write('No valid linting functions selected, exiting.\n')
-            sys.exit(1)
 
     recipes = list(utils.get_recipes(recipe_folder, packages))
     logger.info("Considering total of %s recipes%s.",
@@ -325,14 +318,18 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
                         utils.ellipsize_recipes(recipes, recipe_folder))
 
     linter = lint.Linter(config, recipe_folder, exclude)
-    report = linter.lint(recipes)
+    result = linter.lint(recipes)
+    messages = linter.get_messages()
 
-    if report:
+    if messages:
         print("The following problems have been found:\n")
-        for msg in report:
+        for msg in messages:
             print(f"{msg.severity.name}: {msg.fname}:{msg.end_line}: {msg.check}: {msg.title}")
-    else:
+
+    if result:
         print("All checks OK")
+    else:
+        print("Errors were found")
 
 
 @recipe_folder_and_config()
@@ -435,7 +432,6 @@ def build(
     else:
         docker_builder = None
 
-    lint_registry = None
     if lint_exclude and not lint:
         logger.warning('--lint-exclude has no effect unless --lint is specified.')
 

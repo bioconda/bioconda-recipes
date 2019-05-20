@@ -144,6 +144,14 @@ class LintMessage(NamedTuple):
     #: Name of file in which error was found
     fname: str = "meta.yaml"
 
+    def get_level(self):
+        """Return level string as required by github"""
+        if self.severity < WARNING:
+            return "notice"
+        if self.severity < ERROR:
+            return "warning"
+        return "failure"
+
 
 class LintCheckMeta(abc.ABCMeta):
     """Meta class for lint checks
@@ -305,6 +313,7 @@ class Linter:
         self.recipe_folder = recipe_folder
         self.skip = self.load_skips()
         self.exclude = exclude or []
+        self._messages = []
 
         dag = nx.DiGraph()
         dag.add_nodes_from(str(check) for check in get_checks())
@@ -323,6 +332,12 @@ class Linter:
 
     def get_blacklist(self):
         return utils.get_blacklist(self.config, self.recipe_folder)
+
+    def get_messages(self):
+        return self._messages
+
+    def clear_messages(self):
+        self._messages = []
 
     def load_skips(self):
         """Parses lint skips
@@ -353,9 +368,13 @@ class Linter:
         return skip_dict
 
     def lint(self, recipe_names: List[str]) -> List[LintMessage]:
-        return [message
-                for recipe in utils.tqdm(sorted(recipe_names))
-                for message in self.lint_one(recipe)]
+        self._messages.append(
+            message
+            for recipe in utils.tqdm(sorted(recipe_names))
+            for message in self.lint_one(recipe)
+        )
+        return any(message.severity >= ERROR
+                   for messages in self._messages)
 
     def lint_one(self, recipe_name: str) -> List[LintMessage]:
         # FIXME: rewrite each RecipeError to proper LintMessage

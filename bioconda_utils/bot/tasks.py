@@ -40,6 +40,7 @@ from ..githandler import TempBiocondaRepo
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
 from ..circleci import AsyncCircleAPI
 from ..upload import anaconda_upload, skopeo_upload
+from ..lint import Linter
 
 from celery.exceptions import MaxRetriesExceededError
 
@@ -225,8 +226,8 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
             return
 
         # Here we call the actual linter code
-        utils.load_config('config.yml')
-        from bioconda_utils.linting import lint as _lint, markdown_report
+        config = utils.load_config('config.yml')
+        linter = Linter(config, 'recipes')
 
         # Workaround celery/billiard messing with sys.exit
         if isinstance(sys.exit, types.FunctionType):
@@ -235,20 +236,21 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
             (sys.exit, old_exit) = (new_exit, sys.exit)
 
             try:
-                df = _lint(recipes)
+                res = linter.lint(recipes)
             except SystemExit as exc:
                 old_exit(exc.args)
             finally:
                 sys.exit = old_exit
         else:
-            df = _lint(recipes)
+            res = linter.lint(recipes)
+    messages = linter.get_messages()
 
     summary = "Linted recipes:\n"
     for recipe in recipes:
         summary += " - `{}`\n".format(recipe)
     summary += "\n"
     annotations = []
-    if df is None:
+    if res is False:
         conclusion = CheckRunConclusion.success
         title = "All recipes in good condition"
         summary += "No problems found."
@@ -257,18 +259,19 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
         title = "Some recipes had problems"
         summary += "Please fix the issues listed below."
 
-        for _, row in df.iterrows():
-            check = row['check']
-            info = row['info']
-            recipe = row['recipe']
-            annotations.append({
-                'path': recipe + '/meta.yaml',
-                'start_line': info.get('start_line', 1),
-                'end_line': info.get('end_line', 1),
-                'annotation_level': 'failure',
-                'title': check,
-                'message': info.get('fix') or str(info)
-            })
+    for msg in messages:
+        check = row['check']
+        info = row['info']
+        recipe = row['recipe']
+
+        annotations.append({
+            'path': msg.fname,
+            'start_line': msg.start_line,
+            'end_line': msg.end_line,
+            'annotation_level': msg.get_level(),
+            'title': msg.title,
+            'message': msg.body,
+        })
 
     await ghapi.modify_check_run(
         check_run_number,
