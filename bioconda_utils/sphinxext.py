@@ -569,8 +569,8 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
 
     template_options = {
         'name': recipe.name,
-        'about': recipe.get('about'),
-        'extra': recipe.get('extra'),
+        'about': recipe.get('about', None),
+        'extra': recipe.get('extra', None),
         'recipe': recipe,
         'packages': packages,
     }
