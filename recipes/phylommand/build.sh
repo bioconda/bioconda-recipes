@@ -12,7 +12,15 @@ sed -i.bak '/\$(PP).*-o/ s/-o/$(LDFLAGS) -o/' Makefile
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
-make PP="$GXX -std=c++11" CC="$GCC" NLOPT=YES PTHREADS=YES
+if [[ "$(uname)" == "Linux" ]] ; then
+    PP="$GXX -std=c++11"
+    CC="$GCC"
+elif [[ "$(uname)" == "Darwin" ]] ; then
+    PP="$CXX -std=c++11"
+    CC="$CC"
+fi
+
+make PP="$PP" CC="$CC" NLOPT=YES PTHREADS=YES
 
 # Makefile has no install target 
 mkdir -p $PREFIX/bin
