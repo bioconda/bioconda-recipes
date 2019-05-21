@@ -296,6 +296,12 @@ class LintCheck(metaclass=LintCheckMeta):
         self.messages.append(message)
 
 
+class linter_failure(LintCheck):
+    """An unexpected exception was raised during linting
+
+    Please file an issue at the bioconda-utils repo
+    """
+
 from . import checks
 
 
@@ -374,11 +380,15 @@ class Linter:
         return skip_dict
 
     def lint(self, recipe_names: List[str]) -> List[LintMessage]:
-        self._messages.extend(
-            message
-            for recipe in utils.tqdm(sorted(recipe_names))
-            for message in self.lint_one(recipe)
-        )
+        for recipe in utils.tqdm(sorted(recipe_names)):
+            try:
+                msgs = self.lint_one(recipe)
+            except Exception:
+                fail = linter_failure(self)
+                fail.recipe = recipe
+                fail.message()
+                msgs = fail.messages
+            self._messages.extend(msgs)
         return any(message.severity >= ERROR
                    for message in self._messages)
 
@@ -419,7 +429,16 @@ class Linter:
         for check in self.checks_ordered:
             if str(check) in checks_to_skip:
                 continue
-            res = self.check_instances[check].run(recipe)
+            try:
+                res = self.check_instances[check].run(recipe)
+            except Exception:
+                messages.append(LintMessage(
+                    recipe=recipe,
+                    check=check,
+                    severity=ERROR,
+                    title="Check raised an unexpected exception"))
+                res = True
+
             if res:  # skip checks depending on failed checks
                 checks_to_skip.update(nx.ancestors(self.checks_dag, str(check)))
             messages.extend(res)
