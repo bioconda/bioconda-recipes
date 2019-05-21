@@ -12,12 +12,12 @@ sed -i.bak '/\$(PP).*-o/ s/-o/$(LDFLAGS) -o/' Makefile
 export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
-make PP="$GXX -std=c++11" CC="$GCC" NLOPT=YES RUDISVG=YES PTHREADS=YES
+make PP="$GXX -std=c++11" CC="$GCC" NLOPT=YES PTHREADS=YES
 
 # Makefile has no install target 
 mkdir -p $PREFIX/bin
 
 mv pairalign $PREFIX/bin/
-mv rudisvg $PREFIX/bin/
+mv contree $PREFIX/bin/
 mv treeator $PREFIX/bin/
 mv treebender $PREFIX/bin/
