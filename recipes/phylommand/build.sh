@@ -4,7 +4,7 @@ cd src
 sed -i.bak 's/argv_parser.o \$(TREEATORLINKFLAGS)$/argv_parser.o/' Makefile 
 sed -i.bak 's/\$(PP) -o treeator \$(OTREEATOR)/\$(PP) -o treeator \$(OTREEATOR) \$(TREEATORLINKFLAGS)/' Makefile
 
-make
+make PP="$GXX -std=c++11" CC="$GCC"
 
 # Makefile has no install target 
 mkdir -p $PREFIX/bin
