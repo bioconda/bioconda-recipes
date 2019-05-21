@@ -1,5 +1,7 @@
 #!/bin/sh
-
+if [ ! -f ${PREFIX}/bin/gcc ] ; then
+    ln -s ${CC} ${PREFIX}/bin/gcc
+fi
 export BRANCH=v0.19.0
 export PATH="nim-$BRANCH/bin/nim/bin:${PATH:+:$PATH}"
 export LD=$CC
