@@ -55,13 +55,13 @@ and for reading and writing recipes. Notably, reading and writing recipes here
 does not rely on conda-build as we need to do things conda-build was not
 designed for.
 
-The `bioconda_utils.update.Scanner` class reads recipes and applies various
+The `bioconda_utils.autobump.Scanner` class reads recipes and applies various
 filters (described below) in an asyncio loop to dramatically speed up the many
 http calls that are performed over the course of scanning for updates. It also
 handles other things like retrying after increasingly longer wait times when it
 encounters non-permanent HTTP errors.
 
-Subclasses of `bioconda_utils.update.Filter` are added to the scanner. They
+Subclasses of `bioconda_utils.autobump.Filter` are added to the scanner. They
 contain logic in their ``apply`` method. This method at least takes a recipe as
 the first argument, and either returns a (possibly modified) recipe or raises
 a custom exception. The remainder of the ``apply`` function can do arbitrarily
@@ -75,7 +75,7 @@ Bioconductor, and more. These are primarily used by the `UpdateVersion` filter.
 Writing a filter
 ~~~~~~~~~~~~~~~~
 To add additional functionality to the scanner, create a filter in
-`bioconda_utils.update` and add it to the scanner in
+`bioconda_utils.autobump` and add it to the scanner in
 `bioconda_utils.cli.autobump()`. There are existing filters to exclude recipes
 based on blacklist or subrecipe status, update a recipe based on the latest
 version found by a `Hoster` (see below), update checksums, figure out where to
@@ -83,7 +83,7 @@ load a recipe from (i.e. master branch or an existing PR), create a new PR, and
 more.
 
 Filters can be arbitrarily complex, like any Python function. See the
-`bioconda_utils.update` source for examples when writing a new filter --
+`bioconda_utils.autobump` source for examples when writing a new filter --
 `ExcludeSubrecipe` is a relatively simple one; `UpdateVersion` is more complex.
 
 

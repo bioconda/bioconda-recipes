@@ -5,9 +5,9 @@ One-time setup
 
 Git and GitHub (one-time setup)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-If you are a bioconda team member (having been added by posting in `issue #1`_),
-then you have push access to the repo. In this case you can clone the
-bioconda-recipes repo.
+
+If you are a bioconda team member then you have push access to the
+repo. In this case you can clone the bioconda-recipes repo.
 
 Decide whether you'll work on a clone or a fork.
 

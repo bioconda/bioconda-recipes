@@ -1,5 +1,21 @@
 """
 Celery Tasks doing the actual work
+
+.. rubric:: Tasks
+
+.. autosummary::
+
+   get_latest_pr_commit
+   create_check_run
+   bump
+   lint_check
+   check_circle_artifacts
+   trigger_circle_rebuild
+   merge_pr
+   post_result
+   create_welcome_post
+   run_autobump
+
 """
 
 import logging
@@ -24,6 +40,7 @@ from ..githandler import TempBiocondaRepo
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
 from ..circleci import AsyncCircleAPI
 from ..upload import anaconda_upload, skopeo_upload
+from .. import lint
 
 from celery.exceptions import MaxRetriesExceededError
 
@@ -35,10 +52,9 @@ PRInfo = namedtuple('PRInfo', 'installation user repo ref recipes issue_number')
 Image = namedtuple('Image', "url name tag")
 Package = namedtuple('Package', "arch fname url repodata_md")
 
-Arch = Enum('Arch', 'osx-64 linux-64 noarch')
-
-PACKAGE_RE = re.compile(r"(.*packages)/({})/(.+\.tar\.bz2)$".format('|'.join(a.name for a in Arch)))
+PACKAGE_RE = re.compile(r"(.*packages)/(osx-64|linux-64|noarch)/(.+\.tar\.bz2)$")
 IMAGE_RE = re.compile(r".*images/(.+)(?::|%3A)(.+)\.tar\.gz$")
+
 
 class Checkout:
     # We can't use contextlib.contextmanager because these are async and
@@ -128,6 +144,13 @@ async def get_latest_pr_commit(issue_number: int, ghapi):
 
 @celery.task(acks_late=True)
 async def create_check_run(head_sha: str, ghapi, recreate=True):
+    """Creates a ``check_run`` on GitHub
+
+    Args:
+      head_sha: SHA of commit for which ``check_run`` will be created
+      recreate: If true, a new ``check_run`` will be created even if
+                one already exists
+    """
     if head_sha is None:
         logger.info("Not creating check_run, SHA is None")
         return
@@ -144,7 +167,11 @@ async def create_check_run(head_sha: str, ghapi, recreate=True):
 
 @celery.task(acks_late=True)
 async def bump(issue_number: int, ghapi):
-    """Bump the build number in each recipe"""
+    """Bump the build number in each recipe in PR
+
+    Args:
+      issue_number: Number of PR to bump recipes in
+    """
     logger.info("Processing bump command: %s", issue_number)
     async with Checkout(ghapi, issue_number=issue_number) as git:
         if not git:
@@ -163,6 +190,10 @@ async def bump(issue_number: int, ghapi):
 @celery.task(acks_late=True)
 async def lint_check(check_run_number: int, ref: str, ghapi):
     """Execute linter
+
+    Args:
+      check_run_number: ID of GitHub ``check_run``
+      ref: SHA of commit to check
     """
     ref_label = ref[:8] if len(ref) >= 40 else ref
     logger.info("Starting lint check for %s", ref_label)
@@ -173,7 +204,7 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
             await ghapi.modify_check_run(
                 check_run_number,
                 status=CheckRunStatus.completed,
-                conclusion=CheckRunConclusion.cancelled,
+                conclusion=CheckRunConclusion.neutral,
                 output_title=
                 f"Failed to check out "
                 f"{ghapi.user}/{ghapi.repo}:{ref_label}"
@@ -195,8 +226,8 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
             return
 
         # Here we call the actual linter code
-        utils.load_config('config.yml')
-        from bioconda_utils.linting import lint as _lint, LintArgs, markdown_report
+        config = utils.load_config('config.yml')
+        linter = lint.Linter(config, 'recipes')
 
         # Workaround celery/billiard messing with sys.exit
         if isinstance(sys.exit, types.FunctionType):
@@ -205,41 +236,54 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
             (sys.exit, old_exit) = (new_exit, sys.exit)
 
             try:
-                df = _lint(recipes, LintArgs())
+                res = linter.lint(recipes)
             except SystemExit as exc:
                 old_exit(exc.args)
             finally:
                 sys.exit = old_exit
-
         else:
-            df = _lint(recipes, LintArgs())
+            res = linter.lint(recipes)
+    messages = linter.get_messages()
 
     summary = "Linted recipes:\n"
     for recipe in recipes:
         summary += " - `{}`\n".format(recipe)
     summary += "\n"
+
+    details = ['Severity | Location | Check (links to docs) | Info ',
+               '---------|----------|-----------------------|------']
+
     annotations = []
-    if df is None:
+    if not messages:  # no errors, success
         conclusion = CheckRunConclusion.success
         title = "All recipes in good condition"
         summary += "No problems found."
-    else:
+    elif not res:  # messages, but lint OK
+        conclusion = CheckRunConclusion.neutral
+        title = "Found warnings"
+        summary += "Please consider fixing the issues listed below."
+    else:  # fail
         conclusion = CheckRunConclusion.failure
         title = "Some recipes had problems"
         summary += "Please fix the issues listed below."
 
-        for _, row in df.iterrows():
-            check = row['check']
-            info = row['info']
-            recipe = row['recipe']
-            annotations.append({
-                'path': recipe + '/meta.yaml',
-                'start_line': info.get('start_line', 1),
-                'end_line': info.get('end_line', 1),
-                'annotation_level': 'failure',
-                'title': check,
-                'message': info.get('fix') or str(info)
-            })
+    url = 'https://bioconda.github.io/linting.html'
+
+    for msg in messages:
+        annotations.append({
+            'path': msg.fname,
+            'start_line': msg.start_line,
+            'end_line': msg.end_line,
+            'annotation_level': msg.get_level(),
+            'title': msg.title,
+            'message': msg.body,
+        })
+        # 'raw_details' can also be sent as annotation, contents are hidden
+        # and unfold if 'raw details' blue button clicked.
+        details.append(
+            f'{msg.get_level()}|{msg.fname}:{msg.start_line}|'
+            f'[{msg.check}]({url}#{str(msg.check).replace("_","-")})|{msg.title}'
+        )
 
     await ghapi.modify_check_run(
         check_run_number,
@@ -247,12 +291,17 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
         conclusion=conclusion,
         output_title=title,
         output_summary=summary,
-        output_text=markdown_report(df),
+        output_text='\n'.join(details) if messages else None,
         output_annotations=annotations)
 
 
 @celery.task(acks_late=True)
 async def check_circle_artifacts(pr_number: int, ghapi):
+    """Checks for packages and images uploaded to CircleCI artifacts
+
+    Args:
+       pr_number: Number of PR to check
+    """
     logger.info("Starting check for artifacts on #%s as of %s", pr_number, ghapi)
     pr = await ghapi.get_prs(number=pr_number)
     head_ref = pr['head']['ref']
@@ -304,6 +353,11 @@ async def check_circle_artifacts(pr_number: int, ghapi):
 
 @celery.task(acks_late=True)
 async def trigger_circle_rebuild(pr_number: int, ghapi):
+    """Triggers a rebuild of the latest commit for a PR on CircleCI
+
+    Args:
+      pr_number: Number of Github PR
+    """
     logger.info("Triggering rebuild of #%s", pr_number)
     pr = await ghapi.get_prs(number=pr_number)
     head_ref = pr['head']['ref']
@@ -322,6 +376,18 @@ async def trigger_circle_rebuild(pr_number: int, ghapi):
 
 @celery.task(bind=True, acks_late=True, ignore_result=False)
 async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, str]:
+    """Merges a PR
+
+    - Downloads artifacts from CircleCI
+    - Uploads Docker images to Quay.io
+    - Uploads package to Anaconda.org
+    - Collects co-authors
+    - Merges with co-author trailer lines
+
+    Args:
+      pr_number: number of PR to merge
+      comment_id: ID of comment in PR to use for posting progress
+    """
     pr = await ghapi.get_prs(number=pr_number)
     state, message = await ghapi.check_protections(pr_number, pr['head']['sha'])
     if state is None:
@@ -375,7 +441,7 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
     logger.info("Downloading %s", ', '.join(f for _, f in files))
     done = False
     with tempfile.TemporaryDirectory() as tmpdir:
-        ### Download files
+        # Download files
         try:
             fds = []
             urls = []
@@ -395,7 +461,7 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
         if not done:
             return False, "Failed to download archives. Please try again later"
 
-        ### Upload Images
+        # Upload Images
         uploaded = []
         for fname, dref in images:
             fpath = os.path.join(tmpdir, fname)
@@ -413,7 +479,7 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
             comment += "- [x] Uploaded image {}\n".format(ndref)
             await ghapi.update_comment(comment_id, comment)
 
-        ### Upload Packages
+        # Upload Packages
         for fname in packages:
             fpath = os.path.join(tmpdir, fname)
             for _ in range(5):
@@ -460,11 +526,13 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
     comment += "\n"
     await ghapi.update_comment(comment_id, comment)
 
-    return  await ghapi.merge_pr(pr_number, sha=last_sha,
+    return await ghapi.merge_pr(pr_number, sha=last_sha,
                                  message="\n".join(lines) if lines else None)
 
+
 @celery.task(acks_late=True, ignore_result=True)
-async def post_result(result: Tuple[bool, str], pr_number: int, comment_id: int, prefix: str, user: str, ghapi) -> None:
+async def post_result(result: Tuple[bool, str], pr_number: int, comment_id: int,
+                      prefix: str, user: str, ghapi) -> None:
     logger.error("post result: result=%s, issue=%s", result, pr_number)
     status = "succeeded" if result[0] else "failed"
     message = f"@{user}, your request to {prefix} {status}: {result[1]}"
@@ -489,6 +557,11 @@ async def create_welcome_post(pr_number: int, ghapi):
 
 @celery.task(acks_late=True)
 async def run_autobump(package_names, ghapi, *args):
+    """Runs ``autobump`` on packages
+
+    Args:
+      package_names: List of package names to check for version updates
+    """
     async with Checkout(ghapi) as git:
         if not git:
             logger.error("failed to checkout master")

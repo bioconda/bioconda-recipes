@@ -15,9 +15,11 @@ import shlex
 import logging
 from collections import defaultdict, Counter
 from functools import partial
+import inspect
+from typing import List, Tuple
 
 import argh
-from argh import arg
+from argh import arg, named
 import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
 import pandas
@@ -25,13 +27,13 @@ import pandas
 from . import utils
 from .build import build_recipes
 from . import docker_utils
-from . import lint_functions
-from . import linting
+from . import lint
 from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import cran_skeleton
 from . import update_pinnings
 from . import graph
+from .githandler import BiocondaRepo
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +69,7 @@ def enable_debugging():
             try:
                 func(*args, **kwargs)
             except Exception as e:
+                logger.exception("Dropping into debugger")
                 if pdb:
                     import pdb
                     pdb.post_mortem()
@@ -77,7 +80,7 @@ def enable_debugging():
 
 
 def enable_threads():
-    """Adds the paremeter ``--threads`` (or ``-t``) to limit parallelism"""
+    """Adds the parameter ``--threads`` (or ``-t``) to limit parallelism"""
     def decorator(func):
         @arg('-t', '--threads', help="Limit maximum number of processes used.")
         @utils.wraps(func)
@@ -86,6 +89,63 @@ def enable_threads():
             func(*args, **kwargs)
         return wrapper
     return decorator
+
+
+def recipe_folder_and_config():
+    """Adds optional positional arguments recipe_folder and config
+
+    Requires that func has synopsis ``def x(recipe_folder, config,...)``.
+    """
+    def check_arg(args, idx, name, default):
+        val = args[idx]
+        if not val:
+            val = default
+        if not os.path.exists(val):
+            sys.exit(f"Argument '{name}' points to missing file '{val}'")
+        if val != args[idx]:
+            lst = list(args)
+            lst[idx] = val
+            return tuple(lst)
+        return args
+
+    def decorator(func):
+        args = inspect.getfullargspec(func).args
+        try:
+            recipe_folder_idx = args.index('recipe_folder')
+            config_idx = args.index('config')
+        except ValueError:
+            sys.exit(f"Function {func} must have 'recipe_folder' and 'config' args")
+        @arg('recipe_folder', nargs='?',
+             help='Path to folder containing recipes (default: recipes/)')
+        @arg('config', nargs='?',
+             help='Path to Bioconda config (default: config.yml)')
+        @utils.wraps(func)
+        def wrapper(*args, **kwargs):
+            args = check_arg(args, recipe_folder_idx, 'recipe_folder', 'recipes/')
+            args = check_arg(args, config_idx, 'config', 'config.yml')
+            func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def get_recipes_to_build(git_range: Tuple[str], recipe_folder: str) -> List[str]:
+    """Gets list of modified recipes according to git_range and blacklist
+
+    See `BiocondaRepoMixin.get_recipes_to_build()`.
+
+    Arguments:
+      git_range: one or two-tuple containing "from" and "to" git refs,
+                 with "to" defaulting to "HEAD"
+    Returns:
+      List of recipes for which meta.yaml or build.sh was modified or
+      which were unblacklisted.
+    """
+    if not git_range or len(git_range) > 2:
+        sys.exit("--git-range may have only one or two arguments")
+    other = git_range[0]
+    ref = "HEAD" if len(git_range) == 1 else git_range[1]
+    repo = BiocondaRepo(recipe_folder)
+    return repo.get_recipes_to_build(ref, other)
 
 
 # NOTE:
@@ -184,8 +244,7 @@ def duplicates(config,
                 print(*spec, ','.join(dup_channels), sep='\t')
 
 
-@arg('recipe_folder', help='Path to top-level dir of recipes.')
-@arg('config', help='Path to yaml file specifying the configuration')
+@recipe_folder_and_config()
 @arg(
     '--packages',
     nargs="+",
@@ -194,15 +253,12 @@ def duplicates(config,
 @arg('--cache', help='''To speed up debugging, use repodata cached locally in
      the provided filename. If the file does not exist, it will be created the
      first time.''')
-@arg('--list-funcs', help='''List the linting functions to be used and then
+@arg('--list-checks', help='''List the linting functions to be used and then
      exit''')
-@arg('--only', nargs='+', help='''Only run this linting function. Can be used
+@arg('--only', nargs='+', help='''Only run these linting functions. Can be used
      multiple times.''')
 @arg('--exclude', nargs='+', help='''Exclude this linting function. Can be used
      multiple times.''')
-@arg('--force', action='store_true', help='''Force linting of packages. If
-     specified, --git-range will be ignored and only those packages matching
-     --packages globs will be linted.''')
 @arg('--push-status', action='store_true', help='''If set, the lint status will
      be sent to the current commit on github. Also needs --user and --repo to
      be set. Requires the env var GITHUB_TOKEN to be set. Note that pull
@@ -226,75 +282,57 @@ def duplicates(config,
      summarize the linting results; use this argument to get the full
      results as a TSV printed to stdout.''')
 @enable_logging()
-def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
-         only=None, exclude=None, force=False, push_status=False, user='bioconda',
-         commit=None, push_comment=False, pull_request=None,
-         repo='bioconda-recipes', git_range=None, full_report=False):
+@enable_debugging()
+@named('lint')
+def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
+            exclude=None, push_status=False, user='bioconda',
+            commit=None, push_comment=False, pull_request=None,
+            repo='bioconda-recipes', git_range=None, full_report=False):
     """
     Lint recipes
 
     If --push-status is not set, reports a TSV of linting results to stdout.
     Otherwise pushes a commit status to the specified commit on github.
     """
-    if list_funcs:
-        print('\n'.join([i.__name__ for i in lint_functions.registry]))
+    config_filename = config
+    config = utils.load_config(config)
+
+    if list_checks:
+        print('\n'.join(i.__name__ for i in registry))
         sys.exit(0)
 
     if cache is not None:
         utils.RepoData().set_cache(cache)
-    registry = lint_functions.registry
 
-    if only is not None:
-        registry = list(filter(lambda x: x.__name__ in only, registry))
-        if len(registry) == 0:
-            sys.stderr.write('No valid linting functions selected, exiting.\n')
-            sys.exit(1)
+    recipes = list(utils.get_recipes(recipe_folder, packages))
+    logger.info("Considering total of %s recipes%s.",
+                len(recipes), utils.ellipsize_recipes(recipes, recipe_folder))
 
-    config_filename = config
-    config = utils.load_config(config)
+    if git_range:
+        changed_recipes = get_recipes_to_build(git_range, recipe_folder)
+        logger.info("Constraining to %s git modified recipes%s.", len(changed_recipes),
+                    utils.ellipsize_recipes(changed_recipes, recipe_folder))
+        recipes = [recipe for recipe in recipes if recipe in set(changed_recipes)]
+        if len(recipes) != len(changed_recipes):
+            logger.info("Overlap was %s recipes%s.", len(recipes),
+                        utils.ellipsize_recipes(recipes, recipe_folder))
 
-    _recipes = linting.select_recipes(packages, git_range, recipe_folder,
-                                      config_filename, config, force)
+    linter = lint.Linter(config, recipe_folder, exclude)
+    result = linter.lint(recipes)
+    messages = linter.get_messages()
 
-    lint_args = linting.LintArgs(exclude=exclude, registry=registry)
-    report = linting.lint(_recipes, lint_args)
+    if messages:
+        print("The following problems have been found:\n")
+        for msg in messages:
+            print(f"{msg.severity.name}: {msg.fname}:{msg.end_line}: {msg.check}: {msg.title}")
 
-    # The returned dataframe is in tidy format; summarize a bit to get a more
-    # reasonable log
-    if report is not None:
-        pandas.set_option('max_colwidth', 500)
-        summarized = pandas.DataFrame(
-            dict(failed_tests=report.groupby('recipe')['check'].agg('unique')))
-        if not full_report:
-            logger.error('\n\nThe following recipes failed linting. See '
-                         'https://bioconda.github.io/linting.html for details:\n\n%s\n',
-                         summarized.to_string())
-        else:
-            report.to_csv(sys.stdout, sep='\t')
-
-        if push_status:
-            github_integration.update_status(
-                user, repo, commit, state='error', context='linting',
-                description='linting failed, see travis log', target_url=None)
-        if push_comment:
-            msg = linting.markdown_report(summarized)
-            github_integration.push_comment(
-                user, repo, pull_request, msg)
-        sys.exit(1)
-
+    if result:
+        print("All checks OK")
     else:
-        if push_status:
-            github_integration.update_status(
-                user, repo, commit, state='success', context='linting',
-                description='linting passed', target_url=None)
-        if push_comment:
-            msg = linting.markdown_report()
-            github_integration.push_comment(
-                user, repo, pull_request, msg)
+        print("Errors were found")
 
 
-@arg('recipe_folder', help='Path to top-level dir of recipes.')
-@arg('config', help='Path to yaml file specifying the configuration')
+@recipe_folder_and_config()
 @arg(
     '--packages',
     nargs="+",
@@ -332,8 +370,6 @@ def lint(recipe_folder, config, packages="*", cache=None, list_funcs=False,
      the linting functions to it. This can be used as an alternative to linting
      all recipes before any building takes place with the `bioconda-utils lint`
      command.''')
-@arg('--lint-only', nargs='+',
-     help='''Only run this linting function. Can be used multiple times.''')
 @arg('--lint-exclude', nargs='+',
      help='''Exclude this linting function. Can be used multiple times.''')
 @arg('--check-channels', nargs='+',
@@ -358,7 +394,6 @@ def build(
     build_image=False,
     keep_image=False,
     lint=False,
-    lint_only=None,
     lint_exclude=None,
     check_channels=None,
 ):
@@ -371,22 +406,10 @@ def build(
 
     # handle git range
     if git_range and not force:
-        modified = utils.modified_recipes(git_range, recipe_folder, config)
+        modified = get_recipes_to_build(git_range, recipe_folder)
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
             exit(0)
-        # obtain list of packages to build. `modified` will be a list of *all*
-        # files so we need to extract just the package names since
-        # build_recipes expects globs
-
-        packages = list(
-            set(
-                [
-                    os.path.dirname(os.path.relpath(f, recipe_folder))
-                    for f in modified
-                ]
-            )
-        )
         logger.info('Recipes modified according to git: {}'.format(' '.join(packages)))
 
     if docker:
@@ -409,20 +432,8 @@ def build(
     else:
         docker_builder = None
 
-    if lint:
-        registry = lint_functions.registry
-        if lint_only is not None:
-            registry = tuple(func for func in registry if func.__name__ in lint_only)
-            if len(registry) == 0:
-                sys.stderr.write('No valid linting functions selected, exiting.\n')
-                sys.exit(1)
-        lint_args = linting.LintArgs(exclude=lint_exclude, registry=registry)
-    else:
-        lint_args = None
-        if lint_only is not None:
-            logger.warning('--lint-only has no effect unless --lint is specified.')
-        if lint_exclude is not None:
-            logger.warning('--lint-exclude has no effect unless --lint is specified.')
+    if lint_exclude and not lint:
+        logger.warning('--lint-exclude has no effect unless --lint is specified.')
 
     label = os.getenv('BIOCONDA_LABEL', None)
     if label == "":
@@ -438,15 +449,15 @@ def build(
         docker_builder=docker_builder,
         anaconda_upload=anaconda_upload,
         mulled_upload_target=mulled_upload_target,
-        lint_args=lint_args,
+        lint=lint,
+        lint_exclude=lint_exclude,
         check_channels=check_channels,
         label=label,
     )
     exit(0 if success else 1)
 
 
-@arg('recipe_folder', help='Path to recipes directory')
-@arg('config', help='Path to yaml file specifying the configuration')
+@recipe_folder_and_config()
 @arg('--packages',
      nargs="+",
      help='Glob for package[s] to show in DAG. Default is to show all '
@@ -497,8 +508,7 @@ def dag(recipe_folder, config, packages="*", format='gml', hide_singletons=False
             print('\n'.join(recipes) + '\n')
 
 
-@arg('recipe_folder', help='Path to recipes directory')
-@arg('config', help='Path to yaml file specifying the configuration')
+@recipe_folder_and_config()
 @arg('--packages',
      nargs="+",
      help='Glob for package[s] to update, as needed due to a change in pinnings')
@@ -533,7 +543,7 @@ def update_pinning(recipe_folder, config, packages="*",
     utils.RepoData().df  # trigger load
 
     build_config = utils.load_conda_build_config()
-    blacklist = utils.get_blacklist(config.get('blacklists'), recipe_folder)
+    blacklist = utils.get_blacklist(config, recipe_folder)
 
     from . import recipe
     dag = graph.build_from_recipes(
@@ -581,8 +591,7 @@ def update_pinning(recipe_folder, config, packages="*",
               "could not be incremented: {}".format(list(bumpErrors)))
 
 
-@arg('recipe_folder', help='Path to recipes directory')
-@arg('config', help='Path to yaml file specifying the configuration')
+@recipe_folder_and_config()
 @arg('--dependencies', nargs='+',
      help='''Return recipes in `recipe_folder` in the dependency chain for the
      packages listed here. Answers the question "what does PACKAGE need?"''')
@@ -624,8 +633,7 @@ def dependent(recipe_folder, config, restrict=False,
      must match the package name on the Bioconductor site. If "update-all-packages"
      is specified, then all packages in a given bioconductor release will be
      created/updated (--force is then implied).''')
-@arg('recipe_folder', help='Path to recipes directory')
-@arg('config', help='Path to yaml file specifying the configuration')
+@recipe_folder_and_config()
 @arg('--versioned', action='store_true', help='''If specified, recipe will be
      created in RECIPES/<package>/<version>''')
 @arg('--force', action='store_true', help='''Overwrite the contents of an
@@ -712,6 +720,7 @@ def clean_cran_skeleton(recipe, no_windows=False):
 
 @arg('recipe_folder', help='Path to recipes directory')
 @arg('config', help='Path to yaml file specifying the configuration')
+@recipe_folder_and_config()
 @arg('--packages', nargs="+",
      help='Glob(s) for package[s] to scan. Can be specified more than once')
 @arg('--exclude', nargs="+",
@@ -777,7 +786,6 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
     # load and register config
     config_dict = utils.load_config(config)
     from . import autobump
-    from . import githandler
     from . import githubhandler
     from . import hosters
 
@@ -817,7 +825,7 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
     if check_branch or create_branch or create_pr or only_active:
         # We need to take the recipe from the git repo. This
         # loads the bump/<recipe> branch if available
-        git_handler = githandler.BiocondaRepo(recipe_folder, dry_run)
+        git_handler = BiocondaRepo(recipe_folder, dry_run)
         git_handler.checkout_master()
         if only_active:
             scanner.add(autobump.ExcludeNoActiveUpdate, git_handler)
@@ -875,6 +883,7 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
     if git_handler:
         git_handler.close()
 
+
 @arg('--loglevel', default='info', help='Log level')
 def bot(loglevel='info'):
     """Locally accedd bioconda-bot command API
@@ -892,6 +901,6 @@ def bot(loglevel='info'):
 
 def main():
     argh.dispatch_commands([
-        build, dag, dependent, lint, duplicates, update_pinning,
+        build, dag, dependent, do_lint, duplicates, update_pinning,
         bioconductor_skeleton, clean_cran_skeleton, autobump, bot
     ])

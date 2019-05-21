@@ -32,8 +32,7 @@ from urllib.parse import urljoin
 
 import regex as re
 
-if TYPE_CHECKING:
-    from .aiopipe import AsyncRequests
+from .aiopipe import AsyncRequests
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 

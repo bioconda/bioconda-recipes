@@ -47,7 +47,15 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class RecipeError(EndProcessingItem):
-    pass
+    def __init__(self, item, message=None, line=None, column=None):
+        self.line = line
+        self.column = column
+        if message is not None and line is not None:
+            if column is not None:
+                message += " (at line %i / column %i)" % (line, column)
+            else:
+                message += " (at line %i)" % line
+        super().__init__(item, message)
 
 
 class DuplicateKey(RecipeError):
@@ -100,11 +108,6 @@ class RenderFailure(RecipeError):
 
     May have self.line
     """
-    def __init__(self, item, message, line=None):
-        self.line = line
-        if line is not None:
-            message += " (at line %i)" % line
-        super().__init__(item, message)
     template = "failed to render in Jinja2. Error was: %s"
 
 
@@ -132,6 +135,8 @@ class Recipe():
     JINJA_VARS = {
         "cran_mirror": "https://cloud.r-project.org",
         "compiler": lambda x: f"compiler_{x}",
+        "pin_compatible": lambda x, max_pin=None, min_pin=None: f"{x}",
+        "cdt": lambda x: x
     }
 
 
@@ -292,9 +297,9 @@ class Recipe():
                 "\n".join(self.meta_yaml)
             )
         except jinja2.exceptions.TemplateSyntaxError as exc:
-            raise RenderFailure(self, exc.message, exc.lineno)
+            raise RenderFailure(self, message=exc.message, line=exc.lineno)
         except jinja2.exceptions.TemplateError as exc:
-            raise RenderFailure(self, exc.message)
+            raise RenderFailure(self, message=exc.message)
 
     def get_simple_modules(self):
         """Yield simple replacement values from template
@@ -324,8 +329,9 @@ class Recipe():
         try:
             self.meta = yaml.load(yaml_text)
         except DuplicateKeyError as err:
-            logger.debug("fixing duplicate key at %i:%i",
-                         err.context_mark.line, err.context_mark.column)
+            line = err.problem_mark.line + 1
+            column = err.problem_mark.column + 1
+            logger.debug("fixing duplicate key at %i:%i", line, column)
             # We may have encountered a recipe with linux/osx variants using line selectors
             yaml_text = self._rewrite_selector_block(yaml_text, err.context_mark.line,
                                                      err.context_mark.column)
@@ -333,9 +339,9 @@ class Recipe():
                 try:
                     self.meta = yaml.load(yaml_text)
                 except DuplicateKeyError:
-                    raise DuplicateKey(self)
+                    raise DuplicateKey(self, line=line, column=column)
             else:
-                raise DuplicateKey(self)
+                raise DuplicateKey(self, line=line, column=column)
 
         if "package" not in self.meta \
            or "version" not in self.meta["package"] \
@@ -365,8 +371,18 @@ class Recipe():
     def __getitem__(self, key):
         return self.meta[key]
 
-    def get(self, key, default=None):
-        return self.meta.get(key, default)
+    def get(self, key, default=KeyError):
+        data = self.meta
+        try:
+            for item in key.split('/'):
+                data = data[item]
+        except (KeyError, TypeError):
+            if default is not KeyError:
+                return default
+            raise KeyError(f"No '{key}' in Recipe {self}") from None
+        if default is not KeyError and data is None:
+            return default
+        return data
 
     @property
     def package_names(self) -> List[str]:
@@ -429,7 +445,7 @@ class Recipe():
             if not re_before.search(line):
                 continue
             if re_select.search(line):
-                raise HasSelector(self, lineno)
+                raise HasSelector(self, line=lineno)
             new = re_before.sub(after, line)
             logger.debug("%i - %s", lineno, self.meta_yaml[lineno])
             logger.debug("%i + %s", lineno, new)
@@ -537,15 +553,27 @@ class Recipe():
         lines.append(self.meta_yaml[end_row][:end_col])
         return "\n".join(lines).strip()
 
-    def get_deps(self):
-        lists = [buildrunhost for buildrunhost in
-                 (self.get('requirements') or {}).values()
-                 if buildrunhost]
-        for output in self.get('outputs', []):
-            lists.extend(buildrunhost for buildrunhost in
-                         output.get('requirements', {}).values())
+    def get_deps(self, sections=None, output=True):
+        return list(self.get_deps_dict(sections, output).keys())
 
-        return list(set(entry.split()[0] for lst in lists for entry in lst if entry))
+    def get_deps_dict(self, sections=None, outputs=True):
+        if not sections:
+            sections = ('build', 'run', 'host')
+        else:
+            sections = utils.ensure_list(sections)
+        check_paths = []
+        for section in sections:
+            check_paths.append(f'requirements/{section}')
+        if outputs:
+            for section in sections:
+                for n in range(len(self.get('outputs', []))):
+                    check_paths.append(f'outputs/{n}/requirements/{section}')
+        deps = {}
+        for path in check_paths:
+            for n, spec in enumerate(self.get(path, [])):
+                dep = spec.split()[0]
+                deps.setdefault(dep, []).append(f"{path}/{n}")
+        return deps
 
     def conda_render(self, **kwargs) -> List[Tuple[MetaData, bool, bool]]:
         """Handles calling conda_build.api.render
@@ -559,7 +587,7 @@ class Recipe():
         various exceptions and rewriting them into `CondaRenderFailure`, then
         cache the result.
 
-        Since the ``MetaData`` objects returned expect the on-disk `meta.yaml`
+        Since the ``MetaData`` objects returned expect the on-disk ``meta.yaml``
         to persist (it can get reloaded later on), clients of this function
         must **make sure to call `conda_release` once you are done** with those
         objects.

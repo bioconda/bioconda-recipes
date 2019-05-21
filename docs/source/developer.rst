@@ -16,3 +16,4 @@ considered stable.
 
    bioconda_utils
    bioconda_utils.bot
+   bioconda_utils.lint

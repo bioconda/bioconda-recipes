@@ -17,7 +17,7 @@ from functools import partial
 import logging
 import datetime
 from threading import Event, Thread
-from typing import Sequence, List, Dict, Any, Union
+from typing import Sequence, Collection, List, Dict, Any, Union
 from pathlib import PurePath
 import json
 import warnings
@@ -239,6 +239,32 @@ def setup_logger(name: str, loglevel: Union[str, int] = logging.INFO,
         log_filter = LogFuncFilter(run, "Command output truncated", log_command_max_lines)
         log_stream_handler.addFilter(log_filter)
     return new_logger
+
+
+def ellipsize_recipes(recipes: Collection[str], recipe_folder: str,
+                      n: int = 5, m: int = 50) -> str:
+    """Logging helper showing recipe list
+
+    Args:
+      recipes: List of recipes
+      recipe_folder: Folder name to strip from recipes.
+      n: Show at most this number of recipes, with "..." if more are found.
+      m: Don't show anything if more recipes than this
+         (pointless to show first 5 of 5000)
+    Returns:
+      A string like " (htslib, samtools, ...)" or ""
+    """
+    if not recipes or len(recipes) > m:
+        return ""
+    if len(recipes) > n:
+        if not isinstance(recipes, Sequence):
+            recipes = list(recipes)
+        recipes = recipes[:n]
+        append = ", ..."
+    else:
+        append = ""
+    return ' ('+', '.join(recipe.lstrip(recipe_folder).lstrip('/')
+                     for recipe in recipes) + append + ')'
 
 
 class JinjaSilentUndefined(jinja2.Undefined):
@@ -529,6 +555,8 @@ def run(cmds: List[str], env: Dict[str, str]=None, mask: List[str]=None, live: b
         for mitem in mask:
             arg = arg.replace(mitem, '<hidden>')
         return arg
+
+    mylogger.log(loglevel, "Executing: '%s'", ' '.join(do_mask(arg) for arg in cmds))
 
     # bufsize=4 result of manual experimentation. Changing it can
     # drop performance drastically.
@@ -845,7 +873,8 @@ def file_from_commit(commit, filename):
     if commit == 'HEAD':
         return open(filename).read()
 
-    p = run(['git', 'show', '{0}:{1}'.format(commit, filename)], mask=False)
+    p = run(['git', 'show', '{0}:{1}'.format(commit, filename)], mask=False,
+            loglevel=0)
     return str(p.stdout)
 
 
@@ -888,12 +917,11 @@ def newly_unblacklisted(config_file, recipe_folder, git_range):
     for bl in yaml.safe_load(orig_config)['blacklists']:
         with open('.tmp.blacklist', 'w', encoding='utf8') as fout:
             fout.write(file_from_commit(git_range[0], bl))
-        previous.update(get_blacklist(['.tmp.blacklist'], recipe_folder))
+        previous.update(get_blacklist({'blacklists': '.tmp.blacklist'}, recipe_folder))
         os.unlink('.tmp.blacklist')
 
     current = get_blacklist(
-        yaml.safe_load(
-            file_from_commit(git_range[1], config_file))['blacklists'],
+        yaml.safe_load(file_from_commit(git_range[1], config_file)),
         recipe_folder)
     results = previous.difference(current)
     logger.info('Recipes newly unblacklisted:\n%s', '\n'.join(list(results)))
@@ -908,8 +936,8 @@ def changed_since_master(recipe_folder):
     repo and have added the main repo as ``upstream``, then you'll have to do
     a ``git checkout master && git pull upstream master`` to update your fork.
     """
-    p = run(['git', 'fetch', 'origin', 'master'], mask=False)
-    p = run(['git', 'diff', 'FETCH_HEAD', '--name-only'], mask=False)
+    p = run(['git', 'fetch', 'origin', 'master'], mask=False, loglevel=0)
+    p = run(['git', 'diff', 'FETCH_HEAD', '--name-only'], mask=False, loglevel=0)
     return [
         os.path.dirname(os.path.relpath(i, recipe_folder))
         for i in p.stdout.splitlines(False)
@@ -1037,10 +1065,10 @@ def get_package_paths(recipe, check_channels, force=False):
         api.get_output_file_paths(meta) for meta in build_metas))
 
 
-def get_blacklist(blacklists, recipe_folder):
+def get_blacklist(config: Dict[str, Any], recipe_folder: str) -> set:
     "Return list of recipes to skip from blacklists"
     blacklist = set()
-    for p in blacklists:
+    for p in config.get('blacklists', []):
         blacklist.update(
             [
                 os.path.relpath(i.strip(), recipe_folder)
@@ -1118,63 +1146,6 @@ def load_config(path):
 
 class BiocondaUtilsWarning(UserWarning):
     pass
-
-
-def modified_recipes(git_range, recipe_folder, config_file):
-    """
-    Returns files under the recipes dir that have been modified within the git
-    range. Includes meta.yaml files for recipes that have been unblacklisted in
-    the git range. Filenames are returned with the ``recipe_folder`` included.
-
-    git_range : list or tuple of length 1 or 2
-        For example, ``['00232ffe', '10fab113']``, or commonly ``['master', 'HEAD']``
-        or ``['master']``. If length 2, then the commits are provided to ``git diff``
-        using the triple-dot syntax, ``commit1...commit2``. If length 1, the
-        comparison is any changes in the working tree relative to the commit.
-
-    recipe_folder : str
-        Top-level recipes dir in which to search for meta.yaml files.
-    """
-    orig_git_range = git_range[:]
-    if len(git_range) == 2:
-        git_range = '...'.join(git_range)
-    elif len(git_range) == 1 and isinstance(git_range, list):
-        git_range = git_range[0]
-    else:
-        raise ValueError('Expected 1 or 2 args for git_range; got {}'.format(git_range))
-
-    cmds = (
-        [
-            'git', 'diff', '--relative={}'.format(recipe_folder),
-            '--name-only',
-            git_range,
-            "--"
-        ] +
-        [
-            os.path.join(recipe_folder, '*'),
-            os.path.join(recipe_folder, '*', '*')
-        ]
-    )
-
-    p = run(cmds, shell=False, mask=False)
-
-    modified = [
-        os.path.join(recipe_folder, m)
-        for m in p.stdout.strip().split('\n')
-    ]
-
-    # exclude recipes that were deleted in the git-range
-    existing = list(filter(os.path.exists, modified))
-
-    # if the only diff is that files were deleted, we can have ['recipes/'], so
-    # filter on existing *files*
-    existing = list(filter(os.path.isfile, existing))
-
-    unblacklisted = newly_unblacklisted(config_file, recipe_folder, orig_git_range)
-    unblacklisted = [os.path.join(recipe_folder, i, 'meta.yaml') for i in unblacklisted]
-    existing += unblacklisted
-
-    return existing
 
 
 class Progress:
@@ -1460,8 +1431,12 @@ class RepoData:
             df['subdir'] = repo['info']['subdir']
             return df
 
-        dfs = AsyncRequests.fetch(urls, descs, to_dataframe, repos)
-        res = pd.concat(dfs)
+        if urls:
+            dfs = AsyncRequests.fetch(urls, descs, to_dataframe, repos)
+            res = pd.concat(dfs)
+        else:
+            res = pd.DataFrame(columns=self.columns)
+
         for col in ('channel', 'platform', 'subdir', 'name', 'version', 'build'):
             res[col] = res[col].astype('category')
         res = res.reset_index(drop=True)
