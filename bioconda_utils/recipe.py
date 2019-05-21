@@ -47,7 +47,15 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class RecipeError(EndProcessingItem):
-    pass
+    def __init__(self, item, message=None, line=None, column=None):
+        self.line = line
+        self.column = column
+        if message is not None and line is not None:
+            if column is not None:
+                message += " (at line %i / column %i)" % (line, column)
+            else:
+                message += " (at line %i)" % line
+        super().__init__(item, message)
 
 
 class DuplicateKey(RecipeError):
@@ -100,11 +108,6 @@ class RenderFailure(RecipeError):
 
     May have self.line
     """
-    def __init__(self, item, message, line=None):
-        self.line = line
-        if line is not None:
-            message += " (at line %i)" % line
-        super().__init__(item, message)
     template = "failed to render in Jinja2. Error was: %s"
 
 
@@ -294,9 +297,9 @@ class Recipe():
                 "\n".join(self.meta_yaml)
             )
         except jinja2.exceptions.TemplateSyntaxError as exc:
-            raise RenderFailure(self, exc.message, exc.lineno)
+            raise RenderFailure(self, message=exc.message, line=exc.lineno)
         except jinja2.exceptions.TemplateError as exc:
-            raise RenderFailure(self, exc.message)
+            raise RenderFailure(self, message=exc.message)
 
     def get_simple_modules(self):
         """Yield simple replacement values from template
@@ -326,8 +329,9 @@ class Recipe():
         try:
             self.meta = yaml.load(yaml_text)
         except DuplicateKeyError as err:
-            logger.debug("fixing duplicate key at %i:%i",
-                         err.context_mark.line, err.context_mark.column)
+            line = err.problem_mark.line + 1
+            column = err.problem_mark.column + 1
+            logger.debug("fixing duplicate key at %i:%i", line, column)
             # We may have encountered a recipe with linux/osx variants using line selectors
             yaml_text = self._rewrite_selector_block(yaml_text, err.context_mark.line,
                                                      err.context_mark.column)
@@ -335,9 +339,9 @@ class Recipe():
                 try:
                     self.meta = yaml.load(yaml_text)
                 except DuplicateKeyError:
-                    raise DuplicateKey(self)
+                    raise DuplicateKey(self, line=line, column=column)
             else:
-                raise DuplicateKey(self)
+                raise DuplicateKey(self, line=line, column=column)
 
         if "package" not in self.meta \
            or "version" not in self.meta["package"] \
@@ -441,7 +445,7 @@ class Recipe():
             if not re_before.search(line):
                 continue
             if re_select.search(line):
-                raise HasSelector(self, lineno)
+                raise HasSelector(self, line=lineno)
             new = re_before.sub(after, line)
             logger.debug("%i - %s", lineno, self.meta_yaml[lineno])
             logger.debug("%i + %s", lineno, new)
