@@ -1,0 +1,60 @@
+{% set name = "telescope" %}
+{% set version = "1.0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/mlbendall/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 115928f5aa347bf2416a15e9d790744e42553bb1118809b5677788e649269f74
+
+build:
+  number: 0
+  script: "python setup.py install --single-version-externally-managed --record=record.txt"
+  skip: True  # [py2k]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - numpy >=1.16.3
+    - scipy >=1.2.1
+    - pysam >=0.15.2
+    - future >=0.17.1
+    - pyyaml >=5.1
+    - cython
+    - intervaltree
+    - setuptools
+  run:
+    - python
+    - numpy >=1.16.3
+    - scipy >=1.2.1
+    - pysam >=0.15.2
+    - future >=0.17.1
+    - pyyaml >=5.1
+    - cython
+    - intervaltree >=3.0.2
+
+test:
+  commands:
+    - telescope --version
+    - telescope -h &> /dev/null
+    - telescope assign -h &> /dev/null
+    - telescope resume -h &> /dev/null
+
+about:
+  home: 'https://github.com/mlbendall/telescope'
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Single locus resolution of Transposable ELEment expression.
+
+extra:
+  identifiers:
+    - doi:10.1101/398172
+  container:
+    extended-base: True
+  recipe-maintainers:
+    - davebx
