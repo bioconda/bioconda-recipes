@@ -40,7 +40,7 @@ from ..githandler import TempBiocondaRepo
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
 from ..circleci import AsyncCircleAPI
 from ..upload import anaconda_upload, skopeo_upload
-from ..lint import Linter
+from .. import lint
 
 from celery.exceptions import MaxRetriesExceededError
 
@@ -227,7 +227,7 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
 
         # Here we call the actual linter code
         config = utils.load_config('config.yml')
-        linter = Linter(config, 'recipes')
+        linter = lint.Linter(config, 'recipes')
 
         # Workaround celery/billiard messing with sys.exit
         if isinstance(sys.exit, types.FunctionType):
@@ -254,11 +254,15 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
                '---------|----------|-----------------------|------']
 
     annotations = []
-    if res is False:
+    if not messages:  # no errors, success
         conclusion = CheckRunConclusion.success
         title = "All recipes in good condition"
         summary += "No problems found."
-    else:
+    elif not res:  # messages, but lint OK
+        conclusion = CheckRunConclusion.neutral
+        title = "Found warnings"
+        summary += "Please consider fixing the issues listed below."
+    else:  # fail
         conclusion = CheckRunConclusion.failure
         title = "Some recipes had problems"
         summary += "Please fix the issues listed below."
@@ -266,7 +270,6 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
     url = 'https://bioconda.github.io/linting.html'
 
     for msg in messages:
-        logger.error(msg)
         annotations.append({
             'path': msg.fname,
             'start_line': msg.start_line,
