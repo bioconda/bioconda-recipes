@@ -544,25 +544,3 @@ class Linter:
             logger.debug(message)
 
         return messages
-
-
-def markdown_report(report=None):
-    """
-    Return a rendered Markdown string.
-
-    Parameters
-    ----------
-    report : None or pandas.DataFrame
-        If None, linting assumed to be successful. If dataframe, it's provided
-        to the lint failure template.
-    """
-    if not report:
-        tmpl = utils.jinja.get_template("lint_success.md")
-        return tmpl.render()
-
-    by_recipe = {}
-    for msg in report:
-        by_recipe.setdefault(msg.recipe.path, []).append(msg)
-
-    tmpl = utils.jinja.get_template("lint_failure.md")
-    return tmpl.render(report=by_recipe)
