@@ -204,7 +204,7 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
             await ghapi.modify_check_run(
                 check_run_number,
                 status=CheckRunStatus.completed,
-                conclusion=CheckRunConclusion.cancelled,
+                conclusion=CheckRunConclusion.neutral,
                 output_title=
                 f"Failed to check out "
                 f"{ghapi.user}/{ghapi.repo}:{ref_label}"
