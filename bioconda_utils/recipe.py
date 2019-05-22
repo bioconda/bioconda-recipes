@@ -50,12 +50,15 @@ class RecipeError(EndProcessingItem):
     def __init__(self, item, message=None, line=None, column=None):
         self.line = line
         self.column = column
-        if message is not None and line is not None:
-            if column is not None:
-                message += " (at line %i / column %i)" % (line, column)
-            else:
-                message += " (at line %i)" % line
-        super().__init__(item, message)
+        if message is not None:
+            if line is not None:
+                if column is not None:
+                    message += " (at line %i / column %i)" % (line, column)
+                else:
+                    message += " (at line %i)" % line
+            super().__init__(item, message)
+        else:
+            super().__init__(item)
 
 
 class DuplicateKey(RecipeError):
