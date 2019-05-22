@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./configure CFLAGS="-std=gnu89 -g -O2" --prefix=$PREFIX/bin --datadir=$PREFIX/share
+./configure CFLAGS="-std=gnu89 -g -O2" --prefix=$PREFIX --datadir=$PREFIX/share
 make
 make install
 
