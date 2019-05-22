@@ -255,8 +255,6 @@ def duplicates(config,
      first time.''')
 @arg('--list-checks', help='''List the linting functions to be used and then
      exit''')
-@arg('--only', nargs='+', help='''Only run these linting functions. Can be used
-     multiple times.''')
 @arg('--exclude', nargs='+', help='''Exclude this linting function. Can be used
      multiple times.''')
 @arg('--push-status', action='store_true', help='''If set, the lint status will
@@ -791,7 +789,7 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
 
     if no_follow_graph:
         recipe_source = autobump.RecipeSource(
-            recipe_folder, packages, exclude, not no_shuffle)
+            recipe_folder, packages, exclude or [], not no_shuffle)
         no_skip_pending_deps = True
     else:
         recipe_source = autobump.RecipeGraphSource(
