@@ -84,8 +84,7 @@ ln -s $SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
 export AR="${AR} -r"
 
 cd build
-#make -j${CPU_COUNT} -f Makefile.flat all_projects="$projects"
-make -f Makefile.flat all_projects="$projects"
+make -j${CPU_COUNT} -f Makefile.flat all_projects="$projects"
 
 # remove temporary link
 rm $LIB_INSTALL_DIR
