@@ -11,4 +11,4 @@ mkdir -p ${PREFIX}/lib
 mkdir -p ${PREFIX}/include
 mv ../include/spoa ${PREFIX}/include/
 mv lib/libspoa.a ${PREFIX}/lib/
-mv bin/spoa ${PREFIX}/bin/
+mv spoa ${PREFIX}/bin/
