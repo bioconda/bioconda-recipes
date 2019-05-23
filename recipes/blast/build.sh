@@ -53,6 +53,7 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
   CONFIG_ARGS="--without-gnutls --with-openssl=$PREFIX"
 #fi
 
+export AR="${AR} cs" 
 ./configure \
     --with-dll \
     --with-mt \
@@ -81,7 +82,6 @@ cd ReleaseMT
 # The "datatool" binary needs the libs at build time, create
 # link from final install path to lib build dir:
 ln -s $SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
-export AR="${AR} -r"
 
 cd build
 make -j${CPU_COUNT} -f Makefile.flat all_projects="$projects"
