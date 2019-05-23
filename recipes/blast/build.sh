@@ -46,6 +46,8 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 
 if [ `uname` == Linux ]; then
   CONFIG_ARGS="--without-openssl --with-gnutls=$PREFIX"
+  export GNUTLS_INCLUDE=$PREFIX/include
+  export GNUTLS_LIB=$PREFIX/lib
 else
   CONFIG_ARGS="--without-gnutls --with-openssl=$PREFIX"
 fi
