@@ -44,13 +44,13 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # nettle: set nettle
 # -krb5: disable kerberos (needed on OSX)
 
-if [ `uname` == Linux ]; then
-  CONFIG_ARGS="--without-openssl --with-gnutls=$PREFIX"
-  export GNUTLS_INCLUDE=$PREFIX/include
-  export GNUTLS_LIB=$PREFIX/lib
-else
+#if [ `uname` == Linux ]; then
+#  CONFIG_ARGS="--without-openssl --with-gnutls=$PREFIX"
+#  export GNUTLS_INCLUDE=$PREFIX/include
+#  export GNUTLS_LIB=$PREFIX/lib
+#else
   CONFIG_ARGS="--without-gnutls --with-openssl=$PREFIX"
-fi
+#fi
 
 ./configure \
     --with-dll \
