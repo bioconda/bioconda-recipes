@@ -1,6 +1,5 @@
 {% set name = "plantcv" %}
 {% set version = "3.3.0" %}
-{% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
 {% set hash_value = "a56fc7a86cc5e548078115f888046bf36bc0642ca5cadb56f5e6398a77e17c79" %}
 
@@ -9,24 +8,18 @@ package:
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  url: https://github.com/danforthcenter/plantcv/archive/v{{ version }}.tar.gz
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
   noarch: python
   number: 0
+  script: {{ PYTHON }} setup.py install --single-version-externally-managed
 
 requirements:
-  build:
-    - {{ cdt('mesa-libgl-devel') }}  # [linux]
-    - {{ cdt('mesa-dri-drivers') }}  # [linux]
-    - {{ cdt('libselinux') }}  # [linux]
-    - {{ cdt('libxdamage') }}  # [linux]
-    - {{ cdt('libxxf86vm') }}  # [linux]
   host:
     - python
     - pip
-    - xorg-libxfixes
   run:
     - python
     - matplotlib >=1.5
