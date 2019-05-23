@@ -53,7 +53,7 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
   CONFIG_ARGS="--without-gnutls --with-openssl=$PREFIX"
 #fi
 
-export AR="${AR} cs" 
+export AR="${AR} rcs" 
 ./configure \
     --with-dll \
     --with-mt \
