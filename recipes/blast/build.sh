@@ -8,7 +8,7 @@ export CXXFLAGS="$CXXFLAGS -O2"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CC_FOR_BUILD=$CC
-export CPP_FOR_BUILD=$CC
+export CPP_FOR_BUILD=$CPP
 
 if test x"`uname`" = x"Linux"; then
     # only add things needed; not supported by OSX ld
@@ -17,6 +17,7 @@ fi
 
 if [ `uname` == Darwin ]; then
     export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
+    CPP_FOR_BUILD=$CC
 fi
 
 LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
