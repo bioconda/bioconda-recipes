@@ -1,0 +1,57 @@
+{% set version = "2.2.31" %}
+{% set sha256 = "f0960e8af2a6021fde6f2513381493641f687453a804239a7e598649b432f8a5" %}
+
+package:
+  name: blast
+  version: {{ version }}
+
+source:
+  url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - boost
+    - zlib
+    - bzip2
+    - gnutls
+    - gmp
+    - nettle 3.4
+    - pcre
+  run:
+    - boost
+    - zlib
+    - bzip2
+    - gnutls
+    - gmp
+    - nettle 3.4
+    - pcre
+    - perl
+    - perl-list-moreutils
+    - perl-archive-tar
+
+test:
+  files:
+    - test.fa
+    - testdatabase.fa
+  commands:
+    # (see run_tests.sh for remainder of tests)
+    - blastn -help
+    - blastp -help
+    - makeblastdb -help
+
+about:
+  home: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs
+  license: Public Domain
+  summary: BLAST+ is a new suite of BLAST tools that utilizes the NCBI C++ Toolkit.
+
+extra:
+  identifiers:
+    - biotools:blast
+    - doi:10.1016/S0022-2836(05)80360-2
