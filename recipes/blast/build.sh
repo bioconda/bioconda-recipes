@@ -8,7 +8,7 @@ export CXXFLAGS="$CXXFLAGS -O2"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CC_FOR_BUILD=$CC
-export CPP_FOR_BUILD=$CPP
+export CPP_FOR_BUILD=$CXX
 
 if test x"`uname`" = x"Linux"; then
     # only add things needed; not supported by OSX ld
