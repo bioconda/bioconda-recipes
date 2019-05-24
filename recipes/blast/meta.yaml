@@ -1,5 +1,5 @@
-{% set version = "2.7.1" %}
-{% set sha256 = "10a78d3007413a6d4c983d2acbf03ef84b622b82bd9a59c6bd9fbdde9d0298ca" %}
+{% set version = "2.9.0" %}
+{% set sha256 = "a390cc2d7a09422759fc178db84de9def822cbe485916bbb2ec0d215dacdc257" %}
 
 package:
   name: blast
@@ -8,35 +8,29 @@ package:
 source:
   url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - boost_106400.patch
-    - boost_106500.patch
-    # patch taken from http://www.repeatmasker.org/isb-2.6.0+-changes-vers2.patch.gz
-    - negative_gilist.patch
 
 build:
-  number: 6
+  number: 0
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - time
   host:
     - boost
     - zlib
     - bzip2
-    - gnutls # [linux]
-    - openssl # [osx]
-    - nettle 3.3|3.3.*
+    - gnutls
+    - gmp
+    - nettle 3.4
     - pcre
   run:
     - boost
     - zlib
     - bzip2
-    - gnutls # [linux]
-    - openssl # [osx]
-    - nettle 3.3|3.3.*
+    - gnutls
+    - gmp
+    - nettle 3.4
     - pcre
     - perl
     - perl-list-moreutils
@@ -51,9 +45,6 @@ test:
     - blastn -help
     - blastp -help
     - makeblastdb -help
-    # test that BLAST ignores LD_LIBRARY_PATH
-    - touch libstdc++.so.6; LD_LIBRARY_PATH=. makeblastdb -help && rm libstdc++.so.6
-    # - update_blastdb.pl --help (disabled as it now starts a pager, stalling forever)
 
 about:
   home: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs
