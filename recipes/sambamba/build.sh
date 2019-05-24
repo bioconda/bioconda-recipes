@@ -7,7 +7,12 @@ export LIBRARY_PATH=${PREFIX}/lib
 if [ $(uname) == "Darwin" ]; then
     export LDFLAGS="-headerpad_max_install_names $LDFLAGS"
 fi
-make CC=$CC
+sed -i.bak 's/ gcc / $(CC) /g' Makefile
+git clone --depth 1 https://github.com/biod/BioD
+git clone --depth 1 https://github.com/lz4/lz4
+git clone --depth 1 https://github.com/lomereiter/htslib
+cd htslib && make CC=$CC LDFLAGS="-L$PREFIX/lib" && cd ..
+make CC=$CC LIBRARY_PATH=$PREFIX/lib
 make test
 mkdir -p ${PREFIX}/bin
 cp bin/sambamba ${PREFIX}/bin/sambamba
