@@ -7,4 +7,3 @@ sed -i.bak "8,10d" libGenome/gnDefs.cpp
 ./configure --prefix=$PREFIX
 make
 make install
-ls ${PREFIX}/lib
