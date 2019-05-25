@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="medicagocdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/medicagocdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/medicagocdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/medicagocdf_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-medicagocdf/bioconductor-medicagocdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-medicagocdf/bioconductor-medicagocdf_2.18.0_src_all.tar.gz"
 )
 MD5="1fbb2e4c070344d18e65f1b3993867db"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

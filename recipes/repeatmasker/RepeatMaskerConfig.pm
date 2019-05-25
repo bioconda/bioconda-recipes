@@ -61,13 +61,13 @@ BEGIN {
 
 ##
 ## Search Engine Configuration:
-##   RepeatMasker uses either the CrossMatch, WUBlast/ABBlast, or the
-##   TimeLogic search engine to find matches to interspersed
-##   repeat consensi.  You are only required to have one engine
+##   RepeatMasker uses either the CrossMatch, RMBlast, WUBlast/ABBlast, 
+##   or the HMMER search engine to find matches to interspersed
+##   repeat consensi or profile HMMs.  You are only required to have one engine
 ##   installed on your system in order to run RepeatMasker.  
 ##   
 ##   The optional program RepeatProteinMask will only run
-##   with the WUBlast/ABBlast package ( currently ).  
+##   with the RMBlast or WUBlast/ABBlast package ( currently ).  
 ##
 
   ##
@@ -114,18 +114,6 @@ BEGIN {
     $WUBLASTX_PRGM = "$WUBLAST_DIR/blastx";
     $XDFORMAT_PRGM = "$WUBLAST_DIR/xdformat";
     $SETDB_PRGM    = "$WUBLAST_DIR/setdb";
-  
-  ##
-  ## DeCypher Blast ( OPTIONAL )
-  ## ==============
-  ##  Location of TimeLogic's DeCypher Blast
-  ##  ie. 
-  ##    $DECYPHER = "c:/dc_local/bin/dc_template_rt";
-  ##
-  ##
-    $DEMAKE  = "dc_make_target -template format_aa_into_aa -quiet";
-    $DECYPHER = "";
-  
   
 ##
 ## Default Search Engine
@@ -182,8 +170,8 @@ BEGIN {
 ## Do not change these parameters
 ##
   $VALID_SEARCH_ENGINES = { "crossmatch" => 1, 
-                            "wublast" => 1, 
-                            "decypher" => 1  };
+                            "wublast" => 1
+                          };
 
 ##----------------------------------------------------------------------##
 }
