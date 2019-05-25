@@ -542,12 +542,12 @@ class Linter:
                 res = self.check_instances[check].run(recipe)
             except Exception:
                 logger.exception("Unexpected exception in lint_one")
-                messages.append(LintMessage(
+                res = [LintMessage(
                     recipe=recipe,
                     check=check,
                     severity=ERROR,
-                    title="Check raised an unexpected exception"))
-                res = True
+                    title="Check raised an unexpected exception")
+                ]
 
             if res:  # skip checks depending on failed checks
                 checks_to_skip.update(nx.ancestors(self.checks_dag, str(check)))
