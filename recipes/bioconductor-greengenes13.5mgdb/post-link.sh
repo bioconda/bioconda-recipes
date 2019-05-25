@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="greengenes13.5MgDb_2.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/greengenes13.5MgDb_2.0.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/greengenes13.5MgDb_2.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/greengenes13.5MgDb_2.0.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-greengenes13.5mgdb/bioconductor-greengenes13.5mgdb_2.0.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-greengenes13.5mgdb/bioconductor-greengenes13.5mgdb_2.0.0_src_all.tar.gz"
 )
 MD5="c06d8d5b702636bb5fb3e6229869578c"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
