@@ -96,6 +96,9 @@ def test_lint(linter, recipe, case):
     expected = set(ensure_list(case.get('expect', [])))
     found = set()
     for msg in messages:
-        assert str(msg.check) in expected
+        assert str(msg.check) in expected, \
+            f"In test '{case['name']}' on '{op.basename(recipe)}': '{msg.check}' emitted unexpectedly"
         found.add(str(msg.check))
-    assert len(expected) == len(found)
+    assert len(expected) == len(found), \
+        f"In test '{case['name']}' on '{op.basename(recipe)}': missed expected lint fails"
+
