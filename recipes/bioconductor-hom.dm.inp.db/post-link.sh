@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="hom.Dm.inp.db_3.1.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/hom.Dm.inp.db_3.1.2.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hom.Dm.inp.db_3.1.2.tar.gz"
   "https://bioarchive.galaxyproject.org/hom.Dm.inp.db_3.1.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hom.dm.inp.db/bioconductor-hom.dm.inp.db_3.1.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hom.dm.inp.db/bioconductor-hom.dm.inp.db_3.1.2_src_all.tar.gz"
 )
 MD5="24599bd0267b6b6f83d9a27d42d72221"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
