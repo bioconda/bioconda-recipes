@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="rguatlas4k.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/rguatlas4k.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/rguatlas4k.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/rguatlas4k.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rguatlas4k.db/bioconductor-rguatlas4k.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rguatlas4k.db/bioconductor-rguatlas4k.db_3.2.3_src_all.tar.gz"
 )
 MD5="6a360676e08319ec5465c47c758110bd"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

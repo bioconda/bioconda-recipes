@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euxo pipefail
 
 cd $SRC_DIR/c++/
 
@@ -6,6 +7,7 @@ export CFLAGS="$CFLAGS -O2"
 export CXXFLAGS="$CXXFLAGS -O2"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CC_FOR_BUILD=$CC
 
 if test x"`uname`" = x"Linux"; then
     # only add things needed; not supported by OSX ld
@@ -14,6 +16,11 @@ fi
 
 if [ `uname` == Darwin ]; then
     export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
+else
+    export CPP_FOR_BUILD=$CPP
+    # For using pkgconfig
+    export GNUTLS_INCLUDE="-I${PREFIX}/include"
+    export GNUTLS_LIBS="-L${PREFIX}/lib -lgnutls -lgmp"
 fi
 
 LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
@@ -42,11 +49,8 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # nettle: set nettle
 # -krb5: disable kerberos (needed on OSX)
 
-if [ `uname` == Linux ]; then
-  CONFIG_ARGS="--without-openssl --with-gnutls=$PREFIX"
-else
-  CONFIG_ARGS="--without-gnutls --with-openssl=$PREFIX"
-fi
+# Fixes building on Linux
+export AR="${AR} rcs" 
 
 ./configure \
     --with-dll \
@@ -68,7 +72,9 @@ fi
     --without-gcrypt \
     --with-nettle=$PREFIX \
     --with-z=$PREFIX \
-    --without-krb5 $CONFIG_ARGS
+    --without-krb5 \
+    --without-openssl \
+    --with-gnutls=$PREFIX
 
 projects="algo/blast/ app/ objmgr/ objtools/align_format/ objtools/blast/"
 cd ReleaseMT
