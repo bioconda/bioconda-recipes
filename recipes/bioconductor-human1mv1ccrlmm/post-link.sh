@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="human1mv1cCrlmm_1.0.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/human1mv1cCrlmm_1.0.3.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/human1mv1cCrlmm_1.0.3.tar.gz"
   "https://bioarchive.galaxyproject.org/human1mv1cCrlmm_1.0.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-human1mv1ccrlmm/bioconductor-human1mv1ccrlmm_1.0.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-human1mv1ccrlmm/bioconductor-human1mv1ccrlmm_1.0.3_src_all.tar.gz"
 )
 MD5="b9f638c7b0ede50cb070f1bae85eb4dc"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
