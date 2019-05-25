@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="BSgenome.Amellifera.UCSC.apiMel2.masked_1.3.99.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/BSgenome.Amellifera.UCSC.apiMel2.masked_1.3.99.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Amellifera.UCSC.apiMel2.masked_1.3.99.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Amellifera.UCSC.apiMel2.masked_1.3.99.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.amellifera.ucsc.apimel2.masked/bioconductor-bsgenome.amellifera.ucsc.apimel2.masked_1.3.99_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.amellifera.ucsc.apimel2.masked/bioconductor-bsgenome.amellifera.ucsc.apimel2.masked_1.3.99_src_all.tar.gz"
 )
 MD5="e7a7ff8cfce8e239b22116855456f23d"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
