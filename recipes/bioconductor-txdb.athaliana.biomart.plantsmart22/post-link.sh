@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="TxDb.Athaliana.BioMart.plantsmart22_3.0.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/TxDb.Athaliana.BioMart.plantsmart22_3.0.1.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Athaliana.BioMart.plantsmart22_3.0.1.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Athaliana.BioMart.plantsmart22_3.0.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.athaliana.biomart.plantsmart22/bioconductor-txdb.athaliana.biomart.plantsmart22_3.0.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.athaliana.biomart.plantsmart22/bioconductor-txdb.athaliana.biomart.plantsmart22_3.0.1_src_all.tar.gz"
 )
 MD5="3bab54295e300fedba99eef521220e50"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
