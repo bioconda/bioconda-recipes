@@ -81,16 +81,24 @@ Module Autodocs
 .. autosummary::
    :toctree:
 
-   checks
+   check_build_help
+   check_completeness
+   check_deprecation
+   check_noarch
+   check_policy
+   check_repo
+   check_syntax
 
 """
 
 import abc
 import os
+import pkgutil
 import re
 import itertools
 import logging
 import inspect
+import importlib
 from collections import defaultdict
 from enum import IntEnum
 from typing import Any, Dict, List, NamedTuple, Tuple
@@ -176,9 +184,15 @@ class LintCheckMeta(abc.ABCMeta):
     def __str__(cls):
         return cls.__name__
 
-
+_checks_loaded = False
 def get_checks():
-    """Returns the registered lint checks"""
+    """Loads and returns the available lint checks"""
+    global _checks_loaded
+    if not _checks_loaded:
+        for _loader, name, _ispkg in pkgutil.iter_modules(__path__):
+            if name.startswith('check_'):
+                importlib.import_module(__name__ + '.' + name)
+        _checks_loaded = True
     return LintCheckMeta.registry
 
 
@@ -399,7 +413,6 @@ recipe_error_to_lint_check = {
 }
 
 
-from . import checks
 
 
 class Linter:

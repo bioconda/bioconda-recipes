@@ -51,7 +51,7 @@ tests:
 - name: minimal_recipe
 - name: empty_build_section
   remove: build
-  expect: [should_be_noarch, missing_build_number]
+  expect: [should_be_noarch_generic, missing_build_number]
 - name: missing_home
   remove: about/home
   expect: missing_home
@@ -77,7 +77,7 @@ tests:
         - missing_tests
         - no_tests
         - gpl_requires_license_distributed
-        - should_be_noarch
+        - should_be_noarch_generic
 - name: missing_home_empty_string
   add: { about: { home: '' } }
   expect: missing_home
@@ -129,9 +129,17 @@ tests:
 - name: no_source
   remove: source
 - name: uses_git_url
+  expect: uses_vcs_url
   remove: source/url
   add: { source: { git_url: someurl } }
-  expect: uses_git_url
+- name: uses_svn_url
+  expect: uses_vcs_url
+  remove: source/url
+  add: { source: { svn_url: someurl } }
+- name: uses_hg_url
+  expect: uses_vcs_url
+  remove: source/url
+  add: { source: { hg_url: someurl } }
 - name: uses_perl_threaded_in_build
   add: { requirements: { build: [perl-threaded] } }
   expect: uses_perl_threaded
