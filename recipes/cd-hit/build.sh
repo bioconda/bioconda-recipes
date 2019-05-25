@@ -4,21 +4,23 @@ export CFLAGS="-I$PREFIX/include"
 export CPPFLAGS="-I$PREFIX/include"
 export CXXFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
+export CPATH=${PREFIX}/include
 
 sed -i.bak 's/^CC =$//g' Makefile
+sed -i.bak 's/^#LDFLAGS.*//g' Makefile
 
-#cat > test-openmp.cc <<END
-#include <omp.h>
-#END
 
-if g++ -o /dev/null -c test-openmp.cc 2>/dev/null
-then
-  OPENMP_SUPPORTED=yes
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  #Lines below is commented out until fix provided for OPENMP support on OS X for this program
+ 
+  #CCFLAGS="$CCFLAGS -Wl,-rpath ${PREFIX}/lib -L${PREFIX}/lib -I${PREFIX}/include -fopenmp"
+  #sed -i.bak 's/CCFLAGS = -fopenmp/CCFLAGS += -fopenmp/g' Makefile
+  LDFLAGS="$LDFLAGS -stdlib=libc++"
+  
+  make CC=clang++ openmp=no
 else
-  OPENMP_SUPPORTED=no
+  make CC=$GXX
 fi
 
-make openmp=$OPENMP_SUPPORTED
-
-mkdir -p $PREFIX/bin
-make install PREFIX=$PREFIX/bin
+mkdir -p $PREFIX/bin 
+make install PREFIX=$PREFIX/bin 
