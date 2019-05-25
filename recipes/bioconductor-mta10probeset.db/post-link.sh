@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="mta10probeset.db_8.7.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/mta10probeset.db_8.7.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/mta10probeset.db_8.7.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mta10probeset.db_8.7.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mta10probeset.db/bioconductor-mta10probeset.db_8.7.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mta10probeset.db/bioconductor-mta10probeset.db_8.7.0_src_all.tar.gz"
 )
 MD5="80ca03d68b6c9dd51d50122039b2d8ba"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -30,3 +30,6 @@ cp $SP_DIR/biobb_md/gromacs/solvate.py $PREFIX/bin/solvate
 
 chmod u+x $SP_DIR/biobb_md/gromacs_extra/ndx2resttop.py
 cp $SP_DIR/biobb_md/gromacs_extra/ndx2resttop.py $PREFIX/bin/ndx2resttop
+
+chmod u+x $SP_DIR/biobb_md/gromacs_extra/append_ligand.py
+cp $SP_DIR/biobb_md/gromacs_extra/append_ligand.py $PREFIX/bin/append_ligand
