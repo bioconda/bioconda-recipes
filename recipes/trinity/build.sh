@@ -21,6 +21,9 @@ cd $SRC_DIR
 ln -s ${CC} ${PREFIX}/bin/gcc
 ln -s ${CXX} ${PREFIX}/bin/g++
 
+pushd trinity-plugins/seqtk-trinity-0.0.2
+${CC} ${CFLAGS} ${LDFLAGS}  seqtk.c -o seqtk-trinity -lz -lm
+popd
 make plugins CC=$CC CXX=$CXX
 make
 
