@@ -1,7 +1,7 @@
 import os.path as op
 import os
 import json
-import yaml
+from ruamel_yaml import YAML
 import tempfile
 from copy import deepcopy
 
@@ -11,8 +11,10 @@ from bioconda_utils import lint, utils
 from bioconda_utils.utils import ensure_list
 
 
+yaml = YAML(typ="rt")  # pylint: disable=invalid-name
+
 with open(op.join(op.dirname(__file__), "lint_cases.yaml")) as data:
-    TEST_DATA = yaml.safe_load(data)
+    TEST_DATA = yaml.load(data)
 
 TEST_SETUP = TEST_DATA['setup']
 TEST_RECIPES = list(TEST_SETUP['recipes'].values())
