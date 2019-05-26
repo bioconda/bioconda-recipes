@@ -187,6 +187,11 @@ as noarch:
    marked ``noarch``. Use of a compiler was detected, which
    generally indicates that platform specific binaries were built.
 
+.. lint-check:: should_not_be_noarch_source
+
+   Packages downloading different sources for each platform cannot be
+   marked ``noarch``.
+
 .. lint-check:: should_not_be_noarch_skip
 
 .. lint-check:: should_not_use_skip_python

@@ -6,6 +6,8 @@ behavior. These checks aim at getting the right settings.
 
 """
 
+import re
+
 from . import LintCheck, ERROR, WARNING, INFO
 
 
@@ -128,3 +130,16 @@ class should_not_use_skip_python(LintCheck):
         self.message(section='build/skip')
 
 
+class should_not_be_noarch_source(LintCheck):
+    """The recipe uses per platform sources and cannot be noarch
+
+    You are downloading different upstream sources for each
+    platform. Remove the noarch section or use just one source for all
+    platforms.
+    """
+
+    _pat = re.compile(r'# +\[.*\]')
+    def check_source(self, source, section):
+        # just search the entire source entry for a comment
+        if self._pat.search(self.recipe.get_raw(f"{section}")):
+             self.message(section)

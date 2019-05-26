@@ -479,7 +479,6 @@ class Recipe():
     def get_raw_range(self, path):
         """Locate the position of a node in the YAML within the raw text
 
-
         See also `get_raw()` if you want to get the content of the unparsed
         meta.yaml at a specific key.
 
