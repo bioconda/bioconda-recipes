@@ -18,7 +18,7 @@ cd $SRC_DIR
 
 # The compilers aren't propogated
 pushd trinity-plugins/seqtk-trinity-0.0.2
-${CC} ${CFLAGS} -o seqtk.c -o seqtk-trinity -lz -lm
+${CC} ${CFLAGS} -o seqtk.c -o seqtk-trinity ${LDFLAGS} -lz -lm
 popd
 
 make plugins CC=$CC CXX=$CXX
