@@ -2,11 +2,10 @@
 
 set -x -e
 
-export CC=${PREFIX}/bin/gcc
-export CXX=${PREFIX}/bin/g++
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
+export LIBRARY_PATH="${PREFIX}/lib"
 
 export LDFLAGS="-L${PREFIX}/lib"
 export CPPFLAGS="-I${PREFIX}/include"
@@ -18,8 +17,15 @@ TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
 
 cd $SRC_DIR
 
+# The compilers aren't propogated across makefiles
+ln -s ${CC} ${PREFIX}/bin/gcc
+ln -s ${CXX} ${PREFIX}/bin/g++
+
+pushd trinity-plugins/seqtk-trinity-0.0.2
+${CC} ${CFLAGS} ${LDFLAGS}  seqtk.c -o seqtk-trinity -lz -lm
+popd
+make plugins CC=$CC CXX=$CXX
 make
-make plugins
 
 # remove the sample data
 rm -rf $SRC_DIR/sample_data
@@ -56,3 +62,6 @@ find $TRINITY_HOME -type f -name "*.bak" -print0 | xargs -0 rm -f
 
 # make it easier to find TRINITY_HOME
 ln -sf $TRINITY_HOME $PREFIX/opt/TRINITY_HOME
+
+rm ${PREFIX}/bin/gcc
+rm ${PREFIX}/bin/g++
