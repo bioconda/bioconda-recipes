@@ -16,10 +16,9 @@ TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
 
 cd $SRC_DIR
 
-# The compilers aren't propogated
-pushd trinity-plugins/seqtk-trinity-0.0.2
-${CC} ${CFLAGS} seqtk.c -o seqtk-trinity ${LDFLAGS} -lz -lm
-popd
+# The compilers aren't propogated across makefiles
+ln -s ${CC} ${PREFIX}/bin/gcc
+ln -s ${CXX} ${PREFIX}/bin/g++
 
 make plugins CC=$CC CXX=$CXX
 make
@@ -59,3 +58,6 @@ find $TRINITY_HOME -type f -name "*.bak" -print0 | xargs -0 rm -f
 
 # make it easier to find TRINITY_HOME
 ln -sf $TRINITY_HOME $PREFIX/opt/TRINITY_HOME
+
+rm ${PREFIX}/bin/gcc
+rm ${PREFIX}/bin/g++
