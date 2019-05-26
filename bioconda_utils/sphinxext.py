@@ -767,7 +767,7 @@ class LintDescriptionDirective(SphinxDirective):
 
         # create a new section with title
         section = nodes.section(ids=[nodes.make_id(check_name)])
-        title_text = f'"``{check_name}``"'
+        title_text = f'":py:class:`{check_name}`"'
         title_nodes, messages = self.state.inline_text(title_text, self.lineno)
         title = nodes.title(check_name, '', *title_nodes)
         section += title

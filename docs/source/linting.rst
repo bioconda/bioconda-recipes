@@ -66,9 +66,12 @@ like this without having to make a commit::
     LINT_SKIP="[lint skip uses_setuptools for recipes/mypackage]" circleci build
 
 
-Description of Lint Checks
---------------------------
+Lint Checks
+-----------
 
+Below, each lint check executed is shown and described. Lints are
+grouped into a few sections, depending on what type of issue they aim
+at preventing.
 
 
 Incomplete Recipe
