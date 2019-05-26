@@ -20,6 +20,7 @@ cd $SRC_DIR
 # The compilers aren't propogated across makefiles
 ln -s ${CC} ${PREFIX}/bin/gcc
 ln -s ${CXX} ${PREFIX}/bin/g++
+find / -name omp.h -print
 
 pushd trinity-plugins/seqtk-trinity-0.0.2
 ${CC} ${CFLAGS} ${LDFLAGS}  seqtk.c -o seqtk-trinity -lz -lm
