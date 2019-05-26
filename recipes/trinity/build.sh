@@ -16,12 +16,13 @@ TRINITY_HOME=$PREFIX/opt/trinity-$PKG_VERSION
 
 cd $SRC_DIR
 
-make
 # The compilers aren't propogated
-cd trinity-plugins
-cd seqtk-trinity-0.0.2 && make CC=$CC && cd ..
-cd ..
+pushd trinity-plugins/seqtk-trinity-0.0.2
+make CC=$CC
+popd
+
 make plugins CC=$CC CXX=$CXX
+make
 
 # remove the sample data
 rm -rf $SRC_DIR/sample_data
