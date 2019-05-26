@@ -553,7 +553,11 @@ class Recipe():
         lines.append(self.meta_yaml[start_row][start_col:])
         for row in range(start_row+1, end_row):
             lines.append(self.meta_yaml[row])
-        lines.append(self.meta_yaml[end_row][:end_col])
+        try:
+            lines.append(self.meta_yaml[end_row][:end_col])
+        except IndexError:
+            # might happen with inline lists, looks like bug in ruamel.yaml
+            pass
         return "\n".join(lines).strip()
 
     def get_deps(self, sections=None, output=True):
