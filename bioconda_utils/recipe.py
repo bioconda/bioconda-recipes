@@ -476,6 +476,7 @@ class Recipe():
         line = self.meta_yaml[lineno]
         line = re.sub("number: [0-9]+", "number: "+str(n), line)
         self.meta_yaml[lineno] = line
+        self.render()
 
     def get_raw_range(self, path):
         """Locate the position of a node in the YAML within the raw text

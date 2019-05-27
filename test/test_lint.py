@@ -111,9 +111,18 @@ def test_lint(linter, recipe, mock_repodata, case):
     expected = set(ensure_list(case.get('expect', [])))
     found = set()
     for msg in messages:
-        assert str(msg.check) in expected, \
-            f"In test '{case['name']}' on '{op.basename(recipe)}': '{msg.check}' emitted unexpectedly"
+        assert str(msg.check) in expected, (
+            f"In test '{case['name']}' on '{op.basename(recipe)}':"
+            f"'{msg.check}' emitted unexpectedly")
         found.add(str(msg.check))
-    assert len(expected) == len(found), \
-        f"In test '{case['name']}' on '{op.basename(recipe)}': missed expected lint fails"
+    assert len(expected) == len(found), (
+        f"In test '{case['name']}' on '{op.basename(recipe)}':"
+        f"missed expected lint fails")
 
+    canfix = [msg for msg in messages if msg.canfix and str(msg.check) in expected]
+    if canfix:
+        linter.clear_messages()
+        linter.lint([recipe], fix=True)
+        found = set(str(msg.check) for msg in linter.get_messages())
+        for msg in canfix:
+            assert str(msg.check) not in found
