@@ -269,6 +269,17 @@ Bioconda and it's recipe repository consistent and clean.
    file merely clutter needlessly increasing the size of our git
    repository.
 
+.. lint-check:: long_summary
+
+   Recipes have a ``summary`` and ``description`` field. The
+   recipe/package description pages at anaconda.org/bioconda and here
+   are designed to use the ``summary`` as a title line and provide a
+   separate section for multi-paragraph descriptions filled with
+   content from the ``description`` field. The ``summary`` is also
+   used for package listings with only one row per package.
+
+   It just looks better if the summary fits into one line.
+
 
 Syntax
 ~~~~~~

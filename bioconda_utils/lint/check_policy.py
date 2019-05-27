@@ -82,3 +82,28 @@ class has_windows_bat_file(LintCheck):
     def check_recipe(self, recipe):
         for fname in glob.glob(os.path.join(recipe.dir, '*.bat')):
             self.message(fname=fname)
+
+
+class long_summary(LintCheck):
+    """The summary line is rather long
+
+    Consider using the description field for longer text::
+
+    about:
+      summary: Fancy Read Simulator (makes drinks)
+      description: |
+        XYZ is a very fancy read simulator that will not just make coffee
+        while you are waiting but prepare all kinds of exquisite caffeeinated
+        beverages from freshly roasted, single source beans ground to match
+        ambient humidity.
+
+    This will fit better into the templates listing and describing
+    recipes, which assume the summary to be a title and the
+    description to be one or more paragraphs.
+
+    """
+    severity = WARNING
+    max_length = 120
+    def check_recipe(self, recipe):
+        if len(recipe.get('about/summary', '')) > self.max_length:
+            self.message('about/summary')
