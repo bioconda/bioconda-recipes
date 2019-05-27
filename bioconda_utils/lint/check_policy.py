@@ -33,7 +33,6 @@ class folder_and_package_name_must_match(LintCheck):
         recipe_base_folder, _, _ = recipe.reldir.partition('/')
         if recipe.name !=  recipe_base_folder:
             self.message(section='package/name')
-        print(recipe.name, recipe.reldir, recipe_base_folder)
 
 
 class gpl_requires_license_distributed(LintCheck):
