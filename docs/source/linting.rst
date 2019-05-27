@@ -379,6 +379,11 @@ Repository
    (it will be built only if the "build string" is different, which
    might happen only on one architecture and not the other).
 
+.. lint-check:: build_number_needs_reset
+
+   If no previous build exists for a package/version combination, the
+   build number should be 0.
+
 .. lint-check:: recipe_is_blacklisted
 
    We maintain a list of packages that are "blacklisted". Recipes are

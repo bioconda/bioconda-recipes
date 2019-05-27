@@ -43,6 +43,21 @@ class build_number_needs_bump(LintCheck):
             self.message('build/number')
 
 
+class build_number_needs_reset(LintCheck):
+    """The recipe build number should be reset to 0
+
+    No previous build of a package of this name and this version exists,
+    the build number should therefore be 0.
+    """
+    requires = ['missing_build_number']
+    def check_recipe(self, recipe):
+        bldnos = utils.RepoData().get_package_data(
+            key="build_number",
+            name=recipe.name, version=recipe.version)
+        if not bldnos and recipe.build_number > 0:
+            self.message('build/number')
+
+
 class recipe_is_blacklisted(LintCheck):
     """The recipe is currently blacklisted and will not be built.
 
