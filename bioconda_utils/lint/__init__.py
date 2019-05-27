@@ -527,7 +527,7 @@ class Linter:
             if check not in self.checks_dag:
                 logger.error("Skipping unknown check %s", check)
                 continue
-            for check_dep in nx.descendants(self.checks_dag, check):
+            for check_dep in nx.ancestors(self.checks_dag, check):
                 if check_dep not in checks_to_skip:
                     logger.info("Disabling %s because %s is disabled",
                                 check_dep, check)
