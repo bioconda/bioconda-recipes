@@ -279,13 +279,15 @@ def duplicates(config,
 @arg('--full-report', action='store_true', help='''Default behavior is to
      summarize the linting results; use this argument to get the full
      results as a TSV printed to stdout.''')
+@arg('--try-fix', help='''Attempt to fix problems where found''')
 @enable_logging()
 @enable_debugging()
 @named('lint')
 def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
             exclude=None, push_status=False, user='bioconda',
             commit=None, push_comment=False, pull_request=None,
-            repo='bioconda-recipes', git_range=None, full_report=False):
+            repo='bioconda-recipes', git_range=None, full_report=False,
+            try_fix=False):
     """
     Lint recipes
 
@@ -316,7 +318,7 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
                         utils.ellipsize_recipes(recipes, recipe_folder))
 
     linter = lint.Linter(config, recipe_folder, exclude)
-    result = linter.lint(recipes)
+    result = linter.lint(recipes, fix=try_fix)
     messages = linter.get_messages()
 
     if messages:

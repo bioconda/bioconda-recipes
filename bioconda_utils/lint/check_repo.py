@@ -40,7 +40,11 @@ class build_number_needs_bump(LintCheck):
             key="build_number",
             name=recipe.name, version=recipe.version)
         if bldnos and recipe.build_number <= max(bldnos):
-            self.message('build/number')
+            self.message('build/number', data=max(bldnos))
+
+    def fix(self, _message, data):
+        self.recipe.reset_buildnumber(data + 1)
+        return True
 
 
 class build_number_needs_reset(LintCheck):
@@ -55,7 +59,11 @@ class build_number_needs_reset(LintCheck):
             key="build_number",
             name=recipe.name, version=recipe.version)
         if not bldnos and recipe.build_number > 0:
-            self.message('build/number')
+            self.message('build/number', data=0)
+
+    def fix(self, _message, data):
+        self.recipe.reset_buildnumber(data)
+        return True
 
 
 class recipe_is_blacklisted(LintCheck):
