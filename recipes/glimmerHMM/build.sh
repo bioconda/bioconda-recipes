@@ -14,10 +14,11 @@ cd sources && make
 cd ../train && make
 cd ..
 
-#copy the execulatbles	
+#copy the executables and perl modules needed for training
 cp bin/glimmhmm.pl $PREFIX/bin/.
 cp sources/glimmerhmm $PREFIX/bin/.
 cp train/trainGlimmerHMM $PREFIX/bin/.
+cp train/*.pm $PREFIX/bin/.
 
 # copy the training data
 cp -R trained_dir $PREFIX/GlimmerHMM/
