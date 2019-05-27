@@ -102,8 +102,8 @@ def linter(config_file, recipes_folder):
     yield lint.Linter(config, recipes_folder)
 
 
-@pytest.mark.parametrize('case', TEST_CASES, ids=TEST_CASE_IDS)
 @pytest.mark.parametrize('recipe_data', TEST_RECIPES, ids=TEST_RECIPE_IDS)
+@pytest.mark.parametrize('case', TEST_CASES, ids=TEST_CASE_IDS)
 def test_lint(linter, recipe, mock_repodata, case):
     linter.clear_messages()
     linter.lint([recipe])
