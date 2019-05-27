@@ -429,12 +429,16 @@ class Linter:
                other mechanisms define skipping on a recipe-specific
                basis, this argument can be used to skip tests for all
                recipes. Use sparingly.
+      nocatch: Don't catch exceptions in lint checks and turn them into
+               linter_error lint messages. Used by tests.
     """
-    def __init__(self, config, recipe_folder: str, exclude=None):
+    def __init__(self, config: Dict, recipe_folder: str,
+                 exclude: List[str] = None, nocatch: bool=False) ->None:
         self.config = config
         self.recipe_folder = recipe_folder
         self.skip = self.load_skips()
         self.exclude = exclude or []
+        self.nocatch = nocatch
         self._messages = []
 
         dag = nx.DiGraph()
@@ -494,6 +498,8 @@ class Linter:
             try:
                 msgs = self.lint_one(recipe_name)
             except Exception:
+                if self.nocatch:
+                    raise
                 logger.exception("Unexpected exception in lint")
                 recipe = _recipe.Recipe(recipe_name, self.recipe_folder)
                 msgs = [linter_failure.make_message(recipe=recipe)]
@@ -541,6 +547,8 @@ class Linter:
             try:
                 res = self.check_instances[check].run(recipe)
             except Exception:
+                if self.nocatch:
+                    raise
                 logger.exception("Unexpected exception in lint_one")
                 res = [LintMessage(
                     recipe=recipe,

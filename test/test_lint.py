@@ -99,7 +99,7 @@ def recipe(recipes_folder, case, recipe_data):
 def linter(config_file, recipes_folder):
     """Prepares a linter given config_folder and recipes_folder"""
     config = utils.load_config(config_file)
-    yield lint.Linter(config, recipes_folder)
+    yield lint.Linter(config, recipes_folder, nocatch=True)
 
 
 @pytest.mark.parametrize('recipe_data', TEST_RECIPES, ids=TEST_RECIPE_IDS)
