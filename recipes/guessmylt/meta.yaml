@@ -1,43 +1,50 @@
-{% set version = "1" %}
-{% set sha256 = "7db17c784470d9397b3e0a2634849dc4aabfe978ac05deecc8f7f2a46c09004f" %}
+{% set name = "guessmylt" %}
+{% set version = "0.2" %}
 
 package:
-  name: guessmylt
-  version: '{{ version }}'
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://github.com/NBISweden/GUESSmyLT/archive/v{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 10028bf61e3c7f7a8910aaac52e8e05e5af7e1a0eac9fa94c7a773a4aac2ef8d
 
 build:
   number: 0
   skip: True # [ py27 ]
-  script: python setup.py install --no-deps --record=record.txt
+  entry_points:
+    - GUESSmyLT = GUESSmyLT.GUESSmyLT:main
+    - GUESSmyLT-example = example_run.example:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
 
 requirements:
-  build:
-
   host:
+    - bcbio-gff ==0.6.4
+    - biopython ==1.67
+    - pip
     - pysam >=0.13.0
-    - git
-    - biopython==1.67
-    - bcbio-gff==0.6.4
-    - snakemake==5.4.0
+    - python >= 3.5
+    - snakemake ==5.4.0
     - trinity==2.8.4
     - busco==3.0.2
     - bowtie2==2.3.4.3
-    - python >=3.5
   run:
-    - snakemake==5.4.0
+    - bcbio-gff ==0.6.4
+    - biopython ==1.67
+    - pysam >=0.13.0
+    - snakemake ==5.4.0
     - trinity==2.8.4
     - busco==3.0.2
     - bowtie2==2.3.4.3
-    - snakemake==5.4.0
     - python >=3.5
 
 test:
+  imports:
+    - GUESSmyLT
+    - example_run
   commands:
-    - GUESSmyLT -h
+    - GUESSmyLT --help
     - GUESSmyLT-example
 
 about:
@@ -46,5 +53,9 @@ about:
   license_family: GPL
   summary: Software to guess the RNA-Seq library type of paired and single end read files using mapping and gene annotation.
   dev_url: https://github.com/NBISweden/GUESSmyLT
+  license_file:
+  doc_url:
 
-
+extra:
+  recipe-maintainers:
+    - juke34
