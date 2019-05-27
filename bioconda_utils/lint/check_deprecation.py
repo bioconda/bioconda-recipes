@@ -11,9 +11,15 @@ class uses_perl_threaded(LintCheck):
     Please use ``perl`` instead.
 
     """
-    def check_recipe(self, recipe):
-        if 'perl-threaded' in recipe.get_deps():
-            self.message()
+    def check_deps(self, deps):
+        if 'perl-threaded' in deps:
+            self.message(data=True)
+
+    def fix(self, _message, _data):
+        self.recipe.replace('perl-threaded', 'perl',
+                            within=('requirements', 'outputs'))
+        self.recipe.render()
+        return True
 
 
 class uses_javajdk(LintCheck):
@@ -22,9 +28,14 @@ class uses_javajdk(LintCheck):
     Please use ``openjdk`` instead.
 
     """
-    def check_recipe(self, recipe):
-        if 'java-jdk' in recipe.get_deps():
-            self.message()
+    def check_deps(self, deps):
+        if 'java-jdk' in deps:
+            self.message(data=True)
+
+    def fix(self, _message, _data):
+        self.recipe.replace('java-jdk', 'openjdk',
+                            within=('requirements', 'outputs'))
+        return True
 
 
 class deprecated_numpy_spec(LintCheck):
@@ -39,5 +50,9 @@ class deprecated_numpy_spec(LintCheck):
         for path in deps['numpy']:
             line, _, _ = self.recipe.get_raw(path).partition('#')
             if 'x.x' in line:
-                self.message(section=path)
+                self.message(section=path, data=True)
 
+    def fix(self, _message, _data):
+        self.recipe.replace('numpy x.x', 'numpy',
+                            within=('requirements', 'outputs'))
+        return True

@@ -119,10 +119,17 @@ def test_lint(linter, recipe, mock_repodata, case):
         f"In test '{case['name']}' on '{op.basename(recipe)}':"
         f"missed expected lint fails")
 
-    canfix = [msg for msg in messages if msg.canfix and str(msg.check) in expected]
+    canfix = set(msg for msg in messages if msg.canfix and str(msg.check) in expected)
     if canfix:
         linter.clear_messages()
         linter.lint([recipe], fix=True)
-        found = set(str(msg.check) for msg in linter.get_messages())
+        found_fix = set(str(msg.check) for msg in linter.get_messages())
         for msg in canfix:
-            assert str(msg.check) not in found
+            assert str(msg.check) not in found_fix
+        linter.clear_messages()
+        linter.lint([recipe])
+        found_postfix = set(str(msg.check) for msg in linter.get_messages())
+        for msg in canfix:
+            assert str(msg.check) not in found_postfix
+        for msgstr in found_postfix:
+            assert msgstr in found
