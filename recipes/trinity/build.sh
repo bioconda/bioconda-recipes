@@ -19,11 +19,21 @@ make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
 # remove the sample data
 rm -rf $SRC_DIR/sample_data
 
-# copy source to bin
+# reproduce make install without the wrapper script
 mkdir -p $PREFIX/bin
-mkdir -p $TRINITY_HOME
-cp -R $SRC_DIR/* $TRINITY_HOME/
-cd $TRINITY_HOME && chmod +x Trinity
+mkdir -p $TRINITY_HOME/Butterfly
+chmod +x Trinity
+cp Trinity $TRINITY_HOME/
+mv Analysis $TRINITY_HOME/
+cp Butterfly/Butterfly.jar $TRINITY_HOME/Butterfly
+mkdir -p $TRINITY_HOME/Chrysalis
+cp -LR Chrysalis/bin $TRINITY_HOME/Chrysalis
+mkdir -p $TRINITY_HOME/Inchworm
+cp -LR Inchworm/bin $TRINITY_HOME/Inchworm
+cp -LR PerlLib $TRINITY_HOME/
+cp -LR PyLib $TRINITY_HOME/
+cp -LR trinity-plugins $TRINITY_HOME/
+cp -LR util $TRINITY_HOME/
 
 # add link to Trinity from bin so in PATH
 cd $BINARY_HOME
