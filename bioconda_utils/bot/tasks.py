@@ -227,22 +227,9 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
 
         # Here we call the actual linter code
         config = utils.load_config('config.yml')
-        linter = lint.Linter(config, 'recipes')
+        linter = lint.Linter(config, 'recipes')  # fixme, should be configurable
+        res = linter.lint(recipes)
 
-        # Workaround celery/billiard messing with sys.exit
-        if isinstance(sys.exit, types.FunctionType):
-            def new_exit(args=None):
-                raise SystemExit(args)
-            (sys.exit, old_exit) = (new_exit, sys.exit)
-
-            try:
-                res = linter.lint(recipes)
-            except SystemExit as exc:
-                old_exit(exc.args)
-            finally:
-                sys.exit = old_exit
-        else:
-            res = linter.lint(recipes)
     messages = linter.get_messages()
 
     summary = "Linted recipes:\n"

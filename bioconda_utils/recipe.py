@@ -11,6 +11,7 @@ edit the meta.yaml.
 import logging
 import os
 import re
+import sys
 import tempfile
 
 from collections import defaultdict
@@ -621,6 +622,12 @@ class Recipe():
         with open(os.path.join(self._conda_tempdir.name, 'meta.yaml'), 'w') as tmpfile:
                 tmpfile.write(self.dump())
 
+        old_exit = sys.exit
+        if isinstance(sys.exit, types.FunctionType):
+            def new_exit(args=None):
+                raise SystemExit(args)
+            sys.exit = new_exit
+
         try:
             with open("/dev/null", "w") as devnull:
                 with redirect_stdout(devnull), redirect_stderr(devnull):
@@ -638,6 +645,8 @@ class Recipe():
                 raise CondaRenderFailure(self, f"Jinja2 Template Error: '{msg}'")
             raise CondaRenderFailure(
                 self, f"Unknown SystemExit raised in Conda-Build Render API: '{msg}'")
+        finally:
+            sys.exit = old_exit
         return self._conda_meta
 
     def conda_release(self):
