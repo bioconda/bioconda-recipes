@@ -31,6 +31,7 @@ make
 popd
 
 pushd bcftools-$VERSION
+./configure --disable-bz2 --disable-lzma --prefix=$PREFIX
 make
 popd
 
