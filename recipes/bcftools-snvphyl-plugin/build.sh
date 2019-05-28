@@ -13,6 +13,9 @@ export CFLAGS="$CFLAGS -I$PREFIX/include"
 CC=${CC}
 CXX=${CXX}
 
+ln -s ${CC} ${PREFIX}/bin/gcc
+ln -s ${CXX} ${PREFIX}/bin/g++
+
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/libexec/bcftools
 
@@ -33,3 +36,6 @@ popd
 
 #Move custom bcftools plugin to the ~/libexec/bcftools directory.
 mv bcftools-$VERSION/plugins/filter_snv_density.so $PREFIX/libexec/bcftools/
+
+rm ${PREFIX}/bin/gcc
+rm ${PREFIX}/bin/g++
