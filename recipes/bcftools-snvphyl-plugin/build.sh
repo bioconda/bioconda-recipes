@@ -10,6 +10,9 @@ export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 
+CC=${CC}
+CXX=${CXX}
+
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/libexec/bcftools
 
