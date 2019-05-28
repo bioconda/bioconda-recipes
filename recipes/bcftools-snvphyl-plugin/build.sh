@@ -39,4 +39,3 @@ popd
 mv bcftools-$VERSION/plugins/filter_snv_density.so $PREFIX/libexec/bcftools/
 
 rm ${PREFIX}/bin/gcc
-rm ${PREFIX}/bin/g++
