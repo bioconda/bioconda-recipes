@@ -28,5 +28,5 @@ pushd bcftools-$VERSION
 make
 popd
 
-Move custom bcftools plugin to the ~/libexec/bcftools directory.
+#Move custom bcftools plugin to the ~/libexec/bcftools directory.
 mv bcftools-$VERSION/plugins/filter_snv_density.so $PREFIX/libexec/bcftools/
