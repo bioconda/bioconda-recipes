@@ -1,0 +1,68 @@
+{% set version="2.10.0" %}
+{% set name="mzR" %}
+{% set bioc="3.5" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
+  sha256: a776226cac45b19ea622dd6a4765e3c3052128aa031b3ff3dac20231a02139fe
+build:
+  number: 1
+##  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  host:
+    - bioconductor-biobase
+    - 'bioconductor-biocgenerics >=0.13.6'
+    - bioconductor-protgenerics
+    - bioconductor-zlibbioc
+    - libnetcdf
+    - r-base
+    - r-ncdf4
+    - 'r-rcpp >=0.10.1'
+    - zlib
+    - boost
+  run:
+    - bioconductor-biobase
+    - 'bioconductor-biocgenerics >=0.13.6'
+    - bioconductor-protgenerics
+    - bioconductor-zlibbioc
+    - libnetcdf
+    - r-base
+    - r-ncdf4
+    - 'r-rcpp >=0.10.1'
+    - zlib
+    - boost
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: API for handling file formats for mass spectrometry data
+  description: |
+    mzR provides a unified API to the common file formats and parsers available
+    for mass spectrometry data. It comes with a wrapper for the ISB random
+    access parser for mass spectrometry mzXML, mzData and mzML files.
+    The package contains the original code written by the ISB, and a subset of
+    the proteowizard library for mzML and mzIdentML. The netCDF reading code
+    has previously been used in XCMS.
+extra:
+  identifiers:
+    - biotools:mzr
+  parent_recipe:
+    name: bioconductor-mzr
+    path: recipes/bioconductor-mzr
+    version: 2.6.3
