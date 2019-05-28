@@ -3,15 +3,15 @@
 
 # This patch has not been fed upstream
 sed -i.bak 's/=/\?=/g' makefile
-sed -i.bak 's/^CC=/CC\?=/g' tabix-0.2.5/Makefile
-sed -i.bak 's/^CC=/CC\?=/g' samtools-0.1.16/Makefile
+sed -i.bak 's/^CC=/CC\?=/; s/^CFLAGS=/CFLAGS\?=/' tabix-0.2.5/Makefile
+sed -i.bak 's/^CC=/CC\?=/; s/^CFLAGS=/CFLAGS\?=/' samtools-0.1.16/Makefile
 
 cd tabix-0.2.5
-make lib CC=$CXX
+make lib
 cd -
 
 cd samtools-0.1.16
-make lib CC=$CXX
+make lib
 cd -
 
 # This getopt.h appears to be included through sam.h for the other .cpp files
