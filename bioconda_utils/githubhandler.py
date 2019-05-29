@@ -555,7 +555,8 @@ class GitHubHandler:
                                output_title: str = None,
                                output_summary: str = None,
                                output_text: str = None,
-                               output_annotations: List[Dict] = None) -> Dict['str', Any]:
+                               output_annotations: List[Dict] = None,
+                               actions: List[Dict] = None) -> Dict['str', Any]:
         """Modify a check runs
 
         Arguments:
@@ -570,6 +571,8 @@ class GitHubHandler:
                        ``warning``, ``failure``), and a ``message``. May also have
                        may have ``start_column`` and ``end_column`` (if only one line),
                        ``title`` and ``raw_details``.
+          actions: List of up to three "actions" as dict of ``label``, ``description``
+                   and ``identifier``
         Returns:
           Check run "object" as dict.
         """
@@ -593,6 +596,8 @@ class GitHubHandler:
             }
             if output_annotations:
                 data['output']['annotations'] = output_annotations
+        if actions:
+            data['actions'] = actions
         accept = "application/vnd.github.antiope-preview+json"
         return await self.api.patch(self.CHECK_RUN, var_data, data=data, accept=accept)
 

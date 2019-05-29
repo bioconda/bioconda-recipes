@@ -73,11 +73,12 @@ class Checkout:
     >>>   else:
     >>>      for filename in git.list_changed_files():
     """
-    def __init__(self, ghapi, ref=None, issue_number=None):
+    def __init__(self, ghapi, ref=None, issue_number=None, branch_name="master"):
         self.ghapi = ghapi
         self.orig_cwd = None
         self.git = None
         self.ref = ref
+        self.branch_name = branch_name
         self.issue_number = issue_number
 
     async def __aenter__(self):
@@ -96,7 +97,7 @@ class Checkout:
             else:
                 fork_user = None
                 fork_repo = None
-                branch_name = "master"
+                branch_name = self.branch_name
                 ref = None
 
             self.git = TempBiocondaRepo(
@@ -114,6 +115,9 @@ class Checkout:
 
             if not ref:
                 branch = self.git.get_local_branch(branch_name)
+                if not branch:
+                    self.git.create_local_branch(branch_name)
+                    branch = self.git.get_local_branch(branch_name)
             else:
                 branch = self.git.create_local_branch(branch_name, ref)
             if not branch:
@@ -227,22 +231,9 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
 
         # Here we call the actual linter code
         config = utils.load_config('config.yml')
-        linter = lint.Linter(config, 'recipes')
+        linter = lint.Linter(config, 'recipes')  # fixme, should be configurable
+        res = linter.lint(recipes)
 
-        # Workaround celery/billiard messing with sys.exit
-        if isinstance(sys.exit, types.FunctionType):
-            def new_exit(args=None):
-                raise SystemExit(args)
-            (sys.exit, old_exit) = (new_exit, sys.exit)
-
-            try:
-                res = linter.lint(recipes)
-            except SystemExit as exc:
-                old_exit(exc.args)
-            finally:
-                sys.exit = old_exit
-        else:
-            res = linter.lint(recipes)
     messages = linter.get_messages()
 
     summary = "Linted recipes:\n"
@@ -285,6 +276,14 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
             f'[{msg.check}]({url}#{str(msg.check).replace("_","-")})|{msg.title}'
         )
 
+    actions = []
+    if any(msg.canfix for msg in messages):
+        actions.append({
+            'label': "Fix Issues",
+            'description': "Some issues can be fixed automatically",
+            'identifier': 'lint_fix'
+        })
+
     await ghapi.modify_check_run(
         check_run_number,
         status=CheckRunStatus.completed,
@@ -292,7 +291,32 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
         output_title=title,
         output_summary=summary,
         output_text='\n'.join(details) if messages else None,
-        output_annotations=annotations)
+        output_annotations=annotations,
+        actions=actions)
+
+
+@celery.task(acks_late=True)
+async def lint_fix(head_branch: str, _head_sha: str, ghapi):
+    """Execute linter in fix mode
+
+    Args:
+      check_run_number: ID of GitHub ``check_run``
+      ref: SHA of commit to check
+    """
+    async with Checkout(ghapi, branch_name=head_branch) as git:
+        if not git:
+            logger.error("lint_fix: Failed to checkout")
+            return
+        recipes = git.get_recipes_to_build()
+        if not recipes:
+            logger.error("No recipes? Internal error")
+            return
+        config = utils.load_config('config.yml')
+        linter = lint.Linter(config, 'recipes')  # fixme, should be configurable
+        linter.lint(recipes, fix=True)
+
+        msg = "Fixed Lint Checks"
+        git.commit_and_push_changes(['recipes'], None, msg=msg, sign=True)
 
 
 @celery.task(acks_late=True)

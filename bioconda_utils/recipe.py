@@ -11,6 +11,7 @@ edit the meta.yaml.
 import logging
 import os
 import re
+import sys
 import tempfile
 
 from collections import defaultdict
@@ -27,9 +28,11 @@ import jinja2
 try:
     from ruamel.yaml import YAML
     from ruamel.yaml.constructor import DuplicateKeyError
+    from ruamel.yaml.error import YAMLError
 except ModuleNotFoundError:
     from ruamel_yaml import YAML
     from ruamel_yaml.constructor import DuplicateKeyError
+    from ruamel_yaml.error import YAMLError
 
 from . import utils
 from .aiopipe import EndProcessingItem
@@ -213,18 +216,18 @@ class Recipe():
         if recipe_fname.endswith("meta.yaml"):
             recipe_fname = os.path.dirname(recipe_fname)
         recipe = cls(recipe_fname, recipe_dir)
-        with open(os.path.join(recipe_fname, 'meta.yaml')) as text:
-            try:
+        try:
+            with open(os.path.join(recipe_fname, 'meta.yaml')) as text:
                 recipe.load_from_string(text.read())
-            except FileNotFoundError:
-                exc = MissingMetaYaml(recipe_fname)
-                if return_exceptions:
-                    return exc
-                raise exc
-            except Exception as exc:
-                if return_exceptions:
-                    return exc
-                raise exc
+        except FileNotFoundError:
+            exc = MissingMetaYaml(recipe_fname)
+            if return_exceptions:
+                return exc
+            raise exc
+        except Exception as exc:
+            if return_exceptions:
+                return exc
+            raise exc
         recipe.set_original()
         return recipe
 
@@ -312,6 +315,7 @@ class Recipe():
         Returns:
           a dictionary of replacements (e.g. version: 1.2.3)
         """
+        # unused
         template = self.get_template()
         return {
             attr: getattr(template.module, attr)
@@ -351,10 +355,12 @@ class Recipe():
            or "name" not in self.meta["package"]:
             raise MissingKey(self)
 
-        # make recipe-maintainers a list if it is a string
-        maintainers = self.meta.mlget(["extra", "recipe-maintainers"])
-        if maintainers and isinstance(maintainers, str):
-            self.meta["extra"]["recipe-maintainers"] = [maintainers]
+    @property
+    def maintainers(self):
+        """List of recipe maintainers"""
+        if 'extra' in self.meta and 'recipe-maintainers' in self.meta['extra']:
+            return utils.ensure_list(self.meta['extra']['recipe-maintainers'])
+        return []
 
     @property
     def name(self) -> str:
@@ -374,18 +380,162 @@ class Recipe():
     def __getitem__(self, key):
         return self.meta[key]
 
-    def get(self, key, default=KeyError):
-        data = self.meta
+    def _walk(self, path, noraise=False):
+        nodes = [self.meta]
+        keys = []
+        for key in path.split('/'):
+            last = nodes[-1]
+            if key.isdigit():
+                number = int(key)
+                if isinstance(last, list):
+                    if noraise and len(last) < number:
+                        break
+                    nodes.append(last[number])
+                    keys.append(number)
+                    continue
+                if isinstance(last, dict) and number == 0:
+                    continue
+            if noraise and key not in last:
+                break
+            nodes.append(last[key])
+            keys.append(key)
+        return nodes, keys
+
+    def get_raw_range(self, path):
+        """Locate the position of a node in the YAML within the raw text
+
+        See also `get_raw()` if you want to get the content of the unparsed
+        meta.yaml at a specific key.
+
+        Args:
+          path: The "path" to the node. Use numbers for lists ('source/1/url')
+
+        Returns:
+          a tuple of first_row, first_column, last_row, last_column
+        """
+        if not path:
+            return 0, 0, len(self.meta_yaml), len(self.meta_yaml[-1])
+
+        nodes, keys = self._walk(path)
+        nodes.pop()  # pop parsed value
+
+        # get the start row/col for the value
+        if isinstance(keys[-1], int):
+            start_row, start_col = nodes[-1].lc.key(keys[-1])
+        else:
+            start_row, start_col = nodes[-1].lc.value(keys[-1])
+
+        # getting the end is more complicated, we need to move
+        # up the tree to the next item in order until one is not the last
+        # item in its collection
+        while nodes:
+            node = nodes.pop()
+            key = keys.pop()
+            if isinstance(key, int):
+                if key + 1 < len(node):
+                    end_row, end_col = node.lc.key(key + 1)
+                    break
+            else:
+                node_keys = list(node.keys())
+                if key != node_keys[-1]:
+                    next_key = node_keys[node_keys.index(key)+1]
+                    end_row, end_col = node.lc.key(next_key)
+                    break
+        else:  # reached end of file
+            end_row = len(self.meta_yaml) - 1
+            end_col = len(self.meta_yaml[end_row])
+
+        # now go backward
+        return (start_row, start_col, end_row, end_col)
+
+    def get_raw(self, path):
+        """Extracts the unparsed text for a node in the meta.yaml
+
+        This may contain separators and other characters from
+        the yaml!
+
+        Args:
+          path: Slash-separated path to the node. Numbers can be used
+                to access indices in lists. A number '0' is ignored if
+                the node is a dict (so 'source/0/url' will work even if
+                there is only one url).
+
+        Returns:
+          Extracted raw text
+        """
+        start_row, start_col, end_row, end_col = self.get_raw_range(path)
+        if start_row == end_row:
+            return self.meta_yaml[start_row][start_col:end_col]
+
+        lines = []
+        # first row
+        lines.append(self.meta_yaml[start_row][start_col:])
+        # middle rows if any
+        for row in range(start_row + 1, end_row):
+            lines.append(self.meta_yaml[row])
+        lines.append(self.meta_yaml[end_row][:end_col])
+        return "\n".join(lines).strip()
+
+    def get(self, path: str, default: Any=KeyError) -> Any:
+        """Get a value or section from the recipe
+
+        >>> recipe.get('requirements/build')
+        ['setuptools]
+        >>> recipe.get('source/0/url')
+        'https://somewhere'
+
+        The **path** is a ``/`` separated list of dictionary keys to
+        be walked in the recipe meta data. Numeric sections in the path
+        access list elements. Using ``0`` in the path will get the first
+        element in a list or the contents directly if there is no list.
+        I.e., `source/0/url` will always get the first url, whether or
+        not the source section is a list.
+
+        Args:
+          path: Path through YAML
+          default: If not KeyError, this value will be returned
+                   if the path does not exist in the recipe
+        Raises:
+          KeyError if no default given and the path does not exist.
+        """
         try:
-            for item in key.split('/'):
-                data = data[item]
+            nodes, keys = self._walk(path)
         except (KeyError, TypeError):
             if default is not KeyError:
                 return default
-            raise KeyError(f"No '{key}' in Recipe {self}") from None
-        if default is not KeyError and data is None:
+            raise KeyError(f"No '{path}' in Recipe {self}") from None
+        res = nodes[-1]
+        if default is not KeyError and res is None:
             return default
-        return data
+        return res
+
+    def set(self, path, value):
+        """Set a value or section in the recipe
+
+        See `get` for a description of how **path** works.
+        """
+        # walk path into nodes/keys
+        nodes, keys = self._walk(path, noraise=True)
+
+        # "mkdir -p"
+        found_path = '/'.join(str(key) for key in keys)
+        if found_path != path:
+            _, col, row, _ = self.get_raw_range(found_path)
+            backup = deepcopy(self.meta_yaml)
+            for key in path.split('/')[len(keys):]:
+                self.meta_yaml.insert(row, ' ' * col + key + ':')
+                row += 1
+                col += 2
+            self.meta_yaml[row-1] += " marker"
+            self.render()
+
+        # get old content
+        content = self.get(path)
+        row, col, end_row, end_col = self.get_raw_range(path)
+        self.meta_yaml[row] = self.meta_yaml[row].replace(str(content), str(value))
+        if not str(value) in self.meta_yaml[row]:
+            self.meta_yaml[row] = self.meta_yaml[row][:col] + value
+        self.render()
 
     @property
     def package_names(self) -> List[str]:
@@ -475,86 +625,7 @@ class Recipe():
         line = self.meta_yaml[lineno]
         line = re.sub("number: [0-9]+", "number: "+str(n), line)
         self.meta_yaml[lineno] = line
-
-    def get_raw_range(self, path):
-        """Locate the position of a node in the YAML within the raw text
-
-
-        See also `get_raw()` if you want to get the content of the unparsed
-        meta.yaml at a specific key.
-
-        Args:
-          path: The "path" to the node. Use numbers for lists ('source/1/url')
-
-        Returns:
-          a tuple of first_row, first_column, last_row, last_column
-        """
-        nodes = [self.meta]
-        keys = []
-        # find items composing path
-        for key in path.split("/"):
-            last = nodes[-1]
-            try:
-                number = int(key)
-                if isinstance(last, list):
-                    nodes.append(last[number])
-                    keys.append(number)
-                elif isinstance(last, dict) and number == 0:
-                    pass
-                else:
-                    raise ValueError(f"Can't access {path} in meta")
-            except ValueError:
-                nodes.append(last[key])
-                keys.append(key)
-
-        nodes.pop()  # pop parsed value
-
-        # get the start row/col for the value
-        if isinstance(keys[-1], int):
-            start_row, start_col = nodes[-1].lc.key(keys[-1])
-        else:
-            start_row, start_col = nodes[-1].lc.value(keys[-1])
-
-        # getting the end is more complicated, we need to move
-        # up the tree to the next item in order until one is not the last
-        # item in its collection
-        while nodes:
-            node = nodes.pop()
-            key = keys.pop()
-            if isinstance(key, int):
-                if key + 1 < len(node):
-                    end_row, end_col = node.lc.key(key + 1)
-                    break
-            else:
-                node_keys = list(node.keys())
-                if key != node_keys[-1]:
-                    next_key = node_keys[node_keys.index(key)+1]
-                    end_row, end_col = node.lc.key(next_key)
-                    break
-        else:
-            end_row = len(self.meta_yaml)
-            end_col = len(self.meta_yaml[-1])
-        return (start_row, start_col, end_row, end_col)
-
-    def get_raw(self, path):
-        """Extracts the unparsed text for a node in the meta.yaml
-
-        Args:
-          path: Slash-separated path to the node. Numbers can be used
-                to access indices in lists. A number '0' is ignored if
-                the node is a dict (so 'source/0/url' will work even if
-                there is only one url).
-
-        Returns:
-          Extracted raw text
-        """
-        start_row, start_col, end_row, end_col = self.get_raw_range(path)
-        lines = []
-        lines.append(self.meta_yaml[start_row][start_col:])
-        for row in range(start_row+1, end_row):
-            lines.append(self.meta_yaml[row])
-        lines.append(self.meta_yaml[end_row][:end_col])
-        return "\n".join(lines).strip()
+        self.render()
 
     def get_deps(self, sections=None, output=True):
         return list(self.get_deps_dict(sections, output).keys())
@@ -618,6 +689,12 @@ class Recipe():
         with open(os.path.join(self._conda_tempdir.name, 'meta.yaml'), 'w') as tmpfile:
                 tmpfile.write(self.dump())
 
+        old_exit = sys.exit
+        if isinstance(sys.exit, types.FunctionType):
+            def new_exit(args=None):
+                raise SystemExit(args)
+            sys.exit = new_exit
+
         try:
             with open("/dev/null", "w") as devnull:
                 with redirect_stdout(devnull), redirect_stderr(devnull):
@@ -635,6 +712,8 @@ class Recipe():
                 raise CondaRenderFailure(self, f"Jinja2 Template Error: '{msg}'")
             raise CondaRenderFailure(
                 self, f"Unknown SystemExit raised in Conda-Build Render API: '{msg}'")
+        finally:
+            sys.exit = old_exit
         return self._conda_meta
 
     def conda_release(self):

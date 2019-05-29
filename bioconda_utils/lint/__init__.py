@@ -81,19 +81,27 @@ Module Autodocs
 .. autosummary::
    :toctree:
 
-   checks
+   check_build_help
+   check_completeness
+   check_deprecation
+   check_noarch
+   check_policy
+   check_repo
+   check_syntax
 
 """
 
 import abc
 import os
+import pkgutil
 import re
 import itertools
 import logging
 import inspect
+import importlib
 from collections import defaultdict
 from enum import IntEnum
-from typing import Any, Dict, List, NamedTuple, Tuple
+from typing import Any, Dict, List, NamedTuple, Set, Tuple
 
 import pandas as pd
 import ruamel_yaml as yaml
@@ -101,6 +109,7 @@ import networkx as nx
 
 from .. import utils
 from .. import recipe as _recipe
+
 
 logger = logging.getLogger(__name__)
 
@@ -148,6 +157,9 @@ class LintMessage(NamedTuple):
     #: Name of file in which error was found
     fname: str = "meta.yaml"
 
+    #: Whether the problem can be auto fixed
+    canfix: bool = False
+
     def get_level(self):
         """Return level string as required by github"""
         if self.severity < WARNING:
@@ -176,9 +188,15 @@ class LintCheckMeta(abc.ABCMeta):
     def __str__(cls):
         return cls.__name__
 
-
+_checks_loaded = False
 def get_checks():
-    """Returns the registered lint checks"""
+    """Loads and returns the available lint checks"""
+    global _checks_loaded
+    if not _checks_loaded:
+        for _loader, name, _ispkg in pkgutil.iter_modules(__path__):
+            if name.startswith('check_'):
+                importlib.import_module(__name__ + '.' + name)
+        _checks_loaded = True
     return LintCheckMeta.registry
 
 
@@ -192,16 +210,26 @@ class LintCheck(metaclass=LintCheckMeta):
     requires: List['LintCheck'] = []
 
     def __init__(self, _linter: 'Linter') -> None:
+        #: Messages collected running tests
         self.messages: List[LintMessage] = []
+        #: Recipe currently being checked
         self.recipe: _recipe.Recipe = None
+        #: Whether we are supposed to fix
+        self.try_fix: bool = False
 
     def __str__(self):
         return self.__class__.__name__
 
-    def run(self, recipe: _recipe.Recipe) -> List[LintMessage]:
-        """Run the check on a recipe. Called by Linter"""
+    def run(self, recipe: _recipe.Recipe, fix: bool = False) -> List[LintMessage]:
+        """Run the check on a recipe. Called by Linter
+
+        Args:
+          recipe: The recipe to be linted
+          fix: Whether to attempt to fix the recipe
+        """
         self.messages: List[LintMessage] = []
         self.recipe: _recipe.Recipe = recipe
+        self.try_fix = fix
 
         # Run general checks
         self.check_recipe(recipe)
@@ -211,8 +239,8 @@ class LintCheck(metaclass=LintCheckMeta):
         if isinstance(source, dict):
             self.check_source(source, 'source')
         elif isinstance(source, list):
-            for n, src in enumerate(source):
-                self.check_source(src, f'source/{n}')
+            for num, src in enumerate(source):
+                self.check_source(src, f'source/{num}')
 
         # Run depends checks
         self.check_deps(recipe.get_deps_dict())
@@ -257,25 +285,43 @@ class LintCheck(metaclass=LintCheckMeta):
                 to their locations within the recipe.
         """
 
-    def message(self, section: str = None, fname: str = None, line=None) -> None:
+    def fix(self, message, data) -> LintMessage:
+        """Attempt to fix the problem"""
+
+    def message(self, section: str = None, fname: str = None, line: int = None,
+                data: Any = None) -> None:
         """Add a message to the lint results
+
+        Also calls `fix` if we are supposed to be fixing.
 
         Args:
           section: If specified, a lint location within the recipe
                    meta.yaml pointing to this section/subsection will
                    be added to the message
+          fname: If specified, the message will apply to this file, rather than the
+                 recipe meta.yaml
+          line: If specified, sets the line number for the message directly
+          data: Data to be passed to `fix`. If check can fix, set this to
+                something other than None.
         """
-        self.messages.append(self.make_message(self.recipe, section, fname, line))
+        message = self.make_message(self.recipe, section, fname, line,
+                                    data is not None)
+        if data is not None and self.try_fix and self.fix(message, data):
+            return
+        self.messages.append(message)
 
     @classmethod
     def make_message(cls, recipe: _recipe.Recipe, section: str = None,
-                     fname: str = None, line=None) -> LintMessage:
+                     fname: str = None, line=None, canfix: bool=False) -> LintMessage:
         """Create a LintMessage
 
         Args:
           section: If specified, a lint location within the recipe
                    meta.yaml pointing to this section/subsection will
                    be added to the message
+          fname: If specified, the message will apply to this file, rather than the
+                 recipe meta.yaml
+          line: If specified, sets the line number for the message directly
         """
         doc = inspect.getdoc(cls)
         doc = doc.replace('::', ':').replace('``', '`')
@@ -302,7 +348,8 @@ class LintCheck(metaclass=LintCheckMeta):
                            body=body,
                            fname=fname,
                            start_line=start_line,
-                           end_line=end_line)
+                           end_line=end_line,
+                           canfix=canfix)
 
 
 class linter_failure(LintCheck):
@@ -399,7 +446,6 @@ recipe_error_to_lint_check = {
 }
 
 
-from . import checks
 
 
 class Linter:
@@ -416,12 +462,16 @@ class Linter:
                other mechanisms define skipping on a recipe-specific
                basis, this argument can be used to skip tests for all
                recipes. Use sparingly.
+      nocatch: Don't catch exceptions in lint checks and turn them into
+               linter_error lint messages. Used by tests.
     """
-    def __init__(self, config, recipe_folder: str, exclude=None):
+    def __init__(self, config: Dict, recipe_folder: str,
+                 exclude: List[str] = None, nocatch: bool=False) ->None:
         self.config = config
         self.recipe_folder = recipe_folder
         self.skip = self.load_skips()
         self.exclude = exclude or []
+        self.nocatch = nocatch
         self._messages = []
 
         dag = nx.DiGraph()
@@ -439,13 +489,16 @@ class Linter:
             raise RunTimeError("Cycle in LintCheck requirements!")
         self.check_instances = {str(check): check(self) for check in get_checks()}
 
-    def get_blacklist(self):
+    def get_blacklist(self) -> Set[str]:
+        """Loads the blacklist as per linter configuration"""
         return utils.get_blacklist(self.config, self.recipe_folder)
 
-    def get_messages(self):
+    def get_messages(self) -> List[LintMessage]:
+        """Returns the lint messages collected during linting"""
         return self._messages
 
     def clear_messages(self):
+        """Clears the lint messages stored in linter"""
         self._messages = []
 
     def load_skips(self):
@@ -476,11 +529,26 @@ class Linter:
             skip_dict[recipe].append(func)
         return skip_dict
 
-    def lint(self, recipe_names: List[str]) -> List[LintMessage]:
+    def lint(self, recipe_names: List[str], fix: bool = False) -> bool:
+        """Run linter on multiple recipes
+
+        Lint messages are collected in the linter. They can be retrieved
+        with `get_messages` and the list cleared with `clear_messages`.
+
+        Args:
+          recipe_names: List of names of recipes to lint
+          fix: Whether checks should attempt to fix detected issues
+
+        Returns:
+          True if issues with errors were found
+
+        """
         for recipe_name in utils.tqdm(sorted(recipe_names)):
             try:
-                msgs = self.lint_one(recipe_name)
+                msgs = self.lint_one(recipe_name, fix=fix)
             except Exception:
+                if self.nocatch:
+                    raise
                 logger.exception("Unexpected exception in lint")
                 recipe = _recipe.Recipe(recipe_name, self.recipe_folder)
                 msgs = [linter_failure.make_message(recipe=recipe)]
@@ -489,8 +557,16 @@ class Linter:
         return any(message.severity >= ERROR
                    for message in self._messages)
 
-    def lint_one(self, recipe_name: str) -> List[LintMessage]:
-        # FIXME: rewrite each RecipeError to proper LintMessage
+    def lint_one(self, recipe_name: str, fix: bool = False) -> List[LintMessage]:
+        """Run the linter on a single recipe
+
+        Args:
+          recipe_name: Mames of recipe to lint
+          fix: Whether checks should attempt to fix detected issues
+
+        Returns:
+          List of collected messages
+        """
         try:
             recipe = _recipe.Recipe.from_file(self.recipe_folder, recipe_name)
         except _recipe.RecipeError as exc:
@@ -514,7 +590,7 @@ class Linter:
             if check not in self.checks_dag:
                 logger.error("Skipping unknown check %s", check)
                 continue
-            for check_dep in nx.descendants(self.checks_dag, check):
+            for check_dep in nx.ancestors(self.checks_dag, check):
                 if check_dep not in checks_to_skip:
                     logger.info("Disabling %s because %s is disabled",
                                 check_dep, check)
@@ -526,21 +602,27 @@ class Linter:
             if str(check) in checks_to_skip:
                 continue
             try:
-                res = self.check_instances[check].run(recipe)
+                res = self.check_instances[check].run(recipe, fix)
             except Exception:
+                if self.nocatch:
+                    raise
                 logger.exception("Unexpected exception in lint_one")
-                messages.append(LintMessage(
+                res = [LintMessage(
                     recipe=recipe,
                     check=check,
                     severity=ERROR,
-                    title="Check raised an unexpected exception"))
-                res = True
+                    title="Check raised an unexpected exception")
+                ]
 
             if res:  # skip checks depending on failed checks
                 checks_to_skip.update(nx.ancestors(self.checks_dag, str(check)))
             messages.extend(res)
 
+        if fix and recipe.is_modified():
+            with open(recipe.path, 'w', encoding='utf-8') as fdes:
+                fdes.write(recipe.dump())
+
         for message in messages:
-            logger.debug(message)
+            logger.debug("Found: %s", message)
 
         return messages

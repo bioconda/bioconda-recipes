@@ -1,9 +1,4 @@
 setup:
-  recipes_folder: recipes
-  config.yaml:
-    blacklists: []
-    channels: []
-
   recipes:
     one:
       folder: one
@@ -45,13 +40,22 @@ setup:
           license: BSD
           home: https://elsewhere
           summary: the_summary
+  repodata:
+    bioconda:
+      one:
+        - version: 0.0.1
+      two:
+        - version: 0.0.1
+    conda-forge:
+      three:
+        - version: 1.0
 
 
 tests:
 - name: minimal_recipe
 - name: empty_build_section
   remove: build
-  expect: [should_be_noarch, missing_build_number]
+  expect: [should_be_noarch_generic, missing_build_number]
 - name: missing_home
   remove: about/home
   expect: missing_home
@@ -77,7 +81,7 @@ tests:
         - missing_tests
         - no_tests
         - gpl_requires_license_distributed
-        - should_be_noarch
+        - should_be_noarch_generic
 - name: missing_home_empty_string
   add: { about: { home: '' } }
   expect: missing_home
@@ -129,9 +133,17 @@ tests:
 - name: no_source
   remove: source
 - name: uses_git_url
+  expect: uses_vcs_url
   remove: source/url
   add: { source: { git_url: someurl } }
-  expect: uses_git_url
+- name: uses_svn_url
+  expect: uses_vcs_url
+  remove: source/url
+  add: { source: { svn_url: someurl } }
+- name: uses_hg_url
+  expect: uses_vcs_url
+  remove: source/url
+  add: { source: { hg_url: someurl } }
 - name: uses_perl_threaded_in_build
   add: { requirements: { build: [perl-threaded] } }
   expect: uses_perl_threaded
@@ -194,6 +206,15 @@ tests:
       noarch: python
       skip: True  # [osx]
   expect: should_not_be_noarch_skip
+- name: should_not_be_noarch_source
+  expect: should_not_be_noarch_source
+  remove: source
+  add:
+    source:
+      - url: https://somewhere  # [linux]
+        sha256: 123
+      - url: https://elsewhere  # [osx]
+        sha256: 123
 - name: setup_py_only_install_build_sh
   add_files:
     build.sh: |
@@ -282,3 +303,19 @@ tests:
 - name: gpl_without_license_file
   expect: gpl_requires_license_distributed
   add: { about: { license: GPLv3 } }
+- name: build_number_needs_reset
+  expect: build_number_needs_reset
+  add: { build: { number: 1 } }
+- name: build_number_needs_bump
+  expect: build_number_needs_bump
+  add: { package: { version: 0.0.1 } }
+- name: in_other_channels
+  expect: in_other_channels
+  repodata: { conda-forge: { one: [{version: 0.1}], two: [version: 0.1] } }
+- name: long_summary
+  expect: long_summary
+  add:
+    about:
+      summary: |
+        123456789012345678901234567890123456789012345678901234567890
+        123456789012345678901234567890123456789012345678901234567890

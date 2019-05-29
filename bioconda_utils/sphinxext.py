@@ -743,16 +743,20 @@ def add_ribbon(app, pagename, templatename, context, doctree):
     context['git_ribbon_message'] = "Edit me on GitHub"
 
 
-class LintDescriptionDirective(rst.Directive):
+class LintDescriptionDirective(SphinxDirective):
     required_arguments = 1
     optional_argument = 0
     has_content = True
     add_index = True
 
     def run(self):
+        if not hasattr(self.env, 'bioconda_lint_checks'):
+            self.env.bioconda_lint_checks = {str(check): check for check in get_checks()}
         # gather data
         check_name = self.arguments[0]
-        check = next(check for check in get_checks() if str(check) == check_name)
+        if check_name not in self.env.bioconda_lint_checks:
+            self.error("Duplicate lint description")
+        check = self.env.bioconda_lint_checks.pop(check_name)
         _, lineno = inspect.getsourcelines(check)
         lineno += 1
         fname = inspect.getfile(check)
@@ -763,7 +767,7 @@ class LintDescriptionDirective(rst.Directive):
 
         # create a new section with title
         section = nodes.section(ids=[nodes.make_id(check_name)])
-        title_text = f'"``{check_name}``"'
+        title_text = f'":py:class:`{check_name}`"'
         title_nodes, messages = self.state.inline_text(title_text, self.lineno)
         title = nodes.title(check_name, '', *title_nodes)
         section += title
@@ -784,6 +788,12 @@ class LintDescriptionDirective(rst.Directive):
 
         return [section]
 
+    @classmethod
+    def finalize(cls, app, env):
+        if env.bioconda_lint_checks:
+            for check in env.bioconda_lint_checks:
+                logger.error("Undocumented lint checks: %s", check)
+
 
 def setup(app):
     """Set up sphinx extension"""
@@ -791,6 +801,7 @@ def setup(app):
     app.add_directive('autorecipes', AutoRecipesDirective)
     app.add_directive('lint-check', LintDescriptionDirective)
     app.connect('builder-inited', generate_recipes)
+    app.connect('env-updated', LintDescriptionDirective.finalize)
     app.connect('missing-reference', resolve_required_by_xrefs)
     app.connect('html-page-context', add_ribbon)
     app.add_config_value('bioconda_repo_url', '', 'env')

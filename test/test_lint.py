@@ -1,9 +1,5 @@
 import os.path as op
-import os
-import json
-import yaml
-import tempfile
-from copy import deepcopy
+from ruamel_yaml import YAML
 
 import pytest
 
@@ -11,91 +7,53 @@ from bioconda_utils import lint, utils
 from bioconda_utils.utils import ensure_list
 
 
-with open(op.join(op.dirname(__file__), "lint_cases.yaml")) as data:
-    TEST_DATA = yaml.safe_load(data)
+yaml = YAML(typ="rt")  # pylint: disable=invalid-name
 
-TEST_SETUP = TEST_DATA['setup']
-TEST_RECIPES = list(TEST_SETUP['recipes'].values())
-TEST_RECIPE_IDS = list(TEST_SETUP['recipes'].keys())
+with open(op.join(op.dirname(__file__), "lint_cases.yaml")) as data:
+    TEST_DATA = yaml.load(data)
+
+TEST_RECIPES = list(TEST_DATA['setup']['recipes'].values())
+TEST_RECIPE_IDS = list(TEST_DATA['setup']['recipes'].keys())
 TEST_CASES = TEST_DATA['tests']
 TEST_CASE_IDS = [case['name'] for case in TEST_CASES]
 
 
-def dict_merge(base, add):
-    for key, value in add.items():
-        if isinstance(value, dict):
-            base[key] = dict_merge(base.get(key, {}), value)
-        elif isinstance(base, list):
-            for n in range(len(base)):
-                base[n][key] = dict_merge(base[n].get(key, {}), add)
-        else:
-            base[key] = value
-    return base
-
-
-@pytest.fixture
-def recipes_folder(case):
-    with tempfile.TemporaryDirectory() as tmpdir:
-        recipes_folder = op.join(tmpdir, TEST_SETUP['recipes_folder'])
-        os.mkdir(recipes_folder)
-        yield recipes_folder
-
-
-@pytest.fixture
-def config_file(recipes_folder, case):
-    config_yaml = TEST_SETUP['config.yaml']
-    config_fname = op.join(op.dirname(recipes_folder), 'config.yaml')
-    with open(config_fname, 'w') as config_file:
-        yaml.dump(config_yaml, config_file)
-    yield config_fname
-
-
-@pytest.fixture
-def recipe(recipes_folder, case, recipe_data):
-    recipe = deepcopy(recipe_data['meta.yaml'])
-    if 'remove' in case:
-        for remove in ensure_list(case['remove']):
-            path = remove.split('/')
-            cont = recipe
-            for p in path[:-1]:
-                cont = cont[p]
-            if isinstance(cont, list):
-                for n in range(len(cont)):
-                    del cont[n][path[-1]]
-            else:
-                del cont[path[-1]]
-    if 'add' in case:
-        dict_merge(recipe, case['add'])
-
-    recipe_folder = op.join(recipes_folder, recipe_data['folder'])
-    os.mkdir(recipe_folder)
-
-    if 'add_files' in case:
-        for fname, data in case['add_files'].items():
-            with open(op.join(recipe_folder, fname), "w") as out:
-                out.write(data)
-
-    with open(op.join(recipe_folder, 'meta.yaml'), "w") as meta_file:
-        yaml.dump(recipe, meta_file)
-
-    yield recipe_folder
-
-
 @pytest.fixture
 def linter(config_file, recipes_folder):
+    """Prepares a linter given config_folder and recipes_folder"""
     config = utils.load_config(config_file)
-    yield lint.Linter(config, recipes_folder)
+    yield lint.Linter(config, recipes_folder, nocatch=True)
 
 
-@pytest.mark.parametrize('case', TEST_CASES, ids=TEST_CASE_IDS)
+@pytest.mark.parametrize('repodata', (TEST_DATA['setup']['repodata'],))
 @pytest.mark.parametrize('recipe_data', TEST_RECIPES, ids=TEST_RECIPE_IDS)
-def test_lint(linter, recipe, case):
+@pytest.mark.parametrize('case', TEST_CASES, ids=TEST_CASE_IDS)
+def test_lint(linter, recipe_dir, mock_repodata, case):
     linter.clear_messages()
-    linter.lint([recipe])
+    linter.lint([recipe_dir])
     messages = linter.get_messages()
     expected = set(ensure_list(case.get('expect', [])))
     found = set()
     for msg in messages:
-        assert str(msg.check) in expected
+        assert str(msg.check) in expected, (
+            f"In test '{case['name']}' on '{op.basename(recipe_dir)}':"
+            f"'{msg.check}' emitted unexpectedly")
         found.add(str(msg.check))
-    assert len(expected) == len(found)
+    assert len(expected) == len(found), (
+        f"In test '{case['name']}' on '{op.basename(recipe_dir)}':"
+        f"missed expected lint fails")
+
+    canfix = set(msg for msg in messages if msg.canfix and str(msg.check) in expected)
+    if canfix:
+        linter.clear_messages()
+        linter.lint([recipe_dir], fix=True)
+        found_fix = set(str(msg.check) for msg in linter.get_messages())
+        for msg in canfix:
+            assert str(msg.check) not in found_fix
+        linter.clear_messages()
+        linter.lint([recipe_dir])
+        found_postfix = set(str(msg.check) for msg in linter.get_messages())
+        for msg in canfix:
+            assert str(msg.check) not in found_postfix
+        for msgstr in found_postfix:
+            assert msgstr in found

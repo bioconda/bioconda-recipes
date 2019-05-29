@@ -98,7 +98,16 @@ async def handle_check_run(event, ghapi):
         check_run_number = event.get('check_run/id')
         tasks.lint_check.apply_async((check_run_number, head_sha, ghapi))
         logger.info("Scheduled lint_check for %s %s", check_run_number, head_sha)
-
+    elif action == "requested_action":
+        head_branch = event.get('check_run/check_suite/head_branch')
+        requested_action = event.get('requested_action/identifier')
+        if requested_action == "lint_fix":
+            tasks.lint_fix.s(head_branch, head_sha, ghapi).apply_async()
+            logger.info("Scheduled lint_fix for %s %s", head_branch, head_sha)
+        else:
+            logger.error("Unknown requested action in check run: %s", requested_action)
+    else:
+        logger.error("Unknown action %s", action)
 
 @event_routes.register("pull_request")
 async def handle_pull_request(event, ghapi):
