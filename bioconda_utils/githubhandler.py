@@ -126,6 +126,7 @@ class GitHubHandler:
 
     def set_oauth_token(self, token: str) -> None:
         """Update oauth token for the wrapped GitHubAPI object"""
+        self.token = token
         self.api.oauth_token = token
 
     @abc.abstractmethod
