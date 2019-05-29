@@ -590,7 +590,7 @@ async def run_autobump(package_names, ghapi, *args):
         if not git:
             logger.error("failed to checkout master")
             return
-        recipe_source = autobump.RecipeSource('recipes', package_names)
+        recipe_source = autobump.RecipeSource('recipes', package_names, [])
         scanner = autobump.Scanner(recipe_source)
         scanner.add(autobump.ExcludeSubrecipe)
         scanner.add(autobump.GitLoadRecipe, git)
