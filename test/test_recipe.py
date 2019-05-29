@@ -256,3 +256,26 @@ def test_recipe_package_names(recipe):
         'two': ['two', 'libtwo', 'two-tools'],
     }[recipe.name]
     assert recipe.package_names == expected
+
+
+@with_recipes
+def test_get_deps_dict(recipe):
+    recipe.meta_yaml.extend([
+        'requirements:',
+        '  build:',
+        '    - AA',
+        '    - BB >3',
+        '    - CC>3',
+        '    - DD=1.*',
+        '  run:',
+        '    - AA',
+        '    - BB >3',
+        '    - CC>3',
+        '    - DD=1.*',
+        '    - EE',
+    ])
+    recipe.render()
+    deps = recipe.get_deps_dict()
+
+    for n in 'ABCDE':
+        assert n*2 in deps
