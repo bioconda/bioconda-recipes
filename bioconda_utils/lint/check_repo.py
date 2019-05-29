@@ -87,14 +87,12 @@ class recipe_is_blacklisted(LintCheck):
                 data = fdes.readlines()
             for num, line in enumerate(data):
                 if self.recipe.name in line:
-                    print("found in line", num, line)
                     break
             else:
                 continue
-            print("deleting line", num)
             del data[num]
             with open(blacklist, 'w') as fdes:
-                fdes.write('\n'.join(data))
+                fdes.write(''.join(data))
             break
         else:
             return False
