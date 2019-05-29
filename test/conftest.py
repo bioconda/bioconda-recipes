@@ -119,7 +119,7 @@ def dict_merge(base, add):
 
 
 @pytest.fixture
-def recipe(recipes_folder, case, recipe_data):
+def recipe_dir(recipes_folder, case, recipe_data):
     """Prepares a recipe from recipe_data in recipes_folder"""
     recipe = deepcopy(recipe_data['meta.yaml'])
     if 'remove' in case:
@@ -139,12 +139,14 @@ def recipe(recipes_folder, case, recipe_data):
     recipe_folder = op.join(recipes_folder, recipe_data['folder'])
     os.mkdir(recipe_folder)
 
+    with open(op.join(recipe_folder, 'meta.yaml'), "w") as meta_file:
+        yaml.dump(recipe, meta_file,
+                  transform=lambda l: l.replace('#{%', '{%').replace("#{{", "{{"))
+
     if 'add_files' in case:
         for fname, data in case['add_files'].items():
             with open(op.join(recipe_folder, fname), "w") as out:
                 out.write(data)
 
-    with open(op.join(recipe_folder, 'meta.yaml'), "w") as meta_file:
-        yaml.dump(recipe, meta_file)
 
     yield recipe_folder
