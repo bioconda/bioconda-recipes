@@ -413,6 +413,9 @@ class Recipe():
         Returns:
           a tuple of first_row, first_column, last_row, last_column
         """
+        if not path:
+            return 0, 0, len(self.meta_yaml), len(self.meta_yaml[-1])
+
         nodes, keys = self._walk(path)
         nodes.pop()  # pop parsed value
 
@@ -529,8 +532,9 @@ class Recipe():
         # get old content
         content = self.get(path)
         row, col, end_row, end_col = self.get_raw_range(path)
-
-        self.meta_yaml[row] = self.meta_yaml[row].replace(content, value)
+        self.meta_yaml[row] = self.meta_yaml[row].replace(str(content), str(value))
+        if not str(value) in self.meta_yaml[row]:
+            self.meta_yaml[row] = self.meta_yaml[row][:col] + value
         self.render()
 
     @property

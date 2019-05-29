@@ -42,7 +42,11 @@ class should_be_noarch_python(LintCheck):
             return  # not compiled
         if self.recipe.get('build/noarch', None) == 'python':
             return  # already marked noarch: python
-        self.message(section='build')
+        self.message(section='build', data=True)
+
+    def fix(self, _message, _data):
+        self.recipe.set('build/noarch', 'python')
+        return True
 
 
 class should_be_noarch_generic(LintCheck):
@@ -64,7 +68,11 @@ class should_be_noarch_generic(LintCheck):
             return  # not compiled
         if self.recipe.get('build/noarch', None):
             return  # already marked noarch
-        self.message(section='build')
+        self.message(section='build', data=True)
+
+    def fix(self, _message, _data):
+        self.recipe.set('build/noarch', 'generic')
+        return True
 
 
 class should_not_be_noarch_compiler(LintCheck):
@@ -96,7 +104,6 @@ class should_not_be_noarch_skip(LintCheck):
             return  # no skip or skip=False
         self.message(section='build/noarch')
 
-        
 
 class should_not_use_skip_python(LintCheck):
     """The recipe should be noarch and not use python based skipping
