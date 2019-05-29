@@ -515,7 +515,7 @@ class Linter:
         if 'LINT_SKIP' in os.environ:
             # Allow overwriting of commit message
             commit_message = os.environ['LINT_SKIP']
-        else:
+        elif os.path.exists('.git'):
             # Obtain commit message from last commit.
             commit_message = utils.run(
                 ['git', 'log', '--format=%B', '-n', '1'], mask=False, loglevel=0
