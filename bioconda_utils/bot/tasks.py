@@ -316,7 +316,10 @@ async def lint_fix(head_branch: str, _head_sha: str, ghapi):
         linter.lint(recipes, fix=True)
 
         msg = "Fixed Lint Checks"
-        git.commit_and_push_changes(['recipes'], None, msg=msg, sign=True)
+        if git.commit_and_push_changes(['.'], None, msg=msg, sign=True):
+            logger.info("Created commit in %s", head_branch)
+        else:
+            logger.info("No changes to %s", head_branch)
 
 
 @celery.task(acks_late=True)
