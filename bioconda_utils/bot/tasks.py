@@ -36,7 +36,7 @@ from .. import utils
 from .. import autobump
 from .. import hosters
 from ..recipe import Recipe
-from ..githandler import TempBiocondaRepo
+from ..githandler import TempBiocondaRepo, GitHandlerFailure
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
 from ..circleci import AsyncCircleAPI
 from ..upload import anaconda_upload, skopeo_upload
@@ -316,10 +316,14 @@ async def lint_fix(head_branch: str, _head_sha: str, ghapi):
         linter.lint(recipes, fix=True)
 
         msg = "Fixed Lint Checks"
-        if git.commit_and_push_changes(['.'], None, msg=msg, sign=True):
-            logger.info("Created commit in %s", head_branch)
-        else:
-            logger.info("No changes to %s", head_branch)
+        logger.info("Files changed: %s", list(git.list_changed_files()))
+        try:
+            if git.commit_and_push_changes([], None, msg=msg, sign=True):
+                logger.info("Created commit in %s", head_branch)
+            else:
+                logger.info("No changes to %s", head_branch)
+        except GitHandlerFailure:
+            logger.error("Push failed")
 
 
 @celery.task(acks_late=True)

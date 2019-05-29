@@ -260,22 +260,31 @@ class GitHandlerBase():
         """
         if branch_name is None:
             branch_name = self.repo.active_branch.name
+        if not files:
+            files = list(self.list_changed_files())
         self.repo.index.add(files)
         if not self.repo.index.diff("HEAD"):
             return False
+
         if sign:
             # Gitpyhon does not support signing, so we use the command line client here
             self.repo.index.write()
             self.repo.git.commit('-S', '-m', msg)
         else:
             self.repo.index.commit(msg)
+
         if not self.dry_run:
             logger.info("Pushing branch %s", branch_name)
-            res = self.fork_remote.push(branch_name)
-            failed = res[0].flags & ~(git.PushInfo.FAST_FORWARD | git.PushInfo.NEW_HEAD)
+            try:
+                res = self.fork_remote.push(branch_name)
+                failed = res[0].flags & ~(git.PushInfo.FAST_FORWARD | git.PushInfo.NEW_HEAD)
+                text = res[0].summary
+            except git.GitCommandError as exc:
+                failed = True
+                text = str(exc)
             if failed:
-                logger.error("Failed to push branch %s: %s", branch_name, res[0].summary)
-                raise GitHandlerFailure(res[0].summary)
+                logger.error("Failed to push branch %s: %s", branch_name, text)
+                raise GitHandlerFailure(text)
         else:
             logger.info("Would push branch %s", branch_name)
         return True
