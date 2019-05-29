@@ -241,6 +241,15 @@ class GitHandlerBase():
             if not diffobj.deleted_file:
                 yield diffobj.b_path
 
+    def list_modified_files(self):
+        """Lists files modified in working directory"""
+        seen = set()
+        for diffobj in self.repo.index.diff(None):
+            for fname in (diffobj.a_path, diffobj.b_path):
+                if fname not in seen:
+                    seen.add(fname)
+                    yield fname
+
     def prepare_branch(self, branch_name: str) -> None:
         """Checks out **branch_name**, creating it from home remote master if needed"""
         if branch_name not in self.repo.heads:
@@ -261,7 +270,7 @@ class GitHandlerBase():
         if branch_name is None:
             branch_name = self.repo.active_branch.name
         if not files:
-            files = list(self.list_changed_files())
+            files = list(self.list_modified_files())
         self.repo.index.add(files)
         if not self.repo.index.diff("HEAD"):
             return False

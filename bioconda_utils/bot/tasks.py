@@ -316,7 +316,7 @@ async def lint_fix(head_branch: str, _head_sha: str, ghapi):
         linter.lint(recipes, fix=True)
 
         msg = "Fixed Lint Checks"
-        logger.info("Files changed: %s", list(git.list_changed_files()))
+        logger.info("Files changed: %s", list(git.list_modified_files()))
         try:
             if git.commit_and_push_changes([], None, msg=msg, sign=True):
                 logger.info("Created commit in %s", head_branch)
