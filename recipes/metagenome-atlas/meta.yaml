@@ -1,26 +1,25 @@
-{% set version = "2.0.6" %}
-{% set sha256 = "b842d63cf6159935a0fc62addf64fa4762250f9ffc34feb161f354c66155e498" %}
+{% set version = "2.1.1" %}
+{% set sha256 = "04957dcc87852fefa822e2a281461a5ca497c4302f1f2e2ab3c902adce3d0f8a" %}
 
 package:
   name: metagenome-atlas
   version: {{ version }}
 
 source:
-  url: https://github.com/metagenome-atlas/atlas/archive/v{{ version }}.tar.gz # [linux]
-  sha256: {{ sha256 }}  # [linux]
+  url: https://github.com/metagenome-atlas/atlas/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  skip: True  # [osx]
-  number: 1
+  number: 0
   entry_points:
     - atlas=atlas.atlas:cli
-
+  noarch: python
 
 requirements:
   build:
     - python=3.6
     - setuptools
-    - snakemake=5.4.2
+    - snakemake>=5.4.5
     - pandas=0.23
     - click=7
     - ruamel.yaml=0.15
@@ -28,7 +27,7 @@ requirements:
     - git # this is apparently needed for snakemake
   run:
     - python=3.6
-    - snakemake=5.4
+    - snakemake>=5.4.5
     - pandas=0.23
     - click=7
     - ruamel.yaml=0.15
@@ -36,13 +35,16 @@ requirements:
     - bbmap=37.78
     - git
 
+{% set export_lang = "export LC_ALL=en_US.UTF-8 && export LANG=en_US.UTF-8" %}
+
 test:
   imports:
     - atlas
-  # commands:
-  #   - LANG=en_US.utf8 atlas --version
-  #   - LANG=en_US.utf8 atlas init --help
-  #   - LANG=en_US.utf8 atlas run --help
+  commands:
+    -  {{ export_lang }} && atlas --version
+    - {{ export_lang }} && atlas init --help
+    - {{ export_lang }} && atlas run --help
+
 
 about:
   home: https://github.com/metagenome-atlas
@@ -76,7 +78,11 @@ about:
 extra:
   recipe-maintainers:
     - silask
-    - brwnj
+  container:
+    # unicode problem with click
+    extended-base: true
+
+#    - brwnj
 #  identifiers:
 #    - biotools:Spades
 #    - doi:10.1089/cmb.2012.0021
