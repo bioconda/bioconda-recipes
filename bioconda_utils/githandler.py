@@ -1,6 +1,7 @@
 """Wrappers for interacting with ``git``"""
 
 import asyncio
+import atexit
 import logging
 import os
 import tempfile
@@ -128,7 +129,7 @@ class GitHandlerBase():
             pass
         return None
 
-    def get_remote_branch(self, branch_name: str, try_fetch=True):
+    def get_remote_branch(self, branch_name: str, try_fetch=False):
         """Finds fork remote branch named **branch_name**"""
         if branch_name in self.fork_remote.refs:
             return self.fork_remote.refs[branch_name]
@@ -173,15 +174,15 @@ class GitHandlerBase():
     def create_local_branch(self, branch_name: str, remote_branch: str = None):
         """Creates local branch from remote **branch_name**"""
         if remote_branch is None:
-            remote_branch = self.get_remote_branch(branch_name, try_fetch=True)
+            remote_branch = self.get_remote_branch(branch_name, try_fetch=False)
         else:
-            remote_branch = self.get_remote_branch(remote_branch, try_fetch=True)
+            remote_branch = self.get_remote_branch(remote_branch, try_fetch=False)
         if remote_branch is None:
             return None
         self.repo.create_head(branch_name, remote_branch)
         return self.get_local_branch(branch_name)
 
-    def get_merge_base(self, ref=None, other=None):
+    def get_merge_base(self, ref=None, other=None, try_fetch=False):
         """Determines the merge base for **other** and **ref**
 
         See git merge-base. Returns the commit at which **ref** split
@@ -206,7 +207,8 @@ class GitHandlerBase():
             ref = self.repo.active_branch.commit
         if not other:
             other = self.home_remote.refs.master
-        for depth in (0, 50, 200):
+        depths = (0, 50, 200) if try_fetch else (0,)
+        for depth in depths:
             if depth:
                 self.fork_remote.fetch(ref, depth=depth)
                 self.home_remote.fetch('master', depth=depth)
@@ -443,6 +445,11 @@ class GitHandler(GitHandlerBase):
         super().close()
 
 
+# Directory for mirrors of remote git repos
+_GLOBALTEMP = tempfile.TemporaryDirectory()
+atexit.register(lambda: _GLOBALTEMP.cleanup())
+
+
 class TempGitHandler(GitHandlerBase):
     """GitHandler for working with temporary working directories created on the fly
     """
@@ -473,8 +480,9 @@ class TempGitHandler(GitHandlerBase):
 
         home_url = url_format.format(userpass=userpass,
                                      user=home_user, repo=home_repo)
+
         logger.info("Cloning %s to %s", censor(home_url), self.tempdir.name)
-        repo = git.Repo.clone_from(home_url, self.tempdir.name,  depth=1)
+        repo = self.clone_with_mirror(home_url, self.tempdir.name)
 
         if fork_repo is not None:
             fork_url = url_format.format(userpass=userpass, user=fork_user, repo=fork_repo)
@@ -485,6 +493,31 @@ class TempGitHandler(GitHandlerBase):
             fork_url = None
         logger.info("Finished setting up repo in %s", self.tempdir)
         super().__init__(repo, dry_run, home_url, fork_url)
+
+    @staticmethod
+    def clone_with_mirror(home_url, todir):
+        # obtain or create mirror of remote
+        _, _, fname = home_url.rpartition('@')
+        mirror_name = os.path.join(_GLOBALTEMP.name, fname)
+        if not os.path.exists(mirror_name):
+            logger.info("Creating Bare Mirror %s", fname)
+            mirror = git.Repo.clone_from(home_url, mirror_name, bare=True)
+            logger.info("DONE")
+        else:
+            mirror = git.Repo(mirror_name)
+
+        # update mirror of remote
+        logger.info("Updating Bare Mirror %s", fname)
+        m_origin = mirror.remote('origin')
+        m_origin.set_url(home_url, next(m_origin.urls))
+        mirror.remote('origin').update()
+
+        # clone to actual working repo
+        logger.info("Cloning %s to %s", fname, todir)
+        repo = mirror.clone(todir)
+        r_origin = repo.remote('origin')
+        r_origin.set_url(home_url, next(r_origin.urls))
+        return repo
 
     def close(self) -> None:
         """Remove temporary clone and cleanup resources"""
