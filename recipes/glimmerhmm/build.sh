@@ -6,12 +6,14 @@ if [ `uname` == Darwin ]; then
 fi
 
 
+sed -i.bak "s/CC=g++/CC=GXX/g" sources/makefile
+
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/GlimmerHMM/trained_dir
 
 # cd into the sources
-cd sources && make CXX=$GXX
-cd ../train && make CXX=$GXX
+cd sources && make
+cd ../train && make
 cd ..
 
 #copy the executables	
