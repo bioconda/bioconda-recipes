@@ -14,8 +14,8 @@ mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/GlimmerHMM/trained_dir
 
 # cd into the sources
-cd sources && make CC=$CC 
-cd ../train && make C=$C CC=$CC
+cd sources && make CC=$GXX 
+cd ../train && make C=$C CC=$GXX
 cd ..
 
 #copy the executables	
