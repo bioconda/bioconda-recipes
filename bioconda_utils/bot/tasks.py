@@ -121,7 +121,8 @@ class Checkout:
             else:
                 branch = self.git.create_local_branch(branch_name, ref)
             if not branch:
-                raise RuntimeError(f"Failed to find {branch_name}:{ref} in {self.git}")
+                logger.error(f"Failed to find {branch_name}:{ref} in {self.git}")
+                return None
             branch.checkout()
 
             return self.git

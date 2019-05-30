@@ -89,6 +89,7 @@ async def handle_check_run(event, ghapi):
 
     # Ignore check runs coming from other apps
     if event.get("check_run/app/id") != int(APP_ID):
+        logger.info("Ignoring - event came from %s", app_owner)
         return
 
     if action == "rerequested":

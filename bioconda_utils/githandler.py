@@ -133,9 +133,8 @@ class GitHandlerBase():
         """Finds fork remote branch named **branch_name**"""
         if branch_name in self.fork_remote.refs:
             return self.fork_remote.refs[branch_name]
-        if not try_fetch:
-            return None
-        for depth in (0, 50, 200):
+        depths = (0, 50, 200) if try_fetch else (0,)
+        for depth in depths:
             try:
                 if depth > 0:
                     self.fork_remote.fetch(depth=depth)
@@ -489,6 +488,7 @@ class TempGitHandler(GitHandlerBase):
             if fork_url != home_url:
                 logger.warning("Adding remote fork %s", censor(fork_url))
                 fork_remote = repo.create_remote("fork", fork_url)
+                fork_remote.update()
         else:
             fork_url = None
         logger.info("Finished setting up repo in %s", self.tempdir)
