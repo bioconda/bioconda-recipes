@@ -6,7 +6,9 @@ if [ `uname` == Darwin ]; then
 fi
 
 
-sed -i.bak "s/CC=g++/CC=\$\$GXX/g" sources/makefile
+sed -i.bak "s/g++/\$\$GXX/g" sources/makefile
+sed -i.bak "s/g++/\$\$GXX/g" train/makefile
+sed -i.bak "s/gcc/\$\$GCC/g" train/makefile
 
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/GlimmerHMM/trained_dir
