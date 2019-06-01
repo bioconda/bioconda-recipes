@@ -6,3 +6,4 @@
 # cp msisensor $PREFIX/bin
 
 echo "Hello, World!"
+echo "Location of gcc: " $(which gcc)
