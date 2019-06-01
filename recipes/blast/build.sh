@@ -72,11 +72,10 @@ export AR="${AR} rcs"
     --without-gnutls \
     --without-gcrypt
 
-#projects="algo/blast/ app/ objmgr/ objtools/align_format/ objtools/blast/"
-projects="blastp blastn blastx tblastn tblastx psiblast rpsblast rpstblastn"
-projects="$projects makembindex segmasker dustmasker windowmasker deltablast"
-projects="$projects makeblastdb blastdbcmd blastdb_aliastool convert2blastmask blastdbcheck"
-projects="$projects makeprofiledb blast_formatter"
+apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe rpsblast.exe rpstblastn.exe"
+apps="$apps makembindex.exe segmasker.exe dustmasker.exe windowmasker.exe deltablast.exe"
+apps="$apps makeblastdb.exe blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe blastdbcheck.exe"
+apps="$apps makeprofiledb.exe blast_formatter"
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
@@ -84,7 +83,7 @@ cd ReleaseMT
 ln -s $SRC_DIR/c++/ReleaseMT/lib $LIB_INSTALL_DIR
 
 cd build
-make -j${CPU_COUNT} -f Makefile.flat all_projects="$projects"
+make -j${CPU_COUNT} -f Makefile.flat $apps
 
 # remove temporary link
 rm $LIB_INSTALL_DIR
