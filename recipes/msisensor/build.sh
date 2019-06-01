@@ -7,3 +7,5 @@
 
 echo "Hello, World!"
 echo "Location of gcc: " $(which gcc)
+echo "Environment variables:"
+env
