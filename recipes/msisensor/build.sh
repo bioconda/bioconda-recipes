@@ -1,11 +1,9 @@
-# export CPATH=${PREFIX}/include
-# export INCLUDES="-I$PREFIX/include -I$PREFIX/include/ncurses"
-# export LDFLAGS="-L$PREFIX/lib -ltinfo"
-# export LIBRARY_PATH=${PREFIX}/lib
-# make
-# cp msisensor $PREFIX/bin
+export CPATH=${PREFIX}/include
+export INCLUDES="-I$PREFIX/include -I$PREFIX/include/ncurses"
+export LDFLAGS="-L$PREFIX/lib -ltinfo"
+export LIBRARY_PATH=${PREFIX}/lib
 
-echo "Hello, World!"
-echo "Location of gcc: " $(which gcc)
-echo "Environment variables:"
-env
+alias gcc=$GCC
+
+make
+cp msisensor $PREFIX/bin
