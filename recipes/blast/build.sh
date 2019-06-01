@@ -42,11 +42,8 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # -vdb: disable VDB/SRA toolkit
 # z: set zlib
 # bz2: set libbz2
-# boost: set boost
 # -openssl: disable openssl
 # -gcrypt: disable gcrypt (needed on OSX)
-# gnutls: set gnutls (preferred over openssl for -remote support)
-# nettle: set nettle
 # -krb5: disable kerberos (needed on OSX)
 
 # Fixes building on Linux
@@ -55,6 +52,7 @@ export AR="${AR} rcs"
 ./configure \
     --with-dll \
     --with-mt \
+    --with-openmp \
     --without-autodep \
     --without-makefile-auto-update \
     --with-flat-makefile \
@@ -68,15 +66,17 @@ export AR="${AR} rcs"
     --without-vdb \
     --with-z=$PREFIX \
     --with-bz2=$PREFIX \
-    --with-boost=$PREFIX \
-    --without-gcrypt \
-    --with-nettle=$PREFIX \
     --with-z=$PREFIX \
     --without-krb5 \
     --without-openssl \
-    --with-gnutls=$PREFIX
+    --without-gnutls \
+    --without-gcrypt
 
-projects="algo/blast/ app/ objmgr/ objtools/align_format/ objtools/blast/"
+#projects="algo/blast/ app/ objmgr/ objtools/align_format/ objtools/blast/"
+projects="blastp blastn blastx tblastn tblastx psiblast rpsblast rpstblastn"
+projects="$projects makembindex segmasker dustmasker windowmasker deltablast"
+projects="$projects makeblastdb blastdbcmd blastdb_aliastool convert2blastmask blastdbcheck"
+projects="$projects makeprofiledb blast_formatter"
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
