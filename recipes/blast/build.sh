@@ -18,9 +18,6 @@ if [ `uname` == Darwin ]; then
     export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
 else
     export CPP_FOR_BUILD=$CPP
-    # For using pkgconfig
-    export GNUTLS_INCLUDE="-I${PREFIX}/include"
-    export GNUTLS_LIBS="-L${PREFIX}/lib -lgnutls -lgmp"
 fi
 
 LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
