@@ -75,7 +75,7 @@ export AR="${AR} rcs"
 apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe rpsblast.exe rpstblastn.exe"
 apps="$apps makembindex.exe segmasker.exe dustmasker.exe windowmasker.exe deltablast.exe"
 apps="$apps makeblastdb.exe blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe blastdbcheck.exe"
-apps="$apps makeprofiledb.exe blast_formatter"
+apps="$apps makeprofiledb.exe blast_formatter.exe"
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
