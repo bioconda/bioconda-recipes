@@ -5,7 +5,7 @@ import atexit
 import logging
 import os
 import tempfile
-from typing import List
+from typing import List, Union
 
 import git
 import yaml
@@ -133,12 +133,14 @@ class GitHandlerBase():
         """Finds fork remote branch named **branch_name**"""
         if branch_name in self.fork_remote.refs:
             return self.fork_remote.refs[branch_name]
-        depths = (0, 50, 200) if try_fetch else (0,)
+        depths = (0, 50, 200) if try_fetch else (None,)
         for depth in depths:
             try:
-                if depth > 0:
+                if depth:
                     self.fork_remote.fetch(depth=depth)
-                remote_refs = self.fork_remote.fetch(branch_name, depth=depth)
+                    remote_refs = self.fork_remote.fetch(branch_name, depth=depth)
+                else:
+                    remote_refs = self.fork_remote.fetch(branch_name)
                 break
             except git.GitCommandError:
                 pass
@@ -445,13 +447,81 @@ class GitHandler(GitHandlerBase):
 
 
 # Directory for mirrors of remote git repos
-_GLOBALTEMP = tempfile.TemporaryDirectory()
-atexit.register(lambda: _GLOBALTEMP.cleanup())
 
 
 class TempGitHandler(GitHandlerBase):
     """GitHandler for working with temporary working directories created on the fly
+
+    Throw-away copies of a git repo as provided by this class are useful when we
+    might be working in multiple threads and want to avoid blocking waits for
+    a single repo. It also improves robustness: If something goes wrong with this
+    repo, it will not break the entire process.
     """
+
+    _local_mirror_tmpdir: Union[str, tempfile.TemporaryDirectory] = None
+
+    @classmethod
+    def set_mirror_dir(cls, dirname: str) -> None:
+        """Set directory where repo mirrors are kept for caching
+
+        Use this if you want to preserve a cache across invocations
+        of the Python interpreter.
+
+        Args:
+          dirname: Name of directory in which remote repos will be cached.
+        """
+        cls._local_mirror_tmpdir = dirname
+
+    @classmethod
+    def _get_local_mirror(cls, url: str) -> git.Repo:
+        """Get a (cached) local mirror of a remote repo
+
+        This is used to speed up getting full repo copies. The bioconda-recipes
+        repo has grown to be quite large, and copying it every time a checkout
+        of a branch is needed takes too long. Shallow clones are finicky when
+        checking out by commit SHA (often leads to 'object not advertised' type
+        errors). So instead, we keep a local copy, which is obtained and
+        maintained with this method.
+
+        Args:
+          url: The remote URL. Should include the user/pass.
+        """
+
+        # Create temporary directory with lifetime of python process
+        if cls._local_mirror_tmpdir is None:
+            cls._local_mirror_tmpdir = tempfile.TemporaryDirectory()
+            atexit.register(cls._local_mirror_tmpdir.cleanup)
+
+        # Make location of repo in tmpdir from url
+        _, _, fname = url.rpartition('@')
+        tmpname = getattr(cls._local_mirror_tmpdir, 'name', cls._local_mirror_tmpdir)
+        mirror_name = os.path.join(tmpname, fname)
+
+        # Re-use or create mirror of remote repo
+        if not os.path.exists(mirror_name):
+            logger.info("Creating Bare Mirror %s", fname)
+            mirror = git.Repo.clone_from(url, mirror_name, bare=True)
+            logger.info("DONE")
+        else:
+            mirror = git.Repo(mirror_name)
+
+        # Update the remote url, in case password changed
+        logger.info("Updating Bare Mirror %s", fname)
+        m_origin = mirror.remote('origin')
+        m_origin.set_url(url, next(m_origin.urls))
+
+        # Update the remote repo
+        mirror.remote('origin').update()
+        return mirror
+
+    @classmethod
+    def _clone_with_mirror(cls, home_url, todir):
+        """Prepares a clone of **home_url** in **todir** using mirror cache"""
+        repo = cls._get_local_mirror(home_url).clone(todir)
+        r_origin = repo.remote('origin')
+        r_origin.set_url(home_url, next(r_origin.urls))
+        return repo
+
     def __init__(self,
                  username: str = None,
                  password: str = None,
@@ -481,7 +551,7 @@ class TempGitHandler(GitHandlerBase):
                                      user=home_user, repo=home_repo)
 
         logger.info("Cloning %s to %s", censor(home_url), self.tempdir.name)
-        repo = self.clone_with_mirror(home_url, self.tempdir.name)
+        repo = self._clone_with_mirror(home_url, self.tempdir.name)
 
         if fork_repo is not None:
             fork_url = url_format.format(userpass=userpass, user=fork_user, repo=fork_repo)
@@ -494,30 +564,6 @@ class TempGitHandler(GitHandlerBase):
         logger.info("Finished setting up repo in %s", self.tempdir)
         super().__init__(repo, dry_run, home_url, fork_url)
 
-    @staticmethod
-    def clone_with_mirror(home_url, todir):
-        # obtain or create mirror of remote
-        _, _, fname = home_url.rpartition('@')
-        mirror_name = os.path.join(_GLOBALTEMP.name, fname)
-        if not os.path.exists(mirror_name):
-            logger.info("Creating Bare Mirror %s", fname)
-            mirror = git.Repo.clone_from(home_url, mirror_name, bare=True)
-            logger.info("DONE")
-        else:
-            mirror = git.Repo(mirror_name)
-
-        # update mirror of remote
-        logger.info("Updating Bare Mirror %s", fname)
-        m_origin = mirror.remote('origin')
-        m_origin.set_url(home_url, next(m_origin.urls))
-        mirror.remote('origin').update()
-
-        # clone to actual working repo
-        logger.info("Cloning %s to %s", fname, todir)
-        repo = mirror.clone(todir)
-        r_origin = repo.remote('origin')
-        r_origin.set_url(home_url, next(r_origin.urls))
-        return repo
 
     def close(self) -> None:
         """Remove temporary clone and cleanup resources"""
