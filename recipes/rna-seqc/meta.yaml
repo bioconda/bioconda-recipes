@@ -1,27 +1,28 @@
-{% set version = "1.1.8" %}
+{% set version = "2.3.3" %}
+{% set base = "https://github.com/broadinstitute/rnaseqc/releases/download" %}
+{% set sha256linux = "bfe5d28b900713a7286ebcd5323db56bbec95c3848e8d74f4e1cfdb883840669" %}
+{% set sha256osx = "8fe748a5f345c8b71519161edbff1ad1a995a68edbfbe7a0994ea01c857bf7c3" %}
 
 package:
   name: rna-seqc
-  version: {{ version }}
+  version: '{{ version }}'
 
 source:
-  url: http://www.broadinstitute.org/cancer/cga/tools/rnaseqc/RNA-SeQC_v1.1.8.jar
-  md5: 71d7b5d3b3dcc1893cdc7f6819185d41
+  url: '{{base}}/v{{version}}/rnaseqc.v{{version}}.linux.gz'   # [linux]
+  sha256: '{{sha256linux}}'                                    # [linux]
+
+  url: '{{base}}/v{{version}}/rnaseqc.v{{version}}.osx.gz'     # [osx]
+  sha256: '{{sha256osx}}'                                      # [osx]
 
 build:
-  number: 2
-  noarch: generic
-
-requirements:
-  run:
-  - openjdk 7*
+  number: 0
 
 test:
   commands:
-  - "{ rna-seqc || true; } | grep RNA-SeQC"
-  - "{ rna-seqc || true; } | grep {{ version }}"
+    - rnaseqc --version
 
 about:
-  home: http://archive.broadinstitute.org/cancer/cga/rna-seqc
-  license: None
-  summary: RNA-SeQC is a java program which computes a series of quality control metrics for RNA-seq data. The input can be one or more BAM files
+  home: https://github.com/broadinstitute/rnaseqc
+  license: "custom; see https://raw.githubusercontent.com/broadinstitute/rnaseqc/master/LICENSE"
+  summary: Fast, efficient RNA-Seq metrics for quality control and process optimization
+
