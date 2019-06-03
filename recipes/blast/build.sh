@@ -91,3 +91,4 @@ cp $SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
 
 chmod +x $PREFIX/bin/*
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/update_blastdb.pl
+sed -i.bak 's/mktemp.*/mktemp`/; /export PATH/ s,$,:\$PATH,; s/exit 1/exit 0/' $PREFIX/bin/get_species_taxids.sh
