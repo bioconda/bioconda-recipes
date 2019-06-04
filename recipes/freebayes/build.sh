@@ -30,7 +30,6 @@ sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' multichoose/Makefile
 sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' multichoose/Makefile
 sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' intervaltree/Makefile
 
-
 make -e
 
 cp tabixpp/tabix.hpp ../src
