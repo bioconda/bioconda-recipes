@@ -280,6 +280,12 @@ Bioconda and it's recipe repository consistent and clean.
 
    It just looks better if the summary fits into one line.
 
+.. lint-check:: cran_packages_to_conda_forge
+
+   Conda-Forge has a very active R community planning to eventually
+   package all of CRAN. For that reason, we only allow CRAN packages
+   on Bioconda if they depend on other Bioconda packages.
+
 
 Syntax
 ~~~~~~
@@ -500,6 +506,17 @@ Build helpers
    A ``{{ compiler('xyz') }}`` variable was found, but not in the
    ``build:`` section. Move ``{{ compiler() }}`` variables to the
    ``build:`` section.
+
+.. lint-check:: cython_must_be_in_host
+
+   Cython should match the Python version, so we keep it in the
+   host section for now.
+
+.. lint-check:: cython_needs_compiler
+
+   Cython is compiled into C code, which then needs to be
+   compiled. You almost certainly want to have a C compiler in your
+   recipe.
 
 
 Linter Errors

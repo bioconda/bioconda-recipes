@@ -487,6 +487,9 @@ class Linter:
             self.checks_ordered = nx.topological_sort(dag, reverse=True)
         except nx.NetworkXUnfeasible:
             raise RunTimeError("Cycle in LintCheck requirements!")
+        self.reload_checks()
+
+    def reload_checks(self):
         self.check_instances = {str(check): check(self) for check in get_checks()}
 
     def get_blacklist(self) -> Set[str]:
@@ -515,7 +518,7 @@ class Linter:
         if 'LINT_SKIP' in os.environ:
             # Allow overwriting of commit message
             commit_message = os.environ['LINT_SKIP']
-        else:
+        elif os.path.exists('.git'):
             # Obtain commit message from last commit.
             commit_message = utils.run(
                 ['git', 'log', '--format=%B', '-n', '1'], mask=False, loglevel=0

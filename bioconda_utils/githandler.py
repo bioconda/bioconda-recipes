@@ -1,10 +1,11 @@
 """Wrappers for interacting with ``git``"""
 
 import asyncio
+import atexit
 import logging
 import os
 import tempfile
-from typing import List
+from typing import List, Union
 
 import git
 import yaml
@@ -128,17 +129,18 @@ class GitHandlerBase():
             pass
         return None
 
-    def get_remote_branch(self, branch_name: str, try_fetch=True):
+    def get_remote_branch(self, branch_name: str, try_fetch=False):
         """Finds fork remote branch named **branch_name**"""
         if branch_name in self.fork_remote.refs:
             return self.fork_remote.refs[branch_name]
-        if not try_fetch:
-            return None
-        for depth in (0, 50, 200):
+        depths = (0, 50, 200) if try_fetch else (None,)
+        for depth in depths:
             try:
-                if depth > 0:
+                if depth:
                     self.fork_remote.fetch(depth=depth)
-                remote_refs = self.fork_remote.fetch(branch_name, depth=depth)
+                    remote_refs = self.fork_remote.fetch(branch_name, depth=depth)
+                else:
+                    remote_refs = self.fork_remote.fetch(branch_name)
                 break
             except git.GitCommandError:
                 pass
@@ -173,15 +175,15 @@ class GitHandlerBase():
     def create_local_branch(self, branch_name: str, remote_branch: str = None):
         """Creates local branch from remote **branch_name**"""
         if remote_branch is None:
-            remote_branch = self.get_remote_branch(branch_name, try_fetch=True)
+            remote_branch = self.get_remote_branch(branch_name, try_fetch=False)
         else:
-            remote_branch = self.get_remote_branch(remote_branch, try_fetch=True)
+            remote_branch = self.get_remote_branch(remote_branch, try_fetch=False)
         if remote_branch is None:
             return None
         self.repo.create_head(branch_name, remote_branch)
         return self.get_local_branch(branch_name)
 
-    def get_merge_base(self, ref=None, other=None):
+    def get_merge_base(self, ref=None, other=None, try_fetch=False):
         """Determines the merge base for **other** and **ref**
 
         See git merge-base. Returns the commit at which **ref** split
@@ -206,7 +208,8 @@ class GitHandlerBase():
             ref = self.repo.active_branch.commit
         if not other:
             other = self.home_remote.refs.master
-        for depth in (0, 50, 200):
+        depths = (0, 50, 200) if try_fetch else (0,)
+        for depth in depths:
             if depth:
                 self.fork_remote.fetch(ref, depth=depth)
                 self.home_remote.fetch('master', depth=depth)
@@ -241,6 +244,15 @@ class GitHandlerBase():
             if not diffobj.deleted_file:
                 yield diffobj.b_path
 
+    def list_modified_files(self):
+        """Lists files modified in working directory"""
+        seen = set()
+        for diffobj in self.repo.index.diff(None):
+            for fname in (diffobj.a_path, diffobj.b_path):
+                if fname not in seen:
+                    seen.add(fname)
+                    yield fname
+
     def prepare_branch(self, branch_name: str) -> None:
         """Checks out **branch_name**, creating it from home remote master if needed"""
         if branch_name not in self.repo.heads:
@@ -260,22 +272,31 @@ class GitHandlerBase():
         """
         if branch_name is None:
             branch_name = self.repo.active_branch.name
+        if not files:
+            files = list(self.list_modified_files())
         self.repo.index.add(files)
         if not self.repo.index.diff("HEAD"):
             return False
+
         if sign:
             # Gitpyhon does not support signing, so we use the command line client here
             self.repo.index.write()
             self.repo.git.commit('-S', '-m', msg)
         else:
             self.repo.index.commit(msg)
+
         if not self.dry_run:
             logger.info("Pushing branch %s", branch_name)
-            res = self.fork_remote.push(branch_name)
-            failed = res[0].flags & ~(git.PushInfo.FAST_FORWARD | git.PushInfo.NEW_HEAD)
+            try:
+                res = self.fork_remote.push(branch_name)
+                failed = res[0].flags & ~(git.PushInfo.FAST_FORWARD | git.PushInfo.NEW_HEAD)
+                text = res[0].summary
+            except git.GitCommandError as exc:
+                failed = True
+                text = str(exc)
             if failed:
-                logger.error("Failed to push branch %s: %s", branch_name, res[0].summary)
-                raise GitHandlerFailure(res[0].summary)
+                logger.error("Failed to push branch %s: %s", branch_name, text)
+                raise GitHandlerFailure(text)
         else:
             logger.info("Would push branch %s", branch_name)
         return True
@@ -425,9 +446,82 @@ class GitHandler(GitHandlerBase):
         super().close()
 
 
+# Directory for mirrors of remote git repos
+
+
 class TempGitHandler(GitHandlerBase):
     """GitHandler for working with temporary working directories created on the fly
+
+    Throw-away copies of a git repo as provided by this class are useful when we
+    might be working in multiple threads and want to avoid blocking waits for
+    a single repo. It also improves robustness: If something goes wrong with this
+    repo, it will not break the entire process.
     """
+
+    _local_mirror_tmpdir: Union[str, tempfile.TemporaryDirectory] = None
+
+    @classmethod
+    def set_mirror_dir(cls, dirname: str) -> None:
+        """Set directory where repo mirrors are kept for caching
+
+        Use this if you want to preserve a cache across invocations
+        of the Python interpreter.
+
+        Args:
+          dirname: Name of directory in which remote repos will be cached.
+        """
+        cls._local_mirror_tmpdir = dirname
+
+    @classmethod
+    def _get_local_mirror(cls, url: str) -> git.Repo:
+        """Get a (cached) local mirror of a remote repo
+
+        This is used to speed up getting full repo copies. The bioconda-recipes
+        repo has grown to be quite large, and copying it every time a checkout
+        of a branch is needed takes too long. Shallow clones are finicky when
+        checking out by commit SHA (often leads to 'object not advertised' type
+        errors). So instead, we keep a local copy, which is obtained and
+        maintained with this method.
+
+        Args:
+          url: The remote URL. Should include the user/pass.
+        """
+
+        # Create temporary directory with lifetime of python process
+        if cls._local_mirror_tmpdir is None:
+            cls._local_mirror_tmpdir = tempfile.TemporaryDirectory()
+            atexit.register(cls._local_mirror_tmpdir.cleanup)
+
+        # Make location of repo in tmpdir from url
+        _, _, fname = url.rpartition('@')
+        tmpname = getattr(cls._local_mirror_tmpdir, 'name', cls._local_mirror_tmpdir)
+        mirror_name = os.path.join(tmpname, fname)
+
+        # Re-use or create mirror of remote repo
+        if not os.path.exists(mirror_name):
+            logger.info("Creating Bare Mirror %s", fname)
+            mirror = git.Repo.clone_from(url, mirror_name, bare=True)
+            logger.info("DONE")
+        else:
+            mirror = git.Repo(mirror_name)
+
+        # Update the remote url, in case password changed
+        logger.info("Updating Bare Mirror %s", fname)
+        m_origin = mirror.remote('origin')
+        m_origin.set_url(url, next(m_origin.urls))
+
+        # Update the remote repo
+        mirror.remote('origin').update()
+        return mirror
+
+    @classmethod
+    def _clone_with_mirror(cls, home_url, todir):
+        """Prepares a clone of **home_url** in **todir** using mirror cache"""
+        repo = cls._get_local_mirror(home_url).clone(todir)
+        r_origin = repo.remote('origin')
+        r_origin.set_url(home_url, next(r_origin.urls))
+        return repo
+
     def __init__(self,
                  username: str = None,
                  password: str = None,
@@ -455,18 +549,21 @@ class TempGitHandler(GitHandlerBase):
 
         home_url = url_format.format(userpass=userpass,
                                      user=home_user, repo=home_repo)
+
         logger.info("Cloning %s to %s", censor(home_url), self.tempdir.name)
-        repo = git.Repo.clone_from(home_url, self.tempdir.name,  depth=1)
+        repo = self._clone_with_mirror(home_url, self.tempdir.name)
 
         if fork_repo is not None:
             fork_url = url_format.format(userpass=userpass, user=fork_user, repo=fork_repo)
             if fork_url != home_url:
                 logger.warning("Adding remote fork %s", censor(fork_url))
                 fork_remote = repo.create_remote("fork", fork_url)
+                fork_remote.update()
         else:
             fork_url = None
         logger.info("Finished setting up repo in %s", self.tempdir)
         super().__init__(repo, dry_run, home_url, fork_url)
+
 
     def close(self) -> None:
         """Remove temporary clone and cleanup resources"""

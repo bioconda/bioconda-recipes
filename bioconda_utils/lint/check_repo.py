@@ -75,8 +75,25 @@ class recipe_is_blacklisted(LintCheck):
     def __init__(self, linter):
         super().__init__(linter)
         self.blacklist = linter.get_blacklist()
+        self.blacklists = linter.config.get('blacklists')
 
     def check_recipe(self, recipe):
         if recipe.name in self.blacklist:
-            self.message(section='package/name')
+            self.message(section='package/name', data=True)
 
+    def fix(self, _message, _data):
+        for blacklist in self.blacklists:
+            with open(blacklist, 'r') as fdes:
+                data = fdes.readlines()
+            for num, line in enumerate(data):
+                if self.recipe.name in line:
+                    break
+            else:
+                continue
+            del data[num]
+            with open(blacklist, 'w') as fdes:
+                fdes.write(''.join(data))
+            break
+        else:
+            return False
+        return True

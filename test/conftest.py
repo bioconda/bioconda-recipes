@@ -8,6 +8,7 @@ from copy import deepcopy
 from ruamel_yaml import YAML
 import pandas as pd
 import pytest
+import py
 
 from bioconda_utils import utils
 
@@ -63,7 +64,7 @@ def mock_repodata(repodata, case):
     else:
         data = repodata
 
-    dataframe = pd.DataFrame(columns = utils.RepoData.columns)
+    dataframe = pd.DataFrame(columns=utils.RepoData.columns)
     for channel, packages in data.items():
         for name, versions in packages.items():
             for item in versions:
@@ -88,22 +89,11 @@ def mock_repodata(repodata, case):
 
 
 @pytest.fixture
-def recipes_folder():
+def recipes_folder(tmpdir: py.path.local):
     """Prepares a temp dir with '/recipes' folder as configured"""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        folder = op.join(tmpdir, TEST_RECIPES_FOLDER)
-        os.mkdir(folder)
-        yield folder
-
-
-@pytest.fixture
-def config_file(recipes_folder):
-    """Prepares a Bioconda config.yaml  in a recipes_folder"""
-    config_fname = op.join(op.dirname(recipes_folder), TEST_CONFIG_YAML_FNAME)
-    with open(config_fname, 'w') as fdes:
-        yaml.dump(TEST_CONFIG_YAML, fdes)
-    yield config_fname
-
+    orig_cwd = tmpdir.chdir()
+    yield tmpdir.mkdir(TEST_RECIPES_FOLDER)
+    orig_cwd.chdir()
 
 
 def dict_merge(base, add):
@@ -119,7 +109,26 @@ def dict_merge(base, add):
 
 
 @pytest.fixture
-def recipe_dir(recipes_folder, case, recipe_data):
+def config_file(tmpdir: py.path.local, case):
+    """Prepares Bioconda config.yaml"""
+    if 'add_root_files' in case:
+        for fname, data in case['add_root_files'].items():
+            with tmpdir.join(fname).open('w') as fdes:
+                fdes.write(data)
+        
+    data = deepcopy(TEST_CONFIG_YAML)
+    if 'config' in case:
+        dict_merge(data, case['config'])
+    config_fname = tmpdir.join(TEST_CONFIG_YAML_FNAME)
+    with config_fname.open('w') as fdes:
+        yaml.dump(data, fdes)
+
+    yield config_fname
+
+
+@pytest.fixture
+def recipe_dir(recipes_folder: py.path.local, tmpdir: py.path.local,
+               case, recipe_data):
     """Prepares a recipe from recipe_data in recipes_folder"""
     recipe = deepcopy(recipe_data['meta.yaml'])
     if 'remove' in case:
@@ -136,17 +145,15 @@ def recipe_dir(recipes_folder, case, recipe_data):
     if 'add' in case:
         dict_merge(recipe, case['add'])
 
-    recipe_folder = op.join(recipes_folder, recipe_data['folder'])
-    os.mkdir(recipe_folder)
+    recipe_dir = recipes_folder.mkdir(recipe_data['folder'])
 
-    with open(op.join(recipe_folder, 'meta.yaml'), "w") as meta_file:
-        yaml.dump(recipe, meta_file,
+    with recipe_dir.join('meta.yaml').open('w') as fdes:
+        yaml.dump(recipe, fdes,
                   transform=lambda l: l.replace('#{%', '{%').replace("#{{", "{{"))
 
     if 'add_files' in case:
         for fname, data in case['add_files'].items():
-            with open(op.join(recipe_folder, fname), "w") as out:
-                out.write(data)
+            with recipe_dir.join(fname).open('w') as fdes:
+                fdes.write(data)
 
-
-    yield recipe_folder
+    yield recipe_dir

@@ -9,7 +9,7 @@ import glob
 import os
 
 from . import LintCheck, ERROR, WARNING, INFO
-
+from bioconda_utils import utils
 
 class uses_vcs_url(LintCheck):
     """The recipe downloads source from a VCS
@@ -106,3 +106,20 @@ class long_summary(LintCheck):
     def check_recipe(self, recipe):
         if len(recipe.get('about/summary', '')) > self.max_length:
             self.message('about/summary')
+
+
+class cran_packages_to_conda_forge(LintCheck):
+    """CRAN packages not depending on Bioconda should go to Conda-Forge
+
+    This recipe builds a CRAN package and does not depend on packages
+    from Bioconda. It should therefore be moved to Conda-Forge.
+
+    """
+    def check_deps(self, deps):
+        # must have R in run a run dep
+        if 'R' in deps and any('run' in dep for dep in deps['R']):
+            # and all deps satisfied in conda-forge
+            if all(utils.RepoData().get_package_data(name=dep, channels='conda-forge')
+                   for dep in deps):
+                   self.message()
+

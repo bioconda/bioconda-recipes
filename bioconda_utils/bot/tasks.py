@@ -36,7 +36,7 @@ from .. import utils
 from .. import autobump
 from .. import hosters
 from ..recipe import Recipe
-from ..githandler import TempBiocondaRepo
+from ..githandler import TempBiocondaRepo, GitHandlerFailure
 from ..githubhandler import CheckRunStatus, CheckRunConclusion
 from ..circleci import AsyncCircleAPI
 from ..upload import anaconda_upload, skopeo_upload
@@ -121,7 +121,8 @@ class Checkout:
             else:
                 branch = self.git.create_local_branch(branch_name, ref)
             if not branch:
-                raise RuntimeError(f"Failed to find {branch_name}:{ref} in {self.git}")
+                logger.error(f"Failed to find {branch_name}:{ref} in {self.git}")
+                return None
             branch.checkout()
 
             return self.git
@@ -316,7 +317,14 @@ async def lint_fix(head_branch: str, _head_sha: str, ghapi):
         linter.lint(recipes, fix=True)
 
         msg = "Fixed Lint Checks"
-        git.commit_and_push_changes(['recipes'], None, msg=msg, sign=True)
+        logger.info("Files changed: %s", list(git.list_modified_files()))
+        try:
+            if git.commit_and_push_changes([], None, msg=msg, sign=True):
+                logger.info("Created commit in %s", head_branch)
+            else:
+                logger.info("No changes to %s", head_branch)
+        except GitHandlerFailure:
+            logger.error("Push failed")
 
 
 @celery.task(acks_late=True)
@@ -550,8 +558,15 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
     comment += "\n"
     await ghapi.update_comment(comment_id, comment)
 
-    return await ghapi.merge_pr(pr_number, sha=last_sha,
-                                 message="\n".join(lines) if lines else None)
+    res, msg = await ghapi.merge_pr(pr_number, sha=last_sha,
+                                    message="\n".join(lines) if lines else None)
+    if not res:
+        return res, msg
+
+    if not branch.startswith('pull/'):
+        await ghapi.delete_branch(branch)
+    return res, msg
+
 
 
 @celery.task(acks_late=True, ignore_result=True)
@@ -590,7 +605,7 @@ async def run_autobump(package_names, ghapi, *args):
         if not git:
             logger.error("failed to checkout master")
             return
-        recipe_source = autobump.RecipeSource('recipes', package_names)
+        recipe_source = autobump.RecipeSource('recipes', package_names, [])
         scanner = autobump.Scanner(recipe_source)
         scanner.add(autobump.ExcludeSubrecipe)
         scanner.add(autobump.GitLoadRecipe, git)

@@ -645,7 +645,9 @@ class Recipe():
         deps = {}
         for path in check_paths:
             for n, spec in enumerate(self.get(path, [])):
-                dep = spec.split()[0]
+                if spec is None:  # Fixme: lint this
+                    continue
+                dep = re.split(r'[\s<=>]', spec)[0]
                 deps.setdefault(dep, []).append(f"{path}/{n}")
         return deps
 

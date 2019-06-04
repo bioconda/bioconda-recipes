@@ -46,8 +46,12 @@ setup:
         - version: 0.0.1
       two:
         - version: 0.0.1
+      four:
+        - version: 0.0.1
     conda-forge:
       three:
+        - version: 1.0
+      R:
         - version: 1.0
 
 
@@ -187,10 +191,10 @@ tests:
   expect: has_windows_bat_file
 # FIXME: should_be_noarch without python
 - name: should_be_noarch_python
-  add: { requirements: { host: [python], run: [python] } }
+  add: { requirements: { build: [python], run: [python] } }
   expect: should_be_noarch_python
 - name: should_be_noarch_python_good
-  add: { build: { noarch: python }, requirements: { host: [python], run: [python] } }
+  add: { build: { noarch: python }, requirements: { build: [python], run: [python] } }
 - name: should_be_noarch_python_good_skip
   add:
     build: { noarch: python, skip: false }
@@ -215,6 +219,10 @@ tests:
         sha256: 123
       - url: https://elsewhere  # [osx]
         sha256: 123
+- name: noarch_java_with_python_wrapper
+  add:
+    build: { noarch: generic }
+    requirements: { run: [openjdk, python] }
 - name: setup_py_only_install_build_sh
   add_files:
     build.sh: |
@@ -319,3 +327,33 @@ tests:
       summary: |
         123456789012345678901234567890123456789012345678901234567890
         123456789012345678901234567890123456789012345678901234567890
+- name: blacklisted
+  expect: recipe_is_blacklisted
+  add_root_files:
+    blacklist: |
+      recipes/one
+      recipes/two
+  config:
+    blacklists:
+      - blacklist
+- name: cran_packages_to_conda_forge
+  expect: cran_packages_to_conda_forge
+  add: { requirements: { run: [R, three] } }
+- name: cran_packages_to_conda_forge_bioconda_dep
+  add: { requirements: { run: [R, four] } }
+- name: cython_in_run_no_compiler
+  expect: [cython_must_be_in_host, cython_needs_compiler]
+  add: { requirements: { run: [cython] } }
+- name: cython_in_run
+  expect: cython_must_be_in_host
+  add:
+    requirements: { run: [cython], build: ['{{compiler("c")}}'] }
+    build: { noarch: False }
+- name: cython_in_host_no_compiler
+  expect: cython_needs_compiler
+  add: { requirements: { host: [cython] } }
+- name: cython_in_host
+  add:
+    requirements: { host: [cython], build: ['{{compiler("c")}}'] }
+    build: { noarch: False }
+

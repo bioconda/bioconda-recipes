@@ -62,7 +62,7 @@ RECIPES = yaml.load(RECIPE_DATA)
 
 @pytest.fixture
 def recipe(recipe_dir, recipes_folder):
-    yield Recipe.from_file(recipes_folder, recipe_dir)
+    yield Recipe.from_file(str(recipes_folder), str(recipe_dir))
 
 
 def with_recipes(func):
@@ -247,4 +247,35 @@ def test_recipe_set(recipe):
     assert recipe.get('package/bla/1') == ['test3']
     recipe.set('package/bla/1/0', 'test4')
     assert recipe.get('package/bla/1/0') == 'test4'
-    
+
+
+@with_recipes
+def test_recipe_package_names(recipe):
+    expected = {
+        'one': ['one'],
+        'two': ['two', 'libtwo', 'two-tools'],
+    }[recipe.name]
+    assert recipe.package_names == expected
+
+
+@with_recipes
+def test_get_deps_dict(recipe):
+    recipe.meta_yaml.extend([
+        'requirements:',
+        '  build:',
+        '    - AA',
+        '    - BB >3',
+        '    - CC>3',
+        '    - DD=1.*',
+        '  run:',
+        '    - AA',
+        '    - BB >3',
+        '    - CC>3',
+        '    - DD=1.*',
+        '    - EE',
+    ])
+    recipe.render()
+    deps = recipe.get_deps_dict()
+
+    for n in 'ABCDE':
+        assert n*2 in deps
