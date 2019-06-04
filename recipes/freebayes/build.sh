@@ -25,7 +25,7 @@ cd vcflib
 sed -i.bak 's/ld/$(LD)/' smithwaterman/Makefile
 sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' filevercmp/Makefile
 sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' multichoose/Makefile
-sed -i.bak 's/g++/$(CXX) $(CFLAGS)/g' multichoose/Makefile
+sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' multichoose/Makefile
 
 make -e
 
