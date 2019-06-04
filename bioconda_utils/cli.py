@@ -28,7 +28,6 @@ from . import utils
 from .build import build_recipes
 from . import docker_utils
 from . import lint
-from . import github_integration
 from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import cran_skeleton
 from . import update_pinnings
