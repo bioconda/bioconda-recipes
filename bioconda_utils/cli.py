@@ -405,11 +405,13 @@ def build(
 
     # handle git range
     if git_range and not force:
-        modified = get_recipes_to_build(git_range, recipe_folder)
-        if not modified:
+        if packages != '*':
+            sys.exit("Can't specifiy --packages and --git-range at the same time")
+        packages = get_recipes_to_build(git_range, recipe_folder)
+        if not packages:
             logger.info('No recipe modified according to git, exiting.')
             exit(0)
-        logger.info('Recipes modified according to git: {}'.format(' '.join(modified)))
+        logger.info('Recipes modified according to git: {}'.format(' '.join(packages)))
 
     if docker:
         if build_script_template is not None:
@@ -441,7 +443,7 @@ def build(
     success = build_recipes(
         recipe_folder,
         config=config,
-        packages=packages,
+        packages=[p.lstrip(recipe_folder) for p in packages],
         testonly=testonly,
         force=force,
         mulled_test=mulled_test,
