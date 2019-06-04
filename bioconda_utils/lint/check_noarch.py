@@ -38,6 +38,8 @@ class should_be_noarch_python(LintCheck):
     def check_deps(self, deps):
         if 'python' not in deps:
             return  # not a python package
+        if all('build' not in loc for loc in deps['python']):
+            return  # only uses python in run/host
         if any(dep.startswith('compiler_') for dep in deps):
             return  # not compiled
         if self.recipe.get('build/noarch', None) == 'python':
