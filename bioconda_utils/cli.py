@@ -409,7 +409,7 @@ def build(
         if not modified:
             logger.info('No recipe modified according to git, exiting.')
             exit(0)
-        logger.info('Recipes modified according to git: {}'.format(' '.join(packages)))
+        logger.info('Recipes modified according to git: {}'.format(' '.join(modified)))
 
     if docker:
         if build_script_template is not None:
