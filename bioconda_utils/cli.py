@@ -325,10 +325,10 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
         for msg in messages:
             print(f"{msg.severity.name}: {msg.fname}:{msg.end_line}: {msg.check}: {msg.title}")
 
-    if result:
+    if not result:
         print("All checks OK")
     else:
-        print("Errors were found")
+        sys.exit("Errors were found")
 
 
 @recipe_folder_and_config()
