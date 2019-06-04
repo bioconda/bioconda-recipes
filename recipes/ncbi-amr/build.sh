@@ -1,4 +1,4 @@
 #!/bin/bash
 
-make
+make CXX=$CXX
 make install
