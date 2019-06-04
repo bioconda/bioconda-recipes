@@ -277,8 +277,6 @@ def build_recipes(
         else:
             check_channels = []
 
-    logger.info('blacklist: %s', ', '.join(sorted(blacklist)))
-
     if packages == "*":
         packages = ["*"]
     recipes = []
