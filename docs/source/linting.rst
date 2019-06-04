@@ -280,6 +280,12 @@ Bioconda and it's recipe repository consistent and clean.
 
    It just looks better if the summary fits into one line.
 
+.. lint-check:: cran_packages_to_conda_forge
+
+   Conda-Forge has a very active R community planning to eventually
+   package all of CRAN. For that reason, we only allow CRAN packages
+   on Bioconda if they depend on other Bioconda packages.
+
 
 Syntax
 ~~~~~~
