@@ -507,6 +507,17 @@ Build helpers
    ``build:`` section. Move ``{{ compiler() }}`` variables to the
    ``build:`` section.
 
+.. lint-check:: cython_must_be_in_host
+
+   Cython should match the Python version, so we keep it in the
+   host section for now.
+
+.. lint-check:: cython_needs_compiler
+
+   Cython is compiled into C code, which then needs to be
+   compiled. You almost certainly want to have a C compiler in your
+   recipe.
+
 
 Linter Errors
 ~~~~~~~~~~~~~

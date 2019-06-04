@@ -81,7 +81,8 @@ class setup_py_install_args(LintCheck):
     requires defines entrypoints in its ``setup.py``.
 
     """
-    def _check_line(self, line: str) -> bool:
+    @staticmethod
+    def _check_line(line: str) -> bool:
         """Check a line for a broken call to setup.py"""
         if 'setup.py install' not in line:
             return True
@@ -98,10 +99,40 @@ class setup_py_install_args(LintCheck):
 
         try:
             with open(os.path.join(self.recipe.dir, 'build.sh')) as buildsh:
-                for n, line in enumerate(buildsh):
+                for num, line in enumerate(buildsh):
                     if not self._check_line(line):
-                        self.message(fname='build.sh', line=n)
+                        self.message(fname='build.sh', line=num)
         except FileNotFoundError:
             pass
-        
 
+
+class cython_must_be_in_host(LintCheck):
+    """Cython should be in the build section
+
+    Move cython to ``host``::
+
+      requirements:
+        host:
+          - cython
+    """
+    def check_deps(self, deps):
+        if 'cython' in deps:
+            if any('host' not in location
+                   for location in deps['cython']):
+                self.message()
+
+
+class cython_needs_compiler(LintCheck):
+    """Cython generates C code, which will need to be compiled
+
+    Add the compiler to the recipe::
+
+      requirements:
+        build:
+          - {{ compiler('c') }}
+
+    """
+    severity = WARNING
+    def check_deps(self, deps):
+        if 'cython' in deps and 'compiler_c' not in deps:
+            self.message()
