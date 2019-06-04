@@ -63,7 +63,7 @@ class GitHubHandler:
     GET_CHECK_RUNS    = "/repos/{user}/{repo}/commits/{commit}/check-runs"
     GET_STATUSES      = "/repos/{user}/{repo}/commits/{commit}/statuses"
     CONTENTS          = "/repos/{user}/{repo}/contents/{path}{?ref}"
-
+    GIT_REFERENCE     = "/repos/{user}/{repo}/git/refs/{ref}"
     ORG_MEMBERS       = "/orgs/{user}/members{/username}"
     ORG               = "/orgs/{user}"
     ORG_TEAMS         = "/orgs/{user}/teams{/team_slug}"
@@ -736,6 +736,16 @@ class GitHubHandler:
         content_bytes = base64.b64decode(result['content'])
         content = content_bytes.decode('utf-8')
         return content
+
+    async def delete_branch(self, ref: str) -> None:
+        """Delete a branch (ref)
+
+        Arguments:
+          ref: Name of reference/branch
+        """
+        var_data = copy(self.var_default)
+        var_data['ref'] = ref
+        await self.api.delete(self.GIT_REFERENCE, var_data)
 
 
 class AiohttpGitHubHandler(GitHubHandler):

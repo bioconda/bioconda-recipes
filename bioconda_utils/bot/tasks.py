@@ -558,8 +558,15 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
     comment += "\n"
     await ghapi.update_comment(comment_id, comment)
 
-    return await ghapi.merge_pr(pr_number, sha=last_sha,
-                                 message="\n".join(lines) if lines else None)
+    res, msg = await ghapi.merge_pr(pr_number, sha=last_sha,
+                                    message="\n".join(lines) if lines else None)
+    if not res:
+        return res, msg
+
+    if not branch.startswith('pull/'):
+        await ghapi.delete_branch(branch)
+    return res, msg
+
 
 
 @celery.task(acks_late=True, ignore_result=True)
