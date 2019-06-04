@@ -20,10 +20,16 @@ export INCLUDES="-I . -Ihtslib -I$PREFIX/include -Itabixpp/htslib -I\$(INC_DIR) 
 export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
 export CXXFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
 
+sed -i.bak 's/^CC.*//g' ../SeqLib/htslib/Makefile
+
 cd vcflib
 
 sed -i.bak 's/ld/$(LD)/' smithwaterman/Makefile
 sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' filevercmp/Makefile
+sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' multichoose/Makefile
+sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' multichoose/Makefile
+sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' intervaltree/Makefile
+
 
 make -e
 
