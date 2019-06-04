@@ -40,6 +40,10 @@ sed -i.bak 's/^CXX=.*$//g' Makefile
 sed -i.bak 's/^C=gcc//g' Makefile
 sed -i.bak 's/C)/CC)/' Makefile
 sed -i.bak "s:INCLUDE =:INCLUDE = -I$PREFIX/include:" Makefile
+sed -i.bak 's/configure \&\& make/configure \&\& make -e/g' Makefile
+sed -i.bak 's/export C$//g' Makefile
+sed -i.bak 's/export CC$//g' Makefile
+sed -i.bak 's/export CXX$//g' Makefile
 #sed -i.bak "s:LIBS =:LIBS = -L$PREFIX/lib:" Makefile	
 
 # Set exports.
