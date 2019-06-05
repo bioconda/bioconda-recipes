@@ -49,12 +49,15 @@ variables:
       git config user.name "Autobump"
       git config user.email "bioconda@users.noreply.github.com"
       mkdir -p /tmp/artifacts
-      bioconda-utils autobump recipes/ config.yml \
+      bioconda-utils autobump \
         --unparsed-urls /tmp/artifacts/unparsed_urls.txt \
         --failed-urls /tmp/artifacts/failed_urls.txt \
         --recipe-status /tmp/artifacts/status.txt \
-        --create-pr $AUTOBUMP_OPTS
-
+        --create-pr \
+        --no-check-pinnings \
+        --no-check-pending-deps \
+        --exclude 'bioconductor-*' \
+        $AUTOBUMP_OPTS
 
     
 jobs:
@@ -162,7 +165,6 @@ jobs:
           path: /tmp/artifacts
 
 
-
 workflows:
   version: 2
   # workflow for testing pushes and PRs
@@ -176,8 +178,8 @@ workflows:
           context: org-global
       - build-docs:
           context: org-global
-#      - autobump-test:
-#          context: org-global
+      - autobump-test:
+          context: org-global
   bioconda-utils-nightly:
      triggers:
        - schedule:
@@ -187,7 +189,18 @@ workflows:
                only:
                  - master
      jobs:
-#       - autobump:
-#           context: org-global
+       - autobump:
+           context: org-global
        - build-docs:
+           context: org-global
+  bioconda-utils-autobump:
+     triggers:
+       - schedule:
+           cron: "0 * * * *"
+           filters:
+             branches:
+               only:
+                 - master
+     jobs:
+       - autobump:
            context: org-global
