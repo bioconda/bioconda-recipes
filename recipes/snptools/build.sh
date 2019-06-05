@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
 
 # This patch has not been fed upstream
 sed -i.bak 's/=/\?=/g' makefile
