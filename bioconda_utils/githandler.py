@@ -54,7 +54,7 @@ class GitHandlerBase():
         else:
             self.fork_remote = self.home_remote
 
-        #: Semaphore for things that mess with workding directory
+        #: Semaphore for things that mess with working directory
         self.lock_working_dir = asyncio.Semaphore(1)
 
     def close(self):
