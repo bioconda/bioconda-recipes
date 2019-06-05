@@ -391,9 +391,6 @@ class CheckPinning(Filter):
         self.scanner = scanner
         self.build_config = utils.load_conda_build_config()
         self.bump_only_python = bump_only_python
-        self.check_func = partial(update_pinnings.check,
-                                  build_config=self.build_config,
-                                  keep_metas=True)
 
     @staticmethod
     def match_version(spec, version):
@@ -413,24 +410,38 @@ class CheckPinning(Filter):
                             'version': version})
 
     async def apply(self, recipe: Recipe) -> None:
-        status = await self.scanner.run_sp(self.check_func, recipe)
-        if status.needs_bump(self.bump_only_python):
+        reason = await self.scanner.run_sp(
+            self._sp_apply,
+            (self.build_config, self.bump_only_python, recipe)
+        )
+        if reason:
+            recipe.data['pinning'] = reason
             new_buildno = recipe.build_number + 1
-            metas = recipe.conda_render(build_config=self.build_config)
-            recipe.data['pinning'] = self.find_reason(recipe, metas)
             logger.info("%s needs rebuild. Bumping buildnumber to %i", recipe, new_buildno)
             recipe.reset_buildnumber(new_buildno)
             recipe.render()
-        recipe.conda_release()
 
-    def find_reason(self, recipe, metas):
+    @classmethod
+    def _sp_apply(cls, data) -> None:
+        config, bop, recipe = data
+        status = update_pinnings.check(recipe, build_config=config, keep_metas=True)
+        if status.needs_bump(bop):
+            metas = recipe.conda_render(config=config)
+            reason = cls.find_reason(recipe, metas)
+        else:
+            reason = None
+        recipe.conda_release()
+        return reason
+
+    @classmethod
+    def find_reason(cls, recipe, metas):
         # Decypher variants:
         pinnings = {}
         for variant in metas:
             variant0 = variant[0]
             for var in variant0.get_used_vars():
                 pinnings.setdefault(var, set()).add(variant0.config.variant[var])
-        variants = {k: v for k, v in pinnings.items() if len(v)>1}
+        variants = {k: v for k, v in pinnings.items() if len(v) > 1}
         if variants:
             logger.error("%s has variants: %s", recipe, variants)
 
@@ -456,13 +467,12 @@ class CheckPinning(Filter):
                                                    name=recipe.name,
                                                    version=recipe.version,
                                                    build_number=recipe.build_number)
-        for build_id, package_deps, platform in package_data:
-            build_causes = []
+        for _build_id, package_deps, _platform in package_data:
             for item in package_deps:
                 package, _, constraint = item.partition(" ")
                 if not constraint or package not in pinnings:
                     continue
-                if any(self.match_version(constraint, version)
+                if any(cls.match_version(constraint, version)
                        for version in resolved_vers[package]):
                     continue
                 causes.setdefault(package, set()).add(
@@ -474,6 +484,7 @@ class CheckPinning(Filter):
             if compiler_pins:
                 return {'compiler': set([f"Recompiling with {' / '.join(compiler_pins)}"])}
         return causes
+        # must return not None!
 
 
 class UpdateVersion(Filter, AutoBumpConfigMixin):
