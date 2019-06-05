@@ -44,6 +44,7 @@ sed -i.bak 's/configure \&\& make/configure \&\& make -e/g' Makefile
 sed -i.bak 's/export C$//g' Makefile
 sed -i.bak 's/export CC$//g' Makefile
 sed -i.bak 's/export CXX$//g' Makefile
+
 #sed -i.bak "s:LIBS =:LIBS = -L$PREFIX/lib:" Makefile	
 
 # Set exports.
@@ -51,6 +52,8 @@ export CFLAGS="-I$PREFIX/include"
 export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
+export CC=${CC} 
+export CXX=${CXX} 
 
 sed -i.bak "s:LIBS):LIBS) -L$LIBRARY_PATH:g" Makefile
 
