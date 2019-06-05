@@ -178,13 +178,12 @@ class Scanner(AsyncPipeline[Recipe]):
     Arguments:
       recipe_source: Iteratable providing Recipe stubs
       cache_fn: Filename prefix for caching
-      max_inflight: Maximum number of packages processed asynchronously
       status_fn: Filename for status output
     """
     def __init__(self, recipe_source: Iterable[Recipe],
-                 cache_fn: str = None, max_inflight: int = 100,
+                 cache_fn: str = None,
                  status_fn: str = None) -> None:
-        super().__init__(max_inflight)
+        super().__init__()
         #: recipe source
         self.recipe_source = recipe_source
         #: counter to gather stats on various states
@@ -929,7 +928,7 @@ class LoadRecipe(Filter):
     """Load the recipe from the filesystem"""
     def __init__(self, scanner: Scanner) -> None:
         super().__init__(scanner)
-        self.sem = asyncio.Semaphore(10)
+        self.sem = asyncio.Semaphore(64)
 
     async def apply(self, recipe: Recipe) -> None:
         async with self.sem, \
@@ -997,7 +996,7 @@ class WriteRecipe(Filter, WritingFilter):
     """Write recipe to filesystem"""
     def __init__(self, scanner: Scanner) -> None:
         super().__init__(scanner)
-        self.sem = asyncio.Semaphore(10)
+        self.sem = asyncio.Semaphore(64)
 
     async def apply(self, recipe: Recipe) -> None:
         if not recipe.is_modified():
