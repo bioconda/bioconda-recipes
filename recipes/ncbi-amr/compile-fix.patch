@@ -1,0 +1,44 @@
+diff --git a/Makefile b/Makefile
+index 1417b54..99a24a4 100644
+--- a/Makefile
++++ b/Makefile
+@@ -27,7 +27,8 @@ CXX=g++
+ COMPILE.cpp= $(CXX) $(CPPFLAGS)  -c
+ 
+ #prefix = /panfs/pan1.be-md.ncbi.nlm.nih.gov/bacterial_pathogens/backup
+-prefix=/usr/local
++#prefix=/usr/local
++prefix=${PREFIX}
+ 
+ # soft links are created here to INSTALL_DIR
+ bindir="$(prefix)/bin"
+@@ -71,7 +72,7 @@ clean:
+ 	#rm version.txt
+ 
+ install:
+-	$(INSTALL) -D -t $(INSTALL_DIR) amr_report fasta_check gff_check amrfinder.pl
++	$(INSTALL) -D -t $(bindir) amr_report fasta_check gff_check amrfinder.pl
+ #	@dest=$(INSTALL_DIR); \
+ #		if [ ! -e $(bindir)/amrfinder.pl ]; \
+ #		then \
+diff --git a/common.hpp b/common.hpp
+index 3789ec8..aeeda98 100644
+--- a/common.hpp
++++ b/common.hpp
+@@ -72,6 +72,7 @@
+ #include <memory>
+ #include <algorithm>
+ #include <thread>
++#include <cmath>
+ 
+ 
+ 
+@@ -153,7 +154,7 @@ public:
+ struct Chronometer : Nocopy
+ // Requires: no thread is used
+ {
+-  static constexpr clock_t noclock {-1};
++  static constexpr clock_t noclock {static_cast<clock_t>(-1)};
+   static bool enabled;
+   const string name;
+   clock_t time {0};
