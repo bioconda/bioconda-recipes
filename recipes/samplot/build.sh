@@ -3,6 +3,6 @@
 mkdir -p $PREFIX/bin
 
 chmod +x src/*.py
-cp samplot.py $PREFIX/bin
-cp samplot_vcf.py $PREFIX/bin
+cp src/samplot.py $PREFIX/bin
+cp src/samplot_vcf.py $PREFIX/bin
 
