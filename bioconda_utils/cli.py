@@ -325,10 +325,10 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
         for msg in messages:
             print(f"{msg.severity.name}: {msg.fname}:{msg.end_line}: {msg.check}: {msg.title}")
 
-    if result:
+    if not result:
         print("All checks OK")
     else:
-        print("Errors were found")
+        sys.exit("Errors were found")
 
 
 @recipe_folder_and_config()
@@ -405,8 +405,10 @@ def build(
 
     # handle git range
     if git_range and not force:
-        modified = get_recipes_to_build(git_range, recipe_folder)
-        if not modified:
+        if packages != '*':
+            sys.exit("Can't specifiy --packages and --git-range at the same time")
+        packages = get_recipes_to_build(git_range, recipe_folder)
+        if not packages:
             logger.info('No recipe modified according to git, exiting.')
             exit(0)
         logger.info('Recipes modified according to git: {}'.format(' '.join(packages)))
@@ -441,7 +443,7 @@ def build(
     success = build_recipes(
         recipe_folder,
         config=config,
-        packages=packages,
+        packages=[p.lstrip(recipe_folder) for p in packages],
         testonly=testonly,
         force=force,
         mulled_test=mulled_test,
