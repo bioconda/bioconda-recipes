@@ -129,12 +129,32 @@ class GitHandlerBase():
             pass
         return None
 
+    @staticmethod
+    def is_sha(ref: str) -> bool:
+        """Checks if **ref** is a commit checksum
+
+        Verifies that **ref** is a hex value of length 40
+        """
+        if len(ref) == 40:
+            try:
+                int(ref, 16)
+                return True
+            except ValueError:
+                pass
+        return False
+
     def get_remote_branch(self, branch_name: str, try_fetch=False):
         """Finds fork remote branch named **branch_name**"""
         if branch_name in self.fork_remote.refs:
             return self.fork_remote.refs[branch_name]
+
+        # only do slow fetch attempts for SHA refs
+        if not self.is_sha(branch_name):
+            return None
+
         depths = (0, 50, 200) if try_fetch else (None,)
         for depth in depths:
+            logger.info("Trying depth %s", depth)
             try:
                 if depth:
                     self.fork_remote.fetch(depth=depth)
