@@ -13,6 +13,7 @@ import os
 import re
 import sys
 import tempfile
+import types
 
 from collections import defaultdict
 from contextlib import redirect_stdout, redirect_stderr
