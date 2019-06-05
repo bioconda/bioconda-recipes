@@ -422,6 +422,7 @@ class CheckPinning(Filter):
             logger.info("%s needs rebuild. Bumping buildnumber to %i", recipe, new_buildno)
             recipe.reset_buildnumber(new_buildno)
             recipe.render()
+        recipe.conda_release()
 
     def find_reason(self, recipe, metas):
         # Decypher variants:

@@ -652,7 +652,11 @@ class Recipe():
                 deps.setdefault(dep, []).append(f"{path}/{n}")
         return deps
 
-    def conda_render(self, **kwargs) -> List[Tuple[MetaData, bool, bool]]:
+    def conda_render(self,
+                     bypass_env_check=True,
+                     finalize=True,
+                     permit_unsatisfiable_variants=False,
+                     **kwargs) -> List[Tuple[MetaData, bool, bool]]:
         """Handles calling conda_build.api.render
 
         ``conda_build.api.render`` is fragile, loud and slow. Avoid using this
@@ -670,7 +674,22 @@ class Recipe():
         objects.
 
         Args:
-          kwargs: passed on to ``conda_build.api.render``
+          bypass_env_check:
+             Avoids calling solver to fill in values for ``pin_compatible``
+             and ``resolved_packages`` in Jinja2 expansion.
+             **Changed default:** ``conda-build.api.render`` defaults to False,
+             we set this to True as it is very slow.
+          finalize:
+             Has ``render()`` run ``finalize_metadata``, which fills in
+             versions for host/run dependencies.
+          permit_unsatisfiable_variants:
+             Avoids raising ``UnsatisfiableError`` or
+             ``DependencyNeedsBuildingError`` when determining package
+             dependencies.
+             **Changed default:** Set to True upstream, we set this to False
+             to be informed about dependency problems.
+          kwargs:
+             passed on to ``conda_build.api.render``
 
         Raises:
           `CondaRenderfailure`: Some of the exceptions raised are rewritten
@@ -701,7 +720,12 @@ class Recipe():
         try:
             with open("/dev/null", "w") as devnull:
                 with redirect_stdout(devnull), redirect_stderr(devnull):
-                    self._conda_meta = conda_build.api.render(self._conda_tempdir.name, **kwargs)
+                    self._conda_meta = conda_build.api.render(
+                        self._conda_tempdir.name,
+                        finalize=finalize,
+                        bypass_env_check=bypass_env_check,
+                        permit_unsatisfiable_variants=permit_unsatisfiable_variants,
+                        **kwargs)
         except RuntimeError as exc:
             if exc.args[0].startswith("Couldn't extract raw recipe text"):
                 line = self.meta_yaml[0]

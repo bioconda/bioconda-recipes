@@ -141,8 +141,7 @@ def check(recipe: Recipe, build_config, keep_metas=False) -> State:
     """
     try:
         logger.debug("Calling Conda to render %s", recipe)
-        metas = recipe.conda_render(config=build_config,
-                                    permit_unsatisfiable_variants=False)
+        metas = recipe.conda_render(config=build_config)
         logger.debug("Finished rendering %s", recipe)
     except RecipeError as exc:
         logger.error(exc)
