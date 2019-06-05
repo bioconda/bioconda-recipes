@@ -22,6 +22,7 @@ export CXXFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
 
 sed -i.bak 's/^CC.*//g' SeqLib/htslib/Makefile
 sed -i.bak 's/^CC.*//g' SeqLib/bwa/Makefile
+sed -i.bak 's/^CC.*//g' SeqLib/fermi-lite/Makefile
 
 
 cd vcflib
