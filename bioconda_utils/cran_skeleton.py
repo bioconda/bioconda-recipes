@@ -7,12 +7,13 @@ import os
 import re
 from itertools import zip_longest
 import argparse
+import logging
 
 from conda_build.api import skeletonize
 
 from .utils import run, setup_logger
 
-logger = setup_logger(__name__)
+logger = logging.getLogger(__name__)
 
 # Some dependencies are listed in CRAN that are actually in Bioconductor. Use
 # this dict to map these to bioconductor package names.
@@ -286,6 +287,7 @@ def add_maintainers(lines):
 
 def main():
     """ Adding support for arguments here """
+    setup_logger()
     parser = argparse.ArgumentParser()
     parser.add_argument('package', help='name of the cran package')
     parser.add_argument('output_dir', help='output directory for the recipe')

@@ -37,7 +37,7 @@ from .githandler import BiocondaRepo
 logger = logging.getLogger(__name__)
 
 
-def enable_logging(default_loglevel='info'):
+def enable_logging(default_loglevel='info', default_file_loglevel='debug'):
     """Adds the parameter ``--loglevel`` and sets up logging
 
     Args:
@@ -49,7 +49,8 @@ def enable_logging(default_loglevel='info'):
         @arg('--logfile-level', help="Log level for log file")
         @arg('--log-command-max-lines', help="Limit lines emitted for commands executed")
         @utils.wraps(func)
-        def wrapper(*args, loglevel=default_loglevel, logfile=None, logfile_level=None,
+        def wrapper(*args, loglevel=default_loglevel, logfile=None,
+                    logfile_level=default_file_loglevel,
                     log_command_max_lines=None, **kwargs):
             max_lines = int(log_command_max_lines) if log_command_max_lines else None
             utils.setup_logger('bioconda_utils', loglevel, logfile, logfile_level,

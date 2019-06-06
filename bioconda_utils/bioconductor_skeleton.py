@@ -20,9 +20,7 @@ import yaml
 from . import utils
 from . import cran_skeleton
 
-logging.getLogger("requests").setLevel(logging.WARNING)
-
-logger = utils.setup_logger(__name__)
+logger = logging.getLogger(__name__)
 
 base_url = 'https://bioconductor.org/packages/'
 
