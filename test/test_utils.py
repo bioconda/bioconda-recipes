@@ -72,18 +72,21 @@ def recipes_fixture():
     Writes example recipes (based on test_case.yaml), figures out the package
     paths and attaches them to the Recipes instance, and cleans up afterward.
     """
-    r = Recipes('test_case.yaml')
-    r.write_recipes()
-    r.pkgs = {}
-    for k, v in r.recipe_dirs.items():
-        r.pkgs[k] = utils.built_package_paths(v)
-    yield r
-    for pkgs in r.pkgs.values():
+    rcp = Recipes('test_case.yaml')
+    rcp.write_recipes()
+    rcp.pkgs = {}
+    for key, val in rcp.recipe_dirs.items():
+        logger.error("Getting paths for %s : %s", key, val)
+        rcp.pkgs[key] = utils.built_package_paths(val)
+    yield rcp
+    for pkgs in rcp.pkgs.values():
         for pkg in pkgs:
             ensure_missing(pkg)
 
+
 @pytest.fixture(scope='module')
 def config_fixture():
+    """Loads config"""
     config = utils.load_config(
         os.path.join(os.path.dirname(__file__), "test-config.yaml"))
     yield config
