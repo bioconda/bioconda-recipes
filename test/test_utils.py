@@ -560,7 +560,7 @@ def test_rendering_sandboxing():
                 recipe=r.recipe_dirs['one'],
                 pkg_paths=pkg_paths,
                 mulled_test=False,
-                _raise_error=True,
+                raise_error=True,
             )
         assert ("'GITHUB_TOKEN' is undefined" in str(excinfo.value.stdout))
     else:
