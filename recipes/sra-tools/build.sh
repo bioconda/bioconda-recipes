@@ -18,6 +18,7 @@ fi
 #1popd
 
 pushd ncbi-vdb
+sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#;s#clang++#${CXX}#;s#clang#${CC}#" setup/konfigure.perl
 ./configure \
     --prefix=$PREFIX \
     --build-prefix=$NCBI_OUTDIR \
