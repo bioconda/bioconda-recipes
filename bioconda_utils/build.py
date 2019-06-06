@@ -8,6 +8,8 @@ from collections import defaultdict, namedtuple
 import os
 import logging
 
+from typing import List
+
 # TODO: UnsatisfiableError is not yet in exports for conda 4.5.4
 # from conda.exports import UnsatisfiableError
 from conda.exceptions import UnsatisfiableError
@@ -27,7 +29,7 @@ logger = logging.getLogger(__name__)
 BuildResult = namedtuple("BuildResult", ["success", "mulled_images"])
 
 
-def conda_build_purge():
+def conda_build_purge() -> None:
     utils.run(["conda", "build", "purge"], mask=False)
 
     free_mb = utils.get_free_space()
@@ -38,55 +40,28 @@ def conda_build_purge():
                     utils.get_free_space())
 
 
-def build(
-    recipe,
-    recipe_folder,
-    pkg_paths=None,
-    testonly=False,
-    mulled_test=True,
-    force=False,
-    channels=None,
-    docker_builder=None,
-    _raise_error=False,
-    linter=None,
-):
+def build(recipe: str, pkg_paths: List[str] = None,
+          testonly: bool = False, mulled_test: bool = True,
+          channels: List[str] = None,
+          docker_builder: docker_utils.RecipeBuilder = None,
+          raise_error: bool = False,
+          linter=None) -> BuildResult:
     """
     Build a single recipe for a single env
 
-    Parameters
-    ----------
-    recipe : str
-        Path to recipe
-
-    pkgs : list
-        List of packages to build
-
-    testonly : bool
-        If True, skip building and instead run the test described in the
-        meta.yaml.
-
-    mulled_test : bool
-        Test the built package in a minimal docker container
-
-    force : bool
-        If True, the recipe will be built even if it already exists. Note that
-        typically you'd want to bump the build number rather than force
-        a build.
-
-    channels : list
-        Channels to include via the ``--channel`` argument to conda-build. Higher
-        priority channels should come first.
-
-    docker_builder : docker_utils.RecipeBuilder object
+    Arguments:
+      recipe: Path to recipe
+      pkg_paths: List of paths to expected packages
+      testonly: Only run the tests described in the meta.yaml
+      mulled_test: Run tests in minimal docker container
+      channels: Channels to include via the ``--channel`` argument to
+        conda-build. Higher priority channels should come first.
+      docker_builder : docker_utils.RecipeBuilder object
         Use this docker builder to build the recipe, copying over the built
         recipe to the host's conda-bld directory.
-
-    _raise_error : bool
-        Instead of returning a failed build result, raise the error instead.
-        Used for testing.
-
-    linter : linter | None
-        Linter to use for checking recipes
+      raise_error: Instead of returning a failed build result, raise the
+        error instead. Used for testing.
+      linter: Linter to use for checking recipes
     """
 
     if linter:
@@ -95,61 +70,45 @@ def build(
         if linter.lint([recipe]):
             logger.error('\n\nThe recipe %s failed linting. See '
                          'https://bioconda.github.io/linting.html for details:\n\n%s\n',
-                         recipe)
+                         recipe, linter.get_report())
             return BuildResult(False, None)
+        logger.info("Lint checks passed")
 
-    # Clean provided env and exisiting os.environ to only allow whitelisted env
-    # vars
-    _docker = docker_builder is not None
-
-    whitelisted_env = {}
-    whitelisted_env.update({k: str(v)
-                            for k, v in os.environ.items()
-                            if utils.allowed_env_var(k, _docker)})
+    # Copy env allowing only whitelisted vars
+    whitelisted_env = {
+        k: str(v)
+        for k, v in os.environ.items()
+        if utils.allowed_env_var(k, docker_builder is not None)
+    }
 
     logger.info("BUILD START %s", recipe)
 
-    # --no-build-id is needed for some very long package names that triggers
-    # the 89 character limits this option can be removed as soon as all
-    # packages are rebuild with the 255 character limit
-    # Moreover, --no-build-id will block us from using parallel builds in
-    # conda-build 2.x build_args = ["--no-build-id"]
-
-    # use global variant config file (contains pinnings)
-    build_args = ["--skip-existing"]
-    build_args = []
+    args = []
     if testonly:
-        build_args.append("--test")
+        args += ["--test"]
     else:
-        build_args += ["--no-anaconda-upload"]
+        args += ["--no-anaconda-upload"]
 
-    channel_args = []
-    if channels:
-        for c in channels:
-            channel_args += ['--channel', c]
+    for channel in channels or []:
+        args += ['--channel', channel]
 
-    logger.debug('build_args: %s', build_args)
-    logger.debug('channel_args: %s', channel_args)
-
-    CONDA_BUILD_CMD = [utils.bin_for('conda'), 'build']
+    logger.debug('Build and Channel Args: %s', args)
 
     # Even though there may be variants of the recipe that will be built, we
     # will only be checking attributes that are independent of variants (pkg
     # name, version, noarch, whether or not an extended container was used)
     meta = utils.load_first_metadata(recipe)
+    is_noarch = bool(meta.get_value('build/noarch', default=False))
+    use_base_image = meta.get_value('extra/container', {}).get('extended-base', False)
+    base_image = 'bioconda/extended-base-image' if use_base_image else None
 
     try:
-        # Note we're not sending the contents of os.environ here. But we do
-        # want to add TRAVIS* vars if that behavior is not disabled.
         if docker_builder is not None:
-
-            docker_builder.build_recipe(
-                recipe_dir=os.path.abspath(recipe),
-                build_args=' '.join(channel_args + build_args),
-                env=whitelisted_env,
-                noarch=bool(meta.get_value('build/noarch', default=False))
-            )
-
+            docker_builder.build_recipe(recipe_dir=os.path.abspath(recipe),
+                                        build_args=' '.join(args),
+                                        env=whitelisted_env,
+                                        noarch=is_noarch)
+            # Use presence of expected packages to check for success
             for pkg_path in pkg_paths:
                 if not os.path.exists(pkg_path):
                     logger.error(
@@ -157,48 +116,41 @@ def build(
                         "cannot be found", pkg_path)
                     return BuildResult(False, None)
         else:
-
-            # Temporarily reset os.environ to avoid leaking env vars to
-            # conda-build, and explicitly provide `env` to `run()`
-            # we explicitly point to the meta.yaml, in order to keep
-            # conda-build from building all subdirectories
+            conda_build_cmd = [utils.bin_for('conda'), 'build']
+            # - Temporarily reset os.environ to avoid leaking env vars
+            # - Also pass filtered env to run()
+            # - Point conda-build to meta.yaml, to avoid building subdirs
             with utils.sandboxed_env(whitelisted_env):
-                cmd = CONDA_BUILD_CMD + build_args + channel_args
+                cmd = conda_build_cmd + args
                 for config_file in utils.get_conda_build_config_files():
-                    cmd.extend([config_file.arg, config_file.path])
+                    cmd += [config_file.arg, config_file.path]
                 cmd += [os.path.join(recipe, 'meta.yaml')]
-                logger.debug('command: %s', cmd)
                 with utils.Progress():
                     utils.run(cmd, env=os.environ, mask=False)
 
         logger.info('BUILD SUCCESS %s',
                     ' '.join(os.path.basename(p) for p in pkg_paths))
 
-    except (docker_utils.DockerCalledProcessError, sp.CalledProcessError) as e:
-            logger.error('BUILD FAILED %s', recipe)
-            if _raise_error:
-                raise e
-            return BuildResult(False, None)
+    except (docker_utils.DockerCalledProcessError, sp.CalledProcessError) as exc:
+        logger.error('BUILD FAILED %s', recipe)
+        if raise_error:
+            raise exc
+        return BuildResult(False, None)
 
-    if not mulled_test:
-        return BuildResult(True, None)
-
-    logger.info('TEST START via mulled-build %s', recipe)
-
-    use_base_image = meta.get_value('extra/container', {}).get('extended-base', False)
-    base_image = 'bioconda/extended-base-image' if use_base_image else None
-
-    mulled_images = []
-    for pkg_path in pkg_paths:
-        try:
-            pkg_test.test_package(pkg_path, base_image=base_image)
-        except sp.CalledProcessError as e:
-            logger.error('TEST FAILED: %s', recipe)
-            return BuildResult(False, None)
-        else:
+    if mulled_test:
+        logger.info('TEST START via mulled-build %s', recipe)
+        mulled_images = []
+        for pkg_path in pkg_paths:
+            try:
+                pkg_test.test_package(pkg_path, base_image=base_image)
+            except sp.CalledProcessError:
+                logger.error('TEST FAILED: %s', recipe)
+                return BuildResult(False, None)
             logger.info("TEST SUCCESS %s", recipe)
             mulled_images.append(pkg_test.get_image_name(pkg_path))
-    return BuildResult(True, mulled_images)
+        return BuildResult(True, mulled_images)
+
+    return BuildResult(True, None)
 
 
 def build_recipes(
@@ -448,11 +400,9 @@ def build_recipes(
 
         res = build(
             recipe=recipe,
-            recipe_folder=recipe_folder,
             pkg_paths=pkg_paths,
             testonly=testonly,
             mulled_test=mulled_test and keep_mulled_test,
-            force=force,
             channels=config['channels'],
             docker_builder=docker_builder,
             linter=linter
