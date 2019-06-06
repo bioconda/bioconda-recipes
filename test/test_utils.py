@@ -50,16 +50,14 @@ def ensure_env_missing(env_name):
     exist, deleting it if needed.
     """
     def _clean():
-        p = sp.run(
-            ['conda', 'env', 'list'],
-            stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
-            universal_newlines=True)
+        proc = sp.run(['conda', 'env', 'list'],
+                      stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
+                      universal_newlines=True)
 
-        if env_name in p.stdout:
-            p = sp.run(
-                ['conda', 'env', 'remove', '-y', '-n', env_name],
-                stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
-                universal_newlines=True)
+        if env_name in proc.stdout:
+            sp.run(['conda', 'env', 'remove', '-y', '-n', env_name],
+                   stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
+                   universal_newlines=True)
     _clean()
     yield
     _clean()
