@@ -1,5 +1,5 @@
 <!--
-creator: autobump {{version}}
+creator: autobump
 type: {% block type %}{% endblock %}
 
 recipe: {{r.name}}
