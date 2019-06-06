@@ -22,9 +22,9 @@ else
         cd ..
 fi
 
-sed -i.bak "s/^CC/#CC/g" sources/makefile
-sed -i.bak "s/^C /#C/g"  train/makefile
-sed -i.bak "s/^CC/#CC/g" train/makefile
+#sed -i.bak "s/^CC/#CC/g" sources/makefile
+#sed -i.bak "s/^C /#C/g"  train/makefile
+#sed -i.bak "s/^CC/#CC/g" train/makefile
 
 #copy the executables	
 cp bin/glimmhmm.pl $PREFIX/bin/.
