@@ -5,9 +5,6 @@ if [ `uname` == Darwin ]; then
         sed -i.bak "s~#include <malloc.h>~#include <malloc/malloc.h>~g" train/utils.c
 fi
 
-
-
-
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/GlimmerHMM/trained_dir
 
@@ -21,10 +18,6 @@ else
         cd ../train && make C=$C CC=$GXX
         cd ..
 fi
-
-#sed -i.bak "s/^CC/#CC/g" sources/makefile
-#sed -i.bak "s/^C /#C/g"  train/makefile
-#sed -i.bak "s/^CC/#CC/g" train/makefile
 
 #copy the executables	
 cp bin/glimmhmm.pl $PREFIX/bin/.
