@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cargo build --release --features "cli c-api"
+RUST_BACKTRACE=1 cargo build --release --features "cli c-api"
 
 mkdir -p ${PREFIX}/bin
 mkdir -p ${PREFIX}/lib
