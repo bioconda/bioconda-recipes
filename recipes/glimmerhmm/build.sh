@@ -13,8 +13,8 @@ mkdir -p $PREFIX/GlimmerHMM/trained_dir
 
 # cd into the sources
 if [ `uname` == Darwin ]; then
-        cd sources && make CC=$CC
-        cd ../train && make C=$C CC=$CC
+        cd sources && make CC=$CXX
+        cd ../train && make C=$C CC=$CXX
         cd ..
 else
         cd sources && make CC=$GXX 
