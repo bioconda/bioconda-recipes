@@ -24,6 +24,7 @@ import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
 import pandas
 
+from . import __version__ as VERSION
 from . import utils
 from .build import build_recipes
 from . import docker_utils
@@ -899,6 +900,9 @@ def bot(loglevel='info'):
     logger.error("Nothing here yet")
 
 def main():
+    if '--version' in sys.argv:
+        print("This is bioconda-utils version", VERSION)
+        sys.exit(0)
     argh.dispatch_commands([
         build, dag, dependent, do_lint, duplicates, update_pinning,
         bioconductor_skeleton, clean_cran_skeleton, autobump, bot
