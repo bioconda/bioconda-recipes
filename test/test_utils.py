@@ -265,21 +265,6 @@ def test_docker_build_image_fails():
         docker_utils.RecipeBuilder(dockerfile_template=template, build_image=True)
 
 
-def test_conda_purge_cleans_up():
-    def tmp_dir_exists(d):
-        contents = os.listdir(d)
-        print("conda-bld/:", *contents)
-        for i in contents:
-            if i.startswith('deleteme_'):
-                return True
-        return False
-
-    bld = docker_utils.get_host_conda_bld(purge=False)
-    assert tmp_dir_exists(bld)
-    bld = docker_utils.get_host_conda_bld(purge=True)
-    assert not tmp_dir_exists(bld)
-
-
 def test_get_deps():
     r = Recipes(
         """

@@ -137,12 +137,14 @@ class DockerBuildError(Exception):
 
 
 
-def get_host_conda_bld(purge=True):
+def get_host_conda_bld():
     """
     Identifies the conda-bld directory on the host.
 
     Assumes that conda-build is installed.
     """
+    # v0.16.2: this used to have a side effect, calling conda build purge
+    # hopefully, it's not actually needed.
     build_conf = utils.load_conda_build_config()
     return build_conf.build_folder
 
