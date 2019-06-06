@@ -89,7 +89,7 @@ class AsyncPipeline(Generic[ITEM]):
         #: number of threads to use
         self.threads = threads or threads_to_use()
         #: semaphore to limit io parallelism
-        self.io_sem: asyncio.Semaphore = asyncio.Semaphore(16)
+        self.io_sem: asyncio.Semaphore = asyncio.Semaphore(1)
         #: must never run more than one conda at the same time
         #: (used by PyPi when running skeleton)
         self.conda_sem: asyncio.Semaphore = asyncio.Semaphore(1)
