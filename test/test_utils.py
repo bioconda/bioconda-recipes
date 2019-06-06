@@ -19,6 +19,9 @@ from bioconda_utils import build
 from bioconda_utils import upload
 from helpers import ensure_missing, Recipes
 
+
+logger = logging.getLogger(__name__)
+
 # TODO: need channel order tests. Could probably do this by adding different
 # file:// channels with different variants of the same package
 
