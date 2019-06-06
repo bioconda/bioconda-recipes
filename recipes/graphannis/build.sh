@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cargo update
 RUST_BACKTRACE=1 cargo build --release --features "cli c-api"
 
 mkdir -p ${PREFIX}/bin
