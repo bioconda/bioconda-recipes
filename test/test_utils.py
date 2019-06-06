@@ -107,7 +107,6 @@ def single_build(request, recipes_fixture):
         mulled_test = False
     build.build(
         recipe=recipes_fixture.recipe_dirs['one'],
-        recipe_folder='.',
         pkg_paths=recipes_fixture.pkgs['one'],
         docker_builder=docker_builder,
         mulled_test=mulled_test,
@@ -167,7 +166,6 @@ def single_upload():
 
     build.build(
         recipe=r.recipe_dirs[name],
-        recipe_folder='.',
         pkg_paths=r.pkgs[name],
         docker_builder=None,
         mulled_test=False
@@ -557,7 +555,6 @@ def test_rendering_sandboxing():
             pkg_paths = utils.built_package_paths(r.recipe_dirs['one'])
             build.build(
                 recipe=r.recipe_dirs['one'],
-                recipe_folder='.',
                 pkg_paths=pkg_paths,
                 mulled_test=False,
                 _raise_error=True,
@@ -569,7 +566,6 @@ def test_rendering_sandboxing():
             pkg_paths = utils.built_package_paths(r.recipe_dirs['one'])
             build.build(
                 recipe=r.recipe_dirs['one'],
-                recipe_folder='.',
                 pkg_paths=pkg_paths,
                 mulled_test=False,
             )
@@ -617,7 +613,6 @@ def test_env_sandboxing():
     with utils.temp_env({'GITHUB_TOKEN': 'token_here'}):
         build.build(
             recipe=r.recipe_dirs['one'],
-            recipe_folder='.',
             pkg_paths=pkg_paths,
             mulled_test=False
         )
@@ -719,7 +714,6 @@ def test_build_empty_extra_container():
 
     build_result = build.build(
         recipe=r.recipe_dirs['one'],
-        recipe_folder='.',
         pkg_paths=pkgs,
         mulled_test=True,
     )
@@ -766,7 +760,6 @@ def test_build_container_no_default_gcc(tmpdir):
     pkg_paths = utils.built_package_paths(r.recipe_dirs['one'])
     build_result = build.build(
         recipe=r.recipe_dirs['one'],
-        recipe_folder='.',
         pkg_paths=pkg_paths,
         docker_builder=docker_builder,
         mulled_test=False,
