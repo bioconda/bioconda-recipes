@@ -4,6 +4,8 @@ import yaml
 import os
 import subprocess as sp
 
+import conda_build.api
+
 
 def ensure_missing(package):
     """
@@ -23,7 +25,7 @@ def ensure_missing(package):
     if os.path.exists(package):
         os.unlink(package)
     assert not os.path.exists(package)
-    sp.check_call(['conda', 'index', os.path.dirname(package)])
+    conda_build.api.update_index([os.path.dirname(os.path.dirname(package))])
 
 
 class Recipes(object):
