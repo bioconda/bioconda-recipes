@@ -970,6 +970,7 @@ class GitLoadRecipe(GitFilter):
         branch_name = self.branch_name(recipe)
         remote_branch = self.git.get_remote_branch(branch_name)
         local_branch = self.git.get_local_branch(branch_name)
+        master_branch = self.git.get_local_branch('master')
 
         if local_branch:
             logger.debug("Recipe %s: removing local branch %s", recipe, branch_name)
@@ -977,9 +978,7 @@ class GitLoadRecipe(GitFilter):
 
         logger.debug("Recipe %s: loading from master", recipe)
         recipe_text = await self.pipeline.run_io(
-            self.git.read_from_branch,
-            self.git.get_local_branch('master'),
-            recipe.path)
+            self.git.read_from_branch, master_branch, recipe.path)
         recipe.load_from_string(recipe_text)
         recipe.set_original()
 
