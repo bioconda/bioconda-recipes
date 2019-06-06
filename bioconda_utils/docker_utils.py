@@ -136,27 +136,6 @@ class DockerBuildError(Exception):
     pass
 
 
-def dummy_recipe():
-    """
-    Builds a throwaway recipe in a temp dir.
-
-    The best way to figure out where a recipe will be built seems to be by
-    running ``conda build --output $RECIPE``, but this means a recipe has to
-    exist. This creates a minimal meta.yaml file in a temp dir that can be used
-    as an example recipe.
-
-    Caller is expected to delete when done.
-    """
-    tmpdir = tempfile.mkdtemp()
-    meta = os.path.join(tmpdir, 'meta.yaml')
-    with open(meta, 'w') as fout:
-        fout.write(dedent(
-            """
-            package:
-                name: deleteme
-            """))
-    return tmpdir
-
 
 def get_host_conda_bld(purge=True):
     """
@@ -164,18 +143,8 @@ def get_host_conda_bld(purge=True):
 
     Assumes that conda-build is installed.
     """
-    recipe = dummy_recipe()
-    res = os.path.dirname(
-        os.path.dirname(
-            sp.check_output(
-                ['conda', 'build', recipe, '--output'],
-                universal_newlines=True
-            ).splitlines()[0]
-        )
-    )
-    if purge:
-        sp.check_call(['conda', 'build', 'purge'])
-    return res
+    build_conf = utils.load_conda_build_config()
+    return build_conf.build_folder
 
 
 class RecipeBuilder(object):
