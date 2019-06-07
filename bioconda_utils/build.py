@@ -87,14 +87,14 @@ def build(recipe: str, pkg_paths: List[str] = None,
 
     logger.info("BUILD START %s", recipe)
 
-    args = []
+    args = ['--override-channels']
     if testonly:
         args += ["--test"]
     else:
         args += ["--no-anaconda-upload"]
 
-    for channel in channels or []:
-        args += ['--channel', channel]
+    for channel in channels or ['local']:
+        args += ['-c', channel]
 
     logger.debug('Build and Channel Args: %s', args)
 
