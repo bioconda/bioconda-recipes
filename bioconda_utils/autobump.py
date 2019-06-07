@@ -178,13 +178,12 @@ class Scanner(AsyncPipeline[Recipe]):
     Arguments:
       recipe_source: Iteratable providing Recipe stubs
       cache_fn: Filename prefix for caching
-      max_inflight: Maximum number of packages processed asynchronously
       status_fn: Filename for status output
     """
     def __init__(self, recipe_source: Iterable[Recipe],
-                 cache_fn: str = None, max_inflight: int = 100,
+                 cache_fn: str = None,
                  status_fn: str = None) -> None:
-        super().__init__(max_inflight)
+        super().__init__()
         #: recipe source
         self.recipe_source = recipe_source
         #: counter to gather stats on various states
@@ -392,9 +391,6 @@ class CheckPinning(Filter):
         self.scanner = scanner
         self.build_config = utils.load_conda_build_config()
         self.bump_only_python = bump_only_python
-        self.check_func = partial(update_pinnings.check,
-                                  build_config=self.build_config,
-                                  keep_metas=True)
 
     @staticmethod
     def match_version(spec, version):
@@ -414,23 +410,38 @@ class CheckPinning(Filter):
                             'version': version})
 
     async def apply(self, recipe: Recipe) -> None:
-        status = await self.scanner.run_sp(self.check_func, recipe)
-        if status.needs_bump(self.bump_only_python):
+        reason = await self.scanner.run_sp(
+            self._sp_apply,
+            (self.build_config, self.bump_only_python, recipe)
+        )
+        if reason:
+            recipe.data['pinning'] = reason
             new_buildno = recipe.build_number + 1
-            metas = recipe.conda_render(build_config=self.build_config)
-            recipe.data['pinning'] = self.find_reason(recipe, metas)
             logger.info("%s needs rebuild. Bumping buildnumber to %i", recipe, new_buildno)
             recipe.reset_buildnumber(new_buildno)
             recipe.render()
 
-    def find_reason(self, recipe, metas):
+    @classmethod
+    def _sp_apply(cls, data) -> None:
+        config, bop, recipe = data
+        status = update_pinnings.check(recipe, build_config=config, keep_metas=True)
+        if status.needs_bump(bop):
+            metas = recipe.conda_render(config=config)
+            reason = cls.find_reason(recipe, metas)
+        else:
+            reason = None
+        recipe.conda_release()
+        return reason
+
+    @classmethod
+    def find_reason(cls, recipe, metas):
         # Decypher variants:
         pinnings = {}
         for variant in metas:
             variant0 = variant[0]
             for var in variant0.get_used_vars():
                 pinnings.setdefault(var, set()).add(variant0.config.variant[var])
-        variants = {k: v for k, v in pinnings.items() if len(v)>1}
+        variants = {k: v for k, v in pinnings.items() if len(v) > 1}
         if variants:
             logger.error("%s has variants: %s", recipe, variants)
 
@@ -456,13 +467,12 @@ class CheckPinning(Filter):
                                                    name=recipe.name,
                                                    version=recipe.version,
                                                    build_number=recipe.build_number)
-        for build_id, package_deps, platform in package_data:
-            build_causes = []
+        for _build_id, package_deps, _platform in package_data:
             for item in package_deps:
                 package, _, constraint = item.partition(" ")
                 if not constraint or package not in pinnings:
                     continue
-                if any(self.match_version(constraint, version)
+                if any(cls.match_version(constraint, version)
                        for version in resolved_vers[package]):
                     continue
                 causes.setdefault(package, set()).add(
@@ -474,6 +484,7 @@ class CheckPinning(Filter):
             if compiler_pins:
                 return {'compiler': set([f"Recompiling with {' / '.join(compiler_pins)}"])}
         return causes
+        # must return not None!
 
 
 class UpdateVersion(Filter, AutoBumpConfigMixin):
@@ -928,7 +939,7 @@ class LoadRecipe(Filter):
     """Load the recipe from the filesystem"""
     def __init__(self, scanner: Scanner) -> None:
         super().__init__(scanner)
-        self.sem = asyncio.Semaphore(10)
+        self.sem = asyncio.Semaphore(64)
 
     async def apply(self, recipe: Recipe) -> None:
         async with self.sem, \
@@ -959,6 +970,7 @@ class GitLoadRecipe(GitFilter):
         branch_name = self.branch_name(recipe)
         remote_branch = self.git.get_remote_branch(branch_name)
         local_branch = self.git.get_local_branch(branch_name)
+        master_branch = self.git.get_local_branch('master')
 
         if local_branch:
             logger.debug("Recipe %s: removing local branch %s", recipe, branch_name)
@@ -966,9 +978,7 @@ class GitLoadRecipe(GitFilter):
 
         logger.debug("Recipe %s: loading from master", recipe)
         recipe_text = await self.pipeline.run_io(
-            self.git.read_from_branch,
-            self.git.get_local_branch('master'),
-            recipe.path)
+            self.git.read_from_branch, master_branch, recipe.path)
         recipe.load_from_string(recipe_text)
         recipe.set_original()
 
@@ -996,7 +1006,7 @@ class WriteRecipe(Filter, WritingFilter):
     """Write recipe to filesystem"""
     def __init__(self, scanner: Scanner) -> None:
         super().__init__(scanner)
-        self.sem = asyncio.Semaphore(10)
+        self.sem = asyncio.Semaphore(64)
 
     async def apply(self, recipe: Recipe) -> None:
         if not recipe.is_modified():

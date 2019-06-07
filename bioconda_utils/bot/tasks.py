@@ -20,11 +20,7 @@ Celery Tasks doing the actual work
 
 import logging
 import os
-import sys
-import time
-import types
 from collections import namedtuple
-from enum import Enum
 from typing import Tuple, Set
 import tempfile
 import re
@@ -187,7 +183,7 @@ async def bump(issue_number: int, ghapi):
             recipe = Recipe.from_file('recipes', meta_fn)
             recipe.reset_buildnumber(recipe.build_number + 1)
             recipe.save()
-        msg = f"Bump {recipe} buildno to {buildno}"
+            msg = f"Bump {recipe} buildno to {recipe.build_number}"
         if not git.commit_and_push_changes(recipes, None, msg, sign=True):
             logger.error("Failed to push?!")
 
@@ -488,8 +484,8 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
             done = True
             logger.error("Done downloading")
         finally:
-            for fd in fds:
-                fd.close()
+            for fdes in fds:
+                fdes.close()
         if not done:
             return False, "Failed to download archives. Please try again later"
 
@@ -570,7 +566,7 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
 
 
 @celery.task(acks_late=True, ignore_result=True)
-async def post_result(result: Tuple[bool, str], pr_number: int, comment_id: int,
+async def post_result(result: Tuple[bool, str], pr_number: int, _comment_id: int,
                       prefix: str, user: str, ghapi) -> None:
     logger.error("post result: result=%s, issue=%s", result, pr_number)
     status = "succeeded" if result[0] else "failed"
@@ -595,7 +591,7 @@ async def create_welcome_post(pr_number: int, ghapi):
 
 
 @celery.task(acks_late=True)
-async def run_autobump(package_names, ghapi, *args):
+async def run_autobump(package_names, ghapi, *_args):
     """Runs ``autobump`` on packages
 
     Args:

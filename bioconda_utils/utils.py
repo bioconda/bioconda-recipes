@@ -3,43 +3,42 @@ Utility Functions and Classes
 
 This module collects small pieces of code used throughout :py:mod:`bioconda_utils`.
 """
-import os
-import re
-import glob
+
+import asyncio
+import contextlib
+import datetime
 import fnmatch
+import glob
+import logging
+import os
 import subprocess as sp
 import sys
 import shutil
-import contextlib
+import json
+import queue
+import warnings
+
+from threading import Event, Thread
+from pathlib import PurePath
 from collections import Counter, Iterable, defaultdict, namedtuple
 from itertools import product, chain, groupby, zip_longest
 from functools import partial
-import logging
-import datetime
-from threading import Event, Thread
 from typing import Sequence, Collection, List, Dict, Any, Union
-from pathlib import PurePath
-import json
-import warnings
 from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
-import queue
 
-from conda_build import api
-from conda.exports import VersionOrder
 import pkg_resources
-import requests
-from jsonschema import validate
-from distutils.version import LooseVersion
+import pandas as pd
+import tqdm as _tqdm
+import aiohttp
+import backoff
 import yaml
 import jinja2
 from jinja2 import Environment, PackageLoader
+from conda_build import api
+from conda.exports import VersionOrder
+from jsonschema import validate
 from colorlog import ColoredFormatter
-import pandas as pd
-import tqdm as _tqdm
-import asyncio
-import aiohttp
-import backoff
 from boltons.funcutils import FunctionBuilder
 
 
@@ -167,14 +166,29 @@ class LogFuncFilter:
             self.cur_max_lines = self.max_lines
         return True
 
-def setup_logger(name: str, loglevel: Union[str, int] = logging.INFO,
+
+class LoggingSourceRenameFilter:
+    """Logging filter for abbreviating module name in logs
+
+    Maps ``bioconda_utils`` to ``BIOCONDA`` and for everything else
+    to just the top level package uppercased.
+    """
+    def filter(self, record: logging.LogRecord) -> bool:
+        if record.name.startswith("bioconda_utils"):
+            record.name = "BIOCONDA"
+        else:
+            record.name = record.name.split('.')[0].upper()
+        return True
+
+
+def setup_logger(name: str = 'bioconda_utils', loglevel: Union[str, int] = logging.INFO,
                  logfile: str = None, logfile_level: Union[str, int] = logging.DEBUG,
                  log_command_max_lines = None,
                  prefix: str = "BIOCONDA ",
-                 msgfmt: str = ("%(asctime)s"
-                                "%(log_color)s{prefix}%(levelname)s%(reset)s "
+                 msgfmt: str = ("%(asctime)s "
+                                "%(log_color)s%(name)s %(levelname)s%(reset)s "
                                 "%(message)s"),
-                 datefmt: str ="%H:%M:%S ") -> logging.Logger:
+                 datefmt: str ="%H:%M:%S") -> logging.Logger:
     """Set up logging for bioconda-utils
 
     Args:
@@ -190,6 +204,7 @@ def setup_logger(name: str, loglevel: Union[str, int] = logging.INFO,
       A new logger
     """
     new_logger = logging.getLogger(name)
+    root_logger = logging.getLogger()
 
     if logfile:
         if isinstance(logfile_level, str):
@@ -198,10 +213,10 @@ def setup_logger(name: str, loglevel: Union[str, int] = logging.INFO,
         log_file_handler.setLevel(logfile_level)
         log_file_formatter = logging.Formatter(
             msgfmt.replace("%(log_color)s", "").replace("%(reset)s", "").format(prefix=prefix),
-            datefmt=datefmt
+            datefmt=None,
         )
         log_file_handler.setFormatter(log_file_formatter)
-        new_logger.addHandler(log_file_handler)
+        root_logger.addHandler(log_file_handler)
     else:
         logfile_level = logging.FATAL
 
@@ -209,9 +224,7 @@ def setup_logger(name: str, loglevel: Union[str, int] = logging.INFO,
         loglevel = getattr(logging, loglevel.upper())
 
     # Base logger is set to the lowest of console or file logging
-    new_logger.setLevel(min(loglevel, logfile_level))
-
-    new_logger.propagate = False
+    root_logger.setLevel(min(loglevel, logfile_level))
 
     # Console logging is passed through TqdmHandler so that the progress bar does not
     # get broken by log lines emitted.
@@ -230,7 +243,8 @@ def setup_logger(name: str, loglevel: Union[str, int] = logging.INFO,
             'ERROR': 'red',
             'CRITICAL': 'red',
         }))
-    new_logger.addHandler(log_stream_handler)
+    log_stream_handler.addFilter(LoggingSourceRenameFilter())
+    root_logger.addHandler(log_stream_handler)
 
     # Add filter for `utils.run` to truncate after n lines emitted.
     # We do this here rather than in `utils.run` so that it can be configured
@@ -238,6 +252,7 @@ def setup_logger(name: str, loglevel: Union[str, int] = logging.INFO,
     if log_command_max_lines is not None:
         log_filter = LogFuncFilter(run, "Command output truncated", log_command_max_lines)
         log_stream_handler.addFilter(log_filter)
+
     return new_logger
 
 
@@ -672,7 +687,7 @@ class EnvMatrix:
             yield env
 
 
-def get_deps(recipe=None, meta=None, build=True):
+def get_deps(recipe=None, build=True):
     """
     Generator of dependencies for a single recipe
 
@@ -840,7 +855,9 @@ def built_package_paths(recipe):
     but without the subprocess.
     """
     config = load_conda_build_config()
-    paths = api.get_output_file_paths(recipe, config=config)
+    # NB: Setting bypass_env_check disables ``pin_compatible`` parsing, which
+    #     these days does not change the package build string, so should be fine.
+    paths = api.get_output_file_paths(recipe, config=config, bypass_env_check=True)
     return paths
 
 

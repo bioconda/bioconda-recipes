@@ -504,6 +504,12 @@ class Linter:
         """Clears the lint messages stored in linter"""
         self._messages = []
 
+    def get_report(self) -> str:
+        return "\n".join(
+            f"{msg.severity.name}: {msg.fname}:{msg.end_line}: {msg.check}: {msg.title}"
+            for msg in self.get_messages()
+        )
+
     def load_skips(self):
         """Parses lint skips
 

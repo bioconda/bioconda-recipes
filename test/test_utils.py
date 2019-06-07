@@ -19,6 +19,9 @@ from bioconda_utils import build
 from bioconda_utils import upload
 from helpers import ensure_missing, Recipes
 
+
+logger = logging.getLogger(__name__)
+
 # TODO: need channel order tests. Could probably do this by adding different
 # file:// channels with different variants of the same package
 
@@ -50,16 +53,14 @@ def ensure_env_missing(env_name):
     exist, deleting it if needed.
     """
     def _clean():
-        p = sp.run(
-            ['conda', 'env', 'list'],
-            stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
-            universal_newlines=True)
+        proc = sp.run(['conda', 'env', 'list'],
+                      stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
+                      universal_newlines=True)
 
-        if env_name in p.stdout:
-            p = sp.run(
-                ['conda', 'env', 'remove', '-y', '-n', env_name],
-                stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
-                universal_newlines=True)
+        if env_name in proc.stdout:
+            sp.run(['conda', 'env', 'remove', '-y', '-n', env_name],
+                   stdout=sp.PIPE, stderr=sp.STDOUT, check=True,
+                   universal_newlines=True)
     _clean()
     yield
     _clean()
@@ -74,18 +75,20 @@ def recipes_fixture():
     Writes example recipes (based on test_case.yaml), figures out the package
     paths and attaches them to the Recipes instance, and cleans up afterward.
     """
-    r = Recipes('test_case.yaml')
-    r.write_recipes()
-    r.pkgs = {}
-    for k, v in r.recipe_dirs.items():
-        r.pkgs[k] = utils.built_package_paths(v)
-    yield r
-    for pkgs in r.pkgs.values():
+    rcp = Recipes('test_case.yaml')
+    rcp.write_recipes()
+    rcp.pkgs = {}
+    for key, val in rcp.recipe_dirs.items():
+        rcp.pkgs[key] = utils.built_package_paths(val)
+    yield rcp
+    for pkgs in rcp.pkgs.values():
         for pkg in pkgs:
             ensure_missing(pkg)
 
+
 @pytest.fixture(scope='module')
 def config_fixture():
+    """Loads config"""
     config = utils.load_config(
         os.path.join(os.path.dirname(__file__), "test-config.yaml"))
     yield config
@@ -97,27 +100,30 @@ def single_build(request, recipes_fixture):
     Builds the "one" recipe.
     """
     if request.param:
+        logger.error("Making recipe builder")
         docker_builder = docker_utils.RecipeBuilder(
             use_host_conda_bld=True,
             docker_base_image=DOCKER_BASE_IMAGE)
         mulled_test = True
+        logger.error("DONE")
     else:
         docker_builder = None
         mulled_test = False
+    logger.error("Fixture: Building 'one' %s",
+                 "within docker" if docker_builder else "locally")
     build.build(
         recipe=recipes_fixture.recipe_dirs['one'],
-        recipe_folder='.',
         pkg_paths=recipes_fixture.pkgs['one'],
         docker_builder=docker_builder,
         mulled_test=mulled_test,
     )
+    logger.error("Fixture: Building 'one' %s -- DONE",
+                 "within docker" if docker_builder else "locally")
     yield recipes_fixture.pkgs['one']
     for pkg in recipes_fixture.pkgs['one']:
         ensure_missing(pkg)
 
 
-# TODO: need to have a variant of this where TRAVIS_BRANCH_NAME="master" in
-# order to properly test for upload.
 @pytest.fixture(scope='module', params=PARAMS, ids=IDS)
 def multi_build(request, recipes_fixture, config_fixture):
     """
@@ -131,12 +137,13 @@ def multi_build(request, recipes_fixture, config_fixture):
     else:
         docker_builder = None
         mulled_test = False
-    build.build_recipes(
-        recipe_folder=recipes_fixture.basedir,
-        docker_builder=docker_builder,
-        config=config_fixture,
-        mulled_test=mulled_test,
-    )
+    logger.error("Fixture: Building one/two/three %s",
+                 "within docker" if docker_builder else "locally")
+    build.build_recipes(recipes_fixture.basedir, config_fixture,
+                        docker_builder=docker_builder,
+                        mulled_test=mulled_test)
+    logger.error("Fixture: Building one/two/three %s -- DONE",
+                 "within docker" if docker_builder else "locally")
     built_packages = recipes_fixture.pkgs
     yield built_packages
     for pkgs in built_packages.values():
@@ -166,7 +173,6 @@ def single_upload():
 
     build.build(
         recipe=r.recipe_dirs[name],
-        recipe_folder='.',
         pkg_paths=r.pkgs[name],
         docker_builder=None,
         mulled_test=False
@@ -243,12 +249,9 @@ def test_docker_build_fails(recipes_fixture, config_fixture):
         docker_base_image=DOCKER_BASE_IMAGE,
         build_script_template="exit 1")
     assert docker_builder.build_script_template == 'exit 1'
-    result = build.build_recipes(
-        recipes_fixture.basedir,
-        config=config_fixture,
-        docker_builder=docker_builder,
-        mulled_test=True,
-    )
+    result = build.build_recipes(recipes_fixture.basedir, config_fixture,
+                                 docker_builder=docker_builder,
+                                 mulled_test=True)
     assert not result
 
 
@@ -261,21 +264,6 @@ def test_docker_build_image_fails():
         """)
     with pytest.raises(sp.CalledProcessError):
         docker_utils.RecipeBuilder(dockerfile_template=template, build_image=True)
-
-
-def test_conda_purge_cleans_up():
-    def tmp_dir_exists(d):
-        contents = os.listdir(d)
-        print("conda-bld/:", *contents)
-        for i in contents:
-            if i.startswith('deleteme_'):
-                return True
-        return False
-
-    bld = docker_utils.get_host_conda_bld(purge=False)
-    assert tmp_dir_exists(bld)
-    bld = docker_utils.get_host_conda_bld(purge=True)
-    assert not tmp_dir_exists(bld)
 
 
 def test_get_deps():
@@ -324,14 +312,11 @@ def test_conda_as_dep(config_fixture):
                 - conda
         """, from_string=True)
     r.write_recipes()
-    build_result = build.build_recipes(
-        r.basedir,
-        config=config_fixture,
-        packages="*",
-        testonly=False,
-        force=False,
-        mulled_test=True,
-    )
+    build_result = build.build_recipes(r.basedir, config_fixture,
+                                       packages="*",
+                                       testonly=False,
+                                       force=False,
+                                       mulled_test=True)
     assert build_result
 
 # TODO replace the filter tests with tests for utils.get_package_paths()
@@ -556,10 +541,9 @@ def test_rendering_sandboxing():
             pkg_paths = utils.built_package_paths(r.recipe_dirs['one'])
             build.build(
                 recipe=r.recipe_dirs['one'],
-                recipe_folder='.',
                 pkg_paths=pkg_paths,
                 mulled_test=False,
-                _raise_error=True,
+                raise_error=True,
             )
         assert ("'GITHUB_TOKEN' is undefined" in str(excinfo.value.stdout))
     else:
@@ -568,7 +552,6 @@ def test_rendering_sandboxing():
             pkg_paths = utils.built_package_paths(r.recipe_dirs['one'])
             build.build(
                 recipe=r.recipe_dirs['one'],
-                recipe_folder='.',
                 pkg_paths=pkg_paths,
                 mulled_test=False,
             )
@@ -616,7 +599,6 @@ def test_env_sandboxing():
     with utils.temp_env({'GITHUB_TOKEN': 'token_here'}):
         build.build(
             recipe=r.recipe_dirs['one'],
-            recipe_folder='.',
             pkg_paths=pkg_paths,
             mulled_test=False
         )
@@ -663,14 +645,11 @@ def test_skip_dependencies(config_fixture):
         for pkg in _pkgs:
             ensure_missing(pkg)
 
-    build.build_recipes(
-        r.basedir,
-        config=config_fixture,
-        packages="*",
-        testonly=False,
-        force=False,
-        mulled_test=False,
-    )
+    build.build_recipes(r.basedir, config_fixture,
+                        packages="*",
+                        testonly=False,
+                        force=False,
+                        mulled_test=False)
     for pkg in pkgs['one']:
         assert os.path.exists(pkg)
     for pkg in pkgs['two']:
@@ -686,7 +665,8 @@ def test_skip_dependencies(config_fixture):
 
 class TestSubdags(object):
     def _build(self, recipes_fixture, config_fixture):
-        build.build_recipes(recipes_fixture.basedir, config=config_fixture, mulled_test=False)
+        build.build_recipes(recipes_fixture.basedir, config_fixture,
+                            mulled_test=False)
 
     def test_subdags_out_of_range(self, recipes_fixture, config_fixture):
         with pytest.raises(ValueError):
@@ -718,7 +698,6 @@ def test_build_empty_extra_container():
 
     build_result = build.build(
         recipe=r.recipe_dirs['one'],
-        recipe_folder='.',
         pkg_paths=pkgs,
         mulled_test=True,
     )
@@ -765,7 +744,6 @@ def test_build_container_no_default_gcc(tmpdir):
     pkg_paths = utils.built_package_paths(r.recipe_dirs['one'])
     build_result = build.build(
         recipe=r.recipe_dirs['one'],
-        recipe_folder='.',
         pkg_paths=pkg_paths,
         docker_builder=docker_builder,
         mulled_test=False,
@@ -791,14 +769,11 @@ def no_test_conda_forge_pins(caplog, config_fixture):
                 - zlib {{ zlib }}
         """, from_string=True)
     r.write_recipes()
-    build_result = build.build_recipes(
-        r.basedir,
-        config=config_fixture,
-        packages="*",
-        testonly=False,
-        force=False,
-        mulled_test=False,
-    )
+    build_result = build.build_recipes(r.basedir, config_fixture,
+                                       packages="*",
+                                       testonly=False,
+                                       force=False,
+                                       mulled_test=False)
     assert build_result
 
     for k, v in r.recipe_dirs.items():
@@ -825,14 +800,11 @@ def test_bioconda_pins(caplog, config_fixture):
                 - htslib
         """, from_string=True)
     r.write_recipes()
-    build_result = build.build_recipes(
-        r.basedir,
-        config=config_fixture,
-        packages="*",
-        testonly=False,
-        force=False,
-        mulled_test=False,
-    )
+    build_result = build.build_recipes(r.basedir, config_fixture,
+                                       packages="*",
+                                       testonly=False,
+                                       force=False,
+                                       mulled_test=False)
     assert build_result
 
     for k, v in r.recipe_dirs.items():
@@ -915,14 +887,11 @@ def test_cb3_outputs(config_fixture):
     r.write_recipes()
     r.recipe_dirs['one']
 
-    build_result = build.build_recipes(
-        r.basedir,
-        config=config_fixture,
-        packages="*",
-        testonly=False,
-        force=False,
-        mulled_test=False,
-    )
+    build_result = build.build_recipes(r.basedir, config_fixture,
+                                       packages="*",
+                                       testonly=False,
+                                       force=False,
+                                       mulled_test=False)
     assert build_result
 
     for k, v in r.recipe_dirs.items():
@@ -948,14 +917,11 @@ def test_compiler(config_fixture):
                 - python
         """, from_string=True)
     r.write_recipes()
-    build_result = build.build_recipes(
-        r.basedir,
-        config=config_fixture,
-        packages="*",
-        testonly=False,
-        force=False,
-        mulled_test=False,
-    )
+    build_result = build.build_recipes(r.basedir, config_fixture,
+                                       packages="*",
+                                       testonly=False,
+                                       force=False,
+                                       mulled_test=False)
     assert build_result
 
     for k, v in r.recipe_dirs.items():
@@ -1019,14 +985,11 @@ def test_nested_recipes(config_fixture):
         """, from_string=True)
     r.write_recipes()
 
-    build_results = build.build_recipes(
-        r.basedir,
-        config=config_fixture,
-        packages="*",
-        testonly=False,
-        force=False,
-        mulled_test=False,
-    )
+    build_results = build.build_recipes(r.basedir, config_fixture,
+                                        packages="*",
+                                        testonly=False,
+                                        force=False,
+                                        mulled_test=False)
     assert build_results
 
     assert len(list(utils.get_recipes(r.basedir))) == 4

@@ -56,7 +56,6 @@ def _build_pkg(recipe, mulled_test=False):
         ensure_missing(pkg)
     build.build(
         recipe=r.recipe_dirs['one'],
-        recipe_folder='.',
         pkg_paths=built_packages,
         mulled_test=mulled_test,
     )

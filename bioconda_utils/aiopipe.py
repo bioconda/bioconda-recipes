@@ -79,7 +79,7 @@ class AsyncFilter(abc.ABC, Generic[ITEM]):
 class AsyncPipeline(Generic[ITEM]):
     """Processes items in an asyncio pipeline"""
 
-    def __init__(self, max_inflight: int = 100, threads: int = None) -> None:
+    def __init__(self, threads: int = None) -> None:
         try:  # get or create loop (threads don't have one)
             #: our asyncio loop
             self.loop = asyncio.get_event_loop()
@@ -91,13 +91,12 @@ class AsyncPipeline(Generic[ITEM]):
         #: semaphore to limit io parallelism
         self.io_sem: asyncio.Semaphore = asyncio.Semaphore(1)
         #: must never run more than one conda at the same time
+        #: (used by PyPi when running skeleton)
         self.conda_sem: asyncio.Semaphore = asyncio.Semaphore(1)
         #: the filters successively applied to each item
         self.filters: List[AsyncFilter] = []
         #: executor running things in separate python processes
         self.proc_pool_executor = ProcessPoolExecutor(self.threads)
-        #: semaphore limiting the number of items processed concurrently
-        self.limit_inflight = asyncio.Semaphore(max_inflight)
 
         self._shutting_down = False
 
@@ -195,23 +194,22 @@ class AsyncPipeline(Generic[ITEM]):
 
     async def process(self, item: ITEM) -> bool:
         """Applies the filters to an item"""
-        async with self.limit_inflight:
-            try:
-                for filt in self.filters:
-                    await filt.apply(item)
-            except asyncio.CancelledError:
-                return False
-            except EndProcessingItem as item_error:
-                item_error.log(logger)
-                raise
-            except BrokenExecutor:
-                logger.exception("Fatal exception while processing %s", item)
-                # can't fix this - if one of the pools is done for, so are we
-                raise
-            except Exception:  # pylint: disable=broad-except
-                if not self._shutting_down:
-                    logger.exception("While processing %s", item)
-                return False
+        try:
+            for filt in self.filters:
+                await filt.apply(item)
+        except asyncio.CancelledError:
+            return False
+        except EndProcessingItem as item_error:
+            item_error.log(logger)
+            raise
+        except BrokenExecutor:
+            logger.exception("Fatal exception while processing %s", item)
+            # can't fix this - if one of the pools is done for, so are we
+            raise
+        except Exception:  # pylint: disable=broad-except
+            if not self._shutting_down:
+                logger.exception("While processing %s", item)
+            return False
         return True
 
     async def run_io(self, func, *args):

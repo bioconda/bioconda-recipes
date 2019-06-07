@@ -24,6 +24,7 @@ import networkx as nx
 from networkx.drawing.nx_pydot import write_dot
 import pandas
 
+from . import __version__ as VERSION
 from . import utils
 from .build import build_recipes
 from . import docker_utils
@@ -37,7 +38,7 @@ from .githandler import BiocondaRepo
 logger = logging.getLogger(__name__)
 
 
-def enable_logging(default_loglevel='info'):
+def enable_logging(default_loglevel='info', default_file_loglevel='debug'):
     """Adds the parameter ``--loglevel`` and sets up logging
 
     Args:
@@ -49,7 +50,8 @@ def enable_logging(default_loglevel='info'):
         @arg('--logfile-level', help="Log level for log file")
         @arg('--log-command-max-lines', help="Limit lines emitted for commands executed")
         @utils.wraps(func)
-        def wrapper(*args, loglevel=default_loglevel, logfile=None, logfile_level=None,
+        def wrapper(*args, loglevel=default_loglevel, logfile=None,
+                    logfile_level=default_file_loglevel,
                     log_command_max_lines=None, **kwargs):
             max_lines = int(log_command_max_lines) if log_command_max_lines else None
             utils.setup_logger('bioconda_utils', loglevel, logfile, logfile_level,
@@ -322,8 +324,7 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
 
     if messages:
         print("The following problems have been found:\n")
-        for msg in messages:
-            print(f"{msg.severity.name}: {msg.fname}:{msg.end_line}: {msg.check}: {msg.title}")
+        print(linter.get_report())
 
     if not result:
         print("All checks OK")
@@ -440,21 +441,18 @@ def build(
     if label == "":
         label = None
 
-    success = build_recipes(
-        recipe_folder,
-        config=config,
-        packages=[p.lstrip(recipe_folder) for p in packages],
-        testonly=testonly,
-        force=force,
-        mulled_test=mulled_test,
-        docker_builder=docker_builder,
-        anaconda_upload=anaconda_upload,
-        mulled_upload_target=mulled_upload_target,
-        lint=lint,
-        lint_exclude=lint_exclude,
-        check_channels=check_channels,
-        label=label,
-    )
+    success = build_recipes(recipe_folder, config,
+                            packages=[p.lstrip(recipe_folder) for p in packages],
+                            testonly=testonly,
+                            force=force,
+                            mulled_test=mulled_test,
+                            docker_builder=docker_builder,
+                            anaconda_upload=anaconda_upload,
+                            mulled_upload_target=mulled_upload_target,
+                            do_lint=lint,
+                            lint_exclude=lint_exclude,
+                            check_channels=check_channels,
+                            label=label)
     exit(0 if success else 1)
 
 
@@ -752,7 +750,6 @@ def clean_cran_skeleton(recipe, no_windows=False):
      Implies create-branch.''')
 @arg("--max-updates", help='''Exit after ARG updates''')
 @arg("--no-shuffle", help='''Do not shuffle recipe order''')
-@arg("--parallel", help='''Maximum number of recipes to consider in parallel''')
 @arg("--dry-run", help='''Don't update remote git or github"''')
 @arg("--no-check-pinnings", help='''Don't check for pinning updates''')
 @arg("--no-follow-graph",
@@ -777,7 +774,7 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
              fetch_requirements=False,
              check_branch=False, create_branch=False, create_pr=False,
              only_active=False, no_shuffle=False,
-             max_updates=0, parallel=100, dry_run=False,
+             max_updates=0, dry_run=False,
              no_check_pinnings=False, no_follow_graph=False,
              no_check_version_update=False,
              no_check_pending_deps=False, bump_only_python=False):
@@ -802,7 +799,6 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
     # Setup scanning pipeline
     scanner = autobump.Scanner(recipe_source,
                                cache_fn=cache and cache + "_scan.pkl",
-                               max_inflight=parallel,
                                status_fn=recipe_status)
 
     # Always exclude recipes that were explicitly disabled
@@ -901,6 +897,9 @@ def bot(loglevel='info'):
     logger.error("Nothing here yet")
 
 def main():
+    if '--version' in sys.argv:
+        print("This is bioconda-utils version", VERSION)
+        sys.exit(0)
     argh.dispatch_commands([
         build, dag, dependent, do_lint, duplicates, update_pinning,
         bioconductor_skeleton, clean_cran_skeleton, autobump, bot
