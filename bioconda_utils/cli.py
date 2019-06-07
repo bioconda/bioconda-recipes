@@ -92,16 +92,16 @@ def enable_threads():
     return decorator
 
 
-def recipe_folder_and_config():
+def recipe_folder_and_config(allow_missing_for=None):
     """Adds optional positional arguments recipe_folder and config
 
     Requires that func has synopsis ``def x(recipe_folder, config,...)``.
     """
-    def check_arg(args, idx, name, default):
+    def check_arg(args, idx, name, default, allow_missing):
         val = args[idx]
         if not val:
             val = default
-        if not os.path.exists(val):
+        if not os.path.exists(val) and not allow_missing:
             sys.exit(f"Argument '{name}' points to missing file '{val}'")
         if val != args[idx]:
             lst = list(args)
@@ -114,6 +114,8 @@ def recipe_folder_and_config():
         try:
             recipe_folder_idx = args.index('recipe_folder')
             config_idx = args.index('config')
+            allow_missing_idx = [args.index(field)
+                                 for field in allow_missing_for or []]
         except ValueError:
             sys.exit(f"Function {func} must have 'recipe_folder' and 'config' args")
         @arg('recipe_folder', nargs='?',
@@ -122,8 +124,9 @@ def recipe_folder_and_config():
              help='Path to Bioconda config (default: config.yml)')
         @utils.wraps(func)
         def wrapper(*args, **kwargs):
-            args = check_arg(args, recipe_folder_idx, 'recipe_folder', 'recipes/')
-            args = check_arg(args, config_idx, 'config', 'config.yml')
+            allow = any(args[idx] for idx in allow_missing_idx)
+            args = check_arg(args, recipe_folder_idx, 'recipe_folder', 'recipes/', allow)
+            args = check_arg(args, config_idx, 'config', 'config.yml', allow)
             func(*args, **kwargs)
         return wrapper
     return decorator
@@ -245,7 +248,7 @@ def duplicates(config,
                 print(*spec, ','.join(dup_channels), sep='\t')
 
 
-@recipe_folder_and_config()
+@recipe_folder_and_config(allow_missing_for=['list_checks'])
 @arg(
     '--packages',
     nargs="+",
@@ -295,12 +298,13 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
     If --push-status is not set, reports a TSV of linting results to stdout.
     Otherwise pushes a commit status to the specified commit on github.
     """
+    if list_checks:
+        print('\n'.join(str(check) for check in lint.get_checks()))
+        sys.exit(0)
+
     config_filename = config
     config = utils.load_config(config)
 
-    if list_checks:
-        print('\n'.join(i.__name__ for i in registry))
-        sys.exit(0)
 
     if cache is not None:
         utils.RepoData().set_cache(cache)
