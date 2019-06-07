@@ -856,7 +856,9 @@ def built_package_paths(recipe):
     but without the subprocess.
     """
     config = load_conda_build_config()
-    paths = api.get_output_file_paths(recipe, config=config)
+    # NB: Setting bypass_env_check disables ``pin_compatible`` parsing, which
+    #     these days does not change the package build string, so should be fine.
+    paths = api.get_output_file_paths(recipe, config=config, bypass_env_check=True)
     return paths
 
 
