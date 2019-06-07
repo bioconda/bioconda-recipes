@@ -39,6 +39,10 @@ def install_gpg_key(key) -> str:
             key = match.group(1)
             break
     else:
+        # If the key has escaped newlines (\n literally), replace those
+        # and try again
+        if r'\n' in key:
+            return install_gpg_key(key.replace(r'\n', '\n'))
         raise ValueError(f"Unable to import GPG key: {proc.stderr}")
     return key
 

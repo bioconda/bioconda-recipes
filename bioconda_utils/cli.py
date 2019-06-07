@@ -33,7 +33,7 @@ from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import cran_skeleton
 from . import update_pinnings
 from . import graph
-from .githandler import BiocondaRepo
+from .githandler import BiocondaRepo, install_gpg_key
 
 logger = logging.getLogger(__name__)
 
@@ -843,7 +843,7 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
             git_handler.enable_signing(sign)
         elif env_key:
             try:
-                git_handler.enable_signing(githandler.install_gpg_key(env_key))
+                git_handler.enable_signing(install_gpg_key(env_key))
             except ValueError as exc:
                 logger.error("Failed to use CODE_SIGNING_KEY from environment: %s",
                              exc)
