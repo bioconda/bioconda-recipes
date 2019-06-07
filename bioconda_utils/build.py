@@ -101,7 +101,7 @@ def build(recipe: str, pkg_paths: List[str] = None,
     # Even though there may be variants of the recipe that will be built, we
     # will only be checking attributes that are independent of variants (pkg
     # name, version, noarch, whether or not an extended container was used)
-    meta = utils.load_first_metadata(recipe)
+    meta = utils.load_first_metadata(recipe, finalize=False)
     is_noarch = bool(meta.get_value('build/noarch', default=False))
     use_base_image = meta.get_value('extra/container', {}).get('extended-base', False)
     base_image = 'bioconda/extended-base-image' if use_base_image else None
