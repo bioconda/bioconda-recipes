@@ -769,6 +769,8 @@ def clean_cran_skeleton(recipe, no_windows=False):
      change is the python version. This is generally required unless you plan
      on building everything.""")
 @arg('--sign', nargs="?", help='''Enable signing. Optionally takes keyid.''')
+@arg('--commit-as', nargs=2, help='''Set user and email to use for committing. '''
+     '''Takes exactly two arguments.''')
 @enable_logging()
 @enable_debugging()
 @enable_threads()
@@ -783,7 +785,7 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
              no_check_pinnings=False, no_follow_graph=False,
              no_check_version_update=False,
              no_check_pending_deps=False, bump_only_python=False,
-             sign=0):
+             sign=0, commit_as=None):
     """
     Updates recipes in recipe_folder
     """
@@ -845,6 +847,8 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
             except ValueError as exc:
                 logger.error("Failed to use CODE_SIGNING_KEY from environment: %s",
                              exc)
+        if commit_as:
+            git_handler.set_user(*commit_as)
     else:
         # Just load from local file system
         scanner.add(autobump.LoadRecipe)

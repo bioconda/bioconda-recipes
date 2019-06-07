@@ -87,6 +87,9 @@ class GitHandlerBase():
         #: GPG key ID or bool, indicating whether/how to sign commits
         self._sign: Union[bool, str] = False
 
+        #: Committer and Author
+        self.actor: git.Actor = None
+
     def close(self):
         """Release resources allocated"""
         self.repo.close()
@@ -342,11 +345,19 @@ class GitHandlerBase():
             sign = self._sign
         if sign:
             # Gitpyhon does not support signing, so we use the command line client here
-            sign = '-S' + sign if isinstance(sign, str) else ''
+            args = [
+                '-S' + sign if isinstance(sign, str) else '-S',
+                '-m', msg,
+            ]
+            if self.actor:
+                args += ['--author', f'{self.actor.name} <{self.actor.email}>']
             self.repo.index.write()
-            self.repo.git.commit(sign, '-m', msg)
+            self.repo.git.commit(*args)
         else:
-            self.repo.index.commit(msg)
+            if self.actor:
+                self.repo.index.commit(msg, author=self.actor)
+            else:
+                self.repo.index.commit(msg)
 
         if not self.dry_run:
             logger.info("Pushing branch %s", branch_name)
@@ -364,13 +375,9 @@ class GitHandlerBase():
             logger.info("Would push branch %s", branch_name)
         return True
 
-    def set_user(self, user: str, email: str = None, key: str = None) -> None:
-        with self.repo.config_writer() as writer:
-            writer.set_value("user", "name", user)
-            email = email or f"{user}@users.noreply.github.com"
-            writer.set_value("user", "email", email)
-            if key is not None:
-                writer.set_value("user", "signingkey", key)
+    def set_user(self, user: str, email: str = None) -> None:
+        """Set the user and email to use for committing"""
+        self.actor = git.Actor(user, email)
 
 
 class BiocondaRepoMixin(GitHandlerBase):
