@@ -20,9 +20,9 @@ from kombu import serialization
 import simplejson
 
 from ..githubhandler import GitHubAppHandler, GitHubHandler
+from ..githandler import install_gpg_key
 from ..utils import RepoData
 from .config import APP_ID, APP_KEY, CODE_SIGNING_KEY, BOT_NAME, REPODATA_TIMEOUT
-from .githandler import install_gpg_key
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
