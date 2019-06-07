@@ -33,7 +33,7 @@ from . import bioconductor_skeleton as _bioconductor_skeleton
 from . import cran_skeleton
 from . import update_pinnings
 from . import graph
-from .githandler import BiocondaRepo
+from .githandler import BiocondaRepo, install_gpg_key
 
 logger = logging.getLogger(__name__)
 
@@ -768,6 +768,9 @@ def clean_cran_skeleton(recipe, no_windows=False):
      help="""Bump package build numbers even if the only applicable pinning
      change is the python version. This is generally required unless you plan
      on building everything.""")
+@arg('--sign', nargs="?", help='''Enable signing. Optionally takes keyid.''')
+@arg('--commit-as', nargs=2, help='''Set user and email to use for committing. '''
+     '''Takes exactly two arguments.''')
 @enable_logging()
 @enable_debugging()
 @enable_threads()
@@ -781,7 +784,8 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
              max_updates=0, dry_run=False,
              no_check_pinnings=False, no_follow_graph=False,
              no_check_version_update=False,
-             no_check_pending_deps=False, bump_only_python=False):
+             no_check_pending_deps=False, bump_only_python=False,
+             sign=0, commit_as=None):
     """
     Updates recipes in recipe_folder
     """
@@ -831,9 +835,25 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
         if only_active:
             scanner.add(autobump.ExcludeNoActiveUpdate, git_handler)
         scanner.add(autobump.GitLoadRecipe, git_handler)
+
+        env_key = os.environ.get("CODE_SIGNING_KEY")
+        if sign is None:
+            git_handler.enable_signing()
+        elif sign:
+            git_handler.enable_signing(sign)
+        elif env_key:
+            try:
+                git_handler.enable_signing(install_gpg_key(env_key))
+            except ValueError as exc:
+                logger.error("Failed to use CODE_SIGNING_KEY from environment: %s",
+                             exc)
+        if commit_as:
+            git_handler.set_user(*commit_as)
     else:
         # Just load from local file system
         scanner.add(autobump.LoadRecipe)
+        if sign or sign is None:
+            logger.warning("Not using git. --sign has no effect")
 
     # Exclude recipes that are present in "other channels"
     if exclude_channels != ["none"]:

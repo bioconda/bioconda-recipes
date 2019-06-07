@@ -4,7 +4,9 @@ import asyncio
 import atexit
 import logging
 import os
+import re
 import tempfile
+import subprocess
 from typing import List, Union
 
 import git
@@ -14,6 +16,35 @@ from . import utils
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
+
+
+def install_gpg_key(key) -> str:
+    """Install GPG key
+
+    Args:
+      key: Key to import to GPG as string
+
+    Returns:
+      GPG key ID
+
+    Raises:
+      ValueError if importing the key failed
+    """
+    proc = subprocess.run(['gpg', '--import'],
+                          input=key, stderr=subprocess.PIPE,
+                          encoding='ascii', check=True)
+    for line in proc.stderr.splitlines():
+        match = re.match(r'gpg: key ([\dA-F]{16}): secret key imported', line)
+        if match:
+            key = match.group(1)
+            break
+    else:
+        # If the key has escaped newlines (\n literally), replace those
+        # and try again
+        if r'\n' in key:
+            return install_gpg_key(key.replace(r'\n', '\n'))
+        raise ValueError(f"Unable to import GPG key: {proc.stderr}")
+    return key
 
 
 class GitHandlerFailure(Exception):
@@ -57,6 +88,12 @@ class GitHandlerBase():
         #: Semaphore for things that mess with working directory
         self.lock_working_dir = asyncio.Semaphore(1)
 
+        #: GPG key ID or bool, indicating whether/how to sign commits
+        self._sign: Union[bool, str] = False
+
+        #: Committer and Author
+        self.actor: git.Actor = None
+
     def close(self):
         """Release resources allocated"""
         self.repo.close()
@@ -69,6 +106,16 @@ class GitHandlerBase():
         if self.fork_remote != self.home_remote:
             name = f"{name} <- {get_name(self.fork_remote)}"
         return f"{self.__class__.__name__}({name})"
+
+    def enable_signing(self, key: Union[bool, str] = True) -> None:
+        """Enable signing of commits
+
+        Args:
+          key: Keyid to use for signing. Set to ``True`` to enable
+               using the default key or to ``False`` to disable
+               signing.
+        """
+        self._sign = key
 
     def get_remote(self, desc: str):
         """Finds first remote containing **desc** in one of its URLs"""
@@ -298,12 +345,23 @@ class GitHandlerBase():
         if not self.repo.index.diff("HEAD"):
             return False
 
+        if self._sign and not sign:
+            sign = self._sign
         if sign:
             # Gitpyhon does not support signing, so we use the command line client here
+            args = [
+                '-S' + sign if isinstance(sign, str) else '-S',
+                '-m', msg,
+            ]
+            if self.actor:
+                args += ['--author', f'{self.actor.name} <{self.actor.email}>']
             self.repo.index.write()
-            self.repo.git.commit('-S', '-m', msg)
+            self.repo.git.commit(*args)
         else:
-            self.repo.index.commit(msg)
+            if self.actor:
+                self.repo.index.commit(msg, author=self.actor)
+            else:
+                self.repo.index.commit(msg)
 
         if not self.dry_run:
             logger.info("Pushing branch %s", branch_name)
@@ -321,13 +379,9 @@ class GitHandlerBase():
             logger.info("Would push branch %s", branch_name)
         return True
 
-    def set_user(self, user: str, email: str = None, key: str = None) -> None:
-        with self.repo.config_writer() as writer:
-            writer.set_value("user", "name", user)
-            email = email or f"{user}@users.noreply.github.com"
-            writer.set_value("user", "email", email)
-            if key is not None:
-                writer.set_value("user", "signingkey", key)
+    def set_user(self, user: str, email: str = None) -> None:
+        """Set the user and email to use for committing"""
+        self.actor = git.Actor(user, email)
 
 
 class BiocondaRepoMixin(GitHandlerBase):
