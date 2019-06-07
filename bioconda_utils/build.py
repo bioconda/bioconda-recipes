@@ -3,7 +3,6 @@ Package Builder
 """
 
 import subprocess as sp
-from itertools import chain
 from collections import defaultdict, namedtuple
 import os
 import logging
@@ -26,10 +25,16 @@ from . import graph
 logger = logging.getLogger(__name__)
 
 
+#: Result tuple for builds comprising success status and list of docker images
 BuildResult = namedtuple("BuildResult", ["success", "mulled_images"])
 
 
 def conda_build_purge() -> None:
+    """Calls conda build purge and optionally conda clean
+
+    ``conda clean --all`` is called if we haveless than 300 MB free space
+    on the current disk.
+    """
     utils.run(["conda", "build", "purge"], mask=False)
 
     free_mb = utils.get_free_space()
@@ -63,9 +68,8 @@ def build(recipe: str, pkg_paths: List[str] = None,
         error instead. Used for testing.
       linter: Linter to use for checking recipes
     """
-
     if linter:
-        logger.info('Linting recipe')
+        logger.info('Linting recipe %s', recipe)
         linter.clear_messages()
         if linter.lint([recipe]):
             logger.error('\n\nThe recipe %s failed linting. See '
