@@ -22,6 +22,7 @@ import simplejson
 from ..githubhandler import GitHubAppHandler, GitHubHandler
 from ..utils import RepoData
 from .config import APP_ID, APP_KEY, CODE_SIGNING_KEY, BOT_NAME, REPODATA_TIMEOUT
+from .githandler import install_gpg_key
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -198,20 +199,7 @@ def setup_new_celery_process(sender=None, conf=None, **_kwargs):
 
     Here we make sure that the GPG signing key is installed
     """
-    install_gpg_key()
+    install_gpg_key(CODE_SIGNING_KEY)
     RepoData().set_timeout(REPODATA_TIMEOUT)
 
 
-def install_gpg_key():
-    """Install GPG key from environment"""
-    proc = subprocess.run(['gpg', '--import'],
-                          input=CODE_SIGNING_KEY, stderr=subprocess.PIPE,
-                          encoding='ascii', check=True)
-    for line in proc.stderr.splitlines():
-        match = re.match(r'gpg: key ([\dA-F]{16}): secret key imported', line)
-        if match:
-            key = match.group(1)
-            break
-    else:
-        raise ValueError(f"Unable to import GPG key: {proc.stderr}")
-    return key

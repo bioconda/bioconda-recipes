@@ -4,7 +4,9 @@ import asyncio
 import atexit
 import logging
 import os
+import re
 import tempfile
+import subprocess
 from typing import List, Union
 
 import git
@@ -14,6 +16,31 @@ from . import utils
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
+
+
+def install_gpg_key(key) -> str:
+    """Install GPG key
+
+    Args:
+      key: Key to import to GPG as string
+
+    Returns:
+      GPG key ID
+
+    Raises:
+      ValueError if importing the key failed
+    """
+    proc = subprocess.run(['gpg', '--import'],
+                          input=key, stderr=subprocess.PIPE,
+                          encoding='ascii', check=True)
+    for line in proc.stderr.splitlines():
+        match = re.match(r'gpg: key ([\dA-F]{16}): secret key imported', line)
+        if match:
+            key = match.group(1)
+            break
+    else:
+        raise ValueError(f"Unable to import GPG key: {proc.stderr}")
+    return key
 
 
 class GitHandlerFailure(Exception):

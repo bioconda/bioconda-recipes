@@ -833,10 +833,18 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
         if only_active:
             scanner.add(autobump.ExcludeNoActiveUpdate, git_handler)
         scanner.add(autobump.GitLoadRecipe, git_handler)
+
+        env_key = os.environ.get("CODE_SIGNING_KEY")
         if sign is None:
             git_handler.enable_signing()
         elif sign:
             git_handler.enable_signing(sign)
+        elif env_key:
+            try:
+                git_handler.enable_signing(githandler.install_gpg_key(env_key))
+            except ValueError as exc:
+                logger.error("Failed to use CODE_SIGNING_KEY from environment: %s",
+                             exc)
     else:
         # Just load from local file system
         scanner.add(autobump.LoadRecipe)
