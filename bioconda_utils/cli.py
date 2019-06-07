@@ -441,21 +441,18 @@ def build(
     if label == "":
         label = None
 
-    success = build_recipes(
-        recipe_folder,
-        config=config,
-        packages=[p.lstrip(recipe_folder) for p in packages],
-        testonly=testonly,
-        force=force,
-        mulled_test=mulled_test,
-        docker_builder=docker_builder,
-        anaconda_upload=anaconda_upload,
-        mulled_upload_target=mulled_upload_target,
-        lint=lint,
-        lint_exclude=lint_exclude,
-        check_channels=check_channels,
-        label=label,
-    )
+    success = build_recipes(recipe_folder, config,
+                            packages=[p.lstrip(recipe_folder) for p in packages],
+                            testonly=testonly,
+                            force=force,
+                            mulled_test=mulled_test,
+                            docker_builder=docker_builder,
+                            anaconda_upload=anaconda_upload,
+                            mulled_upload_target=mulled_upload_target,
+                            do_lint=lint,
+                            lint_exclude=lint_exclude,
+                            check_channels=check_channels,
+                            label=label)
     exit(0 if success else 1)
 
 
