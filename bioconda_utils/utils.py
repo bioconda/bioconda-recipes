@@ -3,43 +3,42 @@ Utility Functions and Classes
 
 This module collects small pieces of code used throughout :py:mod:`bioconda_utils`.
 """
-import os
-import re
-import glob
+
+import asyncio
+import contextlib
+import datetime
 import fnmatch
+import glob
+import logging
+import os
 import subprocess as sp
 import sys
 import shutil
-import contextlib
+import json
+import queue
+import warnings
+
+from threading import Event, Thread
+from pathlib import PurePath
 from collections import Counter, Iterable, defaultdict, namedtuple
 from itertools import product, chain, groupby, zip_longest
 from functools import partial
-import logging
-import datetime
-from threading import Event, Thread
 from typing import Sequence, Collection, List, Dict, Any, Union
-from pathlib import PurePath
-import json
-import warnings
 from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
-import queue
 
-from conda_build import api
-from conda.exports import VersionOrder
 import pkg_resources
-import requests
-from jsonschema import validate
-from distutils.version import LooseVersion
+import pandas as pd
+import tqdm as _tqdm
+import aiohttp
+import backoff
 import yaml
 import jinja2
 from jinja2 import Environment, PackageLoader
+from conda_build import api
+from conda.exports import VersionOrder
+from jsonschema import validate
 from colorlog import ColoredFormatter
-import pandas as pd
-import tqdm as _tqdm
-import asyncio
-import aiohttp
-import backoff
 from boltons.funcutils import FunctionBuilder
 
 
