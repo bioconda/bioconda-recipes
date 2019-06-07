@@ -45,6 +45,13 @@ def conda_build_purge() -> None:
                     utils.get_free_space())
 
 
+def has_conda_in_build(recipe):
+    """Checks if recipe has conda or conda build in deps"""
+    deps = utils.get_deps(recipe, build=True)
+    deps.update(utils.get_deps(recipe, build=False))
+    return any(pkg in deps for pkg in ('conda', 'conda-build'))
+
+
 def build(recipe: str, pkg_paths: List[str] = None,
           testonly: bool = False, mulled_test: bool = True,
           channels: List[str] = None,
@@ -390,17 +397,6 @@ def build_recipes(
         # the root env, which is not compatible with mulled-build tests. In
         # that case, we temporarily disable the mulled-build tests for the
         # recipe.
-        deps = []
-        deps += utils.get_deps(recipe, orig_config, build=True)
-        deps += utils.get_deps(recipe, orig_config, build=False)
-        keep_mulled_test = True
-        if 'conda' in deps or 'conda-build' in deps:
-            keep_mulled_test = False
-            if mulled_test:
-                logger.info(
-                    'TEST SKIP: '
-                    'skipping mulled-build test for %s because it '
-                    'depends on conda or conda-build', recipe)
 
         res = build(
             recipe=recipe,
@@ -414,6 +410,10 @@ def build_recipes(
 
         all_success &= res.success
         recipe_success &= res.success
+        keep_mulled_test = not has_conda_in_build(recipe)
+        if mulled_test and not keep_mulled_test:
+            logger.info('TEST SKIP: skipping mulled-build test for %s because it '
+                        'depends on conda or conda-build', recipe)
 
         if not res.success:
             failed.append(recipe)

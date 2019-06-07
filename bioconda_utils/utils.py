@@ -688,7 +688,7 @@ class EnvMatrix:
             yield env
 
 
-def get_deps(recipe=None, meta=None, build=True):
+def get_deps(recipe=None, build=True):
     """
     Generator of dependencies for a single recipe
 
