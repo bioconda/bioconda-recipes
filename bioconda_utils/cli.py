@@ -768,6 +768,7 @@ def clean_cran_skeleton(recipe, no_windows=False):
      help="""Bump package build numbers even if the only applicable pinning
      change is the python version. This is generally required unless you plan
      on building everything.""")
+@arg('--sign', nargs="?", help='''Enable signing. Optionally takes keyid.''')
 @enable_logging()
 @enable_debugging()
 @enable_threads()
@@ -781,7 +782,8 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
              max_updates=0, dry_run=False,
              no_check_pinnings=False, no_follow_graph=False,
              no_check_version_update=False,
-             no_check_pending_deps=False, bump_only_python=False):
+             no_check_pending_deps=False, bump_only_python=False,
+             sign=0):
     """
     Updates recipes in recipe_folder
     """
@@ -831,9 +833,15 @@ def autobump(recipe_folder, config, packages='*', exclude=None, cache=None,
         if only_active:
             scanner.add(autobump.ExcludeNoActiveUpdate, git_handler)
         scanner.add(autobump.GitLoadRecipe, git_handler)
+        if sign is None:
+            git_handler.enable_signing()
+        elif sign:
+            git_handler.enable_signing(sign)
     else:
         # Just load from local file system
         scanner.add(autobump.LoadRecipe)
+        if sign or sign is None:
+            logger.warning("Not using git. --sign has no effect")
 
     # Exclude recipes that are present in "other channels"
     if exclude_channels != ["none"]:

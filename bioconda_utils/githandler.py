@@ -57,6 +57,9 @@ class GitHandlerBase():
         #: Semaphore for things that mess with working directory
         self.lock_working_dir = asyncio.Semaphore(1)
 
+        #: GPG key ID or bool, indicating whether/how to sign commits
+        self._sign: Union[bool, str] = False
+
     def close(self):
         """Release resources allocated"""
         self.repo.close()
@@ -69,6 +72,16 @@ class GitHandlerBase():
         if self.fork_remote != self.home_remote:
             name = f"{name} <- {get_name(self.fork_remote)}"
         return f"{self.__class__.__name__}({name})"
+
+    def enable_signing(self, key: Union[bool, str] = True) -> None:
+        """Enable signing of commits
+
+        Args:
+          key: Keyid to use for signing. Set to ``True`` to enable
+               using the default key or to ``False`` to disable
+               signing.
+        """
+        self._sign = key
 
     def get_remote(self, desc: str):
         """Finds first remote containing **desc** in one of its URLs"""
@@ -298,10 +311,13 @@ class GitHandlerBase():
         if not self.repo.index.diff("HEAD"):
             return False
 
+        if self._sign and not sign:
+            sign = self._sign
         if sign:
             # Gitpyhon does not support signing, so we use the command line client here
+            sign = '-S' + sign if isinstance(sign, str) else ''
             self.repo.index.write()
-            self.repo.git.commit('-S', '-m', msg)
+            self.repo.git.commit(sign, '-m', msg)
         else:
             self.repo.index.commit(msg)
 
