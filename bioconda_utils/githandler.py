@@ -32,11 +32,13 @@ def install_gpg_key(key) -> str:
     """
     proc = subprocess.run(['gpg', '--import'],
                           input=key, stderr=subprocess.PIPE,
-                          encoding='ascii', check=True)
+                          encoding='ascii')
     for line in proc.stderr.splitlines():
-        match = re.match(r'gpg: key ([\dA-F]{16}): secret key imported', line)
+        match = re.match(r'gpg: key ([\dA-F]{8,16}): '
+                         r'(secret key imported|already in secret keyring)',
+                         line)
         if match:
-            key = match.group(1)
+            keyid = match.group(1)
             break
     else:
         # If the key has escaped newlines (\n literally), replace those
@@ -44,7 +46,7 @@ def install_gpg_key(key) -> str:
         if r'\n' in key:
             return install_gpg_key(key.replace(r'\n', '\n'))
         raise ValueError(f"Unable to import GPG key: {proc.stderr}")
-    return key
+    return keyid
 
 
 class GitHandlerFailure(Exception):
