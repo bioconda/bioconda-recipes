@@ -69,10 +69,11 @@ export AR="${AR} rcs"
     --without-gnutls \
     --without-gcrypt
 
-apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe rpsblast.exe rpstblastn.exe"
-apps="$apps makembindex.exe segmasker.exe dustmasker.exe windowmasker.exe deltablast.exe"
-apps="$apps makeblastdb.exe blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe blastdbcheck.exe"
-apps="$apps makeprofiledb.exe blast_formatter.exe"
+apps="blastp.exe blastn.exe blastx.exe tblastn.exe tblastx.exe psiblast.exe"
+apps="$apps rpsblast.exe rpstblastn.exe makembindex.exe segmasker.exe"
+apps="$apps dustmasker.exe windowmasker.exe deltablast.exe makeblastdb.exe" 
+apps="$apps blastdbcmd.exe blastdb_aliastool.exe convert2blastmask.exe"
+apps="$apps blastdbcheck.exe makeprofiledb.exe blast_formatter.exe"
 cd ReleaseMT
 
 # The "datatool" binary needs the libs at build time, create
@@ -91,4 +92,5 @@ cp $SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
 
 chmod +x $PREFIX/bin/*
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/update_blastdb.pl
+# Patches to enable this script to work better in bioconda
 sed -i.bak 's/mktemp.*/mktemp`/; /export PATH/ s,$,:\$PATH,; s/exit 1/exit 0/' $PREFIX/bin/get_species_taxids.sh
