@@ -135,7 +135,7 @@ class AsyncPipeline(Generic[ITEM]):
             filt.finalize()
 
     @abc.abstractmethod
-    async def queue_items(self, queue):
+    async def queue_items(self, send_q, return_q):
         pass
 
     def get_item_count(self) -> int:
