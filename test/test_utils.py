@@ -315,7 +315,7 @@ def test_conda_as_dep(config_fixture):
         """, from_string=True)
     r.write_recipes()
     build_result = build.build_recipes(r.basedir, config_fixture,
-                                       recipes_fixture.recipe_dirnames,
+                                       r.recipe_dirnames,
                                        testonly=False,
                                        force=False,
                                        mulled_test=True)
@@ -648,7 +648,7 @@ def test_skip_dependencies(config_fixture):
             ensure_missing(pkg)
 
     build.build_recipes(r.basedir, config_fixture,
-                        recipes_fixture.recipe_dirnames,
+                        r.recipe_dirnames,
                         testonly=False,
                         force=False,
                         mulled_test=False)
@@ -773,7 +773,7 @@ def no_test_conda_forge_pins(caplog, config_fixture):
         """, from_string=True)
     r.write_recipes()
     build_result = build.build_recipes(r.basedir, config_fixture,
-                                       recipes_fixture.recipe_dirnames,
+                                       r.recipe_dirnames,
                                        testonly=False,
                                        force=False,
                                        mulled_test=False)
@@ -804,7 +804,7 @@ def test_bioconda_pins(caplog, config_fixture):
         """, from_string=True)
     r.write_recipes()
     build_result = build.build_recipes(r.basedir, config_fixture,
-                                       recipes_fixture.recipe_dirnames,
+                                       r.recipe_dirnames,
                                        testonly=False,
                                        force=False,
                                        mulled_test=False)
@@ -891,7 +891,7 @@ def test_cb3_outputs(config_fixture):
     r.recipe_dirs['one']
 
     build_result = build.build_recipes(r.basedir, config_fixture,
-                                       recipes_fixture.recipe_dirnames,
+                                       r.recipe_dirnames,
                                        testonly=False,
                                        force=False,
                                        mulled_test=False)
@@ -921,7 +921,7 @@ def test_compiler(config_fixture):
         """, from_string=True)
     r.write_recipes()
     build_result = build.build_recipes(r.basedir, config_fixture,
-                                       recipes_fixture.recipe_dirnames,
+                                       r.recipe_dirnames,
                                        testonly=False,
                                        force=False,
                                        mulled_test=False)
@@ -989,7 +989,7 @@ def test_nested_recipes(config_fixture):
     r.write_recipes()
 
     build_results = build.build_recipes(r.basedir, config_fixture,
-                                        recipes_fixture.recipe_dirnames,
+                                        r.recipe_dirnames,
                                         testonly=False,
                                         force=False,
                                         mulled_test=False)
