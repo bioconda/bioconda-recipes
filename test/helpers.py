@@ -112,5 +112,5 @@ class Recipes(object):
         self.basedir = basedir
 
     @property
-    def recipe_dirnames:
+    def recipe_dirnames(self):
         return list(self.recipe_dirs.values())
