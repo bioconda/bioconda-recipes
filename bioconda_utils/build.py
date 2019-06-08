@@ -213,8 +213,7 @@ def get_subdags(dag, testonly):
     return subdag
 
 
-def build_recipes(recipe_folder: str, config_path: str,
-                  packages="*",
+def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
                   mulled_test: bool = True, testonly: bool = False,
                   force: bool = False,
                   docker_builder: docker_utils.RecipeBuilder = None,
@@ -246,6 +245,10 @@ def build_recipes(recipe_folder: str, config_path: str,
       do_lint: Whether to run linter
       lint_exclude: List of linting functions to exclude.
     """
+    if not recipes:
+        logger.info("Nothing to be done.")
+        return True
+
     config = utils.load_config(config_path)
     blacklist = utils.get_blacklist(config, recipe_folder)
 
@@ -255,21 +258,6 @@ def build_recipes(recipe_folder: str, config_path: str,
             check_channels = [c for c in config['channels'] if c != "defaults"]
         else:
             check_channels = []
-
-    # collect recipes to build
-    if packages == "*":
-        packages = ["*"]
-    recipes = []
-    for package in packages:
-        for recipe in utils.get_recipes(recipe_folder, package):
-            if os.path.relpath(recipe, recipe_folder) in blacklist:
-                logger.debug('blacklisted: %s', recipe)
-                continue
-            recipes.append(recipe)
-    if not recipes:
-        logger.info("Nothing to be done.")
-        return True
-    logger.debug('Building recipes: %s', recipes)
 
     # setup linting
     if do_lint:
