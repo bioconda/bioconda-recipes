@@ -127,7 +127,7 @@ class AsyncPipeline(Generic[ITEM]):
             logger.warning("Finished update")
         except asyncio.CancelledError:
             pass
-        except EndProcessing as exc:
+        except EndProcessing:
             logger.error("Terminating...")
             self.loop.run_until_complete(self.shutdown())
 
@@ -198,7 +198,7 @@ class AsyncPipeline(Generic[ITEM]):
             for filt in self.filters:
                 await filt.apply(item)
         except asyncio.CancelledError:
-            return False
+            raise
         except EndProcessingItem as item_error:
             item_error.log(logger)
             raise
