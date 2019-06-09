@@ -1,37 +1,42 @@
+{% set name = "pylibseq" %}
+{% set version = "0.2.1" %}
+{% set sha256 = "6bfc509f90832f38e9c9ca862b8f57e35a68ba2b218a1092e3c18affef41f6dd" %}
+
 package:
-  name: pylibseq
-  version: "0.2.0"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/ac/22/06172cf9ff7e62a9c83cd8574c3994acaf0d3e16d9472f236e4a71a9692b/pylibseq-0.2.0.tar.gz
-  sha256: 04c9ba91e79876c6c31229eeda70e49600afb81fa78270ae4f6f58b847b8b72f
+  url: https://files.pythonhosted.org/packages/86/f9/0da11046680d74ceba0aade1bca859951479eacc4bda2bf062a568216cb4/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - header.patch
 
 build:
-  skip: True # [py27]
-  # If this is a new build for the same version, increment the build
-  # number. If you do not include this key, it defaults to 0.
-  number: 2
+  number: 0
 
 requirements:
   build:
     - {{ compiler('cxx') }}
   host:
-    - python
-    - libsequence ==1.9.3
-    - pybind11 >=2.2.0
-
+    - python >=3.4
+    - libsequence >=1.9.6
+    - pybind11 >=2.2.3
+    - msprime >=0.5.0
+    - tbb-devel
   run:
-    - python
-    - libsequence
-    - msprime
+    - python >=3.4
+    - libsequence >=1.9.6
+    - msprime >=0.5.0
+    - tbb
 
 test:
-  # Python imports
   imports:
     - libsequence
 
 about:
   home: http://pypi.python.org/pypi/pylibseq
-  license: GNU Lesser General Public License v2 or later (LGPLv2+)
+  license: GPLv3+
+  license_family: GPL
+  license_file: COPYING
   summary: 'A Python interface to libsequence'
-

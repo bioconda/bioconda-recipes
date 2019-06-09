@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.huex.1.0.st.v2_3.14.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.huex.1.0.st.v2_3.14.1.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.huex.1.0.st.v2_3.14.1.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.huex.1.0.st.v2_3.14.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.huex.1.0.st.v2/bioconductor-pd.huex.1.0.st.v2_3.14.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.huex.1.0.st.v2/bioconductor-pd.huex.1.0.st.v2_3.14.1_src_all.tar.gz"
 )
 MD5="f4c4836c53447890b75b012efbdef3e9"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

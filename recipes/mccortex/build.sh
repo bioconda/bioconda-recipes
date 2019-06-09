@@ -13,6 +13,8 @@ done
 # 
 make MAXK=31
 make MAXK=63
+make MAXK=95
+make MAXK=127
 
 sed -i.bak '1 s|^.*$|#!/usr/bin/env bash|g' bin/mccortex && rm bin/mccortex.bak
 

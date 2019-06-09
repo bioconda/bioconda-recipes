@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="hi16cod.db_3.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/hi16cod.db_3.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hi16cod.db_3.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hi16cod.db_3.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hi16cod.db/bioconductor-hi16cod.db_3.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hi16cod.db/bioconductor-hi16cod.db_3.4.0_src_all.tar.gz"
 )
 MD5="abdc77937e8d37fa5468691376ceb6a5"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

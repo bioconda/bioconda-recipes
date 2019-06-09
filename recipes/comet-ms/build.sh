@@ -6,6 +6,7 @@ platform="$(uname)"
 if [ "$platform" = "Darwin" ]; then
 	unzip comet_source_"$PKG_VERSION".zip
 	sed -i '' -e 's/ -static//' -e 's/ -o / -headerpad_max_install_names&/' Makefile
+	sed -i '' -e "s/sha1Report='..'/sha1Report=NULL/" MSToolkit/include/MSReader.h
 	make
 elif [ "$platform" = "Linux" ]; then
 	mv comet."$PKG_VERSION".linux.exe comet.exe

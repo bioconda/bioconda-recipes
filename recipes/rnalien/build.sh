@@ -8,7 +8,7 @@ stack setup
 stack update
 stack install --extra-include-dirs ${PREFIX}/include --local-bin-path ${PREFIX}/bin
 mv ${PREFIX}/bin/RNAlien ${PREFIX}/bin/RNAlien-bin
-echo -e "#!/bin/bash\nexport SYSTEM_CERTIFICATE_PATH=/usr/local/ssl/cacert.pem\n${PREFIX}/bin/RNAlien-bin \"\$@\"\n" > ${PREFIX}/bin/RNAlien
+echo -e "#!/bin/bash\nexport SYSTEM_CERTIFICATE_PATH=${PREFIX}/ssl/cacert.pem\n${PREFIX}/bin/RNAlien-bin \"\$@\"\n" > ${PREFIX}/bin/RNAlien
 chmod 755 ${PREFIX}/bin/RNAlien
 #cleanup
 rm -r .stack-work
