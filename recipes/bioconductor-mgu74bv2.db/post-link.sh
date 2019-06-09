@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="mgu74bv2.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/mgu74bv2.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/mgu74bv2.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/mgu74bv2.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mgu74bv2.db/bioconductor-mgu74bv2.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mgu74bv2.db/bioconductor-mgu74bv2.db_3.2.3_src_all.tar.gz"
 )
 MD5="dfc729955539aa0a2a852745a515d413"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
