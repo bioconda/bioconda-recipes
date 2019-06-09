@@ -1,66 +1,52 @@
+
+{% set name = "ipyrad" %}
+{% set version = "0.9.7" %}
+{% set sha256 = "ee1afb26eff0ee779e12e968f3d1ff8415105112046f0e192dff8cdd85190c88" %}
+
 package:
-  name: ipyrad
-  version: 1.0  # {{ GIT_DESCRIBE_TAG }}
-  # version: {{ environ.get('GIT_DESCRIBE_TAG', '') }}
+  name: {{name}}
+  version: {{version}}
 
 source:
-  url: https://github.com/dereneaton/ipyrad/archive/0.7.30.tar.gz
-  # git_url: https://github.com/dereneaton/ipyrad.git
+  fn: {{name}}-{{version}}.tar.gz
+  url: https://github.com/eaton-lab/{{name}}/archive/{{version}}.tar.gz
+  sha256: {{sha256}}
 
-# build:
-#   number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
-#   binary_relocation: true
-#   script: python setup.py install
-#   # entry_points:
-    # - ipyrad = ipyrad.__main__:main
+build:
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
-  build:
+  host:
     - python {{ python }}
-    - setuptools >=28.0.0
-    - notebook
-    # - jupyter
-    # - ipython >=5.0.0
-    # - ipyparallel >=6.0.2
-    # - numpy >=1.7
-    # - scipy >=0.16
-    # - numba >=0.33
-    # - pandas >=0.16
-    # - h5py
-    # - mpi4py
-    # - pigz
-    # - future
-    # - cutadapt >=1.12
-    # - pysam >=0.10.0     
-    # - toytree
-
+    - setuptools
   run:
     - python {{ python }}
-    - notebook
-    # - setuptools >=28.0.0
-    # - jupyter
-    # - ipython >=5.0.0
-    - ipyparallel >=6.0.2
-    - numpy >=1.7
-    - scipy >=0.16
-    - numba >=0.33
-    - pandas >=0.16
-    - h5py
-    - mpi4py
-    - pigz
+    - pandas
+    - scipy
+    - numpy
+    - numba >=0.37
     - future
-    # - cutadapt >=1.12
-    # - pysam >=0.10.0     
-    # - toytree
+    - h5py
+    - ipyparallel >=6.0.2
+    - requests
+    - cutadapt
+    - pysam >=0.15
+    - mpi4py >=3.0
+    - bedtools
+    - muscle
+    - vsearch >=2.13
+    - bwa
 
 test:
   imports:
     - ipyrad
+    - ipyrad.analysis
   commands:
     - ipyrad -h
 
 about:
   home: http://github.com/dereneaton/ipyrad
-  license: GPL-3
+  license: GPL3
   license_file: LICENSE.txt
   summary: Interactive assembly and analysis of RAD-seq data sets.
