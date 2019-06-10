@@ -1,22 +1,33 @@
 {% set version = "2.3.3" %}
-{% set base = "https://github.com/broadinstitute/rnaseqc/releases/download" %}
-{% set sha256linux = "bfe5d28b900713a7286ebcd5323db56bbec95c3848e8d74f4e1cfdb883840669" %}
-{% set sha256osx = "8fe748a5f345c8b71519161edbff1ad1a995a68edbfbe7a0994ea01c857bf7c3" %}
+{% set sha256sum = "6c35c10b027b10d14fa8d3497141de572e9f4b6d330ea33f375c0c2be558e232" %}
 
 package:
   name: rna-seqc
   version: '{{ version }}'
 
 source:
-  url: '{{base}}/v{{version}}/rnaseqc.v{{version}}.linux.gz'   # [linux]
-  sha256: '{{sha256linux}}'                                    # [linux]
-
-  url: '{{base}}/v{{version}}/rnaseqc.v{{version}}.osx.gz'     # [osx]
-  sha256: '{{sha256osx}}'                                      # [osx]
+  url: 'https://github.com/broadinstitute/rnaseqc/releases/download/v{{ version }}/rnaseqc.v{{ version }}.full_source.tar.gz'
+  sha256: '{{ sha256sum }}'
 
 build:
   number: 0
 
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - curl
+    - bzip2
+    - libboost
+    - xz
+    - zlib
+  run:
+    - curl
+    - bzip2
+    - libboost
+    - xz
+    - zlib
 test:
   commands:
     - rnaseqc --version
