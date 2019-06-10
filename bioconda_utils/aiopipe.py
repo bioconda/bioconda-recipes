@@ -127,7 +127,7 @@ class AsyncPipeline(Generic[ITEM]):
             logger.warning("Finished update")
         except asyncio.CancelledError:
             pass
-        except EndProcessing as exc:
+        except EndProcessing:
             logger.error("Terminating...")
             self.loop.run_until_complete(self.shutdown())
 
@@ -135,7 +135,7 @@ class AsyncPipeline(Generic[ITEM]):
             filt.finalize()
 
     @abc.abstractmethod
-    async def queue_items(self, queue):
+    async def queue_items(self, send_q, return_q):
         pass
 
     def get_item_count(self) -> int:
@@ -198,7 +198,7 @@ class AsyncPipeline(Generic[ITEM]):
             for filt in self.filters:
                 await filt.apply(item)
         except asyncio.CancelledError:
-            return False
+            raise
         except EndProcessingItem as item_error:
             item_error.log(logger)
             raise

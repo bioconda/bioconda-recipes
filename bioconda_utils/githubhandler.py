@@ -35,6 +35,9 @@ CheckRunConclusion = Enum("CheckRunConclusion",
 #: Merge method
 MergeMethod = Enum("MergeMethod", "merge squash rebase")
 
+#: Pull request review state
+ReviewState = Enum("ReviewState", "APPROVED CHANGES_REQUESTED COMMENTED DISMISSED PENDING")
+
 def iso_now() -> str:
     """Creates ISO 8601 timestamp in format
     ``YYYY-MM-DDTHH:MM:SSZ`` as required by Github
@@ -55,6 +58,7 @@ class GitHubHandler:
     PULL_FILES        = "/repos/{user}/{repo}/pulls/{number}/files"
     PULL_COMMITS      = "/repos/{user}/{repo}/pulls/{number}/commits"
     PULL_MERGE        = "/repos/{user}/{repo}/pulls/{number}/merge"
+    PULL_REVIEWS      = "/repos/{user}/{repo}/pulls/{number}/reviews{/review_id}"
     BRANCH_PROTECTION = "/repos/{user}/{repo}/branches/{branch}/protection"
     ISSUES            = "/repos/{user}/{repo}/issues{/number}"
     ISSUE_COMMENTS    = "/repos/{user}/{repo}/issues/{number}/comments"
@@ -628,6 +632,19 @@ class GitHubHandler:
         var_data['commit'] = sha
         return await self.api.getitem(self.GET_STATUSES, var_data)
 
+    async def get_pr_reviews(self, pr_number: int) -> List[Dict[str, Any]]:
+        """Get reviews filed for a PR
+
+        Arguments:
+          pr_number: Number of PR
+        Returns:
+          List of dictionaries each having ``body`` (`str`), ``state`` (`ReviewState`),
+          and ``commit_id`` (SHA, `str`) as well as a ``user`` `dict`.
+        """
+        var_data = copy(self.var_default)
+        var_data['number'] = str(pr_number)
+        return await self.api.getitem(self.PULL_REVIEWS, var_data)
+
     async def get_branch_protection(self, branch: str = "master") -> Dict[str, Any]:
         """Retrieve protection settings for branch
 
@@ -694,6 +711,8 @@ class GitHubHandler:
 
         # get required checks for target branch
         protections = await self.get_branch_protection(pr['base']['ref'])
+
+        # Verify required_checks
         required_checks = set(protections.get('required_status_checks', {}).get('contexts', []))
         logger.debug("Found required checks: %s", required_checks)
 
@@ -705,8 +724,28 @@ class GitHubHandler:
             if check.get('conclusion') == "success":
                 required_checks.discard(check['name'])
         if required_checks:
-            logger.Info("Missing checks for #%s: %s", pr_number, required_checks)
+            logger.info("Missing checks for #%s: %s", pr_number, required_checks)
             return False, "Not all required checks have passed"
+
+        # Verify required reviews
+        reviews_required = int(protections.get('required_approving_review_count', 0))
+        logger.debug("Found required reviews: %s", reviews_required)
+        if reviews_required:
+            reviews = await self.get_pr_reviews(pr_number)
+            approving_count = 0
+            for review in reviews:
+                if review['state'] == ReviewState.CHANGES_REQUESTED:
+                    logger.info("  failed - a reviewer hs requested changes")
+                    return False, "A reviewer has requested changes"
+                if review['state'] == ReviewState.APPROVED:
+                    approving_count += 1
+            if approving_count < reviews_required:
+                logger.info("  failed - only %s/%s reviews approved",
+                            approving_count, reviews_required)
+                return False, (f"Insufficient number of approving reviews"
+                               f"({approving_count}/{reviews_required})")
+            logger.info("Reviews good: %s/%s and no changes requested",
+                        approving_count, reviews_required)
 
         return True, "LGTM"
 

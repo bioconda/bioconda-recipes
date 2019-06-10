@@ -110,3 +110,7 @@ class Recipes(object):
                 with open(os.path.join(rdir, key), 'w') as fout:
                     fout.write(value)
         self.basedir = basedir
+
+    @property
+    def recipe_dirnames(self):
+        return list(self.recipe_dirs.values())

@@ -152,6 +152,41 @@ def get_recipes_to_build(git_range: Tuple[str], recipe_folder: str) -> List[str]
     return repo.get_recipes_to_build(ref, other)
 
 
+def get_recipes(config, recipe_folder, packages, git_range) -> List[str]:
+    """Gets list of paths to recipe folders to be built
+
+    Considers all recipes matching globs in packages, constrains to
+    recipes modified or unblacklisted in the git_range if given, then
+    removes blacklisted recipes.
+
+    """
+    recipes = list(utils.get_recipes(recipe_folder, packages))
+    logger.info("Considering total of %s recipes%s.",
+                len(recipes), utils.ellipsize_recipes(recipes, recipe_folder))
+
+    if git_range:
+        changed_recipes = get_recipes_to_build(git_range, recipe_folder)
+        logger.info("Constraining to %s git modified recipes%s.", len(changed_recipes),
+                    utils.ellipsize_recipes(changed_recipes, recipe_folder))
+        recipes = [recipe for recipe in recipes if recipe in set(changed_recipes)]
+        if len(recipes) != len(changed_recipes):
+            logger.info("Overlap was %s recipes%s.", len(recipes),
+                        utils.ellipsize_recipes(recipes, recipe_folder))
+
+    blacklist = utils.get_blacklist(config, recipe_folder)
+    blacklisted = []
+    for recipe in recipes:
+        if os.path.relpath(recipe, recipe_folder) in blacklist:
+            blacklisted.append(recipe)
+    if blacklisted:
+        logger.info("Ignoring %s blacklisted recipes%s.", len(blacklisted),
+                    utils.ellipsize_recipes(blacklisted, recipe_folder))
+        recipes = [recipe for recipe in recipes if recipe not in set(blacklisted)]
+    logger.info("Processing %s recipes%s.", len(recipes),
+                utils.ellipsize_recipes(recipes, recipe_folder))
+    return recipes
+
+
 # NOTE:
 #
 # A package is the name of the software package, like `bowtie`.
@@ -302,26 +337,12 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
         print('\n'.join(str(check) for check in lint.get_checks()))
         sys.exit(0)
 
-    config_filename = config
     config = utils.load_config(config)
-
 
     if cache is not None:
         utils.RepoData().set_cache(cache)
 
-    recipes = list(utils.get_recipes(recipe_folder, packages))
-    logger.info("Considering total of %s recipes%s.",
-                len(recipes), utils.ellipsize_recipes(recipes, recipe_folder))
-
-    if git_range:
-        changed_recipes = get_recipes_to_build(git_range, recipe_folder)
-        logger.info("Constraining to %s git modified recipes%s.", len(changed_recipes),
-                    utils.ellipsize_recipes(changed_recipes, recipe_folder))
-        recipes = [recipe for recipe in recipes if recipe in set(changed_recipes)]
-        if len(recipes) != len(changed_recipes):
-            logger.info("Overlap was %s recipes%s.", len(recipes),
-                        utils.ellipsize_recipes(recipes, recipe_folder))
-
+    recipes = get_recipes(config, recipe_folder, packages, git_range)
     linter = lint.Linter(config, recipe_folder, exclude)
     result = linter.lint(recipes, fix=try_fix)
     messages = linter.get_messages()
@@ -337,10 +358,9 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
 
 
 @recipe_folder_and_config()
-@arg(
-    '--packages',
-    nargs="+",
-    help='Glob for package[s] to build. Default is to build all packages. Can '
+@arg('--packages',
+     nargs="+",
+     help='Glob for package[s] to build. Default is to build all packages. Can '
     'be specified more than once')
 @arg('--git-range', nargs='+',
      help='''Git range (e.g. commits or something like
@@ -382,41 +402,19 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
      the first two channels specified in the config file. Note that this is
      ignored if you specify --git-range.''')
 @enable_logging()
-def build(
-    recipe_folder,
-    config,
-    packages="*",
-    git_range=None,
-    testonly=False,
-    force=False,
-    docker=None,
-    mulled_test=False,
-    build_script_template=None,
-    pkg_dir=None,
-    anaconda_upload=False,
-    mulled_upload_target=None,
-    build_image=False,
-    keep_image=False,
-    lint=False,
-    lint_exclude=None,
-    check_channels=None,
-):
+def build(recipe_folder, config, packages="*", git_range=None, testonly=False,
+          force=False, docker=None, mulled_test=False, build_script_template=None,
+          pkg_dir=None, anaconda_upload=False, mulled_upload_target=None,
+          build_image=False, keep_image=False, lint=False, lint_exclude=None,
+          check_channels=None):
     cfg = utils.load_config(config)
     setup = cfg.get('setup', None)
     if setup:
-        logger.debug("Running setup: %s" % setup)
+        logger.debug("Running setup: %s", setup)
         for cmd in setup:
             utils.run(shlex.split(cmd), mask=False)
 
-    # handle git range
-    if git_range and not force:
-        if packages != '*':
-            sys.exit("Can't specifiy --packages and --git-range at the same time")
-        packages = get_recipes_to_build(git_range, recipe_folder)
-        if not packages:
-            logger.info('No recipe modified according to git, exiting.')
-            exit(0)
-        logger.info('Recipes modified according to git: {}'.format(' '.join(packages)))
+    recipes = get_recipes(cfg, recipe_folder, packages, git_range)
 
     if docker:
         if build_script_template is not None:
@@ -441,12 +439,9 @@ def build(
     if lint_exclude and not lint:
         logger.warning('--lint-exclude has no effect unless --lint is specified.')
 
-    label = os.getenv('BIOCONDA_LABEL', None)
-    if label == "":
-        label = None
+    label = os.getenv('BIOCONDA_LABEL', None) or None
 
-    success = build_recipes(recipe_folder, config,
-                            packages=[p.lstrip(recipe_folder) for p in packages],
+    success = build_recipes(recipe_folder, config, recipes,
                             testonly=testonly,
                             force=force,
                             mulled_test=mulled_test,

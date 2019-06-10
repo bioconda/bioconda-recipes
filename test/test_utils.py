@@ -140,6 +140,7 @@ def multi_build(request, recipes_fixture, config_fixture):
     logger.error("Fixture: Building one/two/three %s",
                  "within docker" if docker_builder else "locally")
     build.build_recipes(recipes_fixture.basedir, config_fixture,
+                        recipes_fixture.recipe_dirnames,
                         docker_builder=docker_builder,
                         mulled_test=mulled_test)
     logger.error("Fixture: Building one/two/three %s -- DONE",
@@ -234,8 +235,8 @@ def test_docker_builder_build(recipes_fixture):
         use_host_conda_bld=True,
         docker_base_image=DOCKER_BASE_IMAGE)
     pkgs = recipes_fixture.pkgs['one']
-    docker_builder.build_recipe(
-        recipes_fixture.recipe_dirs['one'], build_args='', env={})
+    docker_builder.build_recipe(recipes_fixture.recipe_dirs['one'],
+                                build_args='', env={})
     for pkg in pkgs:
         assert os.path.exists(pkg)
 
@@ -250,6 +251,7 @@ def test_docker_build_fails(recipes_fixture, config_fixture):
         build_script_template="exit 1")
     assert docker_builder.build_script_template == 'exit 1'
     result = build.build_recipes(recipes_fixture.basedir, config_fixture,
+                                 recipes_fixture.recipe_dirnames,
                                  docker_builder=docker_builder,
                                  mulled_test=True)
     assert not result
@@ -313,7 +315,7 @@ def test_conda_as_dep(config_fixture):
         """, from_string=True)
     r.write_recipes()
     build_result = build.build_recipes(r.basedir, config_fixture,
-                                       packages="*",
+                                       r.recipe_dirnames,
                                        testonly=False,
                                        force=False,
                                        mulled_test=True)
@@ -646,7 +648,7 @@ def test_skip_dependencies(config_fixture):
             ensure_missing(pkg)
 
     build.build_recipes(r.basedir, config_fixture,
-                        packages="*",
+                        r.recipe_dirnames,
                         testonly=False,
                         force=False,
                         mulled_test=False)
@@ -666,6 +668,7 @@ def test_skip_dependencies(config_fixture):
 class TestSubdags(object):
     def _build(self, recipes_fixture, config_fixture):
         build.build_recipes(recipes_fixture.basedir, config_fixture,
+                            recipes_fixture.recipe_dirnames,
                             mulled_test=False)
 
     def test_subdags_out_of_range(self, recipes_fixture, config_fixture):
@@ -770,7 +773,7 @@ def no_test_conda_forge_pins(caplog, config_fixture):
         """, from_string=True)
     r.write_recipes()
     build_result = build.build_recipes(r.basedir, config_fixture,
-                                       packages="*",
+                                       r.recipe_dirnames,
                                        testonly=False,
                                        force=False,
                                        mulled_test=False)
@@ -801,7 +804,7 @@ def test_bioconda_pins(caplog, config_fixture):
         """, from_string=True)
     r.write_recipes()
     build_result = build.build_recipes(r.basedir, config_fixture,
-                                       packages="*",
+                                       r.recipe_dirnames,
                                        testonly=False,
                                        force=False,
                                        mulled_test=False)
@@ -888,7 +891,7 @@ def test_cb3_outputs(config_fixture):
     r.recipe_dirs['one']
 
     build_result = build.build_recipes(r.basedir, config_fixture,
-                                       packages="*",
+                                       r.recipe_dirnames,
                                        testonly=False,
                                        force=False,
                                        mulled_test=False)
@@ -918,7 +921,7 @@ def test_compiler(config_fixture):
         """, from_string=True)
     r.write_recipes()
     build_result = build.build_recipes(r.basedir, config_fixture,
-                                       packages="*",
+                                       r.recipe_dirnames,
                                        testonly=False,
                                        force=False,
                                        mulled_test=False)
@@ -986,7 +989,7 @@ def test_nested_recipes(config_fixture):
     r.write_recipes()
 
     build_results = build.build_recipes(r.basedir, config_fixture,
-                                        packages="*",
+                                        r.recipe_dirnames,
                                         testonly=False,
                                         force=False,
                                         mulled_test=False)
