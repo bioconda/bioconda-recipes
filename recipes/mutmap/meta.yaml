@@ -1,29 +1,32 @@
 {% set name = "mutmap" %}
-{% set version = "2.0.3" %}
-{% set sha256 = "c48e887476810c7be5a62872ac21e1a9e4244b9c33d6295655448be40b896e89" %}
+{% set version = "2.0.6" %}
+{% set sha256 = "2b0373551d39a47d7974ed52cfac6b217c2cb77b4dbe46ef0d504726a65aa0bd" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/YuSugihara/MutMap/archive/v{{ version }}.tar.gz
+  url: https://github.com/YuSugihara/MutMap/releases/download/v{{ version }}/MutMap-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  script: python -m pip install --no-deps --ignore-installed .
+  noarch: python
+  number: 0
 
 requirements:
   host:
     - python >=3.5
+    - pip
 
   run:
     - python >=3.5
     - samtools >=1.7
     - bcftools >=1.7
+    - bwa
     - snpeff
     - trimmomatic
-    - bwa
     - matplotlib
     - numpy
     - pandas
@@ -33,21 +36,14 @@ test:
   commands:
     - mutmap -h
     - mutplot -h
-    - samtools --help
-    - bcftools --help
-    - bwa
-    - snpEff --help
-    - trimmomatic --help
 
 about:
   home: https://github.com/YuSugihara/MutMap
-  license: GPL
   summary: 'MutMap: pipeline to identify causative mutations responsible for a phenotype'
+  license: 'GPL-3.0-or-later'
+  license_family: GPL
 
 extra:
   identifiers:
     - biotools:mutmap
     - doi:10.1038/nbt.2095
-  notes:
-    - This program is free software. You can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or any later version.
-    - This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
