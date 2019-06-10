@@ -571,7 +571,7 @@ def run(cmds: List[str], env: Dict[str, str]=None, mask: List[str]=None, live: b
             arg = arg.replace(mitem, '<hidden>')
         return arg
 
-    mylogger.log(loglevel, "Executing: '%s'", ' '.join(do_mask(arg) for arg in cmds))
+    mylogger.log(loglevel, "(COMMAND) %s", ' '.join(do_mask(arg) for arg in cmds))
 
     # bufsize=4 result of manual experimentation. Changing it can
     # drop performance drastically.
@@ -603,16 +603,34 @@ def run(cmds: List[str], env: Dict[str, str]=None, mask: List[str]=None, live: b
             raise
 
         output = "\n".join(output_lines)
-        returncode = proc.poll()
         if isinstance(cmds, str):
             masked_cmds = do_mask(cmds)
         else:
             masked_cmds = [do_mask(c) for c in cmds]
+
+        if proc.poll() is None:
+            mylogger.log(loglevel, 'Command closed STDOUT/STDERR but is still running')
+            waitfor = 30
+            waittimes = 5
+            for attempt in range(waittimes):
+                mylogger.log(loglevel, "Waiting %s seconds (%i/%i)", waitfor, attempt+1, waittimes)
+                try:
+                    proc.wait(timeout=waitfor)
+                    break;
+                except sp.TimeoutExpired:
+                    pass
+            else:
+                mylogger.log(loglevel, "Terminating process")
+                proc.kill()
+                proc.wait()
+        returncode = proc.poll()
+
         if returncode:
-            logger.error('COMMAND FAILED: %s', ' '.join(masked_cmds))
+            logger.error('COMMAND FAILED (exited with %s): %s', returncode, ' '.join(masked_cmds))
             if not live:
                 logger.error('STDOUT+STDERR:\n%s', output)
             raise sp.CalledProcessError(returncode, masked_cmds, output=output)
+
         return sp.CompletedProcess(returncode, masked_cmds, output)
 
 
