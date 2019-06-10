@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="PartheenMetaData.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/PartheenMetaData.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/PartheenMetaData.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/PartheenMetaData.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-partheenmetadata.db/bioconductor-partheenmetadata.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-partheenmetadata.db/bioconductor-partheenmetadata.db_3.2.3_src_all.tar.gz"
 )
 MD5="1c9fd27e13a341b9aba9a235a67ce978"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
