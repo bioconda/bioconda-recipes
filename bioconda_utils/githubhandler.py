@@ -663,11 +663,11 @@ class GitHubHandler:
                     - bioconda-test
                  enforce_admins:      # admins, too, must follow rules
                     - enabled: True
-             required_approving_review_count: 1  # 1 - 6 valid
-             dismiss_stale_reviews: False  # auto dismiss approval after push
-             require_code_owner_reviews: False
-             required_pull_request_reviews:  # require approving review
-                 dismissal_restrictions:  # specify who may dismiss reviews
+             required_pull_request_reviews:          # require approving review
+                 required_approving_review_count: 1  # 1 - 6 valid
+                 dismiss_stale_reviews: False        # auto dismiss approval after push
+                 require_code_owner_reviews: False
+                 dismissal_restrictions:             # specify who may dismiss reviews
                     users:
                       - login: bla
                     teams:
@@ -679,6 +679,8 @@ class GitHubHandler:
                  - login: bla
                teams:
                  - id: 1
+             enforce_admins:
+               enabled: True  # apply to admins also
         """
         var_data = copy(self.var_default)
         var_data["branch"] = branch
@@ -695,6 +697,8 @@ class GitHubHandler:
           head_sha: if given, check that this is still the latest sha
         """
         pr = await self.get_prs(number=pr_number)
+        logger.info("Checking protections for PR #%s : %s", pr_number, head_sha)
+
         # check that no new commits were made
         if head_sha and head_sha != pr['head']['sha']:
             return False, "Most recent SHA in PR differs"
@@ -714,39 +718,36 @@ class GitHubHandler:
 
         # Verify required_checks
         required_checks = set(protections.get('required_status_checks', {}).get('contexts', []))
-        logger.debug("Found required checks: %s", required_checks)
-
-        for status in await self.get_statuses(head_sha):
-            if status['state'] == 'success':
-                required_checks.discard(status['context'])
-        for check in await self.get_check_runs(head_sha):
-            logger.debug("Found check %s with state %s", check['name'], check.get('conclusion'))
-            if check.get('conclusion') == "success":
-                required_checks.discard(check['name'])
         if required_checks:
-            logger.info("Missing checks for #%s: %s", pr_number, required_checks)
-            return False, "Not all required checks have passed"
+            logger.info("Verifying %s required checks", len(required_checks))
+            for status in await self.get_statuses(head_sha):
+                if status['state'] == 'success':
+                    required_checks.discard(status['context'])
+            for check in await self.get_check_runs(head_sha):
+                if check.get('conclusion') == "success":
+                    required_checks.discard(check['name'])
+            if required_checks:
+                return False, "Not all required checks have passed"
+            logger.info("All status checks passed for #%s", pr_number)
 
         # Verify required reviews
-        reviews_required = int(protections.get('required_approving_review_count', 0))
-        logger.debug("Found required reviews: %s", reviews_required)
-        if reviews_required:
-            reviews = await self.get_pr_reviews(pr_number)
+        required_reviews = protections.get('required_pull_request_reviews', {})
+        if required_reviews:
+            required_count = required_reviews.get('required_approving_review_count', 1)
+            logger.info("Checking for %s approvng reviews and no change requests",
+                        required_count)
             approving_count = 0
-            for review in reviews:
-                if review['state'] == ReviewState.CHANGES_REQUESTED:
-                    logger.info("  failed - a reviewer hs requested changes")
-                    return False, "A reviewer has requested changes"
-                if review['state'] == ReviewState.APPROVED:
+            for review in await self.get_pr_reviews(pr_number):
+                user = review['user']['login']
+                if review['state'] == ReviewState.CHANGES_REQUESTED.name:
+                    return False, "Changes have been requested by `@{user}`"
+                if review['state'] == ReviewState.APPROVED.name:
+                    logger.info("PR #%s was approved by @%s", pr_number, user)
                     approving_count += 1
-            if approving_count < reviews_required:
-                logger.info("  failed - only %s/%s reviews approved",
-                            approving_count, reviews_required)
+            if approving_count < required_count:
                 return False, (f"Insufficient number of approving reviews"
-                               f"({approving_count}/{reviews_required})")
-            logger.info("Reviews good: %s/%s and no changes requested",
-                        approving_count, reviews_required)
-
+                               f"({approving_count}/{required_count})")
+        logger.info("PR #%s is passing configured checks", pr_number)
         return True, "LGTM"
 
     async def get_contents(self, path: str, ref: str = None) -> str:
