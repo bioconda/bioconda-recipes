@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="EnsDb.Hsapiens.v79_2.99.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/EnsDb.Hsapiens.v79_2.99.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/EnsDb.Hsapiens.v79_2.99.0.tar.gz"
   "https://bioarchive.galaxyproject.org/EnsDb.Hsapiens.v79_2.99.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ensdb.hsapiens.v79/bioconductor-ensdb.hsapiens.v79_2.99.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ensdb.hsapiens.v79/bioconductor-ensdb.hsapiens.v79_2.99.0_src_all.tar.gz"
 )
 MD5="16b5629805c07649b2aa501d34fcc588"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
