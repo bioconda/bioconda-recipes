@@ -143,7 +143,6 @@ async def command_rebuild(ghapi, issue_number, _user, *_args):
 
 @command_routes.register("merge")
 @permissions(member=True)
-#@permissions(author=False, team="core")
 async def command_merge(ghapi, issue_number, user, *_args):
     """Merge PR"""
     comment_id = await ghapi.create_comment(issue_number, "Scheduled Upload & Merge")
@@ -157,6 +156,41 @@ async def command_merge(ghapi, issue_number, user, *_args):
 @command_routes.register("autobump")
 @permissions(member=True)
 async def command_autobump(ghapi, _issue_number, _user, *args):
-    """Run Autobump on recipes"""
+    """Run immediate Autobump on recipes"""
+    if any('*' in arg for arg in args):
+        return f"Wildcards in autobump not allowed"
+    if len(args) > 5:
+        return f"Please don't schedule more than 5 updates at once"
     tasks.run_autobump.s(args, ghapi).apply_async()
     return f"Scheduled autobump check of recipe(s) {', '.join(args)}"
+
+
+@command_routes.register("schedule")
+@permissions(team="core")
+async def command_schedule(ghapi, issue_number, user, *args):
+    """Schedule autobump on CircleCI
+
+    Takes the maximum number of recipes to update as optional argument.
+    """
+    err = None
+    if not args:
+        err = "Schedule what?"
+    else:
+        if args[0] == "autobump":
+            if len(args) > 2:
+                err = "Too many arguments."
+            else:
+                if len(args) == 1:
+                    params = {'AUTOBUMP_OPTS': f'--max-updates {int(args[1])}'}
+                else:
+                    params = None
+                from .config import CIRCLE_TOKEN
+                from ..circleci import AsyncCircleAPI
+                capi = AsyncCircleAPI(ghapi.session, token=CIRCLE_TOKEN)
+                res = await capi.trigger_job(project='bioconda-utils', job='autobump',
+                                             params=params)
+                return "Scheduled Autobump: " + res
+        else:
+            err = "Unknown command"
+    return err + (" Options are:\n"
+                  " - `autobump [n]`: schedule *n* updates of autobump")

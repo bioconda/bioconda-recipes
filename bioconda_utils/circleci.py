@@ -22,7 +22,7 @@ class CircleAPI(abc.ABC):
 
     LIST_ARTIFACTS = "/project/{vcs_type}/{username}/{project}/{build_num}/artifacts"
     TRIGGER_REBUILD = "/project/{vcs_type}/{username}/{project}/build"
-    RECENT_BUILDS = "/project/{vcs_type}/{username}/{project}/tree/{path}"
+    BUILDS = "/project/{vcs_type}/{username}/{project}/tree/{path}"
 
     def __init__(self,
                  token: Optional[str] = None,
@@ -118,7 +118,7 @@ class CircleAPI(abc.ABC):
         """
         var_data = self.var_data
         var_data['path'] = path
-        res = await self._make_request('GET', self.RECENT_BUILDS, var_data)
+        res = await self._make_request('GET', self.BUILDS, var_data)
         if sha is not None:
             res = [build for build in res if build["vcs_revision"] == sha]
         if skip_rebuilt:
@@ -151,6 +151,30 @@ class CircleAPI(abc.ABC):
             'branch': branch
         }
         return await self._make_request('POST', self.TRIGGER_REBUILD, self.var_data, data=data)
+
+    async def trigger_job(self, branch="master", project=None, job=None, params=None):
+        """Trigger specific job
+
+        Arguments:
+          branch: Must be ``pull/123`` if on fork, otherwise name of branch
+          project: Optionally the project (repo) name
+          job: Specific job from circle/config.yml to run
+          params: Optional dict of parameters (envvars) to override
+        """
+        var_data = self.var_data
+        var_data['path'] = branch
+        if project:
+            var_data['project'] = project
+
+        data = {
+            'build_parameters': params or {}
+        }
+
+        if job:
+            data['build_parameters']['CIRCLE_JOB'] = job
+
+        res = await self._make_request('POST', self.BUILDS, var_data, data=data)
+        return res.get('build_url')
 
     async def get_artifacts(self, path: str, head_sha: str) -> List[Tuple[str, str, int]]:
         """Get artifacts for specific branch and head_sha
