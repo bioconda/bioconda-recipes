@@ -316,8 +316,9 @@ class GitHubHandler:
                                           closed=False if only_open else None)
         for pull in result.get('items', []):
             pr_number = int(pull['number'])
-            full_pr = self.get_prs(number=pr_number)
-            if full_pr['head']['ref'].startswith(head_sha):
+            logger.error("checking %s", pr_number)
+            full_pr = await self.get_prs(number=pr_number)
+            if full_pr['head']['sha'].startswith(head_sha):
                 pr_numbers.append(pr_number)
         return pr_numbers
 
