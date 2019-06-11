@@ -251,13 +251,16 @@ class GitHubHandler:
             return await self.is_team_member(username, team)
         return True
 
-    async def search_issues(self, author=None, pr=False, issue=False):
+    async def search_issues(self, author=None, pr=False, issue=False, sha=None,
+                            closed=None):
         """Search issues/PRs on our repos
 
         Arguments:
           author: login name of user to search
+          sha: SHA of commit to search for
           pr: whether to consider only PRs
           issue: whether to consider only non-PR issues
+          closed: search only closed if true, only open if false
         """
         query = ["org:" + self.user]
 
@@ -266,8 +269,16 @@ class GitHubHandler:
         elif issue and not pr:
             query += ["is:issue"]
 
+        if closed is not None:
+            if closed:
+                query += ["is:closed"]
+            else:
+                query += ["is:open"]
+
         if author:
             query += ["author:" + author]
+        if sha:
+            query += ["sha:" + sha]
 
         return await self.api.getitem(self.SEARCH_ISSUES + '+'.join(query))
 
@@ -290,6 +301,26 @@ class GitHubHandler:
         except gidgethub.BadRequest:
             return False
         return True
+
+    async def get_prs_from_sha(self, head_sha: str, only_open=False) -> List[int]:
+        """Searches for PRs matching **head_sha**
+
+        Args:
+          head_sha: The head checksum to search for
+          only_open: If true, return only open PRs
+        Result:
+          List of PR numbers.
+        """
+        pr_numbers = []
+        result = await self.search_issues(pr=True, sha=head_sha,
+                                          closed=False if only_open else None)
+        for pull in result.get('items', []):
+            pr_number = int(pull['number'])
+            logger.error("checking %s", pr_number)
+            full_pr = await self.get_prs(number=pr_number)
+            if full_pr['head']['sha'].startswith(head_sha):
+                pr_numbers.append(pr_number)
+        return pr_numbers
 
     # pylint: disable=too-many-arguments
     @backoff.on_exception(backoff.fibo, gidgethub.BadRequest, max_tries=10)
@@ -663,11 +694,11 @@ class GitHubHandler:
                     - bioconda-test
                  enforce_admins:      # admins, too, must follow rules
                     - enabled: True
-             required_approving_review_count: 1  # 1 - 6 valid
-             dismiss_stale_reviews: False  # auto dismiss approval after push
-             require_code_owner_reviews: False
-             required_pull_request_reviews:  # require approving review
-                 dismissal_restrictions:  # specify who may dismiss reviews
+             required_pull_request_reviews:          # require approving review
+                 required_approving_review_count: 1  # 1 - 6 valid
+                 dismiss_stale_reviews: False        # auto dismiss approval after push
+                 require_code_owner_reviews: False
+                 dismissal_restrictions:             # specify who may dismiss reviews
                     users:
                       - login: bla
                     teams:
@@ -679,6 +710,8 @@ class GitHubHandler:
                  - login: bla
                teams:
                  - id: 1
+             enforce_admins:
+               enabled: True  # apply to admins also
         """
         var_data = copy(self.var_default)
         var_data["branch"] = branch
@@ -695,6 +728,8 @@ class GitHubHandler:
           head_sha: if given, check that this is still the latest sha
         """
         pr = await self.get_prs(number=pr_number)
+        logger.info("Checking protections for PR #%s : %s", pr_number, head_sha)
+
         # check that no new commits were made
         if head_sha and head_sha != pr['head']['sha']:
             return False, "Most recent SHA in PR differs"
@@ -714,39 +749,36 @@ class GitHubHandler:
 
         # Verify required_checks
         required_checks = set(protections.get('required_status_checks', {}).get('contexts', []))
-        logger.debug("Found required checks: %s", required_checks)
-
-        for status in await self.get_statuses(head_sha):
-            if status['state'] == 'success':
-                required_checks.discard(status['context'])
-        for check in await self.get_check_runs(head_sha):
-            logger.debug("Found check %s with state %s", check['name'], check.get('conclusion'))
-            if check.get('conclusion') == "success":
-                required_checks.discard(check['name'])
         if required_checks:
-            logger.info("Missing checks for #%s: %s", pr_number, required_checks)
-            return False, "Not all required checks have passed"
+            logger.info("Verifying %s required checks", len(required_checks))
+            for status in await self.get_statuses(head_sha):
+                if status['state'] == 'success':
+                    required_checks.discard(status['context'])
+            for check in await self.get_check_runs(head_sha):
+                if check.get('conclusion') == "success":
+                    required_checks.discard(check['name'])
+            if required_checks:
+                return False, "Not all required checks have passed"
+            logger.info("All status checks passed for #%s", pr_number)
 
         # Verify required reviews
-        reviews_required = int(protections.get('required_approving_review_count', 0))
-        logger.debug("Found required reviews: %s", reviews_required)
-        if reviews_required:
-            reviews = await self.get_pr_reviews(pr_number)
+        required_reviews = protections.get('required_pull_request_reviews', {})
+        if required_reviews:
+            required_count = required_reviews.get('required_approving_review_count', 1)
+            logger.info("Checking for %s approvng reviews and no change requests",
+                        required_count)
             approving_count = 0
-            for review in reviews:
-                if review['state'] == ReviewState.CHANGES_REQUESTED:
-                    logger.info("  failed - a reviewer hs requested changes")
-                    return False, "A reviewer has requested changes"
-                if review['state'] == ReviewState.APPROVED:
+            for review in await self.get_pr_reviews(pr_number):
+                user = review['user']['login']
+                if review['state'] == ReviewState.CHANGES_REQUESTED.name:
+                    return False, "Changes have been requested by `@{user}`"
+                if review['state'] == ReviewState.APPROVED.name:
+                    logger.info("PR #%s was approved by @%s", pr_number, user)
                     approving_count += 1
-            if approving_count < reviews_required:
-                logger.info("  failed - only %s/%s reviews approved",
-                            approving_count, reviews_required)
+            if approving_count < required_count:
                 return False, (f"Insufficient number of approving reviews"
-                               f"({approving_count}/{reviews_required})")
-            logger.info("Reviews good: %s/%s and no changes requested",
-                        approving_count, reviews_required)
-
+                               f"({approving_count}/{required_count})")
+        logger.info("PR #%s is passing configured checks", pr_number)
         return True, "LGTM"
 
     async def get_contents(self, path: str, ref: str = None) -> str:
