@@ -17,6 +17,7 @@ make CC="$CC" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 popd
 
 make \
+    CC="$CXX" \
     CPPFLAGS="-I$PREFIX/include" \
     SeqLib/lib/libseqlib.a
 
