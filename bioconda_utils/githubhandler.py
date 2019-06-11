@@ -251,13 +251,16 @@ class GitHubHandler:
             return await self.is_team_member(username, team)
         return True
 
-    async def search_issues(self, author=None, pr=False, issue=False):
+    async def search_issues(self, author=None, pr=False, issue=False, sha=None,
+                            closed=None):
         """Search issues/PRs on our repos
 
         Arguments:
           author: login name of user to search
+          sha: SHA of commit to search for
           pr: whether to consider only PRs
           issue: whether to consider only non-PR issues
+          closed: search only closed if true, only open if false
         """
         query = ["org:" + self.user]
 
@@ -266,8 +269,16 @@ class GitHubHandler:
         elif issue and not pr:
             query += ["is:issue"]
 
+        if closed is not None:
+            if closed:
+                query += ["is:closed"]
+            else:
+                query += ["is:open"]
+
         if author:
             query += ["author:" + author]
+        if sha:
+            query += ["sha:" + sha]
 
         return await self.api.getitem(self.SEARCH_ISSUES + '+'.join(query))
 
@@ -290,6 +301,25 @@ class GitHubHandler:
         except gidgethub.BadRequest:
             return False
         return True
+
+    async def get_prs_from_sha(self, head_sha: str, only_open=False) -> List[int]:
+        """Searches for PRs matching **head_sha**
+
+        Args:
+          head_sha: The head checksum to search for
+          only_open: If true, return only open PRs
+        Result:
+          List of PR numbers.
+        """
+        pr_numbers = []
+        result = await self.search_issues(pr=True, sha=head_sha,
+                                          closed=False if only_open else None)
+        for pull in result.get('items', []):
+            pr_number = int(pull['number'])
+            full_pr = self.get_prs(number=pr_number)
+            if full_pr['head']['ref'].startswith(head_sha):
+                pr_numbers.append(pr_number)
+        return pr_numbers
 
     # pylint: disable=too-many-arguments
     @backoff.on_exception(backoff.fibo, gidgethub.BadRequest, max_tries=10)
