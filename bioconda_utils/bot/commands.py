@@ -180,7 +180,7 @@ async def command_schedule(ghapi, issue_number, user, *args):
             if len(args) > 2:
                 err = "Too many arguments."
             else:
-                if len(args) == 1:
+                if len(args) == 2:
                     params = {'AUTOBUMP_OPTS': f'--max-updates {int(args[1])}'}
                 else:
                     params = None
