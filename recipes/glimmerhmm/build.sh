@@ -49,4 +49,4 @@ cp train/scoreSTOP2 $PREFIX/bin/.
 cp train/splicescore $PREFIX/bin/.
 
 # copy the training data
-cp -R trained_dir $PREFIX/GlimmerHMM/
+cp -R trained_dir $PREFIX/share/GlimmerHMM/
