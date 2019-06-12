@@ -181,9 +181,11 @@ async def command_schedule(ghapi, issue_number, user, *args):
                 err = "Too many arguments."
             else:
                 if len(args) == 2:
-                    params = {'AUTOBUMP_OPTS': f'--max-updates {int(args[1])}'}
+                    max_updates = int(args[1])
                 else:
-                    params = None
+                    max_updates = 5
+                params = {'AUTOBUMP_OPTS': f'--max-updates {max_updates}'}
+
                 from .config import CIRCLE_TOKEN
                 from ..circleci import AsyncCircleAPI
                 capi = AsyncCircleAPI(ghapi.session, token=CIRCLE_TOKEN)
@@ -193,4 +195,4 @@ async def command_schedule(ghapi, issue_number, user, *args):
         else:
             err = "Unknown command"
     return err + (" Options are:\n"
-                  " - `autobump [n]`: schedule *n* updates of autobump")
+                  " - `autobump [n=5]`: schedule *n* updates of autobump")
