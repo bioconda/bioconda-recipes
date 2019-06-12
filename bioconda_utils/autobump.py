@@ -209,7 +209,7 @@ class Scanner(AsyncPipeline[Recipe]):
         if self.status_fn:
             with open(self.status_fn, "w") as out:
                 for rname, result in self.status:
-                    out.write(f'{rname}\t{result.name}')
+                    out.write(f'{rname}\t{result.name}\n')
         return res
 
     async def queue_items(self, send_q, return_q):
