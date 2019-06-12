@@ -1,5 +1,4 @@
 if [ `uname` == Darwin ]; then
-	export MACOSX_DEPLOYMENT_TARGET=10.9
         sed -i.bak "s~#include <malloc.h>~#include <malloc/malloc.h>~g" sources/util.c
         sed -i.bak "s~#include <malloc.h>~#include <malloc/malloc.h>~g" sources/oc1.h
         sed -i.bak "s~#include <malloc.h>~#include <malloc/malloc.h>~g" train/utils.c
