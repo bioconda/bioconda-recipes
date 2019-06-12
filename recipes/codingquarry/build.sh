@@ -1,5 +1,12 @@
 #!/bin/sh
 
+if [ `uname` == Darwin ]; then
+    export MACOSX_DEPLOYMENT_TARGET=10.9
+    sed -i.bak "s~#include <malloc.h>~#include <malloc/malloc.h>~g" sources/util.c
+    sed -i.bak "s~#include <malloc.h>~#include <malloc/malloc.h>~g" sources/oc1.h
+    sed -i.bak "s~#include <malloc.h>~#include <malloc/malloc.h>~g" train/utils.c
+fi
+
 #modify makefile to use correct compiler c++
 sed -i.bak -e 's/\${CC}/${CXX}/g' -e 's/\${CFLAGS}/${CXXFLAGS}/g' makefile
 
@@ -9,7 +16,7 @@ sed -i.bak '1,4d' makefile
 CXXFLAGS="$CXXFLAGS -fopenmp -g -O3"
 
 #now build
-make
+make CXX=$CXX
 
 #link
 mkdir -p $PREFIX/bin
