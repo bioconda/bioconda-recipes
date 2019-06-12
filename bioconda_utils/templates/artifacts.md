@@ -11,7 +11,7 @@ Arch | Package | Repodata
 ***
 {% endif %}{% if repos %}
 
-You may alsu use `conda` to install these:
+You may also use `conda` to install these:
 
 {% for repo in repos.items() %}
  - For packages in {{ repo[1] | join(' and ')}}:
