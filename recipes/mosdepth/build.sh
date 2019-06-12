@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export BRANCH=v0.19.6
+export BRANCH=v0.19.2
 export PATH="nim-$BRANCH/bin/nim/bin:${PATH:+:$PATH}"
 export LD=$CC
 bash ./scripts/install.sh
