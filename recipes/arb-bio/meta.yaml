@@ -31,7 +31,7 @@ source:
     - typeof.patch
 
 build:
-  number: 7
+  number: 8
 # constraining to perl >= 5.23 does not work via requirements, resulting in a 
 # broken build string. constraining via skip also doesn't work - the suggested
 # approach leads to str < int compare failure during lint. 
@@ -94,9 +94,6 @@ outputs:
       run:
         - gettext
         - {{ pin_compatible("glib", max_pin="x") }}
-    build:
-      run_exports:
-        - {{ pin_subpackage("libarbdb", exact=True) }}
   - name: arb-bio-tools
     script: install_tools.sh
     requirements:
@@ -170,6 +167,9 @@ outputs:
         - fig2dev
   - name: arb-bio-devel
     script: install_devel.sh
+    build:
+      run_exports:
+        - {{ pin_subpackage("libarbdb", exact=True) }}
     requirements:
       build:
         - {{ compiler('cxx') }}

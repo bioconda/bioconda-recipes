@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="phastCons7way.UCSC.hg38_3.7.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/phastCons7way.UCSC.hg38_3.7.1.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/phastCons7way.UCSC.hg38_3.7.1.tar.gz"
   "https://bioarchive.galaxyproject.org/phastCons7way.UCSC.hg38_3.7.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-phastcons7way.ucsc.hg38/bioconductor-phastcons7way.ucsc.hg38_3.7.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-phastcons7way.ucsc.hg38/bioconductor-phastcons7way.ucsc.hg38_3.7.1_src_all.tar.gz"
 )
 MD5="c2d87446b022c166c1c325ea2aef521d"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
