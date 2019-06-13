@@ -70,8 +70,6 @@ class GitterListener:
         try:
             user, repo = self.rooms[room_name].split('/')
             logger.error("Listening in %s for repo %s/%s", room_name, user, repo)
-            ghapi = await self._ghappapi.get_github_api(False, user, repo)
-
             while True:
                 try:
                     room = await self._api.get_room(room_name)
@@ -79,6 +77,9 @@ class GitterListener:
                     await self._api.join_room(self._user, room)
                     logger.info("%s: listening in %s", self, room_name)
                     async for message in self._api.iter_chat(room):
+                        # getting a new ghapi object for every message because our
+                        # creds time out. Ideally, the api class would take care of that.
+                        ghapi = await self._ghappapi.get_github_api(False, user, repo)
                         await self.handle_msg(room, message, ghapi)
                 except (aiohttp.ClientConnectionError,
                         asyncio.TimeoutError):
