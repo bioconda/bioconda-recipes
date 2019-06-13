@@ -7,4 +7,4 @@ export CFLAGS="-I$PREFIX/include -DHAVE_LIBDEFLATE"
 export CPPFLAGS="-I$PREFIX/include -DHAVE_LIBDEFLATE"
 export LDFLAGS="-L$PREFIX/lib"
 
-$PYTHON setup.py install
+$PYTHON -m pip install .
