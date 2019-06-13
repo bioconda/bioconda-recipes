@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 import aiohttp
 
 from .. import gitter
-from ..gitter import AioGitterAPI, GitterAPI
+from ..gitter import AioGitterAPI
 from .commands import command_routes
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -70,6 +70,7 @@ class GitterListener:
         try:
             user, repo = self.rooms[room_name].split('/')
             logger.error("Listening in %s for repo %s/%s", room_name, user, repo)
+            message = None
             while True:
                 try:
                     room = await self._api.get_room(room_name)
@@ -81,34 +82,47 @@ class GitterListener:
                         # creds time out. Ideally, the api class would take care of that.
                         ghapi = await self._ghappapi.get_github_api(False, user, repo)
                         await self.handle_msg(room, message, ghapi)
-                except (aiohttp.ClientConnectionError,
-                        asyncio.TimeoutError):
+
+                # on timeouts, we just run log into the room again
+                except (aiohttp.ClientConnectionError, asyncio.TimeoutError):
                     pass
+
+                # http errors just get logged
                 except aiohttp.ClientResponseError as exc:
-                    logger.exception("HTTP Error Code %s while listening to room %s", exc.code, room_name)
-                except TypeError as exc:
-                    logger.exception("Type error caught. Resuming")
+                    logger.exception("HTTP Error Code %s while listening to room %s",
+                                     exc.code, room_name)
+
+                # asyncio cancellation needs to be passed up
+                except asyncio.CancelledError: # pylint: disable=try-except-raise
+                    raise
+
+                # the rest, we just log so that we remain online after an error
+                except Exception:  # pylint: disable=broad-except
+                    logger.exception("Unexpected exception caught. Last message: '%s'", message)
+
                 await asyncio.sleep(1)
         except asyncio.CancelledError:
             logger.error("%s: stopped listening in %s", self, room_name)
+
+            # we need a new session here as the one we got passed might have been
+            # closed already when we get cancelled
             async with aiohttp.ClientSession() as session:
                 self._api._session = session
-                res = await self._api.leave_room(self._user, room)
+                await self._api.leave_room(self._user, room)
                 logger.error("%s: left room %s", self, room_name)
-        except Exception:
-            logger.exception("%s: exiting with uncaught exception", self)
-            raise
 
     async def handle_msg(self, room: gitter.Room, message: gitter.Message, ghapi) -> None:
         """Parse Gitter message and dispatch via command_routes"""
         await self._api.mark_as_read(self._user, room, [message.id])
         if self._user.id not in (m.userId for m in message.mentions):
             if self._user.username.lower() in (m.screenName.lower() for m in message.mentions):
-                await self._api.send_message(room, "@%s - are you talking to me?", message.fromUser.username)
+                await self._api.send_message(room, "@%s - are you talking to me?",
+                                             message.fromUser.username)
             return
         command = message.text.strip().lstrip('@'+self._user.username).strip()
         if command == message.text.strip():
-            await self._api.send_message(room, "Hmm? Someone talking about me?", message.fromUser.username)
+            await self._api.send_message(room, "Hmm? Someone talking about me?",
+                                         message.fromUser.username)
             return
         cmd, *args = command.split()
         issue_number = None
@@ -119,7 +133,8 @@ class GitterListener:
         except (ValueError, IndexError):
             pass
 
-        response = await command_routes.dispatch(cmd.lower(), ghapi, issue_number, message.fromUser.username, *args)
+        response = await command_routes.dispatch(cmd.lower(), ghapi, issue_number,
+                                                 message.fromUser.username, *args)
         if response:
             await self._api.send_message(room, "@%s: %s", message.fromUser.username, response)
         else:
