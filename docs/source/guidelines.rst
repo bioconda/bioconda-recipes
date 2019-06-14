@@ -176,6 +176,14 @@ added is probably sufficient. The exception is when the package also installs
 a command-line tool, in which case that should be tested as well.
 
 .. note::
+   
+   ``conda skeleton pypi`` only works with packages that have a source
+   distribution produced with ``python setup.py sdist``. Packages on PyPI
+   which only have a wheel will not work with ``conda skeleton pypi``.
+   Packages containing only "built source" distributions produced with 
+   ``python setup.py bdist`` on UNIX will likewise not work. 
+
+.. note::
 
    Make sure you have a conda-build version 3.x when running
    ``conda skeleton pypi <packagename>``. If you are still using conda-build
