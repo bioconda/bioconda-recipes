@@ -1,5 +1,3 @@
-#!/bin/bash
-
-cert-sync $PREFIX/ssl/cacert.pem
+#!/usr/bin/env bash
 
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
