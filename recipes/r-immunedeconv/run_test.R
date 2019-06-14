@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 library(immunedeconv)
 library(readr)
 library(dplyr)
