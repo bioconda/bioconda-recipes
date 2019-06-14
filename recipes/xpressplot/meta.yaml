@@ -1,32 +1,50 @@
+{% set version = "0.0.5b0" %}
+
 package:
   name: xpressplot
-  version: 0.0.5b
+  version: {{ version }}
 
 source:
-  fn: XPRESSplot-v0.0.5b0.tar.gz
-  url: https://github.com/XPRESSyourself/XPRESSplot/archive/XPRESSplot-v0.0.5b0.tar.gz
+  url: https://github.com/XPRESSyourself/XPRESSplot/archive/XPRESSplot-v{{ version }}.tar.gz
   sha256: a536764c6fbe6150e539b826bfb015e6d6eccbb0e3cde3058f6c8f73913f1e2b
 
 build:
+  noarch: python
   number: 0
 
 requirements:
-  host:
+  build:
     - python
     - setuptools
   run:
+    - python
     - pandas
-    - matplotlib
     - numpy
-    - plotly
-    - seaborn
     - scipy
-    - r
-    - matplotlib
-    - multiqc
     - scikit-learn
+    - matplotlib
+    - seaborn
+    - plotly
+    
+test:
+  imports:
+    - os
+    - sys
+    - pandas
+    - numpy
+    - xpressplot
+  source_files:
+    - tests
+  commands:
+    - curl -L https://sourceforge.net/projects/xpressplot/files/GPL570.txt/download -o tests/GPL570.txt
+    - python tests/analyze_test.py
+    - python tests/fetch_test.py
+    - python tests/format_test.py
+    - python tests/normalize_test.py
+    - python tests/utils_test.py
 
 about:
   home: https://github.com/XPRESSyourself/XPRESSplot
   license: GPL-3.0
+  license_file: LICENSE
   summary: 'A toolkit for navigating and analyzing gene expression datasets.'
