@@ -1,3 +1,3 @@
 #!/bin/sh
 
-python setup.py install
+$PYTHON setup.py install 
