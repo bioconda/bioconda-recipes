@@ -1,0 +1,24 @@
+From: Elmar Pruesse <elmar.pruesse@ucdenver.edu>
+Date: Wed, 15 May 2019 17:10:15 -0600
+Subject: [PATCH 1/4] Fix syntax error in omp reduction initializer
+
+---
+ src/metabat2.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/metabat2.cpp b/src/metabat2.cpp
+index 71b170c..a067944 100644
+--- a/src/metabat2.cpp
++++ b/src/metabat2.cpp
+@@ -1017,7 +1017,7 @@ bool is_nz(size_t r1, size_t r2) {
+ 	return false;
+ }
+ 
+-#pragma omp declare reduction (merge_bit : boost::dynamic_bitset<> : omp_out|=omp_in ) initializer(omp_priv(omp_orig))
++#pragma omp declare reduction (merge_bit : boost::dynamic_bitset<> : omp_out|=omp_in ) initializer(omp_priv = boost::dynamic_bitset<>{omp_orig})
+ #pragma omp declare reduction (merge_size_t : std::vector<size_t> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()) )
+ #pragma omp declare reduction (merge_double : std::vector<double> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()) )
+ 
+-- 
+2.14.0
+
