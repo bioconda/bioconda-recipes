@@ -110,9 +110,9 @@ env = {
     'WORKSPACE': args.bootstrap, 
     'BOOTSTRAP': "true", 
     'USE_DOCKER': use_docker, 
-    'PATH': os.environ['PATH'], 
-    'HTTPS_PROXY': os.environ['HTTPS_PROXY'],
-    'https_proxy': os.environ['https_proxy']
+    'PATH': os.environ.get('PATH', ""),
+    'HTTPS_PROXY': os.environ.get('HTTPS_PROXY', ""),
+    'https_proxy': os.environ.get('https_proxy', "")
 }
 
 sp.check_call(['.circleci/setup.sh'], env=env)
