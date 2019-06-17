@@ -7,7 +7,7 @@ pushd build_pthreads
    make
    install -d ${PREFIX}/bin
    install ../bin/raxml-ng ${PREFIX}/bin
-pushd
+popd
 
 # mpi
 mkdir build_mpi
@@ -16,4 +16,4 @@ pushd build_mpi
    make
    install -d ${PREFIX}/bin
    install -T ../bin/raxml-ng ${PREFIX}/bin/raxml-ng-MPI
-pushd
+popd
