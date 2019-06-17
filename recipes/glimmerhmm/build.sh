@@ -21,39 +21,32 @@ mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/share/glimmerhmm
 mkdir -p $PREFIX/share/glimmerhmm/train
 
-# cd into the sources
-if [ `uname` == Darwin ]; then
-        cd sources && make CC=$CXX
-        cd ../train && make clean && make all C=$CC CC=$CXX
-        cd ..
-else
-        cd sources && make CC=$GXX 
-        cd ../train && make clean && make all C=$CC CC=$CXX
-        cd ..
-fi
+# make
+make -C sources CC=$CXX
+make -C train clean && make -C train all C=$CC CC=$CXX
 
 # copy the executables	
-cp bin/glimmhmm.pl $PREFIX/bin/.
-cp sources/glimmerhmm $PREFIX/bin/.
-cp train/trainGlimmerHMM $PREFIX/bin/.
-cp train/build-icm $PREFIX/share/glimmerhmm/train/.
-cp train/build-icm-noframe $PREFIX/share/glimmerhmm/train/.
-cp train/build1 $PREFIX/share/glimmerhmm/train/.
-cp train/build2 $PREFIX/share/glimmerhmm/train/.
-cp train/erfapp $PREFIX/share/glimmerhmm/train/.
-cp train/falsecomp $PREFIX/share/glimmerhmm/train/.
-cp train/findsites $PREFIX/share/glimmerhmm/train/.
-cp train/karlin $PREFIX/share/glimmerhmm/train/.
-cp train/score $PREFIX/share/glimmerhmm/train/.
-cp train/score2 $PREFIX/share/glimmerhmm/train/.
-cp train/scoreATG $PREFIX/share/glimmerhmm/train/.
-cp train/scoreATG2 $PREFIX/share/glimmerhmm/train/.
-cp train/scoreSTOP $PREFIX/share/glimmerhmm/train/.
-cp train/scoreSTOP2 $PREFIX/share/glimmerhmm/train/.
-cp train/splicescore $PREFIX/share/glimmerhmm/train/.
+cp bin/glimmhmm.pl $PREFIX/bin/
+cp sources/glimmerhmm $PREFIX/bin/
+cp train/trainGlimmerHMM $PREFIX/bin/
+cp train/build-icm $PREFIX/share/glimmerhmm/train/
+cp train/build-icm-noframe $PREFIX/share/glimmerhmm/train/
+cp train/build1 $PREFIX/share/glimmerhmm/train/
+cp train/build2 $PREFIX/share/glimmerhmm/train/
+cp train/erfapp $PREFIX/share/glimmerhmm/train/
+cp train/falsecomp $PREFIX/share/glimmerhmm/train/
+cp train/findsites $PREFIX/share/glimmerhmm/train/
+cp train/karlin $PREFIX/share/glimmerhmm/train/
+cp train/score $PREFIX/share/glimmerhmm/train/
+cp train/score2 $PREFIX/share/glimmerhmm/train/
+cp train/scoreATG $PREFIX/share/glimmerhmm/train/
+cp train/scoreATG2 $PREFIX/share/glimmerhmm/train/
+cp train/scoreSTOP $PREFIX/share/glimmerhmm/train/
+cp train/scoreSTOP2 $PREFIX/share/glimmerhmm/train/
+cp train/splicescore $PREFIX/share/glimmerhmm/train/
 
 # copy the perl modules
-cp train/*.pm $PREFIX/share/glimmerhmm/train/.
+cp train/*.pm $PREFIX/share/glimmerhmm/train/
 
 # copy the training data
 cp -R trained_dir $PREFIX/share/glimmerhmm/
