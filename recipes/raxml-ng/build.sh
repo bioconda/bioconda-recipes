@@ -15,5 +15,5 @@ pushd build_mpi
    cmake -DUSE_MPI=ON ..
    make
    install -d ${PREFIX}/bin
-   install -T ../bin/raxml-ng ${PREFIX}/bin/raxml-ng-MPI
+   install ../bin/raxml-ng ${PREFIX}/bin/raxml-ng-MPI
 popd
