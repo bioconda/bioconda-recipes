@@ -577,7 +577,7 @@ class TempGitHandler(GitHandlerBase):
         if not os.path.exists(mirror_name):
             logger.info("Creating Bare Mirror %s", fname)
             mirror = git.Repo.clone_from(url, mirror_name, bare=True)
-            logger.info("DONE")
+            logger.info("Creating Bare Mirror %s -- DONE", fname)
         else:
             mirror = git.Repo(mirror_name)
 
@@ -585,6 +585,7 @@ class TempGitHandler(GitHandlerBase):
         logger.info("Updating Bare Mirror %s", fname)
         m_origin = mirror.remote('origin')
         m_origin.set_url(url, next(m_origin.urls))
+        logger.info("Updating Bare Mirror %s -- DONE", fname)
 
         # Update the remote repo
         mirror.remote('origin').update()
@@ -596,6 +597,10 @@ class TempGitHandler(GitHandlerBase):
         repo = cls._get_local_mirror(home_url).clone(todir)
         r_origin = repo.remote('origin')
         r_origin.set_url(home_url, next(r_origin.urls))
+        _, _, fname = home_url.rpartition('@')
+        logger.info("Fetching %s", fname)
+        r_origin.fetch()
+        logger.info("Fetching %s - DONE", fname)
         return repo
 
     def __init__(self,
