@@ -1,10 +1,9 @@
 #!/bin/bash
 
 export HDF5_DIR=$PREFIX
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
 
-# Add more build steps here, if they are necessary.
-
-# See
-# http://docs.continuum.io/conda/build.html
-# for a list of environment variables that are set during the build process.
+$PYTHON -m pip install -vv --disable-pip-version-check --no-deps --no-cache-dir --ignore-installed . 
+# Work around for no 'source_files' support in test section of meta.yaml
+# Only use test simpleseg as a sanity check
+# cp test/test_all.sh $PREFIX/bin/run_segway_tests.sh
+# cp -r test/simpleseg $PREFIX/bin/segway_simpleseg_test
