@@ -1,0 +1,86 @@
+{% set version = '0.2.3' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-tidyjson
+  version: {{ version|replace("-", "_") }}
+
+source:
+
+  url: https://github.com/sbilge/tidyjson/archive/v0.2.2.3.tar.gz
+  sha256: 74b29b888253983d14d612ffde09ceaa29deccb694194d51db290913a28bdfc1
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: knitr, testthat, ggplot2, magrittr
+requirements:
+  build:
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}
+    - {{posix}}filesystem        # [win]
+    - {{posix}}git
+    - {{posix}}zip               # [win]
+    - {{posix}}make
+
+  host:
+    - r-base
+    - r-assertthat
+    - r-dplyr
+    - r-jsonlite
+    - r-tidyr
+
+  run:
+    - r-base
+    - r-assertthat
+    - r-dplyr
+    - r-jsonlite
+    - r-tidyr
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('tidyjson')"           # [not win]
+    - "\"%R%\" -e \"library('tidyjson')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://github.com/sailthru/tidyjson
+  license: MIT + file LICENSE
+  summary: An easy and consistent way to turn 'JSON' into tidy data frames that are natural to
+    work with in 'dplyr', 'ggplot2' and other tools.
+  license_family: MIT
+
+# The original CRAN metadata for this package was:
+
+# Package: tidyjson
+# Title: A Grammar for Turning 'JSON' into Tidy Tables
+# Version: 0.2.1
+# Author: Jeremy Stanley <jeremy.stanley@gmail.com>
+# Maintainer: Jeremy Stanley <jeremy.stanley@gmail.com>
+# Description: An easy and consistent way to turn 'JSON' into tidy data frames that are natural to work with in 'dplyr', 'ggplot2' and other tools.
+# Depends: R (>= 3.1.0)
+# Imports: assertthat, jsonlite, dplyr
+# URL: https://github.com/sailthru/tidyjson
+# License: MIT + file LICENSE
+# LazyData: true
+# Suggests: knitr, testthat, ggplot2, magrittr
+# VignetteBuilder: knitr
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml
