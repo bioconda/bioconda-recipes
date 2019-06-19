@@ -301,14 +301,15 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
 
 
 @celery.task(acks_late=True)
-async def lint_fix(head_branch: str, _head_sha: str, ghapi):
+async def lint_fix(head_branch: str, head_sha: str, ghapi):
     """Execute linter in fix mode
 
     Args:
       check_run_number: ID of GitHub ``check_run``
       ref: SHA of commit to check
     """
-    async with Checkout(ghapi, branch_name=head_branch) as git:
+    logger.info("Running lint fix on %s as of %s", head_branch, head_sha)
+    async with Checkout(ghapi, ref=head_sha) as git:
         if not git:
             logger.error("lint_fix: Failed to checkout")
             return
