@@ -78,6 +78,9 @@ class Checkout:
         self.issue_number = issue_number
 
     async def __aenter__(self):
+        logger.info("Preparing checkout: pr=%s ref=%s branch=%s repo=%s",
+                    self.issue_number, self.ref, self.branch_name, self.ghapi)
+
         try:
             if self.issue_number:
                 prs = await self.ghapi.get_prs(number=self.issue_number)
@@ -90,11 +93,14 @@ class Checkout:
                 fork_repo = None
                 branch_name = "unknown"
                 ref = self.ref
-            else:
+            elif self.branch_name:
                 fork_user = None
                 fork_repo = None
                 branch_name = self.branch_name
                 ref = None
+            else:
+                logger.error("-- Failed checkout - all None?")
+                return None
 
             self.git = TempBiocondaRepo(
                 password=self.ghapi.token,
@@ -117,13 +123,15 @@ class Checkout:
             else:
                 branch = self.git.create_local_branch(branch_name, ref)
             if not branch:
-                logger.error(f"Failed to find {branch_name}:{ref} in {self.git}")
+                logger.error("-- Failed to checkout - no branch? (git=%s)",
+                             self.git)
                 return None
             branch.checkout()
 
             return self.git
         except Exception:
-            logger.exception(f"Error while checking out with {self.ghapi}")
+            logger.exception("-- Failed to checkout - caught exception: (git=%s)",
+                             self.git)
             return None
 
     async def __aexit__(self, _exc_type, _exc, _tb):
