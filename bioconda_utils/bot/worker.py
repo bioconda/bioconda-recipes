@@ -161,7 +161,7 @@ serialization.register('custom_json',
 
 # Instantiate Celery app, setting our AsyncTask as default
 # task class and loading the tasks from tasks.py
-celery = Celery(  # pylint: disable=invalid-name
+capp = Celery(  # pylint: disable=invalid-name
     task_cls=AsyncTask,
     include=['bioconda_utils.bot.tasks']
 )
@@ -169,7 +169,7 @@ celery = Celery(  # pylint: disable=invalid-name
 
 # Celery must be configured at module level to catch worker as well
 # Settings are suggestions from CloudAMPQ
-celery.conf.update(
+capp.conf.update(
     # Set the URL to the AMQP broker using environment variable
     broker_url=os.environ.get('CLOUDAMQP_URL'),
 
@@ -201,5 +201,3 @@ def setup_new_celery_process(sender=None, conf=None, **_kwargs):
     """
     install_gpg_key(CODE_SIGNING_KEY)
     RepoData().set_timeout(REPODATA_TIMEOUT)
-
-

@@ -26,7 +26,7 @@ import tempfile
 import re
 import asyncio
 
-from .worker import celery
+from .worker import capp
 from .config import BOT_NAME, BOT_EMAIL, CIRCLE_TOKEN, QUAY_LOGIN, ANACONDA_TOKEN
 from .. import utils
 from .. import autobump
@@ -141,7 +141,7 @@ class Checkout:
             self.git.close()
 
 
-@celery.task(acks_late=True, ignore_result=False)
+@capp.task(acks_late=True, ignore_result=False)
 async def get_latest_pr_commit(issue_number: int, ghapi):
     """Returns last commit"""
     commit = {'sha': None}
@@ -151,7 +151,7 @@ async def get_latest_pr_commit(issue_number: int, ghapi):
     return commit['sha']
 
 
-@celery.task(acks_late=True)
+@capp.task(acks_late=True)
 async def create_check_run(head_sha: str, ghapi, recreate=True):
     """Creates a ``check_run`` on GitHub
 
@@ -174,7 +174,7 @@ async def create_check_run(head_sha: str, ghapi, recreate=True):
     logger.warning("Created check run %s for %s", check_run_number, head_sha)
 
 
-@celery.task(acks_late=True)
+@capp.task(acks_late=True)
 async def bump(issue_number: int, ghapi):
     """Bump the build number in each recipe in PR
 
@@ -196,7 +196,7 @@ async def bump(issue_number: int, ghapi):
             logger.error("Failed to push?!")
 
 
-@celery.task(acks_late=True)
+@capp.task(acks_late=True)
 async def lint_check(check_run_number: int, ref: str, ghapi):
     """Execute linter
 
@@ -300,7 +300,7 @@ async def lint_check(check_run_number: int, ref: str, ghapi):
         actions=actions)
 
 
-@celery.task(acks_late=True)
+@capp.task(acks_late=True)
 async def lint_fix(head_branch: str, head_sha: str, ghapi):
     """Execute linter in fix mode
 
@@ -332,7 +332,7 @@ async def lint_fix(head_branch: str, head_sha: str, ghapi):
             logger.error("Push failed")
 
 
-@celery.task(acks_late=True)
+@capp.task(acks_late=True)
 async def check_circle_artifacts(pr_number: int, ghapi):
     """Checks for packages and images uploaded to CircleCI artifacts
 
@@ -388,7 +388,7 @@ async def check_circle_artifacts(pr_number: int, ghapi):
         await ghapi.create_comment(pr_number, msg)
 
 
-@celery.task(acks_late=True)
+@capp.task(acks_late=True)
 async def trigger_circle_rebuild(pr_number: int, ghapi):
     """Triggers a rebuild of the latest commit for a PR on CircleCI
 
@@ -411,7 +411,7 @@ async def trigger_circle_rebuild(pr_number: int, ghapi):
     logger.warning("Trigger_rebuild call returned with %s", res)
 
 
-@celery.task(bind=True, acks_late=True, ignore_result=False)
+@capp.task(bind=True, acks_late=True, ignore_result=False)
 async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, str]:
     """Merges a PR
 
@@ -574,7 +574,7 @@ async def merge_pr(self, pr_number: int, comment_id: int, ghapi) -> Tuple[bool, 
 
 
 
-@celery.task(acks_late=True, ignore_result=True)
+@capp.task(acks_late=True, ignore_result=True)
 async def post_result(result: Tuple[bool, str], pr_number: int, _comment_id: int,
                       prefix: str, user: str, ghapi) -> None:
     logger.error("post result: result=%s, issue=%s", result, pr_number)
@@ -584,7 +584,7 @@ async def post_result(result: Tuple[bool, str], pr_number: int, _comment_id: int
     logger.warning("message %s", message)
 
 
-@celery.task(acks_late=True)
+@capp.task(acks_late=True)
 async def create_welcome_post(pr_number: int, ghapi):
     """Post welcome message for first timers"""
     prq = await ghapi.get_prs(number=pr_number)
@@ -599,7 +599,7 @@ async def create_welcome_post(pr_number: int, ghapi):
     await ghapi.create_comment(pr_number, message)
 
 
-@celery.task(acks_late=True)
+@capp.task(acks_late=True)
 async def run_autobump(package_names, ghapi, *_args):
     """Runs ``autobump`` on packages
 
