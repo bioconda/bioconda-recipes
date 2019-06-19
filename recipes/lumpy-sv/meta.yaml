@@ -1,32 +1,34 @@
 package:
   name: lumpy-sv
-  version: 0.2.14a
+  version: 0.3.0
 
 source:
-  git_url: https://github.com/arq5x/lumpy-sv.git
-  git_tag: c1bcea1
-  #url: https://github.com/arq5x/lumpy-sv/releases/download/0.2.13/lumpy-sv-v0.2.13.tar.gz
-  #sha256: 1a7a5d18875b297acaa68ee1e864ca048654ebc85348920b518dc689d2b7a3cf
+  url: https://github.com/arq5x/lumpy-sv/archive/0.3.0.tar.gz
+  sha256: 8be9ce5010833021280d601e5bcb6baab3bc8be059e3524c1f4f664dee4c8e6d
+  patches:
+    - patch
 
 build:
-  number: 3
+  number: 2
+  skip: True  # [osx]
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - autoconf
-    - automake
+    - {{ compiler('cxx') }}
+    - cmake
   host:
-    - zlib
-    - curl
+    - htslib
   run:
-    - zlib
+    - htslib
     - python 2.7.*
     - samtools
     - gawk
-    - curl
     - pysam
     - numpy
+    - util-linux #contains hexdump
+    - sambamba #lumpy-express dependency
+    - samblaster #lumpy-express dependency
 
 test:
   commands:
@@ -39,9 +41,3 @@ about:
   home: https://github.com/arq5x/lumpy-sv
   license: MIT
   summary: a general probabilistic framework for structural variant discovery
-
-extra:
-  skip-lints:
-    # Use recursive git clone
-    - uses_git_url
-    - missing_hash
