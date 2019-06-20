@@ -59,6 +59,7 @@ class GitHubHandler:
     PULL_COMMITS      = "/repos/{user}/{repo}/pulls/{number}/commits"
     PULL_MERGE        = "/repos/{user}/{repo}/pulls/{number}/merge"
     PULL_REVIEWS      = "/repos/{user}/{repo}/pulls/{number}/reviews{/review_id}"
+    PULL_UPDATE       = "/repos/{user}/{repo}/pulls/{number}/update-branch"
     BRANCH_PROTECTION = "/repos/{user}/{repo}/branches/{branch}/protection"
     ISSUES            = "/repos/{user}/{repo}/issues{/number}"
     ISSUE_COMMENTS    = "/repos/{user}/{repo}/issues/{number}/comments"
@@ -469,6 +470,22 @@ class GitHubHandler:
             if exc.status_code == 404:
                 return False
             raise
+
+    async def pr_update_branch(self, number) -> bool:
+        """Updates PR branch
+
+        Merges changes to "base" into "head"
+        """
+        var_data = copy(self.var_default)
+        var_data['number'] = str(number)
+        accept = "application/vnd.github.lydian-preview+json"
+        try:
+            await self.api.put(self.PULL_UPDATE, var_data, accept=accept)
+            return True
+        except gidgethub.BadRequest as exc:
+            logger.exception("pr_update_branch failed. status_code=%s args=%s",
+                             exc_status_code, exc.args)
+            return False
 
     async def modify_issue(self, number: int,
                            labels: Optional[List[str]] = None,

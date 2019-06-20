@@ -10,7 +10,7 @@ from .events import event_routes
 from ..githubhandler import Event
 from ..circleci import SlackMessage
 from .. import __version__ as VERSION
-from .worker import celery
+from .worker import capp
 from .config import APP_SECRET
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -103,7 +103,7 @@ async def show_status(request):
         {request.app.get('gh_rate_limit')}
 
         """
-        worker_status = celery.control.inspect(timeout=0.1)
+        worker_status = capp.control.inspect(timeout=0.1)
         if not worker_status:
             msg += """
             no workers online
