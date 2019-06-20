@@ -480,11 +480,17 @@ class GitHubHandler:
         var_data['number'] = str(number)
         accept = "application/vnd.github.lydian-preview+json"
         try:
-            await self.api.put(self.PULL_UPDATE, var_data, accept=accept)
+            await self.api.put(self.PULL_UPDATE, var_data, accept=accept, data={})
             return True
-        except gidgethub.BadRequest as exc:
-            logger.exception("pr_update_branch failed. status_code=%s args=%s",
-                             exc_status_code, exc.args)
+        except gidgethub.HTTPException as exc:
+            if exc.status_code == 202:
+                # Usually, we will get our "true" result via this exception.
+                # GitHub sends 202 "Accepted" for this API call. Gidgethub raises
+                # on anything but 200, 201, 204 (see sansio.py:decipher_response).
+                # So we catch and check the status code.
+                return True
+            logger.exception("pr_update_branch_failed (2). status_code=%s, args=%s",
+                             exc.status_code, exc.args)
             return False
 
     async def modify_issue(self, number: int,
