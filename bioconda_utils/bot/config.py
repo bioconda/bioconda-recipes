@@ -32,6 +32,12 @@ APP_KEY = get_secret("APP_KEY")
 #: Numeric App ID (not secret, technically)
 APP_ID = get_secret("APP_ID")
 
+#: App OAuth client ID
+APP_CLIENT_ID = get_secret("APP_CLIENT_ID")
+
+#: App OAuth client secret
+APP_CLIENT_SECRET = get_secret("APP_CLIENT_SECRET")
+
 #: Secret shared with Github used by us to authenticate incoming webhooks
 APP_SECRET = get_secret("APP_SECRET")
 
