@@ -26,7 +26,7 @@ cd ..
 
 cd bin
 ls -larth
-cp fc_coords2hp.py fc_emit_haplotigs.py fc_filt_hp.py fc_primary_contig_index.pl fc_scrub_names.pl FALCON_headerConverter.pl $PREFIX/bin
+cp fc_primary_contig_index.pl fc_scrub_names.pl FALCON_headerConverter.pl $PREFIX/bin
 cd ..
 
 cd ..
