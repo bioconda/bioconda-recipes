@@ -1,0 +1,61 @@
+{% set name = "oncotator" %}
+{% set version = "1.9.9.0" %}
+{% set sha256 = "63efae40c4621bd48420c3fc8bcee5aa1a854a1a083b95325e7ba770d98e7600" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/broadinstitute/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  host:
+    - pip
+    - python <3
+    - numpy ==1.11.0
+    - pyvcf ==0.6.8
+  run:
+    - python <3
+    - biopython ==1.66
+    - cython ==0.24
+    - numpy ==1.11.0
+    - pandas ==0.18.0
+    - bcbio-gff ==0.6.2
+    - pyvcf ==0.6.8
+    - pysam ==0.9.0
+    - sqlalchemy ==1.0.12
+    - shove ==0.6.6
+    - python-memcached ==1.57
+    - more-itertools ==2.2
+    - natsort ==4.0.4
+    - enum34 ==1.1.2
+    - futures
+
+test:
+  imports:
+    - oncotator
+  commands:
+    - oncotator -h
+    - Oncotator -h
+    - initializeDatasource -h
+    - initializeTranscriptDatasource -h
+    - addDatasourceMd5 -h
+    - get_exons -h
+
+about:
+  home: https://github.com/broadinstitute/oncotator
+  license: Custom OSS
+  license_file: LICENSE
+  summary: "Oncotator is a tool for annotating human genomic point mutations and indels with data relevant to cancer researchers."
+  doc_url: https://gatkforums.broadinstitute.org/gatk/categories/oncotator-documentation
+
+extra:
+  identifiers:
+    - doi:10.1002/humu.22771
