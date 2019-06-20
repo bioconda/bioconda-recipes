@@ -1,0 +1,40 @@
+Fix ARB refusing to build with the CF gcc7 setup
+ - must accept "-std=c++17"
+ - must accept gcc 7.3.0
+diff -rNu arbsrc_15220.orig/TEMPLATES/cxxforward.h arbsrc_15220/TEMPLATES/cxxforward.h
+--- arbsrc_15220.orig/TEMPLATES/cxxforward.h	2016-07-08 03:39:15.000000000 -0600
++++ arbsrc_15220/TEMPLATES/cxxforward.h	2019-02-13 17:02:24.563725298 -0700
+@@ -18,13 +18,12 @@
+ #endif
+ 
+ #if defined(__cplusplus)
+-# if (GCC_VERSION_CODE >= 407)
+ #  if (__cplusplus == 199711L)
+ #  else
+ #   if (__cplusplus == 201103L)
+ #    define ARB_ENABLE_Cxx11_FEATURES
+ #   else
+-#    if (__cplusplus == 201402L)
++#    if (__cplusplus >= 201402L)
+ #     define ARB_ENABLE_Cxx11_FEATURES
+ // #     define ARB_ENABLE_Cxx14_FEATURES // not needed yet
+ #    else
+@@ -32,7 +31,6 @@
+ #    endif
+ #   endif
+ #  endif
+-# endif
+ #else
+ # warning C compilation includes cxxforward.h
+ #endif
+diff -rNu arbsrc_15220.orig/Makefile arbsrc_15220/Makefile
+--- arbsrc_15220.orig/Makefile	2016-08-22 04:27:52.000000000 -0600
++++ arbsrc_15220/Makefile	2019-02-12 20:31:20.000000000 -0700
+@@ -102,6 +102,7 @@
+   4.9.0 4.9.1 4.9.2 4.9.3 4.9.4 \
+   5.1.0 5.2.0 5.3.0 5.3.1 5.4.0 \
+   6.1.0 \
++  7.3.0 \
+
+
+ # ----------------------
