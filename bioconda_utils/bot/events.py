@@ -134,3 +134,6 @@ async def handle_pull_request(event, ghapi):
     if action in ('opened', 'reopened', 'synchronize'):
         tasks.create_check_run.s(head_sha, ghapi, recreate=False).apply_async(countdown=30)
         logger.info("Scheduled create_check_run(recreate=False) for %s", head_sha)
+
+    if action in ('labeled', 'unlabeled'):
+        tasks.update_pr_project_columns.s(pr_number, ghapi).apply_async()

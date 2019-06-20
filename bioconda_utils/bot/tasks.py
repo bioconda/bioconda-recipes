@@ -27,7 +27,10 @@ import re
 import asyncio
 
 from .worker import capp
-from .config import BOT_NAME, BOT_EMAIL, CIRCLE_TOKEN, QUAY_LOGIN, ANACONDA_TOKEN
+from .config import (
+    BOT_NAME, BOT_EMAIL, CIRCLE_TOKEN, QUAY_LOGIN, ANACONDA_TOKEN,
+    PROJECT_COLUMN_LABEL_MAP
+)
 from .. import utils
 from .. import autobump
 from .. import hosters
@@ -619,3 +622,26 @@ async def run_autobump(package_names, ghapi, *_args):
         scanner.add(autobump.GitWriteRecipe, git)
         scanner.add(autobump.CreatePullRequest, git, ghapi)
         await scanner._async_run()
+
+
+@capp.task(acks_late=True)
+async def update_pr_project_columns(issue_number, ghapi, *_args):
+    """Updates project columns for PR according to labels"""
+    pr = await ghapi.get_prs(number=issue_number)
+    if not pr:
+        logger.error("Failed to update projects from labels: #%s is not a PR?",
+                     issue_number)
+        return
+    logger.info("Updating projects from labels for #%s '%s'",
+                issue_number, pr['title'])
+    pr_labels = set(label['name'] for label in pr['labels'])
+
+    for column_id, col_labels in PROJECT_COLUMN_LABEL_MAP.items():
+        have_card = any(card.get('issue_number') == issue_number
+                        for card in await ghapi.list_project_cards(column_id))
+        if pr_labels.intersection(col_labels):
+            if not have_card:
+                await ghapi.create_project_card(column_id, number=issue_number)
+        else:
+            if have_card:
+                await ghapi.delete_project_card_from_column(column_id, issue_number)

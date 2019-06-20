@@ -77,3 +77,8 @@ BOT_EMAIL = "47040946+BiocondaBot@users.noreply.github.com"
 
 #: Time in seconds after which repodata should be reloaded
 REPODATA_TIMEOUT = 300
+
+#: Assign PRs to project columns by label
+PROJECT_COLUMN_LABEL_MAP = {
+     5706816: set(('please review & merge',)),
+}
