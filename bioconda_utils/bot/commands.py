@@ -196,3 +196,15 @@ async def command_schedule(ghapi, issue_number, user, *args):
             err = "Unknown command"
     return err + (" Options are:\n"
                   " - `autobump [n=5]`: schedule *n* updates of autobump")
+
+@command_routes.register("update")
+@permissions(member=True, author=True)
+async def command_update(ghapi, issue_number, user, *args):
+    """Update PR branch with it's target branch ("base")
+    """
+    if await ghapi.pr_update_branch(issue_number):
+        msg = "Ok. Branch update triggered."
+    else:
+        msg = "Sorry, I was unable to trigger branch update."
+    await ghapi.create_comment(issue_number, msg)
+
