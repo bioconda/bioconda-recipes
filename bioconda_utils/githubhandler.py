@@ -38,6 +38,9 @@ MergeMethod = Enum("MergeMethod", "merge squash rebase")
 #: Pull request review state
 ReviewState = Enum("ReviewState", "APPROVED CHANGES_REQUESTED COMMENTED DISMISSED PENDING")
 
+#: ContentType for Project Cards
+CardContentType = Enum("CardContentType", "Issue PullRequest")
+
 def iso_now() -> str:
     """Creates ISO 8601 timestamp in format
     ``YYYY-MM-DDTHH:MM:SSZ`` as required by Github
@@ -72,6 +75,10 @@ class GitHubHandler:
     ORG_MEMBERS       = "/orgs/{user}/members{/username}"
     ORG               = "/orgs/{user}"
     ORG_TEAMS         = "/orgs/{user}/teams{/team_slug}"
+
+    PROJECTS_BY_REPO  = "/repos/{user}/{repo}/projects"
+    PROJECT_COL_CARDS = "/projects/columns/{column_id}/cards"
+    PROJECT_CARDS     = "/projects/columns/cards/{card_id}"
 
     TEAMS_MEMBERSHIP  = "/teams/{team_id}/memberships/{username}"
 
@@ -357,6 +364,19 @@ class GitHubHandler:
 
         accept = "application/vnd.github.shadow-cat-preview"  # for draft
         return await self.api.getitem(self.PULLS, var_data, accept=accept)
+
+    async def get_issue(self, number: int) -> Dict[str, Any]:
+        """Retrieve a single PR or Issue by its number
+
+        Arguments:
+          number: PR/Issue number
+        Returns:
+          The dict will contain a 'pull_request' key (containing dict)
+          if the Issue is a PR.
+        """
+        var_data = copy(self.var_default)
+        var_data['number'] = str(number)
+        return await self.api.getitem(self.ISSUES, var_data)
 
     async def iter_pr_commits(self, number: int):
         """Create iterator over commits in a PR"""
@@ -840,6 +860,156 @@ class GitHubHandler:
         var_data = copy(self.var_default)
         var_data['ref'] = ref
         await self.api.delete(self.GIT_REFERENCE, var_data)
+
+    def _deparse_card_pr_number(self, card: Dict[str, Any]) -> Dict[str, Any]:
+        """Extracts the card's issue's number from the content_url
+
+        This is a hack. The card data returned from github does not contain
+        content_id or anything referencing the PR/issue except for the
+        content_url. We deparse this here manually.
+
+        Arguments:
+          card: Card dict as returned from github
+        Results:
+          Card dict with ``issue_number`` field added if card is not a note
+        """
+        if 'content_url' not in card:  # not content_url to parse
+            return card
+        if 'issue_number' in card:  # target value already taken
+            return card
+
+        issue_url = gidgethub.sansio.format_url(self.ISSUES, self.var_default)
+        content_url = card['content_url']
+        if content_url.startswith(issue_url):
+            try:
+                card['issue_number'] = int(content_url.lstrip(issue_url))
+            except ValueError:
+                pass
+        if 'issue_number' not in card:
+            logger.error("Failed to deparse content url to issue number.\n"
+                         "content_url=%s\nissue_url=%s\n",
+                         content_url, issue_url)
+        return card
+
+    async def list_project_cards(self, column_id: int) -> List[Dict[str, Any]]:
+        """List cards in a project column
+
+        Arguments:
+          column_id: ID number of project column
+        """
+        var_data = {'column_id': str(column_id)}
+        accept = "application/vnd.github.inertia-preview+json"
+        res = await self.api.getitem(self.PROJECT_COL_CARDS, var_data, accept=accept)
+        return [self._deparse_card_pr_number(card) for card in res]
+
+    async def get_project_card(self, card_id: int) -> Dict[str, Any]:
+        """Get a project card
+
+        Arguments:
+          card_id: ID number of project card
+        Returns:
+          Empty dict if the project card was not found
+        """
+        var_data = {'card_id': str(card_id)}
+        accept = "application/vnd.github.inertia-preview+json"
+        try:
+            res = await self.api.getitem(self.PROJECT_CARDS, var_data, accept=accept)
+        except gidgethub.BadRequest as exc:
+            if exc.status_code == 404:
+                return {}
+        return self._deparse_card_pr_number(res)
+
+    async def create_project_card(self, column_id: int,
+                                  note: str = None,
+                                  content_id: int = None,
+                                  content_type: CardContentType = None,
+                                  number: int = None) -> Dict[str, Any]:
+        """Create a new project card
+
+        In addition to **column_id**, you must provide *either*:
+        - The **note** parameter for a free text note card
+        - The **content_type** specifying whether the card references a PR or an Issue,
+          *and* the **content_id** with the **id** field from the PR or Issue. Note that
+          PRs have two IDs, once as their issue baseclass and once as PR. You must use
+          the latter for PRs.
+        - The **number** giving either PR or Issue number. Will trigger one or two extra
+          API calls to fill in the **content_type** and **content_id** fields.
+
+        Arguments:
+          column_id: The ID number of the project column
+          note: Content of a note card.
+          content_id: ID number of PR or Issue
+          content_type: Must match content_id type
+          number: PR or Issue number
+        Returns:
+          Dict describing newly created card. Empty if no card.
+
+        """
+        var_data = copy(self.var_default)
+        var_data['column_id'] = str(column_id)
+        accept = "application/vnd.github.inertia-preview+json"
+        data = {}
+        if note:
+            if content_id or content_type or number:
+                raise ValueError("Project Cards can only be a note or a Issue/PR")
+            data['note'] = note
+        elif content_id:
+            if number:
+                raise ValueError("Cannot specify pr/issue number AND content_id")
+            if not content_type:
+                raise ValueError("Must specify content_type if giving content_id")
+            data['content_id'] = content_id
+            data['content_type'] = content_type.name
+        elif number:
+            pullreq = await self.get_prs(number=number)
+            if pullreq:
+                data['content_id'] = pullreq['id']
+                data['content_type'] = CardContentType.PullRequest.name
+            else:
+                issue = await self.get_issue(number=number)
+                data['content_id'] = issue['id']
+                data['content_type'] = CardContentType.Issue.name
+        else:
+            raise ValueError("Must have at least note or content_id/content_type or "
+                             "number parameter")
+        try:
+            res = await self.api.post(self.PROJECT_COL_CARDS, var_data, data=data,
+                                       accept=accept)
+            return self._deparse_card_pr_number(res)
+        except gidgethub.BadRequest:
+            logger.exception("Failed to create project card with data=%s", data)
+            return {}
+
+    async def delete_project_card(self, card_id: int) -> bool:
+        """Deletes a project card
+
+        Arguments:
+          card_id: ID of the card to delete
+        Returns:
+          True if the deletion succeeded
+        """
+        var_data = {'card_id': str(card_id)}
+        accept = "application/vnd.github.inertia-preview+json"
+        try:
+            await self.api.delete(self.PROJECT_CARDS, var_data, accept=accept)
+            return True
+        except gidgethub.BadRequest:
+            logger.exception("Failed to delete project cards %s", card_id)
+            return False
+
+    async def delete_project_card_from_column(self, column_id: int, number: int) -> bool:
+        """Deletes a project card identified by PR/Issue number from column
+
+        Arguments:
+          column_id: ID of project card column
+          number: PR/Issue number
+        Returns:
+          True if the deleteion succeeded
+        """
+        for card in await self.list_project_cards(column_id):
+            if card.get('issue_number') == number:
+                return await self.delete_project_card(card['id'])
+        return False
 
 
 class AiohttpGitHubHandler(GitHubHandler):
