@@ -18,3 +18,4 @@ cp svm-scale ${PREFIX}/bin
 cp svm-train ${PREFIX}/bin
 cp *.py ${PREFIX}/bin
 cp *.R ${PREFIX}/bin
+cp PLEK.range ${PREFIX}/bin
