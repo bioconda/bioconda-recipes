@@ -331,7 +331,8 @@ class GitHubHandler:
         return pr_numbers
 
     # pylint: disable=too-many-arguments
-    @backoff.on_exception(backoff.fibo, gidgethub.BadRequest, max_tries=10)
+    @backoff.on_exception(backoff.fibo, gidgethub.BadRequest, max_tries=10,
+                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
     async def get_prs(self,
                       from_branch: Optional[str] = None,
                       from_user: Optional[str] = None,
@@ -363,7 +364,14 @@ class GitHubHandler:
             var_data['state'] = state.name.lower()
 
         accept = "application/vnd.github.shadow-cat-preview"  # for draft
-        return await self.api.getitem(self.PULLS, var_data, accept=accept)
+        try:
+            return await self.api.getitem(self.PULLS, var_data, accept=accept)
+        except gidgethub.BadRequest as exc:
+            if exc.status_code == 404:
+                if number:
+                    return {}
+                return []
+            raise
 
     async def get_issue(self, number: int) -> Dict[str, Any]:
         """Retrieve a single PR or Issue by its number
