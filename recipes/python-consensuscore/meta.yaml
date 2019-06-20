@@ -1,38 +1,46 @@
+{% set name = "python-consensuscore" %}
+{% set version = "1.1.1" %}
+{% set sha256 = "f40bf93ebee60c83637af01d9bd3cbd21f00498b54aa1b74304b4a14446ded43" %}
+
 package:
-  name: python-consensuscore
-  version: 1.0.0
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  git_rev: 1.0.0
-  git_url: https://github.com/PacificBiosciences/ConsensusCore.git
+  url: https://github.com/PacificBiosciences/ConsensusCore/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+about:
+  home: https://github.com/PacificBiosciences/pbbioconda
+  license: BSD-3-Clause-Clear
+  summary: PacBio Quiver Consensus library for RSII data
+
+extra:
+  recipe-maintainers:
+    - pb-dseifert
+    - mhsieh
 
 build:
-  number: 1
-  string: boost{{CONDA_BOOST}}py{{CONDA_PY}}_{{PKG_BUILDNUM}}
+  skip: True # [not py27]
+  number: 3
 
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm # [osx]
+    - {{ compiler('cxx') }}
+    - meson >=0.48.1
+    - ninja
+    - pkg-config
+    - swig
+  host:
     - python
-    - setuptools
-    - numpy >=1.6.0
-    - boost >=1.47.0,{{CONDA_BOOST}}*
-    - swig >=2.0.7
-
+    - boost
+    - numpy >=1.16.2
   run:
-    - libgcc #[linux]
     - python
-    - numpy >=1.6.0
-    - boost {{CONDA_BOOST}}*
-    - swig >=2.0.7
+    - numpy >=1.16.2
 
 test:
-  # Python imports
   imports:
     - ConsensusCore
-
-about:
-  home: https://github.com/PacificBiosciences/ConsensusCore
-  license: BSD New
-  summary: 'C++ library of multiple-sequence consensus routines with SWIG bindings'
+  commands:
+    - python -c 'import ConsensusCore; ConsensusCore.Version.VersionString()'

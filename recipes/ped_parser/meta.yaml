@@ -1,37 +1,22 @@
+{% set name = "ped_parser" %}
+{% set version = "1.6.6" %}
+{% set sha256hash = "7ce955a5674815ff9383fd5d1e54181ddeadf1bd9c897cc45007edff4125e4fc" %}
+
 build:
-  number: 0
-  skip: True # [osx]
+  number: 1
+  # click needs to be patched in order to properly detect unicode in py3k
+  skip: true  # [py3k or osx]
 
 package:
-  name: ped_parser
-  version: "1.6.5"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn: ped_parser-1.6.5.tar.gz
-  url: https://pypi.python.org/packages/source/p/ped_parser/ped_parser-1.6.5.tar.gz
-  md5: 1f404e131c3d210d32e6253ac500b200
-#  patches:
-   # List any patch files here
-   # - fix.patch
-
-# build:
-  # noarch_python: True
-  # preserve_egg_dir: True
-  # entry_points:
-    # Put any entry points (scripts to be generated automatically) here. The
-    # syntax is module:function.  For example
-    #
-    # - ped_parser = ped_parser:main
-    #
-    # Would create an entry point called ped_parser that calls ped_parser.main()
-
-
-  # If this is a new build for the same version, increment the build
-  # number. If you do not include this key, it defaults to 0.
-  # number: 1
+  url: https://pypi.python.org/packages/5d/ca/0ad16b9dd17f8115800ef08584bc6119a2ca05654dad456c285d5ca33c67/ped_parser-{{ version }}.tar.gz
+  sha256: {{ sha256hash }}
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
     - pytest
@@ -43,27 +28,13 @@ requirements:
     - click
 
 test:
-  # Python imports
   imports:
     - ped_parser
-
-  # commands:
-    # You can put test commands to be run here.  Use this to test that the
-    # entry points work.
-
-
-  # You can also put a file called run_test.py in the recipe that will be run
-  # at test time.
-
-  # requires:
-    # Put any additional test requirements here.  For example
-    # - nose
+  commands:
+    # click requires a unicode locale
+    - LANG=C.UTF-8 ped_parser --help
 
 about:
   home: https://github.com/moonso/ped_parser
   license: BSD License
   summary: 'A ped file parser.'
-
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml

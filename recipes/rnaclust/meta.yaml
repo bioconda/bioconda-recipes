@@ -1,0 +1,55 @@
+{% set name = "RNAclust" %}
+{% set version = "1.3" %}
+{% set sha256 = "c86becf9aafd2d78350bc50ea597b5c6c6bf1b0e5fc74919d0a5d9ba91c22817" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: http://www.bioinf.uni-leipzig.de/~kristin/Software/RNAclust/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patch_fold.patch # patch HairpinE and LoopEnergy definitios to be c11 standard compliant
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - viennarna
+    - locarna
+  run:
+    - locarna
+    - viennarna
+    - perl
+
+test:
+  commands:
+    - RNAclust.pl --help | grep RNAclust.pl
+
+about:
+  home: http://www.bioinf.uni-leipzig.de/~kristin/Software/RNAclust/
+  license: GPL-2.0
+  license_family: GPL
+  license_file: COPYING
+  summary: 'A tool for clustering of RNAs based on their secondary structures using LocARNA'
+  description: |
+    RNAclust is a perl script summarizing all the single steps required for
+    clustering of structured RNA motifs, i.e. identifying groups of RNA
+    sequences sharing a secondary structure motif. It requires as input a
+    multiple FASTA file. In the first step for each input sequence the base
+    pair probability matrix of its secondary structure distribution is
+    calculated (using RNAfold from the Vienna RNA package). Secondly, for
+    each pair of base pair probability matrices a sequence-structure alignment
+    is calculated using LocARNA. Lastly, a hierarchical cluster-tree (in
+    NEWICK format) is derived by WPGMA clustering of the pairwise alignment
+    distances and the optimal number of clusters is calculated from the tree.
+
+extra:
+  recipe-maintainers:
+    - pvanheus
+  identifiers:
+    - biotools:RNAclust

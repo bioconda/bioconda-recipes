@@ -1,4 +1,4 @@
-{% set version = "0.1.1" %}
+{% set version = "0.5.0" %}
 
 package:
   name: rust-bio-tools
@@ -6,25 +6,34 @@ package:
 
 build:
   number: 0
-  skip: True # [osx]
 
 source:
-  fn: merfishtools-{{version}}.tar.gz
-  url: https://github.com/rust-bio/rust-bio-tools/archive/v{{version}}.tar.gz
-  md5: 3e48658079abe85d5d03415de54da926
+  url: https://github.com/rust-bio/rust-bio-tools/archive/rust-bio-tools-{{ version }}.tar.gz
+  sha256: 245a1e6efc5bde2299771c3c61106ac8fd754e6c6ea6a7626a11c9e0473a1f55
 
 requirements:
   build:
-    - rust
-    - gcc
+    - rust >=1.30
+    - clangdev
+    - {{ compiler('c') }}  # [not osx]
+    - {{ compiler('cxx') }}  # [not osx]
+    - clang_osx-64 # [osx]
+    - clangxx_osx-64 # [osx]
+    - pkg-config  # [osx]
+  host:
     - zlib
+    - clangdev
+    - gsl
+    - openblas
   run:
     - zlib
-    - libgcc
+    - gsl
+    - starcode
+    - openblas
 
 test:
   commands:
-    - rbt --help &> /dev/null
+    - rbt --help
 
 about:
   home: https://github.com/rust-bio/rust-bio-tools

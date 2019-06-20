@@ -1,32 +1,22 @@
 #!/bin/bash
 set -e
+set -x
+
+for dir in . recipes
+do
+    if [ -e $dir/meta.yaml ]
+    then
+        echo "Recipe $dir/meta.yaml found in invalid location."
+        echo "Recipes must be stored in a subfolder of the recipes directory."
+        exit 1
+    fi
+done
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-if [[ $TRAVIS_OS_NAME = "linux" ]]
-then
-    # install conda
-    curl -O https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-    sudo bash Miniconda3-latest-Linux-x86_64.sh -b -p /anaconda
-    
-    docker pull condaforge/linux-anvil
-else
-    # install conda
-    curl -O https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
-    sudo bash Miniconda3-latest-MacOSX-x86_64.sh -b -p /anaconda
-fi
-    
+pip install pyyaml
+sudo mkdir /anaconda
 sudo chown -R $USER /anaconda
-mkdir -p /anaconda/conda-bld/osx-64 # workaround for bug in current conda
-mkdir -p /anaconda/conda-bld/linux-64 # workaround for bug in current conda
-export PATH=/anaconda/bin:$PATH
-conda install -y --file $SCRIPT_DIR/requirements.txt
-conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
-
-# setup bioconda channel
-conda config --add channels bioconda
-conda config --add channels r
-conda config --add channels file://anaconda/conda-bld
-
-# setup bioconda-utils
-pip install git+https://github.com/bioconda/bioconda-utils.git@$BIOCONDA_UTILS_TAG
+$SCRIPT_DIR/../simulate-travis.py --bootstrap /anaconda --overwrite
+/anaconda/bin/conda index /anaconda/conda-bld/linux-64 /anaconda/conda-bld/osx-64
+/anaconda/bin/conda config --add channels file://anaconda/conda-bld

@@ -1,44 +1,33 @@
-{% set SRA_TOOLS_VERSION = "2.7.0" %}
-{% set NCBI_VDB_VERSION = SRA_TOOLS_VERSION %}
-{% set NGS_SDK_VERSION = "1.2.5" %}
+{% set version = "2.9.6" %}
+{% set bioconda_version = "2.9.6" %}
+{% set ngs_version = "2.9.6" %}
 
 package:
   name: sra-tools
-  version: {{ SRA_TOOLS_VERSION }}
+  version: '{{ bioconda_version }}'
+
+source:
+  - url: https://github.com/ncbi/sra-tools/archive/{{version}}.tar.gz
+    sha256: f1fdd0d294da0528d00ab14e34921cb9cfe775a332543abf54ade5db13467e44
+    folder: sra-tools
+  - url: https://github.com/ncbi/ncbi-vdb/archive/{{version}}.tar.gz
+    sha256: 3b13ae1362b01f8300a6e8b75742857bd8b0c9ee62561f9fdd4a46be384451d6
+    folder: ncbi-vdb
+  - url: https://github.com/ncbi/ngs/archive/{{ngs_version}}.tar.gz
+    sha256: 4be42f4d62b2376dc2fc4cd992822525bd99f8e1193008c2dab387a2f291405b
+    folder: ngs
 
 build:
   number: 0
 
-source:
-  fn: sra-tools-{{ SRA_TOOLS_VERSION }}.tar.gz
-  url: https://github.com/ncbi/sra-tools/archive/{{ SRA_TOOLS_VERSION }}.tar.gz
-  sha256: 274cd6c4a228c351b5e72eecf382d73d5cccde7d852940af68877883d7e1ea8e
-
-extra:
-  sources:
-    ncbi-vdb:
-      fn: ncbi-vdb-{{ NCBI_VDB_VERSION }}.tar.gz
-      url: https://github.com/ncbi/ncbi-vdb/archive/{{ NCBI_VDB_VERSION }}.tar.gz
-      sha256: 8e227b06dffb5894cac43c2a8d3fee50b23f4609cc6a7027951ef88d7a782c74
-    ngs-sdk:
-      fn: ngs-sdk-{{ NGS_SDK_VERSION }}.tar.gz
-      url: https://github.com/ncbi/ngs/archive/{{ NGS_SDK_VERSION }}.tar.gz
-      sha256: 2a32c30d1611f8ce68aba81e5b44369969c6d32bcebc37aa41be2cdbaa76c113
-
-  notes: "This package includes ncbi-vdb and ngs-sdk. After installation, you should run the configuration tool: ./vdb-config -i. This tool will setup your download/cache area for downloaded files and references."
-
 requirements:
   build:
-    - gcc # [not osx]
-    - llvm # [osx]
-  run:
-    #
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - ncbi-ngs-sdk
+    - perl
 
-about:
-  home: https://github.com/ncbi/sra-tools
-  license: Public Domain
-  summary: The SRA Toolkit and SDK from NCBI is a collection of tools and
-           libraries for using data in the INSDC Sequence Read Archives.
 test:
   commands:
     # "Frequently Used Tools"
@@ -48,3 +37,17 @@ test:
     - sra-pileup --help > /dev/null
     - vdb-config --help > /dev/null
     - vdb-decrypt --help > /dev/null
+    - fastq-dump -N 1 -X 1 SRR000001 && grep '@SRR000001.1' SRR000001.fastq
+    - fasterq-dump --help > /dev/null
+
+about:
+  home: https://github.com/ncbi/sra-tools
+  license: Public Domain
+  summary: SRA Toolkit and SDK from NCBI
+  description:  |
+    The SRA Toolkit and SDK from NCBI is a collection of tools and libraries
+    for using data in the INSDC Sequence Read Archives.
+
+extra:
+  notes: 'After installation, you should run the configuration tool: ./vdb-config
+    -i. This tool will setup your download/cache area for downloaded files and references.'

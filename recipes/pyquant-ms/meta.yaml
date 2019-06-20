@@ -1,0 +1,50 @@
+{% set version = "0.2.3" %}
+{% set sha256 = "9c016fdb06ebfeaf5d7c90b77a920230681806bb2cf9814dbf3bb3ecead9aa2b" %}
+
+package:
+  name: pyquant-ms
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/p/pyquant-ms/pyquant-ms-{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 0
+  entry_points:
+    - pyQuant = pyquant.command_line:run_pyquant
+  script: python -m pip install --no-deps --ignore-installed .
+
+requirements:
+  build:
+    - '{{ compiler("c") }}'
+  host:
+    - python <3
+    - pip
+    - cython
+    - numpy
+  run:
+    - python <3
+    - cython
+    - numpy
+    - scipy >=0.18.*
+    - patsy
+    - pythomics >=0.3.41
+    - pandas
+    - lxml
+    - scikit-learn
+    - simplejson
+
+test:
+  imports:
+    - pyquant
+    - pyquant.tests
+  commands:
+    - pyQuant --help
+
+about:
+  home: https://chris7.github.io/pyquant/
+  license: MIT
+  license_family: MIT
+  summary: A framework for the analysis of quantitative mass spectrometry data
+  dev_uri: https://github.com/Chris7/pyquant

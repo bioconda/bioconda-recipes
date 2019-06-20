@@ -1,3 +1,8 @@
+{% set snpeff_ver = "v4_3t" %}
+# NOTE: if the version contains a trailing letter, use the <d>.<d>.1<l> format
+{% set version = "4.3.1t" %}
+{% set sha256 = "d55a7389a78312947c1e7dadf5e6897b42d3c6e942e7c1b8ec68bb35d2ae2244" %}
+
 about:
   home: 'http://snpeff.sourceforge.net/'
   license: "LGPLv3"
@@ -5,20 +10,26 @@ about:
 
 package:
   name: snpeff
-  version: '4.3'
+  version: {{ version }}
 
 build:
-  number: 3
-  skip: False
+  number: 2
+  noarch: generic
 
 source:
-  fn: snpEff_v4_3_2.zip
-  url: http://downloads.sourceforge.net/project/snpeff/snpEff_v4_3_core.zip
+  url: https://downloads.sourceforge.net/project/snpeff/snpEff_{{ snpeff_ver }}_core.zip
+  sha256: {{ sha256 }}
 
 requirements:
   run:
-      - java-jdk
+    - openjdk
+    - zlib
 
 test:
-    commands:
-      - snpEff -version
+  commands:
+    - snpEff -version
+
+extra:
+  notes: 'The tool is available as command `snpEff`. Note that the package version is slightly different from upstream, this is to make sure conda will order the package versions correctly.'
+  identifiers:
+    - biotools:snpeff

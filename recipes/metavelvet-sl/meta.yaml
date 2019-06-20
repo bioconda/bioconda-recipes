@@ -1,36 +1,48 @@
+{% set name = "metavelvet-sl" %}
+{% set version = "1.0" %}
+{% set md5 = "024e74e4d6d8e251f58668b9adcf1a91" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: http://metavelvet.dna.bio.keio.ac.jp/srcSL/MetaVelvetSLv1.0.tar.gz
+  md5: {{ md5 }}
+  patches:
+    - metavelvet.velvet.makefile.patch
+    - run-annoIS.pl.patch
+
+build:
+  number: 4
+  skip: True # [osx]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - perl
+    - perl-app-cpanminus
+    - perl-module-build
+  run:
+    - zlib
+    - perl
+    - perl-app-cpanminus
+    - perl-module-build
+    - metavelvet-sl-feature-extraction
+    - velvet
+    - metaphlan2
+    - dwgsim
+    - libsvm
+
+test:
+  commands:
+    - meta-velvete -h 2>&1 | grep "meta-"
+    - meta-velvetg -h 2>&1 | grep "meta-"
+    - run-annoIS.pl -h 2>&1 | grep "## Options"
+
 about:
   home: http://metavelvet.dna.bio.keio.ac.jp/MSL.html
   license: ''
   summary: 'MetaVelvet-SL : An extension of Velvet assembler to de novo metagenomic assembler utilizing supervised learning'
-
-build:
-  number: 1
-  skip: True # [osx]
-
-package:
-  name: metavelvet-sl
-  version: '1.0'
-
-requirements:
-  build:
-      - libgcc
-      - gcc
-      - zlib
-      - perl-threaded
-      - perl-app-cpanminus
-      - perl-module-build
-  run:
-      - libgcc
-      - zlib
-      - perl-threaded
-      - perl-app-cpanminus
-      - perl-module-build
-      - metavelvet-sl-feature-extraction
-
-source:
-  fn: metavelvet-sl-1.0.tar.gz
-  url: http://metavelvet.dna.bio.keio.ac.jp/srcSL/MetaVelvetSLv1.0.tar.gz
-  patches:
-      - metavelvet.velvet.makefile.patch
-      - run-annoIS.pl.patch
-

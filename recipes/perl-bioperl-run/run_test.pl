@@ -1,10 +1,7 @@
 #!/usr/bin/env perl
 
 my @items = (
-    ["Bio::Tools::Run::Alignment::Clustalw", undef],
-    ["Bio::Tools::Run::Alignment::TCoffee", undef],
-    ["Bio::Tools::Run::BEDTools", "1.006924"],
-    ["Bio::Tools::Run::Bowtie", undef],
+    ["Bio::Tools::Run::Bowtie", '1.007002'],
     ["Bio::Tools::Run::BWA", undef],
     ["Bio::Tools::Run::EMBOSSApplication", undef],
     ["Bio::Tools::Run::Hmmer", undef],
@@ -20,10 +17,10 @@ foreach $item (@items) {
     if(defined $actual_version) {
         print $actual_version;
         if($actual_version == $expected_version) {
-            print " (PASSED)\n";
+            print " $actual_version (PASSED)\n";
         }
         else {
-            print " (FAILED)\n";
+            print " $actual_version (FAILED)\n";
             die("$module: Expected version '$expected_version', " .
                 "but found '$actual_version'.")
         }
@@ -34,6 +31,6 @@ foreach $item (@items) {
             "but found none");
     }
     else {
-        print "<not available> (PASSED)\n";
+        print "<not checked> (PASSED)\n";
     }
 }

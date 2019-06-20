@@ -1,35 +1,56 @@
-package:
-  name: bioconductor-geoquery
-  version: 2.36.0
-source:
-  fn: GEOquery_2.36.0.tar.gz
-  url: https://bioarchive.galaxyproject.org/GEOquery_2.36.0.tar.gz
-  md5: 1f7b6b82e259d994964f0ecde861dfa6
+{% set version = "2.52.0" %}
+{% set name = "GEOquery" %}
+{% set bioc = "3.9" %}
 
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: ab0f2d2a69f1cbd845ab7cbe225c3ba9
 build:
-  skip: False
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, BiocGenerics, testthat, covr
 requirements:
-  build:
-    - bioconductor-biobase
-    - r
-    - r-rcurl
-    - r-xml
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - r-base
+    - r-dplyr
+    - r-httr
+    - r-magrittr
+    - 'r-readr >=1.3.1'
+    - r-tidyr
+    - r-xml2
   run:
-    - bioconductor-biobase
-    - r
-    - r-rcurl
-    - r-xml
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - r-base
+    - r-dplyr
+    - r-httr
+    - r-magrittr
+    - 'r-readr >=1.3.1'
+    - r-tidyr
+    - r-xml2
 test:
   commands:
-    - '$R -e "library(''GEOquery'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/GEOquery.html
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'The NCBI Gene Expression Omnibus (GEO) is a public repository of microarray
-    data.  Given the rich and varied nature of this resource, it is only natural to
-    want to apply BioConductor tools to these data.  GEOquery is the bridge between
-    GEO and BioConductor.'
+  summary: 'The NCBI Gene Expression Omnibus (GEO) is a public repository of microarray data.  Given the rich and varied nature of this resource, it is only natural to want to apply BioConductor tools to these data.  GEOquery is the bridge between GEO and BioConductor.'
+extra:
+  identifiers:
+    - biotools:geoquery
+  parent_recipe:
+    name: bioconductor-geoquery
+    path: recipes/bioconductor-geoquery
+    version: 2.48.0
+

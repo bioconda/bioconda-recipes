@@ -1,4 +1,4 @@
 #!/bin/bash
-chmod a+x vcfanno
+chmod a+x vcfanno*
 mkdir -p $PREFIX/bin
-cp vcfanno $PREFIX/bin/vcfanno
+cp vcfanno* $PREFIX/bin/vcfanno

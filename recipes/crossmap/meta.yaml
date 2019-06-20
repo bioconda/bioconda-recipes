@@ -1,37 +1,37 @@
+{% set name = "CrossMap" %}
+{% set version = "0.3.4" %}
+{% set sha256hash = "4abc7ad57d14bef6325ed0aeb89bf62097913d6ad407254e66bf8311519b5159" %}
+
 package:
-  name: crossmap
-  version: "0.2.2"
+  name: {{ name|lower }}
+  version: {{ version }}
+
 source:
-  url: http://sourceforge.net/projects/crossmap/files/CrossMap-0.2.2.tar.gz
-  fn: CrossMap-0.2.2.tar.gz
-  patches:
-    - setup_remove_deps.diff
+  url: http://sourceforge.net/projects/crossmap/files/CrossMap-{{ version }}.tar.gz
+  sha256: {{ sha256hash }}
 
 build:
-    number: 3
-
-    # CrossMap is very particular about Python version.
-    skip: True # [not py27 or osx]
+  number: 0
+  noarch: python
 
 requirements:
-  build:
-    - python
-    - cython
+  host:
+    - python >=3
+    - cython >=0.17
     - numpy
-    - setuptools
-    - nose
-    - pysam ==0.6
+    - nose >=0.10.4
+    # doesn't work with pysam >=0.14.0, see https://sourceforge.net/p/crossmap/tickets/6/
+    - pysam >=0.11.1,<0.14.0
+    - openssl 1.0.*
     - bx-python
   run:
-    - python
-    - cython
+    - python >=3
+    - cython >=0.17
     - numpy
-    - setuptools
-    - samtools ==0.1.19
-    - nose
-    - pysam ==0.6
+    - pysam >=0.11.1,<0.14.0
     - bx-python
     - ucsc-wigtobigwig
+    - pybigwig
 
 test:
   commands:
@@ -40,5 +40,7 @@ test:
 
 about:
   home: http://crossmap.sourceforge.net
-  license: GPL
-  summary: "Convert genomic coordiates between assemblies"
+  license: GPLv2
+  license_family: GPL
+  license_file: LICENSE.txt
+  summary: "CrossMap is a program for convenient conversion of genome coordinates and genomeannotation files between assemblies."

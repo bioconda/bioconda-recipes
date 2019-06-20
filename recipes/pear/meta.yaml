@@ -1,29 +1,35 @@
 package:
   name: pear
   version: '0.9.6'
+
 about:
   home: http://sco.h-its.org/exelixis/web/software/pear/
   license: 'Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported'
   summary: 'paired-end read merger'
+
 source:
-  fn: pear-0.9.6-src.tar.gz
   md5: 5ed68d50c1620cd55c58681e38771799
-  url: http://sco.h-its.org/exelixis/web/software/pear/files/pear-0.9.6-src.tar.gz
+  url: https://depot.galaxyproject.org/software/pear/pear_0.9.6_src_all.tar.gz
+
 build:
-  number: 1
+  number: 5
+
 requirements:
   build:
+    - {{ compiler('c') }}
     - pkgconfig
+  host:
     - zlib
+    - bzip2
   run:
     - zlib
+    - bzip2
+
 test:
-  # 'pear -h' exits with error code 1 and there is no 'pear --version', so try
-  # to actually merge something. That way, we can also test whether gzip support
-  # is compiled in.
-  files:
-    - fwd.fastq.gz
-    - rev.fastq.gz
   commands:
-    - pear -f fwd.fastq.gz -r rev.fastq.gz -o out > /dev/null
-    - pearRM -f fwd.fastq.gz -r rev.fastq.gz -o out > /dev/null
+    - pear 2>&1 | grep "PEAR v0.9.6"
+    - pearRM 2>&1 | grep "PEAR v0.9.6"
+
+extra:
+  identifiers:
+    - biotools:PEAR

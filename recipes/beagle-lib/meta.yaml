@@ -1,27 +1,35 @@
-about:
-  home: "https://github.com/beagle-dev/beagle-lib"
-  license: "GPLv3+"
-  summary: "general purpose library for evaluating the likelihood of sequence evolution on trees"
+{% set name = "beagle-lib" %}
+{% set version = "3.1.2" %}
 
 package:
-  name: beagle-lib
-  version: '2.1.2'
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/beagle-dev/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: dd872b484a3a9f0bce369465e60ccf4e4c0cd7bd5ce41499415366019f236275
 
 build:
   number: 1
-  skip: True # [osx]
-
-source:
-  git_url: https://github.com/beagle-dev/beagle-lib.git
-  git_rev: beagle_release_2_1_2
 
 requirements:
-  run:
-    - java-jdk
   build:
+    - {{ compiler('cxx') }}
     - autoconf
-    - java-jdk
+    - automake
+    - libtool
+    - openjdk
+  run:
+    - openjdk
+    - libtool
 
 test:
   commands:
-    - test -e $(dirname $(which conda))/../lib/libhmsbeagle-jni.so
+    - test -f ${PREFIX}/lib/libhmsbeagle-jni.so # [linux]
+    - test -f ${PREFIX}/lib/libhmsbeagle-jni.jnilib # [osx]
+
+about:
+  home: https://github.com/beagle-dev/beagle-lib
+  license: GPL-3.0+
+  license_family: GPL
+  summary: general purpose library for evaluating the likelihood of sequence evolution on trees

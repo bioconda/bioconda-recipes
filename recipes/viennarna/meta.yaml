@@ -1,36 +1,44 @@
+{% set version = "2.4.13" %}
+{% set sha256 = "915c271b48536a3cc60b3109f11f7fd99dcd26d22621ee50f05e7f1c2f90cabe" %}
+
 package:
   name: viennarna
-  version: 2.2.10
+  version: {{ version }}
 
 build:
-  number: 0
+  number: 2
+  run_exports:
+    # Ronny said VRNA is stable in x.x releases
+    - {{ pin_subpackage('viennarna', max_pin='x.x') }}
 
 source:
-  fn: ViennaRNA-2.2.10.tar.gz
-  url: http://www.tbi.univie.ac.at/RNA/packages/source/ViennaRNA-2.2.10.tar.gz
-  sha256: 94f3c8e92a767d08b31f4eb896590fd702330e611036567f68c290c8b0eccc57
-  patches:
-    - patch.makedocs
+  url: https://www.tbi.univie.ac.at/RNA/download/sourcecode/2_4_x/ViennaRNA-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
   build:
-    - gcc   # [linux]
-    - llvm  # [osx]
-    - perl-threaded
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - pkgconfig ## needed for viennarna version checks in dependent packages
+    - perl
+    - python
+    - zlib
   run:
-    - libgcc # [linux]
+    - python
 
 test:
   commands:
-   - RNAalifold --version
-   - RNAeval    --version
-   - RNAfold    --version
-   - RNAplfold  --version
-   - RNAsubopt  --version
-   - kinwalker  --help >& /dev/null
+    - RNAalifold --version
+    - RNAeval    --version
+    - RNAfold    --version
+    - RNAplfold  --version
+    - RNAsubopt  --version
+    - RNAlocmin  --version
+    - kinwalker  --help >& /dev/null
 
 about:
   home: http://www.tbi.univie.ac.at/RNA/
-  license: MIT-like
+  license: custom
   license_file: COPYING
   summary: Vienna RNA package -- RNA secondary structure prediction and comparison

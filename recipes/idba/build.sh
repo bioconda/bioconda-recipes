@@ -1,17 +1,23 @@
-#!/bin/bash
+# fix automake
+
+# fix other python and perl scripts
+gawk -i inplace '/usr\/bin\//{ gsub(/python/, "env python");}1' script/*.py
+gawk -i inplace '/usr\/bin\//{ gsub(/perl/, "env perl");}1' script/*
+
+aclocal
+autoconf
+automake --add-missing
 
 export CC=${PREFIX}/bin/gcc
 export CXX=${PREFIX}/bin/g++
-
 export INCLUDE_PATH="${PREFIX}/include"
 export LIBRARY_PATH="${PREFIX}/lib"
+export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 
 ./configure
 make
 
-
-sed -i 's/usr\/bin\/python/usr\/bin\/env python/g' script/*py
 
 mkdir -p ${PREFIX}/bin
 

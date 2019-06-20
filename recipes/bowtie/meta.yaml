@@ -1,31 +1,47 @@
-about:
-    home: 'https://github.com/BenLangmead/bowtie'
-    license: Artistic
-    summary: An ultrafast memory-efficient short read aligner
+{% set name = "bowtie" %}
+{% set version = "1.2.2" %}
+{% set hash = "b5d8c853a158613aef6423080d054a732e52e1e9300406232823984b2e314935" %}
 
 package:
-    name: bowtie
-    version: 1.1.2
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/BenLangmead/bowtie/archive/v{{ version }}_p1.zip
+  sha256: {{ hash }}
 
 build:
   number: 2
-  skip: False
 
 requirements:
-    build:
-        - python
-        - gcc [not osx]
-        - llvm [osx]
-    run:
-        - libgcc [not osx]
-        - python
-
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - tbb
+    - tbb-devel
+  run:
+    - python
+    - perl
+    - tbb
 
 test:
-    commands:
-        - (bowtie --version 2>&1) > /dev/null
+  commands:
+    - bowtie --help
+    - bowtie-align-l --help
+    - bowtie-align-s --help
+    - bowtie-build --help
+    - bowtie-build-l --help
+    - bowtie-build-s --help
+    - bowtie-inspect --help
+    - bowtie-inspect-l --help
+    - bowtie-inspect-s --help
 
-source:
-  fn: bowtie-1.1.2.tar.gz
-  url: https://github.com/BenLangmead/bowtie/archive/v1.1.2.tar.gz
-  sha256: 717145f12d599e9b3672981f5444fbbdb8e02bfde2a80eba577e28baa4125ba7
+about:
+  home: https://github.com/BenLangmead/bowtie
+  license: Artistic License 2.0
+  summary: An ultrafast memory-efficient short read aligner
+
+extra:
+  identifiers:
+    - biotools:bowtie

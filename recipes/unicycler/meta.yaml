@@ -1,0 +1,51 @@
+{% set version = "0.4.7" %}
+{% set sha256 = "a8cf65e46dc2694b0fbd4e9190c73a1f300921457aadfab27a1792b785620d63" %}
+
+package:
+  name: unicycler
+  version: '{{ version }}'
+
+source:
+  - url: https://github.com/rrwick/Unicycler/archive/v{{ version }}.tar.gz
+    sha256: '{{ sha256 }}'
+    patches:
+      - Makefile.patch  #[linux]
+      - misc.py.patch
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - '{{ compiler("c") }}'
+    - '{{ compiler("cxx") }}'
+  host:
+    - python >=3.4,!=3.7
+    - pip
+    - zlib
+  run:
+    - python >=3.4,!=3.7
+    - spades >=3.6.2
+    - pilon
+    - openjdk
+    - bowtie2
+    - samtools >=1.0
+    - blast
+    - freebayes
+    - racon
+    - miniasm
+    - zlib
+
+test:
+  commands:
+    - COLUMNS=80 unicycler -h
+    - COLUMNS=80 unicycler_align -h
+    - COLUMNS=80 unicycler_check -h
+    - COLUMNS=80 unicycler_polish -h
+
+about:
+  home: https://github.com/rrwick/Unicycler
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: Hybrid assembly pipeline for bacterial genomes

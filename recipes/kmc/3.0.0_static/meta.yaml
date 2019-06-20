@@ -1,0 +1,31 @@
+{% set version = "3.0.0" %}
+
+package:
+  name: kmc
+  version: {{ version }}
+
+source:
+  url: https://github.com/refresh-bio/KMC/releases/download/v{{ version }}/KMC3.linux.tar.gz  # [linux]
+  sha256: 7190b83c7a8df8b51978603332f3bb9d573fb5dd70a2f5df6d3268bdfb732446  # [linux]
+  url: https://github.com/refresh-bio/KMC/releases/download/v{{ version }}/KMC3.mac.tar.gz  # [osx]
+  sha256: d2ffb2e7ee69199e9b3464ea2afb27df731120babaee1ea65b94a3bc059d0a55  # [osx]
+
+build:
+  number: 1
+  script: "chmod u+x kmc kmc_tools kmc_dump; mkdir -p ${PREFIX}/bin; cp kmc kmc_tools kmc_dump ${PREFIX}/bin"
+
+requirements:
+  build:
+  run:
+
+test:
+  commands:
+    - kmc 2>&1 | grep "K-Mer Counter" > /dev/null
+    - kmc_dump 2>&1 | grep "KMC dump ver." > /dev/null
+    - kmc_tools 2>&1 | grep "kmc_tools ver." > /dev/null
+
+about:
+  home: http://sun.aei.polsl.pl/kmc/
+  license: GPLv2
+  summary: K-mer Counter is a utility designed for counting k-mers (sequences of consecutive k symbols) in a set of reads from genome sequencing projects.
+

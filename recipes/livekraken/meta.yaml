@@ -1,0 +1,53 @@
+{% set name = "livekraken" %}
+{% set version = "1.0" %}
+{% set sha256 = "f1cb0fcceb86a31cf5192eb5bebb85149bbaf1899cc80d5b1074f520f1c257d5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://gitlab.com/SimonHTausch/LiveKraken/uploads/be6dfaaebf310a56d7cdc9676c5764b2/LiveKraken-master.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 4
+  skip: True  # [osx]
+  has_prefix_files:
+    - libexec/livekraken
+    - libexec/livekraken-build
+    - libexec/livekraken-filter
+    - libexec/livekraken-mpa-report
+    - libexec/livekraken-report
+    - libexec/livekraken-translate
+    - libexec/livekraken_sankey_diagram.py
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - perl
+    - boost
+
+  run:
+    - jellyfish 1.*
+    - perl
+    - python
+    - argparse
+    - boost
+
+test:
+  commands:
+    - livekraken --version
+    - livekraken-build --version
+    - livekraken-filter --version
+    - livekraken-mpa-report --version
+    - livekraken-report --version
+    - livekraken-translate --version
+    - livekraken_sankey_diagram.py -h
+
+about:
+  home: https://gitlab.com/SimonHTausch/LiveKraken
+  license: GPLv3
+  license_file: LICENSE
+  summary: LiveKraken is a real-time metagenomic classifier for Illumina sequencing data.

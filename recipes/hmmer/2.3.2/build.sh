@@ -1,8 +1,6 @@
 #!/bin/sh
 
-#strictly use anaconda build environment
-CC=${PREFIX}/bin/gcc
-CXX=${PREFIX}/bin/g++
+set -e -u -x
 
 ./configure --prefix=$PREFIX
 make 

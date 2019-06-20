@@ -1,4 +1,7 @@
 #!/bin/sh
-make
-mkdir -p $PREFIX/bin
-mv bin/* $PREFIX/bin/
+
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+export CPATH=${PREFIX}/include
+
+make install prefix=$PREFIX CXX=$CXX CC=$CC LDFLAGS="-L$PREFIX/lib"

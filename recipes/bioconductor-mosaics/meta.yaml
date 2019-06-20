@@ -1,37 +1,65 @@
+{% set version = "2.22.0" %}
+{% set name = "mosaics" %}
+{% set bioc = "3.9" %}
+
 package:
-  name: bioconductor-mosaics
-  version: 2.4.1
-
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: mosaics_2.4.1.tar.gz
-  url: http://bioconductor.org/packages/release/bioc/src/contrib/mosaics_2.4.1.tar.gz
-  md5: 7f8c230dcd8283ed1264f4ced11a25a7
-
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 91e1ae361b6c172d27f265e44b54609e
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-
+# Suggests: mosaicsExample
+# SystemRequirements: Perl
 requirements:
-  build:
-    - bioconductor-iranges
-    - 'r >=3.0.0'
+  host:
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicalignments >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - r-base
+    - r-lattice
+    - r-mass
     - r-rcpp
-    - gcc
+    - perl
   run:
-    - bioconductor-iranges
-    - 'r >=3.0.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicalignments >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - r-base
+    - r-lattice
+    - r-mass
     - r-rcpp
-    - perl-threaded
-    - libgcc
-
+    - perl
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
-    - '$R -e "library(''mosaics'')"'
-
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/mosaics.html
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'This package provides functions for fitting MOSAiCS, a statistical framework
-    to analyze one-sample or two-sample ChIP-seq data.'
+  summary: 'This package provides functions for fitting MOSAiCS and MOSAiCS-HMM, a statistical framework to analyze one-sample or two-sample ChIP-seq data of transcription factor binding and histone modification.'
+extra:
+  identifiers:
+    - biotools:mosaics
+    - doi:10.1198/jasa.2011.ap09706
+  parent_recipe:
+    name: bioconductor-mosaics
+    path: recipes/bioconductor-mosaics
+    version: 2.18.0
+

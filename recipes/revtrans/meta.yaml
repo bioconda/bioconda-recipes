@@ -1,0 +1,46 @@
+{% set name = "revtrans" %}
+{% set version = "1.4" %}
+{% set sha256 = "d97b6b7bb0dab886b067e4379fb1bf721cdecf57faba7de1ef365fca773d796e" %}
+{% set sha256_2 = "a08f020db52c929183a8060741e1960cc81c5ab64dc45aa0d1da9a704bb51579" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: http://www.cbs.dtu.dk/services/RevTrans-2.0/web/releases/revtrans-1.4.tgz
+    sha256: {{ sha256 }}
+    patches:
+    - interpreter.patch
+  - url: http://www.cbs.dtu.dk/services/RevTrans-2.0/web/releases/contributed/revtrans_jarmo.py
+    sha256: {{ sha256_2 }}
+    patches:
+    - interpreter_jarmo.patch
+
+build:
+  number: 0
+  skip: True # [py3k]
+
+requirements:
+  host:
+    - python
+
+  run:
+    - python
+
+test:
+  commands:
+    - revtrans.py dummy_arg -h
+    - revtrans_jarmo.py dummy_arg -h
+
+about:
+  home: http://www.cbs.dtu.dk/services/RevTrans-2.0/web/download.php
+  license: GPLv2
+  license_family: GPL
+  license_file: COPYING
+  summary: "revtrans - performs a reverse translation of a peptide alignment."
+
+extra:
+  notes:  "This package includes a modified version of the program named 'revtrans_jarmo.py' that works with peptide fragments instead of full length sequences."
+  identifiers:
+    - biotools:revtrans

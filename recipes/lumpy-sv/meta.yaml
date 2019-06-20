@@ -1,34 +1,43 @@
 package:
   name: lumpy-sv
-  version: 0.2.12
+  version: 0.3.0
+
 source:
-  git_url: https://github.com/arq5x/lumpy-sv.git
-  git_rev: 66c83c8
+  url: https://github.com/arq5x/lumpy-sv/archive/0.3.0.tar.gz
+  sha256: 8be9ce5010833021280d601e5bcb6baab3bc8be059e3524c1f4f664dee4c8e6d
   patches:
-    # Fix issues with pipefails
-    - 142.diff
-  #fn: lumpy-sv-0.2.11.tar.gz
-  #url: https://github.com/arq5x/lumpy-sv/releases/download/0.2.11/lumpy-sv-0.2.11.tar.gz
+    - patch
+
 build:
-  number: 3
-  skip: True # [not py27]
+  number: 2
+  skip: True  # [osx]
+
 requirements:
   build:
-    - zlib
-    - gcc
-
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - htslib
   run:
-    - zlib
-    - python
+    - htslib
+    - python 2.7.*
     - samtools
     - gawk
-    - libgcc
+    - pysam
+    - numpy
+    - util-linux #contains hexdump
+    - sambamba #lumpy-express dependency
+    - samblaster #lumpy-express dependency
 
 test:
-    commands:
-      - 'lumpy 2>&1 | grep -q structural'
-      - 'lumpyexpress 2>&1 | grep -q lumpyexpress'
+  commands:
+    - 'lumpy 2>&1 | grep -q structural'
+    - 'lumpy_filter 2>&1 | grep -q lumpy_filter\:\ usage'
+    - 'lumpyexpress 2>&1 | grep -q lumpyexpress'
+    - extractSplitReads_BwaMem --help
+
 about:
-    home: https://github.com/arq5x/lumpy-sv
-    license: MIT
-    summary: a general probabilistic framework for structural variant discovery
+  home: https://github.com/arq5x/lumpy-sv
+  license: MIT
+  summary: a general probabilistic framework for structural variant discovery

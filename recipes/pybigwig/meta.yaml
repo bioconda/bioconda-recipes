@@ -1,32 +1,36 @@
+{% set version = "0.3.16" %}
+
 package:
   name: pybigwig
-  version: '0.2.8'
+  version: {{ version }}
 
 source:
-  fn: pyBigWig-0.2.8.tar.gz
-  sha256: f9262d406ee34aba46fc034bd7cfc45b0165de9c4f3c9959c289d9b7fdbcbea7
-  url: https://pypi.python.org/packages/8a/9e/795e371a5516086ae81d6f543cdd6491fb81988b327d75082bead0edb1d2/pyBigWig-0.2.8.tar.gz
+  url: https://files.pythonhosted.org/packages/67/c8/741cca63e6a8688ef22a605bb06cc849fc57df419027013f2d1181f184f8/pyBigWig-0.3.16.tar.gz
+  sha256: 1ec93c67089147cc918c7dbd69ff3cfbe0648e5b7b2e809c51f70daf668215d1
 
 build:
   number: 0
-  skip: False
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - python
     - curl
+    - libcurl
+    - zlib
+    - numpy >=1.10.*
   run:
     - python
-    - curl
+    - libcurl
+    - zlib
+    - {{ pin_compatible('numpy') }}
+
 test:
   imports:
     - pyBigWig
-
   commands:
-    - nosetests pyBigWigTest -s -v
-
-  requires:
-    - nose
+    - python -c "import pyBigWig; assert(pyBigWig.numpy == 1); assert(pyBigWig.remote == 1)"
 
 about:
   home: https://github.com/dpryan79/pyBigWig

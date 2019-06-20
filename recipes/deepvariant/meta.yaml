@@ -1,0 +1,69 @@
+{% set version = "0.8.0" %}
+{% set sha256 = "1d5a2aba453227c7aee739e182e37e25879c4adf00e151fe06b2edf281d04e0c" %}
+# When updating, also need to update model reference in post-link.sh
+
+package:
+  name: deepvariant
+  version: '{{ version }}'
+
+# Things to work on:
+# - Uses pre-built binaries, building problematic due to clif dependency
+# - Need recent kernel with GLIBC > 2.23 due to pre-built htslib
+# - Build patches __main__.py in zip files to generalize python dependency
+# - Requires numpy 1.14, want to sync with CONDA_NPY
+# - Uses python wrappers that don't expose all underlying options
+# - Ships with pre-built model. Longer term will need way to fetch models on demand.
+
+source:
+  url: https://github.com/google/deepvariant/releases/download/v{{ version }}/deepvariant.zip
+  sha256: '{{ sha256 }}'
+build:
+  number: 0
+  skip: true  # [osx or not py27]
+
+requirements:
+  host:
+    - python
+    - unzip
+    - zip
+    - zlib
+    - curl
+    # Needed for non-binary build
+    # - google-cloud-sdk
+    # - bazel
+  run:
+    - openjdk >=8,<9
+    - python
+    - google-cloud-sdk
+    - zlib
+    - boost
+    - htslib
+    - numpy
+    - curl
+    - tensorflow 1.12.*
+    - protobuf
+    - contextlib2
+    - enum34
+    - intervaltree
+    - mock
+    - numpy 1.14.*
+    - psutil
+    - requests
+    - scipy
+    - oauth2client
+    - six
+    - crcmod
+    - parallel
+
+test:
+  commands:
+    # Pre-built binaries need GLIBC 2.16 and 2.23 (htslib) so fail
+    # - dv_make_examples.py -h
+    # - dv_call_variants.py -h
+    # - dv_postprocess_variants.py -h
+
+about:
+  home: https://github.com/google/deepvariant
+  license: MIT
+  summary: DeepVariant is an analysis pipeline that uses a deep neural network to
+    call genetic variants from next-generation DNA sequencing data

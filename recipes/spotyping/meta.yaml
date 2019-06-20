@@ -1,0 +1,41 @@
+{% set name = "SpoTyping" %}
+{% set version = "2.1" %}
+{% set sha256 = "eeb2edac3bebf3c0e9c2ecc89f647f1dc9b658b164f34cdb4b9b202d65371ebc" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/xiaeryu/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - patch-ref-location
+
+build:
+  skip: True  # [not py2k]
+  number: 2
+
+requirements:
+  host:
+    - python
+  run:
+    - python
+    - blast
+    - r-gdata
+
+test:
+  commands:
+    - SpoTyping.py --help|grep SpoTyping >/dev/null 2>&1
+    - SpoTyping_plot.r 2>&1 |grep gdata >/dev/null 2>&1
+
+about:
+  home: https://github.com/xiaeryu/SpoTyping
+  summary: 'SpoTyping: fast and accurate in silico Mycobacterium spoligotyping from sequence reads'
+  license_family: GPL
+  license: GPL-3
+extra:
+  recipe-maintainers:
+    - pvanheus
+  identifiers:
+    - DOI:10.1186/s13073-016-0270-7

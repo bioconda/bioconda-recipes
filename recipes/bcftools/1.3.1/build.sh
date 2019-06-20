@@ -2,5 +2,5 @@
 
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
-make plugins
-make prefix=$PREFIX CPPFLAGS=$CPPFLAGS LDFLAGS=$LDFLAGS install
+make all prefix=${PREFIX} CC=${CC} LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
+make install prefix=${PREFIX} CC=${CC} LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"

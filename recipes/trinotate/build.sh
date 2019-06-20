@@ -8,13 +8,15 @@ mv util/auto_Trinotate.txt util/auto_Trinotate.sh
 cp -rf PerlLib perl-build/lib
 cp -rf sample_data ${PREFIX}/trinotate-sample-data
 
-find -name "*.pl" | grep -v sample_data | xargs -I {} cp -rf {} perl-build/scripts/
+find . -name "*.pl" | grep -v sample_data | xargs -I {} cp -rf {} perl-build/scripts/
 cp Trinotate perl-build/scripts
 
 cd perl-build
 
 cp ${RECIPE_DIR}/Build.PL ./
 
-${PREFIX}/bin/perl ./Build.PL
-./Build manifest
-./Build install --installdirs site
+perl ./Build.PL
+perl ./Build manifest
+perl ./Build install --installdirs site
+
+chmod u+rwx $PREFIX/bin/*

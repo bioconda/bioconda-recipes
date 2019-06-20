@@ -1,5 +1,5 @@
 #!/bin/bash
-target=$PREFIX/share/java/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+target=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $target
 mkdir -p $PREFIX/bin
 cp  *jar $target/.

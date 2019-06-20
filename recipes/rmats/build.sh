@@ -1,15 +1,21 @@
 #!/bin/bash
 
+mkdir $PREFIX/rMATS
 
-cp -R ./* $PREFIX/
+if [[ "$(uname)" == "Darwin" ]]; then
+    SRCDIR="rMATS-turbo-Mac-UCS4"
+else
+    SRCDIR="rMATS-turbo-Linux-UCS4"
+fi
 
-echo '#!/usr/bin/env python' > $PREFIX/RNASeq-MATS.py
-cat ./RNASeq-MATS.py >> $PREFIX/RNASeq-MATS.py
+cp -R $SRCDIR/* $PREFIX/rMATS
+chmod +x $PREFIX/rMATS/rmats.py
+ln -s $PREFIX/rMATS/rmats.py $PREFIX/bin/rmats.py
+ln -s $PREFIX/rMATS/rMATS_P/FDR.py $PREFIX/bin/FDR.py
+ln -s $PREFIX/rMATS/rMATS_P/inclusion_level.py $PREFIX/bin/inclusion_level.py
+ln -s $PREFIX/rMATS/rMATS_P/joinFiles.py $PREFIX/bin/joinFiles.py
+ln -s $PREFIX/rMATS/rMATS_P/paste.py $PREFIX/bin/paste.py
 
-bash $PREFIX/test.bam.sh
-
-mv $PREFIX/RNASeq-MATS.py $PREFIX/bin/RNASeq-MATS.py
-
-rm -rf $PREFIX/testData $PREFIX/gtf
-rm $PREFIX/test.bam.sh
-rm $PREFIX/testRun.sh
+# for backwards compatibility with the previous recipe, create a symlink named
+# for the previously-used executable
+ln -s $PREFIX/rMATS/rmats.py $PREFIX/bin/RNASeq-MATS.py

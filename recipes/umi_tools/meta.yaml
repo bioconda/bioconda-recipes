@@ -1,33 +1,53 @@
+{% set name = "umi_tools" %}
+{% set version = "1.0.0" %}
+{% set sha256hash = "8ac8b8c488613122d11c97c404b3e7894aa31915e258bd2ae40974b6c3dfc323" %}
+
 package:
-  name: "umi_tools"
-  version: "0.2.3"
+  name: {{ name }}
+  version: {{ version }}
+
 source:
-  fn: v0.2.3.tar.gz
-  url: https://github.com/CGATOxford/UMI-tools/archive/v0.2.3.tar.gz
-  md5: ebf34023a9fedb0ce87a0b74e3e655a8
+  url: https://pypi.io/packages/source/u/umi_tools/umi_tools-{{ version }}.tar.gz
+  sha256: {{ sha256hash }}
+
 build:
-  number: 2
-  skip: True # [py2k]
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+  entry_points:
+    - umi_tools = umi_tools.umi_tools:main
+
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - python
+    - pip
+    - matplotlib
+    - scipy
+    - regex
     - setuptools >=1.1
-    - cython >=0.19
     - numpy >=1.7
     - pandas >=0.12.0
-    - pysam >=0.8.4
+    - pysam >=0.9
     - future
   run:
     - python
-    - cython >=0.19
+    - matplotlib
+    - scipy
+    - regex
     - numpy >=1.7
     - pandas >=0.12.0
-    - pysam >=0.8.4
+    - pysam >=0.9
     - future
+
 test:
   commands:
     - umi_tools --help
+
 about:
   home: https://github.com/CGATOxford/UMI-tools
   license: MIT License
-  summary: 'Tools for dealing with Unique Molecular Identifiers'
+  license_family: MIT
+  summary: 'Tools for dealing with Unique Molecular Identifiers
+            (UMIs) / Random Molecular Tags (RMTs)'
+  dev_url: https://github.com/CGATOxford/UMI-tools

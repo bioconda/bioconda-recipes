@@ -21,7 +21,7 @@ function print_license_notice(){
     echo "  Due to license restrictions, this recipe cannot distribute "
     echo "  and install GATK directly. To fully install GATK, you must "
     echo "  download a licensed copy of GATK from the Broad Institute: "
-    echo "    https://www.broadinstitute.org/gatk/download/ "
+    echo "    https://software.broadinstitute.org/gatk/download/archive "
     echo "  and run (after installing this package):"
     echo "    gatk-register /path/to/GenomeAnalysisTK[-$PKG_VERSION.tar.bz2|.jar], "
     echo "   This will copy GATK into your conda environment."
@@ -89,10 +89,19 @@ elif [[ "$file_ext" == "tar.bz2" ]]; then
     mkdir /tmp/gatk
     cd /tmp/gatk
     tar -vxjf $abspath_tarball
+
+    # jar locations: Handle both nested (GATK3.8) and non-ested (<=GATK 3.7)
+    NESTED_GLOB="GenomeAnalysisTK-*/GenomeAnalysisTK.jar"
+    if compgen -G "$NESTED_GLOB"; then
+      JARS=( "$NESTED_GLOB" )
+      JAR=( "${JARS[0]}" )
+    else
+      JAR=./GenomeAnalysisTK.jar
+    fi
     
     if [[ "$2" != "--noversioncheck" ]]; then
-      check_version ./GenomeAnalysisTK.jar
+      check_version $JAR
     fi
     echo "Moving $(basename $abspath_tarball) to $ENV_PREFIX/opt/$PKG_NAME-$PKG_VERSION"
-    mv ./GenomeAnalysisTK.jar $ENV_PREFIX/opt/$PKG_NAME-$PKG_VERSION/
+    mv $JAR $ENV_PREFIX/opt/$PKG_NAME-$PKG_VERSION/
 fi

@@ -1,28 +1,41 @@
+{% set version="1.4.4a" %}
+{% set revision="851ce84" %}
 package:
   name: variantbam
-  version: 1.3.0
+  version: {{ version }}
 
 build:
-  number: 0
+  number: 3
   skip: True # [osx]
 
 source:
-  #fn: variantbam-1.3.0.tar.gz
-  #url: https://github.com/jwalabroad/VariantBam/archive/1.3.0.tar.gz
-  git_url: https://github.com/jwalabroad/VariantBam.git
-  git_rev: 1.3.0
+  # Needs to do recursive Git clone to get sub modules
+  git_url: https://github.com/walaj/VariantBam.git
+  git_rev: {{ revision }}
+  md5: unused
+  #url: https://github.com/walaj/VariantBam/archive/{{ version }}.tar.gz
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
+  host:
+    - xz
+    - bzip2
     - zlib
   run:
+    - xz
+    - bzip2
     - zlib
 
 test:
-    commands:
-      - "variant --help 2>&1 | grep 'Usage: variant'"
+  commands:
+    - 'variant --help 2>&1 | grep "Usage: variant"'
 
 about:
-    home: https://github.com/jwalabroad/VariantBam
-    license: GPLv3
-    summary: Filtering and profiling of next-generational sequencing data using region-specific rules
+  home: https://github.com/jwalabroad/VariantBam
+  license: GPLv3
+  summary: Filtering and profiling of next-generational sequencing data using region-specific rules
+
+extra:
+  skip-lints:
+    - uses_git_url

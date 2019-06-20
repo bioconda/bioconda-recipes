@@ -1,6 +1,9 @@
-#!/bin/bash
+#!/bin/sh
 
+export CPP_INCLUDE_PATH=${PREFIX}/include
+export CXX_INCLUDE_PATH=${PREFIX}/include
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
+make all
 mkdir -p $PREFIX/bin
-
-make STATIC=1 PARALLEL=1 -B src/delly
-cp src/delly $PREFIX/bin/delly
+cp src/delly $PREFIX/bin

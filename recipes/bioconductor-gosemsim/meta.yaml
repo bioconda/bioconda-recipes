@@ -1,34 +1,49 @@
+{% set version = "2.10.0" %}
+{% set name = "GOSemSim" %}
+{% set bioc = "3.9" %}
+
 package:
-  name: bioconductor-gosemsim
-  version: 1.28.2
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: GOSemSim_1.28.2.tar.gz
-  url: http://bioconductor.org/packages/release/bioc/src/contrib/GOSemSim_1.28.2.tar.gz
-  md5: 96a6a406487d4229ebeff5a5b3590d9e
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 7c3863de574a9827b66b3fec462ae4d8
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: AnnotationHub, BiocManager, clusterProfiler, DOSE, knitr, org.Hs.eg.db, prettydoc, testthat
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - bioconductor-go.db
-    - 'r >=3.1.0'
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-go.db >=3.8.0,<3.9.0'
+    - r-base
     - r-rcpp
   run:
-    - bioconductor-annotationdbi
-    - bioconductor-go.db
-    - 'r >=3.1.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-go.db >=3.8.0,<3.9.0'
+    - r-base
     - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
-    - '$R -e "library(''GOSemSim'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/GOSemSim.html
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Implemented five methods proposed by Resnik, Schlicker, Jiang, Lin and
-    Wang respectively for estimating GO semantic similarities. Support many species,
-    including Anopheles, Arabidopsis, Bovine, Canine, Chicken, Chimp, Coelicolor,
-    E coli strain K12 and Sakai, Fly, Gondii, Human, Malaria, Mouse, Pig, Rhesus,
-    Rat, Worm, Xenopus, Yeast, and Zebrafish.'
+  summary: 'The semantic comparisons of Gene Ontology (GO) annotations provide quantitative ways to compute similarities between genes and gene groups, and have became important basis for many bioinformatics analysis approaches. GOSemSim is an R package for semantic similarity computation among GO terms, sets of GO terms, gene products and gene clusters. GOSemSim implemented five methods proposed by Resnik, Schlicker, Jiang, Lin and Wang respectively.'
+extra:
+  identifiers:
+    - biotools:gosemsim
+  parent_recipe:
+    name: bioconductor-gosemsim
+    path: recipes/bioconductor-gosemsim
+    version: 2.6.2
+

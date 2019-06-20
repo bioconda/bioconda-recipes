@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# cd to location of Makefile and source
-cd $SRC_DIR
-
-export PRFX=$PREFIX
 make
 
 binaries="\

@@ -1,37 +1,39 @@
+{% set version = "2.1.0" %}
+
 package:
   name: prosic
-  version: "1.0"
+  version: {{ version }}
 
 build:
-  number: 1
-  string: "py{{CONDA_PY}}_gsl{{CONDA_GSL}}_gmp{{CONDA_GMP}}_{{PKG_BUILDNUM}}"
-  skip: True # [not py3k]
+  number: 4
 
 source:
-  git_url: https://github.com/PROSIC/PROSIC.git
-  git_rev: v1.0
+  url: https://github.com/PROSIC/prosic2/archive/v{{ version }}.tar.gz
+  sha256: 575994be1c6f26d4966eedd44a18a5459e90cad7023dd2d329fbe463cb209b96
+
 
 requirements:
   build:
-    - gcc
-    - gsl {{CONDA_GSL}}*
-    - gmp {{CONDA_GMP}}*
-    - python
+    - {{ compiler('c') }}
+    - rust >=1.30
+    - pkg-config #[osx]
+  host:
+    - gsl
+    - openblas
+    - zlib
+    - bzip2
+    - xz
+    - clangdev
   run:
-    - gsl {{CONDA_GSL}}*
-    - gmp {{CONDA_GMP}}*
-    - python
-    - pyvcf
-    - pysam
-    - numpy
+    - gsl
+    - openblas
+    - zlib
 
 test:
   commands:
-    - prosic-call -h > /dev/null
-    - prosic-extract-observations --help > /dev/null
-    - prosic-annotate --help > /dev/null
+    - prosic call-tumor-normal --help
 
 about:
-  home: https://github.com/PROSIC/PROSIC
+  home: https://prosic.github.io
   license: GPLv3
-  summary: A caller for somatic insertions and deletions.
+  summary: A highly sensitive and accurate Bayesian caller for somatic insertions and deletions.

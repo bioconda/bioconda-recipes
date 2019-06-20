@@ -1,0 +1,56 @@
+{% set name = "SSAKE" %}
+{% set version = "4.0" %}
+{% set sha256 = "873361ee4121e5667a2db5329ed739410e63eb1db39a76f13f6951b85b5a9a23" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  sha256: {{ sha256 }}
+  url: https://github.com/warrenlr/{{ name }}/archive/v{{ version }}.tar.gz
+  patches:
+    - pl_py_paths.patch
+
+build:
+  number: 2
+  skip: True  # [py3k]
+
+requirements:
+  host:
+    - python
+    - perl
+  run:
+    - perl-statistics-descriptive
+    - perl
+    - python
+
+test:
+  commands:
+    - SSAKE 2> /dev/null || [[ "$?" == 255 ]]
+    - analyzePositionSSAKE.pl 2> /dev/null || [[ "$?" == 255 ]]
+    - getStats.pl 2> /dev/null || [[ "$?" == 255 ]]
+    - makeFastaFileFromScaffolds.pl 2> /dev/null || [[ "$?" == 255 ]]
+    - makePairedOutput2EQUALfiles.pl 2> /dev/null || [[ "$?" == 255 ]]
+    - makePairedOutput2UNEQUALfiles.pl 2> /dev/null || [[ "$?" == 255 ]]
+    - makePairedOutput.pl 2> /dev/null || [[ "$?" == 255 ]]
+    - nLength.pl 2> /dev/null || [[ "$?" == 255 ]]
+    - qseq2fasta.pl 2> /dev/null || [[ "$?" == 255 ]]
+    - qseq2fastq.pl 2> /dev/null || [[ "$?" == 255 ]]
+    - splitInput.pl 2> /dev/null || [[ "$?" == 255 ]]
+    - TQSfastq.pl 2> /dev/null || [[ "$?" == 255 ]]
+    - TQSexport.py -h
+    - TQSfastq.py -h
+    - TQS.py -h
+
+about:
+  home: https://github.com/warrenlr/SSAKE
+  license: GPL-2.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: SSAKE is a genomics application for de novo assembly of millions of very short DNA sequences.
+
+extra:
+  identifiers:
+    - biotools:ssake
+  doi: doi.org/10.1093/bioinformatics/btl629

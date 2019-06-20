@@ -1,0 +1,36 @@
+diff -u -r a/Makefile b/Makefile
+--- a/Makefile	2016-01-22 17:09:11.000000000 +0100
++++ b/Makefile	2017-01-09 08:35:25.596116817 +0100
+@@ -1,7 +1,7 @@
+ CC=gcc
+ LIBS=-lm -lsquid 
+ INCLUDE=-I. 
+-CFLAGS=-O3
++CFLAGS+= -O3
+ 
+ randfold: energy_par.o params.o fold.o fold_vars.o utils.o randfold.c
+ 	$(CC) $(CFLAGS) $(INCLUDE) -o randfold params.o energy_par.o fold.o fold_vars.o utils.o randfold.c $(LIBS)
+diff -u -r a/randfold.c b/randfold.c
+--- a/randfold.c	2016-01-22 17:09:11.000000000 +0100
++++ b/randfold.c	2017-01-09 04:15:57.928966271 +0100
+@@ -57,7 +57,7 @@
+ Example: randfold -d let7.tfa 999\n\n";
+ 	
+ 	/* parse command line arguments */
+-	if (argc != 4 || *argv[1] != '-') {
++	if (argc < 2 || argv[1][0] != '-') {
+ 		Die (usage);
+ 	}
+ 	else {
+@@ -83,8 +83,9 @@
+ 	}
+ 
+ 	/* help */
+-	if (opt == -1) 
+-		Die (usage);
++	if (opt == -1) {
++		printf("%s\n",usage); exit(0);
++	}
+ 	
+ 	/* initialize file name and number of randomizations */
+ 	strcpy(seqfile,*argv);

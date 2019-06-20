@@ -1,27 +1,41 @@
-package:
-  name: bioconductor-biocinstaller
-  version: 1.20.1
-source:
-  fn: BiocInstaller_1.20.1.tar.gz
-  url: http://bioconductor.org/packages/release/bioc/src/contrib/BiocInstaller_1.20.1.tar.gz
-  md5: d6758faae696c9bbed2c5c43fcefdb00
+{% set version = "1.32.1" %}
+{% set name = "BiocInstaller" %}
+{% set bioc = "3.8" %}
 
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: cc58048dad0325a2fca2a92680611c22
 build:
-  skip: False
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: remotes, RUnit, BiocGenerics
 requirements:
-  build:
-    - 'r >=3.2.0'
+  host:
+    - r-base
   run:
-    - 'r >=3.2.0'
+    - r-base
 test:
   commands:
-    - '$R -e "library(''BiocInstaller'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/BiocInstaller.html
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'This package is used to install and update Bioconductor, CRAN, and (some)
-    github packages.'
+  summary: 'This package is used to install and update Bioconductor, CRAN, and (some) github packages.'
+extra:
+  identifiers:
+    - biotools:biocinstaller
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-biocinstaller
+    path: recipes/bioconductor-biocinstaller
+    version: 1.30.0
+

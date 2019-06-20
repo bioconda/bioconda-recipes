@@ -1,0 +1,49 @@
+{% set name = "GBSX" %}
+{% set version = "1.3" %}
+# Do not forget to update the version string in the gbsx wrapper script
+{% set sha256 = "3a466426d99011b085138f5e9ebb3ef55d79ce47259beb4ecc2695b1069d2ced" %}
+
+about:
+  home: https://github.com/GenomicsCoreLeuven/GBSX
+  license: GPL-3.0
+  license_family: GPL
+  summary: 'Toolkit for experimental design and demultiplexing genotyping by sequencing experiments'
+  description: |
+    Genotyping By Sequencing demultipleXing toolkit (GBSX) is a toolkit with an
+    inline barcode demultiplexer for usage in the analysis of single read or
+    paired-end genotyping by sequence (GBS) data, a barcode generator, a barcode
+    discovery tool, and a restriction enzyme predictor. GBSX can easily be
+    incorperated as a preceding analysis step for already deployed SNP pipelines.
+
+package:
+  name: gbsx
+  version: {{ version }}
+
+build:
+  noarch: generic
+  number: 0
+
+source:
+  url: https://github.com/GenomicsCoreLeuven/GBSX/releases/download/v{{ version }}/GBSX_v{{ version }}.jar
+  sha256: {{ sha256 }}
+
+requirements:
+  host:
+  run:
+    - openjdk >=6
+    - python
+
+test:
+  commands:
+    - gbsx -help
+
+extra:
+  notes: |
+    GBSX is a Java program that comes with a custom wrapper shell script.
+    This shell wrapper is called "gbsx" and is on $PATH by default. By default
+    "-Xms512m -Xmx1g" is set in the wrapper. If you want to overwrite it you can
+    specify these values directly after your binaries. If you have _JAVA_OPTIONS
+    set globally this will take precedence.
+    For example run it with "gbsx -Xms512m -Xmx1g"
+  identifiers:
+    - doi:10.1186/s12859-015-0514-3

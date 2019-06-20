@@ -1,13 +1,17 @@
+{% set name = "kraken" %}
+{% set version = "1.1.1" %}
+{% set sha256 = "73e48f40418f92b8cf036ca1da727ca3941da9b78d4c285b81ba3267326ac4ee" %}
+
 package:
-  name: kraken
-  version: "0.10.6_eaf8fb68"
+  name: {{ name|lower }}
+  version: {{ version }}
+
 source:
-  fn: kraken-eaf8fb68.tar.gz
-  url: https://github.com/DerrickWood/kraken/archive/eaf8fb68.tar.gz
+  url: https://github.com/DerrickWood/kraken/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 2
-  skip: True # [osx]
+  number: 0
   has_prefix_files:
     - libexec/kraken
     - libexec/kraken-build
@@ -18,14 +22,37 @@ build:
 
 requirements:
   build:
+    - perl
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+
+  host:
+    - perl
+    - clangdev  # [osx]
+    - llvm-openmp  # [osx]
   run:
-    - perl-threaded
+    - bioconda::jellyfish 1.*
+    - perl
+    - rsync
+    - wget
+    - llvm-openmp  # [osx]
 
 test:
   commands:
-    - kraken --version 2>&1 > /dev/null
+    - kraken --version
+    - kraken-build --version
+    - kraken-filter --version
+    - kraken-mpa-report --version
+    - kraken-report --version
+    - kraken-translate --version
 
 about:
   home: http://ccb.jhu.edu/software/kraken/
   license: GPLv3
+  license_file: LICENSE
   summary: Kraken is a system for assigning taxonomic labels to short DNA sequences, usually obtained through metagenomic studies.
+
+extra:
+  identifiers:
+    - biotools:kraken
+    - doi:10.1186/gb-2014-15-3-r46

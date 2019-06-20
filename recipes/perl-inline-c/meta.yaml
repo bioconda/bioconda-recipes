@@ -1,0 +1,55 @@
+{% set name = "perl-inline-c" %}
+{% set version = "0.78" %}
+{% set sha256 = "9a7804d85c01a386073d2176582b0262b6374c5c0341049da3ef84c6f53efbc7" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://cpan.metacpan.org/authors/id/T/TI/TINITA/Inline-C-0.78.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+
+  host:
+    - perl
+    - perl-file-sharedir-install >=0.06
+    - perl-file-path
+    - perl-inline
+    - perl-pegex
+    - perl-parse-recdescent
+    - perl-version
+    - perl-file-copy-recursive
+    - perl-autodie
+    - perl-extutils-makemaker
+    - perl-test-warn
+    # GCC is required for tests (see below)
+    - compilers
+
+  run:
+    - perl
+    - perl-inline
+    - perl-extutils-makemaker
+    - perl-pegex
+    - perl-parse-recdescent
+    - make
+    # GCC is required at runtime as this is a perl module that allows compiling and executing inline C code
+    - compilers
+
+test:
+
+about:
+  home: https://github.com/ingydotnet/inline-c-pm
+  license: perl_5
+  summary: 'C Language Support for Inline'
+
+extra:
+  skip-lints:
+    - compilers_must_be_in_build

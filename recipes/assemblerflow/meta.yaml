@@ -1,0 +1,55 @@
+{% set name = "assemblerflow" %}
+{% set version = "1.1.0.post3" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "b0390727602e90dad1c3afa8dd408e5c30471a0f6d35b323989e9df4e8aa70fb" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  skip: True # [py27]
+  number: 1
+  entry_points:
+    - assemblerflow = assemblerflow.assemblerflow:main
+  script: python -m pip install --no-deps --ignore-installed .
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+    - argparse
+    - jinja2
+  run:
+    - python
+    - argparse
+    - jinja2
+    - nextflow >=0.27
+
+test:
+  imports:
+    - assemblerflow
+    - assemblerflow.generator
+    - assemblerflow.generator.components
+    - assemblerflow.templates
+  commands:
+    - assemblerflow --help
+
+about:
+  home: https://github.com/ODiogoSilva/assemblerflow
+  license: GPL3
+  license_family: GPL3
+  license_file: LICENSE
+  summary: A Nextflow pipeline assembler for genomics. Pick your modules. Assemble them. Run the pipeline.
+  doc_url:  http://assemblerflow.readthedocs.io/en/latest/
+  dev_url: http://assemblerflow.readthedocs.io/en/latest/
+
+extra:
+  recipe-maintainers:
+    - odiogosilva

@@ -1,33 +1,63 @@
-about:
-    home: 'http://last.cbrc.jp/'
-    license: GPLv3
-    summary: "LAST finds similar regions between sequences, and aligns them. It is designed for comparing large datasets to each other (e.g. vertebrate genomes and/or large numbers of DNA reads)."
+{% set name = "LAST" %}
+{% set version = "963" %}
+{% set sha256 = "cd4725456f641722a83f05c61d6388ac77dd607f27c49cdc11605f1f12d79b1b" %}
+
 package:
-  name: last
-  version: '719'
+  name: {{ name|lower }}
+  version: {{ version }}
+
 source:
-  fn: last-719.zip
-  md5: 2fd486b6cf8738ba3121fc3a0256487d
-  url: http://last.cbrc.jp/last-719.zip
-  patches:
-    - maf-convert.23patch
+  sha256: {{ sha256 }}
+  url: http://last.cbrc.jp/{{ name|lower }}-{{ version }}.zip
 
 build:
-  number: 2
-  skip: False
+  number: 1
 
 requirements:
   build:
-    - python
-    - gcc
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
   run:
+    - zlib
     - python
-    - libgcc
+    - future
+    - pillow
+    - parallel
+
 test:
-    commands:
-        - "lastal -V &> /dev/null"
-        - "lastdb -V &> /dev/null"
-        - "last-split -V &> /dev/null"
-        - "last-pair-probs -V &> /dev/null"
-        - "last-merge-batches -V &> /dev/null"
-        - "maf-convert -h &> /dev/null"
+  commands:
+    - lastal -h
+    - lastdb -h
+    - lastal8 -h
+    - lastdb8 -h
+    - last-split -h
+    - last-merge-batches -h
+    - maf-convert -h
+    - last-dotplot -h
+    - last-map-probs -h
+    - last-split8 -h
+    - last-train -h
+    - last-pair-probs -h
+    - fastq-interleave -h
+    - last-postmask -h
+    - maf-cut -h
+    - maf-join -h
+    - maf-sort -h
+    - maf-swap -h
+    - parallel-fasta -h
+    - parallel-fastq -h
+
+about:
+  home: http://last.cbrc.jp/
+  license: GPLv3
+  license_family: GPL
+  license_file: COPYING.txt
+  summary: "LAST finds similar regions between sequences, and aligns them. It is designed for comparing large datasets to each other (e.g. vertebrate genomes and/or large numbers of DNA reads)."
+
+extra:
+  container:
+    extended-base: True
+  identifiers:
+    - biotools:last

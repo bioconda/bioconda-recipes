@@ -1,27 +1,36 @@
+{% set name = "swarm" %}
+{% set version = "2.2.2" %}
+
 package:
-  name: swarm
-  version: 2.1.5
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: v2.1.5.tar.gz
-  url: https://github.com/torognes/swarm/archive/v2.1.5.tar.gz
-  md5: 0ab87c5c55b28f63daedf406332c4f8d
+  url: https://github.com/torognes/swarm/archive/v{{ version }}.tar.gz
+  md5: afb671ba221e7805c3320135c725bf7a
 
 requirements:
+  build:
+    - {{ compiler('cxx') }}
+
   run:
     - python
     - python-igraph
 
 build:
-  number: 0
-  skip: True # [not linux64 or osx]
+  number: 2
 
 test:
   commands:
-     - swarm -v 2>&1 | grep 2.1.5
-     - graph_plot.py --version
+    - swarm -v
+    - graph_plot.py --version
 
 about:
   home: https://github.com/torognes/swarm
   license: Affero GPL
   summary: A robust and fast clustering method for amplicon-based studies.
+
+extra:
+  identifiers:
+    - biotools:swarm
+    - doi:10.7717/peerj.593

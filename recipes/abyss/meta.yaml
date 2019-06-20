@@ -1,35 +1,47 @@
+{% set name = "abyss" %}
+{% set version = "2.1.5" %}
+
 package:
-  name: abyss
-  version: "1.9.0"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 build:
   number: 1
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
 
 source:
-  fn: abyss-1.9.0.tar.gz
-  url: https://github.com/bcgsc/abyss/releases/download/1.9.0/abyss-1.9.0.tar.gz
-  md5: 7b1b9f060dbae6c7fe815b1e50487c83
+  url: https://github.com/bcgsc/abyss/releases/download/{{ version }}/abyss-{{ version }}.tar.gz
+  sha256: 65bfc8241e6ff5adf7601ae4ae93a75e3db86d6bff5d593c75aaff7f0ef41757
 
 requirements:
   build:
-  - gcc # [not osx]
-  - llvm # [osx]
-  - boost {{CONDA_BOOST}}*
-  - google-sparsehash
-  - sqlite
-
+    - {{ compiler('cxx') }}
+  host:
+    - boost
+    - sparsehash
+    - openmpi
   run:
-  - libgcc # [not osx]
-  - sqlite
+    - openmpi
+    - make
 
 test:
   commands:
-    - ABYSS --version
+    - ABYSS-P --version | grep -q "{{ version }}"
+    - ABYSS --version | grep -q "{{ version }}"
+    - abyss-pe help | grep -q "Assemble reads into contigs and scaffolds"
 
 about:
   home: http://www.bcgsc.ca/platform/bioinfo/software/abyss
   license: GPL3
   license_file: LICENSE
   summary: Assembly By Short Sequences - a de novo, parallel, paired-end sequence assembler
+  dev_url: https://github.com/bcgsc/abyss
+  doc_url: https://github.com/bcgsc/abyss#readme
 
+extra:
+  container:
+    # openmpi needs ssh/rsh
+    extended-base: true
+  identifiers:
+    - biotools:abyss
+    - doi:10.1101/gr.214346.116
+    - doi:10.1101/gr.089532.108

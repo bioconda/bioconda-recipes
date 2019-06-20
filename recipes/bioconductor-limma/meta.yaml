@@ -1,25 +1,42 @@
+{% set version = "3.40.0" %}
+{% set name = "limma" %}
+{% set bioc = "3.9" %}
+
 package:
-  name: bioconductor-limma
-  version: 3.28.10
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: limma_3.28.10.tar.gz
-  url: https://depot.galaxyproject.org/software/limma/limma_3.28.10_src_all.tar.gz
-  sha256: 92c219f672f7061e8204cf9466e9b05a3df3a177b2bdfcd23c5a873591b6d4b4
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: e0f515b4bf85f94de2a8922da7b213a3
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: affy, AnnotationDbi, BiasedUrn, Biobase, ellipse, GO.db, gplots, illuminaio, locfit, MASS, org.Hs.eg.db, splines, statmod (>= 1.2.2), vsn
 requirements:
-  build:
-    - 'r >=2.3.0'
+  host:
+    - r-base
   run:
-    - 'r >=2.3.0'
+    - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
-    - '$R -e "library(''limma'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/limma.html
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>=2)'
-  summary: 'Data analysis, linear models and differential expression for microarray
-    data.'
+  summary: 'Data analysis, linear models and differential expression for microarray data.'
+extra:
+  identifiers:
+    - biotools:limma
+  parent_recipe:
+    name: bioconductor-limma
+    path: recipes/bioconductor-limma
+    version: 3.36.5
+

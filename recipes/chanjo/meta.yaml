@@ -1,39 +1,30 @@
+{% set name = "chanjo" %}
+{% set version = "4.1.3" %}
+{% set md5 = "341a7e5ae38f5bf398902e6522abd44e" %}
+
 package:
-  name: chanjo
-  version: "3.3.0"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: chanjo-3.3.0.tar.gz
-  url: https://pypi.python.org/packages/source/c/chanjo/chanjo-3.3.0.tar.gz
-  md5: 7b7d67863c1cb74a731b1ddb79d5595a
-#  patches:
-   # List any patch files here
-   # - fix.patch
+  url: https://pypi.python.org/packages/40/f1/4f137df766697f8b748a6404d96240765b3e851187f8062b64154d99e814/{{ name|lower }}-{{ version }}.tar.gz
+  md5: {{ md5 }}
 
 build:
-  # noarch_python: True
+  number: 1
   preserve_egg_dir: True
   entry_points:
-    # Put any entry points (scripts to be generated automatically) here. The
-    # syntax is module:function.  For example
-    #
-    # - chanjo = chanjo:main
-    #
-    # Would create an entry point called chanjo that calls chanjo.main()
-
     - chanjo = chanjo.__main__:root_command
-
-  # If this is a new build for the same version, increment the build
-  # number. If you do not include this key, it defaults to 0.
-  # number: 1
-  skip: False
+  # path.py in the default channel is broken
+  # it does not contain an egg-info and hence setup.py cannot find it.
+  # Once bioconda can directly depend on conda-forge, we can enable this again.
+  skip: true
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
     - click
-    - setuptools
     - toolz
     - path.py
     - pyyaml
@@ -41,9 +32,7 @@ requirements:
 
   run:
     - python
-    - setuptools
     - click
-    - setuptools
     - toolz
     - path.py
     - pyyaml
@@ -51,7 +40,6 @@ requirements:
     - sambamba
 
 test:
-  # Python imports
   imports:
     - chanjo
     - chanjo.annotate
@@ -68,22 +56,15 @@ test:
     - chanjo.store
 
   commands:
-    # You can put test commands to be run here.  Use this to test that the
-    # entry points work.
-
     - chanjo --help
-
-  # You can also put a file called run_test.py in the recipe that will be run
-  # at test time.
-
-  requires:
-    - pytest
 
 about:
   home: http://www.chanjo.co/
   license: MIT License
   summary: 'Coverage analysis tool for clinical sequencing'
 
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]

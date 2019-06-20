@@ -1,34 +1,45 @@
 #!/bin/bash
+set -euo pipefail
 
 IGBLAST_ADDRESS=ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release
 SHARE_DIR=$PREFIX/share/igblast
 
-wget $IGBLAST_ADDRESS/edit_imgt_file.pl
-# replace the first line with /usr/bin/env perl instead of the hard-coded /opt
-# does this require an explicit perl dependency? 
-sed -i.backup '1 s/^.*$/#!\/usr\/bin\/env perl/g' edit_imgt_file.pl
-chmod +x edit_imgt_file.pl
-mv edit_imgt_file.pl bin/
-
 mkdir -p $PREFIX/bin
+
+if [ $(uname) == Linux ]; then
+  # The binaries want libbz2.so.1, but the correct soname is libbz2.so.1.0
+  for name in makeblastdb igblastn igblastp; do
+    patchelf --replace-needed libbz2.so.1 libbz2.so.1.0 bin/$name
+  done
+fi
+
+# $SHARE_DIR contains the actual igblastn and igblastp binaries and also the
+# required data files. Wrappers will be installed into $PREFIX/bin that set
+# $IGDATA to point to those data files.
 mkdir -p $SHARE_DIR/bin
 
-for FILE in makeblastdb edit_imgt_file.pl; do
-    cp -f bin/$FILE $PREFIX/bin/
+# Copy binaries and wrappers
+for name in igblastn igblastp; do
+  mv bin/$name $SHARE_DIR/bin/
+  sed "s/igblastn/$name/g" $RECIPE_DIR/igblastn.sh > $PREFIX/bin/$name
+  chmod +x $PREFIX/bin/$name
 done
 
-for FILE in igblastn igblastp; do
-    cp -f bin/$FILE $SHARE_DIR/bin/
-done
+# No wrapper needed
+mv bin/makeblastdb $PREFIX/bin/
 
-cp -f $RECIPE_DIR/igblastn.sh $PREFIX/bin/igblastn
-sed 's/igblastn/igblastp/g' $PREFIX/bin/igblastn > $PREFIX/bin/igblastp
-chmod +x $PREFIX/bin/igblastn $PREFIX/bin/igblastp
+wget $IGBLAST_ADDRESS/edit_imgt_file.pl
+# Replace the hardcoded perl shebang pointing to /opt with `#!/usr/bin/env perl`.
+sed -i.backup '1 s_^.*$_#!/usr/bin/env perl_' edit_imgt_file.pl
+chmod +x edit_imgt_file.pl
+mv edit_imgt_file.pl $PREFIX/bin/
+
+
+# Download data files necessary to run IgBLAST. These are not included in the
+# source or binary distributions.
+# See the [IgBLAST README](ftp://ftp.ncbi.nih.gov/blast/executables/igblast/release/README)
 
 for IGBLAST_DIR in internal_data optional_file; do
     mkdir -p $SHARE_DIR/$IGBLAST_DIR
-    wget -r -nH --cut-dirs=5 -P $SHARE_DIR/$IGBLAST_DIR $IGBLAST_ADDRESS/$IGBLAST_DIR
-    for CVS_FILE in Entries Repository Root; do
-        rm -f $SHARE_DIR/$IGBLAST_DIR/$CVS_FILE
-    done
+    wget -nv -r -nH --cut-dirs=5 -X Entries,Repository,Root,CVS -P $SHARE_DIR/$IGBLAST_DIR $IGBLAST_ADDRESS/$IGBLAST_DIR
 done

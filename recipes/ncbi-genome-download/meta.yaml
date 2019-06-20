@@ -1,68 +1,41 @@
+{% set name = "ncbi-genome-download" %}
+{% set version = "0.2.9" %}
+{% set checksum = "ecfe7df476b6e0929274a76056c7c8846a39d777516ddb179c8e6b404e3e4187" %}
+{% set build_number = "0" %}
+
 package:
-  name: ncbi-genome-download
-  version: "0.2.0"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: ncbi-genome-download-0.2.0.tar.gz
-  url: https://pypi.python.org/packages/c7/25/949f1522617349c850a6f6e077cab0d1fe831cea357dd31bf8b0e6226ff1/ncbi-genome-download-0.2.0.tar.gz
-  md5: f395f82725cb05b78a43aaa17af7e6e4
-#  patches:
-   # List any patch files here
-   # - fix.patch
+  url: https://pypi.io/packages/source/n/ncbi-genome-download/ncbi-genome-download-{{ version }}.tar.gz
+  sha256: {{ checksum }}
 
 build:
-  # noarch_python: True
-  # preserve_egg_dir: True
+  number: {{ build_number }}
   entry_points:
-    # Put any entry points (scripts to be generated automatically) here. The
-    # syntax is module:function.  For example
-    #
-    # - ncbi-genome-download = ncbi-genome-download:main
-    #
-    # Would create an entry point called ncbi-genome-download that calls ncbi-genome-download.main()
-
     - ncbi-genome-download=ncbi_genome_download.__main__:main
-
-  # If this is a new build for the same version, increment the build
-  # number. If you do not include this key, it defaults to 0.
-  # number: 1
+    - ngd=ncbi_genome_download.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
 
 requirements:
-  build:
+  host:
+    - pip
     - python
-    - setuptools
-    - requests
-    - pyopenssl >=16.0.0
-    - ndg-httpsclient >=0.4.0
 
   run:
+    - appdirs
     - python
-    - requests
-    - pyopenssl >=16.0.0
-    - ndg-httpsclient >=0.4.0
+    - requests >=2.4.3
+    - enum34  # [py27]
 
 test:
-  # Python imports
   imports:
     - ncbi_genome_download
 
   commands:
-    # You can put test commands to be run here.  Use this to test that the
-    # entry points work.
-
     - ncbi-genome-download --help
-
-  # You can also put a file called run_test.py in the recipe that will be run
-  # at test time.
-
-  requires:
-    - coverage
-    - pytest
-    - pytest-cov
-    - pytest-mock
-    - requests-mock
-    # Put any additional test requirements here.  For example
-    # - nose
+    - ngd --help
 
 about:
   home: https://github.com/kblin/ncbi-genome-download/
@@ -70,6 +43,3 @@ about:
   summary: 'Download genome files from the NCBI FTP server.'
   license_family: Apache
 
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml

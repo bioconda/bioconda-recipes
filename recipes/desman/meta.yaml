@@ -1,0 +1,66 @@
+{% set name = "DESMAN" %}
+{% set version = "2.1" %}
+{% set sha256 = "3bca35dcabf1ce540ea053aaae459971b1ea9a1300d0b544002f50873d6347a2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+build:
+  number: 2
+  skip: True  # [py<35]
+
+source:
+  url: https://github.com/chrisquince/DESMAN/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+     - {{ compiler('c') }}
+  host:
+    - python
+    - setuptools
+    - cython >=0.19.1
+    - numpy >=1.7.1
+    - gsl
+    - pandas >=0.11.0
+    - scipy >=0.12.0
+  run:
+    - python
+    - cython >=0.19.1
+    - bcbio-gff
+    - biopython
+    - pysam
+    - scipy >=0.12.0
+    - numpy >=1.7.1
+    - pandas >=0.11.0
+    - scikit-learn
+    - gsl
+    - r-getopt
+    - r-ggplot2 >=2.2.2
+    - r-reshape >=0.8.7
+    - r-labeling
+
+test:
+  commands:
+    - desman -h
+    - CalcDelta.py -h
+    - Lengths.py -h
+    - Variant_Filter.py -h
+    - ExtractGenes.py -h
+    - CalcGeneCov.py -h
+    - GeneAssign.py -h
+    # When testing imports, desman and sampletau are treated as Perl modules instead of Python, hence these two tests:
+    - python -c "import desman"
+    - python -c "import sampletau"
+
+about:
+  home: https://github.com/chrisquince/DESMAN
+  license: BSD
+  license_family: BSD
+  license_file: LICENSE.txt
+  summary: "De novo Extraction of Strains from MetAgeNomes"
+
+extra:
+  identifiers:
+    - doi:10.1186/s13059-017-1309-9

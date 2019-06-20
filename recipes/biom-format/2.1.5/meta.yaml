@@ -3,28 +3,20 @@ package:
   version: "2.1.5"
 
 source:
-  fn: biom-format-2.1.5.tar.gz
   url: https://pypi.python.org/packages/source/b/biom-format/biom-format-2.1.5.tar.gz
   md5: 30964772b5eb9a84d407d1ed33a064c0
 
 
 build:
-  # noarch_python: True
   preserve_egg_dir: True
   entry_points:
-    # Put any entry points (scripts to be generated automatically) here. The
-    # syntax is module:function.  For example
-    #
-    # - biom-format = biom-format:main
-    #
-    # Would create an entry point called biom-format that calls biom-format.main()
-
     - biom=biom.cli:cli
-
-  number: 3
+  number: 4
+  # click needs to be patched in order to properly detect unicode in py3k
+  skip: true  # [py3k]
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
     - pyqi ==0.3.2  # [py2k]
@@ -36,24 +28,22 @@ requirements:
 
   run:
     - python
-    - setuptools
     - click
     - h5py
     - pyqi ==0.3.2  # [py2k]
     - numpy >=1.3.0
     - future >=0.15.0
     - scipy >=0.13.0
+    # missing scipy dependency
 
 test:
-  # Python imports
   imports:
     - biom
     - biom.cli
 
   commands:
-    # You can put test commands to be run here.  Use this to test that the
-    # entry points work.
-    - biom --help
+    # click requires a unicode locale
+    - LANG=C.UTF-8 biom --help
 
 about:
   home: http://www.biom-format.org
