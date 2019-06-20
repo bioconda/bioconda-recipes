@@ -1,0 +1,48 @@
+{% set name = "kronos" %}
+{% set version = "2.3.0" %}
+{% set sha256 = "11b9f45fe13d67b96734a97c040a63571ad53e845df3034b51a6bbf264a782b3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/jtaghiyar/kronos/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+  entry_points:
+    - kronos = kronos:main
+
+requirements:
+  host:
+    - python <3
+    - ruffus ==2.4.1
+    - pyyaml >=3.11
+  run:
+    - python <3
+    - ruffus ==2.4.1
+    - pyyaml >=3.11
+
+test:
+  imports:
+    - kronos
+  commands:
+    - kronos -h
+    - kronos make_component -h
+    - kronos make_config -h
+    - kronos update_config -h
+    - kronos init -h
+    - kronos run -h
+
+about:
+  home: https://github.com/jtaghiyar/kronos
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.txt
+  summary: "Kronos is a highly flexible Python-based software tool that mainly enables bioinformatics developers, i.e. bioinformaticians who develop workflows for analyzing genomic data, to quickly make a workflow."
+  dev_url: https://github.com/jtaghiyar/kronos
+  doc_url: https://kronos.readthedocs.io/en/latest/

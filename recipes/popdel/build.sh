@@ -1,4 +1,4 @@
 #!/bin/sh
-make all
+make CXX=${CXX}
 mkdir -p ${PREFIX}/bin
 cp popdel ${PREFIX}/bin

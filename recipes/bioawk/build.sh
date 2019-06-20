@@ -1,9 +1,7 @@
 #!/bin/bash
-
-export CPATH="$PREFIX/include"
 export LIBRARY_PATH="$PREFIX/lib"
 
-make
+make CC=$CC CFLAGS="-g -Wall -O2 -I$PREFIX/include -L$PREFIX/lib"
 
 mkdir -p $PREFIX/bin
 cp bioawk $PREFIX/bin
