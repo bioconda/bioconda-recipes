@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd bustools
+cd bustools-0.39.2
 mkdir build
 cd build
 cmake ..
