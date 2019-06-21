@@ -2,5 +2,5 @@
 
 mkdir -p ${PREFIX}/bin
 
-make
-make PREFIX=${PREFIX} install
+make CC=$CC
+cp src/gbmunge ${PREFIX}/bin/

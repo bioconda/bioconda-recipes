@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="MafDb.1Kgenomes.phase1.hs37d5_3.7.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/MafDb.1Kgenomes.phase1.hs37d5_3.7.1.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MafDb.1Kgenomes.phase1.hs37d5_3.7.1.tar.gz"
   "https://bioarchive.galaxyproject.org/MafDb.1Kgenomes.phase1.hs37d5_3.7.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.1kgenomes.phase1.hs37d5/bioconductor-mafdb.1kgenomes.phase1.hs37d5_3.7.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mafdb.1kgenomes.phase1.hs37d5/bioconductor-mafdb.1kgenomes.phase1.hs37d5_3.7.1_src_all.tar.gz"
 )
 MD5="a13d138f00d0f38642f1dfc6cc705050"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

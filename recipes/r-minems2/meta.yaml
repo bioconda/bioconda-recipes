@@ -1,0 +1,48 @@
+{% set version = "0.9" %}
+
+package:
+  name: r-minems2
+  version: '{{ version }}'
+
+source:
+  url: 'https://github.com/adelabriere/mineMS2/archive/v{{ version }}.tar.gz'
+  sha256: 1c80e81aaec69d2d9ffe1b677e0f6a740ecf786fbea1984415f1e404b8254010
+
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - r-base
+    - r-rcpp
+    - bioconductor-msnbase
+    - r-stringr
+    - r-igraph
+    - r-matrix
+  run:
+    - r-base
+    - r-rcpp
+    - bioconductor-msnbase
+    - r-stringr
+    - r-igraph
+    - r-matrix
+
+test:
+  commands:
+    - $R -e "library(mineMS2)"
+    - $R -e 'library(mineMS2) ; path_demo <- system.file("dataset",package="mineMS2") ; ex_file <- file.path(path_demo,"ex_mgf.mgf") ; m2l <- ms2Lib(ex_file)'
+
+about:
+  license: GPL-3.0
+  summary: 'Mine MS-MS spectra using a frequent usbgraph mining approach.'
+  home: https://github.com/adelabriere/mineMS2
+  
+extra:
+  recipe-maintainers:
+    - adelabriere
+    - pkrog

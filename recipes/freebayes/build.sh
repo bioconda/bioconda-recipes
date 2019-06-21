@@ -20,10 +20,18 @@ export INCLUDES="-I . -Ihtslib -I$PREFIX/include -Itabixpp/htslib -I\$(INC_DIR) 
 export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
 export CXXFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
 
+sed -i.bak 's/^CC.*//g' SeqLib/htslib/Makefile
+sed -i.bak 's/^CC.*//g' SeqLib/bwa/Makefile
+sed -i.bak 's/^CC.*//g' SeqLib/fermi-lite/Makefile
+
+
 cd vcflib
 
 sed -i.bak 's/ld/$(LD)/' smithwaterman/Makefile
 sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' filevercmp/Makefile
+sed -i.bak 's/gcc/$(CC) $(CFLAGS)/g' multichoose/Makefile
+sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' multichoose/Makefile
+sed -i.bak 's/g++/$(CXX) $(CXXFLAGS)/g' intervaltree/Makefile
 
 make -e
 
@@ -35,6 +43,11 @@ sed -i.bak 's/^CXX=.*$//g' Makefile
 sed -i.bak 's/^C=gcc//g' Makefile
 sed -i.bak 's/C)/CC)/' Makefile
 sed -i.bak "s:INCLUDE =:INCLUDE = -I$PREFIX/include:" Makefile
+sed -i.bak 's/configure \&\& make/configure \&\& make -e/g' Makefile
+sed -i.bak 's/export C$//g' Makefile
+sed -i.bak 's/export CC$//g' Makefile
+sed -i.bak 's/export CXX$//g' Makefile
+
 #sed -i.bak "s:LIBS =:LIBS = -L$PREFIX/lib:" Makefile	
 
 # Set exports.
@@ -42,6 +55,7 @@ export CFLAGS="-I$PREFIX/include"
 export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
+
 
 sed -i.bak "s:LIBS):LIBS) -L$LIBRARY_PATH:g" Makefile
 

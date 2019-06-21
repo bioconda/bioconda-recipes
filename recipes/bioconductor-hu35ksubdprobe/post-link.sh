@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="hu35ksubdprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/hu35ksubdprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hu35ksubdprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hu35ksubdprobe_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hu35ksubdprobe/bioconductor-hu35ksubdprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hu35ksubdprobe/bioconductor-hu35ksubdprobe_2.18.0_src_all.tar.gz"
 )
 MD5="430a9b8ccd646d8cb06e6c1d750eec23"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
