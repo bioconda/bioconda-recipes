@@ -2,9 +2,10 @@
 
 mkdir -p $PREFIX/bin
 
-#cd Graph2Pro
-#make clean
-#make
+cd Graph2Pro
+make clean
+make
+make check
 
-cp Graph2Pro/DBGraph2Pro $PREFIX/bin/DBGraph2Pro
-cp Graph2Pro/DBGraphPep2Pro $PREFIX/bin/DBGraphPep2Pro
+cp DBGraph2Pro $PREFIX/bin/DBGraph2Pro
+cp DBGraphPep2Pro $PREFIX/bin/DBGraphPep2Pro
