@@ -3,5 +3,6 @@
 cd bustools
 mkdir build
 cd build
-make
+cmake ..
+make 
 make install
