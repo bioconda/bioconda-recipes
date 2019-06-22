@@ -59,6 +59,9 @@ class GitHubHandler:
       to_user: Target User/Org for PRs
       to_repo: Target repository within **to_user**
     """
+    USER              = "/user"
+    USER_APPS         = "/user/installations"
+
     PULLS             = "/repos/{user}/{repo}/pulls{/number}{?head,base,state}"
     PULL_FILES        = "/repos/{user}/{repo}/pulls/{number}/files"
     PULL_COMMITS      = "/repos/{user}/{repo}/pulls/{number}/commits"
@@ -112,6 +115,8 @@ class GitHubHandler:
         self.api: gidgethub.abc.GitHubAPI = None
         #: Login username
         self.username: str = None
+        #: User avatar URL
+        self.avatar_url: str = None
 
     def __str__(self):
         return f"{self.user}/{self.repo}"
@@ -152,19 +157,28 @@ class GitHubHandler:
         return "/{user}/{repo}/tree/{branch_name}/{path}".format(
             branch_name=branch_name, path=path, **self.var_default)
 
-    async def login(self, *args, **kwargs):
+    async def login(self, *args, **kwargs) -> bool:
         """Log into API (fills `username`)"""
 
         self.create_api_object(*args, **kwargs)
 
-        if not self.token:
-            self.username = "UNKNOWN [no token]"
-        else:
-            try:
-                user = await self.api.getitem("/user")
+        self.username = "UNKNOWN [no token]"
+        self.avatar_url = None
+
+        if self.token:
+            user = await self.get_user()
+            if user:
                 self.username = user["login"]
-            except gidgethub.GitHubException:
-                pass
+                self.avatar_url = user["avatar_url"]
+                return True
+
+        return False
+
+    async def get_user(self):
+        try:
+            return await self.api.getitem(self.USER)
+        except gidgethub.GitHubException as exc:
+            return {}
 
     async def iter_teams(self) -> AsyncIterator[Dict[str, Any]]:
         """List organization teams
