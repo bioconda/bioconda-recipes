@@ -1,8 +1,8 @@
 #!/bin/bash
 
-cd bustools-0.39.2
-mkdir build
-cd build
-cmake ..
+mkdir -p $PREFIX/bin
+mkdir -p build 
+cd build 
+cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX ..
 make 
 make install
