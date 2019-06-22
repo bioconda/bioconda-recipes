@@ -4,43 +4,64 @@ HTTP Views (accepts and parses webhooks)
 
 import logging
 
-from aiohttp import web, ClientSession
+from aiohttp import web
 from aiohttp_session import get_session
-from aiohttp_security import authorized_userid, check_authorized, forget, remember
+from aiohttp_security import check_authorized, forget, remember
 from aiohttp_jinja2 import template
-import uritemplate
 
 from .events import event_routes
-from ..githubhandler import Event, AiohttpGitHubHandler
+from ..githubhandler import Event
 from ..circleci import SlackMessage
-from .. import __version__ as VERSION
-from .. import utils
 from .worker import capp
-from .config import APP_SECRET, APP_CLIENT_ID, APP_CLIENT_SECRET
-
-
+from .config import APP_SECRET
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
+
+#: List of routes from url path to handler defined in this module
 web_routes = web.RouteTableDef()  # pylint: disable=invalid-name
-navigation_bar = []
+
+#: List of navigation bar entries defined by this module
+navigation_bar = []  # pylint: disable=invalid-name
+
 
 def add_to_navbar(title):
-    def wrapper(fn):
+    """Decorator adding a view to the navigation bar
+
+    Must be "above" the ``@web_routes`` decorator.
+
+    Arguments:
+      title: Title to register for this page. Will be the HTML title
+             and the name in the navbar.
+
+    """
+    def wrapper(func):
         route = web_routes[-1]
         navigation_bar.append((route.path, route.kwargs['name'], title))
-        return fn
+        return func
     return wrapper
+
 
 @web_routes.post('/_gh')
 async def github_webhook_dispatch(request):
-    """Accepts webhooks from Github and dispatches them to event handlers"""
+    """View for incoming webhooks from Github
+
+    Here, webhooks (events) from Github are accepted and dispatched to
+    the event handlers defined in `events` module and registered with
+    `event_routes`.
+
+    """
     try:
         body = await request.read()
         secret = APP_SECRET
         if secret == "IGNORE":
+            # For debugging locally, we allow not verifying the
+            # secret normally used to authenticate incoming webhooks.
+            # You do have to set it to "IGNORE" so that it's not
+            # accidentally disabled.
             logger.error("IGNORING WEBHOOK SECRET (DEBUG MODE)")
             secret = None
         event = Event.from_http(request.headers, body, secret=secret)
+
         # Respond to liveness check
         if event.event == "ping":
             return web.Response(status=200)
@@ -67,38 +88,48 @@ async def github_webhook_dispatch(request):
             logger.info("Event '%s%s' (%s) done", event.event, action_msg, event.delivery_id)
         except Exception:  # pylint: disable=broad-except
             logger.exception("Failed to dispatch %s", event.delivery_id)
-        request.app['gh_rate_limit'] = ghapi.rate_limit
 
-        try:
-            events_remaining = ghapi.rate_limit.remaining
-        except AttributeError:
-            events_remaining = "Unknown"
-        logger.info('GH requests remaining: %s', events_remaining)
+        # Remember the rate limit
+        # FIXME: remove this, we have many tokens in many places, this no longer works sensibly.
+        request.app['gh_rate_limit'] = ghapi.rate_limit
 
         return web.Response(status=200)
     except Exception:  # pylint: disable=broad-except
         logger.exception("Failure in webhook dispatch")
         return web.Response(status=500)
 
+
 @web_routes.post('/hooks/circleci')
 async def generic_circleci_dispatch(request):
+    """View for incoming webhooks from CircleCI
+
+    These are actually slack messages. We try to deparse them, but
+    nothing is implemented on acting upon them yet.
+
+    """
     try:
         body = await request.read()
         msg = SlackMessage(request.headers, body)
         logger.info("Got data from Circle: %s", msg)
         return web.Response(status=200)
-    except Exception: # pylint: disable=broad-except
+    except Exception:  # pylint: disable=broad-except
         logger.exception("Failure in circle webhook dispatch")
         return web.Response(status=500)
 
+
 @web_routes.post('/hooks/{source}')
 async def generic_webhook_dispatch(request):
-    """Accepts webhooks and dumps them to the log, so we can see what we would be receiving"""
+    """View for all other incoming webhooks
+
+    This is just for debugging, so we can see what we would be
+    receiving
+
+    """
     try:
         source = request.match_info['source']
         body = await request.read()
         logger.error("Got generic webhook for %s", source)
-        logger.error("Data: %s", body)
+        logger.error("   Data: %s", body)
         return web.Response(status=200)
     except Exception: # pylint: disable=broad-except
         logger.exception("Failure in generic webhook dispatch")
@@ -108,16 +139,26 @@ async def generic_webhook_dispatch(request):
 @add_to_navbar(title="Home")
 @web_routes.get("/", name="home")
 @template('bot_index.html')
-async def show_index(request):
-    """Shows landing page"""
+async def show_index(_request):
+    """View for the Bot's home page.
+
+    Renders nothing special at the moment, just the template.
+
+    """
     return {}
 
 
 @add_to_navbar(title="Status")
 @web_routes.get("/status", name="status")
 @template("bot_status.html")
-async def show_status(request):
-    """Shows status of workers"""
+async def show_status(_request):
+    """View for checking in on the bots status
+
+    Shows the status of each responsding worker.  This page may take
+    100ms extra to render. If workers are busy, they may not respons
+    within that time.
+
+    """
     worker_status = capp.control.inspect(timeout=0.1)
     if not worker_status:
         return {
@@ -142,6 +183,12 @@ async def show_status(request):
 
 @web_routes.get('/logout', name="logout")
 async def logout(request):
+    """View for logging out user
+
+    Accepts a **next** parameter in the URL. This is where the user is
+    sent back to (via HTTP redirect) after logging out.
+
+    """
     await check_authorized(request)
     nexturl = request.query.get('next', '/')
     response = web.HTTPFound(nexturl)
@@ -151,7 +198,14 @@ async def logout(request):
 
 @web_routes.get('/auth/github', name="login")
 async def auth_github(request):
-    logger.error("auth github with params %s", request.query)
+    """View for signing in with Github
+
+    Currently the only authentication method (and probably will remain so).
+
+    This will redirect to Github to allow OAUTH authentication if
+    necessary.
+
+    """
     session = await get_session(request)
     nexturl = request.query.get('next', '/')
     baseurl = "http://ehome.hopto.org:8000/auth/github?next="+nexturl
