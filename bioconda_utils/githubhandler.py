@@ -4,6 +4,7 @@ import abc
 import base64
 import datetime
 import logging
+import os
 import time
 
 from copy import copy
@@ -17,6 +18,7 @@ import gidgethub
 import gidgethub.aiohttp
 import gidgethub.sansio
 import jwt
+import uritemplate
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -1052,8 +1054,21 @@ class Event(gidgethub.sansio.Event):
 
 
 class GitHubAppHandler:
-    """Handles interaction with Github as App"""
+    """Handles interaction with Github as App
 
+    Arguments:
+      session: Use this session to make calls to the Github API
+      app_name: The name of the App. This is also used as HTTP user agent
+                identifier.
+      app_key: A PEM key used to sign JWT to obtain temporary bearer tokens
+               for accessing the Github API.
+      app_id: This number identifies our App at Github.
+      client_id: This number identifies our App at Github when logging in
+                 on behalf of users via OAUTH.
+      client_secret: The secret authenticating us when logging in on behalf
+                     of users via OAUTH
+
+    """
     #: Github API url for creating an access token for a specific installation
     #: of an app.
     INSTALLATION_TOKEN = "/app/installations/{installation_id}/access_tokens"
@@ -1064,25 +1079,40 @@ class GitHubAppHandler:
     #: Lifetime of JWT in seconds
     JWT_RENEW_PERIOD = 600
 
+    #: Base URL for calls to oauth login
+    DOMAIN = "https://github.com"
+
+    #: URL template for calls to OAUTH authorize
+    AUTHORIZE = '/login/oauth/authorize{?client_id,client_secret,redirect_uri,state,login}'
+
+    #: URL templete for calls to OAUTH access_token
+    ACCESS_TOKEN = '/login/oauth/access_token'
+
     def __init__(self, session: aiohttp.ClientSession,
-                 app_name: str, app_key: str, app_id: str) -> None:
+                 app_name: str, app_key: str, app_id: str,
+                 client_id: str, client_secret: str) -> None:
         #: Name of app
         self.name = app_name
+        #: ID of app
+        self.app_id = app_id
+        #: Authorization key
+        self.app_key = app_key
+        #: OAUTH client ID
+        self.client_id = client_id
+        #: OAUTH client secret
+        self.client_secret = client_secret
 
         #: Our client session
         self._session = session
         #: Cache for GET queries
         self._cache = cachetools.LRUCache(maxsize=500)
-        #: Authorization key
-        self._app_key = app_key
-        #: ID of app
-        self._app_id = app_id
         #: JWT and its expiry
         self._jwt: Tuple[int, str] = (0, "")
         #: OAUTH tokens for installations
         self._tokens: Dict[str, Tuple[int, str]] = {}
         #: GitHubHandlers for each installation
         self._handlers: Dict[Tuple[str, str], GitHubHandler] = {}
+
 
     def get_app_jwt(self) -> str:
         """Returns JWT authenticating as this app"""
@@ -1093,9 +1123,9 @@ class GitHubAppHandler:
             payload = {
                 'iat': now,
                 'exp': expires,
-                'iss': self._app_id,
+                'iss': self.app_id,
             }
-            token_utf8 = jwt.encode(payload, self._app_key, algorithm="RS256")
+            token_utf8 = jwt.encode(payload, self.app_key, algorithm="RS256")
             token = token_utf8.decode("utf-8")
             self._jwt = (expires, token)
             msg = "Created new"
@@ -1171,3 +1201,109 @@ class GitHubAppHandler:
             api.create_api_object(self._session, self.name)
             self._handlers[handler_key] = api
         return api
+
+
+    @staticmethod
+    def generate_nonce(nbytes=16):
+        """Generates a random string
+
+        Fetches **nbytes** of random data from `os.urandom` and passes them through
+        base64 encoding.
+        """
+        return base64.b64encode(os.urandom(nbytes), altchars=b'_-').decode()
+
+    async def oauth_github_user(self, redirect, session, params):
+        """Acquires `AiohttpGitHubHandler` for user via OAuth
+
+        This must be called from an ``aiohttp.web`` server with the
+        ``aiohttp-session`` active for session management.
+
+        If the user was not yet logged in (has no token in the
+        session), this will raise a `web.HTTPFound` exception to
+        redirect the user's browser to Github where the app can be
+        authorized to act on the users behalf. If the user OKs this,
+        Github redirects the user back to the URL given in
+        **redirect**. The code behind that URL should call this
+        function again, passing the parameters from Github. Using
+        those parameters, an OAUTH token is acquired, used to create
+        an `AiohttpGitHubHandler` object and that object initilized to
+        fetch the users details (calling ``login`` to acquire user
+        name and avatar).
+
+        Details:
+          Two parameters are passed through the redirect calls. The
+          **state** parameter is a nonce generated to avoid cross-site
+          request forgery. It is stored in the users session and must
+          be passed back identically on the second call. The **code**
+          parameter is the secret used to acquire the OAUTH token on
+          the second call to this method.
+
+          Two values are stored in the user's session. The nonce
+          mentioned above and the OAUTH token. A short path attempts
+          to use an existing token to re-authenticate an already
+          logged in user.
+
+        Arguments:
+          redirect: URL to redirect to for authentication callback.
+                    Usually, this is the URL from which you called
+                    this function, so that it gets called again with
+                    the parameters send by GitHub.
+          session: Session for making calls to Github API
+          params: URL parameters that were sent by GitHub.
+
+        Returns:
+          The API client object with the user logged in.
+
+        """
+
+        nonce_cookie_name = f'{self.__class__.__name__}::nonce'
+        token_cookie_name = f'{self.__class__.__name__}::token'
+
+        code = params.get('code')
+        state = params.get('state')
+        nonce = session.get(nonce_cookie_name)
+
+        # If we have a token already, try to authenticate the user
+        # with this token.
+        if token_cookie_name in session:
+            handler = AiohttpGitHubHandler(token=session.get(token_cookie_name))
+            if await handler.login(self._session, self.name):
+                return handler
+
+        # First pass. We don't have a code yet, or the state does
+        # not match our nonce (usually if a user calls the login url
+        # from the browser history). Redirect to GitHub for authentication.
+        if not code or state != nonce:
+            nonce = self.generate_nonce()
+            session[nonce_cookie_name] = nonce
+            raise aiohttp.web.HTTPFound(uritemplate.expand(
+                self.DOMAIN + self.AUTHORIZE, {
+                    'client_id': self._client_id,
+                    'redirect_uri': redirect,
+                    'state': nonce,
+                }))
+
+        # Second pass. We have a code and the state matched the nonce.
+        # Fetch the OAUTH token from Github using the code and state.
+        data = {'client_id': self._client_id,
+                'client_secret': self._client_secret,
+                'code': code,
+                'state': nonce}
+        headers = {'Accept': 'application/json'}
+        async with self._session.post(self.DOMAIN + self.ACCESS_TOKEN,
+                                      json=data, headers=headers) as response:
+            response.raise_for_status()
+            result = await response.json()
+
+        # We should always get a bearer token. This seems to be a future
+        # extension. Check it anyway:
+        if result.get('token_type') != 'bearer':
+            raise RuntimeError("Token type not 'bearer'")
+
+        # Create the client and get user details to verify token validity
+        handler = AiohttpGitHubHandler(token=result.get('access_token'))
+        if not await handler.login(self._session, self.name):
+            raise RuntimeError("Failed to login")
+        session[token_cookie_name] = handler.token
+
+        return handler
