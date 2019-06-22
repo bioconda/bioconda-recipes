@@ -3,19 +3,88 @@
 import logging
 import subprocess
 import time
+import os
 
+import base64
+from cryptography import fernet
 import aiohttp
-
-from .config import BOT_NAME, APP_KEY, APP_ID, GITTER_TOKEN, GITTER_CHANNELS
-from .views import web_routes
+import aiohttp_jinja2
+import jinja2
+from aiohttp_session import setup as setup_session
+from aiohttp_session.cookie_storage import EncryptedCookieStorage
+from aiohttp_security import (authorized_userid,
+                              setup as setup_security,
+                              SessionIdentityPolicy, AbstractAuthorizationPolicy)
+from .config import (BOT_NAME, APP_KEY, APP_ID, GITTER_TOKEN, GITTER_CHANNELS,
+                     APP_CLIENT_ID, APP_CLIENT_SECRET)
+from .views import web_routes, navigation_bar
 from .chat import GitterListener
 from .. import utils
-from ..githubhandler import GitHubAppHandler
+from ..githubhandler import GitHubAppHandler, AiohttpGitHubHandler
 from .. import __version__ as VERSION
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
-loglevel = 'INFO'
+
+#: Override this to get more verbose logging of web app (and, if launched
+#: with web frontend, the worker).
+LOGLEVEL = 'INFO'
+
+
+class AuthorizationPolicy(AbstractAuthorizationPolicy):
+    """Authorization policy for web interface"""
+    def __init__(self, app):
+        self.app = app
+    async def authorized_userid(self, identity: str) -> AiohttpGitHubHandler:
+        """Retrieve authorized user id.
+
+        Arguments:
+          identity: random string identifying user. We use bearer token.
+        Returns:
+          Logged in Github API client.
+        """
+        handler = AiohttpGitHubHandler(token=identity)
+        await handler.login(self.app['client_session'], BOT_NAME)
+        if handler.username:
+            return handler
+
+    async def permits(self, identity: str, permission: str, context=None) -> bool:
+        """Check user permissions.
+
+        Returns:
+          True if the **identity** is allowed the **permission**
+          in the current **context**.
+        """
+        logger.error("permits: %s %s %s", identity, permission, context)
+
+
+async def jinja_defaults(request):
+    """Provides all web views using aiohttp-jinja2 with default values
+
+    Values are:
+      - **user**: The `AiohttpGitHubHandler for the user if a user is logged in.
+      - **version**: The version of the bot running
+      - **navigation_bar**: List of 3-tuples for building nav bar. Each tuple
+        comprises the location, ID and natural name for the page to be added
+        to the main nav bar.
+      - **active_page**: The ID of the currently rendered page. This is set in
+        the aiohttp router as ``name`` field.
+      - **title**: The title of the current page. Parsed from **navigation_bar**
+        using **active_page**.
+    """
+    active_page = request.match_info.route.name
+    try:
+        title = next(item for item in navigation_bar if item[1] == active_page)[2]
+    except StopIteration:
+        return {}
+    ghapi = await authorized_userid(request)
+    return {
+        'user': ghapi,
+        'version': VERSION,
+        'navigation_bar': navigation_bar,
+        'active_page': active_page,
+        'title': title,
+    }
 
 
 async def start():
@@ -28,22 +97,39 @@ async def start():
       --worker-class aiohttp.worker.GunicornWebWorker \
       --reload
     """
-    utils.setup_logger('bioconda_utils', loglevel, prefix="")
+    utils.setup_logger('bioconda_utils', LOGLEVEL, prefix="")
     logger.info("Starting bot (version=%s)", VERSION)
 
     app = aiohttp.web.Application()
 
+    # Set up session storage
+    fernet_key = fernet.Fernet.generate_key()
+    secret_key = base64.urlsafe_b64decode(fernet_key)
+    session_store = EncryptedCookieStorage(secret_key)
+    setup_session(app, session_store)
+
+    # Set up security
+    setup_security(app, SessionIdentityPolicy(), AuthorizationPolicy(app))
+
+    # Set up jinja2 rendering
+    loader = jinja2.PackageLoader('bioconda_utils', 'templates')
+    aiohttp_jinja2.setup(app, loader=loader, context_processors=[jinja_defaults])
+
     # Prepare persistent client session
     app['client_session'] = aiohttp.ClientSession()
     app['ghappapi'] = GitHubAppHandler(app['client_session'],
-                                       BOT_NAME, APP_KEY, APP_ID)
-
+                                       BOT_NAME, APP_KEY, APP_ID,
+                                       APP_CLIENT_ID, APP_CLIENT_SECRET)
     app['gitter_listener'] = GitterListener(
         app, GITTER_TOKEN, GITTER_CHANNELS, app['client_session'],
         app['ghappapi'])
 
     # Add routes collected above
     app.add_routes(web_routes)
+
+    # Set up static files
+    utils_path = os.path.dirname(os.path.dirname(__file__))
+    app.router.add_static("/css", os.path.join(utils_path, 'templates/css'))
 
     # Close session - this needs to be at the end of the
     # on shutdown pieces so the client session remains available
@@ -67,7 +153,7 @@ async def start_with_celery():
         'celery',
         '-A', 'bioconda_utils.bot.worker',
         'worker',
-        '-l', loglevel,
+        '-l', LOGLEVEL,
         '--without-heartbeat',
         '-c', '1',
     ])
@@ -95,4 +181,3 @@ async def start_with_celery():
     app.on_shutdown.append(collect_worker)
 
     return app
-

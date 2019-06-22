@@ -4,18 +4,32 @@ HTTP Views (accepts and parses webhooks)
 
 import logging
 
-from aiohttp import web
+from aiohttp import web, ClientSession
+from aiohttp_session import get_session
+from aiohttp_security import authorized_userid, check_authorized, forget, remember
+from aiohttp_jinja2 import template
+import uritemplate
 
 from .events import event_routes
-from ..githubhandler import Event
+from ..githubhandler import Event, AiohttpGitHubHandler
 from ..circleci import SlackMessage
 from .. import __version__ as VERSION
+from .. import utils
 from .worker import capp
-from .config import APP_SECRET
+from .config import APP_SECRET, APP_CLIENT_ID, APP_CLIENT_SECRET
+
+
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 web_routes = web.RouteTableDef()  # pylint: disable=invalid-name
+navigation_bar = []
 
+def add_to_navbar(title):
+    def wrapper(fn):
+        route = web_routes[-1]
+        navigation_bar.append((route.path, route.kwargs['name'], title))
+        return fn
+    return wrapper
 
 @web_routes.post('/_gh')
 async def github_webhook_dispatch(request):
@@ -91,33 +105,64 @@ async def generic_webhook_dispatch(request):
         return web.Response(status=500)
 
 
-@web_routes.get("/")
+@add_to_navbar(title="Home")
+@web_routes.get("/", name="home")
+@template('bot_index.html')
+async def show_index(request):
+    """Shows landing page"""
+    return {}
+
+
+@add_to_navbar(title="Status")
+@web_routes.get("/status", name="status")
+@template("bot_status.html")
 async def show_status(request):
-    """Shows the index page ('/')
-    """
+    """Shows status of workers"""
+    worker_status = capp.control.inspect(timeout=0.1)
+    if not worker_status:
+        return {
+            'error': 'Could not get worker status'
+        }
+    alive = worker_status.ping()
+    if not alive:
+        return {
+            'error': 'No workers found'
+        }
+
+    return {
+        'workers': {
+            worker: {
+                'active': worker_status.active(worker),
+                'reserved': worker_status.reserved(worker),
+            }
+            for worker in sorted(alive.keys())
+        }
+    }
+
+
+@web_routes.get('/logout', name="logout")
+async def logout(request):
+    await check_authorized(request)
+    nexturl = request.query.get('next', '/')
+    response = web.HTTPFound(nexturl)
+    await forget(request, response)
+    return response
+
+
+@web_routes.get('/auth/github', name="login")
+async def auth_github(request):
+    logger.error("auth github with params %s", request.query)
+    session = await get_session(request)
+    nexturl = request.query.get('next', '/')
+    baseurl = "http://ehome.hopto.org:8000/auth/github?next="+nexturl
     try:
-        logger.info("Status: getting celery data")
-        msg = f"""
-        Running version {VERSION}
-
-        {request.app.get('gh_rate_limit')}
-
-        """
-        worker_status = capp.control.inspect(timeout=0.1)
-        if not worker_status:
-            msg += """
-            no workers online
-            """
-        else:
-            for worker in sorted(worker_status.ping().keys()):
-                active = worker_status.active(worker)
-                reserved = worker_status.reserved(worker)
-                msg += f"""
-                Worker: {worker}
-                active: {len(active[worker])}
-                queued: {len(reserved[worker])}
-                """
-        return web.Response(text=msg)
-    except Exception:  # pylint: disable=broad-except
-        logger.exception("Failure in show status")
-        return web.Response(status=500)
+        ghappapi = request.app['ghappapi']
+        ghapi = await ghappapi.oauth_github_user(baseurl, session, request.query)
+        if ghapi.username:
+            await remember(request, web.HTTPFound(nexturl), ghapi.token)
+            return web.HTTPFound(nexturl)
+    except web.HTTPFound:
+        raise
+    except Exception as exc:
+        logger.exception("failed to auth")
+    return web.HTTPUnauthorized(body="Could not authenticate your Github account")
