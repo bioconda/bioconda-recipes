@@ -1292,15 +1292,15 @@ class GitHubAppHandler:
             session[nonce_cookie_name] = nonce
             raise aiohttp.web.HTTPFound(uritemplate.expand(
                 self.DOMAIN + self.AUTHORIZE, {
-                    'client_id': self._client_id,
+                    'client_id': self.client_id,
                     'redirect_uri': redirect,
                     'state': nonce,
                 }))
 
         # Second pass. We have a code and the state matched the nonce.
         # Fetch the OAUTH token from Github using the code and state.
-        data = {'client_id': self._client_id,
-                'client_secret': self._client_secret,
+        data = {'client_id': self.client_id,
+                'client_secret': self.client_secret,
                 'code': code,
                 'state': nonce}
         headers = {'Accept': 'application/json'}
