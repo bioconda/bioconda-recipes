@@ -6,8 +6,8 @@ import logging
 
 from aiohttp import web
 from aiohttp_session import get_session
-from aiohttp_security import check_authorized, forget, remember
-from aiohttp_jinja2 import template
+from aiohttp_security import check_authorized, forget, permits, remember, authorized_userid
+from aiohttp_jinja2 import template, render_template
 
 from .events import event_routes
 from ..githubhandler import Event
@@ -39,6 +39,24 @@ def add_to_navbar(title):
         navigation_bar.append((route.path, route.kwargs['name'], title))
         return func
     return wrapper
+
+
+async def check_permission(request, permission, context=None):
+    """Checks permissions
+
+    Custom implementation replacing aiohttp-security one. This one
+    adds the requested permissions to the request so they can
+    be presented in the error handler.
+
+    Raises:
+      HTTPForbidden
+    """
+
+    await check_authorized(request)
+    allowed = await permits(request, permission, context)
+    if not allowed:
+        request['permission_required'] = permission
+        raise web.HTTPForbidden()
 
 
 @web_routes.post('/_gh')
@@ -151,7 +169,7 @@ async def show_index(_request):
 @add_to_navbar(title="Status")
 @web_routes.get("/status", name="status")
 @template("bot_status.html")
-async def show_status(_request):
+async def show_status(request):
     """View for checking in on the bots status
 
     Shows the status of each responsding worker.  This page may take
@@ -159,6 +177,7 @@ async def show_status(_request):
     within that time.
 
     """
+    await check_permission(request, 'bioconda')
     worker_status = capp.control.inspect(timeout=0.1)
     if not worker_status:
         return {

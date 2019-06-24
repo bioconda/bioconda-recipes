@@ -53,7 +53,31 @@ class AuthorizationPolicy(AbstractAuthorizationPolicy):
           True if the **identity** is allowed the **permission**
           in the current **context**.
         """
-        logger.error("permits: %s %s %s", identity, permission, context)
+        # Fail if no identity
+        if identity is None:
+            return False
+
+        org, _, team = permission.partition('/')
+
+        # Fail if no permissions requested
+        if not org:
+            logger.error("Internal error: checking for empty permission not allowed")
+            return False
+
+        # Fail if not logged in
+        userapi = await self.app['ghappapi'].get_github_user_api(identity)
+        if not userapi:
+            return False
+
+        # Fail if not in requested org
+        if org not in await userapi.get_user_orgs():
+            return False
+
+        # Fail if team requested and user not in team
+        if team and not await userapi.is_team_member(userapi.username, team):
+            return False
+
+        return True
 
 
 async def jinja_defaults(request):
