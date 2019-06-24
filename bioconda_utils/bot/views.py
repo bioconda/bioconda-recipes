@@ -207,7 +207,7 @@ async def auth_github(request):
 
     """
     session = await get_session(request)
-    nexturl = request.query.get('next', '/')
+    nexturl = request.query.get('next') or '/'
     baseurl = "http://ehome.hopto.org:8000/auth/github?next="+nexturl
     try:
         ghappapi = request.app['ghappapi']
