@@ -160,7 +160,8 @@ class GitHubHandler:
     async def login(self, *args, **kwargs) -> bool:
         """Log into API (fills `username`)"""
 
-        self.create_api_object(*args, **kwargs)
+        if self.api is None:
+            self.create_api_object(*args, **kwargs)
 
         self.username = "UNKNOWN [no token]"
         self.avatar_url = None
@@ -1126,7 +1127,8 @@ class GitHubAppHandler:
         self._tokens: Dict[str, Tuple[int, str]] = {}
         #: GitHubHandlers for each installation
         self._handlers: Dict[Tuple[str, str], GitHubHandler] = {}
-
+        #: GitHubHandlers for each user token->time,handler
+        self._user_handlers: Dict[str, Tuple[int, GitHubHandler]] = {}
 
     def get_app_jwt(self) -> str:
         """Returns JWT authenticating as this app"""
@@ -1196,7 +1198,8 @@ class GitHubAppHandler:
                                 jwt=self.get_app_jwt())
         return res['id']
 
-    async def get_github_api(self, dry_run, to_user, to_repo, installation=None) -> GitHubHandler:
+    async def get_github_api(self, dry_run, to_user, to_repo,
+                             installation=None) -> GitHubHandler:
         """Returns the GitHubHandler for the installation the event came from"""
         if installation is None:
             installation = await self.get_installation_id(to_user, to_repo)
@@ -1216,6 +1219,31 @@ class GitHubAppHandler:
             self._handlers[handler_key] = api
         return api
 
+    async def get_github_user_api(self, token: str) -> GitHubHandler:
+        """Returns the GitHubHandler for a user given a token"""
+        now = int(time.time())
+        if token not in self._user_handlers:
+            api = AiohttpGitHubHandler(token=token)
+            last_access = 0
+        else:
+            last_access, api = self._user_handlers[token]
+
+        if last_access + 300 < now:
+            # last access 5+ minutes ago. recheck login
+            if not await api.login(self._session, self.name):
+                if token in self._user_handlers:
+                    del self._user_handlers[token]
+                return None
+            last_access = now
+
+        if len(self._user_handlers) > 50:
+            lru_keys = sorted(self._user_handlers,
+                              key=lambda k: self._user_handlers[k][0])
+            for key in lru_keys[:10]:
+                del self._user_handlers[key]
+
+        self._user_handlers[token] = (now, api)
+        return api
 
     @staticmethod
     def generate_nonce(nbytes=16):
@@ -1269,7 +1297,6 @@ class GitHubAppHandler:
           The API client object with the user logged in.
 
         """
-
         nonce_cookie_name = f'{self.__class__.__name__}::nonce'
         token_cookie_name = f'{self.__class__.__name__}::token'
 
@@ -1315,8 +1342,8 @@ class GitHubAppHandler:
             raise RuntimeError("Token type not 'bearer'")
 
         # Create the client and get user details to verify token validity
-        handler = AiohttpGitHubHandler(token=result.get('access_token'))
-        if not await handler.login(self._session, self.name):
+        handler = await self.get_github_user_api(result.get('access_token'))
+        if not handler:
             raise RuntimeError("Failed to login")
         session[token_cookie_name] = handler.token
 

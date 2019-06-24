@@ -35,6 +35,7 @@ class AuthorizationPolicy(AbstractAuthorizationPolicy):
     """Authorization policy for web interface"""
     def __init__(self, app):
         self.app = app
+
     async def authorized_userid(self, identity: str) -> AiohttpGitHubHandler:
         """Retrieve authorized user id.
 
@@ -43,10 +44,7 @@ class AuthorizationPolicy(AbstractAuthorizationPolicy):
         Returns:
           Logged in Github API client.
         """
-        handler = AiohttpGitHubHandler(token=identity)
-        await handler.login(self.app['client_session'], BOT_NAME)
-        if handler.username:
-            return handler
+        return await self.app['ghappapi'].get_github_user_api(identity)
 
     async def permits(self, identity: str, permission: str, context=None) -> bool:
         """Check user permissions.
