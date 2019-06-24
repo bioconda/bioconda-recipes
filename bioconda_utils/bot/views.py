@@ -196,6 +196,17 @@ async def logout(request):
     return response
 
 
+@web_routes.get('/login')
+async def login(request):
+    """View for login page
+
+    Redirects to ``/auth/github`` in all cases - no other login
+    methods supported.
+
+    """
+    return web.HTTPFound('/auth/github')
+
+
 @web_routes.get('/auth/github', name="login")
 async def auth_github(request):
     """View for signing in with Github
