@@ -82,8 +82,21 @@ async def jinja_defaults(request):
         'navigation_bar': navigation_bar,
         'active_page': active_page,
         'title': title,
+        'request': request,
     }
 
+
+@aiohttp.web.middleware
+async def handle_errors(request, handler):
+    try:
+        return await handler(request)
+    except aiohttp.web.HTTPException as exc:
+        if exc.status in (302,):
+            raise
+        try:
+            return aiohttp_jinja2.render_template('bot_40x.html', request, {'exc':exc})
+        except KeyError as XYZ:
+            raise exc
 
 async def start():
     """Initialize App
@@ -99,6 +112,7 @@ async def start():
     logger.info("Starting bot (version=%s)", VERSION)
 
     app = aiohttp.web.Application()
+    app['name'] = BOT_NAME
 
     # Set up session storage
     fernet_key = fernet.Fernet.generate_key()
@@ -113,11 +127,18 @@ async def start():
     loader = jinja2.PackageLoader('bioconda_utils', 'templates')
     aiohttp_jinja2.setup(app, loader=loader, context_processors=[jinja_defaults])
 
+    # Set up error handlers
+    app.middlewares.append(handle_errors)
+
     # Prepare persistent client session
     app['client_session'] = aiohttp.ClientSession()
+
+    # Create Github client
     app['ghappapi'] = GitHubAppHandler(app['client_session'],
                                        BOT_NAME, APP_KEY, APP_ID,
                                        APP_CLIENT_ID, APP_CLIENT_SECRET)
+
+    # Create Gitter Client (background process)
     app['gitter_listener'] = GitterListener(
         app, GITTER_TOKEN, GITTER_CHANNELS, app['client_session'],
         app['ghappapi'])

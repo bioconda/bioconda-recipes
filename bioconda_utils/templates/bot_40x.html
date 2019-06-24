@@ -1,0 +1,18 @@
+{% extends "bot_base.html" %}
+
+{% block content %}
+
+<h1>{{exc.status}}: {{exc}}</h1>
+
+{% if exc.status == 401 %}
+<p>You must be logged in to view this resource.</p>
+<p>Please <a href="{{url('login')}}?next={{url(active_page) if active_page else ''}}">login</a>.</p>
+{% elif exc.status == 403 %}
+{% if 'permission_required' in request %}
+You must be a member of <b>@{{request['permission_required']}}</b> to access this resource.
+{% else %}
+You lack permissions to view this resource.
+{% endif %}
+{% endif %}
+
+{% endblock %}
