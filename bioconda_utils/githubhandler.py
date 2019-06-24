@@ -1046,7 +1046,8 @@ class AiohttpGitHubHandler(GitHubHandler):
     def create_api_object(self, session: aiohttp.ClientSession,
                           requester: str, *args, **kwargs) -> None:
         self.api = gidgethub.aiohttp.GitHubAPI(
-            session, requester, oauth_token=self.token
+            session, requester, oauth_token=self.token,
+            cache=cachetools.LRUCache(maxsize=500)
         )
         self.session = session
 
@@ -1115,11 +1116,10 @@ class GitHubAppHandler:
         self.client_id = client_id
         #: OAUTH client secret
         self.client_secret = client_secret
-
+        #: Cache for API queries
+        self._cache = cachetools.LRUCache(maxsize=500)
         #: Our client session
         self._session = session
-        #: Cache for GET queries
-        self._cache = cachetools.LRUCache(maxsize=500)
         #: JWT and its expiry
         self._jwt: Tuple[int, str] = (0, "")
         #: OAUTH tokens for installations
@@ -1163,7 +1163,7 @@ class GitHubAppHandler:
         now = int(time.time())
         expires, token = self._tokens.get(installation, (0, ''))
         if not expires or expires < now + 60:
-            api = gidgethub.aiohttp.GitHubAPI(self._session, self.name)
+            api = gidgethub.aiohttp.GitHubAPI(self._session, self.name, cache=self._cache)
             try:
                 res = await api.post(
                     self.INSTALLATION_TOKEN,
@@ -1189,7 +1189,7 @@ class GitHubAppHandler:
 
     async def get_installation_id(self, user, repo):
         """Retrieve installation ID given user and repo"""
-        api = gidgethub.aiohttp.GitHubAPI(self._session, self.name)
+        api = gidgethub.aiohttp.GitHubAPI(self._session, self.name, cache=self._cache)
         res = await api.getitem(self.INSTALLATION,
                                 {'owner': user, 'repo': repo},
                                 accept="application/vnd.github.machine-man-preview+json",
