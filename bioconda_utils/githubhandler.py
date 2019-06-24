@@ -348,7 +348,7 @@ class GitHubHandler:
 
     # pylint: disable=too-many-arguments
     @backoff.on_exception(backoff.fibo, gidgethub.BadRequest, max_tries=10,
-                          giveup=lambda ex: ex.code not in [429, 502, 503, 504])
+                          giveup=lambda ex: ex.status_code not in [429, 502, 503, 504])
     async def get_prs(self,
                       from_branch: Optional[str] = None,
                       from_user: Optional[str] = None,
