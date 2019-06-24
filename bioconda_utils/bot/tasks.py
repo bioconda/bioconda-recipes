@@ -46,7 +46,6 @@ from celery.exceptions import MaxRetriesExceededError
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-PRInfo = namedtuple('PRInfo', 'installation user repo ref recipes issue_number')
 
 Image = namedtuple('Image', "url name tag")
 Package = namedtuple('Package', "arch fname url repodata_md")
