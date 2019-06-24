@@ -42,10 +42,9 @@ from ..upload import anaconda_upload, skopeo_upload
 from .. import lint
 
 from celery.exceptions import MaxRetriesExceededError
+from celery.utils.log import get_task_logger
 
-logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
-
-
+logger = get_task_logger(__name__)  # pylint: disable=invalid-name
 
 Image = namedtuple('Image', "url name tag")
 Package = namedtuple('Package', "arch fname url repodata_md")
