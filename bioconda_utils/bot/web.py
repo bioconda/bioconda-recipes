@@ -98,7 +98,7 @@ async def jinja_defaults(request):
     try:
         title = next(item for item in navigation_bar if item[1] == active_page)[2]
     except StopIteration:
-        return {}
+        title = 'Unknown'
     ghapi = await authorized_userid(request)
     return {
         'user': ghapi,
