@@ -838,7 +838,7 @@ class GitHubHandler:
             for review in await self.get_pr_reviews(pr_number):
                 user = review['user']['login']
                 if review['state'] == ReviewState.CHANGES_REQUESTED.name:
-                    return False, "Changes have been requested by `@{user}`"
+                    return False, f"Changes have been requested by `@{user}`"
                 if review['state'] == ReviewState.APPROVED.name:
                     logger.info("PR #%s was approved by @%s", pr_number, user)
                     approving_count += 1
