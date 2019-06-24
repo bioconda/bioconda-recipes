@@ -61,6 +61,8 @@ class GitHubHandler:
     """
     USER              = "/user"
     USER_APPS         = "/user/installations"
+    USER_ORGS         = "/user/orgs"
+    USER_TEAMS        = "/user/teams"
 
     PULLS             = "/repos/{user}/{repo}/pulls{/number}{?head,base,state}"
     PULL_FILES        = "/repos/{user}/{repo}/pulls/{number}/files"
@@ -175,11 +177,27 @@ class GitHubHandler:
 
         return False
 
-    async def get_user(self):
+    async def get_user(self) -> Dict[str, Any]:
+        """Fetches the user's info
+
+        Returns:
+          Empty dict if the request failed
+        """
         try:
             return await self.api.getitem(self.USER)
-        except gidgethub.GitHubException as exc:
+        except gidgethub.GitHubException:
             return {}
+
+    async def get_user_orgs(self) -> List[str]:
+        """Fetches the user's orgs
+
+        Returns:
+          Empty list if the request failed
+        """
+        try:
+            return [org['login'] for org in await self.api.getitem(self.USER_ORGS)]
+        except gidgethub.GitHubException:
+            return []
 
     async def iter_teams(self) -> AsyncIterator[Dict[str, Any]]:
         """List organization teams
