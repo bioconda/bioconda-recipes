@@ -14,6 +14,7 @@ from ..githubhandler import Event
 from ..circleci import SlackMessage
 from .worker import capp
 from .config import APP_SECRET, BOT_BASEURL
+from .commands import command_routes
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -254,3 +255,16 @@ async def auth_github(request):
     except Exception as exc:
         logger.exception("failed to auth")
     return web.HTTPUnauthorized(body="Could not authenticate your Github account")
+
+
+@add_to_navbar(title="Commands")
+@web_routes.get('/commands', name="commands")
+@template('bot_commands.html')
+async def list_commands(request):
+    """Self documents available commands"""
+    return {
+        'commands': [
+            {'name': name, 'description': desc}
+            for name, (func, desc) in command_routes.mapping.items()
+        ]
+    }
