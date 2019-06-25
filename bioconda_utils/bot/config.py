@@ -75,6 +75,9 @@ BOT_ALIAS_RE = re.compile(r'@bioconda[- ]?bot', re.IGNORECASE)
 #: which the CODE_SIGNING_KEY was registered.
 BOT_EMAIL = "47040946+BiocondaBot@users.noreply.github.com"
 
+#: Baseurl of bot (for oauth redirects we need to know where we are)
+BOT_BASEURL = get_secret("BOT_BASEURL")
+
 #: Time in seconds after which repodata should be reloaded
 REPODATA_TIMEOUT = 300
 

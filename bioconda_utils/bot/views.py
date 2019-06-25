@@ -13,7 +13,7 @@ from .events import event_routes
 from ..githubhandler import Event
 from ..circleci import SlackMessage
 from .worker import capp
-from .config import APP_SECRET
+from .config import APP_SECRET, BOT_BASEURL
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -238,7 +238,7 @@ async def auth_github(request):
     """
     session = await get_session(request)
     nexturl = request.query.get('next') or '/'
-    baseurl = "http://ehome.hopto.org:8000/auth/github?next="+nexturl
+    baseurl = BOT_BASEURL + "/auth/github?next=" + nexturl
     try:
         ghappapi = request.app['ghappapi']
         ghapi = await ghappapi.oauth_github_user(baseurl, session, request.query)
