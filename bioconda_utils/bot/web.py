@@ -10,6 +10,8 @@ from cryptography import fernet
 import aiohttp
 import aiohttp_jinja2
 import jinja2
+import markdown
+import markupsafe
 from aiohttp_session import setup as setup_session
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from aiohttp_security import (authorized_userid,
@@ -110,6 +112,18 @@ async def jinja_defaults(request):
     }
 
 
+md2html = markdown.Markdown(extensions=[
+    'markdown.extensions.fenced_code',
+    'markdown.extensions.tables',
+    'markdown.extensions.admonition',
+    'markdown.extensions.codehilite',
+    'markdown.extensions.sane_lists',
+])
+
+def jinja2_filter_markdown(text):
+    return markupsafe.Markup(md2html.reset().convert(text))
+
+
 @aiohttp.web.middleware
 async def handle_errors(request, handler):
     try:
@@ -149,7 +163,9 @@ async def start():
 
     # Set up jinja2 rendering
     loader = jinja2.PackageLoader('bioconda_utils', 'templates')
-    aiohttp_jinja2.setup(app, loader=loader, context_processors=[jinja_defaults])
+    aiohttp_jinja2.setup(app, loader=loader,
+                         context_processors=[jinja_defaults],
+                         filters={'markdown': jinja2_filter_markdown})
 
     # Set up error handlers
     app.middlewares.append(handle_errors)
