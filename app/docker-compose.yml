@@ -2,6 +2,7 @@ version: '3.7'
 
 volumes:
   rabbitmq-data:  # persists items in the queue
+  redis-data:     # persists key value store
   traefik-certs:  # persists SSL certs to avoid re-issuing on restart
   esdata:
 
@@ -51,9 +52,9 @@ x-app-common: &app-common
     # Path to secret for SHA signing of incoming webhooks
     - APP_SECRET_FILE=/run/secrets/app_secret
     # Path to App OAuth Client ID
-    - APP_CLIENT_ID=/run/secrets/app_client_id
+    - APP_CLIENT_ID_FILE=/run/secrets/app_client_id
     # PATH to APP OAuth Client Secret
-    - APP_CLIENT_SECRET=/run/secrets/app_client_secret
+    - APP_CLIENT_SECRET_FILE=/run/secrets/app_client_secret
     # Path to GPG key for signing commits
     # (This key is registered with a bot account, not the app,
     #  as github apps have no email they can't have a commit signing key)
@@ -73,7 +74,7 @@ x-app-common: &app-common
     # Git committer email
     - GIT_COMMITTER_EMAIL=47040946+BiocondaBot@users.noreply.github.com
     # Bot URL (for OAUTH redirects)
-    - BOT_BASEURL="https://biocondabot.pruesse.net"
+    - BOT_BASEURL=https://biocondabot.pruesse.net
   secrets:
     # See above
     - app_key
