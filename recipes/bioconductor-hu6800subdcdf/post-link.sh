@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="hu6800subdcdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/hu6800subdcdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hu6800subdcdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hu6800subdcdf_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hu6800subdcdf/bioconductor-hu6800subdcdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hu6800subdcdf/bioconductor-hu6800subdcdf_2.18.0_src_all.tar.gz"
 )
 MD5="7966c21babb23e18cca4faafc8720f0a"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
