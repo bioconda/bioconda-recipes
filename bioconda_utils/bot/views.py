@@ -236,6 +236,10 @@ async def auth_github(request):
     necessary.
 
     """
+    if 'error' in request.query:
+        logger.error(request.query)
+        web.HTTPUnauthorized(body="Encountered an error. ")
+
     session = await get_session(request)
     nexturl = request.query.get('next') or '/'
     baseurl = BOT_BASEURL + "/auth/github?next=" + nexturl
