@@ -3,8 +3,8 @@
 mkdir -p $PREFIX/bin
 
 cd Graph2Pro
-make clean
-make
+#make clean
+#make
 #make check
 
 cp DBGraph2Pro $PREFIX/bin/DBGraph2Pro
