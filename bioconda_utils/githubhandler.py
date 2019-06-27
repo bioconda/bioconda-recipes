@@ -4,6 +4,7 @@ import abc
 import base64
 import datetime
 import logging
+import os
 import time
 
 from copy import copy
@@ -17,6 +18,7 @@ import gidgethub
 import gidgethub.aiohttp
 import gidgethub.sansio
 import jwt
+import uritemplate
 
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -38,6 +40,9 @@ MergeMethod = Enum("MergeMethod", "merge squash rebase")
 #: Pull request review state
 ReviewState = Enum("ReviewState", "APPROVED CHANGES_REQUESTED COMMENTED DISMISSED PENDING")
 
+#: ContentType for Project Cards
+CardContentType = Enum("CardContentType", "Issue PullRequest")
+
 def iso_now() -> str:
     """Creates ISO 8601 timestamp in format
     ``YYYY-MM-DDTHH:MM:SSZ`` as required by Github
@@ -54,6 +59,11 @@ class GitHubHandler:
       to_user: Target User/Org for PRs
       to_repo: Target repository within **to_user**
     """
+    USER              = "/user"
+    USER_APPS         = "/user/installations"
+    USER_ORGS         = "/user/orgs"
+    USER_TEAMS        = "/user/teams"
+
     PULLS             = "/repos/{user}/{repo}/pulls{/number}{?head,base,state}"
     PULL_FILES        = "/repos/{user}/{repo}/pulls/{number}/files"
     PULL_COMMITS      = "/repos/{user}/{repo}/pulls/{number}/commits"
@@ -72,6 +82,10 @@ class GitHubHandler:
     ORG_MEMBERS       = "/orgs/{user}/members{/username}"
     ORG               = "/orgs/{user}"
     ORG_TEAMS         = "/orgs/{user}/teams{/team_slug}"
+
+    PROJECTS_BY_REPO  = "/repos/{user}/{repo}/projects"
+    PROJECT_COL_CARDS = "/projects/columns/{column_id}/cards"
+    PROJECT_CARDS     = "/projects/columns/cards/{card_id}"
 
     TEAMS_MEMBERSHIP  = "/teams/{team_id}/memberships/{username}"
 
@@ -103,6 +117,8 @@ class GitHubHandler:
         self.api: gidgethub.abc.GitHubAPI = None
         #: Login username
         self.username: str = None
+        #: User avatar URL
+        self.avatar_url: str = None
 
     def __str__(self):
         return f"{self.user}/{self.repo}"
@@ -143,19 +159,45 @@ class GitHubHandler:
         return "/{user}/{repo}/tree/{branch_name}/{path}".format(
             branch_name=branch_name, path=path, **self.var_default)
 
-    async def login(self, *args, **kwargs):
+    async def login(self, *args, **kwargs) -> bool:
         """Log into API (fills `username`)"""
 
-        self.create_api_object(*args, **kwargs)
+        if self.api is None:
+            self.create_api_object(*args, **kwargs)
 
-        if not self.token:
-            self.username = "UNKNOWN [no token]"
-        else:
-            try:
-                user = await self.api.getitem("/user")
+        self.username = "UNKNOWN [no token]"
+        self.avatar_url = None
+
+        if self.token:
+            user = await self.get_user()
+            if user:
                 self.username = user["login"]
-            except gidgethub.GitHubException:
-                pass
+                self.avatar_url = user["avatar_url"]
+                return True
+
+        return False
+
+    async def get_user(self) -> Dict[str, Any]:
+        """Fetches the user's info
+
+        Returns:
+          Empty dict if the request failed
+        """
+        try:
+            return await self.api.getitem(self.USER)
+        except gidgethub.GitHubException:
+            return {}
+
+    async def get_user_orgs(self) -> List[str]:
+        """Fetches the user's orgs
+
+        Returns:
+          Empty list if the request failed
+        """
+        try:
+            return [org['login'] for org in await self.api.getitem(self.USER_ORGS)]
+        except gidgethub.GitHubException:
+            return []
 
     async def iter_teams(self) -> AsyncIterator[Dict[str, Any]]:
         """List organization teams
@@ -324,7 +366,8 @@ class GitHubHandler:
         return pr_numbers
 
     # pylint: disable=too-many-arguments
-    @backoff.on_exception(backoff.fibo, gidgethub.BadRequest, max_tries=10)
+    @backoff.on_exception(backoff.fibo, gidgethub.BadRequest, max_tries=10,
+                          giveup=lambda ex: ex.status_code not in [429, 502, 503, 504])
     async def get_prs(self,
                       from_branch: Optional[str] = None,
                       from_user: Optional[str] = None,
@@ -356,7 +399,27 @@ class GitHubHandler:
             var_data['state'] = state.name.lower()
 
         accept = "application/vnd.github.shadow-cat-preview"  # for draft
-        return await self.api.getitem(self.PULLS, var_data, accept=accept)
+        try:
+            return await self.api.getitem(self.PULLS, var_data, accept=accept)
+        except gidgethub.BadRequest as exc:
+            if exc.status_code == 404:
+                if number:
+                    return {}
+                return []
+            raise
+
+    async def get_issue(self, number: int) -> Dict[str, Any]:
+        """Retrieve a single PR or Issue by its number
+
+        Arguments:
+          number: PR/Issue number
+        Returns:
+          The dict will contain a 'pull_request' key (containing dict)
+          if the Issue is a PR.
+        """
+        var_data = copy(self.var_default)
+        var_data['number'] = str(number)
+        return await self.api.getitem(self.ISSUES, var_data)
 
     async def iter_pr_commits(self, number: int):
         """Create iterator over commits in a PR"""
@@ -480,11 +543,17 @@ class GitHubHandler:
         var_data['number'] = str(number)
         accept = "application/vnd.github.lydian-preview+json"
         try:
-            await self.api.put(self.PULL_UPDATE, var_data, accept=accept)
+            await self.api.put(self.PULL_UPDATE, var_data, accept=accept, data={})
             return True
-        except gidgethub.BadRequest as exc:
-            logger.exception("pr_update_branch failed. status_code=%s args=%s",
-                             exc_status_code, exc.args)
+        except gidgethub.HTTPException as exc:
+            if exc.status_code == 202:
+                # Usually, we will get our "true" result via this exception.
+                # GitHub sends 202 "Accepted" for this API call. Gidgethub raises
+                # on anything but 200, 201, 204 (see sansio.py:decipher_response).
+                # So we catch and check the status code.
+                return True
+            logger.exception("pr_update_branch_failed (2). status_code=%s, args=%s",
+                             exc.status_code, exc.args)
             return False
 
     async def modify_issue(self, number: int,
@@ -788,7 +857,7 @@ class GitHubHandler:
             for review in await self.get_pr_reviews(pr_number):
                 user = review['user']['login']
                 if review['state'] == ReviewState.CHANGES_REQUESTED.name:
-                    return False, "Changes have been requested by `@{user}`"
+                    return False, f"Changes have been requested by `@{user}`"
                 if review['state'] == ReviewState.APPROVED.name:
                     logger.info("PR #%s was approved by @%s", pr_number, user)
                     approving_count += 1
@@ -835,6 +904,156 @@ class GitHubHandler:
         var_data['ref'] = ref
         await self.api.delete(self.GIT_REFERENCE, var_data)
 
+    def _deparse_card_pr_number(self, card: Dict[str, Any]) -> Dict[str, Any]:
+        """Extracts the card's issue's number from the content_url
+
+        This is a hack. The card data returned from github does not contain
+        content_id or anything referencing the PR/issue except for the
+        content_url. We deparse this here manually.
+
+        Arguments:
+          card: Card dict as returned from github
+        Results:
+          Card dict with ``issue_number`` field added if card is not a note
+        """
+        if 'content_url' not in card:  # not content_url to parse
+            return card
+        if 'issue_number' in card:  # target value already taken
+            return card
+
+        issue_url = gidgethub.sansio.format_url(self.ISSUES, self.var_default)
+        content_url = card['content_url']
+        if content_url.startswith(issue_url):
+            try:
+                card['issue_number'] = int(content_url.lstrip(issue_url))
+            except ValueError:
+                pass
+        if 'issue_number' not in card:
+            logger.error("Failed to deparse content url to issue number.\n"
+                         "content_url=%s\nissue_url=%s\n",
+                         content_url, issue_url)
+        return card
+
+    async def list_project_cards(self, column_id: int) -> List[Dict[str, Any]]:
+        """List cards in a project column
+
+        Arguments:
+          column_id: ID number of project column
+        """
+        var_data = {'column_id': str(column_id)}
+        accept = "application/vnd.github.inertia-preview+json"
+        res = await self.api.getitem(self.PROJECT_COL_CARDS, var_data, accept=accept)
+        return [self._deparse_card_pr_number(card) for card in res]
+
+    async def get_project_card(self, card_id: int) -> Dict[str, Any]:
+        """Get a project card
+
+        Arguments:
+          card_id: ID number of project card
+        Returns:
+          Empty dict if the project card was not found
+        """
+        var_data = {'card_id': str(card_id)}
+        accept = "application/vnd.github.inertia-preview+json"
+        try:
+            res = await self.api.getitem(self.PROJECT_CARDS, var_data, accept=accept)
+        except gidgethub.BadRequest as exc:
+            if exc.status_code == 404:
+                return {}
+        return self._deparse_card_pr_number(res)
+
+    async def create_project_card(self, column_id: int,
+                                  note: str = None,
+                                  content_id: int = None,
+                                  content_type: CardContentType = None,
+                                  number: int = None) -> Dict[str, Any]:
+        """Create a new project card
+
+        In addition to **column_id**, you must provide *either*:
+        - The **note** parameter for a free text note card
+        - The **content_type** specifying whether the card references a PR or an Issue,
+          *and* the **content_id** with the **id** field from the PR or Issue. Note that
+          PRs have two IDs, once as their issue baseclass and once as PR. You must use
+          the latter for PRs.
+        - The **number** giving either PR or Issue number. Will trigger one or two extra
+          API calls to fill in the **content_type** and **content_id** fields.
+
+        Arguments:
+          column_id: The ID number of the project column
+          note: Content of a note card.
+          content_id: ID number of PR or Issue
+          content_type: Must match content_id type
+          number: PR or Issue number
+        Returns:
+          Dict describing newly created card. Empty if no card.
+
+        """
+        var_data = copy(self.var_default)
+        var_data['column_id'] = str(column_id)
+        accept = "application/vnd.github.inertia-preview+json"
+        data = {}
+        if note:
+            if content_id or content_type or number:
+                raise ValueError("Project Cards can only be a note or a Issue/PR")
+            data['note'] = note
+        elif content_id:
+            if number:
+                raise ValueError("Cannot specify pr/issue number AND content_id")
+            if not content_type:
+                raise ValueError("Must specify content_type if giving content_id")
+            data['content_id'] = content_id
+            data['content_type'] = content_type.name
+        elif number:
+            pullreq = await self.get_prs(number=number)
+            if pullreq:
+                data['content_id'] = pullreq['id']
+                data['content_type'] = CardContentType.PullRequest.name
+            else:
+                issue = await self.get_issue(number=number)
+                data['content_id'] = issue['id']
+                data['content_type'] = CardContentType.Issue.name
+        else:
+            raise ValueError("Must have at least note or content_id/content_type or "
+                             "number parameter")
+        try:
+            res = await self.api.post(self.PROJECT_COL_CARDS, var_data, data=data,
+                                       accept=accept)
+            return self._deparse_card_pr_number(res)
+        except gidgethub.BadRequest:
+            logger.exception("Failed to create project card with data=%s", data)
+            return {}
+
+    async def delete_project_card(self, card_id: int) -> bool:
+        """Deletes a project card
+
+        Arguments:
+          card_id: ID of the card to delete
+        Returns:
+          True if the deletion succeeded
+        """
+        var_data = {'card_id': str(card_id)}
+        accept = "application/vnd.github.inertia-preview+json"
+        try:
+            await self.api.delete(self.PROJECT_CARDS, var_data, accept=accept)
+            return True
+        except gidgethub.BadRequest:
+            logger.exception("Failed to delete project cards %s", card_id)
+            return False
+
+    async def delete_project_card_from_column(self, column_id: int, number: int) -> bool:
+        """Deletes a project card identified by PR/Issue number from column
+
+        Arguments:
+          column_id: ID of project card column
+          number: PR/Issue number
+        Returns:
+          True if the deleteion succeeded
+        """
+        for card in await self.list_project_cards(column_id):
+            if card.get('issue_number') == number:
+                return await self.delete_project_card(card['id'])
+        return False
+
 
 class AiohttpGitHubHandler(GitHubHandler):
     """GitHubHandler using Aiohttp for HTTP requests
@@ -846,7 +1065,8 @@ class AiohttpGitHubHandler(GitHubHandler):
     def create_api_object(self, session: aiohttp.ClientSession,
                           requester: str, *args, **kwargs) -> None:
         self.api = gidgethub.aiohttp.GitHubAPI(
-            session, requester, oauth_token=self.token
+            session, requester, oauth_token=self.token,
+            cache=cachetools.LRUCache(maxsize=500)
         )
         self.session = session
 
@@ -868,8 +1088,21 @@ class Event(gidgethub.sansio.Event):
 
 
 class GitHubAppHandler:
-    """Handles interaction with Github as App"""
+    """Handles interaction with Github as App
 
+    Arguments:
+      session: Use this session to make calls to the Github API
+      app_name: The name of the App. This is also used as HTTP user agent
+                identifier.
+      app_key: A PEM key used to sign JWT to obtain temporary bearer tokens
+               for accessing the Github API.
+      app_id: This number identifies our App at Github.
+      client_id: This number identifies our App at Github when logging in
+                 on behalf of users via OAUTH.
+      client_secret: The secret authenticating us when logging in on behalf
+                     of users via OAUTH
+
+    """
     #: Github API url for creating an access token for a specific installation
     #: of an app.
     INSTALLATION_TOKEN = "/app/installations/{installation_id}/access_tokens"
@@ -880,25 +1113,40 @@ class GitHubAppHandler:
     #: Lifetime of JWT in seconds
     JWT_RENEW_PERIOD = 600
 
+    #: Base URL for calls to oauth login
+    DOMAIN = "https://github.com"
+
+    #: URL template for calls to OAUTH authorize
+    AUTHORIZE = '/login/oauth/authorize{?client_id,client_secret,redirect_uri,state,login}'
+
+    #: URL templete for calls to OAUTH access_token
+    ACCESS_TOKEN = '/login/oauth/access_token'
+
     def __init__(self, session: aiohttp.ClientSession,
-                 app_name: str, app_key: str, app_id: str) -> None:
+                 app_name: str, app_key: str, app_id: str,
+                 client_id: str, client_secret: str) -> None:
         #: Name of app
         self.name = app_name
-
+        #: ID of app
+        self.app_id = app_id
+        #: Authorization key
+        self.app_key = app_key
+        #: OAUTH client ID
+        self.client_id = client_id
+        #: OAUTH client secret
+        self.client_secret = client_secret
+        #: Cache for API queries
+        self._cache = cachetools.LRUCache(maxsize=500)
         #: Our client session
         self._session = session
-        #: Cache for GET queries
-        self._cache = cachetools.LRUCache(maxsize=500)
-        #: Authorization key
-        self._app_key = app_key
-        #: ID of app
-        self._app_id = app_id
         #: JWT and its expiry
         self._jwt: Tuple[int, str] = (0, "")
         #: OAUTH tokens for installations
         self._tokens: Dict[str, Tuple[int, str]] = {}
         #: GitHubHandlers for each installation
         self._handlers: Dict[Tuple[str, str], GitHubHandler] = {}
+        #: GitHubHandlers for each user token->time,handler
+        self._user_handlers: Dict[str, Tuple[int, GitHubHandler]] = {}
 
     def get_app_jwt(self) -> str:
         """Returns JWT authenticating as this app"""
@@ -909,9 +1157,9 @@ class GitHubAppHandler:
             payload = {
                 'iat': now,
                 'exp': expires,
-                'iss': self._app_id,
+                'iss': self.app_id,
             }
-            token_utf8 = jwt.encode(payload, self._app_key, algorithm="RS256")
+            token_utf8 = jwt.encode(payload, self.app_key, algorithm="RS256")
             token = token_utf8.decode("utf-8")
             self._jwt = (expires, token)
             msg = "Created new"
@@ -935,7 +1183,7 @@ class GitHubAppHandler:
         now = int(time.time())
         expires, token = self._tokens.get(installation, (0, ''))
         if not expires or expires < now + 60:
-            api = gidgethub.aiohttp.GitHubAPI(self._session, self.name)
+            api = gidgethub.aiohttp.GitHubAPI(self._session, self.name, cache=self._cache)
             try:
                 res = await api.post(
                     self.INSTALLATION_TOKEN,
@@ -961,14 +1209,15 @@ class GitHubAppHandler:
 
     async def get_installation_id(self, user, repo):
         """Retrieve installation ID given user and repo"""
-        api = gidgethub.aiohttp.GitHubAPI(self._session, self.name)
+        api = gidgethub.aiohttp.GitHubAPI(self._session, self.name, cache=self._cache)
         res = await api.getitem(self.INSTALLATION,
                                 {'owner': user, 'repo': repo},
                                 accept="application/vnd.github.machine-man-preview+json",
                                 jwt=self.get_app_jwt())
         return res['id']
 
-    async def get_github_api(self, dry_run, to_user, to_repo, installation=None) -> GitHubHandler:
+    async def get_github_api(self, dry_run, to_user, to_repo,
+                             installation=None) -> GitHubHandler:
         """Returns the GitHubHandler for the installation the event came from"""
         if installation is None:
             installation = await self.get_installation_id(to_user, to_repo)
@@ -987,3 +1236,133 @@ class GitHubAppHandler:
             api.create_api_object(self._session, self.name)
             self._handlers[handler_key] = api
         return api
+
+    async def get_github_user_api(self, token: str) -> GitHubHandler:
+        """Returns the GitHubHandler for a user given a token"""
+        now = int(time.time())
+        if token not in self._user_handlers:
+            api = AiohttpGitHubHandler(token=token)
+            last_access = 0
+        else:
+            last_access, api = self._user_handlers[token]
+
+        if last_access + 300 < now:
+            # last access 5+ minutes ago. recheck login
+            if not await api.login(self._session, self.name):
+                if token in self._user_handlers:
+                    del self._user_handlers[token]
+                return None
+            last_access = now
+
+        if len(self._user_handlers) > 50:
+            lru_keys = sorted(self._user_handlers,
+                              key=lambda k: self._user_handlers[k][0])
+            for key in lru_keys[:10]:
+                del self._user_handlers[key]
+
+        self._user_handlers[token] = (now, api)
+        return api
+
+    @staticmethod
+    def generate_nonce(nbytes=16):
+        """Generates a random string
+
+        Fetches **nbytes** of random data from `os.urandom` and passes them through
+        base64 encoding.
+        """
+        return base64.b64encode(os.urandom(nbytes), altchars=b'_-').decode()
+
+    async def oauth_github_user(self, redirect, session, params):
+        """Acquires `AiohttpGitHubHandler` for user via OAuth
+
+        This must be called from an ``aiohttp.web`` server with the
+        ``aiohttp-session`` active for session management.
+
+        If the user was not yet logged in (has no token in the
+        session), this will raise a `web.HTTPFound` exception to
+        redirect the user's browser to Github where the app can be
+        authorized to act on the users behalf. If the user OKs this,
+        Github redirects the user back to the URL given in
+        **redirect**. The code behind that URL should call this
+        function again, passing the parameters from Github. Using
+        those parameters, an OAUTH token is acquired, used to create
+        an `AiohttpGitHubHandler` object and that object initilized to
+        fetch the users details (calling ``login`` to acquire user
+        name and avatar).
+
+        Details:
+          Two parameters are passed through the redirect calls. The
+          **state** parameter is a nonce generated to avoid cross-site
+          request forgery. It is stored in the users session and must
+          be passed back identically on the second call. The **code**
+          parameter is the secret used to acquire the OAUTH token on
+          the second call to this method.
+
+          Two values are stored in the user's session. The nonce
+          mentioned above and the OAUTH token. A short path attempts
+          to use an existing token to re-authenticate an already
+          logged in user.
+
+        Arguments:
+          redirect: URL to redirect to for authentication callback.
+                    Usually, this is the URL from which you called
+                    this function, so that it gets called again with
+                    the parameters send by GitHub.
+          session: Session for making calls to Github API
+          params: URL parameters that were sent by GitHub.
+
+        Returns:
+          The API client object with the user logged in.
+
+        """
+        nonce_cookie_name = f'{self.__class__.__name__}::nonce'
+        token_cookie_name = f'{self.__class__.__name__}::token'
+
+        code = params.get('code')
+        state = params.get('state')
+        nonce = session.get(nonce_cookie_name)
+
+        # If we have a token already, try to authenticate the user
+        # with this token.
+        if token_cookie_name in session:
+            handler = AiohttpGitHubHandler(token=session.get(token_cookie_name))
+            if await handler.login(self._session, self.name):
+                return handler
+
+        # First pass. We don't have a code yet, or the state does
+        # not match our nonce (usually if a user calls the login url
+        # from the browser history). Redirect to GitHub for authentication.
+        if not code or state != nonce:
+            nonce = self.generate_nonce()
+            session[nonce_cookie_name] = nonce
+            raise aiohttp.web.HTTPFound(uritemplate.expand(
+                self.DOMAIN + self.AUTHORIZE, {
+                    'client_id': self.client_id,
+                    'redirect_uri': redirect,
+                    'state': nonce,
+                }))
+
+        # Second pass. We have a code and the state matched the nonce.
+        # Fetch the OAUTH token from Github using the code and state.
+        data = {'client_id': self.client_id,
+                'client_secret': self.client_secret,
+                'code': code,
+                'state': nonce}
+        headers = {'Accept': 'application/json'}
+        async with self._session.post(self.DOMAIN + self.ACCESS_TOKEN,
+                                      json=data, headers=headers) as response:
+            response.raise_for_status()
+            result = await response.json()
+
+        # We should always get a bearer token. This seems to be a future
+        # extension. Check it anyway:
+        if result.get('token_type') != 'bearer':
+            raise RuntimeError("Token type not 'bearer'")
+
+        # Create the client and get user details to verify token validity
+        handler = await self.get_github_user_api(result.get('access_token'))
+        if not handler:
+            raise RuntimeError("Failed to login")
+        session[token_cookie_name] = handler.token
+
+        return handler

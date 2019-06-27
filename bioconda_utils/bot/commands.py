@@ -5,6 +5,7 @@ Handlers for user commmands (``@biocondabot do this``)
 import logging
 import functools
 from typing import Callable, Dict, Optional
+from inspect import getdoc
 
 from . import tasks
 
@@ -22,17 +23,19 @@ class CommandDispatch:
     def __init__(self):
         self.mapping: Dict[str, Callable] = {}
 
-    def register(self, cmd: str) -> Callable[[Callable], Callable]:
+    def register(self, cmd: str, description: str = None) -> Callable[[Callable], Callable]:
         """Decorator adding decorated function to dispatcher"""
         def decorator(func):
-            self.mapping[cmd] = func
+            desc = description or getdoc(func)
+            self.mapping[cmd] = (func, desc)
             return func
         return decorator
 
     async def dispatch(self, cmd, *args, **kwargs):
         """Calls one of the registered functions"""
         if cmd in self.mapping:
-            response = await self.mapping[cmd](*args, **kwargs)
+            func, _desc = self.mapping[cmd]
+            response = await func(*args, **kwargs)
             logger.info(response)
             return response
         else:
@@ -94,7 +97,10 @@ def permissions(member: Optional[bool] = None,
 
 @command_routes.register("hello")
 async def command_hello(ghapi, issue_number, user, *_args):
-    """Check whether the bot is listening. If it is, it will answer."""
+    """Check whether the bot is listening. If it is, it will answer.
+
+    This command exists purely for the purpose of testing.
+    """
     msg = f"Hello @{user}!"
     if issue_number:
         await ghapi.create_comment(issue_number, msg)
