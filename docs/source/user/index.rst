@@ -1,0 +1,7 @@
+User Docs
+---------
+
+
+.. toctree::
+
+   install
