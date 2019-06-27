@@ -22,7 +22,6 @@ Bioconda Utilities Package
    cran_skeleton
    docker_utils
    githandler
-   github_integration
    githubhandler
    gitter
    graph
