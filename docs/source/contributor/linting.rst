@@ -73,6 +73,9 @@ Below, each lint check executed is shown and described. Lints are
 grouped into a few sections, depending on what type of issue they aim
 at preventing.
 
+.. contents:: Index of all Lints Checks by Section:
+   :local:
+
 
 Incomplete Recipe
 ~~~~~~~~~~~~~~~~~
