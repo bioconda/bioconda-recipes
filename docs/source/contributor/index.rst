@@ -8,8 +8,8 @@ recipe you'd like to add.
 
 The basic workflow is:
 
-- Follow the `setup` instructions to get a local copy of the recipes
-  repository
+- Follow the :doc:`setup` instructions to get a local copy of the
+  recipes repository
 
 - Write a recipe or modify an existing one. A recipe consists of a
   metadata file and (optionally) a shell script to install it. Here is
@@ -32,7 +32,9 @@ challenging to package. The topics below provide more details.
     :maxdepth: 1
 
     setup
-    contribute-a-recipe
+    workflow
+    building-locally
+
     troubleshooting
     build-system
     guidelines
