@@ -633,11 +633,12 @@ async def update_pr_project_columns(issue_number, ghapi, *_args):
     logger.info("Updating projects from labels for #%s '%s'",
                 issue_number, pr['title'])
     pr_labels = set(label['name'] for label in pr['labels'])
+    pr_closed = pr['state'] == 'closed'
 
     for column_id, col_labels in PROJECT_COLUMN_LABEL_MAP.items():
         have_card = any(card.get('issue_number') == issue_number
                         for card in await ghapi.list_project_cards(column_id))
-        if pr_labels.intersection(col_labels):
+        if not pr_closed and pr_labels.intersection(col_labels):
             if not have_card:
                 await ghapi.create_project_card(column_id, number=issue_number)
         else:
