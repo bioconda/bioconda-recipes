@@ -4,7 +4,7 @@ mkdir -p $PREFIX/bin
 
 cd Graph2Pro
 make clean
-make CXX=$BUILD_PREFIX/bin/x86_64-conda_cos6-linux-gnu-g++
+make CXX=$CXX
 #make check
 
 cp DBGraph2Pro $PREFIX/bin/DBGraph2Pro
