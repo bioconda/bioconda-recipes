@@ -1,6 +1,7 @@
 Troubleshooting
 ---------------
 
+.. hightlight:: bash
 
 .. contents::
    :local:
@@ -92,14 +93,14 @@ can't be found -- despite having zlib listed in the dependencies. The
 reason is that the location of :conda:package:`zlib` often has to be
 specified in the ``build.sh`` script, which can be done like this:
 
-.. code-block:: bash
+.. code:: bash
 
     export CFLAGS="$CFLAGS -I$PREFIX/include"
     export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
 Or sometimes:
 
-.. code-block:: bash
+.. code:: bash
 
     export CPATH=${PREFIX}/include
 
@@ -150,7 +151,7 @@ difficult to troubleshoot problems with the recipe. If the conda-build
 test works but the mulled-build test fails try these steps:
 
 - Run the test using the ``bootstrap.py`` method described in
-  :ref:`test-locally`.
+  :doc:`building-locally`.
 - Look carefully at the output from ``mulled-build`` to look for
   Docker hashes, and cross-reference with the output of ``docker
   images | head`` to figure out the hash of the container used.
@@ -188,10 +189,80 @@ extended base has been needed are:
 
 To use the extended container, add the following to a recipe's ``meta.yaml``:
 
-.. code-block:: yaml
+.. code:: yaml
 
     extra:
       container:
         extended-base: True
+
+
+``g++`` or ``gcc`` not found
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The new conda build system brings its own compilers and system
+libraries. The specific compiler may vary between the target
+platforms, e.g. we use ``clang`` on MacOS and ``gcc`` on Linux. The name
+and path to the right compiler is therefore exported via environment
+variables. Just use ``$CC`` or ``$CXX`` instead of ``gcc`` or ``g++``.
+
+While some software, e.g. those built with ``autotools``, will pick up
+on this automatically, a lot of software has hard-coded compiler names
+in its ``Makefile``\s.
+
+Instead of using patches or ``sed`` to modify those Makefiles, you can
+often simply override Make variables from the command line::
+
+  make CC=$CC
+
+Briefly, Makefile variables can be specified inside the Makefile with
+the following operators:
+
+.. code:: Make
+
+  VAR1 = content   # assign with late recursive expand
+  VAR2 := content  # assign fixed
+  VAR3 ?= content  # assign default
+  VAR4 += content  # append
+
+All of these variables can be "overridden" from the command line as
+shown above. The final value no matter how many ``+=`` or similar
+operations are given inside the Makefile will be exactly what you
+stated on the command line. Only if the variable assignment is
+prefixed with the ``override`` keyword will Make ignore what you add
+to the command line.
+
+Variables that are never "set", so those only modified with ``?=``
+(set if not already set) or ``+=`` (append) most likely will work just
+as expected.
+
+Example:
+
+.. code:: Make
+
+  CC = g++
+  CFLAGS = -O2 -g -DVERSION=1.2.3
+  LDFLAGS += -lz
+
+- This Makefile sets ``CC`` to ``g++`` which you can simply
+  override::
+
+    make CC=$CC
+ 
+- Since it *adds* ``-lz`` to ``LDFLAGS`` to enable linking against
+  `libz`, you do not need to do anything here.
+
+- The ``CFLAGS`` are more complicated. You can patch the
+  Makefile to append to ``CFLAGS`` instead of overwriting::
+
+    sed -i.bak 's/CFLAGS =/CFLAGS +=/' Makefile
+
+  Or you could override::
+
+    make CC=$CC CFLAGS="$CFLAGS -DVERSION=1.2.3"
+
+  In this case, the latter is not recommended as we would expect the
+  version number to change with every new release of the upstream
+  software.
+
 
 
