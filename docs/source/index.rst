@@ -49,7 +49,7 @@ Registry`_.
 .. _`Quay.io`: https://quay.io/organization/biocontainers
 .. _`BioContainers Registry`: https://biocontainers.pro/#/registry
 
-**Browse packages in the Bioconda channel:** :ref:`recipes`
+**Browse packages in the Bioconda channel:** `Recipe Index <conda-recipe_index.html>`_
 
 ----
 
