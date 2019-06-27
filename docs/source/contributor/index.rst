@@ -28,10 +28,15 @@ package. The topics below provide more details.
 .. toctree::
     :maxdepth: 2
 
-    contrib-setup
+    setup
     contribute-a-recipe
     troubleshooting
     build-system
     guidelines
+
+    linting
+    faqs
+    updating
+    cb3
 
 

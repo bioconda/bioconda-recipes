@@ -89,25 +89,9 @@ Bioconda has over 600 (as of 2019/1) `contributors
 <https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
 
 
-Contributor documentation
--------------------------
-
-The rest of this documentation describes the build system architecture, the
-process of creating and testing recipes, and adding recipes to the bioconda
-channel.
-
-
-Contents:
-
 .. toctree::
-    :maxdepth: 3
+   :includehidden:
 
-    user/install
-	       
-    contributing
-    updating
-    linting
-    faqs
-    build-system
-    cb3
-    developer
+   user/index
+   contributor/index
+   developer/index

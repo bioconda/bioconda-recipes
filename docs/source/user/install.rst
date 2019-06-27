@@ -1,7 +1,7 @@
 .. _using-bioconda:
 
-Using Bioconda
-==============
+Getting Started
+===============
 **Note:** *Bioconda supports only 64-bit Linux and Mac OS*.
 
 
