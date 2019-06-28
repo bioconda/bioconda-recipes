@@ -21,8 +21,11 @@ import simplejson
 
 from ..githubhandler import GitHubAppHandler, GitHubHandler
 from ..githandler import install_gpg_key
-from ..utils import RepoData
-from .config import APP_ID, APP_KEY, CODE_SIGNING_KEY, BOT_NAME, REPODATA_TIMEOUT
+from ..utils import RepoData, setup_logger
+from .config import (
+    APP_ID, APP_KEY, CODE_SIGNING_KEY, BOT_NAME, REPODATA_TIMEOUT,
+    APP_CLIENT_ID, APP_CLIENT_SECRET
+)
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -96,7 +99,9 @@ class AsyncTask(Task):
         """
         if not self.ghappapi:
             self.ghappapi = GitHubAppHandler(aiohttp.ClientSession(), BOT_NAME,
-                                             APP_KEY, APP_ID)
+                                             APP_KEY, APP_ID,
+                                             APP_CLIENT_ID, APP_CLIENT_SECRET)
+
 
     async def async_pre_run(self, args, _kwargs):
         """Per-call async initialization

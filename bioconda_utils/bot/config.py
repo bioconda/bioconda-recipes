@@ -32,6 +32,12 @@ APP_KEY = get_secret("APP_KEY")
 #: Numeric App ID (not secret, technically)
 APP_ID = get_secret("APP_ID")
 
+#: App OAuth client ID
+APP_CLIENT_ID = get_secret("APP_CLIENT_ID")
+
+#: App OAuth client secret
+APP_CLIENT_SECRET = get_secret("APP_CLIENT_SECRET")
+
 #: Secret shared with Github used by us to authenticate incoming webhooks
 APP_SECRET = get_secret("APP_SECRET")
 
@@ -69,5 +75,13 @@ BOT_ALIAS_RE = re.compile(r'@bioconda[- ]?bot', re.IGNORECASE)
 #: which the CODE_SIGNING_KEY was registered.
 BOT_EMAIL = "47040946+BiocondaBot@users.noreply.github.com"
 
+#: Baseurl of bot (for oauth redirects we need to know where we are)
+BOT_BASEURL = get_secret("BOT_BASEURL")
+
 #: Time in seconds after which repodata should be reloaded
 REPODATA_TIMEOUT = 300
+
+#: Assign PRs to project columns by label
+PROJECT_COLUMN_LABEL_MAP = {
+     5706816: set(('please review & merge',)),
+}

@@ -2,6 +2,7 @@ version: '3.7'
 
 volumes:
   rabbitmq-data:  # persists items in the queue
+  redis-data:     # persists key value store
   traefik-certs:  # persists SSL certs to avoid re-issuing on restart
   esdata:
 
@@ -16,6 +17,10 @@ secrets:
     file: secrets/app_key.pem
   app_secret:
     file: secrets/app_secret.txt
+  app_client_id:
+    file: secrets/app_client_id.txt
+  app_client_secret:
+    file: secrets/app_client_secret.txt
   code_sign_key:
     file: secrets/code_sign_key.asc
   erlang_cookie:
@@ -46,6 +51,10 @@ x-app-common: &app-common
     - APP_ID_FILE=/run/secrets/app_id
     # Path to secret for SHA signing of incoming webhooks
     - APP_SECRET_FILE=/run/secrets/app_secret
+    # Path to App OAuth Client ID
+    - APP_CLIENT_ID_FILE=/run/secrets/app_client_id
+    # PATH to APP OAuth Client Secret
+    - APP_CLIENT_SECRET_FILE=/run/secrets/app_client_secret
     # Path to GPG key for signing commits
     # (This key is registered with a bot account, not the app,
     #  as github apps have no email they can't have a commit signing key)
@@ -60,11 +69,19 @@ x-app-common: &app-common
     - QUAY_LOGIN_FILE=/run/secrets/quay_login
     # Points to the AMQP message queue server
     - CLOUDAMQP_URL=amqp://mq:5672
+    # Git committer name
+    - GIT_COMMITTER_NAME=BiocondaBot
+    # Git committer email
+    - GIT_COMMITTER_EMAIL=47040946+BiocondaBot@users.noreply.github.com
+    # Bot URL (for OAUTH redirects)
+    - BOT_BASEURL=https://biocondabot.pruesse.net
   secrets:
     # See above
     - app_key
     - app_id
     - app_secret
+    - app_client_id
+    - app_client_secret
     - code_sign_key
     - circle_token
     - gitter_token
@@ -77,7 +94,7 @@ services:
   ## Message Queue
   mq:
     hostname: mq    
-    image: rabbitmq:latest
+    image: rabbitmq:3.7-management
     secrets:
       - source: erlang_cookie
         target: /var/lib/rabbitmq/.erlang.cookie
@@ -85,6 +102,10 @@ services:
         gid: '999'
         mode: 0600
     user: rabbitmq
+    environment:
+      # We limit memory, override default 40% system memory to allow 95% of
+      # container
+      - RABBITMQ_VM_MEMORY_HIGH_WATERMARK=0.95
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
@@ -93,6 +114,19 @@ services:
       resources:
         limits:
           memory: 200M
+
+  ## Redis store
+  redis:
+    hostname: redis
+    image: redis
+    volumes:
+      - redis-data:/data
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          memory: 100M
 
   ## Bioconda-Utils web app
   web:
