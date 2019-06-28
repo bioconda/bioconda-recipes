@@ -1,7 +1,23 @@
 #!/usr/bin/env bash
 
-cat <<EOF >> ${PREFIX}/.messages.txt
+echo "
+################################################################################
 
-Please run download-db.sh to download the database to ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db/
+                                GTDB-Tk v${PKG_VERSION}
+________________________________________________________________________________
 
-EOF
+     GTDB-Tk requires ~25G of external data which needs to be downloaded
+     and unarchived. This can be done automatically, or manually:
+
+     1. Run the command download-db.sh to automatically download to:
+        ${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}/db/
+
+     2. Manually download the latest reference data:
+        https://github.com/Ecogenomics/GTDBTk#gtdb-tk-reference-data
+
+     2b. Set the GTDBTK_DATA_PATH environment variable in the files:
+         ${PREFIX}/etc/conda/activate.d
+         ${PREFIX}/etc/conda/deactivate.d
+
+################################################################################
+" > "${PREFIX}"/.messages.txt
