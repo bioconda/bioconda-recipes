@@ -1,3 +1,4 @@
 #!/bin/bash
-mkdir -p $PREFIX/bin
-cp $RECIPE_DIR/../bin/dsCompareCurves $PREFIX/bin/dsCompareCurves
+
+cp bin/* $PREFIX/bin/.
+chmod +x $PREFIX/bin/*
