@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-make CC=$CC CXX=$CXX
+make -e CC=$CC CXX=$CXX
 mkdir -p $PREFIX/bin
 
 cp ghostz $PREFIX/bin
