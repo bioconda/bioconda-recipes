@@ -1,7 +1,7 @@
 {% set name = "riboSeed" %}
-{% set version = "0.4.80" %}
+{% set version = "0.4.84" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "a93c9f238f2b9e27f0ab9aa1df59b762bf19d2114cb2acd325137a3cba69572a" %}
+{% set hash_value = "b48a5e49211509710c3fab0d5c0449fdcf57b1ea117c707897c8934d1b0d8a38" %}
 
 
 package:
@@ -50,13 +50,11 @@ requirements:
     - mafft
     - prank
     - blast
-    - spades ==3.9.0
+    #- spades ==3.9.0
     - bwa
     - samtools
     - bcftools
     - skesa
-    #  this was broken, but should be resolved
-    #  but quast is currently not being conda built for python 3 because some tests fail :(
     - quast >=4.6.3
 
 test:
@@ -64,20 +62,19 @@ test:
     - riboSeed
   commands:
     - ribo
-
     - ribo scan -h
     - ribo select -h
     - ribo stack -h
-    # the following tests are excluded until issue with mpl/Xserver gets sorted out, sorry!
     - ribo run -h
     - ribo seed -h
     - ribo snag -h
     - ribo sketch -h
     - $PYTHON -m unittest tests.test_conda
+    - spades.py -v
     # run this for local builds, but dont waste the bioconda resources
     # this takes about 5 minutes to run by itself
+    # - ribo run -r $PREFIX/lib/python3.5/site-packages/riboSeed/integration_data/concatenated_seq.fasta -F $PREFIX/lib/python3.5/site-packages/riboSeed/integration_data/test_reads1.fq -R $PREFIX/lib/python3.5/site-packages/riboSeed/integration_data/test_reads2.fq -o /tmp/riboseed/ --serialize --subassembler skesa -v 1
     # - ribo try
-
 about:
   home: https://github.com/nickp60/riboSeed
   license: MIT License
