@@ -6,7 +6,7 @@ $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 # Add more build steps here, if they are necessary.
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM-SPAdes3.9.1
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    THISOS = "linux"
+    THISOS="linux"
     wget https://github.com/nickp60/riboSeed/raw/subspades/SPAdes-3.9.1-linux.tar.gz
         # ...
 elif [[ "$OSTYPE" == "darwin"* ]]; then
