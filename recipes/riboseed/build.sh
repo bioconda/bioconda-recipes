@@ -7,11 +7,11 @@ $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM-SPAdes3.9.1
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     THISOS="linux"
-    curl https://github.com/nickp60/riboSeed/raw/subspades/SPAdes-3.9.1-linux.tar.gz -O
+    curl -LO https://github.com/nickp60/riboSeed/raw/subspades/SPAdes-3.9.1-linux.tar.gz
         # ...
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     THISOS="osx"
-    curl https://github.com/nickp60/riboSeed/raw/subspades/SPAdes-3.9.1-osx.tar.gz -O
+    curl -LO https://github.com/nickp60/riboSeed/raw/subspades/SPAdes-3.9.1-osx.tar.gz
 else
     echo "No SPAdes3.9.1 binaries available for $OSTYPE"
     exit 1
