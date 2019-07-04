@@ -1,5 +1,7 @@
 FROM condaforge/linux-anvil-comp7
-RUN sudo -n yum install -y openssh-clients
+RUN sudo -n yum install -y openssh-clients && \
+    sudo -n yum clean all && \
+    sudo -n rm -rf /var/cache/yum/*
 RUN mkdir -p /tmp/repo/bioconda_utils/
 COPY ./bioconda_utils/bioconda_utils-requirements.txt /tmp/repo/bioconda_utils/
 RUN export PATH="/opt/conda/bin:${PATH}" && \
