@@ -1,1 +1,2 @@
-$R CMD INSTALL --build nanopoRe
+$R CMD INSTALL --build .
+
