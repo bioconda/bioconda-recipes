@@ -14,7 +14,7 @@ RUN export PATH="/opt/conda/bin:${PATH}" && \
     sed -nE \
         -e 's/\s*#.*$//' \
         -e 's/^(conda([><!=~ ].+)?)$/\1/p' \
-        bioconda_utils-requirements.txt \
+        /tmp/repo/bioconda_utils/bioconda_utils-requirements.txt \
         | xargs -r conda install -y && \
     conda install -y --file /tmp/repo/bioconda_utils/bioconda_utils-requirements.txt && \
     conda clean -y -it
