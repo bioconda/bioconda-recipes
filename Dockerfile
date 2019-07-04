@@ -5,7 +5,8 @@ COPY ./bioconda_utils/bioconda_utils-requirements.txt /tmp/repo/bioconda_utils/
 RUN export PATH="/opt/conda/bin:${PATH}" && \
     conda config --add channels defaults && \
     conda config --add channels bioconda && \
-    conda config --add channels conda-forge
+    conda config --add channels conda-forge && \
+    conda config --set auto_update_conda False
 RUN export PATH="/opt/conda/bin:${PATH}" && \
     conda install --file /tmp/repo/bioconda_utils/bioconda_utils-requirements.txt && \
     conda clean -y --all
