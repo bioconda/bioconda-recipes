@@ -3,6 +3,7 @@
 export CPATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
 
+cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j $CPU_COUNT
 
 make test
