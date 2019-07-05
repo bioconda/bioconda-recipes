@@ -1,9 +1,7 @@
 #!/bin/bash
 
-
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
-mkdir -p $PREFIX/bin
 
 cp -R * $outdir
 chmod +x $outdir/run_lefse.py

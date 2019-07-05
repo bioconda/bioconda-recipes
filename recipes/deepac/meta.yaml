@@ -1,0 +1,58 @@
+{% set name = "deepac" %}
+{% set version = "0.9.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: c65a5135d58e90ee50d2843b8bc0bba66116e629482afe73eac437a8a1d9a3e9
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - deepac=deepac.command_line:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+
+requirements:
+  host:
+    - python >=3, <3.7
+    - pip
+  run:
+    - biopython
+    - h5py
+    - keras >=2.2.4
+    - matplotlib
+    - numpy >=1.15
+    - python >=3, <3.7
+    - scikit-learn
+    - tensorflow >=1.12
+    - psutil >=5.6.1
+
+#test:
+#  imports:
+#    - deepac
+#    - deepac.eval
+#    - deepac.tests
+#  commands:
+#    - deepac --help
+#    - deepac test
+
+about:
+  home: https://gitlab.com/rki_bioinformatics/DeePaC
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Predicting pathogenic potentials of novel DNA with reverse-complement neural networks.
+  doc_url: https://rki_bioinformatics.gitlab.io/DeePaC/
+  dev_url: https://gitlab.com/rki_bioinformatics/DeePaC
+
+extra:
+  recipe-maintainers:
+    - JakubBartoszewicz
+  skip-lints:
+    - missing_tests  # conda-forge::tensorflow requires GLIBC >=2.16
+                     # See https://github.com/conda-forge/tensorflow-feedstock/issues/67
+  notes: conda-forge::tensorflow requires GLIBC >=2.16. It should be present on most, but not all systems. See https://github.com/conda-forge/tensorflow-feedstock/issues/67
