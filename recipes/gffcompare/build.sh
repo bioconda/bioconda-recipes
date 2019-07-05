@@ -5,6 +5,10 @@
 # since the prep_mac script just uses different names
 # for the directories (all the magic happens in the 
 # Makefile)
+
+export CXX="$CXX"
+export LINKER="$CXX"
+
 cd gffcompare
 ./prep_linux.sh
 

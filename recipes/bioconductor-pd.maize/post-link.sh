@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.maize_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.maize_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.maize_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.maize_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.maize/bioconductor-pd.maize_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.maize/bioconductor-pd.maize_3.12.0_src_all.tar.gz"
 )
 MD5="a1689518c8525d3dfa97e870f90b7a7b"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

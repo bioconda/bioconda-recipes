@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="illuminaHumanWGDASLv3.db_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/illuminaHumanWGDASLv3.db_1.26.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/illuminaHumanWGDASLv3.db_1.26.0.tar.gz"
   "https://bioarchive.galaxyproject.org/illuminaHumanWGDASLv3.db_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-illuminahumanwgdaslv3.db/bioconductor-illuminahumanwgdaslv3.db_1.26.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminahumanwgdaslv3.db/bioconductor-illuminahumanwgdaslv3.db_1.26.0_src_all.tar.gz"
 )
 MD5="32e8e24555c16f6d0148438d4a841ab8"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

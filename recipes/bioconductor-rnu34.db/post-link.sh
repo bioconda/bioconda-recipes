@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="rnu34.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/rnu34.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/rnu34.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/rnu34.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rnu34.db/bioconductor-rnu34.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rnu34.db/bioconductor-rnu34.db_3.2.3_src_all.tar.gz"
 )
 MD5="a95920bb41a2f78da82f419b245ad1a9"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
