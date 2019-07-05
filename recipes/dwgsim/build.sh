@@ -2,7 +2,7 @@
 
 set -x -e -o pipefail
 
-(git clone http://github.com/samtools/samtools && cd samtools && git checkout 28391e5898804ce6b805016)
+(git clone http://github.com/samtools/samtools && cd samtools && git checkout 28391e5898804ce6b805016d8c676fdf61442eb3)
 
 make LIBCURSES=-lncurses
 
