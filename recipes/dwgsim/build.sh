@@ -1,6 +1,9 @@
-#!/bin/sh
+#!/bin/bash
+set -e
 
-set -x -e -o pipefail
+export CFLAGS="$CFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CPATH=${PREFIX}/include
 
 (git clone http://github.com/samtools/samtools && cd samtools && git checkout 28391e5898804ce6b805016d8c676fdf61442eb3)
 
