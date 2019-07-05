@@ -5,9 +5,10 @@ export LIBRARY_PATH=${PREFIX}/lib
 
 # we can't build bcalm with avaible gatb, link trouble
 rm -rf gatb-core
-wget https://github.com/GATB/gatb-core/archive/v1.4.1.tar.gz
-tar xvfz v1.4.1.tar.gz
-mv gatb-core-1.4.1 gatb-core                                
+git clone https://github.com/GATB/gatb-core.git
+cd gatb-core
+git checkout f25f57bb65db0870ec3c5b14af5e694c7941f567
+cd ..
 
 # avoid gatb example install
 if [ "$(uname)" == "Darwin" ]; then
