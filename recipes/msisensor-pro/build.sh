@@ -5,6 +5,6 @@ export LIBRARY_PATH=${PREFIX}/lib
 export CPPFLAGS="-I$PREFIX/include"
 #apt-get install gcc
 #echo $CC $CXX
-CC=gcc
-make CC=$CC
+
+make CC=$GCC
 cp msisensor-pro $PREFIX/bin
