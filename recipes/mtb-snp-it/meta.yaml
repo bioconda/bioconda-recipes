@@ -1,0 +1,49 @@
+{% set name = "mtb-snp-it" %}
+{% set version = "1.1" %}
+{% set sha256 = "9b5d109953354cda21c4ea557b59bbc425c39d1c34de39f016b04aa1b5d0d2b4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/samlipworth/snpit/archive/V{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - lib_path.patch
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv && mkdir $PREFIX/share/snpit && cp lib/* $PREFIX/share/snpit/"
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - biopython
+    - pyvcf
+    - python
+
+test:
+  imports:
+    - snpit
+  run:
+    - snpit-run.py --help |& grep snpit
+     
+about:
+  home: https://github.com/samlipworth/snpit
+  license: MIT
+  summary: 'SNP-IT: Whole genome SNP based identification of members of the Mycobacterium tuberculosis complex.'
+
+  # The remaining entries in this section are optional, but recommended
+  description: |
+    Whole genome SNP based identification of members of the Mycobacterium tuberculosis complex. 
+    Based on code originally written by Samuel Lipworth and turned into a package by Philip Fowler.
+
+    SNP-IT allows rapid Mycobacterial speciation of VCF or FASTA files aligned to NC000962 (H37rV).
+
+extra:
+  identifiers:
+    - doi:10.3201/eid2503.180894

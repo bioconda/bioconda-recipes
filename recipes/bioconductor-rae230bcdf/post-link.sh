@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="rae230bcdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/rae230bcdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/rae230bcdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/rae230bcdf_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rae230bcdf/bioconductor-rae230bcdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rae230bcdf/bioconductor-rae230bcdf_2.18.0_src_all.tar.gz"
 )
 MD5="bd61c17402e9c04be1000c16e0356618"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

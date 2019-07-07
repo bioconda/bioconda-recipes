@@ -1,0 +1,27 @@
+--- makefile	2018-07-17 11:30:50.000000000 +0200
++++ makefile2	2019-03-29 11:49:14.976910635 +0100
+@@ -49,6 +49,11 @@
+ $(KMC_API_DIR)/kmc_file.o \
+ $(KMC_API_DIR)/kmer_api.o
+ 
++KMC_API_PICO = \
++$(KMC_API_DIR)/mmer.pico \
++$(KMC_API_DIR)/kmc_file.pico \
++$(KMC_API_DIR)/kmer_api.pico
++
+ KMC_TOOLS_OBJS = \
+ $(KMC_TOOLS_DIR)/kmc_header.o \
+ $(KMC_TOOLS_DIR)/kmc_tools.o \
+@@ -75,6 +80,12 @@
+ 	$(KMC_TOOLS_DIR)/libs/libaelf64.a 
+ endif 	
+ 
++$(KMC_API_PICO): %.pico: %.cpp
++	$(CC) $(CFLAGS) -fpic -c -o $@ $<
++
++kmc_api/libkmc.so: $(KMC_API_PICO)
++	$(CC) -shared $(LDFLAGS) -o $@ $^
++
+ $(KMC_OBJS) $(KMC_DUMP_OBJS) $(KMC_API_OBJS): %.o: %.cpp
+ 	$(CC) $(CFLAGS) -c $< -o $@
+ 
