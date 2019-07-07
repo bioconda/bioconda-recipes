@@ -11,6 +11,8 @@ export LIBRARY_PATH=${PREFIX}/lib
 
 CXX=$CXX
 
+ln -s $CXX ${PREFIX}/bin/g++
+
 cd build/
 make linux-g++-64
 make test
