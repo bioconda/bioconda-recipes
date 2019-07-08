@@ -1,5 +1,6 @@
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/bin/logs
-cp -r * $PREFIX/bin
+cp -R * $PREFIX/bin/
+cp -R logs/ $PREFIX/bin/
 
 
