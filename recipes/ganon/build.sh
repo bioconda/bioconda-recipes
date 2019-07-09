@@ -9,6 +9,9 @@ cmake -DCMAKE_BUILD_TYPE=Release -DVERBOSE_CONFIG=ON -DGANON_OFFSET=OFF -DINCLUD
 make
 ctest -VV .
 
+python3 -m unittest discover -s tests/ganon/unit/
+python3 -m unittest discover -s tests/ganon/integration/
+
 mkdir -p ${PREFIX}/bin
 cp ${SRC_DIR}/ganon/ganon ${SRC_DIR}/ganon/build/ganon-build ${SRC_DIR}/ganon/build/ganon-classify ${SRC_DIR}/ganon/scripts/ganon-get-len-taxid.sh ${PREFIX}/bin/
 
