@@ -10,7 +10,10 @@ cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j $CPU_COUNT
 
-make install
+mv megahit $PREFIX/bin
+mv megahit_core $PREFIX/bin
+mv megahit_core_no_hw_accel $PREFIX/bin
+
 
 #mv megahit $PREFIX/bin
 #mv megahit_asm_core $PREFIX/bin
