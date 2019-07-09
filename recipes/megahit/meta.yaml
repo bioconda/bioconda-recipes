@@ -1,8 +1,6 @@
 {% set version = "1.2.5-beta" %}
 {% set sha256 = "5c3b6e4664daf29ebd6aba045d227d2945076351abe566e46475bd19ea7d037b" %}
 
-
-
 package:
   name: megahit
   version: {{ version | replace("-", "_") }}
@@ -16,25 +14,22 @@ build:
 
 requirements:
   build:
-    # megahit requires openpm, which is not available in clang < 3.7
     - cmake
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
   host:
     - zlib
+    - llvm-openmp  # [osx]
   run:
     - zlib
+    - llvm-openmp  # [osx]
     - python
 
 test:
   commands:
-      # Run one of the examples provided with megahit to make sure the
-      # binaries actually work.
-      # The output has to be removed to prevent permission failure during
-      # cleanup after mulled-build.
     - megahit --test --no-hw-accel
     - megahit --test --no-hw-accel --kmin-1pass
-
 
 about:
   home: https://github.com/voutcn/megahit
