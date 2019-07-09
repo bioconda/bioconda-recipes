@@ -10,12 +10,12 @@ cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j $CPU_COUNT
 
-make test
+make install
 
-mv megahit $PREFIX/bin
-mv megahit_asm_core $PREFIX/bin
-mv megahit_sdbg_build $PREFIX/bin
-mv megahit_toolkit $PREFIX/bin
+#mv megahit $PREFIX/bin
+#mv megahit_asm_core $PREFIX/bin
+#mv megahit_sdbg_build $PREFIX/bin
+#mv megahit_toolkit $PREFIX/bin
 
-mkdir -p $PREFIX/share/megahit
-mv example $PREFIX/share/megahit
+#mkdir -p $PREFIX/share/megahit
+#mv example $PREFIX/share/megahit
