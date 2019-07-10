@@ -2,10 +2,10 @@
 
 APPROOT=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
 mkdir -p $APPROOT
-rm bin/Darwin/lib/libgomp.1.dylib
-rm bin/Darwin/lib/libgcc_s.1.dylib
+# rm bin/Darwin/lib/libgomp.1.dylib
+# rm bin/Darwin/lib/libgcc_s.1.dylib
 # rm -r bin/Darwin/lib
-
+rm -r bin/*
 cp -r ./* $APPROOT
 
 
