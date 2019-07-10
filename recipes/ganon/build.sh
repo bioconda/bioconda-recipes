@@ -9,6 +9,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -DVERBOSE_CONFIG=ON -DGANON_OFFSET=OFF -DINCLUD
 make
 ctest -VV .
 
+cd ${SRC_DIR}/ganon/
 python3 -m unittest discover -s tests/ganon/unit/
 python3 -m unittest discover -s tests/ganon/integration/
 
