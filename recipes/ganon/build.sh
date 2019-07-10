@@ -14,5 +14,6 @@ python3 -m unittest discover -s tests/ganon/unit/
 python3 -m unittest discover -s tests/ganon/integration/
 
 mkdir -p ${PREFIX}/bin
-cp ${SRC_DIR}/ganon/ganon ${SRC_DIR}/ganon/build/ganon-build ${SRC_DIR}/ganon/build/ganon-classify ${SRC_DIR}/ganon/scripts/ganon-get-len-taxid.sh ${PREFIX}/bin/
+cp ${SRC_DIR}/ganon/src/ganon/ganon.py ${PREFIX}/bin/ganon
+cp ${SRC_DIR}/ganon/build/ganon-build ${SRC_DIR}/ganon/build/ganon-classify ${SRC_DIR}/ganon/scripts/ganon-get-len-taxid.sh ${PREFIX}/bin/
 
