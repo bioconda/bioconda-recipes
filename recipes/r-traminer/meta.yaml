@@ -1,4 +1,4 @@
-{% set version = '2.0-8' %}
+{% set version = '2.0-9' %}
 
 {% set posix = 'm2-' if win else '' %}
 {% set native = 'm2w64-' if win else '' %}
@@ -9,19 +9,30 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/TraMineR_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/TraMineR/TraMineR_{{ version }}.tar.gz
-  sha256: 394d4481707dfd8a4b0e28681097948ab36934dbe4084cf0917ae5f3e0bb9774
+    - {{ cran_mirror }}/src/contrib/TraMineR_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/TraMineR/TraMineR_{{ version }}.tar.gz
+  sha256: 6e9c017ac11d131c4cfe1009ed1f33704cc9a771b5270bf10477055f5b714b07
 
 build:
+  merge_build_host: True  # [win]
+
   number: 1
+  skip: true  # [win32]
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}      # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
 
   host:
     - r-base
@@ -32,6 +43,7 @@ requirements:
 
   run:
     - r-base
+    - {{native}}gcc-libs         # [win]
     - r-hmisc
     - r-rcolorbrewer
     - r-boot
@@ -39,10 +51,12 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('TraMineR')"
+
+    - $R -e "library('TraMineR')"           # [not win]
+    - "\"%R%\" -e \"library('TraMineR')\""  # [win]
 
 about:
-  home: https://cran.r-project.org/web/packages/TraMineR
+  home: http://traminer.unige.ch
   license: GPL (>= 2)
   summary: Toolbox for the manipulation, description and rendering of sequences, and more generally
     the mining of sequence data in the field of social sciences. Although the toolbox
@@ -57,3 +71,12 @@ about:
     discriminating ones among them. A user's guide can be found on the TraMineR web
     page.
   license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

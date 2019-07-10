@@ -15,6 +15,6 @@ ln -s ${PREFIX}/include ${PREFIX}/include/hdf5
 mkdir build
 cd build
 
-cmake -DCMAKE_INSTALL_PREFIX=$PREFIX ..
-make
+cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -DZLIB_INCLUDE_DIR:PATH=$PREFIX"/include" ..
+make VERBOSE=1
 make install

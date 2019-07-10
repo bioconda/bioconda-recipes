@@ -52,7 +52,7 @@ urlretrieve(
 
 # TODO: this mimics the override in the "common" job in .circleci/config.yaml
 with open('.circleci/common.sh', 'w') as fout:
-    fout.write("MINICONDA_VER=4.5.4\nBIOCONDA_UTILS_TAG=cb3-migration\n")
+    fout.write("MINICONDA_VER=4.5.4\nBIOCONDA_UTILS_TAG=master\n")
 
 local_config_path = os.path.expanduser('~/.config/bioconda/activate')
 
@@ -106,7 +106,15 @@ use_docker = "true"
 if args.no_docker:
     use_docker = "false"
 
-env = {'WORKSPACE': args.bootstrap, 'BOOTSTRAP': "true", 'USE_DOCKER': use_docker, 'PATH': os.environ['PATH']}
+env = {
+    'WORKSPACE': args.bootstrap, 
+    'BOOTSTRAP': "true", 
+    'USE_DOCKER': use_docker, 
+    'PATH': os.environ.get('PATH', ""),
+    'HTTPS_PROXY': os.environ.get('HTTPS_PROXY', ""),
+    'https_proxy': os.environ.get('https_proxy', "")
+}
+
 sp.check_call(['.circleci/setup.sh'], env=env)
 _write_custom_activate(args.bootstrap)
 

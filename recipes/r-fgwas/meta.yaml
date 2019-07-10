@@ -1,0 +1,51 @@
+{% set name = "fGWAS" %}
+{% set version = "0.3.6" %}
+{% set sha256 = "736b715c89007dd25a2a3028715fdfdc827140b46f4fdc4643d6c23b0c6075f7" %}
+
+package:
+  name: r-{{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/wzhy2000/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - r-base
+    - r-minpack.lm
+    - bioconductor-snpstats
+    - r-mvtnorm
+    - r-devtools
+    - parallel
+  run:
+    - r-base
+    - r-minpack.lm
+    - bioconductor-snpstats
+    - r-mvtnorm
+    - r-devtools
+    - parallel
+
+test:
+  commands:
+    - $R -e "library('fGWAS')"
+
+about:
+  home: https://github.com/wzhy2000/fGWAS
+  license: GNU GPL
+  summary: "GWAS tools for longitudinal genetic traits based on fGWAS statistical model."
+  license_family: LGPL
+  license_file: pkg/LICENSE
+
+extra:
+  identifiers:
+    - doi:10.1016/j.jgg.2018.06.006
+  recipe-maintainers:
+    - npavlovikj

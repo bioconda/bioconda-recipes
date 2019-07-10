@@ -1,35 +1,45 @@
-{% set version = '0.8.0' %}
+{% set version = '0.9.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-spocc
   version: {{ version|replace("-", "_") }}
 
 source:
-  url: https://cran.r-project.org/src/contrib/spocc_{{ version }}.tar.gz
-  sha256: 7c0d1fca1ff3b5281bdbf34e90dd3611646dcc559176370f41aab2cfa71b9503
- 
-build:
-  number: 2
+  url:
+    - {{ cran_mirror }}/src/contrib/spocc_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/spocc/spocc_{{ version }}.tar.gz
+  sha256: 5e1f4defa7b537d91c59f989537ed7b7e9d5afa439a64e247044d61c1f6af1ab
 
+build:
+  merge_build_host: True  # [win]
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 
+# geos isn't getting pulled in by an old version of a dependency. This is already fixed in r-rgeos
 requirements:
+  build:
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
     - r-crul >=0.3.4
     - r-data.table >=1.9.6
     - r-jsonlite >=1.4
     - r-lubridate >=1.5.0
-    - r-rbison >=0.5.0
+    - r-rbison >=0.6.0
     - r-rebird >=0.3.0
-    - r-rgbif >=0.9.8
+    - r-rgbif >=1.0.0
     - r-ridigbio >=0.3.5
-    - r-rvertnet >=0.5.0
+    - r-rvertnet >=0.7.0
     - r-tibble >=1.2
     - r-whisker >=0.3_2
     - r-wicket >=0.3.0
+    - geos 3.6.2
 
   run:
     - r-base
@@ -37,28 +47,38 @@ requirements:
     - r-data.table >=1.9.6
     - r-jsonlite >=1.4
     - r-lubridate >=1.5.0
-    - r-rbison >=0.5.0
+    - r-rbison >=0.6.0
     - r-rebird >=0.3.0
-    - r-rgbif >=0.9.8
+    - r-rgbif >=1.0.0
     - r-ridigbio >=0.3.5
-    - r-rvertnet >=0.5.0
+    - r-rvertnet >=0.7.0
     - r-tibble >=1.2
     - r-whisker >=0.3_2
     - r-wicket >=0.3.0
+    - geos 3.6.2
 
 test:
   commands:
-    - $R -e "library('spocc')"
 
+    - $R -e "library('spocc')"           # [not win]
+    - "\"%R%\" -e \"library('spocc')\""  # [win]
 
 about:
   home: https://github.com/ropensci/spocc
-  license: MIT + file LICENSE
-  summary: |
-    A programmatic interface to many species occurrence data sources, including Global
+  license: MIT
+  summary: A programmatic interface to many species occurrence data sources, including Global
     Biodiversity Information Facility ('GBIF'), 'USGSs' Biodiversity Information Serving
     Our Nation ('BISON'), 'iNaturalist', Berkeley 'Ecoinformatics' Engine, 'eBird',
     'AntWeb', Integrated Digitized 'Biocollections' ('iDigBio'), 'VertNet', Ocean 'Biogeographic'
     Information System ('OBIS'), and Atlas of Living Australia ('ALA'). Includes functionality
     for retrieving species occurrence data, and combining those data.
   license_family: MIT
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

@@ -1,23 +1,24 @@
-{% set version = "0.1.2" %}
+{% set version = "0.2.0" %}
+{% set name = "Deepbinner" %}
 
 package:
-  name: deepbinner
+  name: {{ name | lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/rrwick/Deepbinner/archive/v{{ version }}.tar.gz
-  sha256: 297ec118c094840c9095c09a8deb4808f0b9692f86062adc42b930614e2f47bb
+  url: https://github.com/rrwick/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 4dfc00392c0e3c0f5cbd40c03bb6fcaf51c5126e1042c71863939ede1de0120a
 
 build:
-  number: 0
-  skip: true  # [py2k]
+  number: 1
+  noarch: python
   script: python -m pip install --no-deps --ignore-installed .
   entry_points:
     - deepbinner = deepbinner.deepbinner:main
 
 requirements:
   host:
-    - python
+    - python >3
     - pip
     - setuptools
     - tensorflow
@@ -27,7 +28,7 @@ requirements:
     - noise
     - numpy
   run:
-    - python
+    - python >3
     - tensorflow
     - h5py
     - keras
@@ -37,10 +38,9 @@ requirements:
  
 test:
   commands:
-    - deepbinner -h
+    - COLUMNS=80 deepbinner -h
 
 about:
   home: https://github.com/rrwick/Deepbinner
   license: GPL3
   summary: A signal-level demultiplexer for Oxford Nanopore reads.
-

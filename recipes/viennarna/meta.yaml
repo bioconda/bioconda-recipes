@@ -1,12 +1,15 @@
-{% set version = "2.4.9" %}
-{% set sha256 = "a95cbcab730449a5df3edcc2b71d5126b436ac84ac9c0efa53a91896af142a1f" %}
+{% set version = "2.4.13" %}
+{% set sha256 = "915c271b48536a3cc60b3109f11f7fd99dcd26d22621ee50f05e7f1c2f90cabe" %}
 
 package:
   name: viennarna
   version: {{ version }}
 
 build:
-  number: 0
+  number: 2
+  run_exports:
+    # Ronny said VRNA is stable in x.x releases
+    - {{ pin_subpackage('viennarna', max_pin='x.x') }}
 
 source:
   url: https://www.tbi.univie.ac.at/RNA/download/sourcecode/2_4_x/ViennaRNA-{{ version }}.tar.gz
@@ -17,12 +20,12 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
+    - pkgconfig ## needed for viennarna version checks in dependent packages
     - perl
     - python
     - zlib
   run:
     - python
-    - zlib
 
 test:
   commands:

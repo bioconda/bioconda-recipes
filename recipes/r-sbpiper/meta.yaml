@@ -1,26 +1,32 @@
-{% set name = "sbpiper" %}
-{% set version = "1.9.0" %}
-{% set file_ext = "tar.gz" %}
+{% set version = '1.9.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
-  name: 'r-{{ name|lower }}'
-  version: '{{ version }}'
+  name: r-sbpiper
+  version: {{ version|replace("-", "_") }}
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/{{ name }}_{{ version }}.{{ file_ext }}
-    - https://cran.r-project.org/src/contrib/Archive/sbpiper/{{ name }}_{{ version }}.{{ file_ext }}
+    - {{ cran_mirror }}/src/contrib/sbpiper_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/sbpiper/sbpiper_{{ version }}.tar.gz
   sha256: 8f053383eb0f73fef7809898f27882b5a662f5b2aa404b3ee52491d92342585e
 
 build:
-  merge_build_host: True
-  number: 0
+  merge_build_host: True  # [win]
+
+  number: 2
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{posix}}zip               # [win]
+
+  host:
     - r-base
     - r-factominer
     - r-hmisc
@@ -46,14 +52,37 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('sbpiper')"
+
+    - $R -e "library('sbpiper')"           # [not win]
+    - "\"%R%\" -e \"library('sbpiper')\""  # [win]
 
 about:
-  home: https://cran.r-project.org/package=sbpiper
+  home: https://github.com/pdp10/sbpiper
   license: MIT
-  summary: Provides an API for analysing repetitive parameter estimations and simulations of mathematical models. Examples of mathematical models are Ordinary Differential equations (ODEs) or Stochastic Differential Equations (SDEs) models. Among the analyses for parameter estimation sbpiper calculates statistics and generates plots for parameter density, PCA of the best fits, parameter profile likelihood estimations (PLEs), and 2D parameter PLEs. These results can  be generated using all or a subset of the best computed parameter sets. Among the analyses for model simulation sbpiper calculates statistics and generates plots for deterministic and stochastic time courses via cartesian and heatmap plots. Plots for the scan of one or two model parameters can also be generated.
+  summary: "Provides an API for analysing repetitive parameter estimations and simulations of
+    mathematical models. Examples of mathematical models are Ordinary Differential equations
+    (ODEs)  or Stochastic Differential Equations (SDEs) models. Among the analyses for
+    parameter  estimation 'sbpiper' calculates statistics and generates plots for parameter
+    density, PCA of the best  fits, parameter profile likelihood estimations (PLEs),
+    and 2D parameter PLEs. These results can  be generated using all or a subset of
+    the best computed parameter sets. Among the analyses  for model simulation 'sbpiper'
+    calculates statistics and generates plots for deterministic  and stochastic time
+    courses via cartesian and heatmap plots. Plots for the scan of one or two model
+    \ parameters can also be generated. This package is primarily used by the software
+    'SBpipe'.  Citation: Dalle Pezze P, Le Nov\xC3\xA8re N. SBpipe: a collection of
+    pipelines for automating  repetitive simulation and analysis tasks. BMC Systems
+    Biology. 2017;11:46. <doi:10.1186/s12918-017-0423-3>."
+
+  license_family: MIT
 
 extra:
-  recipe-maintainers: 'Piero Dalle Pezze'
   identifiers:
     - doi:10.1186/s12918-017-0423-3
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

@@ -1,19 +1,23 @@
-{% set version="0.5.1b" %}
-about:
-  home: https://github.com/luntergroup/octopus
-  license: MIT
-  summary: Bayesian haplotype-based mutation calling
+{% set name = "octopus" %}
+{% set version = "0.5.2b" %}
+{% set sha256 = "080e8946a3171769567c0b541b1c964b19148d4545f1c6767838b856a2804a05" %}
+
 package:
-  name: octopus
+  name: {{ name }}
   version: {{ version }}
+
 build:
-  number: 0
+  number: 1
   # Not building on osx CircleCI and unsure how to fix; does not pick
   # up 7.2 compilers
   skip: true # [osx]
+
 source:
-  url: https://github.com/luntergroup/octopus/archive/v0.5.1-beta.tar.gz
-  sha256: 51724a7d88df13cb213e6406b5693e236bcc68fbc1fedd39783ae175875558e1 
+  url: https://github.com/luntergroup/{{ name }}/archive/v0.5.2-beta.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - fix_march_set_to_native.patch
+
 requirements:
   build:
     - {{ compiler('c') }}
@@ -34,6 +38,14 @@ requirements:
     - bzip2
     - xz
     - zlib
+
 test:
   commands:
     - octopus -h
+
+about:
+  home: https://github.com/luntergroup/octopus
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Octopus is a mapping-based variant caller that implements several calling models within a unified haplotype-aware framework."
