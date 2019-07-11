@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="hgu95ecdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/hgu95ecdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hgu95ecdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hgu95ecdf_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hgu95ecdf/bioconductor-hgu95ecdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgu95ecdf/bioconductor-hgu95ecdf_2.18.0_src_all.tar.gz"
 )
 MD5="fa27cfff62a38fc51640d797bd628105"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
