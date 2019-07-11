@@ -10,6 +10,37 @@ source:
 
 build:
   number: 0
+  noarch: generic
+
+requirements:
+  run:
+    - snakemake-minimal ={{ version }}
+    # optional dependencies needed for the full experience
+    # require this dropbox version to ensure that a conda doesn't pick up the
+    # outdated version available
+    - dropbox >=7.2.1
+    - ftputil >=3.2
+    - filechunkio >=1.6
+    - pysftp >=0.2.8
+    - psutil
+    - aioeasywebdav
+    # pandas is optional, but required for many workflows
+    - pandas
+    - python-irodsclient
+    - google-cloud-storage
+    - boto3
+    - jsonschema
+    - jinja2
+    - pygraphviz
+    - networkx >=2.0
+
+test:
+  imports:
+    - snakemake
+  commands:
+    - export GIT\_PYTHON_REFRESH=warn
+    - snakemake --version
+    - snakemake --version | grep "{{ version }}"
 
 outputs:
   - name: snakemake-minimal
@@ -61,54 +92,16 @@ outputs:
         For features like reports and remote files, check out the snakemake package 
         which provides all optional dependencies.
 
-  - name: snakemake
-
-    build:
-      number: 0
-      noarch: generic
-
-    requirements:
-      run:
-        - snakemake-minimal ={{ version }}
-        # optional dependencies needed for the full experience
-        # require this dropbox version to ensure that a conda doesn't pick up the
-        # outdated version available
-        - dropbox >=7.2.1
-        - ftputil >=3.2
-        - filechunkio >=1.6
-        - pysftp >=0.2.8
-        - psutil
-        - aioeasywebdav
-        # pandas is optional, but required for many workflows
-        - pandas
-        - python-irodsclient
-        - google-cloud-storage
-        - boto3
-        - jsonschema
-        - jinja2
-        - pygraphviz
-        - networkx >=2.0
-    
-    test:
-      imports:
-        - snakemake
-      commands:
-        - export GIT\_PYTHON_REFRESH=warn
-        - snakemake --version
-        - snakemake --version | grep "{{ version }}"
-    
-    about:
-      description: |
+about:
+  home: https://snakemake.readthedocs.io
+  license: MIT
+  summary: A popular workflow management system aiming at full in-silico reproducibility.
+  description: |
         Snakemake is a workflow management system that aims to reduce the complexity of creating 
         workflows by providing a fast and comfortable execution environment, together with a clean 
         and modern specification language in python style. Snakemake workflows are essentially Python 
         scripts extended by declarative code to define rules. Rules describe how to create output 
         files from input files.
-
-about:
-  home: https://snakemake.readthedocs.io
-  license: MIT
-  summary: A popular workflow management system aiming at full in-silico reproducibility.
 
 extra:
   identifiers:
