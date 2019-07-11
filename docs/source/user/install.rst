@@ -22,7 +22,7 @@ On MacOS, run::
 On Linux, run::
 
    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-   sh Miniconda3-latest-MacOSX-x86_64.sh
+   sh Miniconda3-latest-Linux-x86_64.sh
 
 Follow the instructions in the installer. If you encounter problems,
 refer to the `conda.io:miniconda` documentation. You can also join our
