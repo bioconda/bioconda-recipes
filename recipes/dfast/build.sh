@@ -1,6 +1,20 @@
 #!/bin/sh
 
 APPROOT=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
+
+rm bin/*/aragorn
+rm bin/*/barrnap
+rm -r bin/Darwin/barrnap-0.8
+rm bin/*/blastdbcmd
+rm bin/*/blastp
+rm bin/*/ghost*
+rm bin/*/hmm*
+rm -r bin/lib
+rm bin/*/makeblastdb
+rm bin/*/mga >= 1.0
+rm bin/*/rpsblast
+
+
 mkdir -p $APPROOT
 cp -r ./* $APPROOT
 
