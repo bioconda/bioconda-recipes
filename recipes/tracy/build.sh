@@ -1,5 +1,5 @@
 #!/bin/sh
 
-make all CXX=$CXX CMDCXXFLAGS="-I${PREFIX}/include" CMDLDFLAGS="-L$PREFIX/lib"
+make all
 mkdir -p $PREFIX/bin
 cp src/tracy $PREFIX/bin
