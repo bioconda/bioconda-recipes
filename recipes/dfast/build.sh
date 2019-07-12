@@ -9,7 +9,7 @@ rm bin/*/blastdbcmd
 rm bin/*/blastp
 rm bin/*/ghost*
 rm bin/*/hmm*
-rm -r bin/lib
+rm -r bin/Darwin/lib
 rm bin/*/makeblastdb
 rm bin/*/mga >= 1.0
 rm bin/*/rpsblast
