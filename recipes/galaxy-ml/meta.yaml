@@ -1,0 +1,68 @@
+{% set name = "Galaxy-ML" %}
+{% set version = "0.7.5" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: d60f4bf600216172fed7dd64188e4c8e3bf4fd44462b4b1df28893ce758de0b4
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python
+    - cython
+    - pip
+    - setuptools
+    - numpy>=1.16.2
+  run:
+    - python
+    - pyfaidx
+    - pytabix
+    - tabix
+    - numpy>=1.16.2
+    - scipy>=1.2.1
+    - pandas>=0.24.2
+    - joblib>=0.13.2
+    - asteval>=0.9.13
+    - scikit-learn==0.20.3
+    - xgboost==0.80
+    - mlxtend==0.16.0
+    - skrebate==0.6
+    - imbalanced-learn==0.4.3
+    - tensorflow==1.13.1
+    - Keras==2.2.4
+
+test:
+  imports:
+    - galaxy_ml
+    # tensorflow can't be tested in docker at the moment
+    #- galaxy_ml.keras_galaxy_models
+    - galaxy_ml.iraps_classifier
+    - galaxy_ml.model_persist
+    - galaxy_ml.model_validations
+    #- galaxy_ml.preprocessors
+    - galaxy_ml.utils
+    #- galaxy_ml.externals.selene_sdk.sequences._sequence
+  commands:
+    - command -v tabix
+    - command -v bgzip
+
+about:
+  home: https://github.com/goeckslab/Galaxy-ML
+  summary: APIs for Galaxy machine learning tools
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - qiagu
+
