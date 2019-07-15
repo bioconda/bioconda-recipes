@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/FIs_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/FIs_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-fis/bioconductor-fis_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-fis/bioconductor-fis_1.12.0_src_all.tar.gz"
 )
 MD5="26a808973c479d338754411a994a3df9"
 

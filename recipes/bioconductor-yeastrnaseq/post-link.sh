@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/yeastRNASeq_0.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/yeastRNASeq_0.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-yeastrnaseq/bioconductor-yeastrnaseq_0.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yeastrnaseq/bioconductor-yeastrnaseq_0.22.0_src_all.tar.gz"
 )
 MD5="d49325eb63e76bea71a4e26d08e877ac"
 

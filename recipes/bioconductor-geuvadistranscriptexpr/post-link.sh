@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/GeuvadisTranscriptExpr_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/GeuvadisTranscriptExpr_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-geuvadistranscriptexpr/bioconductor-geuvadistranscriptexpr_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-geuvadistranscriptexpr/bioconductor-geuvadistranscriptexpr_1.12.0_src_all.tar.gz"
 )
 MD5="ece1f0f2d431b75bca527b79f319c9a0"
 

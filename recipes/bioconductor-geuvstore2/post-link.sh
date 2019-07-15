@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/geuvStore2_1.14.0.tar.gz"
   "https://bioarchive.galaxyproject.org/geuvStore2_1.14.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-geuvstore2/bioconductor-geuvstore2_1.14.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-geuvstore2/bioconductor-geuvstore2_1.14.0_src_all.tar.gz"
 )
 MD5="ca0b70a5e2a1b47dd19f9e9566dc8411"
 

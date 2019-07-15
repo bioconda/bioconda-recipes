@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/aracne.networks_1.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/aracne.networks_1.10.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-aracne.networks/bioconductor-aracne.networks_1.10.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-aracne.networks/bioconductor-aracne.networks_1.10.0_src_all.tar.gz"
 )
 MD5="3dafc172cee133222db156054e3bf6f9"
 

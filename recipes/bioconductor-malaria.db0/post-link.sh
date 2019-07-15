@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/malaria.db0_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/malaria.db0_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-malaria.db0/bioconductor-malaria.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-malaria.db0/bioconductor-malaria.db0_3.8.2_src_all.tar.gz"
 )
 MD5="c6028e87fd7d4c72656a4f865d43e81a"
 

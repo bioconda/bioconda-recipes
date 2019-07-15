@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/hapmapsnp5_1.26.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hapmapsnp5_1.26.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hapmapsnp5/bioconductor-hapmapsnp5_1.26.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hapmapsnp5/bioconductor-hapmapsnp5_1.26.0_src_all.tar.gz"
 )
 MD5="0ca43c40b0ef668b56edefa059dead89"
 

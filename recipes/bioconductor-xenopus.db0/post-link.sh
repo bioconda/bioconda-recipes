@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/xenopus.db0_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/xenopus.db0_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-xenopus.db0/bioconductor-xenopus.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-xenopus.db0/bioconductor-xenopus.db0_3.8.2_src_all.tar.gz"
 )
 MD5="199efa5f20b5dd8fc16aaeac9f0d9eeb"
 

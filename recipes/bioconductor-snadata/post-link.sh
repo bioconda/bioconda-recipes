@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/SNAData_1.30.0.tar.gz"
   "https://bioarchive.galaxyproject.org/SNAData_1.30.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-snadata/bioconductor-snadata_1.30.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-snadata/bioconductor-snadata_1.30.0_src_all.tar.gz"
 )
 MD5="aebebfd31a60cb7878138c1aadea000d"
 

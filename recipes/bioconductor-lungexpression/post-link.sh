@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/lungExpression_0.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/lungExpression_0.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lungexpression/bioconductor-lungexpression_0.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lungexpression/bioconductor-lungexpression_0.22.0_src_all.tar.gz"
 )
 MD5="ca0abb60a770427af34dbe8f5498effc"
 

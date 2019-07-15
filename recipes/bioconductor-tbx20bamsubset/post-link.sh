@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/TBX20BamSubset_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TBX20BamSubset_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-tbx20bamsubset/bioconductor-tbx20bamsubset_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tbx20bamsubset/bioconductor-tbx20bamsubset_1.20.0_src_all.tar.gz"
 )
 MD5="bb066042b00d5950e90ce73215301c43"
 

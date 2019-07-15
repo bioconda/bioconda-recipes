@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/FlowSorted.CordBloodCombined.450k_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/FlowSorted.CordBloodCombined.450k_1.0.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-flowsorted.cordbloodcombined.450k/bioconductor-flowsorted.cordbloodcombined.450k_1.0.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowsorted.cordbloodcombined.450k/bioconductor-flowsorted.cordbloodcombined.450k_1.0.0_src_all.tar.gz"
 )
 MD5="526f5a9879e6ae163dcbea71951cd91c"
 

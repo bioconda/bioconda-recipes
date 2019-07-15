@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/yriMulti_0.14.0.tar.gz"
   "https://bioarchive.galaxyproject.org/yriMulti_0.14.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-yrimulti/bioconductor-yrimulti_0.14.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yrimulti/bioconductor-yrimulti_0.14.0_src_all.tar.gz"
 )
 MD5="7701a6d945562afbfed3d9c4f620ef89"
 

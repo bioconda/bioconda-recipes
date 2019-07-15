@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/yeastGSData_0.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/yeastGSData_0.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-yeastgsdata/bioconductor-yeastgsdata_0.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yeastgsdata/bioconductor-yeastgsdata_0.22.0_src_all.tar.gz"
 )
 MD5="76b11f991c186a0141182b94668dfb70"
 

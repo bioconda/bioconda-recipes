@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/VariantToolsData_1.8.0.tar.gz"
   "https://bioarchive.galaxyproject.org/VariantToolsData_1.8.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-varianttoolsdata/bioconductor-varianttoolsdata_1.8.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-varianttoolsdata/bioconductor-varianttoolsdata_1.8.0_src_all.tar.gz"
 )
 MD5="dd2739d2dc782b7ff7778010799037f9"
 

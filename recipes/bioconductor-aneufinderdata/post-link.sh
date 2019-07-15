@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/AneuFinderData_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/AneuFinderData_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-aneufinderdata/bioconductor-aneufinderdata_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-aneufinderdata/bioconductor-aneufinderdata_1.12.0_src_all.tar.gz"
 )
 MD5="1c7d8037814fe4ba56e13c74d85175c1"
 

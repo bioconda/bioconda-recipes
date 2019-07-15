@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/ENCODExplorerData_0.99.1.tar.gz"
   "https://bioarchive.galaxyproject.org/ENCODExplorerData_0.99.1.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-encodexplorerdata/bioconductor-encodexplorerdata_0.99.1_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-encodexplorerdata/bioconductor-encodexplorerdata_0.99.1_src_all.tar.gz"
 )
 MD5="61788c5c9d248ce4b4488b0be98ea879"
 

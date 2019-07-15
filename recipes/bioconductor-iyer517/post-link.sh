@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/Iyer517_1.26.0.tar.gz"
   "https://bioarchive.galaxyproject.org/Iyer517_1.26.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-iyer517/bioconductor-iyer517_1.26.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-iyer517/bioconductor-iyer517_1.26.0_src_all.tar.gz"
 )
 MD5="22360bdd418629479e66c15026f99c7b"
 

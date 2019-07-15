@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/prostateCancerTaylor_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/prostateCancerTaylor_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-prostatecancertaylor/bioconductor-prostatecancertaylor_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-prostatecancertaylor/bioconductor-prostatecancertaylor_1.12.0_src_all.tar.gz"
 )
 MD5="b95fe8d4d6ecd8bfbaeba23a0d53c829"
 

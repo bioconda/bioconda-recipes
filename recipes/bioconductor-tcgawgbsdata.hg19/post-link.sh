@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/tcgaWGBSData.hg19_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/tcgaWGBSData.hg19_1.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-tcgawgbsdata.hg19/bioconductor-tcgawgbsdata.hg19_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tcgawgbsdata.hg19/bioconductor-tcgawgbsdata.hg19_1.2.0_src_all.tar.gz"
 )
 MD5="0016ac6074b918439dac0a52151c4ffa"
 

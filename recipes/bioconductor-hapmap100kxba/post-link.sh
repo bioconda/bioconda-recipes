@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/hapmap100kxba_1.26.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hapmap100kxba_1.26.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hapmap100kxba/bioconductor-hapmap100kxba_1.26.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hapmap100kxba/bioconductor-hapmap100kxba_1.26.0_src_all.tar.gz"
 )
 MD5="11ec72b847b929a9697461cb7143ecc1"
 

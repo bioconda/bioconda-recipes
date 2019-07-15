@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RITANdata_1.8.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RITANdata_1.8.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ritandata/bioconductor-ritandata_1.8.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ritandata/bioconductor-ritandata_1.8.0_src_all.tar.gz"
 )
 MD5="1e056a9bac392cc82d544af54324449e"
 

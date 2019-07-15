@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/NCIgraphData_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/NCIgraphData_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ncigraphdata/bioconductor-ncigraphdata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ncigraphdata/bioconductor-ncigraphdata_1.20.0_src_all.tar.gz"
 )
 MD5="b69030f40d2818cbd1c004d33403a653"
 

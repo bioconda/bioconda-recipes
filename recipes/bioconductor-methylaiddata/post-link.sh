@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/MethylAidData_1.16.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MethylAidData_1.16.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-methylaiddata/bioconductor-methylaiddata_1.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-methylaiddata/bioconductor-methylaiddata_1.16.0_src_all.tar.gz"
 )
 MD5="2ceb994d8b7cc00b2a7ccf2e4af60579"
 

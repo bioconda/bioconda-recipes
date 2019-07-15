@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Mmulatta.UCSC.rheMac3.refGene_3.4.6.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Mmulatta.UCSC.rheMac3.refGene_3.4.6.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.mmulatta.ucsc.rhemac3.refgene/bioconductor-txdb.mmulatta.ucsc.rhemac3.refgene_3.4.6_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.mmulatta.ucsc.rhemac3.refgene/bioconductor-txdb.mmulatta.ucsc.rhemac3.refgene_3.4.6_src_all.tar.gz"
 )
 MD5="2983fa866d080962334f200709809bce"
 

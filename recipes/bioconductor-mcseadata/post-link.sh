@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/mCSEAdata_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mCSEAdata_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mcseadata/bioconductor-mcseadata_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mcseadata/bioconductor-mcseadata_1.4.0_src_all.tar.gz"
 )
 MD5="2ababb1156ca58b2075b8a78841f2d7b"
 

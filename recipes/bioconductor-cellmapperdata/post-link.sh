@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/CellMapperData_1.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/CellMapperData_1.10.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-cellmapperdata/bioconductor-cellmapperdata_1.10.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cellmapperdata/bioconductor-cellmapperdata_1.10.0_src_all.tar.gz"
 )
 MD5="ad6ececf308dc29a5ebc1e56a6bf7632"
 

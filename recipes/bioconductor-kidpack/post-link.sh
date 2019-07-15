@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/kidpack_1.26.0.tar.gz"
   "https://bioarchive.galaxyproject.org/kidpack_1.26.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-kidpack/bioconductor-kidpack_1.26.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-kidpack/bioconductor-kidpack_1.26.0_src_all.tar.gz"
 )
 MD5="380a3108979f90114e23c9756fb10bd0"
 

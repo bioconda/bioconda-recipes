@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RTCGA.RPPA_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RTCGA.RPPA_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rtcga.rppa/bioconductor-rtcga.rppa_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.rppa/bioconductor-rtcga.rppa_1.12.0_src_all.tar.gz"
 )
 MD5="0e74a091c00ddaabd10c8ccab0e38248"
 

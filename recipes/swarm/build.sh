@@ -1,5 +1,5 @@
 mkdir -pv ${PREFIX}/bin ${PREFIX}/share/man/man1
-make -C src
+make -C src CXX=${CXX}
 cp bin/swarm ${PREFIX}/bin
 cp man/swarm.1 ${PREFIX}/share/man/man1
 cp man/swarm_manual.pdf ${PREFIX}/share

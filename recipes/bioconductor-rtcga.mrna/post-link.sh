@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RTCGA.mRNA_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RTCGA.mRNA_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rtcga.mrna/bioconductor-rtcga.mrna_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.mrna/bioconductor-rtcga.mrna_1.12.0_src_all.tar.gz"
 )
 MD5="87f5ceb10640bc62bf465e6d0137fd0e"
 

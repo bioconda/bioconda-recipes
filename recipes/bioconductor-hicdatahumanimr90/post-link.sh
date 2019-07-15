@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/HiCDataHumanIMR90_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/HiCDataHumanIMR90_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hicdatahumanimr90/bioconductor-hicdatahumanimr90_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hicdatahumanimr90/bioconductor-hicdatahumanimr90_1.4.0_src_all.tar.gz"
 )
 MD5="d7687765d6d2bee5988b52c927a1c6c3"
 

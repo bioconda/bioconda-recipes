@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/KEGGdzPathwaysGEO_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/KEGGdzPathwaysGEO_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-keggdzpathwaysgeo/bioconductor-keggdzpathwaysgeo_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-keggdzpathwaysgeo/bioconductor-keggdzpathwaysgeo_1.22.0_src_all.tar.gz"
 )
 MD5="89a8755fa8639a60b631b1f72336e98f"
 

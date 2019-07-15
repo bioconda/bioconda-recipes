@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/tinesath1cdf_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/tinesath1cdf_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-tinesath1cdf/bioconductor-tinesath1cdf_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tinesath1cdf/bioconductor-tinesath1cdf_1.22.0_src_all.tar.gz"
 )
 MD5="c75413e9dc533ceb727d576dfbbdac49"
 

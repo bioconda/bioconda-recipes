@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Rnorvegicus.UCSC.rn5.refGene_3.4.6.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Rnorvegicus.UCSC.rn5.refGene_3.4.6.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.rnorvegicus.ucsc.rn5.refgene/bioconductor-txdb.rnorvegicus.ucsc.rn5.refgene_3.4.6_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.rnorvegicus.ucsc.rn5.refgene/bioconductor-txdb.rnorvegicus.ucsc.rn5.refgene_3.4.6_src_all.tar.gz"
 )
 MD5="e525b207eab3a82450104e7349ccf5cc"
 

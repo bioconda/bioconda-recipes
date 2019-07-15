@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/diffloopdata_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/diffloopdata_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-diffloopdata/bioconductor-diffloopdata_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-diffloopdata/bioconductor-diffloopdata_1.12.0_src_all.tar.gz"
 )
 MD5="eb6194f78579441878992b842aa3cbea"
 

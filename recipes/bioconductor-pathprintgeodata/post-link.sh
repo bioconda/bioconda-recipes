@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/pathprintGEOData_1.14.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pathprintGEOData_1.14.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pathprintgeodata/bioconductor-pathprintgeodata_1.14.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pathprintgeodata/bioconductor-pathprintgeodata_1.14.0_src_all.tar.gz"
 )
 MD5="a7237e62dda8f356c41d35e50fef33e8"
 

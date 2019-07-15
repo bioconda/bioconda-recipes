@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/methyvimData_1.6.0.tar.gz"
   "https://bioarchive.galaxyproject.org/methyvimData_1.6.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-methyvimdata/bioconductor-methyvimdata_1.6.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-methyvimdata/bioconductor-methyvimdata_1.6.0_src_all.tar.gz"
 )
 MD5="a4c9dd38473186f1632b57e21a3ef671"
 

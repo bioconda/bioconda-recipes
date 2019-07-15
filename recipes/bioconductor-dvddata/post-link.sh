@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/DvDdata_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/DvDdata_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-dvddata/bioconductor-dvddata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dvddata/bioconductor-dvddata_1.20.0_src_all.tar.gz"
 )
 MD5="532227658b29e36af2d13ba3d27c4ae5"
 

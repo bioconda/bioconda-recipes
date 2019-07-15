@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/fission_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/fission_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-fission/bioconductor-fission_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-fission/bioconductor-fission_1.4.0_src_all.tar.gz"
 )
 MD5="9e37bceecdb13c6f82799730387e02d0"
 

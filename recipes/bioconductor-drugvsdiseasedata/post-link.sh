@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/DrugVsDiseasedata_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/DrugVsDiseasedata_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-drugvsdiseasedata/bioconductor-drugvsdiseasedata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-drugvsdiseasedata/bioconductor-drugvsdiseasedata_1.20.0_src_all.tar.gz"
 )
 MD5="70457ffd167a803e7b9572c3ee8de757"
 

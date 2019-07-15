@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/biotmleData_1.8.0.tar.gz"
   "https://bioarchive.galaxyproject.org/biotmleData_1.8.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-biotmledata/bioconductor-biotmledata_1.8.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-biotmledata/bioconductor-biotmledata_1.8.0_src_all.tar.gz"
 )
 MD5="81e38ef555e606146c1a7c8358a2f3a6"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Ggallus.UCSC.galGal5.refGene_3.4.6.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Ggallus.UCSC.galGal5.refGene_3.4.6.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.ggallus.ucsc.galgal5.refgene/bioconductor-txdb.ggallus.ucsc.galgal5.refgene_3.4.6_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.ggallus.ucsc.galgal5.refgene/bioconductor-txdb.ggallus.ucsc.galgal5.refgene_3.4.6_src_all.tar.gz"
 )
 MD5="7a232a5afd00f6dd1313f36878a1f773"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RTCGA.mutations_20151101.14.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RTCGA.mutations_20151101.14.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rtcga.mutations/bioconductor-rtcga.mutations_20151101.14.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.mutations/bioconductor-rtcga.mutations_20151101.14.0_src_all.tar.gz"
 )
 MD5="cf3d79748430e6c9afc08dc1d28aa8a9"
 

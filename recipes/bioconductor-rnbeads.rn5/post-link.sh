@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RnBeads.rn5_1.16.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RnBeads.rn5_1.16.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rnbeads.rn5/bioconductor-rnbeads.rn5_1.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rnbeads.rn5/bioconductor-rnbeads.rn5_1.16.0_src_all.tar.gz"
 )
 MD5="1fa4dc52e604abd00c95bf29702eb9f2"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/QUBICdata_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/QUBICdata_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-qubicdata/bioconductor-qubicdata_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-qubicdata/bioconductor-qubicdata_1.12.0_src_all.tar.gz"
 )
 MD5="db90386771c4b586cb2e466881e897d6"
 
