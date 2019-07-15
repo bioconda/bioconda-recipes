@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/hgu133plus2barcodevecs_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hgu133plus2barcodevecs_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgu133plus2barcodevecs/bioconductor-hgu133plus2barcodevecs_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hgu133plus2barcodevecs/bioconductor-hgu133plus2barcodevecs_1.22.0_src_all.tar.gz"
 )
 MD5="48c436478b8b6da87385b0d4f8d3e205"
 

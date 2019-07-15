@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/CLL_1.24.0.tar.gz"
   "https://bioarchive.galaxyproject.org/CLL_1.24.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-cll/bioconductor-cll_1.24.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cll/bioconductor-cll_1.24.0_src_all.tar.gz"
 )
 MD5="c7e9da38377b6a30c1a4969b4175a543"
 

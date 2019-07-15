@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RRBSdata_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RRBSdata_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rrbsdata/bioconductor-rrbsdata_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rrbsdata/bioconductor-rrbsdata_1.4.0_src_all.tar.gz"
 )
 MD5="53ac77ef644a80ac96da8a6b8ff1ae80"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/Affyhgu133Plus2Expr_1.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/Affyhgu133Plus2Expr_1.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-affyhgu133plus2expr/bioconductor-affyhgu133plus2expr_1.18.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-affyhgu133plus2expr/bioconductor-affyhgu133plus2expr_1.18.0_src_all.tar.gz"
 )
 MD5="f1d335aef3a0fb1371144a6f81e70fa4"
 

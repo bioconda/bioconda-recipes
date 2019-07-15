@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/org.Dr.eg.db_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/org.Dr.eg.db_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-org.dr.eg.db/bioconductor-org.dr.eg.db_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-org.dr.eg.db/bioconductor-org.dr.eg.db_3.8.2_src_all.tar.gz"
 )
 MD5="3426287b8ba7d41fbb5c0a8c6f6b2276"
 

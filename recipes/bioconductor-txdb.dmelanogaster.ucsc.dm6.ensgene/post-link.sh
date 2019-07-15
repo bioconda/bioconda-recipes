@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Dmelanogaster.UCSC.dm6.ensGene_3.4.6.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Dmelanogaster.UCSC.dm6.ensGene_3.4.6.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.dmelanogaster.ucsc.dm6.ensgene/bioconductor-txdb.dmelanogaster.ucsc.dm6.ensgene_3.4.6_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.dmelanogaster.ucsc.dm6.ensgene/bioconductor-txdb.dmelanogaster.ucsc.dm6.ensgene_3.4.6_src_all.tar.gz"
 )
 MD5="3f44aee6ed70de5594d80262674c0e15"
 

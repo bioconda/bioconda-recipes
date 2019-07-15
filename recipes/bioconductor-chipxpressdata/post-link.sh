@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ChIPXpressData_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ChIPXpressData_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-chipxpressdata/bioconductor-chipxpressdata_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chipxpressdata/bioconductor-chipxpressdata_1.22.0_src_all.tar.gz"
 )
 MD5="4dc8f6accadaa504672e7f40d144460a"
 

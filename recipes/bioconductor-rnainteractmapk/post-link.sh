@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RNAinteractMAPK_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RNAinteractMAPK_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rnainteractmapk/bioconductor-rnainteractmapk_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rnainteractmapk/bioconductor-rnainteractmapk_1.22.0_src_all.tar.gz"
 )
 MD5="d8ae6fcd34f94ad097f1948ccdefcc5e"
 

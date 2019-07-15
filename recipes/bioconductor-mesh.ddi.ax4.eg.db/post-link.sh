@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MeSH.Ddi.AX4.eg.db_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Ddi.AX4.eg.db_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.ddi.ax4.eg.db/bioconductor-mesh.ddi.ax4.eg.db_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.ddi.ax4.eg.db/bioconductor-mesh.ddi.ax4.eg.db_1.12.0_src_all.tar.gz"
 )
 MD5="69e13d6fc6e627ae014dcc8813ab5e9a"
 

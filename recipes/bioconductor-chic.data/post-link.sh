@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ChIC.data_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ChIC.data_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-chic.data/bioconductor-chic.data_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chic.data/bioconductor-chic.data_1.4.0_src_all.tar.gz"
 )
 MD5="363188008f53ea5cab5ae873be14365a"
 

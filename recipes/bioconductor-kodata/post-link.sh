@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/KOdata_1.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/KOdata_1.10.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-kodata/bioconductor-kodata_1.10.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-kodata/bioconductor-kodata_1.10.0_src_all.tar.gz"
 )
 MD5="4decbccf4763a957a56256bf026fd955"
 

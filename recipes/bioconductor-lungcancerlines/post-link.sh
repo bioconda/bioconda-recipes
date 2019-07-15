@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/LungCancerLines_0.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/LungCancerLines_0.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lungcancerlines/bioconductor-lungcancerlines_0.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lungcancerlines/bioconductor-lungcancerlines_0.22.0_src_all.tar.gz"
 )
 MD5="96f8ced18a07cd538b51bd1d9bf5f50a"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RNAseqData.HNRNPC.bam.chr14_0.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RNAseqData.HNRNPC.bam.chr14_0.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rnaseqdata.hnrnpc.bam.chr14/bioconductor-rnaseqdata.hnrnpc.bam.chr14_0.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rnaseqdata.hnrnpc.bam.chr14/bioconductor-rnaseqdata.hnrnpc.bam.chr14_0.22.0_src_all.tar.gz"
 )
 MD5="355b2ea49c593b0f4d0284d7c47f8686"
 

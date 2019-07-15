@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/CRCL18_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/CRCL18_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-crcl18/bioconductor-crcl18_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-crcl18/bioconductor-crcl18_1.4.0_src_all.tar.gz"
 )
 MD5="acaf9fea6a3b3fc312d3fe77a0157e93"
 

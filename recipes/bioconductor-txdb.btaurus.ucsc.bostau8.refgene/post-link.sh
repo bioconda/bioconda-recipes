@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Btaurus.UCSC.bosTau8.refGene_3.4.6.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Btaurus.UCSC.bosTau8.refGene_3.4.6.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.btaurus.ucsc.bostau8.refgene/bioconductor-txdb.btaurus.ucsc.bostau8.refgene_3.4.6_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.btaurus.ucsc.bostau8.refgene/bioconductor-txdb.btaurus.ucsc.bostau8.refgene_3.4.6_src_all.tar.gz"
 )
 MD5="3ae01e38e8965b61a3e25ed9085718c4"
 

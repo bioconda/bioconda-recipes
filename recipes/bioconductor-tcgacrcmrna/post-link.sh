@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/TCGAcrcmRNA_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TCGAcrcmRNA_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-tcgacrcmrna/bioconductor-tcgacrcmrna_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tcgacrcmrna/bioconductor-tcgacrcmrna_1.4.0_src_all.tar.gz"
 )
 MD5="210ae0298467a9daaf342873ee1a9504"
 

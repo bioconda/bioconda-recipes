@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/blimaTestingData_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/blimaTestingData_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-blimatestingdata/bioconductor-blimatestingdata_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-blimatestingdata/bioconductor-blimatestingdata_1.4.0_src_all.tar.gz"
 )
 MD5="0b979387eeedb8a9e0c32e120f2c6593"
 

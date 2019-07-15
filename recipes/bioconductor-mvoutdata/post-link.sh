@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/mvoutData_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mvoutData_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mvoutdata/bioconductor-mvoutdata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mvoutdata/bioconductor-mvoutdata_1.20.0_src_all.tar.gz"
 )
 MD5="dee1616c6e51610b038b7df786676238"
 

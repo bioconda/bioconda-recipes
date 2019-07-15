@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MeSH.Sce.S288c.eg.db_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Sce.S288c.eg.db_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.sce.s288c.eg.db/bioconductor-mesh.sce.s288c.eg.db_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.sce.s288c.eg.db/bioconductor-mesh.sce.s288c.eg.db_1.12.0_src_all.tar.gz"
 )
 MD5="04c21f9e0331a3ac3daac4b6157df5bb"
 

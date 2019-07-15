@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/XhybCasneuf_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/XhybCasneuf_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-xhybcasneuf/bioconductor-xhybcasneuf_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-xhybcasneuf/bioconductor-xhybcasneuf_1.22.0_src_all.tar.gz"
 )
 MD5="0d53ee29e521d6b33cb3dc9073970b58"
 

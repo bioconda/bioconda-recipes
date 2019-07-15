@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MafDb.gnomADex.r2.1.GRCh38_3.9.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MafDb.gnomADex.r2.1.GRCh38_3.9.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mafdb.gnomadex.r2.1.grch38/bioconductor-mafdb.gnomadex.r2.1.grch38_3.9.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.gnomadex.r2.1.grch38/bioconductor-mafdb.gnomadex.r2.1.grch38_3.9.0_src_all.tar.gz"
 )
 MD5="16c0b79554bd5fc0b4942bba5eca1db2"
 

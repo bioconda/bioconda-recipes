@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/curatedBladderData_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/curatedBladderData_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-curatedbladderdata/bioconductor-curatedbladderdata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-curatedbladderdata/bioconductor-curatedbladderdata_1.20.0_src_all.tar.gz"
 )
 MD5="e81603412d05d4aeef774fb278648872"
 

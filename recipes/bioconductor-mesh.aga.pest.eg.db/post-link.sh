@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MeSH.Aga.PEST.eg.db_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Aga.PEST.eg.db_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.aga.pest.eg.db/bioconductor-mesh.aga.pest.eg.db_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.aga.pest.eg.db/bioconductor-mesh.aga.pest.eg.db_1.12.0_src_all.tar.gz"
 )
 MD5="55d9c4c29db06de62d39143b2de46dbd"
 

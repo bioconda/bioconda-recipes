@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/leeBamViews_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/leeBamViews_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-leebamviews/bioconductor-leebamviews_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-leebamviews/bioconductor-leebamviews_1.20.0_src_all.tar.gz"
 )
 MD5="6e912f317ff209d059e12093b2816993"
 

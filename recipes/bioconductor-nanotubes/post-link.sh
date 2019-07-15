@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/nanotubes_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/nanotubes_1.0.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-nanotubes/bioconductor-nanotubes_1.0.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-nanotubes/bioconductor-nanotubes_1.0.0_src_all.tar.gz"
 )
 MD5="6f54f293086643f47c81eea20f55f165"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/TENxBrainData_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TENxBrainData_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-tenxbraindata/bioconductor-tenxbraindata_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tenxbraindata/bioconductor-tenxbraindata_1.4.0_src_all.tar.gz"
 )
 MD5="7e6d88a566de22896659fada4fd8192b"
 

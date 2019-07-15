@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/celarefData_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/celarefData_1.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-celarefdata/bioconductor-celarefdata_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-celarefdata/bioconductor-celarefdata_1.2.0_src_all.tar.gz"
 )
 MD5="45c742f3a1047a409cc2ab112c2712e7"
 

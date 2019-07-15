@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RnaSeqSampleSizeData_1.16.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RnaSeqSampleSizeData_1.16.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rnaseqsamplesizedata/bioconductor-rnaseqsamplesizedata_1.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rnaseqsamplesizedata/bioconductor-rnaseqsamplesizedata_1.16.0_src_all.tar.gz"
 )
 MD5="b5807095357790233a3b0901e093d4e2"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RNASeqRData_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RNASeqRData_1.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rnaseqrdata/bioconductor-rnaseqrdata_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rnaseqrdata/bioconductor-rnaseqrdata_1.2.0_src_all.tar.gz"
 )
 MD5="48362fed1dbde122a713bc0c238b85ce"
 

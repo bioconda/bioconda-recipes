@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/TCGAWorkflowData_1.8.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TCGAWorkflowData_1.8.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-tcgaworkflowdata/bioconductor-tcgaworkflowdata_1.8.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tcgaworkflowdata/bioconductor-tcgaworkflowdata_1.8.0_src_all.tar.gz"
 )
 MD5="90d52109bd55f983c51da4ae7bc8a63c"
 

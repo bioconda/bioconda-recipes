@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/PathNetData_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/PathNetData_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pathnetdata/bioconductor-pathnetdata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pathnetdata/bioconductor-pathnetdata_1.20.0_src_all.tar.gz"
 )
 MD5="2001039db08246bf7daef431935a2ef6"
 

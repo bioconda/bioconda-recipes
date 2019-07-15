@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/yeast.db0_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/yeast.db0_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-yeast.db0/bioconductor-yeast.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yeast.db0/bioconductor-yeast.db0_3.8.2_src_all.tar.gz"
 )
 MD5="550cd8cf56dd2a399588a06e8dfe6677"
 

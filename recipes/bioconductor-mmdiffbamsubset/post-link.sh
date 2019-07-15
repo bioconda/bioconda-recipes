@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/MMDiffBamSubset_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MMDiffBamSubset_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mmdiffbamsubset/bioconductor-mmdiffbamsubset_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mmdiffbamsubset/bioconductor-mmdiffbamsubset_1.20.0_src_all.tar.gz"
 )
 MD5="a4db104aef49d0178d476f3539d5f218"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/JASPAR2014_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/JASPAR2014_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-jaspar2014/bioconductor-jaspar2014_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-jaspar2014/bioconductor-jaspar2014_1.20.0_src_all.tar.gz"
 )
 MD5="4e907b35b06421d73433cc13987ddb9a"
 

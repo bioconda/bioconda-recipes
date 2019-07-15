@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/scRNAseq_1.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/scRNAseq_1.10.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-scrnaseq/bioconductor-scrnaseq_1.10.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-scrnaseq/bioconductor-scrnaseq_1.10.0_src_all.tar.gz"
 )
 MD5="e9aded444d5781911c8678274f7abbbe"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ABAData_1.14.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ABAData_1.14.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-abadata/bioconductor-abadata_1.14.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-abadata/bioconductor-abadata_1.14.0_src_all.tar.gz"
 )
 MD5="14527790b75fc139b5bbed7981c1a1ea"
 

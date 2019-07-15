@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/restfulSEData_1.6.0.tar.gz"
   "https://bioarchive.galaxyproject.org/restfulSEData_1.6.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-restfulsedata/bioconductor-restfulsedata_1.6.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-restfulsedata/bioconductor-restfulsedata_1.6.0_src_all.tar.gz"
 )
 MD5="b057b9fc07de16899fa3ef2879d06f33"
 

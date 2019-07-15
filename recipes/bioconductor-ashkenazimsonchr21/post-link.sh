@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/AshkenazimSonChr21_1.14.0.tar.gz"
   "https://bioarchive.galaxyproject.org/AshkenazimSonChr21_1.14.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ashkenazimsonchr21/bioconductor-ashkenazimsonchr21_1.14.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ashkenazimsonchr21/bioconductor-ashkenazimsonchr21_1.14.0_src_all.tar.gz"
 )
 MD5="afcd79416fd2b6fb83f2ad1793dcbc2b"
 

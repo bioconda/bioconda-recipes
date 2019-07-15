@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ALL_1.26.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ALL_1.26.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-all/bioconductor-all_1.26.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-all/bioconductor-all_1.26.0_src_all.tar.gz"
 )
 MD5="10195f32f47c4af7bcb37ed7bdba04cb"
 

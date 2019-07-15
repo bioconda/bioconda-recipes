@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/KEGGandMetacoreDzPathwaysGEO_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/KEGGandMetacoreDzPathwaysGEO_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-keggandmetacoredzpathwaysgeo/bioconductor-keggandmetacoredzpathwaysgeo_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-keggandmetacoredzpathwaysgeo/bioconductor-keggandmetacoredzpathwaysgeo_1.4.0_src_all.tar.gz"
 )
 MD5="7d61c7d151e5cb9b955199a4b184a761"
 

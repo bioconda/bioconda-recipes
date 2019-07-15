@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/maqcExpression4plex_1.28.0.tar.gz"
   "https://bioarchive.galaxyproject.org/maqcExpression4plex_1.28.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-maqcexpression4plex/bioconductor-maqcexpression4plex_1.28.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-maqcexpression4plex/bioconductor-maqcexpression4plex_1.28.0_src_all.tar.gz"
 )
 MD5="fa9ecd1de4f0ee49935ea8620c3605e2"
 

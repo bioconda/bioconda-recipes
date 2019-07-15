@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/PWMEnrich.Dmelanogaster.background_4.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/PWMEnrich.Dmelanogaster.background_4.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.dmelanogaster.background/bioconductor-pwmenrich.dmelanogaster.background_4.18.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.dmelanogaster.background/bioconductor-pwmenrich.dmelanogaster.background_4.18.0_src_all.tar.gz"
 )
 MD5="ccbaca13154018cdc8ab613a92b77d67"
 

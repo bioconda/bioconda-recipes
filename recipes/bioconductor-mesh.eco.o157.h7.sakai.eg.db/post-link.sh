@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MeSH.Eco.O157.H7.Sakai.eg.db_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Eco.O157.H7.Sakai.eg.db_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.eco.o157.h7.sakai.eg.db/bioconductor-mesh.eco.o157.h7.sakai.eg.db_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.eco.o157.h7.sakai.eg.db/bioconductor-mesh.eco.o157.h7.sakai.eg.db_1.12.0_src_all.tar.gz"
 )
 MD5="2104ca21e2956dd186a0b15a0de27c08"
 

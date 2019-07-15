@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/adductData_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/adductData_1.0.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-adductdata/bioconductor-adductdata_1.0.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-adductdata/bioconductor-adductdata_1.0.0_src_all.tar.gz"
 )
 MD5="ee38a871976b2c0f4eba667771f3b3a0"
 
