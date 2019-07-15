@@ -1,4 +1,3 @@
 #!/bin/bash
 
-make CXX=$CXX
-make install
+make CXX=$CXX prefix=$PREFIX install
