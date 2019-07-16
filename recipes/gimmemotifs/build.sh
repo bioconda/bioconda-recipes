@@ -1,3 +1,3 @@
 #!/bin/bash
-sed -i 's/"gcc"/os.environ["GCC"]/' compile_externals.py
+patch < compile_fix.patch
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt
