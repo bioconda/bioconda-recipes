@@ -6,4 +6,4 @@ gunzip ORFfinder.gz
 
 chmod +x ORFfinder 
 
-mv ORFfinder ${PREFIX}/bin
+mv ORFfinder ${PREFIX}/bin/
