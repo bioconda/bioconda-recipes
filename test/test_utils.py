@@ -866,7 +866,7 @@ def test_variants():
                   - 2.0
                 """))
     config = utils.load_conda_build_config()
-    config.exclusive_config_file = tmp
+    config.exclusive_config_files = [tmp]
 
     assert len(utils.load_all_meta(recipe, config)) == 2
 
