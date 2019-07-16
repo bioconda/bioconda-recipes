@@ -37,6 +37,7 @@ TEST_LABEL = 'bioconda-utils-test'
 DOCKER_BASE_IMAGE = "bioconda/bioconda-utils-build-env:latest"
 
 SKIP_DOCKER_TESTS = sys.platform.startswith('darwin')
+SKIP_NOT_OSX = not sys.platform.startswith('darwin')
 
 if SKIP_DOCKER_TESTS:
     PARAMS = [False]
@@ -865,7 +866,7 @@ def test_variants():
                   - 2.0
                 """))
     config = utils.load_conda_build_config()
-    config.exclusive_config_file = tmp
+    config.exclusive_config_files = [tmp]
 
     assert len(utils.load_all_meta(recipe, config)) == 2
 
@@ -996,6 +997,49 @@ def test_nested_recipes(config_fixture):
     assert build_results
 
     assert len(list(utils.get_recipes(r.basedir))) == 4
+
+    for k, v in r.recipe_dirs.items():
+        for i in utils.built_package_paths(v):
+            assert os.path.exists(i)
+            ensure_missing(i)
+
+
+@pytest.mark.skipif(SKIP_NOT_OSX, reason='osx-only test')
+def test_conda_build_sysroot(config_fixture):
+    """
+    Test if CONDA_BUILD_SYSROOT is empty/unset and correctly set after compiler activation.
+    """
+    # conda-build >=3.18.0 sets CONDA_BUILD_SYSROOT to a hard-coded default path.
+    # We clear its value in our bioconda_utils-conda_build_config.yaml.
+    # With CONDA_BUILD_SYSROOT being empty, the activation script of clang_osx-64
+    # can set it to a valid path.
+    r = Recipes(
+        """
+        sysroot_var_is_unset_or_empty_without_c_compiler:
+          meta.yaml: |
+            package:
+              name: sysroot_var_is_unset_or_empty_without_c_compiler
+              version: 0.1
+            build:
+              script: '[ -z "${CONDA_BUILD_SYSROOT:-}" ]'
+        sysroot_is_existing_directory_with_c_compiler:
+          meta.yaml: |
+            package:
+              name: sysroot_is_existing_directory_with_c_compiler
+              version: 0.1
+            build:
+              script: 'test -d "${CONDA_BUILD_SYSROOT}"'
+            requirements:
+              build:
+                - {{ compiler('c') }}
+        """, from_string=True)
+    r.write_recipes()
+    build_result = build.build_recipes(r.basedir, config_fixture,
+                                       r.recipe_dirnames,
+                                       testonly=False,
+                                       force=False,
+                                       mulled_test=False)
+    assert build_result
 
     for k, v in r.recipe_dirs.items():
         for i in utils.built_package_paths(v):

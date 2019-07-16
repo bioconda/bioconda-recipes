@@ -456,17 +456,14 @@ def load_conda_build_config(platform=None, trim_skip=True):
     # get environment root
     env_root = PurePath(shutil.which("bioconda-utils")).parents[1]
     # set path to pinnings from conda forge package
-    config.exclusive_config_file = os.path.join(env_root,
-                                                "conda_build_config.yaml")
-    config.variant_config_files = [
+    config.exclusive_config_files = [
+        os.path.join(env_root, "conda_build_config.yaml"),
         os.path.join(
             os.path.dirname(__file__),
-            'bioconda_utils-conda_build_config.yaml')
+            'bioconda_utils-conda_build_config.yaml'),
     ]
-    for cfg in config.variant_config_files:
+    for cfg in chain(config.exclusive_config_files, config.variant_config_files or []):
         assert os.path.exists(cfg), ('error: {0} does not exist'.format(cfg))
-    assert os.path.exists(config.exclusive_config_file), (
-        "error: conda_build_config.yaml not found in environment root")
     if platform:
         config.platform = platform
     config.trim_skip = trim_skip
@@ -483,7 +480,7 @@ def get_conda_build_config_files(config=None):
     if config is None:
         config = load_conda_build_config()
     # TODO: open PR upstream for conda-build to support multiple exclusive_config_files
-    for file_path in ([config.exclusive_config_file] if config.exclusive_config_file else []):
+    for file_path in (config.exclusive_config_files or []):
         yield CondaBuildConfigFile('-e', file_path)
     for file_path in (config.variant_config_files or []):
         yield CondaBuildConfigFile('-m', file_path)
