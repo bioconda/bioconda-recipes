@@ -1,4 +1,4 @@
 #!/bin/bash
-$GXX -o ProSampler ProSampler.cc
+$CXX -o ProSampler ProSampler.cc
 mkdir -p $PREFIX/bin
 cp ProSampler $PREFIX/bin
