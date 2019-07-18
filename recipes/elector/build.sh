@@ -33,4 +33,4 @@ cp src/poa-graph/blosum80.mat $PREFIX/share/elector/
 sed -i "s#os.path.dirname(os.path.realpath(__file__))+\"/../bin/\"#${PREFIX}/bin/#" elector/utils.py
 sed -i "s#os.path.dirname(os.path.realpath(__file__))+\"/../src/poa-graph/\"#${PREFIX}/share/elector/#" elector/utils.py
 
-$PYTHON setup.py install
+$PREFIX/bin/pip install .
