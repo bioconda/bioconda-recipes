@@ -1,0 +1,50 @@
+{% set name = "midas" %}
+{% set version = "1.2.2" %}
+{% set sha256 = "54e50c094ce3e9d0d40c6dab93f17e6b15f9dfd9c571ac242282e9626620ea9c" %}
+
+package:
+  name: '{{name}}'
+  version: '{{version}}'
+
+source:
+  url: https://github.com/snayfach/MIDAS/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
+  patches:
+    - midas.patch
+
+build:
+  noarch: python
+  number: 0
+
+requirements:
+  host:
+    - python <3
+    - setuptools
+  run:
+    - python <3
+    - pandas
+    - pysam
+    - numpy
+    - biopython
+    - hs-blastn
+    - bowtie2
+    - samtools >=1.4.0
+
+test:
+  commands:
+    - build_midas_db.py --help
+    - call_consensus.py --help
+    - compare_genes.py --help
+    - merge_midas.py  --help
+    - query_by_compound.py --help
+    - run_midas.py --help
+    - snp_diversity.py --help
+    - strain_tracking.py --help
+
+about:
+  home: https://github.com/snayfach/MIDAS
+  license: GPL-3.0
+  license_file: LICENSE
+  summary: An integrated pipeline for estimating strain-level genomic variation from
+    metagenomic data
+  license_family: GPL
