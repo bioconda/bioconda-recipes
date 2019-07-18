@@ -1,5 +1,5 @@
 {% set name = "Galaxy-ML" %}
-{% set version = "0.7.4.1" %}
+{% set version = "0.7.7" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,11 +7,12 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 1e22594b9c8e6a27141cfb887f9a37ebe48025db50ee834b933c66a6844a2617
+  sha256: f964f9376c640f9086a3a825b70bb1f5acbcbb22a105f97225fe4454fd2a9517
 
 build:
-  number: 0
+  number: 1
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv
+  skip: true  # [osx]
 
 requirements:
   build:
@@ -27,6 +28,7 @@ requirements:
     - python
     - pyfaidx
     - pytabix
+    - tabix
     - numpy>=1.16.2
     - scipy>=1.2.1
     - pandas>=0.24.2
@@ -37,8 +39,10 @@ requirements:
     - mlxtend==0.16.0
     - skrebate==0.6
     - imbalanced-learn==0.4.3
-    - tensorflow==1.13.1
+    - tensorflow-gpu==1.13.1
     - Keras==2.2.4
+    - cudatoolkit==10.0.130
+    - cudnn==7.6.0
 
 test:
   imports:
@@ -51,6 +55,9 @@ test:
     #- galaxy_ml.preprocessors
     - galaxy_ml.utils
     #- galaxy_ml.externals.selene_sdk.sequences._sequence
+  commands:
+    - command -v tabix
+    - command -v bgzip
 
 about:
   home: https://github.com/goeckslab/Galaxy-ML
