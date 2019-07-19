@@ -1,0 +1,40 @@
+{% set name = "perl-string-diff" %}
+{% set version = "0.07" %}
+{% set sha256 = "7215b67cbc3226e2d0e18b38ec58c93be0bf6090278698bef955348826cd0af3" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://cpan.metacpan.org/authors/id/Y/YA/YAPPO/String-Diff-0.07.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    # Fix tests failing because of the change in perl-yaml library
+    # https://github.com/yappo/p5-String-Diff/pull/8/commits/cf34e0b93fe89fb24f91cfaf998b5b563f269eb2
+    - 0001-fix-tests.patch
+
+build:
+  noarch: generic
+  number: 0
+
+requirements:
+  build:
+    - perl
+    - perl-module-build-tiny
+    - perl-algorithm-diff
+    - perl-yaml
+    - perl-test-base
+
+  run:
+    - perl
+    - perl-algorithm-diff
+
+test:
+  imports:
+    - String::Diff
+
+about:
+  home: https://github.com/yappo/p5-String-Diff
+  license: perl_5
+  summary: 'Simple diff to String'
