@@ -1,4 +1,4 @@
-{% set version = "2.0" %}
+{% set version = "1.3.6" %}
 
 package:
   name: stringtie
@@ -11,23 +11,24 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - autoconf
-    - automake
-    - libtool
-    - pkg-config
   host:
     - zlib
-    - bzip2
+    # curl is used to download prepDE.py
+    - curl
   run:
+    - zlib
     - python
 
 source:
-  url: https://github.com/mpertea/stringtie2/archive/v{{ version }}.tar.gz
-  sha256: ea8a9d122285a44b5bb268bf98f2efb10738911c3463b371ee427f2a2010aeaf
+  sha256: 9dbdf01ab3282dc6eb647409920b53f8e0df45f4c45faf9d6b5ca135a3738ee8
+  url: http://ccb.jhu.edu/software/stringtie/dl/stringtie-{{ version }}.tar.gz
+  patches:
+    - samtools_makefile.patch
 
 test:
   commands:
-    - stringtie --help
+    - "stringtie 2>&1 | grep Assemble"
+    - prepDE.py --help
 
 about:
   home: https://ccb.jhu.edu/software/stringtie/
@@ -37,4 +38,4 @@ about:
 extra:
   identifiers:
     - biotools:StringTie
-    - doi:10.1101/694554
+    - doi:10.1038/nbt.3122
