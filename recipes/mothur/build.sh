@@ -18,15 +18,16 @@ sed -i 's;\(GSL_INCLUDE_DIR \?\=\) \"\\\"Enter_your_GSL_include_path_here\\\"\";
 ### Reconfiguring compiler for uchime Makefile
 sed -i 's/g++/$CXX/g' source/uchime_src/mk
 
+### Cleaning before compiling (just in case)
+make clean
+
 ### Compiling programs
 make
 
-### Cleaning up
-make clean
-
-# Copy executables to bin
+### Organizing bin
+# Copy mothur and uchime executables to bin
 cp {mothur,uchime} "${PREFIX}"/bin/
 
-### Placing BLAST binaries in location required by mothur
+# Placing BLAST binaries in default location for mothur
 mkdir -pv "${PREFIX}"/bin/blast/bin/
 ln -s "${PREFIX}"/bin/{blastall,formatdb,megablast} "${PREFIX}"/bin/blast/bin/
