@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cd src/
-source activate root
 
+source activate root
+which gcc
 make
