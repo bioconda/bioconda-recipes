@@ -13,6 +13,8 @@ sed 's;\(GSL_INCLUDE_DIR \?\=\) \"\\\"Enter_your_GSL_include_path_here\\\"\";\1 
 
 ### Reconfiguring compiler for uchime Makefile
 sed 's/g++/$CXX/g' source/uchime_src/mk > source/uchime_src/mk.tmp && mv source/uchime_src/mk.tmp source/uchime_src/mk
+# Making overwritten file executable
+chmod +x source/uchime_src/mk
 
 ### Cleaning before compiling (just in case)
 make clean
