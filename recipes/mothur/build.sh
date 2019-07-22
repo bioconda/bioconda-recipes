@@ -1,7 +1,3 @@
-# the flags the new gxx activate script sets breaks the build, so unset them here
-# unset CXXFLAGS
-# export CXXFLAGS="-I${PREFIX}/include"
-
 ### Configuring settings within mothur Makefile
 # Enabling dependencies for full functionality
 sed -i 's;\(USEBOOST \?\=\) no;\1 yes;' Makefile
