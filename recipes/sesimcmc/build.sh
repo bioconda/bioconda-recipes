@@ -2,4 +2,4 @@
 set -x
 
 cd src/
-CPP="$CXX" make
+make CC=$GCC CPP=$GXX
