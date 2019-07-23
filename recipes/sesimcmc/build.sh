@@ -2,6 +2,6 @@
 set -x
 
 cd src/
-make CC=$GCC CPP=$GXX
+make CC=$CC CPP=$CXX
 mkdir -p $PREFIX/bin
 cp SeSiMCMC $PREFIX/bin
