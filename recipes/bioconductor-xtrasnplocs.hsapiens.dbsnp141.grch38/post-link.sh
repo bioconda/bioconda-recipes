@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="XtraSNPlocs.Hsapiens.dbSNP141.GRCh38_0.99.12.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/XtraSNPlocs.Hsapiens.dbSNP141.GRCh38_0.99.12.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/XtraSNPlocs.Hsapiens.dbSNP141.GRCh38_0.99.12.tar.gz"
   "https://bioarchive.galaxyproject.org/XtraSNPlocs.Hsapiens.dbSNP141.GRCh38_0.99.12.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-xtrasnplocs.hsapiens.dbsnp141.grch38/bioconductor-xtrasnplocs.hsapiens.dbsnp141.grch38_0.99.12_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-xtrasnplocs.hsapiens.dbsnp141.grch38/bioconductor-xtrasnplocs.hsapiens.dbsnp141.grch38_0.99.12_src_all.tar.gz"
 )
 MD5="2b9d4036b9baff400a811fd69c910cff"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

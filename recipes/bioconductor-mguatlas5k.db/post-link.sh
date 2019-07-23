@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="mguatlas5k.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/mguatlas5k.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/mguatlas5k.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/mguatlas5k.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mguatlas5k.db/bioconductor-mguatlas5k.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mguatlas5k.db/bioconductor-mguatlas5k.db_3.2.3_src_all.tar.gz"
 )
 MD5="826093fe7228c08962aff36ad89af28e"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
