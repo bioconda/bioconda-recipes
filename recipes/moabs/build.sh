@@ -10,4 +10,5 @@ export BOOSTLIB="${PREFIX}/lib"
 make
 make install
 mkdir -p ${PREFIX}
-rsync -av ${SRC_DIR}/bin/ ${PREFIX}/bin
+# rsync -av ${SRC_DIR}/bin/ ${PREFIX}/bin
+cp -R ${SRC_DIR}/bin/* ${PREFIX}/bin
