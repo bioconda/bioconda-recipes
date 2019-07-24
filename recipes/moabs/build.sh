@@ -1,5 +1,9 @@
 #!/bin/bash
 
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+export CPATH=${PREFIX}/include
+
 cd "$SRC_DIR"
 autoreconf -i
 ./configure CPPFLAGS="-I${PREFIX}/include" LDFLAGS="-L${PREFIX}/lib" --prefix=$PREFIX
