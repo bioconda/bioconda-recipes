@@ -5,12 +5,18 @@ local f=$PREFIX/bin/$1
 local url=$2
 local sha256=$3
 wget -q -O "$f" "$url"
+ls -lh "$f" >> "$PREFIX/.messages.txt"
+
 SUCCESS=0
 if [[ $(uname -s) == "Linux" ]]; then
-	if sha256sum -c <<< "$sha256  $f"; then
+	which sha256sum >> "$PREFIX/.messages.txt"
+	sha256sum "$f" >> "$PREFIX/.messages.txt"
+	if [ sha256sum --quiet -c <<< "$sha256  $f" ]; then
 		SUCCESS=1
 	fi
 else if [[ $(uname -s) == "Darwin" ]]; then
+	which shasum >> "$PREFIX/.messages.txt"
+	shasum -a 256 "$f" >> "$PREFIX/.messages.txt"
 	if [[ $(shasum -a 256 $f | awk '{ print $1 }') == "$sha256" ]]; then
 		SUCCESS=1
 	fi
