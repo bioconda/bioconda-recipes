@@ -4,10 +4,8 @@ function cmd {
 local f=$PREFIX/bin/$1
 local url=$2
 local sha256=$3
-
-mkdir -p "$(dirname "$f")" || echo mkdir -p "$(dirname "$f")" >> "$PREFIX/.messages.txt"
-curl -s -o "$f" "$url" || echo curl -s -o "$f" "$url" >> "$PREFIX/.messages.txt"
-sha256sum --quiet -c <<< "$sha256  $f"
+wget -q -O "$f" "$url" || echo wget -q -O "$f" "$url" >> "$PREFIX/.messages.txt"
+sha256sum --quiet -c <<< "$sha256  $f" || exit -1
 if (($?!=0))
 then
 	echo "ERROR: post-link.sh was unable to download $f with the sha256 $sha256 from $url." >> "$PREFIX/.messages.txt"
