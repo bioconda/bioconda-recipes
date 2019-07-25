@@ -2,13 +2,12 @@
 
 function cmd {
 local f=$PREFIX/bin/$1
-local f=$outdir/$1
 local url=$2
 local sha256=$3
 
 echo "$PREFIX" >> "$PREFIX/.messages.txt"
 echo wget -q -O "$f" "$url" >> "$PREFIX/.messages.txt"
-wget -q -O "$f" "$url"
+# wget -q -O "$f" "$url"
 if [ -f "$f" ]
 then
 	SUCCESS=0
