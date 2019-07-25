@@ -6,10 +6,8 @@ local url=$2
 local sha256=$3
 
 echo "$PREFIX" >> "$PREFIX/.messages.txt"
-
-mkdir -p "$(dirname "$f")"
-wget -q -O "$f" "$url"
-
+echo wget -q -O "$f" "$url" >> "$PREFIX/.messages.txt"
+curl -s "$url" > "$f"
 if [ -f "$f" ]
 then
 	SUCCESS=0
