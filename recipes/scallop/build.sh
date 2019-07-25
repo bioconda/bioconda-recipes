@@ -2,7 +2,7 @@
 
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
-export LIBS="-lboost -lhts"
+export LIBS="-lhts"
 
 ./configure --prefix=$PREFIX
 make
