@@ -1,0 +1,100 @@
+From 2dbb692fc3f22e1b5efa24098eb7895d4aa71b55 Mon Sep 17 00:00:00 2001
+From: Anders Goncalves da Silva <andersgs@gmail.com>
+Date: Thu, 25 Jul 2019 15:57:02 -0700
+Subject: [PATCH 1/2] Update Makefile to play nicely with conda
+
+---
+ Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 0a60ccc..3e85874 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,11 +1,12 @@
+ CC=gcc
+ CFLAGS=-g -Wall -O2 -Wno-unused-function
++LDFLAGS=-lz -lm
+ BINDIR=/usr/local/bin
+ 
+ all:seqtk
+ 
+ seqtk:seqtk.c khash.h kseq.h
+-		$(CC) $(CFLAGS) seqtk.c -o $@ -lz -lm
++		$(CC) $(CFLAGS) seqtk.c -o $@ $(LDFLAGS)
+ 
+ install:all
+ 		install seqtk $(BINDIR)
+-- 
+2.20.1 (Apple Git-117)
+
+
+From f49cf234a7b73300a94aa549d348851e97a981de Mon Sep 17 00:00:00 2001
+From: Anders Goncalves da Silva <andersgs@gmail.com>
+Date: Thu, 25 Jul 2019 21:24:50 -0700
+Subject: [PATCH 2/2] Fix lz and lm linking
+
+---
+ 0001-makefile.patch | 30 ++++++++++++++++++++++++++++++
+ Makefile            |  4 ++--
+ 2 files changed, 32 insertions(+), 2 deletions(-)
+ create mode 100644 0001-makefile.patch
+
+diff --git a/0001-makefile.patch b/0001-makefile.patch
+new file mode 100644
+index 0000000..890e480
+--- /dev/null
++++ b/0001-makefile.patch
+@@ -0,0 +1,30 @@
++From 2dbb692fc3f22e1b5efa24098eb7895d4aa71b55 Mon Sep 17 00:00:00 2001
++From: Anders Goncalves da Silva <andersgs@gmail.com>
++Date: Thu, 25 Jul 2019 15:57:02 -0700
++Subject: [PATCH] Update Makefile to play nicely with conda
++
++---
++ Makefile | 3 ++-
++ 1 file changed, 2 insertions(+), 1 deletion(-)
++
++diff --git a/Makefile b/Makefile
++index 0a60ccc..3e85874 100644
++--- a/Makefile
+++++ b/Makefile
++@@ -1,11 +1,12 @@
++ CC=gcc
++ CFLAGS=-g -Wall -O2 -Wno-unused-function
+++LDFLAGS=-lz -lm
++ BINDIR=/usr/local/bin
++ 
++ all:seqtk
++ 
++ seqtk:seqtk.c khash.h kseq.h
++-		$(CC) $(CFLAGS) seqtk.c -o $@ -lz -lm
+++		$(CC) $(CFLAGS) seqtk.c -o $@ $(LDFLAGS)
++ 
++ install:all
++ 		install seqtk $(BINDIR)
++-- 
++2.20.1 (Apple Git-117)
++
+diff --git a/Makefile b/Makefile
+index 3e85874..0315df5 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,12 +1,12 @@
+ CC=gcc
+ CFLAGS=-g -Wall -O2 -Wno-unused-function
+-LDFLAGS=-lz -lm
++LDFLAGS=""
+ BINDIR=/usr/local/bin
+ 
+ all:seqtk
+ 
+ seqtk:seqtk.c khash.h kseq.h
+-		$(CC) $(CFLAGS) seqtk.c -o $@ $(LDFLAGS)
++		$(CC) $(CFLAGS) seqtk.c -o $@ $(LDFLAGS) -lz -lm
+ 
+ install:all
+ 		install seqtk $(BINDIR)
+-- 
+2.20.1 (Apple Git-117)
+
