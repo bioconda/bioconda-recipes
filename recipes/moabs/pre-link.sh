@@ -4,7 +4,12 @@ function cmd {
 local f=$PREFIX/bin/$1
 local url=$2
 local sha256=$3
+
+echo "$PREFIX" >> "$PREFIX/.messages.txt"
+
+mkdir -p "$(dirname "$f")"
 wget -q -O "$f" "$url"
+
 if [ -f "$f" ]
 then
 	SUCCESS=0
