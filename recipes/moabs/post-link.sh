@@ -4,12 +4,15 @@ function cmd {
 local f=$PREFIX/bin/$1
 local url=$2
 local sha256=$3
-wget -q -O "$f" "$url" || echo wget -q -O "$f" "$url" >> "$PREFIX/.messages.txt"
-sha256sum --quiet -c <<< "$sha256  $f"
-if (($?!=0))
+wget -q -O "$f" "$url"
+if [ -f "$f" ]
 then
-	echo "ERROR: post-link.sh was unable to download $f with the sha256 $sha256 from $url." >> "$PREFIX/.messages.txt"
-	exit -1
+	sha256sum --quiet -c <<< "$sha256  $f"
+	if (($? != 0))
+	then
+		echo "ERROR: post-link.sh was unable to download $f with the sha256 $sha256 from $url." >> "$PREFIX/.messages.txt"
+		exit -1
+	fi
 fi
 }
 
