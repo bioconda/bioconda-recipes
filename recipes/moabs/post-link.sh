@@ -14,14 +14,13 @@ echo Success: wget -q -O "$f" "$url" >> "$PREFIX/.messages.txt"
 if [ -f "$f" ]
 then
 	sha256sum "$f" >> "$PREFIX/.messages.txt"
+	uname -s >> "$PREFIX/.messages.txt"
 fi
 
 SUCCESS=0
 if [[ $(uname -s) == "Linux" ]]; then
 	sha256sum "$f" >> "$PREFIX/.messages.txt"
-	sha256sum --quiet -c <<< "$sha256  $f"
-	if (($?==0))
-	then
+	if [[ $(sha256sum "$f" | awk '{ print $1 }') == "$sha256" ]]; then
 		SUCCESS=1
 	fi
 else if [[ $(uname -s) == "Darwin" ]]; then
