@@ -5,18 +5,20 @@ local f=$PREFIX/bin/$1
 local url=$2
 local sha256=$3
 wget -q -O "$f" "$url"
-if [ -f "$f" ]
-then
-	which wget >> "$PREFIX/.messages.txt"
-	echo "$f" >> "$PREFIX/.messages.txt"
-	sha256sum "$f" >> "$PREFIX/.messages.txt"
-	ls -lh "$f" >> "$PREFIX/.messages.txt"
-	sha256sum --quiet -c <<< "$sha256  $f"
-	if (($? != 0))
-	then
-		echo "ERROR: post-link.sh was unable to download $f with the sha256 $sha256 from $url." >> "$PREFIX/.messages.txt"
-		exit -1
+SUCCESS=0
+if [[ $(uname -s) == "Linux" ]]; then
+	if sha256sum -c <<< "$sha256  $f"; then
+		SUCCESS=1
 	fi
+else if [[ $(uname -s) == "Darwin" ]]; then
+	if [[ $(shasum -a 256 $f | awk '{ print $1 }') == "$sha256" ]]; then
+		SUCCESS=1
+	fi
+fi
+
+if [[ $SUCCESS != 1 ]]; then
+	echo "ERROR: post-link.sh was unable to download $f with the sha256 $sha256 from $url." >> "$PREFIX/.messages.txt"
+	exit -1
 fi
 }
 
