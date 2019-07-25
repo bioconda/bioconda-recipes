@@ -5,8 +5,8 @@ local f=$PREFIX/bin/$1
 local url=$2
 local sha256=$3
 
-mkdir -p "$(dirname "$f")"
-wget -O "$f" "$url"
+mkdir -p "$(dirname "$f")" || echo mkdir -p "$(dirname "$f")" >> "$PREFIX/.messages.txt"
+wget -O "$f" "$url" >> "$PREFIX/.messages.txt" || echo wget -O "$f" "$url" >> "$PREFIX/.messages.txt"
 # sha256sum --quiet -c <<< "$sha256  $f"
 # if (($?!=0))
 # then
