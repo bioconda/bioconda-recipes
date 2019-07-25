@@ -1,8 +1,8 @@
 #!/bin/bash
 
-export CPPFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-export LIBS="-lhts"
+export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export LIBS="$LIBS -lhts -lboost"
 
 ./configure --prefix=$PREFIX
 make
