@@ -1,7 +1,11 @@
 #!/bin/bash
 
+outdir=$PREFIX/staging
+mkdir -p "$outdir"
+
 function cmd {
-local f=$PREFIX/bin/$1
+# local f=$PREFIX/bin/$1
+local f=$outdir/$1
 local url=$2
 local sha256=$3
 
