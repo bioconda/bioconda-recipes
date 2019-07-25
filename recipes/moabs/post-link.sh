@@ -7,6 +7,10 @@ local sha256=$3
 wget -q -O "$f" "$url"
 if [ -f "$f" ]
 then
+	which wget >> "$PREFIX/.messages.txt"
+	echo "$f" >> "$PREFIX/.messages.txt"
+	sha256sum "$f" >> "$PREFIX/.messages.txt"
+	ls -lh "$f" >> "$PREFIX/.messages.txt"
 	sha256sum --quiet -c <<< "$sha256  $f"
 	if (($? != 0))
 	then
