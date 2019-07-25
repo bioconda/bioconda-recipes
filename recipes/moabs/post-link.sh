@@ -18,20 +18,28 @@ then
 fi
 
 SUCCESS=0
-if [[ $(uname -s) == "Linux" ]]; then
+os=$(uname -s)
+if [ "$os" == "Linux" ]
+then
 	sha256sum "$f" >> "$PREFIX/.messages.txt"
-	if [[ $(sha256sum "$f" | awk '{ print $1 }') == "$sha256" ]]; then
+	shash=$(sha256sum "$f" | cut -f 1 -d ' ')
+	if [ "$shash" == "$sha256" ]
+	then
 		SUCCESS=1
 	fi
-else if [[ $(uname -s) == "Darwin" ]]; then
+elif [ "$os" == "Darwin" ]
+then
 	shasum -a 256 "$f" >> "$PREFIX/.messages.txt"
-	if [[ $(shasum -a 256 "$f" | awk '{ print $1 }') == "$sha256" ]]; then
+	shash=$(shasum -a 256 "$f" | cut -f 1 -d ' ')
+	if [ "$shash" == "$sha256" ]
+	then
 		SUCCESS=1
 	fi
 fi
 
-if [[ $SUCCESS != 1 ]]; then
-	echo "ERROR: post-link.sh was unable to download $f with the sha256 $sha256 from $url." >> "$PREFIX/.messages.txt"
+if [ $SUCCESS != 1 ]
+then
+	echo "ERROR: post-link.sh was unable to download $f with the sha256 $sha256 from $url at $os." >> "$PREFIX/.messages.txt"
 	exit -1
 fi
 
