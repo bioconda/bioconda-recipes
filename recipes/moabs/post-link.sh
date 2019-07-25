@@ -4,6 +4,8 @@ function cmd {
 local f=$PREFIX/bin/$1
 local url=$2
 local sha256=$3
+date >> "$PREFIX/.messages.txt"
+which wget >> "$PREFIX/.messages.txt"
 wget -q -O "$f" "$url"
 ls -lh "$f" >> "$PREFIX/.messages.txt"
 
@@ -11,7 +13,9 @@ SUCCESS=0
 if [[ $(uname -s) == "Linux" ]]; then
 	which sha256sum >> "$PREFIX/.messages.txt"
 	sha256sum "$f" >> "$PREFIX/.messages.txt"
-	if [ sha256sum --quiet -c <<< "$sha256  $f" ]; then
+	sha256sum --quiet -c <<< "$sha256  $f"
+	if (($?==0))
+	then
 		SUCCESS=1
 	fi
 else if [[ $(uname -s) == "Darwin" ]]; then
