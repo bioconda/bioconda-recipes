@@ -3,6 +3,15 @@
 env >> "$PREFIX/.messages.txt"
 which wget sha256sum shasum >> "$PREFIX/.messages.txt"
 
+function cmd {
+local f=$PREFIX/bin/$1
+local url=$2
+echo wget -q -O "$f" "$url" >> "$PREFIX/.messages.txt"
+wget -q -O "$f" "$url"
+}
+
+cmd lut_fet.dat 'https://ndownloader.figshare.com/files/16527371?private_link=44c546b05dd9fa0aee3d'
+
 # function cmd {
 # local f=$PREFIX/bin/$1
 # local url=$2
