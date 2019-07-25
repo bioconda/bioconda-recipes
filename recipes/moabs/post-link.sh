@@ -6,13 +6,13 @@ local url=$2
 local sha256=$3
 
 mkdir -p "$(dirname "$f")" || echo mkdir -p "$(dirname "$f")" >> "$PREFIX/.messages.txt"
-wget -O "$f" "$url" >> "$PREFIX/.messages.txt" || echo wget -O "$f" "$url" >> "$PREFIX/.messages.txt"
-# sha256sum --quiet -c <<< "$sha256  $f"
-# if (($?!=0))
-# then
-#   echo "ERROR: post-link.sh was unable to download $f with the sha256 $sha256 from $url." >> "$PREFIX/.messages.txt"
-#   exit -1
-# fi
+curl -s -o "$f" "$url" || echo curl -s -o "$f" "$url" >> "$PREFIX/.messages.txt"
+sha256sum --quiet -c <<< "$sha256  $f"
+if (($?!=0))
+then
+	echo "ERROR: post-link.sh was unable to download $f with the sha256 $sha256 from $url." >> "$PREFIX/.messages.txt"
+	exit -1
+fi
 }
 
 cmd \
