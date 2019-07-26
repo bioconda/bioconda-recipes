@@ -261,7 +261,7 @@ def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
 
     # setup linting
     if do_lint:
-        always_exclude = ('build_number_needs_bump')
+        always_exclude = ('build_number_needs_bump',)
         if not lint_exclude:
             lint_exclude = always_exclude
         else:

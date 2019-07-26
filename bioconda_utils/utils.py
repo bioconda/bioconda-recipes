@@ -1017,7 +1017,7 @@ def check_recipe_skippable(recipe, check_channels):
         # No packages with same version + build num in channels: no need to skip
         return False
     num_new_pkg_builds = Counter(
-        (meta.name(), meta.version(), int(meta.build_number()) or 0, _meta_subdir(meta))
+        (meta.name(), meta.version(), int(meta.build_number() or 0), _meta_subdir(meta))
         for meta in metas
     )
     return num_new_pkg_builds == num_existing_pkg_builds
