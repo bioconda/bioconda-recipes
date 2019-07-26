@@ -1,4 +1,7 @@
-find "${BUILD_PREFIX}"/ -regex ".*hdf5.*"
+echo Finding HDF5 Files
+find ${BUILD_PREFIX}/ -regex ".*hdf5.*"
+
+cat ${BUILD_PREFIX}/lib/libhdf5.a
 
 
 # ### Configuring settings within mothur Makefile
