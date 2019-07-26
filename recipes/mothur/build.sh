@@ -6,8 +6,8 @@ sed 's;\(USEGSL ?\=\) no;\1 yes;' Makefile > Makefile.tmp && mv Makefile.tmp Mak
 # Specifying dependency locations
 sed 's;\(BOOST_LIBRARY_DIR ?\=\) \"\\\"Enter_your_boost_library_path_here\\\"\";\1 \"\\\"'"${BUILD_PREFIX}"'\/lib\\\"\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
 sed 's;\(BOOST_INCLUDE_DIR ?\=\) \"\\\"Enter_your_boost_include_path_here\\\"\";\1 \"\\\"'"${BUILD_PREFIX}"'\/include/boost\\\"\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
-sed 's;\(HDF5_LIBRARY_DIR ?\=\) \"\\\"Enter_your_HDF5_library_path_here\\\"\";\1 \"\\\"'"${BUILD_PREFIX}"'\/lib\\\"\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
-sed 's;\(HDF5_INCLUDE_DIR ?\=\) \"\\\"Enter_your_HDF5_include_path_here\\\"\";\1 \"\\\"'"${BUILD_PREFIX}"'\/include\\\"\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
+# sed 's;\(HDF5_LIBRARY_DIR ?\=\) \"\\\"Enter_your_HDF5_library_path_here\\\"\";\1 \"\\\"'"${BUILD_PREFIX}"'\/lib\\\"\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
+# sed 's;\(HDF5_INCLUDE_DIR ?\=\) \"\\\"Enter_your_HDF5_include_path_here\\\"\";\1 \"\\\"'"${BUILD_PREFIX}"'\/include\\\"\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
 sed 's;\(GSL_LIBRARY_DIR ?\=\) \"\\\"Enter_your_GSL_library_path_here\\\"\";\1 \"\\\"'"${BUILD_PREFIX}"'\/lib\\\"\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
 sed 's;\(GSL_INCLUDE_DIR ?\=\) \"\\\"Enter_your_GSL_include_path_here\\\"\";\1 \"\\\"'"${BUILD_PREFIX}"'\/include/gsl\\\"\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
 
