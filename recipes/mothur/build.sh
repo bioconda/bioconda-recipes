@@ -1,7 +1,7 @@
 ### Configuring settings within mothur Makefile
 # Enabling dependencies for full functionality
 sed 's;\(USEBOOST ?\=\) no;\1 yes;' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
-sed 's;\(USEHDF5 ?\=\) no;\1 yes;' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
+# sed 's;\(USEHDF5 ?\=\) no;\1 yes;' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
 sed 's;\(USEGSL ?\=\) no;\1 yes;' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
 # Specifying dependency locations
 sed 's;\(BOOST_LIBRARY_DIR ?\=\) \"\\\"Enter_your_boost_library_path_here\\\"\";\1 \"\\\"'"${BUILD_PREFIX}"'\/lib\\\"\";' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
