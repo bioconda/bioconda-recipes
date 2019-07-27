@@ -1,23 +1,10 @@
+### Dumping preset flags because they break the build process on linux
+# Linker flags
 unset LDFLAGS
 export LDFLAGS="-L${PREFIX}/lib"
-
+# Compiler flags
 unset CXXFLAGS
 export CXXFLAGS="-I${PREFIX}/include"
-
-
-# ### Installing and configuring Boost libraries
-# tar -xzvf ${SRC_DIR}/boost*tar.gz && rm ${SRC_DIR}/boost*tar.gz
-# cd ${SRC_DIR}/boost*
-# ./bootstrap.sh --prefix=${PREFIX}
-# ./b2 install
-
-
-# ### Installing and configuring HDF5 libraries
-# tar -xzvf ${SRC_DIR}/hdf5*tar.gz && rm ${SRC_DIR}/hdf5*tar.gz
-# cd ${SRC_DIR}/hdf5*
-# ./configure --prefix=${PREFIX} --enable-cxx --enable-static --disable-shared
-# make check
-# make install
 
 
 ### Configuring settings within mothur Makefile
