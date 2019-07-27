@@ -1,18 +1,23 @@
-### Installing and configuring Boost libraries
-tar -xzvf boost*tar.gz && rm boost*tar.gz
-cd boost*
-./bootstrap.sh --prefix=${PREFIX}
-./b2 install
-cd ../
+unset LDFLAGS
+export LDFLAGS="-L${PREFIX}/lib"
+
+unset CXXFLAGS
+export CXXFLAGS="-I${PREFIX}/include"
 
 
-### Installing and configuring HDF5 libraries
-tar -xzvf hdf5*tar.gz && rm hdf5*tar.gz
-cd hdf5*
-./configure --prefix=${PREFIX} --enable-cxx --enable-static --disable-shared
-make check
-make install
-cd ../
+# ### Installing and configuring Boost libraries
+# tar -xzvf ${SRC_DIR}/boost*tar.gz && rm ${SRC_DIR}/boost*tar.gz
+# cd ${SRC_DIR}/boost*
+# ./bootstrap.sh --prefix=${PREFIX}
+# ./b2 install
+
+
+# ### Installing and configuring HDF5 libraries
+# tar -xzvf ${SRC_DIR}/hdf5*tar.gz && rm ${SRC_DIR}/hdf5*tar.gz
+# cd ${SRC_DIR}/hdf5*
+# ./configure --prefix=${PREFIX} --enable-cxx --enable-static --disable-shared
+# make check
+# make install
 
 
 ### Configuring settings within mothur Makefile
