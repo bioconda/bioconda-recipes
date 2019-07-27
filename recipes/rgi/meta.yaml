@@ -1,32 +1,28 @@
 {% set name = "rgi" %}
-{% set version = "4.2.2" %}
-{% set sha256 = "ab4a5614e359884129064ec318d8dda2516052b26aa38cfd480245d24e0c96e7" %}
+{% set version = "5.0.0" %}
+{% set sha256 = "88ec80c22be54c74467e25b72805c240df1dbc31e2dc7fa1d50fe83c2252df7d" %}
+{% set sha256database = "221bd0888cfd77dfc79f2aa3c550deacd6a3700bdd788ca42e8fd26537017ff9" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/arpcard/rgi/archive/{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+    - url: https://github.com/arpcard/rgi/archive/{{ version }}.tar.gz
+      sha256: {{ sha256 }}
+    - url: https://card.mcmaster.ca/download/0/broadstreet-v3.0.3.tar.gz
+      sha256: {{ sha256database }}
+      folder: card-data
 
 build:
-  skip: True # [win or py27]
+  skip: True # [win or py27 or py34]
   number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python
-    - setuptools
-    - biopython
-    - six >=1.7.0
-    - zlib
-  run:
-    # RGI requires these exact versions of blast prodigal and diamond, or else --alignment_mode DIAMOND fails
-    - python
+    - python >=3,<3.7
     - blast ==2.6.0
     - six >=1.7.0
     - zlib
@@ -41,15 +37,41 @@ requirements:
     - seaborn >=0.8.1
     - pyfaidx >=0.5.4.1
     - pyahocorasick >=1.1.7
-
+    - setuptools
+    
+  run:
+    # RGI requires these exact versions of blast prodigal and diamond, or else --alignment_mode DIAMOND fails
+    - python >=3,<3.7
+    - blast ==2.6.0
+    - six >=1.7.0
+    - zlib
+    - prodigal ==2.6.3
+    - diamond ==0.8.36
+    - biopython >=1.60
+    - filetype >=1.0.0
+    - pytest >=3.0.0
+    - mock >=2.0.0
+    - pandas >=0.15.0
+    - matplotlib >=2.1.2
+    - seaborn >=0.8.1
+    - pyfaidx >=0.5.4.1
+    - pyahocorasick >=1.1.7
+    - bowtie2 >=2.3.4.3
+    - samtools >=1.9
+    - bamtools >=2.5.1
+    - bedtools >=2.28.0
+    - bwa >=0.7.17
+    
 test:
   commands:
+    - rgi database -v | grep "3.0.3"
     - rgi load -h
     - rgi main -h
     - rgi tab -h
     - rgi parser -h
     - rgi clean -h
     - rgi galaxy -h
+    - rgi bwt -h
 
 about:
   home: https://card.mcmaster.ca

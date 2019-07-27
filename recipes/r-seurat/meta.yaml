@@ -1,7 +1,4 @@
-{% set version = '2.3.4' %}
-
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '3.0.1' %}
 
 package:
   name: r-seurat
@@ -11,37 +8,28 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/Seurat_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/Seurat/Seurat_{{ version }}.tar.gz
-  sha256: 0d0a92c8ecc7beebddbefbcc4d845cb1c66b7005416d9b6335e27f9b22d90b51
+  sha256: 8c467bdbfdb9aff51bde6a897ff98a7389941f688639d8f1d36c71dde076a257
 
 build:
-  merge_build_host: True  # [win]
-
-  number: 1
-
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}        # [not win]
-    - {{ compiler('cxx') }}      # [not win]
-    - {{native}}toolchain        # [win]
-    - {{posix}}filesystem        # [win]
-    - {{posix}}make
-    - {{posix}}sed               # [win]
-    - {{posix}}coreutils         # [win]
-    - {{posix}}zip               # [win]
-
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
-    - r-hmisc
+    - r-kernsmooth
     - r-mass
     - r-matrix >=1.2.14
     - r-rann
     - r-rcolorbrewer
     - r-rocr
-    - r-rcpp >=0.11.0
+    - r-rcpp
     - r-rcppeigen
     - r-rcppprogress
     - r-rtsne
@@ -49,42 +37,35 @@ requirements:
     - r-ape
     - r-cluster
     - r-cowplot
-    - r-dosnow
-    - r-dplyr
-    - r-dtw
     - r-fitdistrplus
-    - r-foreach
-    - r-fpc
-    - r-ggplot2
+    - r-future
+    - r-future.apply
+    - r-ggplot2 >=3.0.0
+    - r-ggrepel
     - r-ggridges
-    - r-gplots
-    - r-hdf5r
-    - r-httr
     - r-ica
     - r-igraph
     - r-irlba
-    - r-lars
     - r-lmtest
     - r-metap
-    - r-mixtools
     - r-pbapply
     - r-plotly
     - r-png
-    - r-reshape2
     - r-reticulate
-    - r-tidyr
+    - r-rlang
+    - r-rsvd
+    - r-scales
+    - r-sctransform >=0.2.0
     - r-tsne
-
   run:
     - r-base
-    - {{native}}gcc-libs         # [win]
-    - r-hmisc
+    - r-kernsmooth
     - r-mass
     - r-matrix >=1.2.14
     - r-rann
     - r-rcolorbrewer
     - r-rocr
-    - r-rcpp >=0.11.0
+    - r-rcpp
     - r-rcppeigen
     - r-rcppprogress
     - r-rtsne
@@ -92,37 +73,30 @@ requirements:
     - r-ape
     - r-cluster
     - r-cowplot
-    - r-dosnow
-    - r-dplyr
-    - r-dtw
     - r-fitdistrplus
-    - r-foreach
-    - r-fpc
-    - r-ggplot2
+    - r-future
+    - r-future.apply
+    - r-ggplot2 >=3.0.0
+    - r-ggrepel
     - r-ggridges
-    - r-gplots
-    - r-hdf5r
-    - r-httr
     - r-ica
     - r-igraph
     - r-irlba
-    - r-lars
     - r-lmtest
     - r-metap
-    - r-mixtools
     - r-pbapply
     - r-plotly
     - r-png
-    - r-reshape2
     - r-reticulate
-    - r-tidyr
+    - r-rlang
+    - r-rsvd
+    - r-scales
+    - r-sctransform >=0.2.0
     - r-tsne
 
 test:
   commands:
-
-    - $R -e "library('Seurat')"           # [not win]
-    - "\"%R%\" -e \"library('Seurat')\""  # [win]
+    - $R -e "library('Seurat')"
 
 about:
   home: http://www.satijalab.org/seurat, https://github.com/satijalab/seurat
@@ -134,12 +108,3 @@ about:
     Macosko E, Basu A, Satija R, et al (2015) <doi:10.1016/j.cell.2015.05.002>, and
     Butler A and Satija R (2017) <doi:10.1101/164889> for more details.
   license_family: GPL3
-extra:
-  recipe-maintainers:
-    - MathiasHaudgaard
-    - FrodePedersen
-    - ArneKr
-    - johanneskoester
-    - bgruening
-    - daler
-    - jdblischak

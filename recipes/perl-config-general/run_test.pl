@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 my @items = (
-    ["Config::General", "2.61"],
+    ["Config::General", "2.63"],
     ["Config::General::Extended", "2.07"],
     ["Config::General::Interpolated", "2.15"],
 );

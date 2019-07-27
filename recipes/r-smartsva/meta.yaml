@@ -1,0 +1,78 @@
+{% set version = '0.1.3' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-smartsva
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/SmartSVA_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/SmartSVA/SmartSVA_{{ version }}.tar.gz
+  sha256: d7925743d04bd52dee575a477cc7e8395fedb08f5dbb8427e61e3d6dbfd04881
+
+build:
+  merge_build_host: True  # [win]
+  number: 0
+  skip: true  # [win32]
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}      # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+  host:
+    - r-base
+    - r-rspectra
+    - r-rcpp
+    - r-rcppeigen
+    - r-isva
+    - bioconductor-sva
+  run:
+    - r-base
+    - {{native}}gcc-libs         # [win]
+    - r-rspectra
+    - r-rcpp
+    - r-rcppeigen
+    - r-isva
+    - bioconductor-sva
+
+test:
+  commands:
+    - $R -e "library('SmartSVA')"           # [not win]
+    - "\"%R%\" -e \"library('SmartSVA')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=SmartSVA
+  license: GPL-3
+  summary: Introduces a fast and efficient Surrogate Variable Analysis algorithm that captures
+    variation of unknown sources (batch effects) for high-dimensional data sets. The
+    algorithm is built on the 'irwsva.build' function of the 'sva' package and proposes
+    a revision on it that achieves an order of magnitude faster running time while trading
+    no accuracy loss in return.
+  license_family: GPL3
+  license_file: '{{ environ["PREFIX"] }}\/lib\/R\/share\/licenses\/GPL-3'  # [unix]
+  license_file: '{{ environ["PREFIX"] }}\R\share\licenses\GPL-3'  # [win]
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak
