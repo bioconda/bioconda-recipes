@@ -5,16 +5,13 @@ package:
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: BisqueRNA_{{ version }}.tar.gz
   url:
     - {{ cran_mirror }}/src/contrib/BisqueRNA_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/BisqueRNA/BisqueRNA_{{ version }}.tar.gz
   sha256: 6b276c39c0211a3fbce71e96714674c466862dcb0d8c0448795259e6e40b49cf
-
 build:
-  merge_build_host: True  # [win]
-  # If this is a new build for the same version, increment the build number.
   number: 0
+  noarch: generic
 
   # This is required to make R link correctly on Linux.
   rpaths:
@@ -38,25 +35,23 @@ requirements:
 
 test:
   commands:
-    # You can put additional test commands to be run here.
-    - $R -e "library('BisqueRNA')"           # [not win]
-
-  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
-  # in the recipe that will be run at test time.
-
-  # requires:
-    # Put any additional test requirements here.
+    - $R -e "library('BisqueRNA')"
 
 about:
   home: https://www.biorxiv.org/content/10.1101/669911v1
   license: GPL-3
-  summary: Provides tools to accurately estimate cell type abundances  from heterogeneous bulk
-    expression. A reference-based method utilizes single-cell information to generate
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+  summary: Provides tools to accurately estimate cell type abundances from heterogeneous bulk expression.
+  description: A reference-based method utilizes single-cell information to generate
     a signature matrix and transformation of bulk expression for accurate regression
     based estimates. A marker-based method utilizes known cell-specific marker genes
     to measure relative abundances across samples. For more details, see Jew and Alvarez
     et al (2019) <doi:10.1101/669911>.
   license_family: GPL3
+
+extra:
+  recipe-maintainers:
+    - brandonjew
 
 # The original CRAN metadata for this package was:
 
