@@ -2,19 +2,21 @@
 
 mkdir -p ${PREFIX}/bin
 
-# Compile main executables
+export CFLAGS="$CFLAGS -std=c++11"
+
 if [ "$(uname)" == "Darwin" ]; then
     # clang doesn't work with -fopenmp
-    export LDFLAGS="$LDFLAGS -L${PREFIX}/lib -lstdc++ -pthread"
+    export LDFLAGS="$LDFLAGS -L${PREFIX}/lib -lstdc++"
 else
     export LDFLAGS="$LDFLAGS -L${PREFIX}/lib -lstdc++ -pthread -fopenmp"
 fi
 
-make CC=$CC CXX=$CXX LDFLAGS="$LDFLAGS"
+
+# Compile main executables
+make CC=$CC CXX=$CXX LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
 
 chmod +x CARNAC-LR 
 chmod +x scripts/CARNAC_to_fasta
-ls scripts
 cp CARNAC-LR ${PREFIX}/bin/
 cp scripts/CARNAC_to_fasta ${PREFIX}/bin/
 
