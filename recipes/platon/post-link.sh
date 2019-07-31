@@ -1,9 +1,10 @@
 
 DB_PATH=https://zenodo.org/record/3349652/files/db.tar.gz
 
-wget -q -nH $DB_PATH
+cd $PREFIX
+wget -q -nH db.tar.gz $DB_PATH
 if [ $? -ne 0 ]; then
-	echo "failed to donwload Platon database ($DB_PATH)
+	echo "failed to donwload Platon database ($DB_PATH) to $PREFIX/db.tar.gz
 	exit(1
 fi
 
