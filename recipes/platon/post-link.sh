@@ -1,5 +1,6 @@
+#!/bin/bash
 
-DB_PATH=https://zenodo.org/record/3349652/files/db.tar.gz
+DB_PATH="https://zenodo.org/record/3349652/files/db.tar.gz"
 
 cd $PREFIX
 wget -q -nH db.tar.gz $DB_PATH
