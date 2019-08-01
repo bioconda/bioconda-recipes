@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ALLMLL_1.24.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ALLMLL_1.24.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-allmll/bioconductor-allmll_1.24.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-allmll/bioconductor-allmll_1.24.0_src_all.tar.gz"
 )
 MD5="90b0a2dc8092018739e3c8b195888311"
 

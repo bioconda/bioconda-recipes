@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Mmusculus.UCSC.mm10.knownGene_3.4.7.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Mmusculus.UCSC.mm10.knownGene_3.4.7.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene_3.4.7_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene_3.4.7_src_all.tar.gz"
 )
 MD5="48ca12361578a95864fc4c59524b61e9"
 

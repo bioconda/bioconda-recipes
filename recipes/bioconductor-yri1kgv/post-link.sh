@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/yri1kgv_0.26.0.tar.gz"
   "https://bioarchive.galaxyproject.org/yri1kgv_0.26.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-yri1kgv/bioconductor-yri1kgv_0.26.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yri1kgv/bioconductor-yri1kgv_0.26.0_src_all.tar.gz"
 )
 MD5="323d8f0ad9c359b2acf16f7802c5efdd"
 

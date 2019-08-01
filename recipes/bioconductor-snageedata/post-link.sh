@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/SNAGEEdata_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/SNAGEEdata_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-snageedata/bioconductor-snageedata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-snageedata/bioconductor-snageedata_1.20.0_src_all.tar.gz"
 )
 MD5="6f95756e911a82831c37171ed8192d7a"
 

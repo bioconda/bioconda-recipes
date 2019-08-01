@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/oct4_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/oct4_1.0.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-oct4/bioconductor-oct4_1.0.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-oct4/bioconductor-oct4_1.0.0_src_all.tar.gz"
 )
 MD5="4258694f3a51f0723ee90a5cdc241d03"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RTCGA.rnaseq_20151101.14.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RTCGA.rnaseq_20151101.14.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rtcga.rnaseq/bioconductor-rtcga.rnaseq_20151101.14.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.rnaseq/bioconductor-rtcga.rnaseq_20151101.14.0_src_all.tar.gz"
 )
 MD5="2a388fc3928cbbd967a5a7a742574a16"
 
