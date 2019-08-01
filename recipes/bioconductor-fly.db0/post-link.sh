@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/fly.db0_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/fly.db0_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-fly.db0/bioconductor-fly.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-fly.db0/bioconductor-fly.db0_3.8.2_src_all.tar.gz"
 )
 MD5="96b1c49edc7c11bc6a76f74c15308053"
 

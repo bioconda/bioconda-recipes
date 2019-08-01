@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RTCGA.PANCAN12_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RTCGA.PANCAN12_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rtcga.pancan12/bioconductor-rtcga.pancan12_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.pancan12/bioconductor-rtcga.pancan12_1.12.0_src_all.tar.gz"
 )
 MD5="d245828f779b7cf0ca7cf3263d700b15"
 

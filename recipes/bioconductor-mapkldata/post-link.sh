@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/mAPKLData_1.16.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mAPKLData_1.16.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mapkldata/bioconductor-mapkldata_1.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mapkldata/bioconductor-mapkldata_1.16.0_src_all.tar.gz"
 )
 MD5="9a0bc0eb61a441595cbe17308a2c7d7c"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/DonaPLLP2013_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/DonaPLLP2013_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-donapllp2013/bioconductor-donapllp2013_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-donapllp2013/bioconductor-donapllp2013_1.22.0_src_all.tar.gz"
 )
 MD5="dc254e899f0e9368fea3d2543408970c"
 

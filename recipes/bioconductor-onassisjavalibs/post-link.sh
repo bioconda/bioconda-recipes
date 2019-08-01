@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/OnassisJavaLibs_1.6.0.tar.gz"
   "https://bioarchive.galaxyproject.org/OnassisJavaLibs_1.6.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-onassisjavalibs/bioconductor-onassisjavalibs_1.6.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-onassisjavalibs/bioconductor-onassisjavalibs_1.6.0_src_all.tar.gz"
 )
 MD5="ec733ed33c8932261fc34adaad85d038"
 
