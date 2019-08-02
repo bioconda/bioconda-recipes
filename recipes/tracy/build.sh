@@ -1,5 +1,8 @@
 #!/bin/sh
 
+cd ${SRC_DIR}
+ls
+git submodule init
 git submodule update --init --recursive
 
 make all CXX=$CXX
