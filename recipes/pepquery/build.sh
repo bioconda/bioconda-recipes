@@ -10,7 +10,6 @@ cat <<END >$PEPQUERY_DIR/pepquery
 JAR_PATH=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 java ${JAVA_OPTS:-} -jar \$JAR_PATH/pepquery.jar \$*
 END
-touch $PEPQUERY_DIR/logs/log4j.properties
-chmod -R a+x $PEPQUERY_DIR/logs
 chmod a+x $PEPQUERY_DIR/pepquery
+chmod a+x $PEPQUERY_DIR/
 ln -s $PEPQUERY_DIR/pepquery $PREFIX/bin
