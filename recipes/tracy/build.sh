@@ -1,10 +1,8 @@
 #!/bin/sh
 
-rmdir ${SRC_DIR}/tracy/src/xxsds/
-mv ${SRC_DIR}/sdsl-lite ${SRC_DIR}/tracy/src/xxsds
-cd ${SRC_DIR}/tracy
+rmdir ${SRC_DIR}/src/xxsds/
+mv ${SRC_DIR}/sdsl-lite ${SRC_DIR}/src/xxsds
 
-export SDSL_ROOT=${SRC_DIR}/tracy/src/sdslLite/
-make all CXX=$CXX CXXFLAGS="-D__STDC_FORMAT_MACROS -I${SRC_DIR}/tracy/src/sdslLite/include"
+make all CXX=$CXX CXXFLAGS="-D__STDC_FORMAT_MACROS -I${SRC_DIR}/src/sdslLite/include"
 mkdir -p $PREFIX/bin
 cp src/tracy $PREFIX/bin
