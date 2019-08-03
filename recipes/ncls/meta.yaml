@@ -1,31 +1,42 @@
+{% set name = "ncls" %}
+{% set version = "0.0.43" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "d9d2e454cb0d25ed056beef6b802d76ce8039beefda1b14967bd4b3620fbc5e9" %}
+
 package:
-  name: ncls
-  version: "0.0.42"
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  url: https://files.pythonhosted.org/packages/f7/08/156506261f4c3426191dc4fb8bbc45f9657067a2458e6aea588bc264ae07/ncls-0.0.42.tar.gz
-  sha256: 4fe09e183314bcaa2cd2391811999d1e10878126b64e052e34f7d207fbebd096 
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 3
+  number: 0
   script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
   build:
-    {{ compiler('c') }}
+    - {{ compiler('c') }}
   host:
+    - python
     - cython
+    - setuptools
     - numpy
-
   run:
+    - python
     - numpy
 
 test:
-  # Python imports
   imports:
     - ncls
 
+
 about:
-  home: http://github.com/hunt-genes/ncls
+  home: https://github.com/endrebak/ncls
   license: BSD
-  summary: 'The Nested Containment List for Python.'
+  summary: Fast overlap datastructure.
+
+extra:
+  recipe-maintainers: 'endrebak'
