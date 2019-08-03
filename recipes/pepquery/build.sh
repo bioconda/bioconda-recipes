@@ -11,5 +11,4 @@ JAR_PATH=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 java ${JAVA_OPTS:-} -jar \$JAR_PATH/pepquery.jar \$*
 END
 chmod a+x $PEPQUERY_DIR/pepquery
-chmod a+x $PEPQUERY_DIR/
 ln -s $PEPQUERY_DIR/pepquery $PREFIX/bin
