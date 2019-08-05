@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 if [[ $target_platform =~ linux.* ]] || [[ $target_platform == osx-64 ]]; then
   export DISABLE_AUTOBREW=1
   $R CMD INSTALL --build .
@@ -33,3 +34,7 @@ else
     popd
   fi
 fi
+
+
+# Symlink libjvm.so
+ln -s ${PREFIX}/jre/lib/amd64/server/libjvm.so  ${PREFIX}/lib/
