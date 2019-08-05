@@ -32,7 +32,7 @@ Gitter_ channel to ask other users for help.
 .. seealso::
 
     * :ref:`conda-anaconda-minconda`
-    * The conda `FAQs <http://conda.pydata.org/docs/faq.html>`_ explain how
+    * The conda `FAQs <https://docs.anaconda.com/anaconda/user-guide/faq/>`_ explain how
       it's easy to use with existing Python installations.
 
 
@@ -78,7 +78,7 @@ Or a new environment can be created::
 We invite all parties interested in adding/editing package recipes to join the bioconda team, 
 so that their pull requests don't require merging by the core team or other members. To do 
 so, please fork our `recipes <https://github.com/bioconda/bioconda-recipes>`_ have a read 
-through the `Conda documentation <http://conda.pydata.org/docs/building/recipe.html#conda-recipe-files-overview>`_. 
+through the `Conda documentation <https://docs.conda.io/projects/conda-build/en/latest/concepts/recipe.html>`_. 
 If you ping ``@bioconda/core`` in a pull request we will review it and then add you to the team, if you desire.
 
 5. Spread the word
