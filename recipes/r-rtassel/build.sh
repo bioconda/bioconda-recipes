@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 if [[ $target_platform =~ linux.* ]] || [[ $target_platform == osx-64 ]]; then
   export DISABLE_AUTOBREW=1
   $R CMD INSTALL --build .
@@ -36,5 +35,16 @@ else
 fi
 
 
-# Symlink libjvm.so
-ln -s ${PREFIX}/jre/lib/amd64/server/libjvm.so  ${PREFIX}/lib/
+# adding activation and deactivation scripts to set LD_LIBRARY_PATH because of libjvm.so
+mkdir -p ${PREFIX}/etc/conda/activate.d
+mkdir -p ${PREFIX}/etc/conda/deactivate.d
+
+if [ ! -f ${PREFIX}/etc/conda/activate.d/env_vars.sh ]; then
+    echo "#!/bin/bash" > ${PREFIX}/etc/conda/activate.d/env_vars.sh
+fi
+echo "export LD_LIBRARY_PATH=${PREFIX}/lib:${PREFIX}/lib/server:${LD_LIBRARY_PATH}" >> ${PREFIX}/etc/conda/activate.d/env_vars.sh
+
+if [ ! -f ${PREFIX}/etc/conda/deactivate.d/env_vars.sh ]; then
+    echo "#!/bin/bash" > ${PREFIX}/etc/conda/deactivate.d/env_vars.sh
+fi
+echo "unset LD_LIBRARY_PATH" >> ${PREFIX}/etc/conda/deactivate.d/env_vars.sh
