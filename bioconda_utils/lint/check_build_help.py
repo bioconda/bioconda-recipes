@@ -107,7 +107,7 @@ class setup_py_install_args(LintCheck):
 
 
 class cython_must_be_in_host(LintCheck):
-    """Cython should be in the build section
+    """Cython should be in the host section
 
     Move cython to ``host``::
 
