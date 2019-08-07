@@ -3,6 +3,8 @@ set -eu -o pipefail
 
 CXXFLAGS="${CXXFLAGS} -fPIC"
 
+sed -i '1s/.*/CC=${CC}/' SeqLib/fermi-lite/Makefile
+
 ./configure
 make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
 make install
