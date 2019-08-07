@@ -1,6 +1,8 @@
 #!/bin/bash
 set -eu -o pipefail
 
+CXXFLAGS="${CXXFLAGS} -fPIC"
+
 ./configure
 make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
 make install
