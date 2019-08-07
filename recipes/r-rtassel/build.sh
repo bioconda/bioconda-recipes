@@ -33,18 +33,3 @@ else
     popd
   fi
 fi
-
-
-# adding activation and deactivation scripts to set LD_LIBRARY_PATH because of libjvm.so
-mkdir -p ${PREFIX}/etc/conda/activate.d
-mkdir -p ${PREFIX}/etc/conda/deactivate.d
-
-if [ ! -f ${PREFIX}/etc/conda/activate.d/env_vars.sh ]; then
-    echo "#!/bin/bash" > ${PREFIX}/etc/conda/activate.d/env_vars.sh
-fi
-echo "export LD_LIBRARY_PATH=${PREFIX}/lib:${PREFIX}/lib/server:${LD_LIBRARY_PATH}" >> ${PREFIX}/etc/conda/activate.d/env_vars.sh
-
-if [ ! -f ${PREFIX}/etc/conda/deactivate.d/env_vars.sh ]; then
-    echo "#!/bin/bash" > ${PREFIX}/etc/conda/deactivate.d/env_vars.sh
-fi
-echo "unset LD_LIBRARY_PATH" >> ${PREFIX}/etc/conda/deactivate.d/env_vars.sh
