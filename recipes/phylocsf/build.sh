@@ -7,8 +7,8 @@ mkdir -p $PREFIX/bin
 wget https://github.com/ocaml/opam/releases/download/2.0.5/opam-full-2.0.5.tar.gz
 tar -xf opam-full-2.0.5.tar.gz
 cd opam-full-2.0.5
-./configure
 make lib-ext
+./configure
 make
 cp opam $PREFIX/bin
 
