@@ -12,6 +12,10 @@ make lib-ext
 make
 cp opam $PREFIX/bin
 
+# Setup opam environment
+opam init -a
+eval $(opam env)
+
 # Install OCaml dependencies
 opam install batteries ocaml-twt gsl
 
