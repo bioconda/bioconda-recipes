@@ -1,7 +1,9 @@
 #!/bin/bash
 set -eu -o pipefail
 
-export gcc=${PREFIX}/bin/gcc
+echo "DEBUG START"
+echo "LOCATION OF GCC:" $(which gcc)
+echo "DEBUG END"
 
 ./configure
 make
