@@ -13,7 +13,7 @@ make
 cp opam $PREFIX/bin
 
 # Setup opam environment
-opam init -a
+opam init -a --disable-sandboxing
 eval $(opam env)
 
 # Install OCaml dependencies
