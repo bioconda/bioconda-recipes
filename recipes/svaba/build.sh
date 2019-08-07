@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu -o pipefail
 
-export gcc=${GCC}
+export gcc=${GXX}
 
 echo "DEBUG START"
 echo "LOCATION OF GCC:" $(which gcc)
