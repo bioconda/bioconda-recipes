@@ -8,7 +8,7 @@ sed -i '1s/.*/CC=${CC}/' SeqLib/fermi-lite/Makefile
 echo "######## DEBUG START ########"
 
 head -n1 SeqLib/fermi-lite/Makefile
-sed -i "1s/.*/CC=${CC}/" SeqLib/fermi-lite/Makefile
+sed -i "1s/.*/CC=$CC/" SeqLib/fermi-lite/Makefile
 head -n1 SeqLib/fermi-lite/Makefile
 
 echo "######## DEBUG STOP ########"
