@@ -3,6 +3,7 @@
 mkdir -p "${PREFIX}"/bin/src
 
 # inject compilers
+find / -name omp.h -pring
 sed -i.bak "s#g++#${CXX}#" src/Makefile
 
 sh install_bracken.sh
