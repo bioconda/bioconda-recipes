@@ -6,7 +6,7 @@ export LIBS="-lm ${PREFIX}/lib/libz.a"
 CXXFLAGS="${CXXFLAGS} -fPIC"
 
 ./configure
-make CC=${CC}
+make CXX=${CXX}
 make install
 
 mkdir -p ${PREFIX}/bin
