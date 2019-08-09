@@ -1,4 +1,4 @@
 #!/bin/bash
 mkdir -p $PREFIX/bin
-make
+make OMP=no
 cp age_align $PREFIX/bin

@@ -1,38 +1,55 @@
+{% set name = "perl-inline-c" %}
+{% set version = "0.78" %}
+{% set sha256 = "9a7804d85c01a386073d2176582b0262b6374c5c0341049da3ef84c6f53efbc7" %}
+
 package:
-  name: perl-inline-c
-  version: "0.76"
+  name: {{ name }}
+  version: {{ version }}
 
 source:
-  fn: Inline-C-0.76.tar.gz
-  url: http://search.cpan.org/CPAN/authors/id/I/IN/INGY/Inline-C-0.76.tar.gz
-  md5: c0fbfdd058075c9271a1384c822c9a87
+  url: https://cpan.metacpan.org/authors/id/T/TI/TINITA/Inline-C-0.78.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
-    - perl-threaded
-    - perl-io-all
+    - {{ compiler('c') }}
+    - make
+
+  host:
+    - perl
+    - perl-file-sharedir-install >=0.06
+    - perl-file-path
     - perl-inline
-    - perl-parse-recdescent
     - perl-pegex
+    - perl-parse-recdescent
+    - perl-version
     - perl-file-copy-recursive
-    - perl-yaml-libyaml
+    - perl-autodie
+    - perl-extutils-makemaker
+    - perl-test-warn
+    # GCC is required for tests (see below)
+    - compilers
 
   run:
-    - perl-threaded
-    - perl-io-all
-    - perl-inline 
-    - perl-parse-recdescent
+    - perl
+    - perl-inline
+    - perl-extutils-makemaker
     - perl-pegex
-    - perl-file-copy-recursive
-    - perl-yaml-libyaml
+    - perl-parse-recdescent
+    - make
+    # GCC is required at runtime as this is a perl module that allows compiling and executing inline C code
+    - compilers
 
-# no tests so far
-
+test:
 
 about:
   home: https://github.com/ingydotnet/inline-c-pm
   license: perl_5
-  summary: 'A library to extract height/width from images'
+  summary: 'C Language Support for Inline'
+
+extra:
+  skip-lints:
+    - compilers_must_be_in_build

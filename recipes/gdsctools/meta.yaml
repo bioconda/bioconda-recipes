@@ -1,76 +1,61 @@
-{% set name="gdsctools" %}
-{% set version="0.17.1" %}
-
+{% set name = "gdsctools" %}
+{% set version = "1.0.1" %}
 
 package:
-  name: {{ name }}
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  md5: 6eea5d390ebc99b25758f962b15be906
+  sha256: 72bba53d42150b88b1e186da5d12d94eb2c9f5ac529f4c9f800f98639cf9d82b
 
 build:
-  skip: True # [py34]
+  number: 0
   entry_points:
-    # Put any entry points (scripts to be generated automatically) here. The
-    # syntax is module:function.  For example
     - gdsctools_anova=gdsctools.scripts.anova:main
     - gdsctools_regression=gdsctools.scripts.regression:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  noarch: python
 
 requirements:
-  build:
+  host:
+    - pip
     - python
-    - setuptools
-
   run:
-    - python
-    - numpy
-    - numexpr
-    - matplotlib >=1.4.3
-    - pandas >=0.19
-    - easydev >=0.9.34
-    - xlrd
-    - scipy
-    - colormap >=1.0
-    - jinja2 <=2.9.1
-    - statsmodels
-    - scikit-learn
-    - reports >=0.3.0
-    - biokit >=0.4
+    - biokit ==0.4.1
     - colorlog
-    - snakemake # [py35]
+    - colormap ==1.0.1
+    - easydev >=0.9.34
+    - jinja2
+    - matplotlib >=1.4.3
+    - numexpr
+    - numpy
+    - pandas ==0.20.1
+    - python
+    - reports ==0.3.1
+    - scikit-learn ==0.18.2
+    - scipy ==0.19.1
+    - statsmodels ==0.8.0
+    - xlrd
 
 test:
-  # Python imports
   imports:
-     - gdsctools
-    #- gdsctools.data
-    #- gdsctools.data.css
-    #- gdsctools.data.images
-    #- gdsctools.data.javascript
-    #- gdsctools.data.templates
-    #- gdsctools.pipelines
-    #- gdsctools.scripts
-
+    - gdsctools
+    - gdsctools.data
+    - gdsctools.data.css
+    - gdsctools.data.images
+    - gdsctools.data.javascript
+    - gdsctools.data.templates
+    - gdsctools.pipelines
+    - gdsctools.scripts
   commands:
     - gdsctools_anova --help
-    - gdsctools_regression --help # [py35]
-
-  # You can also put a file called run_test.py in the recipe that will be run
-  # at test time.
-
-  # requires:
-    # Put any additional test requirements here.  For example
-    # - nose
+    - gdsctools_regression --help
 
 about:
-  home: ['http://pypi.python.org/pypi/gdsctools']
-  license: "BSD 3-clause"
-  summary: 'Set of tools and pipelines to analyse GDSC data (cancerrxgene.org)'
+  home: http://pypi.python.org/pypi/gdsctools
+  license: BSD
   license_family: BSD
+  license_file: LICENSE
+  summary: Set of tools and pipelines to analyse GDSC data (cancerrxgene.org)
 
-# See
-# http://docs.continuum.io/conda/build.html for
-# more information about meta.yaml

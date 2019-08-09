@@ -1,0 +1,30 @@
+--- mummer-4.0.0beta2/Makefile.am	2017-10-12 14:18:55.000000000 -0500
++++ mummer4/Makefile.am	2018-08-23 12:41:17.053596375 -0500
+@@ -151,16 +151,18 @@
+ CLEANFILES += $(libs_scripts) $(all_scripts)
+ 
+ # Rules to generate the scripts, in .libs and in build directory.
+-script_inst_subst  = sed -e 's,[@]PERL[@],$(PERL),g' \
+-                       -e 's,[@]BIN_DIR[@],$(bindir),g' \
+-                       -e 's,[@]LIB_DIR[@],$(script_libdir),g' \
+-	               -e 's,[@]LIBEXEC_DIR[@],$(pkglibexecdir),g' \
+-		       -e 's,[@]GNUPLOT_EXE[@],$(GNUPLOT),g'
++
++script_inst_subst = sed -e 's,[@]PERL[@],$(PERL),g' \
++                       -e 's,"[@]BIN_DIR[@]",\x27$(bindir)\x27,g' \
++                       -e 's,"[@]LIB_DIR[@]",\x27$(script_libdir)\x27,g' \
++                       -e 's,"[@]LIBEXEC_DIR[@]",\x27$(pkglibexecdir)\x27,g' \
++                       -e 's,"[@]GNUPLOT_EXE[@]",\x27$(GNUPLOT)\x27,g'
++
+ script_local_subst = sed -e 's,[@]PERL[@],$(PERL),g' \
+-                       -e 's,[@]BIN_DIR[@],$(abs_builddir),g' \
+-                       -e 's,[@]LIB_DIR[@],$(abs_srcdir)/scripts,g' \
+-	               -e 's,[@]LIBEXEC_DIR[@],$(abs_builddir),g' \
+-                       -e 's,[@]GNUPLOT_EXE[@],$(GNUPLOT),g'
++                       -e 's,"[@]BIN_DIR[@]",\x27$(abs_builddir)\x27,g' \
++                       -e 's,"[@]LIB_DIR[@]",\x27$(abs_srcdir)/scripts\x27,g' \
++                       -e 's,"[@]LIBEXEC_DIR[@]",\x27$(abs_builddir)\x27,g' \
++                       -e 's,"[@]GNUPLOT_EXE[@]",\x27$(GNUPLOT)\x27,g'
+ 
+ .libs/%: scripts/%.pl
+ 	@mkdir -p $(dir $@) && $(script_inst_subst) < $< > $@

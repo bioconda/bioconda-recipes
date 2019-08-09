@@ -1,32 +1,40 @@
+{% set name = "abyss" %}
+{% set version = "1.9.0" %}
+
 package:
   name: abyss
-  version: "1.9.0"
+  version: {{ version }}
 
 build:
-  number: 2
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+  number: 8
 
 source:
-  fn: abyss-1.9.0.tar.gz
-  url: https://github.com/bcgsc/abyss/releases/download/1.9.0/abyss-1.9.0.tar.gz
+  url: https://github.com/bcgsc/abyss/releases/download/{{ version }}/abyss-{{ version }}.tar.gz
   md5: 7b1b9f060dbae6c7fe815b1e50487c83
+  patches:
+    - osx-std_string_length-no-export.patch  # can be removed for "abyss >2.0.2"
 
 requirements:
   build:
-  - gcc # [not osx]
-  - llvm # [osx]
-  - boost {{CONDA_BOOST}}*
-  - google-sparsehash
-  - sqlite
+    - {{ compiler('cxx') }}
+  host:
+    - boost
+    - sparsehash
+    - sqlite
+    - openmpi
 
   run:
-  - bwa
-  - libgcc # [not osx]
-  - sqlite
+    - bwa
+    - sqlite
+    - make
+    - openmpi
 
 test:
   commands:
-    - ABYSS --version
+    - ABYSS-P --version | grep -q "{{ version }}"
+    - ABYSS --version | grep -q "{{ version }}"
+    - abyss-pe help | grep -q "Assemble reads into contigs and scaffolds"
+
 
 about:
   home: http://www.bcgsc.ca/platform/bioinfo/software/abyss
@@ -34,3 +42,10 @@ about:
   license_file: LICENSE
   summary: Assembly By Short Sequences - a de novo, parallel, paired-end sequence assembler
 
+extra:
+  container:
+    # openmpi needs ssh/rsh
+    extended-base: true
+  identifiers:
+    - biotools:abyss
+    - doi:10.1101/gr.089532.108

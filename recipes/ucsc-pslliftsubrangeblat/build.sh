@@ -1,12 +1,12 @@
 #!/bin/bash
-
+mkdir -p "$PREFIX/bin"
 export MACHTYPE=x86_64
 export BINDIR=$(pwd)/bin
-mkdir -p $BINDIR
+mkdir -p "$BINDIR"
 (cd kent/src/lib && make)
+(cd kent/src/htslib && make)
 (cd kent/src/jkOwnLib && make)
 (cd kent/src/hg/lib && make)
 (cd kent/src/utils/pslLiftSubrangeBlat && make)
-mkdir -p $PREFIX/bin
-cp bin/pslLiftSubrangeBlat $PREFIX/bin
-chmod +x $PREFIX/bin/pslLiftSubrangeBlat
+cp bin/pslLiftSubrangeBlat "$PREFIX/bin"
+chmod +x "$PREFIX/bin/pslLiftSubrangeBlat"

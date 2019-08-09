@@ -1,8 +1,7 @@
-rm -r test tutorial
-export LDFLAGS="-L$PREFIX/lib"
-export CPPFLAGS="-I$PREFIX/include"
-./bootstrap
+#!/bin/bash
+
+rm -rf test tutorial
 ./configure \
-    --prefix=$PREFIX 
+    --prefix=$PREFIX
 make
 make install

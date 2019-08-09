@@ -1,0 +1,50 @@
+{% set name = "hera" %}
+{% set version = "1.1" %}
+{% set hash = "71dcf60a53c25c32e054fda643307976faa90d75d0a246140cd9b852b3774bd7" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/bioturing/hera/archive/hera-v{{ version }}.tar.gz
+  sha256: {{ hash }}
+  patches:
+    - hera.patch
+    - hera.makefile.patch
+
+build:
+  number: 3
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - cmake
+  host:
+    - zlib
+    - jemalloc >=4.5.0
+    - htslib
+    - hdf5
+    - libdivsufsort
+    - xz
+    - bzip2
+
+  run:
+    - python
+    - zlib
+    - jemalloc >=4.5.0
+    - htslib
+    - hdf5
+    - libdivsufsort
+    - xz
+    - bzip2
+
+test:
+  commands:
+    - hera -h 2>&1 | grep 'Hera'
+    - hera_build -h
+
+about:
+  home: https://github.com/bioturing/hera
+  license: MIT
+  summary: 'hera is a bioinformatics tool that helps analyze RNA-seq data, providing base-to-base alignment BAM files, transcript abundance estimation, and fusion gene detection.'

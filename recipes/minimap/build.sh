@@ -1,11 +1,13 @@
-  #!/bin/bash
+#!/bin/bash
 
-  mkdir -p $PREFIX/bin
+mkdir -p $PREFIX/bin
 
-  make 
-  make extra 
+export C_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
+make 
+make extra 
 
-  cp minimap $PREFIX/bin 
-  cp minimap-lite $PREFIX/bin
-  cp sdust $PREFIX/bin
+cp minimap $PREFIX/bin 
+cp minimap-lite $PREFIX/bin
+cp sdust $PREFIX/bin
   

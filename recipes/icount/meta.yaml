@@ -1,0 +1,71 @@
+{% set name = "iCount" %}
+{% set version = "2.0.0" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "65da4ecd0903a4db19b55ef4438b2eeda4cab9e80a371d492a53dc81364058cf" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+  patches:
+      - 0001-setup-Change-install_requires-to-list.patch
+
+build:
+  number: 0
+  skip: True # [not py3k]
+  entry_points:
+    - iCount = iCount.cli:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - pysam
+    - cutadapt >=1.10
+    - pybedtools
+    - matplotlib
+    - numpydoc
+    - sphinx >=1.4
+    - numpy
+    - pandas
+    - bedtools >=2.26.0
+    - star
+  run:
+    - python
+    - pysam
+    - cutadapt >=1.10
+    - pybedtools
+    - matplotlib
+    - numpydoc
+    - sphinx >=1.4
+    - numpy
+    - pandas
+    - bedtools >=2.26.0
+    - star
+
+test:
+  imports:
+    - iCount
+    - iCount.analysis
+    - iCount.examples
+    - iCount.externals
+    - iCount.files
+    - iCount.genomes
+    - iCount.mapping
+  commands:
+    - iCount --help
+
+about:
+  home: https://github.com/tomazc/iCount
+  license: MIT
+  license_family: MIT
+  license_file: ''
+  summary: Computational pipeline for analysis of iCLIP data
+  description: "iCount is a Python module and associated command-line interface (CLI), which provides all the commands needed to process iCLIP data on protein-RNA interactions."
+  doc_url: ''
+  dev_url: ''

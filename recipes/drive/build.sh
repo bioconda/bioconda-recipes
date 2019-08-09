@@ -1,4 +1,4 @@
 #!/bin/bash
-chmod a+x drive-*
+chmod a+x drive_*
 mkdir -p $PREFIX/bin
-cp drive-* $PREFIX/bin/drive
+cp drive_* $PREFIX/bin/drive

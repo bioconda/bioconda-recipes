@@ -1,28 +1,33 @@
-{% set version = "4.6.6" %}
+{% set version = "4.8.1" %}
+{% set sha256 = "f8bc3cdd7aebb432fcd35eed0093e7a6413f1e36bbd2a837ebc06e57cdb20b70" %}
 
 package:
   name: cd-hit
   version: {{ version }}
 
 source:
-  fn: cd-hit-{{ version }}.tar.gz
   url: https://github.com/weizhongli/cdhit/archive/V{{ version }}.tar.gz
-  sha256: a0c89c969ad338f958620083b12bc69fa30fcba8246a7ec0b6243e5b2ba0365d
+  sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 2
 
 requirements:
   build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
-
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - llvm-openmp  # [osx]
+  host:
+    - zlib
+    - openmp 
+    - llvm-openmp  # [osx]
   run:
-    - libgcc
-
+    - zlib
+    - openmp 
+    - llvm-openmp  # [osx]
 test:
-    commands:
-      - cd-hit --help | grep 'Usage' > /dev/null
+  commands:
+    - cd-hit --help | grep 'Usage' > /dev/null
 
 about:
   home: https://github.com/weizhongli/cdhit

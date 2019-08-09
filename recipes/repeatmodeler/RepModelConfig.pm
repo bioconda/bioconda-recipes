@@ -28,7 +28,12 @@ require Exporter;
     $REPEATMODELER_LIB_DIR $REPEATMASKER_DIR
     $REPEATMASKER_LIB $WUBLAST_DIR $WUBLASTN_PRGM
     $WUBLASTP_PRGM $WUBLASTX_PRGM $XDFORMAT_PRGM $XDGET_PRGM
-    $RECON_DIR $TRF_PRGM $RSCOUT_DIR $DEBUGALL );
+    $RECON_DIR $TRF_PRGM $RSCOUT_DIR $DEBUGALL
+    $RMBLAST_DIR $RMBLASTN_PRGM $NCBIBLASTP_PRGM
+    $NCBIBLASTX_PRGM $NCBIBLASTDB_PRGM $NCBIDBALIAS_PRGM
+    $NCBIDBCMD_PRGM $NSEG_PRGM
+);
+
 %EXPORT_TAGS = ( all => [ @EXPORT_OK ] );
 @ISA         = qw(Exporter);
 
@@ -100,6 +105,12 @@ BEGIN
 ## Tandem Repeat Finder program.
 ##
   $TRF_PRGM = $ENV{'TRF_DIR'};
+
+##
+## NSEG Location
+## =============
+## Location of the NCBI nseg program
+  $NSEG_PRGM = $ENV{'NSEG_DIR'};
 
 ##
 ## RepeatScout Location

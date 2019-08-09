@@ -1,0 +1,46 @@
+--- R/zzz.R	2018-10-30 20:45:48.000000000 +0100
++++ R/zzz.R2	2019-02-25 13:24:29.218247692 +0100
+@@ -12,15 +12,20 @@
+ 
+ .javaExecutable <- function() Sys.which2("java")
+ 
+-
+-
+-.onLoad <- function(libname, pkgname) {
+-    javaVersion <- system2(.javaExecutable(), '-version', stderr=TRUE, stdout=TRUE)
++.verifyJavaVersion <- function(javaVersion) {
+     if(length(javaVersion) == 0) {
+         warning('Java was not found on your system. Java is required for MS-GF+ to work.')
+     } else {
+-        if(as.numeric(sub('.*\"\\d\\.(\\d).*', '\\1', javaVersion[1])) < 7) {
++        versionNums <- str_match(string = javaVersion[1], 
++                                 pattern = '[[:alpha:] ]+\"([[:digit:]]+)\\.([[:digit:]]+)\\..*')[,2:3]
++        versionNums <- as.numeric(versionNums)
++        if(versionNums[1] == 1 && versionNums[2] < 7) {
+             warning('Java need to be at least version 1.7 for MS-GF+ to work. Please upgrade.')
+         }
+     }
+ }
++
++.onLoad <- function(libname, pkgname) {
++    javaVersion <- system2(.javaExecutable(), '-version', stderr=TRUE, stdout=TRUE)
++    .verifyJavaVersion(javaVersion)
++}
+--- DESCRIPTION	2019-01-05 02:23:08.000000000 +0100
++++ DESCRIPTION2	2019-02-25 14:04:45.653368038 +0100
+@@ -16,7 +16,7 @@
+ LazyLoad: yes
+ biocViews: ImmunoOncology, MassSpectrometry, Proteomics
+ Depends: methods
+-Imports: mzID, ProtGenerics
++Imports: mzID, ProtGenerics, stringr
+ Suggests: gWidgets, knitr, testthat
+ Collate: 'MSGFplus-package.R' 'aaa.R' 'generics.R' 'msgfAsync.R'
+         'msgfParTolerance.R' 'msgfParTda.R' 'msgfParProtocol.R'
+--- NAMESPACE	2018-10-30 20:45:48.000000000 +0100
++++ NAMESPACE2	2019-02-25 14:05:38.820370686 +0100
+@@ -59,3 +59,4 @@
+ importFrom(mzID,mzIDparameters)
+ importFrom(utils,download.file)
+ importFrom(utils,unzip)
++importFrom(stringr,str_match)

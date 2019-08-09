@@ -6,13 +6,15 @@ TGT="$PREFIX/$TGT_BASE"
 [ -d "${PREFIX}/bin" ] || mkdir -p "${PREFIX}/bin"
 
 cd "${SRC_DIR}"
-# Do not install Linux specific x86-acceleration libraries
-cp -rvp third-party $TGT
+
+# Minimum required for operation
 cp RTG.jar $TGT
 cp rtg $TGT
+# Optional utility scripts (e.g. bash completion)
+cp -rvp scripts $TGT
 
-echo "RTG_TALKBACK=     # Attempt to send crash logs to realtime genomics, true to enable
-RTG_USAGE=        # Enable simple usage logging, true to enable
+echo "RTG_TALKBACK=true     # Attempt to send crash logs to realtime genomics, true to enable
+RTG_USAGE=false   # Enable simple usage logging, true to enable
 RTG_JAVA_OPTS=    # Additional arguments passed to the JVM
 RTG_JAVA=/opt/anaconda1anaconda2anaconda3/bin/java   # point to anaconda installed Java
 RTG_JAR=/opt/anaconda1anaconda2anaconda3/${TGT_BASE}/RTG.jar" > $TGT/rtg.cfg

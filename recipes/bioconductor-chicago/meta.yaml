@@ -1,32 +1,50 @@
+{% set version = "1.12.0" %}
+{% set name = "Chicago" %}
+{% set bioc = "3.9" %}
+
 package:
-  name: bioconductor-chicago
-  version: 1.2.0
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: Chicago_1.2.0.tar.gz
-  url: https://bioarchive.galaxyproject.org/Chicago_1.2.0.tar.gz
-  md5: cce9ec0fbb7b589c3862146c77afc260
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: d5ed2c8bd98b169b431f2aef87a65aa6
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: argparser, BiocStyle, knitr, rmarkdown, PCHiCdata, testthat, Rsamtools, GenomicInteractions, GenomicRanges, IRanges, AnnotationHub
 requirements:
-  build:
-    - r
+  host:
+    - r-base
     - r-data.table
     - r-delaporte
     - r-hmisc
+    - r-mass
     - r-matrixstats
   run:
-    - r
+    - r-base
     - r-data.table
     - r-delaporte
     - r-hmisc
+    - r-mass
     - r-matrixstats
 test:
   commands:
-    - '$R -e "library(''Chicago'')"'
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/bioc/html/Chicago.html
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'A pipeline for analysing Capture Hi-C data.'
+extra:
+  identifiers:
+    - biotools:chicago
+  parent_recipe:
+    name: bioconductor-chicago
+    path: recipes/bioconductor-chicago
+    version: 1.10.0
+

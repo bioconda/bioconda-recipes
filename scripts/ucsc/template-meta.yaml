@@ -1,40 +1,44 @@
+{{% set package = "{package}" %}}
+{{% set program = "{program}" %}}
+{{% set version = "{version}" %}}
+{{% set sha256 = "{sha256}" %}}
+
 package:
-    name: "{package}"
-    version: "{version}"
+  name: "{{{{ package }}}}"
+  version: "{{{{ version }}}}"
+
 source:
-    url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{version}.src.tgz"          # [linux]
-    fn: "userApps.src.tgz"                                                                     # [linux]
-    md5: "{md5}"                                                    # [linux]
-    patches:                                                                                   # [linux]
-        - "include.patch"                                                                      # [linux]
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{{{{ version }}}}.src.tgz"
+  sha256: "{{{{ sha256 }}}}"
+  patches:
+    - "include.patch"
 
-    url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/{program}"                    # [osx]
-    fn: "{program}"                                                                            # [osx]
-
-build:                                                                                       # [osx]
-    script: "mkdir -p $PREFIX/bin; cp {program} $PREFIX/bin; chmod +x $PREFIX/bin/{program}" # [osx]
+build:
+  number: 0
 
 requirements:
-    build:
-        - libpng                                                    # [linux]
-        - mysql                                                     # [linux]
-        - zlib                                                      # [linux]
-        - openssl                                                   # [linux]
-        - gcc
+  build:
+    - {{{{ compiler('c') }}}}
+  host:
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - zlib
 
-    run:                                                            # [linux]
-        - libpng                                                    # [linux]
-        - mysql                                                     # [linux]
-        - zlib                                                      # [linux]
-        - openssl                                                   # [linux]
-        - libgcc
+  run:
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - zlib
 
 test:
-    commands:
-        # just check for existence, because the individual programs have no unified behavior
-        - which {program}
+  commands:
+    # just check for existence, because the individual packages have no unified behavior
+    - which {{{{ program }}}}
 
 about:
-    home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
-    license: "varies; see http://genome.ucsc.edu/license"
-    summary: "{summary}"
+  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "varies; see http://genome.ucsc.edu/license"
+  summary: "{summary}"

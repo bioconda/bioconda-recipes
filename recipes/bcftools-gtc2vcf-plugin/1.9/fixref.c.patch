@@ -1,0 +1,107 @@
+--- bcftools-1.9/plugins/fixref.c.orig	2018-06-30 03:48:02.000000000 -0400
++++ bcftools-1.9/plugins/fixref.c	2018-10-03 09:03:07.270160080 -0400
+@@ -90,6 +90,7 @@
+ #define MODE_TOP2FWD  2
+ #define MODE_FLIP2FWD 3
+ #define MODE_USE_ID   4
++#define MODE_SWAP     6
+ 
+ typedef struct
+ {
+@@ -104,12 +105,14 @@
+ typedef struct
+ {
+     char *dbsnp_fname;
+-    int mode, discard;
++    int mode, discard, flip_baf;
+     bcf_hdr_t *hdr;
+     faidx_t *fai;
+     int rid, skip_rid;
+     i2m_t *i2m;
+     int32_t *gts, ngts, pos;
++    float *bafs;
++    int32_t nbafs;
+     uint32_t nsite,nok,nflip,nunresolved,nswap,nflip_swap,nonSNP,nonACGT,nonbiallelic;
+     uint32_t count[4][4], npos_err, unsorted;
+ }
+@@ -130,6 +133,7 @@
+         "       Currently the following modes are recognised:\n"
+         "           flip  .. flips non-ambiguous SNPs and ignores the rest\n"
+         "           id    .. swap REF/ALT and GTs using the ID column to determine the REF allele\n"
++        "           swap  .. swap REF/ALT columns and GTs and ignore the rest\n"
+         "           stats .. collect and print stats\n"
+         "           top   .. converts from Illumina TOP strand to fwd\n"
+         "\n"
+@@ -148,7 +152,8 @@
+         "   -i, --use-id <file.vcf>     Swap REF/ALT using the ID column to determine the REF allele, implies -m id.\n"
+         "                               Download the dbSNP file from\n"
+         "                                   https://www.ncbi.nlm.nih.gov/variation/docs/human_variation_vcf\n"
+-        "   -m, --mode <string>         Collect stats (\"stats\") or convert (\"flip\", \"id\", \"top\") [stats]\n"
++        "   -m, --mode <string>         Collect stats (\"stats\") or convert (\"flip\", \"id\", \"swap\", \"top\") [stats]\n"
++        "   -b --flip-baf               Flip BAF when swapping genotypes\n"
+         "\n"
+         "Examples:\n"
+         "   # run stats\n"
+@@ -178,10 +183,11 @@
+         {"discard",no_argument,NULL,'d'},
+         {"fasta-ref",required_argument,NULL,'f'},
+         {"use-id",required_argument,NULL,'i'},
++        {"flip-baf",no_argument,NULL,'b'},
+         {NULL,0,NULL,0}
+     };
+     int c;
+-    while ((c = getopt_long(argc, argv, "?hf:m:di:",loptions,NULL)) >= 0)
++    while ((c = getopt_long(argc, argv, "?hf:m:di:b:",loptions,NULL)) >= 0)
+     {
+         switch (c) 
+         {
+@@ -190,11 +196,13 @@
+                 else if ( !strcasecmp(optarg,"flip") ) args.mode = MODE_FLIP2FWD; 
+                 else if ( !strcasecmp(optarg,"id") ) args.mode = MODE_USE_ID; 
+                 else if ( !strcasecmp(optarg,"stats") ) args.mode = MODE_STATS; 
++                else if ( !strcasecmp(optarg,"swap") ) args.mode = MODE_SWAP; 
+                 else error("The source strand convention not recognised: %s\n", optarg);
+                 break;
+             case 'i': args.dbsnp_fname = optarg; args.mode = MODE_USE_ID; break;
+             case 'd': args.discard = 1; break;
+             case 'f': ref_fname = optarg; break;
++            case 'b': args.flip_baf = 1; break;
+             case 'h':
+             case '?':
+             default: error("%s", usage()); break;
+@@ -231,6 +239,13 @@
+         }
+     }
+     bcf_update_genotypes(args->hdr,rec,args->gts,args->ngts);
++
++    if (args->flip_baf && bcf_get_format_float(args->hdr, rec, "BAF", &args->bafs, &args->nbafs) >= 0)
++    {
++        float *ptr = args->bafs;
++        for (i=0; i<args->nbafs; i++, ptr++) *ptr = 1 - *ptr;
++        bcf_update_format_float(args->hdr, rec, "BAF", args->bafs, args->nbafs);
++    }
+     
+     return rec;
+ }
+@@ -430,6 +445,13 @@
+         if ( ir==revint(ib) ) { args.nflip_swap++; return set_ref_alt(&args,rec,int2nt(revint(ib)),int2nt(revint(ia)),1); }
+         error("FIXME: this should not happen %s:%d\n", bcf_seqname(args.hdr,rec),rec->pos+1);
+     }
++    else if ( args.mode==MODE_SWAP )
++    {
++        if ( ir==ia ) return ret;
++        if ( ir==ib ) { args.nswap++; return set_ref_alt(&args,rec,int2nt(ib),int2nt(ia),1); }
++        args.nunresolved++;
++        return args.discard ? NULL : ret;
++    }
+     else if ( args.mode==MODE_TOP2FWD )
+     {
+         int pair = 1 << ia | 1 << ib;
+@@ -567,6 +589,7 @@
+     fprintf(stderr,"NS\tnon-biallelic\t%u\n", args.nonbiallelic);
+ 
+     free(args.gts);
++    free(args.bafs);
+     if ( args.fai ) fai_destroy(args.fai);
+     if ( args.i2m ) kh_destroy(i2m, args.i2m);
+ }

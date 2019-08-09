@@ -1,22 +1,29 @@
+{% set version = "0.1.9" %}
+{% set name = "hyphy-python" %}
+
+build:
+  number: 1
+
 package:
-  name: python-hyphy-python
-  version: 0.1.3
+  name: python-{{ name | lower }}
+  version: {{ version }}
 
 source:
-  git_rev: 0.1.3
-  git_url: https://github.com/veg/hyphy-python.git
+  url: https://github.com/veg/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: 0e29cc24f983d62b936610461a377e26f9ff0ce31823f41b1e18fe547f223a14
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+  host:
     - python
     - curl
-    - gcc   # [not osx]
-    - llvm  # [osx]
-
   run:
+    - llvm-openmp  # [osx]
     - python
     - curl
-    - libgcc # [not osx]
 
 test:
   # Python imports
@@ -25,5 +32,6 @@ test:
 
 about:
   home: https://github.com/veg/hyphy-python
-  license: UNKNOWN
+  license: MIT
+  license_file: LICENSE
   summary: 'HyPhy package interface library'

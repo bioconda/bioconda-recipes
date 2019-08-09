@@ -1,0 +1,38 @@
+{% set version = "1.0.1" %}
+{% set hash_value = "8636162798aa0a69f7e4f3e3ae02fe8aafa559d5ff22f74ce447521355bdbb14" %}
+
+package:
+  name: "fastq-anonymous"
+  version: '{{ version }}'
+
+source:
+  fn: 'fastq-anonymous-{{ version }}.tar.gz'
+  url: https://pypi.io/packages/source/f/fastq-anonymous/fastq-anonymous-{{ version }}.tar.gz
+  sha256: '{{ hash_value }}'
+
+build:
+  skip: True  # [py27]
+  number: 1
+  entry_points:
+    - fastq-anonymous=fastqanonymous.fastqanonymous:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    - python
+    - setuptools
+  run:
+    - python
+    - biopython
+
+test:
+  imports:
+    - fastqanonymous
+  commands:
+    - fastq-anonymous --help
+
+about:
+  home: https://github.com/wdecoster/fastq-anonymous
+  license: MIT License
+  license_family: MIT
+  summary: "Change the sequence of a fastq file to enable sharing of confidential information, for troubleshooting\uFFFC of tools."

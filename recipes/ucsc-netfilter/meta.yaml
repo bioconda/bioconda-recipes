@@ -1,40 +1,44 @@
+{% set package = "ucsc-netfilter" %}
+{% set program = "netFilter" %}
+{% set version = "377" %}
+{% set sha256 = "932f149c19641064a9cd3f2382cbb54b45a9292b8444792872d531346925d676" %}
+
 package:
-    name: "ucsc-netfilter"
-    version: "324"
+  name: "{{ package }}"
+  version: "{{ version }}"
+
 source:
-    url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v324.src.tgz"          # [linux]
-    fn: "userApps.src.tgz"                                                                     # [linux]
-    md5: "c49c168584c5917081d71df854e3cd9d"                                                    # [linux]
-    patches:                                                                                   # [linux]
-        - "include.patch"                                                                      # [linux]
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{{ version }}.src.tgz"
+  sha256: "{{ sha256 }}"
+  patches:
+    - "include.patch"
 
-    url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/netFilter"                    # [osx]
-    fn: "netFilter"                                                                            # [osx]
-
-build:                                                                                       # [osx]
-    script: "mkdir -p $PREFIX/bin; cp netFilter $PREFIX/bin; chmod +x $PREFIX/bin/netFilter" # [osx]
+build:
+  number: 0
 
 requirements:
-    build:
-        - libpng                                                    # [linux]
-        - mysql                                                     # [linux]
-        - zlib                                                      # [linux]
-        - openssl                                                   # [linux]
-        - gcc
+  build:
+    - {{ compiler('c') }}
+  host:
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - zlib
 
-    run:                                                            # [linux]
-        - libpng                                                    # [linux]
-        - mysql                                                     # [linux]
-        - zlib                                                      # [linux]
-        - openssl                                                   # [linux]
-        - libgcc
+  run:
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - zlib
 
 test:
-    commands:
-        # just check for existence, because the individual programs have no unified behavior
-        - which netFilter
+  commands:
+    # just check for existence, because the individual packages have no unified behavior
+    - which {{ program }}
 
 about:
-    home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
-    license: "varies; see http://genome.ucsc.edu/license"
-    summary: "Filter out parts of net.  What passes"
+  home: "http://hgdownload.cse.ucsc.edu/admin/exe/"
+  license: "varies; see http://genome.ucsc.edu/license"
+  summary: "Filter out parts of net.  What passes"

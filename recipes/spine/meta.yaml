@@ -1,0 +1,38 @@
+{% set name = "spine" %}
+{% set version = "0.2.2" %}
+{% set hash = "b39b51ae645d4835c7fe8cee755dc0a149a4aba9cb82e596b9a6fe18373e6bd1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/egonozer/Spine/archive/v{{ version }}.tar.gz
+  sha256: {{ hash }}
+  patches:
+    - spine.patch
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - perl
+    - perl-module-build
+    - perl-file-which
+
+  run:
+    - perl
+    - perl-file-which
+    - mummer >=3.22
+
+test:
+  commands:
+    - spine.pl  2>&1 | grep 'wrapper'
+    - nucmer_backbone.pl -V
+    - nucmer_multi.pl -V
+
+about:
+  home: https://github.com/egonozer/Spine
+  license: GPL-3.0
+  summary: 'Identification of conserved nucleotide core genome of bacteria and other small genome organisms'

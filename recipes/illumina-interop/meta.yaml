@@ -1,0 +1,47 @@
+{% set version = "1.1.8" %}
+{% set sha256 = "885ee3c0d53ef6f4a3df82ea219b3658c286ab008a2142e6ceb13dac5f7ab410" %}
+
+package:
+  name: illumina-interop
+  version: '{{version}}'
+
+build:
+  number: 0
+  skip: true # [osx]
+
+source:
+  url: https://github.com/Illumina/interop/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
+
+requirements:
+  build:
+    - cmake
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+
+test:
+  commands:
+    - interop_dumptext | grep Version > /dev/null
+    - interop_imaging_table | grep Version > /dev/null
+    - interop_summary | grep Version > /dev/null
+    - interop_plot_by_cycle | grep Version > /dev/null
+    - interop_plot_by_lane | grep Version > /dev/null
+    - interop_plot_flowcell | grep Version > /dev/null
+    - interop_plot_qscore_histogram | grep Version > /dev/null
+    - interop_plot_qscore_heatmap | grep Version > /dev/null
+    - interop_plot_sample_qc | grep Version > /dev/null
+    - interop_index-summary | grep Version > /dev/null
+    - interop_dumpbin | grep Version > /dev/null
+    - interop_aggregate | grep Version > /dev/null
+
+about:
+  home: http://illumina.github.io/interop/index.html
+  license: GPL-3.0
+  summary: The Illumina InterOp libraries are a set of common routines used for reading
+    and writing InterOp metric files. These metric files are binary files produced
+    during a run providing detailed statistics about a run. In a few cases, the metric
+    files are produced after a run during secondary analysis (index metrics) or for
+    faster display of a subset of the original data (collapsed quality scores).
+  dev_url: https://github.com/Illumina/interop
+  license_family: GPL

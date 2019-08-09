@@ -1,6 +1,7 @@
 #!/bin/bash
 
-$PYTHON setup.py install
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+export CPATH=${PREFIX}/include
 
-cp swga/bin/* $PREFIX/bin/
-
+python -m pip install --no-deps --ignore-installed .

@@ -1,0 +1,119 @@
+--- gtc2vcf-b890909/affy2vcf.c.orig	2018-10-11 10:20:20.163766095 -0400
++++ gtc2vcf-b890909/affy2vcf.c	2018-10-11 10:22:47.924639141 -0400
+@@ -192,7 +192,8 @@
+ 
+     int moff = 0, *off = NULL;
+     int ncols = ksplit_core(str.s, ',', &moff, &off);
+-    for (int i=0; i<ncols; i++)
++    int i;
++    for (i=0; i<ncols; i++)
+     {
+         if ( strcmp(&str.s[off[i]], "\"Probe Set ID\"")==0 ) probeset_id = i;
+         else if ( strcmp(&str.s[off[i]], "\"dbSNP RS ID\"")==0 ) dbsnp_id = i;
+@@ -247,7 +248,8 @@
+ static void annot_destroy(annot_t *annot)
+ {
+     khash_str2int_destroy(annot->probeset_id);
+-    for (int i=0; i<annot->n_records; i++)
++    int i;
++    for (i=0; i<annot->n_records; i++)
+     {
+         free(annot->records[i].probe_set);
+         free(annot->records[i].dbsnp);
+@@ -297,7 +299,8 @@
+ 
+ static void report_destroy(report_t *report)
+ {
+-    for (int i=0; i<report->n_samples; i++) free(report->cel_files[i]);
++    int i;
++    for (i=0; i<report->n_samples; i++) free(report->cel_files[i]);
+     free(report->genders);
+ }
+ 
+@@ -309,7 +312,8 @@
+ {
+     bcf_hdr_t *hdr = bcf_hdr_init("w");
+     int n = faidx_nseq(fai);
+-    for (int i=0; i<n; i++)
++    int i;
++    for (i=0; i<n; i++)
+     {
+         const char *seq = faidx_iseq(fai, i);
+         int len = faidx_seq_len(fai, seq);
+@@ -335,7 +339,8 @@
+                         float *baf,
+                         float *lrr)
+ {
+-    for (int i=0; i<n; i++) // compute THETA and R
++    int i;
++    for (i=0; i<n; i++) // compute THETA and R
+     {
+         float log2x = logf(norm_x[i]) * (float)M_LOG2E;
+         float log2y = logf(norm_y[i]) * (float)M_LOG2E;
+@@ -343,7 +348,7 @@
+         size[i] = ( log2x + log2y ) * 0.5f;
+     }
+ 
+-    for (int i=0; i<n; i++) // compute LRR and BAF
++    for (i=0; i<n; i++) // compute LRR and BAF
+     {
+         if ( delta[i] == cluster->ab_delta )
+         {
+@@ -393,7 +398,8 @@
+     ncols = ksplit_core(str.s, '\t', &moff, &off);
+     if ( strcmp(&str.s[off[0]], "probeset_id") ) error("Malformed first line from summary file: %s\n%s\n", summary_fn, str.s);
+ 
+-    for (int i=1; i<ncols; i++) bcf_hdr_add_sample(hdr, &str.s[off[i]]);
++    int i;
++    for (i=1; i<ncols; i++) bcf_hdr_add_sample(hdr, &str.s[off[i]]);
+     if ( bcf_hdr_write(out_fh, hdr) < 0 ) error("Unable to write to output VCF file\n");
+     bcf_hdr_sync( hdr ); // updates the number of samples
+ 
+@@ -442,7 +448,8 @@
+         }
+         char *tmp;
+         // read genotypes
+-        for (int i=1; i<ncols; i++)
++        int i;
++        for (i=1; i<ncols; i++)
+         {
+             int gt = strtol( &str.s[off[i]], &tmp, 10 );
+             switch ( gt )
+@@ -472,17 +479,17 @@
+         if ( hts_getline(confidences_fp, KS_SEP_LINE, &str) <=0 ) error("Confidences file ended prematurely\n");
+         ncols = ksplit_core(str.s, '\t', &moff, &off);
+         if ( ncols != bcf_hdr_nsamples(hdr) + 1 ) error("Expected %d columns but %d columns found in the confidences file\n", bcf_hdr_nsamples(hdr) + 1, ncols);
+-        for (int i=1; i<ncols; i++) conf_arr[i-1] = strtof(&str.s[off[i]], &tmp);
++        for (i=1; i<ncols; i++) conf_arr[i-1] = strtof(&str.s[off[i]], &tmp);
+ 
+         // read intensities
+         if ( hts_getline(summary_fp, KS_SEP_LINE, &str) <=0 ) error("Summary file ended prematurely\n");
+         ncols = ksplit_core(str.s, '\t', &moff, &off);
+         if ( ncols != bcf_hdr_nsamples(hdr) + 1 ) error("Expected %d columns but %d columns found in the confidences file\n", bcf_hdr_nsamples(hdr) + 1, ncols);
+-        for (int i=1; i<ncols; i++) norm_x_arr[i-1] = strtof(&str.s[off[i]], &tmp);
++        for (i=1; i<ncols; i++) norm_x_arr[i-1] = strtof(&str.s[off[i]], &tmp);
+         if ( hts_getline(summary_fp, KS_SEP_LINE, &str) <=0 ) error("Summary file ended prematurely\n");
+         ncols = ksplit_core(str.s, '\t', &moff, &off);
+         if ( ncols != bcf_hdr_nsamples(hdr) + 1 ) error("Expected %d columns but %d columns found in the confidences file\n", bcf_hdr_nsamples(hdr) + 1, ncols);
+-        for (int i=1; i<ncols; i++) norm_y_arr[i-1] = strtof(&str.s[off[i]], &tmp);
++        for (i=1; i<ncols; i++) norm_y_arr[i-1] = strtof(&str.s[off[i]], &tmp);
+ 
+         // compute LRR and BAF
+         get_lrr_baf(norm_x_arr, norm_y_arr, bcf_hdr_nsamples(hdr), cluster, delta_arr, size_arr, baf_arr, lrr_arr);
+@@ -638,7 +645,8 @@
+         report_t *report = report_init(report_fname);
+         FILE *sex_fh = fopen(sex_fname, "w");
+         if ( !sex_fh ) error("Failed to open %s: %s\n", sex_fname, strerror(errno));
+-        for (int i=0; i<report->n_samples; i++) fprintf(sex_fh, "%s\t%d\n", report->cel_files[i], report->genders[i]);
++        int i;
++        for (i=0; i<report->n_samples; i++) fprintf(sex_fh, "%s\t%d\n", report->cel_files[i], report->genders[i]);
+         fclose(sex_fh);
+         report_destroy(report);
+     }
+@@ -650,4 +658,4 @@
+     bcf_hdr_destroy(hdr);
+     hts_close(out_fh);
+     return 0;
+-}
+\ No newline at end of file
++}

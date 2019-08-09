@@ -12,6 +12,6 @@ else
     make -f Makefile.std plink
 fi
 
-# Install as plink2       
-mkdir -p $PREFIX/bin     
+# Install as plink2
+mkdir -p $PREFIX/bin
 cp plink $PREFIX/bin/plink2

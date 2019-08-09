@@ -1,12 +1,25 @@
-export CXXFLAGS="${CXXFLAGS} -std=c++11 -lstdc++ -x c++"
-export CPPFLAGS="-I${PREFIX}/include"
-export LDFLAGS="-L$PREFIX/lib"
-export PBBAM_INC=$PREFIX/include
-export PBBAM_LIB=$PREFIX/lib
-export BOOST_INC=$PREFIX/include
+#!/usr/bin/env bash
 
-NOPBBAM=1 NOHDF=1 ./configure.py PREFIX=$PREFIX
-make all
-cp alignment/libblasr.* $PREFIX/lib
-cp hdf/libpbihdf.* $PREFIX/lib
-cp pbdata/libpbdata.* $PREFIX/lib
+export BOOST_ROOT="${PREFIX}"
+export PKG_CONFIG_LIBDIR="${PREFIX}"/lib/pkgconfig
+
+# HDF5 doesn't have pkgconfig files yet
+export CPPFLAGS="-isystem ${PREFIX}/include"
+export LDFLAGS="-L${PREFIX}/lib -lhdf5_cpp -lhdf5"
+
+# configure
+# '--wrap-mode nofallback' prevents meson from downloading
+# stuff from the internet or using subprojects.
+meson \
+  --default-library shared \
+  --libdir lib \
+  --wrap-mode nofallback \
+  --prefix "${PREFIX}" \
+  -Dtests=false \
+  build .
+
+# build
+ninja -C build -v
+
+# install
+ninja -C build -v install

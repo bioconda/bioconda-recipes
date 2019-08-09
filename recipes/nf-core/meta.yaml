@@ -1,0 +1,48 @@
+{% set name = "nf-core" %}
+{% set version = "1.6" %}
+{% set sha256 = "3d94796419ba4c5b1df1c59e897a5d2c1d6c55e5ca16fc60dbf0306b0fd8d314" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - python
+    - pip
+    - twine
+  run:
+    - python
+    - cookiecutter
+    - click
+    - gitpython
+    - pyyaml
+    - requests
+    - requests-cache
+    - tabulate
+    - git
+    - jsonschema 
+    
+test:
+  commands:
+    - nf-core --help
+
+about:
+  home: http://nf-co.re/
+  license: MIT
+  summary: 'Python package with helper tools for the nf-core community.'
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true

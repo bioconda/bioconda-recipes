@@ -1,33 +1,33 @@
 {% set name = "ncbi-genome-download" %}
-{% set version = "0.2.2" %}
+{% set version = "0.2.10" %}
+{% set checksum = "2f9fa30424aaa532ed24a6493dc5dec0c7b81d6b86994e7f06b72ff3c2b5028e" %}
+{% set build_number = "0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://pypi.python.org/packages/9a/18/d68d9200014546960020cd93470edb6510e19a524e2ddf071e437efadb8c/ncbi-genome-download-0.2.2.tar.gz
-  md5: 103b2e192a2ff08f1fda1a81c0fcbf13
+  url: https://pypi.io/packages/source/n/ncbi-genome-download/ncbi-genome-download-{{ version }}.tar.gz
+  sha256: {{ checksum }}
 
 build:
+  number: {{ build_number }}
   entry_points:
     - ncbi-genome-download=ncbi_genome_download.__main__:main
-  # number: 1
+    - ngd=ncbi_genome_download.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
 
 requirements:
-  build:
+  host:
+    - pip
     - python
-    - setuptools
-    - requests >=2.4.3
-    - pyopenssl >=16.0.0
-    - ndg-httpsclient >=0.4.0
 
   run:
+    - appdirs
     - python
     - requests >=2.4.3
-    - pyopenssl >=16.0.0
-    - ndg-httpsclient >=0.4.0
+    - enum34  # [py27]
 
 test:
   imports:
@@ -35,13 +35,7 @@ test:
 
   commands:
     - ncbi-genome-download --help
-
-  requires:
-    - coverage
-    - pytest
-    - pytest-cov
-    - pytest-mock
-    - requests-mock
+    - ngd --help
 
 about:
   home: https://github.com/kblin/ncbi-genome-download/

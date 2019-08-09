@@ -1,37 +1,50 @@
 {% set name = "BBMap" %}
-{% set version = "36.84" %}
-{% set sha256 = "2ae82c8265cd7d6d7b4338c71335a2567d54cef51cb871bb2d4f337bae52315a" %}
-
-about:
-  home: 'https://sourceforge.net/projects/bbmap'
-  license: "UC-LBL license (see package)"
-  summary: "BBMap is a short read aligner, as well as various other bioinformatic tools"
+{% set version = "38.61b" %}
+{% set sha256 = "9955ca0cfdfd845fae0423947e55184d0422f11ebb463e71e78b6039913079c9" %}
 
 build:
   number: 0
-  skip: True # [osx]
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name|lower }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
   url: http://downloads.sourceforge.net/project/{{ name|lower }}/{{ name }}_{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
   build:
-    - openjdk # [not osx]
+    - {{ compiler('c') }}
+  host:
+    - openjdk >=7.0
   run:
-    - openjdk # [not osx]
+    - openjdk >=7.0
 
 test:
+  files:
+    - test.fa
+    - testdatabase.fa
+    - testexpected.sam
   commands:
-    - bbmap.sh -V 2>&1 | grep "Executing" > /dev/null
+    - bbmap.sh -V 2>&1 | grep "BBMap" > /dev/null
+    - bbmerge.sh -V 2>&1 | grep "BBMerge" > /dev/null
+    - bbduk.sh -V 2>&1 | grep "BBDuk" > /dev/null
+    - bbmask.sh -V 2>&1 | grep "BBMask" > /dev/null
+    - bbnorm.sh --help 2>&1 | grep "BBNorm" > /dev/null
+
+about:
+  home: https://sourceforge.net/projects/bbmap
+  doc_url: https://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide/
+  license: "UC-LBL license (see package)"
+  license_file: license.txt
+  summary: "BBMap is a short read aligner, as well as various other bioinformatic tools."
 
 extra:
   notes: |
     BBMap is a series of Java programs, but they come with a number of custom
     wrapper shell scripts. Each of these is symlinked to the conda bin directory
     during install.
+  identifiers:
+    - biotools:bbmap
+    - doi:10.1371/journal.pone.0185056

@@ -1,0 +1,41 @@
+{% set name = "fcp" %}
+{% set version = "1.0.7" %}
+{% set md5 = "2acfac9da7a8f4529d2fb9703369a6c0" %}
+
+source:
+  md5: {{ md5 }}
+  url: https://github.com/dparks1134/FragmentClassificationPackage/archive/v{{ version }}.tar.gz
+
+build:
+  number: 1
+  skip: True # [not py27]
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  run:
+    - python
+    - blast
+
+test:
+  commands:
+    - FCP_install.py 2>&1 | grep "FCP_install"
+    - BuildBlastDB.py
+    - nb-classify --help
+    - BLASTN.py
+    - NB-BL.py
+    - Epsilon-NB.py
+    - LCA.py 2>&1 | grep "LCA"
+    - LCA+Epsilon-NB.py
+    - TaxonomicSummary.py
+    - AddModel.py
+    - nb-train --help
+
+about:
+  home: 'https://github.com/dparks1134/FragmentClassificationPackage'
+  license: "GPL3"
+  summary: "Homology- and composition-based classifiers for assigning a taxonomic attribution to metagenomic fragments."

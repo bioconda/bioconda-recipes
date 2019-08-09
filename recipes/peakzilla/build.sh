@@ -9,3 +9,5 @@ then
 else
 	cp peakzilla.py ${PREFIX}/bin
 fi
+
+chmod +x ${PREFIX}/bin/peakzilla.py

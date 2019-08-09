@@ -1,32 +1,38 @@
-package:
-  name: gnu-wget
-  version: '1.18'
+{% set version = "1.18" %}
 
-about:
-  home: http://www.gnu.org/software/wget/
-  license: GPLv3
-  summary: 'Retrieve files using HTTP, HTTPS and FTP'
+package:
+    name: gnu-wget
+    version: {{ version }}
 
 source:
-  fn: wget-1.18.tar.xz
-  url: http://ftp.gnu.org/gnu/wget/wget-1.18.tar.xz
-  md5: af9ca95a4bb8ac4a9bf10aeae66fa5ec
+    md5: af9ca95a4bb8ac4a9bf10aeae66fa5ec
+    url: http://ftp.gnu.org/gnu/wget/wget-{{ version }}.tar.xz
 
 build:
-  number: 1
+    number: 4
 
 requirements:
   build:
-    - gcc
-    # The configure script requires Python 3 for Wget's test suite. The recipe
-    # does not run the tests, but the configure check cannot be turned off.
-    - python >=3
+    - {{ compiler('c') }}
+    - pkg-config
+    - make
+  host:
+    - openssl 1.0.2n
+    - libidn2
+    - libunistring
     - zlib
-    - openssl
   run:
+    - openssl 1.0.2n
+    - libidn2
+    - libunistring
     - zlib
-    - openssl
 
 test:
-  commands:
-    - wget --help > /dev/null 2>&1
+    commands:
+        - wget --help
+        - wget https://github.com/conda-forge
+
+about:
+    home: http://www.gnu.org/software/wget/
+    license: GPLv3
+    summary: Retrieve files using HTTP, HTTPS and FTP

@@ -1,8 +1,12 @@
 #!/bin/bash
 
-cd $SRC_DIR/
 
 mkdir -p $PREFIX/bin
+
+./bootstrap.sh
+./configure --with-capnp=$PREFIX --with-gsl=$PREFIX
+
+make
 
 binaries="\
 mash \

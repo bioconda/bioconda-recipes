@@ -1,0 +1,47 @@
+{% set version = "0.1.0" %}
+{% set sha256 = "729f0067ed460ef398893f671a880c45410ef677075428d0598a8c5f79b931ac" %}
+
+package:
+  name: peakachu
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/tbischler/PEAKachu/archive/v{{ version }}.tar.gz
+  sha256: "{{ sha256 }}"
+  patches:
+    - pandas.patch
+
+build:
+  skip: True  # [not py3k]
+  number: 4
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+  run:
+    - python
+    - biopython
+    - matplotlib
+    - pandas
+    - pysam
+    - numexpr
+    - bcbiogff
+    - statsmodels
+    - rpy2
+    - bioconductor-deseq2 1.18.1
+    - bioconductor-edger
+    - blockbuster
+
+test:
+  imports:
+    - peakachulib
+    - peakachulib.intersection
+  commands:
+    - 'peakachu 2>&1 | grep "^usage" > /dev/null'
+
+about:
+  home: https://github.com/tbischler/PEAKachu
+  license: ISCL
+  summary: "Peak calling tool for CLIP-seq data."

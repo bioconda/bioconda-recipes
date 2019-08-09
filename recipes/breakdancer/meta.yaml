@@ -1,40 +1,50 @@
-about:
-    home: https://github.com/genome/breakdancer
-    license: GPLv3
-    summary: SV detection from paired end reads mapping
+{% set name = "breakdancer" %}
+{% set version = "1.4.5" %}
 
 package:
-    name: breakdancer
-    version: 1.4.5
+  name: {{ name }}
+  version: {{ version }}
+
+about:
+  home: https://github.com/genome/breakdancer
+  license: GPLv3
+  summary: SV detection from paired end reads mapping
 
 build:
-    skip: True  # [not py27]
+  number: 4
+  skip: True  # [not py27]
 
 requirements:
-    build:
-        - python >=2.7,<3
-        - perl
-        - cmake >=2.8
-        - gcc
-        - zlib
-        - ncurses
-    run:
-        - libgcc
-        - perl-math-cdf
-        - perl-statistics-descriptive
-        - zlib
+  build:
+    - cmake >=2.8
+    - {{ compiler('c') }}
+    - python
+  host:
+    - perl
+    - sed
+    - zlib
+    - ncurses
+  run:
+    - perl-math-cdf
+    - perl-statistics-descriptive
+    - perl-gdgraph-histogram  # for bam2cfg.pl
+    - zlib
 
 test:
-    commands:
-        - 'breakdancer-max 2>&1 | grep "Usage: breakdancer-max" > /dev/null'
+  commands:
+    - 'breakdancer-max 2>&1 | grep "Usage: breakdancer-max"'
+    - bam2cfg.pl 2>&1 | grep "Usage"
 
 source:
-    fn: v1.4.5.tar.gz
-    url: https://github.com/genome/breakdancer/archive/v1.4.5.tar.gz
-    md5: 3a3fcb3731b0d9e0573c528bdcaeb18b
-    patches:
-         - builddeps.patch
-         # This patch is applied during the build via builddeps.patch.
-         # The reason is that samtools is a tarball within the breakdancer tarball and
-         # needs to be extracted first. 
-         #- samtools.patch
+  url: https://github.com/genome/breakdancer/archive/v{{ version }}.tar.gz
+  md5: 3a3fcb3731b0d9e0573c528bdcaeb18b
+  patches:
+    - builddeps.patch
+    # This patch is applied during the build via builddeps.patch.
+    # The reason is that samtools is a tarball within the breakdancer tarball and
+    # needs to be extracted first.
+    #- samtools.patch
+
+extra:
+  identifiers:
+    - biotools:breakdancer

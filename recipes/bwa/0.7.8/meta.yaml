@@ -1,24 +1,36 @@
+{% set version = "0.7.8" %}
+{% set sha256 = "6669dbf7486a83acc4453a3c68a7857a76f1c229e229a02a9bae638480fb0b09" %}
+
 package:
   name: bwa
-  version: "0.7.8"
+  version: {{ version }}
 
 build:
-  number: 0
+  number: 4
 
 source:
-  fn: bwa-0.7.8.tar.bz2
-  url: http://downloads.sourceforge.net/project/bio-bwa/bwa-0.7.8.tar.bz2
-  md5: 51ca7a29907022080398b2b88207e33c
+  url: http://downloads.sourceforge.net/project/bio-bwa/bwa-{{ version }}.tar.bz2
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-makefile.patch
 
 requirements:
   build:
-    - gcc
+    - {{ compiler('c') }}
+  host:
     - zlib
   run:
-    - libgcc
     - zlib
+
+test:
+  commands:
+    - bwa 2>&1 | grep "index sequences in the"
 
 about:
   home: http://bio-bwa.sourceforge.net
   license: MIT
   summary: The BWA read mapper.
+
+extra:
+  identifiers:
+    - biotools:bwa

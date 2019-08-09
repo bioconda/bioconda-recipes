@@ -1,49 +1,73 @@
+{% set version = "3.1" %}
+
 package:
   name: hicexplorer
-  version: '1.6.1'
+  version: '{{ version }}'
 
 source:
-  fn: 1.6.1.tar.gz
-  url: https://github.com/maxplanck-ie/HiCExplorer/archive/1.6.1.tar.gz
-  md5: b7e0bb07a9dea6dfa635d517a4a4a1e1
+  url: https://github.com/deeptools/HiCExplorer/archive/{{ version }}.tar.gz
+  sha256: 1919748e87f0a4466c2d48b40af9265f0329cc168d5424453c3fb7505d50efb7
 
 build:
   number: 0
-  skip: True # [not py27]
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  noarch: python
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - numpy >=1.10.4
-    - scipy >=0.17.1
-    - matplotlib >=1.5.3
-    - pysam >=0.8.3
-    - intervaltree >=2.1.0
-    - biopython >=1.65
-    - pytables >=3.2.2
-    - pybigwig >=0.2.8
+  host:
+    - python >=3.5
+    - pip
   run:
-    - python
-    - pybigwig >=0.2.8
-    - numpy >=1.10.4
-    - scipy >=0.17.1
-    - matplotlib >=1.5.3
-    - pysam >=0.8.3
-    - intervaltree >=2.1.0
-    - biopython >=1.65
-    - pytables >=3.2.2
-    - pybigwig >=0.2.8
+    - python  >=3.5
+    - numpy >=1.16
+    - scipy >=1.2
+    - matplotlib ==3.0.*
+    - pysam
+    - intervaltree
+    - biopython
+    - pytables
+    - pybigwig
+    - pandas
+    - jinja2
+    - configparser  # [not py>34]
+    - cooler >=0.8.5
+    - six
+    - future
+    - unidecode
+    - hicmatrix >=10
+    - pygenometracks >=3.0
+    - hic2cool >=0.7
+    - fit_nbinom >=1.1
+    - krbalancing >=0.0.5
 
 test:
   imports:
     - hicexplorer
-
   commands:
+    - findRestSite --version
+    - hicAggregateContacts --version
     - hicBuildMatrix --version
+    - hicCorrectMatrix --version
     - hicCorrelate --version
+    - hicDetectLoops --version
+    - hicFindTADs --version
+    - hicMergeMatrixBins --version
+    - hicPlotMatrix --version
+    - hicPlotDistVsCounts --version
+    - hicPlotTADs --version
+    - hicSumMatrices --version
+    - hicInfo --version
+    - hicConvertFormat --version
+    - hicAdjustMatrix --version
+    - hicNormalize --version
+    - hicAverageRegions --version
+    - hicPlotAverageRegions --version
 
 about:
-  home: https://github.com/maxplanck-ie/HiCExplorer
+  home: https://github.com/deeptools/HiCExplorer
   license: GPL3
   summary: Set of programs to process, analyze and visualize Hi-C data
+
+extra:
+  identifiers:
+    - doi:10.1093/nar/gky504

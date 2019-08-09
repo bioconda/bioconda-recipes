@@ -1,0 +1,49 @@
+{% set name = "pasa" %}
+{% set version = "2.3.3" %}
+{% set sha256 = "9afdee4226060779a4f97512a770592760e600b39797840bbce08f43afd251eb" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 1
+  skip: True # [osx]
+
+source:
+  fn: PASApipeline-v{{ version }}.tar.gz
+  url: https://github.com/PASApipeline/PASApipeline/releases/download/{{ name }}-v{{ version }}/PASApipeline-v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - gcc  # [not osx]
+    - llvm # [osx]
+
+  run:
+    - blat
+    - cdbtools
+    - fasta3
+    - gmap
+    - libgcc # [not osx]
+    - lighttpd
+    - samtools
+    - transdecoder >=5.2.0
+    - perl
+    - perl-cgi
+    - perl-dbd-sqlite
+    - perl-db-file
+    - perl-uri
+    - r-base
+
+test:
+  commands:
+    - "${PREFIX}/opt/{{ name }}-{{ version }}/bin/cln2qual 2>&1 | grep \"cln2qual <cln_report> <qual_file>\""
+    - "${PREFIX}/opt/{{ name }}-{{ version }}/bin/mdust -h 2>&1 | grep \"Usage: mdust\""
+    - "${PREFIX}/opt/{{ name }}-{{ version }}/bin/pasa 2>&1 | grep \"Usage:.*pasa\""
+    - "${PREFIX}/opt/{{ name }}-{{ version }}/Launch_PASA_pipeline.pl --version 2>&1 | grep \"^PASA version:\""
+
+about:
+  home: https://pasapipeline.github.io/
+  license: Broad Institute
+  summary: PASA, acronym for Program to Assemble Spliced Alignments (and pronounced 'pass-uh'), is a eukaryotic genome annotation tool that exploits spliced alignments of expressed transcript sequences to automatically model gene structures, and to maintain gene structure annotation consistent with the most recently available experimental sequence data. PASA also identifies and classifies all splicing variations supported by the transcript alignments.

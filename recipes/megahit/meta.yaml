@@ -1,27 +1,46 @@
-about:
-  home: https://github.com/voutcn/megahit
-  license: GPL3
-  summary: 'MEGAHIT: An ultra-fast single-node solution for large and complex metagenomics assembly via succinct de Bruijn graph'
-build:
-  number: 0
-  skip: True # [osx]
+{% set version = "1.2.7" %}
+{% set sha256 = "9bd0bfd6946015feec9b5d98ff03688b9e6b634b7546b9b24481339bd5389f07" %}
+
 package:
   name: megahit
-  version: 1.1.1
-requirements:
-  build:
-  - gcc   # [not osx]
-  - llvm  # [osx]
-  - zlib
-  run:
-  - zlib
-  - libgcc
-  - python
+  version: {{ version }}
 
 source:
-  fn: v1.1.1.zip
-  md5: 55b441c493b7eb700729d9e698a70f15
-  url: https://github.com/voutcn/megahit/archive/v1.1.1.zip
+  sha256: '{{sha256}}'
+  url: https://github.com/voutcn/megahit/archive/v{{version}}.tar.gz
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - cmake
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+  host:
+    - zlib
+    - llvm-openmp  # [osx]
+  run:
+    - zlib
+    - llvm-openmp  # [osx]
+    - python
+
 test:
   commands:
-  - megahit --help
+    - megahit --test -m 5e6
+    - megahit --test -m 5e6 --kmin-1pass
+
+about:
+  home: https://github.com/voutcn/megahit
+  license: GPL-3.0
+  license_file: LICENSE
+  license_family: GPL
+  summary: |-
+    MEGAHIT: An ultra-fast single-node solution for large and complex
+    metagenomics assembly via succinct de Bruijn graph
+
+extra:
+  identifiers:
+    - biotools:megahit
+    - doi:10.1093/bioinformatics/btv033

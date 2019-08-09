@@ -1,32 +1,46 @@
+{% set version = "2.4" %}
+
 package:
   name: cutadapt
-  version: '1.13'
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/f2/ae/a48f4f4ae8fc1b9660262f6932c43aaa56b55934fa0ced7ee62e66d2d959/cutadapt-2.4.tar.gz
+  sha256: 74307bfa3b4c52b8af8ba651c3fb713a26cb0936d88f8970447366fcfb3e5b6b
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  skip: True  # [py27]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - pip
+    - python
+    - xopen >=0.5.0
+    - dnaio >=0.3
+    - cython
+    - setuptools_scm
+  run:
+    - python
+    - xopen >=0.5.0
+    - dnaio >=0.3
+    - pigz
+
+test:
+  imports:
+    - cutadapt
+  commands:
+    - cutadapt --version
 
 about:
   home: https://cutadapt.readthedocs.io/
   license: MIT License
   summary: 'trim adapters from high-throughput sequencing reads'
 
-source:
-  fn: cutadapt-1.13.tar.gz
-  url: https://pypi.python.org/packages/4b/a0/caf0a418d64a69da12c0f5ede20830f0b7dba2d29efa3f667f1ce69e78da/cutadapt-1.13.tar.gz
-  md5: 2d2d14e0c20ad53d7d84b57bc3e63b4c
-
-build:
-  number: 0
-  script: $PYTHON setup.py install
-
-requirements:
-  build:
-    - python
-    - xopen >=0.1.1
-  run:
-    - python
-    - xopen >=0.1.1
-
-test:
-  imports:
-    - cutadapt
-    - cutadapt.scripts
-  commands:
-    - cutadapt --version
+extra:
+  identifiers:
+    - biotools:cutadapt
+    - doi:10.14806/ej.17.1.200

@@ -1,0 +1,2 @@
+quast --test
+metaquast --test

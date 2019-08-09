@@ -1,9 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 
-$PYTHON setup.py install
+# Remove when go1.11 is available
+go get -u golang.org/x/vgo
 
-# Add more build steps here, if they are necessary.
+pushd nasp/nasptool
+echo 'module "github.com/TGenNorth/nasp"' > go.mod
+$(go env GOPATH)/bin/vgo build -o ../nasptool_linux_64
+popd
 
-# See
-# http://docs.continuum.io/conda/build.html
-# for a list of environment variables that are set during the build process.
+$PYTHON -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .

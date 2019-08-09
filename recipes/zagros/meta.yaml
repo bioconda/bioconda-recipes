@@ -1,29 +1,32 @@
-about:
-    home: 'http://smithlabresearch.org/software/zagros/'
-    license: 'GNU General Public License v3 (GPLv3)'
-    summary: 'zagros is a motif-discovery tool for CLIP-Seq data.'
 package:
-    name: 'zagros'
-    version: '1.0.0'
+  name: 'zagros'
+  version: '1.0.0'
+
 source:
-    fn: zagros-1.0.0.tar.gz
-    url: http://smithlabresearch.org/downloads/zagros-1.0.0.tar.gz
-    sha256: 3d8495d4217e75059a49673c8eaf524f933e2f35be325502fdbaf107e933c028
+  url: http://smithlabresearch.org/downloads/zagros-1.0.0.tar.gz
+  sha256: 3d8495d4217e75059a49673c8eaf524f933e2f35be325502fdbaf107e933c028
 
 build:
-  number: 0
-  skip: True  # [not py27 or osx]
-  string: gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}
+  number: 2
+  skip: True  # [osx]
+
 requirements:
   build:
     - autoconf
-    - gcc # [linux]
-    - llvm # [osx]
+    - {{ compiler('cxx') }}
+  host:
     - gawk
-    - gsl {{CONDA_GSL}}*
+    - gsl
+    - openblas
   run:
-    - libgcc # [linux]
-    - gsl {{CONDA_GSL}}*
+    - gsl
+    - openblas
+
 test:
-    commands:
-        - 'zagros 2>&1 | grep "^Usage"'
+  commands:
+    - 'zagros 2>&1 | grep "^Usage"'
+
+about:
+  home: 'http://smithlabresearch.org/software/zagros/'
+  license: 'GNU General Public License v3 (GPLv3)'
+  summary: 'zagros is a motif-discovery tool for CLIP-Seq data.'

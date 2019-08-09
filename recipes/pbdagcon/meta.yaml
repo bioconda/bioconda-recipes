@@ -6,23 +6,20 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
   skip: True # [osx]
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
 
 source:
   git_url: https://github.com/PacificBiosciences/{{ name }}
   git_rev: 87f393fe133ea626552037c1a0b9c584808bfdd8
-    
+
 requirements:
   build:
-    - llvm # [osx]
-    - gcc # [linux]
-    - boost {{CONDA_BOOST}}*
+    - {{ compiler('cxx') }}
+  host:
+    - boost
     - python
-
   run:
-    - libgcc # [linux]
     - daligner
     - blasr_libcpp
     - dazz_db
@@ -37,3 +34,7 @@ about:
   license: BSD-3-Clause-Clear
   summary: A sequence consensus algorithm implementation based on using directed acyclic graphs to encode multiple sequence alignment
 
+extra:
+  skip-lints:
+    - missing_hash
+    - uses_git_url
