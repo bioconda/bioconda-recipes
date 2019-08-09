@@ -1,7 +1,8 @@
 #!/bin/sh
 set -e
 
-rm -rf ./binaries ./perl5
+rm -rf ./binaries
+rm -f bin/prokka-make_tarball 
 
 ./bin/prokka --setupdb
 
@@ -12,3 +13,4 @@ mv doc/* "${PREFIX}/share/doc/prokka/"
 
 prokka --listdb
 prokka --version
+prokka --citation
