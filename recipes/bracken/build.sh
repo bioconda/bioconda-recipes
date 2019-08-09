@@ -3,8 +3,7 @@
 mkdir -p "${PREFIX}"/bin/src
 
 # inject compilers
-find / -name omp.h -print
-sed -i.bak "s#g++#${CXX}#" src/Makefile
+sed -i.bak "s#g++#${CXX} -I${BUILD_PREFIX}/include/omp.h#" src/Makefile
 
 sh install_bracken.sh
 cp bracken "${PREFIX}"/bin
