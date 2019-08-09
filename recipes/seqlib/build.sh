@@ -9,7 +9,7 @@ sed -i 's|mkdir -p bin \&\& cp src/libseqlib.a fermi-lite/libfml.a bwa/libbwa.a 
 
 echo "#### DEBUG START ####"
 find . -name bwa.h
-echo "DEBUG STOP ###""
+echo "#### DEBUG STOP ####"
 
 ./configure
 make
