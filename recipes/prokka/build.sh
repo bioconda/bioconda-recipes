@@ -9,7 +9,7 @@ rm -f bin/prokka-make_tarball
 mkdir -p "${PREFIX}/bin" "${PREFIX}/db" "${PREFIX}/share/doc/prokka"
 mv bin/* "${PREFIX}/bin/"
 mv db/* "${PREFIX}/db/"
-mv doc/* "${PREFIX}/share/doc/prokka/"
+cp -r doc/* "${PREFIX}/share/doc/prokka/"
 
 prokka --listdb
 prokka --version
