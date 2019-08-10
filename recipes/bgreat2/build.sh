@@ -1,11 +1,10 @@
 #!/bin/bash
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
 
-make zobu="-L${PREFIX}/lib "
+make zobu="$LDFLAGS" CC=$CXX CFLAGS="$CXXFLAGS -flto -funit-at-a-time -fopenmp -lz"
 
 mkdir -p $PREFIX/bin
 cp bgreat $PREFIX/bin
