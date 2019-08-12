@@ -10,11 +10,12 @@ export PATH=$BUILD_PREFIX/bin/:$PATH
 
 #TODO REMOVE
 ls -al ${PREFIX}/lib/
+${CXX} --help
 
 #build (enable debug info by adding '-Wall -d')
 mkdir build
 cd build
-qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX=${CXX} ../src/tools.pro -Wall -d
+qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX=${CXX} QMAKE_RPATHLINKDIR+=${PREFIX}/lib/ ../src/tools.pro -Wall -d
 make
 cd ..
 
