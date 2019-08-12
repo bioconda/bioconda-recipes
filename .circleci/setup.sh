@@ -52,7 +52,6 @@ if ! type bioconda-utils 2> /dev/null || [[ $BOOTSTRAP == "true" ]]; then
     # step 2: setup channels
     $WORKSPACE/miniconda/bin/conda config --system --add channels defaults
     $WORKSPACE/miniconda/bin/conda config --system --add channels bioconda
-    $WORKSPACE/miniconda/bin/conda config --system --add channels conda-forge/label/cf201901
     $WORKSPACE/miniconda/bin/conda config --system --add channels conda-forge
 
     # step 3: install bioconda-utils
