@@ -10,4 +10,3 @@ cp  linux-x64/Mauve ${mauve_dir}/Mauve
 cp $RECIPE_DIR/MauveCM ${mauve_dir}/MauveCM
 ln -s ${mauve_dir}/Mauve $PREFIX/bin/Mauve
 ln -s ${mauve_dir}/MauveCM $PREFIX/bin/MauveCM
-
