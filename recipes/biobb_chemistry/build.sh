@@ -28,3 +28,8 @@ cp $SP_DIR/biobb_chemistry/babelm/babel_minimize.py $PREFIX/bin/babel_minimize
 chmod u+x $SP_DIR/biobb_chemistry/babelm/babel_remove_hydrogens.py
 cp $SP_DIR/biobb_chemistry/babelm/babel_remove_hydrogens.py $PREFIX/bin/babel_remove_hydrogens
 
+chmod u+x $SP_DIR/biobb_chemistry/ambertools/reduce_add_hydrogens.py
+cp $SP_DIR/biobb_chemistry/ambertools/reduce_add_hydrogens.py $PREFIX/bin/reduce_add_hydrogens
+
+chmod u+x $SP_DIR/biobb_chemistry/ambertools/reduce_remove_hydrogens.py
+cp $SP_DIR/biobb_chemistry/ambertools/reduce_remove_hydrogens.py $PREFIX/bin/reduce_remove_hydrogens

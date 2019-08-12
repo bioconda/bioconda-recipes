@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="BSgenome.Ptroglodytes.UCSC.panTro6_1.4.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/BSgenome.Ptroglodytes.UCSC.panTro6_1.4.2.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Ptroglodytes.UCSC.panTro6_1.4.2.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Ptroglodytes.UCSC.panTro6_1.4.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.ptroglodytes.ucsc.pantro6/bioconductor-bsgenome.ptroglodytes.ucsc.pantro6_1.4.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.ptroglodytes.ucsc.pantro6/bioconductor-bsgenome.ptroglodytes.ucsc.pantro6_1.4.2_src_all.tar.gz"
 )
 MD5="1df05d985374e9edc1dd7c3df5118338"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
