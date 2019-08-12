@@ -14,7 +14,7 @@ ls -al ${PREFIX}/lib/
 #build (enable debug info by adding '-Wall -d')
 mkdir build
 cd build
-qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX=${CXX} ../src/tools.pro -Wall -ds
+qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX=${CXX} ../src/tools.pro -Wall -d
 make
 cd ..
 
