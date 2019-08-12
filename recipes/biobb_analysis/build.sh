@@ -22,6 +22,9 @@ cp $SP_DIR/biobb_analysis/gromacs/gmx_image.py $PREFIX/bin/gmx_image
 chmod u+x $SP_DIR/biobb_analysis/gromacs/gmx_trjconv_str.py
 cp $SP_DIR/biobb_analysis/gromacs/gmx_trjconv_str.py $PREFIX/bin/gmx_trjconv_str
 
+chmod u+x $SP_DIR/biobb_analysis/gromacs/gmx_trjconv_str_ens.py
+cp $SP_DIR/biobb_analysis/gromacs/gmx_trjconv_str_ens.py $PREFIX/bin/gmx_trjconv_str_ens
+
 chmod u+x $SP_DIR/biobb_analysis/gromacs/gmx_trjconv_trj.py
 cp $SP_DIR/biobb_analysis/gromacs/gmx_trjconv_trj.py $PREFIX/bin/gmx_trjconv_trj
 
