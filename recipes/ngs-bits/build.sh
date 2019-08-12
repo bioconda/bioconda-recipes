@@ -8,10 +8,13 @@ ln -s $PREFIX/lib htslib/lib
 ln -s $CXX $BUILD_PREFIX/bin/g++
 export PATH=$BUILD_PREFIX/bin/:$PATH
 
+#TODO REMOVE
+ls -al ${PREFIX}/lib/
+
 #build (enable debug info by adding '-Wall -d')
 mkdir build
 cd build
-qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX=${CXX} LIBS+=-L${PREFIX}/lib/ ../src/tools.pro
+qmake CONFIG-=debug CONFIG+=release DEFINES+=QT_NO_DEBUG_OUTPUT QMAKE_CXX=${CXX} ../src/tools.pro -Wall -ds
 make
 cd ..
 
