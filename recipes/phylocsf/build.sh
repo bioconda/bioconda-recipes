@@ -23,7 +23,8 @@ eval $(./opam env)
 
 echo " ======================= Testing stuff for debugging ... ======================="
 echo "Libg gsl test"
-ldconfig -p | grep libgsl
+ldconfig -p | grep libgsl > test.txt 2>&1
+cat test.txt
 
 echo " ======================= Testing environment variables ... ======================="
 echo "gsl config : " $(gsl-config --libs)
