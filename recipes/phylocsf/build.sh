@@ -20,9 +20,17 @@ echo " ======================= Setting up Opam environment ... =================
 ./opam init -a --disable-sandboxing
 eval $(./opam env)
 
+
+echo " ======================= Testing stuff for debugging ... ======================="
+echo "Linux version"
+cat /etc/os-release
+lsb_release -a
+echo "Libg gsl test"
+ldconfig -p | grep libgsl
+
 echo " ======================= Testing environment variables ... ======================="
 echo "gsl config : " $(gsl-config --libs)
-export LD_LIBRARY_PATH=$BUILD_PREFIX/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$BUILD_PREFIX/lib
 echo "LD_LIB_PATH : " $LD_LIBRARY_PATH 
 
 echo " ======================= Installing OCaml dependencies ... ======================="
