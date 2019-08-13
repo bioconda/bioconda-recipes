@@ -22,6 +22,7 @@ eval $(./opam env)
 
 echo " ======================= Testing environment variables ... ======================="
 echo "gsl config : " $(gsl-config --libs)
+export LD_LIBRARY_PATH=$BUILD_PREFIX/lib:$LD_LIBRARY_PATH
 echo "LD_LIB_PATH : " $LD_LIBRARY_PATH 
 
 echo " ======================= Installing OCaml dependencies ... ======================="
