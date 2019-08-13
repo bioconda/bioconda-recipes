@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="BSgenome.Sscrofa.UCSC.susScr11_1.4.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/BSgenome.Sscrofa.UCSC.susScr11_1.4.2.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Sscrofa.UCSC.susScr11_1.4.2.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Sscrofa.UCSC.susScr11_1.4.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.sscrofa.ucsc.susscr11/bioconductor-bsgenome.sscrofa.ucsc.susscr11_1.4.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.sscrofa.ucsc.susscr11/bioconductor-bsgenome.sscrofa.ucsc.susscr11_1.4.2_src_all.tar.gz"
 )
 MD5="db22832229e31e1a629d107df522dff9"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,6 +1,6 @@
 {% set name = "spaln" %}
-{% set version = "2.3.3" %}
-{% set sha256 = "37ddd93338255c3ade47182bf6c8d3d3bf666339ad7c4d48ea3c9fb9f45d11b3" %}
+{% set version = "2.3.3c" %}
+{% set sha256 = "e81d6756dfb28ad27d07b8e15de423815d6309d6c94dc1af3d5ecedb5e2213f2" %}
 
 package:
   name: {{ name|lower }}
@@ -11,6 +11,7 @@ source:
   sha256: {{ sha256 }}
   patches:
     - patch-makefile_pl   # add a Makefile.PL for the Perl part of the code
+    - patch-makefile_ldflags  # add a LDFLAGS variable to the Makefile
 
 build:
   number: 0
@@ -28,7 +29,11 @@ requirements:
 test:
   commands:
     - spaln -h 2>&1 |grep 'SPALN version' >/dev/null
-    - makblk.pl |grep makblk.pl >/dev/null
+    - makblk.pl 2>&1 |grep makblk.pl >/dev/null
+    - sortgrcd -h 2>&1 |grep sortgrcd >/dev/null
+    - makmdm -h 2>&1 |grep makmdm >/dev/null
+    - makdbs -h 2>&1 |grep makdbs >/dev/null
+    - makeidx.pl -h 2>&1 |grep makeidx.pl >/dev/null
 
 about:
   home: http://www.genome.ist.i.kyoto-u.ac.jp/~aln_user/spaln/

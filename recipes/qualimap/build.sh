@@ -10,6 +10,8 @@ cd "${SRC_DIR}"
 if [ "$(uname)" == "Darwin" ]; then
     rm -f libIntel*.so
 fi
+# Set QUALIMAP_HOME to libraries path. This can help qualimap know where scripts/ forlder is.
+sed -i.bak "/-classpath [^ ]*/i\export QUALIMAP_HOME='/opt/anaconda1anaconda2anaconda3/${TGT_BASE}'" qualimap
 # Set classpath to libraries
 sed -i.bak "s#-classpath [^ ]*#-classpath '/opt/anaconda1anaconda2anaconda3/${TGT_BASE}/*'#" qualimap
 # MaxPermSize not supported with Java 8 -- avoid warnings
