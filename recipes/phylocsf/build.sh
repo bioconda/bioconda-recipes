@@ -21,7 +21,7 @@ eval $(./opam env)
 
 echo "Installing OCaml dependencies ..."
 # Install OCaml dependencies
-./opam install batteries ocaml-twt gsl
+./opam install batteries ocaml-twt gsl -y
 
 cd ..
 echo "Building PhyloCSF ..."
@@ -32,6 +32,6 @@ make
 chmod +x PhyloCSF
 
 # Move binary to bin folder
-mv PhyloCSF $PREFIX/bin
-mv PhyloCSF.Linux.x86_64 $PREFIX/bin
-mv PhyloCSF_Parameters $PREFIX/bin
+cp PhyloCSF $PREFIX/bin
+cp PhyloCSF.Linux.x86_64 $PREFIX/bin
+cp PhyloCSF_Parameters $PREFIX/bin
