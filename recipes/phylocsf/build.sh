@@ -2,6 +2,7 @@
 
 # Create bin folder
 mkdir -p $PREFIX/bin
+mkdir -p $PREFIX/lib
 
 echo " ======================= Downloading and compiling Opam ... ======================="
 
@@ -19,8 +20,9 @@ echo " ======================= Setting up Opam environment ... =================
 ./opam init -a --disable-sandboxing
 eval $(./opam env)
 
-gsl-config --libs
-echo $LD_LIBRARY_PATH 
+echo " ======================= Testing environment variables ... ======================="
+echo "gsl config : " $(gsl-config --libs)
+echo "LD_LIB_PATH : " $LD_LIBRARY_PATH 
 
 echo " ======================= Installing OCaml dependencies ... ======================="
 # Install OCaml dependencies
