@@ -23,7 +23,6 @@ eval $(./opam env)
 
 echo " ======================= Testing stuff for debugging ... ======================="
 echo "Linux version"
-cat /etc/os-release
 lsb_release -a
 echo "Libg gsl test"
 ldconfig -p | grep libgsl
