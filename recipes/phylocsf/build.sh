@@ -3,7 +3,7 @@
 # Create bin folder
 mkdir -p $PREFIX/bin
 
-echo "Downloading and compiling Opam ..."
+echo " ======================= Downloading and compiling Opam ... ======================="
 
 # Download and compile Opam to install Ocaml dependencies
 wget https://github.com/ocaml/opam/releases/download/2.0.5/opam-full-2.0.5.tar.gz
@@ -14,17 +14,21 @@ make lib-ext
 make
 # cp opam $PREFIX/bin
 
-echo "Setting up Opam environment ..."
+echo " ======================= Setting up Opam environment ... ======================="
 # Setup opam environment
 ./opam init -a --disable-sandboxing
 eval $(./opam env)
 
-echo "Installing OCaml dependencies ..."
+gsl-config --libs
+echo $LD_LIBRARY_PATH 
+
+echo " ======================= Installing OCaml dependencies ... ======================="
 # Install OCaml dependencies
-./opam install batteries ocaml-twt gsl -y
+# ./opam install batteries ocaml-twt gsl -y
+./opam install gsl -y
 
 cd ..
-echo "Building PhyloCSF ..."
+echo " ======================= Building PhyloCSF ... ======================="
 # Build PhyloCSF
 make
 
