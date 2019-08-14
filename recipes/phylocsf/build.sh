@@ -2,7 +2,6 @@
 
 # Create bin folder
 mkdir -p $PREFIX/bin
-mkdir -p $PREFIX/lib
 
 echo " ======================= Downloading and compiling Opam ... ======================="
 
@@ -22,9 +21,13 @@ eval $(./opam env)
 echo " ======================= Testing environment variables ... ======================="
 echo "gsl config : " $(gsl-config --libs)
 export LD_LIBRARY_PATH=$BUILD_PREFIX/lib
-echo "LD_LIB_PATH : " $LD_LIBRARY_PATH 
+echo "LD_LIB_PATH : " $LD_LIBRARY_PATH
 
 echo " ======================= Testing pkg config ... ======================="
+echo "Listing lib dir"
+echo $BUILD_PREFIX
+ls -a $BUILD_PREFIX/lib
+echo "Package config output"
 /usr/bin/pkg-config --debug gsl
 
 echo " ======================= Installing OCaml dependencies ... ======================="
