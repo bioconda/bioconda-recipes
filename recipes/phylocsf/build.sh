@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Export path to pkconfig lib files required to install Ocaml packages
+export PKG_CONFIG_PATH=$BUILD_PREFIX/lib/pkgconfig
+
 # Create bin folder
 mkdir -p $PREFIX/bin
 
@@ -15,9 +18,6 @@ make
 ./opam init -a --disable-sandboxing
 eval $(./opam env)
 
-# Export path to pkconfig lib files required to install Ocaml packages
-export PKG_CONFIG_PATH=$BUILD_PREFIX/lib/pkgconfig
-
 # Install OCaml dependencies
 ./opam install batteries ocaml-twt gsl ocamlfind -y
 
@@ -32,3 +32,4 @@ chmod +x PhyloCSF
 cp PhyloCSF $PREFIX/bin
 cp PhyloCSF.Linux.x86_64 $PREFIX/bin
 cp -r PhyloCSF_Parameters $PREFIX/bin
+0
