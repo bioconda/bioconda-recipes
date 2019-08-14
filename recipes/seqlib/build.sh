@@ -1,6 +1,10 @@
 #!/bin/bash
 set -eu -o pipefail
 
+cd temp_htslib
+git checkout 5163833ede355f8c2a6788780c55d7598279e767
+cd ..
+
 mv temp_bwa/* bwa/
 mv temp_fermi-lite/* fermi-lite/
 mv temp_htslib/* htslib/
