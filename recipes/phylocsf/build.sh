@@ -30,8 +30,7 @@ ls
 echo "Listing lib dir"
 which pkg-config
 echo "Package config output"
-pkg-config --debug
-pkg-config --list-all
+pkg-config --debug --list-all
 pkg-config --debug gsl
 
 echo " ======================= Installing OCaml dependencies ... ======================="
