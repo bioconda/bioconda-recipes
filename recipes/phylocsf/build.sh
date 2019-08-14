@@ -18,11 +18,6 @@ echo " ======================= Setting up Opam environment ... =================
 ./opam init -a --disable-sandboxing
 eval $(./opam env)
 
-echo " ======================= Testing environment variables ... ======================="
-# echo "gsl config : " $(gsl-config --libs)
-# export LD_LIBRARY_PATH=$BUILD_PREFIX/lib
-# echo "LD_LIB_PATH : " $LD_LIBRARY_PATH
-
 echo " ======================= Testing pkg config ... ======================="
 export PKG_CONFIG_PATH=$BUILD_PREFIX/lib/pkgconfig
 # cd $BUILD_PREFIX/lib/pkgconfig
@@ -36,8 +31,7 @@ export PKG_CONFIG_PATH=$BUILD_PREFIX/lib/pkgconfig
 
 echo " ======================= Installing OCaml dependencies ... ======================="
 # Install OCaml dependencies
-# ./opam install batteries ocaml-twt gsl -y
-./opam install gsl -y
+./opam install batteries ocaml-twt gsl ocamlfind -y
 
 cd ..
 echo " ======================= Building PhyloCSF ... ======================="
