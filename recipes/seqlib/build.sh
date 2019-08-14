@@ -8,6 +8,7 @@ sed -i 's|mkdir -p bin \&\& cp src/libseqlib.a fermi-lite/libfml.a bwa/libbwa.a 
 sed -i 's|mkdir -p bin \&\& cp src/libseqlib.a fermi-lite/libfml.a bwa/libbwa.a htslib/libhts.a bin|mkdir -p bin \&\& cp src/libseqlib.a bin|' Makefile.in
 
 mv temp_bwa/* bwa/
+mv temp_fermi-lite/* fermite-lite/
 
 ./configure
 make
