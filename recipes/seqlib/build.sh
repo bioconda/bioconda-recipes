@@ -6,7 +6,7 @@ mv temp_fermi-lite/* fermi-lite/
 mv temp_htslib/* htslib/
 
 ./configure
-make CC=${CC}
+make CC=${CC} -fPIC
 make install
 make seqtools
 
