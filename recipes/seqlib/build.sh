@@ -9,6 +9,10 @@ sed -i 's|mkdir -p bin \&\& cp src/libseqlib.a fermi-lite/libfml.a bwa/libbwa.a 
 
 mv -f temp_bwa bwa
 
+echo "##### DEBUG START #####"
+ls -lh bwa
+echo "##### DEBUG STOP #####"
+
 ./configure
 make
 make install
