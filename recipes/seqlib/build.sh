@@ -5,6 +5,8 @@ mv temp_bwa/* bwa/
 mv temp_fermi-lite/* fermi-lite/
 mv temp_htslib/* htslib/
 
+export LIBS="-lm ${PREFIX}/lib/libz.a"
+
 ./configure
 make CC=${CC} CXXFLAGS="${CXXFLAGS} -fPIC" CFLAGS="${CFLAGS} -fPIC"
 make install
