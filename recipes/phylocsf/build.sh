@@ -19,13 +19,14 @@ echo " ======================= Setting up Opam environment ... =================
 eval $(./opam env)
 
 echo " ======================= Testing environment variables ... ======================="
-echo "gsl config : " $(gsl-config --libs)
-export LD_LIBRARY_PATH=$BUILD_PREFIX/lib
-echo "LD_LIB_PATH : " $LD_LIBRARY_PATH
+# echo "gsl config : " $(gsl-config --libs)
+# export LD_LIBRARY_PATH=$BUILD_PREFIX/lib
+# echo "LD_LIB_PATH : " $LD_LIBRARY_PATH
 
 echo " ======================= Testing pkg config ... ======================="
 echo "Listing lib dir"
-echo $BUILD_PREFIX
+cd $BUILD_PREFIX/lib/pkgconfig
+pwd
 ls -a $BUILD_PREFIX/lib
 echo "Package config output"
 /usr/bin/pkg-config --debug gsl
