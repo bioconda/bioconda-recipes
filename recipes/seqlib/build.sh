@@ -7,7 +7,7 @@ sed -i 's|SUBDIRS = bwa htslib fermi-lite src|SUBDIRS = src|' Makefile.in
 sed -i 's|mkdir -p bin \&\& cp src/libseqlib.a fermi-lite/libfml.a bwa/libbwa.a htslib/libhts.a bin|mkdir -p bin \&\& cp src/libseqlib.a bin|' Makefile.am
 sed -i 's|mkdir -p bin \&\& cp src/libseqlib.a fermi-lite/libfml.a bwa/libbwa.a htslib/libhts.a bin|mkdir -p bin \&\& cp src/libseqlib.a bin|' Makefile.in
 
-mv -f temp_bwa bwa
+mv temp_bwa/* bwa/
 
 echo "##### DEBUG START #####"
 ls -lh bwa
