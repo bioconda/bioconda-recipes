@@ -24,6 +24,7 @@ echo " ======================= Testing environment variables ... ===============
 # echo "LD_LIB_PATH : " $LD_LIBRARY_PATH
 
 echo " ======================= Testing pkg config ... ======================="
+export PKG_CONFIG_PATH=$BUILD_PREFIX/lib/pkgconfig
 cd $BUILD_PREFIX/lib/pkgconfig
 pwd
 ls
