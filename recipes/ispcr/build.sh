@@ -12,5 +12,5 @@ mkdir -p "lib/$MACHTYPE"
 
 make HOME=$PWD CC=${CC} CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 
-for f in bin/$MACHTYPE/* ; do install -t "$PREFIX/bin" $f ; done
-install -t "$PREFIX/share/doc/ispcr" README
+for f in bin/$MACHTYPE/* ; do mv $f $PREFIX/bin/; done
+mv README $PREFIX/share/doc/ispcr/
