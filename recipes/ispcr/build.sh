@@ -13,4 +13,4 @@ mkdir -p "lib/$MACHTYPE"
 make HOME=$PWD CC=${CC} CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 
 for f in bin/$MACHTYPE/* ; do mv $f $PREFIX/bin/; done
-mv README $PREFIX/share/doc/ispcr/
+cp README $PREFIX/share/doc/ispcr/
