@@ -13,18 +13,11 @@ cd opam-full-2.0.5
 ./configure
 make lib-ext
 make
-# cp opam $PREFIX/bin
 
 echo " ======================= Setting up Opam environment ... ======================="
 # Setup opam environment
 ./opam init -a --disable-sandboxing
 eval $(./opam env)
-
-
-echo " ======================= Testing stuff for debugging ... ======================="
-echo "Libg gsl test"
-ldconfig -p | grep libgsl > test.txt 2>&1
-cat test.txt
 
 echo " ======================= Testing environment variables ... ======================="
 echo "gsl config : " $(gsl-config --libs)
