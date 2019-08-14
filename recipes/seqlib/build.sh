@@ -5,7 +5,8 @@ mv temp_bwa/* bwa/
 mv temp_fermi-lite/* fermi-lite/
 mv temp_htslib/* htslib/
 
-export LIBS="-lz ${PREFIX}/lib/libz.a"
+export CPP_INCLUDE_PATH="${PREFIX}/include"
+export LD_LIBRARY_PATH="${PREFIX}/lib"
 
 ./configure
 make CC=${CC} CXXFLAGS="${CXXFLAGS} -fPIC" CFLAGS="${CFLAGS} -fPIC"
