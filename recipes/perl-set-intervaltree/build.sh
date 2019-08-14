@@ -9,7 +9,7 @@ if [ -f Build.PL ]; then
     ./Build install --installdirs site
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
-    perl Makefile.PL INSTALLDIRS=site
+    perl Makefile.PL INSTALLDIRS=site CC="$CC"
     make
     make test
     make install
