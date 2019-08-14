@@ -25,14 +25,14 @@ echo " ======================= Testing environment variables ... ===============
 
 echo " ======================= Testing pkg config ... ======================="
 export PKG_CONFIG_PATH=$BUILD_PREFIX/lib/pkgconfig
-cd $BUILD_PREFIX/lib/pkgconfig
-pwd
-ls
-echo "Listing lib dir"
-which pkg-config
-echo "Package config output"
-pkg-config --debug --list-all
-pkg-config --debug gsl
+# cd $BUILD_PREFIX/lib/pkgconfig
+# pwd
+# ls
+# echo "Listing lib dir"
+# which pkg-config
+# echo "Package config output"
+# pkg-config --debug --list-all
+# pkg-config --debug gsl
 
 echo " ======================= Installing OCaml dependencies ... ======================="
 # Install OCaml dependencies
