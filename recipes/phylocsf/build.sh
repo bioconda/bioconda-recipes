@@ -28,9 +28,10 @@ cd $BUILD_PREFIX/lib/pkgconfig
 pwd
 ls
 echo "Listing lib dir"
-ls -a $BUILD_PREFIX/lib
 which pkg-config
 echo "Package config output"
+pkg-config --debug
+pkg-config --list-all
 pkg-config --debug gsl
 
 echo " ======================= Installing OCaml dependencies ... ======================="
