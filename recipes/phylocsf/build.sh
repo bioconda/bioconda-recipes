@@ -24,7 +24,8 @@ echo "gsl config : " $(gsl-config --libs)
 export LD_LIBRARY_PATH=$BUILD_PREFIX/lib
 echo "LD_LIB_PATH : " $LD_LIBRARY_PATH 
 
-/usr/bin/pkg-config gsl
+echo " ======================= Testing pkg config ... ======================="
+/usr/bin/pkg-config --debug gsl
 
 echo " ======================= Installing OCaml dependencies ... ======================="
 # Install OCaml dependencies
