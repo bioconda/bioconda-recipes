@@ -11,7 +11,7 @@ DOC_DIR="$SHARE_DIR"/doc
 
 # Create directories
 mkdir -p ${BIN_DIR}
-mkdir -p ${LIB_DIR}
+mkdir -p ${PLUGIN_DIR}
 mkdir -p ${SHARE_DIR}
 
 # Copy binaries and scripts
