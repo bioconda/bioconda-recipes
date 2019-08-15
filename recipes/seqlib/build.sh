@@ -13,9 +13,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 
 ./configure
 
-sed -i.bak "s/gcc/\$\(CC\)/g" Makefile
-
-make CC=${CC} CXXFLAGS="${CXXFLAGS} -fPIC -L${PREFIX}/lib" CFLAGS="${CFLAGS} -fPIC -L${PREFIX}/lib"
+make CC=${CC} CXXFLAGS="${CXXFLAGS} -fPIC -L${PREFIX}/lib"
 make install
 make seqtools
 
