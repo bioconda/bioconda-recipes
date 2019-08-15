@@ -1,7 +1,4 @@
 #!/bin/bash
-# Some executables need to be compiled with -lrt
-sed -i.bak 's/TEST_TOOLS} DropTools/TEST_TOOLS} DropTools -lrt/' CMakeLists.txt
-
 mkdir build
 cd build
 cmake -DBoost_USE_STATIC_LIBS=OFF \
