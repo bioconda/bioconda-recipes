@@ -7,6 +7,7 @@ mv temp_htslib/* htslib/
 
 export CPP_INCLUDE_PATH="${PREFIX}/include"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
+export LIBS="-lm ${PREFIX}/lib/libz.a"
 
 ./configure
 make CC=${CC} CXXFLAGS="${CXXFLAGS} -fPIC" CFLAGS="${CFLAGS} -fPIC -L${PREFIX}/lib"
