@@ -31,6 +31,6 @@ chmod +x PhyloCSF
 
 # Move binary to bin folder
 cp PhyloCSF $PREFIX/bin
-cp PhyloCSF.Linux.x86_64 $PREFIX/bin
+cp PhyloCSF.*.x86_64 $PREFIX/bin
 cp -r PhyloCSF_Parameters $PREFIX/bin
 cp PhyloCSF_Examples/tal-AA.fa $PREFIX/bin
