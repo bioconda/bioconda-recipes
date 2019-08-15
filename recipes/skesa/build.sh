@@ -12,7 +12,7 @@ if [ "$(uname)" == "Darwin" ]; then
   sed -i.bak 's/-Wl,-Bdynamic -lrt//' $makefile
 fi
 
-make -f $makefile BOOST_PATH=${PREFIX}
+make -f $makefile BOOST_PATH=${PREFIX} CC="$CXX $CXXFLAGS"
 
 mkdir -p ${PREFIX}/bin
 mv skesa ${PREFIX}/bin/

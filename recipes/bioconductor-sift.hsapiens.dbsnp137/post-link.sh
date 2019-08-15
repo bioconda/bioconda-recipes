@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="SIFT.Hsapiens.dbSNP137_1.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/SIFT.Hsapiens.dbSNP137_1.0.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/SIFT.Hsapiens.dbSNP137_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/SIFT.Hsapiens.dbSNP137_1.0.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-sift.hsapiens.dbsnp137/bioconductor-sift.hsapiens.dbsnp137_1.0.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-sift.hsapiens.dbsnp137/bioconductor-sift.hsapiens.dbsnp137_1.0.0_src_all.tar.gz"
 )
 MD5="3c3e73f826399af5ff368d1aab12cfd1"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
