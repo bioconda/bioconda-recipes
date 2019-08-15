@@ -12,7 +12,7 @@ export LIBRARY_PATH="${PREFIX}/lib"
 export LD_LIBRARY_PATH="${PREFIX}/lib"
 
 ./configure
-make # CC=${CC} CXXFLAGS="${CXXFLAGS} -fPIC" CFLAGS="${CFLAGS} -fPIC -L${PREFIX}/lib"
+make -fPIC # CC=${CC} CXXFLAGS="${CXXFLAGS} -fPIC" CFLAGS="${CFLAGS} -L${PREFIX}/lib"
 make install
 make seqtools
 
