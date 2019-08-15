@@ -14,6 +14,7 @@ export LD_LIBRARY_PATH="${PREFIX}/lib"
 ./configure
 
 sed -i.bak "s/gcc/\$\(CC\)/g" htslib/Makefile
+sed -i.bak "s|/usr/local|\$\(PREFIX\)|g" htslib/Makefile
 
 make CC=${CC} CXXFLAGS="${CXXFLAGS} -fPIC -L${PREFIX}/lib" CFLAGS="${CFLAGS} -fPIC -L${PREFIX}/lib"
 make install
