@@ -33,4 +33,4 @@ chmod +x PhyloCSF
 cp PhyloCSF $PREFIX/bin
 cp PhyloCSF.Linux.x86_64 $PREFIX/bin
 cp -r PhyloCSF_Parameters $PREFIX/bin
-cp PhyloCSF/PhyloCSF_Examples/tal-AA.fa  $PREFIX/tests
+cp PhyloCSF_Examples/tal-AA.fa  $PREFIX/tests
