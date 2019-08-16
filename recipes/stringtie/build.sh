@@ -5,6 +5,11 @@ export CPLUS_INCLUDE_PATH=$PREFIX/include
 export LINKER="$CXX"
 export CXXFLAGS="$CPPFLAGS"
 
+# This vendors samtools 0.1.18 :(
+pushd samtools-0.1.18
+make CC=${CC} CFLAGS="${CFLAGS}"
+popd
+
 make release CXX=$CXX
 mkdir -p $PREFIX/bin
 mv stringtie $PREFIX/bin
