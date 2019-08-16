@@ -5,7 +5,7 @@ export CPLUS_INCLUDE_PATH=$PREFIX/include
 export LINKER="$CXX"
 export CXXFLAGS="$CPPFLAGS"
 
-make release
+make release CXX=$CXX
 mkdir -p $PREFIX/bin
 mv stringtie $PREFIX/bin
 
