@@ -3,6 +3,8 @@ set -eu -o pipefail
 
 ./configure
 
+export LIBRARY_PATH=${PREFIX}/lib
+
 sed -i 's/CC = gcc/compiler = ${CC}/g' Makefile
 sed -i 's/$(CC)/$(compiler)/g' Makefile
 
