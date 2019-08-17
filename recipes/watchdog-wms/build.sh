@@ -17,14 +17,6 @@ mv "${OUT}/workflowDesigner.sh" "${OUT}/watchdog-gui.sh"
 
 # create symbolic links and make them executable
 ln -s "${OUT}/watchdog-cmd.sh" "${PREFIX}/bin/watchdog-cmd"
+ln -s "${OUT}/watchdog-gui.sh" "${PREFIX}/bin/watchdog-gui"
 chmod 0755 "${PREFIX}/bin/watchdog-cmd"
-
-# test, if javafx is working
-cd "${RECIPE_DIR}"
-RET=$(java "TestJavaFx")
-if [ "$RET" == "INSTALLED" ]; then
-	ln -s "${OUT}/watchdog-gui.sh" "${PREFIX}/bin/watchdog-gui"
-	chmod 0755 "${PREFIX}/bin/watchdog-gui"
-else 
-	echo "Javafx is not installed. No symlink to '${OUT}/watchdog-gui.sh' is created."
-fi
+chmod 0755 "${PREFIX}/bin/watchdog-gui"

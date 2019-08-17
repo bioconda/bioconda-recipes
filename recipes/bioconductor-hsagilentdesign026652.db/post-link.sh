@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="HsAgilentDesign026652.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/HsAgilentDesign026652.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/HsAgilentDesign026652.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/HsAgilentDesign026652.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hsagilentdesign026652.db/bioconductor-hsagilentdesign026652.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hsagilentdesign026652.db/bioconductor-hsagilentdesign026652.db_3.2.3_src_all.tar.gz"
 )
 MD5="dcd2c748bf9d7c002611cd5cf2ff38c0"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

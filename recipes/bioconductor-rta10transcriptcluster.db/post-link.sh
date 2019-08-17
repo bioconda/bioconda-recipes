@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="rta10transcriptcluster.db_8.7.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/rta10transcriptcluster.db_8.7.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/rta10transcriptcluster.db_8.7.0.tar.gz"
   "https://bioarchive.galaxyproject.org/rta10transcriptcluster.db_8.7.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rta10transcriptcluster.db/bioconductor-rta10transcriptcluster.db_8.7.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rta10transcriptcluster.db/bioconductor-rta10transcriptcluster.db_8.7.0_src_all.tar.gz"
 )
 MD5="c6a854395aec7296ffb7d98534b112f7"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
