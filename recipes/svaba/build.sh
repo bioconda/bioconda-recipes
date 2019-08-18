@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu -o pipefail
 
-./configure CC=${CC} CFLAGS="${CFLAGS}"
+./configure
 make CC=${CC} CFLAGS="${CFLAGS}"
 make install
 
