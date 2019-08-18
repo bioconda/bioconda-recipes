@@ -2,7 +2,7 @@
 set -eu -o pipefail
 
 ./configure
-make CC=${CC} CFLAGS=${CFLAGS}
+make CC=${CC} CFLAGS="${CFLAGS}"
 make install
 
 mkdir -p ${PREFIX}/bin
