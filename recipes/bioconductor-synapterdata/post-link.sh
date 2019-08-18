@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/synapterdata_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/synapterdata_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-synapterdata/bioconductor-synapterdata_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-synapterdata/bioconductor-synapterdata_1.22.0_src_all.tar.gz"
 )
 MD5="65584fbc942c508d5dd722f1eebc73d7"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ConnectivityMap_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ConnectivityMap_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-connectivitymap/bioconductor-connectivitymap_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-connectivitymap/bioconductor-connectivitymap_1.20.0_src_all.tar.gz"
 )
 MD5="0556684e97c094a8206e314400bb5165"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/curatedBreastData_2.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/curatedBreastData_2.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-curatedbreastdata/bioconductor-curatedbreastdata_2.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-curatedbreastdata/bioconductor-curatedbreastdata_2.12.0_src_all.tar.gz"
 )
 MD5="945c48e2f40b55c017fcb7acf33c86d8"
 
