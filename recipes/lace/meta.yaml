@@ -5,32 +5,37 @@ package:
   name: {{ name|lower }}
   version: {{ version }}
 
-build:
-  noarch: generic
-  number: 0
-
 source:
-  url: https://github.com/Oshlack/Lace/archive/v{{ version }}.tar.gz
-  sha256: 0edde43e92bd9b62710ce5d4a1da00e0cf5ada1fbf534804956f4ed34504d75b
-  patches:
-    - lace.patch
+  git_url: https://github.com/dpryan79/Lace
+  git_tag: python_module
+  # This should get converted once https://github.com/Oshlack/Lace/pull/49 is merged
+#  url: https://github.com/Oshlack/Lace/archive/v{{ version }}.tar.gz
+#  sha256: 0edde43e92bd9b62710ce5d4a1da00e0cf5ada1fbf534804956f4ed34504d75b
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
 
 requirements:
+  host:
+    - python >=3
+    - pip
   run:
-  - python
-  - pandas
-  - networkx
-  - numpy
-  - matplotlib
-  - blat
+    - python >=3
+    - pandas
+    - networkx
+    - numpy
+    - matplotlib
+    - blat
 
 test:
   commands:
-    - Lace.py -h
-    - Lace_Checker.py -h
-    - Mobius.py -h
-    - STViewer.py -h
-    - BuildSuperTranscript.py
+    - Lace -h
+    - Lace_Checker -h
+    - Mobius -h
+    - STViewer -h
+    - BuildSuperTranscript 2>&1 | grep "Function takes"
 
 about:
   home: https://github.com/Oshlack/Lace
