@@ -3,7 +3,7 @@ set -eu -o pipefail
 
 ./configure
 
-export C_INCLUDE_PATH=${C_INCLUDE_PATH}:${PREFIX}/include
+export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 export INCPATH=${PREFIX}/include
 
