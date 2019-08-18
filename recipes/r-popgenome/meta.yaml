@@ -1,8 +1,5 @@
 {% set version = '2.7.1' %}
 
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
-
 package:
   name: r-popgenome
   version: {{ version|replace("-", "_") }}
@@ -14,43 +11,31 @@ source:
   sha256: a84903b151528fa026ccaba42ada22cd89babbc1824afd40269b7204e488a5fa
 
 build:
-  merge_build_host: True  # [win]
-
   number: 0
-
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}        # [not win]
-    - {{ compiler('cxx') }}      # [not win]
-    - {{native}}toolchain        # [win]
-    - {{posix}}filesystem        # [win]
-    - {{posix}}make
-    - {{posix}}sed               # [win]
-    - {{posix}}coreutils         # [win]
-    - {{posix}}zip               # [win]
-
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
     - r-ff
-
   run:
     - r-base
-    - {{native}}gcc-libs         # [win]
     - r-ff
 
 test:
   commands:
-
-    - $R -e "library('PopGenome')"           # [not win]
-    - "\"%R%\" -e \"library('PopGenome')\""  # [win]
+    - $R -e "library('PopGenome')"
 
 about:
   home: http://popgenome.weebly.com
   license: GPL-3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
   summary: Provides efficient tools for population genomics data analysis, able to process individual
     loci, large sets of loci, or whole genomes. PopGenome <DOI:10.1093/molbev/msu136>
     not only  implements a wide range of population genetics statistics, but also facilitates
@@ -61,11 +46,3 @@ about:
 extra:
   identifiers:
     - doi:10.1093/molbev/msu136
-  recipe-maintainers:
-    - MathiasHaudgaard
-    - FrodePedersen
-    - ArneKr
-    - johanneskoester
-    - bgruening
-    - daler
-    - jdblischak
