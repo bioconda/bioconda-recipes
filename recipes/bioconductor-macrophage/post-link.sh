@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/macrophage_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/macrophage_1.0.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-macrophage/bioconductor-macrophage_1.0.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-macrophage/bioconductor-macrophage_1.0.0_src_all.tar.gz"
 )
 MD5="323708aa316444965821e5662ef2ee7d"
 

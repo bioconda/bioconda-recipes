@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/Illumina450ProbeVariants.db_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/Illumina450ProbeVariants.db_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illumina450probevariants.db/bioconductor-illumina450probevariants.db_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-illumina450probevariants.db/bioconductor-illumina450probevariants.db_1.20.0_src_all.tar.gz"
 )
 MD5="248d5c2f16cab95dafd3af53acd1b05f"
 

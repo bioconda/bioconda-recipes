@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/diggitdata_1.16.0.tar.gz"
   "https://bioarchive.galaxyproject.org/diggitdata_1.16.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-diggitdata/bioconductor-diggitdata_1.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-diggitdata/bioconductor-diggitdata_1.16.0_src_all.tar.gz"
 )
 MD5="a16c7ace0ba38076d549222dc0afb374"
 

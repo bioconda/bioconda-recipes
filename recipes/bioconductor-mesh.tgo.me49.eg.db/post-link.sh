@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MeSH.Tgo.ME49.eg.db_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Tgo.ME49.eg.db_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.tgo.me49.eg.db/bioconductor-mesh.tgo.me49.eg.db_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.tgo.me49.eg.db/bioconductor-mesh.tgo.me49.eg.db_1.12.0_src_all.tar.gz"
 )
 MD5="ef6c6bb69bb039dc3174a3a02e12156f"
 

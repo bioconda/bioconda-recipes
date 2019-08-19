@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/canine.db0_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/canine.db0_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-canine.db0/bioconductor-canine.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-canine.db0/bioconductor-canine.db0_3.8.2_src_all.tar.gz"
 )
 MD5="56742a475a81dacaedd6c100df27eff0"
 

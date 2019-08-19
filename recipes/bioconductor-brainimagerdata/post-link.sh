@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/brainImageRdata_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/brainImageRdata_1.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-brainimagerdata/bioconductor-brainimagerdata_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-brainimagerdata/bioconductor-brainimagerdata_1.2.0_src_all.tar.gz"
 )
 MD5="54c39516d8efa96d6404737c09bddb94"
 

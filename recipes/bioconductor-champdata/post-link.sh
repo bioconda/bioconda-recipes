@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ChAMPdata_2.16.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ChAMPdata_2.16.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-champdata/bioconductor-champdata_2.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-champdata/bioconductor-champdata_2.16.0_src_all.tar.gz"
 )
 MD5="41023a6402403275016b865f07eba6a5"
 
