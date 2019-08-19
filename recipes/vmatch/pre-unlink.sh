@@ -1,4 +1,4 @@
-# Remore activate script
+# Remove activate script
 ACTIVATE_SCRIPT=${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}.sh
 rm ${ACTIVATE_SCRIPT}
 

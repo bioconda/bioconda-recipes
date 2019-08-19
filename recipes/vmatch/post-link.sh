@@ -7,9 +7,10 @@ MKVTREESMAPDIR="$SHARE_DIR"/TRANS/
 # Create activate script
 mkdir -p ${PREFIX}/etc/conda/activate.d
 ACTIVATE_SCRIPT=${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}.sh
-# SAVE_VARIABLE_NAME=LD_LIBRARY_PATH_BEFORE_${PKG_NAME}_${PKG_VERSION}_${PKG_BUILDNUM}
-# SAVE_VARIABLE_NAME=${SAVE_VARIABLE_NAME//./_}
-SAVE_VARIABLE_NAME=LD_LIBRARY_PATH_BEFORE_${PKG_NAME} # Should be enough
+# This variable holds the name of a environement variable
+# that contains the value of LD_LIBRARY_PATH before activating the environment.
+# Its name doesn't include the version (should be enough since there is only one version per env)
+SAVE_VARIABLE_NAME=LD_LIBRARY_PATH_BEFORE_${PKG_NAME}
 echo "# Activate script for ${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 # Save LD_LIBRARY_PATH
 export ${SAVE_VARIABLE_NAME}=\${LD_LIBRARY_PATH}
@@ -31,6 +32,7 @@ unset MKVTREESMAPDIR
 unset ${SAVE_VARIABLE_NAME}
 " > ${DEACTIVATE_SCRIPT}
 
+# Write a message for the user
 echo "Selection functions are installed in ${PLUGIN_DIR}.
 Symbol map files are installed in ${MKVTREESMAPDIR}.
 Activation and deactivation scripts will set LD_LIBRARY_PATH and MKVTREESMAPDIR accordingly

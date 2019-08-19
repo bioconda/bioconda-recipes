@@ -20,7 +20,8 @@ mkdir -p ${DOC_DIR}
 find . -maxdepth 1 -type f -executable -exec cp -p \{\} ${BIN_DIR} \;
 
 # Compile selection functions
-# SYSTEM is not really needed
+# The SYSTEM variable is not really needed
+# but we set it as should be done
 pushd SELECT
 SYSTEM=$(uname -s) make
 cp -p *.so ${PLUGIN_DIR}
