@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="MeSH.Pae.PAO1.eg.db_1.11.0.tar.gz"
+FN="MeSH.Pae.PAO1.eg.db_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/MeSH.Pae.PAO1.eg.db_1.11.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MeSH.Pae.PAO1.eg.db_1.11.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mesh.pae.pao1.eg.db/bioconductor-mesh.pae.pao1.eg.db_1.11.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MeSH.Pae.PAO1.eg.db_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MeSH.Pae.PAO1.eg.db_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.pae.pao1.eg.db/bioconductor-mesh.pae.pao1.eg.db_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.pae.pao1.eg.db/bioconductor-mesh.pae.pao1.eg.db_1.12.0_src_all.tar.gz"
 )
-MD5="281b4562470d51760d4e0d039229a09d"
+MD5="aba001fa355b5dcfc3aee1fbd99a2db5"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

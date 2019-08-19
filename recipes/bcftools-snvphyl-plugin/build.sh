@@ -1,17 +1,33 @@
 #!/bin/sh
 
-#downloading outside of meta.yaml because bioconda lint cannot handle multiple list till they move to version 3 of bioconda
+export VERSION=1.9
+export C_INCLUDE_PATH=${PREFIX}/include
+export LIBRARY_PATH=${PREFIX}/lib
 
-curl -L -s https://github.com/phac-nml/snvphyl-tools/archive/1.8.1.tar.gz > 1.8.1.tar.gz
-tar -zxvf 1.8.1.tar.gz
+CC=${CC}
 
-#copy over custom bcftools plugin
-cp snvphyl*/bcfplugins/filter_snv_density.c plugins/
+ln -s ${CC} ${PREFIX}/bin/gcc
 
-export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-
-./configure --prefix=$PREFIX --enable-libcurl
-make
+mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/libexec/bcftools
-mv plugins/filter_snv_density.so $PREFIX/libexec/bcftools/
+
+#copy plugin source to be the bcftools plugin directory 
+cp snvphyl/bcfplugins/filter_snv_density.c bcftools-$VERSION/plugins/
+
+# Compile htslib and bcftools with filter_snv_density plugin.
+pushd htslib-$VERSION
+autoheader
+(autoconf || autoconf)
+./configure --disable-bz2 --disable-lzma --prefix=$PREFIX
+make
+popd
+
+pushd bcftools-$VERSION
+./configure --disable-bz2 --disable-lzma --prefix=$PREFIX
+make
+popd
+
+#Move custom bcftools plugin to the ~/libexec/bcftools directory.
+mv bcftools-$VERSION/plugins/filter_snv_density.so $PREFIX/libexec/bcftools/
+
+rm ${PREFIX}/bin/gcc

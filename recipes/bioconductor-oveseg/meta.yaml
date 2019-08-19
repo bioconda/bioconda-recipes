@@ -1,0 +1,47 @@
+{% set version = "1.0.0" %}
+{% set name = "OVESEG" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 046a686ab8c0f5679692f8899b8a8c25
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr, rmarkdown, BiocStyle, testthat, ggplot2, gridExtra, grid, reshape2, scales
+# SystemRequirements: C++11
+requirements:
+  host:
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - r-base
+    - r-fdrtool
+    - r-rcpp
+  run:
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - r-base
+    - r-fdrtool
+    - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'An R package for multiple-group comparison to detect tissue/cell-specific marker genes among subtypes. It provides functions to compute OVESEG-test statistics, derive component weights in the mixture null distribution model and estimate p-values from weightedly aggregated permutations. Obtained posterior probabilities of component null hypotheses can also portrait all kinds of upregulation patterns among subtypes.'
+

@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="pathprintGEOData_1.12.0.tar.gz"
+FN="pathprintGEOData_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/pathprintGEOData_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/pathprintGEOData_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pathprintgeodata/bioconductor-pathprintgeodata_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/pathprintGEOData_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/pathprintGEOData_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pathprintgeodata/bioconductor-pathprintgeodata_1.14.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pathprintgeodata/bioconductor-pathprintgeodata_1.14.0_src_all.tar.gz"
 )
-MD5="ad2f10bec6bb16df90e3e9ad1e193563"
+MD5="a7237e62dda8f356c41d35e50fef33e8"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

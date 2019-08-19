@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="NCIgraphData_1.18.0.tar.gz"
+FN="NCIgraphData_1.20.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/NCIgraphData_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/NCIgraphData_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ncigraphdata/bioconductor-ncigraphdata_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/NCIgraphData_1.20.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/NCIgraphData_1.20.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ncigraphdata/bioconductor-ncigraphdata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ncigraphdata/bioconductor-ncigraphdata_1.20.0_src_all.tar.gz"
 )
-MD5="fc2723da5d02c9f6baa7d05054f912a1"
+MD5="b69030f40d2818cbd1c004d33403a653"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

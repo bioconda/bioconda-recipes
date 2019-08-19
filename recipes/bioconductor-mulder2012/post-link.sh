@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="Mulder2012_0.22.0.tar.gz"
+FN="Mulder2012_0.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/Mulder2012_0.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/Mulder2012_0.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mulder2012/bioconductor-mulder2012_0.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/Mulder2012_0.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/Mulder2012_0.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mulder2012/bioconductor-mulder2012_0.24.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mulder2012/bioconductor-mulder2012_0.24.0_src_all.tar.gz"
 )
-MD5="4c3890e75f415c4978187fb416586b1b"
+MD5="cf1ccb7133defdc49f889dfe9efabbf4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

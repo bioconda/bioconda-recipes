@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="dsQTL_0.20.0.tar.gz"
+FN="dsQTL_0.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/dsQTL_0.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/dsQTL_0.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-dsqtl/bioconductor-dsqtl_0.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/dsQTL_0.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/dsQTL_0.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dsqtl/bioconductor-dsqtl_0.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dsqtl/bioconductor-dsqtl_0.22.0_src_all.tar.gz"
 )
-MD5="077dd1342d0cc842c44937a61e90ea10"
+MD5="832fc2afb33890374a5efa553fe276ab"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

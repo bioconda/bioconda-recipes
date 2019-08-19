@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="wheatprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/wheatprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/wheatprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/wheatprobe_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-wheatprobe/bioconductor-wheatprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-wheatprobe/bioconductor-wheatprobe_2.18.0_src_all.tar.gz"
 )
 MD5="b602d5050239850515be9dce12286360"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
