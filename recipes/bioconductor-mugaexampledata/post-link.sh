@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="MUGAExampleData_1.2.0.tar.gz"
+FN="MUGAExampleData_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/MUGAExampleData_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MUGAExampleData_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mugaexampledata/bioconductor-mugaexampledata_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/MUGAExampleData_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MUGAExampleData_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mugaexampledata/bioconductor-mugaexampledata_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mugaexampledata/bioconductor-mugaexampledata_1.4.0_src_all.tar.gz"
 )
-MD5="66132942d0d409057570d914ec435e39"
+MD5="307ef40b4459572843bf422be2dc998b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
