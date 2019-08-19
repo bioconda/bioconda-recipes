@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/davidTiling_1.24.0.tar.gz"
   "https://bioarchive.galaxyproject.org/davidTiling_1.24.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-davidtiling/bioconductor-davidtiling_1.24.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-davidtiling/bioconductor-davidtiling_1.24.0_src_all.tar.gz"
 )
 MD5="fc322c673362b180aacb0e2f381db62c"
 

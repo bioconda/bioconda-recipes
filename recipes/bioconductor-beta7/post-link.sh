@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/beta7_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/beta7_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-beta7/bioconductor-beta7_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-beta7/bioconductor-beta7_1.22.0_src_all.tar.gz"
 )
 MD5="60b008e68244a7e355d290ac76aa0b04"
 

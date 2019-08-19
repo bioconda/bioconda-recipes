@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/OMICsPCAdata_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/OMICsPCAdata_1.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-omicspcadata/bioconductor-omicspcadata_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-omicspcadata/bioconductor-omicspcadata_1.2.0_src_all.tar.gz"
 )
 MD5="8edbe12b716d34eb42783e0b327582bf"
 

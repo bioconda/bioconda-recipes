@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/qPLEXdata_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/qPLEXdata_1.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-qplexdata/bioconductor-qplexdata_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-qplexdata/bioconductor-qplexdata_1.2.0_src_all.tar.gz"
 )
 MD5="e60329bb0a7c25957e0504beb98dd1f8"
 
