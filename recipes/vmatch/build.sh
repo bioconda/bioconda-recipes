@@ -13,6 +13,7 @@ DOC_DIR="$SHARE_DIR"/doc
 mkdir -p ${BIN_DIR}
 mkdir -p ${PLUGIN_DIR}
 mkdir -p ${SHARE_DIR}
+mkdir -p ${DOC_DIR}
 
 # Copy binaries and scripts
 # perl scripts use /usr/bin/env so there is no need to do modify them
