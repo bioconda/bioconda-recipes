@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="JctSeqData_1.12.0.tar.gz"
+FN="JctSeqData_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/JctSeqData_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/JctSeqData_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-jctseqdata/bioconductor-jctseqdata_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/JctSeqData_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/JctSeqData_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-jctseqdata/bioconductor-jctseqdata_1.14.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-jctseqdata/bioconductor-jctseqdata_1.14.0_src_all.tar.gz"
 )
-MD5="76da9f6116c1a71cbb2244c7dd5c32a2"
+MD5="26cbe5468815dbc5bb9d0e86c90cb88d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

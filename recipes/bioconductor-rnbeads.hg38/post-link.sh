@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="RnBeads.hg38_1.14.0.tar.gz"
+FN="RnBeads.hg38_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/RnBeads.hg38_1.14.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RnBeads.hg38_1.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rnbeads.hg38/bioconductor-rnbeads.hg38_1.14.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RnBeads.hg38_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RnBeads.hg38_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rnbeads.hg38/bioconductor-rnbeads.hg38_1.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rnbeads.hg38/bioconductor-rnbeads.hg38_1.16.0_src_all.tar.gz"
 )
-MD5="184f7387ab19409cbb5eee2cbe0da8df"
+MD5="1f69ca76421c139e33d51cd6257d61ec"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="microRNAome_1.4.0.tar.gz"
+FN="microRNAome_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/microRNAome_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/microRNAome_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-micrornaome/bioconductor-micrornaome_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/microRNAome_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/microRNAome_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-micrornaome/bioconductor-micrornaome_1.6.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-micrornaome/bioconductor-micrornaome_1.6.0_src_all.tar.gz"
 )
-MD5="bae32fb7fe64c2d23b0ac8d5d5574a1a"
+MD5="ac73eb0ae684ab92a99aaf4618878bcc"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

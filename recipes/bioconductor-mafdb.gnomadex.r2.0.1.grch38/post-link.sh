@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="MafDb.gnomADex.r2.0.1.GRCh38_3.7.0.tar.gz"
+FN="MafDb.gnomADex.r2.0.1.GRCh38_3.9.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/MafDb.gnomADex.r2.0.1.GRCh38_3.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MafDb.gnomADex.r2.0.1.GRCh38_3.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.gnomadex.r2.0.1.grch38/bioconductor-mafdb.gnomadex.r2.0.1.grch38_3.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MafDb.gnomADex.r2.0.1.GRCh38_3.9.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MafDb.gnomADex.r2.0.1.GRCh38_3.9.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.gnomadex.r2.0.1.grch38/bioconductor-mafdb.gnomadex.r2.0.1.grch38_3.9.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.gnomadex.r2.0.1.grch38/bioconductor-mafdb.gnomadex.r2.0.1.grch38_3.9.0_src_all.tar.gz"
 )
-MD5="95070dc7a5d707d63dbb6ae51ad0e68b"
+MD5="dde927145675571aae324af3db7fe7be"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="SpikeIn_1.24.0.tar.gz"
+FN="SpikeIn_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/SpikeIn_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/SpikeIn_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-spikein/bioconductor-spikein_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/SpikeIn_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SpikeIn_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-spikein/bioconductor-spikein_1.26.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-spikein/bioconductor-spikein_1.26.0_src_all.tar.gz"
 )
-MD5="c9e1bcb003e2a9789fd4f48e5c98430a"
+MD5="3c7f3d87c555ee68feafd95a518caf1d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="TxDb.Ptroglodytes.UCSC.panTro5.refGene_3.4.4.tar.gz"
+FN="TxDb.Ptroglodytes.UCSC.panTro5.refGene_3.4.6.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/TxDb.Ptroglodytes.UCSC.panTro5.refGene_3.4.4.tar.gz"
-  "https://bioarchive.galaxyproject.org/TxDb.Ptroglodytes.UCSC.panTro5.refGene_3.4.4.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.ptroglodytes.ucsc.pantro5.refgene/bioconductor-txdb.ptroglodytes.ucsc.pantro5.refgene_3.4.4_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Ptroglodytes.UCSC.panTro5.refGene_3.4.6.tar.gz"
+  "https://bioarchive.galaxyproject.org/TxDb.Ptroglodytes.UCSC.panTro5.refGene_3.4.6.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.ptroglodytes.ucsc.pantro5.refgene/bioconductor-txdb.ptroglodytes.ucsc.pantro5.refgene_3.4.6_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.ptroglodytes.ucsc.pantro5.refgene/bioconductor-txdb.ptroglodytes.ucsc.pantro5.refgene_3.4.6_src_all.tar.gz"
 )
-MD5="778842f0216030a8d60674c7e04fbc47"
+MD5="7a56692007154b6a83b70a4c6e5a9ebb"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
