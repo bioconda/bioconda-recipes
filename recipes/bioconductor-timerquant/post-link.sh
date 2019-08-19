@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="TimerQuant_1.12.0.tar.gz"
+FN="TimerQuant_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/TimerQuant_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TimerQuant_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-timerquant/bioconductor-timerquant_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/TimerQuant_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TimerQuant_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-timerquant/bioconductor-timerquant_1.14.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-timerquant/bioconductor-timerquant_1.14.0_src_all.tar.gz"
 )
-MD5="6b6d3bd75b7a51740ede49802179a8e3"
+MD5="3e09837187e65aa1b4f59165a35c7df4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

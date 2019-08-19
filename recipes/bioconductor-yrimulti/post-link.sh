@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="yriMulti_0.12.0.tar.gz"
+FN="yriMulti_0.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/yriMulti_0.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/yriMulti_0.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-yrimulti/bioconductor-yrimulti_0.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/yriMulti_0.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/yriMulti_0.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yrimulti/bioconductor-yrimulti_0.14.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yrimulti/bioconductor-yrimulti_0.14.0_src_all.tar.gz"
 )
-MD5="a5ac85ebbea7b116ab9a5200658fbab6"
+MD5="7701a6d945562afbfed3d9c4f620ef89"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

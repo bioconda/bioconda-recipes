@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="Hiiragi2013_1.18.0.tar.gz"
+FN="Hiiragi2013_1.20.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/Hiiragi2013_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/Hiiragi2013_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hiiragi2013/bioconductor-hiiragi2013_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/Hiiragi2013_1.20.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/Hiiragi2013_1.20.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hiiragi2013/bioconductor-hiiragi2013_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hiiragi2013/bioconductor-hiiragi2013_1.20.0_src_all.tar.gz"
 )
-MD5="0e1fdc481e61f2612f88120f4d7cbdff"
+MD5="c8382abd59d8f36b4ab89b63d0a7a438"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

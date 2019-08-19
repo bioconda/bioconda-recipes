@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="FlowSorted.Blood.EPIC_1.0.0.tar.gz"
+FN="FlowSorted.Blood.EPIC_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/FlowSorted.Blood.EPIC_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/FlowSorted.Blood.EPIC_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-flowsorted.blood.epic/bioconductor-flowsorted.blood.epic_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/FlowSorted.Blood.EPIC_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/FlowSorted.Blood.EPIC_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowsorted.blood.epic/bioconductor-flowsorted.blood.epic_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowsorted.blood.epic/bioconductor-flowsorted.blood.epic_1.2.0_src_all.tar.gz"
 )
-MD5="8d567155aab1d5b96ad468d0f0632acd"
+MD5="4e6f8a48f8d8504c3027429fb164eb98"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

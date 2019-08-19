@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="targetscan.Mm.eg.db_0.6.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/targetscan.Mm.eg.db_0.6.1.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/targetscan.Mm.eg.db_0.6.1.tar.gz"
   "https://bioarchive.galaxyproject.org/targetscan.Mm.eg.db_0.6.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-targetscan.mm.eg.db/bioconductor-targetscan.mm.eg.db_0.6.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-targetscan.mm.eg.db/bioconductor-targetscan.mm.eg.db_0.6.1_src_all.tar.gz"
 )
 MD5="1830815c9d1383739f1ff152da0508c5"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

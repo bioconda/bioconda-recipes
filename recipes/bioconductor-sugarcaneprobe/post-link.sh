@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="sugarcaneprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/sugarcaneprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/sugarcaneprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/sugarcaneprobe_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-sugarcaneprobe/bioconductor-sugarcaneprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-sugarcaneprobe/bioconductor-sugarcaneprobe_2.18.0_src_all.tar.gz"
 )
 MD5="66c101ac73e9235d258b9f996c42778e"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

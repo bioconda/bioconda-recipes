@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="r10kcod.db_3.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/r10kcod.db_3.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/r10kcod.db_3.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/r10kcod.db_3.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-r10kcod.db/bioconductor-r10kcod.db_3.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-r10kcod.db/bioconductor-r10kcod.db_3.4.0_src_all.tar.gz"
 )
 MD5="4a7a25fee64294cfb5adccaa6cf28772"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

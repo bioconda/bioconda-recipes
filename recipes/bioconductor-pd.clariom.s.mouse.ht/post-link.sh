@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.clariom.s.mouse.ht_3.14.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.clariom.s.mouse.ht_3.14.1.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.clariom.s.mouse.ht_3.14.1.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.clariom.s.mouse.ht_3.14.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.clariom.s.mouse.ht/bioconductor-pd.clariom.s.mouse.ht_3.14.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.clariom.s.mouse.ht/bioconductor-pd.clariom.s.mouse.ht_3.14.1_src_all.tar.gz"
 )
 MD5="9cb6f77cf9666a0d54e1eacb904fd57c"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,35 +1,37 @@
-{% set version = "1.12.0" %}
+{% set version = "1.14.1" %}
 {% set name = "mAPKL" %}
-{% set bioc = "3.8" %}
-{% set sha256 = "49d260aebe0f1df3d663d033f245aeec8dfb7311579cfb1535a79d9fd9ede8ae" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
   url:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: {{ sha256 }}
-
+  md5: 116da278be7af23529028a147363ce80
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  # r-clustersim is not available for osx because of X11 issues
-  skip: True  # [osx]
-
+  noarch: generic
 # Suggests: BiocStyle, knitr, mAPKLData, hgu133plus2.db, RUnit, BiocGenerics
 requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
   host:
-    - 'bioconductor-annotationdbi >=1.44.0,<1.45.0'
-    - 'bioconductor-biobase >=2.42.0,<2.43.0'
-    - 'bioconductor-limma >=3.38.0,<3.39.0'
-    - 'bioconductor-multtest >=2.38.0,<2.39.0'
-    - 'bioconductor-reactome.db >=1.66.0,<1.67.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-multtest >=2.40.0,<2.41.0'
+    - 'bioconductor-reactome.db >=1.68.0,<1.69.0'
     - r-apcluster
     - r-base
     - r-clustersim
@@ -37,29 +39,25 @@ requirements:
     - r-igraph
     - r-parmigene
   run:
-    - 'bioconductor-annotationdbi >=1.44.0,<1.45.0'
-    - 'bioconductor-biobase >=2.42.0,<2.43.0'
-    - 'bioconductor-limma >=3.38.0,<3.39.0'
-    - 'bioconductor-multtest >=2.38.0,<2.39.0'
-    - 'bioconductor-reactome.db >=1.66.0,<1.67.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-multtest >=2.40.0,<2.41.0'
+    - 'bioconductor-reactome.db >=1.68.0,<1.69.0'
     - r-apcluster
     - r-base
     - r-clustersim
     - r-e1071
     - r-igraph
     - r-parmigene
-
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
-
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  license_family: GPL
-  summary: 'We proposie a hybrid FS method (mAP-KL), which combines multiple hypothesis testing and affinity propagation (AP)-clustering algorithm along with the Krzanowski & Lai cluster quality index, to select a small yet informative subset of genes.'
-
-# libGL.so.1 dependency
+  summary: 'We propose a hybrid FS method (mAP-KL), which combines multiple hypothesis testing and affinity propagation (AP)-clustering algorithm along with the Krzanowski & Lai cluster quality index, to select a small yet informative subset of genes.'
 extra:
   container:
-    extended-base: True
+    extended-base: true
+

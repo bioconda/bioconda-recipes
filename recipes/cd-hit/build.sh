@@ -11,10 +11,13 @@ sed -i.bak 's/^#LDFLAGS.*//g' Makefile
 
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  CCFLAGS="$CCFLAGS -Wl,-rpath ${PREFIX}/lib -L${PREFIX}/lib -I${PREFIX}/include -fopenmp"
-	LDFLAGS="$LDFLAGS -stdlib=libc++"
-  sed -i.bak 's/CCFLAGS = -fopenmp/CCFLAGS += -fopenmp/g' Makefile
-  make CC=clang++
+  #Lines below is commented out until fix provided for OPENMP support on OS X for this program
+ 
+  #CCFLAGS="$CCFLAGS -Wl,-rpath ${PREFIX}/lib -L${PREFIX}/lib -I${PREFIX}/include -fopenmp"
+  #sed -i.bak 's/CCFLAGS = -fopenmp/CCFLAGS += -fopenmp/g' Makefile
+  LDFLAGS="$LDFLAGS -stdlib=libc++"
+  
+  make CC=clang++ openmp=no
 else
   make CC=$GXX
 fi
