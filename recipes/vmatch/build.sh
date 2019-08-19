@@ -14,6 +14,7 @@ mkdir -p ${BIN_DIR}
 mkdir -p ${PLUGIN_DIR}
 mkdir -p ${SHARE_DIR}
 mkdir -p ${DOC_DIR}
+mkdir -p ${PREFIX}/lib
 
 # Copy binaries and scripts
 # perl scripts use /usr/bin/env so there is no need to do modify them
@@ -29,6 +30,7 @@ fi
 pushd SELECT
 SYSTEM=$(uname -s) make
 cp -p *.so ${PLUGIN_DIR}
+cp -p *.so ${PREFIX}/lib
 popd
 
 # Copy data, doc and various files
