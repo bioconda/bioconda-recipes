@@ -17,7 +17,11 @@ mkdir -p ${DOC_DIR}
 
 # Copy binaries and scripts
 # perl scripts use /usr/bin/env so there is no need to do modify them
-find . -maxdepth 1 -type f -executable -exec cp -p \{\} ${BIN_DIR} \;
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    find . -maxdepth 1 -type f -perm +111 -exec cp -p \{\} ${BIN_DIR} \;
+else
+    find . -maxdepth 1 -type f -executable -exec cp -p \{\} ${BIN_DIR} \;
+fi
 
 # Compile selection functions
 # The SYSTEM variable is not really needed
