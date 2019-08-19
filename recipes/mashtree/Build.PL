@@ -19,6 +19,9 @@ sub wanted {
     if($file =~ m/.*\.pl$/){
         push(@files, $file);
     }
+    if($file =~ m/mashtree$/){
+        push(@files, $file);
+    }
 }
 
 foreach my $file (@files){

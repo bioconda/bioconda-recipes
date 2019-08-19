@@ -1,30 +1,28 @@
-{% set version = "1.16.0" %}
+{% set version = "1.18.0" %}
 {% set name = "birte" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.8" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 55af4ce33820be43a9f42fbffca1955321d6ae3af521400b45cf001a990a4bdc
+  md5: b36a82163e94932b5fc3c7bf23b0fa3f
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: knitr
+# SystemRequirements: BLAS, LAPACK
 requirements:
-  build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
   host:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-limma >=3.36.5,<3.38.0'
-    - 'bioconductor-nem >=2.54.0,<2.56.0'
+    - 'bioconductor-biobase >=2.42.0,<2.43.0'
+    - 'bioconductor-limma >=3.38.0,<3.39.0'
+    - 'bioconductor-nem >=2.56.0,<2.57.0'
     - r-base
     - r-glmnet
     - r-mass
@@ -32,23 +30,33 @@ requirements:
     - 'r-rcpparmadillo >=0.3.6.1'
     - openblas
   run:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-limma >=3.36.5,<3.38.0'
-    - 'bioconductor-nem >=2.54.0,<2.56.0'
+    - 'bioconductor-biobase >=2.42.0,<2.43.0'
+    - 'bioconductor-limma >=3.38.0,<3.39.0'
+    - 'bioconductor-nem >=2.56.0,<2.57.0'
     - r-base
     - r-glmnet
     - r-mass
     - r-rcpp
     - 'r-rcpparmadillo >=0.3.6.1'
     - openblas
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Expression levels of mRNA molecules are regulated by different processes, comprising inhibition or activation by transcription factors and post-transcriptional degradation by microRNAs. biRte uses regulatory networks of TFs, miRNAs and possibly other factors, together with mRNA, miRNA and other available expression data to predict the relative influence of a regulator on the expression of its target genes. Inference is done in a Bayesian modeling framework using Markov-Chain-Monte-Carlo. A special feature is the possibility for follow-up network reverse engineering between active regulators.'
 extra:
   identifiers:
     - biotools:birte
     - doi:10.1093/bioinformatics/btv379
+  parent_recipe:
+    name: bioconductor-birte
+    path: recipes/bioconductor-birte
+    version: 1.16.0
+

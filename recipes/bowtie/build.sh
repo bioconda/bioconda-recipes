@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu -o pipefail
 
-make EXTRA_FLAGS="-I${PREFIX}/include -L${PREFIX}/lib"
+make CPP=$CXX EXTRA_FLAGS="-I${PREFIX}/include -L${PREFIX}/lib"
 
 binaries="\
 bowtie \
