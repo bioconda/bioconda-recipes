@@ -2,6 +2,7 @@
 set -e
 set -x
 
+sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" Makefile
 platform="$(uname)"
 unzip comet_source_"$PKG_VERSION".zip
 if [ "$platform" = "Darwin" ]; then
