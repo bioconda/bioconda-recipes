@@ -15,4 +15,4 @@ mkdir -p "$PREFIX"/bin
 cp comet.exe ${PREFIX}/bin/comet
 chmod a+x ${PREFIX}/bin/comet
 cd "$PREFIX"/bin/
-ln -sr comet comet.exe
+ln -s comet comet.exe
