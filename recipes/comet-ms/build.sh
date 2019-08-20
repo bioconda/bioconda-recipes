@@ -7,6 +7,7 @@ unzip comet_source_"$PKG_VERSION".zip
 if [ "$platform" = "Darwin" ]; then
     sed -i.bak -e 's/ -static//' -e 's/ -o / -headerpad_max_install_names&/' Makefile
     sed -i.bak -e "s/sha1Report='..'/sha1Report=NULL/" MSToolkit/include/MSReader.h
+    sed -i.bak "s/ off64_t / off_t /g" CometSearch/Common.h
 fi
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" CometSearch/Makefile
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" MSToolkit/Makefile
