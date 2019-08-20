@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/lumiBarnes_1.24.0.tar.gz"
   "https://bioarchive.galaxyproject.org/lumiBarnes_1.24.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-lumibarnes/bioconductor-lumibarnes_1.24.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lumibarnes/bioconductor-lumibarnes_1.24.0_src_all.tar.gz"
 )
 MD5="b611fcdaf9f3f878f2122a2a67fe946a"
 

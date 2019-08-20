@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ARRmData_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ARRmData_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-arrmdata/bioconductor-arrmdata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-arrmdata/bioconductor-arrmdata_1.20.0_src_all.tar.gz"
 )
 MD5="a31c9743207a9e6e802284323c235412"
 

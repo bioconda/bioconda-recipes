@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/waveTilingData_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/waveTilingData_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-wavetilingdata/bioconductor-wavetilingdata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-wavetilingdata/bioconductor-wavetilingdata_1.20.0_src_all.tar.gz"
 )
 MD5="b6a9a41570c55fa3057b879f72817f6d"
 

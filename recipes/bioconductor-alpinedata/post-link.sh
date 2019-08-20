@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/alpineData_1.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/alpineData_1.10.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-alpinedata/bioconductor-alpinedata_1.10.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-alpinedata/bioconductor-alpinedata_1.10.0_src_all.tar.gz"
 )
 MD5="b97dd0b4c0e4b0b3b55308ffe850740f"
 

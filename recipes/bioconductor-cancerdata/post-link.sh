@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/cancerdata_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/cancerdata_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-cancerdata/bioconductor-cancerdata_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cancerdata/bioconductor-cancerdata_1.22.0_src_all.tar.gz"
 )
 MD5="e7527824c67a7dc60e2345b78ee01da7"
 

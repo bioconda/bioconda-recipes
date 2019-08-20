@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/FlowSorted.Blood.450k_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/FlowSorted.Blood.450k_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-flowsorted.blood.450k/bioconductor-flowsorted.blood.450k_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowsorted.blood.450k/bioconductor-flowsorted.blood.450k_1.22.0_src_all.tar.gz"
 )
 MD5="d2a79cbca36828a67db9655e7e23e059"
 

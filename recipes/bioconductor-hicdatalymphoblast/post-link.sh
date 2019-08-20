@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/HiCDataLymphoblast_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/HiCDataLymphoblast_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hicdatalymphoblast/bioconductor-hicdatalymphoblast_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hicdatalymphoblast/bioconductor-hicdatalymphoblast_1.20.0_src_all.tar.gz"
 )
 MD5="6b12b6d3851d638acdab1a15a9225b92"
 

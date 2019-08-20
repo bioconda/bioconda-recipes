@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/chicken.db0_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/chicken.db0_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-chicken.db0/bioconductor-chicken.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chicken.db0/bioconductor-chicken.db0_3.8.2_src_all.tar.gz"
 )
 MD5="a205de7be26047ac1d45287320d4efc6"
 
