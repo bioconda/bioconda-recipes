@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/WES.1KG.WUGSC_1.16.0.tar.gz"
   "https://bioarchive.galaxyproject.org/WES.1KG.WUGSC_1.16.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-wes.1kg.wugsc/bioconductor-wes.1kg.wugsc_1.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-wes.1kg.wugsc/bioconductor-wes.1kg.wugsc_1.16.0_src_all.tar.gz"
 )
 MD5="6d660e6f8bddd1aa81e578e887a8712b"
 

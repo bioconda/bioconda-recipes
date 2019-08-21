@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/bcellViper_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/bcellViper_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bcellviper/bioconductor-bcellviper_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bcellviper/bioconductor-bcellviper_1.20.0_src_all.tar.gz"
 )
 MD5="e0533eed79305a8a39db5051ba7fb9a5"
 

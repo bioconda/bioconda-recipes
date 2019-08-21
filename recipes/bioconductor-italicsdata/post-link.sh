@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ITALICSData_2.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ITALICSData_2.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-italicsdata/bioconductor-italicsdata_2.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-italicsdata/bioconductor-italicsdata_2.22.0_src_all.tar.gz"
 )
 MD5="20e86e82a58cd3beddddf7ebd31f649b"
 
