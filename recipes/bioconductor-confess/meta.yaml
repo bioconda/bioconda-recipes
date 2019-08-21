@@ -1,6 +1,6 @@
-{% set version = "1.10.0" %}
+{% set version = "1.12.0" %}
 {% set name = "CONFESS" %}
-{% set bioc = "3.8" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,24 +10,31 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 688202920086c703ad3d06e249e62029
+  md5: 9d796e40ddb6520234e5a68e3bbb7d2b
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
   noarch: generic
 # Suggests: BiocStyle, knitr, rmarkdown, CONFESSdata
 requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
   host:
-    - 'bioconductor-ebimage >=4.24.0,<4.25.0'
-    - 'bioconductor-flowclust >=3.20.0,<3.21.0'
-    - 'bioconductor-flowcore >=1.48.0,<1.49.0'
-    - 'bioconductor-flowmeans >=1.42.0,<1.43.0'
-    - 'bioconductor-flowmerge >=2.30.0,<2.31.0'
-    - 'bioconductor-flowpeaks >=1.28.0,<1.29.0'
-    - 'bioconductor-limma >=3.38.0,<3.39.0'
-    - 'bioconductor-samspectral >=1.36.0,<1.37.0'
+    - 'bioconductor-ebimage >=4.26.0,<4.27.0'
+    - 'bioconductor-flowclust >=3.22.0,<3.23.0'
+    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
+    - 'bioconductor-flowmeans >=1.44.0,<1.45.0'
+    - 'bioconductor-flowmerge >=2.32.0,<2.33.0'
+    - 'bioconductor-flowpeaks >=1.30.0,<1.31.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-samspectral >=1.38.0,<1.39.0'
     - r-base
     - r-changepoint
     - r-cluster
@@ -48,14 +55,14 @@ requirements:
     - r-wavethresh
     - r-zoo
   run:
-    - 'bioconductor-ebimage >=4.24.0,<4.25.0'
-    - 'bioconductor-flowclust >=3.20.0,<3.21.0'
-    - 'bioconductor-flowcore >=1.48.0,<1.49.0'
-    - 'bioconductor-flowmeans >=1.42.0,<1.43.0'
-    - 'bioconductor-flowmerge >=2.30.0,<2.31.0'
-    - 'bioconductor-flowpeaks >=1.28.0,<1.29.0'
-    - 'bioconductor-limma >=3.38.0,<3.39.0'
-    - 'bioconductor-samspectral >=1.36.0,<1.37.0'
+    - 'bioconductor-ebimage >=4.26.0,<4.27.0'
+    - 'bioconductor-flowclust >=3.22.0,<3.23.0'
+    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
+    - 'bioconductor-flowmeans >=1.44.0,<1.45.0'
+    - 'bioconductor-flowmerge >=2.32.0,<2.33.0'
+    - 'bioconductor-flowpeaks >=1.30.0,<1.31.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-samspectral >=1.38.0,<1.39.0'
     - r-base
     - r-changepoint
     - r-cluster
@@ -77,9 +84,12 @@ requirements:
     - r-zoo
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH=${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64 $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'Single Cell Fluidigm Spot Detector.'
+extra:
+  container:
+    extended-base: true
 

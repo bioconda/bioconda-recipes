@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="msqc1_1.10.0.tar.gz"
+FN="msqc1_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/msqc1_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/msqc1_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-msqc1/bioconductor-msqc1_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/msqc1_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/msqc1_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-msqc1/bioconductor-msqc1_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-msqc1/bioconductor-msqc1_1.12.0_src_all.tar.gz"
 )
-MD5="9c2ac1fa46c8e7b1baa7e503c5c8d3b3"
+MD5="ceb2ef3c5998e786e3bc8233b0d2724f"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

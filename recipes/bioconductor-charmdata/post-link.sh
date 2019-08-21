@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="charmData_1.18.0.tar.gz"
+FN="charmData_1.19.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/charmData_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/charmData_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-charmdata/bioconductor-charmdata_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/charmData_1.19.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/charmData_1.19.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-charmdata/bioconductor-charmdata_1.19.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-charmdata/bioconductor-charmdata_1.19.0_src_all.tar.gz"
 )
-MD5="b8a33b09e3b618b0aae3f3ca0ec5acc9"
+MD5="b01273cf14a402015dc5a26f6b3780ef"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

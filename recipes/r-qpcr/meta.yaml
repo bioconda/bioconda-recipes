@@ -1,6 +1,4 @@
 {% set version = '1.4-1' %}
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-qpcr
@@ -13,8 +11,8 @@ source:
   sha256: 5b6fd10577d8f33a31d6a7781435866de78373481c03f642f7a9f0b1e5c101e4
 
 build:
-  merge_build_host: True  # [win]
-  number: 0
+  skip: True  # [osx]
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
@@ -22,7 +20,13 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
-    - {{posix}}make
+    - make
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
   host:
     - r-base
     - r-mass
@@ -40,7 +44,7 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('qpcR')"
+    - LD_LIBRARY_PATH=${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64 $R -e "library('qpcR')"
 
 about:
   home: https://CRAN.R-project.org/package=qpcR

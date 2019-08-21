@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="curatedBladderData_1.18.0.tar.gz"
+FN="curatedBladderData_1.20.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/curatedBladderData_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/curatedBladderData_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-curatedbladderdata/bioconductor-curatedbladderdata_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/curatedBladderData_1.20.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/curatedBladderData_1.20.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-curatedbladderdata/bioconductor-curatedbladderdata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-curatedbladderdata/bioconductor-curatedbladderdata_1.20.0_src_all.tar.gz"
 )
-MD5="9626900fba87d603d8a0d7b068f3ce02"
+MD5="e81603412d05d4aeef774fb278648872"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

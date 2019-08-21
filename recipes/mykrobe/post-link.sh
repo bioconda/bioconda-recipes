@@ -27,6 +27,6 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 tar -vxzf "$TARBALL"
-rm -fr "$PREFIX"/src/mykrobe/data
-mv mykrobe-data "$PREFIX"/src/mykrobe/data
+mv $PREFIX/mykrobe-data $PREFIX/share 
+cp -sr $PREFIX/share/mykrobe-data/* $PREFIX/lib/*/site-packages/mykrobe/data
 rm "$TARBALL"

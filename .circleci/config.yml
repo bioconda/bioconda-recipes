@@ -45,6 +45,31 @@ variables:
             echo "Please use a branch other than 'master' or 'bulk' on your fork"
             exit 1
         )
+  store_built_packages: &store_built_packages
+    run:
+      name: Copying packages
+      when: always
+      no_output_timeout: 20m
+      command: |
+        set +e  # Just to be safe. Don't want workflows to fail because of this.
+        mkdir -p /tmp/artifacts/packages
+        cd miniconda/conda-bld || exit 0
+        find -name .cache | xargs rm -rf || true
+        for n in rss.xml index.html channeldata.json linux-64 osx-64 noarch broken; do
+          cp -rv $n /tmp/artifacts/packages || true
+        done
+        if command -V docker >/dev/null; then
+          mkdir -p /tmp/artifacts/images
+          cd /tmp/artifacts/images
+          docker image ls --format '{{.Repository}}:{{.Tag}}' | \
+            (grep biocontainers || true) | \
+            xargs -n1 -P4 bash -c 'docker save $1 | gzip -c > "${1##*/}.tar.gz"' --
+        fi
+        true
+
+  store_artifacts: &store_artifacts
+    store_artifacts:
+      path: /tmp/artifacts
 
 
 jobs:
@@ -108,6 +133,8 @@ jobs:
             bioconda-utils build recipes config.yml \
               --docker --mulled-test \
               --git-range master HEAD
+      - *store_built_packages
+      - *store_artifacts
 
   # build and test on macos
   test-macos:
@@ -123,6 +150,8 @@ jobs:
           command: |
             bioconda-utils build recipes config.yml \
             --git-range master HEAD
+      - *store_built_packages
+      - *store_artifacts
 
   # build, test and upload on linux
   upload-linux:

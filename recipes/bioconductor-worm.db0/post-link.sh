@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="worm.db0_3.7.1.tar.gz"
+FN="worm.db0_3.8.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/worm.db0_3.7.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/worm.db0_3.7.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-worm.db0/bioconductor-worm.db0_3.7.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/worm.db0_3.8.2.tar.gz"
+  "https://bioarchive.galaxyproject.org/worm.db0_3.8.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-worm.db0/bioconductor-worm.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-worm.db0/bioconductor-worm.db0_3.8.2_src_all.tar.gz"
 )
-MD5="65473df3ea58399054f7c71a53d33362"
+MD5="5975ea35d6c925bf2bfd0cdeb9b16667"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

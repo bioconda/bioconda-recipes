@@ -1,6 +1,6 @@
-{% set version = "1.8.0" %}
+{% set version = "1.10.0" %}
 {% set name = "MoonlightR" %}
-{% set bioc = "3.8" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,7 +10,7 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: ee7e9a7914dd2f526db0f189785be525
+  md5: 3cd30ab5e407ff40c1f5a26c088ab84b
 build:
   number: 0
   rpaths:
@@ -19,14 +19,21 @@ build:
   noarch: generic
 # Suggests: BiocStyle, knitr, rmarkdown, testthat, devtools, roxygen2, png
 requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
   host:
-    - 'bioconductor-biobase >=2.42.0,<2.43.0'
-    - 'bioconductor-clusterprofiler >=3.10.0,<3.11.0'
-    - 'bioconductor-dose >=3.8.0,<3.9.0'
-    - 'bioconductor-geoquery >=2.50.0,<2.51.0'
-    - 'bioconductor-limma >=3.38.0,<3.39.0'
-    - 'bioconductor-summarizedexperiment >=1.12.0,<1.13.0'
-    - 'bioconductor-tcgabiolinks >=2.10.0,<2.11.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-clusterprofiler >=3.12.0,<3.13.0'
+    - 'bioconductor-dose >=3.10.0,<3.11.0'
+    - 'bioconductor-geoquery >=2.52.0,<2.53.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-tcgabiolinks >=2.12.0,<2.13.0'
     - r-base
     - r-circlize
     - r-doparallel
@@ -38,13 +45,13 @@ requirements:
     - r-rcolorbrewer
     - r-rismed
   run:
-    - 'bioconductor-biobase >=2.42.0,<2.43.0'
-    - 'bioconductor-clusterprofiler >=3.10.0,<3.11.0'
-    - 'bioconductor-dose >=3.8.0,<3.9.0'
-    - 'bioconductor-geoquery >=2.50.0,<2.51.0'
-    - 'bioconductor-limma >=3.38.0,<3.39.0'
-    - 'bioconductor-summarizedexperiment >=1.12.0,<1.13.0'
-    - 'bioconductor-tcgabiolinks >=2.10.0,<2.11.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-clusterprofiler >=3.12.0,<3.13.0'
+    - 'bioconductor-dose >=3.10.0,<3.11.0'
+    - 'bioconductor-geoquery >=2.52.0,<2.53.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-tcgabiolinks >=2.12.0,<2.13.0'
     - r-base
     - r-circlize
     - r-doparallel
@@ -57,9 +64,12 @@ requirements:
     - r-rismed
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 3)'
   summary: 'Motivation: The understanding of cancer mechanism requires the identification of genes playing a role in the development of the pathology and the characterization of their role (notably oncogenes and tumor suppressors). Results: We present an R/bioconductor package called MoonlightR which returns a list of candidate driver genes for specific cancer types on the basis of TCGA expression data. The method first infers gene regulatory networks and then carries out a functional enrichment analysis (FEA) (implementing an upstream regulator analysis, URA) to score the importance of well-known biological processes with respect to the studied cancer type. Eventually, by means of random forests, MoonlightR predicts two specific roles for the candidate driver genes: i) tumor suppressor genes (TSGs) and ii) oncogenes (OCGs). As a consequence, this methodology does not only identify genes playing a dual role (e.g. TSG in one cancer type and OCG in another) but also helps in elucidating the biological processes underlying their specific roles. In particular, MoonlightR can be used to discover OCGs and TSGs in the same cancer type. This may help in answering the question whether some genes change role between early stages (I, II) and late stages (III, IV) in breast cancer. In the future, this analysis could be useful to determine the causes of different resistances to chemotherapeutic treatments.'
+extra:
+  container:
+    extended-base: true
 
