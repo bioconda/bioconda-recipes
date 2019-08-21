@@ -10,6 +10,6 @@ CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
 if [[ $(uname -s) == "Darwin" ]]; then
     sed -i.bak "15i\
-	cp ../../libchemcpp.so ../../libchemcpp.dylib" src/chemcpp/src/Makefile
+\tcp ../../libchemcpp.so ../../libchemcpp.dylib" src/chemcpp/src/Makefile
 fi
 $R CMD INSTALL --build .
