@@ -24,9 +24,9 @@ else
     find . -maxdepth 1 -type f -executable -exec cp -p \{\} ${BIN_DIR} \;
 fi
 
-# Compile selection functions
+# Compile selection functions and install them.
 # The SYSTEM variable is not really needed
-# but we set it as should be done
+# but we set it as should be done.
 pushd SELECT
 SYSTEM=$(uname -s) make
 cp -p *.so ${PLUGIN_DIR}

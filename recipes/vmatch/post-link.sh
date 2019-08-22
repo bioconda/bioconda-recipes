@@ -23,12 +23,12 @@ export MKVTREESMAPDIR=${MKVTREESMAPDIR}
 # Create deactivate script
 mkdir -p ${PREFIX}/etc/conda/deactivate.d
 DEACTIVATE_SCRIPT=${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}.sh
-echo "# Dectivate script for ${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
+echo "# Deactivate script for ${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 # Restore LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=\${${SAVE_VARIABLE_NAME}}
 # Remove MKVTREESMAPDIR
 unset MKVTREESMAPDIR
-# Remore ${SAVE_VARIABLE_NAME}
+# Remove ${SAVE_VARIABLE_NAME}
 unset ${SAVE_VARIABLE_NAME}
 " > ${DEACTIVATE_SCRIPT}
 
