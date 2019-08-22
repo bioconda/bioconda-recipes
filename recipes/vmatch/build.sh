@@ -6,12 +6,10 @@ set -euxo pipefail
 # Those variables are also used in pre and post-link scripts
 BIN_DIR="$PREFIX"/bin
 SHARE_DIR="$PREFIX"/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
-PLUGIN_DIR="$SHARE_DIR"/plugin
 DOC_DIR="$SHARE_DIR"/doc
 
 # Create directories
 mkdir -p ${BIN_DIR}
-mkdir -p ${PLUGIN_DIR}
 mkdir -p ${SHARE_DIR}
 mkdir -p ${DOC_DIR}
 mkdir -p ${PREFIX}/lib
@@ -27,9 +25,10 @@ fi
 # Compile selection functions and install them.
 # The SYSTEM variable is not really needed
 # but we set it as should be done.
+# The libs are installed in ${PREFIX}/lib so `vmatch`
+# can find them without the full path.
 pushd SELECT
 SYSTEM=$(uname -s) make
-cp -p *.so ${PLUGIN_DIR}
 cp -p *.so ${PREFIX}/lib
 popd
 
