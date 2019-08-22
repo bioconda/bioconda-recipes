@@ -26,7 +26,8 @@ fi
 # The SYSTEM variable is not really needed
 # but we set it as should be done.
 # The libs are installed in ${PREFIX}/lib so `vmatch`
-# can find them without the full path.
+# can find them without the full path
+# (thanks to rpath modification by conda).
 pushd SELECT
 SYSTEM=$(uname -s) make
 cp -p *.so ${PREFIX}/lib
