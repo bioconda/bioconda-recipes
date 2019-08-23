@@ -1,2 +1,2 @@
-#!/usr/bin/env cafe
-version
+#!/bin/bash
+cafe test-version.txt
