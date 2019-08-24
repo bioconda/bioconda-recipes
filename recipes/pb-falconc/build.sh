@@ -16,8 +16,9 @@ cd csources
 # Fix compiler references to use conda set CC
 # https://github.com/brentp/mosdepth/blob/master/scripts/install.sh
 export LINKER=$CC
-sed -i.bak '/^CC=/s/^/#/g' build.sh
-sed -i.bak '/^LINKER=/s/^/#/g' build.sh
+# But CircleCI does not find "gcc", so I will comment those 2 sed lines out. ~cd
+#sed -i.bak '/^CC=/s/^/#/g' build.sh
+#sed -i.bak '/^LINKER=/s/^/#/g' build.sh
 sh build.sh
 cd ..
 rm -rf csources
