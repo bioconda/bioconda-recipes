@@ -5,6 +5,7 @@ echo "CC=$CC"
 which $CC
 export CC_PATH=$CC
 #which gcc  # missing in Bioconda
+alias gcc=$CC
 
 NIM_VERSION=devel
 # devel, b/c branches are missing.
