@@ -2,8 +2,9 @@
 set -vexu -o pipefail
 
 echo "CC=$CC"
-which gcc
 which $CC
+export CC_PATH=$CC
+#which gcc  # missing in Bioconda
 
 NIM_VERSION=devel
 # devel, b/c branches are missing.
