@@ -20,9 +20,13 @@ cd nim-$NIM_VERSION
 #bin/nim c koch
 #./koch boot -d:release
 
-sh build_all.sh
-
 export PATH=$base/nim-$NIM_VERSION/bin:$PATH
+mkdir -p $base/nim-$NIM_VERSION/bin
+ln -sf $CC $base/nim-$NIM_VERSION/bin/gcc
+which gcc
+gcc -h
+
+sh build_all.sh
 
 #git clone -b $NIMBLE_VERSION --depth 1 git://github.com/nim-lang/nimble.git
 #cd nimble
