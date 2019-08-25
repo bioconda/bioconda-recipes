@@ -1,6 +1,10 @@
 #!/bin/bash
 set -vexu -o pipefail
 
+echo "CC=$CC"
+which gcc
+which $CC
+
 NIM_VERSION=devel
 # devel, b/c branches are missing.
 #NIM_VERSION=v0.20.2
