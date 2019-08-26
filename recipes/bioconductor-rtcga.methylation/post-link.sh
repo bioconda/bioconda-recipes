@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RTCGA.methylation_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RTCGA.methylation_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rtcga.methylation/bioconductor-rtcga.methylation_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.methylation/bioconductor-rtcga.methylation_1.12.0_src_all.tar.gz"
 )
 MD5="39f7bae6e164ffe53315ddbf7ed3b168"
 
