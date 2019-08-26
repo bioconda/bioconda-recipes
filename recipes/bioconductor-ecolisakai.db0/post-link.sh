@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/ecoliSakai.db0_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/ecoliSakai.db0_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ecolisakai.db0/bioconductor-ecolisakai.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ecolisakai.db0/bioconductor-ecolisakai.db0_3.8.2_src_all.tar.gz"
 )
 MD5="5307f40dff484dfd8427111bfc8312ce"
 

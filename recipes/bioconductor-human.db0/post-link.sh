@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/human.db0_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/human.db0_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-human.db0/bioconductor-human.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-human.db0/bioconductor-human.db0_3.8.2_src_all.tar.gz"
 )
 MD5="b150cae85c2594ebb694fa1996895ac0"
 

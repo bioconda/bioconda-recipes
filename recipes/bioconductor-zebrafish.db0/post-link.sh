@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/zebrafish.db0_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/zebrafish.db0_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-zebrafish.db0/bioconductor-zebrafish.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-zebrafish.db0/bioconductor-zebrafish.db0_3.8.2_src_all.tar.gz"
 )
 MD5="0fcbb88a589acd7b0ed8b07f6d455477"
 

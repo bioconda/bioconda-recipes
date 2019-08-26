@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/Affymoe4302Expr_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/Affymoe4302Expr_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-affymoe4302expr/bioconductor-affymoe4302expr_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-affymoe4302expr/bioconductor-affymoe4302expr_1.22.0_src_all.tar.gz"
 )
 MD5="f9c8f9273ae064ffc30074388b43f8ed"
 

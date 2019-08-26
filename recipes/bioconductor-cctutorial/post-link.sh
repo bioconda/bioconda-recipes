@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ccTutorial_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ccTutorial_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-cctutorial/bioconductor-cctutorial_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cctutorial/bioconductor-cctutorial_1.22.0_src_all.tar.gz"
 )
 MD5="9a7ab28f231b5b046e61a1fa80385ef3"
 
