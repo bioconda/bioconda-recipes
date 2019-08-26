@@ -3,11 +3,11 @@
 # fail on all errors
 set -e
 
-mkdir -p "$PREFIX/libexec" "$PREFIX/bin"
+mkdir -p "$PREFIX/bin"
 
-# clean and build Canu into libexec dir
-( cd src; make clean TARGET_DIR=$PREFIX/libexec && make TARGET_DIR=$PREFIX/libexec )
+pushd src
+make clean
+make TARGET_DIR=$PREFIX CC=$CC CXX=$CXX
 
-# Link all executable files to bin
-find $PREFIX/libexec -type f -perm +111 -exec ln -s {} $PREFIX/bin \;
-
+# This installs all of the object files as well, remove that
+rm -rf $PREFIX/*amd64
