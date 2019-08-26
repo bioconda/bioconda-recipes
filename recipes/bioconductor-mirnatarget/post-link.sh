@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/miRNATarget_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/miRNATarget_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mirnatarget/bioconductor-mirnatarget_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mirnatarget/bioconductor-mirnatarget_1.22.0_src_all.tar.gz"
 )
 MD5="f53ec633f1b577134140f432f0af82db"
 

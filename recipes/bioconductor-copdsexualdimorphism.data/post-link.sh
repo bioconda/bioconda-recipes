@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/COPDSexualDimorphism.data_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/COPDSexualDimorphism.data_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-copdsexualdimorphism.data/bioconductor-copdsexualdimorphism.data_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-copdsexualdimorphism.data/bioconductor-copdsexualdimorphism.data_1.20.0_src_all.tar.gz"
 )
 MD5="47555d52e02a3b6d87bbe39a18174531"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/affycompData_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/affycompData_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-affycompdata/bioconductor-affycompdata_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-affycompdata/bioconductor-affycompdata_1.22.0_src_all.tar.gz"
 )
 MD5="a334dbc9b6dc766a2f496d967de5e918"
 

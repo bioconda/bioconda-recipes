@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/minfiData_0.30.0.tar.gz"
   "https://bioarchive.galaxyproject.org/minfiData_0.30.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-minfidata/bioconductor-minfidata_0.30.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-minfidata/bioconductor-minfidata_0.30.0_src_all.tar.gz"
 )
 MD5="91b5668c839ed8fcca5ea36439c46473"
 

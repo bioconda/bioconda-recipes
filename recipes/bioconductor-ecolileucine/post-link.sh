@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ecoliLeucine_1.24.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ecoliLeucine_1.24.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ecolileucine/bioconductor-ecolileucine_1.24.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ecolileucine/bioconductor-ecolileucine_1.24.0_src_all.tar.gz"
 )
 MD5="6b94fceec7ba510c24754b9fcd8c6ac5"
 

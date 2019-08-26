@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/geneLenDataBase_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/geneLenDataBase_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-genelendatabase/bioconductor-genelendatabase_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-genelendatabase/bioconductor-genelendatabase_1.20.0_src_all.tar.gz"
 )
 MD5="53df16996486e637bf7a98b5498525ff"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/curatedCRCData_2.16.0.tar.gz"
   "https://bioarchive.galaxyproject.org/curatedCRCData_2.16.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-curatedcrcdata/bioconductor-curatedcrcdata_2.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-curatedcrcdata/bioconductor-curatedcrcdata_2.16.0_src_all.tar.gz"
 )
 MD5="e9df2a3ae6a0b51c081cc3a653045805"
 
