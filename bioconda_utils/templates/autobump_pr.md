@@ -34,4 +34,4 @@ Author | {% if author_is_member %}@{{author}}{% else %}{{"`@%s`"|format(author)}
 
 {% block message %}{% endblock %}
 
-This pull request was automatically generated (see [docs](https://bioconda.github.io/updating.html)).
+This pull request was automatically generated (see [docs](https://bioconda.github.io/contributor/updating.html)).
