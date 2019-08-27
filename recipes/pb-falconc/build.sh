@@ -7,12 +7,11 @@ pushd nim
 ./build.sh
 bin/nim c --gcc.exe:$CC --gcc.linkerexe:$CC koch
 ./koch tools --gcc.exe:$CC --gcc.linkerexe:$CC
+baseCC=`basename $CC`
+echo "gcc.exe = \"$baseCC\"" >> config/nim.cfg
+echo "gcc.linkerexe = \"$baseCC\"" >> config/nim.cfg
 popd
 
 export PATH=$base/nim/bin:$PATH
-echo "--gcc.exe:$CC" >> nim.cfg
-echo "--gcc.linkerexe:$CC" >> nim.cfg
-cat nim.cfg
-
 make build
 make install
