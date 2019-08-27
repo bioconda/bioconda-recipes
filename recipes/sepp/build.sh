@@ -23,3 +23,5 @@ cp -v test/unittest/data/q2-fragment-insertion/input_fragments.fasta $PREFIX/sha
 cp -v test/unittest/data/q2-fragment-insertion/reference_alignment_tiny.fasta $PREFIX/share/sepp/ref/
 cp -v test/unittest/data/q2-fragment-insertion/reference_phylogeny_tiny.nwk $PREFIX/share/sepp/ref/
 cp -v test/unittest/data/q2-fragment-insertion/RAxML_info-reference-gg-raxml-bl.info $PREFIX/share/sepp/ref/
+
+cat $PREFIX/share/sepp/.sepp/main.config
