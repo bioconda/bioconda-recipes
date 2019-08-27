@@ -1,5 +1,5 @@
 {% set name = "medaka" %}
-{% set version = "0.6.4" %}
+{% set version = "0.8.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,12 +7,12 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: a980a487251bfb4921126c27e562239e8d9a66023d991bbaaf908ffef6ca6ff5
+  sha256: dfd3780311e8aeee20ea276a0b5633ac80ffb6f23e97ec2dd68f248a8bd8a715
 
 build:
   # keras is 2.7 or 3.6 only. We need py3: 3.6 is the only possibility
   skip: True # [not py36]
-  number: 0
+  number: 1
   entry_points:
     - medaka = medaka.medaka:main
     - medaka_counts = medaka.medaka_counts:main
@@ -20,6 +20,9 @@ build:
     - medaka_version_report = medaka:report_binaries
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+
   host:
     - cffi
     - pip
@@ -29,8 +32,7 @@ requirements:
     - xz
     - zlib
     - libdeflate
-  build:
-    - {{ compiler('c') }}
+
   run:
     - biopython
     - cffi
@@ -41,11 +43,11 @@ requirements:
     - pysam
     - python
     - pyyaml ==5.1
-    - tensorflow ==1.12.0
+    - tensorflow >=1.12.2
     - whatshap ==0.18
     - samtools ==1.9
     - bcftools ==1.9
-    - minimap2 ==2.11
+    - minimap2 ==2.17
     - htslib ==1.9
     - bzip2
     - xz

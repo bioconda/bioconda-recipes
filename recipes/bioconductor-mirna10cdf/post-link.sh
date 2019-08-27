@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="mirna10cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/mirna10cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/mirna10cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mirna10cdf_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mirna10cdf/bioconductor-mirna10cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mirna10cdf/bioconductor-mirna10cdf_2.18.0_src_all.tar.gz"
 )
 MD5="814da2a2e298e132f4db0b2e8ab814be"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

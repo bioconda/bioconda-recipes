@@ -1,0 +1,50 @@
+{% set version = "1.0.0" %}
+{% set name = "atSNP" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 3af26fbd4c4878de74d0e4abedef8462
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: testthat, BiocStyle, knitr, rmarkdown
+requirements:
+  host:
+    - 'bioconductor-biocfilecache >=1.8.0,<1.9.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-bsgenome >=1.52.0,<1.53.0'
+    - 'bioconductor-motifstack >=1.28.0,<1.29.0'
+    - r-base
+    - r-data.table
+    - r-rappdirs
+    - r-rcpp
+  run:
+    - 'bioconductor-biocfilecache >=1.8.0,<1.9.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-bsgenome >=1.52.0,<1.53.0'
+    - 'bioconductor-motifstack >=1.28.0,<1.29.0'
+    - r-base
+    - r-data.table
+    - r-rappdirs
+    - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'atSNP performs affinity tests of motif matches with the SNP or the reference genomes and SNP-led changes in motif matches.'
+

@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="AneuFinderData_1.10.0.tar.gz"
+FN="AneuFinderData_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/AneuFinderData_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/AneuFinderData_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-aneufinderdata/bioconductor-aneufinderdata_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/AneuFinderData_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/AneuFinderData_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-aneufinderdata/bioconductor-aneufinderdata_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-aneufinderdata/bioconductor-aneufinderdata_1.12.0_src_all.tar.gz"
 )
-MD5="aeee3783942cb420cfb1a39dbbe1b9cc"
+MD5="1c7d8037814fe4ba56e13c74d85175c1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

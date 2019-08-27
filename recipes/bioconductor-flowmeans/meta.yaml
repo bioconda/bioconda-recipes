@@ -1,6 +1,6 @@
-{% set version = "1.42.1" %}
+{% set version = "1.44.0" %}
 {% set name = "flowMeans" %}
-{% set bioc = "3.8" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,34 +10,40 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 0b5ac87aa94096b505c62a49f57a0252
+  md5: 26cf203fb97eed85439fc524aa63c39a
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
   noarch: generic
 requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
   host:
-    - 'bioconductor-biobase >=2.42.0,<2.43.0'
-    - 'bioconductor-flowcore >=1.48.0,<1.49.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
     - r-base
     - r-feature
     - r-rrcov
   run:
-    - 'bioconductor-biobase >=2.42.0,<2.43.0'
-    - 'bioconductor-flowcore >=1.48.0,<1.49.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
     - r-base
     - r-feature
     - r-rrcov
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH=${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64 $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Identifies cell populations in Flow Cytometry data using non-parametric clustering and segmented-regression-based change point detection. Note: R 2.11.0 or newer is required.'
-
 extra:
   container:
-    extended-base: True
+    extended-base: true

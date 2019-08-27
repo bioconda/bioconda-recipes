@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="hapmap500knsp_1.24.0.tar.gz"
+FN="hapmap500knsp_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/hapmap500knsp_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/hapmap500knsp_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hapmap500knsp/bioconductor-hapmap500knsp_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/hapmap500knsp_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/hapmap500knsp_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hapmap500knsp/bioconductor-hapmap500knsp_1.26.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hapmap500knsp/bioconductor-hapmap500knsp_1.26.0_src_all.tar.gz"
 )
-MD5="6a1ab68e668feec8e7388dbbd4308252"
+MD5="c78f3012d3aee6bcfe793a7f14cdac6d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

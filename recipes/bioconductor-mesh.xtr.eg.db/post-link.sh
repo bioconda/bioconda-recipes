@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="MeSH.Xtr.eg.db_1.11.0.tar.gz"
+FN="MeSH.Xtr.eg.db_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/MeSH.Xtr.eg.db_1.11.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MeSH.Xtr.eg.db_1.11.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mesh.xtr.eg.db/bioconductor-mesh.xtr.eg.db_1.11.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MeSH.Xtr.eg.db_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MeSH.Xtr.eg.db_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.xtr.eg.db/bioconductor-mesh.xtr.eg.db_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.xtr.eg.db/bioconductor-mesh.xtr.eg.db_1.12.0_src_all.tar.gz"
 )
-MD5="1b49f5370146697faef0d8ae965f7e29"
+MD5="aec288e916f0702d95b0d113d06c1a14"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

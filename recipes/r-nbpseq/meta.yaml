@@ -1,6 +1,4 @@
 {% set version = '0.3.0' %}
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-nbpseq
@@ -13,32 +11,25 @@ source:
   sha256: 7e251fa017d91ffa7b0c5e740859db4aa4f9bc3b46632983e03c4da161a79e50
 
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}        # [not win]
-    - {{native}}toolchain        # [win]
-    - {{posix}}filesystem        # [win]
-    - {{posix}}make
-    - {{posix}}sed               # [win]
-    - {{posix}}coreutils         # [win]
-    - {{posix}}zip               # [win]
+    - {{ compiler('c') }}
+    - make
   host:
     - r-base
     - bioconductor-qvalue
   run:
     - r-base
-    - {{native}}gcc-libs         # [win]
     - bioconductor-qvalue
 
 test:
   commands:
-    - $R -e "library('NBPSeq')"           # [not win]
-    - "\"%R%\" -e \"library('NBPSeq')\""  # [win]
+    - $R -e "library('NBPSeq')"
 
 about:
   home: https://CRAN.R-project.org/package=NBPSeq
