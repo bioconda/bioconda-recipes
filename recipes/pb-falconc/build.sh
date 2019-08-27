@@ -10,6 +10,9 @@ bin/nim c --gcc.exe:$CC --gcc.linkerexe:$CC koch
 popd
 
 export PATH=$base/nim/bin:$PATH
+echo "--gcc.exe:$CC" >> nim.cfg
+echo "--gcc.linkerexe:$CC" >> nim.cfg
+cat nim.cfg
 
 make build
 make install
