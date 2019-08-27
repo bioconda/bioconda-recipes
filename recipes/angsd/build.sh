@@ -1,4 +1,6 @@
 #! /bin/bash
+mkdir -p $BINDIR
+make CFLAGS="$CFLAGS" CPPFLAGS="$CPPFLAGS" prefix=$PREFIX CC=$CC CXX=$CXX install
 binaries="\
 misc/msToGlf \
 misc/contamination \
@@ -13,7 +15,6 @@ misc/supersim \
 angsd \
 "
 BINDIR=$PREFIX/bin
-mkdir -p $BINDIR
 
 export C_INCLUDE_PATH=${PREFIX}/include
 export CPP_INCLUDE_PATH=${PREFIX}/include
