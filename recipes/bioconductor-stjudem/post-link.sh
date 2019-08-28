@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/stjudem_1.24.0.tar.gz"
   "https://bioarchive.galaxyproject.org/stjudem_1.24.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-stjudem/bioconductor-stjudem_1.24.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-stjudem/bioconductor-stjudem_1.24.0_src_all.tar.gz"
 )
 MD5="35358ac2317e7d083d373b6db1d0cbd9"
 

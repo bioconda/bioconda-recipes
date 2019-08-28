@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/COHCAPanno_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/COHCAPanno_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-cohcapanno/bioconductor-cohcapanno_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cohcapanno/bioconductor-cohcapanno_1.20.0_src_all.tar.gz"
 )
 MD5="7372e4f9927b5c9b1060be2105a3e3f4"
 

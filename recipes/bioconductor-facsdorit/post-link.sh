@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/facsDorit_1.26.0.tar.gz"
   "https://bioarchive.galaxyproject.org/facsDorit_1.26.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-facsdorit/bioconductor-facsdorit_1.26.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-facsdorit/bioconductor-facsdorit_1.26.0_src_all.tar.gz"
 )
 MD5="dcf6e4b99ee9e013e30ebd0f8ec678d0"
 

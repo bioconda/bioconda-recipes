@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/AffymetrixDataTestFiles_0.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/AffymetrixDataTestFiles_0.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-affymetrixdatatestfiles/bioconductor-affymetrixdatatestfiles_0.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-affymetrixdatatestfiles/bioconductor-affymetrixdatatestfiles_0.22.0_src_all.tar.gz"
 )
 MD5="c2cdbf27e487b9877c00fb8c60e22959"
 

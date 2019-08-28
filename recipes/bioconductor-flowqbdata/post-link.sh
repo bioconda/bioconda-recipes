@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/flowQBData_1.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/flowQBData_1.10.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-flowqbdata/bioconductor-flowqbdata_1.10.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowqbdata/bioconductor-flowqbdata_1.10.0_src_all.tar.gz"
 )
 MD5="e5d94c8fb66f811c34a7a92ef607f20d"
 

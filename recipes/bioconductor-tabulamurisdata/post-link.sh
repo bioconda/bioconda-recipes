@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/TabulaMurisData_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TabulaMurisData_1.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-tabulamurisdata/bioconductor-tabulamurisdata_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tabulamurisdata/bioconductor-tabulamurisdata_1.2.0_src_all.tar.gz"
 )
 MD5="ba5ccbb99aed729f12a3805313f53cd3"
 

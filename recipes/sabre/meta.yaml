@@ -1,0 +1,53 @@
+# Does not have proper versions tagged in github
+{% set version="1.000" %}
+
+package:
+  name: sabre
+  version: {{ version }}
+
+source:
+  # Last commit was 039a55e500ba07b7e6432ea6ec2ddcfb3471d949 dated 2013-09-28
+  url: https://github.com/najoshi/sabre/archive/039a55e500ba07b7e6432ea6ec2ddcfb3471d949.tar.gz
+  sha256: 8101eda078eded6c755d607a83ad5c659023dad9f0f2dadc11445c0ca305bf02
+  patches:
+    - makefile.patch
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - zlib
+  run:
+    - zlib
+
+test:
+  commands:
+    - sabre --version | grep {{ version }}
+    - sabre pe --help
+    - sabre se --help
+
+about:
+  home: https://github.com/najoshi/sabre/
+  license: MIT
+  license_file: LICENSE
+  summary: A barcode demultiplexing and trimming tool for FastQ files
+  description: |
+    Next-generation sequencing can currently produce hundreds of millions of
+    reads per lane of sample and that number increases at a dizzying rate.
+    Barcoding individual sequences for multiple lines or multiple species is a
+    cost-efficient method to sequence and analyze a broad range of data. Sabre
+    is a tool that will demultiplex barcoded reads into separate files. It
+    will work on both single-end and paired-end data in fastq format. It
+    simply compares the provided barcodes with each read and separates the
+    read into its appropriate barcode file, after stripping the barcode from
+    the read (and also stripping the quality values of the barcode bases). If
+    a read does not have a recognized barcode, then it is put into the unknown
+    file. Sabre also has an option (-m) to allow mismatches of the barcodes.
+    Sabre also supports gzipped file inputs. Also, since sabre does not use
+    the quality values in any way, it can be used on fasta data that is
+    converted to fastq by creating fake quality values. Finally, after
+    demultiplexing, sabre outputs a summary of how many records went into each
+    barcode file.
