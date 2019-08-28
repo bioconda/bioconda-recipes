@@ -7,8 +7,8 @@ cp plasmidfinder.py ${PREFIX}/bin/plasmidfinder.py
 
 
 # copy script to download database
-chmod +x ${RECIPE_DIR}/download-db.sh
-cp ${RECIPE_DIR}/download-db.sh ${PREFIX}/bin/download-db.sh
+chmod +x download-db.sh
+cp download-db.sh ${PREFIX}/bin/download-db.sh
 
 
 # Path for database
