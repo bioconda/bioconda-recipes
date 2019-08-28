@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="simpIntLists_1.16.0.tar.gz"
+FN="simpIntLists_1.20.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/experiment/src/contrib/simpIntLists_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/simpIntLists_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-simpintlists/bioconductor-simpintlists_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/simpIntLists_1.20.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/simpIntLists_1.20.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-simpintlists/bioconductor-simpintlists_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-simpintlists/bioconductor-simpintlists_1.20.0_src_all.tar.gz"
 )
-MD5="7a876bfa3d4e4ae339b90c3f64934a51"
+MD5="27879fea1d9ddd0404829b7de8eaae77"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

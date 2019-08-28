@@ -23,8 +23,11 @@ get_submodule utillib 0.1.0 NickSto       utillib       bffe515f7bd98661657c2600
 get_submodule ET      0.2.2 NickSto       ET            11dc5cb02521a2260e6c88a83d489c72f819bd759aeff31d66aa40ca2f1358a6
 get_submodule bfx     0.2.0 NickSto       bfx           252d31dc260882f203d04624945c8abb4940f3ae4b03a5050182d23854488ef8
 
+# Inject compilers
+sed -i.bak 's#gcc#${CC}#g' Makefile
+
 # Compile binaries and move them to lib.
-make
+make CC=$CC
 mv *.so "$PREFIX/lib"
 mv kalign "$PREFIX/lib"
 

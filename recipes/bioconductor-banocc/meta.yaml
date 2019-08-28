@@ -1,40 +1,47 @@
-{% set version = "1.4.0" %}
+{% set version = "1.8.0" %}
 {% set name = "banocc" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 8e0e0edd7306bf239427155aa4a0ee667ac3f3e01baf8179ab462f8d6304c62e
+  md5: 2efc9ad31f51961ccb514914002cf5f9
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, methods, testthat
+# SystemRequirements: C++11
 requirements:
   host:
     - r-base
     - 'r-coda >=0.18.1'
     - r-mvtnorm
-    - 'r-rstan >=2.10.1'
+    - 'r-rstan >=2.17.4'
     - r-stringr
   run:
     - r-base
     - 'r-coda >=0.18.1'
     - r-mvtnorm
-    - 'r-rstan >=2.10.1'
+    - 'r-rstan >=2.17.4'
     - r-stringr
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'MIT + file LICENSE'
   summary: 'BAnOCC is a package designed for compositional data, where each sample sums to one. It infers the approximate covariance of the unconstrained data using a Bayesian model coded with `rstan`. It provides as output the `stanfit` object as well as posterior median and credible interval estimates for each correlation element.'
-
+extra:
+  parent_recipe:
+    name: bioconductor-banocc
+    path: recipes/bioconductor-banocc
+    version: 1.6.0
 
