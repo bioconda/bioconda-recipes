@@ -1,0 +1,62 @@
+{% set name = "bohra" %}
+{% set version = "1.0.20" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "f589094a141e3fb8453c32cc3fe4ff5602f292dbb7e94ab08cb8b3e956f6d5af"
+
+build:
+  noarch: python
+  number: 1
+  entry_points:
+    - bohra=bohra.bohra:main
+  script: "sed -i.bak '35d;34d;28d' setup.py; {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - biopython >=1.70
+    - jinja2
+    - numpy
+    - packaging
+    - pandas >=0.23.0
+    - psutil
+    - pytest-runner
+    - pytest
+    - python >=3.6
+    - sh
+    - snakemake >=5.4.0
+    - svgwrite
+    - snippy >=4.4.3
+    - shovill >=1.0.4
+    - roary
+    - prokka
+    - kraken2
+    - abricate
+    - mlst
+    - iqtree
+    - seqtk
+    - snp-dists >=0.6.3
+
+test:
+  imports:
+    - bohra
+  commands:
+    - bohra --help
+
+about:
+  home: "https://github.com/kristyhoran/bohra"
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: "GPL3"
+  license_file: "LICENSE.txt"
+  summary: "A bioinformatics pipeline for analysing short read Illumina data microbiological public health."
+
+extra:
+  recipe-maintainers:
+    - kristyhoran

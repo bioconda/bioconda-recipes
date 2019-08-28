@@ -1,31 +1,34 @@
-{% set version = "1.10.0" %}
+{% set version = "1.14.0" %}
 {% set name = "ABAEnrichment" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: dc12cd6e10754bc0f49a84c6d8c4614bb65322009c02db2bdb8d0aaa2d019703
+  md5: 1a51e6bb3d1686f966c8a12ce6e08c9f
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, knitr, testthat
 requirements:
   host:
-    - 'bioconductor-abadata >=1.10.0,<1.12.0'
+    - 'bioconductor-abadata >=1.14.0,<1.15.0'
+    - 'bioconductor-gofuncr >=1.4.0,<1.5.0'
     - r-base
     - 'r-data.table >=1.10.4'
     - 'r-gplots >=2.14.2'
     - 'r-gtools >=3.5.0'
     - 'r-rcpp >=0.11.5'
   run:
-    - 'bioconductor-abadata >=1.10.0,<1.12.0'
+    - 'bioconductor-abadata >=1.14.0,<1.15.0'
+    - 'bioconductor-gofuncr >=1.4.0,<1.5.0'
     - r-base
     - 'r-data.table >=1.10.4'
     - 'r-gplots >=2.14.2'
@@ -39,9 +42,14 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'The package ABAEnrichment is designed to test for enrichment of user defined candidate genes in the set of expressed genes in different human brain regions. The core function ''aba_enrich'' integrates the expression of the candidate gene set (averaged across donors) and the structural information of the brain using an ontology, both provided by the Allen Brain Atlas project. ''aba_enrich'' interfaces the ontology enrichment software FUNC to perform the statistical analyses. Additional functions provided in this package like ''get_expression'' and ''plot_expression'' facilitate exploring the expression data. From version 1.3.5 onwards genomic regions can be provided as input, too; and from version 1.5.9 onwards the function ''get_annotated_genes'' offers an easy way to obtain annotations of genes to enriched or user-defined brain regions.'
+  summary: 'The package ABAEnrichment is designed to test for enrichment of user defined candidate genes in the set of expressed genes in different human brain regions. The core function ''aba_enrich'' integrates the expression of the candidate gene set (averaged across donors) and the structural information of the brain using an ontology, both provided by the Allen Brain Atlas project. ''aba_enrich'' interfaces the ontology enrichment software FUNC to perform the statistical analyses. Additional functions provided in this package like ''get_expression'' and ''plot_expression'' facilitate exploring the expression data, and besides the standard candidate vs. background gene set enrichment, also three additional tests are implemented, e.g. for cases when genes are ranked instead of divided into candidate and background.'
 extra:
   identifiers:
     - biotools:abaenrichment
+  parent_recipe:
+    name: bioconductor-abaenrichment
+    path: recipes/bioconductor-abaenrichment
+    version: 1.10.0
+

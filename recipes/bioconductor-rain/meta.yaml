@@ -1,37 +1,44 @@
-{% set version = "1.14.0" %}
+{% set version = "1.18.0" %}
 {% set name = "rain" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: d379e73af167fb35d1046e9a0c0af8248de837ed62105bdd6e463a11e584fa05
+  md5: 65a71f22d50df3704c7d697a2e78dbfd
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: lattice, BiocStyle
 requirements:
   host:
-    - 'bioconductor-multtest >=2.36.0,<2.38.0'
+    - 'bioconductor-multtest >=2.40.0,<2.41.0'
     - r-base
     - r-gmp
   run:
-    - 'bioconductor-multtest >=2.36.0,<2.38.0'
+    - 'bioconductor-multtest >=2.40.0,<2.41.0'
     - r-base
     - r-gmp
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'This package uses non-parametric methods to detect rhythms in time series. It deals with outliers, missing values and is optimized for time series comprising 10-100 measurements. As it does not assume expect any distinct waveform it is optimal or detecting oscillating behavior (e.g. circadian or cell cycle) in e.g. genome- or proteome-wide biological measurements such as: micro arrays, proteome mass spectrometry, or metabolome measurements.'
 extra:
   identifiers:
     - biotools:rain
+  parent_recipe:
+    name: bioconductor-rain
+    path: recipes/bioconductor-rain
+    version: 1.14.0
+

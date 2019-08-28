@@ -1,0 +1,44 @@
+{% set version = "1.30.0" %}
+{% set name = "seqCNA" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 4940c184d6dea7e54e8f31a025d39034
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# SystemRequirements: samtools
+requirements:
+  host:
+    - 'bioconductor-glad >=2.48.0,<2.49.0'
+    - 'bioconductor-seqcna.annot >=1.20.0,<1.21.0'
+    - 'r-adehabitatlt >=0.3.4'
+    - r-base
+    - 'r-dosnow >=1.0.5'
+  run:
+    - 'bioconductor-glad >=2.48.0,<2.49.0'
+    - 'bioconductor-seqcna.annot >=1.20.0,<1.21.0'
+    - 'r-adehabitatlt >=0.3.4'
+    - r-base
+    - 'r-dosnow >=1.0.5'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Copy number analysis of high-throughput sequencing cancer data with fast summarization, extensive filtering and improved normalization'
+

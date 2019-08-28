@@ -1,0 +1,50 @@
+{% set version = '0.04-22' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-hierfstat
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/hierfstat_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/hierfstat/hierfstat_{{ version }}.tar.gz
+  sha256: ddf9151b7492c8d13619402bf3bad741a4ea3a2fdb28e7c29a659b94c4165bb9
+
+build:
+  number: 0
+
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - r-base
+    - r-ade4
+    - r-adegenet
+    - r-gtools
+
+  run:
+    - r-base
+    - r-ade4
+    - r-adegenet
+    - r-gtools
+
+test:
+  commands:
+    - $R -e "library('hierfstat')"           # [not win]
+
+about:
+  home: http://www.r-project.org, http://github.com/jgx65/hierfstat
+  license: GPL (>= 2)
+  summary: Allows the estimation of hierarchical F-statistics from haploid or diploid genetic
+    data  with any numbers  of levels in the hierarchy, following the algorithm of Yang
+    (Evolution, 1998, 52(4):950-956;  <DOI:10.2307/2411227>. Functions are also given
+    to test via randomisations the significance of each F and variance components,   using
+    the likelihood-ratio statistics G.
+  license_family: GPL3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+

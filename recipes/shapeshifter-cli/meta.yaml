@@ -1,0 +1,49 @@
+{% set name = "shapeshifter-cli" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 47bbeec1bb98e99bd638f1041df4afff8644eacb81a9025a094c1681e963836d
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - shapeshift = shapeshiftercli.shapeshiftercli:main
+    - ss = shapeshiftercli.shapeshiftercli:main
+    - shapeshiftmerge = mergecli.mergecli:main
+    - ssm = mergecli.mergecli:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python >3
+  run:
+    - pandas
+    - python >3
+    - shapeshifter
+
+test:
+  imports:
+    - mergecli
+    - shapeshiftercli
+  commands:
+    - shapeshift --help
+    - ss --help
+    - shapeshiftmerge --help
+    - ssm --help
+
+about:
+  home: https://github.com/srp33/ShapeShifter-CLI
+  license: MIT
+  summary: A command-line tool for transforming large data sets
+
+extra:
+  recipe-maintainers:
+    - srp33
+    - frytime32
