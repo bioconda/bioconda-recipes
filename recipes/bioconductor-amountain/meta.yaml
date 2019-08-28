@@ -1,28 +1,28 @@
-{% set version = "1.6.0" %}
+{% set version = "1.10.0" %}
 {% set name = "AMOUNTAIN" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 94d402f778f446eba3c9a75c6ebb8fb7443153652534e1911f1c761c9a0f2edd
+  md5: 4511063e0919b9b89aacee901f2273b3
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, qgraph, knitr, rmarkdown
+# SystemRequirements: gsl
 requirements:
   host:
     - r-base
-    - openblas
   run:
     - r-base
-    - openblas
   build:
     - {{ compiler('c') }}
     - make
@@ -30,10 +30,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'A pure data-driven gene network, weighted gene co-expression network (WGCN) could be constructed only from expression profile. Different layers in such networks may represent different time points, multiple conditions or various species. AMOUNTAIN aims to search active modules in multi-layer WGCN using a continuous optimization approach.'
 extra:
   identifiers:
     - biotools:amountain
     - doi:10.1101/056952
+  parent_recipe:
+    name: bioconductor-amountain
+    path: recipes/bioconductor-amountain
+    version: 1.6.0
+

@@ -12,7 +12,7 @@ export LDFLAGS="-L$PREFIX/lib"
 sed -i.bak "/^PREFIX.*$/d" Makefile
 sed -i.bak "/^CFLAGS.*$/d" Makefile
 
-make
+make CC=$CC LIBS="-L${PREFIX}/lib -lz -lm"
 
 mkdir -p "$PREFIX"/bin
 

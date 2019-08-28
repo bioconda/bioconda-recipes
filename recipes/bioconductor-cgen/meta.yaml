@@ -1,0 +1,40 @@
+{% set version = "3.20.0" %}
+{% set name = "CGEN" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 767b43ecdbf0996bfd4cca6de398c669
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: cluster
+requirements:
+  host:
+    - r-base
+    - r-mvtnorm
+    - r-survival
+  run:
+    - r-base
+    - r-mvtnorm
+    - r-survival
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL-2 + file LICENSE'
+  summary: 'An R package for analysis of case-control studies in genetic epidemiology.'
+

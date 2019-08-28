@@ -1,39 +1,47 @@
-{% set version = "1.58.2" %}
+{% set version = "1.62.0" %}
 {% set name = "graph" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: ea81f17367f1e15616bfdd60d14d974567f0740f28bc22482ef982c1c65a551f
+  md5: 5b665791d49e3e87757e6f0cf1c27acf
+  patches:
+    - Makevars.patch
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: SparseM (>= 0.36), XML, RBGL, RUnit, cluster
 requirements:
+  host:
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - r-base
+  run:
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - r-base
   build:
     - {{ compiler('c') }}
     - make
-  host:
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
-    - r-base
-  run:
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
-    - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'A package that implements some simple graph handling capabilities.'
 extra:
   identifiers:
     - biotools:graph
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-graph
+    path: recipes/bioconductor-graph
+    version: 1.58.2
+

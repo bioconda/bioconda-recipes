@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="geneLenDataBase_1.16.0.tar.gz"
+FN="geneLenDataBase_1.20.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/experiment/src/contrib/geneLenDataBase_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/geneLenDataBase_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-genelendatabase/bioconductor-genelendatabase_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/geneLenDataBase_1.20.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/geneLenDataBase_1.20.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-genelendatabase/bioconductor-genelendatabase_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-genelendatabase/bioconductor-genelendatabase_1.20.0_src_all.tar.gz"
 )
-MD5="aa23db3bc55f6d20e42e66a47a99f065"
+MD5="53df16996486e637bf7a98b5498525ff"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
