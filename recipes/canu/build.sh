@@ -6,7 +6,7 @@ set -e
 mkdir -p "$PREFIX/bin"
 
 pushd src
-make clean
+make clean TARGET_DIR=$PREFIX CC=$CC CXX=$CXX
 make TARGET_DIR=$PREFIX CC=$CC CXX=$CXX
 
 # This installs all of the object files as well, remove that
