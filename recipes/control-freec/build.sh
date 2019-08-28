@@ -12,6 +12,4 @@ do
 done
 
 cd src
-sed -i.bak "s#gcc#${CC}#g;s#g++#${CXX}#g" Makefile.freec
-make 
-cp freec $PREFIX/bin
+$CXX -o $PREFIX/bin/freec $CXXFLAGS $LDFLAGS *.c
