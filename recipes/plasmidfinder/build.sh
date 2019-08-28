@@ -5,8 +5,8 @@ chmod +x plasmidfinder.py
 cp plasmidfinder.py ${PREFIX}/bin/plasmidfinder.py
 
 # copy script to download database
-chmod +x ${SRC_DIR}/download-db.sh
-cp ${SRC_DIR}/download-db.sh ${PREFIX}/bin/download-db.sh
+chmod +x ${RECIPE_DIR}/download-db.sh
+cp ${RECIPE_DIR}/download-db.sh ${PREFIX}/bin/download-db.sh
 
 # Path for database
 outdir=${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
