@@ -12,5 +12,6 @@ do
 done
 
 cd src
-make
+sed -i.bak "s#gcc#${CC}#g;s#g++#${CXX}#g" Makefile.freec
+make 
 cp freec $PREFIX/bin
