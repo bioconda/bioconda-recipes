@@ -12,4 +12,4 @@ do
 done
 
 cd src
-$CXX -o $PREFIX/bin/freec $CXXFLAGS $LDFLAGS *.c
+$CXX -o $PREFIX/bin/freec $CXXFLAGS $LDFLAGS *.cpp
