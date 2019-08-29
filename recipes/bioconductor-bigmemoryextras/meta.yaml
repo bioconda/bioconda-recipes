@@ -1,0 +1,35 @@
+{% set version = "1.32.0" %}
+{% set name = "bigmemoryExtras" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: f8f4f43d3318d5118883e89803205d49
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: testthat, BiocGenerics, BiocStyle, knitr
+requirements:
+  host:
+    - r-base
+    - 'r-bigmemory >=4.5.31'
+  run:
+    - r-base
+    - 'r-bigmemory >=4.5.31'
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'This package defines a "BigMatrix" ReferenceClass which adds safety and convenience features to the filebacked.big.matrix class from the bigmemory package. BigMatrix protects against segfaults by monitoring and gracefully restoring the connection to on-disk data and it also protects against accidental data modification with a filesystem-based permissions system. We provide utilities for using BigMatrix-derived classes as assayData matrices within the Biobase package''s eSet family of classes. BigMatrix provides some optimizations related to attaching to, and indexing into, file-backed matrices with dimnames. Additionally, the package provides a "BigMatrixFactor" class, a file-backed matrix with factor properties.'
+

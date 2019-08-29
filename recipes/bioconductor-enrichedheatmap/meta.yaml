@@ -1,0 +1,52 @@
+{% set version = "1.14.0" %}
+{% set name = "EnrichedHeatmap" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 354f237782eaf57e6c3ace742398e126
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: testthat (>= 0.3), knitr, markdown, genefilter, RColorBrewer
+requirements:
+  host:
+    - 'bioconductor-complexheatmap >=2.0.0,<2.1.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - r-base
+    - 'r-circlize >=0.4.5'
+    - r-getoptlong
+    - r-locfit
+    - r-matrixstats
+    - r-rcpp
+  run:
+    - 'bioconductor-complexheatmap >=2.0.0,<2.1.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - r-base
+    - 'r-circlize >=0.4.5'
+    - r-getoptlong
+    - r-locfit
+    - r-matrixstats
+    - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
+  summary: 'Enriched heatmap is a special type of heatmap which visualizes the enrichment of genomic signals on specific target regions. Here we implement enriched heatmap by ComplexHeatmap package. Since this type of heatmap is just a normal heatmap but with some special settings, with the functionality of ComplexHeatmap, it would be much easier to customize the heatmap as well as concatenating to a list of heatmaps to show correspondance between different data sources.'
+

@@ -1,0 +1,57 @@
+{% set version = "1.2.0" %}
+{% set name = "Rmmquant" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 050e95348776d7b8b0b5bdfb08715b21
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr, rmarkdown, testthat
+# SystemRequirements: C++11
+requirements:
+  host:
+    - 'bioconductor-biocstyle >=2.12.0,<2.13.0'
+    - 'bioconductor-deseq2 >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-org.mm.eg.db >=3.8.0,<3.9.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-tbx20bamsubset >=1.20.0,<1.21.0'
+    - 'bioconductor-txdb.mmusculus.ucsc.mm9.knowngene >=3.2.0,<3.3.0'
+    - r-base
+    - r-devtools
+    - 'r-rcpp >=0.12.8'
+  run:
+    - 'bioconductor-biocstyle >=2.12.0,<2.13.0'
+    - 'bioconductor-deseq2 >=1.24.0,<1.25.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-org.mm.eg.db >=3.8.0,<3.9.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-tbx20bamsubset >=1.20.0,<1.21.0'
+    - 'bioconductor-txdb.mmusculus.ucsc.mm9.knowngene >=3.2.0,<3.3.0'
+    - r-base
+    - r-devtools
+    - 'r-rcpp >=0.12.8'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'RNA-Seq is currently used routinely, and it provides accurate information on gene transcription. However, the method cannot accurately estimate duplicated genes expression. Several strategies have been previously used, but all of them provide biased results. With Rmmquant, if a read maps at different positions, the tool detects that the corresponding genes are duplicated; it merges the genes and creates a merged gene. The counts of ambiguous reads is then based on the input genes and the merged genes. Rmmquant is a drop-in replacement of the widely used tools findOverlaps and featureCounts that handles multi-mapping reads in an unabiased way.'
+

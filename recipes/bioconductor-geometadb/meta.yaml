@@ -1,37 +1,44 @@
-{% set version = "1.42.0" %}
+{% set version = "1.46.0" %}
 {% set name = "GEOmetadb" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 6aa42745ede4b84d337454db584ff0c8881edc288d9efe55b6f23d372be03656
+  md5: f6d5d27fe6addf6f4daf72b82372b8ad
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, dplyr, tm, wordcloud
 requirements:
   host:
-    - 'bioconductor-geoquery >=2.48.0,<2.50.0'
+    - 'bioconductor-geoquery >=2.52.0,<2.53.0'
     - r-base
     - r-rsqlite
   run:
-    - 'bioconductor-geoquery >=2.48.0,<2.50.0'
+    - 'bioconductor-geoquery >=2.52.0,<2.53.0'
     - r-base
     - r-rsqlite
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'The NCBI Gene Expression Omnibus (GEO) represents the largest public repository of microarray data. However, finding data of interest can be challenging using current tools. GEOmetadb is an attempt to make access to the metadata associated with samples, platforms, and datasets much more feasible. This is accomplished by parsing all the NCBI GEO metadata into a SQLite database that can be stored and queried locally. GEOmetadb is simply a thin wrapper around the SQLite database along with associated documentation. Finally, the SQLite database is updated regularly as new data is added to GEO and can be downloaded at will for the most up-to-date metadata. GEOmetadb paper: http://bioinformatics.oxfordjournals.org/cgi/content/short/24/23/2798 .'
 extra:
   identifiers:
     - biotools:geometadb
+  parent_recipe:
+    name: bioconductor-geometadb
+    path: recipes/bioconductor-geometadb
+    version: 1.42.0
+

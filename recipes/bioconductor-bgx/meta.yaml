@@ -1,0 +1,45 @@
+{% set version = "1.50.0" %}
+{% set name = "bgx" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 0249dde7f7644bf8aee843004a9deb93
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: affydata, hgu95av2cdf
+requirements:
+  host:
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-gcrma >=2.56.0,<2.57.0'
+    - r-base
+    - 'r-rcpp >=0.11.0'
+  run:
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-gcrma >=2.56.0,<2.57.0'
+    - r-base
+    - 'r-rcpp >=0.11.0'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'Bayesian integrated analysis of Affymetrix GeneChips'
+

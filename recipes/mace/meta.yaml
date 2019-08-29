@@ -1,0 +1,46 @@
+{% set name = "mace" %}
+{% set version = "1.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://ayera.dl.sourceforge.net/project/chipexo/MACE-1.2.tar.gz
+  sha256: 300a15e37d4d4387e7ecb87f7e4f0ac73654b2c92c898dc4621f96117167386d
+  patches:
+    - source.patch
+
+build:
+  number: 1
+  skip: True  # [py3k]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+
+requirements:
+  build:
+    - "{{ compiler('c') }}"
+  host:
+    - python
+    - pip
+    - cython
+    - numpy
+    - gsl
+    - zlib
+  run:
+    - python
+    - numpy
+    - bx-python
+    - gsl
+    - zlib
+    - ucsc-wigtobigwig
+
+test:
+  commands:
+    - mace.py -h
+
+about:
+  home: http://chipexo.sourceforge.net
+  license: GPL3
+  license_family: GPL3
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+  summary: Model Based Analysis for ChIP-exo data
