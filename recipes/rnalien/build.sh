@@ -1,5 +1,7 @@
 #!/bin/bash
 declare -a tools=("RNAlien" "RNAlienStatistics" "cmsearchToBed" "RNAcentralHTTPRequest" "RNAlienScan")
+ls -l
+ls -l RNAlien
 for t in "${tools[@]}"
 do
    mv RNAlien/$t ${PREFIX}/bin/${t}-bin
