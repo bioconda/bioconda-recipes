@@ -1,0 +1,57 @@
+{% set version = "1.18.0" %}
+{% set name = "PAA" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 88bae0739cd3c1eb902e07a2ae2a2d10
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: BiocStyle, RUnit, BiocGenerics, vsn
+# SystemRequirements: C++ software package Random Jungle
+requirements:
+  host:
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-sva >=3.32.0,<3.33.0'
+    - r-base
+    - r-e1071
+    - r-gplots
+    - r-gtools
+    - r-mass
+    - r-mrmre
+    - r-randomforest
+    - 'r-rcpp >=0.11.6'
+    - r-rocr
+  run:
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-sva >=3.32.0,<3.33.0'
+    - r-base
+    - r-e1071
+    - r-gplots
+    - r-gtools
+    - r-mass
+    - r-mrmre
+    - r-randomforest
+    - 'r-rcpp >=0.11.6'
+    - r-rocr
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'BSD_3_clause + file LICENSE'
+  summary: 'PAA imports single color (protein) microarray data that has been saved in gpr file format - esp. ProtoArray data. After preprocessing (background correction, batch filtering, normalization) univariate feature preselection is performed (e.g., using the "minimum M statistic" approach - hereinafter referred to as "mMs"). Subsequently, a multivariate feature selection is conducted to discover biomarker candidates. Therefore, either a frequency-based backwards elimination aproach or ensemble feature selection can be used. PAA provides a complete toolbox of analysis tools including several different plots for results examination and evaluation.'
+

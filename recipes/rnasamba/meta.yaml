@@ -1,0 +1,50 @@
+{% set name = "rnasamba" %}
+{% set version = "0.1.4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: c7d83a2b9b8ca4eac2094755513395cbe6b083ca24b98c31f1eec18939ecdfa7
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - rnasamba-classify=rnasamba.cli:classify_cli
+    - rnasamba-train=rnasamba.cli:train_cli
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - biopython
+    - keras >=2.1.0
+#    - numpy (allow tensorflow to pick version, avoid pinning)
+    - pip
+    - python >=3.6
+    - tensorflow >=1.5.0,<2.0
+  run:
+    - biopython
+    - keras >=2.1.0
+#    - numpy
+    - python >=3.6
+    - tensorflow >=1.5.0,<2.0
+
+# Tests fail due to tensorflow needing GLIBC 2.16 missing in container
+#test:
+#  commands:
+#    - rnasamba-classify --help
+#    - rnasamba-train --help
+
+about:
+  home: http://apcamargo.github.io/RNAsamba/
+  license: GPL-3
+  license_family: GPL
+  license_file: LICENSE
+  summary: A tool for computing the coding potential of RNA transcript sequences using deep learning.
+
+extra:
+  skip-lints:
+    - missing_tests  # conda-forge::tensorflow needs GLIBC 2.16

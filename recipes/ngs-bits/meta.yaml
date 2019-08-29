@@ -1,36 +1,49 @@
-{% set version = "2018_10" %}
+{% set version = "2019_08" %}
 
 package:
   name: ngs-bits
   version: {{ version }}
 
 build:
-  number: 2
+  number: 0
 
 source:
-  git_rev: ngs-bits-{{ version }}.tgz
   url: https://github.com/imgag/ngs-bits/releases/download/{{ version }}/ngs-bits-{{ version }}.tgz
-  sha256: 8e63f1895b3775d828262aea46b63841a7bc8178d8f6f8416b9e984eb43721af
+  sha256: a0cf6f12f28227c71853d0444285ca5c3738b7f8b5e7a369c782ee705df413cf
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ cdt('mesa-libgl-devel') }}
+    - {{ cdt('mesa-dri-drivers') }}
+    - {{ cdt('libselinux') }}
+    - {{ cdt('libxdamage') }}
+    - {{ cdt('libxxf86vm') }}
+    - {{ cdt('libxfixes') }}
   host:
     - bzip2
     - xz
     - zlib
-    - qt >=5.5.0
+    - qt
     - htslib
+    - xorg-libxfixes  # [linux]
   run:
     - bzip2
     - xz
     - zlib
     - python
     - matplotlib
-    - qt >=5.5.0
+    - qt
     - htslib
+
+extra:
+  container:
+    extended-base: True
 
 about:
   home: https://github.com/imgag/ngs-bits
   license: MIT license
+  license_file: LICENSE
   summary: Short-read sequencing tools
+
+#For libGL dependency docu see: https://conda-forge.org/docs/maintainer/knowledge_base.html#core-dependency-tree-packages-cdt

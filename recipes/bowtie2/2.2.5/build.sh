@@ -1,9 +1,7 @@
 #!/bin/bash
 set -eu -o pipefail
 
-if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-    make
-fi
+make CXX=$CXX CPP=$CXX CC=$CC LDLIBS="-L$PREFIX/lib -lz -ltbb -ltbbmalloc -lpthread"
 
 binaries="\
 bowtie2 \
