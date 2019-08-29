@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/msd16s_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/msd16s_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-msd16s/bioconductor-msd16s_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-msd16s/bioconductor-msd16s_1.4.0_src_all.tar.gz"
 )
 MD5="c6671e141bf8abb9df5fa623a5702fcb"
 

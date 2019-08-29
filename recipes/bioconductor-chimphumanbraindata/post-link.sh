@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ChimpHumanBrainData_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ChimpHumanBrainData_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-chimphumanbraindata/bioconductor-chimphumanbraindata_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chimphumanbraindata/bioconductor-chimphumanbraindata_1.22.0_src_all.tar.gz"
 )
 MD5="d7a381464a431897c78431f93a64998d"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/cgdv17_0.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/cgdv17_0.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-cgdv17/bioconductor-cgdv17_0.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cgdv17/bioconductor-cgdv17_0.22.0_src_all.tar.gz"
 )
 MD5="f7d6c5564f18afe12623a4b6f184e787"
 
