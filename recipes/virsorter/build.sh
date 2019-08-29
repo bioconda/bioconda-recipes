@@ -1,6 +1,6 @@
 ### Reconfiguring compiler for VirSorter Makefile
 cd Scripts/
-sed 's/gcc/$GCC/g' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
+sed 's/gcc/$$GCC/g' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
 
 
 ### Cleaning before compiling (just in case)
