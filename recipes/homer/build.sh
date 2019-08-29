@@ -5,7 +5,9 @@ mkdir -p $outdir
 mkdir -p $outdir/bin
 mkdir -p $PREFIX/bin
 chmod +x configureHomer.pl
+sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" configureHomer.pl
 cp configureHomer.pl $outdir/
+
 
 ( cd $outdir && perl configureHomer.pl -install )
 
