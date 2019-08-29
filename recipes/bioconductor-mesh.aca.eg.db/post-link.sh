@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MeSH.Aca.eg.db_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Aca.eg.db_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.aca.eg.db/bioconductor-mesh.aca.eg.db_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.aca.eg.db/bioconductor-mesh.aca.eg.db_1.12.0_src_all.tar.gz"
 )
 MD5="5e2a81ebf27098b81e4ed973301b2caa"
 

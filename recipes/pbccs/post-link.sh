@@ -23,7 +23,13 @@ cat > "${PREFIX}"/.messages.txt <<- EOF
 	# We make no warranty that any such issue will be addressed,                 #
 	# to any extent or within any time frame.                                    #
 	#                                                                            #
-	# BSD 3-Clause Clear License                                                 #
+	# PacBio tool ccs, distributed via Bioconda, is licensed under               #
+	#                                                                            #
+	#   BSD-3 Clause Clear                                                       #
+	#                                                                            #
+	# and statically links GNU C Library v2.29 licensed under LGPL.              #
+	# Per LPGL 2.1 subsection 6c, you are entitled to request the complete       #
+	# machine-readable work that uses glibc in object code.                      #
 	#                                                                            #
 	# Please see https://github.com/PacificBiosciences/pbbioconda for            #
 	# information on License, Copyright and Disclaimer                           #

@@ -1,58 +1,54 @@
-{% set version = "2.1.1" %}
-{% set sha256 = "04957dcc87852fefa822e2a281461a5ca497c4302f1f2e2ab3c902adce3d0f8a" %}
+{% set version = "2.1.4" %}
+{% set sha256 = "f84f59c106d13996edcd9613d8fb320ba4f6a14957e58ff55dfe21018be84fd0" %}
 
 package:
   name: metagenome-atlas
   version: {{ version }}
 
 source:
-  url: https://github.com/metagenome-atlas/atlas/archive/v{{ version }}.tar.gz
+  url: https://github.com/metagenome-atlas/atlas/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   entry_points:
     - atlas=atlas.atlas:cli
   noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+
 
 requirements:
-  build:
-    - python=3.6
-    - setuptools
-    - snakemake>=5.4.5
-    - pandas=0.23
-    - click=7
-    - ruamel.yaml=0.15
-    - biopython>=1.70
-    - git # this is apparently needed for snakemake
-  run:
-    - python=3.6
-    - snakemake>=5.4.5
-    - pandas=0.23
-    - click=7
-    - ruamel.yaml=0.15
-    - biopython>=1.70
-    - bbmap=37.78
-    - git
+  host:
+    - python >3.6,<3.7
+    - pip
 
-{% set export_lang = "export LC_ALL=en_US.UTF-8 && export LANG=en_US.UTF-8" %}
+  run:
+    - python >3.6,<3.7
+    - snakemake >=5.4.5,<6
+    - pandas >=0.23
+    - click >=7
+    - ruamel.yaml >=0.15
+    - biopython >=1.70
+    - bbmap >=37.78
+    - git
 
 test:
   imports:
     - atlas
   commands:
-    -  {{ export_lang }} && atlas --version
+{% set export_lang = "export LC_ALL=en_US.UTF-8 && export LANG=en_US.UTF-8" %}
+    - {{ export_lang }} && atlas --version
     - {{ export_lang }} && atlas init --help
     - {{ export_lang }} && atlas run --help
 
-
 about:
   home: https://github.com/metagenome-atlas
+  dev_url: https://github.com/metagenome-atlas/atlas
+  doc_url: https://metagenome-atlas.rtfd.io
   license: BSD-3-Clause
   license_family: BSD
-  summary: |
-    ATLAS - Three commands to start analysing your metagenome data
-
+  summary: ATLAS - Three commands to start analysing your metagenome data
   description: |
     Atlas is a easy to use metagenomic pipeline
     ![scheme of workflow](https://github.com/metagenome-atlas/atlas/blob/f8627545bcfb8f2b55733a35ecd0426ae4bbd5d1/resources/images/ATLAS_scheme.png)
@@ -73,16 +69,8 @@ about:
       - run atlas on any cluster system
     For more details see documentation.
 
-  dev_url: https://github.com/metagenome-atlas/atlas
-  doc_url: https://metagenome-atlas.rtfd.io
 extra:
   recipe-maintainers:
     - silask
   container:
-    # unicode problem with click
-    extended-base: true
-
-#    - brwnj
-#  identifiers:
-#    - biotools:Spades
-#    - doi:10.1089/cmb.2012.0021
+    extended-base: true  # unicode problem with click

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/bronchialIL13_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/bronchialIL13_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bronchialil13/bioconductor-bronchialil13_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bronchialil13/bioconductor-bronchialil13_1.22.0_src_all.tar.gz"
 )
 MD5="a7b5cbe220c3ad028b87560217dca192"
 

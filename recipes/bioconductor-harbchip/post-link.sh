@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/harbChIP_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/harbChIP_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-harbchip/bioconductor-harbchip_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-harbchip/bioconductor-harbchip_1.22.0_src_all.tar.gz"
 )
 MD5="8b019087317d308012e39effa61094d7"
 
