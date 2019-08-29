@@ -1,0 +1,42 @@
+{% set name = "ncls" %}
+{% set version = "0.0.43" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "d9d2e454cb0d25ed056beef6b802d76ce8039beefda1b14967bd4b3620fbc5e9" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - cython
+    - setuptools
+    - numpy
+  run:
+    - python
+    - numpy
+
+test:
+  imports:
+    - ncls
+
+
+about:
+  home: https://github.com/endrebak/ncls
+  license: BSD
+  summary: Fast overlap datastructure.
+
+extra:
+  recipe-maintainers: 'endrebak'

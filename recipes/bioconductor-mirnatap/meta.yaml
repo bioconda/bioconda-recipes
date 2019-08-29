@@ -1,24 +1,26 @@
-{% set version = "1.14.0" %}
+{% set version = "1.18.0" %}
 {% set name = "miRNAtap" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: cf5dbfa8557d27d2ccd51953f14457a394d0af6e92dd577097e10ccbb70a648d
+  md5: 8fe90803d5bec9678d94e761e384d2f4
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: topGO, org.Hs.eg.db, miRNAtap.db, testthat
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.42.1,<1.44.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
     - r-base
     - r-dbi
     - r-plyr
@@ -26,7 +28,7 @@ requirements:
     - r-sqldf
     - r-stringr
   run:
-    - 'bioconductor-annotationdbi >=1.42.1,<1.44.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
     - r-base
     - r-dbi
     - r-plyr
@@ -37,10 +39,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'The package facilitates implementation of workflows requiring miRNA predictions, it allows to integrate ranked miRNA target predictions from multiple sources available online and aggregate them with various methods which improves quality of predictions above any of the single sources. Currently predictions are available for Homo sapiens, Mus musculus and Rattus norvegicus (the last one through homology translation).'
 extra:
   identifiers:
     - biotools:mirnatap
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-mirnatap
+    path: recipes/bioconductor-mirnatap
+    version: 1.14.0
+
