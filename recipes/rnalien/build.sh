@@ -1,5 +1,5 @@
 #!/bin/bash
-declare -a tools=("RNAlien" "RNAlienStatistics" "cmsearchToBed" "RNAcentralHTTPRequest")
+declare -a tools=("RNAlien" "RNAlienStatistics" "cmsearchToBed" "RNAcentralHTTPRequest" "RNAlienScan")
 for t in "${tools[@]}"
 do
    echo "${t}"
