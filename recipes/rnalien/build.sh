@@ -2,6 +2,7 @@
 declare -a tools=("RNAlien" "RNAlienStatistics" "cmsearchToBed" "RNAcentralHTTPRequest" "RNAlienScan")
 ls -l
 ls -l RNAlien
+mkdir bin
 for t in "${tools[@]}"
 do
    mv $t ${PREFIX}/bin/${t}-bin
