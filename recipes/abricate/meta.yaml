@@ -1,6 +1,7 @@
-{% set version = "0.8.13" %}
+{% set version = "0.9.3" %}
 {% set name = "abricate" %}
-{% set sha256 = "21cae491e40ee12ce34fd6fbcc93ca3ed12d88a9a774b9f8e62da36078b8292d" %}
+{% set sha256 = "a7714ea591d86fd282b53d0146af8af6ab693aec5d1545632ee73feb8605d46f" %}
+{% set user = "tseemann" %}
 
 package:
   name: {{ name }}
@@ -8,15 +9,16 @@ package:
 
 build:
   number: 0
+  noarch: generic
 
 source:
-  url: https://github.com/tseemann/{{ name }}/archive/v{{ version }}.tar.gz
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
   host:
     - perl-bioperl >=1.7
-    - perl-file-slurp
+    - perl-path-tiny
     - perl-text-csv
     - perl-list-moreutils
     - perl-json
@@ -24,12 +26,12 @@ requirements:
     - blast >=2.7
     - zlib
     - unzip
-    - emboss
+    - any2fasta
     - entrez-direct
 
   run:
     - perl-bioperl >=1.7
-    - perl-file-slurp
+    - perl-path-tiny
     - perl-text-csv
     - perl-list-moreutils
     - perl-json
@@ -37,17 +39,18 @@ requirements:
     - blast >=2.7
     - zlib
     - unzip
-    - emboss
+    - any2fasta
     - entrez-direct
 
 test:
   commands:
-    - abricate --version
-    - abricate --list
-    - abricate --check
+    - {{ name }} --version | grep '{{ version }}'
+    - {{ name }} --help
+    - {{ name }} --list
+    - {{ name }} --check
 
 about:
-  home: https://github.com/tseemann/abricate
+  home: https://github.com/{{ user}}/{{ name }}
   license: GPL2
   license_file: LICENSE
   summary: Mass screening of contigs for antibiotic resistance genes
