@@ -1,10 +1,6 @@
 #!/bin/bash
 export CPATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
-
-# Ensure cmake sets use_new_cxx to 1
-sed -i.bak "s/4.3/4.0/" CMakeLists.txt
-
 rm -rf build
 mkdir build
 cd build
