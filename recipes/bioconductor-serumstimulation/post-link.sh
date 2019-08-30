@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/serumStimulation_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/serumStimulation_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-serumstimulation/bioconductor-serumstimulation_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-serumstimulation/bioconductor-serumstimulation_1.20.0_src_all.tar.gz"
 )
 MD5="7fabd88ad4038ffd70bb9b8b27738947"
 

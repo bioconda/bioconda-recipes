@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RUVnormalizeData_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RUVnormalizeData_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ruvnormalizedata/bioconductor-ruvnormalizedata_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ruvnormalizedata/bioconductor-ruvnormalizedata_1.4.0_src_all.tar.gz"
 )
 MD5="cf46437c54508c46e43c5679bdedf2b0"
 

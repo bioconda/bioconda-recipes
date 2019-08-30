@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/reactome.db_1.68.0.tar.gz"
   "https://bioarchive.galaxyproject.org/reactome.db_1.68.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-reactome.db/bioconductor-reactome.db_1.68.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-reactome.db/bioconductor-reactome.db_1.68.0_src_all.tar.gz"
 )
 MD5="281e47eea8f6bf72502843ad6a48dab0"
 

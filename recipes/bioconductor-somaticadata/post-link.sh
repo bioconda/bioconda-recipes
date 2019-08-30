@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/SomatiCAData_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/SomatiCAData_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-somaticadata/bioconductor-somaticadata_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-somaticadata/bioconductor-somaticadata_1.22.0_src_all.tar.gz"
 )
 MD5="59d6519327a11557942dceb5765787bb"
 
