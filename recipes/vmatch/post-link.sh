@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euxo pipefail
+
 SHARE_DIR="$PREFIX"/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 MKVTREESMAPDIR="$SHARE_DIR"/TRANS/
 
