@@ -22,11 +22,11 @@ unset MKVTREESMAPDIR
 " > ${DEACTIVATE_SCRIPT}
 
 # Write a message for the user
-echo "
+cat <<EOF >> ${PREFIX}/.messages.txt
 vmatch selection functions are installed in ${PREFIX}/lib.
 You can use them without specifying their full path.
 Symbol map files are installed in ${MKVTREESMAPDIR}.
 Activation and deactivation scripts will set MKVTREESMAPDIR accordingly
 so you can use symbol map files without specifying their full path.
 Those scripts are in ${ACTIVATE_SCRIPT} and ${DEACTIVATE_SCRIPT} respectively.
-" > $PREFIX/.messages.txt
+EOF
