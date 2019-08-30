@@ -4,7 +4,7 @@ export LIBRARY_PATH=${PREFIX}/lib
 rm -rf build
 mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_CXX_FLAGS="$CXXFLAGS -DUSE_NEW_CXX" ..
 make -j8
 
 binaries="\
