@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RGMQLlib_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RGMQLlib_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rgmqllib/bioconductor-rgmqllib_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rgmqllib/bioconductor-rgmqllib_1.4.0_src_all.tar.gz"
 )
 MD5="da01b2fe647643af1df9d3563c61f446"
 

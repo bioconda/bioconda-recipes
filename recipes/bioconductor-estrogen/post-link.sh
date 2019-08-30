@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/estrogen_1.30.0.tar.gz"
   "https://bioarchive.galaxyproject.org/estrogen_1.30.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-estrogen/bioconductor-estrogen_1.30.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-estrogen/bioconductor-estrogen_1.30.0_src_all.tar.gz"
 )
 MD5="fe5ddaafa6641e710a5cf76fb47a9989"
 

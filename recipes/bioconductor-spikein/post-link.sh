@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/SpikeIn_1.26.0.tar.gz"
   "https://bioarchive.galaxyproject.org/SpikeIn_1.26.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-spikein/bioconductor-spikein_1.26.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-spikein/bioconductor-spikein_1.26.0_src_all.tar.gz"
 )
 MD5="3c7f3d87c555ee68feafd95a518caf1d"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/MSstatsBioData_1.6.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MSstatsBioData_1.6.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-msstatsbiodata/bioconductor-msstatsbiodata_1.6.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-msstatsbiodata/bioconductor-msstatsbiodata_1.6.0_src_all.tar.gz"
 )
 MD5="a0a04b89a7eaee9c85a630483b296a0c"
 

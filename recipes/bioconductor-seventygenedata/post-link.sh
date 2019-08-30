@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/seventyGeneData_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/seventyGeneData_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-seventygenedata/bioconductor-seventygenedata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-seventygenedata/bioconductor-seventygenedata_1.20.0_src_all.tar.gz"
 )
 MD5="8a2c6bc5c05bb81a31f58667cde3018d"
 
