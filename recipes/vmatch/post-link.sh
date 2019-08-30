@@ -5,6 +5,7 @@ MKVTREESMAPDIR="$SHARE_DIR"/TRANS/
 
 # Create activate script
 mkdir -p ${PREFIX}/etc/conda/activate.d
+ACTIVATE_SCRIPT=${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}.sh
 echo "# Activate script for ${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}
 # Export MKVTREESMAPDIR
 export MKVTREESMAPDIR=${MKVTREESMAPDIR}
