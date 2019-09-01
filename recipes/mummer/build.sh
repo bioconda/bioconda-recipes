@@ -7,13 +7,21 @@ MUMMER_HOME=$PREFIX/opt/mummer-$PKG_VERSION
 mkdir -p $BINARY_HOME
 mkdir -p $MUMMER_HOME
 
+sed -i.bak 's/^CC.*$//g' Makefile
+sed -i.bak 's/^CXX.*$//g' Makefile
+sed -i.bak 's/^AR.*$//g' Makefile
+sed -i.bak 's/^PERL.*$//g' Makefile
+sed -i.bak 's/^SED.*$//g' Makefile
+sed -i.bak 's/^CSH.*$//g' Makefile
+
+pushd ${PREFIX}/bin/
+ln -s ./tcsh ./csh
+popd
+
 # cd to location of Makefile and source
 cp -R $SRC_DIR/* $MUMMER_HOME
 
 cd $MUMMER_HOME
-
-CC=$CC
-CXX=$CXX
 
 make
 make check
