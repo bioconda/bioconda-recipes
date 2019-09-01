@@ -13,6 +13,7 @@ cp -R $SRC_DIR/* $MUMMER_HOME
 cd $MUMMER_HOME
 
 make
+make check
 
 binaries="\
 combineMUMs \
