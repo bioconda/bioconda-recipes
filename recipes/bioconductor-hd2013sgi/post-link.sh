@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="HD2013SGI_1.22.0.tar.gz"
+FN="HD2013SGI_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/HD2013SGI_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/HD2013SGI_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hd2013sgi/bioconductor-hd2013sgi_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/HD2013SGI_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HD2013SGI_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hd2013sgi/bioconductor-hd2013sgi_1.24.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hd2013sgi/bioconductor-hd2013sgi_1.24.0_src_all.tar.gz"
 )
-MD5="e67f8f961700314d6ba0326dfebb0e3b"
+MD5="bc5df4cfc33cf00def4c05aa6f6d78c9"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

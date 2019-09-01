@@ -1,0 +1,41 @@
+{% set name = "pyranges" %}
+{% set version = "0.0.52" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 5397d0eee2912c0290d36568996db011a8b6f3b8ddfe7b51bd709399db8ead23
+
+build:
+  number: 0
+  skip: True  # [py2k]
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - setuptools
+    - cython
+    - pysam
+  run:
+    - python
+    - pandas
+    - ncls >=0.0.43
+    - tabulate
+    - sorted_nearest >=0.0.28
+    - pyrle
+    - natsort
+
+test:
+  imports:
+    - pyranges
+
+about:
+  home: http://github.com/endrebak/pyranges
+  license: MIT
+  summary: GenomicRanges for Python.

@@ -1,6 +1,6 @@
-{% set version = "1.0.0" %}
+{% set version = "1.2.0" %}
 {% set name = "slingshot" %}
-{% set bioc = "3.8" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,19 +10,26 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  md5: 429308c9bbe073d329feedfe57ae773e
+  md5: f7080eedc58ac571193933bc5808dbcf
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
   noarch: generic
-# Suggests: BiocGenerics, destiny, gam, knitr, mclust, RColorBrewer, rmarkdown, splatter, testthat, covr
+# Suggests: BiocGenerics, BiocStyle, destiny, gam, knitr, mclust, RColorBrewer, rmarkdown, testthat, covr
 requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
   host:
-    - 'bioconductor-clusterexperiment >=2.2.0,<2.3.0'
-    - 'bioconductor-singlecellexperiment >=1.4.0,<1.5.0'
-    - 'bioconductor-summarizedexperiment >=1.12.0,<1.13.0'
+    - 'bioconductor-clusterexperiment >=2.4.0,<2.5.0'
+    - 'bioconductor-singlecellexperiment >=1.6.0,<1.7.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-ape
     - r-base
     - r-igraph
@@ -30,9 +37,9 @@ requirements:
     - 'r-princurve >=2.0.4'
     - r-rgl
   run:
-    - 'bioconductor-clusterexperiment >=2.2.0,<2.3.0'
-    - 'bioconductor-singlecellexperiment >=1.4.0,<1.5.0'
-    - 'bioconductor-summarizedexperiment >=1.12.0,<1.13.0'
+    - 'bioconductor-clusterexperiment >=2.4.0,<2.5.0'
+    - 'bioconductor-singlecellexperiment >=1.6.0,<1.7.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-ape
     - r-base
     - r-igraph
@@ -41,13 +48,12 @@ requirements:
     - r-rgl
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Provides functions for inferring continuous, branching lineage structures in low-dimensional data. Slingshot was designed to model developmental trajectories in single-cell RNA sequencing data and serve as a component in an analysis pipeline after dimensionality reduction and clustering. It is flexible enough to handle arbitrarily many branching events and allows for the incorporation of prior knowledge through supervised graph construction.'
-
 extra:
   container:
-    # needed for libGL.so.1
     extended-base: true
+

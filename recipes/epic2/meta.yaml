@@ -1,32 +1,33 @@
+{% set name = "epic2" %}
+{% set version = "0.0.40" %}
+{% set hash_value = "6cf0a2274a772d751c74ad78dfe2e0c27beb6631c6b5cf773d08f7d68615fdb8" %}
+
 package:
-  name: epic2
-  version: "0.0.26"
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
 
 source:
-  url: https://files.pythonhosted.org/packages/8d/d3/0f8f2916d9f3d299bcb2b1118c76b1089bd94a87e9a0266d64016e6b0153/epic2-0.0.26.tar.gz
-  sha256: 06c82434ed28a06b8715a57dd26c1e4e884d576924c7e1c71cbd6463abfcfcb4
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: '{{ hash_value }}'
 
 build: 
   number: 0
-  skip: 
-    True # [osx]
+  # Compilation errors on OSX
+  skip: True  # [osx]
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - python
     - cython
     - setuptools
-    - scipy
-    - numpy
     - pysam
-    - natsort
-    - functools32 # [py27]
     - htslib
     - libdeflate
-
   run:
     - python
-    - cython
     - scipy
     - numpy
     - pysam
@@ -34,18 +35,21 @@ requirements:
     - functools32 # [py27]
     - htslib
     - libdeflate
-
 
 test:
   # Python imports
   imports:
     - epic2
-
   commands:
     - epic2 -h
 
 about:
   home: http://github.com/endrebak/epic2
   license: MIT
+  license_file: LICENSE
   summary: 'Ultraperformant Chip-Seq broad domain finder based on SICER.'
-
+  
+extra:
+  doi: 10.1093/bioinformatics/btz232
+  recipe-maintainers:
+    - endrebak
