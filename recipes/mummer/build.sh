@@ -41,6 +41,7 @@ show-tiling \
 perl -i -pe 's/defined \(%/\(%/' mummerplot
 
 #Fix escaping symbol @ included in the path to the library (mainly for conda virtual env with galaxy)
+cd $BINARY_HOME
 for i in exact-tandems dnadiff mapview mummerplot nucmer promer run-mummer1 run-mummer3; do
   perl -i -pe 's/(envs\/\_\_.*)(\K\@)/\\@/' $i
 done
