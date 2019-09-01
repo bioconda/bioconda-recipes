@@ -12,6 +12,9 @@ cp -R $SRC_DIR/* $MUMMER_HOME
 
 cd $MUMMER_HOME
 
+CC=$CC
+CXX=$CXX
+
 make
 make check
 
