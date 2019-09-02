@@ -19,7 +19,7 @@ ln -s ./tcsh ./csh
 popd
 
 # replace perl with /usr/bin/env perl and remove -w flag
-find . -name \*.pl -exec sed  -i 's^/usr/bin/env perl -w^/usr/bin/env perl^' {} \;
+find . -name \*.pl -exec sed  -i.bak 's^/usr/bin/env perl -w^/usr/bin/env perl^' {} \;
 
 # cd to location of Makefile and source
 cp -R $SRC_DIR/* $MUMMER_HOME
@@ -58,6 +58,8 @@ perl -i -pe 's/defined \(%/\(%/' mummerplot
 cd $BINARY_HOME
 for i in exact-tandems dnadiff mapview mummerplot nucmer promer run-mummer1 run-mummer3; do
   perl -i -pe 's/(envs\/\_\_.*)(\K\@)/\\@/' $i
+  # replace perl with /usr/bin/env perl and remove -w flag
+  sed  -i.bak 's^/usr/bin/env perl -w^/usr/bin/env perl^' $i
 done
 
 for i in $binaries; do 
