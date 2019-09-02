@@ -7,6 +7,7 @@ export CPPFLAGS="-DHAVE_LIBDEFLATE -I$PREFIX/include"
 export CFLAGS="-DHAVE_LIBDEFLATE -I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
+sed -i.bak 's@^#!/usr/bin/perl -w@#!/opt/anaconda1anaconda2anaconda3/bin/perl@' misc/vcfutils.pl
 ./configure --prefix=$PREFIX --enable-libcurl --enable-libgsl CPPFLAGS="$CPPFLAGS" LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS"
 make all
 make install
