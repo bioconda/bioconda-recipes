@@ -1,4 +1,7 @@
 #!/bin/bash
-make CC=$CXX OPTCFLAGS="$CXXFLAGS -fpermissive"
+pushd include/bwa
+make CC=$CC
+popd
+make CC=$CXX CFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS -pthread -static-libstdc++ -lz"
 mkdir -p $PREFIX/bin/
-cp RadSex/bin/radsex $PREFIX/bin/
+cp bin/radsex $PREFIX/bin/
