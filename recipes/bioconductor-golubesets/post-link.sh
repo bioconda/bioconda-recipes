@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/golubEsets_1.26.0.tar.gz"
   "https://bioarchive.galaxyproject.org/golubEsets_1.26.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-golubesets/bioconductor-golubesets_1.26.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-golubesets/bioconductor-golubesets_1.26.0_src_all.tar.gz"
 )
 MD5="3e7e78f951be8c6542fd6de61eabd92e"
 

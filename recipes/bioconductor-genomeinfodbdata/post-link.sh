@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/GenomeInfoDbData_1.2.1.tar.gz"
   "https://bioarchive.galaxyproject.org/GenomeInfoDbData_1.2.1.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-genomeinfodbdata/bioconductor-genomeinfodbdata_1.2.1_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-genomeinfodbdata/bioconductor-genomeinfodbdata_1.2.1_src_all.tar.gz"
 )
 MD5="2fd536521151e2ff37217b5cfee8cec4"
 

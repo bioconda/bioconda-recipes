@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/chromstaRData_1.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/chromstaRData_1.10.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-chromstardata/bioconductor-chromstardata_1.10.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chromstardata/bioconductor-chromstardata_1.10.0_src_all.tar.gz"
 )
 MD5="10d6c6236f90681d268ddb75e36f8549"
 

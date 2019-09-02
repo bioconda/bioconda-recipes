@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/faahKO_1.24.0.tar.gz"
   "https://bioarchive.galaxyproject.org/faahKO_1.24.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-faahko/bioconductor-faahko_1.24.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-faahko/bioconductor-faahko_1.24.0_src_all.tar.gz"
 )
 MD5="c2d5a234c32448986696671867e5fbca"
 

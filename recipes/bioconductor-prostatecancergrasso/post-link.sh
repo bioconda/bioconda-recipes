@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/prostateCancerGrasso_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/prostateCancerGrasso_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-prostatecancergrasso/bioconductor-prostatecancergrasso_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-prostatecancergrasso/bioconductor-prostatecancergrasso_1.12.0_src_all.tar.gz"
 )
 MD5="6bf3e5b205d0f15bd2ffb93d87029a16"
 
