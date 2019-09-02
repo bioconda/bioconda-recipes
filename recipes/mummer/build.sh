@@ -52,7 +52,6 @@ show-tiling \
 
 # patch defined(%hash) out
 # https://github.com/bioconda/bioconda-recipes/issues/1254
-
 perl -i -pe 's/defined \(%/\(%/' mummerplot
 
 #Fix escaping symbol @ included in the path to the library (mainly for conda virtual env with galaxy)
