@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/msqc1_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/msqc1_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-msqc1/bioconductor-msqc1_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-msqc1/bioconductor-msqc1_1.12.0_src_all.tar.gz"
 )
 MD5="ceb2ef3c5998e786e3bc8233b0d2724f"
 

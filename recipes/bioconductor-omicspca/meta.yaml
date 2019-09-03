@@ -12,13 +12,20 @@ source:
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
   md5: e69ae22e13ed95a9060126f90b5ecbd0
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
   noarch: generic
 # Suggests: knitr, RUnit, BiocGenerics
 requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
   host:
     - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
     - 'bioconductor-helloranges >=1.10.0,<1.11.0'
@@ -75,7 +82,7 @@ requirements:
     - r-tidyr
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
@@ -85,4 +92,5 @@ extra:
     name: bioconductor-omicspca
     path: recipes/bioconductor-omicspca
     version: 1.0.0
-
+  container:
+    extended-base: true

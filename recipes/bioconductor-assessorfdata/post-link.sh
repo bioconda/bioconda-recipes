@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/AssessORFData_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/AssessORFData_1.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-assessorfdata/bioconductor-assessorfdata_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-assessorfdata/bioconductor-assessorfdata_1.2.0_src_all.tar.gz"
 )
 MD5="d8fb320aa512adb3b5c4656d7f2809b2"
 

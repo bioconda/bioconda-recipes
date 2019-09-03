@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MeSH.PCR.db_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.PCR.db_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.pcr.db/bioconductor-mesh.pcr.db_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.pcr.db/bioconductor-mesh.pcr.db_1.12.0_src_all.tar.gz"
 )
 MD5="4926de52ba0a431d445b50c8e0d9e2aa"
 

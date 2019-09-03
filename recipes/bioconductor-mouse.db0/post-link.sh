@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/mouse.db0_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/mouse.db0_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mouse.db0/bioconductor-mouse.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mouse.db0/bioconductor-mouse.db0_3.8.2_src_all.tar.gz"
 )
 MD5="1927a435523cfdf1a94b67a674fdfce5"
 

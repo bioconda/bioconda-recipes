@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/rhesus.db0_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/rhesus.db0_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rhesus.db0/bioconductor-rhesus.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rhesus.db0/bioconductor-rhesus.db0_3.8.2_src_all.tar.gz"
 )
 MD5="48321e16fd44fa3db5975b1b918c9865"
 
