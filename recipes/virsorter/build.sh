@@ -1,3 +1,11 @@
+### Altering scripts to use conda MetaGeneAnnotator binary
+## Scripts/Step_1_contigs_cleaning_and_gene_prediction.pl
+sed "s;mga_linux_ia64;mga;" Scripts/Step_1_contigs_cleaning_and_gene_prediction.pl > Scripts/Step_1_contigs_cleaning_and_gene_prediction.pl.tmp && mv Scripts/Step_1_contigs_cleaning_and_gene_prediction.pl.tmp Scripts/Step_1_contigs_cleaning_and_gene_prediction.pl
+sed "s;mga_linux_ia64\\\n;mga\\\n;" Scripts/Step_1_contigs_cleaning_and_gene_prediction.pl > Scripts/Step_1_contigs_cleaning_and_gene_prediction.pl.tmp && mv Scripts/Step_1_contigs_cleaning_and_gene_prediction.pl.tmp Scripts/Step_1_contigs_cleaning_and_gene_prediction.pl
+## Scripts/Step_first_add_custom_phage_sequence.pl
+sed "s;mga_linux_ia64;mga;" Scripts/Step_first_add_custom_phage_sequence.pl > Scripts/Step_first_add_custom_phage_sequence.pl.tmp && mv Scripts/Step_first_add_custom_phage_sequence.pl.tmp Scripts/Step_first_add_custom_phage_sequence.pl
+
+
 ### Reconfiguring compiler for VirSorter Makefile
 cd Scripts/
 sed 's/gcc/\$\(CC\)/g' Makefile > Makefile.tmp && mv Makefile.tmp Makefile
