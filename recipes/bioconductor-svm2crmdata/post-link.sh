@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/SVM2CRMdata_1.16.0.tar.gz"
   "https://bioarchive.galaxyproject.org/SVM2CRMdata_1.16.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-svm2crmdata/bioconductor-svm2crmdata_1.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-svm2crmdata/bioconductor-svm2crmdata_1.16.0_src_all.tar.gz"
 )
 MD5="205df5b059ee9465b8d95c0ed1f6d4dc"
 

@@ -1,4 +1,5 @@
 #!/bin/bash
 
-cp bin/* $PREFIX/bin/.
+mkdir -p $PREFIX/bin
+cp bin/* $PREFIX/bin/
 chmod +x $PREFIX/bin/*

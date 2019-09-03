@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/CopyNeutralIMA_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/CopyNeutralIMA_1.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-copyneutralima/bioconductor-copyneutralima_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-copyneutralima/bioconductor-copyneutralima_1.2.0_src_all.tar.gz"
 )
 MD5="99b9b248b03ad09a1b274a986d0a6b54"
 

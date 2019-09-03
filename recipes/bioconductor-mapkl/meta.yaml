@@ -1,4 +1,4 @@
-{% set version = "1.13.0" %}
+{% set version = "1.14.1" %}
 {% set name = "mAPKL" %}
 {% set bioc = "3.9" %}
 
@@ -10,7 +10,7 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: e5763a6bb545a2f2cbc99b732717ada7
+  md5: 116da278be7af23529028a147363ce80
 build:
   number: 0
   rpaths:
@@ -19,6 +19,13 @@ build:
   noarch: generic
 # Suggests: BiocStyle, knitr, mAPKLData, hgu133plus2.db, RUnit, BiocGenerics
 requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
   host:
     - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
     - 'bioconductor-biobase >=2.44.0,<2.45.0'
@@ -45,7 +52,7 @@ requirements:
     - r-parmigene
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'

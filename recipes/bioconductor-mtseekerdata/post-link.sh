@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/MTseekerData_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MTseekerData_1.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mtseekerdata/bioconductor-mtseekerdata_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mtseekerdata/bioconductor-mtseekerdata_1.2.0_src_all.tar.gz"
 )
 MD5="f36216a2c91f9d02efbca8071367edc1"
 
