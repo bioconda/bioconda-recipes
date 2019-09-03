@@ -15,29 +15,41 @@ source:
 
 
 requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
   host:
-    - python >=3.4,<3.7
+    - python >=3.6
     - pip
-    - setuptools
   run:
-    - python >=3.4
+    - python >=3.6
+    - numpy >=1.11.1
+    - pytables >=3.3
+    - pandas >=0.22.0
+    - biopython >=1.70
     - pycurl >=7.43
     - scipy >=1.1
-    - numpy >=1.11
-    - biopython >=1.70
-    - pandas >=0.22.0
-    - pytables >=3.3
     - ete3 >=3.0
+    - pyqt >=5
     - blast
     - mash
     - circlator
 
 test:
   commands:
-    - "mob_typer -h"
-    - "mob_recon -h"
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" mob_typer -h
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" mob_recon -h
 
 about:
   home: https://github.com/phac-nml/mob-suite
   license: Apache License, Version 2.0
   summary: 'This package MOB-suite: software tools for clustering, reconstruction and typing of plasmids from draft assemblies. The MOB-suite is designed to be a modular set of tools for the typing and reconstruction of plasmid sequences from WGS assemblies.'
+
+extra:
+  container:
+    # Due to pyqt
+    extended-base: true
