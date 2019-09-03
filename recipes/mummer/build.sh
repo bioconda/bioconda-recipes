@@ -59,7 +59,7 @@ cd $BINARY_HOME
 for i in exact-tandems dnadiff mapview mummerplot nucmer promer run-mummer1 run-mummer3; do
   perl -i -pe 's/(envs\/\_\_.*)(\K\@)/\\@/' $i
   # replace perl with /usr/bin/env perl and remove -w flag
-  sed  -i.bak 's^/usr/bin/env perl -w^/usr/bin/env perl^' $i
+  # sed  -i.bak 's^/usr/bin/env perl -w^/usr/bin/env perl^' $i
 done
 
 for i in $binaries; do 
