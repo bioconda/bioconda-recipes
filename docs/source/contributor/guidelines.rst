@@ -217,7 +217,7 @@ Or a package that only runs on Python 3.6 and 3.7:
 .. code-block:: yaml
 
     host:
-      - python >=3
+      - python >=3.6
 
 Alternatively, for straightforward compatibility fixes you can apply a `patch
 in the meta.yaml <conda-build:meta-yaml>`.
