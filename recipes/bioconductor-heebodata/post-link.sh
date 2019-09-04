@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/HEEBOdata_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/HEEBOdata_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-heebodata/bioconductor-heebodata_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-heebodata/bioconductor-heebodata_1.22.0_src_all.tar.gz"
 )
 MD5="76163c616e6f8e975962b0b0ad45da7f"
 

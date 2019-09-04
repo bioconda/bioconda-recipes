@@ -5,7 +5,7 @@ package:
   version: {{ version }}
 
 build:
-  number: 4
+  number: 6
 
 source:
   url: https://github.com/samtools/bcftools/releases/download/{{ version }}/bcftools-{{ version }}.tar.bz2
@@ -20,21 +20,26 @@ requirements:
     - xz
     - zlib
     - libdeflate
+    - gsl
   run:
     - bzip2
     - curl
+    - gsl
     # Currently removed due to size and dependency issues
     #- matplotlib # for plot-vcfstats
     #- tectonic # for plot-vcfstats
     - xz
     - zlib
     - libdeflate
+    - perl
 
 test:
   commands:
     - bcftools -h
     - bcftools --version
     - bcftools plugin -lv
+    - bcftools -h | grep polysomy
+    - vcfutils.pl 2>&1 | grep vcfutils
     #- plot-vcfstats -h 2>&1 | grep -q "Plots output of "
 
 about:

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RIPSeekerData_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RIPSeekerData_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ripseekerdata/bioconductor-ripseekerdata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ripseekerdata/bioconductor-ripseekerdata_1.20.0_src_all.tar.gz"
 )
 MD5="5393a250ac8618929a6240d902c738d1"
 
