@@ -7,11 +7,10 @@ sed -i.bak 's#misc/varfilter.py##g' Makefile
 # https://sourceforge.net/p/samtools/mailman/message/34699333/
 sed -i.bak 's/ -rdynamic//g' Makefile
 
-# https://github.com/samtools/samtools/issues/577
-if [[ "$(uname)" == "Linux" ]] ; then
-    export LDFLAGS="$LDFLAGS -Wl,--add-needed"
-fi
+# Ensure we run successfully using either conda-forge or defaults ncurses
+# (unlike other platforms, the latter does not automatically pull in libtinfo)
+CURSES_LIB="-ltinfow -lncursesw"
 
-./configure --prefix=$PREFIX --with-htslib=system LDFLAGS="$LDFLAGS"
+./configure --prefix=$PREFIX --with-htslib=system CURSES_LIB="$CURSES_LIB"
 make all
 make install
