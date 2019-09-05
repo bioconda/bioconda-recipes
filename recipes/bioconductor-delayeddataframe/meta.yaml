@@ -1,0 +1,39 @@
+{% set version = "1.0.0" %}
+{% set name = "DelayedDataFrame" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 60d192f4f76c29989e1feb0e47d23660
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: testthat, knitr, rmarkdown, SeqArray, GDSArray
+requirements:
+  host:
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-delayedarray >=0.10.0,<0.11.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - r-base
+  run:
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-delayedarray >=0.10.0,<0.11.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - r-base
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Based on the standard DataFrame metaphor, we are trying to implement the feature of delayed operation on the DelayedDataFrame, with a slot of lazyIndex, which saves the mapping indexes for each column of DelayedDataFrame. Methods like show, validity check, [/[[ subsetting, rbind/cbind are implemented for DelayedDataFrame to be operated around lazyIndex. The listData slot stays untouched until a realization call e.g., DataFrame constructor OR as.list() is invoked.'
+

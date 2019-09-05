@@ -1,0 +1,42 @@
+{% set name = "FigTree" %}
+{% set version = "1.4.4" %}
+{% set sha256hash = "529b867657b29e369cf81cd361e6a76bd713d488a63b91932df2385800423aa8" %}
+
+package:
+  name: {{ name|lower}}
+  version: {{ version }}
+
+build:
+  number: 0
+  noarch: generic
+
+source:
+  url: https://github.com/rambaut/figtree/releases/download/v{{ version }}/FigTree_v{{ version }}.tgz
+  sha256: {{ sha256hash }}
+
+requirements:
+  host:
+  run:
+    - openjdk >=5
+    - python
+    - xorg-libxtst
+
+test:
+  commands:
+    - figtree -help
+
+about:
+  home: https://github.com/rambaut/figtree
+  license: GPLv2
+  license_family: GPL
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+  summary: "FigTree is designed as a graphical viewer of phylogenetic trees and as a program for producing publication-ready figures."
+
+extra:
+  notes: |
+    FigTree is Java program that comes with a custom wrapper shell script.
+    This shell wrapper is called "figtree" and is on $PATH by default. By default
+    "-Xms512m -Xmx1g" is set in the wrapper. If you want to overwrite it you can
+    specify these values directly after your binaries. If you have _JAVA_OPTIONS
+    set globally this will take precedence.
+    For example run it with "figtree -Xms512m -Xmx1g"
