@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="MetaGxPancreas_1.2.0.tar.gz"
+FN="MetaGxPancreas_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/MetaGxPancreas_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MetaGxPancreas_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-metagxpancreas/bioconductor-metagxpancreas_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/MetaGxPancreas_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MetaGxPancreas_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-metagxpancreas/bioconductor-metagxpancreas_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-metagxpancreas/bioconductor-metagxpancreas_1.4.0_src_all.tar.gz"
 )
-MD5="974a7f5e6f82070585bdc35cc843ccea"
+MD5="8c87608964940fa1f28b5713c6588414"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -12,7 +12,7 @@ source:
 
 build:
   skip: True  # [osx]
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
@@ -20,7 +20,13 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
-    - {{posix}}make
+    - make
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
   host:
     - r-base
     - r-mass
@@ -38,7 +44,7 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('qpcR')"
+    - LD_LIBRARY_PATH=${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64 $R -e "library('qpcR')"
 
 about:
   home: https://CRAN.R-project.org/package=qpcR
@@ -51,4 +57,4 @@ about:
 extra:
   container:
     # gl
-     extended-base: true
+    extended-base: true

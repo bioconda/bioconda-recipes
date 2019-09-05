@@ -1,0 +1,51 @@
+{% set name = "snostrip" %}
+{% set version = "2.0.2" %}
+{% set sha256 = "07902c0813b91189bfbf12cbe931dda769fe96ea8c3806c69cb6d2b016d66b80" %}
+{% set subversion = "-beta" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source: 
+  url: https://github.com/Bierinformatik/snoStrip/archive/v{{ version }}{{ subversion }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - configure.patch # [linux] #makes paths for executables and data conda combatible
+    - snostrip.patch # [linux] #adds conda paths libs to @INC for perl scripts and modules
+  
+build:
+  number: 0
+  skip: True # [osx]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - perl
+    - blast-legacy
+    - infernal
+    - muscle
+    - viennarna
+ 
+  run:
+    - perl
+    - blast-legacy
+    - infernal
+    - muscle
+    - viennarna
+ 
+test:
+  commands:
+    - snoStrip.pl -h 2>&1 | grep usage
+
+about:
+  home: http://snostrip.bioinf.uni-leipzig.de/help.py
+  license: GPL3
+  license_file: README.md
+  summary: Automatic snoRNA annotation pipeline
+
+extra:
+  recipe-maintainers:
+    - jfallmann

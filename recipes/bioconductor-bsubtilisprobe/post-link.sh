@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="bsubtilisprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/bsubtilisprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/bsubtilisprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/bsubtilisprobe_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsubtilisprobe/bioconductor-bsubtilisprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsubtilisprobe/bioconductor-bsubtilisprobe_2.18.0_src_all.tar.gz"
 )
 MD5="83568fcea2122350b7ce982e79b7ec53"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
