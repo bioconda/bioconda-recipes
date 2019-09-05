@@ -5,5 +5,5 @@ mkdir -p build
 cd build
 cmake ..
 make
-cp bin/lambda $PREFIX/bin
-cp bin/lambda_indexer $PREFIX/bin
+cp lambda $PREFIX/bin
+cp lambda_indexer $PREFIX/bin
