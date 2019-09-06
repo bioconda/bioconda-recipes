@@ -6,5 +6,4 @@ cd build
 cmake ..
 make
 ls -l bin
-cp lambda2 $PREFIX/bin
-cp lambda_indexer $PREFIX/bin
+cp bin/lambda2 $PREFIX/bin
