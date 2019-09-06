@@ -1,9 +1,8 @@
 NCBI_OUTDIR=$SRC_DIR/ncbi-outdir
 
+pushd ngs-sdk
 sed -i.bak "349i\
 \$TOOLS = '${CXX}';" setup/konfigure.perl
-
-pushd ngs-sdk
 ./configure \
     --prefix=$PREFIX \
     --build-prefix=$NCBI_OUTDIR \
