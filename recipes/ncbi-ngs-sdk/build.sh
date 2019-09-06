@@ -1,7 +1,9 @@
 NCBI_OUTDIR=$SRC_DIR/ncbi-outdir
 
+export bCC=`basename ${CC}`
+export bCXX=`basename ${CXX}`
 pushd ngs-sdk
-sed -i.bak "s#gcc#${CC}#g;s#g++#${CXX}#g" setup/konfigure.perl
+sed -i.bak "s#gcc#${bCC}#g;s#g++#${bCXX}#g" setup/konfigure.perl
 ./configure \
     --prefix=$PREFIX \
     --build-prefix=$NCBI_OUTDIR \
