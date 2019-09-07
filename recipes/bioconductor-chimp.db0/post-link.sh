@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/chimp.db0_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/chimp.db0_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-chimp.db0/bioconductor-chimp.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chimp.db0/bioconductor-chimp.db0_3.8.2_src_all.tar.gz"
 )
 MD5="7a3202440652fd2c5a4c95c5439e92a8"
 

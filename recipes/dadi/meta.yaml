@@ -1,40 +1,46 @@
-{% set name = "DADI" %}
-{% set version = "1.7.0" %}
+{% set name = "dadi" %}
+{% set version = "2.0.3" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 about:
-  home: https://bitbucket.org/gutenkunstlab/dadi
-  license: Custom
-  license_file: LICENSE.txt
-  summary: DADI implements methods for demographic history and selection inference from genetic data, based on diffusion approximations to the allele frequency spectrum.
+  home: "https://bitbucket.org/gutenkunstlab/dadi"
+  license: "BSD-3-Clause"
+  license_family: "BSD"
+  license_file: "LICENSE.txt"
+  summary: "Fit population genetic models using diffusion approximations to the allele frequency spectrum"
 
 source:
-  - url: https://bitbucket.org/gutenkunstlab/{{ name|lower }}/get/{{ version }}.tar.gz
-    sha256: 8aeea4fc0e1354866d24e8f75b4d0d3356062d2d8a03b41976ec05c8cc80b7bf 
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "3c0259325ae9bdb803f310973d4624d0054e2afa9fae5a5d1fa6d31aaec637b7"
 
 build:
   number: 0
-  script: $PYTHON -m pip install --no-deps --ignore-installed --no-cache-dir .
-  skip: True  #[py3k]
+  script: '{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv --install-option="--cython" '
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
-    - python 
     - pip
+    - cython
+    - python >=3
     - numpy
-    - scipy
-    - matplotlib
-    - ipython
   run:
-    - python 
+    - python >=3
     - numpy
     - scipy
     - matplotlib
-    - ipython
 
 test:
   imports:
     - dadi
+    - dadi.DFE
+    - dadi.Triallele
+    - dadi.TwoLocus
+
+extra:
+  recipe-maintainers:
+    - RyanGutenkunst
