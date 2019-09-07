@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="TxDb.Hsapiens.UCSC.hg18.knownGene_3.2.2.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/TxDb.Hsapiens.UCSC.hg18.knownGene_3.2.2.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Hsapiens.UCSC.hg18.knownGene_3.2.2.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Hsapiens.UCSC.hg18.knownGene_3.2.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.hsapiens.ucsc.hg18.knowngene/bioconductor-txdb.hsapiens.ucsc.hg18.knowngene_3.2.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.hsapiens.ucsc.hg18.knowngene/bioconductor-txdb.hsapiens.ucsc.hg18.knowngene_3.2.2_src_all.tar.gz"
@@ -17,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
