@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/HDCytoData_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/HDCytoData_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hdcytodata/bioconductor-hdcytodata_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hdcytodata/bioconductor-hdcytodata_1.4.0_src_all.tar.gz"
 )
 MD5="7e6294543c192c0a089c6eb1c6c406ce"
 

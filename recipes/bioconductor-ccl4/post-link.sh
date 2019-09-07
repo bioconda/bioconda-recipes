@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/CCl4_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/CCl4_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ccl4/bioconductor-ccl4_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ccl4/bioconductor-ccl4_1.22.0_src_all.tar.gz"
 )
 MD5="465604e9af49594dd9bfdfe6c059edc1"
 

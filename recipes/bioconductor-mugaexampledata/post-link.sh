@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/MUGAExampleData_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MUGAExampleData_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mugaexampledata/bioconductor-mugaexampledata_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mugaexampledata/bioconductor-mugaexampledata_1.4.0_src_all.tar.gz"
 )
 MD5="307ef40b4459572843bf422be2dc998b"
 

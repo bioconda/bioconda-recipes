@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/anopheles.db0_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/anopheles.db0_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-anopheles.db0/bioconductor-anopheles.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-anopheles.db0/bioconductor-anopheles.db0_3.8.2_src_all.tar.gz"
 )
 MD5="8ee605dc6b30694688ffe67e71259ca8"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/chipenrich.data_2.8.0.tar.gz"
   "https://bioarchive.galaxyproject.org/chipenrich.data_2.8.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-chipenrich.data/bioconductor-chipenrich.data_2.8.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chipenrich.data/bioconductor-chipenrich.data_2.8.0_src_all.tar.gz"
 )
 MD5="26d744a980e0698a991565fb0beea5a1"
 

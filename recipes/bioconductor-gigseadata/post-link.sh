@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/GIGSEAdata_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/GIGSEAdata_1.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-gigseadata/bioconductor-gigseadata_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-gigseadata/bioconductor-gigseadata_1.2.0_src_all.tar.gz"
 )
 MD5="9179864b9233f0010eb2f0fb58317ae5"
 

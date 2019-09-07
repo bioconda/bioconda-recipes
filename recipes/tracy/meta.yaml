@@ -1,34 +1,41 @@
-{% set version = "0.5.3" %}
-{% set sha256 = "5d9a056e96a77adec65a20d8e8191095174b2ec28907d3508b3a59482e5bf11e" %}
+{% set version = "0.5.5" %}
+{% set sha256 = "b788ebd000065b8c0e376805bb9e1e16564c831f0a41da2eb119abade708e9d8" %}
 
 package:
   name: tracy
   version: '{{ version }}'
 
 source:
-  url: https://github.com/gear-genomics/tracy/archive/v{{ version }}.tar.gz
-  sha256: '{{ sha256 }}'
+  - url: https://github.com/gear-genomics/tracy/archive/v{{ version }}.tar.gz
+    sha256: '{{ sha256 }}'
+  - folder: src/xxsds
+    git_url: https://github.com/xxsds/sdsl-lite.git
+    git_rev: a654b57
 
 build:
-  number: 1
+  number: 0
   skip: True # [osx]
+
+extra:
+  skip-lints:
+    - uses_vcs_url
+    - missing_hash
 
 requirements:
   build:
     - {{ compiler('cxx') }}
+    - cmake >=3.10
   host:
     - zlib
     - bzip2
     - boost
     - htslib
-    - sdsl-lite
     - nlohmann_json
   run:
     - zlib
     - bzip2
     - boost
     - htslib
-    - sdsl-lite
     - nlohmann_json
 
 test:
@@ -37,6 +44,7 @@ test:
 
 about:
   home: https://github.com/gear-genomics/tracy
-  license: GPLv3
+  license: BSD License
+  license_family: BSD
   license_file: LICENSE
   summary: Basecalling, alignment, assembly and deconvolution of Sanger chromatogram trace files

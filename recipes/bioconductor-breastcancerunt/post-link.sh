@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/breastCancerUNT_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/breastCancerUNT_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-breastcancerunt/bioconductor-breastcancerunt_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-breastcancerunt/bioconductor-breastcancerunt_1.22.0_src_all.tar.gz"
 )
 MD5="4abb8ad6dee3b46bfe38e5712993418d"
 

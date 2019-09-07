@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/DLBCL_1.24.0.tar.gz"
   "https://bioarchive.galaxyproject.org/DLBCL_1.24.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-dlbcl/bioconductor-dlbcl_1.24.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dlbcl/bioconductor-dlbcl_1.24.0_src_all.tar.gz"
 )
 MD5="730b96fa17675ada97131b40a2466c94"
 
