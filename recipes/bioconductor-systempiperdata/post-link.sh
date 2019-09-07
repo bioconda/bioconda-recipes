@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/systemPipeRdata_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/systemPipeRdata_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-systempiperdata/bioconductor-systempiperdata_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-systempiperdata/bioconductor-systempiperdata_1.12.0_src_all.tar.gz"
 )
 MD5="c8d11c0e23f871eea5f073d749b26be0"
 

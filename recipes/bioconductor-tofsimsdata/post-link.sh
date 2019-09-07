@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/tofsimsData_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/tofsimsData_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-tofsimsdata/bioconductor-tofsimsdata_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tofsimsdata/bioconductor-tofsimsdata_1.12.0_src_all.tar.gz"
 )
 MD5="5d746a53346a01cbf016e711cc70bdd9"
 
