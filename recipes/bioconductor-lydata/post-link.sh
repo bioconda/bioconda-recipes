@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="lydata_1.8.0.tar.gz"
+FN="lydata_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/lydata_1.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/lydata_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-lydata/bioconductor-lydata_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/lydata_1.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/lydata_1.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lydata/bioconductor-lydata_1.10.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-lydata/bioconductor-lydata_1.10.0_src_all.tar.gz"
 )
-MD5="d64eba72812c41d245f9972c33d71226"
+MD5="ddb7b13ac19ac940d615d9cb7ff14770"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

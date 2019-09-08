@@ -1,8 +1,12 @@
-{% set version = "5.4.5" %}
+{% set version = "5.6.0" %}
 
 package:
   name: snakemake
   version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/s/snakemake/snakemake-{{ version }}.tar.gz
+  sha256: 65b944bcf06fd31b5da7430a6012a542c4c3c05a822b92ca218f2406eabd2c24
 
 build:
   number: 0
@@ -29,6 +33,9 @@ requirements:
     - jinja2
     - pygraphviz
     - networkx >=2.0
+    - pygments
+    # older versions of imagemagick sometimes fail on PDF -> PNG conversion
+    - imagemagick >=7.0
 
 test:
   imports:
@@ -41,9 +48,71 @@ test:
 about:
   home: https://snakemake.readthedocs.io
   license: MIT
-  summary: Snakemake is a workflow management system that aims to reduce the complexity of creating workflows by providing a fast and comfortable execution environment, together with a clean and modern specification language in python style. Snakemake workflows are essentially Python scripts extended by declarative code to define rules. Rules describe how to create output files from input files. This package provides the full installation including all optional dependencies.
+  summary: A popular workflow management system aiming at full in-silico reproducibility.
+  description: |
+        Snakemake is a workflow management system that aims to reduce the complexity of creating 
+        workflows by providing a fast and comfortable execution environment, together with a clean 
+        and modern specification language in python style. Snakemake workflows are essentially Python 
+        scripts extended by declarative code to define rules. Rules describe how to create output 
+        files from input files.
 
 extra:
   identifiers:
     - doi:10.1093/bioinformatics/bts480
     - biotools:Snakemake
+  skip-lints:
+    - uses_setuptools  # uses pkg_resoures during run time
+    - should_be_noarch_python  # toplevel metapackage is noarch:generic
+
+outputs:
+  - name: snakemake-minimal
+
+    build:
+      noarch: python
+      script: python -m pip install --no-deps --ignore-installed .
+      entry_points:
+        - snakemake = snakemake:main
+        - snakemake-bash-completion = snakemake:bash_completion
+
+    requirements:
+      host:
+        - python >=3.5
+        - pip
+        - setuptools
+      run:
+        - python >=3.5
+        - setuptools
+        - wrapt
+        - requests
+        - docutils
+        - pyyaml
+        - datrie
+        - requests >=2.8.1
+        - psutil
+        - ratelimiter
+        - configargparse
+        - appdirs
+        - jsonschema
+        - gitpython
+
+    test:
+      imports:
+        - snakemake
+      commands:
+        - export GIT\_PYTHON_REFRESH=warn
+        - snakemake --version
+        - snakemake --version | grep "{{ version }}"
+    
+    about:
+      home: https://snakemake.readthedocs.io
+      license: MIT
+      summary: A popular workflow management system aiming at full in-silico reproducibility.
+      description: |
+        Snakemake is a workflow management system that aims to reduce the complexity
+        of creating workflows by providing a fast and comfortable execution 
+        environment, together with a clean and modern specification language in 
+        python style. Snakemake workflows are essentially Python scripts extended 
+        by declarative code to define rules. Rules describe how to create output 
+        files from input files. This package provides the core snakemake functionality.
+        For features like reports and remote files, check out the snakemake package 
+        which provides all optional dependencies.

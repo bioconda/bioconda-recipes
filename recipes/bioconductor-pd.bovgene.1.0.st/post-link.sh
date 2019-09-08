@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.bovgene.1.0.st_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.bovgene.1.0.st_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.bovgene.1.0.st_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.bovgene.1.0.st_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.bovgene.1.0.st/bioconductor-pd.bovgene.1.0.st_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.bovgene.1.0.st/bioconductor-pd.bovgene.1.0.st_3.12.0_src_all.tar.gz"
 )
 MD5="6e9747d13aee7825722562ccc49ad35f"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

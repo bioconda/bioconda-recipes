@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="drosophila2probe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/drosophila2probe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/drosophila2probe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/drosophila2probe_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-drosophila2probe/bioconductor-drosophila2probe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-drosophila2probe/bioconductor-drosophila2probe_2.18.0_src_all.tar.gz"
 )
 MD5="ba0251902ea0a5f0db61105bdcdc3530"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
