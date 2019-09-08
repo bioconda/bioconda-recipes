@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/DmelSGI_1.16.0.tar.gz"
   "https://bioarchive.galaxyproject.org/DmelSGI_1.16.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-dmelsgi/bioconductor-dmelsgi_1.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dmelsgi/bioconductor-dmelsgi_1.16.0_src_all.tar.gz"
 )
 MD5="42c76634466b104f1c93c49d14757b49"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/genomationData_1.16.0.tar.gz"
   "https://bioarchive.galaxyproject.org/genomationData_1.16.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-genomationdata/bioconductor-genomationdata_1.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-genomationdata/bioconductor-genomationdata_1.16.0_src_all.tar.gz"
 )
 MD5="e9b054305d2ce85aeb1bca338eb07b66"
 

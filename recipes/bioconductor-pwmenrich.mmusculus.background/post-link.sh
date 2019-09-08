@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/PWMEnrich.Mmusculus.background_4.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/PWMEnrich.Mmusculus.background_4.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.mmusculus.background/bioconductor-pwmenrich.mmusculus.background_4.18.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.mmusculus.background/bioconductor-pwmenrich.mmusculus.background_4.18.0_src_all.tar.gz"
 )
 MD5="d9cab0ba0958913a7cfaac48f615513a"
 

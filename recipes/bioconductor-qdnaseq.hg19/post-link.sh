@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/QDNAseq.hg19_1.14.0.tar.gz"
   "https://bioarchive.galaxyproject.org/QDNAseq.hg19_1.14.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-qdnaseq.hg19/bioconductor-qdnaseq.hg19_1.14.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-qdnaseq.hg19/bioconductor-qdnaseq.hg19_1.14.0_src_all.tar.gz"
 )
 MD5="18bb6347a3912c344deca9f2646087b4"
 
