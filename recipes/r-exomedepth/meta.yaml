@@ -1,7 +1,4 @@
-{% set version = '1.1.10' %}
-
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '1.1.12' %}
 
 package:
   name: r-exomedepth
@@ -11,54 +8,46 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/ExomeDepth_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/ExomeDepth/ExomeDepth_{{ version }}.tar.gz
-  sha256: 2678ff4c4d024e08a843f08cb932707a11ce7274ab48bfc2632669ca930d8f86
+  sha256: 0aee57c44d744364af4fb7d8d23f3369b35a3c99c995b998afa6b28d9710d980
 
 build:
-  merge_build_host: True  # [win]
-
-  number: 2
-
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}        # [not win]
-    - {{ compiler('cxx') }}      # [not win]
-    - {{native}}toolchain        # [win]
-    - {{posix}}filesystem        # [win]
-    - {{posix}}make
-    - {{posix}}sed               # [win]
-    - {{posix}}coreutils         # [win]
-    - {{posix}}zip               # [win]
-
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - make
   host:
     - r-base
-    - 'bioconductor-biostrings >=2.48.0,<2.50.0'
-    - 'bioconductor-genomicalignments >=1.16.0,<1.18.0'
-    - 'bioconductor-genomicranges >=1.32.7,<1.34.0'
+    - bioconductor-biostrings
+    - bioconductor-genomicalignments
+    - bioconductor-genomicranges >=1.23.0
     - bioconductor-iranges
-    - 'bioconductor-rsamtools >=1.32.0,<1.34.0'
+    - bioconductor-rsamtools
     - r-vgam >=0.8.4
     - r-aod
-
+    - r-dplyr
+    - r-magrittr
   run:
     - r-base
-    - {{native}}gcc-libs         # [win]
-    - 'bioconductor-biostrings >=2.48.0,<2.50.0'
-    - 'bioconductor-genomicalignments >=1.16.0,<1.18.0'
-    - 'bioconductor-genomicranges >=1.32.7,<1.34.0'
+    - bioconductor-biostrings
+    - bioconductor-genomicalignments
+    - bioconductor-genomicranges >=1.23.0
     - bioconductor-iranges
-    - 'bioconductor-rsamtools >=1.32.0,<1.34.0'
+    - bioconductor-rsamtools
     - r-vgam >=0.8.4
     - r-aod
+    - r-dplyr
+    - r-magrittr
 
 test:
   commands:
-
-    - $R -e "library('ExomeDepth')"           # [not win]
-    - "\"%R%\" -e \"library('ExomeDepth')\""  # [win]
+    - $R -e "library('ExomeDepth')"
 
 about:
   home: https://CRAN.R-project.org/package=ExomeDepth
@@ -66,14 +55,3 @@ about:
   summary: Calls copy number variants (CNVs) from targeted sequence data, typically exome sequencing
     experiments designed to identify the genetic basis of Mendelian disorders.
   license_family: GPL3
-extra:
-  identifiers:
-    - biotools:exomedepth
-  recipe-maintainers:
-    - MathiasHaudgaard
-    - FrodePedersen
-    - ArneKr
-    - johanneskoester
-    - bgruening
-    - daler
-    - jdblischak

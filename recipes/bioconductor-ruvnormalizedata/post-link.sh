@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="RUVnormalizeData_0.114.0.tar.gz"
+FN="RUVnormalizeData_1.4.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/experiment/src/contrib/RUVnormalizeData_0.114.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RUVnormalizeData_0.114.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ruvnormalizedata/bioconductor-ruvnormalizedata_0.114.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RUVnormalizeData_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RUVnormalizeData_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ruvnormalizedata/bioconductor-ruvnormalizedata_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ruvnormalizedata/bioconductor-ruvnormalizedata_1.4.0_src_all.tar.gz"
 )
-MD5="116061e9ddf8357f83e5460ad86da991"
+MD5="cf46437c54508c46e43c5679bdedf2b0"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

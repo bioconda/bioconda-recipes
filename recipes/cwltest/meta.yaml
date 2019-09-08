@@ -1,46 +1,44 @@
-{% set version = "1.0.20180601100346" %}
+{% set name = "cwltest" %}
+{% set version = "1.0.20190228134645" %}
+
 package:
-  name: cwltest
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/c/cwltest/cwltest-{{ version }}.tar.gz
-  sha256: 4308dff9c63a223e9630ab359016bab48047c0701f98aed7daf3ac09a4939f66
-
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "317a917d0ed18e5db9dab1069f32222625e350b35d53f36b5b7430538006eadb"
+  patches:
+    - patch
 
 build:
-  noarch: python
   number: 0
+  noarch: python
+  entry_points:
+    - cwltest=cwltest:main
+    - mock-cwl-runner=cwltest.tests.mock_cwl_runner:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
   host:
+    - pip
     - python
-    - setuptools
-    - schema-salad >=1.14
-    - typing >=3.5.3,<3.6
-    - junit-xml >=1.8
-    - futures >=3.0.5 # [py27]
-    - subprocess32 >=3.5.0 # [py27]
-    - cachecontrol <0.12,>=0.11.7
-    - mistune <0.8,>=0.7.3
-
   run:
+    - junit-xml >=1.8
     - python
     - schema-salad >=1.14
-    - typing >=3.5.3,<3.6
-    - junit-xml >=1.8
-    - futures >=3.0.5 # [py27]
-    - subprocess32 >=3.5.0 # [py27]
-    - cachecontrol <0.12,>=0.11.7
-    - mistune <0.8,>=0.7.3
+    - six >=1.10.0
 
 test:
   imports:
     - cwltest
+    - cwltest.tests
   commands:
     - cwltest --help
+    - mock-cwl-runner --help
 
 about:
-  home: https://github.com/common-workflow-language/cwltest
-  license: Apache License 2.0
-  summary: Framework for testing CWL tools and workflows
+  home: "https://github.com/common-workflow-language/cwltest"
+  license: "Apache 2.0"
+  license_family: "APACHE"
+  summary: "Common workflow language testing framework"

@@ -1,0 +1,51 @@
+{% set version = "1.10.0" %}
+{% set name = "normr" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: d7a14e44272acd117020c25ebfccfd08
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: BiocStyle, testthat (>= 1.0), knitr, rmarkdown
+# SystemRequirements: C++11
+requirements:
+  host:
+    - 'bioconductor-bamsignals >=1.16.0,<1.17.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-qvalue >=2.16.0,<2.17.0'
+    - 'bioconductor-rtracklayer >=1.44.0,<1.45.0'
+    - r-base
+    - 'r-rcpp >=0.11'
+  run:
+    - 'bioconductor-bamsignals >=1.16.0,<1.17.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-qvalue >=2.16.0,<2.17.0'
+    - 'bioconductor-rtracklayer >=1.44.0,<1.45.0'
+    - r-base
+    - 'r-rcpp >=0.11'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'Robust normalization and difference calling procedures for ChIP-seq and alike data. Read counts are modeled jointly as a binomial mixture model with a user-specified number of components. A fitted background estimate accounts for the effect of enrichment in certain regions and, therefore, represents an appropriate null hypothesis. This robust background is used to identify significantly enriched or depleted regions.'
+

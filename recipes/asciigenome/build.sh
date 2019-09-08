@@ -1,11 +1,9 @@
 #!/bin/bash
 
-outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-mkdir -p $outdir
 mkdir -p $PREFIX/bin
 
-cp ASCIIGenome.jar $outdir
-echo '#!/bin/sh' > $outdir/ASCIIGenome
-echo exec java -Djava.net.useSystemProxies=true -Xmx2500m -jar $outdir/ASCIIGenome.jar '"$@"' >> $outdir/ASCIIGenome
-chmod a+x $outdir/ASCIIGenome
-ln -s $outdir/ASCIIGenome $PREFIX/bin
+# To be removed after shebang is fixed is ASCIIGenome repository
+sed 's|#!/bin/sh|#!/bin/bash|' ASCIIGenome > $PREFIX/bin/ASCIIGenome
+chmod a+x $PREFIX/bin/ASCIIGenome
+
+cp ASCIIGenome.jar $PREFIX/bin/
