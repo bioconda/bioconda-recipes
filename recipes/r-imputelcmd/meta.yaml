@@ -1,0 +1,58 @@
+{% set version = '2.0' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-imputelcmd
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/imputeLCMD_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/imputeLCMD/imputeLCMD_{{ version }}.tar.gz
+  sha256: dfd5846cb9b6662dff8bfb0e18bc68f1b59f706666209f8dd6b61a1ec38e6383
+
+build:
+  merge_build_host: True  # [win]
+  number: 1
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+
+  host:
+    - r-base
+    - bioconductor-impute
+    - r-norm
+    - bioconductor-pcamethods
+    - r-tmvtnorm
+  run:
+    - r-base
+    - bioconductor-impute
+    - r-norm
+    - bioconductor-pcamethods
+    - r-tmvtnorm
+
+test:
+  commands:
+    - $R -e "library('imputeLCMD')"           # [not win]
+    - "\"%R%\" -e \"library('imputeLCMD')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=imputeLCMD
+  license: GPL (>= 2)
+  summary: 'The package contains a collection of functions for left-censored missing data imputation.
+    Left-censoring is a special case of missing not at random (MNAR)  mechanism that
+    generates non-responses in proteomics experiments. The package also contains functions
+    to artificially generate peptide/protein expression data (log-transformed) as random
+    draws from a multivariate Gaussian distribution as well as a function to generate
+    missing data (both randomly and non-randomly). For comparison reasons, the package
+    also contains several wrapper functions for the imputation of non-responses that
+    are missing at random. * New functionality has been added: a hybrid method that
+    allows the imputation of missing values in a more complex scenario where the missing
+    data are both MAR and MNAR.'
+  license_family: GPL3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'

@@ -1,5 +1,5 @@
-{% set version = "0.5.6" %}
-{% set sha256 = "57eeab0ed2f408126318533150e4b70028c6e6787c483ba4ed29f1433c6e6e0a" %}
+{% set version = "0.5.8" %}
+{% set sha256 = "f6363683c826c6d39ac5e43efdc8316328783a9cb4d29995520e9ca6913621ed" %}
 
 package:
   name: krakenuniq
@@ -8,25 +8,31 @@ package:
 source:
   url: https://github.com/fbreitwieser/krakenuniq/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - krakenuniq.patch
 
 build:
   number: 0
-  skip: True  # [osx]
 
 requirements:
   build:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+
   host:
     - perl
+    - clangdev  # [osx]
+    - llvm-openmp  # [osx]
     - zlib
 
   run:
-    - jellyfish 1.*
+    - bioconda::jellyfish 1.*
     - perl
+    - rsync
+    - wget
+    - llvm-openmp  # [osx]
     - perl-libwww-perl
     - perl-lwp-protocol-https
-    - zlib
 
 test:
   commands:

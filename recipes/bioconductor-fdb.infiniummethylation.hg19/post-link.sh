@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="FDb.InfiniumMethylation.hg19_2.2.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/FDb.InfiniumMethylation.hg19_2.2.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/FDb.InfiniumMethylation.hg19_2.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/FDb.InfiniumMethylation.hg19_2.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-fdb.infiniummethylation.hg19/bioconductor-fdb.infiniummethylation.hg19_2.2.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-fdb.infiniummethylation.hg19/bioconductor-fdb.infiniummethylation.hg19_2.2.0_src_all.tar.gz"
@@ -17,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
