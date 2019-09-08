@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/SomaticCancerAlterations_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/SomaticCancerAlterations_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-somaticcanceralterations/bioconductor-somaticcanceralterations_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-somaticcanceralterations/bioconductor-somaticcanceralterations_1.20.0_src_all.tar.gz"
 )
 MD5="aaf2b8c5ef006b545d1c383fefa35dca"
 

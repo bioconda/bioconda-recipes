@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Ptroglodytes.UCSC.panTro5.refGene_3.4.6.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Ptroglodytes.UCSC.panTro5.refGene_3.4.6.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.ptroglodytes.ucsc.pantro5.refgene/bioconductor-txdb.ptroglodytes.ucsc.pantro5.refgene_3.4.6_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.ptroglodytes.ucsc.pantro5.refgene/bioconductor-txdb.ptroglodytes.ucsc.pantro5.refgene_3.4.6_src_all.tar.gz"
 )
 MD5="7a56692007154b6a83b70a4c6e5a9ebb"
 

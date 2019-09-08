@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/flowWorkspaceData_2.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/flowWorkspaceData_2.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-flowworkspacedata/bioconductor-flowworkspacedata_2.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowworkspacedata/bioconductor-flowworkspacedata_2.20.0_src_all.tar.gz"
 )
 MD5="c729e940217ce7298e58ddb4b654b85a"
 
