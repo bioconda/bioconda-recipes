@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="TxDb.Mmusculus.UCSC.mm10.knownGene_3.4.4.tar.gz"
+FN="TxDb.Mmusculus.UCSC.mm10.knownGene_3.4.7.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/TxDb.Mmusculus.UCSC.mm10.knownGene_3.4.4.tar.gz"
-  "https://bioarchive.galaxyproject.org/TxDb.Mmusculus.UCSC.mm10.knownGene_3.4.4.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene_3.4.4_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Mmusculus.UCSC.mm10.knownGene_3.4.7.tar.gz"
+  "https://bioarchive.galaxyproject.org/TxDb.Mmusculus.UCSC.mm10.knownGene_3.4.7.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene_3.4.7_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene_3.4.7_src_all.tar.gz"
 )
-MD5="48c7efbd3a3004a0760b56b4858cc6c7"
+MD5="48ca12361578a95864fc4c59524b61e9"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

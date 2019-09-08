@@ -1,5 +1,5 @@
 {% set name = "tobias" %}
-{% set version = "0.3.0" %}
+{% set version = "0.8.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,24 +7,25 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 7c7de1efc97352b6fb7bc21a692c901dc7a8ab270a850445577ae1aa4155d0fc
+  sha256: 27f3d51bd7e5f75323450139a0132fc512bf5a4616afb23ce8f2d53345445aaa
 
 build:
   number: 0
   skip: True # [py27]
-  skip: True # [osx]
 
 requirements:
+  build:
+    - {{ compiler('c') }}
   host:
-    - python >=3
+    - python
     - setuptools
     - cython
     - numpy
   run:
-    - python >=3
-    - numpy
+    - python
+    - {{ pin_compatible('numpy') }}
     - scipy
-    - pysam
+    - pysam >=0.15.3  #This is only due to pinning issues with earlier builds
     - matplotlib >=2
     - scikit-learn
     - pandas
@@ -33,6 +34,7 @@ requirements:
     - pyBigWig
     - moods
     - pybedtools
+    - adjusttext
 
 test:
   commands:
@@ -42,10 +44,12 @@ about:
   home: https://github.molgen.mpg.de/loosolab/TOBIAS
   doc_url: https://github.molgen.mpg.de/loosolab/TOBIAS/wiki
   license: MIT
-  summary: |
-    TOBIAS (Transcription factor Occupancy prediction By Investigation of ATAC-seq Signal) is a collection of command-line 
-    bioinformatics tools for performing footprinting analysis on ATAC-seq data. 
+  summary: Transcription factor Occupancy prediction By Investigation of ATAC-seq Signal 
+  description: |
+    TOBIAS (Transcription factor Occupancy prediction By Investigation of ATAC-seq Signal) is a collection
+    of command-line bioinformatics tools for performing footprinting analysis on ATAC-seq data. 
 
 extra:
   recipe-maintainers:
     - msbentsen
+    - jenzopr

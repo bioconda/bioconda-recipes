@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="illuminaMousev1.db_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/illuminaMousev1.db_1.26.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/illuminaMousev1.db_1.26.0.tar.gz"
   "https://bioarchive.galaxyproject.org/illuminaMousev1.db_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-illuminamousev1.db/bioconductor-illuminamousev1.db_1.26.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminamousev1.db/bioconductor-illuminamousev1.db_1.26.0_src_all.tar.gz"
 )
 MD5="13818c3b9acabe75550492bbe638fc05"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
