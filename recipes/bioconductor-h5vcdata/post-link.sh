@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="h5vcData_2.2.0.tar.gz"
+FN="h5vcData_2.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/h5vcData_2.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/h5vcData_2.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-h5vcdata/bioconductor-h5vcdata_2.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/h5vcData_2.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/h5vcData_2.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-h5vcdata/bioconductor-h5vcdata_2.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-h5vcdata/bioconductor-h5vcdata_2.4.0_src_all.tar.gz"
 )
-MD5="dafde62ac2fd221e41398ba6b3d6ccc2"
+MD5="cd3b929b2cde6716aa26ffd790f350da"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

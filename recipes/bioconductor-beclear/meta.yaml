@@ -1,6 +1,6 @@
-{% set version = "1.14.0" %}
+{% set version = "2.0.0" %}
 {% set name = "BEclear" %}
-{% set bioc = "3.8" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,36 +10,42 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: f7d173d8b8e409c822746bced7049a1e
+  md5: 92515d8f34e66403c62df8b192d0dbdf
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: testthat
+# Suggests: testthat, BiocStyle, knitr, rmarkdown, pander
+# SystemRequirements: C++11
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.16.0,<1.17.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
     - r-base
     - 'r-data.table >=1.11.8'
     - r-futile.logger
     - r-matrix
+    - r-rcpp
     - r-rdpack
   run:
-    - 'bioconductor-biocparallel >=1.16.0,<1.17.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
     - r-base
     - 'r-data.table >=1.11.8'
     - r-futile.logger
     - r-matrix
+    - r-rcpp
     - r-rdpack
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Provides some functions to detect and correct for batch effects in DNA methylation data. The core function is based on latent factor models and can also be used to predict missing values in any other matrix containing real numbers.'
+  license: GPL-3
+  summary: 'Provides functions to detect and correct for batch effects in DNA methylation data. The core function is based on latent factor models and can also be used to predict missing values in any other matrix containing real numbers.'
 extra:
   identifiers:
     - biotools:beclear

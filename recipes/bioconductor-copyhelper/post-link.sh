@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="CopyhelpeR_1.14.0.tar.gz"
+FN="CopyhelpeR_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/CopyhelpeR_1.14.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/CopyhelpeR_1.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-copyhelper/bioconductor-copyhelper_1.14.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/CopyhelpeR_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/CopyhelpeR_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-copyhelper/bioconductor-copyhelper_1.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-copyhelper/bioconductor-copyhelper_1.16.0_src_all.tar.gz"
 )
-MD5="d1141ae0fe9aa075e083042ededcafce"
+MD5="d2c50c7ac853e6f631111da79fe7bc03"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
