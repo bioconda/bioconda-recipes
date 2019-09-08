@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/shinyMethylData_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/shinyMethylData_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-shinymethyldata/bioconductor-shinymethyldata_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-shinymethyldata/bioconductor-shinymethyldata_1.4.0_src_all.tar.gz"
 )
 MD5="f646ba21155e7392c9b00814e56e6967"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RTCGA.CNV_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RTCGA.CNV_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rtcga.cnv/bioconductor-rtcga.cnv_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.cnv/bioconductor-rtcga.cnv_1.12.0_src_all.tar.gz"
 )
 MD5="45de80778e2b1ff9334485bf4b86d268"
 

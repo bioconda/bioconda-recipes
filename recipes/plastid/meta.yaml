@@ -11,7 +11,11 @@ source:
   patches:
     - 0001-Simplify-get_short_name-regex.patch # Patch submitted upstream https://github.com/joshuagryphon/plastid/pull/30
 build:
-  number: 4
+  number: 5
+
+extra:
+  skip-lints:
+    - deprecated_numpy_spec  # Later numpy causes issue: https://github.com/joshuagryphon/plastid/issues/18, remove skip-lint when fix released
 
 requirements:
   build:
@@ -31,8 +35,8 @@ requirements:
     - zlib
   run:
     - python
-    - {{ pin_compatible('numpy') }}
-    - {{ pin_compatible('pysam') }}
+    - {{ pin_compatible('numpy', max_pin='x.x') }} # Later numpy causes issue: https://github.com/joshuagryphon/plastid/issues/18, remove max_pin when fix released
+    - {{ pin_compatible('pysam', max_pin='x.x.x') }}
     - termcolor
     - scipy >=0.15.1
     - pandas >=0.17.0
@@ -59,6 +63,8 @@ test:
     - reformat_transcripts -h
     - findjuncs -h
     - slidejuncs -h
+    # Later numpy causes issue: https://github.com/joshuagryphon/plastid/issues/18, remove this test when fix released
+    - python -c "exec(\"import numpy\ncounts = numpy.array([1,2,3])\ncounts.reshape((len(counts)/3,3))\")"
 
 about:
   home: http://plastid.readthedocs.io/en/latest/
