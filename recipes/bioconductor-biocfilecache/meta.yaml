@@ -1,24 +1,27 @@
-{% set version = "1.4.0" %}
+{% set version = "1.8.0" %}
 {% set name = "BiocFileCache" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 0e8d1f6571795b67d68defdd5501a4983f36c341ee1978c26f8b66b0858aff74
+  md5: e362534e2cd232efbe27190cbd15fbb9
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: testthat, knitr, BiocStyle, rmarkdown, rtracklayer
 requirements:
   host:
     - r-base
+    - r-curl
     - r-dbi
     - 'r-dbplyr >=1.0.0'
     - r-dplyr
@@ -27,6 +30,7 @@ requirements:
     - r-rsqlite
   run:
     - r-base
+    - r-curl
     - r-dbi
     - 'r-dbplyr >=1.0.0'
     - r-dplyr
@@ -37,8 +41,12 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'This package creates a persistent on-disk cache of files that the user can add, update, and retrieve. It is useful for managing resources (such as custom Txdb objects) that are costly or difficult to create, web resources, and data files used across sessions.'
-
+extra:
+  parent_recipe:
+    name: bioconductor-biocfilecache
+    path: recipes/bioconductor-biocfilecache
+    version: 1.4.0
 

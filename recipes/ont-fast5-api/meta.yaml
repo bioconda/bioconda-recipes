@@ -1,38 +1,44 @@
+{% set version = "1.4.7" %}
+
 package:
-  name: ont-fast5-api
-  version: "1.0.1"
+  name: "ont-fast5-api"
+  version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/e0/06/e824a888777a4cba9feb83f37fd7e9aa8a1f78e5ff9e1700e6e48fd05974/ont-fast5-api-1.0.1.tar.gz
-  sha256: f8bf15a4870c843dbedaacb2bb801005518d2c7c9942fef72cbda43dd078ddf9
+  url: https://pypi.io/packages/source/o/ont-fast5-api/ont-fast5-api-{{ version }}.tar.gz
+  sha256: 02d47386b8264761ba0c34b0e06fa1afa59d6bf09ba9e2e14f19424fdcad00b5
 
 build:
   noarch: python
-  number: 1
+  number: 0
+  entry_points:
+    - multi_to_single_fast5=ont_fast5_api.conversion_tools.multi_to_single_fast5:main
+    - single_to_multi_fast5=ont_fast5_api.conversion_tools.single_to_multi_fast5:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
   host:
+    - pip
     - python
-    - setuptools
-    - h5py
-    - numpy >=1.8.1
-    - progressbar33
-
   run:
-    - python
-    - h5py
+    - h5py >=2.2.1
     - numpy >=1.8.1
-    - progressbar33
+    - progressbar33 >=2.3.1
+    - python
+    - six >=1.9
 
 test:
   imports:
     - ont_fast5_api
     - ont_fast5_api.analysis_tools
+    - ont_fast5_api.conversion_tools
   commands:
-    - multi_to_single_fast5 -h
+    - multi_to_single_fast5 --help
+    - single_to_multi_fast5 --help
 
 about:
   home: https://github.com/nanoporetech/ont_fast5_api
-  license: Mozilla Public License 2.0 (MPL 2.0)
-  summary: 'Oxford Nanopore Technologies fast5 API software'
+  license: Mozilla Public 2.0 (MPL 2.0)
   license_family: OTHER
+  license_file: LICENSE.md
+  summary: Oxford Nanopore Technologies fast5 API software
