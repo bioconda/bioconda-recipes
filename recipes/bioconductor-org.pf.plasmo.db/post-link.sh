@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/org.Pf.plasmo.db_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/org.Pf.plasmo.db_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-org.pf.plasmo.db/bioconductor-org.pf.plasmo.db_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-org.pf.plasmo.db/bioconductor-org.pf.plasmo.db_3.8.2_src_all.tar.gz"
 )
 MD5="5ae4ea5101f16c79f5b7ad6b8717a5d0"
 

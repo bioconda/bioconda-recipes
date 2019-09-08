@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/healthyFlowData_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/healthyFlowData_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-healthyflowdata/bioconductor-healthyflowdata_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-healthyflowdata/bioconductor-healthyflowdata_1.22.0_src_all.tar.gz"
 )
 MD5="e68c9638bbe2a477a0d8cf2b99d7fd3c"
 

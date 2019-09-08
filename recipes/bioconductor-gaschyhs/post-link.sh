@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/gaschYHS_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/gaschYHS_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-gaschyhs/bioconductor-gaschyhs_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-gaschyhs/bioconductor-gaschyhs_1.22.0_src_all.tar.gz"
 )
 MD5="640ea3dc1bccf57861211b0f6395ec1b"
 

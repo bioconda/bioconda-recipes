@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/brgedata_1.6.0.tar.gz"
   "https://bioarchive.galaxyproject.org/brgedata_1.6.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-brgedata/bioconductor-brgedata_1.6.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-brgedata/bioconductor-brgedata_1.6.0_src_all.tar.gz"
 )
 MD5="cb1cdff76c21aabfa29e0004360532d8"
 

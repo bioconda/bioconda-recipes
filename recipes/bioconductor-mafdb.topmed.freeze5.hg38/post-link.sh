@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MafDb.TOPMed.freeze5.hg38_3.9.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MafDb.TOPMed.freeze5.hg38_3.9.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mafdb.topmed.freeze5.hg38/bioconductor-mafdb.topmed.freeze5.hg38_3.9.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.topmed.freeze5.hg38/bioconductor-mafdb.topmed.freeze5.hg38_3.9.0_src_all.tar.gz"
 )
 MD5="b7522cfd7c3cd5266a0b7762ef5ba157"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/fibroEset_1.26.0.tar.gz"
   "https://bioarchive.galaxyproject.org/fibroEset_1.26.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-fibroeset/bioconductor-fibroeset_1.26.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-fibroeset/bioconductor-fibroeset_1.26.0_src_all.tar.gz"
 )
 MD5="cb7df36fe536a6bdbefeddf2086ec477"
 
