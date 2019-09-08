@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/microRNAome_1.6.0.tar.gz"
   "https://bioarchive.galaxyproject.org/microRNAome_1.6.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-micrornaome/bioconductor-micrornaome_1.6.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-micrornaome/bioconductor-micrornaome_1.6.0_src_all.tar.gz"
 )
 MD5="ac73eb0ae684ab92a99aaf4618878bcc"
 

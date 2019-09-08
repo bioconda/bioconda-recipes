@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/IlluminaDataTestFiles_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/IlluminaDataTestFiles_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminadatatestfiles/bioconductor-illuminadatatestfiles_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-illuminadatatestfiles/bioconductor-illuminadatatestfiles_1.22.0_src_all.tar.gz"
 )
 MD5="546621b97e6be804d7e9db2262d4469e"
 

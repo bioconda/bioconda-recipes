@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/HD2013SGI_1.24.0.tar.gz"
   "https://bioarchive.galaxyproject.org/HD2013SGI_1.24.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hd2013sgi/bioconductor-hd2013sgi_1.24.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hd2013sgi/bioconductor-hd2013sgi_1.24.0_src_all.tar.gz"
 )
 MD5="bc5df4cfc33cf00def4c05aa6f6d78c9"
 

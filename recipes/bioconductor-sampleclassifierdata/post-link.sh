@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/sampleClassifierData_1.8.0.tar.gz"
   "https://bioarchive.galaxyproject.org/sampleClassifierData_1.8.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-sampleclassifierdata/bioconductor-sampleclassifierdata_1.8.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-sampleclassifierdata/bioconductor-sampleclassifierdata_1.8.0_src_all.tar.gz"
 )
 MD5="6fcc9c1340d095ffb07ab865540dbe72"
 

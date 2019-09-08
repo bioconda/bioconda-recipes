@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/MAQCsubsetILM_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MAQCsubsetILM_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-maqcsubsetilm/bioconductor-maqcsubsetilm_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-maqcsubsetilm/bioconductor-maqcsubsetilm_1.22.0_src_all.tar.gz"
 )
 MD5="29ec94614e117e09ca659d61b071618b"
 

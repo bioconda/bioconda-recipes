@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/JctSeqData_1.14.0.tar.gz"
   "https://bioarchive.galaxyproject.org/JctSeqData_1.14.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-jctseqdata/bioconductor-jctseqdata_1.14.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-jctseqdata/bioconductor-jctseqdata_1.14.0_src_all.tar.gz"
 )
 MD5="26cbe5468815dbc5bb9d0e86c90cb88d"
 

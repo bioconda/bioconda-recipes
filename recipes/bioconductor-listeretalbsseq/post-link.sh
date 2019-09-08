@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ListerEtAlBSseq_1.16.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ListerEtAlBSseq_1.16.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-listeretalbsseq/bioconductor-listeretalbsseq_1.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-listeretalbsseq/bioconductor-listeretalbsseq_1.16.0_src_all.tar.gz"
 )
 MD5="65a04e46b826417c971c461fa1599ba2"
 
