@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="CellMapperData_1.8.0.tar.gz"
+FN="CellMapperData_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/CellMapperData_1.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/CellMapperData_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-cellmapperdata/bioconductor-cellmapperdata_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/CellMapperData_1.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/CellMapperData_1.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cellmapperdata/bioconductor-cellmapperdata_1.10.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cellmapperdata/bioconductor-cellmapperdata_1.10.0_src_all.tar.gz"
 )
-MD5="ac7ff311f02953168d5cb3f829fd1e1c"
+MD5="ad6ececf308dc29a5ebc1e56a6bf7632"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

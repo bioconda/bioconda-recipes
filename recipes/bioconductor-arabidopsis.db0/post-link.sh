@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="arabidopsis.db0_3.7.1.tar.gz"
+FN="arabidopsis.db0_3.8.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/arabidopsis.db0_3.7.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/arabidopsis.db0_3.7.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-arabidopsis.db0/bioconductor-arabidopsis.db0_3.7.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/arabidopsis.db0_3.8.2.tar.gz"
+  "https://bioarchive.galaxyproject.org/arabidopsis.db0_3.8.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-arabidopsis.db0/bioconductor-arabidopsis.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-arabidopsis.db0/bioconductor-arabidopsis.db0_3.8.2_src_all.tar.gz"
 )
-MD5="1366b9a8107e13d674be15d742537f2a"
+MD5="8a9e7a715dee82af3056db3a41416049"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

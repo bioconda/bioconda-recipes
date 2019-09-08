@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="hgug4112a.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/hgug4112a.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hgug4112a.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/hgug4112a.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hgug4112a.db/bioconductor-hgug4112a.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgug4112a.db/bioconductor-hgug4112a.db_3.2.3_src_all.tar.gz"
 )
 MD5="67ecf8c887e2ebe1941cc51d0f5fb468"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
