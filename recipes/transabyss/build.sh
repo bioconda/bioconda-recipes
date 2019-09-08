@@ -7,7 +7,6 @@ mkdir -p $PREFIX/bin
 
 chmod 777 bin/*
 cp bin/* $PREFIX/bin
-cp -rf configs $PREFIX/
 
 mkdir -p $TOPDIR/scripts
 mv transabyss $TOPDIR/scripts/
