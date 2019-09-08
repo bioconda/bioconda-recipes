@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/NestLink_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/NestLink_1.0.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-nestlink/bioconductor-nestlink_1.0.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-nestlink/bioconductor-nestlink_1.0.0_src_all.tar.gz"
 )
 MD5="f71e0add07a81dd57fb97103af33762f"
 
