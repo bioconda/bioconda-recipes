@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/SpikeInSubset_1.24.0.tar.gz"
   "https://bioarchive.galaxyproject.org/SpikeInSubset_1.24.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-spikeinsubset/bioconductor-spikeinsubset_1.24.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-spikeinsubset/bioconductor-spikeinsubset_1.24.0_src_all.tar.gz"
 )
 MD5="5b7cc17fe60a8c139f555c9ddd25eada"
 

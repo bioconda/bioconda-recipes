@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/seq2pathway.data_1.16.0.tar.gz"
   "https://bioarchive.galaxyproject.org/seq2pathway.data_1.16.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-seq2pathway.data/bioconductor-seq2pathway.data_1.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-seq2pathway.data/bioconductor-seq2pathway.data_1.16.0_src_all.tar.gz"
 )
 MD5="a41f1f988fee568e2437562bfca8703c"
 

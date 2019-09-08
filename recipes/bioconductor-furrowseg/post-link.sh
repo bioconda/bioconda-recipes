@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/furrowSeg_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/furrowSeg_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-furrowseg/bioconductor-furrowseg_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-furrowseg/bioconductor-furrowseg_1.12.0_src_all.tar.gz"
 )
 MD5="ce4d21cb772147f45976e3e47612cfb0"
 

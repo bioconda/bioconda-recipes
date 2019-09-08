@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/CLLmethylation_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/CLLmethylation_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-cllmethylation/bioconductor-cllmethylation_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cllmethylation/bioconductor-cllmethylation_1.4.0_src_all.tar.gz"
 )
 MD5="2b2496c6f9a26e10a55c87b5a1087859"
 

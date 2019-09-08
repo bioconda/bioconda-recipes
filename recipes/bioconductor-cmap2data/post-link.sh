@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/cMap2data_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/cMap2data_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-cmap2data/bioconductor-cmap2data_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cmap2data/bioconductor-cmap2data_1.20.0_src_all.tar.gz"
 )
 MD5="5a816640a2b0fbe93e9398b460320ed7"
 
