@@ -11,6 +11,7 @@ sed -i.bak 's/pynacl==/pynacl>=/' setup.py
 sed -i.bak 's/docker==/docker>=/' setup.py
 sed -i.bak 's/galaxy-lib==/galaxy-lib>=/' setup.py
 sed -i.bak 's/requests==/requests>=/' setup.py
+sed -i.bak 's/pathlib==/pathlib>=/' setup.py
 
 # For non-releases only: Avoid needing git/.git for version prep
 #sed -i.bak 's/return _version()/return distVersion()/' version_template.py
