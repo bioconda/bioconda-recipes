@@ -12,7 +12,7 @@ set -u
 source .circleci/common.sh
 
 # Set path
-echo "export PATH=$WORKSPACE/miniconda/bin:$PATH" >> $BASH_ENV
+echo "export PATH=\"$WORKSPACE/miniconda/bin:$PATH\"" >> $BASH_ENV
 source $BASH_ENV
 
 # Make sure the CircleCI config is up to date.

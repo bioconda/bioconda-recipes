@@ -1,0 +1,47 @@
+{% set version = "0.10.0" %}
+
+package:
+  name: unifrac
+  version: {{ version }}
+
+source:
+  url: https://github.com/biocore/unifrac/archive/{{ version }}.tar.gz
+  sha256: 97507caa5536bf445ca712ec495a39c4c95db3388d3259be3270e0e15ceb5ce5
+
+build:
+  number: 1
+  skip: True # [py27]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+
+  host:
+    - python
+    - pip
+    - h5py 2.9.0
+    - cython >=0.28.3
+    - numpy >=1.12.1
+
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - {{ pin_compatible('h5py') }}
+    - biom-format
+    - scikit-bio >=0.5.1
+
+test:
+  imports:
+    - unifrac
+  commands:
+    - ssu --help
+    - faithpd --help
+    - python -m unittest unifrac.tests.test_methods
+    - python -m unittest unifrac.tests.test_api
+
+about:
+  home: https://github.com/biocore/unifrac
+  license: BSD-3-Clause
+  license_family: BSD
+  summary: 'Fast phylogenetic diversity calculations'
+
