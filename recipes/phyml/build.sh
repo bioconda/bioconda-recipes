@@ -3,6 +3,7 @@ set -x
 set +e
 
 # needed to fix version
+sed -i.bak "s/20190321/20190908/" configure.ac
 sh autogen.sh
 
 # PhyML builds different binaries depending on configure flags.
