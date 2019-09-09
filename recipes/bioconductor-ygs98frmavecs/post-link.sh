@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="ygs98frmavecs_1.3.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/ygs98frmavecs_1.3.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/ygs98frmavecs_1.3.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ygs98frmavecs_1.3.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ygs98frmavecs/bioconductor-ygs98frmavecs_1.3.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ygs98frmavecs/bioconductor-ygs98frmavecs_1.3.0_src_all.tar.gz"
 )
 MD5="e78c8447eb381b91dafb2f9688da39dc"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

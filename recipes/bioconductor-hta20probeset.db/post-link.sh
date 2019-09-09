@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="hta20probeset.db_8.7.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/hta20probeset.db_8.7.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hta20probeset.db_8.7.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hta20probeset.db_8.7.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hta20probeset.db/bioconductor-hta20probeset.db_8.7.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hta20probeset.db/bioconductor-hta20probeset.db_8.7.0_src_all.tar.gz"
 )
 MD5="d2123b0ecd324626b06a920f947a114e"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

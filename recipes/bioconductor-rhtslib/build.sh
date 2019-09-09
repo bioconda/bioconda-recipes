@@ -8,5 +8,7 @@ CXX=$CXX
 CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
-export C_INCLUDE_PATH="${PREFIX}/include"
+pushd src/htslib-1.7
+make CC="${CC}" CFLAGS="${CFLAGS}" LDFLAGS="-L${PREFIX}/lib"
+popd
 $R CMD INSTALL --build .
