@@ -4,6 +4,7 @@
 
 # call installer
 chmod u+x MEGAN_Community_unix_6_12_3.sh
+sed -i "s%# INSTALL4J_JAVA_HOME_OVERRIDE=%INSTALL4J_JAVA_HOME_OVERRIDE=$PREFIX/bin%" MEGAN_Community_unix_6_12_3.sh
 MEGAN="$PREFIX/opt/$PKG_NAME-$PKG_VERSION"
 ./MEGAN_Community_unix_6_12_3.sh -q -dir "$MEGAN"
 # link to bin/ and fix paths
