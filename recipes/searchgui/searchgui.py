@@ -13,7 +13,8 @@ import shutil
 from os import access
 from os import getenv
 from os import X_OK
-jar_file = 'SearchGUI-3.3.6.jar'
+
+jar_file = 'SearchGUI-4.0.1-SNAPSHOT.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
@@ -94,7 +95,6 @@ def main():
     jar_path = os.path.join(jar_dir, jar_file)
 
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args
-
     sys.exit(subprocess.call(java_args))
 
 

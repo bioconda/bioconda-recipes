@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu -o pipefail
 
-MODEL_VERSION="0.7.0"
+MODEL_VERSION="0.8.0"
 
 GSUTIL=$PREFIX/bin/gsutil
 for MODEL_TYPE in wgs wes

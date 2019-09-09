@@ -1,23 +1,26 @@
-{% set version = "2.6.0" %}
+{% set version = "2.10.0" %}
 {% set name = "ENCODExplorer" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: f0da70176e0eede01132fbe727e60d0640b4c40c59618a0ffcb9df0377521d24
+  md5: cfc6d5a72878ec794ac0be88938cedfa
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit,BiocGenerics,knitr, curl, httr
 requirements:
   host:
+    - 'bioconductor-annotationhub >=2.16.0,<2.17.0'
     - r-base
     - r-data.table
     - r-dplyr
@@ -30,6 +33,7 @@ requirements:
     - r-stringr
     - r-tidyr
   run:
+    - 'bioconductor-annotationhub >=2.16.0,<2.17.0'
     - r-base
     - r-data.table
     - r-dplyr
@@ -45,10 +49,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'This package allows user to quickly access ENCODE project files metadata and give access to helper functions to query the ENCODE rest api, download ENCODE datasets and save the database in SQLite format.'
 extra:
   identifiers:
     - biotools:encodexplorer
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-encodexplorer
+    path: recipes/bioconductor-encodexplorer
+    version: 2.6.0
+
