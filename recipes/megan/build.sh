@@ -1,5 +1,7 @@
 #!/bin/bash
 
+>&2 which java
+
 # call installer
 chmod u+x MEGAN_Community_unix_6_12_3.sh
 MEGAN="$PREFIX/opt/$PKG_NAME-$PKG_VERSION"
