@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="soybeancdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/soybeancdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/soybeancdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/soybeancdf_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-soybeancdf/bioconductor-soybeancdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-soybeancdf/bioconductor-soybeancdf_2.18.0_src_all.tar.gz"
 )
 MD5="a18e0ba5dbcf2291bdec91091dc528e6"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

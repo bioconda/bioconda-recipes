@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="TxDb.Mmulatta.UCSC.rheMac3.refGene_3.4.4.tar.gz"
+FN="TxDb.Mmulatta.UCSC.rheMac3.refGene_3.4.6.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/TxDb.Mmulatta.UCSC.rheMac3.refGene_3.4.4.tar.gz"
-  "https://bioarchive.galaxyproject.org/TxDb.Mmulatta.UCSC.rheMac3.refGene_3.4.4.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.mmulatta.ucsc.rhemac3.refgene/bioconductor-txdb.mmulatta.ucsc.rhemac3.refgene_3.4.4_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Mmulatta.UCSC.rheMac3.refGene_3.4.6.tar.gz"
+  "https://bioarchive.galaxyproject.org/TxDb.Mmulatta.UCSC.rheMac3.refGene_3.4.6.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.mmulatta.ucsc.rhemac3.refgene/bioconductor-txdb.mmulatta.ucsc.rhemac3.refgene_3.4.6_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.mmulatta.ucsc.rhemac3.refgene/bioconductor-txdb.mmulatta.ucsc.rhemac3.refgene_3.4.6_src_all.tar.gz"
 )
-MD5="f395dba94db765148ac814a1330f7ade"
+MD5="2983fa866d080962334f200709809bce"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
