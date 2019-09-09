@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/PasillaTranscriptExpr_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/PasillaTranscriptExpr_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pasillatranscriptexpr/bioconductor-pasillatranscriptexpr_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pasillatranscriptexpr/bioconductor-pasillatranscriptexpr_1.12.0_src_all.tar.gz"
 )
 MD5="faceed94f7269a49ff908400b7aab192"
 

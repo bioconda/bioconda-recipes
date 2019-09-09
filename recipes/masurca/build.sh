@@ -10,5 +10,6 @@ export LDFLAGS="-L${PREFIX}/lib"
 export CPATH=${PREFIX}/include
 # C++17 breaks the Celera Assembler build, so force C++11 by adding the flag last
 export CXXFLAGS="$CXXFLAGS -std=c++11"
+sed -i.bak "s#-lz#-L${PREFIX}/lib -lz#g" Flye/lib/minimap2/Makefile
 
 ./install.sh

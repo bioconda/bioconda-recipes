@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/breakpointRdata_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/breakpointRdata_1.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-breakpointrdata/bioconductor-breakpointrdata_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-breakpointrdata/bioconductor-breakpointrdata_1.2.0_src_all.tar.gz"
 )
 MD5="5bb31f8819f87705c211d99636af87eb"
 
