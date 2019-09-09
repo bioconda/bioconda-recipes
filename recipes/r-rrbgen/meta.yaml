@@ -1,0 +1,46 @@
+{% set version = "0.0.6" %}
+{% set sha256 = "2cfd00be202a164212949e290459736359e80a064f2992d59f57501629f218ee" %}
+
+package:
+  name: r-rrbgen
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/rwdavies/rrbgen/releases/download/{{ version }}/rrbgen_{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 2
+  script: '$R CMD INSTALL --build --install-tests .'
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+  host:
+    - r-base
+    - r-rcpp >=0.12.18
+    - r-rcpparmadillo >=0.8.600.0.0
+    - r-testthat >=2.0.0    
+  run:
+    - r-rcpp >=0.12.18
+    - r-rcpparmadillo >=0.8.600.0.0
+    - r-base
+    - r-testthat >=2.0.0
+    
+test:
+  commands:
+    - $R -e "library('rrbgen')"  
+    - $R -e "testthat::test_package('rrbgen', stop_on_failure = TRUE, stop_on_warning = TRUE)"
+
+about:
+  home: https://github.com/rwdavies/rrbgen
+  license: GPL3
+  license_family: GPL3
+  license_file: LICENSE
+  summary: A lightweight limited functionality R bgen read/write library
+  doc_url: https://github.com/rwdavies/rrbgen
+  dev_url: https://github.com/rwdavies/rrbgen
+
+extra:
+  recipe-maintainers:
+    - rwdavies

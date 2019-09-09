@@ -1,14 +1,18 @@
 package:
   name: bcbio-nextgen-vm
-  version: '0.1.0a'
+  version: '0.1.6'
 
 build:
-  number: 131
-  skip: True # [not py27]
+  number: 1
+  # Currently hitting conda errors on OSX
+  # ERROR:conda.core.link:An error occurred while installing package
+  # FileNotFoundError(2, "No such file or directory: '_placehold_pl/bin/python3.7'
+  # https://circleci.com/gh/bioconda/bioconda-recipes/50765
+  skip: true  # [osx]
 
 source:
-  url: https://github.com/bcbio/bcbio-nextgen-vm/archive/d61850b.tar.gz
-  sha256: 053b0843a38ad98b22ab643313bef9c117aaac1aba34cb2f97dc7e8b81a1705d
+  url: https://github.com/bcbio/bcbio-nextgen-vm/archive/8b46793.tar.gz
+  sha256: 94fb816019d8f1d3fb713f824b0f0c49654724bf68fb7d909d969e8402112fb3
 
 requirements:
   host:
@@ -17,25 +21,33 @@ requirements:
 
   run:
     - python
-    - bcbio-nextgen >1.1.0
+    - six
+    - bcbio-nextgen >1.1.4
     - python-dateutil >=2.5.0
     - ipyparallel >=6.0.2
-    - pysam >=0.13.0
-    - arvados-cwl-runner >=1.0.20171211211613
-    - cromwell >=0.34
-    - pyhocon
-    - cwl2wdl
+    - pysam >=0.15.2
+    - boto3
+    # cwltool and schema salad dependencies for latest arvados
+    - cachecontrol ==0.11.7
+    - pathlib2 ==2.3.2
+    - cwltool
+    - arvados-cwl-runner >=1.3.1.20190301150258  # [linux64]
+    - cromwell >=0.36
     - ruamel.yaml >=0.13.0
-    - toil >=3.11.0
     - rabix-bunny >=1.0.4
     - nodejs
     - nose
-    - sevenbridges-python
+    - sbg-cwl-runner  # [py3k]
+    - sevenbridges-python >=0.17.5
     - synapseclient
-    - dxpy
-    - dx-cwl >=0.1.0a20180820
-    - six
-    - google-cloud-sdk
+    - dxpy  # [py2k]
+    - dx-cwl >=0.1.0a20180820  # [py2k]
+    - google-cloud-sdk  # [py2k]
+    # Toil needs updates to latest cwltool to be compatible with arvados-cwl-runner
+    # - toil >=3.11.0  # [py2k]
+    # Older dependencies no longer in active use
+    # - pyhocon
+    # - cwl2wdl
     # Deprecate elasticluster and deps to simplify install
     # - elasticluster
 

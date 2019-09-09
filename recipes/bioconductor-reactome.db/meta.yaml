@@ -1,35 +1,41 @@
-{% set version = "1.64.0" %}
+{% set version = "1.68.0" %}
 {% set name = "reactome.db" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 2da0eb17b5fce58cf4ee97d414f0c03b22f8b9487f7e31b4e5a02b9479898ff3
+  md5: 281e47eea8f6bf72502843ad6a48dab0
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RSQLite
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.42.1,<1.44.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.42.1,<1.44.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: 'CC BY 4.0'
   summary: 'A set of annotation maps for reactome assembled using data from reactome'
-
+extra:
+  parent_recipe:
+    name: bioconductor-reactome.db
+    path: recipes/bioconductor-reactome.db
+    version: 1.64.0
 
