@@ -20,4 +20,4 @@ sed -i.bak 's/sphinx==/sphinx>=/' setup.py
 #sed -i.bak 's/def currentCommit()/def _currentCommit()/' version_template.py
 #sed -i.bak 's/def dirty()/def _dirty()/' version_template.py
 
-$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+$PYTHON -m pip install . --no-deps --ignore-installed -vv
