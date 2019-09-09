@@ -1,0 +1,32 @@
+--- ncbi-vdb-2.9.6/setup/konfigure.perl	2019-03-18 17:57:05.000000000 +0100
++++ ncbi-vdb-2.9.6-patched/setup/konfigure.perl	2019-06-26 11:18:16.762478449 +0200
+@@ -325,7 +325,7 @@
+     $SHLX = 'so';
+     $EXEX = '';
+     $OSINC = 'unix';
+-    $TOOLS = 'gcc' unless ($TOOLS);
++    $TOOLS = $ENV{'CC'};
+ } elsif ($OSTYPE =~ /darwin/i) {
+     $LPFX = 'lib';
+     $OBJX = 'o';
+@@ -353,13 +353,14 @@
+ $CPP     = $OPT{CXX    } if ($OPT{CXX    });
+ $LDFLAGS = $OPT{LDFLAGS} if ($OPT{LDFLAGS});
+ 
+-if ($TOOLS =~ /gcc$/) {
+-    $CPP  = 'g++' unless ($CPP);
+-    $CC   = "$TOOLS -c";
++println "TOOLS = $TOOLS";
++if ($TOOLS =~ /cc$/) {
++    $CPP  = $ENV{'CPP'} unless ($CPP);
++    $CC   = $ENV{'CC'} . " -c";
+     $CP   = "$CPP -c";
+-    $AR   = 'ar rc';
+-    $ARX  = 'ar x';
+-    $ARLS = 'ar t';
++    $AR   = $ENV{'AR'};
++    $ARX  = "$AR x";
++    $ARLS = "$AR t";
+     $LD   = $TOOLS;
+     $LP   = $CPP;
+ 

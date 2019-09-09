@@ -1,0 +1,90 @@
+{% set name = "ymp" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 5e658389d29c9418c368476c24986f15484fd82eedd323ad4517ebc71af51d6f
+
+build:
+  number: 0
+  entry_points:
+    - ymp=ymp.cli:main
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
+
+requirements:
+  host:
+    - python >=3.6
+    - setuptools_scm >=3.2
+    - pytest-runner
+    - aiohttp
+    - click
+    - click-completion
+    - coloredlogs
+    - drmaa
+    - networkx >=2
+    - pandas >=0.20
+    - pip
+    - ruamel.yaml >0.15
+    - snakemake =5.4.*
+    - tqdm >=4.21.0
+    - xdg
+    - xlrd
+
+  run:
+    - python >=3.6
+    - aiohttp
+    - click
+    - click-completion
+    - coloredlogs
+    - drmaa
+    - networkx >=2
+    - pandas >=0.20
+    - ruamel.yaml >0.15
+    - snakemake =5.4.*
+    - tqdm >=4.21.0
+    - xdg
+    - xlrd
+    - conda
+
+test:
+  imports:
+    - ymp
+    - ymp.cli
+  commands:
+    - ymp --help
+    - ymp init demo
+    - ymp make -n toy.assemble_megahit.map_bbmap
+
+about:
+  home: https://ymp.readthedocs.io
+  dev_url: https://github.com/epruesse/ymp
+  doc_url: https://ymp.readthedocs.io
+  license: GNU General Public v3 or later (GPLv3+)
+  license_family: GPL3
+  license_file: LICENSE
+  summary: Create entire NGS pipelines with one command 
+  description: |
+    YMP allows composing complex NGS data analysis workflows from
+    conceptual building blocks ("stages") using a single command line
+    statement. Pre-tested conda environments are installed on-the fly,
+    reference databases downloaded as needed and requested workflows
+    executed using Snakemake.
+
+    With YMP, developing new pipelines or testing alternative
+    approaches using differnt tools or optimizing parameters becomes
+    easy. Results from previous results are reused where possible. The
+    collection of stages included with YMP is can be extended with
+    project specific YMP stage definitions or simple Snakefiles.
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true
+  recipe-maintainers:
+    - epruesse
