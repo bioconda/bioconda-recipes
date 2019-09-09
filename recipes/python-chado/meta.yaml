@@ -1,55 +1,76 @@
+{% set name = "python-chado" %}
+{% set version = "2.3.0" %}
+{% set sha256 = "49c8d577d610353d16446bc63b694dc1f94fa1aee19531935fa1b118f1ec63e3" %}
+
 package:
-  name: python-chado
-  version: "2.2.3"
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/b8/3c/88961886e414e1eb5f43c283e02ce2d598abebd63bcf61391851b7cf34fe/chado-2.2.3.tar.gz
-  sha256: 8b8aec89c4b14cd16793fa58c9634df9690ee0066d79a8ea6ff73d8e974b1a5d
+  url: https://pypi.io/packages/source/c/chado/chado-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  noarch: python
   number: 0
+  noarch: python
+  entry_points:
+    - chakin=chakin.cli:chakin
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
   host:
+    - bcbio-gff ==0.6.4
+    - biopython
+    - click
+    - future
+    - pip
+    - psycopg2
     - python
+    - pyyaml
     - setuptools
     - sqlalchemy
-    - psycopg2
-    - biopython
-    - bcbiogff >=0.6.4
     - wrapt
-    - click
-    - pyyaml
-
   run:
-    - python
-    - sqlalchemy
-    - psycopg2
+    - bcbio-gff ==0.6.4
     - biopython
-    - bcbiogff >=0.6.4
-    - wrapt
     - click
-    - pyyaml
     - future
+    - psycopg2
+    - python
+    - pyyaml
+    - setuptools
+    - sqlalchemy
+    - wrapt
 
 test:
   imports:
     - chado
     - chado.analysis
     - chado.export
+    - chado.expression
+    - chado.feature
     - chado.organism
+    - chado.phylogeny
     - chado.util
-
+    - chakin
+    - chakin.commands
+    - chakin.commands.analysis
+    - chakin.commands.export
+    - chakin.commands.expression
+    - chakin.commands.feature
+    - chakin.commands.organism
+    - chakin.commands.phylogeny
+    - chakin.commands.util
   commands:
-    - chakin --help > /dev/null
-    - chakin analysis --help > /dev/null
+    - chakin --help
+    - chakin analysis --help
 
 about:
   home: https://github.com/galaxy-genome-annotation/python-chado
-  license: MIT License
-  summary: 'Chado library'
+  license: MIT
   license_family: MIT
+  icense_file: '{{ environ["RECIPE_DIR"] }}/LICENSE.txt'
+  summary: "A Python library for interacting with Chado database."
 
 extra:
   container:

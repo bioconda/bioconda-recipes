@@ -1,32 +1,41 @@
-{% set version = "1.12.0" %}
+{% set version = "1.16.0" %}
 {% set name = "RnaSeqSampleSizeData" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/release/data/experiment/src/contrib/RnaSeqSampleSizeData_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 1ee146d3992f06e442aad427bc8c0fd8b10991c2763dbed1638094832c2b0fcb
+  md5: b5807095357790233a3b0901e093d4e2
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, knitr
 requirements:
   host:
-    - bioconductor-edgeR
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
     - r-base
   run:
-    - bioconductor-edgeR
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
     - r-base
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPLv2'
-  summary: 'RnaSeqSampleSizeData: Read counts and dispersion distribution from real data for sample size estimation of RNA-seq experiments'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'RnaSeqSampleSizeData package provides the read counts and dispersion distribution from real RNA-seq experiments. It can be used by RnaSeqSampleSize package to estimate sample size and power for RNA-seq experiment design.'
+extra:
+  parent_recipe:
+    name: bioconductor-rnaseqsamplesizedata
+    path: recipes/bioconductor-rnaseqsamplesizedata
+    version: 1.12.0
+
