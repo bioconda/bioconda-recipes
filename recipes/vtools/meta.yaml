@@ -1,0 +1,55 @@
+{% set name = "vtools" %}
+{% set version = "1.0.0" %}
+{% set pipname = "v-tools" %}
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ pipname[0] }}/{{ pipname }}/{{ pipname }}-{{ version }}.tar.gz
+  sha256: 93db5295b6395034b92958b32d9398798489fb5dc7cef909e547a381b57a6458
+
+build:
+  number: 0
+  entry_points:
+    - vtools-filter = vtools.cli:filter_cli
+    - vtools-stats = vtools.cli:stats_cli
+    - vtools-gcoverage = vtools.cli:gcoverage_cli
+    - vtools-evaluate = vtools.cli:evaluate_cli
+  script:  "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python >=3.6
+    - setuptools
+    - cython
+    - numpy
+    - cyvcf2
+    - click
+    - tqdm
+  run:
+    - python >=3.6
+    - setuptools
+    - cython
+    - numpy
+    - cyvcf2
+    - click
+    - tqdm
+
+test:
+  imports:
+    - vtools
+  commands:
+    - vtools-filter --help
+    - vtools-stats --help
+    - vtools-gcoverage --help
+    - vtools-evaluate --help
+
+about:
+  home: https://github.com/LUMC/vtools
+  license: MIT
+  license_family: MIT
+  summary: Various tools operating over VCF files. Uses cyvcf2 and cython under the hood for speed

@@ -1,8 +1,5 @@
 {% set version = '3.1.2' %}
 
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
-
 package:
   name: r-metama
   version: {{ version|replace("-", "_") }}
@@ -14,23 +11,17 @@ source:
   sha256: 01851d9632cdf1988d6a43ba44500e51477b9b25d5df1e1da488cd800df85ed6
 
 build:
-  merge_build_host: True  # [win]
-
-  number: 2
-
+  noarch: generic
+  number: 4
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
-  build:
-    - {{posix}}zip               # [win]
-
   host:
     - r-base
     - r-smvar
     - bioconductor-limma
-
   run:
     - r-base
     - r-smvar
@@ -38,9 +29,7 @@ requirements:
 
 test:
   commands:
-
-    - $R -e "library('metaMA')"           # [not win]
-    - "\"%R%\" -e \"library('metaMA')\""  # [win]
+    - $R -e "library('metaMA')"
 
 about:
   home: https://CRAN.R-project.org/package=metaMA
@@ -48,12 +37,3 @@ about:
   summary: Combines either p-values or modified effect sizes from different studies to find differentially
     expressed genes
   license_family: GPL
-extra:
-  recipe-maintainers:
-    - MathiasHaudgaard
-    - FrodePedersen
-    - ArneKr
-    - johanneskoester
-    - bgruening
-    - daler
-    - jdblischak

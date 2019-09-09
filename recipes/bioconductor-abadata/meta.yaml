@@ -1,33 +1,39 @@
-{% set version = "1.10.0" %}
+{% set version = "1.14.0" %}
 {% set name = "ABAData" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 9fa25de3474c152697a6092a2599d57572c5af84101d861c8737afa1ade46734
+  md5: 14527790b75fc139b5bbed7981c1a1ea
 build:
-  number: 0
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, knitr, ABAEnrichment
 requirements:
   host:
     - r-base
   run:
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Provides the data for the gene expression enrichment analysis conducted in the package ''ABAEnrichment''. The package includes three datasets which are derived from the Allen Brain Atlas: (1) Gene expression data from Human Brain (adults) averaged across donors, (2) Gene expression data from the Developing Human Brain pooled into five age categories and averaged across donors and (3) a developmental effect score based on the Developing Human Brain expression data. All datasets are restricted to protein coding genes.'
-
+extra:
+  parent_recipe:
+    name: bioconductor-abadata
+    path: recipes/bioconductor-abadata
+    version: 1.10.0
 
