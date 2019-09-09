@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="BSgenome.Mmulatta.UCSC.rheMac2.masked_1.3.99.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/BSgenome.Mmulatta.UCSC.rheMac2.masked_1.3.99.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Mmulatta.UCSC.rheMac2.masked_1.3.99.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Mmulatta.UCSC.rheMac2.masked_1.3.99.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmulatta.ucsc.rhemac2.masked/bioconductor-bsgenome.mmulatta.ucsc.rhemac2.masked_1.3.99_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mmulatta.ucsc.rhemac2.masked/bioconductor-bsgenome.mmulatta.ucsc.rhemac2.masked_1.3.99_src_all.tar.gz"
 )
 MD5="7602d86b68df7e4c8d336fede4090a62"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,17 +1,29 @@
-{% set version = '0.4.56' %}
+{% set version = '0.5.49' %}
+{% set name = "cellbrowser" %}
 
 package:
   name: ucsc-cell-browser
-  version: {{ version }}
+  version: "{{ version }}"
 
 source:
-  url: https://github.com/maximilianh/cellBrowser/archive/v{{ version }}.tar.gz
-  sha256: 9069b980506147433d8cf775ec623a9bc024ff4f9c0e599cecfacf307956cda4
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "923c64d7df31d70c426abfb863b092d14c3e503459cf85451373b0b2fd4c6f82"
 
 build:
   number: 0
+  entry_points:
+    - cbBuild = cellbrowser.cellbrowser:cbBuildCli
+    - cbScanpy = cellbrowser.cellbrowser:cbScanpyCli
+    - cbSeurat = cellbrowser.seurat:cbSeuratCli
+    - cbTool = cellbrowser.convert:cbToolCli
+    - cbUpgrade = cellbrowser.cellbrowser:cbUpgradeCli
+    - cbGuessGencode = cellbrowser.guessgenes:cbGuessGencodeCli
+    - cbMarkerAnnotate = cellbrowser.geneinfo:cbMarkerAnnotateCli
+    - cbImportScanpy = cellbrowser.convert:cbImportScanpyCli
+    - cbImportSeurat = cellbrowser.seurat:cbImportSeurat2Cli
+    - cbImportCellranger = cellbrowser.convert:cbCellrangerCli
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
 
 requirements:
     host:
@@ -23,6 +35,9 @@ requirements:
         - anndata
 
 test:
+    imports:
+        - RangeHTTPServer
+        - cellbrowser
     commands:
         - which cbBuild
         - which cbGuessGencode

@@ -21,7 +21,7 @@ function print_license_notice(){
     echo "  Due to license restrictions, this recipe cannot distribute "
     echo "  and install GATK directly. To fully install GATK, you must "
     echo "  download a licensed copy of GATK from the Broad Institute: "
-    echo "    https://www.broadinstitute.org/gatk/download/ "
+    echo "    https://software.broadinstitute.org/gatk/download/archive "
     echo "  and run (after installing this package):"
     echo "    gatk-register /path/to/GenomeAnalysisTK[-$PKG_VERSION.tar.bz2|.jar], "
     echo "   This will copy GATK into your conda environment."

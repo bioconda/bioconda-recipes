@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="yeastCC_1.22.0.tar.gz"
+FN="yeastCC_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/yeastCC_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/yeastCC_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-yeastcc/bioconductor-yeastcc_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/yeastCC_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/yeastCC_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yeastcc/bioconductor-yeastcc_1.24.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yeastcc/bioconductor-yeastcc_1.24.0_src_all.tar.gz"
 )
-MD5="5b31b8fadb3318846770cdd2f6b620a1"
+MD5="55504ef44f97f3cf418c6817f9884538"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

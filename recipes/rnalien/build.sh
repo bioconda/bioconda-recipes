@@ -1,14 +1,10 @@
 #!/bin/bash
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="-L${PREFIX}/lib"
-export CPPFLAGS="-I${PREFIX}/include"
+declare -a tools=("RNAlien" "RNAlienStatistics" "cmsearchToBed" "RNAcentralHTTPRequest" "RNAlienScan")
 
-stack setup
-stack update
-stack install --extra-include-dirs ${PREFIX}/include --local-bin-path ${PREFIX}/bin
-mv ${PREFIX}/bin/RNAlien ${PREFIX}/bin/RNAlien-bin
-echo -e "#!/bin/bash\nexport SYSTEM_CERTIFICATE_PATH=${PREFIX}/ssl/cacert.pem\n${PREFIX}/bin/RNAlien-bin \"\$@\"\n" > ${PREFIX}/bin/RNAlien
-chmod 755 ${PREFIX}/bin/RNAlien
-#cleanup
-rm -r .stack-work
+mkdir -p $PREFIX/bin
+for t in "${tools[@]}"
+do
+   mv $t ${PREFIX}/bin/${t}-bin
+   echo -e "#!/bin/bash\nexport SYSTEM_CERTIFICATE_PATH=${PREFIX}/ssl/cacert.pem\n${PREFIX}/bin/${t}-bin \"\$@\"\n" > ${PREFIX}/bin/${t}
+   chmod 755 ${PREFIX}/bin/${t}
+done
