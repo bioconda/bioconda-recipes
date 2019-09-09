@@ -5,7 +5,7 @@ rm -rf build
 mkdir build
 cd build
 cmake -DCMAKE_CXX_FLAGS="$CXXFLAGS -DUSE_NEW_CXX" ..
-make -j8
+make -j2
 
 mkdir -p $PREFIX/bin/
 
