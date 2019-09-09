@@ -10,6 +10,13 @@ source:
 build:
   number: 0
   noarch: python
+  entry_points:
+    - toil = toil.utils.toilMain:main
+    - _toil_worker = toil.worker:main
+    - cwltoil = toil.cwl.cwltoil:main [cwl]
+    - toil-cwl-runner = toil.cwl.cwltoil:main [cwl]
+    - toil-wdl-runner = toil.wdl.toilwdl:main
+    - _toil_mesos_executor = toil.batchSystems.mesos.executor:main [mesos]
 
 requirements:
   host:
@@ -66,10 +73,29 @@ requirements:
     - sphinx >=1.7.5
 
 test:
+  imports:
+    - toil
+    - toil.batchSystems
+    - toil.batchSystems.mesos
+    - toil.batchSystems.mesos.test
+    - toil.cwl
+    - toil.jobStores
+    - toil.jobStores.aws
+    - toil.lib
+    - toil.lib.encryption
+    - toil.provisioners
+    - toil.provisioners.aws
+    - toil.provisioners.azure
+    - toil.test
+    - toil.utils
+    - toil.wdl
   commands:
     - toil --help
-    - toil --version
+    - _toil_worker --help
     - cwltoil --help
+    - toil-cwl-runner --help
+    - toil-wdl-runner --help
+    - _toil_mesos_executor --help
 
 about:
   home: https://github.com/BD2KGenomics/toil
