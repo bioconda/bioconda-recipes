@@ -1,6 +1,5 @@
 #!/bin/bash 
 
-ant jar
 mauve_dir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p ${mauve_dir}
 cp Mauve.jar ${mauve_dir}/Mauve.jar
