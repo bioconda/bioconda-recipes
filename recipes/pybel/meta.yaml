@@ -1,59 +1,50 @@
+{% set name = "pybel" %}
+{% set version = "0.13.2" %}
+
 package:
-  name: pybel
-  version: "0.13.2"
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/89/db/4b061fcb7a14618c9598a9e75e5023dc7f1ebc7cb771c159730fb98e5f39/pybel-0.13.2.tar.gz
-  sha256: 469201a25e77ab2f1519bd36847ca47b061c57243a084e07ea6e69bf0ff1acd6
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "469201a25e77ab2f1519bd36847ca47b061c57243a084e07ea6e69bf0ff1acd6"
 
 build:
+  number: 0
+  noarch: python
   entry_points:
     - pybel = pybel.cli:main
-  number: 0
-  # tests fail on osx: https://travis-ci.org/bioconda/bioconda-recipes/jobs/235726973#L3656
-  # click needs to be patched in order to properly detect unicode in py3k
-  skip: true  # [osx or py3k]
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
   host:
-    - python
-    - setuptools
-    - requests
-    - ndex-python
-    - requests-file
-    - networkx
-    - pyparsing
-    - configparser  # [py27]
-    - py2neo
-    - click
-    - sqlalchemy
-    - onto2nx
+    - pip
+    - python >=3
   run:
-    - python
-    - requests
-    - ndex-python
-    - requests-file
-    - networkx
-    - pyparsing
-    - configparser  # [py27]
-    - py2neo
-    - click
+    - python >=3
+    - networkx >=2.1
     - sqlalchemy
-    - onto2nx
+    - click
+    - click-plugins
+    - bel-resources
+    - requests
+    - requests-file
+    - pyparsing
+    - tqdm
 
 test:
   # Python imports
   imports:
     - pybel
-    - pybel.ext
-    - pybel.manager
-    - pybel.parser
-    - pybel.parser.modifiers
   commands:
-    # click requires a unicode locale
-    - LANG=C.UTF-8 pybel --help
+    - pybel --help
 
 about:
   home: https://github.com/pybel/pybel
   license: Apache Software License
+  license_file: LICENSE
   summary: 'PyBEL is a Python package for parsing and handling biological networks encoded in the Biological Expression Language (BEL)'
+
+extra:
+  container:
+    extended-base: true
