@@ -5,6 +5,7 @@ if [ `uname` == Darwin ]; then
 fi
 
 make clean
-make CC=$CC CXX=$CXX V=1 all -j${CPU_COUNT}
+make CC=$CC CXX=$CXX -n
+make CC=$CC CXX=$CXX --trace
 mkdir -p $PREFIX/bin
 make install PREFIX=$PREFIX/bin/
