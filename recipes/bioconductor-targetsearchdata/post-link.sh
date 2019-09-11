@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/TargetSearchData_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TargetSearchData_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-targetsearchdata/bioconductor-targetsearchdata_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-targetsearchdata/bioconductor-targetsearchdata_1.22.0_src_all.tar.gz"
 )
 MD5="5930865598f2ac84a58a11111f3ba7ac"
 

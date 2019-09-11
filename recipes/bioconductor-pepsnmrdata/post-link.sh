@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/PepsNMRData_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/PepsNMRData_1.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pepsnmrdata/bioconductor-pepsnmrdata_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pepsnmrdata/bioconductor-pepsnmrdata_1.2.0_src_all.tar.gz"
 )
 MD5="4426ad09c50010889fece7df54bf184d"
 

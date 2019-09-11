@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/DeSousa2013_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/DeSousa2013_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-desousa2013/bioconductor-desousa2013_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-desousa2013/bioconductor-desousa2013_1.20.0_src_all.tar.gz"
 )
 MD5="6772bbad387e983a0f1ba536055635ca"
 
