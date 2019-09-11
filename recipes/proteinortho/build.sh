@@ -5,7 +5,6 @@ if [ `uname` == Darwin ]; then
 fi
 
 make clean
-make CC=$CC CXX=$CXX -n
-make CC=$CC CXX=$CXX --trace
+make CC=$CC CXX=$CXX SHELL="sh -x"
 mkdir -p $PREFIX/bin
 make install PREFIX=$PREFIX/bin/
