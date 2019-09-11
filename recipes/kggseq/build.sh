@@ -14,3 +14,4 @@ cp $RECIPE_DIR/kggseq $outdir/
 chmod +x $outdir/kggseq
 ln -s $outdir/kggseq $PREFIX/bin
 
+kggseq
