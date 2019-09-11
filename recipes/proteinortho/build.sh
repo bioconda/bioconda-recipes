@@ -7,6 +7,6 @@ fi
 export LIBRARY_PATH=${PREFIX}/lib
 export LD_LIBRARY_PATH=${PREFIX}/lib
 make clean
-make CC=$CC CXX=$CXX CXXLIBRARY="-L${PREFIX}/lib" all -j${CPU_COUNT}
+make CC=$CC CXX=$CXX LDLIBS="-lgfortran" CXXLIBRARY="-L${PREFIX}/lib" all -j${CPU_COUNT}
 mkdir -p $PREFIX/bin
 make install PREFIX=$PREFIX/bin/
