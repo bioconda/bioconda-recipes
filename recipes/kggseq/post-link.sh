@@ -6,3 +6,4 @@
 ## exit 0 so the install is a success
 #exit 0
 echo "potrebbe anche funzionare"
+kggseq --lib-update
