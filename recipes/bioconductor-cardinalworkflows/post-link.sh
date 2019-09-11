@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/CardinalWorkflows_1.16.0.tar.gz"
   "https://bioarchive.galaxyproject.org/CardinalWorkflows_1.16.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-cardinalworkflows/bioconductor-cardinalworkflows_1.16.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cardinalworkflows/bioconductor-cardinalworkflows_1.16.0_src_all.tar.gz"
 )
 MD5="1d61193cff92e95a54c8a79cf2148ba7"
 

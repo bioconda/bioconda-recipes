@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/gcspikelite_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/gcspikelite_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-gcspikelite/bioconductor-gcspikelite_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-gcspikelite/bioconductor-gcspikelite_1.22.0_src_all.tar.gz"
 )
 MD5="008f920fa946568d0e31d4333e2fe28c"
 
