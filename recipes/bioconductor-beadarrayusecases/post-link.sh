@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="BeadArrayUseCases_1.20.0.tar.gz"
+FN="BeadArrayUseCases_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/BeadArrayUseCases_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/BeadArrayUseCases_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-beadarrayusecases/bioconductor-beadarrayusecases_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/BeadArrayUseCases_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/BeadArrayUseCases_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-beadarrayusecases/bioconductor-beadarrayusecases_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-beadarrayusecases/bioconductor-beadarrayusecases_1.22.0_src_all.tar.gz"
 )
-MD5="aa5309f7583a03c59235ce459a749cd6"
+MD5="f137cb510837fa607e144c2c1290d846"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -11,26 +11,42 @@ source:
     - linux.patch
 
 build:
-  number: 2
-  skip: True    # [py3k or osx]
+  number: 4
+  skip: True  # [py3k or osx]
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
   host:
     - python
     - numpy
     - scipy
+    - gsl 1.16
+    - zlib
+    - libgfortran
   run:
     - python
     - numpy
     - scipy
+    - gsl 1.16
+    - zlib
+    - libgfortran
     - star >=2.5
 
 test:
   commands:
     - rmats.py
+    - $PREFIX/rMATS/rMATS_C/rMATSexe | grep "Fail to open"
 
 about:
   home: http://rnaseq-mats.sourceforge.net
   license: Free for non-commercial use, see LICENSE file
   summary: MATS is a computational tool to detect differential alternative splicing events from RNA-Seq data.
   license_file: LICENSE
+
+extra:
+  skip-lints:
+    # This seems to need an old libgfortran
+    - should_use_compilers

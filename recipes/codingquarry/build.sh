@@ -6,7 +6,11 @@ sed -i.bak -e 's/\${CC}/${CXX}/g' -e 's/\${CFLAGS}/${CXXFLAGS}/g' makefile
 #remove explicit CC, CXX, and LDFLAGS definitions to use conda ones
 sed -i.bak '1,4d' makefile
 
-CXXFLAGS="$CXXFLAGS -fopenmp -g -O3"
+if [ `uname` == Darwin ]; then
+	CXXFLAGS="${CXXFLAGS} -g -O3 -fopenmp -I${PREFIX}/include"
+else
+	CXXFLAGS="${CXXFLAGS} -fopenmp -g -O3"
+fi
 
 #now build
 make
@@ -32,4 +36,4 @@ cp -R $SRC_DIR/QuarryFiles ${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}/QuarryFiles
 
 #required ENV variable
 mkdir -p ${PREFIX}/etc/conda/activate.d/
-echo "export QUARRYFILES=${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}/QuarryFiles" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh
+echo "export QUARRY_PATH=${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}/QuarryFiles" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh

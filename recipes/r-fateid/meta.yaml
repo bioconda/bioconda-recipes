@@ -1,4 +1,4 @@
-{% set version = '0.1.6' %}
+{% set version = '0.1.8' %}
 
 package:
   name: r-fateid
@@ -9,7 +9,7 @@ source:
     - {{ cran_mirror }}/src/contrib/FateID_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/FateID/FateID_{{ version }}.tar.gz
     - https://depot.galaxyproject.org/software/r-fateid/r-fateid_{{ version }}_src_all.tar.gz
-  sha256: 4d2dc706b88b9545ee1aa414182e4eba7f73a4db818fd92476e5b260f3871723
+  sha256: 5014e26976e321f7b68a3fec02366548f47ae7546963659e4a88e96c88222a34
 
 build:
   noarch: generic
@@ -19,6 +19,12 @@ build:
     - lib/
 
 requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}
+    - {{ cdt('libxdamage') }}
+    - {{ cdt('libxfixes') }}
+    - {{ cdt('libxxf86vm') }}
+    - {{ cdt('mesa-dri-drivers') }}
   host:
     - r-base
     - r-rcolorbrewer
@@ -30,6 +36,7 @@ requirements:
     - r-randomforest
     - r-rgl
     - r-som
+    - r-umap
   run:
     - r-base
     - r-rcolorbrewer
@@ -41,11 +48,11 @@ requirements:
     - r-randomforest
     - r-rgl
     - r-som
+    - r-umap
 
 test:
   commands:
-    - $R -e "library('FateID')"           # [not win]
-    - "\"%R%\" -e \"library('FateID')\""  # [win]
+    - LD_LIBRARY_PATH=${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64 $R -e "library('FateID')"
 
 about:
   home: https://CRAN.R-project.org/package=FateID
@@ -55,6 +62,7 @@ about:
     <DOI:10.1038/nmeth.4662>."
 
   license_family: GPL3
+
 extra:
   identifiers:
     - doi:10.1038/nmeth.4662

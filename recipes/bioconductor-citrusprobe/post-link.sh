@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="citrusprobe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/citrusprobe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/citrusprobe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/citrusprobe_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-citrusprobe/bioconductor-citrusprobe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-citrusprobe/bioconductor-citrusprobe_2.18.0_src_all.tar.gz"
 )
 MD5="259b114f96d5307c447d000bd27a7d15"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
