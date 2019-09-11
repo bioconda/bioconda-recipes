@@ -1,95 +1,77 @@
-{% set version = "0.254.0" %}
+{% set name = "dxpy" %}
+{% set version = "0.286.1" %}
 
 package:
-  name: dxpy
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/d/dxpy/dxpy-{{ version }}.tar.gz
-  sha256: 885563d3865fc72f9bfaf78946f04cda48a9085fc1313439cd1743efe5f7c95b
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 775c2f739e8fbed4e860392bfa73bfd350f8c417d25fc30e4fd58a1ca469d002
 
 build:
-  number: 1
-  skip: true # [not py27]
+  number: 0
+  noarch: python
   entry_points:
-    - dx = dxpy.scripts.dx:main
-    - dx-app-wizard = dxpy.scripts.dx_app_wizard:main
-    - dx-genes-to-gtf = dxpy.scripts.dx_genes_to_gtf:main
-    - dx-build-app = dxpy.scripts.dx_build_app:main
-    - dx-reads-to-fastq = dxpy.scripts.dx_reads_to_fastq:main
-    - dx-variants-to-vcf = dxpy.scripts.dx_variants_to_vcf:main
-    - dx-build-asset = dxpy.scripts.dx_build_asset:main
-    - dx-mappings-to-fastq = dxpy.scripts.dx_mappings_to_fastq:main
-    - dx-spans-to-bed = dxpy.scripts.dx_spans_to_bed:main
-    - dx-mappings-to-sam = dxpy.scripts.dx_mappings_to_sam:main
-    - dx-build-report-html = dxpy.scripts.dx_build_report_html:main
-    - dx-genes-to-gff = dxpy.scripts.dx_genes_to_gff:main
     - dx-build-applet = dxpy.scripts.dx_build_applet:main
+    - dx-build-app = dxpy.scripts.dx_build_app:main
+    - dx = dxpy.scripts.dx:main
+    - dx-build-report-html = dxpy.scripts.dx_build_report_html:main
+    - dx-app-wizard = dxpy.scripts.dx_app_wizard:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
   host:
-    - python
+    - argcomplete >=1.9.4
+    - beautifulsoup4 >=4.4.1
+    - cryptography <=2.2.2
     - setuptools
-    - xattr
-    - ws4py >=0.3.2
-    - python-dateutil >=2.3
-    - python-magic >=0.4.6
-    - beautifulsoup4 >=4.4.1
     - psutil >=3.3.0
-    - requests >=2.7.0
-    - futures >=3.0.4
-    - fusepy >=2.0.2
-    - xattr >=0.6.4
-
-  run:
     - python
-    - xattr
-    - ws4py >=0.3.2
-    - python-dateutil >=2.3
+    - python-dateutil >=2.5
     - python-magic >=0.4.6
+    - requests >=2.8.0
+    - websocket-client >=0.53.0
+  run:
+    - argcomplete >=1.9.4
     - beautifulsoup4 >=4.4.1
+    - cryptography <=2.2.2
     - psutil >=3.3.0
-    - requests >=2.7.0
-    - futures >=3.0.4
-    - fusepy >=2.0.2
-    - xattr >=0.6.4
+    - python
+    - python-dateutil >=2.5
+    - python-magic >=0.4.6
+    - requests >=2.8.0
+    - websocket-client >=0.53.0
 
 test:
-  # Python imports
   imports:
     - dxpy
     - dxpy.bindings
     - dxpy.cli
     - dxpy.packages
-    - dxpy.packages.argcomplete
     - dxpy.scripts
     - dxpy.templating
     - dxpy.utils
-
   commands:
-    - dx --help
-    - dx-app-wizard --help
-    - dx-genes-to-gtf --help
-    - dx-build-app --help
-    - dx-reads-to-fastq --help
-    - dx-variants-to-vcf --help
-    - dx-build-asset --help
-    - dx-mappings-to-fastq --help
-    - dx-spans-to-bed --help
-    - dx-mappings-to-sam --help
-    - dx-build-report-html --help
-    - dx-genes-to-gff --help
     - dx-build-applet --help
-
+    - dx-build-app --help
+    - dx --help
+    - dx-build-report-html --help
+    - dx-app-wizard --help
   requires:
-    - coverage >=3.7.1
-    - pexpect >=4.2
-    - pyopenssl >=16.2.0
+    - mock >=2.0.0
+    - pexpect >=4.6
+    - pyopenssl >=17.5.0
+    - pytest >=3.5.1
 
 about:
   home: https://github.com/dnanexus/dx-toolkit
-  license: "Apache v2.0"
-  license_family: APACHE
-  summary: 'DNAnexus Platform API bindings for Python'
-  dev_url: https://github.com/dnanexus/dx-toolkit
+  license: Apache-2.0
+  license_family: Apache
+  summary: DNAnexus Platform API bindings for Python
   doc_url: https://wiki.dnanexus.com/downloads#DNAnexus-Platform-SDK
+  dev_url: https://github.com/dnanexus/dx-toolkit
+
+extra:
+  recipe-maintainers:
+    - notestaff

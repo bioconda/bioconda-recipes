@@ -1,56 +1,66 @@
-{% set version = "1.10.0" %}
+{% set version = "1.16.0" %}
 {% set name = "podkat" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 84315f7a5278a3c40b50aaa92b7be45951279bbe731e4772c23c23ceb27d2331
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 679979f4046c4e43e81d953f250091fb
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BSgenome.Hsapiens.UCSC.hg38.masked, TxDb.Hsapiens.UCSC.hg38.knownGene, BSgenome.Mmusculus.UCSC.mm10.masked, GWASTools (>= 1.13.24), VariantAnnotation, SummarizedExperiment, knitr
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - bioconductor-biostrings
-    - 'bioconductor-bsgenome >=1.32.0'
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rsamtools
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-bsgenome >=1.52.0,<1.53.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rhtslib >=1.16.0,<1.17.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
     - r-base
     - r-matrix
     - 'r-rcpp >=0.11.1'
   run:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - bioconductor-biostrings
-    - 'bioconductor-bsgenome >=1.32.0'
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rsamtools
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-bsgenome >=1.52.0,<1.53.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rhtslib >=1.16.0,<1.17.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
     - r-base
     - r-matrix
     - 'r-rcpp >=0.11.1'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'This package provides an association test that is capable of dealing with very rare and even private variants. This is accomplished by a kernel-based approach that takes the positions of the variants into account. The test can be used for pre-processed matrix data, but also directly for variant data stored in VCF files. Association testing can be performed whole-genome, whole-exome, or restricted to pre-defined regions of interest. The test is complemented by tools for analyzing and visualizing the results.'
-
 extra:
   identifiers:
     - biotools:podkat
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-podkat
+    path: recipes/bioconductor-podkat
+    version: 1.12.0
+

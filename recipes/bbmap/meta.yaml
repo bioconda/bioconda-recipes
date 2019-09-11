@@ -1,33 +1,44 @@
 {% set name = "BBMap" %}
-{% set version = "38.06" %}
-{% set sha256 = "28a875d792d3608b088e74acdb109b8a4554c78c7e46162230169b607a9beccf" %}
-
-about:
-  home: 'https://sourceforge.net/projects/bbmap'
-  license: "UC-LBL license (see package)"
-  summary: "BBMap is a short read aligner, as well as various other bioinformatic tools."
+{% set version = "38.67" %}
+{% set sha256 = "d415c1b52882eb174799b79d800bd0f0041d4f58a56e2d22ea21b0857fb5029b" %}
 
 build:
-  number: 2
-  noarch: generic
+  number: 0
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  sha256: {{ sha256 }}
   url: http://downloads.sourceforge.net/project/{{ name|lower }}/{{ name }}_{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - openjdk >=7.0
   run:
     - openjdk >=7.0
 
 test:
+  files:
+    - test.fa
+    - testdatabase.fa
+    - testexpected.sam
   commands:
     - bbmap.sh -V 2>&1 | grep "BBMap" > /dev/null
+    - bbmerge.sh -V 2>&1 | grep "BBMerge" > /dev/null
+    - bbduk.sh -V 2>&1 | grep "BBDuk" > /dev/null
+    - bbmask.sh -V 2>&1 | grep "BBMask" > /dev/null
+    - bbnorm.sh --help 2>&1 | grep "BBNorm" > /dev/null
+
+about:
+  home: https://sourceforge.net/projects/bbmap
+  doc_url: https://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide/
+  license: "UC-LBL license (see package)"
+  license_file: license.txt
+  summary: "BBMap is a short read aligner, as well as various other bioinformatic tools."
 
 extra:
   notes: |
@@ -36,3 +47,4 @@ extra:
     during install.
   identifiers:
     - biotools:bbmap
+    - doi:10.1371/journal.pone.0185056

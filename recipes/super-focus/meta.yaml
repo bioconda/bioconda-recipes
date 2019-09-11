@@ -1,24 +1,28 @@
-{% set name = "SUPER-FOCUS" %}
-{% set version = "0.30" %}
-{% set hash = "9265edbc1f289d5009fa5ba790fc705a14715a306f43636ab115c5207c57f396" %}
+{% set version = "0.34" %}
+{% set sha256 = "e9b3c462fd88976b5296fe4e013561120e3526809fabc59d243ec23d11374ecc" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: super-focus
+  version: '{{ version }}'
 
 source:
-  fn: {{ version }}.tar.gz
   url: https://github.com/metageni/SUPER-FOCUS/archive/{{ version }}.tar.gz
-  sha256: {{ hash }}
+  sha256: '{{ sha256 }}'
 
 build:
-  number: 1
-  skip: True # [not py27]
+  noarch: python
+  number: 0
+  script: $PYTHON -m pip install --no-deps --ignore-installed --no-cache-dir -vvv .
 
 requirements:
+  host:
+    - python >=3
+    - pip
+    - pytest
+
   run:
-    - python
-    - numpy
+    - python >=3
+    - numpy >=1.12.1
     - scipy
     - jellyfish
     - rapsearch # [not osx]
@@ -27,11 +31,13 @@ requirements:
 
 test:
   commands:
-    - superfocus.py
-    - superfocus_downloadDB.py
+    - superfocus --help
+    - superfocus_downloadDB --help
 
 about:
   home: https://edwards.sdsu.edu/SUPERFOCUS
-  license: GPL3
+  license: GPL-3.0
+  license_family: GPL
   license_file: COPYING
-  summary: "SUPER-FOCUS: A tool for agile functional analysis of shotgun metagenomic data"
+  summary: 'SUPER-FOCUS: A tool for agile functional analysis of shotgun metagenomic data'
+  dev_url: https://github.com/metageni/SUPER-FOCUS

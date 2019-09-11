@@ -1,50 +1,55 @@
-{% set version = "1.16.0" %}
+{% set version = "1.22.0" %}
 {% set name = "EDDA" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 602823ecbfd955f6437928048711c863672ee743143fd2d262b659380fb81300
+  md5: 644dc53ad78a4e34f618d4f76ef7a04f
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
-    - bioconductor-bayseq
-    - bioconductor-deseq
-    - bioconductor-edger
+    - 'bioconductor-bayseq >=2.18.0,<2.19.0'
+    - 'bioconductor-deseq >=1.36.0,<1.37.0'
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
     - r-base
     - 'r-rcpp >=0.10.4'
     - r-rocr
     - r-snow
   run:
-    - bioconductor-bayseq
-    - bioconductor-deseq
-    - bioconductor-edger
+    - 'bioconductor-bayseq >=2.18.0,<2.19.0'
+    - 'bioconductor-deseq >=1.36.0,<1.37.0'
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
     - r-base
     - 'r-rcpp >=0.10.4'
     - r-rocr
     - r-snow
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'EDDA can aid in the design of a range of common experiments such as RNA-seq, Nanostring assays, RIP-seq and Metagenomic sequencing, and enables researchers to comprehensively investigate the impact of experimental decisions on the ability to detect differential abundance. This work was published on 3 December 2014 at Genome Biology under the title "The importance of study design for detecting differentially abundant features in high-throughput experiments" (http://genomebiology.com/2014/15/12/527).'
-
 extra:
   identifiers:
     - biotools:edda
     - doi:10.1186/s13059-014-0527-7
+  parent_recipe:
+    name: bioconductor-edda
+    path: recipes/bioconductor-edda
+    version: 1.18.0
+

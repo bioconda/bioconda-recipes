@@ -1,30 +1,39 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "EGSEAdata" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 1d266debcc106ad05ed63413a49ebdfa4dfc597f444235b5f82e106717d26ebb
+  md5: 66cb1885c1cc1a378884e34c41ef2e25
 build:
-  number: 2
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: EGSEA
 requirements:
   host:
     - r-base
   run:
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
   license: 'file LICENSE'
   summary: 'This package includes gene set collections that are used for the Ensemble of Gene Set Enrichment Analyses (EGSEA) method for gene set testing. It includes Human and Mouse versions of the MSidDB (Subramanian, et al. (2005) PNAS, 102(43):15545-15550) and GeneSetDB (Araki, et al. (2012) FEBS Open Bio, 2:76-82) collections.'
+extra:
+  parent_recipe:
+    name: bioconductor-egseadata
+    path: recipes/bioconductor-egseadata
+    version: 1.8.0
+

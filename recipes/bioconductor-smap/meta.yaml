@@ -1,15 +1,16 @@
-{% set version = "1.42.0" %}
+{% set version = "1.48.0" %}
 {% set name = "SMAP" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: b899716d625c4db5bffe1b2c90be62de38cbc5ed5fe5fa63eb394db0220e4e58
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: e7f7c7e177651e2116ee07d18352404e
 build:
   number: 1
   rpaths:
@@ -20,15 +21,22 @@ requirements:
     - r-base
   run:
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'Functions and classes for DNA copy number profiling of array-CGH data'
-
 extra:
   identifiers:
     - biotools:smap
     - doi:10.1093/bioinformatics/btn003
+  parent_recipe:
+    name: bioconductor-smap
+    path: recipes/bioconductor-smap
+    version: 1.44.0
+

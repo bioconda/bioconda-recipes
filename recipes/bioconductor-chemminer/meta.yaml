@@ -1,57 +1,70 @@
-{% set version = "2.30.0" %}
+{% set version = "3.36.0" %}
 {% set name = "ChemmineR" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 54b99549687ddebab04144c6321a595e66ec0161e7d52626b8d7d4f6d55e09e1
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 8d49bddc3a3375ead2711b55cd405930
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: RSQLite, scatterplot3d, gplots, fmcsR, snow, RPostgreSQL, BiocStyle, knitr, knitcitations, knitrBootstrap, ChemmineOB (>= 1.16.1), ChemmineDrugs, png,rmarkdown, BiocManager
+# SystemRequirements: GNU make
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
-    - bioconductor-biocgenerics
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-base
-    - r-bh  # not in DESCRIPTION
+    - r-base64enc
+    - r-bh
     - r-dbi
     - r-digest
+    - r-dt
     - r-ggplot2
     - r-gridextra
     - r-png
     - 'r-rcpp >=0.11.0'
     - r-rcurl
     - r-rjson
-    - r-bh  # not specified in DESCRIBTION
+    - r-rsvg
   run:
-    - bioconductor-biocgenerics
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-base
-    - r-bh  # not in DESCRIPTION
+    - r-base64enc
+    - r-bh
     - r-dbi
     - r-digest
+    - r-dt
     - r-ggplot2
     - r-gridextra
     - r-png
     - 'r-rcpp >=0.11.0'
     - r-rcurl
     - r-rjson
-    - r-bh  # not specified in DESCRIBTION
+    - r-rsvg
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'ChemmineR is a cheminformatics package for analyzing drug-like small molecule data in R. Its latest version contains functions for efficient processing of large numbers of molecules, physicochemical/structural property predictions, structural similarity searching, classification and clustering of compound libraries with a wide spectrum of algorithms. In addition, it offers visualization functions for compound clustering results and chemical structures.'
-
 extra:
   identifiers:
     - biotools:chemminer
+  parent_recipe:
+    name: bioconductor-chemminer
+    path: recipes/bioconductor-chemminer
+    version: 3.32.1
+

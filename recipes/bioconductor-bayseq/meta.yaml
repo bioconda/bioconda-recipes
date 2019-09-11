@@ -1,39 +1,47 @@
-{% set version = "2.12.0" %}
+{% set version = "2.18.0" %}
 {% set name = "baySeq" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: bf585cdfee8505ca70add124e7d9d36c2f8f7d1fd92fc3e5c9cce2bf6a4621b5
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: db957567c040f3240610ab767f1bb0c4
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, BiocGenerics
 requirements:
   host:
-    - bioconductor-edger
-    - bioconductor-genomicranges
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-abind
     - r-base
   run:
-    - bioconductor-edger
-    - bioconductor-genomicranges
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-abind
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'This package identifies differential expression in high-throughput ''count'' data, such as that derived from next-generation sequencing machines, calculating estimated posterior likelihoods of differential expression (or more complex hypotheses) via empirical Bayesian methods.'
 extra:
   identifiers:
     - biotools:bayseq
     - doi:10.1186/1471-2105-11-422
+  parent_recipe:
+    name: bioconductor-bayseq
+    path: recipes/bioconductor-bayseq
+    version: 2.14.0
+

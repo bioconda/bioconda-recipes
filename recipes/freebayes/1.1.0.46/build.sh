@@ -22,12 +22,6 @@ export C_INCLUDE_PATH=$PREFIX/include
 export CPLUS_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 
-# Make bamtools.
-mkdir -p bamtools/build
-cd bamtools/build
-cmake ..
-cd ../..
-
 # Make autoversion.
 cd src
 make autoversion
@@ -36,7 +30,15 @@ cd ..
 
 # Make vcflib (needed for freebayes-parallel).
 cd vcflib
-make
+
+export LDFLAGS="-L$PREFIX/lib -L\$(LIB_DIR) -lvcflib -lhts -lpthread -lz -lm -llzma -lbz2"
+export INCLUDES="-Ihtslib -I$PREFIX/include -Itabixpp/htslib -I\$(INC_DIR) -L. -Ltabixpp/htslib"
+export LIBPATH="-L. -Lhtslib -L$PREFIX/lib"
+export CXXFLAGS="-O3 -D_FILE_OFFSET_BITS=64 -std=c++0x"
+sed -i.bak 's/make/make -e/' Makefile
+
+make -e
+
 cd ..
 
 # Translate for Python 3 if needed.

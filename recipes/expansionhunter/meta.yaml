@@ -1,33 +1,46 @@
-{% set name = "expansionhunter" %}
-{% set version = "2.0.8" %}
-
+{% set name = "ExpansionHunter" %}
+{% set version = "3.1.2" %}
+{% set sha256 = "a7eec6c5591d19917fff507603e675f15cb90dd406dc4d8def5b99763320e9ed" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 1
+  number: 0
 
 source:
   url: https://github.com/Illumina/ExpansionHunter/archive/v{{ version }}.tar.gz
-  md5: 24d39d1f1c4b013f87a589932bc88976
+  sha256: {{ sha256 }}
+  patches:
+    - brackets.patch  # [osx]
 
 requirements:
   build:
-  - {{ compiler('c') }}
-  - cmake
-  - boost
-  - icu
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake
+  host:
+    - boost
+    - icu
+    - zlib
+    - htslib
   run:
-  - boost
-  - icu
-  - libcxx # [osx]
+    - boost
+    - icu
+    - zlib
+    - htslib
+
 test:
   commands:
   - ExpansionHunter --help 2>&1 | grep "help"
+
 about:
   home: https://github.com/Illumina/ExpansionHunter
-  license: GPL3
+  license: Apache v2.0
+  license_family: Apache
   license_file: LICENSE.txt
-  summary: a tool for estimating repeat sizes
+  summary: "A tool for estimating repeat sizes"
+extra:
+  skip-lints:
+    - should_not_be_noarch_source

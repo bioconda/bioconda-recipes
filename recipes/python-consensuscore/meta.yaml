@@ -1,40 +1,46 @@
 {% set name = "python-consensuscore" %}
-{% set version = "1.0.2" %}
+{% set version = "1.1.1" %}
+{% set sha256 = "f40bf93ebee60c83637af01d9bd3cbd21f00498b54aa1b74304b4a14446ded43" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url:  https://github.com/PacificBiosciences/ConsensusCore/archive/0ee22b27847f000d08923fdbaf84bf80ea228370.tar.gz
-  md5: 521fb20a45008b61ec9f1b5e08ed050a
+  url: https://github.com/PacificBiosciences/ConsensusCore/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+about:
+  home: https://github.com/PacificBiosciences/pbbioconda
+  license: BSD-3-Clause-Clear
+  summary: PacBio Quiver Consensus library for RSII data
+
+extra:
+  recipe-maintainers:
+    - pb-dseifert
+    - mhsieh
 
 build:
-  number: 1
+  skip: True # [not py27]
+  number: 3
 
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - meson >=0.48.1
+    - ninja
+    - pkg-config
+    - swig
   host:
     - python
-    - setuptools
-    - numpy >=1.6.0
     - boost
-    - boost >=1.47.0
-    - swig >=2.0.7
-
+    - numpy >=1.16.2
   run:
     - python
-    - numpy >=1.6.0
-    - boost
-    - swig >=2.0.7
+    - numpy >=1.16.2
 
 test:
-  # Python imports
   imports:
     - ConsensusCore
-
-about:
-  home: https://github.com/PacificBiosciences/ConsensusCore
-  license: BSD-3-Clause-Clear
-  summary: 'C++ library of multiple-sequence consensus routines with SWIG bindings'
+  commands:
+    - python -c 'import ConsensusCore; ConsensusCore.Version.VersionString()'

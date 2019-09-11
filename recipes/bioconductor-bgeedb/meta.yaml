@@ -1,25 +1,28 @@
-{% set version = "2.4.0" %}
+{% set version = "2.10.0" %}
 {% set name = "BgeeDB" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 5d906e9b41516b5203efe506084199a06fac8185d1043fadfab2c885a5090aca
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 4da20080e790bd0121458d873a9d525b
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr, BiocStyle, testthat, rmarkdown
 requirements:
   host:
-    - bioconductor-biobase
-    - bioconductor-graph
-    - bioconductor-topgo
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-topgo >=2.36.0,<2.37.0'
     - r-base
     - r-data.table
     - r-digest
@@ -27,9 +30,9 @@ requirements:
     - r-rcurl
     - r-tidyr
   run:
-    - bioconductor-biobase
-    - bioconductor-graph
-    - bioconductor-topgo
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-topgo >=2.36.0,<2.37.0'
     - r-base
     - r-data.table
     - r-digest
@@ -40,11 +43,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
   summary: 'A package for the annotation and gene expression data download from Bgee database, and TopAnat analysis: GO-like enrichment of anatomical terms, mapped to genes by expression patterns.'
-
 extra:
   identifiers:
     - biotools:bgeedb
     - doi:10.12688/f1000research.9973.1
+  parent_recipe:
+    name: bioconductor-bgeedb
+    path: recipes/bioconductor-bgeedb
+    version: 2.6.2
+

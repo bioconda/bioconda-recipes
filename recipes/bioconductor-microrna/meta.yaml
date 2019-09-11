@@ -1,15 +1,16 @@
-{% set version = "1.36.0" %}
+{% set version = "1.42.0" %}
 {% set name = "microRNA" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: d276e6a849990865879d56297f93b81e357178d5931c40e9604f0e9fbc0b8855
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 14fbaf24634fc9b16f8a05ed579f43eb
 build:
   number: 1
   rpaths:
@@ -17,20 +18,28 @@ build:
     - lib/
 requirements:
   host:
-    - 'bioconductor-biostrings >=2.11.32'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
     - r-base
   run:
-    - 'bioconductor-biostrings >=2.11.32'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Different data resources for microRNAs and some functions for manipulating them.'
-
 extra:
   identifiers:
     - biotools:microrna
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-microrna
+    path: recipes/bioconductor-microrna
+    version: 1.38.0
+

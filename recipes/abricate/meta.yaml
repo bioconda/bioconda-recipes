@@ -1,59 +1,52 @@
-{% set version = "0.8" %}
+{% set version = "0.9.8" %}
 {% set name = "abricate" %}
+{% set sha256 = "b4d75a2bbd496ea4c91d84b2f5f421b83860c843f51f5e079f1926f601ac973f" %}
+{% set user = "tseemann" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 build:
-  number: 1
+  number: 0
+  noarch: generic
 
 source:
-  url: https://github.com/tseemann/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: 287bc61518f86ffd04801bd8f2c7aeebb62b7c74b2fa154974c321efcee5a206
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - zlib
-    - perl
-    - perl-bioperl >=1.6.924
-    - perl-file-slurp
-    - perl-text-csv
+    - perl-bioperl >=1.7
+    - perl-path-tiny
     - perl-list-moreutils
-    - perl-file-spec
     - perl-json
     - perl-lwp-simple
-    - perl-findbin
-    - blast >=2.6
-    - emboss
+    - blast >=2.7
+    - zlib
     - unzip
+    - any2fasta
+
   run:
-    - perl
-    - perl-bioperl >=1.6.924
-    - perl-file-slurp
-    - perl-text-csv
+    - perl-bioperl >=1.7
+    - perl-path-tiny
     - perl-list-moreutils
-    - perl-file-spec
     - perl-json
     - perl-lwp-simple
-    - perl-findbin
-    - blast >=2.6
+    - blast >=2.7
     - zlib
     - unzip
-    - emboss
-    - entrez-direct
+    - any2fasta
 
 test:
   commands:
-    - abricate --version
-    - abricate --list
-    - abricate --check
-    - unzip --help
+    - {{ name }} --version | grep '{{ version }}'
+    - {{ name }} --help
+    - {{ name }} --list
+    - {{ name }} --check
 
 about:
-  home: https://github.com/tseemann/abricate
+  home: https://github.com/{{ user}}/{{ name }}
   license: GPL2
   license_file: LICENSE
   summary: Mass screening of contigs for antibiotic resistance genes

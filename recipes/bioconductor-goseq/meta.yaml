@@ -1,34 +1,37 @@
-{% set version = "1.30.0" %}
+{% set version = "1.36.0" %}
 {% set name = "goseq" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 6e4e344fe6048cc91576b4411ae8360221250ed5b3b8650444fa930d08a4d606
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 4d129450dfb15d6d4c0dfaad38049082
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: edgeR, org.Hs.eg.db, rtracklayer
 requirements:
   host:
-    - bioconductor-annotationdbi
-    - bioconductor-biocgenerics
-    - 'bioconductor-genelendatabase >=1.9.2'
-    - bioconductor-go.db
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genelendatabase >=1.20.0,<1.21.0'
+    - 'bioconductor-go.db >=3.8.0,<3.9.0'
     - r-base
     - r-biasedurn
     - r-mgcv
   run:
-    - bioconductor-annotationdbi
-    - bioconductor-biocgenerics
-    - 'bioconductor-genelendatabase >=1.9.2'
-    - bioconductor-go.db
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genelendatabase >=1.20.0,<1.21.0'
+    - 'bioconductor-go.db >=3.8.0,<3.9.0'
     - r-base
     - r-biasedurn
     - r-mgcv
@@ -36,10 +39,14 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>= 2)'
   summary: 'Detects Gene Ontology and/or other user defined categories which are over/under represented in RNA-seq data'
-
 extra:
   identifiers:
     - biotools:goseq
+  parent_recipe:
+    name: bioconductor-goseq
+    path: recipes/bioconductor-goseq
+    version: 1.32.0
+

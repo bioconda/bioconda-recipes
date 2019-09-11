@@ -7,9 +7,8 @@ mkdir -p $PREFIX/bin
 
 cd $SRC_DIR
 
-cp grid.sh GRiD*.R README.md update_database.sh bowtie.txt check_R_libraries.R $outdir
+cp grid GRiD*.R README.md update_database check_R_libraries.R $outdir
 cp -R blast_database $outdir
-cp -R PathoScope $outdir
-chmod +x $outdir/*.sh
-ln -s $outdir/grid.sh $PREFIX/bin/grid.sh
-ln -s $outdir/update_database.sh $PREFIX/bin/update_database.sh
+chmod +x $outdir/grid $outdir/update_database
+ln -s $outdir/grid $PREFIX/bin/grid
+ln -s $outdir/update_database $PREFIX/bin/update_database

@@ -1,59 +1,50 @@
-about:
-  home: 'http://homer.salk.edu/homer/'
-  license: GPLv3
-  summary:  Software for motif discovery and next generation sequencing analysis
+{% set version = "4.10" %}
 
 # Note that the script to install homer is always the same (configureHomer.pm)
 # but its content changes. Behind the scene a specific version is downloaded
-# For instance for version 4.9.1, this file is downloaded and installed
-# http://homer.ucsd.edu/homer/data/software/homer.v4.9.1.zip
+# For instance for version 4.10, this file is downloaded and installed
+# http://homer.ucsd.edu/homer/data/software/homer.v4.10.zip
 
 package:
   name: homer
-  version: '4.9.1'
+  version: '{{ version }}'
 
 source:
-  md5: e71ff4258c8a9cfcdd419c7078848a0d
-  url: http://homer.salk.edu/homer/configureHomer.pl
+  - url: http://homer.ucsd.edu/homer/configureHomer.pl
+    sha256: 71c91cfacc0ea092fad95de6186c8265f5b328415c4755e0c07eee0d5df3c035
 
 build:
-  number: 6
+  number: 0
 
 # dependencies according to README.txt installed by configureHomer.pl
 # are ghostscript, weblogo v2 NOT v2.8 and blat. Note, however, that there
 # is no v2 of weblogo available on weblogo website (nor conda).
 requirements:
   build:
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - python
     - setuptools
     - perl
     - wget
-    - unzip # [linux]
-    - zip # [linux]
-
+    - unzip
+    - zip
   run:
     - perl
 
 test:
-  requires:
-    - perl
   commands:
-    #- configureHomer.pl 2>&1 | grep "share" > /dev/null
-    #- findMotifs.pl 2>&1 | grep "findMotifs.pl" > /dev/null
-    #- findMotifs.pl 2>&1 | grep "please run configureHomer.pl" > /dev/null
-    - findMotifs.pl -h > /dev/null
-    - homer2 > /dev/null
-    #- GenomeOntology.pl > /dev/null
-    #- homer > /dev/null
-    #- makeTagDirectory > /dev/null
+    - annotatePeaks.pl -h > /dev/null 2>&1
+    - findMotifs.pl -h > /dev/null 2>&1
+    - homer2 > /dev/null 2>&1
+    - GenomeOntology.pl > /dev/null 2>&1
+    - makeTagDirectory > /dev/null 2>&1
 
 about:
   home: 'http://homer.ucsd.edu/homer/index.html'
-  license: "GPL3"
+  license: "GNU General Public v3 (GPLv3)"
+  license_family: "GPL3"
+  license_file: "LICENSE.txt"
   summary: 'Software for motif discovery and next generation sequencing analysis'
-  license_family: GPL
-  maintainer: BioNinja, cokelaer, simonvh
-
+  maintainer: BioNinja, cokelaer, simonvh, r78v10a07
 

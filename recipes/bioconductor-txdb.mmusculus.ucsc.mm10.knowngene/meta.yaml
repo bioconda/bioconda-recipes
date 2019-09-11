@@ -1,34 +1,42 @@
-{% set version = "3.4.0" %}
+{% set version = "3.4.7" %}
 {% set name = "TxDb.Mmusculus.UCSC.mm10.knownGene" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 6b2e9ce3b2050cb770cca989b14b09c50e20ef88568b19cac7ec6ecd93daea21
+  md5: 48ca12361578a95864fc4c59524b61e9
 build:
-  number: 2
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
   host:
-    - bioconductor-annotationdbi
-    - 'bioconductor-genomicfeatures >=1.25.17'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
     - r-base
   run:
-    - bioconductor-annotationdbi
-    - 'bioconductor-genomicfeatures >=1.25.17'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Exposes an annotation databases generated from UCSC by exposing these as TxDb objects'
+extra:
+  parent_recipe:
+    name: bioconductor-txdb.mmusculus.ucsc.mm10.knowngene
+    path: recipes/bioconductor-txdb.mmusculus.ucsc.mm10.knowngene
+    version: 3.4.0
+

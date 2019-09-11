@@ -1,26 +1,25 @@
-{% set version = "3.1.0" %}
+{% set version = "3.1.1" %}
+{% set rc = "" %}
+{% set printed_version = "3.1.1" %}
 
 package:
   name: kmc
-  version: {{ version }}
+  version: {{ version }}{{ rc }}
 
 source:
-  url: https://github.com/refresh-bio/KMC/archive/v{{ version }}.tar.gz
-  sha256: b931f3cc4f315c12e296fa2453c3097094ea37f2aa089a611dee15123753a81b
+  url: https://github.com/refresh-bio/KMC/archive/v{{ version }}{{ rc }}.tar.gz
+  sha256: d7cdf37d90a07d1a432b7427436f962914b5f63a1b6dbb9a116609a1c64d1324
   patches:
-    - 0001-kmc-use-make-user-flags.patch
-    - 0002-kmc-no-stdlib-static-link.patch
-    - 0003-kmc-c++11-compat.patch
-    - 0004-kmc-no-libz-libbz2-static-link.patch
+    - shared_library.patch
 
 build:
-  number: 4
-  # this recipe builds kmc without the asmlib speedup
+  number: 0
+  skip: True  # [osx]
 
 requirements:
   build:
-    # C++11 features are required
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
     - zlib
     - bzip2
@@ -30,14 +29,20 @@ requirements:
 
 test:
   commands:
-    - (kmc 2>&1; true) | grep -q "K-Mer Counter (KMC) ver. {{ version }}"
-    - (kmc_dump 2>&1; true) | grep -q "KMC dump ver. {{ version }}"
-    - (kmc_tools 2>&1; true) | grep -q "kmc_tools ver. {{ version }}"
+    - (kmc 2>&1; true) | grep -q "K-Mer Counter (KMC) ver. {{ printed_version }}"
+    - (kmc_dump 2>&1; true) | grep -q "KMC dump ver. {{ printed_version }}"
+    - (kmc_tools 2>&1; true) | grep -q "kmc_tools ver. {{ printed_version }}"
 
 about:
   home: http://sun.aei.polsl.pl/kmc/
-  license: GPLv2
-  summary: K-mer Counter is a utility designed for counting k-mers (sequences of consecutive k symbols) in a set of reads from genome sequencing projects.
+  license: GPL3
+  license_family: GPL3
+  license_file: '{{ environ["RECIPE_DIR"] }}/gpl-3.0.txt'
+  summary: Tools for efficient k-mer counting and filtering of reads based on k-mer content
+  description: |
+    K-mer Counter is a utility designed for counting k-mers (sequences
+    of consecutive k symbols) in a set of reads from genome sequencing
+    projects.
 
 extra:
   identifiers:

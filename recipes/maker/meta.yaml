@@ -1,15 +1,16 @@
 package:
   name: maker
-  version: 2.31.9
+  version: 2.31.10
 
 source:
-  url: http://yandell.topaz.genetics.utah.edu/maker_downloads/static/maker-2.31.9.tgz
-  md5: 63d79e37d25c60d236658f847b74ea18
+  url: http://yandell.topaz.genetics.utah.edu/maker_downloads/static/maker-2.31.10.tgz
+  md5: 30e3ff1b4bad0218ebf20d049638e864
   patches:
     - "repeatmasker_check.patch"
+    - "mpi_init.patch"
 
 build:
-  number: 6
+  number: 14
 
 requirements:
   build:
@@ -21,7 +22,8 @@ requirements:
     - repeatmasker
     - snap
     - snoscan
-    - perl-bioperl
+    - perl
+    - perl-bioperl-core >=1.007002
     - perl-bit-vector
     - perl-dbd-pg
     - perl-dbd-sqlite
@@ -29,12 +31,12 @@ requirements:
     - perl-file-which
     - perl-io-all
     - perl-io-prompt
-    - perl-inline-c
+    - perl-inline-c >=0.78
     - perl-perlio-gzip
     - perl-forks
-    - perl-list-moreutils <=0.25
+    - perl-list-moreutils
     - perl-perl-unsafe-signals
-    - openmpi
+    - mpich
     - trnascan-se
     - postgresql
   run:
@@ -46,7 +48,8 @@ requirements:
     - repeatmasker
     - snap
     - snoscan
-    - perl-bioperl
+    - perl
+    - perl-bioperl-core >=1.007002
     - perl-bit-vector
     - perl-dbd-pg
     - perl-dbd-sqlite
@@ -54,12 +57,12 @@ requirements:
     - perl-file-which
     - perl-io-all
     - perl-io-prompt
-    - perl-inline-c
+    - perl-inline-c >=0.78
     - perl-perlio-gzip
     - perl-forks
-    - perl-list-moreutils <=0.25
+    - perl-list-moreutils
     - perl-perl-unsafe-signals
-    - openmpi
+    - mpich
     - trnascan-se ==1.3.1
     - postgresql
     # GeneMarkS, GeneMark-ES and FGENESH are optional requirements but are not free
@@ -74,5 +77,8 @@ test:
     - maker --version
 
 extra:
+  container:
+    # mpich needs /etc/resolv.conf : https://github.com/bioconda/bioconda-recipes/issues/11583
+    extended-base: true
   identifiers:
     - biotools:maker

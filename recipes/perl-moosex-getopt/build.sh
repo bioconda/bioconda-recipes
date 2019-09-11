@@ -1,15 +1,6 @@
 #!/bin/bash
 
 # If it has Build.PL use that, otherwise use Makefile.PL
-set -e -x
-
-echo $PATH
-export PATH=/opt/rh/devtoolset-2/root/usr/bin/:$PATH
-
-HOME=/tmp cpanm -v Devel::StackTrace
-HOME=/tmp cpanm -v MooseX::Role::Parameterized
-HOME=/tmp cpanm -v --installdeps .
-
 if [ -f Build.PL ]; then
     perl Build.PL
     perl ./Build
@@ -27,8 +18,3 @@ else
     exit 1
 fi
 
-# Add more build steps here, if they are necessary.
-
-# See
-# http://docs.continuum.io/conda/build.html
-# for a list of environment variables that are set during the build process.

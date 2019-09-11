@@ -1,58 +1,49 @@
-{% set name = "confindr" %}
-{% set version = "0.3.2" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "dae78a22b32cec2893553f624931b663c60d6362618b5db7d5d335d02a39e735" %}
+{% set version = "0.7.1" %}
+{% set sha256 = "ac05cf8ffbb0a6a7cc8c2000062a2f79e2502c0f242b92977b1202676c53bed4" %}
 
 package:
-  name: '{{ name|lower }}'
+  name: confindr
   version: '{{ version }}'
 
 source:
-  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/c/confindr/confindr-{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
-  skip: True # [py27]
+  noarch: python
+  number: 0
+  script: python -m pip install --no-deps --ignore-installed --no-cache-dir .
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - biopython
-    - pysam
-    - pytest
-    - bbmap
-    - jellyfish
-    - blast
-    - mash >=2
-    - samtools
+  host:
+    - python >=3
+    - pip
   run:
-    - python
+    - python >=3
     - biopython
-    - pysam
+    - rauth
+    - pysam >=0.15
     - pytest
-    - bbmap
-    - jellyfish
-    - blast
+    - pluggy 0.11.0
+    - bbmap >=38
     - mash >=2
-    - samtools
+    - samtools >=1.6
+    - minimap2
+    - kma 1.2.0
 
 test:
   imports:
-    - confindr
-    - confindr_wrappers
+    - confindr_src
   commands:
     - confindr.py --version
 
 about:
-  home: https://github.com/lowandrew/ConFindr
+  home: https://github.com/OLC-Bioinformatics/ConFindr
   license: MIT
   license_family: MIT
-  summary: 'Detect intra- and inter-species bacterial contamination in NGS reads'
-  doc_url: 'https://lowandrew.github.io/ConFindr/'
-  dev_url: 'https://github.com/lowandrew/ConFindr'
+  summary: Detect intra- and inter-species bacterial contamination in NGS reads
+  doc_url: https://OLC-Bioinformatics.github.io/ConFindr/
+  dev_url: https://github.com/OLC-Bioinformatics/ConFindr
 
 extra:
-  recipe-maintainers: 'Andrew Low'
+  recipe-maintainers: lowandrew

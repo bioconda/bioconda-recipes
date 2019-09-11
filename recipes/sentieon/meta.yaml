@@ -1,19 +1,18 @@
-{% set version="201711.04" %}
+{% set version="201808.07" %}
 
 package:
   name: sentieon
   version: {{ version }}
 source:
   url: https://s3.amazonaws.com/sentieon-release/software/sentieon-genomics-{{ version }}.tar.gz
-  md5: 7ee8678c2c2ada3d9c34ccb277c6912a
-
+  sha256: fb66b18a7b99e44968eb2c3a6a5b761d6b1e70fba9f7dfc4e5db3a74ab3d3dd9
   patches:
     # Fix driver scripts so they resolves location including symlinks
     - sentieon_symlinks.patch
     - bwa_symlinks.patch
 
 build:
-  number: 2
+  number: 0
   # Currently failing on OSX when copying and fixing shared libraries
   # included with sentieon package. I don't understand problem:
   # https://travis-ci.org/bioconda/bioconda-recipes/jobs/141822657
@@ -24,15 +23,20 @@ requirements:
   build:
     - {{ compiler('fortran') }}
     - {{ compiler('cxx') }}
+  host:
+    - zlib
   run:
     - python >=2.7,<3.0a0
     - zlib
+
 test:
   commands:
-    - 'sentieon driver'
-    - 'sentieon driver --help --algo TNscope'
+    - sentieon driver
+    - sentieon driver --help --algo TNscope
     # Tests have issues with on quay/mulled when combined, non-zero exit code
-    # - 'sentieon-licsrvr 2>&1 | grep SENTIEON_LICENSE'
+    #- sentieon-bwa 2>&1 | grep Burrows-Wheeler
+    #- sentieon-licsrvr 2>&1 | grep SENTIEON_LICENSE
+
 about:
   home: http://sentieon.com
   license: Commercial (requires license for use; redistribution allowed)

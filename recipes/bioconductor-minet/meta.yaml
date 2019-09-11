@@ -1,40 +1,45 @@
-{% set version = "3.36.0" %}
+{% set version = "3.42.0" %}
 {% set name = "minet" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: c8dabac10814a69fab810600b60c85358fafa62d34a9363b7d176e77209fe9c5
+  md5: 7b93b37bf615c6b55b51095c04d626b8
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
     - r-base
     - r-infotheo
   run:
     - r-base
     - r-infotheo
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'file LICENSE'
   summary: 'This package implements various algorithms for inferring mutual information networks from data.'
-
 extra:
   identifiers:
     - biotools:minet
     - doi:10.1186/1471-2105-9-461
+  parent_recipe:
+    name: bioconductor-minet
+    path: recipes/bioconductor-minet
+    version: 3.38.0
+

@@ -1,30 +1,32 @@
+{% set version = "0.23.2" %}
+{% set sha256 = "91aae24faa8ea61ee2fa6579f1e18e5e6a8fdd56b33acc1413bc336e0b8112d6" %}
+
 package:
   name: sevenbridges-python
-  version: "0.7.2"
+  version: '{{ version }}'
 
 source:
-  url: https://pypi.python.org/packages/07/cc/f959f1d79c67cb46457ca58c6cf2210acfd1c018cbc4e0431815e6e80b7e/sevenbridges-python-0.7.2.tar.gz
-  md5: f74052f71c9a325f07ed5e5f806619a3
+  url: https://pypi.io/packages/source/s/sevenbridges-python/sevenbridges-python-{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
-  number: 1
-  # futures not available for python 3.6
-  skip: True  # [not py2k and not py35]
+  noarch: python
+  number: 0
+  script: $PYTHON -m pip install --no-deps --ignore-installed --no-cache-dir .
 
 requirements:
-  host:
+  build:
     - python
-    - setuptools
-    - requests
-    - six
-    - futures
+    - pip
   run:
     - python
-    - requests
-    - six
-    - futures
+    - futures >=3.0.4  # [py2k]
+    - requests >=2.20.0
+    - six >=1.10.0
 
 test:
+  requires:
+    - pytest
   imports:
     - sevenbridges
     - sevenbridges.http
@@ -34,6 +36,8 @@ test:
     - sevenbridges.models.compound.billing
     - sevenbridges.models.compound.files
     - sevenbridges.models.compound.jobs
+    - sevenbridges.models.compound.limits
+    - sevenbridges.models.compound.markers
     - sevenbridges.models.compound.projects
     - sevenbridges.models.compound.tasks
     - sevenbridges.models.compound.volumes
@@ -41,5 +45,14 @@ test:
 
 about:
   home: https://github.com/sbg/sevenbridges-python
-  license: Apache Software License
-  summary: 'SBG API python client bindings'
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
+  summary: SBG API python client bindings
+  description: sevenbridges-python is a Python library that provides an interface for the Seven Bridges Platform the Cancer
+    Genomics Cloud and Cavatica public APIs. It works with Python versions 2.6+ and supports Python 3.
+  dev_url: https://github.com/sbg/sevenbridges-python
+
+extra:
+  recipe-maintainers:
+    - QuicksilverMachine

@@ -1,41 +1,33 @@
-{% set name = "pyquant-ms" %}
-{% set version = "0.2.1" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "e8e1864d26f3464e6f6930bd13e0218065e76a05d83907252391c726167d1cd7" %}
+{% set version = "0.2.4" %}
+{% set sha256 = "2ac0c22ed006a16fa76478c5cb06336bb852fa9a0a89ebcb9e07cc1ad234c68e" %}
 
 package:
-  name: '{{ name|lower }}'
+  name: pyquant-ms
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/p/pyquant-ms/pyquant-ms-{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
-  number: 1
-  skip: True # [py3k]
+  number: 0
+  skip: True  # [py3k]
   entry_points:
     - pyQuant = pyquant.command_line:run_pyquant
-  script: python -m pip install --no-deps --ignore-installed .
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
+  build:
+    - '{{ compiler("c") }}'
   host:
     - python
     - pip
-    - setuptools
     - cython
     - numpy
-    - scipy >=0.18.*
-    - patsy
-    - pythomics >=0.3.41
-    - pandas
-    - lxml
-    - scikit-learn
-    - simplejson
   run:
     - python
     - cython
-    - numpy
+    - {{ pin_compatible('numpy') }}
     - scipy >=0.18.*
     - patsy
     - pythomics >=0.3.41
@@ -52,7 +44,11 @@ test:
     - pyQuant --help
 
 about:
-  home: http://www.github.com/pandeylab/pyquant
-  license: MIT License
+  home: https://chris7.github.io/pyquant/
+  license: MIT
   license_family: MIT
   summary: A framework for the analysis of quantitative mass spectrometry data
+  dev_uri: https://github.com/Chris7/pyquant
+extra:
+  skip-lints:
+    - cython_must_be_in_host

@@ -1,34 +1,43 @@
-{% set version = "1.16.0" %}
+{% set version = "1.22.0" %}
 {% set name = "curatedOvarianData" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 68443c35ca13b271eea69771fb3b8b868a7d3ea6a2f8fc188278c36bf579a395
+  md5: 1af5517292618a6a05871dbf02953866
 build:
-  number: 2
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: survival, RUnit, metafor, genefilter, logging, sva, xtable, futile.logger, BiocStyle
 requirements:
   host:
-    - bioconductor-affy
-    - bioconductor-biocgenerics
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-base
   run:
-    - bioconductor-affy
-    - bioconductor-biocgenerics
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'The curatedOvarianData package provides data for gene expression analysis in patients with ovarian cancer.'
+extra:
+  parent_recipe:
+    name: bioconductor-curatedovariandata
+    path: recipes/bioconductor-curatedovariandata
+    version: 1.18.0
+

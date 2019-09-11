@@ -1,56 +1,47 @@
 {% set name = "planemo" %}
-{% set version = "0.54.0" %}
-{% set sha256 = "dae22557b860a56ea6ae9b0a68d3bbea0c586266084584c8d1428f07151444f0" %}
+{% set version = "0.61.0" %}
 
 package:
-  name: {{ name }}
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/34/fc/b74e3d0e5f3523f8b384583f69739f68154ee9eecbc6d10b2e0485454d79/planemo-0.54.0.tar.gz
-  sha256: {{ sha256 }}
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: a129f1d24f1883bff037d5f79f9700a36a55f052656e09250df82d27e618dfa8
 
 build:
-  preserve_egg_dir: true
-  skip: true # [py3k]
+  number: 0
+  noarch: python
   entry_points:
     - planemo=planemo.cli:planemo
-  number: 1
-  script: python -m pip install --no-deps --ignore-installed .
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
 
 requirements:
   host:
+    - pip
+    - python
+  run:
     - aenum
     - bioblend >=0.10.0
     - click
-    - galaxy-lib >=17.9.8
-    - jinja2
-    - pyaml
-    - python
-    - pip
-    - setuptools
-    - six >=1.7.0
-    - virtualenv
-
-  run:
-    - aenum
-    - bioblend >=0.8.0
-    - click
     - docutils
-    - galaxy-lib >=17.9.8
+    - ephemeris
+    - galaxy-lib >=18.9.2
     - glob2
+    - gxformat2 >=0.8.0
     - jinja2
+    - lxml  # for planemo lint
+    - oyaml
     - pyaml
     - python
     - pyyaml
     - six >=1.7.0
     - virtualenv
-    - ephemeris
-    - gxformat2
 
 test:
   imports:
     - planemo
+    - planemo.bioconda_scripts
     - planemo.commands
     - planemo.conda_verify
     - planemo.cwl
@@ -64,14 +55,19 @@ test:
     - planemo.shed
     - planemo.shed2tap
     - planemo.test
+    - planemo.training
     - planemo.xml
 
   commands:
-    # click requires a unicode locale
-    - LANG=C.UTF-8 planemo --help
+    - planemo --help
 
 about:
   home: https://github.com/galaxyproject/planemo
   license: Academic Free License (AFL)
   summary: 'Command-line utilities to assist in building tools for the Galaxy project (http://galaxyproject.org/).'
   license_family: Apache
+
+extra:
+  container:
+    # click requires a Unicode locale
+    extended-base: True

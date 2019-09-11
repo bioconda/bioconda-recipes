@@ -1,29 +1,29 @@
-{% set version="0.2.0" %}
+{% set version="1.1.0" %}
 package:
   name: wisecondorx
   version:  {{ version }}
 
 source:
   url: https://github.com/CenterForMedicalGeneticsGhent/wisecondorX/archive/v{{ version }}.tar.gz
-  sha256: a03133935bf78234009a62aa9349d7cf67b192d6a611bb9c202a329d00addbc5
+  sha256: c4bab8ec9c2f374f98a7425458d1a342ae69665b8542ba60ade2ae675ddb2c5f
 
 build:
   number: 1
-  skip: True # [not py27]
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
 
 requirements:
   host:
     - python
     - setuptools
-
   run:
     - python
     - pysam
-    - futures
+    - futures # [not py3k]
     - scipy
     - scikit-learn
     - numpy
-    - r-jsonlite
+    - r-jsonlite >=1.5
     - r-png
     - bioconductor-dnacopy
 
@@ -36,7 +36,6 @@ test:
     - WisecondorX gender --help
     - WisecondorX newref --help
     - WisecondorX predict --help
-    - fix_convert_npz.py --help
 
 about:
   home: https://github.com/CenterForMedicalGeneticsGhent/wisecondorX

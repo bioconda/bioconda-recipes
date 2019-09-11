@@ -1,7 +1,11 @@
 #!/bin/bash
 
 # set path for libssw.so
-export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"
+export LIBRARY_PATH=${PREFIX}/lib
+export C_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/linux
+export CPP_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/linux
+export CXX_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/linux
+export CPLUS_INCLUDE_PATH=${PREFIX}/include:${PREFIX}/include/linux
 export JAVA_HOME="${PREFIX}/bin"
 export LDFLAGS="-L$PREFIX/lib"
 

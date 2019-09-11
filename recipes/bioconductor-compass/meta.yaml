@@ -1,25 +1,25 @@
-{% set version = "1.16.0" %}
+{% set version = "1.22.0" %}
 {% set name = "COMPASS" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 560fa4df6e37df0db5f9bb4fd6b3067d3d52ccf3507d844b6795647b86653bf4
+  md5: f3efd33af8043c6ec9b8e668e645e2a5
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: flowWorkspace (>= 3.9.66), flowCore, ncdfFlow, shiny, testthat, devtools, flowWorkspaceData, ggplot2
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
+    - 'bioconductor-biocstyle >=2.12.0,<2.13.0'
     - r-abind
     - r-base
     - r-clue
@@ -33,9 +33,11 @@ requirements:
     - 'r-rcpp >=0.11.0'
     - r-reshape2
     - r-rlang
+    - r-rmarkdown
     - r-scales
     - r-tidyr
   run:
+    - 'bioconductor-biocstyle >=2.12.0,<2.13.0'
     - r-abind
     - r-base
     - r-clue
@@ -49,18 +51,26 @@ requirements:
     - 'r-rcpp >=0.11.0'
     - r-reshape2
     - r-rlang
+    - r-rmarkdown
     - r-scales
     - r-tidyr
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'COMPASS is a statistical framework that enables unbiased analysis of antigen-specific T-cell subsets. COMPASS uses a Bayesian hierarchical framework to model all observed cell-subsets and select the most likely to be antigen-specific while regularizing the small cell counts that often arise in multi-parameter space. The model provides a posterior probability of specificity for each cell subset and each sample, which can be used to profile a subject''s immune response to external stimuli such as infection or vaccination.'
-
 extra:
   identifiers:
     - biotools:compass
     - doi:10.1038/nbt.3187
+  parent_recipe:
+    name: bioconductor-compass
+    path: recipes/bioconductor-compass
+    version: 1.18.1
+
