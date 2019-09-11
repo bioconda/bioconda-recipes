@@ -6,4 +6,4 @@
 ## exit 0 so the install is a success
 #exit 0
 echo "potrebbe anche funzionare"
-#java -jar $outdir/kggseq.jar
+kggseq --lib-update
