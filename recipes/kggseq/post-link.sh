@@ -5,5 +5,5 @@
 #
 ## exit 0 so the install is a success
 #exit 0
-echo "potrebbe anche funzionare"
+echo "Update software to latest version"
 kggseq --lib-update
