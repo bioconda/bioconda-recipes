@@ -19,7 +19,7 @@ You can execute an almost exact copy of our Linux build pipeline by
 <https://circleci.com/docs/2.0/local-cli>`_ and running it from the
 folder where your copy of ``bioconda-recipes`` resides::
 
-    # Ensure the builc container is up-to-date
+    # Ensure the build container is up-to-date
     docker pull bioconda/bioconda-utils-build-env:latest
 
     # Run the build locally

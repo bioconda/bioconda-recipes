@@ -9,7 +9,7 @@
 
 Since `bioconda-utils` is tightly coupled to `bioconda-recipes`, it is
 strongly recommended that `bioconda-utils` be set up and used according to the
-instructions at https://bioconda.github.io/contribute-a-recipe.html. This will
+instructions at https://bioconda.github.io/contributor/index.html. This will
 ensure that your local setup matches that used to build recipes on travis-ci as
 closely as possible.
 
