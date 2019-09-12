@@ -16,7 +16,7 @@ rm bin/*/rpsblast
 
 
 mkdir -p $APPROOT
-mv ./* $APPROOT
+cp -r ./* $APPROOT
 
 ln -s ${APPROOT}/dfast ${PREFIX}/bin/
 ln -s ${APPROOT}/scripts/file_downloader.py ${PREFIX}/bin/dfast_file_downloader.py
