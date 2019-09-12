@@ -1,0 +1,108 @@
+{% set version = '0.1.6' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-gprofiler2
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/gprofiler2_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/gprofiler2/gprofiler2_{{ version }}.tar.gz
+  sha256: ff2ddcfc78596611b16ffa45a8dc3a000f2578ee432b83da63b64f2e1d6ba337
+
+build:
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - r-rcurl
+    - r-crosstalk
+    - r-dplyr
+    - r-ggplot2
+    - r-gridextra
+    - r-jsonlite
+    - r-plotly
+    - r-plyr
+    - r-tidyr
+    - r-viridislite
+
+  run:
+    - r-base
+    - r-rcurl
+    - r-crosstalk
+    - r-dplyr
+    - r-ggplot2
+    - r-gridextra
+    - r-jsonlite
+    - r-plotly
+    - r-plyr
+    - r-tidyr
+    - r-viridislite
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('gprofiler2')"           # [not win]
+    - "\"%R%\" -e \"library('gprofiler2')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: https://CRAN.R-project.org/package=gprofiler2
+  license: GPL (>= 2)
+  summary: 'A toolset for functional enrichment analysis and visualization, gene/protein/SNP
+    identifier conversion and mapping orthologous genes across species via ''g:Profiler''
+    (<https://biit.cs.ut.ee/gprofiler>).  The main tools are:  (1) ''g:GOSt'' - functional
+    enrichment analysis and visualization of gene lists;  (2) ''g:Convert'' - gene/protein/transcript
+    identifier conversion across various namespaces; (3) ''g:Orth'' - orthology search
+    across species; (4) ''g:SNPense'' - mapping SNP rs identifiers to chromosome positions,
+    genes and variant effects This package is an R interface corresponding to the 2019
+    update of ''g:Profiler'' and provides access to ''g:Profiler'' for versions ''e94_eg41_p11''
+    and higher. See the package ''gProfileR'' for accessing older versions from the
+    ''g:Profiler'' toolset.  '
+
+  license_family: GPL3
+  license_file: 'LICENSE'
+
+# The original CRAN metadata for this package was:
+
+# Package: gprofiler2
+# Type: Package
+# Title: Interface to the 'g:Profiler' Toolset
+# Version: 0.1.6
+# Author: Liis Kolberg <liis.kolberg@ut.ee>, Uku Raudvere <uku.raudvere@ut.ee>
+# Maintainer: Liis Kolberg <liis.kolberg@ut.ee>
+# Description: A toolset for functional enrichment analysis and visualization, gene/protein/SNP identifier conversion and mapping orthologous genes across species via 'g:Profiler' (<https://biit.cs.ut.ee/gprofiler>).  The main tools are:  (1) 'g:GOSt' - functional enrichment analysis and visualization of gene lists;  (2) 'g:Convert' - gene/protein/transcript identifier conversion across various namespaces; (3) 'g:Orth' - orthology search across species; (4) 'g:SNPense' - mapping SNP rs identifiers to chromosome positions, genes and variant effects This package is an R interface corresponding to the 2019 update of 'g:Profiler' and provides access to 'g:Profiler' for versions 'e94_eg41_p11' and higher. See the package 'gProfileR' for accessing older versions from the 'g:Profiler' toolset.
+# BugReports: https://biit.cs.ut.ee/gprofiler/page/contact
+# License: GPL (>= 2)
+# Encoding: UTF-8
+# LazyData: true
+# RoxygenNote: 6.1.1
+# Imports: jsonlite, RCurl, ggplot2, plotly, tidyr, crosstalk, plyr, grDevices, gridExtra, grid, viridisLite, dplyr
+# Depends: R (>= 3.5)
+# NeedsCompilation: no
+# Packaged: 2019-08-26 11:01:17 UTC; Liis
+# Repository: CRAN
+# Date/Publication: 2019-08-26 13:40:02 UTC
+
+# See
+# https://docs.conda.io/projects/conda-build for
+# more information about meta.yaml
