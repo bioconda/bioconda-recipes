@@ -9,7 +9,7 @@ fi
 mkdir -p build
 cd build
 
-cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DBOOST_ROOT="${PREFIX}" ..
+cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DBOOST_ROOT="${PREFIX}" -DCMAKE_CXX_COMPILER=${CXX} ..
 
 make VERBOSE=1
 make install

@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.charm.hg18.example_0.99.4.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.charm.hg18.example_0.99.4.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.charm.hg18.example_0.99.4.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.charm.hg18.example_0.99.4.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.charm.hg18.example/bioconductor-pd.charm.hg18.example_0.99.4_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.charm.hg18.example/bioconductor-pd.charm.hg18.example_0.99.4_src_all.tar.gz"
 )
 MD5="e201d4281a23c202f57bae1135e226b4"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

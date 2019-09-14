@@ -1,6 +1,6 @@
-{% set version = "2.26.2" %}
+{% set version = "2.28.0" %}
 {% set name = "rhdf5" %}
-{% set bioc = "3.8" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,22 +10,20 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 34f99cc588c989cd213d896b25e77de2f26c9ca7f79d405cf4bbf211e6e0f383
+  md5: 7b4ac800b93750924391110fa7e93d60
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-# Suggests: bit64, BiocStyle, knitr, rmarkdown, testthat
+# Suggests: bit64, BiocStyle, knitr, rmarkdown, testthat, microbenchmark, dplyr, ggplot2
 requirements:
   host:
-    - 'bioconductor-rhdf5lib >=1.4.0,<1.5.0'
+    - 'bioconductor-rhdf5lib >=1.6.0,<1.7.0'
     - r-base
-    - zlib
   run:
-    - 'bioconductor-rhdf5lib >=1.4.0,<1.5.0'
+    - 'bioconductor-rhdf5lib >=1.6.0,<1.7.0'
     - r-base
-    - zlib
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
@@ -33,7 +31,6 @@ requirements:
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-    - 'curl https://raw.githubusercontent.com/pachterlab/sleuth/master/tests/testthat/small_test_data/kallisto/abundance.h5 -O; $R -e "library(rhdf5); h5errorHandling(type=''verbose''); quit(''no'', status=is.null(h5read(''abundance.h5'', ''bootstrap/bs0'')))"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0

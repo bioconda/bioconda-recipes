@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="chipenrich.data_2.6.0.tar.gz"
+FN="chipenrich.data_2.8.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/chipenrich.data_2.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/chipenrich.data_2.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-chipenrich.data/bioconductor-chipenrich.data_2.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/chipenrich.data_2.8.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/chipenrich.data_2.8.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chipenrich.data/bioconductor-chipenrich.data_2.8.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-chipenrich.data/bioconductor-chipenrich.data_2.8.0_src_all.tar.gz"
 )
-MD5="cd762813ed7fcc7e0ef6d0be7de5047b"
+MD5="26d744a980e0698a991565fb0beea5a1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
