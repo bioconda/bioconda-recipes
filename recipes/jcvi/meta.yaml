@@ -1,33 +1,25 @@
 {% set name = "jcvi" %}
 {% set version = "0.9.6" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "eaaf422c97376c0f35b2c98c3413bbef03e925d4bf0becf492a2b4028912891e" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: eaaf422c97376c0f35b2c98c3413bbef03e925d4bf0becf492a2b4028912891e
 
 build:
   number: 0
   skip: True  # [not py27]
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
-    - setuptools
-    - biopython
-    - deap
-    - matplotlib
-    - networkx
-    - numpy
+    - pip
     - cython
   run:
     - python
@@ -60,6 +52,3 @@ about:
   license_family: BSD
   summary: Python utility libraries on genome assembly, annotation and comparative genomics
   description: "JCVI utility libraries"
-
-extra:
-  recipe-maintainers: ''
