@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="BSgenome.Drerio.UCSC.danRer6.masked_1.3.99.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/BSgenome.Drerio.UCSC.danRer6.masked_1.3.99.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Drerio.UCSC.danRer6.masked_1.3.99.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Drerio.UCSC.danRer6.masked_1.3.99.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.drerio.ucsc.danrer6.masked/bioconductor-bsgenome.drerio.ucsc.danrer6.masked_1.3.99_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.drerio.ucsc.danrer6.masked/bioconductor-bsgenome.drerio.ucsc.danrer6.masked_1.3.99_src_all.tar.gz"
 )
 MD5="71c9b05c27b8d2e05735e6494a8f17ba"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

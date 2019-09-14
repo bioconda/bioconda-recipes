@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="shinyMethylData_1.2.0.tar.gz"
+FN="shinyMethylData_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/shinyMethylData_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/shinyMethylData_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-shinymethyldata/bioconductor-shinymethyldata_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/shinyMethylData_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/shinyMethylData_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-shinymethyldata/bioconductor-shinymethyldata_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-shinymethyldata/bioconductor-shinymethyldata_1.4.0_src_all.tar.gz"
 )
-MD5="c7cfcef8e0c7dff18eb34609812ea3b4"
+MD5="f646ba21155e7392c9b00814e56e6967"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

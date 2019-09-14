@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.barley1_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.barley1_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.barley1_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.barley1_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.barley1/bioconductor-pd.barley1_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.barley1/bioconductor-pd.barley1_3.12.0_src_all.tar.gz"
 )
 MD5="b8d11f5ad42e75f7a91931b46d449c1a"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

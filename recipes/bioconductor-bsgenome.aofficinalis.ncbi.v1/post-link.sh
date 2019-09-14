@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="BSgenome.Aofficinalis.NCBI.V1_1.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/BSgenome.Aofficinalis.NCBI.V1_1.0.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Aofficinalis.NCBI.V1_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Aofficinalis.NCBI.V1_1.0.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.aofficinalis.ncbi.v1/bioconductor-bsgenome.aofficinalis.ncbi.v1_1.0.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.aofficinalis.ncbi.v1/bioconductor-bsgenome.aofficinalis.ncbi.v1_1.0.0_src_all.tar.gz"
 )
 MD5="3f8fd13e74eee63895a5ef528004b60b"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
