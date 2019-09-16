@@ -20,7 +20,8 @@ esac
 
 
 wrong_prefix="$(perl -V | sed -rn "s|\s+cc='([^']+)/bin/.*|\1|p")"
-if [ -n "$wrong_prefix" ]; then
+#if [ -n "$wrong_prefix" ]; then
+if false; then
     echo "====== Fixing Conda-Forge's Perl ======"
     good_prefix="${CXX%/bin/*}"
     echo "Replacing"
