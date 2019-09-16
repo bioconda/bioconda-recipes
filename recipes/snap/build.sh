@@ -1,4 +1,5 @@
 #!/bin/sh
+sed -i.bak "s#gcc#${CC}#" Makefile
 make
 mkdir -p $PREFIX/bin
 mkdir -p ${PREFIX}/share/snap
