@@ -1,0 +1,28 @@
+diff --git a/Makefile b/Makefile
+index d354260..e68ccf6 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,14 +1,13 @@
+-CXXFLAGS=-Wno-char-subscripts -DNDEBUG -Wall -O3 -std=c++11 -I. -I./sdsl-lite/build/include -I./htslib/htslib -I./KMC -fopenmp
+-LIBS=-L./sdsl-lite/build/lib -L./sdsl-lite/build/external/libdivsufsort/lib -L./htslib/ -lhts -lz -lsdsl -ldivsufsort -ldivsufsort64
++CXXFLAGS=-Wno-char-subscripts -DNDEBUG -Wall -O3 -std=c++11 -I. -I${PREFIX}/include -I${PREFIX}/include/htslib -I${PREFIX}/include/sdsl
++LIBS=-L${PREFIX}/lib -lhts -lz -lsdsl -ldivsufsort -ldivsufsort64 -lkmc
+ 
+ .PHONY: all
+ 
+ all: malva-geno
+ 
+-malva-geno: main.o MurmurHash3.o \
+-						./KMC/kmc_api/kmc_file.o ./KMC/kmc_api/kmer_api.o ./KMC/kmc_api/mmer.o
++malva-geno: main.o MurmurHash3.o
+ 	@echo "* Linking $@"
+-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
++	$(CXX) $(CXXFLAGS) $^ $(LIBS) -o $@
+ 
+ %.o: %.cpp
+ 	@echo '* Compiling $<'
+@@ -16,4 +15,3 @@ malva-geno: main.o MurmurHash3.o \
+ 
+ clean:
+ 	rm -rf *.o
+-	rm -rf KMC/kmc_api/*.o

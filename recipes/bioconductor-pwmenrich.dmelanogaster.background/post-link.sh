@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="PWMEnrich.Dmelanogaster.background_4.16.0.tar.gz"
+FN="PWMEnrich.Dmelanogaster.background_4.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/PWMEnrich.Dmelanogaster.background_4.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/PWMEnrich.Dmelanogaster.background_4.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.dmelanogaster.background/bioconductor-pwmenrich.dmelanogaster.background_4.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/PWMEnrich.Dmelanogaster.background_4.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PWMEnrich.Dmelanogaster.background_4.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.dmelanogaster.background/bioconductor-pwmenrich.dmelanogaster.background_4.18.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.dmelanogaster.background/bioconductor-pwmenrich.dmelanogaster.background_4.18.0_src_all.tar.gz"
 )
-MD5="265967f539c3da744389a1fb5a3f112a"
+MD5="ccbaca13154018cdc8ab613a92b77d67"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

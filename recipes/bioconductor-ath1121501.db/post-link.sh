@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="ath1121501.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/ath1121501.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/ath1121501.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/ath1121501.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ath1121501.db/bioconductor-ath1121501.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ath1121501.db/bioconductor-ath1121501.db_3.2.3_src_all.tar.gz"
 )
 MD5="ff9977848321463b27a379ed31fffbc3"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="mouse.db0_3.7.1.tar.gz"
+FN="mouse.db0_3.8.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/mouse.db0_3.7.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/mouse.db0_3.7.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mouse.db0/bioconductor-mouse.db0_3.7.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/mouse.db0_3.8.2.tar.gz"
+  "https://bioarchive.galaxyproject.org/mouse.db0_3.8.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mouse.db0/bioconductor-mouse.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mouse.db0/bioconductor-mouse.db0_3.8.2_src_all.tar.gz"
 )
-MD5="01237a7808395a578f72063603b6db98"
+MD5="1927a435523cfdf1a94b67a674fdfce5"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

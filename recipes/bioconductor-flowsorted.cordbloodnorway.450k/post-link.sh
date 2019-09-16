@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="FlowSorted.CordBloodNorway.450k_1.8.0.tar.gz"
+FN="FlowSorted.CordBloodNorway.450k_1.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/FlowSorted.CordBloodNorway.450k_1.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/FlowSorted.CordBloodNorway.450k_1.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-flowsorted.cordbloodnorway.450k/bioconductor-flowsorted.cordbloodnorway.450k_1.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/FlowSorted.CordBloodNorway.450k_1.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/FlowSorted.CordBloodNorway.450k_1.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowsorted.cordbloodnorway.450k/bioconductor-flowsorted.cordbloodnorway.450k_1.10.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowsorted.cordbloodnorway.450k/bioconductor-flowsorted.cordbloodnorway.450k_1.10.0_src_all.tar.gz"
 )
-MD5="f8a375e9ed900e593e944cbd95f13750"
+MD5="83e0a618318a466dbb7df19db7340909"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="genomewidesnp6Crlmm_1.0.7.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/genomewidesnp6Crlmm_1.0.7.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/genomewidesnp6Crlmm_1.0.7.tar.gz"
   "https://bioarchive.galaxyproject.org/genomewidesnp6Crlmm_1.0.7.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-genomewidesnp6crlmm/bioconductor-genomewidesnp6crlmm_1.0.7_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-genomewidesnp6crlmm/bioconductor-genomewidesnp6crlmm_1.0.7_src_all.tar.gz"
 )
 MD5="13dd5aef3d814524896f2f3013beb78b"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
