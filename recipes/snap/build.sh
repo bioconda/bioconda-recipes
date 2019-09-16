@@ -5,6 +5,8 @@ cd ..
 make CC=${CC} CFLAGS="$CFLAGS" snap
 make CC=${CC} CFLAGS="$CFLAGS" fathom
 make CC=${CC} CFLAGS="$CFLAGS" forge
+make CC=${CC} CFLAGS="$CFLAGS" hmm-info
+make CC=${CC} CFLAGS="$CFLAGS" exonpairs
 
 mkdir -p $PREFIX/bin
 mkdir -p ${PREFIX}/share/snap
