@@ -1,7 +1,7 @@
 #!/bin/bash
 
-mkdir ${SRC_DIR}/hilive2/build
-cd ${SRC_DIR}/hilive2/build
+mkdir build
+cd build
 
 cmake -E env CXXFLAGS="-pthread" cmake -DCMAKE_BUILD_TYPE=Release -DSEQAN_INCLUDE_PATH="${CONDA_DEFAULT_ENV}/include/" -DCMAKE_PREFIX_PATH="${CONDA_DEFAULT_ENV}/share/cmake/seqan" -DCONDA=ON ..
 
