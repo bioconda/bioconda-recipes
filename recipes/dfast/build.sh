@@ -6,6 +6,7 @@ rm -rf bin/Linux
 rm -rf bin/Darwin
 
 mkdir -p $APPROOT
+mkdir -o ${PREFIX}/bin
 cp -r ./* $APPROOT
 
 ln -s ${APPROOT}/dfast ${PREFIX}/bin/dfast
