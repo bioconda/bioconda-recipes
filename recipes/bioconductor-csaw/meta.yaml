@@ -1,60 +1,74 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.0" %}
 {% set name = "csaw" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 894cf793f221c0cc2564f1f1c43ca899a7ca6f925e0ba7cd7365388e996d844b
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 9bd64f602a67ea5a18eabc7ecef5d031
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: org.Mm.eg.db, TxDb.Mmusculus.UCSC.mm10.knownGene, testthat, GenomicAlignments, knitr, BiocStyle, rmarkdown, BiocManager
+# SystemRequirements: C++11
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - bioconductor-biocgenerics
-    - bioconductor-biocparallel
-    - bioconductor-edger
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicfeatures
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-limma
-    - bioconductor-rhtslib
-    - bioconductor-rsamtools
-    - bioconductor-s4vectors
-    - 'bioconductor-summarizedexperiment >=1.2.0'
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-rhtslib >=1.16.0,<1.17.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-zlibbioc >=1.30.0,<1.31.0'
     - r-base
     - r-rcpp
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
-    - bioconductor-annotationdbi
-    - bioconductor-biocgenerics
-    - bioconductor-biocparallel
-    - bioconductor-edger
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicfeatures
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-limma
-    - bioconductor-rhtslib
-    - bioconductor-rsamtools
-    - bioconductor-s4vectors
-    - 'bioconductor-summarizedexperiment >=1.2.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-rhtslib >=1.16.0,<1.17.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-zlibbioc >=1.30.0,<1.31.0'
     - r-base
     - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Detection of differentially bound regions in ChIP-seq data with sliding windows, with methods for normalization and proper FDR control.'
+extra:
+  identifiers:
+    - biotools:csaw
+  parent_recipe:
+    name: bioconductor-csaw
+    path: recipes/bioconductor-csaw
+    version: 1.14.1
+

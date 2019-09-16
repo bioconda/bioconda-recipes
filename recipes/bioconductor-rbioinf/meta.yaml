@@ -1,32 +1,45 @@
-{% set version = "1.38.0" %}
+{% set version = "1.44.0" %}
 {% set name = "RBioinf" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 90b7073ed0c2c40820842344983fb6ed78f167ae8fd30c0ed5a92e345b4b1307
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: c157e29f804f8b12ec5771f2283f1850
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: Rgraphviz
 requirements:
-  build:
-    - bioconductor-graph
+  host:
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
     - r-base
   run:
-    - bioconductor-graph
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Functions and datasets and examples to accompany the monograph R For Bioinformatics.'
+extra:
+  identifiers:
+    - biotools:rbioinf
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-rbioinf
+    path: recipes/bioconductor-rbioinf
+    version: 1.40.0
+

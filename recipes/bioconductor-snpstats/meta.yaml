@@ -1,38 +1,51 @@
-{% set version = "1.28.0" %}
+{% set version = "1.34.0" %}
 {% set name = "snpStats" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 396e0afa44629a84f8a3b9cd2b623f905dc82a71ca0a803711944301ade738f5
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: b4a3c967936226141b748b94b9d8e008
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: hexbin
 requirements:
-  build:
-    - bioconductor-biocgenerics
-    - bioconductor-zlibbioc
+  host:
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-zlibbioc >=1.30.0,<1.31.0'
     - r-base
     - r-matrix
     - r-survival
   run:
-    - bioconductor-biocgenerics
-    - bioconductor-zlibbioc
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-zlibbioc >=1.30.0,<1.31.0'
     - r-base
     - r-matrix
     - r-survival
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Classes and statistical methods for large SNP association studies. This extends the earlier snpMatrix package, allowing for uncertainty in genotypes.'
+extra:
+  identifiers:
+    - biotools:snpstats
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-snpstats
+    path: recipes/bioconductor-snpstats
+    version: 1.30.0
+

@@ -1,34 +1,57 @@
-{% set version = "1.10.0" %}
+{% set version = "2.0.0" %}
 {% set name = "BEclear" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: f65f7af93612186e70c31529e757b11a01146ceda2f947394b9d2604efc773ea
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 92515d8f34e66403c62df8b192d0dbdf
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: testthat, BiocStyle, knitr, rmarkdown, pander
+# SystemRequirements: C++11
 requirements:
-  build:
+  host:
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
     - r-base
+    - 'r-data.table >=1.11.8'
+    - r-futile.logger
     - r-matrix
-    - r-snowfall
+    - r-rcpp
+    - r-rdpack
   run:
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
     - r-base
+    - 'r-data.table >=1.11.8'
+    - r-futile.logger
     - r-matrix
-    - r-snowfall
+    - r-rcpp
+    - r-rdpack
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'Provides some functions to detect and correct for batch effects in DNA methylation data. The core function "BEclear" is based on latent factor models and can also be used to predict missing values in any other matrix containing real numbers.'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Provides functions to detect and correct for batch effects in DNA methylation data. The core function is based on latent factor models and can also be used to predict missing values in any other matrix containing real numbers.'
+extra:
+  identifiers:
+    - biotools:beclear
+    - doi:10.1371/journal.pone.0159921
+  parent_recipe:
+    name: bioconductor-beclear
+    path: recipes/bioconductor-beclear
+    version: 1.12.1
+

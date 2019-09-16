@@ -1,0 +1,52 @@
+{% set version = "1.32.0" %}
+{% set name = "IPPD" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 8945de40830ddf1cf423a7ebacd346e7
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  host:
+    - r-base
+    - r-bitops
+    - r-digest
+    - r-mass
+    - r-matrix
+    - r-xml
+  run:
+    - r-base
+    - r-bitops
+    - r-digest
+    - r-mass
+    - r-matrix
+    - r-xml
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (version 2 or later)'
+  summary: 'The package provides functionality to extract isotopic peak patterns from raw mass spectra. This is done by fitting a large set of template basis functions to the raw spectrum using either nonnegative least squares or least absolute deviation fittting. The package offers a flexible function which tries to estimate model parameters in a way tailored to the peak shapes in the data. The package also provides functionality to process LCMS runs.'
+extra:
+  identifiers:
+    - biotools:ippd
+    - doi:10.1186/1471-2105-13-291
+  parent_recipe:
+    name: bioconductor-ippd
+    path: recipes/bioconductor-ippd
+    version: 1.28.0
+

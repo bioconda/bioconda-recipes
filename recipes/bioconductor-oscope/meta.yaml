@@ -1,31 +1,33 @@
-{% set version = "1.8.0" %}
+{% set version = "1.14.0" %}
 {% set name = "Oscope" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 060c2769c9f0839b2e4382c2fca8713db92c821bc83e9e991a545b177d52470a
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 25588131ddda3404c7e1c1674c9f486c
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle
 requirements:
-  build:
-    - bioconductor-biocparallel
-    - bioconductor-ebseq
+  host:
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-ebseq >=1.24.0,<1.25.0'
     - r-base
     - r-cluster
     - r-testthat
   run:
-    - bioconductor-biocparallel
-    - bioconductor-ebseq
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-ebseq >=1.24.0,<1.25.0'
     - r-base
     - r-cluster
     - r-testthat
@@ -33,6 +35,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Oscope is a statistical pipeline developed to identifying and recovering the base cycle profiles of oscillating genes in an unsynchronized single cell RNA-seq experiment. The Oscope pipeline includes three modules: a sine model module to search for candidate oscillator pairs; a K-medoids clustering module to cluster candidate oscillators into groups; and an extended nearest insertion module to recover the base cycle order for each oscillator group.'
+extra:
+  identifiers:
+    - biotools:oscope
+    - doi:10.1038/nmeth.3549
+  parent_recipe:
+    name: bioconductor-oscope
+    path: recipes/bioconductor-oscope
+    version: 1.10.0
+

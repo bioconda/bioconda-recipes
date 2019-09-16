@@ -1,53 +1,49 @@
-{% set version = "0.4.0" %}
+{% set version = "0.16.0" %}
 
 package:
   name: cobra
   version: {{ version }}
 
 source:
-  fn: cobra-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/c/cobra/cobra-{{ version }}.tar.gz
-  sha256: 104e1f73f78d463849161143e8f2b98fcd7cb5ce8ee2c5b0c704ce3153036e30
+  sha256: 23d46e566aedd40469412e3a785ca71568126ca81790bf3b42794ef9ae11b7ac
 
 build:
-  number: 1
-  skip: True # [osx]
+  noarch: python
+  number: 0
 
 requirements:
-  build:
+  host:
     - python
     - setuptools
-    - six
-    - cython
-    - gcc
-    - glpk
-
   run:
     - python
     - six
-    - numpy
-    - scipy
-    - lxml
-    - python-libsbml
-    - glpk
-    - libgcc
+    - future
+    - swiglpk >=4.65
+    - ruamel.yaml >=0.15
+    - numpy >=1.10.0
+    - pandas >=0.23.0
+    - optlang >=1.4.4
+    - tabulate
+    - python-libsbml >=5.18.0
+    - depinfo >=1.5.1
 
 test:
   imports:
     - cobra
     - cobra.core
-    - cobra.design
     - cobra.flux_analysis
+    - cobra.sampling
     - cobra.io
     - cobra.manipulation
-    - cobra.solvers
     - cobra.test
-    - cobra.topology
-
-  requires:
-    - jsonschema
+    - cobra.util
+  commands:
+    - python -c "import cobra.test; cobra.test.create_test_model('textbook').optimize()"
 
 about:
   home: https://opencobra.github.io/cobrapy
   license: GNU Lesser General Public License v2 or later (LGPLv2+) or GNU General Public License v2 or later (GPLv2+)
-  summary: 'COBRApy is a package for constraint-based modeling of biological networks'
+  license_file: LICENSE
+  summary: COBRApy is a package for constraint-based modeling of biological networks.

@@ -23,14 +23,12 @@ last-map-probs \
 last-dotplot \
 "
 
-if [[ $(uname) == "Darwin" ]]; then
-	export CMAKE_CXX_FLAGS="-stdlib=libc++"
-fi
-
 for i in $scripts; do cp $SRC_DIR/scripts/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
 
 chmod +x $SRC_DIR/build/*
-make CXX="g++ $CMAKE_CXX_FLAGS"
+pushd src
+make CXX="$CXX" CXXFLAGS="${CXXFLAGS}" CFLAGS="${CFLAGS}" LDFLAGS="-L${PREFIX}/lib -lz"
+popd
 
 mkdir -p $PREFIX/bin
 for i in $binaries; do cp $SRC_DIR/src/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done

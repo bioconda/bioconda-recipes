@@ -1,32 +1,41 @@
+{% set version = "3.8.2" %}
+{% set name = "org.Ce.eg.db" %}
+{% set bioc = "3.9" %}
+
 package:
-  name: bioconductor-org.ce.eg.db
-  version: 3.2.3
-
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
 source:
-  fn: org.Ce.eg.db_3.2.3.tar.gz
-  url: https://bioc.ism.ac.jp/packages/3.2/data/annotation/src/contrib/org.Ce.eg.db_3.2.3.tar.gz
-  md5: 7c85c6469114956030ec18f8952238d8
-
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 8d60c5d14fa63b6b4bbaee3b65611136
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-
+  noarch: generic
+# Suggests: DBI, annotate, RUnit
 requirements:
-  build:
-    - bioconductor-annotationdbi >=1.31.19
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
     - r-base
   run:
-    - bioconductor-annotationdbi >=1.31.19
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
     - r-base
-
+    - curl
 test:
   commands:
-    - $R -e "library('org.Ce.eg.db')"
-
+    - '$R -e "library(''{{ name }}'')"'
 about:
-  home: http://bioconductor.org/packages/release/data/annotation/html/org.Ce.eg.db.html
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Genome wide annotation for Worm,
-  primarily based on mapping using Entrez Gene identifiers.'
+  summary: 'Genome wide annotation for Worm, primarily based on mapping using Entrez Gene identifiers.'
+extra:
+  parent_recipe:
+    name: bioconductor-org.ce.eg.db
+    path: recipes/bioconductor-org.ce.eg.db
+    version: 3.6.0
+

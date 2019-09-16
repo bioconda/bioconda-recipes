@@ -1,33 +1,33 @@
-{% set version = "2.0" %}
+{% set name = "Mash" %}
+{% set version = "2.2.1" %}
 
 package:
-  name: mash
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: mash-{{ version }}.tar.gz
   url: https://github.com/marbl/Mash/archive/v{{ version }}.tar.gz
-  sha256: 7bea8cd3c266640bbd97f2e1c9d0168892915c1c14f7d03a9751bf7a3709dd01
+  sha256: c81c4d2cd85e3ff4f73017a51e000f58f6942b429ece0b9f7fa48e549bbcae1e
 
 build:
   number: 0
-  string: gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}
 
 requirements:
-  build: 
-    - gcc  # [not osx]
-    - llvm  # [osx]
+  build:
+    - {{ compiler('cxx') }}
     - autoconf
     - automake
-    - zlib {{CONDA_ZLIB}}*
+  host:
+    - zlib
     - capnproto
-    - gsl {{ CONDA_GSL }}*
-
+    - gsl
+    - libcblas
   run:
-    - libgcc  # [not osx]
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
     - capnproto
-    - gsl {{ CONDA_GSL }}*
+    - gsl
+    - libcblas
+
 test:
   commands:
     - mash -h

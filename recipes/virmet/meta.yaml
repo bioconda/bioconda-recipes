@@ -1,20 +1,23 @@
+{% set version = "v1.1.1" %}
+{% set sha256 = "feda817aecc98bf0332de0e11e58e5a808279c452780be5b33741574158761e0" %}
+
 package:
   name: virmet
-  version: "v1.1.1"
-
-build:
-  number: 0
-  skip: True # [py27]
+  version: '{{version}}'
 
 source:
-  url: https://github.com/ozagordi/VirMet/archive/v1.1.1.tar.gz
-  md5: be64fa64b5c9b9033ac9282fe7e37fac 
+  url: https://github.com/ozagordi/VirMet/archive/{{version}}.tar.gz
+  sha256: '{{sha256}}'
+
+build:
+  noarch: python
+  number: 4
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
-    - python
-    - setuptools
-
+  host:
+    - python >=3
+    - pip
   run:
     - biopython
     - blast >=2.3
@@ -23,20 +26,20 @@ requirements:
     - htslib
     - pandas
     - prinseq
-    - python
+    - python >=3
     - r-ggplot2
     - samtools >=1.3
     - seqtk
 
-about:
-  home: http://virmet.readthedocs.io
-  summary: 'A pipeline for viral metagenomics'
-  license: MIT
-  #license_file:
-
 test:
   commands:
-    # test a few subcommands
     - virmet fetch -h
     - virmet wolfpack -h
     - virmet --help
+
+about:
+  home: http://virmet.readthedocs.io
+  license: MIT
+  license_family: MIT
+  summary: A pipeline for viral metagenomics
+  dev_url: https://github.com/ozagordi/VirMet

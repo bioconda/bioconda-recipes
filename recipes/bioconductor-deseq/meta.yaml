@@ -1,46 +1,58 @@
-{% set version = "1.30.0" %}
+{% set version = "1.36.0" %}
 {% set name = "DESeq" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 693b7b5af137c05fda2fe4815f8e62d932a39451ffe8fed1e43c9ae0d9e0c556
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2f4ef93911b4e75bc0b470bb0b9d70d0
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: pasilla (>= 0.2.10), vsn, gplots
 requirements:
-  build:
-    - 'bioconductor-biobase >=2.21.7'
-    - 'bioconductor-biocgenerics >=0.7.5'
-    - bioconductor-genefilter
-    - bioconductor-geneplotter
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genefilter >=1.66.0,<1.67.0'
+    - 'bioconductor-geneplotter >=1.62.0,<1.63.0'
     - r-base
     - r-lattice
     - r-locfit
     - r-mass
     - r-rcolorbrewer
   run:
-    - 'bioconductor-biobase >=2.21.7'
-    - 'bioconductor-biocgenerics >=0.7.5'
-    - bioconductor-genefilter
-    - bioconductor-geneplotter
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genefilter >=1.66.0,<1.67.0'
+    - 'bioconductor-geneplotter >=1.62.0,<1.63.0'
     - r-base
     - r-lattice
     - r-locfit
     - r-mass
     - r-rcolorbrewer
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 3)'
   summary: 'Estimate variance-mean dependence in count data from high-throughput sequencing assays and test for differential expression based on a model using the negative binomial distribution'
+extra:
+  identifiers:
+    - biotools:deseq
+  parent_recipe:
+    name: bioconductor-deseq
+    path: recipes/bioconductor-deseq
+    version: 1.32.0
+

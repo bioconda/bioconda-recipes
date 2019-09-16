@@ -1,66 +1,79 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.2" %}
 {% set name = "systemPipeR" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 9b1110f37b2a7a6c3f6dbfcc36c71d713b72f6bf4fd58dcc2942ee82e545b286
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: a9e21a5a9f835b67175107fe6036a8b5
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: ape, RUnit, BiocStyle, knitr, rmarkdown, biomaRt, BiocParallel, BiocManager
+# SystemRequirements: systemPipeR can be used to run external command-line software (e.g. short read aligners), but the corresponding tool needs to be installed on a system.
 requirements:
-  build:
-    - bioconductor-annotate
-    - bioconductor-biocgenerics
-    - bioconductor-biostrings
-    - bioconductor-deseq2
-    - bioconductor-edger
-    - bioconductor-genomicfeatures
-    - bioconductor-genomicranges
-    - bioconductor-go.db
-    - bioconductor-gostats
-    - bioconductor-limma
-    - bioconductor-rsamtools
-    - bioconductor-shortread
-    - bioconductor-summarizedexperiment
-    - bioconductor-variantannotation
+  host:
+    - 'bioconductor-annotate >=1.62.0,<1.63.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-deseq2 >=1.24.0,<1.25.0'
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-go.db >=3.8.0,<3.9.0'
+    - 'bioconductor-gostats >=2.50.0,<2.51.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-shortread >=1.42.0,<1.43.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-variantannotation >=1.30.0,<1.31.0'
     - r-base
-    - r-batchjobs
+    - r-batchtools
     - r-ggplot2
     - r-pheatmap
     - r-rjson
+    - r-yaml
   run:
-    - bioconductor-annotate
-    - bioconductor-biocgenerics
-    - bioconductor-biostrings
-    - bioconductor-deseq2
-    - bioconductor-edger
-    - bioconductor-genomicfeatures
-    - bioconductor-genomicranges
-    - bioconductor-go.db
-    - bioconductor-gostats
-    - bioconductor-limma
-    - bioconductor-rsamtools
-    - bioconductor-shortread
-    - bioconductor-summarizedexperiment
-    - bioconductor-variantannotation
+    - 'bioconductor-annotate >=1.62.0,<1.63.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-deseq2 >=1.24.0,<1.25.0'
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-go.db >=3.8.0,<3.9.0'
+    - 'bioconductor-gostats >=2.50.0,<2.51.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-shortread >=1.42.0,<1.43.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-variantannotation >=1.30.0,<1.31.0'
     - r-base
-    - r-batchjobs
+    - r-batchtools
     - r-ggplot2
     - r-pheatmap
     - r-rjson
+    - r-yaml
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'R package for building and running automated end-to-end analysis workflows for a wide range of next generation sequence (NGS) applications such as RNA-Seq, ChIP-Seq, VAR-Seq and Ribo-Seq. Important features include a uniform workflow interface across different NGS applications, automated report generation, and support for running both R and command-line software, such as NGS aligners or peak/variant callers, on local computers or compute clusters. Efficient handling of complex sample sets and experimental designs is facilitated by a consistently implemented sample annotation infrastructure. Instructions for using systemPipeR are given in the Overview Vignette (HTML). The remaining Vignettes, linked below, are workflow templates for common NGS use cases.'
+extra:
+  identifiers:
+    - biotools:systempiper
+  parent_recipe:
+    name: bioconductor-systempiper
+    path: recipes/bioconductor-systempiper
+    version: 1.14.0
+

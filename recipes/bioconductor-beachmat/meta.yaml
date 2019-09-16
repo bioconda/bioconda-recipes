@@ -1,42 +1,46 @@
-{% set version = "1.0.1" %}
+{% set version = "2.0.0" %}
 {% set name = "beachmat" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: e28ebefe877de87b2b540f58d41dfb1d6a5adb7b2d3338feb937fd4ff785d51e
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: c0c0ea857cbfc243f4350ef48527b6f5
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: testthat, BiocStyle, knitr, rmarkdown, Matrix, devtools
+# SystemRequirements: C++11
 requirements:
-  build:
-    - bioconductor-delayedarray
-    - bioconductor-hdf5array
-    - bioconductor-rhdf5
-    - bioconductor-rhdf5lib
+  host:
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-delayedarray >=0.10.0,<0.11.0'
     - r-base
-    - r-rcpp
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
-    - bioconductor-delayedarray
-    - bioconductor-hdf5array
-    - bioconductor-rhdf5
-    - bioconductor-rhdf5lib
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-delayedarray >=0.10.0,<0.11.0'
     - r-base
-    - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'Provides a consistent C++ class interface for a variety of commonly used matrix types, including sparse and HDF5-backed matrices.'
+  summary: 'Provides a consistent C++ class interface for reading from and writing data to a variety of commonly used matrix types. Ordinary matrices and several sparse/dense Matrix classes are directly supported, third-party S4 classes may be supported by external linkage, while all other matrices are handled by DelayedArray block processing.'
+extra:
+  parent_recipe:
+    name: bioconductor-beachmat
+    path: recipes/bioconductor-beachmat
+    version: 1.2.1
+

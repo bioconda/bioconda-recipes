@@ -9,7 +9,7 @@ if [ -f Build.PL ]; then
     ./Build install --installdirs site
 elif [ -f Makefile.PL ]; then
     # Make sure this goes in site
-    perl Makefile.PL INSTALLDIRS=site
+    perl Makefile.PL -n INSTALLDIRS=site
     make
     #make test # expected to fail as we don't had perl-heap-simple as dep to avoid cyclic dependency
     make install

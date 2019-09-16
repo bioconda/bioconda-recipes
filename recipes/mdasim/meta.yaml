@@ -1,41 +1,41 @@
-{% set name = "mdasim" %}
-{% set version = "1.2" %}
+{% set version = "2.1.1" %}
+{% set sha256 = "ef0e9c646d246f1670fc1fbeff2d89dfa7d32b6de42b2daad79807c69f2866fb" %}
 
 package:
-    name: {{ name|lower }}
-    version: {{ version }}
+  name: mdasim
+  version: '{{version}}'
 
 source:
-    url: https://sourceforge.net/projects/mdasim/files/{{name}}{{version}}.tar.gz
-    md5: 9bfc68508863082b02714bf9d59f6245
-    patches:
-        - bugfix-and-openmpi.patch
+  url: https://github.com/hzi-bifo/mdasim/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
 
 build:
-    # omitting OSX as the Makefile wasn't made for this (tried debugging, never ends)
-    skip: True # [not linux64]
-    number: 0
+  # omitting OSX as the Makefile wasn't made for this (tried debugging, never ends)
+  skip: true # [not linux64]
+  number: 0
+  script: make prefix=$PREFIX
 
 requirements:
-    build:
-        - gcc
-        - openmpi
-    run:
-        - libgcc
-        - openmpi
+  build:
+    - '{{ compiler("c") }}'
+  host:
+    - openmpi
+  run:
+    - openmpi
 
 test:
-    source_files:
-        - examples/Staphylococcus_aureus_USA300_FPR3757.fa
-        - examples/primerList.fasta
-    commands:
-        - mdasim --help
-        - mdasim --version
-        # omitting for linux64 to avoid test failures when run in biocontainers on travis where file copying doesn't seem to work, put back in if you make mdasim compile on OSX
-        #        - mdasim --input=examples/Staphylococcus_aureus_USA300_FPR3757.fa --primers=examples/primerList.fasta --coverage=2 # [osx]
+  commands:
+    - mdasim --help
+    - mdasim --version
 
 about:
-    home: https://sourceforge.net/projects/mdasim/
-    license: GPL-3
-    license_file: LICENSE.txt
-    summary: 'Tagliavi Z, Draghici S. MDAsim: A multiple displacement amplification simulator. 2012 IEEE International Conference on Bioinformatics and Biomedicine (BIBM). 2012. pp. 1–4. doi:10.1109/BIBM.2012.6392622'
+  home: https://github.com/hzi-bifo/mdasim
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE.txt
+  summary: 'This is MDAsim 2+, a tool to simulate whole genome amplification of a
+    DNA sequence with multiple displacement amplification. A citation for this version
+    will be provided when available. MDAsim 2+ extends MDAsim 1.2, so please also
+    always cite: Tagliavi Z, Draghici S. MDAsim: A multiple displacement amplification
+    simulator. 2012 IEEE International Conference on Bioinformatics and Biomedicine
+    (BIBM). 2012. pp. 1–4. doi:10.1109/BIBM.2012.6392622'

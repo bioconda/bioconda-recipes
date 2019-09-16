@@ -1,44 +1,48 @@
+{% set version = "3.2.0" %}
+
+package:
+  name: trinotate
+  version: {{ version }}
+
+source:
+  url: https://github.com/Trinotate/Trinotate/archive/Trinotate-v{{ version }}.tar.gz
+  sha256: 93195661a822b5a4eeb6504051795db91626a75c81c03f03f1f9fbfbf7e1e291
+  patches:
+      - runMe.sh.patch
+      - trinotate.patch
+      - boiler.patch
+
+build:
+  noarch: generic
+  number: 0
+
+requirements:
+  host:
+    - perl
+    - perl-app-cpanminus
+    - perl-module-build
+    - perl-dbi
+    - perl-dbd-sqlite
+    - perl-file-find-rule
+  run:
+    - perl
+    - sqlite
+    - perl-app-cpanminus
+    - perl-module-build
+    - perl-dbi
+    - perl-dbd-sqlite
+    - blast
+    - hmmer
+    - perl-file-find-rule
+    - wget
+
+test:
+  commands:
+    - Trinotate --help 2>&1 | grep "Trinotate <sqlite.db> <command>"
+
 about:
   home: https://trinotate.github.io/
   license: 'BSD'
   summary: 'Trinotate is a comprehensive annotation suite designed for automatic
     functional annotation of transcriptomes, particularly de novo assembled
     transcriptomes, from model or non-model organisms'
-
-build:
-  number: 0
-
-package:
-  name: trinotate
-  version: '3.0.2'
-
-requirements:
-  build:
-      - perl 
-      - perl-app-cpanminus
-      - perl-module-build
-      - perl-dbi
-      - perl-dbd-sqlite
-      - perl-file-find-rule
-  run:
-      - perl 
-      - sqlite
-      - perl-app-cpanminus
-      - perl-module-build
-      - perl-dbi
-      - perl-dbd-sqlite
-      - blast
-      - hmmer
-      - perl-file-find-rule
-
-source:
-  fn: trinotate-3.0.2.tar.gz
-  url: https://github.com/Trinotate/Trinotate/archive/v3.0.2.tar.gz
-  patches:
-      - runMe.sh.patch
-      - trinotate.patch
-  md5: bf52a1393d029acc43dbb493dd6f31f4
-
-test:
-    commands:
-        - Trinotate --help 2>&1 | grep "Trinotate <sqlite.db> <command>"

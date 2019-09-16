@@ -1,40 +1,52 @@
-{% set version = "1.2.1" %}
+{% set version = "1.8.1" %}
 {% set name = "treeio" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 9de664155c482be466a0089cf4757288bd672ee92958e07f49cfde641b9666d4
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: b7b37244daef327a50f199209c161a1b
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: Biostrings, ggplot2, ggtree, knitr, phangorn, prettydoc, testthat, tidyr
 requirements:
-  build:
+  host:
     - r-ape
     - r-base
-    - r-ggplot2
+    - r-dplyr
     - r-jsonlite
     - r-magrittr
-    - r-rvcheck
+    - r-rlang
+    - r-tibble
+    - 'r-tidytree >=0.2.3'
   run:
     - r-ape
     - r-base
-    - r-ggplot2
+    - r-dplyr
     - r-jsonlite
     - r-magrittr
-    - r-rvcheck
+    - r-rlang
+    - r-tibble
+    - 'r-tidytree >=0.2.3'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Base classes and functions for parsing and exporting phylogenetic trees.'
+  summary: 'Base classes and functions for parsing and exporting phylogenetic trees. ''treeio'' supports parsing analysis findings from commonly used software packages, allows linking external data to phylogeny and merging tree data obtained from different sources. It also supports exporting phylogenetic tree with heterogeneous associated data to a single tree file.'
+extra:
+  parent_recipe:
+    name: bioconductor-treeio
+    path: recipes/bioconductor-treeio
+    version: 1.4.3
+

@@ -1,38 +1,53 @@
-{% set version = "2.18.0" %}
+{% set version = "2.24.1" %}
 {% set name = "UniProt.ws" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: dc652b6480badda24c895284f573915d904733e16667ccfb521c152f01ab381c
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: c5617e285c45fd257e3b122afa3cc59b
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocStyle, knitr
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - 'bioconductor-biocgenerics >=0.13.8'
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biocfilecache >=1.8.0,<1.9.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-base
+    - r-rappdirs
     - r-rcurl
     - r-rsqlite
   run:
-    - bioconductor-annotationdbi
-    - 'bioconductor-biocgenerics >=0.13.8'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biocfilecache >=1.8.0,<1.9.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-base
+    - r-rappdirs
     - r-rcurl
     - r-rsqlite
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'Artistic License 2.0'
   summary: 'A collection of functions for retrieving, processing and repackaging the UniProt web services.'
+extra:
+  identifiers:
+    - biotools:uniprot.ws
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-uniprot.ws
+    path: recipes/bioconductor-uniprot.ws
+    version: 2.20.4
+

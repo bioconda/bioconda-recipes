@@ -1,40 +1,51 @@
-{% set version = "1.32.0" %}
+{% set version = "1.38.0" %}
 {% set name = "Genominator" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 0ac624d72dc6b2e8f478f3d9e1b0882c6001d19bfb2e0e5646aef4e77c3705be
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 3d84c0c525066a75bba4249dc5676d07
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: biomaRt, ShortRead, yeastRNASeq
 requirements:
-  build:
-    - 'bioconductor-biocgenerics >=0.1.0'
-    - bioconductor-genomegraphs
-    - 'bioconductor-iranges >=2.5.27'
+  host:
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genomegraphs >=1.44.0,<1.45.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
     - r-base
-    - 'r-dbi >=0.2_5'
+    - 'r-dbi >=0.2-5'
     - r-rsqlite
   run:
-    - 'bioconductor-biocgenerics >=0.1.0'
-    - bioconductor-genomegraphs
-    - 'bioconductor-iranges >=2.5.27'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genomegraphs >=1.44.0,<1.45.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
     - r-base
-    - 'r-dbi >=0.2_5'
+    - 'r-dbi >=0.2-5'
     - r-rsqlite
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Tools for storing, accessing, analyzing and visualizing genomic data.'
+extra:
+  identifiers:
+    - biotools:genominator
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-genominator
+    path: recipes/bioconductor-genominator
+    version: 1.34.0
+

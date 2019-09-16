@@ -1,41 +1,46 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "CHRONOS" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: df913f00b6cc912fb7da5ec10c8e53d5278f3bc19e131dbe745376529f2fe42b
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 23549499ee1be61c2fe468de10d353b0
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocGenerics, knitr
+# SystemRequirements: Java version >= 1.7, Pandoc
 requirements:
-  build:
-    - bioconductor-biomart
-    - bioconductor-graph
-    - bioconductor-rbgl
+  host:
+    - 'bioconductor-biomart >=2.40.0,<2.41.0'
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-rbgl >=1.60.0,<1.61.0'
     - r-base
     - r-circlize
     - r-doparallel
     - r-foreach
+    - r-igraph
     - r-openxlsx
     - r-rcurl
     - r-xml
   run:
-    - bioconductor-biomart
-    - bioconductor-graph
-    - bioconductor-rbgl
+    - 'bioconductor-biomart >=2.40.0,<2.41.0'
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-rbgl >=1.60.0,<1.61.0'
     - r-base
     - r-circlize
     - r-doparallel
     - r-foreach
+    - r-igraph
     - r-openxlsx
     - r-rcurl
     - r-xml
@@ -43,6 +48,14 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'A package used for efficient unraveling of the inherent dynamic properties of pathways. MicroRNA-mediated subpathway topologies are extracted and evaluated by exploiting the temporal transition and the fold change activity of the linked genes/microRNAs.'
+extra:
+  identifiers:
+    - biotools:CHRONOS
+  parent_recipe:
+    name: bioconductor-chronos
+    path: recipes/bioconductor-chronos
+    version: 1.8.1
+

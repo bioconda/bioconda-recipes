@@ -1,76 +1,25 @@
-diff --git a/alfred/Makefile b/bioconda-recipes/recipes/alfred/Makefile
-index e834679..92c47f1 100644
---- a/alfred/Makefile
-+++ b/bioconda-recipes/recipes/alfred/Makefile
-@@ -1,26 +1,16 @@
- DEBUG ?= 0
- STATIC ?= 0
+diff --git a/Makefile b/Makefile
+index d4dccd2..4d05d49 100644
+--- a/Makefile
++++ b/Makefile
+@@ -3,6 +3,7 @@ STATIC ?= 0
  
--# Submodules
--PWD = $(shell pwd)
--EBROOTHTSLIB ?= ${PWD}/src/htslib/
--BOOST_ROOT ?= ${PWD}/src/modular-boost/
--
--# Install dir
--prefix = ${PWD}
--exec_prefix = $(prefix)
--bindir = $(exec_prefix)/bin
--
+ # Submodules
+ PWD = $(shell pwd)
++SDSL_ROOT ?= ${PWD}/src/sdslLite/
+ EBROOTHTSLIB ?= ${PWD}/src/htslib/
+ JLIB ?= ${PWD}/src/jlib/
+ 
+@@ -13,10 +14,8 @@ bindir ?= $(exec_prefix)/bin
+ 
  # Flags
  CXX=g++
--CXXFLAGS += -isystem ${EBROOTHTSLIB} -isystem ${BOOST_ROOT} -pedantic -W -Wall -Wno-unknown-pragmas -D__STDC_LIMIT_MACROS -fno-strict-aliasing
--LDFLAGS += -L${EBROOTHTSLIB} -L${EBROOTHTSLIB}/lib -L${BOOST_ROOT}/stage/lib -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time
-+CXXFLAGS += -isystem ${PREFIX} -isystem ${BOOST_ROOT} -pedantic -W -Wall -Wno-unknown-pragmas -D__STDC_LIMIT_MACROS -fno-strict-aliasing
-+LDFLAGS += -L${PREFIX}/lib -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time
+-CXXFLAGS = ${CMDCXXFLAGS}
+-CXXFLAGS += -std=c++11 -isystem ${JLIB} -isystem ${EBROOTHTSLIB} -pedantic -W -Wall -Wno-unknown-pragmas -D__STDC_LIMIT_MACROS -fno-strict-aliasing
+-LDFLAGS = ${CMDLDFLAGS}
+-LDFLAGS += -L${EBROOTHTSLIB} -L${EBROOTHTSLIB}/lib -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time -L${EBROOTHTSLIB} -L${EBROOTHTSLIB}/lib -lpthread
++CXXFLAGS += -std=c++11 -isystem ${JLIB} -isystem ${EBROOTHTSLIB} -isystem ${SDSL_ROOT}/include -pedantic -W -Wall -fvisibility=hidden
++LDFLAGS += -L${SDSL_ROOT}/lib -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time -lsdsl -ldivsufsort -ldivsufsort64 -ldl -L${EBROOTHTSLIB} -L${EBROOTHTSLIB}/lib -lpthread
  
  # Additional flags for release/debug
  ifeq (${STATIC}, 1)
- 	LDFLAGS += -static -static-libgcc -pthread -lhts -lz -llzma -lbz2
- else
--	LDFLAGS += -lhts -lz -llzma -lbz2 -Wl,-rpath,${EBROOTHTSLIB},-rpath,${EBROOTHTSLIB}/lib,-rpath,${BOOST_ROOT}/stage/lib
-+	LDFLAGS += -lhts -lz -llzma -lbz2
- endif
- ifeq (${DEBUG}, 1)
- 	CXXFLAGS += -g -O0 -fno-inline -DDEBUG
-@@ -30,13 +20,6 @@ else ifeq (${DEBUG}, 2)
- else
- 	CXXFLAGS += -O3 -fno-tree-vectorize -DNDEBUG
- endif
--ifeq (${EBROOTHTSLIB}, ${PWD}/src/htslib/)
--	SUBMODULES += .htslib
--endif
--ifeq (${BOOST_ROOT}, ${PWD}/src/modular-boost/)
--	SUBMODULES += .boost
--endif
--
- 
- # External sources
- BOOSTSOURCES = $(wildcard src/modular-boost/libs/iostreams/include/boost/iostreams/*.hpp)
-@@ -44,25 +27,12 @@ HTSLIBSOURCES = $(wildcard src/htslib/*.c) $(wildcard src/htslib/*.h)
- SOURCES = $(wildcard src/*.h) $(wildcard src/*.cpp)
- 
- # Targets
--BUILT_PROGRAMS = src/alfred
--TARGETS = ${SUBMODULES} ${BUILT_PROGRAMS}
-+TARGETS = src/alfred
- 
- all:   	$(TARGETS)
- 
--.htslib: $(HTSLIBSOURCES)
--	cd src/htslib && make && make lib-static && cd ../../ && touch .htslib
--
--.boost: $(BOOSTSOURCES)
--	cd src/modular-boost && ./bootstrap.sh --prefix=${PWD}/src/modular-boost --without-icu --with-libraries=iostreams,filesystem,system,program_options,date_time && ./b2 && ./b2 headers && cd ../../ && touch .boost
--
- src/alfred: ${SUBMODULES} $(SOURCES)
- 	$(CXX) $(CXXFLAGS) $@.cpp -o $@ $(LDFLAGS)
- 
--install: ${BUILT_PROGRAMS}
--	mkdir -p ${bindir}
--	install -p ${BUILT_PROGRAMS} ${bindir}
--
- clean:
--	cd src/htslib && make clean
--	cd src/modular-boost && ./b2 --clean-all
--	rm -f $(TARGETS) $(TARGETS:=.o) ${SUBMODULES}
-+	rm -f $(TARGETS) $(TARGETS:=.o)

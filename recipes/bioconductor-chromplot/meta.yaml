@@ -1,34 +1,45 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "chromPlot" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 87aca7fe1d474f939797e2ad4da6f8ace46d67464e86d566bb8275caf10f1e9b
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: a83b3a023294deec5184eb5f7af01ec1
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: qtl, GenomicFeatures, TxDb.Hsapiens.UCSC.hg19.knownGene
 requirements:
-  build:
-    - bioconductor-biomart
-    - bioconductor-genomicranges
+  host:
+    - 'bioconductor-biomart >=2.40.0,<2.41.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-base
   run:
-    - bioconductor-biomart
-    - bioconductor-genomicranges
+    - 'bioconductor-biomart >=2.40.0,<2.41.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Package designed to visualize genomic data along the chromosomes, where the vertical chromosomes are sorted by number, with sex chromosomes at the end.'
+extra:
+  identifiers:
+    - biotools:chromplot
+    - doi:10.1093/bioinformatics/btw137
+  parent_recipe:
+    name: bioconductor-chromplot
+    path: recipes/bioconductor-chromplot
+    version: 1.8.0
+

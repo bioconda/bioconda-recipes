@@ -1,0 +1,46 @@
+{% set version = "1.30.0" %}
+{% set name = "predictionet" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 38a12700b0f4e71deaecacb35555b12c
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: network, minet, knitr
+requirements:
+  host:
+    - 'bioconductor-rbgl >=1.60.0,<1.61.0'
+    - r-base
+    - r-catnet
+    - r-igraph
+    - r-mass
+    - r-penalized
+  run:
+    - 'bioconductor-rbgl >=1.60.0,<1.61.0'
+    - r-base
+    - r-catnet
+    - r-igraph
+    - r-mass
+    - r-penalized
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'This package contains a set of functions related to network inference combining genomic data and prior information extracted from biomedical literature and structured biological databases. The main function is able to generate networks using Bayesian or regression-based inference methods; while the former is limited to < 100 of variables, the latter may infer networks with hundreds of variables. Several statistics at the edge and node levels have been implemented (edge stability, predictive ability of each node, ...) in order to help the user to focus on high quality subnetworks. Ultimately, this package is used in the ''Predictive Networks'' web application developed by the Dana-Farber Cancer Institute in collaboration with Entagen.'
+

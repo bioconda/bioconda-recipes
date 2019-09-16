@@ -1,0 +1,52 @@
+{% set version = "1.6.0" %}
+{% set name = "slalom" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 76c07e6bd25335b1c7ddd97569ee927b
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr, rhdf5, scater, testthat
+requirements:
+  host:
+    - 'bioconductor-gseabase >=1.46.0,<1.47.0'
+    - 'bioconductor-singlecellexperiment >=1.6.0,<1.7.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - r-base
+    - r-bh
+    - r-ggplot2
+    - 'r-rcpp >=0.12.8'
+    - r-rcpparmadillo
+    - r-rsvd
+  run:
+    - 'bioconductor-gseabase >=1.46.0,<1.47.0'
+    - 'bioconductor-singlecellexperiment >=1.6.0,<1.7.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - r-base
+    - r-bh
+    - r-ggplot2
+    - 'r-rcpp >=0.12.8'
+    - r-rcpparmadillo
+    - r-rsvd
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'slalom is a scalable modelling framework for single-cell RNA-seq data that uses gene set annotations to dissect single-cell transcriptome heterogeneity, thereby allowing to identify biological drivers of cell-to-cell variability and model confounding factors.'
+

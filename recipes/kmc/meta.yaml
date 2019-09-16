@@ -1,46 +1,50 @@
-{% set version = "3.0.1" %}
+{% set version = "3.1.1" %}
+{% set rc = "" %}
+{% set printed_version = "3.1.1" %}
 
 package:
   name: kmc
-  version: {{ version }}
+  version: {{ version }}{{ rc }}
 
 source:
-  fn: kmc-{{ version }}.tar.gz
-  url: https://github.com/refresh-bio/KMC/archive/v{{ version }}.tar.gz
-  sha256: 0dbc9254f95541a060d94076d2aa03bb57eb2da114895848f65af0db1e4f8b67
+  url: https://github.com/refresh-bio/KMC/archive/v{{ version }}{{ rc }}.tar.gz
+  sha256: d7cdf37d90a07d1a432b7427436f962914b5f63a1b6dbb9a116609a1c64d1324
   patches:
-    - 0001-kmc-use-make-user-flags.patch
-    - 0002-kmc-no-stdlib-static-link.patch
-    - 0003-kmc-c++11-compat.patch
-    - 0004-kmc-no-libz-libbz2-static-link.patch
+    - shared_library.patch
 
 build:
   number: 0
-  # this recipe builds kmc without the asmlib speedup
-  string: "noasmlib_{{ PKG_BUILDNUM }}"
+  skip: True  # [osx]
 
 requirements:
   build:
-    # C++11 features are required
-    - gcc >=4.7
-    - libgcc
-    - zlib {{ CONDA_ZLIB }}*
-    - bzip2 {{ CONDA_BZIP2 }}*
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - bzip2
   run:
-    - libgcc
-    - zlib {{ CONDA_ZLIB }}*
-    - bzip2 {{ CONDA_BZIP2 }}*
+    - zlib
+    - bzip2
 
 test:
   commands:
-    - kmc 2>&1 | grep "K-Mer Counter" > /dev/null
-    - kmc_dump 2>&1 | grep "KMC dump ver." > /dev/null
-    - kmc_tools 2>&1 | grep "kmc_tools ver." > /dev/null
+    - (kmc 2>&1; true) | grep -q "K-Mer Counter (KMC) ver. {{ printed_version }}"
+    - (kmc_dump 2>&1; true) | grep -q "KMC dump ver. {{ printed_version }}"
+    - (kmc_tools 2>&1; true) | grep -q "kmc_tools ver. {{ printed_version }}"
 
 about:
   home: http://sun.aei.polsl.pl/kmc/
-  license: GPLv2
-  summary: K-mer Counter is a utility designed for counting k-mers (sequences of consecutive k symbols) in a set of reads from genome sequencing projects.
+  license: GPL3
+  license_family: GPL3
+  license_file: '{{ environ["RECIPE_DIR"] }}/gpl-3.0.txt'
+  summary: Tools for efficient k-mer counting and filtering of reads based on k-mer content
+  description: |
+    K-mer Counter is a utility designed for counting k-mers (sequences
+    of consecutive k symbols) in a set of reads from genome sequencing
+    projects.
 
 extra:
-  note: this recipe omits the asmlib speedup due to licensing issues
+  identifiers:
+    - biotools:KMC
+    - doi:10.1093/bioinformatics/btx304

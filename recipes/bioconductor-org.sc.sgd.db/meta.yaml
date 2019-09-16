@@ -1,0 +1,41 @@
+{% set version = "3.8.2" %}
+{% set name = "org.Sc.sgd.db" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 386e853c14191f8845fc0237aad0d0db
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: DBI, annotate, RUnit
+requirements:
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - r-base
+  run:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - r-base
+    - curl
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Genome wide annotation for Yeast, primarily based on mapping using ORF identifiers from SGD.'
+extra:
+  parent_recipe:
+    name: bioconductor-org.sc.sgd.db
+    path: recipes/bioconductor-org.sc.sgd.db
+    version: 3.6.0
+

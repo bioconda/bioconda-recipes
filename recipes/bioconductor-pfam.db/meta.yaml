@@ -1,0 +1,41 @@
+{% set version = "3.8.2" %}
+{% set name = "PFAM.db" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 5439ecd3a3caf591e77ffcd01e70dea5
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: DBI
+requirements:
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - r-base
+  run:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - r-base
+    - curl
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'A set of protein ID mappings for PFAM assembled using data from public repositories'
+extra:
+  parent_recipe:
+    name: bioconductor-pfam.db
+    path: recipes/bioconductor-pfam.db
+    version: 3.6.0
+

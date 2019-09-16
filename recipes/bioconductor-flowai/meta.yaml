@@ -1,24 +1,26 @@
-{% set version = "1.6.2" %}
+{% set version = "1.14.0" %}
 {% set name = "flowAI" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: a3c4b4152fadd0aa6fd812d4dbb888700aee141dc7b5a26fe81cb408c58abdfe
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: c887df5730d374cb7db2a7ef93524fe8
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: testthat, shiny
 requirements:
-  build:
-    - bioconductor-flowcore
+  host:
+    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
     - r-base
     - r-changepoint
     - r-ggplot2
@@ -26,9 +28,10 @@ requirements:
     - r-plyr
     - r-rcolorbrewer
     - r-reshape2
+    - r-rmarkdown
     - r-scales
   run:
-    - bioconductor-flowcore
+    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
     - r-base
     - r-changepoint
     - r-ggplot2
@@ -36,11 +39,21 @@ requirements:
     - r-plyr
     - r-rcolorbrewer
     - r-reshape2
+    - r-rmarkdown
     - r-scales
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'The package is able to perform an automatic or interactive quality control on FCS data acquired using flow cytometry instruments. By evaluating three different properties: 1) flow rate, 2) signal acquisition, 3) dynamic range, the quality control enables the detection and removal of anomalies.'
+extra:
+  identifiers:
+    - biotools:flowai
+    - doi:10.1093/bioinformatics/btw191
+  parent_recipe:
+    name: bioconductor-flowai
+    path: recipes/bioconductor-flowai
+    version: 1.10.1
+

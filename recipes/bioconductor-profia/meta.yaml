@@ -1,44 +1,57 @@
-{% set version = "1.4.0" %}
+{% set version = "1.10.0" %}
 {% set name = "proFIA" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: f74b59f95a81b7c0c3ab9780c859219ee1c85dc6df2d1d257ff4e2ac6510565f
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: dbd75f01b57a3e7dd6116f621d4a4cfa
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocGenerics, plasFIA, knitr,
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-biocparallel
-    - bioconductor-ropls
-    - bioconductor-xcms
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-ropls >=1.16.0,<1.17.0'
+    - 'bioconductor-xcms >=3.6.0,<3.7.0'
     - r-base
     - r-minpack.lm
     - r-missforest
     - r-pracma
   run:
-    - bioconductor-biobase
-    - bioconductor-biocparallel
-    - bioconductor-ropls
-    - bioconductor-xcms
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-ropls >=1.16.0,<1.17.0'
+    - 'bioconductor-xcms >=3.6.0,<3.7.0'
     - r-base
     - r-minpack.lm
     - r-missforest
     - r-pracma
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: CeCILL
   summary: 'Flow Injection Analysis coupled to High-Resolution Mass Spectrometry is a promising approach for high-throughput metabolomics. FIA- HRMS data, however, cannot be pre-processed with current software tools which rely on liquid chromatography separation, or handle low resolution data only. Here we present the proFIA package, which implements a new methodology to pre-process FIA-HRMS raw data (netCDF, mzData, mzXML, and mzML) including noise modelling and injection peak reconstruction, and generate the peak table. The workflow includes noise modelling, band detection and filtering then signal matching and missing value imputation. The peak table can then be exported as a .tsv file for further analysis. Visualisations to assess the quality of the data and of the signal made are easely produced.'
+extra:
+  identifiers:
+    - biotools:profia
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-profia
+    path: recipes/bioconductor-profia
+    version: 1.8.0
+

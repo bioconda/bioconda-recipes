@@ -1,34 +1,45 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.0" %}
 {% set name = "FISHalyseR" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 0b0d162336ebc9475814321331c573b3f89629c6877a7e02c6882f7fbdba051f
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: be6da4b0fcd9884da0ee3d01c3dcdf37
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr
 requirements:
-  build:
-    - bioconductor-ebimage
+  host:
+    - 'bioconductor-ebimage >=4.26.0,<4.27.0'
     - r-abind
     - r-base
   run:
-    - bioconductor-ebimage
+    - 'bioconductor-ebimage >=4.26.0,<4.27.0'
     - r-abind
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'FISHalyseR provides functionality to process and analyse digital cell culture images, in particular to quantify FISH probes within nuclei. Furthermore, it extract the spatial location of each nucleus as well as each probe enabling spatial co-localisation analysis.'
+extra:
+  identifiers:
+    - biotools:fishalyser
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-fishalyser
+    path: recipes/bioconductor-fishalyser
+    version: 1.14.0
+

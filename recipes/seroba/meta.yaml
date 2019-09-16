@@ -1,26 +1,27 @@
-{% set name = "seroba" %}
-{% set version = "1.0.0" %}
-{% set sha256sum = "7056841f54e338f9fc981e4278c849c0e6d446a5d2a8db795482f826f2b3533e" %}
+{% set name = "SeroBA" %}
+{% set version = "1.0.1" %}
+{% set sha256sum = "5f123b192e7eacb231a97f135da42b43ede7e88a76b8a0479702329f12a080c3" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://github.com/sanger-pathogens/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256sum }}
 
 build:
   number: 0
-  skip: True # [not py3k]
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
 
 requirements:
-  build:
-    - python
+  host:
+    - python >=3
+    - pip
     - setuptools
   run:
-    - python
+    - python >=3
     - setuptools
     - kmc >=3.0
     - mummer
@@ -41,6 +42,7 @@ about:
   home: https://github.com/sanger-pathogens/seroba
   license: GPL3.0
   license_family: GPL
+  license_file: LICENSE
   summary: 'SeroBA is a k-mer based Pipeline to identify the Serotype from Illumina NGS reads for given references.'
   description: |
       SeroBA is a k-mer based Pipeline to identify the Serotype from Illumina NGS reads for given references. 

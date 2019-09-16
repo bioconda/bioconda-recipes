@@ -1,0 +1,38 @@
+{% set name = "akt" %}
+{% set version = "0.3.2" %}
+{% set sha256 = "a61f479208d68939c2d557ba72d232072f1eec53c626ff078ee7f09b5cfac716" %}
+
+package:
+  name: akt
+  version: {{ version }}
+
+source:
+  url: https://github.com/Illumina/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 2
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - openmp  # [linux]
+  run:
+    - zlib
+    - openmp  # [linux]
+
+test:
+  commands:
+    - akt || [[ $? == 1 ]]
+
+about:
+  home: "https://github.com/Illumina/akt"
+  license: "GPL3"
+  summary: "Ancestry and Kinship Tools (AKT) provides a handful of useful statistical genetics routines using the htslib API for input/output. This means it can seamlessly read BCF/VCF files and play nicely with bcftools."
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btw576

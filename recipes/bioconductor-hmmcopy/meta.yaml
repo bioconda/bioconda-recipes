@@ -1,36 +1,46 @@
-{% set version = "1.20.0" %}
+{% set version = "1.26.0" %}
 {% set name = "HMMcopy" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 2fc5b3a90012c55de4370acbb20be0292885c59931464dc43a2115a9a07e0e4a
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: e18ef3f2af6b9d913c127002b9ca729b
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - readline 6.2*
-    - 'bioconductor-geneplotter >=1.24.0'
-    - 'bioconductor-iranges >=1.4.16'
+  host:
+    - 'bioconductor-geneplotter >=1.62.0,<1.63.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
     - r-base
   run:
-    - readline 6.2*
-    - 'bioconductor-geneplotter >=1.24.0'
-    - 'bioconductor-iranges >=1.4.16'
+    - 'bioconductor-geneplotter >=1.62.0,<1.63.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Corrects GC and mappability biases for readcounts (i.e. coverage) in non-overlapping windows of fixed length for single whole genome samples, yielding a rough estimate of copy number for furthur analysis.  Designed for rapid correction of high coverage whole genome tumour and normal samples.'
+extra:
+  identifiers:
+    - biotools:hmmcopy
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-hmmcopy
+    path: recipes/bioconductor-hmmcopy
+    version: 1.22.0
+

@@ -1,62 +1,83 @@
+{% set version = "3.2" %}
+
 package:
   name: hicexplorer
-  version: '2.0'
+  version: '{{ version }}'
 
 source:
-  fn: 2.0.tar.gz
-  url: https://github.com/deeptools/HiCExplorer/archive/2.0.tar.gz
-  sha256: 975eda994b336c5279068ec8cb9c78bda34ad958f5faef88e7b49132861a6380
+  url: https://github.com/deeptools/HiCExplorer/archive/{{ version }}.tar.gz
+  sha256: 3ebaddc5d849feb0a96c31d2cae04d63264161c09792b608b4b92713364feab1
 
 build:
-  number: 1
-  skip: false
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  noarch: python
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - numpy 1.12.*
-    - scipy >=0.19.0
-    - matplotlib ==2.1.1
-    - pysam >=0.11.2
-    - intervaltree >=2.1.0
-    - biopython >=1.68
-    - pytables >=3.3.0
-    - pybigwig >=0.3.4
-    - pandas >=0.20.2
-    - jinja2 >=2.9.6
-    - configparser >=3.5.0  # [not py>34]
-    - cooler >=0.7.6
-    - six >=1.10.0
-    - future >=0.16.0
+  host:
+    - python >=3.5
+    - pip
   run:
-    - python
-    - pybigwig >=0.3.4
-    - numpy >=1.12.*
-    - scipy >=0.19.0
-    - matplotlib ==2.1.1
-    - pysam >=0.11.2
-    - intervaltree >=2.1.0
-    - biopython >=1.68
-    - pytables >=3.3.0
-    - pybigwig >=0.3.4
-    - pandas >=0.20.2
-    - jinja2 >=2.9.6
-    - configparser >=3.5.0  # [not py>34]
-    - cooler >=0.7.6
-    - six >=1.10.0
-    - future >=0.16.0
-    
+    - python  >=3.5
+    - numpy >=1.17
+    - scipy >=1.3
+    - matplotlib ==3.1.*
+    - pysam
+    - intervaltree
+    - biopython
+    - pytables
+    - pybigwig
+    - pandas
+    - jinja2
+    - cooler >=0.8.5
+    - future
+    - unidecode
+    - hicmatrix >=11
+    - pygenometracks >=3.0
+    - hic2cool >=0.7
+    - fit_nbinom >=1.1
+    - krbalancing >=0.0.5
+    - psutil
+    - pybedtools >=0.8
 
 test:
   imports:
     - hicexplorer
-
   commands:
+    - findRestSite --version
+    - hicAggregateContacts --version
     - hicBuildMatrix --version
+    - hicCorrectMatrix --version
     - hicCorrelate --version
+    - hicDetectLoops --version
+    - hicFindTADs --version
+    - hicMergeMatrixBins --version
+    - hicPlotMatrix --version
+    - hicPlotDistVsCounts --version
+    - hicPlotTADs --version
+    - hicSumMatrices --version
+    - hicInfo --version
+    - hicConvertFormat --version
+    - hicAdjustMatrix --version
+    - hicNormalize --version
+    - hicAverageRegions --version
+    - hicPlotAverageRegions --version
+    - hicMergeLoops --version
+    - hicValidateLocations --version
+    - hicCompartmentsPolarization --version
+    - chicQualityControl --version
+    - chicViewpointBackgroundModel --version
+    - chicViewpoint --version
+    - chicSignificantInteractions --version
+    - chicAggregateStatistic --version
+    - chicDifferentialTest --version
+    - chicPlotViewpoint --version
 
 about:
   home: https://github.com/deeptools/HiCExplorer
   license: GPL3
-  summary: Set of programs to process, analyze and visualize Hi-C data
+  summary: Set of programs to process, analyze and visualize Hi-C and capture Hi-C data
+
+extra:
+  identifiers:
+    - doi:10.1093/nar/gky504

@@ -1,33 +1,41 @@
 {% set version = "1.4.0" %}
 {% set name = "BSgenome.Mmusculus.UCSC.mm10" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 6e2eb3bce208cc7766f0e0ef1e14465289d5463b34d94c9a9279256545b5408b
+  md5: 929f8bd0ea9ad416ecc0c2c002500414
 build:
-  number: 2
+  number: 7
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: TxDb.Mmusculus.UCSC.mm10.knownGene
 requirements:
-  build:
-    - 'bioconductor-bsgenome >=1.33.5'
+  host:
+    - 'bioconductor-bsgenome >=1.52.0,<1.53.0'
     - r-base
   run:
-    - 'bioconductor-bsgenome >=1.33.5'
+    - 'bioconductor-bsgenome >=1.52.0,<1.53.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Full genome sequences for Mus musculus (Mouse) as provided by UCSC (mm10, Dec. 2011) and stored in Biostrings objects.'
+extra:
+  parent_recipe:
+    name: bioconductor-bsgenome.mmusculus.ucsc.mm10
+    path: recipes/bioconductor-bsgenome.mmusculus.ucsc.mm10
+    version: 1.4.0
+

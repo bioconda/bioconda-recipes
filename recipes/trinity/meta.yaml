@@ -1,64 +1,58 @@
-build:
-  number: 0
-# OSX build skipped because of this error: https://gist.github.com/pvanheus/2fbce93b326a3edb1a57aaebc8ca749e
-  skip: True # [osx]
-
+{% set name = "trinity" %}
+{% set version = "2.8.5" %}
 
 package:
-  name: trinity
-  version: '2.5.1'
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/trinityrnaseq/trinityrnaseq/archive/Trinity-v{{ version }}.tar.gz
+  sha256: eef3691aee5dbc73d8ce609f82912d3d0ae81eabced5fa61d1e53dbfe37cf3dc
+  patches:
+    - patch
+
+build:
+  number: 2
+  skip: True  # [osx]
 
 requirements:
   build:
-    - collectl
-    - fastool
-    - gcc
-    - jellyfish >=2.2.6
-    - openjdk
-    - parafly
-    - perl-app-cpanminus
-    - perl-module-build
-    - samtools >=1.3
-    - slclust
-    - trimmomatic >=0.36
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - cmake
+    - autoconf
+  host:
     - zlib
-
   run:
+    - trimmomatic >=0.36
     - bowtie
     - bowtie2 >=2.3.0
-    - collectl
-    - fastool
     - jellyfish >=2.2.6
-    - libgcc
-    - openjdk
-    - parafly
-    - perl-app-cpanminus
-    - perl-module-build
+    - openjdk >=8
+    - perl
+    - python
     - samtools >=1.3
-    - slclust
-    - trimmomatic >=0.36
     - zlib
-
-source:
-  fn: Trinity-v2.5.1.tar.gz
-  url: https://github.com/trinityrnaseq/trinityrnaseq/archive/Trinity-v2.5.1.tar.gz
-  sha256: bf14f96981bb028d7960dec895a1bcbda1fadbbe562a913b188559fd74b90457
-  patches:
-    - makefile.clean.patch
-    - trinity-plugins.makefile.clean.patch
+    - salmon >=0.9.1
+    - numpy
 
 test:
   commands:
-      - "Trinity --cite &> /dev/null"
-      - "align_and_estimate_abundance.pl --help &> /dev/null || [[ \"$?\" == 255 ]]"
-      - "abundance_estimates_to_matrix.pl --help &> /dev/null || [[ \"$?\" == 255 ]]"
-      - "run_DE_analysis.pl -h &> /dev/null || [[ \"$?\" == 255 ]]"
-      - "analyze_diff_expr.pl -h &> /dev/null || [[ \"$?\" == 255 ]]"
-      - "PtR --help &> /dev/null || [[ \"$?\" == 255 ]]"
-      - "TrinityStats.pl 2>&1 | grep \"usage:\" &> /dev/null"
-      - "define_clusters_by_cutting_tree.pl 2>&1 | grep \"define K clusters via k-means algorithm\" &> /dev/null"
+    - "Trinity --cite"
+    - "align_and_estimate_abundance.pl --help || [[ \"$?\" == 255 ]]"
+    - "abundance_estimates_to_matrix.pl --help || [[ \"$?\" == 255 ]]"
+    - "run_DE_analysis.pl -h || [[ \"$?\" == 255 ]]"
+    - "analyze_diff_expr.pl -h || [[ \"$?\" == 255 ]]"
+    - "PtR --help || [[ \"$?\" == 255 ]]"
+    - "TrinityStats.pl 2>&1 | grep \"usage:\""
+    - "define_clusters_by_cutting_tree.pl 2>&1 | grep \"define K clusters via k-means algorithm\""
+    - "Trinity_gene_splice_modeler.py --help"
 
 about:
   home: https://github.com/trinityrnaseq/trinityrnaseq/
   license: 'BSD-3-Clause'
   summary: 'Trinity RNA-Seq de novo transcriptome assembly'
+
+extra:
+  identifiers:
+    - biotools:trinity

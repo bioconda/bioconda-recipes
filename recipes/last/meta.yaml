@@ -1,40 +1,63 @@
-{% set version = "876" %}
+{% set name = "LAST" %}
+{% set version = "982" %}
+{% set sha256 = "2affa2ff2285f76e00431412429caa59ae3846f92b4d2b0524906cb470ca20d1" %}
 
 package:
-  name: last
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: last-{{ version }}.zip
-  md5: 5b4998aed0b8dbcf7dd8df03ebcb02bc
-  url: http://last.cbrc.jp/last-{{ version }}.zip
+  sha256: {{ sha256 }}
+  url: http://last.cbrc.jp/{{ name|lower }}-{{ version }}.zip
 
 build:
   number: 0
 
 requirements:
   build:
-    - python
-    - gcc  # [not osx]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
   run:
+    - zlib
     - python
-    - libgcc  # [not osx]
     - future
+    - pillow
+    - parallel
 
 test:
   commands:
-    - "lastal -V"
-    - "lastdb -V"
-    - "lastal8 -h"
-    - "lastdb8 -h"
-    - "last-split -V"
-    - "last-pair-probs -V"
-    - "last-merge-batches -V"
-    - "maf-convert -h"
+    - lastal -h
+    - lastdb -h
+    - lastal8 -h
+    - lastdb8 -h
+    - last-split -h
+    - last-merge-batches -h
+    - maf-convert -h
+    - last-dotplot -h
+    - last-map-probs -h
+    - last-split8 -h
+    - last-train -h
+    - last-pair-probs -h
+    - fastq-interleave -h
+    - last-postmask -h
+    - maf-cut -h
+    - maf-join -h
+    - maf-sort -h
+    - maf-swap -h
+    - parallel-fasta -h
+    - parallel-fastq -h
 
 about:
-    home: 'http://last.cbrc.jp/'
-    license: GPLv3
-    summary: "LAST finds similar regions between sequences, and aligns them. It is designed for comparing large datasets to each other (e.g. vertebrate genomes and/or large numbers of DNA reads)."
-    
+  home: http://last.cbrc.jp/
+  license: GPLv3
+  license_family: GPL
+  license_file: COPYING.txt
+  summary: "LAST finds similar regions between sequences, and aligns them. It is designed for comparing large datasets to each other (e.g. vertebrate genomes and/or large numbers of DNA reads)."
+
+extra:
+  container:
+    extended-base: True
+  identifiers:
+    - biotools:last

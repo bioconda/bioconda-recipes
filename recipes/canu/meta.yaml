@@ -1,40 +1,40 @@
-{% set name = "canu" %}
-{% set version = "1.6" %}
-{% set md5 = "a8047bd8975ef16af39207dbea919f95" %}
+{% set version = "1.8" %}
+{% set sha256 = "30ecfe574166f54f79606038830f68927cf0efab33bdc3c6e43fd1448fa0b2e4" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: canu
+  version: '{{version}}'
 
 source:
-  # Canu currently needs to come from git to get its version string right
-  url: https://github.com/marbl/{{ name|lower }}/archive/v{{ version }}.tar.gz
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  md5: {{ md5 }}
+  url: https://github.com/marbl/canu/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
 
 build:
-    number: 1
-    skip: True  # [osx]
-    detect_binary_files_with_prefix: True
+  number: 2
+  # This should actually work, but it explicitly checks for gcc
+  skip: True  # [osx]
 
 requirements:
-    build:
-        - gcc  # [not osx]
-        - llvm  # [osx]
-        - perl
-        - gnuplot >=5.0.5
-    run:
-        - libgcc # [not osx]
-        - perl
-        - perl-filesys-df
-        - openjdk
-        - gnuplot >=5.0.5
+  build:
+    - '{{ compiler("c") }}'
+    - '{{ compiler("cxx") }}'
+  host:
+    - gnuplot >=5.0.5
+  run:
+    - perl
+    - perl-filesys-df
+    - openjdk
+    - gnuplot >=5.0.5
 
 test:
   commands:
     - canu --version
 
 about:
-  home: http://http://canu.readthedocs.org/
+  home: http://canu.readthedocs.org/
   license: GPLv2 and others
-  summary: 'Canu is a fork of the Celera Assembler designed for high-noise single-molecule sequencing.'
+  license_file: README.licenses
+  license_family: GPL
+  summary: Canu is a fork of the Celera Assembler designed for high-noise single-molecule
+    sequencing.
+  dev_url: https://github.com/marbl/canu

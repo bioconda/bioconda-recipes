@@ -1,27 +1,29 @@
-{% set version = "1.0.0" %}
+{% set version = "1.6.0" %}
 {% set name = "SCnorm" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 2657577e53a2b41000863c9d5f104b196f267e28242dddc30bb5c1f58a62fc6e
+  md5: 03654c349ec319e48ba68c201858730e
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, devtools
 requirements:
-  build:
-    - bioconductor-biocparallel
-    - bioconductor-s4vectors
-    - bioconductor-summarizedexperiment
+  host:
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-singlecellexperiment >=1.6.0,<1.7.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-cluster
     - r-data.table
@@ -30,9 +32,10 @@ requirements:
     - r-moments
     - r-quantreg
   run:
-    - bioconductor-biocparallel
-    - bioconductor-s4vectors
-    - bioconductor-summarizedexperiment
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-singlecellexperiment >=1.6.0,<1.7.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-cluster
     - r-data.table
@@ -44,6 +47,12 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'This package implements SCnorm — a method to normalize single-cell RNA-seq data.'
+extra:
+  parent_recipe:
+    name: bioconductor-scnorm
+    path: recipes/bioconductor-scnorm
+    version: 1.2.1
+

@@ -1,48 +1,64 @@
-{% set version = "1.2.0" %}
+{% set version = "1.8.0" %}
 {% set name = "GenomicDataCommons" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 4d72679d98321d82a0830d4f3dac2219c2373bf9b703322d1a7dc51bf3bfbf59
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 7a1b67231b1ccc299aa857334cc6b8fb
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, DT, testthat, listviewer, ggplot2, GenomicAlignments, Rsamtools
 requirements:
-  build:
-    - bioconductor-genomicranges
-    - bioconductor-iranges
+  host:
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
-    - r-data.table
+    - r-dplyr
     - r-httr
     - r-jsonlite
-    - r-lazyeval
     - r-magrittr
+    - r-rappdirs
     - r-readr
+    - r-rlang
+    - r-tibble
     - r-xml2
   run:
-    - bioconductor-genomicranges
-    - bioconductor-iranges
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
-    - r-data.table
+    - r-dplyr
     - r-httr
     - r-jsonlite
-    - r-lazyeval
     - r-magrittr
+    - r-rappdirs
     - r-readr
+    - r-rlang
+    - r-tibble
     - r-xml2
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Programmatically access the NIH / NCI Genomic Data Commons RESTful service.'
+extra:
+  parent_recipe:
+    name: bioconductor-genomicdatacommons
+    path: recipes/bioconductor-genomicdatacommons
+    version: 1.4.3
+

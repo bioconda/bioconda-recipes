@@ -1,35 +1,42 @@
-{% set version = "3.4.2" %}
+{% set version = "3.4.6" %}
 {% set name = "TxDb.Drerio.UCSC.danRer10.refGene" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 740cf7e249e19afe47119564aee3515728e0b9056779a013b43f4bb1e93e0cb3
+  md5: fef9bbec3809e1b69991516988f146fb
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - 'bioconductor-genomicfeatures >=1.29.10'
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
     - r-base
   run:
-    - bioconductor-annotationdbi
-    - 'bioconductor-genomicfeatures >=1.29.10'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Exposes an annotation databases generated from UCSC by exposing these as TxDb objects'
+extra:
+  parent_recipe:
+    name: bioconductor-txdb.drerio.ucsc.danrer10.refgene
+    path: recipes/bioconductor-txdb.drerio.ucsc.danrer10.refgene
+    version: 3.4.3
+

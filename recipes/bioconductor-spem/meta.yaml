@@ -1,34 +1,44 @@
-{% set version = "1.18.0" %}
+{% set version = "1.24.0" %}
 {% set name = "SPEM" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: aa144c35fc6c5d1bff35cfd00fad9e5e4bb426a6579bb698ec88c7e95d90f715
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: c13851d7ae3e607c65b7c5803953bd4e
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-biobase
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
     - r-rsolnp
   run:
-    - bioconductor-biobase
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
     - r-rsolnp
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'This package can optimize the parameter in S-system models given time series data'
+extra:
+  identifiers:
+    - biotools:spem
+    - doi:10.1089/cmb.2011.0269
+  parent_recipe:
+    name: bioconductor-spem
+    path: recipes/bioconductor-spem
+    version: 1.20.0
+

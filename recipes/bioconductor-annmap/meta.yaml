@@ -1,41 +1,43 @@
-{% set version = "1.20.0" %}
+{% set version = "1.26.0" %}
 {% set name = "annmap" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 7195bb4388a390bded53ecee7c55fb9f3231feb159552eec9565ab2243679460
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 721ffaaaab01aabd5bbbf20d7c25d1ce
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, rjson, Gviz
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - bioconductor-genefilter
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rsamtools
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genefilter >=1.66.0,<1.67.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
     - r-base
     - r-dbi
     - r-digest
     - r-lattice
     - 'r-rmysql >=0.6-0'
   run:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - bioconductor-genefilter
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rsamtools
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genefilter >=1.66.0,<1.67.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
     - r-base
     - r-dbi
     - r-digest
@@ -45,6 +47,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'annmap provides annotation mappings for Affymetrix exon arrays and coordinate based queries to support deep sequencing data analysis. Database access is hidden behind the API which provides a set of functions such as genesInRange(), geneToExon(), exonDetails(), etc. Functions to plot gene architecture and BAM file data are also provided. Underlying data are from Ensembl.'
+extra:
+  identifiers:
+    - biotools:annmap
+    - doi:10.1093/nar/gkm779
+  parent_recipe:
+    name: bioconductor-annmap
+    path: recipes/bioconductor-annmap
+    version: 1.22.0
+

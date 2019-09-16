@@ -1,36 +1,49 @@
-{% set version = "1.20.0" %}
+{% set version = "1.26.0" %}
 {% set name = "CancerMutationAnalysis" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 1cbcaf6efc42c526e07694778dce88f0af15e45cb0d4080b7b36f78d8c719a99
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: b68cb94aaffc396c1fb4db092acbae91
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: KEGG.db
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - bioconductor-limma
-    - bioconductor-qvalue
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-qvalue >=2.16.0,<2.17.0'
     - r-base
   run:
-    - bioconductor-annotationdbi
-    - bioconductor-limma
-    - bioconductor-qvalue
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-qvalue >=2.16.0,<2.17.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2) + file LICENSE'
   summary: 'This package implements gene and gene-set level analysis methods for somatic mutation studies of cancer.  The gene-level methods distinguish between driver genes (which play an active role in tumorigenesis) and passenger genes (which are mutated in tumor samples, but have no role in tumorigenesis) and incorporate a two-stage study design.  The gene-set methods implement a patient-oriented approach, which calculates gene-set scores for each sample, then combines them across samples; a gene-oriented approach which uses the Wilcoxon test is also provided for comparison.'
+extra:
+  identifiers:
+    - biotools:cancermutationanalysis
+    - doi:10.1007/978-1-62703-721-1_7
+  parent_recipe:
+    name: bioconductor-cancermutationanalysis
+    path: recipes/bioconductor-cancermutationanalysis
+    version: 1.22.0
+

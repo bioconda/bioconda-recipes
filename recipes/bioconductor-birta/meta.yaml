@@ -1,36 +1,49 @@
-{% set version = "1.22.0" %}
+{% set version = "1.28.0" %}
 {% set name = "birta" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 904f9543c80b054efe3c5c472b955e86ca2d7eb821cb3fad2d5f20cb5a7c8dff
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: d4c84a404a92d5698e1af22fd17da36b
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-limma
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
     - r-base
     - r-mass
   run:
-    - bioconductor-biobase
-    - bioconductor-limma
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
     - r-base
     - r-mass
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Expression levels of mRNA molecules are regulated by different processes, comprising inhibition or activation by transcription factors and post-transcriptional degradation by microRNAs. birta (Bayesian Inference of Regulation of Transcriptional Activity) uses the regulatory networks of TFs and miRNAs together with mRNA and miRNA expression data to predict switches in regulatory activity between two conditions. A Bayesian network is used to model the regulatory structure and Markov-Chain-Monte-Carlo is applied to sample the activity states.'
+extra:
+  identifiers:
+    - biotools:birta
+    - doi:10.1093/bioinformatics/bts257
+  parent_recipe:
+    name: bioconductor-birta
+    path: recipes/bioconductor-birta
+    version: 1.24.0
+

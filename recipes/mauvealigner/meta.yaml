@@ -1,0 +1,45 @@
+{% set version = "1.2.0" %}
+{% set sha256 = "0d0cf5dd560cf062d4bfb01b121b38865f3a7fae6312d4169eb696add82cefc7" %}
+
+package:
+  name: mauvealigner
+  version: {{ version }}
+
+build:
+  skip: True  # [osx]
+  number: 0
+
+source:
+  url: https://depot.galaxyproject.org/software/mauveAligner/mauveAligner_{{ version }}_src_all.zip
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+  host:
+    - boost-cpp 1.65
+    - libgenome
+    - libmuscle
+    - libmems
+  run:
+    - boost-cpp 1.65
+    - libgenome
+    - libmuscle
+    - libmems
+
+test:
+  commands:
+    - mauveAligner 2>&1 | grep ^Options
+    - progressiveMauve 2>&1 | grep ^Options
+
+about:
+  home: http://darlinglab.org/mauve/
+  license: GPL-2.0
+  license_family: GPL
+  summary: The mauveAligner and progressiveMauve command-line tools for generating multiple genome alignments in the presence of large-scale evolutionary events
+  dev_url: https://sourceforge.net/projects/mauve/

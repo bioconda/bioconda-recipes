@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+#!/opt/anaconda1anaconda2anaconda3/bin/python
 #
 # Wrapper script for DeepVariant call_variants
 
 BINARY_DIR="/opt/anaconda1anaconda2anaconda3/BINARYSUB"
-MODEL_DIR="/opt/anaconda1anaconda2anaconda3/MODELSUB"
+MODEL_DIRS= {"wgs": "/opt/anaconda1anaconda2anaconda3/WGSMODELSUB",
+             "wes": "/opt/anaconda1anaconda2anaconda3/WESMODELSUB"}
 
 import argparse
 import os
@@ -28,12 +29,14 @@ def main():
     parser.add_argument("--outfile", required=True)
     parser.add_argument("--examples", required=True, help="Example directory from make_examples")
     parser.add_argument("--sample", required=True, help="Sample name")
+    parser.add_argument("--model", default="wgs", choices=sorted(MODEL_DIRS.keys()),
+                        help="DeepVariant trained model to use, defaults to wgs")
     parser.add_argument("-h", "--help", action=DVHelp)
 
     args = parser.parse_args()
 
     bin_dir = real_dirname(BINARY_DIR)
-    model_dir = real_dirname(MODEL_DIR)
+    model_dir = real_dirname(MODEL_DIRS[args.model])
     py_exe = sys.executable
     cmd = ("{py_exe} {bin_dir}/call_variants.zip "
            "--outfile {args.outfile} --examples {args.examples}/{args.sample}.tfrecord@{args.cores}.gz "

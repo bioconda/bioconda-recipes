@@ -1,44 +1,58 @@
-{% set version = "1.24.0" %}
+{% set version = "1.30.0" %}
 {% set name = "deepSNV" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 76d7c6ba83aebaf0adffc2673af19220ddb956528d6cdb03c6a5bb92c8e6689a
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2547a2cad930d74948b182b285df1c07
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: RColorBrewer, knitr, rmarkdown
 requirements:
-  build:
-    - bioconductor-biostrings
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rhtslib
-    - bioconductor-summarizedexperiment
-    - 'bioconductor-variantannotation >=1.13.44'
+  host:
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rhtslib >=1.16.0,<1.17.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-variantannotation >=1.30.0,<1.31.0'
     - r-base
     - r-vgam
   run:
-    - bioconductor-biostrings
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rhtslib
-    - bioconductor-summarizedexperiment
-    - 'bioconductor-variantannotation >=1.13.44'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rhtslib >=1.16.0,<1.17.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - 'bioconductor-variantannotation >=1.30.0,<1.31.0'
     - r-base
     - r-vgam
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'This package provides provides quantitative variant callers for detecting subclonal mutations in ultra-deep (>=100x coverage) sequencing experiments. The deepSNV algorithm is used for a comparative setup with a control experiment of the same loci and uses a beta-binomial model and a likelihood ratio test to discriminate sequencing errors and subclonal SNVs. The shearwater algorithm computes a Bayes classifier based on a beta-binomial model for variant calling with multiple samples for precisely estimating model parameters - such as local error rates and dispersion - and prior knowledge, e.g. from variation data bases such as COSMIC.'
+extra:
+  identifiers:
+    - biotools:deepsnv
+  parent_recipe:
+    name: bioconductor-deepsnv
+    path: recipes/bioconductor-deepsnv
+    version: 1.26.1
+

@@ -1,14 +1,7 @@
-#!/bin/bash
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-export LDFLAGS="-L${PREFIX}/lib"
-export CPPFLAGS="-I${PREFIX}/include"
-export CFLAGS="-I$PREFIX/include"
-export CPATH=${PREFIX}/include
+#!/usr/bin/env bash
 
-stack setup
-stack update
-make install prefix=$PREFIX
 
-#cleanup
-rm -r .stack-work
+mkdir -p ${PREFIX}/bin
+mv ngless-1.0.1-static-Linux64 ngless
+chmod +x ngless
+mv ngless ${PREFIX}/bin

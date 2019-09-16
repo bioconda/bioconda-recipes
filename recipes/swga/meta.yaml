@@ -1,55 +1,53 @@
 {% set name = "swga" %}
-{% set version = "0.4.3.p1" %}
+{% set version = "0.4.4" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://github.com/eclarke/swga/archive/c91d2ff81349811369110df81219ec1036ba8129.tar.gz
-  md5: c71b533fed7037be59f852af90944c1d
+  url: https://github.com/eclarke/swga/archive/2f240cbb356d8c4b4130d9e442596d10227738ff.tar.gz
+  sha256: 28f6971234453f8ba91997c3203e71e94a4de5e37f7bcfd01096deb1fcb952c0
+  patches:
+    - SortingCount.cpp.patch
 
 build:
-  skip: true # [not py27]
+  skip: true # [osx]
   entry_points:
     - swga = swga.main:main
-  number: 0
+  number: 1
 
 requirements:
   build:
-    - python
-    - setuptools
-    - pyfaidx
-    - click
-    - peewee
-    - melt
-    - pytest
-    - argutils
-    - semantic_version
-    - workspace
-    - gcc
-
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python <3
+    - pip
+    - bc
+    - zlib
   run:
-    - python
-    - setuptools
-    - pyfaidx
+    - python <3
+    - pyfaidx >0.4.5.2
     - click
-    - peewee
+    - pyyaml
+    - peewee >=2.7.3,<3.0
     - melt
     - pytest
     - argutils
     - semantic_version
     - workspace
+    - zlib
 
 test:
   imports:
     - swga
   commands:
-    # click requires a unicode locale
-    - LANG=C.UTF-8 swga  2>&1 | grep Usage
+    - swga 2>&1 | grep Usage
 
 about:
   home: https://github.com/eclarke/swga
-  license: GPLv3
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
   summary: 'Select primer sets for selective whole genome amplification (SWGA)'

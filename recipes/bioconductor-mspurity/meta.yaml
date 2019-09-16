@@ -1,54 +1,77 @@
-{% set version = "1.4.0" %}
+{% set version = "1.10.0" %}
 {% set name = "msPurity" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 542501d5413ffe9d296f8ae8c5311d3b41ee6f3b8ce7c99204ff52d73230bf80
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 3c75ae8d5c3437d5193646273b393b3c
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: testthat, xcms, BiocStyle, knitr, rmarkdown, msPurityData, CAMERA
 requirements:
-  build:
-    - bioconductor-mzr
+  host:
+    - 'bioconductor-keggrest >=1.24.0,<1.25.0'
+    - 'bioconductor-mzr >=2.18.0,<2.19.0'
     - r-base
     - r-dbi
+    - r-dbplyr
     - r-dosnow
+    - r-dplyr
     - r-fastcluster
     - r-foreach
     - r-ggplot2
+    - r-jsonlite
+    - r-magrittr
     - r-plyr
     - r-rcpp
     - r-reshape2
     - r-rsqlite
     - r-stringr
-    - gcc  # [linux]
-    - llvm  # [osx]
+    - r-uuid
   run:
-    - bioconductor-mzr
+    - 'bioconductor-keggrest >=1.24.0,<1.25.0'
+    - 'bioconductor-mzr >=2.18.0,<2.19.0'
     - r-base
     - r-dbi
+    - r-dbplyr
     - r-dosnow
+    - r-dplyr
     - r-fastcluster
     - r-foreach
     - r-ggplot2
+    - r-jsonlite
+    - r-magrittr
     - r-plyr
     - r-rcpp
     - r-reshape2
     - r-rsqlite
     - r-stringr
+    - r-uuid
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'Assess the contribution of the targeted precursor in fragmentation acquired or anticipated isolation windows using a metric called "precursor purity". Also provides simple processing steps (averaging, filtering, blank subtraction, etc) for DI-MS data. Works for both LC-MS(/MS) and DI-MS(/MS) data. Spectral matching of fragmentation spectra can also be run against a SQLite database of library spectra.'
+  summary: 'msPurity R package was developed to: 1) Assess the spectral quality of fragmentation spectra by evaluating the "precursor ion purity". 2) Process fragmentation spectra. 3) Perform spectral matching. What is precursor ion purity? -What we call "Precursor ion purity" is a measure of the contribution of a selected precursor peak in an isolation window used for fragmentation. The simple calculation involves dividing the intensity of the selected precursor peak by the total intensity of the isolation window. When assessing MS/MS spectra this calculation is done before and after the MS/MS scan of interest and the purity is interpolated at the recorded time of the MS/MS acquisition. Additionally, isotopic peaks can be removed, low abundance peaks are removed that are thought to have limited contribution to the resulting MS/MS spectra and the isolation efficiency of the mass spectrometer can be used to normalise the intensities used for the calculation.'
+extra:
+  identifiers:
+    - biotools:mspurity
+    - doi:10.1021/acs.analchem.6b04358
+  parent_recipe:
+    name: bioconductor-mspurity
+    path: recipes/bioconductor-mspurity
+    version: 1.6.2
+

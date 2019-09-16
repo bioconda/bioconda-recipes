@@ -1,40 +1,54 @@
-package: 
-    name: rmblast
-    version: 2.2.28
+package:
+  name: rmblast
+  version: 2.6.0
 source:
-    fn:  ncbi-rmblastn-2.2.28-src.tar.gz # [linux]
-    url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/rmblast/2.2.28/ncbi-rmblastn-2.2.28-src.tar.gz # [linux]
-    md5: fb5f4e2e02ffcb1b17af2e9f206c5c22 # [linux]
-    fn: ncbi-rmblastn-2.2.28-universal-macosx.tar.gz # [osx]
-    url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/rmblast/2.2.28/ncbi-rmblastn-2.2.28-universal-macosx.tar.gz # [osx]
-    md5: 421c5ddf2c425800d934562c965e8706 # [osx]
+  url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.6.0/ncbi-blast-2.6.0+-src.tar.gz
+  sha256: 0510e1d607d0fb4389eca50d434d5a0be787423b6850b3a4f315abc2ef19c996
+  patches:
+    - boost_106400.patch
+    - boost_106500.patch
+    # patch taken from http://www.repeatmasker.org/isb-2.6.0+-changes-vers2.patch.gz
+    - isb-2.6.0+-changes-vers2.patch
 
 build:
-  number: 2
+  number: 1
 
 requirements:
   build:
-    - boost <=1.58  # [linux]
-    - gcc  # [linux]
-    - bzip2 {{ CONDA_BZIP2 }}*  # [linux]
-    - zlib {{CONDA_ZLIB}}*  # [linux]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - boost
+    - bzip2
+    - zlib
+    - gnutls # [linux]
+    - openssl # [osx]
+    - nettle 3.3|3.3.*
+    - pcre
+    - time
   run:
-    - boost <=1.58  # [linux]
-    - libgcc  # [linux]
-    - bzip2 {{ CONDA_BZIP2 }}*  # [linux]
-    - zlib {{CONDA_ZLIB}}*  # [linux]
-    - blast
+    - boost
+    - bzip2
+    - zlib
+    - gnutls # [linux]
+    - openssl # [osx]
+    - nettle 3.3|3.3.*
+    - pcre
+    - perl
+    - perl-list-moreutils
+    - perl-archive-tar
 
 test:
-    commands:
-        - rmblastn -help > /dev/null
-        - makeblastdb -help > /dev/null
+  commands:
+    - rmblastn -help > /dev/null
+    - makeblastdb -help > /dev/null
+    - blastn -help
+    - blastp -help
+    # test that BLAST ignores LD_LIBRARY_PATH
+    - touch libstdc++.so.6; LD_LIBRARY_PATH=. makeblastdb -help && rm libstdc++.so.6
+    - update_blastdb.pl --help
 
 about:
-    home: http://www.repeatmasker.org/RMBlast.html
-    license: OSL-2.1
-    summary: RMBlast is a RepeatMasker compatible version of the standard NCBI BLAST suite.
-
-extra:
-  skip-lints:
-    - boost_not_pinned
+  home: http://www.repeatmasker.org/RMBlast.html
+  license: OSL-2.1
+  summary: RMBlast is a RepeatMasker compatible version of the standard NCBI BLAST suite.

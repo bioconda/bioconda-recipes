@@ -1,30 +1,24 @@
-{% set version = "2.4.1" %}
-
+{% set version = "2.5.1" %}
+{% set sha256 = "4abd76cbe1ca89d51abc26bf43a92359e5677f34a8258b901a01f38c897873fc" %}
 package:
   name: bamtools
-  version: {{ version }}
+  version: '{{version}}'
 
 source:
-  fn: v{{ version }}.tar.gz
-  url: https://github.com/pezmaster31/bamtools/archive/v{{ version  }}.tar.gz
-  sha256: 933a0c1a83c88c1dac8078c0c0e82f6794c75cb927265399404bc2cc2611204b
-  patches:
-    # Install bamtools in lib instead of bamtools lib, thanks to homebrew-science:
-    # https://github.com/Homebrew/homebrew-science/blob/master/bamtools.rb
-    - bamtools_lib.diff
+  url: https://github.com/pezmaster31/bamtools/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
 
 build:
-  number: 0
+  number: 5
 
 requirements:
   build:
-    - gcc   # [linux]
-    - llvm  # [osx]
+    - {{ compiler('cxx') }}
     - cmake
-    - zlib {{CONDA_ZLIB}}*
+  host:
+    - zlib
   run:
-    - zlib {{CONDA_ZLIB}}*
-    - libgcc  # [linux]
+    - zlib
 
 test:
   commands:
@@ -34,3 +28,7 @@ about:
   home: https://github.com/pezmaster31/bamtools
   license: MIT
   summary: C++ API & command-line toolkit for working with BAM data
+
+extra:
+  identifiers:
+    - biotools:bamtools

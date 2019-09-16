@@ -1,44 +1,59 @@
-{% set version = "1.4.0" %}
+{% set version = "1.10.0" %}
 {% set name = "BiocWorkflowTools" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 6acba24a2c8174efd75b1ca60452fa962d2042ec8ed738e7b719df799a0eb9ea
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: b35b8354e016215f29f0fa4c7108e4ef
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-biocstyle
+  host:
+    - 'bioconductor-biocstyle >=2.12.0,<2.13.0'
     - r-base
     - r-bookdown
+    - r-devtools
     - r-git2r
     - r-httr
     - r-knitr
     - r-rmarkdown
+    - r-rstudioapi
     - r-stringr
+    - r-usethis
   run:
-    - bioconductor-biocstyle
+    - 'bioconductor-biocstyle >=2.12.0,<2.13.0'
     - r-base
     - r-bookdown
+    - r-devtools
     - r-git2r
     - r-httr
     - r-knitr
     - r-rmarkdown
+    - r-rstudioapi
     - r-stringr
+    - r-usethis
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'MIT + file LICENSE'
   summary: 'Provides functions to ease the transition between Rmarkdown and LaTeX documents when authoring a Bioconductor Workflow.'
+extra:
+  identifiers:
+    - biotools:BiocWorkflowTools
+  parent_recipe:
+    name: bioconductor-biocworkflowtools
+    path: recipes/bioconductor-biocworkflowtools
+    version: 1.6.2
+

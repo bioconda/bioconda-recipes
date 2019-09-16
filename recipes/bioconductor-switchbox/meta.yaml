@@ -1,23 +1,23 @@
-{% set version = "1.14.0" %}
+{% set version = "1.20.0" %}
 {% set name = "switchBox" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 62ed7e6b6d8d08c9c77d04d2374692487bd34d5b4e594442d0638fc639711356
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 9485b5713f5dd142fb2fa58cb698cdae
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
+  host:
     - r-base
     - r-gplots
     - r-proc
@@ -25,10 +25,22 @@ requirements:
     - r-base
     - r-gplots
     - r-proc
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'The package offer different classifiers based on comparisons of pair of features (TSP), using various decision rules (e.g., majority wins principle).'
+extra:
+  identifiers:
+    - biotools:switchbox
+  parent_recipe:
+    name: bioconductor-switchbox
+    path: recipes/bioconductor-switchbox
+    version: 1.16.0
+

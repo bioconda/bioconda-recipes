@@ -1,31 +1,33 @@
-{% set version = "1.37.0" %}
+{% set version = "1.46.0" %}
 {% set name = "SRAdb" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 3573abf8ed55a0e639196e02a15c96b41d965fd0527b890500c4803fa12c88c8
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 227f399b7b8f1c93a2bd8e374da80c89
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: Rgraphviz
 requirements:
-  build:
-    - bioconductor-geoquery
-    - bioconductor-graph
+  host:
+    - 'bioconductor-geoquery >=2.52.0,<2.53.0'
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
     - r-base
     - r-rcurl
     - r-rsqlite
   run:
-    - bioconductor-geoquery
-    - bioconductor-graph
+    - 'bioconductor-geoquery >=2.52.0,<2.53.0'
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
     - r-base
     - r-rcurl
     - r-rsqlite
@@ -33,6 +35,14 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'The Sequence Read Archive (SRA) is the largest public repository of sequencing data from the next generation of sequencing platforms including Roche 454 GS System, Illumina Genome Analyzer, Applied Biosystems SOLiD System, Helicos Heliscope, and others. However, finding data of interest can be challenging using current tools. SRAdb is an attempt to make access to the metadata associated with submission, study, sample, experiment and run much more feasible. This is accomplished by parsing all the NCBI SRA metadata into a SQLite database that can be stored and queried locally. Fulltext search in the package make querying metadata very flexible and powerful.  fastq and sra files can be downloaded for doing alignment locally. Beside ftp protocol, the SRAdb has funcitons supporting fastp protocol (ascp from Aspera Connect) for faster downloading large data files over long distance. The SQLite database is updated regularly as new data is added to SRA and can be downloaded at will for the most up-to-date metadata.'
+extra:
+  identifiers:
+    - biotools:sradb
+  parent_recipe:
+    name: bioconductor-sradb
+    path: recipes/bioconductor-sradb
+    version: 1.42.2
+

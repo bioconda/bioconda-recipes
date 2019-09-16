@@ -1,58 +1,74 @@
-{% set version = "1.36.0" %}
+{% set version = "1.42.0" %}
 {% set name = "ShortRead" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 9f7dbec9d74f16a67403a0f801024fceb637c5ddef2ad97e5716925635b5b31a
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2acf79d7db1b63a807cc4a3e597b80bc
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, RUnit, biomaRt, GenomicFeatures, yeastNagalakshmi
 requirements:
-  build:
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.23.3'
-    - bioconductor-biocparallel
-    - 'bioconductor-biostrings >=2.37.1'
-    - 'bioconductor-genomeinfodb >=1.1.19'
-    - 'bioconductor-genomicalignments >=1.5.4'
-    - 'bioconductor-genomicranges >=1.21.6'
-    - 'bioconductor-iranges >=2.3.7'
-    - 'bioconductor-rsamtools >=1.21.4'
-    - 'bioconductor-s4vectors >=0.13.8'
-    - bioconductor-zlibbioc
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicalignments >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-xvector >=0.24.0,<0.25.0'
+    - 'bioconductor-zlibbioc >=1.30.0,<1.31.0'
     - r-base
     - r-hwriter
     - r-lattice
     - r-latticeextra
   run:
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.23.3'
-    - bioconductor-biocparallel
-    - 'bioconductor-biostrings >=2.37.1'
-    - 'bioconductor-genomeinfodb >=1.1.19'
-    - 'bioconductor-genomicalignments >=1.5.4'
-    - 'bioconductor-genomicranges >=1.21.6'
-    - 'bioconductor-iranges >=2.3.7'
-    - 'bioconductor-rsamtools >=1.21.4'
-    - 'bioconductor-s4vectors >=0.13.8'
-    - bioconductor-zlibbioc
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicalignments >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-xvector >=0.24.0,<0.25.0'
+    - 'bioconductor-zlibbioc >=1.30.0,<1.31.0'
     - r-base
     - r-hwriter
     - r-lattice
     - r-latticeextra
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'This package implements sampling, iteration, and input of FASTQ files. The package includes functions for filtering and trimming reads, and for generating a quality assessment report. Data are represented as DNAStringSet-derived objects, and easily manipulated for a diversity of purposes.  The package also contains legacy support for early single-end, ungapped alignment formats.'
+extra:
+  identifiers:
+    - biotools:shortread
+  parent_recipe:
+    name: bioconductor-shortread
+    path: recipes/bioconductor-shortread
+    version: 1.38.0
+

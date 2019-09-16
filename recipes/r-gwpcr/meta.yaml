@@ -1,46 +1,34 @@
-{% set version = '0.9.9' %}
+{% set version = '0.9.10' %}
 
 package:
   name: r-gwpcr
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: v{{ version }}.tar.gz
   url: https://github.com/Cibiv/gwpcR/archive/v{{ version }}.tar.gz
-  sha256: 0e86efa786ec66c9b601a7e31da1625c5969f37047a724d4845e3140638919b2
+  sha256: 6673467f8302535cbd266b9c772cbc6217d10b4db61595eb24fa60cf20caee37
 
 build:
-  # If this is a new build for the same version, increment the build number.
-  number: 0
-
-  # This is required to make R link correctly on Linux.
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{ compiler('c') }}
+
+  host:
     - r-base
     - r-data.table
     - r-akima
     - r-statmod
-    - gcc                  # [linux]
-    - llvm                 # [osx]
 
   run:
     - r-base
     - r-data.table
     - r-akima
     - r-statmod
-    - libgcc               # [linux]
-
-# test:
-#   requires:
-#     - r-testthat
-#   source_files:
-#     - tests
-#   commands:
-#     - $R -e "library('testthat'); test_dir('tests/testthat');"
 
 test:
   commands:
@@ -54,3 +42,12 @@ about:
             The model is based on a mechanistic model of PCR amplification as a
             Galton-Watson branching process, and on Poissonan sampling to model
             high-throughput sequencing.'
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

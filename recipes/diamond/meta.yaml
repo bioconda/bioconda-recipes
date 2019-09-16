@@ -1,35 +1,40 @@
-{% set name = "diamond" %}
-{% set version = "0.9.14" %}
-{% set sha256 = "de870a7806ac0aa47b97c9b784dd7201e2c8e11a122003bde440d926211b911e" %}
-
+{% set version = "0.9.25" %}
+{% set sha256 = "65298f60cf9421dcc7669ce61642611cd9eeffc32f66fd39ebfa25dd64416808" %}
 
 package:
-  name: {{ name }}
+  name: diamond
   version: {{ version }}
 
 source:
-  url: https://github.com/bbuchfink/{{ name }}/archive/v{{ version }}.tar.gz
+  url: https://github.com/bbuchfink/diamond/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
   number: 0
-  skip: False
 
 requirements:
   build:
-    - gcc  # [unix]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - cmake
-    - zlib {{ CONDA_ZLIB }}*
+  host:
+    - boost
+    - zlib
   run:
-    - libgcc  # [unix]
-    - zlib {{ CONDA_ZLIB }}*
+    - boost
+    - zlib
 
 test:
   commands:
     - diamond --help 2>&1 > /dev/null
 
 about:
-  home: http://ab.inf.uni-tuebingen.de/software/diamond/
-  license: BSD
+  home: https://github.com/bbuchfink/diamond
+  license: AGPL-3.0
+  license_family: AGPL
   summary: Accelerated BLAST compatible local sequence aligner
+
+extra:
+  identifiers:
+    - biotools:Diamond
+    - doi:10.1038/nmeth.3176

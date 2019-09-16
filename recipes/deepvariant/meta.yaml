@@ -1,32 +1,32 @@
-{% set version="0.4.1" %}
+{% set version = "0.8.0" %}
+{% set sha256 = "1d5a2aba453227c7aee739e182e37e25879c4adf00e151fe06b2edf281d04e0c" %}
 # When updating, also need to update model reference in post-link.sh
 
 package:
   name: deepvariant
-  version: {{ version }}
+  version: '{{ version }}'
 
 # Things to work on:
 # - Uses pre-built binaries, building problematic due to clif dependency
 # - Need recent kernel with GLIBC > 2.23 due to pre-built htslib
 # - Build patches __main__.py in zip files to generalize python dependency
-# - Requires numpy 1.13, want to sync with CONDA_NPY
+# - Requires numpy 1.14, want to sync with CONDA_NPY
 # - Uses python wrappers that don't expose all underlying options
 # - Ships with pre-built model. Longer term will need way to fetch models on demand.
 
 source:
-  fn: deepvariant-{{ version }}.zip
-  url: https://github.com/google/deepvariant/releases/download/v0.4.1/deepvariant.zip
-  md5: 0e3e34e4f5cbfb6d0f3007656a6a2632
-
+  url: https://github.com/google/deepvariant/releases/download/v{{ version }}/deepvariant.zip
+  sha256: '{{ sha256 }}'
 build:
   number: 0
   skip: true  # [osx or not py27]
 
 requirements:
-  build:
+  host:
     - python
     - unzip
     - zip
+    - zlib
     - curl
     # Needed for non-binary build
     # - google-cloud-sdk
@@ -35,24 +35,26 @@ requirements:
     - openjdk >=8,<9
     - python
     - google-cloud-sdk
-    - zlib {{ CONDA_ZLIB }}*
-    - boost {{ CONDA_BOOST }}*
-    - htslib {{ CONDA_HTSLIB }}*
-    - numpy 1.13.*
+    - zlib
+    - boost
+    - htslib
+    - numpy
     - curl
-    - tensorflow
+    - tensorflow 1.12.*
+    - protobuf
     - contextlib2
     - enum34
     - intervaltree
     - mock
-    - numpy
+    - numpy 1.14.*
+    - psutil
     - requests
     - scipy
     - oauth2client
     - six
     - crcmod
     - parallel
-    
+
 test:
   commands:
     # Pre-built binaries need GLIBC 2.16 and 2.23 (htslib) so fail
@@ -63,4 +65,5 @@ test:
 about:
   home: https://github.com/google/deepvariant
   license: MIT
-  summary: DeepVariant is an analysis pipeline that uses a deep neural network to call genetic variants from next-generation DNA sequencing data
+  summary: DeepVariant is an analysis pipeline that uses a deep neural network to
+    call genetic variants from next-generation DNA sequencing data

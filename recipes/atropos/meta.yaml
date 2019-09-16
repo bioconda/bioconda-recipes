@@ -1,35 +1,27 @@
-package:
-  name: atropos
-  version: '1.1.10'
-
 {% set name = "atropos" %}
-{% set version = "1.1.16" %}
-{% set md5 = "1439c96339470eabe411e871316bccd6" %}
+{% set version = "1.1.22" %}
+{% set hash = "05e40cb9337421479c692e1154b962fbf811d7939b72c197a024929b7ae88b78" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  md5: {{ md5 }}
-
-about:
-  home: https://atropos.readthedocs.io/
-  license: CC0
-  summary: 'trim adapters from high-throughput sequencing reads'
-
+  sha256: {{ hash }}
 
 build:
   number: 0
-  script: $PYTHON setup.py install
+  script: python -m pip install --no-deps --ignore-installed .
   skip: True  # [py27]
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - python
-    - cython
+    - pip
+    - cython >=0.25.2
   run:
     - python
     - tqdm
@@ -39,3 +31,8 @@ requirements:
 test:
   commands:
     - atropos | grep "Atropos version"
+
+about:
+  home: https://atropos.readthedocs.io/
+  license: CC0 and partly MIT
+  summary: 'trim adapters from high-throughput sequencing reads'

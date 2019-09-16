@@ -1,0 +1,41 @@
+{% set name = "bis-snp-utils" %}
+{% set version = "0.0.1" %}
+{% set sha256hash = "f156c077fc9c2101733384d799db1a873be01ddd180b7dab13f6cd28382eed31" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 2
+
+source:
+  url: https://github.com/karl616/Bis-tools/archive/{{ name }}-{{ version }}.tar.gz
+  sha256: {{ sha256hash }}
+
+requirements:
+  build:
+  run:
+    - perl
+    - perl-getopt-long
+
+test:
+  commands:
+    - annotateBed_2way.pl |grep "perl annotateBed.pl" > /dev/null
+    - gtf2bed.pl | grep USAGE > /dev/null
+    - mergeBamWithSameSM.pl | grep "perl mergeBamWithSameSM.pl" > /dev/null
+    - sep_line_by_name.pl 2>&1 | grep "no input file" > /dev/null
+    - sortByRefAndCor.pl | grep Usage > /dev/null
+    - uniqLine.pl 2>&1 | grep Usage > /dev/null
+    - vcf2bed6plus2.strand.pl | grep USAGE > /dev/null
+    - vcf2bedGraph.pl | grep USAGE > /dev/null
+    - vcf2bed.NOME.pl 2>&1 | grep USAGE > /dev/null
+    - vcf2bed.pl | grep USAGE > /dev/null
+    - vcf2coverage.pl | grep USAGE > /dev/null
+    - vcf2wig_ct_coverage.pl | grep USAGE > /dev/null
+    - vcf2wig.pl | grep USAGE > /dev/null
+
+about:
+  home: http://people.csail.mit.edu/dnaase/bissnp2011/
+  license: MIT
+  summary: bis-snp-utils are support tools for Bis-SNP

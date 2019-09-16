@@ -1,18 +1,23 @@
-{% set version = '1.7.2-0' %}
+{% set version = '1.7.2-4' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-scrm
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: scrm_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/scrm_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/scrm/scrm_{{ version }}.tar.gz
-  sha256: a889b56e9107389623147539fb5a7d2160e12ba3491df63bebb523ddaa6f95c4
+    - {{ cran_mirror }}/src/contrib/scrm_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/scrm/scrm_{{ version }}.tar.gz
+  sha256: c780450d91b671499b703588336bac23293e938ae3d33b1e54db0306091040ba
 
 build:
-  number: 0
+  merge_build_host: True  # [win]
+
+  number: 1
+  skip: true  # [win32]
 
   rpaths:
     - lib/R/lib/
@@ -20,19 +25,29 @@ build:
 
 requirements:
   build:
+    - {{ compiler('c') }}        # [not win]
+    - {{ compiler('cxx') }}      # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+
+  host:
     - r-base
     - r-rcpp >=0.11.2
-    - gcc  # [linux]
-    - llvm # [osx]
 
   run:
     - r-base
+    - {{native}}gcc-libs         # [win]
     - r-rcpp >=0.11.2
-    - libgcc # [linux]
 
 test:
   commands:
-    - $R -e "library('scrm')"
+
+    - $R -e "library('scrm')"           # [not win]
+    - "\"%R%\" -e \"library('scrm')\""  # [win]
 
 about:
   home: https://github.com/scrm/scrm-r
@@ -44,3 +59,12 @@ about:
     data sets as produced by Next- Generation Sequencing technologies for up to several
     thousand sequences.
   license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

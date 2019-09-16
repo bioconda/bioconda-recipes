@@ -1,52 +1,47 @@
-{% set version="0.9.1" %}
-{% set llvm_version = "4.0.0" %}
-
-build:
-  number: 0
-  # OSX failing due to libary issues even though shipping with Salmon binary
-  # dyld: Library not loaded: /usr/local/opt/tbb/lib/libtbbmalloc_proxy.dylib
-  # https://travis-ci.org/bioconda/bioconda-recipes/jobs/211785820#L295
-  #skip: true # [osx]
-
-about:
-    home: https://github.com/COMBINE-lab/salmon
-    license: GPLv3
-    summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using lightweight alignments
+{% set version="0.14.1" %}
 
 package:
-    name: salmon
-    version: {{ version }}
+  name: salmon
+  version: {{ version }}
+
+build:
+  number: 2
 
 source:
-  fn: Salmon-{{ version }}_src.tar.gz 
   url: https://github.com/COMBINE-lab/salmon/archive/v{{ version }}.tar.gz
-  md5: 1277b8ed65d2c6982ed176a496a2a1e3
+  sha256: 05289170e69b5f291a8403b40d6b9bff54cc38825e9f721c210192b51a19273e
 
 requirements:
   build:
-    - llvm # [osx]
-    - clangdev =={{ llvm_version }}  # [osx]
-    - libcxx =={{ llvm_version }}  # [osx]
-    - gcc ==4.8.5 # [linux]
-    - autoconf 2.69 pl5.*
-    - boost {{CONDA_BOOST}}*
-    - icu 58.*
+    - autoconf
     - cmake
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{CONDA_BZIP2}}*
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - boost-cpp
+    - icu 
+    - zlib
+    - bzip2
     - unzip
-    - jemalloc ==4.5.0
-    - tbb
+    - jemalloc >=5.1.0
+    - tbb-devel
   run:
-    - libgcc # [linux]
-    - libcxx =={{ llvm_version }}  # [osx]
-    - boost {{CONDA_BOOST}}*
-    - icu 58.*
-    - jemalloc ==4.5.0
     - tbb
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{CONDA_BZIP2}}*
 
 test:
   commands:
     - salmon --help
+
+about:
+  home: https://github.com/COMBINE-lab/salmon
+  license: GPLv3
+  license_file: LICENSE
+  summary: Highly-accurate & wicked fast transcript-level quantification from RNA-seq reads using lightweight alignments
+
+extra:
+  recipe-maintainers:
+    - rob-p
+    - k3yavi
+  identifiers:
+    - biotools:salmon
+    - doi:10.1038/nmeth.4197
