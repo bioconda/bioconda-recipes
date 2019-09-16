@@ -1,17 +1,14 @@
 {% set org_name = "SAMstats" %}
 {% set name = "samstats" %}
 {% set version = "0.2.1" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "4d70604976b296ed6e0b7c561857aadc81324daabb983ca928300ac0f294025a" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ org_name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ org_name }}-{{ version }}.tar.gz
+  sha256: 4d70604976b296ed6e0b7c561857aadc81324daabb983ca928300ac0f294025a
 
 build:
   noarch: python
@@ -19,13 +16,12 @@ build:
   entry_points:
     - SAMstats = SAMstats.__init__:main
     - SAMstatsParallel= SAMstatsParallel.__init__:main
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
   host:
     - python
-    - setuptools
-    - multiprocess
+    - pip
   run:
     - python
     - multiprocess
@@ -44,9 +40,3 @@ about:
   license_family: OTHER
   license_file: ''
   summary: SAM file alignment statistics at the read level
-  description: ''
-  doc_url: ''
-  dev_url: ''
-
-extra:
-  recipe-maintainers: ''
