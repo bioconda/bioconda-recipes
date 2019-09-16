@@ -3,7 +3,7 @@
 export STATIC="FALSE"
 if [ `uname` == Darwin ]; then
     export LDFLAGS="${LDFLAGS} -headerpad_max_install_names"
-    export STATIC="TRUE"
+#    export STATIC="TRUE"
 fi
 
 make clean
