@@ -1,6 +1,11 @@
 #!/bin/sh
-sed -i.bak "s#gcc#${CC}#" Makefile
-make
+cd Zoe
+make CC=${CC} CFLAGS="$CFLAGS" zoe-loop
+cd ..
+make CC=${CC} CFLAGS="$CFLAGS" snap
+make CC=${CC} CFLAGS="$CFLAGS" fathom
+make CC=${CC} CFLAGS="$CFLAGS" forge
+
 mkdir -p $PREFIX/bin
 mkdir -p ${PREFIX}/share/snap
 mkdir -p ${PREFIX}/share/snap/bin
