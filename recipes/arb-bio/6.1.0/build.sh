@@ -56,6 +56,8 @@ echo "==== Fixing #!/usr/bin/perl ===="
 #        after the build is finished.
 find . -name \*.pl -o -name \*.amc | \
     xargs sed -i.bak "s|/usr/bin/perl|/usr/bin/env perl|g"
+find . -name \*.pl.bak -o -name \*.amc.bak | \
+    xargs rm -f
 
 
 echo "====== PREPARING CONFIG ========"
