@@ -1,8 +1,9 @@
 #!/bin/bash
 
 ./autogen.sh
-./configure CFLAGS="-std=gnu89 -g -O2" --prefix=$PREFIX --datadir=$PREFIX/share
-make
+#./configure CFLAGS="-std=gnu89 -g -O2" --prefix=$PREFIX --datadir=$PREFIX/share
+./configure --prefix=$PREFIX --datadir=$PREFIX/share
+make -j
 make install
 
 mv $PREFIX/share/RNAz/perl/*.pl $PREFIX/bin/.
