@@ -49,6 +49,11 @@ export PATH="$(pwd)/_buildchain:$PATH"
 
 echo "==== Fixing #!/usr/bin/perl ===="
 
+# We can't rewrite this to $PREFIX/bin/perl because $PREFIX
+# is too long. #!-lines have a max length hardcoded in the
+# kernel. So we rewrite to /usr/bin/env perl instead.
+# FIXME: This will have to be altered to $PREFIX
+#        after the build is finished.
 find . -name \*.pl -o -name \*.amc | \
     xargs sed -i.bak "s|/usr/bin/perl|/usr/bin/env perl|g"
 
