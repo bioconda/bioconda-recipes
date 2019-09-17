@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/PWMEnrich.Hsapiens.background_4.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/PWMEnrich.Hsapiens.background_4.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.hsapiens.background/bioconductor-pwmenrich.hsapiens.background_4.18.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pwmenrich.hsapiens.background/bioconductor-pwmenrich.hsapiens.background_4.18.0_src_all.tar.gz"
 )
 MD5="ddb7753fa5b296989688aa37ebb52a66"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/Single.mTEC.Transcriptomes_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/Single.mTEC.Transcriptomes_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-single.mtec.transcriptomes/bioconductor-single.mtec.transcriptomes_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-single.mtec.transcriptomes/bioconductor-single.mtec.transcriptomes_1.12.0_src_all.tar.gz"
 )
 MD5="8d1e883b5ca8e20ba358a4988827fb6c"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MeSH.Bsu.168.eg.db_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Bsu.168.eg.db_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.bsu.168.eg.db/bioconductor-mesh.bsu.168.eg.db_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.bsu.168.eg.db/bioconductor-mesh.bsu.168.eg.db_1.12.0_src_all.tar.gz"
 )
 MD5="89464279a892e7faab76f91a086b3fa4"
 

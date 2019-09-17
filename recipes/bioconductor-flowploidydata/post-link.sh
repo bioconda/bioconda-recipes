@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/flowPloidyData_1.10.0.tar.gz"
   "https://bioarchive.galaxyproject.org/flowPloidyData_1.10.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-flowploidydata/bioconductor-flowploidydata_1.10.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowploidydata/bioconductor-flowploidydata_1.10.0_src_all.tar.gz"
 )
 MD5="e207b89cdef6679d0ee10063a582c930"
 

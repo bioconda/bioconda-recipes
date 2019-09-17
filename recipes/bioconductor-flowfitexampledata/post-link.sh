@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/flowFitExampleData_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/flowFitExampleData_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-flowfitexampledata/bioconductor-flowfitexampledata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowfitexampledata/bioconductor-flowfitexampledata_1.20.0_src_all.tar.gz"
 )
 MD5="d5627c525cb0ab48377638d0af2e8c3c"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/mosaicsExample_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mosaicsExample_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mosaicsexample/bioconductor-mosaicsexample_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mosaicsexample/bioconductor-mosaicsexample_1.22.0_src_all.tar.gz"
 )
 MD5="c87a905df5b38287895aff9adb2c8406"
 
