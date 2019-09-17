@@ -1,43 +1,47 @@
-{% set version = "1.4.0" %}
+{% set version = "1.8.0" %}
 {% set name = "netReg" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 696418c4f8f2b938316eb12e9349d4d588c44428310ec97fd8e7327c174bfc4a
+  md5: 3577e49e7a74fac264e70a907d4834c9
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: testthat, knitr, rmarkdown, BiocStyle, lintr, lassoshooting
+# SystemRequirements: C++11
 requirements:
+  host:
+    - r-base
+    - r-rcpp
+    - r-rcpparmadillo
+  run:
+    - r-base
+    - r-rcpp
+    - r-rcpparmadillo
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - automake
     - make
-  host:
-    - r-base
-    - r-rcpp
-    - r-rcpparmadillo
-    - openblas
-  run:
-    - r-base
-    - r-rcpp
-    - r-rcpparmadillo
-    - openblas
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL-3 | BSL-1.0 + file LICENSE'
   summary: 'netReg fits linear regression models using network-penalization. Graph prior knowledge, in the form of biological networks, is being incorporated into the loss function of the linear model. The networks describe biological relationships such as co-regulation or dependency of the same transcription factors/metabolites/etc. yielding a part sparse and part smooth solution for coefficient profiles.'
-
+extra:
+  parent_recipe:
+    name: bioconductor-netreg
+    path: recipes/bioconductor-netreg
+    version: 1.4.0
 
