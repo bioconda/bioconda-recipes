@@ -1,6 +1,6 @@
-{% set version = "1.2.0" %}
+{% set version = "1.4.0" %}
 {% set name = "RSeqAn" %}
-{% set bioc = "3.8" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,24 +10,29 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 3ccf58bab71c87b4df1c300b4766d750
+  md5: a758f8f9fd49a40baab1a0e875a0b33f
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: knitr, rmarkdown
+# Suggests: knitr, rmarkdown, testthat
 requirements:
   host:
     - r-base
+    - r-rcpp
   run:
     - r-base
+    - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'BSD_3_clause + file LICENSE'
-  summary: 'Headers from the SeqAn C++ library for easy of usage in R.'
+  summary: 'Headers and some wrapper functions from the SeqAn C++ library for ease of usage in R.'
 

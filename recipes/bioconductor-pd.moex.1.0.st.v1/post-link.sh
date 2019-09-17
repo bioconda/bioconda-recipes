@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.moex.1.0.st.v1_3.14.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.moex.1.0.st.v1_3.14.1.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.moex.1.0.st.v1_3.14.1.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.moex.1.0.st.v1_3.14.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.moex.1.0.st.v1/bioconductor-pd.moex.1.0.st.v1_3.14.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.moex.1.0.st.v1/bioconductor-pd.moex.1.0.st.v1_3.14.1_src_all.tar.gz"
 )
 MD5="57427e63b2d44258c12d796eada1897b"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

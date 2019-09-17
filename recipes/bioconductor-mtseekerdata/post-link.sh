@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="MTseekerData_1.0.0.tar.gz"
+FN="MTseekerData_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/MTseekerData_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MTseekerData_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mtseekerdata/bioconductor-mtseekerdata_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/MTseekerData_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MTseekerData_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mtseekerdata/bioconductor-mtseekerdata_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mtseekerdata/bioconductor-mtseekerdata_1.2.0_src_all.tar.gz"
 )
-MD5="f5271cbb8d617a4fb35b794def24e72a"
+MD5="f36216a2c91f9d02efbca8071367edc1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
