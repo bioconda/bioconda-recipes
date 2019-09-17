@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # copy main scripts
+mkdir -p ${PREFIX}/bin
 chmod +x bin/*.py
 cp bin/* ${PREFIX}/bin/
 cp etc/configuration.cfg ${PREFIX}/etc/
