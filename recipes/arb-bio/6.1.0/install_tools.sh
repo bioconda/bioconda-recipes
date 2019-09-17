@@ -17,16 +17,19 @@ exclude_haves() {
 
 mkdir -p $PREFIX/lib/arb/bin
 for bin in install/lib/arb/bin/arb_*; do
+    echo checking $bin
     if [ ! -L "$bin" -a -z "`get_needed $bin | exclude_haves`" ]; then
-	echo installing $bin
-	echo `get_needed $bin`
 	mv $bin $PREFIX/lib/arb/bin
+	echo   installed
+	echo   needs libs: `get_needed $bin`
     fi
 done
 
+echo Creating Symlinks
 (
     cd $PREFIX/bin
     for binary in ../lib/arb/bin/arb_*; do
 	ln -s "$binary"
+	echo "  $binary"
     done
 )
