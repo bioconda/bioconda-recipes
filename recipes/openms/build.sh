@@ -3,6 +3,8 @@
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 export LD_LIBRARY_PATH="${PREFIX}/lib;${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64"
+# Change C++ version to match boost
+sed -i.bak "s/11/17/" CMakeLists.txt
 
 mkdir contrib-build
 cd contrib-build
