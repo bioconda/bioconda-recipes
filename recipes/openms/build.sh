@@ -2,7 +2,7 @@
 
 export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
-export LD_LIBRARY_PATH=${PREFIX}/lib
+export LD_LIBRARY_PATH="${PREFIX}/lib;${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64"
 
 mkdir contrib-build
 cd contrib-build

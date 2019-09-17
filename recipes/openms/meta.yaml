@@ -10,7 +10,7 @@ source:
 
 build:
   number: 2
-  skip: True # [py3k]
+  skip: True # [py3k or osx]
 
 requirements:
   build:
@@ -18,6 +18,12 @@ requirements:
     - cmake
     - autoconf
     - automake
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
   host:
     - python
     - zlib
@@ -46,7 +52,7 @@ requirements:
     - coinmp
 test:
   commands:
-    - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ FileMerger --help
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ FileMerger --help
 
 about:
   home: https://github.com/OpenMS/OpenMS
@@ -57,3 +63,6 @@ extra:
   identifiers:
     - biotools:openms
     - doi:10.1007/978-1-60761-987-1_23
+  extra:
+    container:
+      extended-base: true
