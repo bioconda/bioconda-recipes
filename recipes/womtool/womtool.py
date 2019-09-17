@@ -24,7 +24,7 @@ DEFAULT_JVM_MEM_OPTS = ['-Xms512m', '-Xmx1g']
 def real_dirname(in_path):
     """Returns the path to the JAR file"""
     realPath = os.path.dirname(os.path.realpath(in_path))
-    newPath = os.path.realpath(os.path.join(realPath, "..", "share", PKG_NAME))
+    newPath = os.path.realpath(os.path.join(realPath, "..", PKG_NAME))
     return newPath
 
 
