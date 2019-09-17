@@ -31,7 +31,11 @@ sed -i.bak "s/glib-config --libs/pkg-config --libs glib-2.0/g" other_programs/ma
 sed -i.bak "s/glib-config --libs/pkg-config --libs glib-2.0/g" snp/makefile
 
 sed -i.bak "s/isnumber/isdigit/g" models/phasemodel.c
-sed -i.bak  's/getline/getlineSeq/g' HMMer2/sqio.c
+sed -i.bak "s/getline/getlineSeq/g" HMMer2/sqio.c
+
+sed -i.bak "s/csh welcome.csh//g" makefile
 
 make all
 cp -v ./bin/* $PREFIX/bin/
+mkdir $PREFIX/share/wise2
+cp -rf ../wisecfg $PREFIX/share/wise2/
