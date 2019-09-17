@@ -50,7 +50,7 @@ export PATH="$(pwd)/_buildchain:$PATH"
 echo "==== Fixing #!/usr/bin/perl ===="
 
 find . -name \*.pl -o -name \*.amc | \
-    xargs sed -ibak "s|/usr/bin/perl|$(which perl)|g"
+    xargs sed -i.bak "s|/usr/bin/perl|/usr/bin/env perl|g"
 
 
 echo "====== PREPARING CONFIG ========"
