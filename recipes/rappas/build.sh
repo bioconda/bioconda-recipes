@@ -11,7 +11,7 @@ cd $SRC_DIR
 pwd
 ant -f build-cli.xml
 cp dist/RAPPAS.jar $rappas_dir
-cat /media/ben/STOCK/SOURCES/NetBeansProjects/RAPPAS/conda-recipe/stub.sh dist/RAPPAS.jar > rappas && chmod +x rappas
+cat stub.sh dist/RAPPAS.jar > rappas && chmod +x rappas
 cp rappas $rappas_dir
 #link in /bin
 mkdir -p ${PREFIX}/bin
