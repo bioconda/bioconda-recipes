@@ -1,5 +1,6 @@
 #!/bin/sh
 
+ls -a
 cd PhiPack/src/
 mkdir -p $PREFIX/bin
 
