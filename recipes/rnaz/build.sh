@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ./autogen.sh
-./configure --prefix=$PREFIX --datadir=$PREFIX/share
+./configure --prefix=$PREFIX --datadir=$PREFIX/share CFLAGS="$CFLAGS"
 make -j
 make install
 
