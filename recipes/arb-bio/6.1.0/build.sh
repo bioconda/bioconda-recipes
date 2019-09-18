@@ -40,6 +40,7 @@ fi
 
 echo "====== Fixing Conda's Custom Buildchain not in PATH ===="
 
+rm -rf _buildchain
 mkdir _buildchain
 export PATH="$(pwd)/_buildchain:$PATH"
 [ -n $LD ] && ln -s $LD _buildchain/ld
@@ -91,12 +92,10 @@ export XAW_LIBS=$(pkg-config --libs xaw7)
 export XML_INCLUDES=$(pkg-config --cflags xerces-c)
 export XINCLUDES=$(pkg-config --cflags x11)
 
-make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX -j$CPU_COUNT build \
- | sed 's|'$PREFIX'|$PREFIX|g' #> build.log || (cat build.log; false)
+make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX LINK_STATIC=0 -j$CPU_COUNT build
 
 # create tarballs (picks the necessary files out of build tree)
-make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX tarfile_quick \
- | sed 's|'$PREFIX'|$PREFIX|g' #> build.log || (cat build.log; false)
+make SHARED_LIB_SUFFIX=$SHARED_LIB_SUFFIX LINK_STATIC=0 tarfile_quick
 
 echo "====== FINISHED BUILD ========"
 
