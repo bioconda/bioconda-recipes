@@ -14,6 +14,7 @@ ant -f build-cli.xml
 #ex: when requiring large RAM amount of RAM
 #the stub concatenate 'rappas' is for normal usage
 cp dist/RAPPAS.jar $rappas_dir
+chmod +x $rappas_dir/RAPPAS.jar
 cat stub.sh dist/RAPPAS.jar > rappas && chmod +x rappas
 cp rappas $rappas_dir
 
