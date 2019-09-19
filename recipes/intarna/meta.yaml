@@ -1,4 +1,5 @@
-{% set INTARNA_VERSION = "3.0.0" %}
+{% set INTARNA_VERSION = "3.1.0" %}
+{% set INTARNA_SHA256  = "f48bebfb23a9804be299349a4ab2d9f101128268ef16e008be06711d8e7d34d6" %}
 {% set VRNA_VERSION = "2.4.13" %}
 
 package:
@@ -15,21 +16,23 @@ build:
 
 source:
   url: "https://github.com/BackofenLab/IntaRNA/releases/download/v{{INTARNA_VERSION}}/intaRNA-{{INTARNA_VERSION}}.tar.gz"
-  sha256: 725e4770a3b1c57006570b79063b68631646c0fd46cd58baa408cf4e26f06d96
+  sha256: {{INTARNA_SHA256}}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
   host:
     - boost-cpp
+    - zlib
     - viennarna {{VRNA_VERSION}}*
     - pkgconfig
     - doxygen
     - perl
+    - llvm-openmp # [osx]
   run:
     - boost-cpp
-    # for old interface wrapper
-    - perl
+    - llvm-openmp # [osx]
+    - zlib
 
 test:
   commands:
