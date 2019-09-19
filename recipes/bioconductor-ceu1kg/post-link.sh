@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ceu1kg_0.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ceu1kg_0.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-ceu1kg/bioconductor-ceu1kg_0.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ceu1kg/bioconductor-ceu1kg_0.22.0_src_all.tar.gz"
 )
 MD5="c755c9ed3fded070eb1c8acb518e3d15"
 
