@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/COSMIC.67_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/COSMIC.67_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-cosmic.67/bioconductor-cosmic.67_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cosmic.67/bioconductor-cosmic.67_1.20.0_src_all.tar.gz"
 )
 MD5="4ddee996e33164a4f0d0034c438b7783"
 
