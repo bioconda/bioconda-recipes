@@ -21,7 +21,7 @@ cp -pr DNA ${PREFIX}/share/snap
 cat <<EOF >> ${PREFIX}/bin/snap
 #!/bin/sh
 
-SNAPDIR=${PREFIX}/share/snap
+SNAPDIR=/opt/anaconda1anaconda2anaconda3/share/snap
 NAME=\`basename \$0\`
 
 ZOE=\$SNAPDIR
