@@ -8,6 +8,7 @@ export PATH="$(pwd)/_buildchain:$PATH"
 [ -n $GXX ] && ln -s $GCC _buildchain/g++
 [ -n $AR ] && ln -s $AR _buildchain/ar
 [ -n $RANLIB ] && ln -s $RANLIB _buildchain/ranlib
+ls -l _buildchain
 
 pushd src
 sed -i.bak "s/glib-config --cflags/pkg-config --cflags glib-2.0/g"  makefile
