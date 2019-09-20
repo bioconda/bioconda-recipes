@@ -84,7 +84,7 @@ If you ping ``@bioconda/core`` in a pull request we will review it and then add 
 5. Spread the word
 ------------------
 
-Consider `adding a badge <_static/badge-generator/>`_ to your posters and presentations to promote
+Consider `adding a badge <../_static/badge-generator/>`_ to your posters and presentations to promote
 that a tool can be easily installed from Bioconda.
 
 
