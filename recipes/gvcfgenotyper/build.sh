@@ -2,7 +2,6 @@
 set -eu -o pipefail
 
 cd external/htslib-*
-./configure --prefix=${PREFIX} --disable-lzma --disable-bz2
 make CC=$CC
 cd ../..
 sed -i.bak 's^-Isrc/c/^-Isrc/c/ -I${PREFIX}/include^' Makefile
