@@ -26,7 +26,7 @@ NAME=\`basename \$0\`
 
 ZOE=\$SNAPDIR
 export ZOE
-
+echo "SNAPDIR \${SNAPDIR} NAME \${NAME}"
 \${SNAPDIR}/bin/\$NAME "\$@"
 EOF
 chmod a+x ${PREFIX}/bin/snap
