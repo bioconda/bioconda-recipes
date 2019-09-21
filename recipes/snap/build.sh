@@ -19,7 +19,7 @@ cp -pr HMM ${PREFIX}/share/snap
 cp -pr DNA ${PREFIX}/share/snap
 
 cat <<EOF >> ${PREFIX}/bin/snap
-#!/bin/sh
+#!/bin/bash
 
 SNAPDIR=/opt/anaconda1anaconda2anaconda3/share/snap
 NAME=\`basename \$0\`
