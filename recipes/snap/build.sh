@@ -18,7 +18,7 @@ cp -p snap fathom forge hmm-info exonpairs cds-trainer.pl hmm-assembler.pl nonco
 cp -pr HMM ${PREFIX}/share/snap
 cp -pr DNA ${PREFIX}/share/snap
 
-for NAME in fathom forge hmm-info exonpairs cds-trainer.pl hmm-assembler.pl noncoding-trainer.pl patch-hmm.pl zff2gff3.pl ; do
+for NAME in snap fathom forge hmm-info exonpairs cds-trainer.pl hmm-assembler.pl noncoding-trainer.pl patch-hmm.pl zff2gff3.pl ; do
   cp $RECIPE_DIR/wrapper ${PREFIX}/bin/${NAME}
 done
 chmod a+x ${PREFIX}/bin/*
