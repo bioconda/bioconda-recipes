@@ -18,19 +18,7 @@ cp -p snap fathom forge hmm-info exonpairs cds-trainer.pl hmm-assembler.pl nonco
 cp -pr HMM ${PREFIX}/share/snap
 cp -pr DNA ${PREFIX}/share/snap
 
-cat <<EOF >> ${PREFIX}/bin/snap
-#!/bin/bash
-
-SNAPDIR=/opt/anaconda1anaconda2anaconda3/share/snap
-NAME=\`basename \$0\`
-
-ZOE=\$SNAPDIR
-export ZOE
-echo "SNAPDIR \${SNAPDIR} NAME \${NAME}"
-\${SNAPDIR}/bin/\$NAME "\$@"
-EOF
-chmod a+x ${PREFIX}/bin/snap
-
+cp $SRC_DIR/wrapper ${PREFIX}/bin/$NAME
 for NAME in fathom forge hmm-info exonpairs cds-trainer.pl hmm-assembler.pl noncoding-trainer.pl patch-hmm.pl zff2gff3.pl ; do
   ln -s ${PREFIX}/bin/snap ${PREFIX}/bin/${NAME}
 done
