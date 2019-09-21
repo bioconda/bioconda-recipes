@@ -22,3 +22,4 @@ for NAME in snap fathom forge hmm-info exonpairs cds-trainer.pl hmm-assembler.pl
   cp $RECIPE_DIR/wrapper ${PREFIX}/bin/${NAME}
 done
 chmod a+x ${PREFIX}/bin/*
+chmod a+x ${PREFIX}/share/snap/bin/*
