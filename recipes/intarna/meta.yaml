@@ -1,4 +1,5 @@
-{% set INTARNA_VERSION = "3.0.0" %}
+{% set INTARNA_VERSION = "3.1.0.2" %}
+{% set INTARNA_SHA256  = "8621805f779390e2c92055a274efd70d76ca2ed7324d9d6dbc37d4d7ff85183c" %}
 {% set VRNA_VERSION = "2.4.13" %}
 
 package:
@@ -11,25 +12,27 @@ about:
   summary: Efficient RNA-RNA interaction prediction incorporating seeding and accessibility of interacting sites
 
 build:
-  number: 0
+  number: 1
 
 source:
   url: "https://github.com/BackofenLab/IntaRNA/releases/download/v{{INTARNA_VERSION}}/intaRNA-{{INTARNA_VERSION}}.tar.gz"
-  sha256: 725e4770a3b1c57006570b79063b68631646c0fd46cd58baa408cf4e26f06d96
+  sha256: {{INTARNA_SHA256}}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
   host:
     - boost-cpp
-    - viennarna {{VRNA_VERSION}}*
+    - zlib
+    - viennarna >={{VRNA_VERSION}}*,<3.*
     - pkgconfig
     - doxygen
     - perl
+    - llvm-openmp # [osx]
   run:
     - boost-cpp
-    # for old interface wrapper
-    - perl
+    - llvm-openmp # [osx]
+    - zlib
 
 test:
   commands:
@@ -42,4 +45,7 @@ extra:
     - doi:10.1093/nar/gkx279
     - doi:10.1093/bioinformatics/btn544
     - doi:10.1093/nar/gky329
- 
+  recipe-maintainers:
+    - martin-raden
+    - BackofenLab
+
