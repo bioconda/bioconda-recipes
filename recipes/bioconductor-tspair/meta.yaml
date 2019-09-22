@@ -1,15 +1,16 @@
-{% set version = "1.36.0" %}
+{% set version = "1.42.0" %}
 {% set name = "tspair" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: dc602daff9a7ddb1cc5017123fd7a3060a0202118fc3ba9970ad74b345903c1d
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 0fe6764ba9edb91989fc0d238b12dde5
 build:
   number: 1
   rpaths:
@@ -17,20 +18,27 @@ build:
     - lib/
 requirements:
   host:
-    - 'bioconductor-biobase >=2.4.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
   run:
-    - 'bioconductor-biobase >=2.4.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'These functions calculate the pair of genes that show the maximum difference in ranking between two user specified groups. This "top scoring pair" maximizes the average of sensitivity and specificity over all rank based classifiers using a pair of genes in the data set. The advantage of classifying samples based on only the relative rank of a pair of genes is (a) the classifiers are much simpler and often more interpretable than more complicated classification schemes and (b) if arrays can be classified using only a pair of genes, PCR based tests could be used for classification of samples. See the references for the tspcalc() function for references regarding TSP classifiers.'
-
 extra:
   identifiers:
     - biotools:tspair
     - doi:10.1093/bioinformatics/btp126
+  parent_recipe:
+    name: bioconductor-tspair
+    path: recipes/bioconductor-tspair
+    version: 1.38.0
+

@@ -1,44 +1,55 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.1" %}
 {% set name = "HDF5Array" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 500275365ecf557798e9f40248097a93c7c55520a8e17de9361b2b1d88fa8d4d
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: dd67e1f670a830eedce958e2f6df4351
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: h5vcData, SummarizedExperiment (>= 1.9.6), GenomicRanges, ExperimentHub, TENxBrainData, BiocParallel, GenomicFeatures, BiocStyle
 requirements:
   host:
-    - bioconductor-biocgenerics
-    - 'bioconductor-delayedarray >=0.3.18'
-    - bioconductor-iranges
-    - bioconductor-rhdf5
-    - bioconductor-s4vectors
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-delayedarray >=0.10.0,<0.11.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rhdf5 >=2.28.0,<2.29.0'
+    - 'bioconductor-rhdf5lib >=1.6.0,<1.7.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
   run:
-    - bioconductor-biocgenerics
-    - 'bioconductor-delayedarray >=0.3.18'
-    - bioconductor-iranges
-    - bioconductor-rhdf5
-    - bioconductor-s4vectors
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-delayedarray >=0.10.0,<0.11.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rhdf5 >=2.28.0,<2.29.0'
+    - 'bioconductor-rhdf5lib >=1.6.0,<1.7.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'An array-like container for convenient access and manipulation of HDF5 datasets. Supports delayed operations and block processing.'
-
+  summary: 'Implements the HDF5Array and TENxMatrix classes, 2 convenient and memory-efficient array-like containers for on-disk representation of HDF5 datasets. HDF5Array is for datasets that use the conventional (i.e. dense) HDF5 representation. TENxMatrix is for datasets that use the HDF5-based sparse matrix representation from 10x Genomics (e.g. the 1.3 Million Brain Cell Dataset). Both containers being DelayedArray extensions, they support all operations supported by DelayedArray objects. These operations can be either delayed or block-processed.'
 extra:
   identifiers:
     - biotools:hdf5array
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-hdf5array
+    path: recipes/bioconductor-hdf5array
+    version: 1.8.1
+

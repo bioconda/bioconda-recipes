@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="KOdata_1.4.0.tar.gz"
+FN="KOdata_1.10.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/experiment/src/contrib/KOdata_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/KOdata_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-kodata/bioconductor-kodata_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/KOdata_1.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/KOdata_1.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-kodata/bioconductor-kodata_1.10.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-kodata/bioconductor-kodata_1.10.0_src_all.tar.gz"
 )
-MD5="205ff9b0327541c7fae4a83f6092b892"
+MD5="4decbccf4763a957a56256bf026fd955"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

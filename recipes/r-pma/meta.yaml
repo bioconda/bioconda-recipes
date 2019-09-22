@@ -1,15 +1,14 @@
-{% set version = '1.0.11' %}
+{% set version = '1.1' %}
 
 package:
   name: r-pma
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: PMA_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/PMA_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/PMA/PMA_{{ version }}.tar.gz
-  sha256: ade8030475aac640a55e107330c1450fdb638cd7cf8fc32b39ed0b60a83110ed
+    - {{ cran_mirror }}/src/contrib/PMA_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/PMA/PMA_{{ version }}.tar.gz
+  sha256: fc6473b87ed8e6b71a3d014ad8b9070e4f6cd250fd3214f6655d960a73429f6e
 
 build:
   number: 1
@@ -19,10 +18,12 @@ build:
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
     - r-base
     - bioconductor-impute
-    - gcc
-
   run:
     - r-base
     - bioconductor-impute
@@ -34,5 +35,11 @@ test:
 about:
   home: https://CRAN.R-project.org/package=PMA
   license: GPL (>= 2)
-  summary: Performs Penalized Multivariate Analysis
+  summary: 'Performs Penalized Multivariate Analysis: a penalized matrix decomposition, sparse
+    principal components analysis, and sparse canonical correlation analysis, described
+    in the following papers: (1) Witten, Tibshirani and Hastie (2009) A penalized matrix
+    decomposition, with applications to sparse principal components and canonical correlation
+    analysis. Biostatistics 10(3):515-534. (2) Witten and Tibshirani (2009) Extensions
+    of sparse canonical correlation analysis, with applications to genomic data. Statistical
+    Applications in Genetics and Molecular Biology 8(1): Article 28.'
   license_family: GPL3

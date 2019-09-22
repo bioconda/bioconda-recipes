@@ -1,37 +1,46 @@
-{% set version = "1.38.0" %}
+{% set version = "1.44.0" %}
 {% set name = "KEGGgraph" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: fc2b2128e2b096c2cb1797796f748a1d1f5471bb1bf6b200dae441ddab671109
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: e298c4cd0727be85b994ce6d55b231b1
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: Rgraphviz, RBGL, testthat, RColorBrewer, KEGG.db, org.Hs.eg.db, hgu133plus2.db, SPIA
 requirements:
   host:
-    - bioconductor-graph
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
     - r-base
+    - r-rcurl
     - 'r-xml >=2.3-0'
   run:
-    - bioconductor-graph
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
     - r-base
+    - r-rcurl
     - 'r-xml >=2.3-0'
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'KEGGGraph is an interface between KEGG pathway and graph object as well as a collection of tools to analyze, dissect and visualize these graphs. It parses the regularly updated KGML (KEGG XML) files into graph models maintaining all essential pathway attributes. The package offers functionalities including parsing, graph operation, visualization and etc.'
-
 extra:
   identifiers:
     - biotools:kegggraph
+  parent_recipe:
+    name: bioconductor-kegggraph
+    path: recipes/bioconductor-kegggraph
+    version: 1.40.0
+

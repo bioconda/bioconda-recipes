@@ -1,0 +1,47 @@
+{% set version="1.0.3" %}
+{% set sha256="43d7b0d593a484bec4a5ebbc77dcf8ffd645ee11fd79b778dcdd02b20dd576c1" %}
+package:
+  name: 'wgfast'
+  version: {{ version }}
+
+source:
+  url: https://github.com/FofanovLab/wgfast/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 1
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . -v"
+  entry_points:
+    - wgfast = wgfast.main:main
+    - wgfast_prep = wgfast.wgfast_prep:main
+
+requirements:
+  host:
+    - python >3
+    - pip
+  run:
+    - python >3
+    - biopython
+    - dendropy
+    - samtools
+    - bwa
+    - bbmap
+    - raxml
+    - picard
+
+test:
+  commands:
+    - wgfast --help
+    - wgfast_prep --help
+
+about:
+  home: https://github.com/jasonsahl/wgfast
+  summary: 'The whole genome focused array SNP typing (WG-FAST) pipeline'
+  license: 'GPL v3'
+  license_file: LICENSE
+  license_family: 'GPL'
+  
+extra:
+  recipe_maintainers: 
+    - tfursten

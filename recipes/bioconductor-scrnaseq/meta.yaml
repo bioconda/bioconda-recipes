@@ -1,0 +1,41 @@
+{% set version = "1.10.0" %}
+{% set name = "scRNAseq" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: e9aded444d5781911c8678274f7abbbe
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown
+requirements:
+  host:
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - r-base
+  run:
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - r-base
+    - curl
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  license: CC0
+  summary: 'Gene-level read counts of three public scRNA-seq datasets. See vignette for details.'
+extra:
+  parent_recipe:
+    name: bioconductor-scrnaseq
+    path: recipes/bioconductor-scrnaseq
+    version: 1.6.0
+

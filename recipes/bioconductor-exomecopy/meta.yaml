@@ -1,42 +1,51 @@
-{% set version = "1.24.0" %}
+{% set version = "1.30.0" %}
 {% set name = "exomeCopy" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 2ef2b446e11612d98a35f0af86763a9b24b0962213efb2f38e398bc9ea51379f
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: e68955655de5d7df8b919f6b029b3be0
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: Biostrings
 requirements:
   host:
-    - bioconductor-genomeinfodb
-    - 'bioconductor-genomicranges >=1.23.16'
-    - 'bioconductor-iranges >=2.5.27'
-    - bioconductor-rsamtools
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
     - r-base
   run:
-    - bioconductor-genomeinfodb
-    - 'bioconductor-genomicranges >=1.23.16'
-    - 'bioconductor-iranges >=2.5.27'
-    - bioconductor-rsamtools
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Detection of copy number variants (CNV) from exome sequencing samples, including unpaired samples.  The package implements a hidden Markov model which uses positional covariates, such as background read depth and GC-content, to simultaneously normalize and segment the samples into regions of constant copy count.'
-
 extra:
   identifiers:
     - biotools:exomecopy
     - doi:10.2202/1544-6115.1732
+  parent_recipe:
+    name: bioconductor-exomecopy
+    path: recipes/bioconductor-exomecopy
+    version: 1.26.0
+

@@ -1,0 +1,46 @@
+{% set version = '1.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-gpca
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/gPCA_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/gPCA/gPCA_{{ version }}.tar.gz
+  sha256: 7ce6c5f90758f9c208bc192ee1a7a423cb1f3de456ad9534bfdff646440b8bfa
+
+build:
+  merge_build_host: True  # [win]
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+
+  run:
+    - r-base
+
+test:
+  commands:
+
+    - $R -e "library('gPCA')"           # [not win]
+    - "\"%R%\" -e \"library('gPCA')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=gPCA
+  license: GPL (>= 2)
+  summary: This package implements guided principal components analysis for the detection of
+    batch effects in high-throughput data.
+  license_family: GPL3
+
+

@@ -1,15 +1,16 @@
-{% set version = "1.26.0" %}
+{% set version = "1.32.0" %}
 {% set name = "Vega" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: cd97a242b61e24629494aeb41c9dbc3f26f2249ff6cead073ded10d50f3ccacf
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: d17f38e24edcd024c6650bf651fb2c13
 build:
   number: 1
   rpaths:
@@ -20,15 +21,22 @@ requirements:
     - r-base
   run:
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'Vega (Variational Estimator for Genomic Aberrations) is an algorithm that adapts a very popular variational model (Mumford and Shah) used in image segmentation so that chromosomal aberrant regions can be efficiently detected.'
-
 extra:
   identifiers:
     - biotools:vega
     - doi:10.1093/bioinformatics/btq586
+  parent_recipe:
+    name: bioconductor-vega
+    path: recipes/bioconductor-vega
+    version: 1.28.0
+

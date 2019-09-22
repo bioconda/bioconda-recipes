@@ -1,23 +1,23 @@
-{% set version = "1.4.0" %}
+{% set version = "1.10.0" %}
 {% set name = "FitHiC" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: d6b0d32fe50a4b564a74ff8348c6ad3cbdd4fe2c093f8deda9a180786f86d48b
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 9ad2ef5671bfce808db7f9f61c64b93d
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: knitr, rmarkdown
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
     - r-base
     - r-data.table
@@ -28,15 +28,23 @@ requirements:
     - r-data.table
     - r-fdrtool
     - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Fit-Hi-C is a tool for assigning statistical confidence estimates to intra-chromosomal contact maps produced by genome-wide genome architecture assays such as Hi-C.'
-
 extra:
   identifiers:
     - biotools:fithic
     - doi:10.1101/gr.160374
+  parent_recipe:
+    name: bioconductor-fithic
+    path: recipes/bioconductor-fithic
+    version: 1.6.0
+

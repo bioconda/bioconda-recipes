@@ -1,40 +1,40 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "contiBAIT" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 9ae1ecf3219a276e00e36816a7ba78a0e866ea292a3a0265ab4043226bc3c62f
+  md5: d6a506be45a84ec08ecd8a6434d47fc8
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
-    - bioconductor-biocparallel
-    - bioconductor-dnacopy
-    - bioconductor-exomecopy
-    - bioconductor-genomicalignments
-    - bioconductor-genomicfiles
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - 'bioconductor-rsamtools >=1.21'
-    - bioconductor-rtracklayer
-    - bioconductor-s4vectors
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-dnacopy >=1.58.0,<1.59.0'
+    - 'bioconductor-exomecopy >=1.30.0,<1.31.0'
+    - 'bioconductor-genomicalignments >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicfiles >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-rtracklayer >=1.44.0,<1.45.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - 'r-bh >=1.51.0-3'
     - r-clue
     - r-cluster
     - r-colorspace
+    - r-data.table
     - r-diagram
     - r-ggplot2
     - r-gplots
@@ -43,21 +43,22 @@ requirements:
     - r-reshape2
     - r-tsp
   run:
-    - bioconductor-biocparallel
-    - bioconductor-dnacopy
-    - bioconductor-exomecopy
-    - bioconductor-genomicalignments
-    - bioconductor-genomicfiles
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - 'bioconductor-rsamtools >=1.21'
-    - bioconductor-rtracklayer
-    - bioconductor-s4vectors
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-dnacopy >=1.58.0,<1.59.0'
+    - 'bioconductor-exomecopy >=1.30.0,<1.31.0'
+    - 'bioconductor-genomicalignments >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicfiles >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-rtracklayer >=1.44.0,<1.45.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - 'r-bh >=1.51.0-3'
     - r-clue
     - r-cluster
     - r-colorspace
+    - r-data.table
     - r-diagram
     - r-ggplot2
     - r-gplots
@@ -65,16 +66,23 @@ requirements:
     - r-rcpp
     - r-reshape2
     - r-tsp
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'BSD_2_clause + file LICENSE'
   summary: 'Using strand inheritance data from multiple single cells from the organism whose genome is to be assembled, contiBAIT can cluster unbridged contigs together into putative chromosomes, and order the contigs within those chromosomes.'
-
 extra:
   identifiers:
     - biotools:contibait
     - doi:10.1093/bioinformatics/btx281
+  parent_recipe:
+    name: bioconductor-contibait
+    path: recipes/bioconductor-contibait
+    version: 1.8.0
+

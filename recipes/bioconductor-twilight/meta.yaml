@@ -1,36 +1,45 @@
-{% set version = "1.54.0" %}
+{% set version = "1.60.0" %}
 {% set name = "twilight" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: a3c03646fd5944e2ae665a8cb6e3ac4e0837a4ba3b77ccffc324a0217833f32c
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 6d152a6e78dbd5b054dcd1a492d585c9
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: golubEsets (>= 1.4.2), vsn (>= 1.7.2)
 requirements:
   host:
-    - 'bioconductor-biobase >=1.12.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
   run:
-    - 'bioconductor-biobase >=1.12.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'In a typical microarray setting with gene expression data observed under two conditions, the local false discovery rate describes the probability that a gene is not differentially expressed between the two conditions given its corrresponding observed score or p-value level. The resulting curve of p-values versus local false discovery rate offers an insight into the twilight zone between clear differential and clear non-differential gene expression. Package ''twilight'' contains two main functions: Function twilight.pval performs a two-condition test on differences in means for a given input matrix or expression set and computes permutation based p-values. Function twilight performs a stochastic downhill search to estimate local false discovery rates and effect size distributions. The package further provides means to filter for permutations that describe the null distribution correctly. Using filtered permutations, the influence of hidden confounders could be diminished.'
-
 extra:
   identifiers:
     - biotools:twilight
     - doi:10.1093/bioinformatics/bti436
+  parent_recipe:
+    name: bioconductor-twilight
+    path: recipes/bioconductor-twilight
+    version: 1.56.0
+

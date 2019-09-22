@@ -1,30 +1,38 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "JASPAR2016" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: a6e24ac8588a5bef2bc314e6e2bd1e562186f8703d1d00a6b6469d295d15264e
+  md5: 010a850897534622a73f91dedb64dc4e
 build:
-  number: 2
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
   host:
     - r-base
   run:
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
   license: GPL-2
   summary: 'Data package for JASPAR 2016. To search this databases, please use the package TFBSTools (>= 1.8.1).'
+extra:
+  parent_recipe:
+    name: bioconductor-jaspar2016
+    path: recipes/bioconductor-jaspar2016
+    version: 1.8.0
+

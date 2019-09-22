@@ -1,24 +1,27 @@
-{% set version = "1.26.0" %}
+{% set version = "1.32.0" %}
 {% set name = "MLP" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 072ebd445d88ff80b5a5713cfc45fdc3d5dcf23638ea6d63cd36ff95d3e00a56
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 0f025c2156526df2dd6c926f3f9b7820
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: GO.db, org.Hs.eg.db, org.Mm.eg.db, org.Rn.eg.db, org.Cf.eg.db, KEGG.db, annotate, Rgraphviz, GOstats, limma, mouse4302.db, reactome.db
 requirements:
   host:
-    - bioconductor-affy
-    - bioconductor-annotationdbi
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
     - r-base
     - r-gdata
     - r-gmodels
@@ -26,8 +29,8 @@ requirements:
     - r-gtools
     - r-plotrix
   run:
-    - bioconductor-affy
-    - bioconductor-annotationdbi
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
     - r-base
     - r-gdata
     - r-gmodels
@@ -38,11 +41,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Mean Log P Analysis'
-
 extra:
   identifiers:
     - biotools:mlp
     - doi:10.1007/978-3-642-24007-2_12
+  parent_recipe:
+    name: bioconductor-mlp
+    path: recipes/bioconductor-mlp
+    version: 1.28.0
+

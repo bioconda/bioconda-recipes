@@ -1,35 +1,44 @@
-{% set version = "1.30.0" %}
+{% set version = "1.36.0" %}
 {% set name = "BayesPeak" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 3f41b7a76851519646ec4915622a34eb9b48656e6305895db680c05acf0f19b9
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 5cbdcb27c5f5fd239bb1a3b0521d5e3c
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, parallel
 requirements:
   host:
-    - bioconductor-iranges
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
     - r-base
   run:
-    - bioconductor-iranges
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'This package is an implementation of the BayesPeak algorithm for peak-calling in ChIP-seq data.'
-
 extra:
   identifiers:
     - biotools:bayespeak
+  parent_recipe:
+    name: bioconductor-bayespeak
+    path: recipes/bioconductor-bayespeak
+    version: 1.32.0
+

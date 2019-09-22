@@ -1,46 +1,51 @@
-{% set version = "1.42.0" %}
+{% set version = "1.48.0" %}
 {% set name = "maigesPack" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: b2241940bd8edacc6f58f5fe913a1c3bfc4fc14331ef55276bded52cf29c22b1
+  md5: bd7b7b4a8952913853d1f25c342f671b
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: amap, annotate, class, e1071, MASS, multtest, OLIN, R2HTML, rgl, som
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - bioconductor-convert
-    - bioconductor-graph
-    - bioconductor-limma
-    - bioconductor-marray
+    - 'bioconductor-convert >=1.60.0,<1.61.0'
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-marray >=1.62.0,<1.63.0'
     - r-base
   run:
-    - bioconductor-convert
-    - bioconductor-graph
-    - bioconductor-limma
-    - bioconductor-marray
+    - 'bioconductor-convert >=1.60.0,<1.61.0'
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-marray >=1.62.0,<1.63.0'
     - r-base
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'This package uses functions of various other packages together with other functions in a coordinated way to handle and analyse cDNA microarray data'
-
 extra:
   identifiers:
     - biotools:maigespack
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-maigespack
+    path: recipes/bioconductor-maigespack
+    version: 1.44.0
+

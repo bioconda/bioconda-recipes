@@ -1,26 +1,28 @@
-{% set version = "2.52.0" %}
+{% set version = "2.58.0" %}
 {% set name = "nem" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 684e172ac25d4652bae9a6435edc00c2ca638d8a9bb57c508cef80fd2d5a2404
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 26c590b60db3f910b797964eba70b38d
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: Biobase (>= 1.10)
 requirements:
   host:
-    - bioconductor-graph
-    - bioconductor-limma
-    - 'bioconductor-rbgl >=1.8.1'
-    - bioconductor-rgraphviz
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-rbgl >=1.60.0,<1.61.0'
+    - 'bioconductor-rgraphviz >=2.28.0,<2.29.0'
     - r-base
     - r-boot
     - r-e1071
@@ -28,25 +30,32 @@ requirements:
     - r-rcolorbrewer
     - r-statmod
   run:
-    - bioconductor-graph
-    - bioconductor-limma
-    - 'bioconductor-rbgl >=1.8.1'
-    - bioconductor-rgraphviz
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-rbgl >=1.60.0,<1.61.0'
+    - 'bioconductor-rgraphviz >=2.28.0,<2.29.0'
     - r-base
     - r-boot
     - r-e1071
     - r-plotrix
     - r-rcolorbrewer
     - r-statmod
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'The package ''nem'' allows to reconstruct features of pathways from the nested structure of perturbation effects. It takes as input (1.) a set of pathway components, which were perturbed, and (2.) phenotypic readout of these perturbations (e.g. gene expression, protein expression). The output is a directed graph representing the phenotypic hierarchy.'
-
 extra:
   identifiers:
     - biotools:nem
     - doi:10.1093/bioinformatics/btq385
+  parent_recipe:
+    name: bioconductor-nem
+    path: recipes/bioconductor-nem
+    version: 2.54.0
+
