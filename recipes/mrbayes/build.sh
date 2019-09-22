@@ -2,9 +2,8 @@
 set -x
 
 cd src
-autoconf
-
 # build version with MPI & Beagle
+./configure --help
 ./configure \
     --prefix=$PREFIX \
     --disable-debug \
