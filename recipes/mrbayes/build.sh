@@ -2,7 +2,6 @@
 set -x
 
 # build version with MPI & Beagle
-LD_LIBRARY_PATH=${PREFIX}/lib  # this gets the wrong ncurses otherwise
 ./configure \
     --prefix=$PREFIX \
     --disable-debug \
