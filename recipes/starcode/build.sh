@@ -1,5 +1,5 @@
 #!/bin/bash
 
-make
+make CC=$CC
 mkdir -p $PREFIX/bin
 cp starcode $PREFIX/bin

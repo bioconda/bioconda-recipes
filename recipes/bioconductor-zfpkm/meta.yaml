@@ -1,45 +1,48 @@
-{% set version = "1.0.0" %}
+{% set version = "1.6.0" %}
 {% set name = "zFPKM" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 3ba04bf9b972bfb0f71eb350ac17e756f8e418e9a199740830dbee086a5042ae
-
+  md5: 1c309bf1b7bf6f1a32df581d3543b068
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-
+  noarch: generic
+# Suggests: knitr, limma, edgeR, GEOquery, stringr, printr
 requirements:
   host:
-    - bioconductor-summarizedexperiment
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-checkmate
     - r-dplyr
     - r-ggplot2
     - r-tidyr
   run:
-    - bioconductor-summarizedexperiment
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-checkmate
     - r-dplyr
     - r-ggplot2
     - r-tidyr
-
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL-3 | file LICENSE'
   summary: 'Perform the zFPKM transform on RNA-seq FPKM data. This algorithm is based on the publication by Hart et al., 2013 (Pubmed ID 24215113). Reference recommends using zFPKM > -3 to select expressed genes. Validated with encode open/closed chromosome data. Works well for gene level data using FPKM or TPM. Does not appear to calibrate well for transcript level data.'
+extra:
+  parent_recipe:
+    name: bioconductor-zfpkm
+    path: recipes/bioconductor-zfpkm
+    version: 1.2.0
+

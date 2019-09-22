@@ -1,53 +1,64 @@
-{% set version = "1.4.0" %}
+{% set version = "1.10.0" %}
 {% set name = "signeR" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 1628d75b3c6a728e43c97d67b1740a63cef07e56f68709eb5e495f73a1e4ad66
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: eb18254515946efe1641254d1e3bd639
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: knitr, rtracklayer, BSgenome.Hsapiens.UCSC.hg19
+# SystemRequirements: C++11
 requirements:
   host:
-    - bioconductor-biocgenerics
-    - bioconductor-biostrings
-    - 'bioconductor-bsgenome >=1.36.3'
-    - bioconductor-genomicranges
-    - bioconductor-variantannotation
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-variantannotation >=1.30.0,<1.31.0'
     - r-base
     - r-class
-    - r-rcpparmadillo  # not listed
     - r-nloptr
     - r-nmf
     - r-pmcmr
+    - r-rcpp
+    - 'r-rcpparmadillo >=0.7.100'
   run:
-    - bioconductor-biocgenerics
-    - bioconductor-biostrings
-    - 'bioconductor-bsgenome >=1.36.3'
-    - bioconductor-genomicranges
-    - bioconductor-variantannotation
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-variantannotation >=1.30.0,<1.31.0'
     - r-base
     - r-class
-    - r-rcpparmadillo  # not listed
     - r-nloptr
     - r-nmf
     - r-pmcmr
+    - r-rcpp
+    - 'r-rcpparmadillo >=0.7.100'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'The signeR package provides an empirical Bayesian approach to mutational signature discovery. It is designed to analyze single nucleotide variaton (SNV) counts in cancer genomes, but can also be applied to other features as well. Functionalities to characterize signatures or genome samples according to exposure patterns are also provided.'
-
 extra:
   identifiers:
     - biotools:signer
+  parent_recipe:
+    name: bioconductor-signer
+    path: recipes/bioconductor-signer
+    version: 1.6.1
+

@@ -1,28 +1,31 @@
-{% set version = "1.18.0" %}
+{% set version = "1.24.0" %}
 {% set name = "KEGGREST" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 124ebab423d71ca19e72419225f2455b6af7741d4295e3e4bb9b9f22294271c4
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 92afe9765a580a1c947fb6d5467c9eb7
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocGenerics, knitr
 requirements:
   host:
-    - bioconductor-biostrings
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
     - r-base
     - r-httr
     - r-png
   run:
-    - bioconductor-biostrings
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
     - r-base
     - r-httr
     - r-png
@@ -30,11 +33,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'A package that provides a client interface to the KEGG REST server. Based on KEGGSOAP by J. Zhang, R. Gentleman, and Marc Carlson, and KEGG (python package) by Aurelien Mazurie.'
-
 extra:
   identifiers:
     - biotools:keggrest
     - doi:10.1007/s11845-015-1283-8
+  parent_recipe:
+    name: bioconductor-keggrest
+    path: recipes/bioconductor-keggrest
+    version: 1.20.2
+

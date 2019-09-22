@@ -1,41 +1,48 @@
-{% set version = "5.32.0" %}
+{% set version = "5.38.0" %}
 {% set name = "globaltest" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: b942923511c12f6db6e7e1ae27875dad4ab3ac044bffe2297b11ab61cdf469ba
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: a93ffe229a13c2b8ae1e0bfab3ae7088
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: vsn, golubEsets, KEGG.db, hu6800.db, Rgraphviz, GO.db, lungExpression, org.Hs.eg.db, GSEABase, penalized, gss, MASS, boot, rpart, mstate
 requirements:
   host:
-    - bioconductor-annotate
-    - bioconductor-annotationdbi
-    - bioconductor-biobase
+    - 'bioconductor-annotate >=1.62.0,<1.63.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
     - r-survival
   run:
-    - bioconductor-annotate
-    - bioconductor-annotationdbi
-    - bioconductor-biobase
+    - 'bioconductor-annotate >=1.62.0,<1.63.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
     - r-survival
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'The global test tests groups of covariates (or features) for association with a response variable. This package implements the test with diagnostic plots and multiple testing utilities, along with several functions to facilitate the use of this test for gene set testing of GO and KEGG terms.'
-
 extra:
   identifiers:
     - biotools:globaltest
+  parent_recipe:
+    name: bioconductor-globaltest
+    path: recipes/bioconductor-globaltest
+    version: 5.34.1
+

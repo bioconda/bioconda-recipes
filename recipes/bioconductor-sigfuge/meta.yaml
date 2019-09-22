@@ -1,31 +1,33 @@
-{% set version = "1.16.0" %}
+{% set version = "1.22.0" %}
 {% set name = "SigFuge" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 8ee467fc7f4e44d6c035bd2c8728f8a774cf25e4aa5c03e0d3af80e5d532be35
+  md5: 630ba0ad1edb05c6c3f19b8d612e8163
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: org.Hs.eg.db, prebsdata, Rsamtools (>= 1.17.0), TxDb.Hsapiens.UCSC.hg19.knownGene, BiocStyle
 requirements:
   host:
-    - bioconductor-genomicranges
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-base
     - r-ggplot2
     - r-matlab
     - r-reshape
     - r-sigclust
   run:
-    - bioconductor-genomicranges
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-base
     - r-ggplot2
     - r-matlab
@@ -35,11 +37,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Algorithm for testing significance of clustering in RNA-seq data.'
-
 extra:
   identifiers:
     - biotools:sigfuge
     - doi:10.1093/nar/gku521
+  parent_recipe:
+    name: bioconductor-sigfuge
+    path: recipes/bioconductor-sigfuge
+    version: 1.18.0
+

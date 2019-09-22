@@ -1,51 +1,60 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "InteractionSet" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: a9726644f75438b46267d7df756482db0019d0feee9b7c525b2d05d97123b7f2
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 07e6970639ef0dbd8a73837560b37d61
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: testthat, knitr, rmarkdown, BiocStyle
+# SystemRequirements: C++11
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
-    - bioconductor-biocgenerics
-    - bioconductor-genomeinfodb
-    - 'bioconductor-genomicranges >=1.29.6'
-    - bioconductor-iranges
-    - 'bioconductor-s4vectors >=0.13.13'
-    - 'bioconductor-summarizedexperiment >=1.1.6'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-matrix
     - r-rcpp
   run:
-    - bioconductor-biocgenerics
-    - bioconductor-genomeinfodb
-    - 'bioconductor-genomicranges >=1.29.6'
-    - bioconductor-iranges
-    - 'bioconductor-s4vectors >=0.13.13'
-    - 'bioconductor-summarizedexperiment >=1.1.6'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-matrix
     - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Provides the GInteractions, InteractionSet and ContactMatrix objects and associated methods for storing and manipulating genomic interaction data from Hi-C and ChIA-PET experiments.'
-
 extra:
   identifiers:
     - biotools:interactionset
+  parent_recipe:
+    name: bioconductor-interactionset
+    path: recipes/bioconductor-interactionset
+    version: 1.8.0
+

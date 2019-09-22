@@ -1,40 +1,46 @@
-{% set version = "1.22.0" %}
+{% set version = "1.28.0" %}
 {% set name = "pcaGoPromoter" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 5fcfb0cf2e97e063642675540ea426c2492d22013f1579872ed30a708cb6e10c
+  md5: da4aa4bf501174c978b6f2718e2d32ae
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: Rgraphviz, GO.db, hgu133plus2.db, mouse4302.db, rat2302.db, hugene10sttranscriptcluster.db, mogene10sttranscriptcluster.db, pcaGoPromoter.Hs.hg19, pcaGoPromoter.Mm.mm9, pcaGoPromoter.Rn.rn4, serumStimulation, parallel
 requirements:
   host:
-    - bioconductor-annotationdbi
-    - bioconductor-biostrings
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
     - r-base
     - r-ellipse
   run:
-    - bioconductor-annotationdbi
-    - bioconductor-biostrings
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
     - r-base
     - r-ellipse
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'This package contains functions to ease the analyses of DNA micro arrays. It utilizes principal component analysis as the initial multivariate analysis, followed by functional interpretation of the principal component dimensions with overrepresentation analysis for GO terms and regulatory interpretations using overrepresentation analysis of predicted transcription factor binding sites with the primo algorithm.'
-
 extra:
   identifiers:
     - biotools:pcagopromoter
+  parent_recipe:
+    name: bioconductor-pcagopromoter
+    path: recipes/bioconductor-pcagopromoter
+    version: 1.24.0
+

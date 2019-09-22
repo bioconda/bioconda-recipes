@@ -1,32 +1,41 @@
 {% set version = "1.4.1" %}
 {% set name = "BSgenome.Hsapiens.UCSC.hg38" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 71d7e4557666e2ff76ffc6c637331bfab0c0b59f4963f2b6f5606f12f74580e2
+  md5: 1b95bfdc9763351b04611666cd624b30
 build:
-  number: 3
+  number: 7
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: TxDb.Hsapiens.UCSC.hg38.knownGene
 requirements:
   host:
-    - 'bioconductor-bsgenome >=1.35.16'
+    - 'bioconductor-bsgenome >=1.52.0,<1.53.0'
     - r-base
   run:
-    - 'bioconductor-bsgenome >=1.35.16'
+    - 'bioconductor-bsgenome >=1.52.0,<1.53.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Full genome sequences for Homo sapiens (Human) as provided by UCSC (hg38, Dec. 2013) and stored in Biostrings objects.'
+extra:
+  parent_recipe:
+    name: bioconductor-bsgenome.hsapiens.ucsc.hg38
+    path: recipes/bioconductor-bsgenome.hsapiens.ucsc.hg38
+    version: 1.4.1
+

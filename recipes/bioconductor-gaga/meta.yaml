@@ -1,15 +1,16 @@
-{% set version = "2.24.0" %}
+{% set version = "2.30.0" %}
 {% set name = "gaga" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: fdcac2a7425d3e74774c2531251939664161e88b01b5bf3be4510463891bf3bb
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: fe0fd738660de0e168906463bee2143c
 build:
   number: 1
   rpaths:
@@ -17,26 +18,33 @@ build:
     - lib/
 requirements:
   host:
-    - bioconductor-biobase
-    - bioconductor-ebarrays
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-ebarrays >=2.48.0,<2.49.0'
     - r-base
     - r-coda
     - r-mgcv
   run:
-    - bioconductor-biobase
-    - bioconductor-ebarrays
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-ebarrays >=2.48.0,<2.49.0'
     - r-base
     - r-coda
     - r-mgcv
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Implements the GaGa model for high-throughput data analysis, including differential expression analysis, supervised gene clustering and classification. Additionally, it performs sequential sample size calculations using the GaGa and LNNGV models (the latter from EBarrays package).'
-
 extra:
   identifiers:
     - biotools:gaga
     - doi:10.1214/09-aoas244
+  parent_recipe:
+    name: bioconductor-gaga
+    path: recipes/bioconductor-gaga
+    version: 2.26.0
+

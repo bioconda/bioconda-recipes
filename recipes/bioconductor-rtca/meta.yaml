@@ -1,28 +1,31 @@
-{% set version = "1.30.0" %}
+{% set version = "1.36.0" %}
 {% set name = "RTCA" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 6864995caafd56b273a73d38fc4be465a00a9ded4509e410d64f62921dce5b78
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: fd9e6aa7833069a60b2bfeddf8071d19
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: xtable
 requirements:
   host:
-    - bioconductor-biobase
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
     - r-gtools
     - r-rcolorbrewer
   run:
-    - bioconductor-biobase
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
     - r-gtools
     - r-rcolorbrewer
@@ -30,11 +33,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL-3
   summary: 'Import, analyze and visualize data from Roche(R) xCELLigence RTCA systems. The package imports real-time cell electrical impedance data into R. As an alternative to commercial software shipped along the system, the Bioconductor package RTCA provides several unique transformation (normalization) strategies and various visualization tools.'
-
 extra:
   identifiers:
     - biotools:rtca
     - doi:10.1016/j.compbiolchem.2013.12.004
+  parent_recipe:
+    name: bioconductor-rtca
+    path: recipes/bioconductor-rtca
+    version: 1.32.0
+

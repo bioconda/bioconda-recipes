@@ -1,40 +1,45 @@
-{% set version = "1.72.0" %}
+{% set version = "1.78.0" %}
 {% set name = "CNVtools" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 65e185c1e4c33064d53219fd4dc0e10c66e60a3a4b8e23c083fe5ce0ca7b1546
+  md5: f9844ca1cd5bb736dc47736f3848b3e4
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
     - r-base
     - r-survival
   run:
     - r-base
     - r-survival
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'This package is meant to facilitate the testing of Copy Number Variant data for genetic association, typically in case-control studies.'
-
 extra:
   identifiers:
     - biotools:cnvtools
     - doi:10.1038/ng.206
+  parent_recipe:
+    name: bioconductor-cnvtools
+    path: recipes/bioconductor-cnvtools
+    version: 1.74.0
+

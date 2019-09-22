@@ -1,8 +1,7 @@
 {% set name = "riboSeed" %}
-
-{% set version = "0.4.73" %}
+{% set version = "0.4.87" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "7d56ff13bdfd106fa8066aa5a821469a147d36d5bda60f69379183c792505630" %}
+{% set hash_value = "d0c6d90fa690105d8cff5dbabc95d6d33be8af7a788ebb5485cc0a90c578eb61" %}
 
 
 package:
@@ -14,64 +13,58 @@ source:
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
+  number: 0
+  noarch: python
   entry_points:
     - ribo = riboSeed.ribo:main
-  number: 0
-  skip: True  # [py2k]
-  skip: True  # [py34]
+
 requirements:
   host:
-    - python
+    - python 3.5.*
     - setuptools
-    - biopython ==1.68
-    - pysam ==0.11.2.2
-    - jenkspy ==0.1.4
-    - pyaml ==17.8.0
-    - matplotlib ==1.5.3
-    - pandas ==0.20.1
-    - coverage ==4.4.1
-    - nose ==1.3.7
-    - networkx ==2.1
   run:
+    - python 3.5.*
     # python reqs
-    - python
-    - biopython ==1.68
-    - jenkspy ==0.1.4
-    - pyaml ==17.8.0
-    - pysam ==0.11.2.2
-    - matplotlib ==1.5.3
-    - pandas ==0.20.1
-    - coverage ==4.4.1
-    - nose ==1.3.7
-    - networkx ==2.1
+    - biopython
+    - jenkspy
+    - pyaml
+    - pysam
+    - matplotlib
+    - pandas
+    - numpy
+    - coverage
+    - networkx
+    - bcbiogff
     # sys reqs
-    - emboss
-    - barrnap ==0.7
+    - barrnap
     - mafft
     - prank
-    - spades ==3.9.0
-    - bwa ==0.7.8
-    - samtools ==1.4.1
-    - bcftools ==1.5
-    # - quast ==4.6.3  this should work, but quast is currently not being conda built for python 3 because some tests fail :(
+    - blast
+    - spades ==3.9.1
+    - bwa
+    - samtools
+    - bcftools
+    - skesa
+    - quast >=4.6.3
 
 test:
   imports:
     - riboSeed
   commands:
     - ribo
-
     - ribo scan -h
     - ribo select -h
     - ribo stack -h
-    # the following tests are excluded until issue with mpl/Xserver gets sorted out, sorry!
-    # - ribo run -h
-    # - ribo seed -h
-    # - ribo snag -h
-    # - ribo sketch -h
+    - ribo run -h
+    - ribo seed -h
+    - ribo snag -h
+    - ribo sketch -h
     # - $PYTHON -m unittest tests.test_conda
-
-
+    - spades.py -v
+    # run this for local builds, but dont waste the bioconda resources
+    # this takes about 5 minutes to run by itself
+    # - ribo run -r $PREFIX/lib/python3.5/site-packages/riboSeed/integration_data/concatenated_seq.fasta -F $PREFIX/lib/python3.5/site-packages/riboSeed/integration_data/test_reads1.fq -R $PREFIX/lib/python3.5/site-packages/riboSeed/integration_data/test_reads2.fq -o /tmp/riboseed/ --serialize --subassembler skesa -v 1
+    # - ribo try
 about:
   home: https://github.com/nickp60/riboSeed
   license: MIT License

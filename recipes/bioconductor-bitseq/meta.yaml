@@ -1,41 +1,52 @@
-{% set version = "1.22.0" %}
+{% set version = "1.28.0" %}
 {% set name = "BitSeq" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 1e769bb9b98435a4ccb04b0e42c2e1089d0f030f82d3ac721d8ab629f6df75f6
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 813708121ae472700424da3cde5fdf22
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: edgeR, DESeq, BiocStyle
 requirements:
   host:
-    - bioconductor-iranges
-    - bioconductor-rsamtools
-    - bioconductor-s4vectors
-    - bioconductor-zlibbioc
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rhtslib >=1.16.0,<1.17.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
   run:
-    - bioconductor-iranges
-    - bioconductor-rsamtools
-    - bioconductor-s4vectors
-    - bioconductor-zlibbioc
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rhtslib >=1.16.0,<1.17.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'Artistic-2.0 + file LICENSE'
   summary: 'The BitSeq package is targeted for transcript expression analysis and differential expression analysis of RNA-seq data in two stage process. In the first stage it uses Bayesian inference methodology to infer expression of individual transcripts from individual RNA-seq experiments. The second stage of BitSeq embraces the differential expression analysis of transcript expression. Providing expression estimates from replicates of multiple conditions, Log-Normal model of the estimates is used for inferring the condition mean transcript expression and ranking the transcripts based on the likelihood of differential expression.'
-
 extra:
   identifiers:
     - biotools:bitseq
+  parent_recipe:
+    name: bioconductor-bitseq
+    path: recipes/bioconductor-bitseq
+    version: 1.24.0
+
