@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/vulcandata_1.6.0.tar.gz"
   "https://bioarchive.galaxyproject.org/vulcandata_1.6.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-vulcandata/bioconductor-vulcandata_1.6.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-vulcandata/bioconductor-vulcandata_1.6.0_src_all.tar.gz"
 )
 MD5="f4b88fcd71e15eaa28291dfa423b90b5"
 

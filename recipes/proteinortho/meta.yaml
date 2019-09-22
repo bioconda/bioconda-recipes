@@ -1,6 +1,6 @@
 {% set name = "proteinortho" %}
-{% set version = "6.0.3" %}
-{% set sha256 = "952eb56a84d12afb19ecbac8127ab6157b725cb65c249a19df2fd292f800eaca" %}
+{% set version = "6.0.7" %}
+{% set sha256 = "a9c5888ef12234e1d228e4ae1ef591e52b0be112d72022e047f2bcbaf1e18a21" %}
 
 package:
   name: {{ name }}
@@ -9,6 +9,8 @@ package:
 source:
   url: https://gitlab.com/paulklemm_PHD/proteinortho/-/archive/v{{ version }}/proteinortho-v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    version.patch
 
 build:
   number: 0
@@ -17,20 +19,23 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - {{ compiler('fortran') }}
+    - cmake
   host:
     - openmp
-    - openblas
+    - liblapacke
   run:
     - perl
     - python
     - diamond
     - openmp
-    - openblas
+    - liblapacke
  
 test:
   commands:
     - proteinortho --version
+    - proteinortho -test
     - proteinortho_clustering -test
+    - proteinortho_grab_proteins.pl -help
 
 about:
   home: https://gitlab.com/paulklemm_PHD/proteinortho/

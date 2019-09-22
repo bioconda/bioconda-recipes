@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/PFAM.db_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/PFAM.db_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pfam.db/bioconductor-pfam.db_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pfam.db/bioconductor-pfam.db_3.8.2_src_all.tar.gz"
 )
 MD5="5439ecd3a3caf591e77ffcd01e70dea5"
 
