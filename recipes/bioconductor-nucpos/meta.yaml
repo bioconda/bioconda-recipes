@@ -1,0 +1,41 @@
+{% set version = "1.2.0" %}
+{% set name = "nuCpos" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 8ae37dce2a611262d22eb1fe3c7dfb15
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: NuPoP, Biostrings, testthat
+requirements:
+  host:
+    - r-base
+  run:
+    - r-base
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('fortran') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'nuCpos, a derivative of NuPoP, is an R package for prediction of nucleosome positions. In nuCpos, a duration hidden Markov model is trained with a chemical map of nucleosomes either from budding yeast, fission yeast, or mouse embryonic stem cells. nuCpos outputs the Viterbi (most probable) path of nucleosome-linker states, predicted nucleosome occupancy scores and histone binding affinity (HBA) scores as NuPoP does. nuCpos can also calculate local and whole nucleosomal HBA scores for a given 147-bp sequence. Furthermore, effect of genetic alterations on nucleosome occupancy can be predicted with this package. The parental package NuPoP, which is based on an MNase-seq-based map of budding yeast nucleosomes, was developed by Ji-Ping Wang and Liqun Xi, licensed under GPL-2.'
+extra:
+  parent_recipe:
+    name: bioconductor-nucpos
+    path: recipes/bioconductor-nucpos
+    version: 1.0.0
+

@@ -1,31 +1,34 @@
-{% set version = "1.11.1" %}
+{% set version = "1.16.0" %}
 {% set name = "rGREAT" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 060e17d46d961c7b2b1e69e9248e2bc969d788e97cc8fb7a22ae8cd4edda1710
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 4c2fca6609f651d5206ce6d7c3cd0d89
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: testthat (>= 0.3), knitr, circlize
 requirements:
   host:
-    - bioconductor-genomicranges
-    - bioconductor-iranges
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
     - r-base
     - 'r-getoptlong >=0.0.9'
     - r-rcurl
     - r-rjson
   run:
-    - bioconductor-genomicranges
-    - bioconductor-iranges
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
     - r-base
     - 'r-getoptlong >=0.0.9'
     - r-rcurl
@@ -34,11 +37,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: 'GPL (>= 2)'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
   summary: 'This package makes GREAT (Genomic Regions Enrichment of Annotations Tool) analysis automatic by constructing a HTTP POST request according to user''s input and automatically retrieving results from GREAT web server.'
-
 extra:
   identifiers:
     - biotools:rgreat
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-rgreat
+    path: recipes/bioconductor-rgreat
+    version: 1.12.1
+

@@ -1,26 +1,28 @@
-{% set version = "4.20.0" %}
+{% set version = "4.26.0" %}
 {% set name = "EBImage" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 18331f7380b0f89ee6e02a07c4ba7fc9fb69d36b5daf8c48520287b30e70f220
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 098cfb9ab5b7d4f10ad9cbba2bf6a3cb
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, digest, knitr, rmarkdown, shiny
 requirements:
   host:
-    - 'bioconductor-biocgenerics >=0.7.1'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-abind
     - r-base
-    - 'r-fftwtools >=0.9_7'
+    - 'r-fftwtools >=0.9-7'
     - r-htmltools
     - r-htmlwidgets
     - r-jpeg
@@ -29,10 +31,10 @@ requirements:
     - r-rcurl
     - r-tiff
   run:
-    - 'bioconductor-biocgenerics >=0.7.1'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-abind
     - r-base
-    - 'r-fftwtools >=0.9_7'
+    - 'r-fftwtools >=0.9-7'
     - r-htmltools
     - r-htmlwidgets
     - r-jpeg
@@ -40,14 +42,22 @@ requirements:
     - r-png
     - r-rcurl
     - r-tiff
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
   summary: 'EBImage provides general purpose functionality for image processing and analysis. In the context of (high-throughput) microscopy-based cellular assays, EBImage offers tools to segment cells and extract quantitative cellular descriptors. This allows the automation of such tasks using the R programming language and facilitates the use of other tools in the R environment for signal processing, statistical modeling, machine learning and visualization with image data.'
-
 extra:
   identifiers:
     - biotools:ebimage
+  parent_recipe:
+    name: bioconductor-ebimage
+    path: recipes/bioconductor-ebimage
+    version: 4.22.1
+

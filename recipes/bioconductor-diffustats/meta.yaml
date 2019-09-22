@@ -1,23 +1,24 @@
-{% set version = "0.102.0" %}
+{% set version = "1.4.0" %}
 {% set name = "diffuStats" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 80132d6cffc4ab623cc0e03b55b96cdfb3969beb396f91d1fa276754fcf3b021
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2d28196f508d79d81d396b315e840fa8
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: testthat, knitr, rmarkdown, ggplot2, ggsci, igraphdata, BiocStyle, reshape2
+# SystemRequirements: GNU make
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
     - r-base
     - r-expm
@@ -40,15 +41,23 @@ requirements:
     - r-rcpp
     - r-rcpparmadillo
     - r-rcppparallel
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Label propagation approaches are a widely used procedure in computational biology for giving context to molecular entities using network data. Node labels, which can derive from gene expression, genome-wide association studies, protein domains or metabolomics profiling, are propagated to their neighbours in the network, effectively smoothing the scores through prior annotated knowledge and prioritising novel candidates. The R package diffuStats contains a collection of diffusion kernels and scoring approaches that facilitates their computation and benchmarking.'
-
 extra:
   identifiers:
     - biotools:diffuStats
     - doi:10.1093/bioinformatics/btx632
+  parent_recipe:
+    name: bioconductor-diffustats
+    path: recipes/bioconductor-diffustats
+    version: 0.104.0
+

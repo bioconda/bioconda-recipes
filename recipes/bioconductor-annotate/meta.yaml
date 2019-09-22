@@ -1,34 +1,37 @@
-{% set version = "1.56.0" %}
+{% set version = "1.62.0" %}
 {% set name = "annotate" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 80a22ce4fd2240e70f24b187cd03aff3a47fa26b695c85928e897729f6b89972
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 8f03aad5fa522e027f0446f15eeaa1ea
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: hgu95av2.db, genefilter, Biostrings (>= 2.25.10), IRanges, rae230a.db, rae230aprobe, tkWidgets, GO.db, org.Hs.eg.db, org.Mm.eg.db, hom.Hs.inp.db, humanCHRLOC, Rgraphviz, RUnit,
 requirements:
   host:
-    - 'bioconductor-annotationdbi >=1.27.5'
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.13.8'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-base
     - r-dbi
     - r-rcurl
     - r-xml
     - r-xtable
   run:
-    - 'bioconductor-annotationdbi >=1.27.5'
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.13.8'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-base
     - r-dbi
     - r-rcurl
@@ -38,10 +41,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Using R enviroments for annotation.'
 extra:
   identifiers:
     - biotools:annotate
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-annotate
+    path: recipes/bioconductor-annotate
+    version: 1.58.0
+

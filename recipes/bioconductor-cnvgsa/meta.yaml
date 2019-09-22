@@ -1,31 +1,33 @@
-{% set version = "1.22.0" %}
+{% set version = "1.28.0" %}
 {% set name = "cnvGSA" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 984804bbd703dde15fe80b7e45d0758e339c1ff9bad0fbaafe93181e9e82fd48
+  md5: c0795147bf7c9c04734e76a4a9d5ad28
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: cnvGSAdata, org.Hs.eg.db
 requirements:
   host:
-    - bioconductor-genomicranges
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-base
     - r-brglm
     - r-doparallel
     - r-foreach
     - r-splitstackshape
   run:
-    - bioconductor-genomicranges
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-base
     - r-brglm
     - r-doparallel
@@ -35,11 +37,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
   summary: 'This package is intended to facilitate gene-set association with rare CNVs in case-control studies.'
-
 extra:
   identifiers:
     - biotools:cnvgsa
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-cnvgsa
+    path: recipes/bioconductor-cnvgsa
+    version: 1.24.0
+

@@ -1,39 +1,45 @@
-{% set version = "1.36.0" %}
+{% set version = "1.42.0" %}
 {% set name = "logitT" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 96bf3b3e9e8cbb4343204c064173ca27c93a396c8f9e445af6acadce58294b22
+  md5: 26d824e6c1b564e3e6ad3d86f8765124
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: SpikeInSubset
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - bioconductor-affy
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
     - r-base
   run:
-    - bioconductor-affy
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'The logitT library implements the Logit-t algorithm introduced in --A high performance test of differential gene expression for oligonucleotide arrays-- by William J Lemon, Sandya Liyanarachchi and Ming You for use with Affymetrix data stored in an AffyBatch object in R.'
-
 extra:
   identifiers:
     - biotools:logitt
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-logitt
+    path: recipes/bioconductor-logitt
+    version: 1.38.0
+

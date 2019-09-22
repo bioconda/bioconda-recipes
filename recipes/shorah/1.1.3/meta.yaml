@@ -2,31 +2,26 @@
 {% set version = "1.1.3" %}
 {% set sha256 = "3b89623fcbef71193503adce5ea05fb62f4c1d9cb46c599705942a06ccfb8e87" %}
 
-about:
-  summary: The Short Reads Assembly into Haplotypes (ShoRAH) program for inferring viral haplotypes from NGS data
-  home: https://github.com/cbg-ethz/{{ name }}
-  license: GPLv3
-  license_family: GPL3
-
 package:
   name: {{ name|lower }}
   version: {{ version }}
-
-build:
-  number: 2
 
 source:
   url: https://github.com/cbg-ethz/shorah/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.bz2
   sha256: {{ sha256 }}
 
+build:
+  number: 2
+
 requirements:
   build:
     - {{ compiler('c') }}
-    - pkgconfig
+    - pkg-config
   host:
     - python
     - gsl
     - zlib
+    - blas {{ blas }}
   run:
     - perl
     - python
@@ -35,13 +30,9 @@ requirements:
     - numpy
     - gsl
     - zlib
+    - blas {{ blas }}
 
 test:
-  imports:
-    - shorah_dec
-    - shorah_mm
-    - shorah_snv
-
   commands:
   - shorah.py -h
   - dec.py -h
@@ -49,19 +40,16 @@ test:
   - snv.py -h
   - amplian.py -h
   - fas2read.pl -h
-
   - contain -h
   - b2w -h
   - diri_sampler -h
   - freqEst -h
 
-#  # quick test skipped to shave off a few seconds of CircleCi's runtime
-#  - amplian.py -b examples/amplicon_test/ampli_sorted.bam -f examples/amplicon_test/reference.fasta
-#
-#  source_files:
-#  - examples/amplicon_test/ampli_sorted.bam
-#  - examples/amplicon_test/reference.fasta
-
+about:
+  summary: The Short Reads Assembly into Haplotypes (ShoRAH) program for inferring viral haplotypes from NGS data
+  home: https://github.com/cbg-ethz/{{ name }}
+  license: GPLv3
+  license_family: GPL3
 
 extra:
   identifiers:

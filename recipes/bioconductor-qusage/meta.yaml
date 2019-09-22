@@ -1,41 +1,47 @@
-{% set version = "2.12.0" %}
+{% set version = "2.18.0" %}
 {% set name = "qusage" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 9c6d6982b4106866993ac0786f7e6814f1fab92d3f6a069cfbb63d2780d9a923
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 6ce81ce507c1b76c40a33058159813ee
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
   host:
-    - bioconductor-biobase
-    - 'bioconductor-limma >=3.14'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
     - r-base
-    - r-lsmeans
+    - r-emmeans
     - r-nlme
   run:
-    - bioconductor-biobase
-    - 'bioconductor-limma >=3.14'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
     - r-base
-    - r-lsmeans
+    - r-emmeans
     - r-nlme
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'This package is an implementation the Quantitative Set Analysis for Gene Expression (QuSAGE) method described in (Yaari G. et al, Nucl Acids Res, 2013). This is a novel Gene Set Enrichment-type test, which is designed to provide a faster, more accurate, and easier to understand test for gene expression studies. qusage accounts for inter-gene correlations using the Variance Inflation Factor technique proposed by Wu et al. (Nucleic Acids Res, 2012). In addition, rather than simply evaluating the deviation from a null hypothesis with a single number (a P value), qusage quantifies gene set activity with a complete probability density function (PDF). From this PDF, P values and confidence intervals can be easily extracted. Preserving the PDF also allows for post-hoc analysis (e.g., pair-wise comparisons of gene set activity) while maintaining statistical traceability. Finally, while qusage is compatible with individual gene statistics from existing methods (e.g., LIMMA), a Welch-based method is implemented that is shown to improve specificity. For questions, contact Chris Bolen (cbolen1@gmail.com) or Steven Kleinstein (steven.kleinstein@yale.edu)'
-
 extra:
   identifiers:
     - biotools:qusage
+  parent_recipe:
+    name: bioconductor-qusage
+    path: recipes/bioconductor-qusage
+    version: 2.14.0
+

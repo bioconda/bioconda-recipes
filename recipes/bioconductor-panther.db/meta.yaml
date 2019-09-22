@@ -1,35 +1,43 @@
 {% set version = "1.0.4" %}
 {% set name = "PANTHER.db" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 3e583f25e168a2896d20ced50761f80b11ae7c3a647e4dbb4a8bc1d9a35588ee
+  md5: bfd7362a4823bd3fda1bfab8e5b7908e
 build:
-  number: 1
+  number: 5
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit,knitr,BiocStyle
 requirements:
   host:
-    - bioconductor-annotationdbi
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
     - r-base
     - r-rsqlite
   run:
-    - bioconductor-annotationdbi
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
     - r-base
     - r-rsqlite
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'A set of annotation maps describing the entire Gene Ontology assembled using data from PANTHER.'
+extra:
+  parent_recipe:
+    name: bioconductor-panther.db
+    path: recipes/bioconductor-panther.db
+    version: 1.0.4
+

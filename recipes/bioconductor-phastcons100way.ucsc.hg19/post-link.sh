@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="phastCons100way.UCSC.hg19_3.6.0.tar.gz"
+FN="phastCons100way.UCSC.hg19_3.7.2.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/phastCons100way.UCSC.hg19_3.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/phastCons100way.UCSC.hg19_3.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-phastcons100way.ucsc.hg19/bioconductor-phastcons100way.ucsc.hg19_3.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/phastCons100way.UCSC.hg19_3.7.2.tar.gz"
+  "https://bioarchive.galaxyproject.org/phastCons100way.UCSC.hg19_3.7.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-phastcons100way.ucsc.hg19/bioconductor-phastcons100way.ucsc.hg19_3.7.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-phastcons100way.ucsc.hg19/bioconductor-phastcons100way.ucsc.hg19_3.7.2_src_all.tar.gz"
 )
-MD5="62955c9b6b2d13c0e7b7870b213dbff1"
+MD5="65aa706a567f7e328dbba0095f995cf1"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

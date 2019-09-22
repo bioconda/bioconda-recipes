@@ -1,42 +1,50 @@
-{% set version = "2.8.0" %}
+{% set version = "2.14.0" %}
 {% set name = "nondetects" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 4011aca813ccb68b302233b37e9f6b58868b2a7ef31e4f909ef624fed0970674
+  md5: 6ed082936ef8d168c1bb04cb44def8df
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, BiocStyle (>= 1.0.0), RUnit, BiocGenerics (>= 0.8.0)
 requirements:
   host:
-    - 'bioconductor-biobase >=2.22.0'
-    - 'bioconductor-htqpcr >=1.16.0'
-    - bioconductor-limma
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-htqpcr >=1.38.0,<1.39.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - r-arm
     - r-base
     - r-mvtnorm
   run:
-    - 'bioconductor-biobase >=2.22.0'
-    - 'bioconductor-htqpcr >=1.16.0'
-    - bioconductor-limma
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-htqpcr >=1.38.0,<1.39.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - r-arm
     - r-base
     - r-mvtnorm
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Methods to model and impute non-detects in the results of qPCR experiments.'
-
 extra:
   identifiers:
     - biotools:nondetects
+  parent_recipe:
+    name: bioconductor-nondetects
+    path: recipes/bioconductor-nondetects
+    version: 2.10.0
+

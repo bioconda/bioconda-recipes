@@ -1,23 +1,29 @@
 {% set version = '1.0' %}
-{% set posix = '' %}
-{% set native = '' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-ggrasp
   version: {{ version|replace("-", "_") }}
 
 source:
-  url: {{ cran_mirror }}/src/contrib/ggrasp_{{ version }}.tar.gz
+  url:
+    - {{ cran_mirror }}/src/contrib/ggrasp_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/ggrasp/ggrasp_{{ version }}.tar.gz
   sha256: 0133019df762cd19d7daf1b5f2b353c43568124ade6e34fa04837656138a3652
 
 build:
-  number: 0
+  merge_build_host: True  # [win]
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
     - r-ape
@@ -25,6 +31,7 @@ requirements:
     - r-colorspace
     - r-ggplot2
     - r-mixtools
+
   run:
     - r-base
     - r-ape
@@ -35,7 +42,9 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('ggrasp')"
+
+    - $R -e "library('ggrasp')"           # [not win]
+    - "\"%R%\" -e \"library('ggrasp')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=ggrasp
@@ -46,11 +55,16 @@ about:
     out as a list or a new phylogeny with graphs of the trees and distance distributions
     also available. For detailed introduction see: Thomas H Clarke, Lauren M Brinkac,
     Granger Sutton, and Derrick E Fouts (2018), GGRaSP: a R-package for selecting representative
-    genomes using Gaussian mixture models, Bioinformatics, bty300, 
-    <doi:10.1093/bioinformatics/bty300>.'
+    genomes using Gaussian mixture models, Bioinformatics, bty300, <doi:10.1093/bioinformatics/bty300>.'
+
   license_family: GPL2
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 
 extra:
   recipe-maintainers:
-    - nick-youngblut
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak
