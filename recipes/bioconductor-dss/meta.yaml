@@ -1,47 +1,48 @@
-{% set version = "2.26.0" %}
+{% set version = "2.32.0" %}
 {% set name = "DSS" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 1fecdae846e3ced49b1569fada4d6b452c61be91978248ab4eda10474cb6c02a
-
+  md5: 24e4aa2a0263452f0a28e93a660789f1
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-
+# Suggests: BiocStyle, knitr, rmarkdown
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - bioconductor-biobase
-    - bioconductor-bsseq
-    - bioconductor-delayedarray
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-bsseq >=1.20.0,<1.21.0'
+    - 'bioconductor-delayedarray >=0.10.0,<0.11.0'
     - r-base
   run:
-    - bioconductor-biobase
-    - bioconductor-bsseq
-    - bioconductor-delayedarray
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-bsseq >=1.20.0,<1.21.0'
+    - 'bioconductor-delayedarray >=0.10.0,<0.11.0'
     - r-base
-
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL
   summary: 'DSS is an R library performing differntial analysis for count-based sequencing data. It detectes differentially expressed genes (DEGs) from RNA-seq, and differentially methylated loci or regions (DML/DMRs) from bisulfite sequencing (BS-seq). The core of DSS is a new dispersion shrinkage method for estimating the dispersion parameter from Gamma-Poisson or Beta-Binomial distributions.'
-
 extra:
   identifiers:
     - biotools:dss
+  parent_recipe:
+    name: bioconductor-dss
+    path: recipes/bioconductor-dss
+    version: 2.28.0
+

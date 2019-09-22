@@ -1,54 +1,84 @@
 {% set name = "rgi" %}
-{% set version = "4.0.3" %}
-{% set sha256 = "d82c92b2152089046fa0096f279714a068d31108030cb89c7a9fde6f9ee824b5" %}
+{% set version = "5.1.0" %}
+{% set sha256 = "806ac75c38170b688222d264391e685b96a08bc77278ff9130be3797b56de2e9" %}
+{% set sha256database = "98d336e11bd84e2253c76b32d1f9371b0560c82053f4ce3cc17e91d1ca203c98" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://card.mcmaster.ca/download/1/software-v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-
+    - url: https://github.com/arpcard/rgi/archive/{{ version }}.tar.gz
+      sha256: {{ sha256 }}
+    - url: https://card.mcmaster.ca/download/0/broadstreet-v3.0.4.tar.gz
+      sha256: {{ sha256database }}
+      folder: card-data
 
 build:
-  skip: True # [win]
-  number: 3
+  skip: True # [py27 or py == 37 ]
+  number: 0
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
-    - setuptools
-    - biopython
-    - six >=1.7.0
-    - zlib
-  run:
-    # RGI requires these exact versions of blast prodigal and diamond, or else --alignment_mode DIAMOND fails
-    - python
-    - filetype
     - blast ==2.6.0
-    - biopython
     - six >=1.7.0
     - zlib
     - prodigal ==2.6.3
     - diamond ==0.8.36
-
+    - biopython ==1.72
+    - filetype >=1.0.0
+    - pytest >=3.0.0
+    - mock >=2.0.0
+    - pandas >=0.15.0
+    - matplotlib >=2.1.2
+    - seaborn >=0.8.1
+    - pyfaidx >=0.5.4.1
+    - pyahocorasick >=1.1.7
+    - setuptools
+    
+  run:
+    # RGI requires these exact versions of blast prodigal and diamond, or else --alignment_mode DIAMOND fails
+    - python
+    - blast ==2.6.0
+    - six >=1.7.0
+    - zlib
+    - prodigal ==2.6.3
+    - diamond ==0.8.36
+    - biopython ==1.72
+    - filetype >=1.0.0
+    - pytest >=3.0.0
+    - mock >=2.0.0
+    - pandas >=0.15.0
+    - matplotlib >=2.1.2
+    - seaborn >=0.8.1
+    - pyfaidx >=0.5.4.1
+    - pyahocorasick >=1.1.7
+    - bowtie2 >=2.3.4.3
+    - samtools >=1.9
+    - bamtools >=2.5.1
+    - bedtools >=2.28.0
+    - bwa >=0.7.17
+    
 test:
   commands:
+    - rgi database -v | grep "3.0.4"
     - rgi load -h
     - rgi main -h
     - rgi tab -h
     - rgi parser -h
     - rgi clean -h
     - rgi galaxy -h
-
+    - rgi bwt -h
+    - rgi kmer_build -h
+    - rgi kmer_query -h
 
 about:
   home: https://card.mcmaster.ca
   license: https://card.mcmaster.ca/about
-  license_file: rgi-{{ version }}/LICENSE
+  license_file: LICENSE
   summary: 'This tool provides a preliminary annotation of your DNA sequence(s) based upon the data available in The Comprehensive Antibiotic Resistance Database (CARD). Hits to genes tagged with Antibiotic Resistance ontology terms will be highlighted. As CARD expands to include more pathogens, genomes, plasmids, and ontology terms this tool will grow increasingly powerful in providing first-pass detection of antibiotic resistance associated genes. See license at CARD website'
 
 extra:

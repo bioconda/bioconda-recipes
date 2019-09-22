@@ -1,24 +1,27 @@
-{% set version = "1.8.0" %}
+{% set version = "1.14.0" %}
 {% set name = "subSeq" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 64d462fe68a6858a4aeae7b47c8884a0bd9a0310d17d92c965db5a4899e338fd
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 7c8e235019360f80bfb607b98a7d95ca
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: limma, edgeR, DESeq2, DEXSeq (>= 1.9.7), testthat, knitr
 requirements:
   host:
-    - bioconductor-biobase
-    - 'bioconductor-qvalue >=1.99'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-qvalue >=2.16.0,<2.17.0'
     - r-base
     - r-data.table
     - r-digest
@@ -27,8 +30,8 @@ requirements:
     - r-magrittr
     - r-tidyr
   run:
-    - bioconductor-biobase
-    - 'bioconductor-qvalue >=1.99'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-qvalue >=2.16.0,<2.17.0'
     - r-base
     - r-data.table
     - r-digest
@@ -40,11 +43,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'MIT + file LICENSE'
   summary: 'Subsampling of high throughput sequencing count data for use in experiment design and analysis.'
-
 extra:
   identifiers:
     - biotools:subseq
     - doi:10.1093/bioinformatics/btu552
+  parent_recipe:
+    name: bioconductor-subseq
+    path: recipes/bioconductor-subseq
+    version: 1.10.0
+

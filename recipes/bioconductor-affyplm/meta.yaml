@@ -1,45 +1,54 @@
-{% set version = "1.54.0" %}
+{% set version = "1.60.0" %}
 {% set name = "affyPLM" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 081fae17b4b7a7cef6189a108e61f9e6ab4253ddccf345b9bf7ce2c6fae60712
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 8070d4cba459fb7998c26c3d7c0ed571
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: affydata, MASS
 requirements:
   host:
-    - 'bioconductor-affy >=1.11.0'
-    - 'bioconductor-biobase >=2.17.8'
-    - 'bioconductor-biocgenerics >=0.3.2'
-    - bioconductor-gcrma
-    - 'bioconductor-preprocesscore >=1.5.1'
-    - bioconductor-zlibbioc
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-gcrma >=2.56.0,<2.57.0'
+    - 'bioconductor-preprocesscore >=1.46.0,<1.47.0'
+    - 'bioconductor-zlibbioc >=1.30.0,<1.31.0'
     - r-base
   run:
-    - 'bioconductor-affy >=1.11.0'
-    - 'bioconductor-biobase >=2.17.8'
-    - 'bioconductor-biocgenerics >=0.3.2'
-    - bioconductor-gcrma
-    - 'bioconductor-preprocesscore >=1.5.1'
-    - bioconductor-zlibbioc
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-gcrma >=2.56.0,<2.57.0'
+    - 'bioconductor-preprocesscore >=1.46.0,<1.47.0'
+    - 'bioconductor-zlibbioc >=1.30.0,<1.31.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'A package that extends and improves the functionality of the base affy package. Routines that make heavy use of compiled code for speed. Central focus is on implementation of methods for fitting probe-level models and tools using these models. PLM based quality assessment tools.'
-
 extra:
   identifiers:
     - biotools:affyplm
+  parent_recipe:
+    name: bioconductor-affyplm
+    path: recipes/bioconductor-affyplm
+    version: 1.56.0
+

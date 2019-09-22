@@ -1,10 +1,12 @@
 #!/bin/bash
-FN="TxDb.Rnorvegicus.UCSC.rn6.refGene_3.4.1.tar.gz"
+FN="TxDb.Rnorvegicus.UCSC.rn6.refGene_3.4.6.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/TxDb.Rnorvegicus.UCSC.rn6.refGene_3.4.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.rnorvegicus.ucsc.rn6.refgene/bioconductor-txdb.rnorvegicus.ucsc.rn6.refgene_3.4.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Rnorvegicus.UCSC.rn6.refGene_3.4.6.tar.gz"
+  "https://bioarchive.galaxyproject.org/TxDb.Rnorvegicus.UCSC.rn6.refGene_3.4.6.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.rnorvegicus.ucsc.rn6.refgene/bioconductor-txdb.rnorvegicus.ucsc.rn6.refgene_3.4.6_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.rnorvegicus.ucsc.rn6.refgene/bioconductor-txdb.rnorvegicus.ucsc.rn6.refgene_3.4.6_src_all.tar.gz"
 )
-MD5="4128d06fb48a78aad08da3765fe55234"
+MD5="ea525daa75bcf165eb24f6e93f4dbf6c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -15,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

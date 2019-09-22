@@ -1,15 +1,16 @@
-{% set version = "1.52.0" %}
+{% set version = "1.58.0" %}
 {% set name = "rama" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 179e00ec1b7dd249cce8de3cdfda858b36d8ed153efdf4100395980acfd6c7bc
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 09183bff22ae8499d8f99175f334c193
 build:
   number: 1
   rpaths:
@@ -20,15 +21,22 @@ requirements:
     - r-base
   run:
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Robust estimation of cDNA microarray intensities with replicates. The package uses a Bayesian hierarchical model for the robust estimation. Outliers are modeled explicitly using a t-distribution, and the model also addresses classical issues such as design effects, normalization, transformation, and nonconstant variance.'
-
 extra:
   identifiers:
     - biotools:rama
     - doi:10.1198/016214505000001096
+  parent_recipe:
+    name: bioconductor-rama
+    path: recipes/bioconductor-rama
+    version: 1.54.0
+

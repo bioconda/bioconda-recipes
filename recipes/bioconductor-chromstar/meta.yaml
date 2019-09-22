@@ -1,33 +1,32 @@
-{% set version = "1.4.0" %}
+{% set version = "1.10.0" %}
 {% set name = "chromstaR" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 5f329f313dfcad93b97fe08452dfb4a81f5d984acfa244dafe8ff36776fac2cf
+  md5: 021eb8e6f24bb476a42ceefcaf19b883
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: knitr, BiocStyle, testthat, biomaRt
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - bioconductor-bamsignals
-    - bioconductor-chromstardata
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicalignments
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rsamtools
-    - bioconductor-s4vectors
+    - 'bioconductor-bamsignals >=1.16.0,<1.17.0'
+    - 'bioconductor-chromstardata >=1.10.0,<1.11.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicalignments >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-doparallel
     - r-foreach
@@ -35,30 +34,37 @@ requirements:
     - r-mvtnorm
     - r-reshape2
   run:
-    - bioconductor-bamsignals
-    - bioconductor-chromstardata
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicalignments
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rsamtools
-    - bioconductor-s4vectors
+    - 'bioconductor-bamsignals >=1.16.0,<1.17.0'
+    - 'bioconductor-chromstardata >=1.10.0,<1.11.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicalignments >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-doparallel
     - r-foreach
     - r-ggplot2
     - r-mvtnorm
     - r-reshape2
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'This package implements functions for combinatorial and differential analysis of ChIP-seq data. It includes uni- and multivariate peak-calling, export to genome browser viewable files, and functions for enrichment analyses.'
-
 extra:
   identifiers:
     - biotools:chromstar
     - doi:10.1101/038612
+  parent_recipe:
+    name: bioconductor-chromstar
+    path: recipes/bioconductor-chromstar
+    version: 1.6.2
+

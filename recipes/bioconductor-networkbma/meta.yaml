@@ -1,24 +1,23 @@
-{% set version = "2.18.0" %}
+{% set version = "2.24.0" %}
 {% set name = "networkBMA" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: aaa479ba072f440e1458d8449a5bbd9b9dc794689a2f573f8dcff31843843313
+  md5: c4412287f245abd27fad8563da668e11
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# SystemRequirements: liblapack-dev
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
     - r-base
     - r-bh
@@ -35,16 +34,23 @@ requirements:
     - 'r-rcpp >=0.10.3'
     - 'r-rcpparmadillo >=0.3.810.2'
     - 'r-rcppeigen >=0.3.1.2.1'
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'An extension of Bayesian Model Averaging (BMA) for network construction using time series gene expression data. Includes assessment functions and sample test data.'
-
 extra:
   identifiers:
     - biotools:networkbma
     - doi:10.1186/1752-0509-8-47
+  parent_recipe:
+    name: bioconductor-networkbma
+    path: recipes/bioconductor-networkbma
+    version: 2.20.0
+

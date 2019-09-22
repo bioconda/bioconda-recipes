@@ -1,50 +1,58 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.0" %}
 {% set name = "GenomicTuples" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 3e604fbaa5e940fc841191e0f5c9e59f3548d7a39b7eccf6e9a56e0244a2c224
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 31d317d5a9fcdcea3e3f3944e8cd9a6e
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: testthat, knitr, BiocStyle, rmarkdown
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
-    - 'bioconductor-biocgenerics >=0.17.0'
-    - 'bioconductor-genomeinfodb >=1.7.2'
-    - 'bioconductor-genomicranges >=1.23.15'
-    - 'bioconductor-iranges >=2.5.26'
-    - 'bioconductor-s4vectors >=0.9.38'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-data.table
     - 'r-rcpp >=0.11.2'
   run:
-    - 'bioconductor-biocgenerics >=0.17.0'
-    - 'bioconductor-genomeinfodb >=1.7.2'
-    - 'bioconductor-genomicranges >=1.23.15'
-    - 'bioconductor-iranges >=2.5.26'
-    - 'bioconductor-s4vectors >=0.9.38'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-data.table
     - 'r-rcpp >=0.11.2'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'GenomicTuples defines general purpose containers for storing genomic tuples. It aims to provide functionality for tuples of genomic co-ordinates that are analogous to those available for genomic ranges in the GenomicRanges Bioconductor package.'
-
 extra:
   identifiers:
     - biotools:genomictuples
     - doi:10.21105/joss.00020
+  parent_recipe:
+    name: bioconductor-genomictuples
+    path: recipes/bioconductor-genomictuples
+    version: 1.14.1
+

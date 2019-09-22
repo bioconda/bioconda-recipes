@@ -1,40 +1,39 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.0" %}
 {% set name = "flowDensity" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: f362235594a58651dc75e5f1c212c05a3861447b5b4abf1de5b61e4c6340c1b5
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 8f3b83a8621c85305349c9e6e4a07e73
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# SystemRequirements: GEOS (>= 3.2.0);for building from source: GEOS from http://trac.osgeo.org/geos/; GEOS OSX frameworks built by William Kyngesburye at http://www.kyngchaos.com/ may be used for source installs on OSX.
 requirements:
   host:
-    - bioconductor-flowcore
-    - 'bioconductor-flowworkspace >=3.21.5'
+    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
+    - 'bioconductor-flowworkspace >=3.32.0,<3.33.0'
     - r-base
     - r-car
-    - r-geomap
     - r-gplots
-    - r-nloptr  # not in DESCRIPTION
     - r-rfoc
     - r-rgeos
     - r-sp
   run:
-    - bioconductor-flowcore
-    - 'bioconductor-flowworkspace >=3.21.5'
+    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
+    - 'bioconductor-flowworkspace >=3.32.0,<3.33.0'
     - r-base
     - r-car
-    - r-geomap
     - r-gplots
-    - r-nloptr  # not in DESCRIPTION
     - r-rfoc
     - r-rgeos
     - r-sp
@@ -42,11 +41,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'This package provides tools for automated sequential gating analogous to the manual gating strategy based on the density of the data.'
-
 extra:
   identifiers:
     - biotools:flowdensity
     - doi:10.1093/bioinformatics/btu677
+  parent_recipe:
+    name: bioconductor-flowdensity
+    path: recipes/bioconductor-flowdensity
+    version: 1.14.0
+

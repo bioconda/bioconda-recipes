@@ -1,48 +1,56 @@
-{% set version = "1.10.0" %}
+{% set version = "1.16.0" %}
 {% set name = "bamsignals" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 7463b60dbe1c527a28bbfa0e060c55cd537fa4d06e3be5265953972467352d96
+  md5: d193458eb5ac2b8af0c95ed0a6ef48dd
 build:
-  number: 2
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: testthat (>= 0.9), Rsamtools, BiocStyle, knitr, rmarkdown
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
-    - bioconductor-biocgenerics
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rhtslib
-    - bioconductor-zlibbioc
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rhtslib >=1.16.0,<1.17.0'
+    - 'bioconductor-zlibbioc >=1.30.0,<1.31.0'
     - r-base
     - 'r-rcpp >=0.10.6'
   run:
-    - bioconductor-biocgenerics
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rhtslib
-    - bioconductor-zlibbioc
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rhtslib >=1.16.0,<1.17.0'
+    - 'bioconductor-zlibbioc >=1.30.0,<1.31.0'
     - r-base
     - 'r-rcpp >=0.10.6'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'This package allows to efficiently obtain count vectors from indexed bam files. It counts the number of reads in given genomic ranges and it computes reads profiles and coverage profiles. It also handles paired-end data.'
 extra:
   identifiers:
     - biotools:bamsignals
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-bamsignals
+    path: recipes/bioconductor-bamsignals
+    version: 1.12.1
+

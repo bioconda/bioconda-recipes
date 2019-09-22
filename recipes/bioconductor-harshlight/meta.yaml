@@ -1,44 +1,48 @@
-{% set version = "1.50.0" %}
+{% set version = "1.56.0" %}
 {% set name = "Harshlight" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: c0a85d943b7ea1108db93fda3dfd708279a7abd3a77a003dd0039af55a229449
+  md5: fd903a7f83459d6bf07f5ee37b2b606e
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - bioconductor-affy
-    - bioconductor-altcdfenvs
-    - bioconductor-biobase
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
+    - 'bioconductor-altcdfenvs >=2.46.0,<2.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
   run:
-    - bioconductor-affy
-    - bioconductor-altcdfenvs
-    - bioconductor-biobase
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
+    - 'bioconductor-altcdfenvs >=2.46.0,<2.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'The package is used to detect extended, diffuse and compact blemishes on microarray chips. Harshlight automatically marks the areas in a collection of chips (affybatch objects) and a corrected AffyBatch object is returned, in which the defected areas are substituted with NAs or the median of the values of the same probe in the other chips in the collection. The new version handle the substitute value as whole matrix to solve the memory problem.'
-
 extra:
   identifiers:
     - biotools:harshlight
     - doi:10.1186/1471-2105-6-294
+  parent_recipe:
+    name: bioconductor-harshlight
+    path: recipes/bioconductor-harshlight
+    version: 1.52.0
+

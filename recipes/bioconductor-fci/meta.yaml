@@ -1,0 +1,55 @@
+{% set version = "1.14.0" %}
+{% set name = "fCI" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: d886adcdcb84a88b0c24d8f4ae4d910a
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, BiocStyle
+requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
+  host:
+    - r-base
+    - r-fnn
+    - r-gtools
+    - r-psych
+    - r-rgl
+    - r-venndiagram
+    - r-zoo
+  run:
+    - r-base
+    - r-fnn
+    - r-gtools
+    - r-psych
+    - r-rgl
+    - r-venndiagram
+    - r-zoo
+test:
+  commands:
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: '(f-divergence Cutoff Index), is to find DEGs in the transcriptomic & proteomic data, and identify DEGs by computing the difference between the distribution of fold-changes for the control-control and remaining (non-differential) case-control gene expression ratio data. fCI provides several advantages compared to existing methods.'
+extra:
+  container:
+    extended-base: true
+
