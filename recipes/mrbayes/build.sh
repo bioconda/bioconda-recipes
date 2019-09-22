@@ -1,7 +1,6 @@
 #!/bin/bash
 set -x
 
-cd src
 # build version with MPI & Beagle
 ./configure --help
 ./configure \
