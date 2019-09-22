@@ -2,7 +2,6 @@
 set -x
 
 # build version with MPI & Beagle
-./configure --help
 ./configure \
     --prefix=$PREFIX \
     --disable-debug \
