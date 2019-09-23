@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/curatedTCGAData_1.6.0.tar.gz"
   "https://bioarchive.galaxyproject.org/curatedTCGAData_1.6.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-curatedtcgadata/bioconductor-curatedtcgadata_1.6.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-curatedtcgadata/bioconductor-curatedtcgadata_1.6.0_src_all.tar.gz"
 )
 MD5="3389cf6624a52501366bbccdcf9d2534"
 

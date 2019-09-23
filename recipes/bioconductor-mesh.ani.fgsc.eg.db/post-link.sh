@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MeSH.Ani.FGSC.eg.db_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Ani.FGSC.eg.db_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.ani.fgsc.eg.db/bioconductor-mesh.ani.fgsc.eg.db_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.ani.fgsc.eg.db/bioconductor-mesh.ani.fgsc.eg.db_1.12.0_src_all.tar.gz"
 )
 MD5="f1d9c0e500981f4b7df7dc67e9c59d89"
 

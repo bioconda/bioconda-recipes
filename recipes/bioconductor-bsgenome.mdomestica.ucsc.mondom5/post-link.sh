@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Mdomestica.UCSC.monDom5_1.4.2.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Mdomestica.UCSC.monDom5_1.4.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mdomestica.ucsc.mondom5/bioconductor-bsgenome.mdomestica.ucsc.mondom5_1.4.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mdomestica.ucsc.mondom5/bioconductor-bsgenome.mdomestica.ucsc.mondom5_1.4.2_src_all.tar.gz"
 )
 MD5="ff940f7446a275962f69a6f4cb84724c"
 

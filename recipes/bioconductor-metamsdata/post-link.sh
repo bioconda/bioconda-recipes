@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/metaMSdata_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/metaMSdata_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-metamsdata/bioconductor-metamsdata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-metamsdata/bioconductor-metamsdata_1.20.0_src_all.tar.gz"
 )
 MD5="60703c7f827a3e2f1ca0abe3afa39d5b"
 

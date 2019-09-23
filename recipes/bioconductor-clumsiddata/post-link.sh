@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/CluMSIDdata_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/CluMSIDdata_1.0.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-clumsiddata/bioconductor-clumsiddata_1.0.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-clumsiddata/bioconductor-clumsiddata_1.0.0_src_all.tar.gz"
 )
 MD5="a9ba9176bf862de81836a3b74f60af5e"
 
