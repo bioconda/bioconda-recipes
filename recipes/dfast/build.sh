@@ -14,9 +14,9 @@ rm bin/*/mga
 rm bin/*/rpsblast
 if [ "$(uname)" == "Darwin" ]; then
     rm -rf bin/Linux
+    LD_LIBRARY_PATH=APPROOT/bin/Darwin/lib
 else
     rm -rf bin/Darwin
-    LD_LIBRARY_PATH=APPROOT/bin/Darwin/lib
 fi
 
 
