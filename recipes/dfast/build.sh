@@ -9,7 +9,6 @@ rm bin/*/blastdbcmd
 rm bin/*/blastp
 rm bin/*/ghost*
 rm bin/*/hmm*
-rm -r bin/Darwin/lib
 rm bin/*/makeblastdb
 rm bin/*/mga
 rm bin/*/rpsblast
@@ -17,6 +16,7 @@ if [ "$(uname)" == "Darwin" ]; then
     rm -rf bin/Linux
 else
     rm -rf bin/Darwin
+    LD_LIBRARY_PATH=APPROOT/bin/Darwin/lib
 fi
 
 
