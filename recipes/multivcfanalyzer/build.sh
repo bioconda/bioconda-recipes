@@ -7,5 +7,5 @@ mkdir -p $outdir
 mkdir -p ${PREFIX}/bin
 cp -R * $outdir/
 cp $RECIPE_DIR/multivcfanalyzer.py $outdir/multivcfanalyzer
-ln -s $outdir/multivcfanalyzer $PREFIX/multivcfanalyzer
+ln -s $outdir/multivcfanalyzer $PREFIX/bin/multivcfanalyzer
 chmod 0755 ${PREFIX}/bin/multivcfanalyzer
