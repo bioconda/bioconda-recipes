@@ -13,7 +13,7 @@ import subprocess
 from os import access, getenv, X_OK
 jar_file = 'MultiVCFAnalyzer_0-85-1.jar'
 
-default_jvm_mem_opts = ['-Xms1g', '-Xmx2g']
+default_jvm_mem_opts = ['-Xms4g', '-Xmx32g']
 
 # !!! End of parameter section. No user-serviceable code below this line !!!
 
@@ -35,7 +35,6 @@ def java_executable():
 
 def jvm_opts(argv):
     """Construct list of Java arguments based on our argument list.
-
     The argument list passed in argv must not include the script name.
     The return value is a 3-tuple lists of strings of the form:
       (memory_options, prop_options, passthrough_options)
