@@ -1,27 +1,26 @@
-{% set version = "2.0.12" %}
+{% set version = "2.15" %}
 
 package:
   name: dunovo
   version: {{ version }}
 
 source:
-  fn: v{{ version }}.tar.gz
   url: https://github.com/galaxyproject/dunovo/archive/v{{ version }}.tar.gz
-  sha256: 6973f163dabf82d236982534d88b5d11573a5aa0982bf9d6236be635fb9b4e11
+  sha256: 1cf02bcc37cc641a20bdf5e20c2b3b98d4dccd43b1182830cb1a9e7d173d1a78
 
 build:
-  number: 0
+  number: 2
   skip: True  # [py3k or osx]
 
 requirements:
   build:
     - make
-    - gcc
+    - {{ compiler('c') }}
+  host:
     - python
     - wget
 
   run:
-    - libgcc
     - python
     - mafft 7.221
     - bowtie >=1.1.2
@@ -34,6 +33,8 @@ test:
     - 'correct.py --version > /dev/null'
     - 'align-families.py --version > /dev/null'
     - 'make-consensi.py --version > /dev/null'
+    - 'precheck.py --help > /dev/null'
+    - 'trimmer.py --help > /dev/null'
   imports:
     - networkx
 

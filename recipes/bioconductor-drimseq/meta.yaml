@@ -1,55 +1,60 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "DRIMSeq" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 96e954c3cbddb2cd39186ca942b0e1e1e8ea411dd285171a9bf6d9b23475e89f
-
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 399bc7fe47de2da27d0f357470c7037e
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-
+  noarch: generic
+# Suggests: PasillaTranscriptExpr, GeuvadisTranscriptExpr, grid, BiocStyle, knitr, testthat
 requirements:
-  build:
-    - bioconductor-biocgenerics
-    - bioconductor-biocparallel
-    - bioconductor-edger
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-limma
-    - bioconductor-s4vectors
+  host:
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-ggplot2
     - r-mass
     - r-reshape2
   run:
-    - bioconductor-biocgenerics
-    - bioconductor-biocparallel
-    - bioconductor-edger
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-limma
-    - bioconductor-s4vectors
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-ggplot2
     - r-mass
     - r-reshape2
-
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 3)'
   summary: 'The package provides two frameworks. One for the differential transcript usage analysis between different conditions and one for the tuQTL analysis. Both are based on modeling the counts of genomic features (i.e., transcripts) with the Dirichlet-multinomial distribution. The package also makes available functions for visualization and exploration of the data and results.'
+extra:
+  identifiers:
+    - biotools:drimseq
+  parent_recipe:
+    name: bioconductor-drimseq
+    path: recipes/bioconductor-drimseq
+    version: 1.8.0
+

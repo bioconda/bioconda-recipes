@@ -1,27 +1,26 @@
-{% set version = "1.4.1" %}
+{% set version = "1.10.0" %}
 {% set name = "flowPloidy" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 05e77dbc9fdd5cea9ab80b855777cfcf74c27a5c91ccd849a6425c8a96611ec7
-
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 8e4270702378029e598d7b82be4177a4
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-
+  noarch: generic
+# Suggests: flowPloidyData, testthat
 requirements:
-  build:
-    - bioconductor-flowcore
+  host:
+    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
     - r-base
     - r-car
     - r-catools
@@ -30,7 +29,7 @@ requirements:
     - r-rmarkdown
     - r-shiny
   run:
-    - bioconductor-flowcore
+    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
     - r-base
     - r-car
     - r-catools
@@ -38,12 +37,19 @@ requirements:
     - r-minpack.lm
     - r-rmarkdown
     - r-shiny
-
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Determine sample ploidy via flow cytometry histogram analysis. Reads Flow Cytometry Standard (FCS) files via the flowCore bioconductor package, and provides functions for determining the DNA ploidy of samples based on internal standards.'
+extra:
+  identifiers:
+    - biotools:flowploidy
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-flowploidy
+    path: recipes/bioconductor-flowploidy
+    version: 1.6.0
+

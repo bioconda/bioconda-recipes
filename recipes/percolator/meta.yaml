@@ -1,42 +1,40 @@
+{% set name = "percolator" %}
+{% set version = "3.03" %}
+
 package:
-  name: percolator
-  version: '3.1'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: rel-3-01.tar.gz
-  url: https://github.com/percolator/percolator/archive/rel-3-01.tar.gz
-  md5: fcb37bc5fcd0149cc775c3e72ff3dc24
+  url: https://github.com/percolator/percolator/archive/rel-3-03.tar.gz
+  sha256: 3dbea50dfa0d629b939e07147146922a664f0e79a56c5eeb6042beee745d2077
 
 build:
-  number: 4
-  string: boost_1.62{{PKG_BUILDNUM}}
+  number: 0 
   skip: True # [osx]
 
 requirements:
   build:
-    - cmake ==2.8.10.2
-    - gcc
-    - zlib {{ CONDA_ZLIB }}*
-    - boost ==1.62 # Specify version to ensure install from conda-forge and get static libs
+    - cmake
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - boost
     - tokyocabinet
     - sqlite
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - xerces-c ==3.1.2
+    - bzip2
+    - xerces-c
     - xsd
   run:
-    - libgcc
-    - zlib {{ CONDA_ZLIB }}*
     - tokyocabinet
     - sqlite
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - xerces-c ==3.1.2
+    - xerces-c
     - xsd
-
 
 test:
   commands:
     - sqt2pin -o test.txt $PREFIX/testdata/target.sqt $PREFIX/testdata/target.sqt
-    - percolator -X test.xml $PREFIX/testdata/percolatorTab 
+    - percolator -X test.xml $PREFIX/testdata/percolatorTab
 
 extra:
   container:
@@ -46,3 +44,5 @@ about:
   home: https://github.com/percolator/percolator
   license: Apache 2.0
   summary: Semi-supervised learning for peptide identification from shotgun proteomics datasets
+  identifiers:
+    - biotools:percolator

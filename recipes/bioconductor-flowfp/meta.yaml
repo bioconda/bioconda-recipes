@@ -1,38 +1,52 @@
-{% set version = "1.36.0" %}
+{% set version = "1.42.0" %}
 {% set name = "flowFP" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 0ea942db120bf59f09c43cc407c5c3845d6628da12bb16571dff5ed52f48fc4e
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 42394f73038de936b2d9ad3b82bceee4
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: RUnit
 requirements:
-  build:
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.1.6'
-    - bioconductor-flowcore
-    - bioconductor-flowviz
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
+    - 'bioconductor-flowviz >=1.48.0,<1.49.0'
     - r-base
   run:
-    - bioconductor-biobase
-    - 'bioconductor-biocgenerics >=0.1.6'
-    - bioconductor-flowcore
-    - bioconductor-flowviz
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
+    - 'bioconductor-flowviz >=1.48.0,<1.49.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Fingerprint generation of flow cytometry data, used to facilitate the application of machine learning and datamining tools for flow cytometry.'
+extra:
+  identifiers:
+    - biotools:flowfp
+    - doi:10.1155/2009/193947
+  parent_recipe:
+    name: bioconductor-flowfp
+    path: recipes/bioconductor-flowfp
+    version: 1.38.0
+

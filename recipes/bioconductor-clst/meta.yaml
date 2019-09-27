@@ -1,35 +1,45 @@
-{% set version = "1.26.0" %}
+{% set version = "1.32.0" %}
 {% set name = "clst" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: dc8ec394358db8b6a13d9b19d70d48f3887dd870ad1dd75ec9a79e2948f32dc0
+  md5: a9b3a5b2342ff43e0946b8c17c81816c
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit
 requirements:
-  build:
-    - bioconductor-roc
+  host:
+    - 'bioconductor-roc >=1.60.0,<1.61.0'
     - r-base
     - r-lattice
   run:
-    - bioconductor-roc
+    - 'bioconductor-roc >=1.60.0,<1.61.0'
     - r-base
     - r-lattice
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Package for modified nearest-neighbor classification based on calculation of a similarity threshold distinguishing within-group from between-group comparisons.'
+extra:
+  identifiers:
+    - biotools:clst
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-clst
+    path: recipes/bioconductor-clst
+    version: 1.28.0
+

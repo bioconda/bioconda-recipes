@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="RmiR.Hs.miRNA_1.0.7.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/RmiR.Hs.miRNA_1.0.7.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/RmiR.Hs.miRNA_1.0.7.tar.gz"
   "https://bioarchive.galaxyproject.org/RmiR.Hs.miRNA_1.0.7.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rmir.hs.mirna/bioconductor-rmir.hs.mirna_1.0.7_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rmir.hs.mirna/bioconductor-rmir.hs.mirna_1.0.7_src_all.tar.gz"
 )
 MD5="4aedac188382447d9907d2617aa2e8e6"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

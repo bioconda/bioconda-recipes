@@ -1,38 +1,41 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "RTCGA.mRNA" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: fe4bbd73fd8ee12d3d26747731ea9f2a3f2dfe55fdc0fbc2a4dd219b224c9f6c
-
+  md5: 87f5ceb10640bc62bf465e6d0137fd0e
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-
+  noarch: generic
+# Suggests: knitr
 requirements:
-  build:
-    - bioconductor-rtcga
+  host:
+    - 'bioconductor-rtcga >=1.14.0,<1.15.0'
     - r-base
   run:
-    - bioconductor-rtcga
+    - 'bioconductor-rtcga >=1.14.0,<1.15.0'
     - r-base
-    - wget
-
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
   license: GPL-2
   summary: 'Package provides mRNA datasets from The Cancer Genome Atlas Project for all available cohorts types from http://gdac.broadinstitute.org/. Data format is explained here https://wiki.nci.nih.gov/display/TCGA/Gene+expression+data Data from 2015-11-01 snapshot.'
+extra:
+  parent_recipe:
+    name: bioconductor-rtcga.mrna
+    path: recipes/bioconductor-rtcga.mrna
+    version: 1.8.0
+

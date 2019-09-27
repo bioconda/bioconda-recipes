@@ -1,0 +1,48 @@
+{% set version = "0.2.2" %}
+{% set sha256 = "1b1888730a3609cdec191ff04a14cc13565eb362b261624ce6e7b0f9ed237464" %}
+
+package:
+  name: ghost-tree
+  version: {{ version }}
+
+source:
+  url: https://github.com/JTFouquier/ghost-tree/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+  noarch: python
+  number: 1
+
+requirements:
+  host:
+    - python >=3.4
+    - setuptools
+
+  run:
+    - python >=3.4
+    - fasttree
+    - muscle
+    - sumaclust >=1.0.31
+    - click >=4.0
+    - scikit-bio >=0.5.1
+    - numpy
+
+test:
+  requires:
+    - nose
+  commands:
+    - ghost-tree --help
+    - nosetests -v ghosttree
+
+about:
+  home: https://github.com/JTFouquier/ghost-tree
+  license: BSD license
+  summary: |
+    ghost-tree is a bioinformatics tool that combines sequence data from two
+    genetic marker databases into one phylogenetic tree that can be used for
+    diversity analyses.
+    
+extra:
+  container:
+    extended-base: True

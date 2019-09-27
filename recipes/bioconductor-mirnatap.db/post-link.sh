@@ -1,7 +1,9 @@
 #!/bin/bash
 FN="miRNAtap.db_0.99.10.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/miRNAtap.db_0.99.10.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/miRNAtap.db_0.99.10.tar.gz"
+  "https://bioarchive.galaxyproject.org/miRNAtap.db_0.99.10.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mirnatap.db/bioconductor-mirnatap.db_0.99.10_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mirnatap.db/bioconductor-mirnatap.db_0.99.10_src_all.tar.gz"
 )
 MD5="48010280b68d6f1ddbff3b374132ce0a"
@@ -15,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

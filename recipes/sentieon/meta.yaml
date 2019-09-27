@@ -1,23 +1,18 @@
-{% set version="201711.01" %}
+{% set version="201808.07" %}
 
 package:
   name: sentieon
   version: {{ version }}
 source:
-  fn: sentieon-genomics-{{ version }}-linux.tar.gz # [linux]
-  url: https://sentieon.sharepoint.com/Release/_layouts/15/guestaccess.aspx?docid=071cc9e0d11aa4d3f8d479b7118862966&authkey=AQt4HeZHkOuXlTilsjvvPW4&e=nqZ7kC # [linux]
-  md5: 256a54ca748a9ee6effd9bf27cad1a6d # [linux]
-  #fn: sentieon-genomics-{{ version }}-mac.tar.gz # [osx]
-  #url: https://sentieon.sharepoint.com/Release/_layouts/15/guestaccess.aspx?guestaccesstoken=xV%2bluck4cIhDqLGmeVzLT5p1%2b67SiarhwZqRUx%2fOK5w%3d&docid=0b3cf62ebe0fc4cc78615b5a1989b0108 # [osx]
-  #md5: notavailable # [osx]
-
+  url: https://s3.amazonaws.com/sentieon-release/software/sentieon-genomics-{{ version }}.tar.gz
+  sha256: fb66b18a7b99e44968eb2c3a6a5b761d6b1e70fba9f7dfc4e5db3a74ab3d3dd9
   patches:
     # Fix driver scripts so they resolves location including symlinks
     - sentieon_symlinks.patch
     - bwa_symlinks.patch
 
 build:
-  number: 2
+  number: 0
   # Currently failing on OSX when copying and fixing shared libraries
   # included with sentieon package. I don't understand problem:
   # https://travis-ci.org/bioconda/bioconda-recipes/jobs/141822657
@@ -26,17 +21,23 @@ build:
 
 requirements:
   build:
+    - {{ compiler('fortran') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
   run:
-    - libgfortran
-    - libgcc
-    - zlib {{ CONDA_ZLIB }}*
+    - python >=2.7,<3.0a0
+    - zlib
+
 test:
   commands:
-    # Tests have issues with libz on quay/mulled. Not sure why since included in requirements
-    # - 'sentieon driver'
-    # - 'sentieon driver --help --algo TNscope'
-    # - 'sentieon-licsrvr 2>&1 | grep SENTIEON_LICENSE'
+    - sentieon driver
+    - sentieon driver --help --algo TNscope
+    # Tests have issues with on quay/mulled when combined, non-zero exit code
+    #- sentieon-bwa 2>&1 | grep Burrows-Wheeler
+    #- sentieon-licsrvr 2>&1 | grep SENTIEON_LICENSE
+
 about:
   home: http://sentieon.com
-  license: Commercial (requires license for use)
+  license: Commercial (requires license for use; redistribution allowed)
   summary: Accelerated performance bioinformatics tools for mapping and variant calling

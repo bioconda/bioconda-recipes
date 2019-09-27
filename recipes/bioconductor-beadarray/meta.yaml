@@ -1,50 +1,64 @@
-{% set version = "2.28.0" %}
+{% set version = "2.34.0" %}
 {% set name = "beadarray" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 11575596b6b9dd7c7f4c58392cd88c70a441e74f70a3152fa794bdf7bec6ec2b
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 4f03d3bd7e45479f800e943ef7e4384d
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: lumi, vsn, affy, hwriter, beadarrayExampleData, illuminaHumanv3.db, gridExtra, BiocStyle, TxDb.Hsapiens.UCSC.hg19.knownGene, ggbio, Nozzle.R1, knitr
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - bioconductor-beaddatapackr
-    - 'bioconductor-biobase >=2.17.8'
-    - 'bioconductor-biocgenerics >=0.3.2'
-    - bioconductor-genomicranges
-    - bioconductor-illuminaio
-    - bioconductor-iranges
-    - bioconductor-limma
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-beaddatapackr >=1.36.0,<1.37.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-illuminaio >=0.26.0,<0.27.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
     - r-base
     - r-ggplot2
+    - r-hexbin
     - r-reshape2
   run:
-    - bioconductor-annotationdbi
-    - bioconductor-beaddatapackr
-    - 'bioconductor-biobase >=2.17.8'
-    - 'bioconductor-biocgenerics >=0.3.2'
-    - bioconductor-genomicranges
-    - bioconductor-illuminaio
-    - bioconductor-iranges
-    - bioconductor-limma
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-beaddatapackr >=1.36.0,<1.37.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-illuminaio >=0.26.0,<0.27.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
     - r-base
     - r-ggplot2
+    - r-hexbin
     - r-reshape2
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL-2
-  summary: 'The package is able to read bead-level data (raw TIFFs and text files) output by BeadScan as well as bead-summary data from BeadStudio.  Methods for quality assessment and low-level analysis are provided.'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
+  summary: 'The package is able to read bead-level data (raw TIFFs and text files) output by BeadScan as well as bead-summary data from BeadStudio. Methods for quality assessment and low-level analysis are provided.'
+extra:
+  identifiers:
+    - biotools:beadarray
+  parent_recipe:
+    name: bioconductor-beadarray
+    path: recipes/bioconductor-beadarray
+    version: 2.30.0
+

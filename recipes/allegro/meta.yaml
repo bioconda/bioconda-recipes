@@ -1,11 +1,12 @@
+{% set sha256 = "d4211db7f68204eabcea52fdc958dd92f6239c45e965234e6f923a4dee154582" %}
+
 package:
   name: allegro
   version: 3
 
 source:
-  fn: allegro2-2017-10-11.tar.gz
-  url: https://github.com/BioTools-Tek/packages/blob/master/allegro2/allegro2-2017-10-11.tar.gz?raw=true
-  md5: d110247846de8ee433bda2190b530959
+  url: https://github.com/BioTools-Tek/packages/raw/master/allegro2/allegro2-2017-10-11.tar.gz
+  sha256: {{ sha256 }}
   patches:
     - patches/calcassoc.patch
     - patches/calcviterbi.patch
@@ -14,21 +15,18 @@ source:
     - patches/options.patch
     - patches/peel.patch # [osx]
     - patches/scoredistfull.patch
-    
 
 build:
-  number: 1
+  number: 2
 
 requirements:
   build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
-    - zlib {{CONDA_ZLIB}}*
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
     - patch
-
   run:
-    - libgcc  # [linux]
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
 
 test:
   commands:
@@ -37,5 +35,5 @@ test:
 about:
   home: http://www.nature.com/ng/journal/v37/n10/full/ng1005-1015.html?foxtrotcallback=true
     # main link is broken: http://www.decode.com/software/allegro
-  license: INDIVIDUAL 
+  license: INDIVIDUAL
   summary: A fast linkage and haplotype analysis utility making use of MTBDD to reduce complexity.

@@ -3,32 +3,29 @@ package:
   version: 1.04
 
 source:
-  fn: SOAPdenovo-Trans-src-v1.04.zip
   url: https://downloads.sourceforge.net/project/soapdenovotrans/SOAPdenovo-Trans/src/v1.04/SOAPdenovo-Trans-src-v1.04.zip
   md5: be5fc908051bffd95a9499a497ccd3fa
   patches:
     - makefile.patch
 
 build:
-  number: 1
+  number: 2
   # The source package includes a static library with ELF object files, which is linked during compilation.
   # The C source files aren't included, so rebuilding in Mach-O format isn't possible.
   skip: True # [osx]
 
 requirements:
   build:
-    - gcc # [linux]
-    - llvm # [osx]
-    - zlib {{CONDA_ZLIB}}*
-
+    - {{ compiler('c') }}
+  host:
+    - zlib
   run:
-    - libgcc # [linux]
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
 
 test:
-    commands:
-        - SOAPdenovo-Trans-31mer
-        - SOAPdenovo-Trans-127mer
+  commands:
+    - SOAPdenovo-Trans-31mer
+    - SOAPdenovo-Trans-127mer
 
 about:
   home: 'http://soap.genomics.org.cn/SOAPdenovo-Trans.html'

@@ -1,37 +1,34 @@
-{% set version = "0.29.0" %}
+{% set version = "1.10.0" %}
 
 package:
   name: nanoplotter
   version: {{ version }}
 
 source:
-  fn: nanoplotter-{{ version }}.tar.gz
   url: https://pypi.io/packages/source/n/nanoplotter/nanoplotter-{{ version }}.tar.gz
-  sha256: 833c04f0b8a5196db2914af08470f4b897e59b5ebbb2060e936a6c60c8240363
+  sha256: 1e97bd043668cd3066300695747eb49594720583975252947da33214bc72caa2
 
 build:
   number: 0
-  skip: True  # [py27]
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - pandas
-    - numpy
-    - scipy
-    - matplotlib >=2.0.0
-    - seaborn
-    - pauvre
+  host:
+    - python >3
+    - pip
 
   run:
-    - python
+    - python >3
     - pandas
     - numpy
     - scipy
-    - matplotlib >=2.0.0
-    - seaborn
-    - pauvre
+    - matplotlib >=2.1.0
+    - seaborn >=0.9.0
+    - pauvre ==0.1.86
+    - statsmodels >=0.8.0
+    - plotly >=3.4.2
+    - joypy
 
 test:
   imports:
@@ -39,9 +36,10 @@ test:
 
 about:
   home: https://github.com/wdecoster/nanoplotter
-  license: MIT License
-  summary: 'Plotting functions of Oxford Nanopore sequencing data'
-  license_family: MIT
+  license: GPL-3.0
+  license_file: '{{ RECIPE_DIR }}/LICENSE'
+  summary: 'Plotting functions of Oxford Nanopore sequencing data for NanoPack'
+  license_family: GPL
 
 extra:
   container:

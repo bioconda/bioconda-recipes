@@ -1,36 +1,50 @@
-{% set version = "1.40.0" %}
+{% set version = "1.46.0" %}
 {% set name = "Rtreemix" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 45487d9276358e2a02e8719fd87ebcc85cb87c17d4b0f6a5cbfbcff703cdeec0
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 8fd53d3b038779d64d0c79e458073794
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: Rgraphviz
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-graph
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
     - r-base
     - r-hmisc
   run:
-    - bioconductor-biobase
-    - bioconductor-graph
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
     - r-base
     - r-hmisc
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
   summary: 'Rtreemix is a package that offers an environment for estimating the mutagenetic trees mixture models from cross-sectional data and using them for various predictions. It includes functions for fitting the trees mixture models, likelihood computations, model comparisons, waiting time estimations, stability analysis, etc.'
+extra:
+  identifiers:
+    - biotools:rtreemix
+    - doi:10.1093/bioinformatics/btn410
+  parent_recipe:
+    name: bioconductor-rtreemix
+    path: recipes/bioconductor-rtreemix
+    version: 1.42.0
+

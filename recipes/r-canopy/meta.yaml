@@ -8,34 +8,31 @@ package:
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: Canopy_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/Canopy_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/Canopy/Canopy_{{ version }}.tar.gz
-
-
+    - {{ cran_mirror }}/src/contrib/Canopy_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/Canopy/Canopy_{{ version }}.tar.gz
   sha256: 8d87184ee99efdcec58dc8199aacbed5398be88050832ec3d9c4c10fef85e924
 
 build:
-  # If this is a new build for the same version, increment the build number.
-  number: 0
-
-  # This is required to make R link correctly on Linux.
+  merge_build_host: True  # [win]
+  number: 3
   rpaths:
     - lib/R/lib/
     - lib/
 
-
 requirements:
   build:
-    - r-base >=3.4
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
     - r-ape
     - r-fields
     - r-pheatmap
     - r-scatterplot3d
 
   run:
-    - r-base >=3.4
+    - r-base
     - r-ape
     - r-fields
     - r-pheatmap
@@ -43,11 +40,12 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('Canopy')"  # [not win]
+
+    - $R -e "library('Canopy')"           # [not win]
     - "\"%R%\" -e \"library('Canopy')\""  # [win]
 
 about:
-  home: https://cran.r-project.org/web/packages/Canopy/index.html
+  home: https://github.com/yuchaojiang/Canopy
   license: GPL-2
   summary: A statistical framework and computational procedure for identifying the sub-populations
     within a tumor, determining the mutation profiles of each  subpopulation, and inferring
@@ -61,3 +59,12 @@ about:
     evolutionary configurations consistent with the data, Canopy outputs  all configurations
     along with their confidence assessment.
   license_family: GPL2
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

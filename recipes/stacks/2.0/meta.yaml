@@ -1,36 +1,34 @@
-{% set version="2.0Beta8" %}
-{% set hash="1660bb4569dd6e427d5617977ef953d38f169b050ba475903a6419b82c055080" %}
-# `gxx_*`/`gcc_*` below should be replaced by `compiler("cxx")` with conda-build 3
-{% set gxx_version = "7.2.0" %}
-
+{% set version="2.0" %}
+{% set hash="a721b7367a9a342163e8d848d34616419a8c32e4be5ababfaa4f5d7c02d8cfa1" %}
 
 package:
   name: stacks
   version: {{ version }}
 
 build:
-  skip: True # [not linux]
   number: 1
 
-
 source:
-  fn: stacks-{{ version }}.tar.gz
   sha256: {{ hash }}
   url: http://catchenlab.life.illinois.edu/stacks/source/stacks-{{ version }}.tar.gz
 
 requirements:
   build:
-    - gcc_linux-64 {{ gxx_version }}  # [linux64]
-    - gxx_linux-64 {{ gxx_version }}  # [linux64]
-    - zlib {{CONDA_ZLIB}}*
-    - openmp
-
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - openmp  # [linux]
   run:
     - perl
+    - perl-bioperl-core
+    - perl-file-spec
+    - perl-file-temp
+    - perl-posix
+    - python <3
     - velvet
-    - libgcc >={{ gxx_version }}  # [linux]
-    - zlib {{CONDA_ZLIB}}*
-    - openmp
+    - samtools
+    - zlib
+    - openmp  # [linux]
 
 test:
   commands:
@@ -44,25 +42,22 @@ test:
     - command -v process_shortreads
     - command -v clone_filter
     - command -v kmer_filter
+    - command -v stacks-dist-extract
+    - command -v stacks-integrate-alignments
     - command -v tsv2bam
-#    - command -v convert_stacks.pl
+    - command -v convert_stacks.pl
     - command -v count_fixed_catalog_snps.py
     - command -v denovo_map.pl
-    - command -v exec_velvet.pl
-    - command -v export_sql.pl
-#    - extract_interpop_chars.pl
-    - command -v index_radtags.pl
+    - command -v extract_interpop_chars.pl
     - command -v integrate_alignments.py
-    - command -v load_radtags.pl
-    - command -v load_sequences.pl
     - command -v ref_map.pl
-    - command -v sort_read_pairs.pl
-    - command -v stacks-dist-extract
-    - command -v stacks_export_notify.pl
-    - command -v stacks-gdb
-    - command -v stacks-integrate-alignments
 
 about:
   home: http://catchenlab.life.illinois.edu/stacks/
   license: GPL
   summary: Stacks is a software pipeline for building loci from RAD-seq
+
+extra:
+  identifiers:
+    - biotools:Stacks
+    - doi:10.1111/mec.12354

@@ -1,34 +1,35 @@
-{% set version = "1.16.0" %}
+{% set version = "1.22.0" %}
 {% set name = "qcmetrics" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: e848b31d7b7b0931b0b483b9fb8f61bb544957bd3a7e7f2432289a647ebbfea9
+  md5: 58dc1a2e6afca43f5d883fdde8d1282b
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: affy, MSnbase, ggplot2, lattice, yaqcaffy, MAQCsubsetAFX, RforProteomics, AnnotationDbi, mzR, hgu133plus2cdf, BiocStyle
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-s4vectors
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-knitr
     - r-nozzle.r1
     - r-pander
     - r-xtable
   run:
-    - bioconductor-biobase
-    - bioconductor-s4vectors
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-knitr
     - r-nozzle.r1
@@ -38,6 +39,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'The package provides a framework for generic quality control of data. It permits to create, manage and visualise individual or sets of quality control metrics and generate quality control reports in various formats.'
+extra:
+  identifiers:
+    - biotools:qcmetrics
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-qcmetrics
+    path: recipes/bioconductor-qcmetrics
+    version: 1.18.0
+

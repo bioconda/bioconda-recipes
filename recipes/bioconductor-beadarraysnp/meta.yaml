@@ -1,34 +1,45 @@
-{% set version = "1.44.0" %}
+{% set version = "1.50.0" %}
 {% set name = "beadarraySNP" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: fce4520b18b42218e46f49e69a73e65b776e5413bc5982ff06d442bf55059996
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: be8d5f6c4373eb5b19bef26fe6f9fb48
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: aCGH, affy, limma, snapCGH, beadarray, DNAcopy
 requirements:
-  build:
-    - 'bioconductor-biobase >=2.14'
-    - bioconductor-quantsmooth
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-quantsmooth >=1.50.0,<1.51.0'
     - r-base
   run:
-    - 'bioconductor-biobase >=2.14'
-    - bioconductor-quantsmooth
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-quantsmooth >=1.50.0,<1.51.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'Importing data from Illumina SNP experiments and performing copy number calculations and reports.'
+extra:
+  identifiers:
+    - biotools:beadarraysnp
+    - doi:10.1093/bioinformatics/btm311
+  parent_recipe:
+    name: bioconductor-beadarraysnp
+    path: recipes/bioconductor-beadarraysnp
+    version: 1.46.0
+

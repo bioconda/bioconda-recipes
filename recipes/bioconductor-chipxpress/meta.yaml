@@ -1,38 +1,39 @@
-{% set version = "1.22.0" %}
+{% set version = "1.28.0" %}
 {% set name = "ChIPXpress" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 2b1b1056cbe87817593200a7fd0b91346c3e516649a2485c986bbf09f83b9a71
+  md5: 9680fbb73971f9b76b2099d0b0ca8161
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: mouse4302frmavecs, mouse4302.db, mouse4302cdf, RUnit, BiocGenerics
 requirements:
-  build:
-    - bioconductor-affy
-    - bioconductor-biobase
-    - bioconductor-chipxpressdata
-    - bioconductor-frma
-    - bioconductor-geoquery
+  host:
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-chipxpressdata >=1.22.0,<1.23.0'
+    - 'bioconductor-frma >=1.36.0,<1.37.0'
+    - 'bioconductor-geoquery >=2.52.0,<2.53.0'
     - r-base
     - r-biganalytics
     - r-bigmemory
   run:
-    - bioconductor-affy
-    - bioconductor-biobase
-    - bioconductor-chipxpressdata
-    - bioconductor-frma
-    - bioconductor-geoquery
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-chipxpressdata >=1.22.0,<1.23.0'
+    - 'bioconductor-frma >=1.36.0,<1.37.0'
+    - 'bioconductor-geoquery >=2.52.0,<2.53.0'
     - r-base
     - r-biganalytics
     - r-bigmemory
@@ -40,6 +41,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL(>=2)
   summary: 'ChIPXpress takes as input predicted TF bound genes from ChIPx data and uses a corresponding database of gene expression profiles downloaded from NCBI GEO to rank the TF bound targets in order of which gene is most likely to be functional TF target.'
+extra:
+  identifiers:
+    - biotools:chipxpress
+    - doi:10.1186/1471-2105-14-188
+  parent_recipe:
+    name: bioconductor-chipxpress
+    path: recipes/bioconductor-chipxpress
+    version: 1.24.0
+

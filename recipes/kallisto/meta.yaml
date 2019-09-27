@@ -1,35 +1,39 @@
-{% set version = "0.43.1" %}
+{% set version = "0.46.0" %}
 
 package:
-    name: kallisto
-    version: {{ version }}
+  name: kallisto
+  version: {{ version }}
 
 source:
-  fn: kallisto-{{ version }}.tar.gz
   url: https://github.com/pachterlab/kallisto/archive/v{{ version }}.tar.gz
-  sha256: 2164938c2c61c04e338c4c132cf749f56d39e6f0b4c517121bca1fbc218e430e
+  sha256: af4778cf121cdb9f732b355fc0ce44c6708caddf22d9560ba7f4b5d5b9795be1
 
 build:
-    number: 1
-    string: hdf5{{CONDA_HDF5}}_{{PKG_BUILDNUM}}
+  number: 1
 
 requirements:
-    build:
-        - hdf5 {{CONDA_HDF5}}*
-        - cmake
-        - zlib
-        - gcc
-    run:
-        - hdf5 {{CONDA_HDF5}}*
-        - libgcc
+  build:
+    - cmake
+    - {{ compiler('cxx') }}
+    - autoconf
+    - automake
+  host:
+    - hdf5
+    - zlib
+
 test:
-    files:
-        - t.fa
-        - t.fq
-    commands:
-        - kallisto version
+  files:
+    - t.fa
+    - t.fq
+  commands:
+    - kallisto version
 
 about:
-    home: "http://pachterlab.github.io/kallisto"
-    license: BSD_2_Clause
-    summary: Quantifying abundances of transcripts from RNA-Seq data, or more generally of target sequences using high-throughput sequencing reads.
+  home: "http://pachterlab.github.io/kallisto"
+  license: BSD_2_Clause
+  summary: Quantifying abundances of transcripts from RNA-Seq data, or more generally of target sequences using high-throughput sequencing reads.
+
+extra:
+  identifiers:
+    - biotools:kallisto
+    - doi:10.1038/nbt.3519

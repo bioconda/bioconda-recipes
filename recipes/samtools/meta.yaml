@@ -1,34 +1,27 @@
-{% set version = "1.7" %}
+{% set version = "1.9" %}
 
 package:
   name: samtools
   version: {{ version }}
 
 build:
-  number: 1
+  number: 12
 
 source:
-  fn: samtools-{{ version }}.tar.bz2
   url: https://github.com/samtools/samtools/releases/download/{{ version }}/samtools-{{ version }}.tar.bz2
-  sha256: e7b09673176aa32937abd80f95f432809e722f141b5342186dfef6a53df64ca1
+  sha256: 083f688d7070082411c72c27372104ed472ed7a620591d06f928e653ebc23482
 
 requirements:
   build:
-  - gcc  # [not osx]
-  - llvm # [osx]
-    # ncurses not compatible with samtools, see note in build.sh
-    #- ncurses {{CONDA_NCURSES}}*
-  - zlib {{ CONDA_ZLIB }}*
-  - bzip2 {{ CONDA_BZIP2 }}*
-  - curl
-  - xz {{ CONDA_XZ }}*
+    - {{ compiler('c') }}
+  host:
+    - htslib
+    - ncurses
+    - zlib
   run:
-  - libgcc # [not osx]
-    #- ncurses {{CONDA_NCURSES}}*
-  - zlib {{ CONDA_ZLIB }}*
-  - bzip2 {{ CONDA_BZIP2 }}*
-  - curl
-  - xz {{ CONDA_XZ }}*
+    - htslib
+    - ncurses
+    - zlib
 
 about:
   home: https://github.com/samtools/samtools
@@ -38,3 +31,9 @@ about:
 test:
   commands:
     - samtools --help
+    # test if https protocol works, if it doesnt samtools will fail with "Protocol not supported"
+    - samtools view 'https://example.com' 2>&1 | grep 'truncated file.' -q
+
+extra:
+  identifiers:
+    - biotools:samtools

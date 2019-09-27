@@ -1,51 +1,56 @@
-{% set name = "rsem" %}
-{% set version = "1.3.0" %}
-{% set sha256 = "ecfbb79c23973e1c4134f05201f4bd89b0caf0ce4ae1ffd7c4ddc329ed4e05d2" %}
-
-about:
-  home: https://deweylab.github.io/RSEM/
-  license: GPLv3
-  summary: RSEM (RNA-Seq by Expectation-Maximization)
+{% set version = "1.3.2" %}
 
 package:
-  name: {{ name }} 
+  name: rsem
   version: {{ version }}
+
+source:
+  url: https://github.com/deweylab/RSEM/archive/v{{ version }}.tar.gz
+  sha256: 7cf5538226330960415f759045fd6940fe39ed26955ba833e09dbfdf3332ec6b
+  patches:
+    - 01_fix_cxx_11.patch  # iostreams must be cast to bool explicitly
+    - 02_fix_makefile.patch  # de-vendor samtools and allow overriding *FLAGS
 
 build:
   rpaths:
     - lib/R/lib/
     - lib/
-  number: 3
-  skip: False
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
+  number: 0
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - bioconductor-biobase
-    - boost {{CONDA_BOOST}}*
-    - gcc
     - perl
     - perl-module-build
     - r-base
-    - zlib {{ CONDA_ZLIB }}*
+    - samtools
+    - htslib
+    - zlib
   run:
     - bioconductor-biobase
     - bioconductor-ebseq
-    - boost {{CONDA_BOOST}}*
-    - libgcc
+    - ucsc-bigwigsummary
     - perl
     - perl-module-build
     - r-base
-    - samtools 1.3
-    - zlib {{ CONDA_ZLIB }}*
+    - samtools
+    - zlib
 
 test:
   commands:
     - rsem-prepare-reference 2>&1 | grep reference_name > /dev/null
     - rsem-for-ebseq-find-DE 2>&1 | grep Usage > /dev/null
-    - rsem-bam2wig foo bar foobar 2>&1 | grep "fail to open file" > /dev/null
+    - rsem-bam2wig foo bar foobar 2>&1 | grep "Failed to open file" > /dev/null
     - which rsem-for-ebseq-calculate-clustering-info
 
-source:
-  url: https://github.com/deweylab/RSEM/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+about:
+  home: https://deweylab.github.io/RSEM/
+  license: GPLv3
+  summary: "RSEM is a software package for estimating gene and isoform expression levels from RNA-Seq data. The RSEM package provides an user-friendly interface, supports threads for parallel computation of the EM algorithm, single-end and paired-end read data, quality scores, variable-length reads and RSPD estimation. In addition, it provides posterior mean and 95% credibility interval estimates for expression levels. For visualization, It can generate BAM and Wiggle files in both transcript-coordinate and genomic-coordinate. Genomic-coordinate files can be visualized by both UCSC Genome browser and Broad Institute's Integrative Genomics Viewer (IGV). Transcript-coordinate files can be visualized by IGV. RSEM also has its own scripts to generate transcript read depth plots in pdf format. The unique feature of RSEM is, the read depth plots can be stacked, with read depth contributed to unique reads shown in black and contributed to multi-reads shown in red. In addition, models learned from data can also be visualized. Last but not least, RSEM contains a simulator."
+
+extra:
+  identifiers:
+    - doi:10.1186/1471-2105-12-323
+    - biotools:rsem

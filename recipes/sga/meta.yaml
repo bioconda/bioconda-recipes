@@ -1,40 +1,48 @@
+{% set name = "SGA" %}
 {% set version = "0.10.15" %}
+{% set sha256 = "1b18996e6ec47985bc4889a8cbc3cd4dd3a8c7d385ae9f450bd474e36342558b" %}
 
 package:
-  name: sga
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: sga-{{ version }}.tar.gz
   url: https://github.com/jts/sga/archive/v{{ version }}.tar.gz
-  sha256: 1b18996e6ec47985bc4889a8cbc3cd4dd3a8c7d385ae9f450bd474e36342558b
+  sha256: {{ sha256 }}
+  patches:
+    - gcc.patch
+    - configure.patch
 
 build:
-  number: 2
-  string: bamtools{{CONDA_BAMTOOLS}}_{{PKG_BUILDNUM}}
+  number: 4
 
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
     - autoconf
     - automake
     - m4
+  host:
     - sparsehash
-    - bamtools {{ CONDA_BAMTOOLS }}*
-    - zlib {{ CONDA_ZLIB }}*
+    - bamtools
+    - zlib
   run:
-    - libgcc  # [not osx]
-    - libcxx  # [osx]
     - sparsehash
-    - bamtools {{ CONDA_BAMTOOLS }}*
-    - zlib {{ CONDA_ZLIB }}*
+    - bamtools
+    - zlib
 
 test:
-    commands:
-      - sga --help
+  commands:
+    - sga --help
 
 about:
   home: https://github.com/jts/sga
   license: GPLv3
+  license_family: GPL
+  license_file: "src/COPYING"
   summary: SGA - String Graph Assembler. SGA is a de novo assembler for DNA sequence reads. It is based on Gene Myers string graph formulation of assembly and uses the FM-index/Burrows-Wheeler transform to efficiently find overlaps between sequence reads.
+
+extra:
+  identifiers:
+    - biotools:sga

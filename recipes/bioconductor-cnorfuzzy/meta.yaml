@@ -1,38 +1,47 @@
-{% set version = "1.20.0" %}
+{% set version = "1.26.0" %}
 {% set name = "CNORfuzzy" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: d7baf1e59c9f845d6ff3a5f970a83246bfbb2f7a77a66a04f21b61075722319c
+  md5: e309f6b2e672b473f696368fd2a62595
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: xtable, Rgraphviz, RUnit, BiocGenerics
 requirements:
-  build:
-    - 'bioconductor-cellnoptr >=1.4.0'
+  host:
+    - 'bioconductor-cellnoptr >=1.30.0,<1.31.0'
     - r-base
     - 'r-nloptr >=0.8.5'
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
-    - 'bioconductor-cellnoptr >=1.4.0'
+    - 'bioconductor-cellnoptr >=1.30.0,<1.31.0'
     - r-base
     - 'r-nloptr >=0.8.5'
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'This package is an extension to CellNOptR.  It contains additional functionality needed to simulate and train a prior knowledge network to experimental data using constrained fuzzy logic (cFL, rather than Boolean logic as is the case in CellNOptR).  Additionally, this package will contain functions to use for the compilation of multiple optimization results (either Boolean or cFL).'
+extra:
+  identifiers:
+    - biotools:cnorfuzzy
+    - doi:10.1186/1752-0509-6-133
+  parent_recipe:
+    name: bioconductor-cnorfuzzy
+    path: recipes/bioconductor-cnorfuzzy
+    version: 1.22.0
+

@@ -1,27 +1,27 @@
-{% set version = "2.8.0" %}
+{% set version = "2.14.0" %}
 {% set name = "OncoSimulR" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: b354f94334a13ecf1610cc2b8e9e493c6d2475e5f7224fda7246a271abf715ac
+  md5: ad7ec9aa5aa85b0e0c961a23adf441ab
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, knitr, Oncotree, testthat (>= 1.0.0), rmarkdown, bookdown, pander
 requirements:
-  build:
-    - bioconductor-graph
-    - bioconductor-nem
-    - bioconductor-rgraphviz
+  host:
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-nem >=2.58.0,<2.59.0'
+    - 'bioconductor-rgraphviz >=2.28.0,<2.29.0'
     - r-base
     - r-car
     - r-data.table
@@ -33,12 +33,10 @@ requirements:
     - r-rcolorbrewer
     - 'r-rcpp >=0.12.4'
     - r-smatr
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
-    - bioconductor-graph
-    - bioconductor-nem
-    - bioconductor-rgraphviz
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-nem >=2.58.0,<2.59.0'
+    - 'bioconductor-rgraphviz >=2.28.0,<2.29.0'
     - r-base
     - r-car
     - r-data.table
@@ -50,11 +48,22 @@ requirements:
     - r-rcolorbrewer
     - 'r-rcpp >=0.12.4'
     - r-smatr
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 3)'
-  summary: 'Functions for forward population genetic simulation in asexual populations, with special focus on cancer progression. Fitness can be an arbitrary function of genetic interactions between multiple genes or modules of genes, including epistasis, order restrictions in mutation accumulation, and order effects.  Mutation rates can differ between genes, and we can include mutator/antimutator genes (to model mutator phenotypes). Simulations use continuous-time models and can include driver and passenger genes and modules.  Also included are functions for: simulating random DAGs of the type found in Oncogenetic Tress, Conjunctive Bayesian Networks, and other tumor progression models; plotting and sampling from single or multiple realizations of the simulations, including single-cell sampling; plotting the parent-child relationships of the clones; generating random fitness landscapes (Rough Mount Fuji, House of Cards, and additive models) and plotting them.'
+  summary: 'Functions for forward population genetic simulation in asexual populations, with special focus on cancer progression. Fitness can be an arbitrary function of genetic interactions between multiple genes or modules of genes, including epistasis, order restrictions in mutation accumulation, and order effects.  Mutation rates can differ between genes, and we can include mutator/antimutator genes (to model mutator phenotypes). Simulations use continuous-time models and can include driver and passenger genes and modules.  Also included are functions for: simulating random DAGs of the type found in Oncogenetic Trees, Conjunctive Bayesian Networks, and other cancer progression models; plotting and sampling from single or multiple realizations of the simulations, including single-cell sampling; plotting the parent-child relationships of the clones; generating random fitness landscapes (Rough Mount Fuji, House of Cards, and additive models) and plotting them.'
+extra:
+  identifiers:
+    - biotools:oncosimulr
+  parent_recipe:
+    name: bioconductor-oncosimulr
+    path: recipes/bioconductor-oncosimulr
+    version: 2.10.0
+

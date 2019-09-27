@@ -1,49 +1,37 @@
 {% set package = "ucsc-netsyntenic" %}
 {% set program = "netSyntenic" %}
-{% set version = "357" %}
-{% set sha256 = "0cec445f47c319e407d2cf866fb2f6ec0c9b72a2b10a0f75142ebc01ca4aca87" %}
+{% set version = "377" %}
+{% set sha256 = "932f149c19641064a9cd3f2382cbb54b45a9292b8444792872d531346925d676" %}
 
 package:
   name: "{{ package }}"
   version: "{{ version }}"
 
 source:
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{{ version }}.src.tgz"                      # [linux]
-  fn: "userApps.src.tgz"                                                                     # [linux]
-  sha256: "{{ sha256 }}"                                                    # [linux]
-  patches:                                                                                   # [linux]
-    - "include.patch"                                                                        # [linux]
-
-  url: "http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/{{ program }}"                    # [osx]
-  fn: "{{ program }}"                                                                            # [osx]
+  url: "http://hgdownload.cse.ucsc.edu/admin/exe/userApps.v{{ version }}.src.tgz"
+  sha256: "{{ sha256 }}"
+  patches:
+    - "include.patch"
 
 build:
-  number: 1
-  # Skipping OSX because of the following error:
-  # /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/install_name_tool:
-  # changing install names or rpaths can't be redone for:
-  # /anaconda/conda-bld/ucsc-netsyntenic_1511103948404/_b_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/bin/netSyntenic
-  # (for architecture x86_64) because larger updated load commands do not fit
-  # (the program must be relinked, and you may need to use -headerpad or
-  # -headerpad_max_install_names)
-  skip: True  # [osx]
+  number: 0
 
 requirements:
   build:
-    - gcc                                                       # [linux]
-    - libpng                                                    # [linux]
-    - libuuid                                                   # [linux]
-    - mysql-connector-c                                         # [linux]
-    - openssl                                                   # [linux]
-    - zlib {{CONDA_ZLIB}}*                                      # [linux]
+    - {{ compiler('c') }}
+  host:
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - zlib
 
   run:
-    - libgcc                                                    # [linux]
-    - libpng                                                    # [linux]
-    - libuuid                                                   # [linux]
-    - mysql-connector-c                                         # [linux]
-    - openssl                                                   # [linux]
-    - zlib {{CONDA_ZLIB}}*                                      # [linux]
+    - libpng
+    - libuuid
+    - mysql-connector-c
+    - openssl
+    - zlib
 
 test:
   commands:

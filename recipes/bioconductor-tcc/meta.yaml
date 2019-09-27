@@ -1,43 +1,50 @@
-{% set version = "1.18.0" %}
+{% set version = "1.24.0" %}
 {% set name = "TCC" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: a50aa4a3238127e273f982e6a2faf4918b9c67d7d4ae3d5296054d838e82d582
+  md5: fca8112eea20197cfefa1b0c2e35eb7c
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocGenerics
 requirements:
-  build:
-    - bioconductor-bayseq
-    - bioconductor-deseq
-    - bioconductor-deseq2
-    - bioconductor-edger
-    - bioconductor-roc
+  host:
+    - 'bioconductor-bayseq >=2.18.0,<2.19.0'
+    - 'bioconductor-deseq >=1.36.0,<1.37.0'
+    - 'bioconductor-deseq2 >=1.24.0,<1.25.0'
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
+    - 'bioconductor-roc >=1.60.0,<1.61.0'
     - r-base
-    - r-samr
   run:
-    - bioconductor-bayseq
-    - bioconductor-deseq
-    - bioconductor-deseq2
-    - bioconductor-edger
-    - bioconductor-roc
+    - 'bioconductor-bayseq >=2.18.0,<2.19.0'
+    - 'bioconductor-deseq >=1.36.0,<1.37.0'
+    - 'bioconductor-deseq2 >=1.24.0,<1.25.0'
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
+    - 'bioconductor-roc >=1.60.0,<1.61.0'
     - r-base
-    - r-samr
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'This package provides a series of functions for performing differential expression analysis from RNA-seq count data using robust normalization strategy (called DEGES). The basic idea of DEGES is that potential differentially expressed genes or transcripts (DEGs) among compared samples should be removed before data normalization to obtain a well-ranked gene list where true DEGs are top-ranked and non-DEGs are bottom ranked. This can be done by performing a multi-step normalization strategy (called DEGES for DEG elimination strategy). A major characteristic of TCC is to provide the robust normalization methods for several kinds of count data (two-group with or without replicates, multi-group/multi-factor, and so on) by virtue of the use of combinations of functions in depended packages.'
+extra:
+  identifiers:
+    - biotools:tcc
+  parent_recipe:
+    name: bioconductor-tcc
+    path: recipes/bioconductor-tcc
+    version: 1.20.1
+

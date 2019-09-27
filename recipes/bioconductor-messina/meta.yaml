@@ -1,31 +1,30 @@
-{% set version = "1.14.0" %}
+{% set version = "1.20.0" %}
 {% set name = "messina" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 156ba193500eb312fdbd6a18905688680d2bda7a987585b0bb445b83ed6e0311
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: bfd3714601dfff75a4dd9be6c8a7a5d4
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: knitr (>= 1.5), antiProfilesData (>= 0.99.2), Biobase (>= 2.22.0), BiocStyle
 requirements:
-  build:
+  host:
     - r-base
     - 'r-foreach >=1.4.1'
     - 'r-ggplot2 >=0.9.3.1'
     - 'r-plyr >=1.8'
     - 'r-rcpp >=0.11.1'
     - 'r-survival >=2.37-4'
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
     - r-base
     - 'r-foreach >=1.4.1'
@@ -33,10 +32,22 @@ requirements:
     - 'r-plyr >=1.8'
     - 'r-rcpp >=0.11.1'
     - 'r-survival >=2.37-4'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'EPL (>= 1.0)'
   summary: 'Messina is a collection of algorithms for constructing optimally robust single-gene classifiers, and for identifying differential expression in the presence of outliers or unknown sample subgroups.  The methods have application in identifying lead features to develop into clinical tests (both diagnostic and prognostic), and in identifying differential expression when a fraction of samples show unusual patterns of expression.'
+extra:
+  identifiers:
+    - biotools:messina
+  parent_recipe:
+    name: bioconductor-messina
+    path: recipes/bioconductor-messina
+    version: 1.16.0
+

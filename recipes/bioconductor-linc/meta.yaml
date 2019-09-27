@@ -1,31 +1,31 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "LINC" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: cde9f0069dd8a1db8483a969dddd7107d16fd89a76ba867305664c5d2fcb8b4a
+  md5: 5b3d4f07c51e87efa8b1894f69cfd085
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: RUnit, BiocGenerics, knitr, biomaRt
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-clusterprofiler
-    - bioconductor-dose
-    - bioconductor-ggtree
-    - bioconductor-org.hs.eg.db
-    - bioconductor-reactomepa
-    - bioconductor-sva
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-clusterprofiler >=3.12.0,<3.13.0'
+    - 'bioconductor-dose >=3.10.0,<3.11.0'
+    - 'bioconductor-ggtree >=1.16.0,<1.17.0'
+    - 'bioconductor-org.hs.eg.db >=3.8.0,<3.9.0'
+    - 'bioconductor-reactomepa >=1.28.0,<1.29.0'
+    - 'bioconductor-sva >=3.32.0,<3.33.0'
     - r-ape
     - r-base
     - r-ggplot2
@@ -33,16 +33,14 @@ requirements:
     - r-png
     - 'r-rcpp >=0.11.0'
     - r-reshape2
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
-    - bioconductor-biobase
-    - bioconductor-clusterprofiler
-    - bioconductor-dose
-    - bioconductor-ggtree
-    - bioconductor-org.hs.eg.db
-    - bioconductor-reactomepa
-    - bioconductor-sva
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-clusterprofiler >=3.12.0,<3.13.0'
+    - 'bioconductor-dose >=3.10.0,<3.11.0'
+    - 'bioconductor-ggtree >=1.16.0,<1.17.0'
+    - 'bioconductor-org.hs.eg.db >=3.8.0,<3.9.0'
+    - 'bioconductor-reactomepa >=1.28.0,<1.29.0'
+    - 'bioconductor-sva >=3.32.0,<3.33.0'
     - r-ape
     - r-base
     - r-ggplot2
@@ -50,11 +48,23 @@ requirements:
     - r-png
     - 'r-rcpp >=0.11.0'
     - r-reshape2
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'This package provides methods to compute co-expression networks of lincRNAs and protein-coding genes. Biological terms associated with the sets of protein-coding genes predict the biological contexts of lincRNAs according to the ''Guilty by Association'' approach.'
+extra:
+  identifiers:
+    - biotools:linc
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-linc
+    path: recipes/bioconductor-linc
+    version: 1.8.0
+

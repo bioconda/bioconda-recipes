@@ -1,36 +1,44 @@
-{% set version = "1.42.0" %}
+{% set version = "1.48.0" %}
 {% set name = "bridge" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 537acf2edd96df67a1c19fa0f5114b60a2d205a10094f829879f6f86c498ac2b
+  md5: 480a9c00864b54d93b8c319a3db68795
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - bioconductor-rama
+  host:
+    - 'bioconductor-rama >=1.58.0,<1.59.0'
     - r-base
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
-    - bioconductor-rama
+    - 'bioconductor-rama >=1.58.0,<1.59.0'
     - r-base
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Test for differentially expressed genes with microarray data. This package can be used with both cDNA microarrays or Affymetrix chip. The packge fits a robust Bayesian hierarchical model for testing for differential expression. Outliers are modeled explicitly using a $t$-distribution. The model includes an exchangeable prior for the variances which allow different variances for the genes but still shrink extreme empirical variances. Our model can be used for testing for differentially expressed genes among multiple samples, and can distinguish between the different possible patterns of differential expression when there are three or more samples. Parameter estimation is carried out using a novel version of Markov Chain Monte Carlo that is appropriate when the model puts mass on subspaces of the full parameter space.'
+extra:
+  identifiers:
+    - biotools:bridge
+    - doi:10.1111/j.1541-0420.2005.00397.x
+  parent_recipe:
+    name: bioconductor-bridge
+    path: recipes/bioconductor-bridge
+    version: 1.44.0
+

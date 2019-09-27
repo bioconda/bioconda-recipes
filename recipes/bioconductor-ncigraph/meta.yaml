@@ -1,40 +1,51 @@
-{% set version = "1.26.0" %}
+{% set version = "1.32.0" %}
 {% set name = "NCIgraph" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 201e4e2e7d2634b6959c241cef8f1de38185d24c1e310d116c44eb1724b68d24
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 0bcb95b9449cc4451fcf113b5f1a3b10
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: Rgraphviz
 requirements:
-  build:
-    - bioconductor-graph
-    - bioconductor-kegggraph
-    - bioconductor-rbgl
-    - bioconductor-rcy3
+  host:
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-kegggraph >=1.44.0,<1.45.0'
+    - 'bioconductor-rbgl >=1.60.0,<1.61.0'
+    - 'bioconductor-rcy3 >=2.4.0,<2.5.0'
     - r-base
     - r-r.methodss3
   run:
-    - bioconductor-graph
-    - bioconductor-kegggraph
-    - bioconductor-rbgl
-    - bioconductor-rcy3
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-kegggraph >=1.44.0,<1.45.0'
+    - 'bioconductor-rbgl >=1.60.0,<1.61.0'
+    - 'bioconductor-rcy3 >=2.4.0,<2.5.0'
     - r-base
     - r-r.methodss3
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Provides various methods to load the pathways from the NCI Pathways Database in R graph objects and to re-format them.'
+extra:
+  identifiers:
+    - biotools:ncigraph
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-ncigraph
+    path: recipes/bioconductor-ncigraph
+    version: 1.28.0
+

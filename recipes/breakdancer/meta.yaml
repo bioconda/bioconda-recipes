@@ -2,46 +2,49 @@
 {% set version = "1.4.5" %}
 
 package:
-    name: {{ name }}
-    version: {{ version }}
+  name: {{ name }}
+  version: {{ version }}
 
 about:
-    home: https://github.com/genome/breakdancer
-    license: GPLv3
-    summary: SV detection from paired end reads mapping
+  home: https://github.com/genome/breakdancer
+  license: GPLv3
+  summary: SV detection from paired end reads mapping
 
 build:
-    number: 2
-    skip: True  # [not py27]
+  number: 4
+  skip: True  # [not py27]
 
 requirements:
-    build:
-        - python
-        - perl
-        - cmake >=2.8
-        - gcc
-        - sed
-        - zlib {{CONDA_ZLIB}}*
-        - ncurses {{CONDA_NCURSES}}*
-    run:
-        - libgcc
-        - perl-math-cdf
-        - perl-statistics-descriptive
-        - perl-gdgraph-histogram  # for bam2cfg.pl
-        - zlib {{CONDA_ZLIB}}*
+  build:
+    - cmake >=2.8
+    - {{ compiler('c') }}
+    - python
+  host:
+    - perl
+    - sed
+    - zlib
+    - ncurses
+  run:
+    - perl-math-cdf
+    - perl-statistics-descriptive
+    - perl-gdgraph-histogram  # for bam2cfg.pl
+    - zlib
 
 test:
-    commands:
-        - 'breakdancer-max 2>&1 | grep "Usage: breakdancer-max"'
-        - bam2cfg.pl 2>&1 | grep "Usage"
+  commands:
+    - 'breakdancer-max 2>&1 | grep "Usage: breakdancer-max"'
+    - bam2cfg.pl 2>&1 | grep "Usage"
 
 source:
-    fn: {{ name }}-{{ version }}.tar.gz
-    url: https://github.com/genome/breakdancer/archive/v{{ version }}.tar.gz
-    md5: 3a3fcb3731b0d9e0573c528bdcaeb18b
-    patches:
-         - builddeps.patch
-         # This patch is applied during the build via builddeps.patch.
-         # The reason is that samtools is a tarball within the breakdancer tarball and
-         # needs to be extracted first.
-         #- samtools.patch
+  url: https://github.com/genome/breakdancer/archive/v{{ version }}.tar.gz
+  md5: 3a3fcb3731b0d9e0573c528bdcaeb18b
+  patches:
+    - builddeps.patch
+    # This patch is applied during the build via builddeps.patch.
+    # The reason is that samtools is a tarball within the breakdancer tarball and
+    # needs to be extracted first.
+    #- samtools.patch
+
+extra:
+  identifiers:
+    - biotools:breakdancer

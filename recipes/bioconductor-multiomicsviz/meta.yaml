@@ -1,29 +1,31 @@
-{% set version = "1.2.0" %}
+{% set version = "1.8.0" %}
 {% set name = "multiOmicsViz" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: a134a57169ba6b7b64c6ebad4f2cae60f16d9fb7be6b9856b498e71bc57f14ff
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 27efea72517daffda09ad491d7781341
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocGenerics
 requirements:
-  build:
-    - bioconductor-summarizedexperiment
+  host:
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-doparallel
     - r-foreach
   run:
-    - bioconductor-summarizedexperiment
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-doparallel
     - r-foreach
@@ -31,6 +33,12 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
   summary: 'Calculate the spearman correlation between the source omics data and other target omics data, identify the significant correlations and plot the significant correlations on the heat map in which the x-axis and y-axis are ordered by the chromosomal location.'
+extra:
+  parent_recipe:
+    name: bioconductor-multiomicsviz
+    path: recipes/bioconductor-multiomicsviz
+    version: 1.4.0
+

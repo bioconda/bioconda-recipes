@@ -1,25 +1,27 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.0" %}
 {% set name = "quantro" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 7821670588ed73fd6768cd999dfd0557c2d4102506c584582dbd86bc012384ef
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: c271662d585e8997b71f103a08dacf8a
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr, RUnit, BiocGenerics, BiocStyle
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-minfi
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-minfi >=1.30.0,<1.31.0'
     - r-base
     - r-doparallel
     - r-foreach
@@ -27,8 +29,8 @@ requirements:
     - r-iterators
     - r-rcolorbrewer
   run:
-    - bioconductor-biobase
-    - bioconductor-minfi
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-minfi >=1.30.0,<1.31.0'
     - r-base
     - r-doparallel
     - r-foreach
@@ -39,6 +41,14 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>=3)'
   summary: 'A data-driven test for the assumptions of quantile normalization using raw data such as objects that inherit eSets (e.g. ExpressionSet, MethylSet). Group level information about each sample (such as Tumor / Normal status) must also be provided because the test assesses if there are global differences in the distributions between the user-defined groups.'
+extra:
+  identifiers:
+    - biotools:quantro
+  parent_recipe:
+    name: bioconductor-quantro
+    path: recipes/bioconductor-quantro
+    version: 1.14.0
+

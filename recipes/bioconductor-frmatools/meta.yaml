@@ -1,44 +1,48 @@
-{% set version = "1.28.0" %}
+{% set version = "1.36.0" %}
 {% set name = "frmaTools" %}
-{% set bioc = "3.5" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: f5c394e29524ee247c5fb4a7cc5cba5c17bf99a44f80513e96c12e99076ce58c
-
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: db1ec01c20b52ddc34d3c8161bf13da4
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-
+  noarch: generic
+# Suggests: oligo, pd.huex.1.0.st.v2, pd.hugene.1.0.st.v1, frma, affyPLM, hgu133aprobe, hgu133atagprobe, hgu133plus2probe, hgu133acdf, hgu133atagcdf, hgu133plus2cdf, hgu133afrmavecs, frmaExampleData
 requirements:
-  build:
-    - bioconductor-affy
-    - bioconductor-biobase
-    - bioconductor-preprocesscore
+  host:
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-preprocesscore >=1.46.0,<1.47.0'
     - r-base
     - r-dbi
   run:
-    - bioconductor-affy
-    - bioconductor-biobase
-    - bioconductor-preprocesscore
+    - 'bioconductor-affy >=1.62.0,<1.63.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-preprocesscore >=1.46.0,<1.47.0'
     - r-base
     - r-dbi
-
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
-  home: https://www.bioconductor.org/packages/release/bioc/html/frmaTools.html
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'Tools for advanced use of the frma microarray package.'
+  summary: 'Tools for advanced use of the frma package.'
+extra:
+  identifiers:
+    - biotools:frmatools
+  parent_recipe:
+    name: bioconductor-frmatools
+    path: recipes/bioconductor-frmatools
+    version: 1.32.0
+

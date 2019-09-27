@@ -1,0 +1,45 @@
+{% set name = "htsget" %}
+{% set version = "0.2.5" %}
+
+package:
+  name: "python-{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: d383dc36f699bd921f760f5500c8ed251e5f8358a7cc219c6c89c35d103e8045
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - htsget=htsget.cli:htsget_main
+  script: "sed -i.bak '22d' setup.py && {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python
+    - setuptools_scm
+  run:
+    - humanize
+    - python
+    - requests
+    - six
+
+test:
+  imports:
+    - htsget
+  commands:
+    - htsget --help
+
+about:
+  home: http://pypi.python.org/pypi/htsget
+  license: Apache Software
+  license_family: APACHE
+  license_file: LICENSE
+  summary: Python API and command line interface for the GA4GH htsget API.
+
+extra:
+  recipe-maintainers:
+    - dpryan79

@@ -1,25 +1,26 @@
-{% set version = "1.4.0" %}
+{% set version = "1.10.0" %}
 {% set name = "CVE" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 9719ea5105e639eb698518eab9ed205163db4fb488a1ae723ae457a5ec621d41
+  md5: 2396cfaf7ce6b60195a6af560d5c1d66
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, RTCGAToolbox, testthat, BiocStyle
 requirements:
-  build:
-    - bioconductor-consensusclusterplus
+  host:
+    - 'bioconductor-consensusclusterplus >=1.48.0,<1.49.0'
     - r-ape
     - r-base
     - r-ggplot2
@@ -28,9 +29,10 @@ requirements:
     - r-plyr
     - r-rcolorbrewer
     - r-shiny
+    - r-tidyverse
     - r-wgcna
   run:
-    - bioconductor-consensusclusterplus
+    - 'bioconductor-consensusclusterplus >=1.48.0,<1.49.0'
     - r-ape
     - r-base
     - r-ggplot2
@@ -39,11 +41,21 @@ requirements:
     - r-plyr
     - r-rcolorbrewer
     - r-shiny
+    - r-tidyverse
     - r-wgcna
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Shiny app for interactive variant prioritisation in precision oncology. The input file for CVE is the output file of the recently released Oncotator Variant Annotation tool summarising variant-centric information from 14 different publicly available resources relevant for cancer researches. Interactive priortisation in CVE is based on known germline and cancer variants, DNA repair genes and functional prediction scores. An optional feature of CVE is the exploration of the tumour-specific pathway context that is facilitated using co-expression modules generated from publicly available transcriptome data. Finally druggability of prioritised variants is assessed using the Drug Gene Interaction Database (DGIdb).'
+extra:
+  identifiers:
+    - biotools:cve
+    - doi:10.1186/s12920-017-0261-6
+  parent_recipe:
+    name: bioconductor-cve
+    path: recipes/bioconductor-cve
+    version: 1.6.0
+

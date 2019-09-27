@@ -1,34 +1,40 @@
-{% set name = "seqprep" %}
-{% set version = "1.2" %}
-{% set sha256hash = "6d2015b5fec631dd3fd29b5560d9daaa3b1b2271d5bed9c51737430c442e2d4e" %}
+{% set version = "1.3.2" %}
+{% set sha256 = "2b8a462a0e0a3e51f70be7730dc77b1f2bb69e74845dd0fbd2110a921c32265a" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: seqprep
+  version: '{{version}}'
 
 build:
-  number: 1
+  number: 3
   skip: True # [osx]
 
 source:
-  fn: v{{ version }}.tar.gz
   url: https://github.com/jstjohn/SeqPrep/archive/v{{ version }}.tar.gz
-  sha256: {{ sha256hash }}
-
+  sha256: '{{ sha256 }}'
   patches:
     - cflags.patch
 
 requirements:
   build:
-    - zlib {{CONDA_ZLIB}}*
+    - {{ compiler('c') }}
+  host:
+    - zlib
   run:
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
 
 test:
   commands:
-    - 'SeqPrep -h 2>&1 | grep SeqPrep'
+    - SeqPrep -h 2>&1 | grep SeqPrep
 
 about:
   home: https://github.com/jstjohn/SeqPrep
-  summary: 'Tool for stripping adaptors and/or merging paired reads with overlap into single reads.'
+  summary: Tool for stripping adaptors and/or merging paired reads with overlap into
+    single reads.
   license: MIT
+
+  license_family: MIT
+extra:
+  identifiers:
+    - biotools:seqprep
+    - doi:10.1134/S1021443716020175

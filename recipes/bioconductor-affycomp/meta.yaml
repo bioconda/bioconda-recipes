@@ -1,32 +1,43 @@
-{% set version = "1.54.0" %}
+{% set version = "1.60.0" %}
 {% set name = "affycomp" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: a093b51ee32c5bdbfa5cef6becf3f3a2fc0f41dbf93ee63363fd815fe2af9389
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 2e6ae6a236b15e9d2fd7f376611e4841
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: splines, affycompData
 requirements:
-  build:
-    - 'bioconductor-biobase >=2.3.3'
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
   run:
-    - 'bioconductor-biobase >=2.3.3'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'The package contains functions that can be used to compare expression measures for Affymetrix Oligonucleotide Arrays.'
+extra:
+  identifiers:
+    - biotools:affycomp
+    - doi:10.1093/bioinformatics/btg410
+  parent_recipe:
+    name: bioconductor-affycomp
+    path: recipes/bioconductor-affycomp
+    version: 1.56.0
+

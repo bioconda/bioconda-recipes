@@ -1,29 +1,28 @@
 {% set name = "busco" %}
 {% set version = "3.0.2" %}
-{% set sha256 = "cd0699545a126c7cc94604eef7c8dc50379b5d11becbad3a0f55d995a4c5e1c0" %}
+{% set sha256 = "7cfc50b1a256cd697ec7e2b1c3b5af7118f50e2d809533df3d5d8dfca7560c46" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  # Not available for osx because requires augustus
-  skip: True # [py27 or osx]
-  number: 5
+  number: 12
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://gitlab.com/ezlab/busco/repository/archive.tar.bz2?ref={{ version }}
+  url: https://gitlab.com/ezlab/busco/-/archive/{{ version }}/busco-{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
-  build:
-    - python
+  host:
+    - python >=3
   run:
-    - python
-    - blast
+    - python >=3
+    - findutils
+    - blast >=2.2,<2.4
     - hmmer
-    - augustus >=3.2.3
+    - augustus >=3.3.2
+    - r-base
     - r-ggplot2 >=2.2.1
 
 test:
@@ -34,6 +33,7 @@ test:
     - run_busco -h
     - generate_plot.py -h
     - generate_plot -h
+    - mkdir findtest ; cd findtest ; touch file ; find . -delete ; cd ..
 
     # Message reported by busco when the config file exists but no input provided
     - run_busco | grep "Please add it in the config file"
@@ -45,3 +45,10 @@ about:
            assembly, gene set, and transcriptome completeness based on
            evolutionarily informed expectations of gene content from
            near-universal single-copy orthologs selected from OrthoDB.
+
+extra:
+  identifiers:
+    - biotools:busco
+    - doi:10.1093/bioinformatics/btv351
+  skip-lints:
+    - should_be_noarch

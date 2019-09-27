@@ -1,34 +1,43 @@
-{% set version = "1.14.0" %}
+{% set version = "1.20.0" %}
 {% set name = "HIBAG" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: b4f74bde8943961a88200c84b197e30a8d520eb8a6f88d42dd684e838d5b644e
+  md5: 726af2e377f5adb21cbceeadfc75e7d4
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: parallel, knitr, gdsfmt (>= 1.2.2), SNPRelate (>= 1.1.6), ggplot2, reshape2
 requirements:
-  build:
+  host:
     - r-base
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
     - r-base
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'It is a software package for imputing HLA types using SNP data, and relies on a training set of HLA and SNP genotypes. HIBAG can be used by researchers with published parameter estimates instead of requiring access to large training sample datasets. It combines the concepts of attribute bagging, an ensemble classifier method, with haplotype inference for SNPs and HLA types. Attribute bagging is a technique which improves the accuracy and stability of classifier ensembles using bootstrap aggregating and random variable selection.'
+extra:
+  identifiers:
+    - biotools:hibag
+  parent_recipe:
+    name: bioconductor-hibag
+    path: recipes/bioconductor-hibag
+    version: 1.16.0
+

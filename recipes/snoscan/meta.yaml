@@ -1,42 +1,38 @@
 {% set name = "snoscan" %}
-{% set version = "0.9b" %}
+{% set version = "0.9.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 1
+  number: 0
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://depot.galaxyproject.org/software/snoscan/snoscan_0.9b_src_all.tar.gz
-  md5: 30719dc179f00c892d50ce070336d0a1
-  patches:
-    - patches/sort-snos.patch
-    - patches/sqio.c.patch
+  url: http://lowelab.ucsc.edu/software/snoscan-{{ version }}.tar.gz
+  sha256: e6ad2f10354cb0c4c44d46d5f298476dbe250a4817afcc8d1c56d252e08ae19e
 
 
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm  # [osx]
-    - zlib {{CONDA_ZLIB}}*
+    - {{ compiler('c') }}
+  host:
     - perl
-    - perl-app-cpanminus
     - perl-module-build
 
   run:
-    - libgcc  # [not osx]
-    - zlib {{CONDA_ZLIB}}*
     - perl
 
 test:
   commands:
-    - snoscan -h > /dev/null
-    - sort-snos 2>&1 | grep "Usage" > /dev/null
+    - snoscan -h
+    - sort-snos 2>&1 | grep "Usage" 
 
 about:
   home: http://lowelab.ucsc.edu/snoscan
   summary: Search for C/D box methylation guide snoRNA genes in a genomic sequence
-  licence: GPL
+  license: GNU General Public License, version 2
+
+extra:
+  identifiers:
+    - biotools:snoscan

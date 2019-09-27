@@ -1,24 +1,24 @@
-{% set version = "1.10.0" %}
+{% set version = "1.16.0" %}
 {% set name = "sincell" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 5d352b3a64e1a9f806b1aca691feda5ef85adf9b08f7bfd29f84f7cfd364e21e
+  md5: e5fe14dc73fdf0a8acc9e2cd85558d33
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, knitr, biomaRt, stringr, monocle
 requirements:
-  build:
+  host:
     - r-base
     - r-cluster
     - r-entropy
@@ -34,8 +34,6 @@ requirements:
     - r-scatterplot3d
     - r-statmod
     - r-tsp
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
     - r-base
     - r-cluster
@@ -52,11 +50,22 @@ requirements:
     - r-scatterplot3d
     - r-statmod
     - r-tsp
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Cell differentiation processes are achieved through a continuum of hierarchical intermediate cell-states that might be captured by single-cell RNA seq. Existing computational approaches for the assessment of cell-state hierarchies from single-cell data might be formalized under a general workflow composed of i) a metric to assess cell-to-cell similarities (combined or not with a dimensionality reduction step), and ii) a graph-building algorithm (optionally making use of a cells-clustering step). Sincell R package implements a methodological toolbox allowing flexible workflows under such framework. Furthermore, Sincell contributes new algorithms to provide cell-state hierarchies with statistical support while accounting for stochastic factors in single-cell RNA seq. Graphical representations and functional association tests are provided to interpret hierarchies.'
+extra:
+  identifiers:
+    - biotools:sincell
+  parent_recipe:
+    name: bioconductor-sincell
+    path: recipes/bioconductor-sincell
+    version: 1.14.0
+

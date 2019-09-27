@@ -1,41 +1,35 @@
 {% set name = "MetaProb" %}
 {% set version = "2" %}
-{% set sha256 = "c8cb4394c1f183d693802c357bb2506b5649f7ad9cc1c56f3768c3e074f958b6" %}
-{% set md5 = "4271f038dac8a3a0cc0dca53151e7154" %}
+{% set sha256 = "ebc91d0282b2817c7150ead3a82c8e97b8aa623fb436eca3e998943a207b3d8d" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name|lower }}-{{ version }}.tar.gz
   url: https://bitbucket.org/samu661/metaprob/downloads/{{ name }}_v{{ version }}.tar.gz
   sha256: {{ sha256 }}
-  md5: {{ md5 }}
   patches:
     - makefile.patch
 
 build:
-  number: 1
+  number: 2
   skip: True  # [ osx ]
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
 
 requirements:
   build:
-    - gcc  # [linux]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
+  host:
     - eigen
-    - boost {{ CONDA_BOOST }}*
-
+    - boost
   run:
-    - libgcc  # [linux]
     - eigen
-    - boost {{ CONDA_BOOST }}*
+    - boost
 
 test:
   commands:
     - command -v MetaProb
-    - MetaProb > /dev/null
+    - MetaProb
 
 about:
   home: https://bitbucket.org/samu661/metaprob/

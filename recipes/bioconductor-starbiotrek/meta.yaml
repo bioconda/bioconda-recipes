@@ -1,49 +1,59 @@
-{% set version = "1.4.0" %}
+{% set version = "1.10.0" %}
 {% set name = "StarBioTrek" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: d28e761fcbaa9a7d5e7737d798d5fe3502bf8a70a3ffb32a454d8adf3728fe8c
-
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: aad2f6de9be8593284c27883bbb0f54d
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, testthat, devtools, roxygen2, qgraph, png, grid
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - bioconductor-keggrest
-    - bioconductor-org.hs.eg.db
-    - bioconductor-spidermir
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-graphite >=1.30.0,<1.31.0'
+    - 'bioconductor-spidermir >=1.14.0,<1.15.0'
     - r-base
     - r-e1071
+    - r-ggplot2
     - r-igraph
+    - r-mlmetrics
+    - r-reshape2
     - r-rocr
   run:
-    - bioconductor-annotationdbi
-    - bioconductor-keggrest
-    - bioconductor-org.hs.eg.db
-    - bioconductor-spidermir
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-graphite >=1.30.0,<1.31.0'
+    - 'bioconductor-spidermir >=1.14.0,<1.15.0'
     - r-base
     - r-e1071
+    - r-ggplot2
     - r-igraph
+    - r-mlmetrics
+    - r-reshape2
     - r-rocr
-
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 3)'
   summary: 'This tool StarBioTrek presents some methodologies to measure pathway activity and cross-talk among pathways integrating also the information of network data.'
+extra:
+  identifiers:
+    - biotools:starbiotrek
+    - doi:10.1186/s12918-015-0211-x
+  parent_recipe:
+    name: bioconductor-starbiotrek
+    path: recipes/bioconductor-starbiotrek
+    version: 1.6.0
+

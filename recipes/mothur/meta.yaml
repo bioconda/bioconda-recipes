@@ -1,42 +1,59 @@
+{% set mothurVersion = "1.42.3" %}
+{% set mothurSha256 = "c723c5204ccefe4b598b9d7dee12a8193154849808e77d896ce3ca5265e9c352" %}
+{% set vsearchVersion = "2.13.3" %}
+
 package:
   name: mothur
-  version: 1.39.5
+  version: {{ mothurVersion }}
 
 source:
-  fn: v1.39.5.tar.gz
-  url: https://github.com/mothur/mothur/archive/v1.39.5.tar.gz
-  md5: 1f826ea4420e6822fc0db002c5940b92
-  patches:
-    - Build-Flags.patch
+  url: https://github.com/mothur/mothur/archive/v.{{ mothurVersion }}.tar.gz
+  sha256: {{ mothurSha256 }}
 
 build:
-  number: 1
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
-  skip: True # [not linux64 or osx]
+  number: 0
 
 requirements:
   build:
-    - gcc   # [linux]
-    - llvm  # [osx]
-    - zlib {{CONDA_ZLIB}}*
-    - ncurses
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - boost
+    - boost-cpp
+    - gsl
+    - hdf5
     - readline
-    - boost >=1.55,{{CONDA_BOOST}}*
+  host:
     - blast-legacy
+    - boost
+    - boost-cpp
+    - gsl
+    - hdf5
+    - readline
+    - vsearch ={{ vsearchVersion }}
+    - zlib
   run:
-    - libgcc   # [linux]
-    - zlib {{CONDA_ZLIB}}*
-    - ncurses
-    - readline
-    - boost {{CONDA_BOOST}}*
     - blast-legacy
+    - boost
+    - boost-cpp
+    - gsl
+    - hdf5
+    - readline
+    - vsearch ={{ vsearchVersion }}
+    - zlib
+
 test:
   commands:
-     - mothur "#help()"
-     - uchime --version
+    - mothur "#help()"
+    - uchime --version
 
 about:
   home: http://www.mothur.org
-  license: GPL
+  license: GPL-3.0
+  license_family: GPL
   license_file: LICENSE.md
   summary: This project seeks to develop a single piece of open-source, expandable software to fill the bioinformatics needs of the microbial ecology community.
+  dev_url: https://github.com/mothur/mothur
+
+extra:
+  identifiers:
+    - doi:10.1128/AEM.01541-09

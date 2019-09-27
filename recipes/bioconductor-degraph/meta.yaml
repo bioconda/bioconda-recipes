@@ -1,29 +1,30 @@
-{% set version = "1.30.0" %}
+{% set version = "1.36.0" %}
 {% set name = "DEGraph" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 118e3be5f578b0cc7153f81e7cf54ba6b610dd006d541c7e9c7d6870f30e7c20
+  md5: 29e1cfa7fe5e9ea44f6ac99e847e9fde
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: corpcor, fields, graph, KEGGgraph, lattice, marray, RBGL, rrcov, Rgraphviz, NCIgraph
 requirements:
-  build:
-    - bioconductor-graph
-    - bioconductor-kegggraph
-    - bioconductor-ncigraph
-    - bioconductor-rbgl
-    - bioconductor-rgraphviz
+  host:
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-kegggraph >=1.44.0,<1.45.0'
+    - 'bioconductor-ncigraph >=1.32.0,<1.33.0'
+    - 'bioconductor-rbgl >=1.60.0,<1.61.0'
+    - 'bioconductor-rgraphviz >=2.28.0,<2.29.0'
     - r-base
     - r-lattice
     - r-mvtnorm
@@ -31,11 +32,11 @@ requirements:
     - r-r.utils
     - r-rrcov
   run:
-    - bioconductor-graph
-    - bioconductor-kegggraph
-    - bioconductor-ncigraph
-    - bioconductor-rbgl
-    - bioconductor-rgraphviz
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-kegggraph >=1.44.0,<1.45.0'
+    - 'bioconductor-ncigraph >=1.32.0,<1.33.0'
+    - 'bioconductor-rbgl >=1.60.0,<1.61.0'
+    - 'bioconductor-rgraphviz >=2.28.0,<2.29.0'
     - r-base
     - r-lattice
     - r-mvtnorm
@@ -46,6 +47,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'DEGraph implements recent hypothesis testing methods which directly assess whether a particular gene network is differentially expressed between two conditions. This is to be contrasted with the more classical two-step approaches which first test individual genes, then test gene sets for enrichment in differentially expressed genes. These recent methods take into account the topology of the network to yield more powerful detection procedures. DEGraph provides methods to easily test all KEGG pathways for differential expression on any gene expression data set and tools to visualize the results.'
+extra:
+  identifiers:
+    - biotools:degraph
+    - doi:10.1214/11-AOAS528
+  parent_recipe:
+    name: bioconductor-degraph
+    path: recipes/bioconductor-degraph
+    version: 1.32.0
+

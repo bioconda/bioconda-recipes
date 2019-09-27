@@ -1,28 +1,30 @@
-{% set version = "1.16.0" %}
+{% set version = "1.22.0" %}
 {% set name = "plethy" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: ac66dc688626dc0652303a8b3bd9e9ec0fad64d1e0bf57e5f7dbb3063431ff08
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 602fa867af93cc7b3635b972b4aa16e9
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocStyle
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - bioconductor-iranges
-    - bioconductor-s4vectors
-    - bioconductor-streamer
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-streamer >=1.30.0,<1.31.0'
     - r-base
     - 'r-dbi >=0.5-1'
     - r-ggplot2
@@ -31,11 +33,11 @@ requirements:
     - r-reshape2
     - 'r-rsqlite >=1.1'
   run:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - bioconductor-iranges
-    - bioconductor-s4vectors
-    - bioconductor-streamer
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-streamer >=1.30.0,<1.31.0'
     - r-base
     - 'r-dbi >=0.5-1'
     - r-ggplot2
@@ -47,6 +49,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'This package provides the infrastructure and tools to import, query and perform basic analysis of whole body plethysmography and metabolism data.  Currently support is limited to data derived from Buxco respirometry instruments as exported by their FinePointe software.'
+extra:
+  identifiers:
+    - biotools:plethy
+    - doi:10.1186/s12859-015-0547-7
+  parent_recipe:
+    name: bioconductor-plethy
+    path: recipes/bioconductor-plethy
+    version: 1.18.0
+

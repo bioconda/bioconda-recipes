@@ -1,31 +1,31 @@
-{% set version = "1.8.0" %}
+{% set version = "1.14.0" %}
 {% set name = "FindMyFriends" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 66a8f49d01f2770d8d7417bb70bc4695f5cffe5d4ae0a95b76bd50626583c68d
+  md5: 8f41164987f56ae09297da848cc88b31
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, testthat, knitr, rmarkdown, reutils
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - bioconductor-biocparallel
-    - bioconductor-biostrings
-    - bioconductor-iranges
-    - bioconductor-kebabs
-    - bioconductor-s4vectors
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-kebabs >=1.18.0,<1.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-digest
     - r-dplyr
@@ -37,16 +37,14 @@ requirements:
     - r-matrix
     - r-rcpp
     - r-reshape2
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - bioconductor-biocparallel
-    - bioconductor-biostrings
-    - bioconductor-iranges
-    - bioconductor-kebabs
-    - bioconductor-s4vectors
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-kebabs >=1.18.0,<1.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-digest
     - r-dplyr
@@ -58,11 +56,23 @@ requirements:
     - r-matrix
     - r-rcpp
     - r-reshape2
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>=2)'
   summary: 'A framework for doing microbial comparative genomics in R. The main purpose of the package is assisting in the creation of pangenome matrices where genes from related organisms are grouped by similarity, as well as the analysis of these data. FindMyFriends provides many novel approaches to doing pangenome analysis and supports a gene grouping algorithm that scales linearly, thus making the creation of huge pangenomes feasible.'
+extra:
+  identifiers:
+    - biotools:findmyfriends
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-findmyfriends
+    path: recipes/bioconductor-findmyfriends
+    version: 1.10.0
+

@@ -1,46 +1,59 @@
-{% set version = "1.42.0" %}
+{% set version = "1.48.0" %}
 {% set name = "Ringo" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: b8ff6e75db07b7fcb01f5a61359883ddbf5a156c9c07cad3cb7e906ed0679f9c
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 905cfe4b4a6f9bf4bcfbdf0250c7cc0c
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: rtracklayer (>= 1.3.1), mclust, topGO (>= 1.15.0)
 requirements:
-  build:
-    - 'bioconductor-biobase >=1.14.1'
-    - 'bioconductor-biocgenerics >=0.1.11'
-    - bioconductor-genefilter
-    - bioconductor-limma
-    - bioconductor-vsn
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genefilter >=1.66.0,<1.67.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-vsn >=3.52.0,<3.53.0'
     - r-base
     - r-lattice
     - r-matrix
     - r-rcolorbrewer
   run:
-    - 'bioconductor-biobase >=1.14.1'
-    - 'bioconductor-biocgenerics >=0.1.11'
-    - bioconductor-genefilter
-    - bioconductor-limma
-    - bioconductor-vsn
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-genefilter >=1.66.0,<1.67.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-vsn >=3.52.0,<3.53.0'
     - r-base
     - r-lattice
     - r-matrix
     - r-rcolorbrewer
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'The package Ringo facilitates the primary analysis of ChIP-chip data. The main functionalities of the package are data read-in, quality assessment, data visualisation and identification of genomic regions showing enrichment in ChIP-chip. The package has functions to deal with two-color oligonucleotide microarrays from NimbleGen used in ChIP-chip projects, but also contains more general functions for ChIP-chip data analysis, given that the data is supplied as RGList (raw)  or ExpressionSet (pre- processed). The package employs functions from various other packages of the Bioconductor project and provides additional ChIP-chip-specific and NimbleGen-specific functionalities.'
+  summary: 'The package Ringo facilitates the primary analysis of ChIP-chip data. The main functionalities of the package are data read-in, quality assessment, data visualisation and identification of genomic regions showing enrichment in ChIP-chip. The package has functions to deal with two-color oligonucleotide microarrays from NimbleGen used in ChIP-chip projects, but also contains more general functions for ChIP-chip data analysis, given that the data is supplied as RGList (raw) or ExpressionSet (pre- processed). The package employs functions from various other packages of the Bioconductor project and provides additional ChIP-chip-specific and NimbleGen-specific functionalities.'
+extra:
+  identifiers:
+    - biotools:ringo
+  parent_recipe:
+    name: bioconductor-ringo
+    path: recipes/bioconductor-ringo
+    version: 1.44.0
+

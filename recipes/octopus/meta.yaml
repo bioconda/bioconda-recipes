@@ -1,53 +1,48 @@
-{% set version="0.3.3a" %}
+{% set name = "octopus" %}
+{% set version = "0.5.2b" %}
+{% set sha256 = "080e8946a3171769567c0b541b1c964b19148d4545f1c6767838b856a2804a05" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 2
+
+source:
+  url: https://github.com/luntergroup/{{ name }}/archive/v0.5.2-beta.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - fix_march_set_to_native.patch
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - boost-cpp
+    - htslib
+    - wget
+    - icu
+    - bzip2
+    - xz
+    - zlib
+  run:
+    - boost-cpp
+    - htslib
+    - icu
+    - bzip2
+    - xz
+    - zlib
+
+test:
+  commands:
+    - octopus -h
+
 about:
   home: https://github.com/luntergroup/octopus
   license: MIT
-  summary: Bayesian haplotype-based mutation calling
-package:
-  name: octopus
-  version: {{ version }}
-build:
-  number: 1
-  # We can re-add use of pre-build conda boost when bioconda version 
-  # updated to at least 1.65 and compiled with 7.x compilers
-  #string: "htslib{{CONDA_HTSLIB}}_boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}"
-  string: "htslib{{CONDA_HTSLIB}}_{{PKG_BUILDNUM}}"
-  # Not building on osx CircleCI and unsure how to fix; does not pick
-  # up 7.2 compilers
-  skip: true # [osx]
-source:
-  fn: octopus-{{ version }}.tar.gz
-  url: https://github.com/luntergroup/octopus/archive/v0.3.3-alpha.tar.gz
-  md5: 5c35ea21b5c31aa792f054b5f65484e7
-requirements:
-  build:
-    - gcc_linux-64 # [linux64]
-    - gxx_linux-64 # [linux64]
-    - gcc_linux-32 # [linux32]
-    - gxx_linux-32 # [linux32]
-    - clang_osx-64 # [osx]
-    - clangxx_osx-64 # [osx]
-    - cmake
-    - htslib {{CONDA_HTSLIB}}*
-    - wget
-    # - boost {{CONDA_BOOST}}*
-    - icu 58.*
-    - bzip2 {{CONDA_BZIP2}}*
-    - xz {{CONDA_XZ}}*
-    - zlib {{CONDA_ZLIB}}*
-  run:
-    - libgcc >=7.2 # [linux]
-    - libstdcxx-ng >=7.2 # [linux]
-    - htslib {{CONDA_HTSLIB}}*
-    # - boost {{CONDA_BOOST}}*
-    - icu 58.*
-    - bzip2 {{CONDA_BZIP2}}*
-    - xz {{CONDA_XZ}}*
-    - zlib {{CONDA_ZLIB}}*
-test:
-   commands:
-     - octopus -h
-
-extra:
-  skip-lints:
-    - boost_not_pinned
+  license_family: MIT
+  license_file: LICENSE
+  summary: "Octopus is a mapping-based variant caller that implements several calling models within a unified haplotype-aware framework."

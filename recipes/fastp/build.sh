@@ -1,5 +1,5 @@
 #!/bin/bash
 set -eu -o pipefail
-make
-mkdir -p $PREFIX/bin
-cp fastp $PREFIX/bin
+
+make INCLUDE_DIRS="$PREFIX/include" LIBRARY_DIRS="$PREFIX/lib"
+make install

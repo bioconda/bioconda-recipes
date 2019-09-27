@@ -1,32 +1,42 @@
-{% set version = "1.16.0" %}
+{% set version = "1.22.0" %}
 {% set name = "OmicCircos" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: a30a101128b700dbe2e7c179ca848cf278435531f9cd97b553ac3c0aac19bc8d
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 9d3312b4108c9266549045b04bbdba88
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-genomicranges
+  host:
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-base
   run:
-    - bioconductor-genomicranges
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'OmicCircos is an R application and package for generating high-quality circular plots for omics data.'
+extra:
+  identifiers:
+    - biotools:omiccircos
+    - doi:10.4137/cin.s13495
+  parent_recipe:
+    name: bioconductor-omiccircos
+    path: recipes/bioconductor-omiccircos
+    version: 1.18.0
+

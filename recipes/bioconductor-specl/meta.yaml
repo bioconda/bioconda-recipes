@@ -1,44 +1,48 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.0" %}
 {% set name = "specL" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 3746570731e14d2ee38a6409a92c7f4f6d374efb060acc0fa1d2b43b3e80730d
+  md5: 4a1307fb9987edd64375397ee5c88b40
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocGenerics, BiocStyle (>= 2.2.1), knitr (>= 1.15.1), msqc1 (>= 1.0.0), rmarkdown, RUnit (>= 0.4.31)
 requirements:
-  build:
+  host:
     - r-base
     - 'r-dbi >=0.5.1'
-    - 'r-protviz >=0.2.31'
-    - 'r-rcpp >=0.12.4'
+    - 'r-protviz >=0.4.0'
     - 'r-rsqlite >=1.1.2'
     - 'r-seqinr >=3.3.3'
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
     - r-base
     - 'r-dbi >=0.5.1'
-    - 'r-protviz >=0.2.31'
-    - 'r-rcpp >=0.12.4'
+    - 'r-protviz >=0.4.0'
     - 'r-rsqlite >=1.1.2'
     - 'r-seqinr >=3.3.3'
-    - libcxx # [osx]
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'specL provides a function for generating spectra libraries which can be used for MRM SRM MS workflows in proteomics. The package provides a BiblioSpec reader, a function which can add the protein information using a FASTA formatted amino acid file, and an export method for using the created library in the Spectronaut software.'
+  summary: 'provides a function for generating spectra libraries which can be used for MRM SRM MS workflows in proteomics. The package provides a BiblioSpec reader, a function which can add the protein information using a FASTA formatted amino acid file, and an export method for using the created library in the Spectronaut software.'
+extra:
+  identifiers:
+    - biotools:specl
+  parent_recipe:
+    name: bioconductor-specl
+    path: recipes/bioconductor-specl
+    version: 1.16.0
+

@@ -1,31 +1,33 @@
-{% set version = "1.4.0" %}
+{% set version = "1.10.0" %}
 {% set name = "switchde" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: c62b0c0d0e306bd7a10a82842e0cef4049874daaec56ce8a56183f095a78ad3b
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 352c860f4f9d8494214110aedf58b29e
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, BiocStyle, testthat, numDeriv, tidyr
 requirements:
-  build:
-    - bioconductor-singlecellexperiment
-    - bioconductor-summarizedexperiment
+  host:
+    - 'bioconductor-singlecellexperiment >=1.6.0,<1.7.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-dplyr
     - r-ggplot2
   run:
-    - bioconductor-singlecellexperiment
-    - bioconductor-summarizedexperiment
+    - 'bioconductor-singlecellexperiment >=1.6.0,<1.7.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-dplyr
     - r-ggplot2
@@ -33,6 +35,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Inference and detection of switch-like differential expression across single-cell RNA-seq trajectories.'
+extra:
+  identifiers:
+    - biotools:switchde
+    - doi:10.1093/bioinformatics/btw798
+  parent_recipe:
+    name: bioconductor-switchde
+    path: recipes/bioconductor-switchde
+    version: 1.6.0
+

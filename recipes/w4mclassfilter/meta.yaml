@@ -1,27 +1,38 @@
+{% set version = "0.98.12" %}
+{% set md5 = "96eecf70aa82f7f6ce4e66c06b9ee173" %}
+
 package:
   name: w4mclassfilter
-  version: 0.98.7
+  version: {{ version }}
+
 source:
-  fn: w4mclassfilter_0.98.7.tar.gz
-  url: https://github.com/HegemanLab/w4mclassfilter/releases/download/v0.98.7/w4mclassfilter_0.98.7.tar.gz
-  md5: b6a1b2a1b1c5c602ab587cebad315547
+  url: https://github.com/HegemanLab/w4mclassfilter/releases/download/v{{ version }}/w4mclassfilter_{{ version }}.tar.gz
+  md5: {{ md5 }}
+
 build:
+  noarch: generic
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  script:
+    - $R CMD INSTALL --build .
+
 requirements:
-  build:
+  host:
     - r-base
   run:
     - r-base
+
 test:
   commands:
     - '$R -e "library(w4mclassfilter)"'
+
 about:
   home: https://github.com/HegemanLab/w4mclassfilter
   license: MIT
-  summary: 'Filter Workflow4Metabolomics dataMatrix, sampleMetadata, and 
-    variableMetadata files by sample-class, imputing zero for NA values and 
-    eliminating zero-variance rows and columns from the data-matrix.
+  summary: 'Filter Workflow4Metabolomics feature list, optionally imputing NA values.'
+  description: 'Filter Workflow4Metabolomics dataMatrix, sampleMetadata, and
+    variableMetadata files by sample-class, eliminating zero-variance rows and
+    columns from the data-matrix and, optionally, imputing NA values.
     MIT Licence allows redistribution.'

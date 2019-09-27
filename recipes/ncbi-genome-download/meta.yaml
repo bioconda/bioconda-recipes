@@ -1,28 +1,28 @@
 {% set name = "ncbi-genome-download" %}
-{% set version = "0.2.5" %}
+{% set version = "0.2.11" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
   url: https://pypi.io/packages/source/n/ncbi-genome-download/ncbi-genome-download-{{ version }}.tar.gz
-  md5: 127909bdbb7146fb232a08ddaf8fd885
+  sha256: 894420126a2e7ef74d977618e4c31b24a43bd98c6aeb3431d2dfdd5d3dbd72c6
 
 build:
+  number: 0
+  noarch: python
   entry_points:
     - ncbi-genome-download=ncbi_genome_download.__main__:main
-  number: 1
+    - ngd=ncbi_genome_download.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv "
 
 requirements:
-  build:
+  host:
+    - pip
     - python
-    - setuptools
-    - requests >=2.4.3
-    - enum34  # [py27]
-
   run:
+    - appdirs
     - python
     - requests >=2.4.3
     - enum34  # [py27]
@@ -33,17 +33,10 @@ test:
 
   commands:
     - ncbi-genome-download --help
-
-  requires:
-    - coverage
-    - pytest
-    - pytest-cov
-    - pytest-mock
-    - requests-mock
+    - ngd --help
 
 about:
   home: https://github.com/kblin/ncbi-genome-download/
   license: Apache Software License
   summary: 'Download genome files from the NCBI FTP server.'
   license_family: Apache
-

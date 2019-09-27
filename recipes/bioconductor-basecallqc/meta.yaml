@@ -1,27 +1,27 @@
-{% set version = "1.2.0" %}
+{% set version = "1.8.0" %}
 {% set name = "basecallQC" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 1f6af0dc47a9786557e74c24bb2e29948444bf44c03ec2dc2fb90c0dbeb673cf
-
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 1833033cf86b2c75d24b284a3bb3700f
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-
+  noarch: generic
+# Suggests: testthat, BiocStyle
+# SystemRequirements: bcl2Fastq (versions >= 2.1.7)
 requirements:
-  build:
-    - bioconductor-shortread
+  host:
+    - 'bioconductor-shortread >=1.42.0,<1.43.0'
     - r-base
     - r-data.table
     - r-dplyr
@@ -38,7 +38,7 @@ requirements:
     - r-xml
     - r-yaml
   run:
-    - bioconductor-shortread
+    - 'bioconductor-shortread >=1.42.0,<1.43.0'
     - r-base
     - r-data.table
     - r-dplyr
@@ -54,17 +54,19 @@ requirements:
     - r-tidyr
     - r-xml
     - r-yaml
-
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 3)'
   summary: 'The basecallQC package provides tools to work with Illumina bcl2Fastq (versions >= 2.1.7) software.Prior to basecalling and demultiplexing using the bcl2Fastq software, basecallQC functions allow the user to update Illumina sample sheets from versions <= 1.8.9 to >= 2.1.7 standards, clean sample sheets of common problems such as invalid sample names and IDs, create read and index basemasks and the bcl2Fastq command. Following the generation of basecalled and demultiplexed data, the basecallQC packages allows the user to generate HTML tables, plots and a self contained report of summary metrics from Illumina XML output files.'
-
 extra:
   notes: |
     'This package relies on bcl2fastq being available in the system PATH.  Due to licensing
     restrictions Bioconda does not provide this package.'
+  parent_recipe:
+    name: bioconductor-basecallqc
+    path: recipes/bioconductor-basecallqc
+    version: 1.4.0
+

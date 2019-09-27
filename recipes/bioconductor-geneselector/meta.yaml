@@ -1,44 +1,53 @@
-{% set version = "2.28.0" %}
+{% set version = "2.32.0" %}
 {% set name = "GeneSelector" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.8" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 3a292ef0236ad9004a98636379ce85636d8a325a148158dfd3836bfeac168139
+  md5: d33abf828afc8bb90576ee93daf62701
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: multtest, siggenes, samr, limma
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-limma
-    - bioconductor-multtest
-    - bioconductor-siggenes
+  host:
+    - 'bioconductor-biobase >=2.42.0,<2.43.0'
+    - 'bioconductor-limma >=3.38.0,<3.39.0'
+    - 'bioconductor-multtest >=2.38.0,<2.39.0'
+    - 'bioconductor-siggenes >=1.56.0,<1.57.0'
     - r-base
     - r-samr
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
-    - bioconductor-biobase
-    - bioconductor-limma
-    - bioconductor-multtest
-    - bioconductor-siggenes
+    - 'bioconductor-biobase >=2.42.0,<2.43.0'
+    - 'bioconductor-limma >=3.38.0,<3.39.0'
+    - 'bioconductor-multtest >=2.38.0,<2.39.0'
+    - 'bioconductor-siggenes >=1.56.0,<1.57.0'
     - r-base
     - r-samr
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'The term ''GeneSelector'' refers to a filter selecting those genes which are consistently identified as differentially expressed using various statistical procedures. ''Selected'' genes are those present at the top of the list in various ranking methods (currently 14). In addition, the stability of the findings can be taken into account in the final ranking by examining perturbed versions of the original data set, e.g. by leaving samples, swapping class labels, generating bootstrap replicates or adding noise. Given multiple ranked lists, one can use aggregation methods in order to find a synthesis.'
+extra:
+  identifiers:
+    - biotools:geneselector
+    - doi:10.1093/bib/bbp034
+  parent_recipe:
+    name: bioconductor-geneselector
+    path: recipes/bioconductor-geneselector
+    version: 2.30.0
+

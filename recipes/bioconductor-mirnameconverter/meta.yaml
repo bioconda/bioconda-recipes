@@ -1,37 +1,48 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "miRNAmeConverter" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 9cc7988e323fc6f9896ec4b6c6c04cf7e9bc183b380b4a1f6a527557f18b1ab2
+  md5: 677abb97b5124109ab30fe667414039f
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: methods, testthat, knitr, rmarkdown
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - bioconductor-mirbaseversions.db
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-mirbaseversions.db >=1.1.0,<1.2.0'
     - r-base
     - r-dbi
+    - r-reshape2
   run:
-    - bioconductor-annotationdbi
-    - bioconductor-mirbaseversions.db
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-mirbaseversions.db >=1.1.0,<1.2.0'
     - r-base
     - r-dbi
+    - r-reshape2
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Package containing an S4 class for translating mature miRNA names to different miRBase versions, sequence retrieval, checking names for validity and detecting miRBase version of a given set of names (data from http://www.mirbase.org/).'
+  summary: 'Translating mature miRNA names to different miRBase versions, sequence retrieval, checking names for validity and detecting miRBase version of a given set of names (data from http://www.mirbase.org/).'
+extra:
+  identifiers:
+    - biotools:mirnameconverter
+  parent_recipe:
+    name: bioconductor-mirnameconverter
+    path: recipes/bioconductor-mirnameconverter
+    version: 1.8.0
+

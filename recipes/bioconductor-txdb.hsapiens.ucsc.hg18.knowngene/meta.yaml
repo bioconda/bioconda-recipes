@@ -1,35 +1,42 @@
 {% set version = "3.2.2" %}
 {% set name = "TxDb.Hsapiens.UCSC.hg18.knownGene" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: bc9ca40b4eab87f5ca64a4b876d42502b9b8e9f5983d745bfe0ee349d97b69fa
+  md5: e8b32a672e87345c72bb30be73d1e2d6
 build:
-  number: 1
+  number: 6
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - 'bioconductor-genomicfeatures >=1.21.30'
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
     - r-base
   run:
-    - bioconductor-annotationdbi
-    - 'bioconductor-genomicfeatures >=1.21.30'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Exposes an annotation databases generated from UCSC by exposing these as TxDb objects'
+extra:
+  parent_recipe:
+    name: bioconductor-txdb.hsapiens.ucsc.hg18.knowngene
+    path: recipes/bioconductor-txdb.hsapiens.ucsc.hg18.knowngene
+    version: 3.2.2
+

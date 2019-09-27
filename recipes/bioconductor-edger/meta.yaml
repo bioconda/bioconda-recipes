@@ -1,39 +1,50 @@
-{% set version = "3.20.7" %}
+{% set version = "3.26.5" %}
 {% set name = "edgeR" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 5c4286fd0d80ae0696c4ef65111366152cc071c3e8fd446b2d0fce6d75b235dc
+  md5: 35f98c97430e9e3b1eabb625d7c969f2
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: AnnotationDbi, jsonlite, org.Hs.eg.db, readr, rhdf5, splines
+# SystemRequirements: C++11
 requirements:
-  build:
-    - 'bioconductor-limma >=3.34.5'
+  host:
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
     - r-base
     - r-locfit
     - r-rcpp
-    - gcc
   run:
-    - 'bioconductor-limma >=3.34.5'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
     - r-base
     - r-locfit
     - r-rcpp
-    - libgcc
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>=2)'
   summary: 'Differential expression analysis of RNA-seq expression profiles with biological replication. Implements a range of statistical methodology based on the negative binomial distributions, including empirical Bayes estimation, exact tests, generalized linear models and quasi-likelihood tests. As well as RNA-seq, it be applied to differential signal analysis of other types of genomic data that produce counts, including ChIP-seq, Bisulfite-seq, SAGE and CAGE.'
+extra:
+  identifiers:
+    - biotools:edger
+  parent_recipe:
+    name: bioconductor-edger
+    path: recipes/bioconductor-edger
+    version: 3.22.5
+

@@ -1,30 +1,39 @@
-{% set version = "0.1.3" %}
+{% set version = "0.6.0" %}
 
 package:
   name: rust-bio-tools
   version: {{version}}
 
 build:
-  number: 1
-  skip: true  # [osx]
+  number: 0
 
 source:
-  fn: rust-bio-tools-{{version}}.tar.gz
-  url: https://github.com/rust-bio/rust-bio-tools/archive/v{{version}}.tar.gz
-  sha256: 8038ccfb26c1ae0e10f84bd09a8ec0313e8da1a8b1b097f2519b0c19cf00c0f4 
+  url: https://github.com/rust-bio/rust-bio-tools/archive/rust-bio-tools-{{ version }}.tar.gz
+  sha256: 689a0b5bb8e91ae51ffd569a0283f6e8086494544c0ad42c873c177b69629675
 
 requirements:
   build:
-    - rust
-    - gcc <4.8.5
-    - zlib {{ CONDA_ZLIB }}*
+    - rust >=1.30
+    - clangdev
+    - {{ compiler('c') }}  # [not osx]
+    - {{ compiler('cxx') }}  # [not osx]
+    - clang_osx-64 # [osx]
+    - clangxx_osx-64 # [osx]
+    - pkg-config  # [osx]
+  host:
+    - zlib
+    - clangdev
+    - gsl
+    - openblas
   run:
-    - zlib {{ CONDA_ZLIB }}*
-    - libgcc
+    - zlib
+    - gsl
+    - starcode
+    - openblas
 
 test:
   commands:
-    - rbt --help &> /dev/null
+    - rbt --help
 
 about:
   home: https://github.com/rust-bio/rust-bio-tools

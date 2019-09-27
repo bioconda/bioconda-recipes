@@ -1,40 +1,51 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.0" %}
 {% set name = "MBASED" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: ae2286c1d997e8b514fc24b0d71926ee28f61bdbc016c9cc647c2426dea849fb
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 992a08870864f79fa226791b969c3b8b
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle
 requirements:
-  build:
-    - bioconductor-biocgenerics
-    - bioconductor-biocparallel
-    - bioconductor-genomicranges
-    - bioconductor-summarizedexperiment
+  host:
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-runit
   run:
-    - bioconductor-biocgenerics
-    - bioconductor-biocparallel
-    - bioconductor-genomicranges
-    - bioconductor-summarizedexperiment
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-runit
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'The package implements MBASED algorithm for detecting allele-specific gene expression from RNA count data, where allele counts at individual loci (SNVs) are integrated into a gene-specific measure of ASE, and utilizes simulations to appropriately assess the statistical significance of observed ASE.'
+extra:
+  identifiers:
+    - biotools:mbased
+    - doi:10.1186/s13059-014-0405-3
+  parent_recipe:
+    name: bioconductor-mbased
+    path: recipes/bioconductor-mbased
+    version: 1.14.0
+

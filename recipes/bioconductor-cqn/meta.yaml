@@ -1,30 +1,32 @@
-{% set version = "1.24.0" %}
+{% set version = "1.30.0" %}
 {% set name = "cqn" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 36841a614baf7e17018e19349ffd4e32034cdff644904de3834b7b38dc5084c7
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 3cdf1037d31884fe295ff7ab0bdc68da
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: scales, edgeR
 requirements:
-  build:
-    - bioconductor-preprocesscore
+  host:
+    - 'bioconductor-preprocesscore >=1.46.0,<1.47.0'
     - r-base
     - r-mclust
     - r-nor1mix
     - r-quantreg
   run:
-    - bioconductor-preprocesscore
+    - 'bioconductor-preprocesscore >=1.46.0,<1.47.0'
     - r-base
     - r-mclust
     - r-nor1mix
@@ -33,6 +35,14 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'A normalization tool for RNA-Seq data, implementing the conditional quantile normalization method.'
+extra:
+  identifiers:
+    - biotools:cqn
+  parent_recipe:
+    name: bioconductor-cqn
+    path: recipes/bioconductor-cqn
+    version: 1.26.0
+

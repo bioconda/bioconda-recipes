@@ -1,39 +1,49 @@
-{% set version = "2.30.0" %}
+{% set version = "2.36.0" %}
 {% set name = "keggorthology" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 96212cea18230facf342e2a99096835b83940f5a2149019b2a694f2bc63afa84
+  md5: a469c9ebfc6aa734e7ff0a370a76ea76
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RBGL,ALL
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - bioconductor-graph
-    - bioconductor-hgu95av2.db
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-hgu95av2.db >=3.2.0,<3.3.0'
     - r-base
     - r-dbi
   run:
-    - bioconductor-annotationdbi
-    - bioconductor-graph
-    - bioconductor-hgu95av2.db
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-hgu95av2.db >=3.2.0,<3.3.0'
     - r-base
     - r-dbi
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'graphical representation of the Feb 2010 KEGG Orthology. The KEGG orthology is a set of pathway IDs that are not to be confused with the KEGG ortholog IDs.'
+extra:
+  identifiers:
+    - biotools:keggorthology
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-keggorthology
+    path: recipes/bioconductor-keggorthology
+    version: 2.32.0
+

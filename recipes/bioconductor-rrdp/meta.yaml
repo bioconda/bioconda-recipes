@@ -1,32 +1,44 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.0" %}
 {% set name = "rRDP" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: f0152dbb2ef608995d4498137c3773480984b458406388177a560cb7a1848447
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 943c2acf0f62f3132d9e6a3f4c0301e5
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: rRDPData
+# SystemRequirements: Java
 requirements:
-  build:
-    - 'bioconductor-biostrings >=2.26.2'
+  host:
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
     - r-base
   run:
-    - 'bioconductor-biostrings >=2.26.2'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL-2 | file LICENSE'
   summary: 'Seamlessly interfaces RDP classifier (version 2.9).'
+extra:
+  identifiers:
+    - biotools:rrdp
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-rrdp
+    path: recipes/bioconductor-rrdp
+    version: 1.14.0
+

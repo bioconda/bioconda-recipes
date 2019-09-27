@@ -1,30 +1,31 @@
-{% set version = "1.5.0" %}
+{% set version = "1.12.0" %}
 {% set name = "GMRP" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: b7aeb2045b56d988058c868f5aeb949c2d6c012e07366b6e7381210fdafd9288
+  md5: e11678c64a96380d6c9e45e55d4625a8
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, BiocGenerics
 requirements:
-  build:
-    - bioconductor-genomicranges
+  host:
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-base
     - r-diagram
     - r-plotrix
   run:
-    - bioconductor-genomicranges
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-base
     - r-diagram
     - r-plotrix
@@ -32,6 +33,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Perform Mendelian randomization analysis of multiple SNPs to determine risk factors causing disease of study and to exclude confounding variabels and perform path analysis to construct path of risk factors to the disease.'
+extra:
+  identifiers:
+    - biotools:gmrp
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-gmrp
+    path: recipes/bioconductor-gmrp
+    version: 1.8.1
+

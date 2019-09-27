@@ -1,23 +1,22 @@
 {% set name = "ont-tombo" %}
-{% set version = "1.2" %}
-{% set hash = "db3258d7f4e3d9b60d66d457aa8821ac8d0c2058a2eaa6a79e99dff54de8c18a" %}
+{% set version = "1.5" %}
+{% set hash = "51de9a86f99d2117aeee20fabb73470f649d29a6d79a40925f3f7348118aae98" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
   url: https://github.com/nanoporetech/tombo/archive/{{ version }}.tar.gz
   sha256: {{ hash }}
 
 build:
   entry_points:
     - tombo = tombo.__main__:main
-  number: 0
+  number: 1
 
 requirements:
-  build:
+  host:
     - python
     - setuptools >=18.0
     - h5py
@@ -29,13 +28,13 @@ requirements:
     - r-base
     - r-ggplot2
     - r-gridextra
-    - mappy
+    - mappy >=2.10
     - pyfaidx
     - future
+    - tqdm
 
   run:
     - python
-    - setuptools >=18.0
     - h5py
     - rpy2  # [py3k]
     - rpy2 <=2.8.6  # [not py3k]
@@ -45,19 +44,24 @@ requirements:
     - r-base
     - r-ggplot2
     - r-gridextra
-    - mappy
+    - mappy >=2.10
     - pyfaidx
     - future
+    - tqdm
 
 test:
   imports:
     - tombo
 
   commands:
-    - tombo --help 
+    - tombo --help
 
 about:
   home: https://nanoporetech.github.io/tombo/
   license: mpl-2.0
   license_file: LICENSE.md
   summary: 'Detection of modified bases from raw nanopore sequencing data.'
+
+extras:
+  identifiers:
+    - doi:https://doi.org/10.1101/094672 # bioarxiv preprint

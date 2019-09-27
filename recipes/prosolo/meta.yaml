@@ -1,39 +1,34 @@
-{% set version = "0.3.1" %}
+{% set version = "0.6.1" %}
 
 package:
   name: prosolo
   version: {{ version }}
 
 build:
-  # only on OSX, `cargo install` fails with: `thread 'main' panicked at 'assertion failed: src_path.is_absolute()', src/tools/cargo/src/cargo/core/manifest.rs:311`
-  # looks like a `cargo` bug, that may go away with newer `rust` versions; check osx with rust>1.21 when available
-  skip: True # [not linux64]
-  number: 1
-  string: "gsl{{CONDA_GSL}}_{{PKG_BUILDNUM}}"
+  number: 0
 
 source:
-  url: https://github.com/PROSIC/prosolo/archive/v{{ version }}.tar.gz
-  fn: prosolo-{{ version }}.tar.gz
-  md5: 57c767cda5c796fc689928cf21e88cdf
+  url: https://github.com/prosolo/prosolo/archive/v{{ version }}.tar.gz
+  sha256: eb022d7e7b2c430eb3da8767f993d03aaf305f49ef3020f3cd6fbf1a97751b1d
 
 requirements:
   build:
-    - gcc # [not osx]
-    - llvm # [osx]
-    - rust >=1.21
-    - gsl {{CONDA_GSL}}*
-    - zlib {{ CONDA_ZLIB }}*
-    # new cram dependencies for rust-htslib 0.16.0
-    - bzip2 {{ CONDA_BZIP2 }}*  # [linux]
-    - xz {{CONDA_XZ}}*
+    - {{ compiler('c') }}
+    - rust >=1.30
+    - pkg-config #[osx]
+  host:
+    - gsl
+    - openblas
+    - zlib
+    - bzip2
+    - xz
     - clangdev
   run:
-    - gsl {{CONDA_GSL}}*
-    - libgcc # [not osx]
-    - zlib {{ CONDA_ZLIB }}*
-    # new cram dependencies for rust-htslib 0.16.0
-    - bzip2 {{ CONDA_BZIP2 }}*  # [linux]
-    - xz {{CONDA_XZ}}*
+    - gsl
+    - openblas
+    - zlib
+    - bzip2
+    - xz
     - clangdev
 
 test:
@@ -41,6 +36,6 @@ test:
     - prosolo single-cell-bulk --help
 
 about:
-  home: https://github.com/PROSIC/prosolo/tree/v{{ version }}
+  home: https://github.com/prosolo/prosolo/tree/v{{ version }}
   license: GPLv3
   summary: A highly sensitive and accurate Bayesian caller for variants in single cell sequencing data.

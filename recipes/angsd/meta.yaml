@@ -1,35 +1,38 @@
-{% set version = "0.910" %}
-
-build:
-  number: 1
-  skip: True # [osx]
-
-about:
-  home: http://www.popgen.dk/angsd/index.php/ANGSD
-  license: GPLv3, MIT
-  summary: "ANGSD: Analysis of next generation Sequencing Data"
+{% set version = "0.931" %}
+{% set sha256 = "9f1a7e769ca2b5b3df33c0c27313cba4cb7af9b2c41213b5cc10a88d85635350" %}
 
 package:
   name: angsd
   version: {{ version }}
 
+source:
+  url: https://github.com/ANGSD/angsd/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True # [osx]
+
 requirements:
   build:
-    - htslib {{ CONDA_HTSLIB }}*
-    - gcc # [not osx]
-    - llvm # [osx]
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - htslib
   run:
-    - libgcc # [not osx]
-    - htslib {{ CONDA_HTSLIB }}*
+    - htslib
 
 test:
   commands:
     - angsd 2>&1 | grep "angsd version"
     - thetaStat 2>&1 | grep "neutrality test"
 
-source:
-  fn: angsd-{{ version }}.tar.gz
-  url: https://github.com/ANGSD/angsd/archive/{{ version }}.tar.gz
-  md5: 89a5dcbff49de6b72e474b6f4bf8d112
-  patches:
-    - Makefile.patch
+about:
+  home: http://www.popgen.dk/angsd/index.php/ANGSD
+  license: GPLv3, MIT
+  summary: "ANGSD: Analysis of next generation Sequencing Data"
+
+extra:
+  identifiers:
+    - biotools:angsd
+    - doi:10.1186/s12859-014-0356-4

@@ -1,29 +1,28 @@
-{% set name = "twopaco" %}
+{% set name = "TwoPaCo" %}
 {% set version = "0.9.2" %}
-{% set hash = "0493807d4ad232067058904c69a1e968682f97d62e81aa452b5fc7b64d06b044" %}
+{% set sha256 = "0493807d4ad232067058904c69a1e968682f97d62e81aa452b5fc7b64d06b044" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/medvedevgroup/TwoPaCo/archive/v{{ version }}.tar.gz
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  sha256: {{ hash }}
+  url: https://github.com/medvedevgroup/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - Makefile.patch
 
 build:
-    number: 0
-    skip: True  # [osx]
+  number: 2
+  skip: True  # [osx]
 
 requirements:
-    build:
-        - gcc 
-        - cmake
-        - tbb
-
-    run:
-        - libgcc
-        - tbb
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - tbb-devel
 
 test:
   commands:
@@ -32,5 +31,6 @@ test:
 
 about:
   home: https://github.com/medvedevgroup/TwoPaCo
-  license: BSD-3-Clause
-  summary: 'A fast constructor of the compressed de Bruijn graph from many genomes'
+  license: Custom OSS
+  license_file: LICENSE.txt
+  summary: 'A fast constructor of the compressed de Bruijn graph from many genomes.'

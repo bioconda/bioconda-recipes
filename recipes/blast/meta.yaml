@@ -1,56 +1,76 @@
-{% set version = "2.7.1" %}
-{% set sha256 = "10a78d3007413a6d4c983d2acbf03ef84b622b82bd9a59c6bd9fbdde9d0298ca" %}
+{% set version = "2.9.0" %}
+{% set sha256 = "a390cc2d7a09422759fc178db84de9def822cbe485916bbb2ec0d215dacdc257" %}
 
 package:
   name: blast
   version: {{ version }}
 
 source:
-  fn: ncbi-blast-{{ version }}+-src.tar.gz
   url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
   sha256: {{ sha256 }}
-  patches:
-    - boost_106400.patch
 
 build:
-  number: 2
-  string: boost{{ CONDA_BOOST }}_{{ PKG_BUILDNUM }}
+  number: 3
 
 requirements:
   build:
-    - gcc  # [linux]
-    - boost {{ CONDA_BOOST }}*
-    - zlib {{ CONDA_ZLIB }}*
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - gnutls
-    - nettle 3.3|3.3.*
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - bzip2
     - pcre
-    - time
+    - entrez-direct
+    - curl
   run:
-    - libgcc  # [linux]
-    - boost {{ CONDA_BOOST }}*
-    - zlib {{ CONDA_ZLIB }}*
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - gnutls
-    - nettle 3.3|3.3.*
+    - zlib
+    - bzip2
     - pcre
     - perl
     - perl-list-moreutils
-    - perl-archive-tar 
+    - perl-archive-tar
+    - perl-json
+    - entrez-direct
+    - curl
 
 test:
   files:
     - test.fa
     - testdatabase.fa
   commands:
+    # (see run_test.sh for remainder of tests)
     - blastn -help
     - blastp -help
     - makeblastdb -help
-    # test that BLAST ignores LD_LIBRARY_PATH
-    - touch libstdc++.so.6; LD_LIBRARY_PATH=. makeblastdb -help && rm libstdc++.so.6
-    - update_blastdb.pl --help
+    - blastdb_aliastool -version > /dev/null
+    - blastdbcheck -version > /dev/null
+    - blastdbcmd -version > /dev/null
+    - blastn -version > /dev/null
+    - blastp -version > /dev/null
+    - blastx -version > /dev/null
+    - convert2blastmask -version > /dev/null
+    - dustmasker -version > /dev/null
+    - makeblastdb -version > /dev/null
+    - makembindex -version > /dev/null
+    - psiblast -version > /dev/null
+    - rpsblast -version > /dev/null
+    - rpstblastn -version > /dev/null
+    - segmasker -version > /dev/null
+    - tblastn -version > /dev/null
+    - tblastx -version > /dev/null
+    - windowmasker -version > /dev/null
+    - update_blastdb.pl --version > /dev/null
+    - get_species_taxids.sh -h > /dev/null
 
 about:
   home: http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs
   license: Public Domain
   summary: BLAST+ is a new suite of BLAST tools that utilizes the NCBI C++ Toolkit.
+
+extra:
+  identifiers:
+    - biotools:blast
+    - doi:10.1016/S0022-2836(05)80360-2
+  recipe-maintainers:
+    - christiam
+    - epruesse

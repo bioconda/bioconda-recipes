@@ -1,35 +1,36 @@
-{% set version = "1.10.0" %}
+{% set version = "1.16.0" %}
 {% set name = "cpvSNP" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: a8713080c1e637d35cace162d8661bdd6daa06e119b1e07452da44df5cba7eaa
+  md5: fe5f5b8dd0f39d5fec228b88b0a702a4
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: TxDb.Hsapiens.UCSC.hg19.knownGene, RUnit, BiocGenerics, ReportingTools, BiocStyle
 requirements:
-  build:
-    - bioconductor-biocparallel
-    - bioconductor-genomicfeatures
-    - 'bioconductor-gseabase >=1.24.0'
+  host:
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
+    - 'bioconductor-gseabase >=1.46.0,<1.47.0'
     - r-base
     - r-corpcor
     - r-ggplot2
     - r-plyr
   run:
-    - bioconductor-biocparallel
-    - bioconductor-genomicfeatures
-    - 'bioconductor-gseabase >=1.24.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
+    - 'bioconductor-gseabase >=1.46.0,<1.47.0'
     - r-base
     - r-corpcor
     - r-ggplot2
@@ -38,6 +39,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Gene set analysis methods exist to combine SNP-level association p-values into gene sets, calculating a single association p-value for each gene set. This package implements two such methods that require only the calculated SNP p-values, the gene set(s) of interest, and a correlation matrix (if desired). One method (GLOSSI) requires independent SNPs and the other (VEGAS) can take into account correlation (LD) among the SNPs. Built-in plotting functions are available to help users visualize results.'
+extra:
+  identifiers:
+    - biotools:cpvsnp
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-cpvsnp
+    path: recipes/bioconductor-cpvsnp
+    version: 1.12.0
+

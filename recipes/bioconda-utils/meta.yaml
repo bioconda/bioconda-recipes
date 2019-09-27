@@ -1,57 +1,84 @@
-{% set version = "0.12.0" %}
+{% set version = "0.16.7" %}
+{% set sha256 = "5cb557dd710403416c8985ad847eb71445f9bae8fb140b2a598de88b3ce577e7" %}
 
 package:
   name: bioconda-utils
-  version: {{ version }}
+  version: '{{ version }}'
 
 source:
-  fn: bioconda-utils-{{ version }}.tar.gz
   url: https://github.com/bioconda/bioconda-utils/archive/v{{ version }}.tar.gz
-  sha256: c96a08498e9d895dc34bca2e881758e6a831ec1e9d067e508390c25f73753134
+  sha256: '{{ sha256 }}'
 
 build:
-  number: 0
-  skip: True  # [not py3k]
-  script: python setup.py install --single-version-externally-managed --record record.txt
+  noarch: python
+  number: 1
+  script: python -m pip install --no-deps --ignore-installed .
   entry_points:
     - bioconda-utils = bioconda_utils.cli:main
 
 requirements:
-  build:
-    - python
-    - setuptools
+  host:
+    - python >=3.6
+    - pip
   run:
-    - python
+    - python >=3.6
     - anaconda-client 1.6.*
     - argh 0.26.*
     - beautifulsoup4 4.6.*
-    - conda 4.3.33
-    - conda-build 2.1.18
-    - galaxy-lib 17.9.*
+    - conda 4.6.14
+    - conda-build 3.18.9
+    - conda-verify 3.1.*
+    - galaxy-lib >=18.9.1
     - jinja2 2.10.*
     - jsonschema 2.6.*
     - networkx 1.11
     - pyaml 17.12.*
-    - pydotplus 2.0.*
-    - requests 2.18.*
+    - requests 2.20.*
     - sphinx
+    - sphinx-autodoc-typehints
+    - alabaster 0.7.*
     - docutils
-    - sphinx_rtd_theme
     - involucro 1.1.*
-    - pandas 0.22.*
-    - numpy 1.14.*
+    - pandas 0.23.*
+    - libblas * *openblas
     - pygithub 1.34.*
     - colorlog 3.1.*
     - six 1.11.*
-    - alabaster 0.7.*
+    - git
+    - conda-forge-pinning 2019.07.11
+    - aiohttp 3.4.*
+    - aiofiles 0.4.*
+    - aioftp 0.12.*
+    - regex 2018.08.29
+    - backoff 1.6.*
+    - tqdm >=4.26
+    - ruamel_yaml 0.15.*
+    - gitpython 2.1.*
+    - gidgethub 3.0.*
+    - boltons 18.*
+    - gunicorn 19.9.*
+    - cachetools 3.0.*
+    - pyjwt 1.7.*
+    - celery 4.2.*
+    - skopeo 0.1.35
+    - aiohttp-jinja2 1.1.*
+    - aiohttp-security 0.4.*
+    - aiohttp-session 2.7.*
+    - aioredis 1.2.*
+    - cryptography 2.*
+    - markdown 3.1.*
 
 test:
-    imports:
-      - bioconda_utils
-    commands:
-      - bioconda-utils --help
+  imports:
+    - bioconda_utils
+  commands:
+    - bioconda-utils --help
+    - bioconda-utils lint --help
+    - bioconda-utils build --help
 
 about:
   home: http://bioconda.github.io/build-system.html
   license: MIT
-  summary:  Utilities for building and managing bioconda recipes.
+  license_family: MIT
+  summary: Utilities for building and managing bioconda recipes.
+  dev_url: https://github.com/bioconda/bioconda-utils

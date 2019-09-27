@@ -1,35 +1,44 @@
-{% set version = "1.38.0" %}
+{% set version = "1.44.0" %}
 {% set name = "dyebias" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 5312f64b9c710e61581d7af49fe4325cde10b313457b5051a0ad0625138eb4a2
+  md5: 2f434cc8b244800f94d4301d29ae1b25
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: limma, convert, GEOquery, dyebiasexamples, methods
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-marray
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-marray >=1.62.0,<1.63.0'
     - r-base
   run:
-    - bioconductor-biobase
-    - bioconductor-marray
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-marray >=1.62.0,<1.63.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Many two-colour hybridizations suffer from a dye bias that is both gene-specific and slide-specific. The former depends on the content of the nucleotide used for labeling; the latter depends on the labeling percentage. The slide-dependency was hitherto not recognized, and made addressing the artefact impossible.  Given a reasonable number of dye-swapped pairs of hybridizations, or of same vs. same hybridizations, both the gene- and slide-biases can be estimated and corrected using the GASSCO method (Margaritis et al., Mol. Sys. Biol. 5:266 (2009), doi:10.1038/msb.2009.21)'
+extra:
+  identifiers:
+    - biotools:dyebias
+  parent_recipe:
+    name: bioconductor-dyebias
+    path: recipes/bioconductor-dyebias
+    version: 1.40.0
+

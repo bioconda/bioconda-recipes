@@ -1,43 +1,48 @@
-{% set version = "1.16.0" %}
+{% set version = "1.22.0" %}
 {% set name = "flowClean" %}
-{% set bioc = "3.5" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 64787000903720d2b26c7b3f6151c149cdafb30681c6dc5bb60e4bbe8b68bfa2
-
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 2b64b477a320b1858313596eb698a805
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
-
+  noarch: generic
+# Suggests: flowViz, grid, gridExtra
 requirements:
-  build:
-    - bioconductor-flowcore
+  host:
+    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
     - r-base
     - r-bit
     - r-changepoint
     - r-sfsmisc
   run:
-    - bioconductor-flowcore
+    - 'bioconductor-flowcore >=1.50.0,<1.51.0'
     - r-base
     - r-bit
     - r-changepoint
     - r-sfsmisc
-
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
-  home: https://bioconductor.org/packages/release/bioc/html/flowClean.html
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'A quality control tool for flow cytometry data based on compositional data analysis.'
+extra:
+  identifiers:
+    - biotools:flowclean
+  parent_recipe:
+    name: bioconductor-flowclean
+    path: recipes/bioconductor-flowclean
+    version: 1.18.0
+

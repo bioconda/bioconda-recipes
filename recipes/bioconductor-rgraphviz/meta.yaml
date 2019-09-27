@@ -1,37 +1,40 @@
-{% set version = "2.22.0" %}
+{% set version = "2.28.0" %}
 {% set name = "Rgraphviz" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 1bfb8ac90df797365cf883813505f3b63a01061f515c009924c424e59cf436f9
-  patches: # [osx]
-    - rpath.patch  # [osx]
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 939f3939e3bed3a546143ed40f95e722
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: RUnit, BiocGenerics, XML
+# SystemRequirements: optionally Graphviz (>= 2.16)
 requirements:
-  build:
-    - bioconductor-graph
+  host:
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
     - r-base
-    - llvm  # [osx]
-    - gcc  # [linux]
   run:
-    - bioconductor-graph
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
     - r-base
-    - libgcc # [linux]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - automake
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: EPL
   summary: 'Interfaces R with the AT and T graphviz library for plotting R graph objects from the graph package.'
+

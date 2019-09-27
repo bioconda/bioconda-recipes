@@ -1,36 +1,45 @@
-{% set version = "1.42.0" %}
+{% set version = "1.50.0" %}
 {% set name = "chopsticks" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 8d599d1afd587b9f7c3df6892623d0c0c65b6115f5041603034cdb7d269a9c2b
+  md5: 6971614767463f422261c871144d0de4
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: hexbin
 requirements:
-  build:
+  host:
     - r-base
     - r-survival
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
     - r-base
     - r-survival
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Implements classes and methods for large-scale SNP association studies'
+extra:
+  identifiers:
+    - biotools:chopsticks
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-chopsticks
+    path: recipes/bioconductor-chopsticks
+    version: 1.46.0
+

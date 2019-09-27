@@ -1,36 +1,37 @@
-{% set version = "1.4.0" %}
+{% set version = "1.10.0" %}
 {% set name = "regsplice" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: a3ec0d3474c5244fe3719920f2e71a9dbe600f813d5315c7f893b6f85537f53f
+  md5: 32b236f311812f449bd9bd81b0a2bd3c
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: testthat, BiocStyle, knitr, rmarkdown
 requirements:
-  build:
-    - bioconductor-edger
-    - bioconductor-limma
-    - bioconductor-s4vectors
-    - bioconductor-summarizedexperiment
+  host:
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-glmnet
     - r-pbapply
   run:
-    - bioconductor-edger
-    - bioconductor-limma
-    - bioconductor-s4vectors
-    - bioconductor-summarizedexperiment
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-glmnet
     - r-pbapply
@@ -38,6 +39,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: MIT
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
   summary: 'Statistical methods for detection of differential splicing (differential exon usage) in RNA-seq and exon microarray data, using L1-regularization (lasso) to improve power.'
+extra:
+  identifiers:
+    - biotools:regsplice
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-regsplice
+    path: recipes/bioconductor-regsplice
+    version: 1.6.0
+

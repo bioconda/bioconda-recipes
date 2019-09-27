@@ -1,30 +1,31 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "GenRank" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 9faf025ae5802305165115f117a110b2d77ac0ad4cc8254437a45d3bf110331c
+  md5: dad9e212df456a6ccd2c25ca658ec132
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, testthat
 requirements:
-  build:
-    - bioconductor-survcomp
+  host:
+    - 'bioconductor-survcomp >=1.34.0,<1.35.0'
     - r-base
     - r-matrixstats
     - r-reshape2
   run:
-    - bioconductor-survcomp
+    - 'bioconductor-survcomp >=1.34.0,<1.35.0'
     - r-base
     - r-matrixstats
     - r-reshape2
@@ -32,6 +33,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Methods for ranking genes based on convergent evidence obtained from multiple independent evidence layers. This package adapts three methods that are popular for meta-analysis.'
+extra:
+  identifiers:
+    - biotools:genrank
+    - doi:10.12688/f1000research.11223.1
+  parent_recipe:
+    name: bioconductor-genrank
+    path: recipes/bioconductor-genrank
+    version: 1.8.0
+

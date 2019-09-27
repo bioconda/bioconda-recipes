@@ -1,23 +1,25 @@
-{% set version = "1.18.0" %}
+{% set version = "1.24.0" %}
 {% set name = "STRINGdb" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 6e1de815279199136df7efd8acac0d0f6ddd945780fb0799b85fd0cb48973043
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 852af459f0bf6827166b50f9e4c78387
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocGenerics
 requirements:
-  build:
+  host:
     - r-base
     - r-gplots
     - r-hash
@@ -43,6 +45,14 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'The STRINGdb package provides a R interface to the STRING protein-protein interactions database (http://www.string-db.org).'
+extra:
+  identifiers:
+    - biotools:stringdb
+  parent_recipe:
+    name: bioconductor-stringdb
+    path: recipes/bioconductor-stringdb
+    version: 1.20.0
+

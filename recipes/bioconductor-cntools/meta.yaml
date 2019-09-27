@@ -1,32 +1,44 @@
-{% set version = "1.34.0" %}
+{% set version = "1.40.0" %}
 {% set name = "CNTools" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 6a92715248751f434b454276fe5b93fcacfe58fb9186482ac9cf015de0e8ad5b
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: d3fab8b1e26b17398d947fb7785b06f5
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
-  build:
-    - bioconductor-genefilter
+  host:
+    - 'bioconductor-genefilter >=1.66.0,<1.67.0'
     - r-base
   run:
-    - bioconductor-genefilter
+    - 'bioconductor-genefilter >=1.66.0,<1.67.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
   summary: 'This package provides tools to convert the output of segmentation analysis using DNAcopy to a matrix structure with overlapping segments as rows and samples as columns so that other computational analyses can be applied to segmented data'
+extra:
+  identifiers:
+    - biotools:cntools
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-cntools
+    path: recipes/bioconductor-cntools
+    version: 1.36.0
+

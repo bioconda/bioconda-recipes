@@ -1,15 +1,19 @@
 #!/bin/bash
+set -x -e -o pipefail
 
-export DISABLE_ASMLIB=true
-export CXX=g++
 export CPPFLAGS="-I${PREFIX}/include"
-export LDFLAGS="-L${PREFIX}/lib -Wl,-rpath,${PREFIX}/lib"
+export LDFLAGS="-L${PREFIX}/lib"
+export CXXFLAGS="${CXXFLAGS}"
 
-if [ "$(uname)" == "Darwin" ]; then
-    Makefile=makefile_mac
-else
-    Makefile=makefile
-fi
-make -f $Makefile
+make CC=${CXX} CFLAGS=${CPPFLAGS}
+make CC=${CXX} CFLAGS=${CPPFLAGS} kmc_api/libkmc.so
 
-cp bin/kmc bin/kmc_dump bin/kmc_tools "${PREFIX}/bin/"
+mkdir -p $PREFIX/bin
+mkdir -p $PREFIX/lib
+mkdir -p $PREFIX/include
+
+mv bin/kmc $PREFIX/bin/kmc
+mv bin/kmc_tools $PREFIX/bin
+mv bin/kmc_dump $PREFIX/bin
+mv kmc_api/*.so $PREFIX/lib
+mv kmc_api/*.h $PREFIX/include

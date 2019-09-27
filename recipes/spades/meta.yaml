@@ -1,56 +1,71 @@
-{% set version = "3.11.1" %}
+{% set version = "3.13.1" %}
+{% set sha256 = "8da29b72fb56170dd39e3a8ea5074071a8fa63b29346874010b8d293c2f72a3e" %}
 
 package:
   name: spades
   version: {{ version }}
 
 source:
-  fn: SPAdes-{{ version }}-Darwin.tar.gz  # [osx]
-  url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}-Darwin.tar.gz  # [osx]
-  sha256: c7e1bb6065e836c466007a235ffad907fb5f2b634fd2fe86535ed233408aa317  # [osx]
-  fn: SPAdes-{{ version }}.tar.gz  # [linux]
-  url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}.tar.gz  # [linux]
-  sha256: 3ab85d86bf7d595bd8adf11c971f5d258bbbd2574b7c1703b16d6639a725b474  # [linux]
+  url: http://cab.spbu.ru/files/release{{ version }}/SPAdes-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-change-verbosity.patch
+    - 0002-disable-parallel-libstdc.patch  # [osx]
 
 build:
-  number: 1
-  string: py{{CONDA_PY}}_zlib{{CONDA_ZLIB}}_{{PKG_BUILDNUM}}  # [linux]
+  number: 2
 
 requirements:
   build:
-    - gcc >=4.8.2  # [linux]
-    - cmake >=2.8.12  # [linux]
-    - zlib {{CONDA_ZLIB}}*  # [linux]
-    - bzip2 {{CONDA_BZIP2}}*  # [linux]
-
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - clangdev  # [osx]
+    - llvm-openmp  # [osx]
+    - openmp  # [linux]
+    - cmake
+  host:
+    - llvm-openmp  # [osx]
+    - openmp  # [linux]
+    - zlib
+    - bzip2
   run:
+    - llvm-openmp  # [osx]
+    - openmp  # [linux]
     - python
-    - libgcc  # [linux]
-    - zlib {{CONDA_ZLIB}}*  # [linux]
-    - bzip2 {{CONDA_BZIP2}}*  # [linux]
 
 test:
   commands:
     - spades.py --version
     - rnaspades.py --version
     - truspades.py --version
-    - dipspades.py --version
     - metaspades.py --version
     - plasmidspades.py --version
+    - spades-kmercount -h
     - spades.py --test && rm -rf spades_test
 
 about:
   home: http://cab.spbu.ru/software/spades/
   license: GPLv2
   license_family: GPL
-  license_file: LICENSE  # [linux]
-  license_file: share/spades/LICENSE  # [osx]
-  summary: |
-    SPAdes (St. Petersburg genome assembler) is intended for both standard isolates and single-cell MDA bacteria assemblies.
+  license_file: LICENSE
+  summary: SPAdes (St. Petersburg genome assembler) is intended for both standard isolates and single-cell MDA bacteria assemblies.
+  description: |
+    SPAdes (St. Petersburg genome assembler) is a genome assembly algorithm which was designed for
+    single cell and multi-cells bacterial data sets. However, it might not be suitable for large
+    genomes projects.
+
+    SPAdes works with Ion Torrent, PacBio, Oxford Nanopore, and Illumina paired-end, mate-pairs and
+    single reads
+
   dev_url: https://github.com/ablab/spades
-  doc_url: http://cab.spbu.ru/files/release3.11.0/manual.html
+  doc_url: http://cab.spbu.ru/files/release{{version}}/manual.html
 extra:
-  doi: 10.1089/cmb.2012.0021
   recipe-maintainers:
     - druvus
     - notestaff
+  identifiers:
+    - biotools:spades
+    - doi:10.1089/cmb.2012.0021
+    - doi:10.1101/gr.213959.116
+  skip-lints:
+    - should_not_be_noarch_source

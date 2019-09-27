@@ -1,33 +1,43 @@
-{% set version = "1.16.0" %}
+{% set version = "1.22.0" %}
 {% set name = "SpacePAC" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: d6cc73719fb06dec064fac3fb91f88c077e90ef573fc2e58eed4d83f8df988b5
+  md5: 95329db0a49f8763beb15579fd6c86cc
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, BiocGenerics, rgl
 requirements:
-  build:
-    - bioconductor-ipac
+  host:
+    - 'bioconductor-ipac >=1.28.0,<1.29.0'
     - r-base
   run:
-    - bioconductor-ipac
+    - 'bioconductor-ipac >=1.28.0,<1.29.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'Identifies clustering of somatic mutations in proteins via a simulation approach while considering the protein''s tertiary structure.'
+extra:
+  identifiers:
+    - biotools:spacepac
+    - doi:10.1186/1471-2105-15-231
+  parent_recipe:
+    name: bioconductor-spacepac
+    path: recipes/bioconductor-spacepac
+    version: 1.18.3
+

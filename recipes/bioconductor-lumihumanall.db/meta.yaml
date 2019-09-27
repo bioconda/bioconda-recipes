@@ -1,36 +1,43 @@
 {% set version = "1.22.0" %}
 {% set name = "lumiHumanAll.db" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: a2c1bd766e756eb7e01cf196c1809c8a282a4c4caaf1482a0d1961b2c2a8c24e
+  md5: ce7e219b50833ceab203f0bbfb11d917
 build:
-  number: 0
+  number: 5
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: annotate, RUnit
 requirements:
-  build:
-    - 'bioconductor-annotationdbi >=1.23.25'
-    - 'bioconductor-org.hs.eg.db >=2.10.1'
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-org.hs.eg.db >=3.8.0,<3.9.0'
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.23.25'
-    - 'bioconductor-org.hs.eg.db >=2.10.1'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-org.hs.eg.db >=3.8.0,<3.9.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Illumina Human Illumina expression annotation data (chip lumiHumanAll) assembled using data from public repositories'
+extra:
+  parent_recipe:
+    name: bioconductor-lumihumanall.db
+    path: recipes/bioconductor-lumihumanall.db
+    version: 1.22.0
+

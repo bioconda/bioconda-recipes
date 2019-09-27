@@ -1,37 +1,45 @@
-{% set name = "vsearch" %}
-{% set version = "2.7.0" %}
-{% set hash = "a50577ee89d3f663b40f5f6749c54801666faa0bb54c40bd0286bb823b5a4314" %}
+{% set version = "2.14.1" %}
+{% set sha256 = "388529a39eb0618a09047bf91e0a8ae8c9fd851a05f8d975e299331748f97741" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: vsearch
+  version: '{{ version }}'
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
   url: https://github.com/torognes/vsearch/archive/v{{ version }}.tar.gz
-  sha256: {{ hash }}
+  sha256: '{{ sha256 }}'
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
+    - '{{ compiler("c") }}'
+    - '{{ compiler("cxx") }}'
     - automake
     - autoconf
-    - m4
-    - gcc  # [linux]
-    - llvm  # [osx]
-    - perl
-    - zlib {{CONDA_ZLIB}}*
+  host:
+    - zlib
+    - bzip2
   run:
-    - libgcc  # [linux]
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
+    - bzip2
 
 test:
+  files:
+    - small.fna.gz
   commands:
-    - vsearch --version 
+    # (see run_tests.sh for remainder of tests)
+    - vsearch --version
 
 about:
   home: https://github.com/torognes/vsearch
-  license: "dual-licensed under GPLv3+ or BSD 2-clause"
-  summary: "a versatile open source tool for metagenomics (USEARCH alternative)"
+  license: dual-licensed under GPL-3.0+ or BSD 2-clause
+  license_family: GPL
+  license_file: LICENSE.txt
+  summary: a versatile open source tool for metagenomics (USEARCH alternative)
+
+extra:
+  identifiers:
+    - biotools:vsearch
+    - doi:10.7717/peerj.2584

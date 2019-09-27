@@ -1,23 +1,25 @@
-{% set version = "1.4.0" %}
+{% set version = "1.10.0" %}
 {% set name = "SNPediaR" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 89f5437c3a1c27750fee938f628acf3d6d230cd9ef9493362a65f4531629a9fe
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 9b5250e8021dc88cd29b37c1c1a5db03
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, testthat
 requirements:
-  build:
+  host:
     - r-base
     - r-jsonlite
     - r-rcurl
@@ -29,6 +31,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'SNPediaR provides some tools for downloading and parsing data from the SNPedia web site <http://www.snpedia.com>. The implemented functions allow users to import the wiki text available in SNPedia pages and to extract the most relevant information out of them. If some information in the downloaded pages is not automatically processed by the library functions, users can easily implement their own parsers to access it in an efficient way.'
+extra:
+  identifiers:
+    - biotools:snpediar
+    - doi:10.1007/978-1-4419-9863-7_1039
+  parent_recipe:
+    name: bioconductor-snpediar
+    path: recipes/bioconductor-snpediar
+    version: 1.6.0
+

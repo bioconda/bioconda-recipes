@@ -1,29 +1,29 @@
-{% set version = "1.12.1" %}
+{% set version = "1.18.1" %}
 {% set name = "MSnID" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: bddf02c93ecfe24159eac615e5ef14fd4efc50b89c1c93cccb0b3932270285ff
+  md5: 616eb099ccfc543bb5dd9a4ce70e3dcf
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, msmsTests, ggplot2, RUnit, BiocGenerics
 requirements:
-  build:
-    - bioconductor-biobase
-    - 'bioconductor-msnbase >=1.12.1'
-    - 'bioconductor-mzid >=1.3.5'
-    - bioconductor-mzr
-    - bioconductor-protgenerics
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-msnbase >=2.10.0,<2.11.0'
+    - 'bioconductor-mzid >=1.22.0,<1.23.0'
+    - 'bioconductor-mzr >=2.18.0,<2.19.0'
+    - 'bioconductor-protgenerics >=1.16.0,<1.17.0'
     - r-base
     - r-data.table
     - r-doparallel
@@ -33,14 +33,12 @@ requirements:
     - r-r.cache
     - r-rcpp
     - r-reshape2
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
-    - bioconductor-biobase
-    - 'bioconductor-msnbase >=1.12.1'
-    - 'bioconductor-mzid >=1.3.5'
-    - bioconductor-mzr
-    - bioconductor-protgenerics
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-msnbase >=2.10.0,<2.11.0'
+    - 'bioconductor-mzid >=1.22.0,<1.23.0'
+    - 'bioconductor-mzr >=2.18.0,<2.19.0'
+    - 'bioconductor-protgenerics >=1.16.0,<1.17.0'
     - r-base
     - r-data.table
     - r-doparallel
@@ -50,11 +48,22 @@ requirements:
     - r-r.cache
     - r-rcpp
     - r-reshape2
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Extracts MS/MS ID data from mzIdentML (leveraging mzID package) or text files. After collating the search results from multiple datasets it assesses their identification quality and optimize filtering criteria to achieve the maximum number of identifications while not exceeding a specified false discovery rate. Also contains a number of utilities to explore the MS/MS results and assess missed and irregular enzymatic cleavages, mass measurement accuracy, etc.'
+extra:
+  identifiers:
+    - biotools:msnid
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-msnid
+    path: recipes/bioconductor-msnid
+    version: 1.14.0
+

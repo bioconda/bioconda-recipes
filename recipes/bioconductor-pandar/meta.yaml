@@ -1,26 +1,27 @@
-{% set version = "1.10.0" %}
+{% set version = "1.16.0" %}
 {% set name = "pandaR" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 22ad4f7e766d846b2f39382611c756f9eb0f351fe3207c8100b309269b55f574
+  md5: dc76ba50e9307fd00be88cfc5a8eae54
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-base
     - r-ggplot2
     - r-hexbin
@@ -30,8 +31,8 @@ requirements:
     - r-reshape
     - r-runit
   run:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-base
     - r-ggplot2
     - r-hexbin
@@ -44,6 +45,14 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'Runs PANDA, an algorithm for discovering novel network structure by combining information from multiple complementary data sources.'
+extra:
+  identifiers:
+    - biotools:pandar
+  parent_recipe:
+    name: bioconductor-pandar
+    path: recipes/bioconductor-pandar
+    version: 1.12.0
+

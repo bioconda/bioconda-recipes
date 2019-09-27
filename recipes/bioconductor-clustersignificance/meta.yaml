@@ -1,39 +1,49 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "ClusterSignificance" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 61db4b25f4298f396441f3def371a11b37e30997a97bbf019d931a27f69792a7
+  md5: b97eb45eafae8a055983244ffd40d33a
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, testthat, BiocStyle, ggplot2, plsgenomics, covr
 requirements:
-  build:
+  host:
     - r-base
     - r-pracma
-    - r-princurve
+    - 'r-princurve >=2.0.5'
     - r-rcolorbrewer
     - r-scatterplot3d
   run:
     - r-base
     - r-pracma
-    - r-princurve
+    - 'r-princurve >=2.0.5'
     - r-rcolorbrewer
     - r-scatterplot3d
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'The ClusterSignificance package provides tools to assess if class clusters in dimensionality reduced data representations have a separation different from permuted data. The term class clusters here refers to, clusters of points representing known classes in the data. This is particularly useful to determine if a subset of the variables, e.g. genes in a specific pathway, alone can separate samples into these established classes. ClusterSignificance accomplishes this by, projecting all points onto a one dimensional line. Cluster separations are then scored and the probability of the seen separation being due to chance is evaluated using a permutation method.'
+extra:
+  identifiers:
+    - biotools:clustersignificance
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-clustersignificance
+    path: recipes/bioconductor-clustersignificance
+    version: 1.8.2
+

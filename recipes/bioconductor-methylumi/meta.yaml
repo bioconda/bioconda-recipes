@@ -1,36 +1,38 @@
-{% set version = "2.24.1" %}
+{% set version = "2.30.0" %}
 {% set name = "methylumi" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 2c81232bb11f2494a57b70d3664a70f21b31799e96a477ba5c301dc6748f1c16
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: e5e8dd104dba330867bb8b3c3a78922a
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: lumi, lattice, limma, xtable, SQN, MASS, matrixStats, parallel, rtracklayer, Biostrings, methyAnalysis, TCGAMethylation450k, IlluminaHumanMethylation450kanno.ilmn12.hg19, FDb.InfiniumMethylation.hg18 (>= 2.2.0), Homo.sapiens, knitr
 requirements:
-  build:
-    - bioconductor-annotate
-    - bioconductor-annotationdbi
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - 'bioconductor-fdb.infiniummethylation.hg19 >=2.2.0'
-    - bioconductor-genefilter
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicranges
-    - bioconductor-illuminaio
-    - bioconductor-iranges
-    - bioconductor-minfi
-    - bioconductor-s4vectors
-    - bioconductor-summarizedexperiment
+  host:
+    - 'bioconductor-annotate >=1.62.0,<1.63.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-fdb.infiniummethylation.hg19 >=2.2.0,<2.3.0'
+    - 'bioconductor-genefilter >=1.66.0,<1.67.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-illuminaio >=0.26.0,<0.27.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-minfi >=1.30.0,<1.31.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-ggplot2
     - r-lattice
@@ -38,19 +40,19 @@ requirements:
     - r-reshape2
     - r-scales
   run:
-    - bioconductor-annotate
-    - bioconductor-annotationdbi
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - 'bioconductor-fdb.infiniummethylation.hg19 >=2.2.0'
-    - bioconductor-genefilter
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicranges
-    - bioconductor-illuminaio
-    - bioconductor-iranges
-    - bioconductor-minfi
-    - bioconductor-s4vectors
-    - bioconductor-summarizedexperiment
+    - 'bioconductor-annotate >=1.62.0,<1.63.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-fdb.infiniummethylation.hg19 >=2.2.0,<2.3.0'
+    - 'bioconductor-genefilter >=1.66.0,<1.67.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-illuminaio >=0.26.0,<0.27.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-minfi >=1.30.0,<1.31.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-ggplot2
     - r-lattice
@@ -61,6 +63,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'This package provides classes for holding and manipulating Illumina methylation data.  Based on eSet, it can contain MIAME information, sample information, feature information, and multiple matrices of data.  An "intelligent" import function, methylumiR can read the Illumina text files and create a MethyLumiSet. methylumIDAT can directly read raw IDAT files from HumanMethylation27 and HumanMethylation450 microarrays.  Normalization, background correction, and quality control features for GoldenGate, Infinium, and Infinium HD arrays are also included.'
+  summary: 'This package provides classes for holding and manipulating Illumina methylation data.  Based on eSet, it can contain MIAME information, sample information, feature information, and multiple matrices of data.  An "intelligent" import function, methylumiR can read the Illumina text files and create a MethyLumiSet. methylumIDAT can directly read raw IDAT files from HumanMethylation27 and HumanMethylation450 microarrays. Normalization, background correction, and quality control features for GoldenGate, Infinium, and Infinium HD arrays are also included.'
+extra:
+  identifiers:
+    - biotools:methylumi
+    - doi:10.1186/1471-2164-14-293
+  parent_recipe:
+    name: bioconductor-methylumi
+    path: recipes/bioconductor-methylumi
+    version: 2.26.0
+

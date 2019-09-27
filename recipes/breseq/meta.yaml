@@ -1,27 +1,27 @@
-{% set name = "breseq" %}
-{% set version = "0.31.1" %}
+{% set version = "0.34.0" %}
+{% set sha256 = "cd8a9ffc5ea5e21feb20a3da113431a332841d3737d712c03b6224bb4079ea6a" %}
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
-
-build:
-  number: 2
+  name: breseq
+  version: '{{ version }}'
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
   url: https://github.com/barricklab/breseq/releases/download/v{{ version }}/breseq-{{ version }}-Source.tar.gz
-  sha256: 52471eb1c90b1b564243ad6d1c668a82a5539ef742b0badbbb9c7b3fcc2afac3
+  sha256: '{{ sha256 }}'
+  patches:
+    - disable-compiler-version-check.patch
+
+build:
+  number: 0
 
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm  # [osx]
-    - zlib {{CONDA_ZLIB}}*
-
+    - '{{ compiler("c") }}'
+    - '{{ compiler("cxx") }}'
+  host:
+    - zlib
   run:
-    - libgcc  # [not osx]
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
     - r-base
     - bowtie2 >=2.0.0,!=2.0.3,!=2.0.4,!=2.3.1
 
@@ -32,6 +32,8 @@ test:
 
 about:
   home: https://github.com/barricklab/breseq
-  license: GPLv3
+  license: GPL-3.0
+  license_family: GPL
   license_file: COPYING
-  summary: 'A computational pipeline for finding mutations relative to a reference sequence in short-read DNA re-sequencing data.'
+  summary: A computational pipeline for finding mutations relative to a reference sequence in short-read DNA re-sequencing
+    data.

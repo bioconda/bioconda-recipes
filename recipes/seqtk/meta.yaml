@@ -1,29 +1,36 @@
+{% set version = "1.3" %}
+{% set sha256 = "5a1687d65690f2f7fa3f998d47c3c5037e792f17ce119dab52fff3cfdca1e563" %}
+
 package:
   name: seqtk
-  version: 1.2
+  version: {{ version }}
 
 source:
-  fn: v1.2.tar.gz
-  url: https://github.com/lh3/seqtk/archive/v1.2.tar.gz
-  md5: 255ffe05bf2f073dc57abcff97f11a37
+  url: https://github.com/lh3/seqtk/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - 0001-makefile.patch
 
 build:
-  number: 1
+  number: 2
 
 requirements:
   build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
-    - zlib {{CONDA_ZLIB}}*
+    - {{ compiler('c') }}
+  host:
+    - zlib
   run:
-    - zlib {{CONDA_ZLIB}}*
-
+    - zlib
+test:
+  commands:
+    - seqtk 2>&1 | grep seqtk -q
 
 about:
   home: https://github.com/lh3/seqtk
-  license: MIT License
+  license: MIT
+  license_file: LICENSE
   summary: Seqtk is a fast and lightweight tool for processing sequences in the FASTA or FASTQ format
 
-test:
-  commands:
-    - seqtk seq
+extra:
+  identifiers:
+    - biotools:seqtk

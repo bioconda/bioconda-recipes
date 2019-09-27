@@ -1,37 +1,45 @@
-{% set version = "1.20.0" %}
+{% set version = "1.26.0" %}
 {% set name = "lmdme" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: c32a048d9c26b6b1faab9f9694ba52110918ca240f8dd617b8978954b873829c
+  md5: 546f6d67cd946e4d9d81632e2214ee41
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-limma
-    - bioconductor-stemhypoxia
+  host:
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-stemhypoxia >=1.20.0,<1.21.0'
     - r-base
     - r-pls
   run:
-    - bioconductor-limma
-    - bioconductor-stemhypoxia
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
+    - 'bioconductor-stemhypoxia >=1.20.0,<1.21.0'
     - r-base
     - r-pls
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>=2)'
   summary: 'linear ANOVA decomposition of Multivariate Designed Experiments implementation based on limma lmFit. Features: i)Flexible formula type interface, ii) Fast limma based implementation, iii) p-values for each estimated coefficient levels in each factor, iv) F values for factor effects and v) plotting functions for PCA and PLS.'
+extra:
+  identifiers:
+    - biotools:lmdme
+  parent_recipe:
+    name: bioconductor-lmdme
+    path: recipes/bioconductor-lmdme
+    version: 1.22.0
+

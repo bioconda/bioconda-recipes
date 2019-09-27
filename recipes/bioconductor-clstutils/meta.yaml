@@ -1,32 +1,33 @@
-{% set version = "1.26.0" %}
+{% set version = "1.32.0" %}
 {% set name = "clstutils" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: e60dc6b3f500cc39876e26bf3b2895cf5e370673640195127ec3d94ea8cae0a6
+  md5: f31a1566acdc40319644a1c7ec1969ab
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: RUnit, RSVGTipsDevice
 requirements:
-  build:
-    - bioconductor-clst
+  host:
+    - 'bioconductor-clst >=1.32.0,<1.33.0'
     - r-ape
     - r-base
     - r-lattice
     - r-rjson
     - r-rsqlite
   run:
-    - bioconductor-clst
+    - 'bioconductor-clst >=1.32.0,<1.33.0'
     - r-ape
     - r-base
     - r-lattice
@@ -36,6 +37,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Tools for performing taxonomic assignment based on phylogeny using pplacer and clst.'
+extra:
+  identifiers:
+    - biotools:clstutils
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-clstutils
+    path: recipes/bioconductor-clstutils
+    version: 1.28.0
+

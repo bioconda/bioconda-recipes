@@ -6,21 +6,21 @@ package:
   version: {{ version }}
 
 source:
-  fn: bwa-{{ version }}.tar.gz
   url: https://github.com/lh3/bwa/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - Makefile.patch
 
 build:
-  number: 2
+  number: 6
 
 requirements:
   build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
-    - zlib {{CONDA_ZLIB}}*
+    - {{ compiler('c') }}
+  host:
+    - zlib
   run:
-    - zlib {{CONDA_ZLIB}}*
-    - libgcc  # [not osx]
+    - zlib
     - perl
 
 test:
@@ -32,4 +32,9 @@ test:
 about:
   home: https://github.com/lh3/bwa
   license: GPL3
+  license_file: COPYING
   summary: The BWA read mapper.
+
+extra:
+  identifiers:
+    - biotools:bwa

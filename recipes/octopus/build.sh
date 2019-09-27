@@ -1,26 +1,30 @@
 #!/bin/bash
+
 set -eu -o pipefail
 
+export CPATH=${PREFIX}/include
+export CMAKE_LDFLAGS="-L${PREFIX}/lib"
+export LIBRARY_PATH=${PREFIX}/lib
+
+# https://github.com/luntergroup/octopus/issues/38
+export HTSLIB_ROOT=${PREFIX}/lib
+
+# Ignore compiler warnings
+sed -i.bak '556i\
+    -Wno-maybe-uninitialized
+' CMakeLists.txt
+
+sed -i.bak 's/ -Werror / /' src/CMakeLists.txt
+
 cd build
-# BOOST -- need up to date version compiled with gcc 7.2
-wget http://dl.bintray.com/boostorg/release/1.65.0/source/boost_1_65_0.tar.gz
-tar -xzpf boost_1_65_0.tar.gz
-cd boost_1_65_0
+cmake  -DCMAKE_CXX_COMPILER_AR=${AR} \
+       -DCMAKE_CXX_COMPILER_RANLIB=${RANLIB} \
+       -DINSTALL_PREFIX=ON \
+       -DCMAKE_INSTALL_PREFIX=${PREFIX}/bin \
+       -DINSTALL_ROOT=ON \
+       -DCMAKE_BUILD_TYPE=Release \
+       -DBOOST_ROOT=${PREFIX} \
+       -DBoost_NO_SYSTEM_PATHS=ON \
+       ..
 
-export BOOST_BUILD_PATH=`pwd`
-cat <<EOF > ./user-config.jam
-using gcc : : ${CXX} ;
-EOF
-
-./bootstrap.sh --prefix=$PREFIX --without-libraries=python --without-libraries=wave --with-icu=${PREFIX}
-./b2 \
-  --debug-configuration \
-  runtime-link=shared \
-  link=static,shared \
-  toolset=gcc \
-  cxxflags="${CXXFLAGS}" \
-  install
-cd ..
-# octopus
-cmake  -DINSTALL_PREFIX=ON -DCMAKE_INSTALL_PREFIX=$PREFIX -DINSTALL_ROOT=ON ..
 make install

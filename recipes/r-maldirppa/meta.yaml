@@ -1,24 +1,30 @@
 {% set version = '1.0.1' %}
 
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
   name: r-maldirppa
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: MALDIrppa_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/MALDIrppa_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/MALDIrppa/MALDIrppa_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/MALDIrppa_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/MALDIrppa/MALDIrppa_{{ version }}.tar.gz
   sha256: 0ea6f65ef546130e399caac95f37cea5618acabc958eace5ff7be2cd8ac956f8
 
 build:
-  number: 0
+  merge_build_host: True  # [win]
+  number: 3
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{posix}}zip               # [win]
+
+  host:
     - r-base
     - r-maldiquant
     - r-lattice
@@ -36,7 +42,9 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('MALDIrppa')"
+
+    - $R -e "library('MALDIrppa')"           # [not win]
+    - "\"%R%\" -e \"library('MALDIrppa')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=MALDIrppa
@@ -44,3 +52,12 @@ about:
   summary: Provides methods for quality control and robust pre-processing and analysis of MALDI
     mass spectrometry data.
   license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

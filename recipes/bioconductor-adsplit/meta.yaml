@@ -1,42 +1,53 @@
-{% set version = "1.48.0" %}
+{% set version = "1.54.0" %}
 {% set name = "adSplit" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: ca161b19138510145ea8c1ebb1129b247764435ae17ac9ef2bbf99360bc57b8d
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: a392edf9d83df7654bce88050c3d9a61
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: golubEsets (>= 1.0), vsn (>= 1.5.0), hu6800.db (>= 1.8.1)
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - 'bioconductor-biobase >=1.5.12'
-    - 'bioconductor-go.db >=1.8.1'
-    - 'bioconductor-kegg.db >=1.8.1'
-    - 'bioconductor-multtest >=1.6.0'
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-go.db >=3.8.0,<3.9.0'
+    - 'bioconductor-kegg.db >=3.2.0,<3.3.0'
+    - 'bioconductor-multtest >=2.40.0,<2.41.0'
     - r-base
     - 'r-cluster >=1.9.1'
   run:
-    - bioconductor-annotationdbi
-    - 'bioconductor-biobase >=1.5.12'
-    - 'bioconductor-go.db >=1.8.1'
-    - 'bioconductor-kegg.db >=1.8.1'
-    - 'bioconductor-multtest >=1.6.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-go.db >=3.8.0,<3.9.0'
+    - 'bioconductor-kegg.db >=3.2.0,<3.3.0'
+    - 'bioconductor-multtest >=2.40.0,<2.41.0'
     - r-base
     - 'r-cluster >=1.9.1'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'This package implements clustering of microarray gene expression profiles according to functional annotations. For each term genes are annotated to, splits into two subclasses are computed and a significance of the supporting gene set is determined.'
+extra:
+  parent_recipe:
+    name: bioconductor-adsplit
+    path: recipes/bioconductor-adsplit
+    version: 1.50.0
+

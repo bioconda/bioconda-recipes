@@ -1,40 +1,49 @@
-{% set version = "1.8.0" %}
+{% set version = "1.14.0" %}
 {% set name = "DNABarcodes" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 57e8d2375709e7402437b560f78270c55f88cec1d0e43e0b01fc948d2ce57774
+  md5: d5e24b79f158ae0aa4641b8215e81f7c
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: knitr, BiocStyle, rmarkdown
 requirements:
-  build:
+  host:
     - r-base
     - r-bh
     - r-matrix
     - 'r-rcpp >=0.11.2'
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
     - r-base
     - r-bh
     - r-matrix
     - 'r-rcpp >=0.11.2'
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'The package offers a function to create DNA barcode sets capable of correcting insertion, deletion, and substitution errors. Existing barcodes can be analysed regarding their minimal, maximal and average distances between barcodes. Finally, reads that start with a (possibly mutated) barcode can be demultiplexed, i.e., assigned to their original reference barcode.'
+extra:
+  identifiers:
+    - biotools:dnabarcodes
+  parent_recipe:
+    name: bioconductor-dnabarcodes
+    path: recipes/bioconductor-dnabarcodes
+    version: 1.10.0
+
