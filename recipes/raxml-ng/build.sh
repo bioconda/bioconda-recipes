@@ -10,10 +10,13 @@ pushd build_pthreads
 popd
 
 # mpi
-mkdir build_mpi
-pushd build_mpi
-   CXX=mpicxx cmake -DUSE_MPI=ON ..
-   make
-   install -d ${PREFIX}/bin
-   install ../bin/raxml-ng-mpi ${PREFIX}/bin
-popd
+if [ ! "$(uname)" = 'Darwin' ]
+then
+  mkdir build_mpi
+  pushd build_mpi
+     CXX=mpicxx cmake -DUSE_MPI=ON ..
+     make
+     install -d ${PREFIX}/bin
+     install ../bin/raxml-ng-mpi ${PREFIX}/bin
+  popd
+fi
