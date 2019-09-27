@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/bodymapRat_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/bodymapRat_1.0.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bodymaprat/bioconductor-bodymaprat_1.0.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bodymaprat/bioconductor-bodymaprat_1.0.0_src_all.tar.gz"
 )
 MD5="828a327a3b634d6861595baea00c4ac3"
 

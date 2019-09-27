@@ -1,7 +1,4 @@
-{% set version = '2.3.3' %}
-
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
+{% set version = '2.6.0' %}
 
 package:
   name: r-speaq
@@ -11,21 +8,19 @@ source:
   url:
     - {{ cran_mirror }}/src/contrib/speaq_{{ version }}.tar.gz
     - {{ cran_mirror }}/src/contrib/Archive/speaq/speaq_{{ version }}.tar.gz
-  sha256: bb1aa887c93cb40baf6ee01282c5485627152363ba3f47680e3d2a2a5a4735ff
+  sha256: 2e2b56aa4e08e8ec92f94f4d12c19f329567ba2a45c553f8b4b92004318e08e0
 
 build:
-  merge_build_host: True  # [win]
-  number: 1
+  number: 0
+  noarch: generic
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
-  build:
-    - {{posix}}zip               # [win]
-
   host:
     - r-base
+    - r-rfast
     - bioconductor-massspecwavelet
     - r-cluster
     - r-data.table
@@ -39,9 +34,9 @@ requirements:
     - r-reshape2
     - r-rvest
     - r-xml2
-
   run:
     - r-base
+    - r-rfast
     - bioconductor-massspecwavelet
     - r-cluster
     - r-data.table
@@ -58,9 +53,7 @@ requirements:
 
 test:
   commands:
-
-    - $R -e "library('speaq')"           # [not win]
-    - "\"%R%\" -e \"library('speaq')\""  # [win]
+    - $R -e "library('speaq')"
 
 about:
   home: https://CRAN.R-project.org/package=speaq
@@ -73,14 +66,4 @@ about:
     with any number of statistical tools either included in ''speaq'' or available elsewhere
     on CRAN. More detail can be found in Vu et al. (2011) <doi:10.1186/1471-2105-12-405>
     and Beirnaert et al. (2018) <doi:10.1371/journal.pcbi.1006018>. '
-
   license_family: APACHE
-extra:
-  recipe-maintainers:
-    - MathiasHaudgaard
-    - FrodePedersen
-    - ArneKr
-    - johanneskoester
-    - bgruening
-    - daler
-    - jdblischak

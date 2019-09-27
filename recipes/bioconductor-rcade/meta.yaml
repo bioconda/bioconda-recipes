@@ -12,13 +12,20 @@ source:
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
   md5: fdd9ad4b78ffed906437541c24fd7d86
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
   noarch: generic
 # Suggests: limma, biomaRt, RUnit, BiocGenerics, BiocStyle
 requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
   host:
     - 'bioconductor-bayseq >=2.18.0,<2.19.0'
     - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
@@ -43,7 +50,7 @@ requirements:
     - r-rgl
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
