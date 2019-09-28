@@ -1,6 +1,6 @@
 {% set name = "somaticseq" %}
-{% set version = "2.8.1" %}
-{% set sha256 = "2ae4d5e10d09345c3774975602087175a6d680519a28f6e045649c7f340cf489" %}
+{% set version = "3.2.1" %}
+{% set sha256 = "e171b4b746ca87a73ab8565d4a9c962aa2eb34d87feffb79c6aaf3ec3b3dbc0f" %}
 
 package:
   name: {{ name|lower }}
@@ -11,18 +11,20 @@ source:
 
 build:
   number: 0
-  skip: True # [py27 or osx]
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
   host:
-    - python
+    - python >=3
+    - pip
   run:
-    - python
-    - r-ada
-    - regex
+    - python >=3
     - numpy
     - pysam
     - scipy
+    - r-base
+    - r-ada
     - bedtools
     - gatk4
     - varscan >=2
@@ -34,13 +36,15 @@ requirements:
 
 test:
   commands:
-    - SomaticSeq.Wrapper.sh --output-dir test
-    - ssSomaticSeq.Wrapper.sh --output-dir test
+    - run_somaticseq.py --help
+    - somaticseq_parallel.py --help
+    - makeSomaticScripts.py --help
 
 about:
   home: http://bioinform.github.io/somaticseq/
   license: 2-clause BSD
   license_file: LICENSE.txt
+  license_family: BSD
   summary: An ensemble approach to accurately detect somatic mutations
   description: >
     SomaticSeq is an ensemble caller that has the ability to use machine learning to filter out false positives.
