@@ -21,3 +21,4 @@ cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
       -DZLIB_ROOT=$PREFIX \
       ..
 make
+cp ../bin/popscle ${PREFIX}/bin
