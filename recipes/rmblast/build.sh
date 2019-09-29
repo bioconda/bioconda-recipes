@@ -2,8 +2,8 @@
 
 cd $SRC_DIR/c++/
 
-export CFLAGS="$CFLAGS -O2"
-export CXXFLAGS="$CXXFLAGS -O2"
+export CFLAGS="$CFLAGS -Ofast"
+export CXXFLAGS="$CXXFLAGS -Ofast"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 
