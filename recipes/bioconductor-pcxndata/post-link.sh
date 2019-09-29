@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/pcxnData_2.6.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pcxnData_2.6.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pcxndata/bioconductor-pcxndata_2.6.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pcxndata/bioconductor-pcxndata_2.6.0_src_all.tar.gz"
 )
 MD5="49ae7b9155cd6680c186180c03869e7f"
 

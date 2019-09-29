@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/MetaGxBreast_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MetaGxBreast_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-metagxbreast/bioconductor-metagxbreast_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-metagxbreast/bioconductor-metagxbreast_1.4.0_src_all.tar.gz"
 )
 MD5="ebc1b88b0cbc809a6ee615a618ae9e87"
 
