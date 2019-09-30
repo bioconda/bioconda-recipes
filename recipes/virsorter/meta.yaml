@@ -1,0 +1,50 @@
+{% set virsorterVersion = "1.0.5" %}
+{% set virsorterSha256 = "5a25f74cac02502a6a1961c31945ae1d6bae27e718f0a471a674bf549c376330" %}
+
+package:
+  name: virsorter
+  version: {{ virsorterVersion }}
+
+source:
+  url: https://github.com/simroux/VirSorter/archive/v{{ virsorterVersion }}.tar.gz
+  sha256: {{ virsorterSha256 }}
+
+build:
+  number: 4
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - perl
+    - perl-bioperl
+  run:
+    - perl
+    - blast
+    - diamond =0.9.14
+    - hmmer =3.1b2
+    - mcl =14.137
+    - metagene_annotator
+    - muscle
+    - perl-bioperl
+    - perl-file-which
+    - perl-list-moreutils
+    - perl-parallel-forkmanager
+
+test:
+  commands:
+    - wrapper_phage_contigs_sorter_iPlant.pl --help 2>&1 | grep "Required Arguments"
+
+about:
+  home: https://github.com/simroux/VirSorter
+  license: GPL-2.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: Mining viral signal from microbial genomic data.
+  dev_url: https://github.com/simroux/VirSorter
+
+extra:
+  identifiers:
+    - doi:10.7717/peerj.985
+  recipe-maintainers:
+    - wclose

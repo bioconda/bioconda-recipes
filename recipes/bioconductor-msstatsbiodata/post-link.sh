@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="MSstatsBioData_1.4.0.tar.gz"
+FN="MSstatsBioData_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/MSstatsBioData_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MSstatsBioData_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-msstatsbiodata/bioconductor-msstatsbiodata_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/MSstatsBioData_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MSstatsBioData_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-msstatsbiodata/bioconductor-msstatsbiodata_1.6.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-msstatsbiodata/bioconductor-msstatsbiodata_1.6.0_src_all.tar.gz"
 )
-MD5="d6b9978157012351f0fea33b1c678296"
+MD5="a0a04b89a7eaee9c85a630483b296a0c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
