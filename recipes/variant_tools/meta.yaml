@@ -1,0 +1,54 @@
+{% set name = "variant_tools" %}
+{% set version = "3.0.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: "3602f3666ce751361b2d7426d3734c075b171b6fe77c26341ca8370eee329331"
+
+build:
+  number: 0
+  entry_points:
+    - vtools=variant_tools.vtools:main
+    - vtools_report=variant_tools.vtools_report:main
+    - worker_run=variant_tools.worker_zmq:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python
+    - pyzmq
+    - setuptools
+    - numpy
+    - cython
+  run:
+    - python
+    - pyzmq
+    - setuptools
+    - numpy
+    - scipy
+    - pytables
+
+test:
+  imports:
+    - variant_tools
+  commands:
+    - vtools --help
+    - vtools_report --help
+    - worker_run --help
+
+about:
+  home: http://varianttools.sourceforge.net
+  license: GPL3
+  license_family: GPL
+  summary: An integrated annotation and analysis package for next-generation sequencing data
+  description: 
+    Variant Tools is a software tool for the manipulation, annotation, selection, simulation, and analysis of variants in the context of next-gen sequencing analysis. Unlike some other tools used for Next-Gen sequencing analysis, variant tools is project based and provides a whole set of tools to manipulate and analyze genetic variants. 
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btr667
