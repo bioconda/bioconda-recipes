@@ -13,7 +13,7 @@ import shutil
 from os import access
 from os import getenv
 from os import X_OK
-jar_file = 'MobileInsertions-0.2.3.jar'
+jar_file = 'MobileInsertions-0.2.4.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 

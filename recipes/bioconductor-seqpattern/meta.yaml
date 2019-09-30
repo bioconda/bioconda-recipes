@@ -1,33 +1,35 @@
-{% set version = "1.10.0" %}
+{% set version = "1.16.0" %}
 {% set name = "seqPattern" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: f59e54dcd136b30ebdaf3f797c8d35cca05ff023d7dba337d8801f3c102f95cd
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 44e22955071d0a0964000501a064f5ee
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BSgenome.Drerio.UCSC.danRer7, CAGEr, RUnit, BiocGenerics, BiocStyle
 requirements:
-  build:
-    - bioconductor-biostrings
-    - bioconductor-genomicranges
-    - bioconductor-iranges
+  host:
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
     - r-base
     - r-kernsmooth
     - r-plotrix
   run:
-    - bioconductor-biostrings
-    - bioconductor-genomicranges
-    - bioconductor-iranges
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
     - r-base
     - r-kernsmooth
     - r-plotrix
@@ -35,6 +37,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Visualising oligonucleotide patterns and sequence motifs occurrences across a large set of sequences centred at a common reference point and sorted by a user defined feature.'
+extra:
+  identifiers:
+    - biotools:seqpattern
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-seqpattern
+    path: recipes/bioconductor-seqpattern
+    version: 1.12.0
+

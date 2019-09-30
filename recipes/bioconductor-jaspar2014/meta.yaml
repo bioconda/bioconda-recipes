@@ -1,33 +1,40 @@
-{% set version = "1.14.0" %}
+{% set version = "1.20.0" %}
 {% set name = "JASPAR2014" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 3423d5f824e238a7d863f1b901fcac0b2b40dc5404487f1563c4c9d1fd5bb90e
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 4e907b35b06421d73433cc13987ddb9a
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - 'bioconductor-biostrings >=2.29.19'
+  host:
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
     - r-base
   run:
-    - 'bioconductor-biostrings >=2.29.19'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
   license: GPL-2
   summary: 'Data package for JASPAR 2014. To search this databases, please use the package TFBSTools.'
+extra:
+  parent_recipe:
+    name: bioconductor-jaspar2014
+    path: recipes/bioconductor-jaspar2014
+    version: 1.16.0
+

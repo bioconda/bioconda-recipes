@@ -1,33 +1,37 @@
-{% set version = "0.1.2" %}
+{% set version = "0.1.17" %}
+{% set sha256 = "63ca5af9153d580f8de325b4617a50fca85d9ec7ab76b90ab49c3175f7a0427e" %}
 
 package:
   name: alfred
-  version: {{ version }}
+  version: '{{ version }}'
 
 source:
   url: https://github.com/tobiasrausch/alfred/archive/v{{ version }}.tar.gz
-  sha256: 4389ddd474b6d8e9ffb87ffa429870c8ede861a2c1853603b21b05f3e8c79d26
+  sha256: '{{ sha256 }}'
   patches:
     - Makefile.patch
 
 build:
   number: 1
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
   skip: True # [osx]
 
 requirements:
   build:
-    - gcc
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - boost {{CONDA_BOOST}}*
-    - htslib {{CONDA_HTSLIB}}*
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - bzip2
+    - boost
+    - htslib
+    - sdsl-lite
+    - nlohmann_json
   run:
-    - libgcc
-    - zlib {{CONDA_ZLIB}}*
-    - bzip2 {{ CONDA_BZIP2 }}*
-    - boost {{CONDA_BOOST}}*
-    - htslib {{CONDA_HTSLIB}}*
+    - zlib
+    - bzip2
+    - boost
+    - htslib
+    - sdsl-lite
+    - nlohmann_json
 
 test:
   commands:
@@ -36,4 +40,4 @@ test:
 about:
   home: https://github.com/tobiasrausch/alfred
   license: GPLv3
-  summary: Sequence alignment quality control, BAM statistics and feature counting
+  summary: BAM statistics, feature counting and feature annotation

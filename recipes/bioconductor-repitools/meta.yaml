@@ -1,36 +1,37 @@
-{% set version = "1.24.0" %}
+{% set version = "1.30.0" %}
 {% set name = "Repitools" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 2af2e4bdcdd3fb93a9ead1b657ac3a7e6a8485f0a762ac20a85a3b60b982d6ab
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: be4217174c229d982e547851342de8d8
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: ShortRead, BSgenome.Hsapiens.UCSC.hg18
 requirements:
-  build:
-    - 'bioconductor-biocgenerics >=0.8.0'
-    - bioconductor-biostrings
-    - bioconductor-bsgenome
-    - bioconductor-dnacopy
-    - 'bioconductor-edger >=3.4.0'
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicalignments
-    - bioconductor-genomicranges
-    - 'bioconductor-iranges >=1.20.0'
-    - bioconductor-ringo
-    - bioconductor-rsamtools
-    - bioconductor-rtracklayer
-    - 'bioconductor-s4vectors >=0.9.25'
+  host:
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-bsgenome >=1.52.0,<1.53.0'
+    - 'bioconductor-dnacopy >=1.58.0,<1.59.0'
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicalignments >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-ringo >=1.48.0,<1.49.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-rtracklayer >=1.44.0,<1.45.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-aroma.affymetrix
     - r-base
     - r-cluster
@@ -39,19 +40,19 @@ requirements:
     - r-mass
     - r-rsolnp
   run:
-    - 'bioconductor-biocgenerics >=0.8.0'
-    - bioconductor-biostrings
-    - bioconductor-bsgenome
-    - bioconductor-dnacopy
-    - 'bioconductor-edger >=3.4.0'
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicalignments
-    - bioconductor-genomicranges
-    - 'bioconductor-iranges >=1.20.0'
-    - bioconductor-ringo
-    - bioconductor-rsamtools
-    - bioconductor-rtracklayer
-    - 'bioconductor-s4vectors >=0.9.25'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-bsgenome >=1.52.0,<1.53.0'
+    - 'bioconductor-dnacopy >=1.58.0,<1.59.0'
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicalignments >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-ringo >=1.48.0,<1.49.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-rtracklayer >=1.44.0,<1.45.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-aroma.affymetrix
     - r-base
     - r-cluster
@@ -59,10 +60,21 @@ requirements:
     - r-gsmoothr
     - r-mass
     - r-rsolnp
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'LGPL (>= 2)'
   summary: 'Tools for the analysis of enrichment-based epigenomic data.  Features include summarization and visualization of epigenomic data across promoters according to gene expression context, finding regions of differential methylation/binding, BayMeth for quantifying methylation etc.'
+extra:
+  identifiers:
+    - biotools:repitools
+  parent_recipe:
+    name: bioconductor-repitools
+    path: recipes/bioconductor-repitools
+    version: 1.26.0
+

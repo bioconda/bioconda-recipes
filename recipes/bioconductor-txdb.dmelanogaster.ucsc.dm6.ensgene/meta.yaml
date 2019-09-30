@@ -1,35 +1,42 @@
-{% set version = "3.4.1" %}
+{% set version = "3.4.6" %}
 {% set name = "TxDb.Dmelanogaster.UCSC.dm6.ensGene" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 01cc6196b2660348d6ec3c7eb707966b07f803c0a40bef63958e1234d703bc69
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 3f44aee6ed70de5594d80262674c0e15
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - 'bioconductor-genomicfeatures >=1.27.13'
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
     - r-base
   run:
-    - bioconductor-annotationdbi
-    - 'bioconductor-genomicfeatures >=1.27.13'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Exposes an annotation databases generated from UCSC by exposing these as TxDb objects'
+extra:
+  parent_recipe:
+    name: bioconductor-txdb.dmelanogaster.ucsc.dm6.ensgene
+    path: recipes/bioconductor-txdb.dmelanogaster.ucsc.dm6.ensgene
+    version: 3.4.1
+

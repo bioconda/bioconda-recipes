@@ -1,43 +1,45 @@
-{% set version = "1.20.0" %}
+{% set version = "1.26.0" %}
 {% set name = "PADOG" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: e5d42c8afe97a2c830b1e5b9eac982982ab768e086b5c38ddec01d08af90e8d2
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: b3d4cf132c70bf0ce99691aabcf0ea3e
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: doParallel, parallel
 requirements:
-  build:
-    - bioconductor-annotationdbi
-    - bioconductor-biobase
-    - bioconductor-hgu133a.db
-    - bioconductor-hgu133plus2.db
-    - bioconductor-kegg.db
-    - bioconductor-keggdzpathwaysgeo
-    - bioconductor-limma
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-hgu133a.db >=3.2.0,<3.3.0'
+    - 'bioconductor-hgu133plus2.db >=3.2.0,<3.3.0'
+    - 'bioconductor-kegg.db >=3.2.0,<3.3.0'
+    - 'bioconductor-keggdzpathwaysgeo >=1.22.0,<1.23.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
     - r-base
     - r-dorng
     - r-foreach
     - r-gsa
     - r-nlme
   run:
-    - bioconductor-annotationdbi
-    - bioconductor-biobase
-    - bioconductor-hgu133a.db
-    - bioconductor-hgu133plus2.db
-    - bioconductor-kegg.db
-    - bioconductor-keggdzpathwaysgeo
-    - bioconductor-limma
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-hgu133a.db >=3.2.0,<3.3.0'
+    - 'bioconductor-hgu133plus2.db >=3.2.0,<3.3.0'
+    - 'bioconductor-kegg.db >=3.2.0,<3.3.0'
+    - 'bioconductor-keggdzpathwaysgeo >=1.22.0,<1.23.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
     - r-base
     - r-dorng
     - r-foreach
@@ -47,6 +49,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'This package implements a general purpose gene set analysis method called PADOG that downplays the importance of genes that apear often accross the sets of genes to be analyzed. The package provides also a benchmark for gene set analysis methods in terms of sensitivity and ranking using 24 public datasets from KEGGdzPathwaysGEO package.'
+extra:
+  identifiers:
+    - biotools:padog
+    - doi:10.1186/1471-2105-13-136
+  parent_recipe:
+    name: bioconductor-padog
+    path: recipes/bioconductor-padog
+    version: 1.22.0
+

@@ -1,29 +1,58 @@
+{% set version="0.1.16" %}
+
 package:
   name: perl-vcftools-vcf
-  version: '0.1.14'
+  version: {{ version }}
 
 source:
-  fn: vcftools-0.1.15.tar.gz
-  url: https://github.com/vcftools/vcftools/releases/download/v0.1.15/vcftools-0.1.15.tar.gz
-  sha256: 31e47afd5be679d89ece811a227525925b6907cce4af2c86f10f465e080383e3
+  url: https://github.com/vcftools/vcftools/releases/download/v{{ version }}/vcftools-{{ version }}.tar.gz
+  sha256: dbfc774383c106b85043daa2c42568816aa6a7b4e6abc965eeea6c47dde914e3
 
 build:
-  number: 0
+  number: 2
 
 requirements:
-  build:
-    - gcc
+  host:
     - perl
     - perl-module-build
   run:
-    - libgcc
     - perl
 
 test:
- commands:
+  commands:
     - perl -e "use Vcf;"
+    - fill-aa -h 2>&1 | grep -q "Usage:.*fill-aa"
+    - fill-an-ac -h 2>&1 | grep -q "Usage:.*fill-an-ac"
+    - fill-fs -h 2>&1 | grep -q "Usage:.*fill-fs"
+    - fill-ref-md5 -h 2>&1 | grep -q "Usage:.*fill-ref-md5"
+    - tab-to-vcf -h 2>&1 | grep -q "Usage:.*tab-to-vcf"
+    - vcf-annotate -h 2>&1 | grep -q "Usage:.*vcf-annotate"
+    - vcf-compare -h 2>&1 | grep -q "Usage:.*vcf-compare"
+    - vcf-concat -h 2>&1 | grep -q "Usage:.*vcf-concat"
+    - vcf-consensus -h 2>&1 | grep -q "Usage:.*vcf-consensus"
+    - vcf-contrast -h 2>&1 | grep -q "Usage:.*vcf-contrast"
+    - vcf-convert -h 2>&1 | grep -q "Usage:.*vcf-convert"
+    - vcf-fix-newlines -h 2>&1 | grep -q "Usage:.*vcf-fix-newlines"
+    - vcf-fix-ploidy -h 2>&1 | grep -q "Usage:.*vcf-fix-ploidy"
+    - vcf-haplotypes -h 2>&1 | grep -q "gff file with indels for each haplotypes"
+    - vcf-indel-stats -h 2>&1 | grep -q "Usage:.*vcf-indel-stats"
+    - vcf-isec -h 2>&1 | grep -q "Usage:.*vcf-isec"
+    - vcf-merge -h 2>&1 | grep -q "Usage:.*vcf-merge"
+    - vcf-phased-join -h 2>&1 | grep -q "Usage:.*vcf-phased-join"
+    - vcf-query -h 2>&1 | grep -q "Usage:.*vcf-query"
+    - vcf-shuffle-cols -h 2>&1 | grep -q "Usage:.*vcf-shuffle-cols"
+    - vcf-sort -h 2>&1 | grep -q "Usage:.*vcf-sort"
+    - vcf-stats -h 2>&1 | grep -q "Usage:.*vcf-stats"
+    - vcf-subset -h 2>&1 | grep -q "Usage:.*vcf-subset"
+    - vcf-to-tab -h 2>&1 | grep -q "Usage:.*vcf-to-tab"
+    - vcf-tstv -h 2>&1 | grep -q "Usage:.*vcf-tstv"
+    - vcf-validator -h 2>&1 | grep -q "Usage:.*vcf-validator"
 
 about:
   home: https://github.com/vcftools/vcftools
   license: LGPLv3
   summary: cpanm ready distribution of VCFtools Perl libraries
+
+extra:
+  identifiers:
+    - biotools:vcftools

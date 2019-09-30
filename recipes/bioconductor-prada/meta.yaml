@@ -1,40 +1,53 @@
-{% set version = "1.54.0" %}
+{% set version = "1.60.0" %}
 {% set name = "prada" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 36e2b25c172eb24b4c5feccfe47760184035143f99d9cd438d79fd1a0281c8a5
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: bdb750f5fd7eee86f2189acc886dc394
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: cellHTS2, tcltk
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-base
     - r-mass
     - r-rcolorbrewer
     - r-rrcov
   run:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-base
     - r-mass
     - r-rcolorbrewer
     - r-rrcov
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
   summary: 'Tools for analysing and navigating data from high-throughput phenotyping experiments based on cellular assays and fluorescent detection (flow cytometry (FACS), high-content screening microscopy).'
+extra:
+  identifiers:
+    - biotools:prada
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-prada
+    path: recipes/bioconductor-prada
+    version: 1.56.0
+

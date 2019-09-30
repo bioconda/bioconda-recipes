@@ -1,34 +1,45 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "nucleoSim" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: b3185e2b265b9ae40f86ca373469d8eba0931e4e5092db5a7f7174d83c59dd3f
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: a7c5dacf53ecce0dd78991928b9656c5
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, BiocGenerics, knitr, rmarkdown, RUnit
 requirements:
-  build:
-    - bioconductor-iranges
-    - bioconductor-s4vectors
+  host:
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
   run:
-    - bioconductor-iranges
-    - bioconductor-s4vectors
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'This package can generate a synthetic map with reads covering the nucleosome regions as well as a synthetic map with forward and reverse reads emulating next-generation sequencing. The user has choice between three different distributions for the read positioning: Normal, Student and Uniform.'
+extra:
+  identifiers:
+    - biotools:nucleosim
+    - doi:10.1515/sagmb-2014-0098
+  parent_recipe:
+    name: bioconductor-nucleosim
+    path: recipes/bioconductor-nucleosim
+    version: 1.8.0
+

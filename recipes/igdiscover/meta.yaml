@@ -1,4 +1,4 @@
-{% set version = "0.8.0" %}
+{% set version = "0.11" %}
 
 about:
   home: https://igdiscover.se/
@@ -10,47 +10,44 @@ package:
   version: {{ version }}
 
 source:
-  fn: igdiscover-{{ version }}.tar.gz
-  url: https://pypi.io/packages/source/i/igdiscover/igdiscover-{{ version }}.tar.gz
-  md5: 8322eb84ac78d91fdcd0f9fc4a6ba8e8
+  url: https://files.pythonhosted.org/packages/97/69/88430559bd62240f18cfb5f2ca87edcc31af6689efe57f41f974c768e652/igdiscover-0.11.tar.gz
+  sha256: 2f626888aa42db083df9ab7538d03f2a4483a936d430bbb695412ed1574d362e
+  patches:
+    - cpucount-osx.patch  # [osx]
 
 requirements:
+  host:
+    - python
+    - pip
+    - setuptools
   run:
     - python
-    - sqt >=0.8.0
-    - pandas >=0.16.2
-    - numpy
-    - matplotlib
-    - snakemake >=3.9.0
-    - cutadapt
-    - xopen >=0.1.1
-    - seaborn >=0.6,<0.8
-    - scipy >=0.16.1
-    - ruamel.yaml
-    - muscle
-    - pear
-    - flash
-    - igblast ==1.5.0
-    - vsearch ==1.9.7
-    - fastqc
-  build:
-    - python
-    - sqt >=0.8.0
-    - pandas >=0.16.2
-    - numpy
-    - matplotlib
-    - snakemake >=3.9.0
-    - cutadapt
-    - xopen >=0.1.1
-    - seaborn >=0.6,<0.8
-    - scipy >=0.16.1
-    - ruamel.yaml
+    - pip
+    - sqt 0.8.*
+    - pandas 0.23.*
+    - numpy >=1.15
+    - matplotlib-base 3.0.*
+    - snakemake-minimal 5.3.*
+    - cutadapt ==1.18
+    - xopen >=0.3.5
+    - seaborn 0.9.*
+    - scipy >=1.1
+    - ruamel.yaml 0.15.*
+    - muscle 3.8.*
+    - pear 0.9.6.*
+    - flash 1.2.*
+    - igblast 1.7.*
 
 build:
   number: 1
-  skip: True  # [py27]
-  script: python3 setup.py install
+  skip: True  # [py<36]
+  script: python -m pip install --no-deps --ignore-installed .
 
 test:
   commands:
     - igdiscover --help > /dev/null
+
+extra:
+  identifiers:
+    - biotools:igdiscover
+    - doi:10.1038/ncomms13642

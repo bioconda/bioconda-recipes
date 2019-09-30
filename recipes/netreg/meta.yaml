@@ -1,6 +1,39 @@
 {% set name = "netreg" %}
-{% set version = "1.2.0" %}
-{% set sha256 = "9b5bee87de3de4a2aa6cae81bfa5c357a0ce9d6ced242999d0e74ee263abf4d7" %}
+{% set version = "1.8.0" %}
+{% set sha256 = "9b300296384786867a5442d97dfe853a19d2457bd1f7b05c2303249f42ce018c" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  sha256: {{ sha256 }}
+  url: https://github.com/dirmeier/netReg/archive/v{{ version }}.tar.gz
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+  host:
+    - boost-cpp
+    - armadillo >=7.800.1
+    - openblas >=0.2.19
+    - zlib
+    - hdf5
+  run:
+    - boost-cpp
+    - armadillo >=7.800.1
+    - openblas >=0.2.19
+    - zlib
+    - hdf5
+
+test:
+  commands:
+    - netReg -h
 
 about:
   home: https://github.com/dirmeier/netReg
@@ -8,37 +41,3 @@ about:
   summary: "netReg fits linear regression models using network-penalization."
   license_file: LICENSE
   doc_url: https://dirmeier.github.io/netReg/
-
-build:
-  number: 0
-
-package:
-  name: {{ name }}
-  version: {{ version }}
-
-requirements:
-  build:
-    - gcc # [linux]
-    - llvm # [osx]
-    - libcxx # [osx]
-    - cmake >=3.8
-    - boost {{ CONDA_BOOST }}*
-    - armadillo >=7.800.1
-    - openblas >=0.2.19
-    - zlib {{ CONDA_ZLIB }}*
-  run:
-    - libgcc # [linux]
-    - libcxx # [osx]
-    - boost {{ CONDA_BOOST }}*
-    - armadillo >=7.800.1
-    - openblas >=0.2.19
-    - zlib {{ CONDA_ZLIB }}*
-
-source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-  url: https://github.com/dirmeier/netReg/archive/v{{ version }}.tar.gz
-
-test:
-   commands:
-     - netReg -h

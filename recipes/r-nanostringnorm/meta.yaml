@@ -1,47 +1,45 @@
-{% set version = '1.1.21' %}
+{% set version = '1.2.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-nanostringnorm
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: NanoStringNorm_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/NanoStringNorm_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/NanoStringNorm/NanoStringNorm_{{ version }}.tar.gz
-  sha256: 6416dd76a84d30bf9bd7000a581fd9b7757558b86e2afb49ad433f35cb8475e5
+    - {{ cran_mirror }}/src/contrib/NanoStringNorm_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/NanoStringNorm/NanoStringNorm_{{ version }}.tar.gz
+  sha256: f2d4773a67c609a85ad12635252310e1e190444a66997d07665544def3862117
 
 build:
-  number: 0
-
+  merge_build_host: True  # [win]
+  number: 1
+  skip: true  # [win32]
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{posix}}zip               # [win]
+  host:
     - r-base
+    - r-xml >=3.98_1.5
     - r-gdata >=2.8.2
     - bioconductor-vsn >=3.22.0
-
-    # prev version:
-    # - r-googlevis
-    # - r-lme4
-    # - r-runit
-
   run:
     - r-base
+    - r-xml >=3.98_1.5
     - r-gdata >=2.8.2
     - bioconductor-vsn >=3.22.0
-
-    # prev version:
-    # - r-googlevis
-    # - r-lme4
-    # - r-runit
 
 test:
   commands:
-    - $R -e "library('NanoStringNorm')"
+
+    - $R -e "library('NanoStringNorm')"           # [not win]
+    - "\"%R%\" -e \"library('NanoStringNorm')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=NanoStringNorm
@@ -49,3 +47,12 @@ about:
   summary: A set of tools for normalizing, diagnostics and visualization of NanoString nCounter
     data.
   license_family: GPL2
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

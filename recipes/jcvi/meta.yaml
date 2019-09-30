@@ -1,0 +1,55 @@
+{% set name = "jcvi" %}
+{% set version = "0.9.11" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: e7719014ebbd82107806adda6c784d73cd6ba5036289ccb2058800ad22bbad7a
+
+build:
+  number: 0
+  skip: True  # [not py27]
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - numpy 
+    - cython
+  run:
+    - python
+    - biopython
+    - deap
+    - matplotlib
+    - networkx
+    - {{ pin_compatible('numpy') }}
+    - r-ggplot2 >=3.0.0
+    - gffutils
+
+test:
+  imports:
+    - jcvi
+    - jcvi.algorithms
+    - jcvi.annotation
+    - jcvi.apps
+    - jcvi.assembly
+    - jcvi.compara
+    - jcvi.formats
+    - jcvi.graphics
+    - jcvi.projects
+    - jcvi.utils
+    - jcvi.utils.data
+    - jcvi.variation
+
+about:
+  home: http://github.com/tanghaibao/jcvi
+  license: BSD License
+  license_family: BSD
+  summary: Python utility libraries on genome assembly, annotation and comparative genomics
+  description: "JCVI utility libraries"

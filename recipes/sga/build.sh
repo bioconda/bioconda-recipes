@@ -1,8 +1,13 @@
 #!/bin/bash
-set -x
-set -e
+
+export CFLAGS="-I$PREFIX/include -O3"
+export LDFLAGS="-L$PREFIX/lib"
+export CPATH="${PREFIX}/include"
+export CXXFLAGS="-I${PREFIX}/include -O3"
 
 pushd $SRC_DIR/src
-bamtools=$(conda list bamtools -c)
+
 ./autogen.sh
-./configure --prefix=$PREFIX --with-bamtools=$SYS_PREFIX/pkgs/$bamtools  && make && make install
+./configure --prefix=$PREFIX --with-bamtools=$PREFIX --with-sparsehash=$PREFIX
+make
+make install

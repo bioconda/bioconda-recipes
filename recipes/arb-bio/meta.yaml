@@ -7,88 +7,207 @@ package:
   version: {{ version }}
 
 source:
-  fn: {{name | lower }}-{{ version }}-source.tgz
   url: http://download.arb-home.de/release/{{ name|lower }}-{{ version }}/{{ name|lower }}-{{ version }}-source.tgz
   sha256: {{ sha256 }}
   patches:
-   # allow disabling build of bundled tools
-   - disable_pkgs.patch
-   # do not create links for mafft
-   - no_mafftlinks.patch
-   # allow linking with missing symbols on macos
-   - link_dyn.patch
-   - make.patch
-   # prefix SOURCE_TOOLS/... with full PATH
-   - make_path_fix.patch
-   # change all /usr/bin/xyz paths to /usr/bin/env xyz
-   - abs_path_fix.patch
-   # use sed, not gsed
-   - gsed.patch
+    # allow disabling build of bundled tools
+    - disable_pkgs.patch
+    # do not create links for mafft
+    - no_mafftlinks.patch
+    # allow linking with missing symbols on macos
+    - link_dyn.patch
+    - make.patch
+    # prefix SOURCE_TOOLS/... with full PATH
+    - make_path_fix.patch
+    # change all /usr/bin/xyz paths to /usr/bin/env xyz
+    - abs_path_fix.patch
+    # use sed, not gsed
+    - gsed.patch
+    # allow building with -std=c++17 set
+    - cxxforward.patch
+    # fix some CB / casting issue
+    - nullptr.patch
+    # fix typeof not defined
+    - typeof.patch
 
 build:
-  number: 1
+  number: 8
+# constraining to perl >= 5.23 does not work via requirements, resulting in a 
+# broken build string. constraining via skip also doesn't work - the suggested
+# approach leads to str < int compare failure during lint. 
+# => let's just hope no one tries building this with an old perl.
+#  skip: True  # [perl <5.23]
 
 requirements:
   build:
-    - gcc   # [linux]
-    - llvm  # [osx]
+    - {{ compiler('cxx') }}
     - pkg-config
+    - time
+    - lynx
+    - xorg-makedepend
+    - sed >=4.4
+    - tar
+    - perl
+    - coreutils  # for gnu readlink
+  host:
     - openmotif-dev
-    - glib 2.51.* # 2.50.2 links to broken gettext
-    - gettext !=0.19.8  # gettext 0.19.8 is broken
+    - glib
+    - gettext
     - pthread-stubs
-    - xorg-libxp
-    - xorg-libxmu
     - xorg-libxi
+    - xorg-libxp
     - xorg-libxaw
     - xorg-libxpm
-    - xorg-makedepend
-    - xerces-c
+    - xorg-libxmu
     - libtiff
     - libxslt
-    # perl 5.22.0.1-0 and 5.22.2.1-0 want to use
-    # -fstack-protector-strong, which doesn't exist in conda gcc 4.8 and
-    # leads to compile failure
-    - perl !=5.22.0.1-0,!=5.22.2.1-0
-    - lynx
-    - time
-    - sed >=4.4 # 4.2 links to broken gettext
+    - libpng
+    - xerces-c
+    # Perl is a problem. We must always have a perl version that was compiled with the
+    # same compiler we are using. Otherwise we run into e.g. "-fstack-protector-strong" type
+    # issues. Make-Maker uses the flags from the perl build time for the makefile it generates,
+    # so those flags must work for us as well.
+    - perl
 
-  run:
-    - libgcc   # [linux]
-    - gettext !=0.19.8  # gettext 0.19.8 is broken
-    - xorg-libxi
-    - xorg-libxmu
-    - xorg-libxp
-    - xorg-libxaw
-    - xorg-libxpm
-    - xorg-libxft
-    - glib 2.51.*
-    - openmotif
-    - gnuplot
-    - muscle
-    - mafft
-    - raxml
-    - mrbayes
-    - phylip
-    - phyml 3.2.0
-    - fasttree
-    - sed >=4.4
-    - xfig
-    - fig2dev
-    - perl !=5.22.0.1-0,!=5.22.2.1-0
 
 test:
   requires:
     - conda
   commands:
+    # most tests are in `run_test.sh`
     - if command -v conda; then conda inspect linkages -p $PREFIX $PKG_NAME; fi
     - if command -v conda; then conda inspect objects -p $PREFIX $PKG_NAME; fi   # [osx]
     - which arb
     - which arb_pt_server
 
+outputs:
+  - name: libarbdb
+    script: install_libarbdb.sh
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+      host:
+        - glib
+        # We must have perl in the host sections of all output packages because
+        # `pin_compatible` will fail otherwise. Probably another bug.
+        - perl
+      run:
+        - gettext
+        - {{ pin_compatible("glib", max_pin="x") }}
+  - name: arb-bio-tools
+    script: install_tools.sh
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+      host:
+        - glib
+        - perl # see above
+      run:
+        - {{ pin_subpackage("libarbdb", exact=True) }}
+
+  - name: arb-bio
+    script: install_main.sh
+    requirements:
+      # We have to restate everything we used above in the top level requirements here.
+      # Lacking proper documentation of anything in conda build 3, all of this is trial
+      # and error. The run dependencies stated at the top level are not applied to the
+      # arb-bio output even though it shares the name with the toplevel.
+      # We also can't use YAML anchors to reference what we wrote above because conda
+      # build breaks YAML by parsing the outputs section again at a later point.
+      # Horrible mess....
+      build:
+        - {{ compiler('cxx') }}
+        - pkg-config
+        - time
+        - lynx
+        - xorg-makedepend
+        - sed >=4.4
+        - tar
+      host:
+        - openmotif-dev
+        - glib
+        - gettext
+        - pthread-stubs
+        - xorg-libxi
+        - xorg-libxp
+        - xorg-libxaw
+        - xorg-libxpm
+        - xorg-libxmu
+        - libtiff
+        - libxslt
+        - libpng
+        - xerces-c
+        - perl
+      run:
+        - {{ pin_subpackage('arb-bio-tools', exact=True) }}
+        # We build a binary perl module. ABI compatability seems to be maintained
+        # at minor version (5.26.x), so we pin accordingly:
+        - {{ pin_compatible("perl", max_pin="x.x") }}
+        - gettext
+        - openmotif
+        - xorg-libxi
+        - xorg-libxmu
+        - xorg-libxp
+        - xorg-libxaw
+        - xorg-libxpm
+        - xorg-libxft
+        - xorg-libxt
+        - libpng
+        # tools:
+        - gnuplot
+        - muscle
+        - mafft
+        - raxml
+        - mrbayes
+        - phylip
+        - phyml 3.2.0*
+        - fasttree
+        - sed >=4.4
+        - xfig
+        - fig2dev
+  - name: arb-bio-devel
+    script: install_devel.sh
+    build:
+      run_exports:
+        - {{ pin_subpackage("libarbdb", exact=True) }}
+    requirements:
+      build:
+        - {{ compiler('cxx') }}
+      run:
+        - {{ pin_subpackage('arb-bio', exact=True) }}
+        - openmotif-dev
+
 about:
   home: http://www.arb-home.de
+  dev_url: http://bugs.arb-home.de/
+  doc_url: http://www.arb-home.de/documentation.html
   license: ARB
   licence_file: arb_LICENSE.txt
   summary: ARB 6 Sequence Analysis Suite
+  description: |
+    "ARB (ARBor, Latin: tree): A software environment for maintaining
+    databases of molecular sequences and additional information, and
+    for analyzing the sequence data, with emphasis on phylogeny
+    reconstruction.
+
+    The programs have primarily been developed for ribosomal
+    ribonucleic acid (rRNA) sequences and, therefore, contain special
+    tools for alignment and analysis of these structures. However,
+    other molecular sequence data can also be handled. Protein gene
+    sequences and predicted protein primary structures as well as
+    protein secondary structures can be stored in the same database.
+
+    The ARB package is designed for graphical user interface. Program
+    control and data display are available in a hierarchical set of
+    windows and subwindows. The majority of operations can be
+    controlled using the mouse for moving the pointer and the left
+    mouse button for initiating and performing operations"
+
+extra:
+  identifiers:
+    - biotools:arb
+    - doi:10.1002/9781118010518.ch46
+  recipe-maintainers:
+    - epruesse
+  skip-lints:
+    - should_not_be_noarch  # false positive, `noarch: False` added by CB3 for outputs

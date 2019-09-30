@@ -1,10 +1,21 @@
+{% set name="guidescan" %}
+{% set version="1.2" %}
+
 package:
-  name: guidescan
-  version: '1.0'
+  name: {{ name }}
+  version: '{{ version }}'
 
 source:
-  git_url: https://bitbucket.org/arp2012/guidescan_public.git
-  git_rev: ff0745d
+  url: https://bitbucket.org/arp2012/guidescan_public/get/v{{ version }}.tar.gz
+  sha256: 8b3707922bfd986d9d3c784953c3d47c26c0cc5726462a1e2a39bcd5627320bc
+
+# if/when a tagged release of guidescan is available, the source
+# should be switched from git_url&git_rev to url&sha256.
+# At that time, these lint-skip lines can be removed:
+extra:
+  skip-lints:
+    - uses_git_url
+    - missing_hash
 
 build:
   number: 1
@@ -12,10 +23,9 @@ build:
 
 requirements:
   build:
-    - gcc   # [not osx]
-    - llvm  # [osx]
-
-    - python ==2.7.13
+    - {{ compiler('c') }}
+  host:
+    - python >=2.7.13
     #- setuptools
     - samtools ==1.3.1
     - coreutils
@@ -24,36 +34,37 @@ requirements:
     - pysam ==0.8.3
     - pyfaidx ==0.4.7.1
     - bx-python ==0.7.3
-    - scikit-learn ==0.16.1
+    - scikit-learn >=0.16.1
     - numpy
     - psutil
     - xlwt
     - pandas
     - openblas
+    - python-dateutil >=2.5.0
 
   run:
-    - libgcc # [not osx]
 
-    - python ==2.7.13
-    #- setuptools
-    - samtools ==1.3.1
-    - coreutils
-    - rename
-    - biopython >=1.66
-    - pysam ==0.8.3
-    - pyfaidx ==0.4.7.1
-    - bx-python ==0.7.3
-    - scikit-learn ==0.16.1
-    - numpy
-    - psutil
-    - xlwt
-    - pandas
-    - openblas
+  - python >=2.7.13
+  #- setuptools
+  - samtools ==1.3.1
+  - coreutils
+  - rename
+  - biopython >=1.66
+  - pysam ==0.8.3
+  - pyfaidx ==0.4.7.1
+  - bx-python ==0.7.3
+  - scikit-learn >=0.16.1
+  - numpy
+  - psutil
+  - xlwt
+  - pandas
+  - openblas
+  - python-dateutil >=2.5.0
 
 test:
   imports:
     - guidescan
-  commands: 
+  commands:
     - "guidescan_processer -h"
     - "guidescan_bamdata -h"
     - "guidescan_guidequery -h"

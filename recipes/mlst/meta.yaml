@@ -1,35 +1,54 @@
+{% set name = "mlst" %}
+{% set version = "2.17.6" %}
+{% set sha256 = "223c6b4751bc4fb7fe9d41f56e75c90235b1eba022f987abc1d75ae51fc50819" %}
+{% set user = "tseemann" %}
+
 package:
-  name: mlst
-  version: "2.9"
+  name: '{{ name }}'
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: '{{ sha256 }}'
 
 build:
   number: 0
-
-source:
-  fn: mlst_2.9.tar.gz
-  url: https://github.com/tseemann/mlst/archive/2.9.tar.gz
-  md5: 7421ad5a423440570f6eede2cfc4a684
+  noarch: generic
 
 requirements:
-
-  build:
-  - gcc # [linux]
-  - llvm # [osx]
-
+  host:
+    - any2fasta
+    - blast >=2.9.0
+    - perl >=5.26
+    - perl-bioperl >=1.7.2
+    - perl-moo
+    - perl-list-moreutils
+    - perl-json
+    - zlib
   run:
-  - libgcc # [linux]
-  - perl
-  - perl-bioperl
-  - perl-moo
-  - perl-list-moreutils
-  - blast
+    - any2fasta
+    - blast >=2.9.0
+    - perl >=5.26
+    - perl-bioperl >=1.7.2
+    - perl-moo
+    - perl-list-moreutils
+    - perl-json
+    - zlib
 
 test:
   commands:
+    - mlst --version
+    - mlst --check
+    - mlst --help
     - mlst --list 2>&1 | grep leptospira > /dev/null
 
 about:
-  home: https://github.com/tseemann/mlst
-  license: GPL2
+  home: https://github.com/{{ user }}/{{ name }}
+  license: GPL-2.0
+  license_family: GPL
   license_file: LICENSE
   summary: Scan contig files against PubMLST typing schemes
+
+extra:
+  identifiers:
+    - biotools:{{ name }}

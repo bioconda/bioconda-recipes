@@ -1,0 +1,68 @@
+{% set version = '1.2.1' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-perfmeas
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/PerfMeas_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/PerfMeas/PerfMeas_{{ version }}.tar.gz
+  sha256: 2371d9f8949d8c570d8b772ff1c3615eebf5e825a96722b40ced07b22ab3eaf4
+
+build:
+  merge_build_host: True  # [win]
+  number: 3
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}        # [not win]
+    - {{native}}toolchain        # [win]
+    - {{posix}}filesystem        # [win]
+    - {{posix}}make
+    - {{posix}}sed               # [win]
+    - {{posix}}coreutils         # [win]
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - bioconductor-rbgl
+    - bioconductor-graph
+    - bioconductor-limma
+
+  run:
+    - r-base
+    - {{native}}gcc-libs         # [win]
+    - bioconductor-rbgl
+    - bioconductor-graph
+    - bioconductor-limma
+
+test:
+  commands:
+
+    - $R -e "library('PerfMeas')"           # [not win]
+    - "\"%R%\" -e \"library('PerfMeas')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=PerfMeas
+  license: GPL (>= 2)
+  summary: Package that implements different performance measures for classification and ranking
+    tasks. AUC, precision at a given recall, F-score for single and multiple classes
+    are available.
+  license_family: GPL3
+
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

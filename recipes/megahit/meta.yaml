@@ -1,41 +1,46 @@
-{% set name = "megahit" %}
-{% set version = "1.1.2" %}
-{% set sha256 = "d0d3965dd49c6fdaea958ef66146cb6b30b7d51acbbfe94194c437f15a424cb5" %}
+{% set version = "1.2.8" %}
+{% set sha256 = "9f64c75920cd08cc41e7c9bbd0dba0e36a08cade8a6bdc7b91d46ed106ef44c9" %}
 
 package:
-  name: {{ name }}
+  name: megahit
   version: {{ version }}
 
 source:
-  fn: v{{ version }}.tar.gz
-  sha256: {{ sha256 }}
-  url: https://github.com/voutcn/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: '{{sha256}}'
+  url: https://github.com/voutcn/megahit/archive/v{{version}}.tar.gz
 
 build:
   number: 0
 
 requirements:
   build:
-  # megahit requires openpm, which is not available in clang < 3.7
-  - gcc
-  - zlib 1.2.8
+    - cmake
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+  host:
+    - zlib
+    - llvm-openmp  # [osx]
   run:
-  - libgcc # for gomp
-  - zlib 1.2.8
-  - python
+    - zlib
+    - llvm-openmp  # [osx]
+    - python
 
 test:
   commands:
-    # Run one of the examples provided with megahit to make sure the
-    # binaries actually work.
-    # The output has to be removed to prevent permission failure during
-    # cleanup after mulled-build.
-    - megahit --12 $PREFIX/share/megahit/example/readsInterleaved1.fa.gz && rm -r megahit_out
-
+    - megahit --test -m 5e6
+    - megahit --test -m 5e6 --kmin-1pass
 
 about:
   home: https://github.com/voutcn/megahit
-  license: GPL3
-  summary: |
+  license: GPL-3.0
+  license_file: LICENSE
+  license_family: GPL
+  summary: |-
     MEGAHIT: An ultra-fast single-node solution for large and complex
     metagenomics assembly via succinct de Bruijn graph
+
+extra:
+  identifiers:
+    - biotools:megahit
+    - doi:10.1093/bioinformatics/btv033

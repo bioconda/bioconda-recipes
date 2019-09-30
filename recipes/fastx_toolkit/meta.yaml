@@ -3,29 +3,26 @@ package:
   version: 0.0.14
 
 source:
-    url: https://github.com/agordon/fastx_toolkit/releases/download/0.0.14/fastx_toolkit-0.0.14.tar.bz2
-    fn: fastx_toolkit-0.0.14.tar.bz2
-    md5: bf1993c898626bb147de3d6695c20b40
-    patches:
-      - fastx.patch
+  url: https://github.com/agordon/fastx_toolkit/releases/download/0.0.14/fastx_toolkit-0.0.14.tar.bz2
+  md5: bf1993c898626bb147de3d6695c20b40
+  patches:
+    - fastx.patch
 
 build:
   preserve_egg_dir: True
-  number: 5
-  skip: False
+  number: 7
+  skip: True # [osx]
 
 requirements:
   build:
-    - gcc [not osx]
-    - llvm [osx]
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
     - cython
     - nose
     - libgtextutils
-
   run:
-    - libgcc [not osx]
     - cython
-    - nose
     - libgtextutils
     - gnuplot >=5.0.5
     - perl
@@ -34,14 +31,15 @@ requirements:
     - perl-gdgraph-histogram
 
 test:
-    commands:
-      - SCRIPT=$(which fasta_clipping_histogram.pl) && perl5.22.0 "$SCRIPT"
-      - 'fastx_trimmer -h | grep "Part of FASTX Toolkit 0.0.14 by A. Gordon (assafgordon@gmail.com)"'
+  commands:
+    - fasta_clipping_histogram.pl
+    - 'fastx_trimmer -h | grep "Part of FASTX Toolkit 0.0.14 by A. Gordon (assafgordon@gmail.com)"'
 
 about:
   home: https://github.com/agordon/fastx_toolkit
   license: AGPL
-  summary: 'The FASTX-Toolkit is a collection of command line tools for
+  summary: |
+    The FASTX-Toolkit is a collection of command line tools for
     Short-Reads FASTA/FASTQ files preprocessing.
 
     Next-Generation sequencing machines usually produce FASTA or FASTQ files,
@@ -51,7 +49,7 @@ about:
     The main processing of such FASTA/FASTQ files is mapping (aka aligning) the
     sequences to reference genomes or other databases using specialized
     programs. Example of such mapping programs are: Blat, SHRiMP, LastZ, MAQ
-    and many many others.
+    and many many others
 
     However, it is sometimes more productive to preprocess the FASTA/FASTQ files
     before mapping the sequences to the genome - manipulating the sequences to

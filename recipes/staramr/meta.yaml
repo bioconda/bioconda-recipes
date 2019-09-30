@@ -1,0 +1,79 @@
+{% set name = "staramr" %}
+{% set version = "0.6.1" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: a4724b2dcc9d67c526a27e9831e7a03cf5bdfc9523951bcf1b53b5ed93236037
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install --no-deps --ignore-installed .
+  noarch: python
+
+requirements:
+  host:
+    - python >=3
+    - pip
+  run:
+    - python >=3
+    - biopython >=1.70
+    - pandas >=0.23.0
+    - gitpython >=2.1.3
+    - xlsxwriter >=1.0.2
+    - numpy >=1.12.1
+    - green >=2.13.0
+    - coloredlogs >=10.0
+    - blast >=2.2.31
+    - mlst
+    - git
+
+test:
+  imports:
+    - staramr
+    - staramr.blast
+    - staramr.blast.pointfinder
+    - staramr.blast.resfinder
+    - staramr.blast.results
+    - staramr.blast.results.pointfinder
+    - staramr.blast.results.pointfinder.codon
+    - staramr.blast.results.pointfinder.nucleotide
+    - staramr.blast.results.resfinder
+    - staramr.databases
+    - staramr.databases.exclude
+    - staramr.databases.resistance
+    - staramr.databases.resistance.pointfinder
+    - staramr.databases.resistance.resfinder
+    - staramr.detection
+    - staramr.exceptions
+    - staramr.results
+    - staramr.subcommand
+    - staramr.tests
+    - staramr.tests.integration
+    - staramr.tests.integration.databases
+    - staramr.tests.integration.detection
+    - staramr.tests.unit
+    - staramr.tests.unit.blast
+    - staramr.tests.unit.blast.pointfinder
+    - staramr.tests.unit.blast.results
+    - staramr.tests.unit.blast.results.pointfinder
+    - staramr.tests.unit.blast.results.pointfinder.codon
+    - staramr.tests.unit.blast.results.pointfinder.nucleotide
+    - staramr.tests.unit.results
+  commands:
+    - staramr --version
+    - staramr db info
+    - staramr search --help
+
+about:
+  home: https://github.com/phac-nml/staramr
+  license: Apache Software License
+  license_family: APACHE
+  license_file: 'LICENSE'
+  summary: 'Scan genome contigs against the ResFinder and PointFinder databases'
+  author: Aaron Petkau, Gary van Domselaar
+  dev_url: https://github.com/phac-nml/staramr
+  doc_url: https://github.com/phac-nml/staramr

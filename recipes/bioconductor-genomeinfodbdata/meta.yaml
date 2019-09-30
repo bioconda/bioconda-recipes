@@ -1,31 +1,38 @@
-{% set version = "1.0.0" %}
+{% set version = "1.2.1" %}
 {% set name = "GenomeInfoDbData" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: d7bb73db4a76960e65c5f6d8ccdcb9480a48cea529a30ea2399f8e4c9887e876
+  md5: 2fd536521151e2ff37217b5cfee8cec4
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
 requirements:
-  build:
+  host:
     - r-base
   run:
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Files for mapping between NCBI taxonomy ID and species. Used by functions in the GenomeInfoDb package.'
+extra:
+  parent_recipe:
+    name: bioconductor-genomeinfodbdata
+    path: recipes/bioconductor-genomeinfodbdata
+    version: 1.1.0
+

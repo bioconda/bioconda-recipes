@@ -1,39 +1,50 @@
-{% set version = "1.20.0" %}
+{% set version = "1.26.0" %}
 {% set name = "DirichletMultinomial" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: a193f836368f71aa2a39242aa5d5fdd4de3993f63d34969f2905888a41379ab0
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: ff77746ada0149b0fb99d375f17c4b4d
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: lattice, parallel, MASS, RColorBrewer, xtable
+# SystemRequirements: gsl
 requirements:
-  build:
-    - gcc # [not osx]
-    - llvm # [osx]
-    - bioconductor-biocgenerics
-    - bioconductor-iranges
-    - bioconductor-s4vectors
+  host:
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
   run:
-    - libgcc # [not osx]
-    - bioconductor-biocgenerics
-    - bioconductor-iranges
-    - bioconductor-s4vectors
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL-3
   summary: 'Dirichlet-multinomial mixture models can be used to describe variability in microbial metagenomic data. This package is an interface to code originally made available by Holmes, Harris, and Quince, 2012, PLoS ONE 7(2): 1-15, as discussed further in the man page for this package, ?DirichletMultinomial.'
+extra:
+  identifiers:
+    - biotools:dirichletmultinomial
+    - doi:10.1371/journal.pone.0030126
+  parent_recipe:
+    name: bioconductor-dirichletmultinomial
+    path: recipes/bioconductor-dirichletmultinomial
+    version: 1.22.0
+

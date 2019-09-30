@@ -1,35 +1,43 @@
 {% set version = "1.26.0" %}
 {% set name = "illuminaMousev2.db" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 03864df588d7261db6923d0d7cccdd9bbb753ce60e4cdf92ba2bc3ea1318916f
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: fba228a71f264f976d8cdb035861974d
 build:
-  number: 1
+  number: 7
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: annotate, RUnit
 requirements:
-  build:
-    - 'bioconductor-annotationdbi >=1.29.20'
-    - 'bioconductor-org.mm.eg.db >=3.1.2'
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-org.mm.eg.db >=3.8.0,<3.9.0'
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.29.20'
-    - 'bioconductor-org.mm.eg.db >=3.1.2'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-org.mm.eg.db >=3.8.0,<3.9.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Illumina MouseWG6v2 annotation data (chip illuminaMousev2) assembled using data from public repositories'
+extra:
+  parent_recipe:
+    name: bioconductor-illuminamousev2.db
+    path: recipes/bioconductor-illuminamousev2.db
+    version: 1.26.0
+

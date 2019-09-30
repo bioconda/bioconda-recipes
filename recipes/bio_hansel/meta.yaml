@@ -1,44 +1,48 @@
 {% set name = "bio_hansel" %}
-{% set version = "0.2.0" %}
-{% set hash_type = "md5" %}
-{% set hash_value = "a7f5bb1055f5f38923d21956b535ab1e" %}
+{% set version = "2.2.0" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "e47bfcaf55e35089a700130dddfd025caab6c4e8999c62ccf6cdaf573b609389" %}
 
 package:
-  name: bio_hansel
-  version: '{{ version }}'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: '{{ name }}-{{ version }}.tar.gz'
-  url: https://pypi.io/packages/source/b/bio-hansel/{{ name }}-{{ version }}.tar.gz
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name | replace("_", "-") }}/{{ name }}-{{ version }}.tar.gz
+  {{ hash_type }}: {{ hash_value }}
 
 build:
   number: 1
   skip: True # [py2k]
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
+  host:
     - python
+    - pip
     - setuptools
     - numpy >=1.12.1
     - pandas >=0.20.1
-    - attrs ==17.2.0
-    
+    - attrs
+    - pyahocorasick >=1.1.6
+
   run:
     - python
-    - blast >=2.6
-    - jellyfish >=2.0
     - numpy >=1.12.1
     - pandas >=0.20.1
-    - attrs ==17.2.0
-    
+    - attrs
+    - pyahocorasick >=1.1.6
+
 test:
   commands:
-    #Using hansel -V as -help contains special french characters.
+    #Using hansel -V as verification that the tool has been installed.
     - hansel -V
 
 about:
-  home: https://github.com/phac-nml/bio_hansel
+  home: https://github.com/phac-nml/biohansel
   license: GNU General Public License v3 or later (GPLv3+)
-  summary: 'Subtype Salmonella enterica genomes using 33bp k-mer typing schemes.\nIncludes schemes for Heidelberg and Enteritidis subtyping.\nDeveloped by Genevieve Labbe, James Robertson, Peter Kruczkiewicz, Chad R. Laing, Kim Ziebell, Marisa Rankin, Aleisha R. Reimer, Lorelee Tschetter, Gary Van Domselaar, Eduardo N. Taboada, Sadjia Bekal, Kimberley A. MacDonald, Linda Hoang, Linda Chui, Danielle Daignault, Durda Slavic, Frank Pollari, E. Jane Parmley, Philip Mabon, Elissa Giang, Lok Kan Lee, Jonathan Moffat, Joanne MacKinnon, Benjamin M. Hetman, Roger Johnson, John H.E. Nash.\n'
+  license_file: LICENSE
+  summary: 'Subtype Salmonella enterica genomes using 33bp k-mer typing schemes.\nIncludes schemes for Heidelberg and Enteritidis subtyping.\nDeveloped by Genevieve Labbe, James Robertson, Peter Kruczkiewicz, Marisa Rankin, Matthew Gopez, Chad R. Laing, Philip Mabon, Kim Ziebell, Aleisha R. Reimer, Lorelee Tschetter, Gary Van Domselaar, Eduardo N. Taboada, Sadjia Bekal, Kimberley A. MacDonald, Linda Hoang, Linda Chui, Danielle Daignault, Durda Slavic, Frank Pollari, E. Jane Parmley, David Son, Darian Hole, Elissa Giang, Lok Kan Lee, Jonathan Moffat, Joanne MacKinnon, Benjamin M. Hetman, Roger Johnson, John H.E. Nash.\n'
   license_family: GPL3

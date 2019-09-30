@@ -1,0 +1,42 @@
+{% set version = "1.0.2" %}
+{% set name = "DeMixT" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 046c9450d8aad4e3d8cf935fb51deedc
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  host:
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - r-base
+    - r-kernsmooth
+    - r-knitr
+    - r-matrixstats
+  run:
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - r-base
+    - r-kernsmooth
+    - r-knitr
+    - r-matrixstats
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'DeMixT is a software package that performs deconvolution on transcriptome data from a mixture of two or three components.'
+

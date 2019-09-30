@@ -1,28 +1,30 @@
-{% set version = "1.2.0" %}
+{% set version = "1.8.0" %}
 {% set name = "wiggleplotr" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: c25604d9375e49e279a91a60c628a11cdd437ef248b94d7140cc781360dd98e9
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: e8a1ac4ab6c1eed1878c34273ae48c02
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, biomaRt, GenomicFeatures, testthat, ensembldb, EnsDb.Hsapiens.v86, org.Hs.eg.db, TxDb.Hsapiens.UCSC.hg38.knownGene, AnnotationDbi, AnnotationFilter
 requirements:
-  build:
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rtracklayer
-    - bioconductor-s4vectors
+  host:
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rtracklayer >=1.44.0,<1.45.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-assertthat
     - r-base
     - r-cowplot
@@ -30,11 +32,11 @@ requirements:
     - 'r-ggplot2 >=2.2.0'
     - r-purrr
   run:
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-rtracklayer
-    - bioconductor-s4vectors
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-rtracklayer >=1.44.0,<1.45.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-assertthat
     - r-base
     - r-cowplot
@@ -45,6 +47,12 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'Apache License 2.0'
   summary: 'Tools to visualise read coverage from sequencing experiments together with genomic annotations (genes, transcripts, peaks). Introns of long transcripts can be rescaled to a fixed length for better visualisation of exonic read coverage.'
+extra:
+  parent_recipe:
+    name: bioconductor-wiggleplotr
+    path: recipes/bioconductor-wiggleplotr
+    version: 1.4.0
+

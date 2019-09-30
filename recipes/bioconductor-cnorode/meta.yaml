@@ -1,0 +1,46 @@
+{% set version = "1.26.0" %}
+{% set name = "CNORode" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 800cc2ee0114d43e824ce48573f517d0
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+requirements:
+  host:
+    - 'bioconductor-cellnoptr >=1.30.0,<1.31.0'
+    - r-base
+    - r-genalg
+  run:
+    - 'bioconductor-cellnoptr >=1.30.0,<1.31.0'
+    - r-base
+    - r-genalg
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'ODE add-on to CellNOptR'
+extra:
+  identifiers:
+    - biotools:cnorode
+    - doi:10.1186/1752-0509-6-133
+  parent_recipe:
+    name: bioconductor-cnorode
+    path: recipes/bioconductor-cnorode
+    version: 1.22.0
+

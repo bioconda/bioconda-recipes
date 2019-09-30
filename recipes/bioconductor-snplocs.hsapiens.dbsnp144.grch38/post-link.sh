@@ -1,10 +1,12 @@
 #!/bin/bash
 FN="SNPlocs.Hsapiens.dbSNP144.GRCh38_0.99.20.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/SNPlocs.Hsapiens.dbSNP144.GRCh38_0.99.20.tar.gz"
-  "https://depot.galaxyproject.org/software/SNPlocs.Hsapiens.dbSNP144.GRCh38/SNPlocs.Hsapiens.dbSNP144.GRCh38_0.99.20_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/SNPlocs.Hsapiens.dbSNP144.GRCh38_0.99.20.tar.gz"
+  "https://bioarchive.galaxyproject.org/SNPlocs.Hsapiens.dbSNP144.GRCh38_0.99.20.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-snplocs.hsapiens.dbsnp144.grch38/bioconductor-snplocs.hsapiens.dbsnp144.grch38_0.99.20_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-snplocs.hsapiens.dbsnp144.grch38/bioconductor-snplocs.hsapiens.dbsnp144.grch38_0.99.20_src_all.tar.gz"
 )
-    MD5="128c95e327adf72ae137fb5ae58270fc"
+MD5="128c95e327adf72ae137fb5ae58270fc"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -15,12 +17,12 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
   if [[ $(uname -s) == "Linux" ]]; then
-    if [[ $(md5sum -c <<<"$MD5  $TARBALL") ]]; then
+    if md5sum -c <<<"$MD5  $TARBALL"; then
       SUCCESS=1
       break
     fi
@@ -40,5 +42,6 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 # Install and clean up
-R CMD INSTALL --build $TARBALL
+R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
 rm $TARBALL
+rmdir $STAGING

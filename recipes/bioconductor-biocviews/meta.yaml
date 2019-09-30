@@ -1,35 +1,39 @@
-{% set version = "1.46.0" %}
+{% set version = "1.52.2" %}
 {% set name = "biocViews" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: ad868c40c54bbcac5b38776bc56afca95bc514f091ea042b4d08303c83c4fe27
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 620818e4fd029a3acf46d437c08752a7
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocGenerics, knitr, commonmark
 requirements:
-  build:
-    - bioconductor-biobase
-    - 'bioconductor-graph >=1.9.26'
-    - 'bioconductor-rbgl >=1.13.5'
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-rbgl >=1.60.0,<1.61.0'
     - r-base
+    - r-biocmanager
     - r-rcurl
     - r-runit
     - r-xml
   run:
-    - bioconductor-biobase
-    - 'bioconductor-graph >=1.9.26'
-    - 'bioconductor-rbgl >=1.13.5'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-graph >=1.62.0,<1.63.0'
+    - 'bioconductor-rbgl >=1.60.0,<1.61.0'
     - r-base
+    - r-biocmanager
     - r-rcurl
     - r-runit
     - r-xml
@@ -37,6 +41,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Infrastructure to support Bioconductor ''views'' used to classify software packages. ''biocViews'' are directed acyclic graphs of terms from a controlled vocabulary. There are three major classifications, corresponding to ''software'', ''annotation'', and ''experiment data'' packages.'
+  summary: 'Infrastructure to support ''views'' used to classify Bioconductor packages. ''biocViews'' are directed acyclic graphs of terms from a controlled vocabulary. There are three major classifications, corresponding to ''software'', ''annotation'', and ''experiment data'' packages.'
+extra:
+  identifiers:
+    - biotools:biocviews
+    - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-biocviews
+    path: recipes/bioconductor-biocviews
+    version: 1.48.3
+

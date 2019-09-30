@@ -1,36 +1,47 @@
-{% set version = "2.8.0" %}
+{% set version = "2.14.0" %}
 {% set name = "chromDraw" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 4eb3d62f7c6037a25dc04612d6abd313ff154131bc22034abf7d0a31dcba19d3
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: e577a789a88f7d82e8e6fc7a9388cbb5
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# SystemRequirements: Rtools (>= 3.1)
 requirements:
-  build:
-    - 'bioconductor-genomicranges >=1.17.46'
+  host:
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-base
     - 'r-rcpp >=0.11.1'
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
-    - 'bioconductor-genomicranges >=1.17.46'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-base
     - 'r-rcpp >=0.11.1'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'ChromDraw is a R package for drawing the schemes of karyotype(s) in the linear and circular fashion. It is possible to visualized cytogenetic marsk on the chromosomes. This tool has own input data format. Input data can be imported from the GenomicRanges data structure. This package can visualized the data in the BED file format. Here is requirement on to the first nine fields of the BED format. Output files format are *.eps and *.svg.'
+extra:
+  identifiers:
+    - biotools:chromdraw
+  parent_recipe:
+    name: bioconductor-chromdraw
+    path: recipes/bioconductor-chromdraw
+    version: 2.10.0
+

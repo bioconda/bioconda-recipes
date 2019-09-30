@@ -1,36 +1,50 @@
-{% set version = "2.16.0" %}
+{% set version = "2.21.1" %}
 {% set name = "Rchemcpp" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: df8af3d20e06ec0d44a99cd7b7aedd06c7e55e50cb117a3cf01d7442d27cb9cc
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 7baa3710ac856f7b70b580e127f0aa0e
+  patches:
+    - patch
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: apcluster, kernlab
+# SystemRequirements: GNU make
 requirements:
-  build:
-    - bioconductor-chemminer
+  host:
+    - 'bioconductor-chemminer >=3.36.0,<3.37.0'
     - r-base
     - 'r-rcpp >=0.11.1'
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
-    - bioconductor-chemminer
+    - 'bioconductor-chemminer >=3.36.0,<3.37.0'
     - r-base
     - 'r-rcpp >=0.11.1'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2.1)'
   summary: 'The Rchemcpp package implements the marginalized graph kernel and extensions, Tanimoto kernels, graph kernels, pharmacophore and 3D kernels suggested for measuring the similarity of molecules.'
+extra:
+  identifiers:
+    - biotools:rchemcpp
+  parent_recipe:
+    name: bioconductor-rchemcpp
+    path: recipes/bioconductor-rchemcpp
+    version: 2.18.0
+

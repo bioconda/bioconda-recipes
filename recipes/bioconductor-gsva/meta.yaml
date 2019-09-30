@@ -1,42 +1,54 @@
-{% set version = "1.26.0" %}
+{% set version = "1.32.0" %}
 {% set name = "GSVA" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 09f0ca21a1a0c5ac3b9c4d7ef71fe37a12d419e1782ab39d79b854ca0e0771ff
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: fbf37c12f2e4ddbefffe06d68a49c54c
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: limma, RColorBrewer, genefilter, mclust, edgeR, snow, parallel, GSVAdata
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - bioconductor-geneplotter
-    - 'bioconductor-gseabase >=1.17.4'
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-geneplotter >=1.62.0,<1.63.0'
+    - 'bioconductor-gseabase >=1.46.0,<1.47.0'
     - r-base
     - r-shiny
     - r-shinythemes
   run:
-    - bioconductor-biobase
-    - bioconductor-biocgenerics
-    - bioconductor-geneplotter
-    - 'bioconductor-gseabase >=1.17.4'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-geneplotter >=1.62.0,<1.63.0'
+    - 'bioconductor-gseabase >=1.46.0,<1.47.0'
     - r-base
     - r-shiny
     - r-shinythemes
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Gene Set Variation Analysis (GSVA) is a non-parametric, unsupervised method for estimating variation of gene set enrichment through the samples of a expression data set. GSVA performs a change in coordinate systems, transforming the data from a gene by sample matrix to a gene-set by sample matrix, thereby allowing the evaluation of pathway enrichment for each sample. This new matrix of GSVA enrichment scores facilitates applying standard analytical methods like functional enrichment, survival analysis, clustering, CNV-pathway analysis or cross-tissue pathway analysis, in a pathway-centric manner.'
+extra:
+  identifiers:
+    - biotools:gsva
+  parent_recipe:
+    name: bioconductor-gsva
+    path: recipes/bioconductor-gsva
+    version: 1.28.0
+

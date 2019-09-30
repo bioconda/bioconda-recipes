@@ -1,56 +1,68 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.0" %}
 {% set name = "methylPipe" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 69939878022e1e20081a7a3309e0acb5cd895cac4a64da3a91e9ce5f1d48df1c
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: e671d3ee89cf1a770cf8ac13b919c284
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BSgenome.Hsapiens.UCSC.hg18, TxDb.Hsapiens.UCSC.hg18.knownGene, knitr, MethylSeekR
 requirements:
-  build:
-    - bioconductor-biocgenerics
-    - bioconductor-biostrings
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicalignments
-    - bioconductor-genomicranges
-    - bioconductor-gviz
-    - bioconductor-iranges
-    - bioconductor-marray
-    - bioconductor-rsamtools
-    - bioconductor-s4vectors
-    - 'bioconductor-summarizedexperiment >=0.2.0'
+  host:
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicalignments >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-gviz >=1.28.0,<1.29.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-marray >=1.62.0,<1.63.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-data.table
     - r-gplots
   run:
-    - bioconductor-biocgenerics
-    - bioconductor-biostrings
-    - bioconductor-genomeinfodb
-    - bioconductor-genomicalignments
-    - bioconductor-genomicranges
-    - bioconductor-gviz
-    - bioconductor-iranges
-    - bioconductor-marray
-    - bioconductor-rsamtools
-    - bioconductor-s4vectors
-    - 'bioconductor-summarizedexperiment >=0.2.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicalignments >=1.20.0,<1.21.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-gviz >=1.28.0,<1.29.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-marray >=1.62.0,<1.63.0'
+    - 'bioconductor-rsamtools >=2.0.0,<2.1.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
     - r-base
     - r-data.table
     - r-gplots
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL(>=2)
   summary: 'Memory efficient analysis of base resolution DNA methylation data in both the CpG and non-CpG sequence context. Integration of DNA methylation data derived from any methodology providing base- or low-resolution data.'
+extra:
+  identifiers:
+    - biotools:methylpipe
+  parent_recipe:
+    name: bioconductor-methylpipe
+    path: recipes/bioconductor-methylpipe
+    version: 1.14.0
+

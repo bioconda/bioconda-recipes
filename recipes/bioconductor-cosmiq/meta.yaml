@@ -1,0 +1,54 @@
+{% set version = "1.18.0" %}
+{% set name = "cosmiq" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 7280905e37ca78bd4d6557311fe07d18
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: RUnit, BiocGenerics, BiocStyle
+requirements:
+  host:
+    - 'bioconductor-faahko >=1.24.0,<1.25.0'
+    - 'bioconductor-massspecwavelet >=1.50.0,<1.51.0'
+    - 'bioconductor-xcms >=3.6.0,<3.7.0'
+    - r-base
+    - r-pracma
+    - r-rcpp
+  run:
+    - 'bioconductor-faahko >=1.24.0,<1.25.0'
+    - 'bioconductor-massspecwavelet >=1.50.0,<1.51.0'
+    - 'bioconductor-xcms >=3.6.0,<3.7.0'
+    - r-base
+    - r-pracma
+    - r-rcpp
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'cosmiq is a tool for the preprocessing of liquid- or gas - chromatography mass spectrometry (LCMS/GCMS) data with a focus on metabolomics or lipidomics applications. To improve the detection of low abundant signals, cosmiq generates master maps of the mZ/RT space from all acquired runs before a peak detection algorithm is applied. The result is a more robust identification and quantification of low-intensity MS signals compared to conventional approaches where peak picking is performed in each LCMS/GCMS file separately. The cosmiq package builds on the xcmsSet object structure and can be therefore integrated well with the package xcms as an alternative preprocessing step.'
+extra:
+  identifiers:
+    - biotools:cosmiq
+    - doi:10.5167/uzh-107947
+  parent_recipe:
+    name: bioconductor-cosmiq
+    path: recipes/bioconductor-cosmiq
+    version: 1.16.0
+

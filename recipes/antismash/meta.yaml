@@ -1,59 +1,61 @@
-{% set name = "Antismash" %}
-{% set version = "4.0.2" %}
+{% set name = "antiSMASH" %}
+{% set version = "4.2.0" %}
+{% set sha256 = "cf284c2a18ee8d76762a599b6c6d6cadf5a0adefe2078c84875b22c96dd777b2" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  skip: True # [not py27]
-  number: 2
+  number: 1
 
 source:
-  fn: {{ name|lower }}-{{ version }}.tar.gz
-  url: https://bitbucket.org/antismash/antismash/downloads/{{ name|lower  }}-{{ version }}.tar.gz
-  md5: 98e7a6402f0614acc80d8e87b17ed36b
+  url: https://dl.secondarymetabolites.org/releases/{{ version }}/antismash-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - smiles.patch  # [osx]
 
 requirements:
-  build:
-    - python
-
+  host:
+    - python >=2.7,<3.0a0
+    - pip
+    - icu
   run:
-    - python
+    - python >=2.7,<3.0a0
     - argparse
     - backports.lzma
-    - bcbiogff
+    - bcbio-gff
     - biopython >=1.65
-    - blast ==2.2.31
+    - blast ==2.2.*
     - clustalw
     - cssselect
-    - diamond ==0.8.36
+    - diamond ==0.8.*
     - ete2
-    - fasttree ==2.1.9
+    - fasttree ==2.1.*
     - glimmer ==3.02
-    - glimmerhmm ==3.0.4
+    - glimmerhmm ==3.0.*
     - helperlibs
-    - hmmer
+    - hmmer ==3.1b2
     - hmmer2
+    - icu
     - openjdk
-    - libxml2 ==2.9.4
+    - libxml2 2.9.*
     - mafft
-    - matplotlib  
+    - matplotlib
     - meme ==4.11.2
     - muscle
     - networkx
     - numpy
-    - pandas    
-    - perl-bioperl
-    - perl-pathtools
+    - pandas
+    - perl 5.26.*
+    - perl-bioperl  
     - prodigal
     - pyexcelerator
-    - pyquery ==1.2.9
-    - pysvg 
-    - scipy  
-    - scikit-learn ==0.18.2
-    - xz ==5.2.2
-
+    - pyquery ==1.2.*
+    - pysvg
+    - scipy
+    - scikit-learn ==0.18.*
+    - xz ==5.2.*
 
 test:
   commands:
@@ -61,7 +63,11 @@ test:
 
 about:
   home: http://antismash.secondarymetabolites.org/
-  license: GPL3
+  license: AGPL-3.0
+  license_family: AGPL
   license_file: LICENSE.txt
-  summary: antiSMASH allows the rapid genome-wide identification, annotation and analysis of secondary metabolite biosynthesis gene clusters.
+  summary: "antiSMASH allows the rapid genome-wide identification, annotation and analysis of secondary metabolite biosynthesis gene clusters."
 
+extra:
+  identifiers:
+    - biotools:antismash

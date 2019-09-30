@@ -1,33 +1,41 @@
-{% set version = "1.20.0" %}
+{% set version = "1.26.0" %}
 {% set name = "ALL" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_{{ name|lower }}.tar.gz'
-  sha256: 5e487b68a15ea8aa83ae2cbd39b88fb41d9708f8e4c1e02efea9aade529ae3cf
+  md5: 10195f32f47c4af7bcb37ed7bdba04cb
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: rpart
 requirements:
-  build:
-    - 'bioconductor-biobase >=2.5.5'
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
   run:
-    - 'bioconductor-biobase >=2.5.5'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Data of T- and B-cell Acute Lymphocytic Leukemia from the Ritz Laboratory at the DFCI (includes Apr 2004 versions)'
+extra:
+  parent_recipe:
+    name: bioconductor-all
+    path: recipes/bioconductor-all
+    version: 1.22.0
+

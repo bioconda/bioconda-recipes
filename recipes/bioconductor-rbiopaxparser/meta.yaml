@@ -1,23 +1,25 @@
-{% set version = "2.18.0" %}
+{% set version = "2.24.0" %}
 {% set name = "rBiopaxParser" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 0487523dbddedf8af73c593e321c7f08812832fd1f687d7760c906abbba51bd9
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: b8e64e8bcf94e7674e7b5bcda29cd06c
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: Rgraphviz, RCurl, graph, RUnit, BiocGenerics, nem, RBGL, igraph
 requirements:
-  build:
+  host:
     - r-base
     - r-data.table
     - r-xml
@@ -29,6 +31,14 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Parses BioPAX files and represents them in R, at the moment BioPAX level 2 and level 3 are supported.'
+extra:
+  identifiers:
+    - biotools:rbiopaxparser
+  parent_recipe:
+    name: bioconductor-rbiopaxparser
+    path: recipes/bioconductor-rbiopaxparser
+    version: 2.20.0
+

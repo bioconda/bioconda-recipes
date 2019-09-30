@@ -6,44 +6,40 @@ package:
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://downloads.sourceforge.net/project/{{ name }}/{{ version }}/{{ name }}-{{ version }}-source.tar.gz
   md5: 3c26b80654e1ef6ef61085f0ecf75e65
   patches: # [osx]
     - osxfixes.patch # [osx]
 
 build:
-  number: 0
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}} # [linux]
+  number: 2
 
 requirements:
   build:
-    - gcc # [linux]
-    - llvm # [osx]
-    - llvmdev # [osx]
-    - libcxx # [osx]
-    - boost ==1.63.0 # [osx]
-    - boost {{CONDA_BOOST}}* # [linux]
+    - {{ compiler('c') }}
+  host:
+    - boost
     - zlib
     - bzip2
 
   run:
-    - libgcc # [linux]
-    - libcxx # [osx]
-    - boost {{CONDA_BOOST}}* # [linux]
-    - boost ==1.63.0 # [osx]
+    - boost
     - zlib
     - bzip2
 
 test:
-    commands:
-        - erne-map --version | grep ERNE
-        - erne-bs5 --version | grep ERNE
-        - erne-create --version | grep ERNE
-        - erne-filter --version | grep ERNE
-        - erne-meth --version | grep ERNE
+  commands:
+    - erne-map --version | grep ERNE
+    - erne-bs5 --version | grep ERNE
+    - erne-create --version | grep ERNE
+    - erne-filter --version | grep ERNE
+    - erne-meth --version | grep ERNE
 
 about:
   home: 'http://erne.sourceforge.net'
   license: GPLv3
   summary: "ERNE - Extended Randomized Numerical alignEr"
+
+extra:
+  identifiers:
+    - biotools:erne

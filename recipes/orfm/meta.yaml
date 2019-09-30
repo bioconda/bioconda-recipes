@@ -1,28 +1,30 @@
-{% set name = "orfm" %}
-{% set version = "0.6.1" %}
+{% set version = "0.7.1" %}
+{% set sha256 = "d6fa1152e0b0b75e17f25667fedf2b240c3f2bcb63f9d3abeee77d427f768e34" %}
+{% set sha256_seqtk = "e7b9ca97ccef3af037333cfb5e03ec55f10db5133b73edd2564f6702f2711753" %}
 
 package:
-  name: {{ name|lower }}
+  name: orfm
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: https://github.com/wwood/OrfM/archive/v{{ version }}.tar.gz
-  md5: 29319b37ca2c066a073fb802bdca9221
+  - url: https://github.com/wwood/OrfM/archive/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+  - url: https://github.com/lh3/seqtk/archive/d3b53c9.tar.gz
+    sha256: {{ sha256_seqtk }}
+    folder: ext/seqtk
 
 requirements:
   build:
-    - gnu-wget
-    - gcc  # [not osx]
-    - llvm  # [osx]
+    - {{ compiler('c') }}
     - autoconf
-    - automake 
-
+    - automake
+  host:
+    - zlib
   run:
-    - libgcc   # [not osx]
+    - zlib
 
 test:
   commands:
@@ -30,7 +32,7 @@ test:
 
 about:
   home: https://github.com/wwood/OrfM
-  license: GPL3
+  license: LGPL-3.0
+  license_family: LGPL
   license_file: LICENSE.txt
-  summary: 'OrfM is a simple and not slow ORF caller'
-  
+  summary: OrfM is a simple and not slow ORF caller

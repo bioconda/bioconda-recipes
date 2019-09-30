@@ -1,32 +1,43 @@
-{% set version = "1.56.0" %}
+{% set version = "1.62.0" %}
 {% set name = "marray" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 2caad6eab11df6f58022ebbfb357e03af6b4cd07945cd415b1f2306f501c8991
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: d2628eb19ca37a181402798dc8543ec9
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: tkWidgets
 requirements:
-  build:
-    - bioconductor-limma
+  host:
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
     - r-base
   run:
-    - bioconductor-limma
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL
   summary: 'Class definitions for two-color spotted microarray data. Fuctions for data input, diagnostic plots, normalization and quality checking.'
+extra:
+  identifiers:
+    - biotools:marray
+    - doi:10.1007/0-387-21679-0_3
+  parent_recipe:
+    name: bioconductor-marray
+    path: recipes/bioconductor-marray
+    version: 1.58.0
+

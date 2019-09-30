@@ -1,77 +1,67 @@
 package:
   name: bcbio-nextgen
-  version: '1.0.7a0'
+  version: '1.1.6a'
 
 build:
-  number: 4
-  skip: True # [not py27]
+  number: 1
+  # Currently hitting conda errors on OSX
+  # ERROR:conda.core.link:An error occurred while installing package
+  # FileNotFoundError(2, "No such file or directory: '_placehold_pl/bin/python3.7'
+  # https://circleci.com/gh/bioconda/bioconda-recipes/50729
+  noarch: python
 
 source:
-  #fn: bcbio-nextgen-1.0.6.tar.gz
-  #url: https://pypi.io/packages/source/b/bcbio-nextgen/bcbio-nextgen-1.0.6.tar.gz
-  fn: bcbio-nextgen-cfe27d7.tar.gz
-  url: https://github.com/chapmanb/bcbio-nextgen/archive/cfe27d7.tar.gz
-  md5: 497dc56aefb6b8cf0f5dda736cf47641
+  #url: https://pypi.io/packages/source/b/bcbio-nextgen/bcbio-nextgen-1.1.5.tar.gz
+  url: https://github.com/bcbio/bcbio-nextgen/archive/131cef1.tar.gz
+  sha256: d858714c7c04de31af22661cd459185c398f43804d31d74ae657ace07e7b6666
 
 requirements:
-  build:
-    - python
+  host:
+    - python >=3.6
     - setuptools
     - pip
   run:
     - python
-    - argparse [py26]
     - arrow
-    - azure
     - beautifulsoup4
     - bioblend
     - biopython
     - boto
-    - cython
     - cyvcf2
     - dnapi
-    - fabric
     - fadapa
     - geneimpacts
     - gffutils
     - h5py
-    - htslib {{ CONDA_HTSLIB }}*
-    - ipyparallel >=4.0,<5.0
-    - ipython-cluster-helper >=0.5.8
-    - joblib
-    - libsodium >=0.4,<1.0
+    - htslib
+    - ipyparallel >=6.0.2
+    - ipython-cluster-helper >=0.6.1
+    - joblib >=0.12
     - logbook
     - matplotlib
     - mock
     - msgpack-python
-    - numpy
     - openssl
     - pandas
-    - path.py
-    - patsy
     - pip
     - py
     - pycrypto
     - pytest
-    - pytest-cov
+    - pytest-cov >=2.6.1
     - pytest-mock
-    - progressbar
     - psutil
-    - python-dateutil
+    - python-dateutil >=2.5.0
     - pybedtools
     - pysam >=0.13.0
     - pyvcf
     - pyyaml
-    - pyzmq
     - requests
-    - scipy
+    - scipy >=1.3.0
     - seaborn
     - seqcluster
-    - sqlalchemy
     - statsmodels
     - tabulate
     - toolz
-    - tornado
     - yamllint
 
 test:
@@ -83,7 +73,7 @@ test:
     # ImportError: dlopen(zmq/backend/cython/constants.so, 2): Library not loaded: @rpath/./libzmq.4.dylib
     #   Referenced from: /zmq/backend/cython/constants.so
     #     Reason: image not found
-    #- bcbio.distributed.ipython
+    - bcbio.distributed.ipython # [not osx]
   commands:
     # click requires a unicode locale
     - LANG=C.UTF-8 bcbio_nextgen.py -h
@@ -94,3 +84,7 @@ about:
   home: https://github.com/chapmanb/bcbio-nextgen
   license: MIT
   summary: Validated, scalable, community developed variant calling, RNA-seq and small RNA analysis
+
+extra:
+  identifiers:
+    - biotools:bcbio-nextgen

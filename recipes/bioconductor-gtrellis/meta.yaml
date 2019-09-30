@@ -1,42 +1,48 @@
-{% set version = "1.11.1" %}
+{% set version = "1.16.0" %}
 {% set name = "gtrellis" %}
-{% set bioc = "3.6" %}
-
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-#      https://www.bioconductor.org/packages/release/bioc/src/contrib/gtrellis_1.11.1.tar.gz
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-  sha256: 1b913487cee2bbb0a151b41406e37d98c27b085b8f66622d6d1eb41bd5eea457
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: b3c146b4dab9ee1afcdceefd70895da3
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: testthat (>= 1.0.0), knitr, RColorBrewer, markdown, ComplexHeatmap (>= 1.99.0), Cairo, png, jpeg, tiff
 requirements:
-  build:
-    - r-base >=3.3.2
-    - 'bioconductor-iranges'
-    - 'bioconductor-genomicranges'
-    - r-gridbase
-    - r-circlize >=0.4.1
-    - r-getoptlong >=0.1.6
+  host:
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - r-base
+    - 'r-circlize >=0.3.3'
+    - r-getoptlong
   run:
-    - r-base >=3.3.2
-    - 'bioconductor-iranges'
-    - 'bioconductor-genomicranges'
-    - r-gridbase
-    - r-circlize >=0.4.1
-    - r-getoptlong >=0.1.6
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - r-base
+    - 'r-circlize >=0.3.3'
+    - r-getoptlong
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: GPL (>= 2)
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
   summary: 'Genome level Trellis graph visualizes genomic data conditioned by genomic categories (e.g. chromosomes). For each genomic category, multiple dimensional data which are represented as tracks describe different features from different aspects. This package provides high flexibility to arrange genomic categories and to add self-defined graphics in the plot.'
+extra:
+  identifiers:
+    - biotools:gtrellis
+  parent_recipe:
+    name: bioconductor-gtrellis
+    path: recipes/bioconductor-gtrellis
+    version: 1.12.1
+

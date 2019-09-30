@@ -1,33 +1,41 @@
-{% set version = "3.5.0" %}
+{% set version = "3.8.2" %}
 {% set name = "org.Rn.eg.db" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: a4971a0c56cfcb48f603b24ffd0538c6864b12d7865e2fc91e90ae89808a7687
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: e53247d4a84bcc5a11c6479e565dc16f
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: DBI, annotate, RUnit
 requirements:
-  build:
-    - 'bioconductor-annotationdbi >=1.39.3'
+  host:
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
     - r-base
   run:
-    - 'bioconductor-annotationdbi >=1.39.3'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Genome wide annotation for Rat, primarily based on mapping using Entrez Gene identifiers.'
+extra:
+  parent_recipe:
+    name: bioconductor-org.rn.eg.db
+    path: recipes/bioconductor-org.rn.eg.db
+    version: 3.6.0
+

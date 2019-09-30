@@ -1,52 +1,49 @@
---- Makefile	2017-04-11 09:46:02.426758432 +0200
-+++ Makefile.fixed	2017-03-07 10:33:54.833014372 +0100
-@@ -9,8 +9,8 @@
+--- a/Makefile
++++ b/Makefile
+@@ -12,9 +12,8 @@ exec_prefix = $(prefix)
+ bindir ?= $(exec_prefix)/bin
  
  # Flags
- CXX=g++
--CXXFLAGS += -isystem ${SEQTK_ROOT} -isystem ${BOOST_ROOT} -pedantic -W -Wall -Wno-unknown-pragmas -D__STDC_LIMIT_MACROS -fno-strict-aliasing
--LDFLAGS += -L${SEQTK_ROOT} -L${BOOST_ROOT}/stage/lib -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time 
-+CXXFLAGS += -isystem ${PREFIX} -isystem ${BOOST_ROOT} -pedantic -W -Wall -Wno-unknown-pragmas -D__STDC_LIMIT_MACROS -fno-strict-aliasing
-+LDFLAGS += -L${PREFIX}/lib -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time 
+-CXX=g++
+-CXXFLAGS += -isystem ${EBROOTHTSLIB} -pedantic -W -Wall -Wno-unknown-pragmas -D__STDC_LIMIT_MACROS -fno-strict-aliasing -fpermissive
+-LDFLAGS += -L${EBROOTHTSLIB} -L${EBROOTHTSLIB}/lib -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time 
++CXXFLAGS += -isystem ${PREFIX} -isystem ${BOOST_ROOT} -pedantic -W -Wall -Wno-unknown-pragmas -D__STDC_LIMIT_MACROS -fno-strict-aliasing -fpermissive
++LDFLAGS += -L${PREFIX}/lib -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time
  
- # Additional flags for release/debug
+ # Flags for parallel computation
  ifeq (${PARALLEL}, 1)
-@@ -23,7 +23,7 @@
+@@ -27,7 +26,7 @@ endif
  ifeq (${STATIC}, 1)
- 	LDFLAGS += -static -static-libgcc -pthread -lhts -lz
+ 	LDFLAGS += -static -static-libgcc -pthread -lhts -lz -llzma -lbz2
  else
--	LDFLAGS += -lhts -lz -Wl,-rpath,${SEQTK_ROOT},-rpath,${BOOST_ROOT}/stage/lib
-+	LDFLAGS += -lhts -lz
+-	LDFLAGS += -lhts -lz -llzma -lbz2 -Wl,-rpath,${EBROOTHTSLIB}
++	LDFLAGS += -lhts -lz -llzma -lbz2
  endif
- ifeq (${DEBUG}, 1)
- 	CXXFLAGS += -g -O0 -fno-inline -DDEBUG
-@@ -41,7 +41,7 @@
- DELLYSOURCES = $(wildcard src/*.h) $(wildcard src/*.cpp)
+ 
+ # Flags for debugging, profiling and releases
+@@ -50,14 +49,14 @@ SOURCES = $(wildcard src/*.h) $(wildcard src/*.cpp)
  
  # Targets
--TARGETS = .htslib .bcftools .boost src/delly src/cov src/dpe
-+TARGETS = src/delly src/cov src/dpe
+ BUILT_PROGRAMS = src/delly
+-TARGETS = ${SUBMODULES} ${BUILT_PROGRAMS}
++TARGETS = src/delly
  
  all:   	$(TARGETS)
  
-@@ -54,16 +54,16 @@
- .boost: $(BOOSTSOURCES)
- 	cd src/modular-boost && ./bootstrap.sh --prefix=${PWD}/src/modular-boost --without-icu --with-libraries=iostreams,filesystem,system,program_options,date_time && ./b2 && ./b2 headers && cd ../../ && touch .boost
+ .htslib: $(HTSLIBSOURCES)
+ 	if [ -r src/htslib/Makefile ]; then cd src/htslib && make && make lib-static && cd ../../ && touch .htslib; fi
  
--src/delly: .htslib .bcftools .boost $(DELLYSOURCES)
-+src/delly: $(DELLYSOURCES)
+-src/delly: ${SUBMODULES} $(SOURCES)
++src/delly: $(SOURCES)
  	$(CXX) $(CXXFLAGS) $@.cpp -o $@ $(LDFLAGS)
  
--src/cov: .htslib .bcftools .boost $(DELLYSOURCES)
-+src/cov: $(DELLYSOURCES)
- 	$(CXX) $(CXXFLAGS) $@.cpp -o $@ $(LDFLAGS)
- 
--src/dpe: .htslib .bcftools .boost $(DELLYSOURCES)
-+src/dpe: $(DELLYSOURCES)
- 	$(CXX) $(CXXFLAGS) $@.cpp -o $@ $(LDFLAGS)
+ src/dpe: ${SUBMODULES} $(SOURCES)
+@@ -69,7 +68,7 @@ install: ${BUILT_PROGRAMS}
  
  clean:
- 	cd src/htslib && make clean
- 	cd src/modular-boost && ./b2 --clean-all
--	rm -f $(TARGETS) $(TARGETS:=.o) .htslib .boost .bcftools
+ 	if [ -r src/htslib/Makefile ]; then cd src/htslib && make clean; fi
+-	rm -f $(TARGETS) $(TARGETS:=.o) ${SUBMODULES}
 +	rm -f $(TARGETS) $(TARGETS:=.o)
+ 
+ distclean: clean
+ 	rm -f ${BUILT_PROGRAMS}

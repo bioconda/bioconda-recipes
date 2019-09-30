@@ -1,0 +1,53 @@
+{% set version = "1.6.0" %}
+{% set name = "apeglm" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: be62827e5f20cdd38a44f3c163417486
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: DESeq2, airway, knitr, rmarkdown, testthat
+requirements:
+  host:
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - r-base
+    - r-emdbook
+    - r-rcpp
+    - r-rcppeigen
+    - r-rcppnumerical
+  run:
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-summarizedexperiment >=1.14.0,<1.15.0'
+    - r-base
+    - r-emdbook
+    - r-rcpp
+    - r-rcppeigen
+    - r-rcppnumerical
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'apeglm provides Bayesian shrinkage estimators for effect sizes for a variety of GLM models, using approximation of the posterior for individual coefficients.'
+extra:
+  parent_recipe:
+    name: bioconductor-apeglm
+    path: recipes/bioconductor-apeglm
+    version: 1.2.1
+

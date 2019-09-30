@@ -1,20 +1,18 @@
---- bin/bwa.orig	2017-04-14 13:16:19.000000000 -0400
-+++ bin/bwa	2017-04-14 13:31:17.742633472 -0400
-@@ -1,17 +1,20 @@
+diff --git a/bin/bwa.orig b/bin/bwa
+index 0ef4326..89924eb 100755
+--- a/bin/bwa.orig
++++ b/bin/bwa
+@@ -1,12 +1,15 @@
 -#!/bin/sh
+-case "$0" in
+-/*)     bin_dir=$(dirname "$0");;
+-*)      bin_dir=$(dirname "$(pwd)/$0");;
+-esac
+-case "$bin_dir" in
+-*/.)    install_dir="$bin_dir.";;
+-*)      install_dir=$(dirname "$bin_dir");;
+-esac
 +#!/bin/bash
- OS=$(uname)
- case "$OS" in
- CYGWIN*) OS=Cygwin;;
- esac
- 
--if [ ! ${0%%/*} ]; then
--    bin_dir=$(dirname "$0")
--else
--    bin_dir=$(dirname "$(pwd)/$0")
--fi
--# remove trailing '/.'
--bin_dir=${bin_dir%%/.*}
 +# Find original directory of bash script, resovling symlinks
 +# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
 +SOURCE="${BASH_SOURCE[0]}"
@@ -24,8 +22,8 @@
 +    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 +done
 +bin_dir="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
- install_dir=$(dirname "$bin_dir")
++install_dir=$(dirname "$bin_dir")
 +
- lib_dir=$install_dir/lib
- libexec_dir=$install_dir/libexec
+ export SENTIEON_INSTALL_DIR="$install_dir"
  
+ # load common function definitions

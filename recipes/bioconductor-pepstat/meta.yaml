@@ -1,37 +1,39 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.0" %}
 {% set name = "pepStat" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 9557008b00cc6cd6f5541f0ecb2fc8371848268794fc89932a8d79f7419aca2e
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: e78ab9a2f6eb8002061befa6ff303c68
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: pepDat, Pviz, knitr, shiny
 requirements:
-  build:
-    - bioconductor-biobase
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-limma
+  host:
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
     - r-base
     - r-data.table
     - r-fields
     - r-ggplot2
     - r-plyr
   run:
-    - bioconductor-biobase
-    - bioconductor-genomicranges
-    - bioconductor-iranges
-    - bioconductor-limma
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-limma >=3.40.0,<3.41.0'
     - r-base
     - r-data.table
     - r-fields
@@ -41,6 +43,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Statistical analysis of peptide microarrays'
+extra:
+  identifiers:
+    - biotools:pepstat
+    - doi:10.1007/978-1-4939-3037-1_10
+  parent_recipe:
+    name: bioconductor-pepstat
+    path: recipes/bioconductor-pepstat
+    version: 1.14.0
+

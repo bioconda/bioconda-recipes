@@ -83,7 +83,7 @@ def main():
     jar_path = os.path.join(jar_dir, jar_file)
 
     if not os.path.isfile(jar_path):
-        sys.stderr.write('GATK jar file not found. Have you run \"gatk-register\"?\n')
+        sys.stderr.write('GATK jar file not found. Have you run \"gatk3-register\"?\n')
         sys.exit(1)
 
     java_args = [java] + mem_opts + prop_opts + [jar_arg] + [jar_path] + pass_args

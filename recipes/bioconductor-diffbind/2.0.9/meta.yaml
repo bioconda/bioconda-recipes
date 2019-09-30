@@ -6,18 +6,19 @@ package:
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: {{ name }}_{{ version }}.tar.gz
   url: http://bioconductor.statistik.tu-dortmund.de/packages/3.3/bioc/src/contrib/DiffBind_2.0.9.tar.gz
   md5: 9d00cf8d809f138ce2a3b1e5620bbf51
 build:
   # bioconductor-systempiper is set to skip in OSX, so this package cannot be built for OSX
   skip: True # [osx]
-  number: 2
+  number: 3
   rpaths:
     - lib/R/lib/
     - lib/
 requirements:
   build:
+    - {{ compiler('cxx') }}
+  host:
     - bioconductor-biocparallel
     - bioconductor-deseq2
     - bioconductor-edger
@@ -37,8 +38,6 @@ requirements:
     - r-locfit
     - r-rcolorbrewer
     - r-rcpp
-    - gcc  # [linux]
-    - llvm  # [osx]
   run:
     - bioconductor-biocparallel
     - bioconductor-deseq2
@@ -61,7 +60,6 @@ requirements:
     - r-rcolorbrewer
     - r-getopt
     - r-rcpp
-    - libgcc  # [linux]
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
@@ -71,3 +69,7 @@ about:
   summary: 'Compute differentially bound sites from multiple ChIP-seq experiments
     using affinity (quantitative) data. Also enables occupancy (overlap) analysis
     and plotting functions.'
+
+extra:
+  identifiers:
+    - biotools:diffbind

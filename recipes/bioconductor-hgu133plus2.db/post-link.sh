@@ -1,10 +1,12 @@
 #!/bin/bash
 FN="hgu133plus2.db_3.2.3.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/annotation/src/contrib/hgu133plus2.db_3.2.3.tar.gz"
-  "https://depot.galaxyproject.org/software/hgu133plus2.db/hgu133plus2.db_3.2.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hgu133plus2.db_3.2.3.tar.gz"
+  "https://bioarchive.galaxyproject.org/hgu133plus2.db_3.2.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hgu133plus2.db/bioconductor-hgu133plus2.db_3.2.3_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hgu133plus2.db/bioconductor-hgu133plus2.db_3.2.3_src_all.tar.gz"
 )
-    MD5="45a376b6092da75907b9e73bbd90e5bf"
+MD5="45a376b6092da75907b9e73bbd90e5bf"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -15,12 +17,12 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
   if [[ $(uname -s) == "Linux" ]]; then
-    if [[ $(md5sum -c <<<"$MD5  $TARBALL") ]]; then
+    if md5sum -c <<<"$MD5  $TARBALL"; then
       SUCCESS=1
       break
     fi
@@ -40,5 +42,6 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 # Install and clean up
-R CMD INSTALL --build $TARBALL
+R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
 rm $TARBALL
+rmdir $STAGING

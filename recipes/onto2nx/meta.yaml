@@ -1,50 +1,53 @@
+{% set name = "onto2nx" %}
+{% set version = "0.1.1" %}
+
 package:
-  name: onto2nx
-  version: "0.1.0"
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  fn: onto2nx-0.1.0.tar.gz
-  url: https://pypi.python.org/packages/ba/c0/d0ee2400caee5b0245c2034df042c214c63c929721d07193c1f9a5187a00/onto2nx-0.1.0.tar.gz
-  md5: edd3797e4dc00aea48266d3da82eda7c
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 2bdd6a0de8bfa9ffc428f60f9066d37e769594b832a7c190d942e9c4228a782e
 
 build:
   number: 0
-  # click needs to be patched in order to properly detect unicode in py3k
-  skip: true  # [py3k]
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - networkx
-    - rdflib
-    - rdflib-jsonld
-    - sparqlwrapper
-    - colorama
-    - requests
-    - pyfiglet
+  host:
     - click
-    - pygments
+    - networkx ==1.11
+    - pip
+    - python
+    - rdflib ==4.2.1
+    - rdflib-jsonld
+    - requests
+    - requests-file
+    - sparqlwrapper
   run:
-    - python
-    - networkx
-    - rdflib
-    - rdflib-jsonld
-    - sparqlwrapper
-    - colorama
-    - requests
-    - pyfiglet
     - click
-    - pygments
+    - networkx ==1.11
+    - python
+    - rdflib ==4.2.1
+    - rdflib-jsonld
+    - requests
+    - requests-file
+    - sparqlwrapper
 
 test:
-  # Python imports
   imports:
     - onto2nx
     - onto2nx.ontospy
     - onto2nx.ontospy.core
+  requires:
+    - mock
+    - tox
 
 about:
   home: https://github.com/cthoyt/onto2nx
-  license: GNU General Public License v3 or later (GPLv3+)
-  summary: 'A package for parsing ontologies into NetworkX graphs'
+  license: GPL 3.0
+  license_family: GPL
+  license_file: LICENSE
+  summary: A package for parsing ontologies in the OWL and OBO format into NetworkX graphs
+  doc_url: https://onto2nx.readthedocs.io/en/latest/

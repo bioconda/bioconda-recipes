@@ -1,54 +1,63 @@
+{% set version = "1.2.11" %}
+{% set sha256 = "722f6fa1a5065a1b210848a64985b7a3f9d43bcc77e396336e833b7759f389fc" %}
+
 package:
   name: ribocode
-  version: 1.2.7
+  version: '{{version}}'
 
 source:
-  fn: RiboCode-1.2.7.tar.gz
-  url: https://pypi.python.org/packages/65/4c/9d6ca41db7d55f97736d9c7065ee50baae61e1ec9cebf87c1be1025d1743/RiboCode-1.2.7.tar.gz
-  md5: f97a70888e9c07f1c4ea96fbea1b98fe
-
-requirements:
-  build:
-    - python 
-    - numpy 
-    - pysam >0.8.4
-    - matplotlib
-    - scipy
-    - pyfasta
-    - biopython
-    - h5py
-    - htseq
-  run:
-    - python
-    - numpy 
-    - pysam >0.8.4
-    - matplotlib
-    - scipy
-    - pyfasta
-    - biopython
-    - h5py
-    - htseq
-test:
-  imports:
-    - RiboCode
-  commands:
-    - RiboCode --help
-    - prepare_transcripts --help
+  url: https://github.com/xryanglab/RiboCode/archive/v{{version}}.tar.gz
+  sha256: '{{sha256}}'
 
 build:
-  skip: True # [not py27]
+  number: 0
+  noarch: python
   entry_points:
     - RiboCode=RiboCode.RiboCode:main
+    - RiboCode_onestep=RiboCode.RiboCode_onestep:main
     - prepare_transcripts=RiboCode.prepare_transcripts:main
     - metaplots=RiboCode.metaplots:main
     - plot_orf_density=RiboCode.plot_orf_density:main
     - ORFcount=RiboCode.RPF_count_ORF:main
     - GTFupdate=RiboCode.GTF_update:main
-  script:
-    python setup.py install
+
+requirements:
+  host:
+    - python
+    - numpy
+    - pysam >0.8.4
+    - matplotlib
+    - pyfasta
+    - biopython
+    - h5py
+    - htseq
+    - future
+  run:
+    - python
+    - numpy
+    - pysam >0.8.4
+    - matplotlib
+    - scipy
+    - pyfasta
+    - biopython
+    - h5py
+    - htseq
+    - future
+
+test:
+  imports:
+    - RiboCode
+  commands:
+    - RiboCode --help
+    - RiboCode_onestep --help
+    - prepare_transcripts --help
+    - metaplots --help
+    - plot_orf_density --help
+    - ORFcount --help
+    - GTFupdate --help
 
 about:
-  home: https://github.com/xzt41/RiboCode
+  home: https://github.com/xryanglab/RiboCode
   license: MIT
-  summary: "A package for identifying the translated ORFs using ribosome-profiling data"
   license_family: MIT
+  summary: A package for identifying the translated ORFs using ribosome-profiling data

@@ -1,45 +1,31 @@
 {% set name = "tRNAscan-SE" %}
-{% set version = "1.3.1" %}
+{% set version = "2.0.3" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 2
-  skip: True # [osx] ##osx build faild due to download error
+  number: 0
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
-  url: http://eddylab.org/software/tRNAscan-SE/tRNAscan-SE.tar.gz
-  md5: 714689121a1cf11c5d9c59561769c4d7
-  patches:
-    - patches/checkversion.pl.patch
-    - patches/fasta2gsi.pl.patch
-    - patches/instman.pl.patch
-    - patches/sstofa.pl.patch
-    - patches/tRNAscan-SE.src.patch
-    - patches/Makefile.patch
-    
+  url: http://lowelab.ucsc.edu/software/trnascan-se-{{ version }}.tar.gz
+  sha256: b305c1bf226d16833349b22ad1f3160a52ad30f577a336128da3cc76d5772a4e
+
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm  # [osx]
-    - zlib
+    - {{ compiler('c') }}
+  host:
     - perl
-
   run:
-    - libgcc  # [not osx]
-    - zlib
     - perl
+    - infernal ==1.1.2
 
 test:
   commands:
-    - tRNAscan-SE -h > /dev/null
+    - tRNAscan-SE -h
 
 about:
-  home: http://eddylab.org/software.html
-  license: GPLv2
+  home: http://lowelab.ucsc.edu/tRNAscan-SE/
+  license: GPLv3
   summary: tRNA detection in large-scale genome sequence
-
-

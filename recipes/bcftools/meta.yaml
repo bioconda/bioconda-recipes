@@ -1,4 +1,41 @@
-{% set version="1.6" %}
+{% set version="1.9" %}
+
+package:
+  name: bcftools
+  version: {{ version }}
+
+build:
+  number: 7
+
+source:
+  url: https://github.com/samtools/bcftools/releases/download/{{ version }}/bcftools-{{ version }}.tar.bz2
+  sha256: 6f36d0e6f16ec4acf88649fb1565d443acf0ba40f25a9afd87f14d14d13070c8
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - htslib
+    - zlib
+    - gsl
+  run:
+    - gsl
+    - htslib
+    # Currently removed due to size and dependency issues
+    #- matplotlib # for plot-vcfstats
+    #- tectonic # for plot-vcfstats
+    - zlib
+    - perl
+
+test:
+  commands:
+    - bcftools -h
+    - bcftools --version
+    - bcftools plugin -lv
+    - bcftools -h | grep polysomy
+    - vcfutils.pl 2>&1 | grep vcfutils
+    #- plot-vcfstats -h 2>&1 | grep -q "Plots output of "
+
 about:
   home: https://github.com/samtools/bcftools
   license: MIT
@@ -9,37 +46,7 @@ about:
     streaming from a pipe. Indexed VCF and BCF will work in all situations. Un-indexed
     VCF and BCF and streams will work in most, but not all situations.
 
-build:
-  number: 0
-package:
-  name: bcftools
-  version: {{ version }}
-requirements:
-  build:
-  - gcc  # [not osx]
-  - llvm # [osx]
-  - bzip2
-  - curl
-  - xz
-  - zlib
-  run:
-  - libgcc # [not osx]
-  - bzip2
-  - curl
-  # Currently removed due to size and dependency issues
-  #- matplotlib # for plot-vcfstats
-  #- texlive-core # for plot-vcfstats
-  - xz
-  - zlib
-
-source:
-  fn: bcftools-{{ version }}.tar.bz2
-  url: https://github.com/samtools/bcftools/releases/download/{{ version }}/bcftools-{{ version }}.tar.bz2
-  sha256: 293010736b076cf684d2873928924fcc3d2c231a091084c2ac23a8045c7df982
-
-test:
-  commands:
-    - bcftools -h
-    - bcftools --version
-    - bcftools plugin -lv
-    #- plot-vcfstats -h 2>&1 | grep -q "Plots output of "
+extra:
+  identifiers:
+    - biotools:bcftools
+    - doi:10.1093/bioinformatics/btp352

@@ -1,32 +1,42 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "PCAN" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: cdea4399888be63216d69fbbf30394516fc3fe26b0ef88a11c6df714dd0cd546
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: f1232cbd6da8413cc00d752f91521c1b
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, knitr, rmarkdown, reactome.db, STRINGdb
 requirements:
-  build:
-    - bioconductor-biocparallel
+  host:
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
     - r-base
   run:
-    - bioconductor-biocparallel
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
     - r-base
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'CC BY-NC-ND 4.0'
   summary: 'Phenotypes comparison based on a pathway consensus approach. Assess the relationship between candidate genes and a set of phenotypes based on additional genes related to the candidate (e.g. Pathways or network neighbors).'
+extra:
+  identifiers:
+    - biotools:pcan
+  parent_recipe:
+    name: bioconductor-pcan
+    path: recipes/bioconductor-pcan
+    version: 1.8.0
+

@@ -1,37 +1,34 @@
-{% set name = "bpp-phyl" %}
-{% set version = "2.2.0" %}
+{% set name = 'bpp-phyl' %}
+{% set version = '2.4.1' %}
+{% set sha256 = 'e7bf7d4570f756b7773904ffa600ffcd77c965553ddb5cbc252092d1da962ff2' %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 build:
-  skip: True  # [win]
   number: 0
 
 source:
-  fn: {{ name|lower }}-{{ version }}.tar.gz
-  url: http://biopp.univ-montp2.fr/repos/sources/{{ name }}-{{ version }}.tar.gz
-  md5: 5c40667ec0bf37e0ecaba321be932770
+  url: https://github.com/BioPP/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 requirements:
   build:
-    - gcc # [not osx]
-    - llvm # [osx]
-    - cmake
-    - bpp-seq
-
+  - {{ compiler('c') }}
+  - cmake
+  - bpp-seq
   run:
-    - libgcc # [not osx]
-    - bpp-seq
+  - bpp-seq
 
 test:
   commands:
-    - test -f ${PREFIX}/lib/libbpp-phyl.a  # [unix]
+    - test -f ${PREFIX}/lib/libbpp-phyl.a
     - test -f ${PREFIX}/lib/libbpp-phyl.so  # [linux]
+    - test -f ${PREFIX}/lib/libbpp-phyl.dylib  # [osx]
 
 about:
   home: https://github.com/BioPP/bpp-phyl
   license: CeCILL
   license_file: COPYING.txt
-  summary: Bio++ is a set of C++ libraries for Bioinformatics.
+  summary: "Bio++ is a set of C++ libraries for Bioinformatics."

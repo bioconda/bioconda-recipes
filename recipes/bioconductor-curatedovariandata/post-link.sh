@@ -1,10 +1,12 @@
 #!/bin/bash
-FN="curatedOvarianData_1.16.0.tar.gz"
+FN="curatedOvarianData_1.22.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/experiment/src/contrib/curatedOvarianData_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/curatedOvarianData/curatedOvarianData_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/curatedOvarianData_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/curatedOvarianData_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-curatedovariandata/bioconductor-curatedovariandata_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-curatedovariandata/bioconductor-curatedovariandata_1.22.0_src_all.tar.gz"
 )
-    MD5="ce3b7806e9a24e289454db0df74fbc75"
+MD5="1af5517292618a6a05871dbf02953866"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -15,12 +17,12 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
   if [[ $(uname -s) == "Linux" ]]; then
-    if [[ $(md5sum -c <<<"$MD5  $TARBALL") ]]; then
+    if md5sum -c <<<"$MD5  $TARBALL"; then
       SUCCESS=1
       break
     fi
@@ -40,5 +42,6 @@ if [[ $SUCCESS != 1 ]]; then
 fi
 
 # Install and clean up
-R CMD INSTALL --build $TARBALL
+R CMD INSTALL --library=$PREFIX/lib/R/library $TARBALL
 rm $TARBALL
+rmdir $STAGING
