@@ -1,0 +1,33 @@
+{% set version = "1.1" %}
+{% set sha256 = "b24a1414595576b79cb5e9859107713f6c0d3cba7cd006377598440315edbf29" %}
+
+package:
+  name: seacr
+  version: '{{ version }}'
+
+source:
+  url: https://github.com/FredHutch/SEACR/archive/6baf05a810a30845b40e1eab1f9590498b968c97.tar.gz
+  sha256: '{{ sha256 }}'
+
+build:
+  number: 0
+  skip: True # [osx]
+  script:
+    - sed -i.bak '1 s/^.*$/#!/usr/bin/env Rscript/' SEACR_1.1.R
+    - mkdir $PREFIX/bin
+    - cp SEACR_1.1.R $PREFIX/bin/SEACR.R
+    - cp SEACR_1.1.sh $PREFIX/bin/SEACR.sh
+    
+
+requirements:
+  run:
+    - r-base
+
+test:
+  commands:
+    - SEACR.R --help
+
+about:
+  home: https://github.com/FredHutch/SEACR
+  license: https://github.com/FredHutch/SEACR/blob/master/LICENSE
+  summary: SEACR is intended to call peaks and enriched regions from sparse CUT&RUN or chromatin profiling data in which background is dominated by "zeroes" (i.e. regions with no read coverage). It requires R (https://www.r-project.org) and Bedtools (https://bedtools.readthedocs.io/en/latest/) to be available in your path, and it requires bedgraphs from paired-end sequencing as input, which can be generated from read pair BED files (i.e. BED coordinates reflecting the 5' and 3' termini of each read pair) using bedtools genomecov with the "-bg" flag, or alternatively from name-sorted paired-end BAM files as described in "Preparing input bedgraph files" below.
