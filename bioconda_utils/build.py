@@ -222,7 +222,8 @@ def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
                   mulled_upload_target=None,
                   check_channels: List[str] = None,
                   do_lint: bool = None,
-                  lint_exclude: List[str] = None):
+                  lint_exclude: List[str] = None,
+                  keep_old_work: bool = False):
     """
     Build one or many bioconda packages.
 
@@ -244,6 +245,7 @@ def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
         Fefaults to every channel in the config file except "defaults".
       do_lint: Whether to run linter
       lint_exclude: List of linting functions to exclude.
+      keep_old_work: Do not remove anything from environment, even after successful build and test.
     """
     if not recipes:
         logger.info("Nothing to be done.")
@@ -364,7 +366,8 @@ def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
                         upload.mulled_upload(img, mulled_upload_target)
 
         # remove traces of the build
-        conda_build_purge()
+        if not keep_old_work:
+            conda_build_purge()
 
     if failed or failed_uploads:
         logger.error('BUILD SUMMARY: of %s recipes, '
