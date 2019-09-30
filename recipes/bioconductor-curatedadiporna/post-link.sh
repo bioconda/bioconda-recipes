@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/curatedAdipoRNA_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/curatedAdipoRNA_1.0.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-curatedadiporna/bioconductor-curatedadiporna_1.0.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-curatedadiporna/bioconductor-curatedadiporna_1.0.0_src_all.tar.gz"
 )
 MD5="4424c4af38fa09e6d09b81c4d485c830"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/pcaGoPromoter.Mm.mm9_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pcaGoPromoter.Mm.mm9_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pcagopromoter.mm.mm9/bioconductor-pcagopromoter.mm.mm9_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pcagopromoter.mm.mm9/bioconductor-pcagopromoter.mm.mm9_1.20.0_src_all.tar.gz"
 )
 MD5="cdcf550e2a810757e4f0fdd661c0e1a9"
 

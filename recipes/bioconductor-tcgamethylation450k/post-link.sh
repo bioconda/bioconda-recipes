@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/TCGAMethylation450k_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TCGAMethylation450k_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-tcgamethylation450k/bioconductor-tcgamethylation450k_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tcgamethylation450k/bioconductor-tcgamethylation450k_1.20.0_src_all.tar.gz"
 )
 MD5="84b02ffc29f555bdb04e40476fd86fff"
 
