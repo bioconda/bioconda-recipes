@@ -300,6 +300,7 @@ intersphinx_mapping = {
 extlinks = {
     'biotools': ('https://bio.tools/%s', ''),
     'doi': ('https://doi.org/%s', ''),
+    'debian': ('https://tracker.debian.org/pkg/%s', ''),
 }
 
 # add document name before automatic section title reference
