@@ -401,12 +401,14 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
      already present in one of these channels will be skipped. The default is
      the first two channels specified in the config file. Note that this is
      ignored if you specify --git-range.''')
+@arg('--keep-old-work', action='store_true', help='''Do not remove anything
+from environment, even after successful build and test.''')
 @enable_logging()
 def build(recipe_folder, config, packages="*", git_range=None, testonly=False,
           force=False, docker=None, mulled_test=False, build_script_template=None,
           pkg_dir=None, anaconda_upload=False, mulled_upload_target=None,
           build_image=False, keep_image=False, lint=False, lint_exclude=None,
-          check_channels=None):
+          check_channels=None, keep_old_work=False):
     cfg = utils.load_config(config)
     setup = cfg.get('setup', None)
     if setup:
@@ -451,7 +453,8 @@ def build(recipe_folder, config, packages="*", git_range=None, testonly=False,
                             do_lint=lint,
                             lint_exclude=lint_exclude,
                             check_channels=check_channels,
-                            label=label)
+                            label=label,
+                            keep_old_work=keep_old_work)
     exit(0 if success else 1)
 
 
