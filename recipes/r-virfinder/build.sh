@@ -1,7 +1,6 @@
-ls -a
-cd linux/
-tar -xzf VirFinder_1.1.tar.gz
-cd VirFinder/
+### Triggering compilation
 echo "NeedsCompilation: yes" >> DESCRIPTION
 
+
+### Building
 $R CMD INSTALL --build .
