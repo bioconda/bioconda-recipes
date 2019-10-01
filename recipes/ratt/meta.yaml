@@ -1,0 +1,43 @@
+{% set version = "1.0.3" %}
+
+package:
+  name: ratt
+  version: {{ version }}
+
+source:
+  url: https://github.com/ThomasDOtto/ratt/archive/v{{ version }}.tar.gz
+  sha256: c54c78c973e79063ada9bf5fde24ef1b35c47f1c36f5a5b58346b077ba82362c
+  patches:
+    - ratt_home.patch
+
+build:
+  noarch: generic
+  number: 0
+
+requirements:
+  build:
+    - pandoc
+  run:
+    - perl
+    - mummer
+
+test:
+  requires:
+    - wget
+    - unzip
+  commands:
+    - wget http://ratt.sourceforge.net/Tbexample.zip
+    - unzip Tbexample.zip
+    - mkdir embl && mv Tb_H37Rv.embl embl/
+    - ratt --prefix tb-f11 --type Strain embl F11.fasta
+
+about:
+  home: http://ratt.sourceforge.net
+  license: GPL3
+  license_file: LICENSE
+  summary: 'Rapid Annotation Transfer Tool'
+  description: >
+    RATT is software to transfer annotation from a reference (annotated) genome to an unannotated query genome.
+    It was first developed to transfer annotations between different genome assembly versions.
+    However, it can also transfer annotations between strains and even different species, like Plasmodium chabaudi onto P. berghei, between different Leishmania species or Salmonella enterica onto other Salmonella serotypes.
+    RATT is able to transfer any entries present on a reference sequence, such as the systematic id or an annotator's notes; such information would be lost in a de novo annotation. 
