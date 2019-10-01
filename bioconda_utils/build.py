@@ -290,15 +290,17 @@ def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
         logger.info("Nothing to be done.")
         return True
 
-    logger.info("Building and testing %s recipes in total", len(dag))
-
     skip_dependent = defaultdict(list)
-    dag = remove_cycles(dag, name2recipes, failed, skip_dependent)
-    subdag = get_subdags(dag, n_workers, worker_offset)
+    dag2 = remove_cycles(dag, name2recipes, failed, skip_dependent)
+    for n in dag.nodes():
+        if n not in dag2:
+            logger.info("{} removed".format(n))
+    subdag = get_subdags(dag2, n_workers, worker_offset)
     if not subdag:
         logger.info("Nothing to be done.")
         return True
-    logger.info("%i recipes to build: \n%s", len(subdag), "\n".join(subdag.nodes()))
+    return True
+    logger.info("%i recipes to build and test: \n%s", len(subdag), "\n".join(subdag.nodes()))
 
     recipe2name = {}
     for name, recipe_list in name2recipes.items():
