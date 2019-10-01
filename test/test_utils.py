@@ -666,6 +666,18 @@ def test_skip_dependencies(config_fixture):
             ensure_missing(pkg)
 
 
+class TestSubdags(object):
+    def _build(self, recipes_fixture, config_fixture, n_workers, worker_offset):
+        build.build_recipes(recipes_fixture.basedir, config_fixture,
+                            recipes_fixture.recipe_dirnames,
+                            n_workers=n_workers, worker_offset=worker_offset,
+                            mulled_test=False)
+
+    def test_subdags_out_of_range(self, recipes_fixture, config_fixture):
+        with pytest.raises(ValueError):
+            self._build(recipes_fixture, config_fixture, 2, 4)
+
+
 @pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')
 def test_build_empty_extra_container():
     r = Recipes(
