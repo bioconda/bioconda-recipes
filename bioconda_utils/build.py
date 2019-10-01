@@ -228,7 +228,8 @@ def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
                   do_lint: bool = None,
                   lint_exclude: List[str] = None,
                   n_workers: int = 1,
-                  worker_offset: int = 0):
+                  worker_offset: int = 0,
+                  keep_old_work: bool = False):
     """
     Build one or many bioconda packages.
 
@@ -254,6 +255,7 @@ def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
         sub-DAGs are then split into groups of n_workers size.
       worker_offset: If n_workers is >1, then every worker_offset within a given group of
         sub-DAGs will be processed.
+      keep_old_work: Do not remove anything from environment, even after successful build and test.
     """
     if not recipes:
         logger.info("Nothing to be done.")
@@ -389,7 +391,8 @@ def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
                         upload.mulled_upload(img, mulled_upload_target)
 
         # remove traces of the build
-        conda_build_purge()
+        if not keep_old_work:
+            conda_build_purge()
 
     if failed or failed_uploads:
         logger.error('BUILD SUMMARY: of %s recipes, '

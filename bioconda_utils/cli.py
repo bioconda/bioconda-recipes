@@ -418,12 +418,14 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
      11th, etc. sub-DAGs. Equivalently, using "--n-workers 5 --worker-offset 1"
      will result in sub-DAGs 2, 7, 12, etc. being processed. If you use more
      than one worker, then make sure to give each a different offset!''')
+@arg('--keep-old-work', action='store_true', help='''Do not remove anything
+from environment, even after successful build and test.''')
 @enable_logging()
 def build(recipe_folder, config, packages="*", git_range=None, testonly=False,
           force=False, docker=None, mulled_test=False, build_script_template=None,
           pkg_dir=None, anaconda_upload=False, mulled_upload_target=None,
           build_image=False, keep_image=False, lint=False, lint_exclude=None,
-          check_channels=None, n_workers=1, worker_offset=0):
+          check_channels=None, n_workers=1, worker_offset=0, keep_old_work=False):
     cfg = utils.load_config(config)
     setup = cfg.get('setup', None)
     if setup:
@@ -470,7 +472,8 @@ def build(recipe_folder, config, packages="*", git_range=None, testonly=False,
                             check_channels=check_channels,
                             label=label,
                             n_workers=n_workers,
-                            worker_offset=worker_offset)
+                            worker_offset=worker_offset,
+                            keep_old_work=keep_old_work)
     exit(0 if success else 1)
 
 
