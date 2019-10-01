@@ -4,7 +4,7 @@
 PACKAGE_HOME=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
 
 # Create destination directories
-mkdir -o $PREFIX/bin
+mkdir -p $PREFIX/bin
 mkdir -p $PACKAGE_HOME
 
 # Copy over files
