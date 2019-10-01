@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Setup path variables
-BINARY_HOME=$PREFIX/bin
 PACKAGE_HOME=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
 
 # Create destination directories
+mkdir -p $PREFIX/bin
 mkdir -p $PACKAGE_HOME
 
 # Copy over files
