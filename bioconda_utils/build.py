@@ -6,6 +6,7 @@ import subprocess as sp
 from collections import defaultdict, namedtuple
 import os
 import logging
+import itertools
 
 from typing import List
 
@@ -195,10 +196,9 @@ def get_subdags(dag, n_workers, worker_offset):
         nodes = set()
         found = set()
         for idx, root_node in enumerate(root_nodes):
-            children = list(nx.dfs_successors(dag, root_node).values())
-            if len(children):
-                children = children[0]  # If there were no children this is [], otherwise [[child1, child2, ...]]
-            # This is the only obvious way of ensuring that a given node is included
+            # Flatten the nested list
+            children = itertools.chain(*nx.dfs_successors(dag, root_node).values())
+            # This is the only obvious way of ensuring that all nodes are included
             # in exactly 1 subgraph
             found.add(root_node)
             if idx % n_workers == worker_offset:
@@ -206,9 +206,10 @@ def get_subdags(dag, n_workers, worker_offset):
                 for child in children:
                     if child not in found:
                         nodes.add(child)
-            for child in children:
-                found.add(child)
-        logger.info("Should return sub-DAGs with {} nodes".format(len(nodes)))
+                        found.add(child)
+            else:
+                for child in children:
+                    found.add(child)
         subdags = dag.subgraph(list(nodes))
         logger.info("Building and testing sub-DAGs %i in each group of %i, which is %i packages", worker_offset, n_workers, len(subdags.nodes()))
     else:
@@ -293,26 +294,11 @@ def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
 
     skip_dependent = defaultdict(list)
     dag = remove_cycles(dag, name2recipes, failed, skip_dependent)
-    logger.info("failed {} skip_dependent {}".format(failed, skip_dependent))
-    found = set()
-    logger.info("A {}".format(len(dag)))
-    for i in range(n_workers):
-        subdag = get_subdags(dag, n_workers, i)
-        logger.info("B {}".format(len(subdag)))
-        if "perl-class-load" in subdag.nodes():
-            logger.info("contains perl-class-load")
-        for n in subdag.nodes():
-            #if n in found:
-            #    print("{} already found!".format(n))
-            found.add(n)
-        if not subdag:
-            logger.info("Nothing to be done.")
-            return True
-    #logger.info("Recipes to build: \n%s", "\n".join(subdag.nodes()))
-    #for n in dag.nodes():
-    #    if n not in found:
-    #        logger.info("missing {}".format(n))
-    return True
+    subdag = get_subdags(dag, n_workers, worker_offset)
+    if not subdag:
+        logger.info("Nothing to be done.")
+        return True
+    logger.info("%i recipes to build: \n%s", len(subdag), "\n".join(subdag.nodes()))
 
     recipe2name = {}
     for name, recipe_list in name2recipes.items():
