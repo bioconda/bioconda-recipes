@@ -11,5 +11,5 @@ go build -o ${PREFIX}/bin/goalign -ldflags "-X github.com/evolbioinfo/goalign/ve
 cp -r tests/data $PREFIX/goalign_test_data
 
 # Goalign test script
-sed 's+GOALIGN=./goalign+GOALIGN=goalign+g' test.sh | sed "s+TESTDATA=\"tests/data\"+TESTDATA=\$PREFIX/goalign_test_data/+g"  > $PREFIX/bin/goalign_test.sh
+sed 's+GOALIGN=./goalign+GOALIGN=goalign+g' test.sh | sed "s+TESTDATA=\"tests/data\"+TESTDATA=${PREFIX}/goalign_test_data/+g"  > $PREFIX/bin/goalign_test.sh
 chmod a+x $PREFIX/bin/goalign_test.sh
