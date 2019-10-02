@@ -12,5 +12,8 @@ cp -r tests/data $PREFIX/goalign_test_data
 
 # Goalign test script
 echo "#!/usr/bin/env bash" > $PREFIX/bin/goalign_test.sh
-sed 's+GOALIGN=./goalign+GOALIGN=goalign+g' test.sh | sed "s+TESTDATA=\"tests/data\"+TESTDATA=\$(dirname \$0)/../goalign_test_data/+g"  >> $PREFIX/bin/goalign_test.sh
+sed 's+GOALIGN=./goalign+GOALIGN=goalign+g' test.sh \
+    | sed "s+TESTDATA=\"tests/data\"+TESTDATA=\$(dirname \$0)/../goalign_test_data/+g" \
+    | sed "s+tar -xzf boot.tar.gz+gunzip -c boot.tar.gz | tar xf -+g" \
+    >> $PREFIX/bin/goalign_test.sh
 chmod a+x $PREFIX/bin/goalign_test.sh
