@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/Mulder2012_0.24.0.tar.gz"
   "https://bioarchive.galaxyproject.org/Mulder2012_0.24.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mulder2012/bioconductor-mulder2012_0.24.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mulder2012/bioconductor-mulder2012_0.24.0_src_all.tar.gz"
 )
 MD5="cf1ccb7133defdc49f889dfe9efabbf4"
 

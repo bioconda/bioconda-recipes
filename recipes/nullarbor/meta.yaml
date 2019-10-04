@@ -1,67 +1,67 @@
 {% set name = "nullarbor" %}
-{% set version = "2.0.20181010" %}
+{% set version = "2.0.20191003" %}
+{% set sha256 = "85dd1db79de41658ad5eb9934b85beb559278e42e60ccd8cda1933bab4d84792" %}
+{% set user = "tseemann" %}
 
 package:
-  name: nullarbor
+  name: {{ name }}
   version: {{ version }}
 
-build:
-  number: 4
-  skip: True # [osx]
-
 source:
-  git_url: https://github.com/tseemann/nullarbor.git
-  git_rev: d561e9d
-  md5: unused
+  url: https://github.com/{{ user }}/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  noarch: generic
 
 requirements:
   run:
+    - abricate >=0.9.8
+    - any2fasta >=0.4.2
+    - centrifuge >=1.0
+    - fasttree >=2.1.10
+    - iqtree >=1.6.12
+    - kraken >=1.1
+    - kraken2
+    - make >=4.2
+    - mash >=2.2
+    - megahit >=1.1.3
+    - mlst >=2.17.6
+    - newick_utils
     - perl
     - perl-file-spec
     - perl-findbin
-    - perl-yaml-tiny
+    - perl-json
+    - perl-list-moreutils >=0.428
     - perl-path-tiny
-    - lighter >=1.1
-    - bwa >=0.7.17
-    - flash >=1.2
-    - pilon >=1.22
-    - seqtk >=1.3
-    - skesa >=2.3
-    - megahit >=1.1
-    - velvet >=1.2.10
-    - samclip >=0.2
-    - trimmomatic >=0.36
-    - mash >=2.1
-    - shovill >=1.0
-    - snippy >=4.2
-    - iqtree >=1.6
-    - roary >=3.0
-    - spades >=3.6
-    - prokka >=1.12
-    - kraken >=1.1
-    - kraken2
-    - centrifuge >=1.0
-    - mlst >=2.1
-    - abricate >=0.8
-    - snp-dists >=0.6
-    - newick_utils
-    - fasttree
-    - quicktree >=2.4
+    - perl-svg
+    - perl-text-csv
+    - perl-time-piece
+    - perl-yaml-tiny
     - pigz
-    - samtools >=1.8
+    - prokka >=1.14
+    - roary >=3.12
+    - samtools >=1.9
+    - seqtk >=1.3
+    - shovill >=1.0.9
+    - skesa >=2.3
+    - snippy >=4.4.3
+    - snp-dists >=0.6
+    - spades >=3.13
+    - trimmomatic >=0.39
 
 test:
   commands:
-    - "nullarbor.pl --help"
-    - "nullarbor.pl --version"
-
-extra:
-  skip-lints:
-    - uses_git_url
-    - missing_hash
+    - {{ name }}.pl --version | grep '{{ version }}'
+    - {{ name }}-report.pl --version | grep '{{ version }}'
+    - {{ name }}.pl --help
+    - roary2svg.pl --help | grep -i Usage
+    - fa --help | grep -i Usage
+    - fq --help | grep -i Usage
 
 about:
-  home: https://github.com/tseemann/nullarbor
+  home: https://github.com/{{ user }}/{{ name }}
   license: GPL2
   license_file: LICENSE
-  summary: Pipeline to generate complete public health microbiology reports from sequenced isolates
+  summary: Reads to report pipeline for bacterial isolate NGS data

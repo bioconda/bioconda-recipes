@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pig.db0_3.8.2.tar.gz"
   "https://bioarchive.galaxyproject.org/pig.db0_3.8.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pig.db0/bioconductor-pig.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pig.db0/bioconductor-pig.db0_3.8.2_src_all.tar.gz"
 )
 MD5="e3109e7efd1a29387f318a62e8b6892c"
 
