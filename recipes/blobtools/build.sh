@@ -6,7 +6,10 @@
 #cd $blobtools
 #
 #sed -i -e '4d;16,29d;50d' setup.py
-$PYTHON setup.py install --single-version-externally-managed --record=/tmp/record.txt
+$PYTHON -m pip install . --ignore-installed --no-deps -vv
+mkdir -p ${PREFIX}/bin
+cp blobtools ${PREFIX}/bin/
+chmod a+x ${PREFIX}/bin/blobtools
 
 echo '#!/usr/bin/env bash' > $PREFIX/bin/blobtools-build_nodesdb
 echo "blobtools=$blobtools" >> $PREFIX/bin/blobtools-build_nodesdb
