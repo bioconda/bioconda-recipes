@@ -29,3 +29,14 @@ chmod 775 *
 cd ../
 mkdir -pv "${PREFIX}"/bin/
 mv wrapper_phage_contigs_sorter_iPlant.pl Scripts/ "${PREFIX}"/bin/
+
+
+### Creating scripts to set env variables during activation/deactivation of env
+mkdir -p "${PREFIX}"/etc/conda/activate.d "${PREFIX}"/etc/conda/deactivate.d
+# Setting perl path when activating
+echo '#!/bin/sh' > "${PREFIX}"/etc/conda/activate.d/env_vars.sh
+echo 'export CONDA_PERL5LIB=$(find "${CONDA_PREFIX}" -type d -path "*/site_perl/*" -prune | paste -s -d":")' >> "${PREFIX}"/etc/conda/activate.d/env_vars.sh
+echo 'export PERL5LIB="${CONDA_PERL5LIB}":"${PERL5LIB}"' >> "${PREFIX}"/etc/conda/activate.d/env_vars.sh
+# Resetting perl path when deactivating
+echo '#!/bin/sh' > "${PREFIX}"/etc/conda/deactivate.d/env_vars.sh
+echo 'export PERL5LIB=${PERL5LIB//"${CONDA_PERL5LIB}":/}' >> "${PREFIX}"/etc/conda/deactivate.d/env_vars.sh
