@@ -16,4 +16,4 @@ sed "s~cat VERSION~cat $PREFIX/share/ngsutils/VERSION~g" | \
 sed 's~exec "$DIR"/ngsutils/$SUBDIR/$action "$@"~exec python "$DIR"/ngsutils/$SUBDIR/$action "$@"~g' > $SRC_DIR/bin/ngsutils.new
 mv $SRC_DIR/bin/ngsutils.new $SRC_DIR/bin/ngsutils
 
-python setup.py install
+$PYTHON -m pip install . --ignore-installed --no-deps -vv
