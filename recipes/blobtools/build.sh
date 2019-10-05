@@ -1,13 +1,8 @@
 #/bin/bash
 
-#blobtools=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
-#mkdir -p $blobtools
-#cp -a ./* $blobtools
-#cd $blobtools
-#
-#sed -i -e '4d;16,29d;50d' setup.py
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
 mkdir -p ${PREFIX}/bin
+sed -i.bak "s#/usr/bin/env python3#/opt/anaconda1anaconda2anaconda3/bin/python#" blobtools
 cp blobtools ${PREFIX}/bin/
 chmod a+x ${PREFIX}/bin/blobtools
 
