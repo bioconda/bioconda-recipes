@@ -1,3 +1,4 @@
+{% set data = load_setup_py_data(setup_file='../setup.py', from_recipe_dir=True) %}
 {% set version = data.get('version') %}
 
 about:
@@ -11,40 +12,50 @@ package:
     version: {{ version }}
 
 source:
-    url: https://github.com/phac-nml/ecoli_serotyping/archive/v{{ version }}.tar.gz
+    url: https://github.com/phac-nml/ecoli_serotyping/archive/{{ version }}.tar.gz
+    sha256sum: 7b5f58c515da00cc026c6e8d051ef9921637e6e486410fb93931764727ebfd39   
+    #git_url: https://github.com/kbessonov1984/ecoli_serotyping.git
+    #git_rev: master
 
 build:
-    number: 1
-    script: python setup.py install
+    number: 0
+    script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
     build:
         - python >=3.5
+        - pip
 
     run:
         - python >=3.5
         - pytest >=3.5
-        - pandas 0.23.1.*
-        - samtools 1.8.*
-        - bowtie2 2.3.4.1.*
-        - mash 2.0.*
-        - bcftools 1.8.*
-        - biopython 1.70.*
-        - blast 2.7.1.*
-        - seqtk 1.2.*
-        - requests 2.22.*
-        - portalocker 1.5.*
+        - pandas >=0.23.1.*
+        - samtools >=1.8.*
+        - bowtie2 >=2.3.*
+        - mash >=2.0.*
+        - bcftools >=1.8.*
+        - biopython >=1.70.*
+        - blast >=2.7.1.*
+        - seqtk >=1.2.*
+        - requests >=2.*.*
+        - portalocker >=1.5.*
 test:
     import:
         - ectyper
     source_files:
-        - test/
+        - test/*.py
+        - test/Data/*
+        - test/Data/test_dir/*
+        - test/Data/test_dir/subfolder1/*
+        - test/Data/test_dir/subfolder2/*
     requires:
-         - pytest
+        - pytest
     commands:
         - "ectyper --help"
-        - "pytest -s ectyper/test/test_ectyper_intergration.py"
-        - "pytest -s ectyper/test/test_O_serotyping.py"
+        - "pwd && ls ./test/Data/*"
+        - "pytest -s ./test/test_O_serotyping.py"
+        - "pytest -s ./test/test_ectyper_integration.py"
+
 
 
 
