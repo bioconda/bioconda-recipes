@@ -1,10 +1,11 @@
 #/bin/bash
 
-$PYTHON -m pip install . --ignore-installed --no-deps -vv
 mkdir -p ${PREFIX}/bin
-sed -i.bak "s#/usr/bin/env python3#/opt/anaconda1anaconda2anaconda3/bin/python#" blobtools
-cp blobtools ${PREFIX}/bin/
-chmod a+x ${PREFIX}/bin/blobtools
+rm blobtools
+mv lib blobtools
+$PYTHON -m pip install . --ignore-installed --no-deps -vv
+echo -e "#!/opt/anaconda1anaconda2anaconda3/bin/python\nfrom blobtools.interface import main\nmain()" > ${PREFIX}/bin/blobtools
+chmod +x ${PREFIX}/bin/*
 
 echo '#!/usr/bin/env bash' > $PREFIX/bin/blobtools-build_nodesdb
 echo "blobtools=$blobtools" >> $PREFIX/bin/blobtools-build_nodesdb
