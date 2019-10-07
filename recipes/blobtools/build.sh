@@ -1,5 +1,6 @@
 #/bin/bash
 
+rm blobtools
 mv lib blobtools
 $PYTHON -m pip install . --ignore-installed --no-deps -vv
 
