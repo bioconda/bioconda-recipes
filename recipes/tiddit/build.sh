@@ -8,9 +8,10 @@ mkdir build
 cd build
 cmake ..
 make
-make DESTDIR=${PREFIX} install
-cd $outdir/src
+cd ../src
 python setup.py build_ext --inplace
+cd ../build
+make DESTDIR=${PREFIX} install
 
 ln -s $outdir/TIDDIT.py $PREFIX/bin/tiddit
 
