@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Sscrofa.UCSC.susScr3.refGene_3.4.6.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Sscrofa.UCSC.susScr3.refGene_3.4.6.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.sscrofa.ucsc.susscr3.refgene/bioconductor-txdb.sscrofa.ucsc.susscr3.refgene_3.4.6_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.sscrofa.ucsc.susscr3.refgene/bioconductor-txdb.sscrofa.ucsc.susscr3.refgene_3.4.6_src_all.tar.gz"
 )
 MD5="17a9e1a37e5f3fd23f6cfb753d1ad8f2"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/dsQTL_0.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/dsQTL_0.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-dsqtl/bioconductor-dsqtl_0.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dsqtl/bioconductor-dsqtl_0.22.0_src_all.tar.gz"
 )
 MD5="832fc2afb33890374a5efa553fe276ab"
 

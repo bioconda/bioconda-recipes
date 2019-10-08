@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/gatingMLData_2.24.0.tar.gz"
   "https://bioarchive.galaxyproject.org/gatingMLData_2.24.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-gatingmldata/bioconductor-gatingmldata_2.24.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-gatingmldata/bioconductor-gatingmldata_2.24.0_src_all.tar.gz"
 )
 MD5="8738620aac52004fefa9a3af7194df75"
 

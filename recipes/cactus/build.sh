@@ -35,7 +35,7 @@ mkdir submodules/hal/lib
 mkdir submodules/hal/bin
 
 make
-$PYTHON setup.py install
+$PYTHON -m pip install --ignore-installed --no-deps -vv
 cp -r bin/* ${PREFIX}/bin
 cp -r submodules/hal ${PREFIX}/lib/python2.7/site-packages
 

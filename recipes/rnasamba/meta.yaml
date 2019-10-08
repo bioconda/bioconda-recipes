@@ -1,5 +1,5 @@
 {% set name = "rnasamba" %}
-{% set version = "0.1.2" %}
+{% set version = "0.1.6" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,36 +7,36 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 4f51a7fc868c9d9132ce52aa392f8e31d15984c9ce141191db88fb1132d915fc
+  sha256: 0eb46039c1485bf666a7c6ab817d873ded131bb3448d79dcde985dba4d34eccd
 
 build:
   number: 0
   noarch: python
   entry_points:
-    - rnasamba-classify=rnasamba.cli:classify_cli
-    - rnasamba-train=rnasamba.cli:train_cli
+    - rnasamba=rnasamba.cli:cli
   script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
   host:
     - biopython
-    - keras >=2.1.0
-#    - numpy (allow tensorflow to pick version, avoid pinning)
+    - keras >=2.1.0,<2.3.0
+    - numpy <1.17
     - pip
     - python >=3.6
     - tensorflow >=1.5.0,<2.0
   run:
     - biopython
-    - keras >=2.1.0
-#    - numpy
+    - keras >=2.1.0,<2.3.0
+    - numpy <1.17
     - python >=3.6
     - tensorflow >=1.5.0,<2.0
 
 # Tests fail due to tensorflow needing GLIBC 2.16 missing in container
 #test:
 #  commands:
-#    - rnasamba-classify --help
-#    - rnasamba-train --help
+#    - rnasamba --help
+#    - rnasamba classify --help
+#    - rnasamba train --help
 
 about:
   home: http://apcamargo.github.io/RNAsamba/
