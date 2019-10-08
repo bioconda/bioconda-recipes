@@ -46,6 +46,80 @@ CRAN_X_PACKAGES = set(["rgl", "tsdist", "tsclust", "plot3drgl", "pals", "longitu
                        "bpca", "bcrocsurface", "feature", "pca3d", "forestfloor", "oceanview",
                        "clustersim", "hiver", "lidr", "mixomics", "snpls", "matlib", "qpcr"])
 
+# This maps items in a package's SystemRequirement to conda packages
+# There can be multiple resulting packages, all of which should then
+# be included in recipes
+SysReqs = {'and egrep are required for some functionalities': ['grep'],
+           'BLAS': ['openblas'],
+           'bowtie': ['bowtie2'],
+           'bowtie and samtools are required for some functionalities': ['bowtie2', 'samtools'],
+           'clustalo': ['clustalo'],
+           'cwltool (>= 1.0.2018)': ['cwltool >=1.0.2018'],
+           'Cytoscape (>= 3.3.0)': ['cytoscape >=3.3.0'],
+           'Cytoscape (>= 3.6.1) (if used for visualization of results': ['cytoscape >=3.6.1'],
+           'Cytoscape (>= 3.7.1)': ['cytoscape >=3.7.1'],
+           'Ensembl VEP (API version 96) and the Perl modules DBI and DBD::mysql must be installed. See the package README and Ensembl installation instructions: http://www.ensembl.org/info/docs/tools/vep/script/vep_download.html#installer': ['ensembl-vep', 'perl-dbd-mysql', 'perl-dbi'],
+           'GEOS (>= 3.2.0);for building from source: GEOS from http://trac.osgeo.org/geos/; GEOS OSX frameworks built by William Kyngesburye at http://www.kyngchaos.com/ may be used for source installs on OSX.': ['geos >=3.2.0'],
+           'GLPK (>= 4.42)': ['glpk >=4.42'],
+           'GNU Scientific Library >= 1.6 (http://www.gnu.org/software/gsl/)': ['gsl >=4.42'],
+           'graphviz': ['graphviz'],
+           'Graphviz version >= 2.2': ['graphviz >=2.2'],
+           'gs': ['ghostscript'],
+           'gsl': ['gsl'],
+           'GSL and OpenMP': ['gsl'],
+           'GSL (GNU Scientific Library)': ['gsl'],
+           'gsl. Note: users should have GSL installed. Windows users: \'consult the README file available in the inst directory of the source distribution for necessary configuration instructions\'.': ['gsl'],
+           'h5py': ['h5py'],
+           'HMMER3': ['hmmer >=3'],
+           'ImageMagick': ['imagemagick'],
+           'JAGS 4.x.y': ['jags 4.*.*'],
+           'Java': ['openjdk'],
+           'Java (>= 1.5)': ['openjdk'],
+           'Java (>= 1.6)': ['openjdk'],
+           'Java (>= 1.7)': ['openjdk'],
+           'Java (>= 1.8)': ['openjdk'],
+           'Java (>= 8)': ['openjdk'],
+           'Java Runtime Environment (>= 6)': ['openjdk'],
+           'Java version >= 1.6': ['openjdk'],
+           'Java version >= 1.7': ['openjdk'],
+           'jQuery': ['jquery'],
+           'jQueryUI': ['jquery-ui'],
+           'libsbml (==5.10.2)': ['libsbml 5.10.2'],
+           'libSBML (>= 5.5)': ['libsbml >=5.5'],
+           'libxml2': ['libxml2'],
+           'MAFFT (>= 7.305)': ['mafft >=7.305'],
+           'mofapy': ['mofapy'],
+           'Netpbm': ['netpbm'],
+           'nodejs': ['nodejs'],
+           'numpy': ['numpy'],
+           'OpenBabel': ['openbabel'],
+           'OpenBabel (>= 2.3.1) with headers (http://openbabel.org).': ['openbabel >=2.3.1'],
+           'pandas': ['pandas'],
+           'Pandoc': ['pandoc'],
+           'pandoc (>= 1.12.3)': ['pandoc >=1.12.3'],
+           'Pandoc (>= 1.12.3)': ['pandoc >=1.12.3'],
+           'pandoc (>= 1.19.2.1)': ['pandoc >=1.19.2.1'],
+           'pandoc (http://pandoc.org/installing.html) for generating reports from markdown files.': ['pandoc'],
+           'perl': ['perl >=5.6.0'],
+           'Perl': ['perl >=5.6.0'],
+           'Perl (>= 5.6.0)': ['perl >=5.6.0'],
+           'python (>= 2.7)': ['python >=2.7'],
+           'Python (>=2.7.0)': ['python >=2.7'],
+           'python (< 3.7)': ['python <3.7'],
+           'root_v5.34.36 <http://root.cern.ch> - See README file for installation instructions.': ['root5 5.34.36'],
+           'rTANDEM uses expat and pthread libraries. See the README file for details.': ['expat'],
+           'samtools': ['samtools'],
+           'scipy': ['scipiy'],
+           'sklearn': ['scikit-learn'],
+           'STAR': ['star'],
+           'tensorflow': ['tensorflow'],
+           'To generate html reports pandoc (http://pandoc.org/installing.html) is required.': ['pandoc'],
+           'TopHat': ['tophat2'],
+           'ViennaRNA (>= 2.4.1)': ['viennarna >=2.4.1'],
+           'xml2': ['libxml2']}
+
+
+
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -531,7 +605,6 @@ class BioCProjectPage(object):
         List of "SystemRequirements" from the VIEW file
         """
         try:
-            print(self.packages[self.package]['SystemRequirements'])
             return self.packages[self.package]['SystemRequirements']
         except KeyError:
             return []
@@ -760,6 +833,20 @@ class BioCProjectPage(object):
             description = description.replace('{}_'.format(vcs), '{} '.format(vcs))
         return description
 
+    def parseSystemRequirements(self, reqs):
+        """
+        Parse the text version of system requirements and return a list of conda packages
+        """
+        reqs = reqs.split(',')
+        packages = [SysReqs[r.strip()] for r in reqs if r.strip() in SysReqs]
+        packages = []
+        for req in reqs:
+            if req in SysReqs:
+                packages.extend(SysReqs[req])
+        if len(packages):
+            return packages
+        return None
+
     @property
     def meta_yaml(self):
         """
@@ -864,6 +951,11 @@ class BioCProjectPage(object):
 
         if self.license_file_location():
             d['about']['license_file'] = self.license_file_location()
+
+        if self.packages[self.package].get('SystemRequirements', None):
+            if self.parseSystemRequirements(self.packages[self.package]['SystemRequirements']):
+                d['requirements']['host'].extend(self.parseSystemRequirements(self.packages[self.package]['SystemRequirements']))
+                d['requirements']['run'].extend(self.parseSystemRequirements(self.packages[self.package]['SystemRequirements']))
 
         if self.needsX:
             # Anything that causes rgl to get imported needs X around
