@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="xenopus.db0_3.7.1.tar.gz"
+FN="xenopus.db0_3.8.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/xenopus.db0_3.7.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/xenopus.db0_3.7.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-xenopus.db0/bioconductor-xenopus.db0_3.7.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/xenopus.db0_3.8.2.tar.gz"
+  "https://bioarchive.galaxyproject.org/xenopus.db0_3.8.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-xenopus.db0/bioconductor-xenopus.db0_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-xenopus.db0/bioconductor-xenopus.db0_3.8.2_src_all.tar.gz"
 )
-MD5="6a34dd176e70d66d4acda7a141e09ef5"
+MD5="199efa5f20b5dd8fc16aaeac9f0d9eeb"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

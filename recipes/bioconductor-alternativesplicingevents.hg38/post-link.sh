@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="alternativeSplicingEvents.hg38_1.0.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/alternativeSplicingEvents.hg38_1.0.1.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/alternativeSplicingEvents.hg38_1.0.1.tar.gz"
   "https://bioarchive.galaxyproject.org/alternativeSplicingEvents.hg38_1.0.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-alternativesplicingevents.hg38/bioconductor-alternativesplicingevents.hg38_1.0.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-alternativesplicingevents.hg38/bioconductor-alternativesplicingevents.hg38_1.0.1_src_all.tar.gz"
 )
 MD5="9ce2e10cfe00ec4451670e1fd18d2e37"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
