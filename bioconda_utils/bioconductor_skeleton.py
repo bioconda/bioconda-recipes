@@ -119,7 +119,6 @@ SysReqs = {'and egrep are required for some functionalities': ['grep'],
            'xml2': ['libxml2']}
 
 
-
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -1189,39 +1188,24 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
 
     if not proj.is_data_package:
         with open(os.path.join(recipe_dir, 'build.sh'), 'w') as fout:
+            fout.write(dedent(
+                '''\
+                #!/bin/bash
+                mv DESCRIPTION DESCRIPTION.old
+                grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
+                mkdir -p ~/.R
+                echo -e "CC=$CC
+                FC=$FC
+                CXX=$CXX
+                CXX98=$CXX
+                CXX11=$CXX
+                CXX14=$CXX" > ~/.R/Makevars
+                '''))
             if needs_x:
                 fout.write(dedent(
-                    '''\
-                    #!/bin/bash
-                    mv DESCRIPTION DESCRIPTION.old
-                    grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
-                    mkdir -p ~/.R
-                    echo -e "CC=$CC
-                    FC=$FC
-                    CXX=$CXX
-                    CXX98=$CXX
-                    CXX11=$CXX
-                    CXX14=$CXX" > ~/.R/Makevars
-                    export LD_LIBRARY_PATH=${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64
-                    $R CMD INSTALL --build .'''
-                    )
-                )
-            else:
-                fout.write(dedent(
-                    '''\
-                    #!/bin/bash
-                    mv DESCRIPTION DESCRIPTION.old
-                    grep -v '^Priority: ' DESCRIPTION.old > DESCRIPTION
-                    mkdir -p ~/.R
-                    echo -e "CC=$CC
-                    FC=$FC
-                    CXX=$CXX
-                    CXX98=$CXX
-                    CXX11=$CXX
-                    CXX14=$CXX" > ~/.R/Makevars
-                    $R CMD INSTALL --build .'''
-                    )
-                )
+                    '''export LD_LIBRARY_PATH=${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64
+                    '''))
+            fout.write(dedent('''$R CMD INSTALL --build .'''))
 
     else:
         urls = [
