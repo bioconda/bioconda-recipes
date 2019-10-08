@@ -16,9 +16,9 @@ RUN export PATH="/opt/conda/bin:${PATH}" && \
         -e 's/^(conda([><!=~ ].+)?)$/\1/p' \
         /tmp/repo/bioconda_utils/bioconda_utils-requirements.txt \
         | xargs -r conda install -y && \
-    echo "requirements"
+    echo "requirements" && \
     conda install -y --file /tmp/repo/bioconda_utils/bioconda_utils-requirements.txt && \
-    echo "clean"
+    echo "clean" && \
     conda clean -y -it
 COPY . /tmp/repo
 RUN export PATH="/opt/conda/bin:${PATH}" && \
