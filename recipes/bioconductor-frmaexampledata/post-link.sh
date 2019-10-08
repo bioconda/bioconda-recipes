@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/frmaExampleData_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/frmaExampleData_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-frmaexampledata/bioconductor-frmaexampledata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-frmaexampledata/bioconductor-frmaexampledata_1.20.0_src_all.tar.gz"
 )
 MD5="3eb2349bbcc2b56bc60f2f7911e6d7cc"
 

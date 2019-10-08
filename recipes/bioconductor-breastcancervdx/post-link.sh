@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/breastCancerVDX_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/breastCancerVDX_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-breastcancervdx/bioconductor-breastcancervdx_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-breastcancervdx/bioconductor-breastcancervdx_1.22.0_src_all.tar.gz"
 )
 MD5="b437da5fd7abf3b1f10276dd6543217d"
 

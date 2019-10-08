@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/BeadArrayUseCases_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BeadArrayUseCases_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-beadarrayusecases/bioconductor-beadarrayusecases_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-beadarrayusecases/bioconductor-beadarrayusecases_1.22.0_src_all.tar.gz"
 )
 MD5="f137cb510837fa607e144c2c1290d846"
 

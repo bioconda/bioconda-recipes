@@ -1,39 +1,31 @@
 {% set name = "pyranges" %}
-{% set version = "0.0.44" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "1b9b036bee414c91a487068159fb1f6ceea1d41c3fe120b21b66cfe2b5066514" %}
+{% set version = "0.0.56" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: a4908d36285f97449d04953eedfcfad4f9ad851b3800b48c978b5a0611769303
 
 build:
   number: 0
-  skip: True  # [py!=37]
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
     - python
-    - setuptools
-    - cython
+    - pip
   run:
     - python
     - pandas
-    - ncls
+    - ncls >=0.0.43
     - tabulate
-    - sorted_nearest
+    - sorted_nearest >=0.0.28
     - pyrle
     - natsort
-    - bamread
-    - pybigwig
 
 test:
   imports:
@@ -43,3 +35,4 @@ about:
   home: http://github.com/endrebak/pyranges
   license: MIT
   summary: GenomicRanges for Python.
+  license_file: LICENSE

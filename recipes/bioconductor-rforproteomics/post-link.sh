@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RforProteomics_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RforProteomics_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rforproteomics/bioconductor-rforproteomics_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rforproteomics/bioconductor-rforproteomics_1.22.0_src_all.tar.gz"
 )
 MD5="b3512efa8224bd8069e638bae018384b"
 
