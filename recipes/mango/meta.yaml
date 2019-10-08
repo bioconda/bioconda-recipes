@@ -1,38 +1,65 @@
-{% set version="0.0.5" %}
+{% set name = "bdgenomics.mango" %}
+{% set version = "0.0.5" %}
 
 package:
-  name: mango
-  version: {{ version }}
+  name: "mango"
+  version: "{{ version }}"
 
 source:
-  url: https://search.maven.org/remotecontent?filepath=org/bdgenomics/mango/mango-distribution/{{ version }}/mango-distribution-{{ version }}-bin.tar.gz
-  md5: f438bdbe93e855db1dae077fa28ff3f7
+  - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 12dc1b334597481b2caa3988417cb6742569585fd1f056c02adfce2b1f208467
+  - url: https://search.maven.org/remotecontent?filepath=org/bdgenomics/mango/mango-distribution/{{ version }}/mango-distribution-{{ version }}-bin.tar.gz
+    md5: f438bdbe93e855db1dae077fa28ff3f7
+
 
 build:
-  number: 0
   noarch: generic
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
   host:
-    - python >3
+    - bdgenomics.adam ==0.30.0a0
+    - bdgenomics.mango.pileup ==0.0.4
+    - cigar ==0.1.3
+    - ipython ==7.8.0
+    - ipywidgets ==7.0.0
+    - jupyter ==1.0.0
+    - matplotlib ==2.0.2
     - pip
-  run:
+    - psutil
     - python
-    - bdgenomics.mango =={{ version }}
-    - bdgenomics.mango.pileup =={{ version }}
+  run:
     - openjdk >=8,<9
     - pyspark
+    - bdgenomics.adam ==0.30.0a0
+    - bdgenomics.mango.pileup ==0.0.4
+    - cigar ==0.1.3
+    - ipython ==7.8.0
+    - ipywidgets ==7.0.0
+    - jupyter ==1.0.0
+    - matplotlib ==2.0.2
+    - psutil
+    - python
 
 test:
-  # Python imports
   imports:
+    - bdgenomics
     - bdgenomics.mango
+    - bdgenomics.mango.test
     - bdgenomics.mango.pileup
   commands:
     - mango-submit --help
     - mango-notebook --help
     - make_genome --help
+
 about:
-  home: https://github.com/bigdatagenomics/mango
-  license: Apache 2
-  summary: Scalable genomics visualization tool built on Apache Spark
+  home: "https://github.com/bdgenomics/mango"
+  license: "Apache 2"
+  summary: "A scalable genomic visualization tool"
+  doc_url: "https://bdg-mango.readthedocs.io/en/latest/"
+  dev_url: "https://github.com/bigdatagenomics/mango"
+
+extra:
+  recipe-maintainers:
+    - akmorrow13
