@@ -872,13 +872,8 @@ class BioCProjectPage(object):
             self.extra['container'] = OrderedDict([('extended-base', True)])
 
             if 'build' not in d['requirements']:
-                d['requirements']['build'] = []
-            d['requirements']['build'].append("{{ cdt('mesa-libgl-devel') }}  # [linux]")
-            d['requirements']['build'].append("{{ cdt('mesa-dri-drivers') }}  # [linux]")
-            d['requirements']['build'].append("{{ cdt('libselinux') }}  # [linux]")
-            d['requirements']['build'].append("{{ cdt('libxdamage') }}  # [linux]")
-            d['requirements']['build'].append("{{ cdt('libxxf86vm') }}  # [linux]")
-            d['requirements']['build'].append("xorg-libxfixes  # [linux]")
+                # This is filled in manually later since pyaml.dumps will mess of the formatting otherwise
+                d['requirements']['build'] = ["PLACEHOLDER"]
 
             d['test']['commands'] = ['''LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library('{{ name }}')"''']
 
@@ -904,10 +899,15 @@ class BioCProjectPage(object):
             renderedsplit.insert(idx, '# Suggests: {}'.format(self.packages[self.package]['Suggests']))
         # Fix the core dependencies if this needsX
         if self.needsX:
-            idx = len(renderedsplit) - 1 - renderedsplit[::-1].index('  build:')
-            for idx2 in range(6):
-                line = renderedsplit[idx+idx2]
-                renderedsplit[idx+idx2] = line.strip("'").replace("''","'").replace(" '", " ")
+            idx = renderedsplit.index('  build:') + 1
+            renderedsplit.insert(idx, "    - xorg-libxfixes  # [linux]")
+            renderedsplit.insert(idx, "    - {{ cdt('libxxf86vm') }}  # [linux]")
+            renderedsplit.insert(idx, "    - {{ cdt('libxdamage') }}  # [linux]")
+            renderedsplit.insert(idx, "    - {{ cdt('libselinux') }}  # [linux]")
+            renderedsplit.insert(idx, "    - {{ cdt('mesa-dri-drivers') }}  # [linux]")
+            renderedsplit.insert(idx, "    - {{ cdt('mesa-libgl-devel') }}  # [linux]")
+            if "    - PLACEHOLDER" in renderedsplit:
+                del renderedsplit[renderedsplit.index("    - PLACEHOLDER")]
         rendered = '\n'.join(renderedsplit) + '\n'
 
         rendered = (
