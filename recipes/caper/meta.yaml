@@ -1,0 +1,40 @@
+{% set name = "caper" %}
+{% set version = "0.4.0" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "f65d936a9b0fedbeafb1cdd8ce475d245a840e7937149f8fbf6c64bd7a740b4f" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  noarch: python
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - pyhocon
+    - requests
+  run:
+    - python
+    - pyhocon
+    - requests
+
+test:
+  imports:
+    - caper
+    - test
+
+about:
+  home: https://github.com/ENCODE-DCC/caper
+  license: MIT
+  summary: Cromwell Assisted Pipeline ExecutoR
+  description: Python wrapper for Cromwell
