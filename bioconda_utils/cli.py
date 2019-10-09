@@ -681,13 +681,14 @@ def bioconductor_skeleton(
         if not bioc_version:
             bioc_version = _bioconductor_skeleton.latest_bioconductor_release_version()
         packages = _bioconductor_skeleton.fetchPackages(bioc_version)
+        needs_x = _bioconductor_skeleton.packagesNeedingX(packages)
         problems = []
         for k, v in packages.items():
             try:
                 _bioconductor_skeleton.write_recipe(
                     k, recipe_folder, config, force=True, bioc_version=bioc_version,
                     pkg_version=v['Version'], versioned=versioned, packages=packages,
-                    skip_if_in_channels=skip_if_in_channels)
+                    skip_if_in_channels=skip_if_in_channels, needs_x = k in needs_x)
             except:
                 problems.append(k)
         if len(problems):
