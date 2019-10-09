@@ -1,41 +1,41 @@
+{% set name = "PyBEL" %}
+{% set version = "0.13.2" %}
+{% set sha256 = "469201a25e77ab2f1519bd36847ca47b061c57243a084e07ea6e69bf0ff1acd6" %}
+
 package:
-  name: pybel
-  version: "0.13.2"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  url: https://files.pythonhosted.org/packages/89/db/4b061fcb7a14618c9598a9e75e5023dc7f1ebc7cb771c159730fb98e5f39/pybel-0.13.2.tar.gz
-  sha256: 469201a25e77ab2f1519bd36847ca47b061c57243a084e07ea6e69bf0ff1acd6
+  url: https://files.pythonhosted.org/packages/89/db/4b061fcb7a14618c9598a9e75e5023dc7f1ebc7cb771c159730fb98e5f39/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   noarch: python
   entry_points:
     - pybel = pybel.cli:main
   number: 0
-  # tests fail on osx: https://travis-ci.org/bioconda/bioconda-recipes/jobs/235726973#L3656
-  # click needs to be patched in order to properly detect unicode in py3k
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
   host:
-    - python <3
+    - python >=3.5
     - pip
   run:
-    - python <3
+    - python >=3.5
     - requests
-    - ndex-python
     - requests-file
-    - networkx
+    - networkx >=2.1
     - pyparsing
-    - configparser
-    - py2neo
     - click
+    - click-plugins
     - sqlalchemy
-    - onto2nx
+    - tqdm
+    - bel-resources
 
 test:
-  # Python imports
   imports:
     - pybel
-    - pybel.ext
     - pybel.manager
     - pybel.parser
     - pybel.parser.modifiers
@@ -44,6 +44,14 @@ test:
     - LANG=C.UTF-8 pybel --help
 
 about:
-  home: https://github.com/pybel/pybel
-  license: Apache Software License
-  summary: 'PyBEL is a Python package for parsing and handling biological networks encoded in the Biological Expression Language (BEL)'
+  home: https://pybel.readthedocs.io
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: LICENSE
+  summary: "PyBEL is a Python package for parsing and handling biological networks encoded in the Biological Expression Language (BEL)."
+  doc_url: https://pybel.readthedocs.io/en/latest/
+  dev_url: https://github.com/pybel/pybel
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btx660
