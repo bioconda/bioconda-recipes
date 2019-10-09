@@ -57,6 +57,7 @@ else
   CONFIG_ARGS="--without-gnutls --with-openssl=$PREFIX"
 fi
 
+# not building with boost as it's only used for unit tests
 ./configure \
     --with-dll \
     --with-mt \
@@ -73,7 +74,6 @@ fi
     --without-vdb \
     --with-z=$PREFIX \
     --with-bz2=$PREFIX \
-    --with-boost=$PREFIX \
     --with-nettle=$PREFIX \
     --without-krb5 \
     --without-sse42 \
