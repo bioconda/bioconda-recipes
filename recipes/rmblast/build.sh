@@ -93,7 +93,6 @@ make -j${CPU_COUNT} -f Makefile.flat all_projects="$projects"
 rm $LIB_INSTALL_DIR
 
 mkdir -p $PREFIX/bin $LIB_INSTALL_DIR
-rm $SRC_DIR/c++/ReleaseMT/bin/*_unit_test
 cp $SRC_DIR/c++/ReleaseMT/bin/* $PREFIX/bin/
 cp $SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
 
