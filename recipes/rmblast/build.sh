@@ -70,7 +70,7 @@ fi
     --without-gcrypt \
     --with-nettle=$PREFIX \
     --with-z=$PREFIX \
-    --without-krb5 $CONFIG_ARGS
+    --without-krb5 $CONFIG_ARGS || cat config.log >&2
 
 projects="algo/blast/ app/ objmgr/ objtools/align_format/ objtools/blast/"
 cd ReleaseMT
