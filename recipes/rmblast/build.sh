@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euxo pipefail
 
 patch -p1 < $RECIPE_DIR/isb-2.9.0+-rmblast-p2.patch
 
@@ -8,6 +9,7 @@ export CFLAGS="$CFLAGS -Ofast"
 export CXXFLAGS="$CXXFLAGS -Ofast"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CC_FOR_BUILD=$CC
 
 if test x"`uname`" = x"Linux"; then
     # only add things needed; not supported by OSX ld
@@ -16,6 +18,8 @@ fi
 
 if [ `uname` == Darwin ]; then
     export LDFLAGS="${LDFLAGS} -Wl,-rpath,$PREFIX/lib -lz -lbz2"
+else
+    export CPP_FOR_BUILD=$CPP
 fi
 
 LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
@@ -44,6 +48,9 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 # nettle: set nettle
 # -krb5: disable kerberos (needed on OSX)
 
+# Fixes building on Linux
+export AR="${AR} rcs"
+
 if [ `uname` == Linux ]; then
   CONFIG_ARGS="--without-openssl --with-gnutls=$PREFIX"
 else
@@ -67,10 +74,10 @@ fi
     --with-z=$PREFIX \
     --with-bz2=$PREFIX \
     --with-boost=$PREFIX \
-    --without-gcrypt \
     --with-nettle=$PREFIX \
-    --with-z=$PREFIX \
-    --without-krb5 $CONFIG_ARGS || cat config.log >&2
+    --without-krb5 \
+    --without-sse42 \
+    --without-gcrypt $CONFIG_ARGS
 
 projects="algo/blast/ app/ objmgr/ objtools/align_format/ objtools/blast/"
 cd ReleaseMT
@@ -92,3 +99,5 @@ cp $SRC_DIR/c++/ReleaseMT/lib/* $LIB_INSTALL_DIR
 
 chmod +x $PREFIX/bin/*
 sed -i.bak '1 s|^.*$|#!/usr/bin/env perl|g' $PREFIX/bin/update_blastdb.pl
+# Patches to enable this script to work better in bioconda
+sed -i.bak 's/mktemp.*/mktemp`/; s/exit 1/exit 0/; s/^export PATH=\/bin:\/usr\/bin:/\#export PATH=\/bin:\/usr\/bin:/g' $PREFIX/bin/get_species_taxids.sh
