@@ -682,7 +682,6 @@ def bioconductor_skeleton(
             bioc_version = _bioconductor_skeleton.latest_bioconductor_release_version()
         packages = _bioconductor_skeleton.fetchPackages(bioc_version)
         needs_x = _bioconductor_skeleton.packagesNeedingX(packages)
-        print("need X: {}".format(needs_x))
         problems = []
         for k, v in packages.items():
             try:
