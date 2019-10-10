@@ -17,14 +17,15 @@ mkdir -p ${PREFIX}/bin
 
 #cp -rf ${RECIPE_DIR}/TERefiner/* ./TERefiner/
 
-
 cd TERefiner
 make
 cd ${WORK_DIR} 
 
 chmod 777 TERefiner_1
 
-cd ./ContigsCompactor-v0.2.0/ContigsMerger/ && make && cd ${WORK_DIR} 
+cd ./ContigsCompactor-v0.2.0/ContigsMerger/ 
+make
+cd ${WORK_DIR} 
 
 cp -rf ./TERefiner/* ${PREFIX}/bin/ 
 
@@ -32,4 +33,5 @@ cp -rf ./ContigsCompactor-v0.2.0/ContigsMerger/* ${PREFIX}/bin
 
 chmod +x ${PREFIX}/bin/TERefiner_1
 chmod +x ${PREFIX}/bin/ContigsMerger
+
 
