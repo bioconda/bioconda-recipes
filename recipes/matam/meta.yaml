@@ -1,0 +1,63 @@
+{% set name = "matam" %}
+{% set version = "1.6.0" %}
+{% set sha256 = "unused" %}
+
+package:
+  name: matam
+  version: {{ version }}
+
+source:
+  # can't use url due to submodules not present in github release
+  # url: https://github.com/bonsai-team/{{ name }}/archive/v{{ version }}.tar.gz
+  git_url: https://github.com/bonsai-team/matam.git
+  git_tag: v{{ version }}
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+  skip: True # [osx]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - cmake
+    - autoconf
+    - automake
+
+  host:
+    - zlib
+    - python >=3
+
+  run:
+    - coreutils # Centos6 (otherwise sort --parallel is unrecognized)
+    - wget
+    - bzip2
+    - zlib
+    - python >=3
+    - numpy
+    - samtools=1.9=h8571acd_11 # samtools libcrypto.so.1.0.0 error (https://github.com/sunbeam-labs/sunbeam/issues/181)
+    - sga
+    - sortmerna
+    - vsearch
+    - rdptools
+    - krona
+
+test:
+  commands:
+    - matam_assembly.py --help
+    - index_default_ssu_rrna_db.py --help
+    - matam_db_preprocessing.py --help
+    - matam_compare_samples.py --help
+
+about:
+  home: https://github.com/bonsai-team/matam
+  license: AGPL-3.0
+  license_file: LICENSE
+  summary: MATAM is a software dedicated to the fast and accurate targeted assembly of short reads.
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btx644
+  skip-lints:
+    - uses_vcs_url
