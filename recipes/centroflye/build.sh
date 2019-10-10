@@ -9,7 +9,7 @@ popd
 
 outdir=${PREFIX}/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p ${outdir}
-cp scripts $outdir/
+cp -r scripts $outdir/
 cp run_all.sh $outdir/
 chmod +x $outdir/run_all.sh
 chmod +x $outdir/scripts/*.py
