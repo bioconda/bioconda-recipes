@@ -1,0 +1,64 @@
+diff --git a/bin/mapDamage b/bin/mapDamage
+index 7e3fa86..d64eb4e 100755
+--- a/bin/mapDamage
++++ b/bin/mapDamage
+@@ -163,14 +163,6 @@ def main():
+         sys.path.insert(0,path_to_mm)
+     import mapdamage
+ 
+-    fpath_seqtk = mapdamage.rscript.construct_path("seqtk", folder="seqtk")
+-    if not (os.path.isfile(fpath_seqtk) and os.access(fpath_seqtk, os.X_OK)):
+-        sys.stderr.write("Seqtk executable not accessible; mapDamage has not\n"
+-                         "been intalled properly or current user does not\n"
+-                         "sufficient permissions. Expected executable at\n   "
+-                         "'%s'\n" % (fpath_seqtk,))
+-        return 1
+-
+     options = mapdamage.parseoptions.options()
+     if options == None:
+         sys.stderr.write("Option parsing failed, terminating the program\n")
+diff --git a/mapdamage/composition.py b/mapdamage/composition.py
+index b46b9d6..99edbed 100644
+--- a/mapdamage/composition.py
++++ b/mapdamage/composition.py
+@@ -33,11 +33,10 @@ def get_base_comp(filename,destination=False):
+     Gets the basecomposition of all the sequences in filename
+     and returns the value to destination if given.
+     """
+-    path_to_seqtk = mapdamage.rscript.construct_path("seqtk",folder="seqtk")
+     bases = {"A":0,"C":0,"G":0,"T":0}
+     alp = ["A","C","G","T"]
+     try:
+-        proc = subprocess.Popen([path_to_seqtk,"comp",filename],stdout=subprocess.PIPE)
++        proc = subprocess.Popen(["seqtk","comp",filename],stdout=subprocess.PIPE)
+         out = proc.communicate()[0]
+         for li in out.splitlines():
+             tabs = li.split() # 1 is the ref, 2 is the total and then the base counts A, C, G and T.
+diff --git a/setup.py b/setup.py
+index 31a12d7..9ef3c4e 100644
+--- a/setup.py
++++ b/setup.py
+@@ -40,14 +40,8 @@ class compileInstall(DistutilsInstall):
+     def run(self):
+         self.record=""
+         setup_version()
+-        compile_seqtk()
+         DistutilsInstall.run(self)
+         # fixing the permission problem of seqtk
+-        files = self.get_outputs()
+-        for fi in files:
+-            if fi.endswith("seqtk/seqtk"):
+-                os.chmod(fi,0o755)
+-
+ 
+ 
+ 
+@@ -59,7 +53,7 @@ setup(
+     author='Aurélien Ginolhac, Mikkel Schubert, Hákon Jónsson',
+     author_email='MSchubert@snm.ku.dk, jonsson.hakon@gmail.com',
+     packages=['mapdamage'],
+-    package_data={'mapdamage': ['Rscripts/*.R','Rscripts/stats/*.R','seqtk/seqtk']},
++    package_data={'mapdamage': ['Rscripts/*.R','Rscripts/stats/*.R']},
+     scripts=['bin/mapDamage'],
+     url='https://github.com/ginolhac/mapDamage',
+     license='LICENSE.txt',
