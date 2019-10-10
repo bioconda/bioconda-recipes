@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd src;
-make;
+make CC=${CXX} CFLAGS="$CXXFLAGS -fopenmp -lz"
 
 
 mkdir -p $PREFIX/bin;
