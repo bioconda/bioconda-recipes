@@ -2,5 +2,5 @@
 set -eu -o pipefail
 
 mkdir -p $PREFIX/bin
-chmod a+x duphold_shared
-cp duphold_shared $PREFIX/bin/duphold
+chmod a+x duphold_static
+cp duphold_static $PREFIX/bin/duphold
