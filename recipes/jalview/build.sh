@@ -10,7 +10,7 @@ mkdir -p $JALVIEWDIR
 # copy jalview files to target
 
 # debug - is the JAR even generated ???
-ls -lR $SRC_DIR | grep jalview-all
+#ls -lR $SRC_DIR | grep jalview-all
 
 cp -R build/libs/jalview-all-$PKG_VERSION-j1.8.jar $JALVIEWDIR/jalview-all-j1.8.jar
 # copy wrapper and make executable
