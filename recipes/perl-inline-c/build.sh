@@ -1,4 +1,5 @@
 #!/bin/bash
+rm t/08taint.t
 
 # If it has Build.PL use that, otherwise use Makefile.PL
 if [ -f Build.PL ]; then
@@ -17,4 +18,3 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
-

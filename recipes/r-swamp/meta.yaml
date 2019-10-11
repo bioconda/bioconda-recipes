@@ -1,43 +1,67 @@
-{% set name = 'swamp' %}
 {% set version = '1.4.1' %}
 
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
 package:
-  name: r-{{ name }}
-  version: {{ version }}
+  name: r-swamp
+  version: {{ version|replace("-", "_") }}
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/{{ name }}_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/{{ name }}/{{ name }}_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/swamp_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/swamp/swamp_{{ version }}.tar.gz
   sha256: a6462f4fe99837317752b6d2c8f31275414a7f3e6fb4ab2e4fd8409c4f238407
 
 build:
-  number: 0
+  noarch: generic
+  merge_build_host: True  # [win]
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
+  build:
+    - {{posix}}zip               # [win]
+
   host:
     - r-base
     - r-mass
     - r-amap
     - r-gplots
-    - bioconductor-impute
+    - 'bioconductor-impute >=1.54.0,<1.56.0'
 
   run:
     - r-base
     - r-mass
     - r-amap
     - r-gplots
-    - bioconductor-impute
+    - 'bioconductor-impute >=1.54.0,<1.56.0'
 
 test:
   commands:
-    - $R -e "library('swamp')"
+
+    - $R -e "library('swamp')"           # [not win]
+    - "\"%R%\" -e \"library('swamp')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=swamp
   license: GPL (>= 2)
-  summary: Collection of functions to connect the structure of the data with the information on the samples.
+  summary: 'Collection of functions to connect the structure of the data with the information
+    on the samples. Three types of associations are covered: 1. linear model of principal
+    components. 2. hierarchical clustering analysis. 3. distribution of features-sample
+    annotation associations. Additionally, the inter-relation between sample annotations
+    can be analyzed. Simple methods are provided for the correction of batch effects
+    and removal of principal components.'
+
   license_family: GPL3
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

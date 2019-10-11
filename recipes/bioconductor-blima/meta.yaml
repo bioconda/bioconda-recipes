@@ -1,44 +1,52 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.0" %}
 {% set name = "blima" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 5d83e9c62a578a3005d4b5768522f8733ebb4c0f6a40243b1719279ab49b8301
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 2e95ea07342f80f96e6893c08a11ef12
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: xtable, blimaTestingData, BiocStyle, illuminaHumanv4.db, lumi, knitr
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
-    - 'bioconductor-beadarray >=2.0.0'
-    - 'bioconductor-biobase >=2.0.0'
-    - bioconductor-biocgenerics
+    - 'bioconductor-beadarray >=2.34.0,<2.35.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-base
     - 'r-rcpp >=0.12.8'
   run:
-    - 'bioconductor-beadarray >=2.0.0'
-    - 'bioconductor-biobase >=2.0.0'
-    - bioconductor-biocgenerics
+    - 'bioconductor-beadarray >=2.34.0,<2.35.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
     - r-base
     - 'r-rcpp >=0.12.8'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
   summary: 'Package blima includes several algorithms for the preprocessing of Illumina microarray data. It focuses to the bead level analysis and provides novel approach to the quantile normalization of the vectors of unequal lengths. It provides variety of the methods for background correction including background subtraction, RMA like convolution and background outlier removal. It also implements variance stabilizing transformation on the bead level. There are also implemented methods for data summarization. It also provides the methods for performing T-tests on the detector (bead) level and on the probe level for differential expression testing.'
-
 extra:
   identifiers:
     - biotools:blima
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-blima
+    path: recipes/bioconductor-blima
+    version: 1.14.0
+

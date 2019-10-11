@@ -1,4 +1,4 @@
-{% set version = '2.1.3' %}
+{% set version = '2.5.9' %}
 
 package:
   name: r-hemdag
@@ -6,50 +6,67 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/HEMDAG_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/HEMDAG/HEMDAG_{{ version }}.tar.gz
-
-
-  sha256: 3c62a2c0295bc839d0eec757d31bc731abe3baa6d758860bdc784704fc190c84 
+    - {{ cran_mirror }}/src/contrib/HEMDAG_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/HEMDAG/HEMDAG_{{ version }}.tar.gz
+  sha256: b49e27994aedee3ba422b14c956424487b1bed8374d0d3b5c3a111dcbc81e139
 
 build:
-  number: 2
-
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
   host:
     - r-base
-    - r-perfmeas
     - bioconductor-rbgl
+    - r-doparallel
+    - r-foreach
     - bioconductor-graph
+    - r-iterators
+    - r-plyr
     - r-precrec
     - bioconductor-preprocesscore
-
   run:
     - r-base
-    - r-perfmeas
     - bioconductor-rbgl
+    - r-doparallel
+    - r-foreach
     - bioconductor-graph
+    - r-iterators
+    - r-plyr
     - r-precrec
     - bioconductor-preprocesscore
 
 test:
   commands:
-    - $R -e "library('HEMDAG')"
+    - $R -e "library('HEMDAG')"           # [not win]
+    - "\"%R%\" -e \"library('HEMDAG')\""  # [win]
 
 about:
-  home: https://CRAN.R-project.org/package=HEMDAG
+  home: https://github.com/marconotaro/HEMDAG
   license: GPL (>= 3)
-  summary: An implementation of Hierarchical Ensemble Methods for Directed Acyclic Graphs (DAGs).
-    The 'HEMDAG' package can be used to enhance the predictions of virtually any flat
-    learning methods, by taking into account the hierarchical nature of the classes
-    of a bio-ontology. 'HEMDAG' is specifically designed for exploiting the hierarchical
-    relationships of DAG-structured taxonomies, such as the Human Phenotype Ontology
-    (HPO) or the Gene Ontology (GO), but it can be also safely applied to tree-structured
-    taxonomies (as FunCat), since trees are DAGs. 'HEMDAG' scale nicely both in terms
-    of the complexity of the taxonomy and in the cardinality of the examples. (Marco
-    Notaro, Max Schubach, Peter N. Robinson and Giorgio Valentini (2017) doi:10.1186/s12859-017-1854-y
   license_family: GPL3
+  summary: a collection of Hierarchical Ensemble Methods (HEMs) for Directed Acyclic Graphs (DAGs).
+  description: "[![Documentation Status](https://readthedocs.org/projects/hemdag-tutorials/badge/?version=latest)](https://hemdag-tutorials.readthedocs.io/en/latest/?badge=latest)\n\nHEMDAG library:\n\
+      * implements several Hierarchical Ensemble Methods (HEMs) for Directed Acyclic Graphs (DAGs);\n\
+      * reconciles flat predictions with the topology of the ontology;\n\
+      * can enhance predictions of virtually any flat learning methods by taking into account the hierarchical relationships between ontology classes;\n\
+      * provides biologically consistent predictions according to the hierarchical nature of the ontology classes;\n\
+      * is specifically designed for exploiting the hierarchical relationships of DAG-structured taxonomies, 
+        such as the Human Phenotype Ontology (HPO) or the Gene Ontology (GO), but can be safely applied to tree-structured 
+        taxonomies as well (e.g. FunCat), since trees are DAGs;\n\
+      * scales nicely both in terms of the complexity of the taxonomy and in the cardinality of the examples;\n\
+      * provides several utility functions to process and analyze graphs;\n\
+      * provides several performance metrics to evaluate HEMs algorithms.\n\n"
+  doc_url: https://hemdag-tutorials.readthedocs.io
+  dev_url: https://github.com/marconotaro/HEMDAG
+
+extra:
+  recipe-maintainers:
+    - marconotaro
+    - visze

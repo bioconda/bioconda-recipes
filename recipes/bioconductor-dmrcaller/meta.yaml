@@ -1,0 +1,47 @@
+{% set version = "1.16.0" %}
+{% set name = "DMRcaller" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 23001b628eb991beec5ef7ad3921f1b1
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr, RUnit, BiocGenerics
+requirements:
+  host:
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - r-base
+    - r-betareg
+    - r-rcpp
+    - r-rcpproll
+  run:
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - r-base
+    - r-betareg
+    - r-rcpp
+    - r-rcpproll
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Uses Bisulfite sequencing data in two conditions and identifies differentially methylated regions between the conditions in CG and non-CG context. The input is the CX report files produced by Bismark and the output is a list of DMRs stored as GRanges objects.'
+

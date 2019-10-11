@@ -1,4 +1,4 @@
-{% set version = '2.1.1' %}
+{% set version = '2.3.0' %}
 
 package:
   name: r-rnexml
@@ -6,11 +6,12 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/RNeXML_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/RNeXML/RNeXML_{{ version }}.tar.gz
-  sha256: 97f472067e42ad17a504f3ff9180f2575e47507a794735a23e7a69a54b3ddcc2
+    - {{ cran_mirror }}/src/contrib/RNeXML_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/RNeXML/RNeXML_{{ version }}.tar.gz
+  sha256: 8a52e141f2f47f4cfcb617c1a2866fdff26db4b56d47c914c9f12917c39edb73
 
 build:
+  noarch: generic
   number: 1
   rpaths:
     - lib/R/lib/
@@ -30,6 +31,7 @@ requirements:
     - r-tidyr >=0.3.1
     - r-uuid >=0.1_1
     - r-xml2
+    - r-stringi 
 
   run:
     - r-base
@@ -44,15 +46,27 @@ requirements:
     - r-tidyr >=0.3.1
     - r-uuid >=0.1_1
     - r-xml2
+    - r-stringi 
 
 test:
   commands:
-    - $R -e "library('RNeXML')"
+    - $R -e "library('RNeXML')"           # [not win]
+    - "\"%R%\" -e \"library('RNeXML')\""  # [win]
 
 about:
-  home: https://CRAN.R-project.org/package=RNeXML
-  license: 'BSD_3_clause + file LICENSE'
+  home: https://github.com/ropensci/RNeXML
+  license: BSD_3_clause
   summary: Provides access to phyloinformatic data in 'NeXML' format.  The package should add
     new functionality to R such as the possibility to manipulate 'NeXML' objects in
     more various and refined way and compatibility with 'ape' objects.
   license_family: BSD
+
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

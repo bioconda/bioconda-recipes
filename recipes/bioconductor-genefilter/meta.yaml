@@ -1,46 +1,55 @@
-{% set version = "1.60.0" %}
+{% set version = "1.66.0" %}
 {% set name = "genefilter" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: e78d58043cf6f746b6a6b4e2cb298f9dadf75ae1d16fbc286d93c8671ee57a9c
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 89a16c8a1c9ec26f6429981b785a15b0
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: class, hgu95av2.db, tkWidgets, ALL, ROC, DESeq, pasilla, RColorBrewer, BiocStyle, knitr
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - bioconductor-annotate
-    - bioconductor-annotationdbi
-    - bioconductor-biobase
-    - 'bioconductor-s4vectors >=0.9.42'
+    - 'bioconductor-annotate >=1.62.0,<1.63.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-survival
   run:
-    - bioconductor-annotate
-    - bioconductor-annotationdbi
-    - bioconductor-biobase
-    - 'bioconductor-s4vectors >=0.9.42'
+    - 'bioconductor-annotate >=1.62.0,<1.63.0'
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-survival
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Some basic functions for filtering genes'
-
+  summary: 'Some basic functions for filtering genes.'
 extra:
   identifiers:
     - biotools:genefilter
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-genefilter
+    path: recipes/bioconductor-genefilter
+    version: 1.62.0
+

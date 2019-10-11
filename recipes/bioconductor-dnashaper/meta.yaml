@@ -1,43 +1,51 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "DNAshapeR" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 5ba3cfb15f6b312a5941e55a666740107b828bef30ff61f8252c6b7f4b5c84dc
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 7f27913e977cf523165f72f81957c94e
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: AnnotationHub, knitr, rmarkdown, testthat, BSgenome.Scerevisiae.UCSC.sacCer3, BSgenome.Hsapiens.UCSC.hg19, caret
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
-    - bioconductor-biostrings
-    - bioconductor-genomicranges
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-base
     - r-fields
     - 'r-rcpp >=0.12.1'
   run:
-    - bioconductor-biostrings
-    - bioconductor-genomicranges
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
     - r-base
     - r-fields
     - 'r-rcpp >=0.12.1'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
   summary: 'DNAhapeR is an R/BioConductor package for ultra-fast, high-throughput predictions of DNA shape features. The package allows to predict, visualize and encode DNA shape features for statistical learning.'
-
 extra:
   identifiers:
     - biotools:dnashaper
+  parent_recipe:
+    name: bioconductor-dnashaper
+    path: recipes/bioconductor-dnashaper
+    version: 1.8.0
+

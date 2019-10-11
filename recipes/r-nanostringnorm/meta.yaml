@@ -1,16 +1,18 @@
-{% set version = '1.1.21' %}
+{% set version = '1.2.1' %}
 
 package:
   name: r-nanostringnorm
   version: {{ version|replace("-", "_") }}
 
 source:
-  url: https://cran.r-project.org/src/contrib/Archive/NanoStringNorm/NanoStringNorm_{{ version }}.tar.gz
-  sha256: 6416dd76a84d30bf9bd7000a581fd9b7757558b86e2afb49ad433f35cb8475e5
+  url:
+    - {{ cran_mirror }}/src/contrib/NanoStringNorm_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/NanoStringNorm/NanoStringNorm_{{ version }}.tar.gz
+  sha256: f2d4773a67c609a85ad12635252310e1e190444a66997d07665544def3862117
 
 build:
-  number: 2
-
+  noarch: generic
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
@@ -18,19 +20,32 @@ build:
 requirements:
   host:
     - r-base
+    - r-xml >=3.98_1.5
     - r-gdata >=2.8.2
     - bioconductor-vsn >=3.22.0
   run:
     - r-base
+    - r-xml >=3.98_1.5
     - r-gdata >=2.8.2
     - bioconductor-vsn >=3.22.0
 
 test:
   commands:
-    - $R -e "library('NanoStringNorm')"
+    - $R -e "library('NanoStringNorm')"           # [not win]
+    - "\"%R%\" -e \"library('NanoStringNorm')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=NanoStringNorm
   license: GPL-2
-  summary: A set of tools for normalizing, diagnostics and visualization of NanoString nCounter data.
+  summary: A set of tools for normalizing, diagnostics and visualization of NanoString nCounter
+    data.
   license_family: GPL2
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

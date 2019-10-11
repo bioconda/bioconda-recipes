@@ -1,0 +1,37 @@
+{% set version = "1.6.0" %}
+{% set name = "GENIE3" %}
+{% set bioc = "3.9" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 535e4bf9a25c52f26feb09ac5e790016
+build:
+  number: 1
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr, rmarkdown, foreach, doRNG, doParallel, Biobase, SummarizedExperiment, testthat, methods
+requirements:
+  host:
+    - r-base
+    - r-reshape2
+  run:
+    - r-base
+    - r-reshape2
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'This package implements the GENIE3 algorithm for inferring gene regulatory networks from expression data.'
+

@@ -1,43 +1,46 @@
 {% set version = "0.99.10" %}
 {% set name = "miRNAtap.db" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
-
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 43e735987bae9aa68b6e7544c5d1d87ebf7edcc075427114508eb8b47c7d91c8
-
+  md5: 48010280b68d6f1ddbff3b374132ce0a
 build:
-  number: 1
+  number: 5
   rpaths:
     - lib/R/lib/
     - lib/
-
+  noarch: generic
 requirements:
   host:
-    - bioconductor-annotationdbi
-    - bioconductor-mirnatap
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-mirnatap >=1.18.0,<1.19.0'
     - r-base
     - r-dbi
     - r-rsqlite
   run:
-    - bioconductor-annotationdbi
-    - bioconductor-mirnatap
+    - 'bioconductor-annotationdbi >=1.46.0,<1.47.0'
+    - 'bioconductor-mirnatap >=1.18.0,<1.19.0'
     - r-base
     - r-dbi
     - r-rsqlite
-    - wget
-
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: GPL-2
   summary: 'This package holds the database for miRNAtap.'
+extra:
+  parent_recipe:
+    name: bioconductor-mirnatap.db
+    path: recipes/bioconductor-mirnatap.db
+    version: 0.99.10
+

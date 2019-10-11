@@ -6,34 +6,27 @@ SHARE_DIR=$PREFIX/share/igblast
 
 mkdir -p $PREFIX/bin
 
-# This is going to contain the igblastn and igblastp binaries.
-# Only wrappers are installed into $PREFIX/bin/ .
-mkdir -p $SHARE_DIR/bin
-
 if [ $(uname) == Linux ]; then
-    # If on Linux, compile the tool ourselves because the distributed binaries
-    # link against libbz2.so, and the usual conda bzip2 package does not
-    # provide this. See https://github.com/bioconda/bioconda-recipes/pull/3020
-
-    cd c++
-    ./configure --prefix=$PREFIX --with-sqlite3=$PREFIX
-    make -j2
-    mv ReleaseMT/bin/{igblastn,igblastp} $SHARE_DIR/bin/
-    mv ReleaseMT/bin/makeblastdb $PREFIX/bin/
-else
-    # On macOS, use the prebuilt binaries
-    mv bin/makeblastdb $PREFIX/bin/
-    mv bin/igblastn bin/igblastp $SHARE_DIR/bin/
+  # The binaries want libbz2.so.1, but the correct soname is libbz2.so.1.0
+  for name in makeblastdb igblastn igblastp; do
+    patchelf --replace-needed libbz2.so.1 libbz2.so.1.0 bin/$name
+  done
 fi
 
+# $SHARE_DIR contains the actual igblastn and igblastp binaries and also the
+# required data files. Wrappers will be installed into $PREFIX/bin that set
+# $IGDATA to point to those data files.
+mkdir -p $SHARE_DIR/bin
 
-# Since IgBLAST needs the environment variable IGDATA in order to find its
-# data files (download below), the igblastn and igblastp binaries will be
-# wrappers that set IGDATA to $SCRIPT_DIR/../share/igblast.
-cp -f $RECIPE_DIR/igblastn.sh $PREFIX/bin/igblastn
-sed 's/igblastn/igblastp/g' $PREFIX/bin/igblastn > $PREFIX/bin/igblastp
-chmod +x $PREFIX/bin/igblastn $PREFIX/bin/igblastp
+# Copy binaries and wrappers
+for name in igblastn igblastp; do
+  mv bin/$name $SHARE_DIR/bin/
+  sed "s/igblastn/$name/g" $RECIPE_DIR/igblastn.sh > $PREFIX/bin/$name
+  chmod +x $PREFIX/bin/$name
+done
 
+# No wrapper needed
+mv bin/makeblastdb $PREFIX/bin/
 
 wget $IGBLAST_ADDRESS/edit_imgt_file.pl
 # Replace the hardcoded perl shebang pointing to /opt with `#!/usr/bin/env perl`.
@@ -48,5 +41,5 @@ mv edit_imgt_file.pl $PREFIX/bin/
 
 for IGBLAST_DIR in internal_data optional_file; do
     mkdir -p $SHARE_DIR/$IGBLAST_DIR
-    wget -nv -r -nH --cut-dirs=5 -X Entries,Repository,Root -P $SHARE_DIR/$IGBLAST_DIR $IGBLAST_ADDRESS/$IGBLAST_DIR
+    wget -nv -r -nH --cut-dirs=5 -X Entries,Repository,Root,CVS -P $SHARE_DIR/$IGBLAST_DIR $IGBLAST_ADDRESS/$IGBLAST_DIR
 done

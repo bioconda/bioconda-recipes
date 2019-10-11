@@ -1,31 +1,30 @@
-{% set version = "18.5.13" %}
-{% set sha256 = "be2279e50a1534b8c8611748d5c19cb76f100c5cc70a689b6055067715105bb1" %}
+{% set name = "galaxy-lib" %}
+{% set version = "19.5.2" %}
 
 package:
-  name: galaxy-lib
-  version: '{{version}}'
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://pypi.io/packages/source/g/galaxy-lib/galaxy-lib-{{version}}.tar.gz
-  sha256: '{{sha256}}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: c835c565807d1c1eb16ebb4a6c5ad68182184b18b54ee9bcd65a6024d9aecdba
 
 build:
+  number: 0
   noarch: python
-  preserve_egg_dir: true
-  number: 2
   entry_points:
+    - galaxy-tool-test=galaxy.tools.verify.script:main
     - mulled-build=galaxy.tools.deps.mulled.mulled_build:main
     - mulled-build-channel=galaxy.tools.deps.mulled.mulled_build_channel:main
+    - mulled-search=galaxy.tools.deps.mulled.mulled_search:main
     - mulled-build-tool=galaxy.tools.deps.mulled.mulled_build_tool:main
     - mulled-build-files=galaxy.tools.deps.mulled.mulled_build_files:main
-    - mulled-search=galaxy.tools.deps.mulled.mulled_search:main
-  script: python -m pip install --no-deps --ignore-installed .
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
   host:
-    - python
     - pip
-    - setuptools
+    - python
   run:
     - python
     - six >=1.9.0
@@ -33,11 +32,12 @@ requirements:
     - packaging
     - pyyaml
     - markupsafe
+    - boltons
 
 test:
-  # Python imports
   imports:
     - galaxy
+    - galaxy.containers
     - galaxy.exceptions
     - galaxy.jobs
     - galaxy.jobs.metrics
@@ -51,6 +51,7 @@ test:
     - galaxy.tools.deps.mulled
     - galaxy.tools.deps.resolvers
     - galaxy.tools.linters
+    - galaxy.tools.locations
     - galaxy.tools.parser
     - galaxy.tools.toolbox
     - galaxy.tools.toolbox.filters
@@ -58,17 +59,25 @@ test:
     - galaxy.tools.verify
     - galaxy.tools.verify.asserts
     - galaxy.util
-
+    - galaxy.util.logging
+    - galaxy.util.path
   commands:
+    - galaxy-tool-test --help
     - mulled-build --help
     - mulled-build-channel --help
+    - mulled-search --help
     - mulled-build-tool --help
     - mulled-build-files --help
-    - mulled-search --help
 
 about:
   home: https://github.com/galaxyproject/galaxy-lib
-  license: Academic Free License (AFL)
-  summary: Subset of Galaxy (http://galaxyproject.org/) core code base designed to
-    be used a library.
-  license_family: Apache
+  license: Academic Free (AFL)
+  license_family: OTHER
+  license_file: LICENSE
+  summary: Subset of Galaxy (http://galaxyproject.org/) core code base designed to be used a library.
+  doc_url: https://galaxy-lib.readthedocs.org
+  dev_url: https://github.com/galaxyproject/galaxy-lib
+
+extra:
+  recipe-maintainers:
+    - bgruening

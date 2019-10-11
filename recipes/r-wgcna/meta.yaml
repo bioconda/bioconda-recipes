@@ -1,4 +1,4 @@
-{% set version = '1.63' %}
+{% set version = '1.68' %}
 
 package:
   name: r-wgcna
@@ -6,21 +6,21 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/WGCNA_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/WGCNA/WGCNA_{{ version }}.tar.gz
-  sha256: 098cdfc7f8e5ccda57449e7a8ef7fa37e33f5ac3ad6b4b679dd62f642a6e4588
+    - {{ cran_mirror }}/src/contrib/WGCNA_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/WGCNA/WGCNA_{{ version }}.tar.gz
+  sha256: 0a04f15a20817f9260ae1896eda3be83a7f4855a27a348df85c7f4d376f1efe8
 
 build:
-  number: 0
-
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-
+    - make
   host:
     - r-base
     - bioconductor-annotationdbi
@@ -36,7 +36,6 @@ requirements:
     - bioconductor-preprocesscore
     - r-robust
     - r-survival
-
   run:
     - r-base
     - bioconductor-annotationdbi
@@ -55,18 +54,19 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('WGCNA')"
+    - $R -e "library('WGCNA')"           # [not win]
+    - "\"%R%\" -e \"library('WGCNA')\""  # [win]
 
 about:
-  home: http://www.genetics.ucla.edu/labs/horvath/CoexpressionNetwork/Rpackages/WGCNA/
+  home: http://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/
   license: GPL (>= 2)
   summary: Functions necessary to perform Weighted Correlation Network Analysis on high-dimensional
-    data. Includes functions for rudimentary data cleaning, construction of correlation
-    networks, module identification, summarization, and relating of variables and modules
-    to sample traits. Also includes a number of utility functions for data manipulation
-    and visualization.
+    data as originally described in Horvath and Zhang (2005) <doi:10.2202/1544-6115.1128>
+    and Langfelder and Horvath (2008) <doi:10.1186/1471-2105-9-559>. Includes functions
+    for rudimentary data cleaning, construction of correlation networks, module identification,
+    summarization, and relating of variables and modules to sample traits. Also includes
+    a number of utility functions for data manipulation and visualization.
   license_family: GPL3
-
 extra:
   identifiers:
     - biotools:wgcna

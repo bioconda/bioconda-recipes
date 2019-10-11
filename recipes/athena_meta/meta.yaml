@@ -1,0 +1,40 @@
+{% set version = "1.3" %}
+
+package:
+  name: athena_meta
+  version: {{ version }}
+
+source:
+  url: https://github.com/abishara/athena_meta/archive/{{ version }}.tar.gz
+  sha256: 3ae0ef982c52412d5954b6da4b8a3387b1f30eeb96902654d22188d4c536a784
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  host:
+    - python <3
+  run:
+    - python <3
+    - bwa 0.7.*
+    - flye 2.3.1
+    - pysam 0.15
+    - bx-python 0.8
+    - numpy 1.11
+    - ipython-cluster-helper 0.6
+    - idba_subasm 1.1.3a1
+    - htslib 1.9
+    - samtools 1.9
+
+test:
+  commands: 
+    - athena-meta -h | grep 'athena-meta'
+    - athena-meta --check_prereqs
+    - athena-meta --test
+
+about:
+  home: https://github.com/abishara/athena_meta/
+  summary: Athena read cloud assembler for metagenomes
+  license: MIT

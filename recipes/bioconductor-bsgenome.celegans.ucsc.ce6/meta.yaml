@@ -1,32 +1,41 @@
 {% set version = "1.4.0" %}
 {% set name = "BSgenome.Celegans.UCSC.ce6" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 6997709c5f9eca77a1b7d3367bee676f765b672b61acb9471d4cec3eca581f57
+  md5: cb86ff861d8f660c2abd8fc1907d84a6
 build:
-  number: 3
+  number: 7
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: TxDb.Celegans.UCSC.ce6.ensGene
 requirements:
   host:
-    - 'bioconductor-bsgenome >=1.33.5'
+    - 'bioconductor-bsgenome >=1.52.0,<1.53.0'
     - r-base
   run:
-    - 'bioconductor-bsgenome >=1.33.5'
+    - 'bioconductor-bsgenome >=1.52.0,<1.53.0'
     - r-base
-    - wget
+    - curl
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/annotation/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'Full genome sequences for Caenorhabditis elegans (Worm) as provided by UCSC (ce6, May 2008) and stored in Biostrings objects.'
+extra:
+  parent_recipe:
+    name: bioconductor-bsgenome.celegans.ucsc.ce6
+    path: recipes/bioconductor-bsgenome.celegans.ucsc.ce6
+    version: 1.4.0
+

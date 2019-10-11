@@ -1,0 +1,92 @@
+{% set version = '3.3.12' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-classdiscovery
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/ClassDiscovery_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/ClassDiscovery/ClassDiscovery_{{ version }}.tar.gz
+  sha256: fe4e7ec4283f6820f2c84c1c05a1b9c71c837137edea126769f06f5a53cc2ee5
+
+build:
+  noarch: generic
+  merge_build_host: True  # [win]
+  # If this is a new build for the same version, increment the build number.
+  number: 0
+
+  # This is required to make R link correctly on Linux.
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+# Suggests: xtable
+requirements:
+  build:
+    - {{posix}}zip               # [win]
+
+  host:
+    - r-base
+    - bioconductor-biobase
+    - r-cluster
+    - r-mclust
+    - r-oompabase >=3.0.1
+    - r-oompadata
+
+  run:
+    - r-base
+    - bioconductor-biobase
+    - r-cluster
+    - r-mclust
+    - r-oompabase >=3.0.1
+    - r-oompadata
+
+test:
+  commands:
+    # You can put additional test commands to be run here.
+    - $R -e "library('ClassDiscovery')"           # [not win]
+    - "\"%R%\" -e \"library('ClassDiscovery')\""  # [win]
+
+  # You can also put a file called run_test.py, run_test.sh, or run_test.bat
+  # in the recipe that will be run at test time.
+
+  # requires:
+    # Put any additional test requirements here.
+
+about:
+  home: http://oompa.r-forge.r-project.org/
+  license: Apache (== 2.0)
+  summary: 'Defines the classes used for "class discovery" problems in the OOMPA project (<http://oompa.r-forge.r-project.org/>).
+    Class discovery primarily consists of unsupervised clustering methods with attempts
+    to assess their statistical significance. '
+
+  license_family: APACHE
+
+# The original CRAN metadata for this package was:
+
+# Package: ClassDiscovery
+# Version: 3.3.9
+# Date: 2018-09-27
+# Title: Classes and Methods for "Class Discovery" with Microarrays or Proteomics
+# Author: Kevin R. Coombes
+# Maintainer: Kevin R. Coombes <krc@silicovore.com>
+# Depends: R (>= 3.0), cluster, oompaBase (>= 3.0.1)
+# Imports: methods, stats, graphics, grDevices, mclust, oompaData, Biobase
+# Suggests: xtable
+# Description: Defines the classes used for "class discovery" problems in the OOMPA project (<http://oompa.r-forge.r-project.org/>). Class discovery primarily consists of unsupervised clustering methods with attempts to assess their statistical significance.
+# License: Apache License (== 2.0)
+# LazyLoad: yes
+# biocViews: Microarray, Clustering
+# URL: http://oompa.r-forge.r-project.org/
+# NeedsCompilation: no
+# Packaged: 2018-10-03 11:25:11 UTC; Kevin
+# Repository: CRAN
+# Date/Publication: 2018-10-03 22:02:55 UTC
+
+# See
+# http://docs.continuum.io/conda/build.html for
+# more information about meta.yaml

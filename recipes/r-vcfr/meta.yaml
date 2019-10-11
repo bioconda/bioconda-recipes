@@ -1,4 +1,4 @@
-{% set version = '1.5.0' %}
+{% set version = '1.8.0' %}
 
 package:
   name: r-vcfr
@@ -6,21 +6,21 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/vcfR_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/vcfR/vcfR_{{ version }}.tar.gz
-  sha256: 7cd7d352d72120cf6127c9ef86b5134135d66bb4f047945c75aa0b99cc741a22
+    - {{ cran_mirror }}/src/contrib/vcfR_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/vcfR/vcfR_{{ version }}.tar.gz
+  sha256: 5ffcf9980c1936b9be41b92d5887c56a7ec6e3cf197e5ef7c78aefa8aba20499
 
 build:
-  number: 1
-
+  number: 2
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-
+    - make
   host:
     - r-base
     - r-rcpp
@@ -30,10 +30,9 @@ requirements:
     - r-memuse
     - r-pinfsc50
     - r-stringr
-    - r-tidyr
+    - r-tibble
     - r-vegan
     - r-viridislite
-
   run:
     - r-base
     - r-rcpp
@@ -43,16 +42,17 @@ requirements:
     - r-memuse
     - r-pinfsc50
     - r-stringr
-    - r-tidyr
+    - r-tibble
     - r-vegan
     - r-viridislite
 
 test:
   commands:
-    - $R -e "library('vcfR')"
+    - $R -e "library('vcfR')"           # [not win]
+    - "\"%R%\" -e \"library('vcfR')\""  # [win]
 
 about:
-  home: https://github.com/knausb/vcfR, https://knausb.github.io/ vcfR_documentation/
+  home: https://github.com/knausb/vcfR, https://knausb.github.io/vcfR_documentation/
   license: GPL
   summary: Facilitates easy manipulation of variant call format (VCF) data. Functions are provided
     to rapidly read from and write to VCF files. Once VCF data is read into R a parser

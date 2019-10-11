@@ -10,6 +10,31 @@ source:
   url: https://github.com/PacificBiosciences/ConsensusCore/archive/{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
+build:
+  skip: True # [not py27]
+  number: 3
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - meson >=0.48.1
+    - ninja
+    - pkg-config
+    - swig
+  host:
+    - python
+    - boost
+    - numpy >=1.16.2
+  run:
+    - python
+    - numpy >=1.16.2
+
+test:
+  imports:
+    - ConsensusCore
+  commands:
+    - python -c 'import ConsensusCore; ConsensusCore.Version.VersionString()'
+
 about:
   home: https://github.com/PacificBiosciences/pbbioconda
   license: BSD-3-Clause-Clear
@@ -19,28 +44,3 @@ extra:
   recipe-maintainers:
     - pb-dseifert
     - mhsieh
-
-build:
-  skip: True # [not py27]
-  number: 1
-
-requirements:
-  build:
-    - {{ compiler('cxx') }}
-    - meson
-    - ninja
-    - pkg-config
-    - swig
-  host:
-    - python
-    - boost
-    - numpy >=1.7.1
-  run:
-    - python
-    - numpy >=1.7.1
-
-test:
-  imports:
-    - ConsensusCore
-  commands:
-    - python -c 'import ConsensusCore; ConsensusCore.Version.VersionString()'

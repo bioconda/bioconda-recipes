@@ -1,19 +1,37 @@
+{% set name = 'beast2' %}
+{% set version = '2.6.1' %}
+{% set hash = '3fc8304ad5bce4526d238fd2fc40d60fa4d5fe8824ff0cc237d428f9aa8c74c6' %}
+
 package:
-  name: beast2
-  version: '2.4.5'
+  name: '{{ name }}'
+  version: '{{ version }}'
 
 source:
-  url: https://github.com/CompEvol/beast2/releases/download/v2.4.5/BEAST.v2.4.5.Linux.tgz
-  md5: aa7579069e47a2ef6257071205320665
+  url: https://github.com/CompEvol/beast2/archive/v{{ version }}.zip
+  sha256: '{{ hash }}'
   patches:
+    - build.patch
     - beast_lib.patch
 
 build:
-  number: 1
+  number: 0
+  noarch: generic
 
 requirements:
   build:
     - gettext
+    - openjdk
+    - ant
+
+  host:
+    - openjdk 8.0* zulu8*
+    - beagle-lib
+    - fontconfig
+    - font-ttf-ubuntu
+    - fontconfig
+    - freetype
+    - xorg-libxtst
+
   run:
     - openjdk 8.0* zulu8*
     - beagle-lib
@@ -27,15 +45,15 @@ test:
   commands:
     - beast -version
     # check to make sure beagle-lib is loaded ok
-    - beast -beagle_info | grep Flags
-    - addonmanager -help
-    - appstore -help
+    - beast -beagle_info \| grep Flags
+    - applauncher -help
+    - packagemanager -help
     - loganalyser -h
     - logcombiner -help
     - treeannotator -help
 
 about:
   home: http://www.beast2.org
-  license: LGPLv2.1
-  license_file: LICENSE.txt
+  license: LGPL (>= 2.1)
+  license_file: COPYING
   summary: "BEAST 2 is a cross-platform program for Bayesian phylogenetic analysis of molecular sequences."

@@ -1,27 +1,31 @@
-{% set version = "1.0.0" %}
+{% set version = "1.6.0" %}
 {% set name = "HiCcompare" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-  sha256: 60e77bfb50f3f5732f41d3fe3044cb7ca8872e51e8682fc087f2df7c30a145e4
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 89f5a317b6381160c2ef31d6b2d8c553
 build:
-  number: 0
+  number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown, testthat, multiHiCcompare
 requirements:
   host:
-    - bioconductor-biocparallel
-    - bioconductor-genomicranges
-    - bioconductor-interactionset
-    - bioconductor-iranges
-    - bioconductor-qdnaseq
-    - bioconductor-s4vectors
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-interactionset >=1.12.0,<1.13.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-qdnaseq >=1.20.0,<1.21.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-data.table
     - r-dplyr
@@ -32,12 +36,12 @@ requirements:
     - r-mgcv
     - r-pheatmap
   run:
-    - bioconductor-biocparallel
-    - bioconductor-genomicranges
-    - bioconductor-interactionset
-    - bioconductor-iranges
-    - bioconductor-qdnaseq
-    - bioconductor-s4vectors
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
+    - 'bioconductor-genomicranges >=1.36.0,<1.37.0'
+    - 'bioconductor-interactionset >=1.12.0,<1.13.0'
+    - 'bioconductor-iranges >=2.18.0,<2.19.0'
+    - 'bioconductor-qdnaseq >=1.20.0,<1.21.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-data.table
     - r-dplyr
@@ -51,17 +55,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
-  license: MIT
-  license_file: LICENSE
-  summary: 'HiCcompare provides functions for joint normalization and difference detection in multiple Hi-C datasets. HiCcompare operates on processed Hi-C data in the form of chromosome-specific chromatin interaction matrices. It accepts three-column tab-separated text files storing chromatin interaction matrices in a sparse matrix format which are available from several sources. HiCcompare is designed to give the user the ability to perform a comparative analysis on the 3-Dimensional structure of the genomes of cells in different biological states. HiCcompare differs from other packages that attempt to compare Hi-C data in that it works on processed data in chromatin interaction matrix format instead of pre-processed sequencing data. In addition, HiCcompare provides a non-parametric method for the joint normalization and removal of biases between two Hi-C datasets for the purpose of comparative analysis. HiCcompare also provides a simple yet robust permutation method for detecting differences between Hi-C datasets.'
-
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'MIT + file LICENSE'
+  summary: 'HiCcompare provides functions for joint normalization and difference detection in multiple Hi-C datasets. HiCcompare operates on processed Hi-C data in the form of chromosome-specific chromatin interaction matrices. It accepts three-column tab-separated text files storing chromatin interaction matrices in a sparse matrix format which are available from several sources. HiCcompare is designed to give the user the ability to perform a comparative analysis on the 3-Dimensional structure of the genomes of cells in different biological states.`HiCcompare` differs from other packages that attempt to compare Hi-C data in that it works on processed data in chromatin interaction matrix format instead of pre-processed sequencing data. In addition, `HiCcompare` provides a non-parametric method for the joint normalization and removal of biases between two Hi-C datasets for the purpose of comparative analysis. `HiCcompare` also provides a simple yet robust method for detecting differences between Hi-C datasets.'
 extra:
   identifiers:
     - biotools:HiCcompare
     - doi:10.1186/s12859-018-2288-x
-  authors:
-    - John Stansfield
-    - Mikhail Dozmorov
-  maintainers:
-    - John Stansfield <stansfieldjc at vcu.edu>
+  parent_recipe:
+    name: bioconductor-hiccompare
+    path: recipes/bioconductor-hiccompare
+    version: 1.2.0
+

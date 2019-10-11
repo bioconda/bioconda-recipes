@@ -1,4 +1,4 @@
-{% set version = '0.8.4' %}
+{% set version = '0.8.6' %}
 
 package:
   name: r-phylobase
@@ -6,9 +6,9 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/phylobase_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/phylobase/phylobase_{{ version }}.tar.gz
-  sha256: d7c1a972c266ffe80345c7150608a85e6e2def4a3f079ac964ad9dbce2281002
+    - {{ cran_mirror }}/src/contrib/phylobase_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/phylobase/phylobase_{{ version }}.tar.gz
+  sha256: e7117b210ef406115e5523b794d8c2c5779640cee8c06e73751dc14c69322fd9
 
 build:
   number: 1
@@ -18,8 +18,9 @@ build:
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-
+    - make
   host:
     - r-base
     - r-rnexml
@@ -27,7 +28,6 @@ requirements:
     - r-ade4
     - r-ape >=3.0
     - r-rncl >=0.6.0
-
   run:
     - r-base
     - r-rnexml
@@ -38,11 +38,13 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('phylobase')"
+
+    - $R -e "library('phylobase')"           # [not win]
+    - "\"%R%\" -e \"library('phylobase')\""  # [win]
 
 about:
   home: https://github.com/fmichonneau/phylobase
-  license: 'GPL (>= 2)'
+  license: GPL (>= 2)
   summary: Provides a base S4 class for comparative methods, incorporating one or more trees
     and trait data.
   license_family: GPL3

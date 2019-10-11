@@ -11,9 +11,13 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+
   host:
     - perl
     - perl-file-sharedir-install >=0.06
@@ -26,6 +30,8 @@ requirements:
     - perl-autodie
     - perl-extutils-makemaker
     - perl-test-warn
+    # GCC is required for tests (see below)
+    - compilers
 
   run:
     - perl
@@ -33,13 +39,17 @@ requirements:
     - perl-extutils-makemaker
     - perl-pegex
     - perl-parse-recdescent
+    - make
+    # GCC is required at runtime as this is a perl module that allows compiling and executing inline C code
+    - compilers
 
 test:
-  imports:
-    - Inline::C
 
 about:
   home: https://github.com/ingydotnet/inline-c-pm
   license: perl_5
   summary: 'C Language Support for Inline'
 
+extra:
+  skip-lints:
+    - compilers_must_be_in_build

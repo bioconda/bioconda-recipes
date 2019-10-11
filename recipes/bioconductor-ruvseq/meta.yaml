@@ -1,41 +1,48 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.0" %}
 {% set name = "RUVSeq" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 9c539658c55b0bbe259e7c51a124641cd49b7af3aee185b9179185b05e907b42
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: bacf3b82eb0dfaf71deedde3f134197e
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, knitr, RColorBrewer, zebrafishRNASeq, DESeq2
 requirements:
   host:
-    - bioconductor-biobase
-    - 'bioconductor-edaseq >=1.99.1'
-    - bioconductor-edger
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-edaseq >=2.18.0,<2.19.0'
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
     - r-base
     - r-mass
   run:
-    - bioconductor-biobase
-    - 'bioconductor-edaseq >=1.99.1'
-    - bioconductor-edger
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-edaseq >=2.18.0,<2.19.0'
+    - 'bioconductor-edger >=3.26.0,<3.27.0'
     - r-base
     - r-mass
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'This package implements the remove unwanted variation (RUV) methods of Risso et al. (2014) for the normalization of RNA-Seq read counts between samples.'
-
 extra:
   identifiers:
     - biotools:ruvseq
+  parent_recipe:
+    name: bioconductor-ruvseq
+    path: recipes/bioconductor-ruvseq
+    version: 1.14.0
+

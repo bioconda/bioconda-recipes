@@ -1,35 +1,40 @@
+{% set version = "0.3.4" %}
+
 package:
-  name: umitools
-  version: "0.3.0"
+  name: "umitools"
+  version: "{{ version }}"
 
 source:
-  url: https://pypi.python.org/packages/a0/5c/104c8f5d35abaaff7882b8f398f35e4052d4359762f05b396438095c7518/umitools-0.3.0.tar.gz
-  md5: 8af92b04cdaa02771a434fabbe211f15
+  url: https://pypi.io/packages/source/u/umitools/umitools-{{ version }}.tar.gz
+  sha256: 43337b9b715495e69f2e46b8e5f997856407560ca9c0cd16a9ee55084ba63b48
 
 build:
+  noarch: python
   entry_points:
+    - umitools=umitools.umitools:main
     - umi_reformat_fastq=umitools.reformat_umi_fastq:main
     - umi_reformat_sra_fastq=umitools.reformat_umi_sra_fastq:main
     - umi_mark_duplicates=umitools.umi_mark_duplicates:main
     - umi_simulator=umitools.umi_simulator:main
-  skip: True # [py27]
   number: 1
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
 
 requirements:
   host:
-    - python
-    - pysam
-    - editdistance
-    - networkx
-
+    - pip
+    - python >=3
   run:
-    - python
+    - python >=3
     - pysam
     - editdistance
     - networkx
 
 test:
+  imports:
+    - umitools
+
   commands:
+    - umitools --help
     - umi_reformat_fastq --help
     - umi_reformat_sra_fastq --help
     - umi_mark_duplicates --help
@@ -39,3 +44,8 @@ about:
   home: https://github.com/weng-lab/umitools
   license: GPL3
   summary: 'A toolset for handling sequencing data with unique molecular identifiers (UMIs)'
+
+extra:
+  identifiers:
+    - doi:10.1186/s12864-018-4933-1
+

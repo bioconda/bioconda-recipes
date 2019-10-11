@@ -1,33 +1,42 @@
+{% set version = "0.3.4" %}
+{% set sha256 = "e4336f03d0d15126dbb1c6368c7e80421b0c7354f4a6b492d54d7d14cf5a7f51" %}
+
 package:
   name: segemehl
-  version: 0.2.0
+  version: {{ version }}
 
-about:
-  home: http://www.bioinf.uni-leipzig.de/Software/segemehl/
-  summary: Short read mapping with gaps
 build:
-  number: 4
+  number: 0
+  skip: True  # [osx]
 
 source:
-  url: "http://www.bioinf.uni-leipzig.de/Software/segemehl/segemehl_0_2_0.tar.gz"
-  sha256: 2575139d2f2ba7bd534afcbe485c0570c177d1faaeb267c4cd873e65b8e72afb
+  url: "http://www.bioinf.uni-leipzig.de/Software/segemehl/downloads/segemehl-0.3.4.tar.gz"
+  sha256: {{ sha256 }}
 
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - pkg-config
   host:
     - zlib
     - ncurses
+    - htslib
   run:
-    - zlib
     - ncurses
+    - htslib
 
 test:
   commands:
     - segemehl.x --help 2>&1 | grep -A1 VERSION
-    - lack.x --help 2>&1 | grep -A1 VERSION
-    - testrealign.x --help 2>&1 | grep -A1 VERSION
+    - haarz.x --help 2>&1 | grep -A1 VERSION
 
 extra:
   identifiers:
     - biotools:segemehl
+
+about:
+  home: http://www.bioinf.uni-leipzig.de/Software/segemehl/
+  license: GPL3
+  license_file: licence.txt
+  summary: Short read mapping with gaps

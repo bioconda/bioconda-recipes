@@ -1,10 +1,12 @@
 #!/bin/bash
-FN="HSMMSingleCell_0.112.0.tar.gz"
+FN="HSMMSingleCell_1.4.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.6/data/experiment/src/contrib/HSMMSingleCell_0.112.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hsmmsinglecell/bioconductor-hsmmsinglecell_0.112.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/HSMMSingleCell_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HSMMSingleCell_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hsmmsinglecell/bioconductor-hsmmsinglecell_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hsmmsinglecell/bioconductor-hsmmsinglecell_1.4.0_src_all.tar.gz"
 )
-MD5="07190931796761fc34c6c1391a6d4cfc"
+MD5="8ee141b0de4637baf95d871cb0ff163b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -15,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

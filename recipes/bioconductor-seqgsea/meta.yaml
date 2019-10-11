@@ -1,41 +1,48 @@
-{% set version = "1.18.0" %}
+{% set version = "1.24.0" %}
 {% set name = "SeqGSEA" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 4aac943601f218adca968c80d34e337e5623ae89e3f3f42d5eb7f33da55158ed
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 99baf889467af15810cf88111873c40f
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: easyRNASeq, GenomicRanges
 requirements:
   host:
-    - bioconductor-biobase
-    - bioconductor-biomart
-    - bioconductor-deseq
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biomart >=2.40.0,<2.41.0'
+    - 'bioconductor-deseq >=1.36.0,<1.37.0'
     - r-base
     - r-doparallel
   run:
-    - bioconductor-biobase
-    - bioconductor-biomart
-    - bioconductor-deseq
+    - 'bioconductor-biobase >=2.44.0,<2.45.0'
+    - 'bioconductor-biomart >=2.40.0,<2.41.0'
+    - 'bioconductor-deseq >=1.36.0,<1.37.0'
     - r-base
     - r-doparallel
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 3)'
   summary: 'The package generally provides methods for gene set enrichment analysis of high-throughput RNA-Seq data by integrating differential expression and splicing. It uses negative binomial distribution to model read count data, which accounts for sequencing biases and biological variation. Based on permutation tests, statistical significance can also be achieved regarding each gene''s differential expression and splicing, respectively.'
-
 extra:
   identifiers:
     - biotools:seqgsea
+  parent_recipe:
+    name: bioconductor-seqgsea
+    path: recipes/bioconductor-seqgsea
+    version: 1.20.0
+

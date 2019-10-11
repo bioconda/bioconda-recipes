@@ -1,14 +1,14 @@
-{% set version = '1.2' %}
-{% set posix = '' %}
-{% set native = '' %}
+{% set version = '1.2.1' %}
 
 package:
   name: r-phylosignal
   version: {{ version|replace("-", "_") }}
 
 source:
-  url: {{ cran_mirror }}/src/contrib/phylosignal_{{ version }}.tar.gz
-  sha256: 4b1229a75352f86978137a2108938803240a55e8865a8e3cb21c151b3679fa2a
+  url:
+    - {{ cran_mirror }}/src/contrib/phylosignal_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/phylosignal/phylosignal_{{ version }}.tar.gz
+  sha256: 9acdfc724cff531590c5b6ba23cb25c5efb84659c08aa7f7cb76f05cec26ba81
 
 build:
   number: 0
@@ -20,7 +20,7 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - {{posix}}make
+    - make
   host:
     - r-base
     - r-dbi
@@ -33,6 +33,7 @@ requirements:
     - r-phylobase
   run:
     - r-base
+    - {{native}}gcc-libs         # [win]
     - r-dbi
     - r-rcpp >=0.11.0
     - r-rcpparmadillo
@@ -44,7 +45,9 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('phylosignal')"
+
+    - $R -e "library('phylosignal')"           # [not win]
+    - "\"%R%\" -e \"library('phylosignal')\""  # [win]
 
 about:
   home: https://CRAN.R-project.org/package=phylosignal
@@ -54,8 +57,13 @@ about:
     tree, different measures and tests for the phylogenetic signal, methods to describe
     where the signal is located and a phylogenetic clustering method.
   license_family: GPL3
-  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 
 extra:
   recipe-maintainers:
-    - nick-youngblut
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

@@ -1,10 +1,15 @@
 #!/bin/bash
 set -eu -o pipefail
 
-mkdir build
-cd build
+mkdir -p $PREFIX/bin
 
-cmake .. -DSEQAN_BUILD_SYSTEM=APP:yara -DSEQAN_ARCH_NATIVE=ON -DCMAKE_INSTALL_PREFIX=$PREFIX
-make all
-make test
-make install
+binaries="\
+yara_mapper \
+yara_indexer \
+"
+
+for i in $binaries
+do
+    cp $SRC_DIR/bin/$i $PREFIX/bin/$i
+    chmod a+x $PREFIX/bin/$i
+done

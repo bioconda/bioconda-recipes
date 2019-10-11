@@ -1,44 +1,49 @@
-{% set version = "1.38.0" %}
+{% set version = "1.44.0" %}
 {% set name = "MEDME" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 37154c7d207b4f5f03bc26e19c57b6a798ba9eb8fa666d073e99fcf1c24ff78c
+  md5: 62985b7b4ebe51262d25380963c26d4a
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BSgenome.Hsapiens.UCSC.hg18, BSgenome.Mmusculus.UCSC.mm9
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - bioconductor-biostrings
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
     - r-base
     - r-drc
     - r-mass
   run:
-    - bioconductor-biostrings
+    - 'bioconductor-biostrings >=2.52.0,<2.53.0'
     - r-base
     - r-drc
     - r-mass
-    - libcxx # [osx]
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Description: MEDME allows the prediction of absolute and relative methylation levels based on measures obtained by MeDIP-microarray experiments'
-
 extra:
   identifiers:
     - biotools:medme
     - doi:10.1101/gr.080721.108
+  parent_recipe:
+    name: bioconductor-medme
+    path: recipes/bioconductor-medme
+    version: 1.40.0
+

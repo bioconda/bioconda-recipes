@@ -1,25 +1,28 @@
-{% set version = "1.8.0" %}
+{% set version = "1.14.0" %}
 {% set name = "myvariant" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 383c9402214832ebe8714890bef464555e2599adfdbb3b24d7b8932f8bc790e4
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 3fd2a1cd530340e48ed29d1b6a0282fc
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle
 requirements:
   host:
-    - bioconductor-genomeinfodb
-    - bioconductor-s4vectors
-    - bioconductor-variantannotation
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-variantannotation >=1.30.0,<1.31.0'
     - r-base
     - r-hmisc
     - r-httr
@@ -27,9 +30,9 @@ requirements:
     - r-magrittr
     - r-plyr
   run:
-    - bioconductor-genomeinfodb
-    - bioconductor-s4vectors
-    - bioconductor-variantannotation
+    - 'bioconductor-genomeinfodb >=1.20.0,<1.21.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
+    - 'bioconductor-variantannotation >=1.30.0,<1.31.0'
     - r-base
     - r-hmisc
     - r-httr
@@ -40,11 +43,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'MyVariant.info is a comprehensive aggregation of variant annotation resources. myvariant is a wrapper for querying MyVariant.info services'
-
 extra:
   identifiers:
     - biotools:myvariant
     - doi:10.1101/035667
+  parent_recipe:
+    name: bioconductor-myvariant
+    path: recipes/bioconductor-myvariant
+    version: 1.10.0
+

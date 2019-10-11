@@ -1,25 +1,27 @@
-{% set version = "1.14.0" %}
+{% set version = "1.20.0" %}
 {% set name = "mygene" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: a446efd2261103702a2df190599f494b0a417dd147ce44582ea7a434b1be1363
+  md5: 0b83f62d78a6c3dca0bfd49c4b4a2abc
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle
 requirements:
   host:
-    - bioconductor-genomicfeatures
-    - bioconductor-s4vectors
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-hmisc
     - 'r-httr >=0.3'
@@ -27,8 +29,8 @@ requirements:
     - r-plyr
     - r-sqldf
   run:
-    - bioconductor-genomicfeatures
-    - bioconductor-s4vectors
+    - 'bioconductor-genomicfeatures >=1.36.0,<1.37.0'
+    - 'bioconductor-s4vectors >=0.22.0,<0.23.0'
     - r-base
     - r-hmisc
     - 'r-httr >=0.3'
@@ -39,11 +41,15 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
   summary: 'MyGene.Info_ provides simple-to-use REST web services to query/retrieve gene annotation data. It''s designed with simplicity and performance emphasized. *mygene*, is an easy-to-use R wrapper to access MyGene.Info_ services.'
-
 extra:
   identifiers:
     - biotools:mygene
     - doi:10.1101/009333
+  parent_recipe:
+    name: bioconductor-mygene
+    path: recipes/bioconductor-mygene
+    version: 1.16.2
+

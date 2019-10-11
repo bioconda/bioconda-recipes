@@ -1,4 +1,4 @@
-{% set version = '0.1-10' %}
+{% set version = '0.1-12' %}
 
 package:
   name: r-mutoss
@@ -6,13 +6,13 @@ package:
 
 source:
   url:
-    - https://cran.r-project.org/src/contrib/mutoss_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/mutoss/mutoss_{{ version }}.tar.gz
-  sha256: 23e62c2e3fa0fb235adb47deed2502f054510661aaadfe1a8f91d9dad4c832de
+    - {{ cran_mirror }}/src/contrib/mutoss_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/mutoss/mutoss_{{ version }}.tar.gz
+  sha256: 2889ae3d502157592697124eb86adc14911e2b7fdaa7204743a376b1eeb967fa
 
 build:
+  noarch: generic
   number: 1
-
   rpaths:
     - lib/R/lib/
     - lib/
@@ -24,7 +24,6 @@ requirements:
     - bioconductor-multtest >=2.2.0
     - r-mvtnorm
     - r-plotrix
-
   run:
     - r-base
     - r-multcomp >=1.1_0
@@ -34,11 +33,13 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('mutoss')"
+    - $R -e "library('mutoss')"           # [not win]
+    - "\"%R%\" -e \"library('mutoss')\""  # [win]
 
 about:
-  home: http://mutoss.r-forge.r-project.org/
+  home: https://github.com/kornl/mutoss/
   license: GPL
-  summary: The Mutoss package and accompanying mutossGUI package are designed to ease the application
-    and comparison of multiple hypothesis testing procedures.
+  summary: Designed to ease the application and comparison of multiple hypothesis testing procedures
+    for FWER, gFWER, FDR and FDX. Methods are  standardized and usable by the accompanying
+    'mutossGUI'.
   license_family: GPL

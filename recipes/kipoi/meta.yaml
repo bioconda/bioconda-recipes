@@ -1,56 +1,47 @@
 {% set name = "kipoi" %}
-{% set version = "0.3.6" %}
+{% set version = "0.6.24" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
-{% set hash_value = "6a2482e91c4fd168411bfb5c8c5ad7833669f6c02ad2af8f3ec21cac06541302" %}
+{% set hash_value = "8764c1df417407285dbb3e15ede6126e97ec669224e378f1214f58e4299bc588" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 1
+  number: 0
+  noarch: python
   entry_points:
     - kipoi = kipoi.__main__:main
-  script: pip install 'related>=0.6.0' enum34 epc && python setup.py install --single-version-externally-managed --record=record.txt
+  script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
-  build:
-    - git-lfs
-    - gcc # [not osx]
-    - llvm # [osx]
+  host:
     - python
-    - pip
     - setuptools
-    - pyyaml
-    - future
-    - numpy
-    - pandas
-    - tqdm
-#    - related >=0.6.0
-#    - enum34
-    - colorlog
-    - cookiecutter
-    - h5py
   run:
-    - libgcc  # [not osx]
-    - git-lfs
     - python
     - pyyaml
     - future
     - numpy
-    - pandas
+    - pandas >=0.21.0
     - tqdm
-#    - related >=0.6.0
-#    - enum34
+    - attrs >=17.4.0
+    - related >=0.6.0
+    - enum34
     - colorlog
-    - cookiecutter
+    - jinja2
+    - cookiecutter >=1.6.0
     - h5py
+    - urllib3 >=1.21.1
+    - tinydb
+    - kipoi-utils >=0.1.12
+    - kipoi-conda >=0.1.6
+    - deprecation >=2.0.6
 
 test:
   imports:
@@ -58,33 +49,18 @@ test:
     - kipoi.cli
     - kipoi.external
     - kipoi.external.related
-    - kipoi.external.torch
-    - kipoi.postprocessing
-    - kipoi.postprocessing.variant_effects
-    - kipoi.postprocessing.variant_effects.utils
   commands:
-    - "kipoi --help"
-  requires:
-#    - libstdcxx-ng # [not osx]
-#    - bumpversion
-#    - cython
-#    - epc
-#    - jedi
-#    - keras
-#    - pytest >=3.3.1
-#    - pytest-cov
-#    - pytest-pep8
-#    - pytest-xdist
-#    - scikit-learn
-#    - tensorflow
-#    - wheel
+    - kipoi --help
 
 about:
-  home: https://github.com/kipoi/kipoi
+  home: https://kipoi.org
   license: MIT
   license_family: MIT
+  license_file: LICENSE.txt
   summary: 'Kipoi: model zoo for genomics'
-  description: 'Kipoi: model zoo for genomics. http://kipoi.org/'
+  description: "Kipoi: model zoo for genomics."
+  doc_url: https://kipoi.org/docs/
+  dev_url: https://github.com/kipoi/kipoi
 
 extra:
   recipe-maintainers:

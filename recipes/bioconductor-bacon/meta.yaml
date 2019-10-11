@@ -1,39 +1,48 @@
-{% set version = "1.6.0" %}
+{% set version = "1.12.0" %}
 {% set name = "bacon" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: be600564444b4ba23ba9fa7aba9d46a8ed383726b83ab86cb165635b5d0bdec4
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 86a2cea86bb1adf7f064f2558665b7c0
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, knitr, rmarkdown, testthat, roxygen2
 requirements:
   host:
-    - bioconductor-biocparallel
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
     - r-base
     - r-ellipse
     - r-ggplot2
   run:
-    - bioconductor-biocparallel
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
     - r-base
     - r-ellipse
     - r-ggplot2
+  build:
+    - {{ compiler('c') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
   summary: 'Bacon can be used to remove inflation and bias often observed in epigenome- and transcriptome-wide association studies. To this end bacon constructs an empirical null distribution using a Gibbs Sampling algorithm by fitting a three-component normal mixture on z-scores.'
-
 extra:
   identifiers:
     - biotools:bacon
+  parent_recipe:
+    name: bioconductor-bacon
+    path: recipes/bioconductor-bacon
+    version: 1.8.0
+

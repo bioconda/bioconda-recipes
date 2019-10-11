@@ -1,40 +1,54 @@
-{% set version = "1.4.1" %}
+{% set version = "1.10.0" %}
 {% set name = "matter" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.9" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-    - 'https://depot.galaxyproject.org/software/{{ name }}/{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 21a1aa6515079e8dd1a8321daeb20ec8ae1ac8298affea66d35a02fa2f181fd1
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 80c2d4693acc88b40867e100e4ade2dd
 build:
   number: 1
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocStyle, testthat
 requirements:
   host:
-    - bioconductor-biocgenerics
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
     - r-base
     - r-biglm
+    - r-digest
     - r-irlba
   run:
-    - bioconductor-biocgenerics
+    - 'bioconductor-biocgenerics >=0.30.0,<0.31.0'
+    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
     - r-base
     - r-biglm
+    - r-digest
     - r-irlba
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: Artistic-2.0
-  summary: 'Memory-efficient reading, writing, and manipulation of structured binary data on disk as vectors, matrices, and arrays.'
-
+  summary: 'Memory-efficient reading, writing, and manipulation of structured binary data on disk as vectors, matrices, arrays, lists, and data frames.'
 extra:
   identifiers:
     - biotools:matter
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-matter
+    path: recipes/bioconductor-matter
+    version: 1.6.0
+
