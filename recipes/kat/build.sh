@@ -12,7 +12,6 @@ export LDFLAGS="-L$PREFIX/lib"
 # Build boost
 #./build_boost.sh
 ./autogen.sh
-./configure --help
-./configure --disable-silent-rules --disable-dependency-tracking --disable-pykat-install --prefix=$PREFIX
+./configure --disable-silent-rules --disable-dependency-tracking --prefix=$PREFIX
 make
 make install
