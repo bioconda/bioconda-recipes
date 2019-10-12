@@ -12,6 +12,7 @@ export LDFLAGS="-L$PREFIX/lib"
 # Build boost
 #./build_boost.sh
 ./autogen.sh
+export PYTHON_NOVERSION_CHECK="3.7.0"
 ./configure --disable-silent-rules --disable-dependency-tracking --prefix=$PREFIX
 make
 make install
