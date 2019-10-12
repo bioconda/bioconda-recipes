@@ -11,6 +11,8 @@ export LDFLAGS="-L$PREFIX/lib"
 
 # Build boost
 #./build_boost.sh
+#importing matplotlib fails, likely due to X
+sed -i.bak "124d" configure.ac
 ./autogen.sh
 export PYTHON_NOVERSION_CHECK="3.7.0"
 ./configure --disable-silent-rules --disable-dependency-tracking --prefix=$PREFIX
