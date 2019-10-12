@@ -10,8 +10,9 @@ export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 
 # Build boost
-./build_boost.sh
+#./build_boost.sh
 ./autogen.sh
+./configure --help
 ./configure --disable-silent-rules --disable-dependency-tracking --disable-pykat-install --prefix=$PREFIX
 make
 make install
