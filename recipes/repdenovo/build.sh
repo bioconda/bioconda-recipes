@@ -1,37 +1,17 @@
 #!/bin/bash
-
 set -x -e
-
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-
-export LDFLAGS="-L${PREFIX}/lib"
-export CPPFLAGS="-I${PREFIX}/include"
-
-export CXXFLAGS="${LDFLAGS} ${CPPFLAGS}"
-
-export WORK_DIR=$(pwd)
 
 mkdir -p ${PREFIX}/bin
 
-#cp -rf ${RECIPE_DIR}/TERefiner/* ./TERefiner/
+pushd TERefiner
+make CC=$CXX BAMTOOLS_LD=${PREFIX}/lib BAMTOOLS=${PREFIX}/include
+cp TERefiner_1 ${PREFIX}/bin/ 
+popd
 
-cd TERefiner
-make
-cd ${WORK_DIR} 
+pushd ./ContigsCompactor-v0.2.0/ContigsMerger/ 
+make CC=$CXX CFLAGS="$CXXFLAGS -L${PREFIX}/lib"
+cp ContigsMerger ${PREFIX}/bin
+popd
 
-chmod 777 TERefiner_1
-
-cd ./ContigsCompactor-v0.2.0/ContigsMerger/ 
-make
-cd ${WORK_DIR} 
-
-cp -rf ./TERefiner/* ${PREFIX}/bin/ 
-
-cp -rf ./ContigsCompactor-v0.2.0/ContigsMerger/* ${PREFIX}/bin 
-
-chmod +x ${PREFIX}/bin/TERefiner_1
-chmod +x ${PREFIX}/bin/ContigsMerger
-
-
+cp *.py ${PREFIX}/bin/
+chmod +x ${PREFIX}/bin/*
