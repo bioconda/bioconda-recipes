@@ -18,4 +18,4 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"; # get final path of this script
 
-java -jar $DIR/jalview-all-1.8.jar ${@};
+java -jar $DIR/jalview-all-j1.8.jar ${@};
