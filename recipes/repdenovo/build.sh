@@ -4,7 +4,7 @@ set -x -e
 mkdir -p ${PREFIX}/bin
 
 pushd TERefiner
-make CC=$CXX BAMTOOLS_LD=${PREFIX}/lib BAMTOOLS=${PREFIX}/include
+make CC=$CXX BAMTOOLS_LD=${PREFIX}/lib BAMTOOLS=${PREFIX}/include/bamtools
 cp TERefiner_1 ${PREFIX}/bin/ 
 popd
 
