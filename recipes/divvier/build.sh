@@ -1,6 +1,7 @@
 #!/bin/bash
 set -eu -o pipefail
-make
 
-mkdir -p ${PREFIX}/bin
-cp ./divvier ${PREFIX}/bin/
+echo $PREFIX
+mkdir -p $PREFIX/bin
+make
+co divvier $PREFIX/bin
