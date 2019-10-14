@@ -1,4 +1,5 @@
 #!/bin/bash
+mkdir -p $PREFIX/bin
 cp src/* $PREFIX/bin
 
 cp Rfam_for_miRDeep.fa $PREFIX/bin
