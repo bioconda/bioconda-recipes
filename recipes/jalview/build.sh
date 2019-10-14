@@ -18,6 +18,7 @@ mkdir -p $JALVIEWDIR
 
 cp -R build/libs/jalview-all-$PKG_VERSION-j1.8.jar $JALVIEWDIR/jalview-all-j1.8.jar
 cp -R build/libs/jalview-all-$PKG_VERSION-j11.jar $JALVIEWDIR/jalview-all-j11.jar
+
 # copy wrapper and make executable
 cp $RECIPE_DIR/jalview.sh $JALVIEWDIR/.
 chmod +x $JALVIEWDIR/jalview.sh; 

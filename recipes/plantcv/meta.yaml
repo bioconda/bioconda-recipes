@@ -1,22 +1,26 @@
 {% set name = "plantcv" %}
-{% set version = "3.6.0" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "2aececf1d388105671d0f93bdaf5b59bca17ee504eace9e99fb0990ee7bd472b" %}
+{% set version = "3.6.1" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: "32e65b9364ab254c4c28cdcd0286f4ed4056633c2de8122d2671e8d08e59cfac"
 
 build:
   noarch: python
   number: 0
 
 requirements:
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}        # [linux]
+    - {{ cdt('libxdamage') }}        # [linux]
+    - {{ cdt('libxfixes') }}         # [linux]
+    - {{ cdt('libxxf86vm') }}        # [linux]
   host:
     - python
     - pip
@@ -32,16 +36,16 @@ requirements:
     - py-opencv <4
 
 test:
-  imports:
-    - plantcv
-    - plantcv.learn
-    - plantcv.parallel
-    - plantcv.plantcv
-    - plantcv.plantcv.morphology
-    - plantcv.plantcv.roi
-    - plantcv.plantcv.threshold
-    - plantcv.plantcv.transform
-    - plantcv.plantcv.visualize
+  commands:
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.learn"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.parallel"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.plantcv"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.plantcv.morphology"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.plantcv.roi"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.plantcv.threshold"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.plantcv.transform"
+    - LD_LIBRARY_PATH="$BUILD_PREFIX/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" python -c "import plantcv.plantcv.visualize"
 
 about:
   home: https://plantcv.danforthcenter.org
