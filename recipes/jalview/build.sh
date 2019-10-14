@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# create target directory
+JALVIEWDIR=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
+mkdir -p $JALVIEWDIR
+
 # patch jalview 2.11.0 gradle.properties so the shadowJar task generates jars called jalview-all-2.11.0-j{11,1.8}.jar
 echo "rootProject.name = 'jalview'" >> settings.gradle
 
@@ -16,12 +20,6 @@ gradle -PJAVA_VERSION=11 -PINSTALLATION="bioconda (build $PKG_BUILDNUM)" -PJALVI
 
 # copy jalview jar to target
 cp -vR build/libs/jalview-all-$PKG_VERSION-j11.jar $JALVIEWDIR/jalview-all-j11.jar
-
-# create target directory
-JALVIEWDIR=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-mkdir -p $JALVIEWDIR
-
-
 
 # copy wrapper and make executable
 cp $RECIPE_DIR/jalview.sh $JALVIEWDIR/.
