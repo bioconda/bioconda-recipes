@@ -22,6 +22,6 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"; # get final path of this scrip
 J_VERSION="j11"
 
 # if java 8 is installed we pick the j1.8 build
- [[ $( conda list openjdk | egrep -e 'openjdk:\W+8' ) ]]; then J_VERSION=j1.8; fi
+if [[ $( conda list openjdk | egrep -e 'openjdk\W+8' ) ]]; then J_VERSION=j1.8; fi
 
 java -jar $DIR/jalview-all-${J_VERSION}.jar ${@};
