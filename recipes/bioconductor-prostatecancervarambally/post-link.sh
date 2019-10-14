@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="prostateCancerVarambally_1.10.0.tar.gz"
+FN="prostateCancerVarambally_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/prostateCancerVarambally_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/prostateCancerVarambally_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-prostatecancervarambally/bioconductor-prostatecancervarambally_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/prostateCancerVarambally_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/prostateCancerVarambally_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-prostatecancervarambally/bioconductor-prostatecancervarambally_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-prostatecancervarambally/bioconductor-prostatecancervarambally_1.12.0_src_all.tar.gz"
 )
-MD5="c35f1f99121183a4332dbbc56a3de36b"
+MD5="47ad7ca82845afe9830f4cb1ad3f27c5"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,27 +1,38 @@
-{% set version="1.5.26" %}
+{% set version="1.5.31" %}
+{% set sha256_linux="773b3c9bd70b2fc84ec18f8c0d16fb6a4feecf22f6fc4f971519e94483f66bb4" %}
+{% set sha256_osx="a03e84661b151aa1e8f3bb1c6335aaddff734db34f858686287d29f02d97a527" %}
 
-about:
-  home: 'https://wiki.dnanexus.com/Downloads#Upload-Agent'
-  license: "Apache v2.0"
-  summary: command-line tool for uploading files to the DNAnexus Platform
+
 package:
   name: dxua
   version: {{ version }}
-requirements:
+
+source:
+  url: https://dnanexus-sdk.s3.amazonaws.com/dnanexus-upload-agent-{{ version }}-linux.tar.gz  # [linux]
+  sha256: {{ sha256_linux }}  # [linux]
+  url: https://dnanexus-sdk.s3.amazonaws.com/dnanexus-upload-agent-{{ version }}-osx.zip  # [osx]
+  sha256: {{ sha256_osx }}  # [osx]
+
+build:
+  number: 0
+  # Linking problem on OSX installs
+  # https://travis-ci.org/bioconda/bioconda-recipes/jobs/243209079#L725
+  skip: true  # [osx]
 
 test:
   commands:
     - "dxua --help &> /dev/null"
 
-build:
-  number: 1
-  # Linking problem on OSX installs
-  # https://travis-ci.org/bioconda/bioconda-recipes/jobs/243209079#L725
-  skip: true # [osx]
+about:
+  home: 'https://documentation.dnanexus.com/user/objects/uploading-and-downloading-files/batch/upload-agent'
+  license: "Apache 2.0"
+  license_family: Apache
+  license_file: LICENSE-2.0.txt
+  summary: command-line tool for uploading files to the DNAnexus Platform
 
-source:
-  url: https://wiki.dnanexus.com/images/files/dnanexus-upload-agent-{{ version }}-linux.tar.gz #[linux64]
-  md5: 2c9119f8f9289bfb1ed751bd151c6079 #[linux64]
-
-  url: https://wiki.dnanexus.com/images/files/dnanexus-upload-agent-{{ version }}-osx.zip #[osx]
-  md5: 83fd9bf4bbee46c887e66195048f8e87 #[osx]
+extra:
+  recipe-maintainers:
+    - notestaff
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source

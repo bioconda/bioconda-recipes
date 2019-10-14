@@ -1,36 +1,24 @@
 {% set name = "genomelake" %}
 {% set version = "0.1.4" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "fcec11be1cce15f08de0df34916f946a9470ed911050f5ab7098a1279e892253" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: fcec11be1cce15f08de0df34916f946a9470ed911050f5ab7098a1279e892253
 
 build:
   number: 1
-  script: pip install cython && python setup.py install --single-version-externally-managed --record=record.txt
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
   build:
+    - {{ compiler('c') }}
+  host:
     - python
     - pip
-    - setuptools
-    - future
-    - gcc # [not osx]
-    - llvm # [osx]    
-    - bcolz >=1.1
-    - numpy
-    - pybedtools
-    - pybigwig
-    - pysam
-    - six >=1.9.0
   run:
     - python
     - bcolz >=1.1
@@ -48,11 +36,5 @@ about:
   home: https://github.com/kundajelab/genomelake
   license: BSD License
   license_family: BSD
-  license_file: ''
   summary: Simple and efficient random access to genomic data for deep learning models.
   description: "Simple and efficient random access to genomic data for deep learning models."
-  doc_url: ''
-  dev_url: ''
-
-extra:
-  recipe-maintainers: ''

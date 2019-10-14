@@ -1,3 +1,5 @@
+{% set blast_version = "2.9.0" %}
+
 package:
   name: maker
   version: 2.31.10
@@ -10,12 +12,13 @@ source:
     - "mpi_init.patch"
 
 build:
-  number: 11
+  noarch: generic
+  number: 15
 
 requirements:
-  build:
+  host:
     - augustus >=3.2.3
-    - blast
+    - blast {{ blast_version }}
     - exonerate
     - infernal
     - mir-prefer
@@ -23,7 +26,7 @@ requirements:
     - snap
     - snoscan
     - perl
-    - perl-bioperl >=1.7
+    - perl-bioperl-core >=1.007002
     - perl-bit-vector
     - perl-dbd-pg
     - perl-dbd-sqlite
@@ -36,20 +39,21 @@ requirements:
     - perl-forks
     - perl-list-moreutils
     - perl-perl-unsafe-signals
-    - openmpi
+    - mpich
     - trnascan-se
     - postgresql
   run:
     - augustus >=3.2.3
-    - blast
+    - blast {{ blast_version }}
     - exonerate
     - infernal
     - mir-prefer
     - repeatmasker
+    - rmblast {{ blast_version }} # blast and rmblast must be pinned to the same version as they share some libraries
     - snap
     - snoscan
     - perl
-    - perl-bioperl >=1.7
+    - perl-bioperl-core >=1.007002
     - perl-bit-vector
     - perl-dbd-pg
     - perl-dbd-sqlite
@@ -62,7 +66,7 @@ requirements:
     - perl-forks
     - perl-list-moreutils
     - perl-perl-unsafe-signals
-    - openmpi
+    - mpich
     - trnascan-se ==1.3.1
     - postgresql
     # GeneMarkS, GeneMark-ES and FGENESH are optional requirements but are not free
@@ -70,6 +74,7 @@ requirements:
 about:
   home: http://www.yandell-lab.org/software/maker.html
   license: GPL3
+  license_file: LICENSE
   summary: MAKER is a portable and easily configurable genome annotation pipeline.
 
 test:
@@ -77,5 +82,8 @@ test:
     - maker --version
 
 extra:
+  container:
+    # mpich needs /etc/resolv.conf : https://github.com/bioconda/bioconda-recipes/issues/11583
+    extended-base: true
   identifiers:
     - biotools:maker
