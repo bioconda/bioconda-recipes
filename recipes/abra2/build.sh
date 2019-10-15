@@ -2,7 +2,7 @@
 
 set -eu -o pipefail
 
-make all
+make CC=$CXX CFLAGS="$CFLAGS" all
 outdir="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 mkdir -p "${outdir}"
 mkdir -p "${PREFIX}/bin"
