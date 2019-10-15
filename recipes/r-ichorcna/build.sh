@@ -8,6 +8,23 @@ mkdir -p $PREFIX/bin
 perl -pi -e 'print "#!/opt/anaconda1anaconda2anaconda3/bin/Rscript\n" if $. == 1' scripts/runIchorCNA.R
 perl -pi -e 'print "#!/opt/anaconda1anaconda2anaconda3/bin/Rscript\n" if $. == 1' scripts/createPanelOfNormals.R
 
+echo "***************"
+echo "* DEBUG START *"
+echo "***************"
+
+echo ""
+
+echo $outdir
+find $outdir
+
+echo ""
+
+echo "*************"
+echo "* DEBUG END *"
+echo "*************"
+
+
+
 chmod a+x $outdir/scripts/*.R
 ln -s $outdir/scripts/runIchorCNA.R $PREFIX/bin
 ln -s $outdir/scripts/ichorCNA_createPanelOfNormals.R $PREFIX/bin
