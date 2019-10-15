@@ -3,12 +3,18 @@ set -eu -o pipefail
 
 # Compile nim
 pushd nim_source
-bash build.sh --os linux --cpu x86_64
+if [[ $OSTYPE == "darwin"* ]]; then
+  bash build.sh --os osx --cpu x86_64
+else
+  bash build.sh --os linux --cpu x86_64
+fi
 bname=`basename $CC`
 echo "gcc.exe = \"${bname}\"" >> config/nim.cfg
 echo "gcc.linkerexe = \"${bname}\"" >> config/nim.cfg
-bin/nim c  koch #--gcc.exe=$CC --gcc.linkerexe=$CC koch 
-./koch tools #--gcc.exe=$CC --gcc.linkerexe=$CC
+echo "clang.exe = \"${bname}\"" >> config/nim.cfg
+echo "clang.linkerexe = \"${bname}\"" >> config/nim.cfg
+bin/nim c  koch
+./koch tools
 popd
 
 export PATH=$SRC_DIR/nim_source/bin:$PATH
