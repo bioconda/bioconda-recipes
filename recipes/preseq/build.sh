@@ -8,4 +8,4 @@ export LIBRARY_PATH=${PREFIX}/lib
 if [ "$(uname)" == "Darwin" ]; then
     CXXFLAGS="-stdlib=libstdc++"
 fi
-make CXX=$CXX install ROOT="."
+make CXX=$CXX LIBS="-L$PREFIX/lib -lgsl -lgslcblas -lz" install ROOT="."
