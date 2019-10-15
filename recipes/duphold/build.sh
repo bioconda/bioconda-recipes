@@ -4,7 +4,7 @@ set -eu -o pipefail
 # Compile nim
 pushd nim_source
 if [[ $OSTYPE == "darwin"* ]]; then
-  bash build.sh --os osx --cpu x86_64
+  bash build.sh --os darwin --cpu x86_64
 else
   bash build.sh --os linux --cpu x86_64
 fi
