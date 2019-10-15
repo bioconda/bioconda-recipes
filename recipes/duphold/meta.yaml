@@ -1,19 +1,27 @@
-{% set name = "duphold" %}
 {% set version = "0.1.5" %}
-{% set download_version = "0.1.15" %}  # tarball has been versioned incorrectly
-{% set sha256hash = "f12f263a841ad5a2da9c00be564e4459c66155f0546e67e8114f0e7a8becfe4f" %}
 
 package:
-  name: {{ name|lower }}
+  name: duphold
   version: {{ version }}
 
 source:
-  url: https://github.com/brentp/duphold/releases/download/v{{ download_version }}/duphold_static
-  sha256: {{ sha256hash }}
+  # The wrong tag was used
+  - url: https://github.com/brentp/duphold/archive/v0.1.15.tar.gz
+    sha256: a46332505554ad48864b5505eaab1ed78883353e918d4122722fd30ebd9f232f
+  - url: https://nim-lang.org/download/nim-1.0.0.tar.xz
+    sha256: 034817cc4dec86b7099bcf3e79e9e38842b50212b2fd96cd741fe90855a7e0dd
+    folder: nim_source
 
 build:
   number: 0
-  skip: True  # [osx]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - htslib
+  run:
+    - htslib
 
 test:
   commands:
@@ -22,9 +30,5 @@ test:
 about:
   home: https://github.com/brentp/duphold
   license: MIT
+  license_file: LICENSE
   summary: SV callers like lumpy look at split-reads and pair distances to find structural variants. This tool is a fast way to add depth information to those calls.
-
-extra:
-  skip-lints:
-    #Packages a prebuilt binary
-    - should_be_noarch_generic
