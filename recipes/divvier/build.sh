@@ -1,8 +1,9 @@
 #!/bin/bash
 set -eu -o pipefail
 
-echo $PREFIX
-CXX=$CXX
-mkdir -p $PREFIX/bin
+echo ${PREFIX}
+CC=${CC}
+CXX=${CXX}
+mkdir -p ${PREFIX}/bin
 make
-co divvier $PREFIX/bin
+cp divvier ${PREFIX}/bin
