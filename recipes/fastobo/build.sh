@@ -19,7 +19,7 @@ sh rustup.sh -y --default-toolchain nightly
 export PATH="$CARGO_HOME/bin:$PATH"
 
 # build statically linked binary with Rust
-RUSTFLAGS="-C linker=$CC" C_INCLUDE_PATH=$BUILD_PREFIX/include LIBRARY_PATH=$BUILD_PREFIX/lib $PYTHON -m pip install . --no-deps --ignore-installed -vv
+RUSTFLAGS="-C linker=$CC" C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib $PYTHON -m pip install . --no-deps --ignore-installed -vv
 
 # remove rustup and cargo
 rm -rf "$RUSTUP_HOME"
