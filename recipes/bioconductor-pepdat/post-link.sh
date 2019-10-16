@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/pepDat_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pepDat_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pepdat/bioconductor-pepdat_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pepdat/bioconductor-pepdat_1.4.0_src_all.tar.gz"
 )
 MD5="c72c91f64f3099c7ac03fe30244a4a9d"
 

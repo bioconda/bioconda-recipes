@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/TCGAbiolinksGUI.data_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/TCGAbiolinksGUI.data_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-tcgabiolinksgui.data/bioconductor-tcgabiolinksgui.data_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tcgabiolinksgui.data/bioconductor-tcgabiolinksgui.data_1.4.0_src_all.tar.gz"
 )
 MD5="919f2748bfd2dab5e1b95969a4a212ae"
 

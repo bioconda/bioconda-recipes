@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/facopy.annot_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/facopy.annot_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-facopy.annot/bioconductor-facopy.annot_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-facopy.annot/bioconductor-facopy.annot_1.4.0_src_all.tar.gz"
 )
 MD5="5a332eb0a856a4bd83e8d6e2236fabc4"
 

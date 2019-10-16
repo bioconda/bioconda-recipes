@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/MIGSAdata_1.8.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MIGSAdata_1.8.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-migsadata/bioconductor-migsadata_1.8.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-migsadata/bioconductor-migsadata_1.8.0_src_all.tar.gz"
 )
 MD5="c510924ea1ebf2892f33b16b3fd21473"
 

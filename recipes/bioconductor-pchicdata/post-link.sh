@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/PCHiCdata_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/PCHiCdata_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pchicdata/bioconductor-pchicdata_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pchicdata/bioconductor-pchicdata_1.12.0_src_all.tar.gz"
 )
 MD5="18936bf2c0bf4b12b969b6bf8141773a"
 

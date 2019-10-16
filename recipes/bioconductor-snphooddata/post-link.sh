@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/SNPhoodData_1.14.0.tar.gz"
   "https://bioarchive.galaxyproject.org/SNPhoodData_1.14.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-snphooddata/bioconductor-snphooddata_1.14.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-snphooddata/bioconductor-snphooddata_1.14.0_src_all.tar.gz"
 )
 MD5="932f101b78576f7a6407704d3031fdbf"
 
