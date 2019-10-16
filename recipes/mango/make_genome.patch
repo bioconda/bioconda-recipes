@@ -1,0 +1,31 @@
+--- a/bin/make_genome
++++ b/bin/make_genome
+@@ -20,12 +20,20 @@
+ # Runs MakeGenome, which generates a .genome file containing reference, genes, cytoband, and chromsizes.
+ # Requires 2 arguments: genome name and output file to save .genome file to.
+
+-SOURCE_DIR=$(dirname ${BASH_SOURCE[0]})
++# Find original directory of this script, resolving symlinks
++# https://stackoverflow.com/questions/59895/get-the-source-directory-of-a-bash-script-from-within-the-script-itself/246128#246128
++SOURCE="${BASH_SOURCE[0]}"
++while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
++  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
++  SOURCE="$(readlink "$SOURCE")"
++  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
++done
++SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+
+ # get Mango jar
+-MANGO_CLI_JAR=$(${SOURCE_DIR}/find-mango-assembly.sh)
++MANGO_CLI_JAR=$(${SCRIPT_DIR}/find-mango-assembly.sh)
+
+-SPARK_SUBMIT=$(${SOURCE_DIR}/find-spark.sh)
++SPARK_SUBMIT=$(${SCRIPT_DIR}/find-spark.sh)
+
+ # submit the job to Spark
+ "$SPARK_SUBMIT" \
+@@ -34,4 +42,3 @@
+   --conf spark.kryo.registrator=org.bdgenomics.mango.serialization.MangoKryoRegistrator \
+   $MANGO_CLI_JAR \
+   "MakeGenome" "$@" \
+-
