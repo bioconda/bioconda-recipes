@@ -2,7 +2,8 @@
 
 set -eu -o pipefail
 
-make CC=$CXX CFLAGS="$CFLAGS" all
+sed -i.bak "s#g++#${CXX}#" Makefile
+make
 outdir="${PREFIX}/share/${PKG_NAME}-${PKG_VERSION}-${PKG_BUILDNUM}"
 mkdir -p "${outdir}"
 mkdir -p "${PREFIX}/bin"
