@@ -26,6 +26,8 @@ echo "*************"
 echo "* DEBUG END *"
 echo "*************"
 
+cp ./scripts/*.R $outdir/scripts/
+
 chmod a+x $outdir/scripts/*.R
 ln -s $outdir/scripts/runIchorCNA.R $PREFIX/bin
 ln -s $outdir/scripts/ichorCNA_createPanelOfNormals.R $PREFIX/bin
