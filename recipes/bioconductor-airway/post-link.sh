@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/airway_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/airway_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-airway/bioconductor-airway_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-airway/bioconductor-airway_1.4.0_src_all.tar.gz"
 )
 MD5="ef609098c2893c759ddabbcb47cd4b6b"
 

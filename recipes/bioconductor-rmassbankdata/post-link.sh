@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RMassBankData_1.22.0.tar.gz"
   "https://bioarchive.galaxyproject.org/RMassBankData_1.22.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rmassbankdata/bioconductor-rmassbankdata_1.22.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rmassbankdata/bioconductor-rmassbankdata_1.22.0_src_all.tar.gz"
 )
 MD5="fc66ede0eb4d7ad10d96b38d2c1a212a"
 

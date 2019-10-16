@@ -14,7 +14,7 @@ mkdir -p $QUAST_HOME
 rm -r $SRC_DIR/quast_libs/site_packages/joblib*
 rm -r $SRC_DIR/quast_libs/site_packages/simplejson
 
-python "setup.py" install
+$PYTHON -m pip install . --ignore-installed --no-deps -vv
 
 cp -R $SRC_DIR/*quast*.py $QUAST_HOME/
 cp -R $SRC_DIR/icarus.py $QUAST_HOME/

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/pumadata_2.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pumadata_2.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pumadata/bioconductor-pumadata_2.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pumadata/bioconductor-pumadata_2.20.0_src_all.tar.gz"
 )
 MD5="bc4a7df5441823c28dfaa3c291750d5a"
 
