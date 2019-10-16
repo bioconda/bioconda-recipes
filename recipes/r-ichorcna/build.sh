@@ -16,14 +16,15 @@ echo ""
 
 echo $outdir
 find $outdir
+echo "-----"
+pwd -P
+find .
 
 echo ""
 
 echo "*************"
 echo "* DEBUG END *"
 echo "*************"
-
-
 
 chmod a+x $outdir/scripts/*.R
 ln -s $outdir/scripts/runIchorCNA.R $PREFIX/bin
