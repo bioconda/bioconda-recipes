@@ -39,6 +39,6 @@ echo "*************"
 
 chmod a+x $outdir/scripts/*.R
 ln -s $outdir/scripts/runIchorCNA.R $PREFIX/bin
-ln -s $outdir/scripts/ichorCNA_createPanelOfNormals.R $PREFIX/bin
+ln -s $outdir/scripts/createPanelOfNormals.R $PREFIX/bin
 
 cp inst/extdata/* $outdir/extdata
