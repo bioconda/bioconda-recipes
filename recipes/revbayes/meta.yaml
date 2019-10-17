@@ -1,0 +1,36 @@
+{% set version = "1.0.13" %}
+
+package:
+  name: revbayes
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  url: https://github.com/revbayes/revbayes/archive/v{{ version }}.tar.gz
+  sha256: 472b4ccc44d813c1ff1b8d27e8ccf3d96388de79aa1688b3714f683ba65038fa
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=2.6
+  host:
+    - boost-cpp >=1.60,<=1.68
+    - openmpi
+  run:
+    # The package uses boost::signal, which was deprecated and then removed starting with v1.69 
+    - boost-cpp >=1.60,<=1.68
+    - openmpi
+
+about:
+  home: https://revbayes.github.io/
+  license: GPLv3
+  summary: Bayesian phylogenetic inference using probabilistic graphical models and an interactive language.
+
+test:
+  commands:
+    - rb-mpi -v
+    - rb-mpi -h
+
