@@ -1,0 +1,45 @@
+{% set name = "paragraph" %}
+{% set version = "2.3" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/Illumina/{{ name }}/archive/v{{ version }}.tar.gz
+  sha256: 6394314e42005026893a305362a1fed58d37f2ca02ed5fc6c54d4c5d12caf1eb
+
+build:
+  skip: True  # [osx]
+  number: 0
+
+requirements:
+  build:
+    - "{{ compiler('c') }}"
+    - "{{ compiler('cxx') }}"
+    - cmake
+    - boost-cpp
+  host:
+    - htslib
+    - zlib
+    - bzip2
+  run:
+    - python >=3
+    - htslib
+    - zlib
+    - bzip2
+    - pysam
+    - intervaltree
+    - jsonschema
+
+test:
+  commands:
+    - multigrmpy.py --help
+    - paragraph --help
+    - grmpy --help
+
+about:
+  home: https://github.com/Illumina/paragraph
+  license: Apache License 2.0
+  license_file: LICENSE
+  summary: Graph realignment tools for structural variants

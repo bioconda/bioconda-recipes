@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="org.Hs.eg.db_3.6.0.tar.gz"
+FN="org.Hs.eg.db_3.8.2.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/org.Hs.eg.db_3.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/org.Hs.eg.db_3.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-org.hs.eg.db/bioconductor-org.hs.eg.db_3.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/org.Hs.eg.db_3.8.2.tar.gz"
+  "https://bioarchive.galaxyproject.org/org.Hs.eg.db_3.8.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-org.hs.eg.db/bioconductor-org.hs.eg.db_3.8.2_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-org.hs.eg.db/bioconductor-org.hs.eg.db_3.8.2_src_all.tar.gz"
 )
-MD5="3fa8de2859f317b59636f0e41b132e85"
+MD5="79de4b2d1cb26b303a9a4d286d6dd766"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

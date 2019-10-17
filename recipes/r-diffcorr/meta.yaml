@@ -1,0 +1,49 @@
+{% set version = '0.4.1' %}
+
+package:
+  name: r-diffcorr
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/DiffCorr_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/DiffCorr/DiffCorr_{{ version }}.tar.gz
+  sha256: 15125ae871949ef2be89916384e46c665079e6826ecbba6b3608701e574bb7cf
+
+build:
+  number: 1
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - r-base
+    - r-fdrtool
+    - r-igraph
+    - bioconductor-multtest
+    - bioconductor-pcamethods
+  run:
+    - r-base
+    - r-fdrtool
+    - r-igraph
+    - bioconductor-multtest
+    - bioconductor-pcamethods
+
+test:
+  commands:
+    - $R -e "library('DiffCorr')"           # [not win]
+    - "\"%R%\" -e \"library('DiffCorr')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=DiffCorr
+  license: GPL3
+  summary: 'A method for identifying pattern changes between 2 experimental conditions in correlation
+    networks (e.g., gene co-expression networks), which builds on a commonly used association
+    measure, such as Pearson''s correlation coefficient. This package includes functions
+    to calculate correlation matrices for high-dimensional dataset and to test differential
+    correlation, which means the changes in the correlation relationship among variables
+    (e.g., genes and metabolites) between 2 experimental conditions. '
+  license_family: GPL3
+  license_file: {{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3
