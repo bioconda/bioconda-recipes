@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ASICSdata_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/ASICSdata_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-asicsdata/bioconductor-asicsdata_1.4.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-asicsdata/bioconductor-asicsdata_1.4.0_src_all.tar.gz"
 )
 MD5="c8a51bb2154a98248afedc0b926acd7d"
 

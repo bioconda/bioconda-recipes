@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/leukemiasEset_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/leukemiasEset_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-leukemiaseset/bioconductor-leukemiaseset_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-leukemiaseset/bioconductor-leukemiaseset_1.20.0_src_all.tar.gz"
 )
 MD5="d8ae541fe7fb33d22bff4cbf35d73a2c"
 

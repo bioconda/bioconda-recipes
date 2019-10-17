@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/DMRcatedata_1.20.0.tar.gz"
   "https://bioarchive.galaxyproject.org/DMRcatedata_1.20.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-dmrcatedata/bioconductor-dmrcatedata_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-dmrcatedata/bioconductor-dmrcatedata_1.20.0_src_all.tar.gz"
 )
 MD5="4401fe1a28b3d313d4ec38d5ca48b7fe"
 
