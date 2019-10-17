@@ -40,6 +40,6 @@ $PYTHON -m pip install python_pileup/. --no-deps --ignore-installed -vv
 # jupyter nbextension enable bdgenomics.mango.pileup --user --py
 
 mkdir -p $PREFIX/mango-assembly/target
-for f in $PACKAGE_HOME/*.jar ; do
+for f in $PACKAGE_HOME/repo/*.jar ; do
     ln -s $f $PREFIX/mango-assembly/target/
 done
