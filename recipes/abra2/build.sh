@@ -12,9 +12,3 @@ cp target/abra2-2.20-jar-with-dependencies.jar "${outdir}/abra2.jar"
 cp "${RECIPE_DIR}/abra2-wrapper.sh" "${outdir}/abra2"
 chmod +x "${outdir}/abra2"
 ln -s "${outdir}/abra2" "${PREFIX}/bin/abra2"
-
-echo "**** DEBUG START ****"
-
-ls -lh $outdir
-
-echo "**** DEBUG END ****"
