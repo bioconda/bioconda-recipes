@@ -1,32 +1,50 @@
+{% set version = '2.1.1' %}
+
 package:
   name: mapdamage2
-  version: "2.1.0"
+  version: {{ version }}
 
 build:
   noarch: python
-  number: 0
+  number: 1
   script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 source:
-  url: https://github.com/ginolhac/mapDamage/archive/2.1.0.tar.gz
-  sha256: 416075d68759103ac136ce88ad486c487b031de4fd4b78a2f9c879d97fe0bd4b
+  url: https://github.com/ginolhac/mapDamage/archive/{{ version }}.tar.gz
+  sha256: a61efd7af6f3f8bc12295c3d77533018e15afdcd1cac0a7a976726cd2ca9cd60
   patches:
-    - makefile.patch
-    - composition.patch
+    - patch
 
 requirements:
   host:
     - pip
     - python >=3.5
+    - r-base
+    - r-ggplot2 >=2.1.0
+    - r-rcpp
+    - r-rcppgsl
+    - r-inline
+    - r-gam
   run:
     - python >=3.5
+    - r-base
+    - r-ggplot2 >=2.1.0
+    - r-rcpp
+    - r-rcppgsl
+    - r-inline
+    - r-gam
     - pysam
     - seqtk
 
 test:
+  imports:
+    - pysam
   commands:
-    - mapDamage 2>&1 | grep Usage > /dev/null
-    - mapDamage -h 2>&1 | grep 'Options for the statistical estimation' > /dev/null
+    - mapDamage -h 2>&1 | grep 'Options for the statistical estimation'
+    - mapDamage 2>&1 | grep Usage
+    - $R -e "library('RcppGSL')"  # [not win]
+    - "\"%R%\" -e \"library('RcppGSL')\""  # [win]
+
 
 about:
   home: https://github.com/ginolhac/mapDamage
