@@ -26,6 +26,6 @@ make
 
 cd ..
 mkdir -p $PREFIX/bin
-mv rb-mpi $PREFIX/bin
+mv rb $PREFIX/bin
 
 
