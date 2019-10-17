@@ -1,7 +1,7 @@
 #!/bin/bash
 
 jar_name="abra2.jar"
-jar_dir=$(dirname "$(realpath --physical "${BASH_SOURCE[0]}")")
+jar_dir=$(dirname "$(pwd -P "${BASH_SOURCE[0]}")")
 jar_path="${jar_dir}/${jar_name}"
 
 if [[ -z "${JAVA_TOOL_OPTIONS}" ]]; then
