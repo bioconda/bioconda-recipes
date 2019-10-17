@@ -1,6 +1,4 @@
 #!/bin/bash
-git submodule init
-git submodule update
 if [[ "$OSTYPE" == "darwin"* ]]; then #MacOS
 	rm -rf ea-utils #EA-Utils does not build fine in osx, but fastq-stats does!
 	git clone https://github.com/ExpressionAnalysis/ea-utils
