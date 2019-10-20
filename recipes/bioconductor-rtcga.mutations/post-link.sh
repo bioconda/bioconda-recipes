@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="RTCGA.mutations_20151101.12.0.tar.gz"
+FN="RTCGA.mutations_20151101.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/RTCGA.mutations_20151101.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RTCGA.mutations_20151101.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rtcga.mutations/bioconductor-rtcga.mutations_20151101.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/RTCGA.mutations_20151101.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RTCGA.mutations_20151101.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.mutations/bioconductor-rtcga.mutations_20151101.14.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rtcga.mutations/bioconductor-rtcga.mutations_20151101.14.0_src_all.tar.gz"
 )
-MD5="742f2540bf6458f5b74a670666c5510a"
+MD5="cf3d79748430e6c9afc08dc1d28aa8a9"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

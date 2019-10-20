@@ -1,0 +1,59 @@
+{% set name = "thapbi-pict" %}
+{% set version = "0.4.9" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name | replace("-", "_") }}/{{ name | replace("-", "_") }}-{{ version }}.tar.gz
+  sha256: a63b02c039efef7878362d3442ed661870a1898e7d7f64087aa04f1c2b0e89ff
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - thapbi_pict = thapbi_pict.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python >=3.5
+  run:
+    # Python
+    - biopython >=1.73
+    - matplotlib
+    - networkx
+    - pydot
+    - python >=3.5
+    - python-levenshtein
+    - sqlalchemy
+    - xlsxwriter
+    # Command line
+    - blast
+    - cutadapt
+    - flash
+    - graphviz
+    - hmmer
+    - swarm
+    - trimmomatic
+
+test:
+  imports:
+    - thapbi_pict
+    - thapbi_pict.hmm
+  commands:
+    - thapbi_pict --help
+    - thapbi_pict -v
+
+about:
+  home: https://github.com/peterjc/thapbi-pict
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE.rst
+  summary: "THAPBI Phytophthora ITS1 Classifier Tool (PICT)."
+
+extra:
+  recipe-maintainers:
+    - peterjc

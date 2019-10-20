@@ -1,8 +1,5 @@
 {% set version = '0.1-12' %}
 
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
-
 package:
   name: r-mutoss
   version: {{ version|replace("-", "_") }}
@@ -14,26 +11,19 @@ source:
   sha256: 2889ae3d502157592697124eb86adc14911e2b7fdaa7204743a376b1eeb967fa
 
 build:
-  merge_build_host: True  # [win]
-
+  noarch: generic
   number: 1
-  skip: true  # [win32]
-
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
-  build:
-    - {{posix}}zip               # [win]
-
   host:
     - r-base
     - r-multcomp >=1.1_0
     - bioconductor-multtest >=2.2.0
     - r-mvtnorm
     - r-plotrix
-
   run:
     - r-base
     - r-multcomp >=1.1_0
@@ -43,7 +33,6 @@ requirements:
 
 test:
   commands:
-
     - $R -e "library('mutoss')"           # [not win]
     - "\"%R%\" -e \"library('mutoss')\""  # [win]
 
@@ -54,12 +43,3 @@ about:
     for FWER, gFWER, FDR and FDX. Methods are  standardized and usable by the accompanying
     'mutossGUI'.
   license_family: GPL
-extra:
-  recipe-maintainers:
-    - MathiasHaudgaard
-    - FrodePedersen
-    - ArneKr
-    - johanneskoester
-    - bgruening
-    - daler
-    - jdblischak

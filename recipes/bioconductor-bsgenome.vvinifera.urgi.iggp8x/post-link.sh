@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="BSgenome.Vvinifera.URGI.IGGP8X_0.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/BSgenome.Vvinifera.URGI.IGGP8X_0.1.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Vvinifera.URGI.IGGP8X_0.1.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Vvinifera.URGI.IGGP8X_0.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bsgenome.vvinifera.urgi.iggp8x/bioconductor-bsgenome.vvinifera.urgi.iggp8x_0.1_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.vvinifera.urgi.iggp8x/bioconductor-bsgenome.vvinifera.urgi.iggp8x_0.1_src_all.tar.gz"
 )
 MD5="fccaf60e5c9352b9c454f7a8ecac2a20"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="TxDb.Btaurus.UCSC.bosTau8.refGene_3.4.4.tar.gz"
+FN="TxDb.Btaurus.UCSC.bosTau8.refGene_3.4.6.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/TxDb.Btaurus.UCSC.bosTau8.refGene_3.4.4.tar.gz"
-  "https://bioarchive.galaxyproject.org/TxDb.Btaurus.UCSC.bosTau8.refGene_3.4.4.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-txdb.btaurus.ucsc.bostau8.refgene/bioconductor-txdb.btaurus.ucsc.bostau8.refgene_3.4.4_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Btaurus.UCSC.bosTau8.refGene_3.4.6.tar.gz"
+  "https://bioarchive.galaxyproject.org/TxDb.Btaurus.UCSC.bosTau8.refGene_3.4.6.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.btaurus.ucsc.bostau8.refgene/bioconductor-txdb.btaurus.ucsc.bostau8.refgene_3.4.6_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-txdb.btaurus.ucsc.bostau8.refgene/bioconductor-txdb.btaurus.ucsc.bostau8.refgene_3.4.6_src_all.tar.gz"
 )
-MD5="4c5973c4153ff02dd768324291631d1e"
+MD5="3ae01e38e8965b61a3e25ed9085718c4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

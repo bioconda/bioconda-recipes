@@ -1,8 +1,9 @@
 #!/bin/bash
 FN="pd.x.laevis.2_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/pd.x.laevis.2_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.x.laevis.2_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.x.laevis.2_3.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pd.x.laevis.2/bioconductor-pd.x.laevis.2_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.x.laevis.2/bioconductor-pd.x.laevis.2_3.12.0_src_all.tar.gz"
 )
 MD5="32416957e3cdc11ad4dbfcd9141ff113"
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

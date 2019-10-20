@@ -1,6 +1,6 @@
 {% set name = "kraken" %}
-{% set version = "1.1" %}
-{% set sha256 = "a4ac74c54c10920f431741c80d8a172670be12c3b352912000030fb5ea4c87a7" %}
+{% set version = "1.1.1" %}
+{% set sha256 = "73e48f40418f92b8cf036ca1da727ca3941da9b78d4c285b81ba3267326ac4ee" %}
 
 package:
   name: {{ name|lower }}
@@ -11,7 +11,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 3
+  number: 2
   has_prefix_files:
     - libexec/kraken
     - libexec/kraken-build
@@ -23,11 +23,19 @@ build:
 requirements:
   build:
     - perl
-    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
 
-  run:
-    - jellyfish 1.*
+  host:
     - perl
+    - clangdev  # [osx]
+    - llvm-openmp  # [osx]
+  run:
+    - kmer-jellyfish 1.*
+    - perl
+    - rsync
+    - wget
+    - llvm-openmp  # [osx]
 
 test:
   commands:

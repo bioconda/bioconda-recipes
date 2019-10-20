@@ -1,11 +1,12 @@
 #!/bin/bash
-FN="TBX20BamSubset_1.18.0.tar.gz"
+FN="TBX20BamSubset_1.20.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/TBX20BamSubset_1.18.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TBX20BamSubset_1.18.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tbx20bamsubset/bioconductor-tbx20bamsubset_1.18.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/TBX20BamSubset_1.20.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TBX20BamSubset_1.20.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tbx20bamsubset/bioconductor-tbx20bamsubset_1.20.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tbx20bamsubset/bioconductor-tbx20bamsubset_1.20.0_src_all.tar.gz"
 )
-MD5="6b04fa46c1d81b4965a59ac7a3cbde37"
+MD5="bb066042b00d5950e90ce73215301c43"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

@@ -1,55 +1,66 @@
+{% set name = "python-chado" %}
+{% set version = "2.3.0" %}
+{% set sha256 = "49c8d577d610353d16446bc63b694dc1f94fa1aee19531935fa1b118f1ec63e3" %}
+
 package:
-  name: python-chado
-  version: "2.2.5"
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://files.pythonhosted.org/packages/45/bd/98536c10146665739bccb9fa867d5f7b6cb810c499f2f1efa413b4bdafcd/chado-2.2.5.tar.gz
-  sha256: 28b6cc1203af278802f724bdc39eeafaf50216c890c73770e9619519af3cc046
+  url: https://pypi.io/packages/source/c/chado/chado-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
-  noarch: python
   number: 0
+  noarch: python
+  entry_points:
+    - chakin=chakin.cli:chakin
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
   host:
+    - pip
     - python
-    - setuptools
-    - sqlalchemy
-    - psycopg2
-    - biopython
-    - bcbiogff >=0.6.4
-    - wrapt
-    - click
-    - pyyaml
-
   run:
-    - python
-    - sqlalchemy
-    - psycopg2
+    - bcbio-gff ==0.6.4
     - biopython
-    - bcbiogff >=0.6.4
-    - wrapt
     - click
-    - pyyaml
     - future
+    - psycopg2
+    - python
+    - pyyaml
+    - sqlalchemy
+    - wrapt
 
 test:
   imports:
     - chado
     - chado.analysis
     - chado.export
+    - chado.expression
+    - chado.feature
     - chado.organism
+    - chado.phylogeny
     - chado.util
-
+    - chakin
+    - chakin.commands
+    - chakin.commands.analysis
+    - chakin.commands.export
+    - chakin.commands.expression
+    - chakin.commands.feature
+    - chakin.commands.organism
+    - chakin.commands.phylogeny
+    - chakin.commands.util
   commands:
-    - chakin --help > /dev/null
-    - chakin analysis --help > /dev/null
+    - chakin --help
+    - chakin analysis --help
 
 about:
   home: https://github.com/galaxy-genome-annotation/python-chado
-  license: MIT License
-  summary: 'Chado library'
+  license: MIT
   license_family: MIT
+  icense_file: '{{ environ["RECIPE_DIR"] }}/LICENSE.txt'
+  summary: "A Python library for interacting with Chado database."
 
 extra:
   container:

@@ -1,0 +1,45 @@
+{% set name = "chiron" %}
+{% set version = "0.4.2.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: a45baef2d74651185d8848fcc5a2abbf6663f8c3cbc6c4d1340c7ad7b0d2f0ec
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - chiron=chiron.entry:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+
+requirements:
+  host:
+    - pip
+    - python 2.7
+  run:
+    - h5py >=2.7.0
+    - mappy >=2.10.0
+    - numpy >=1.13.3
+    - python 2.7
+    - statsmodels >=0.8.0
+    - tqdm >=4.23.0
+    - tensorflow >=1.3.0
+
+about:
+  home: https://github.com/haotianteng/chiron
+  license: Mozilla Public License 2.0 (MPL 2.0)
+  license_family: OTHER
+  summary: 'A deep neural network basecaller for nanopore sequencing.'
+
+extra:
+  identifiers:
+    - doi:10.1093/gigascience/giy037
+    - biotools:Chiron
+  skip-lints:
+    - missing_tests  # conda-forge::tensorflow requires GLIBC >=2.16
+                     # See https://github.com/conda-forge/tensorflow-feedstock/issues/67
+  notes: conda-forge::tensorflow requires GLIBC >=2.16. It should be present on most, but not all systems. See https://github.com/conda-forge/tensorflow-feedstock/issues/67

@@ -17,8 +17,8 @@ echo PASS
 echo -n 'Searching Database for Hits... '
 blastn \
   -query test.fa -db testdb -task blastn -dust no \
-  -outfmt "7 qseqid sseqid evalue bitscore" -max_target_seqs 2 | \
-  grep -q " 2 hits found"
+  -outfmt "7 qseqid sseqid evalue bitscore" -max_target_seqs 6 | \
+  grep -q " 3 hits found"
 echo PASS
 echo -n 'Search and Fetch An Entry From Database... '
 blastdbcmd -db testdb -entry gnl1 -out test_query.fa
