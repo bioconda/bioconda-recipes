@@ -10,7 +10,7 @@
 set -eu -o pipefail
 
 cd t_coffee_source
-make 
+make CC=$CXX CFLAGS="$CFLAGS"
 
 # install tcoffee in the target bin directory 
 mkdir -p $PREFIX/bin

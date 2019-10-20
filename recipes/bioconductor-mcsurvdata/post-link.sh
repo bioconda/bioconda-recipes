@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/mcsurvdata_1.2.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mcsurvdata_1.2.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mcsurvdata/bioconductor-mcsurvdata_1.2.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mcsurvdata/bioconductor-mcsurvdata_1.2.0_src_all.tar.gz"
 )
 MD5="3e2204677f27ed5f9a47551a24963bdd"
 

@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MeSH.Dan.eg.db_1.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/MeSH.Dan.eg.db_1.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mesh.dan.eg.db/bioconductor-mesh.dan.eg.db_1.12.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.dan.eg.db/bioconductor-mesh.dan.eg.db_1.12.0_src_all.tar.gz"
 )
 MD5="bac1907757c826866d96ea6a6f0290e7"
 
