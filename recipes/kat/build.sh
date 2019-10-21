@@ -17,7 +17,8 @@ ln -s $CXX ${PREFIX}/bin/g++
 
 # Build and vendor boost
 ./build_boost.sh --toolset gcc
-cp *.so ${PREFIX}/lib
+find . -name *.so -ls
+exit 1
 
 #importing matplotlib fails, likely due to X
 sed -i.bak "124d" configure.ac
