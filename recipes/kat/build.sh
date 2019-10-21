@@ -11,11 +11,13 @@ export LDFLAGS="-L$PREFIX/lib"
 
 # This package is a mess and vendors a LOT that hard-codes compilers
 mkdir -p ${PREFIX}/bin
+mkdir -p ${PREFIX}/lib
 ln -s $CC ${PREFIX}/bin/gcc
 ln -s $CXX ${PREFIX}/bin/g++
 
-# Build boost
+# Build and vendor boost
 ./build_boost.sh --toolset gcc
+cp *.so ${PREFIX}/lib
 
 #importing matplotlib fails, likely due to X
 sed -i.bak "124d" configure.ac
