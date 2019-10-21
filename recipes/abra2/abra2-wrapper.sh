@@ -10,6 +10,6 @@ if [[ -z "${JAVA_TOOL_OPTIONS}" ]]; then
 fi
 
 java_path="/opt/anaconda1anaconda2anaconda3/bin/java"
-[[ -r "${java_path}" ]] || jar_path="java"
+[[ -r "${java_path}" ]] || java_path="java"
 
 exec "${java_path}" -jar ${jar_path} "$@"
