@@ -9,7 +9,7 @@ if [[ -z "${JAVA_TOOL_OPTIONS}" ]]; then
     export JAVA_TOOL_OPTIONS
 fi
 
-java_path="${JAVA_HOME}/bin/java"
+java_path="/opt/anaconda1anaconda2anaconda3/bin/java"
 [[ -r "${java_path}" ]] || jar_path="java"
 
 exec "${java_path}" -jar ${jar_path} "$@"
