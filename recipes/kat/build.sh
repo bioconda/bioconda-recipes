@@ -28,3 +28,4 @@ make install
 
 unlink ${PREFIX}/bin/gcc
 unlink ${PREFIX}/bin/g++
+rm -rf $PREFIX/mkspecs
