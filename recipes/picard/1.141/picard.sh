@@ -1,13 +1,10 @@
 #!/bin/bash
-# snpEff executable shell script, adapted from VarScan shell script
-jar_name="snpEff.jar"
-
+# Picard executable shell script
 set -eu -o pipefail
 
-set -o pipefail
 export LC_ALL=en_US.UTF-8
 
-# Find original directory of bash script, resovling symlinks
+# Find original directory of bash script, resolving symlinks
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -18,10 +15,12 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 JAR_DIR=$DIR
+ENV_PREFIX="$(dirname $(dirname $DIR))"
+# Use Java installed with Anaconda to ensure correct version
+java="$ENV_PREFIX/bin/java"
 
-java=java
-
-if [ -z "${JAVA_HOME:=}" ]; then
+# if JAVA_HOME is set (non-empty), use it. Otherwise keep "java"
+if [ -n "${JAVA_HOME:=}" ]; then
   if [ -e "$JAVA_HOME/bin/java" ]; then
       java="$JAVA_HOME/bin/java"
   fi
@@ -45,7 +44,12 @@ for arg in "$@"; do
             jvm_mem_opts="$jvm_mem_opts $arg"
             ;;
          *)
-            pass_args="$pass_args $arg"
+	    if [[ ${pass_args} == '' ]] #needed to avoid preceeding space on first arg e.g. ' MarkDuplicates'
+            then 
+                pass_args="$arg" 
+	    else
+                pass_args="$pass_args \"$arg\"" #quotes later arguments to avoid problem with ()s in MarkDuplicates regex arg
+            fi
             ;;
     esac
 done
@@ -57,8 +61,8 @@ fi
 pass_arr=($pass_args)
 if [[ ${pass_arr[0]:=} == org* ]]
 then
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/$jar_name" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -cp "$JAR_DIR/picard.jar" $pass_args
 else
-    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/$jar_name" $pass_args
+    eval "$java" $jvm_mem_opts $jvm_prop_opts -jar "$JAR_DIR/picard.jar" $pass_args
 fi
 exit
