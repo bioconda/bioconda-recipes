@@ -19,4 +19,4 @@ fi
 
 # Install as plink
 mkdir -p $PREFIX/bin
-cp plink $PREFIX/bin/plink1.90b5
+cp plink $PREFIX/bin/
