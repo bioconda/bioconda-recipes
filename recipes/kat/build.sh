@@ -1,21 +1,7 @@
 #!/bin/sh
-
 set -x -e
 
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
-
-export CPPFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-
-# This package is a mess and vendors a LOT that hard-codes compilers
 mkdir -p ${PREFIX}/bin
-ln -s $CC ${PREFIX}/bin/gcc
-ln -s $CXX ${PREFIX}/bin/g++
-
-# Build boost
-./build_boost.sh --toolset gcc
 
 #importing matplotlib fails, likely due to X
 sed -i.bak "124d" configure.ac
@@ -26,6 +12,9 @@ export PYTHON_NOVERSION_CHECK="3.7.0"
 make
 make install
 
-unlink ${PREFIX}/bin/gcc
-unlink ${PREFIX}/bin/g++
+# This directory isn't needed and confuses conda
 rm -rf $PREFIX/mkspecs
+
+cd ${PREFIX}/lib
+# Something is creating a symlink from ${PREFIX}/lib/\n
+find . -type l -not -name "??*" -ls -delete
