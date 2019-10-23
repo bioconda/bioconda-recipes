@@ -110,10 +110,9 @@ this domain. If a bioinformatics recipe has more general dependencies, please
 consider opening a pull request with `conda-forge
 <https://conda-forge.github.io/#add_recipe>`_ which hosts general packages.
 
-The exception to this is with R packages. We are still coordinating with
-Anaconda and conda-forge about the best place to keep general R packages. In
-the meantime, R packages that are not specific to bioinformatics and that
-aren't already in the ``conda-forge`` channel can be added to bioconda.
+All CRAN packages that do not depend on a package in bioconda should be added 
+to conda-forge instead. This is still the case if the CRAN package is directly 
+related to bioinformatics.
 
 If uploading of an unreleased version is necessary, please follow the
 versioning scheme of conda for pre- and post-releases (e.g. using a, b, rc, and
@@ -128,8 +127,8 @@ dev suffixes, see `here
 A `noarch` package must be created for pure python packages. To do so,
 add ``noarch: python`` to the ``build`` section of the ``meta.yaml`` file.
 
- For other generic packages (like a data package), add ``noarch: generic`` to
-  the ``build`` section.
+For other generic packages (like a data package), add ``noarch: generic`` to
+ the ``build`` section.
 
 Dependencies
 ~~~~~~~~~~~~
@@ -139,8 +138,8 @@ a particular dependency should come from a particular channel. This means that
 a recipe must have its dependencies in one of the following:
 
 - as-yet-unbuilt recipes in the repo but that will be included in the PR
-- ``bioconda`` channel
 - ``conda-forge`` channel
+- ``bioconda`` channel
 - default Anaconda channel
 
 Otherwise, you will have to write the recipes for those dependencies and

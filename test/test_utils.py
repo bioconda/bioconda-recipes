@@ -667,21 +667,15 @@ def test_skip_dependencies(config_fixture):
 
 
 class TestSubdags(object):
-    def _build(self, recipes_fixture, config_fixture):
+    def _build(self, recipes_fixture, config_fixture, n_workers, worker_offset):
         build.build_recipes(recipes_fixture.basedir, config_fixture,
                             recipes_fixture.recipe_dirnames,
+                            n_workers=n_workers, worker_offset=worker_offset,
                             mulled_test=False)
 
     def test_subdags_out_of_range(self, recipes_fixture, config_fixture):
         with pytest.raises(ValueError):
-            with utils.temp_env({'SUBDAGS': '1', 'SUBDAG': '5'}):
-                self._build(recipes_fixture, config_fixture)
-
-    def test_subdags_more_than_recipes(self, caplog, recipes_fixture, config_fixture):
-        with caplog.at_level(logging.INFO):
-            with utils.temp_env({'SUBDAGS': '5', 'SUBDAG': '4'}):
-                    self._build(recipes_fixture, config_fixture)
-            assert 'Nothing to be done' in caplog.records[-1].getMessage()
+            self._build(recipes_fixture, config_fixture, 2, 4)
 
 
 @pytest.mark.skipif(SKIP_DOCKER_TESTS, reason='skipping on osx')

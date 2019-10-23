@@ -1,0 +1,78 @@
+name: PR Tests
+on: [pull_request]
+jobs:
+  test-linux:
+    name: Shorter linux tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup
+      uses: bioconda/bioconda-actions/bioconda_utils_setup_conda/@master
+    - name: Install bioconda-utils
+      run: |
+        python setup.py install
+    - name: Build docker container
+      run: |
+        docker build -t bioconda-utils-build-env:latest ./
+        docker history bioconda-utils-build-env:latest
+        docker run --rm -t bioconda-utils-build-env:latest sh -lec 'type -t conda && conda info -a && conda list'
+    - name: Run shorter tests
+      run: |
+        if git diff --name-only origin/master...HEAD | grep -vE ^docs; then
+            py.test --durations=0 test/ -v --tb=native -m 'not long_running'
+        else
+            echo "Skipping pytest - only docs modified"
+        fi
+  test-linux-long:
+    name: Longer linux tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup
+      uses: bioconda/bioconda-actions/bioconda_utils_setup_conda/@master
+    - name: Install bioconda-utils
+      run: |
+        python setup.py install
+    - name: Build docker container
+      run: |
+        docker build -t bioconda-utils-build-env:latest ./
+        docker history bioconda-utils-build-env:latest
+        docker run --rm -t bioconda-utils-build-env:latest sh -lec 'type -t conda && conda info -a && conda list'
+    - name: Run longer tests
+      run: |
+        if git diff --name-only origin/master...HEAD | grep -vE ^docs; then
+            py.test --durations=0 test/ -v --tb=native -m 'long_running'
+        else
+            echo "Skipping pytest - only docs modified"
+        fi
+  test-macosx:
+    name: OSX tests
+    runs-on: macOS-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup
+      uses: bioconda/bioconda-actions/bioconda_utils_setup_conda/@master
+    - name: Install bioconda-utils
+      run: |
+        python setup.py install
+    - name: Run tests
+      run: |
+        if git diff --name-only origin/master...HEAD | grep -vE ^docs; then
+            py.test --durations=0 test/ -v -k "not docker" --tb=native
+        else
+            echo "Skipping pytest - only docs modified"
+        fi
+  autobump-test:
+    name: autobump test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup
+      uses: bioconda/bioconda-actions/bioconda_utils_setup_conda@master
+    - name: Install bioconda-utils
+      run: |
+        python setup.py install
+    - name: Test autobump
+      env:
+        AUTOBUMP_OPTS: --dry-run
+      uses: bioconda/bioconda-actions/bioconda_utils_autobump@master
