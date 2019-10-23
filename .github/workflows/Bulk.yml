@@ -1,0 +1,44 @@
+name: Bulk branch
+on:
+  push:
+    branches:
+      - bulk
+jobs:
+  build-linux:
+    name: Bulk Linux Builds
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        runner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup Bioconda-utils
+      uses: bioconda/bioconda-actions/bioconda_recipes_setup_conda/@bulk
+    - name: Build and upload
+      env:
+        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+        QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+      run: |
+        bioconda-utils build recipes config.yml \
+          --worker-offset ${{ matrix.runner }} --n-workers 10 \
+          --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+  build-osx:
+    name: Bulk OSX Builds
+    runs-on: macOS-latest
+    strategy:
+      matrix:
+        runner: [0, 1, 2, 3, 4]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup Bioconda-utils
+      uses: bioconda/bioconda-actions/bioconda_recipes_setup_conda/@bulk
+    - name: Build and upload
+      env:
+        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+        QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+      run: |
+        bioconda-utils build recipes config.yml \
+          --worker-offset ${{ matrix.runner }} --n-workers 5 \
+          --anaconda-upload
