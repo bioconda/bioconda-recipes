@@ -401,6 +401,23 @@ def do_lint(recipe_folder, config, packages="*", cache=None, list_checks=False,
      already present in one of these channels will be skipped. The default is
      the first two channels specified in the config file. Note that this is
      ignored if you specify --git-range.''')
+@arg('--n-workers', type=int, default=1,
+     help='''The number of parallel workers that are in use. This is intended
+     for use in cases such as the "bulk" branch, where there are multiple
+     parallel workers building and uploading recipes. In essence, this causes
+     bioconda-utils to process every Nth sub-DAG, where N is the value you give
+     to this option. The default is 1, which is intended for cases where there
+     are NOT parallel workers (i.e., the majority of cases). This should
+     generally NOT be used in conjunctions with the --packages or --git-range
+     options!''')
+@arg('--worker-offset', type=int, default=0,
+     help='''This is only used if --nWorkers is >1. In that case, then each
+     instance of bioconda-utils will process every Nth sub-DAG. This option
+     gives the 0-based offset for that. For example, if "--n-workers 5 --worker-offset 0"
+     is used, then this instance of bioconda-utils will process the 1st, 6th,
+     11th, etc. sub-DAGs. Equivalently, using "--n-workers 5 --worker-offset 1"
+     will result in sub-DAGs 2, 7, 12, etc. being processed. If you use more
+     than one worker, then make sure to give each a different offset!''')
 @arg('--keep-old-work', action='store_true', help='''Do not remove anything
 from environment, even after successful build and test.''')
 @enable_logging()
@@ -408,7 +425,7 @@ def build(recipe_folder, config, packages="*", git_range=None, testonly=False,
           force=False, docker=None, mulled_test=False, build_script_template=None,
           pkg_dir=None, anaconda_upload=False, mulled_upload_target=None,
           build_image=False, keep_image=False, lint=False, lint_exclude=None,
-          check_channels=None, keep_old_work=False):
+          check_channels=None, n_workers=1, worker_offset=0, keep_old_work=False):
     cfg = utils.load_config(config)
     setup = cfg.get('setup', None)
     if setup:
@@ -454,6 +471,8 @@ def build(recipe_folder, config, packages="*", git_range=None, testonly=False,
                             lint_exclude=lint_exclude,
                             check_channels=check_channels,
                             label=label,
+                            n_workers=n_workers,
+                            worker_offset=worker_offset,
                             keep_old_work=keep_old_work)
     exit(0 if success else 1)
 

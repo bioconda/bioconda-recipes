@@ -6,6 +6,7 @@ import subprocess as sp
 from collections import defaultdict, namedtuple
 import os
 import logging
+import itertools
 
 from typing import List
 
@@ -183,34 +184,38 @@ def remove_cycles(dag, name2recipes, failed, skip_dependent):
     return dag.subgraph(name for name in dag if name not in nodes_in_cycles)
 
 
-def get_subdags(dag, testonly):
-    subdags_n = int(os.environ.get("SUBDAGS", 1))
-    subdag_i = int(os.environ.get("SUBDAG", 0))
-    if subdag_i >= subdags_n:
+def get_subdags(dag, n_workers, worker_offset):
+    if n_workers > 1 and worker_offset >= n_workers:
         raise ValueError(
-            "SUBDAG=%s (zero-based) but only SUBDAGS=%s "
-            "subdags are available")
+            "n-workers is less than the worker-offset given! "
+            "Either decrease --n-workers or decrease --worker-offset!")
 
     # Get connected subdags and sort by nodes
-    if testonly:
-        # use each node as a subdag (they are grouped into equal sizes below)
-        node_lists = sorted([[n] for n in nx.nodes(dag)])
+    if n_workers > 1:
+        root_nodes = sorted([k for k, v in dag.in_degree().items() if v == 0])
+        nodes = set()
+        found = set()
+        for idx, root_node in enumerate(root_nodes):
+            # Flatten the nested list
+            children = itertools.chain(*nx.dfs_successors(dag, root_node).values())
+            # This is the only obvious way of ensuring that all nodes are included
+            # in exactly 1 subgraph
+            found.add(root_node)
+            if idx % n_workers == worker_offset:
+                nodes.add(root_node)
+                for child in children:
+                    if child not in found:
+                        nodes.add(child)
+                        found.add(child)
+            else:
+                for child in children:
+                    found.add(child)
+        subdags = dag.subgraph(list(nodes))
+        logger.info("Building and testing sub-DAGs %i in each group of %i, which is %i packages", worker_offset, n_workers, len(subdags.nodes()))
     else:
-        node_lists = [list(nodes) for nodes in nx.connected_components(dag.to_undirected())]
+        subdags = dag
 
-    # chunk subdags such that we have at most subdags_n many
-    if subdags_n < len(node_lists):
-        chunks = [[node for nodes in node_lists[i::subdags_n] for node in nodes]
-                  for i in range(subdags_n)]
-    else:
-        chunks = node_lists
-
-    if subdag_i >= len(chunks):
-        return dag.subgraph([])
-
-    subdag = dag.subgraph(chunks[subdag_i])
-    logger.info("Building and testing subdag %s of %s", subdag_i + 1, subdags_n)
-    return subdag
+    return subdags
 
 
 def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
@@ -223,6 +228,8 @@ def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
                   check_channels: List[str] = None,
                   do_lint: bool = None,
                   lint_exclude: List[str] = None,
+                  n_workers: int = 1,
+                  worker_offset: int = 0,
                   keep_old_work: bool = False):
     """
     Build one or many bioconda packages.
@@ -242,9 +249,13 @@ def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
       mulled_upload_target: If specified, upload the mulled docker image to the given target
         on quay.io.
       check_channels: Channels to check to see if packages already exist in them.
-        Fefaults to every channel in the config file except "defaults".
+        Defaults to every channel in the config file except "defaults".
       do_lint: Whether to run linter
       lint_exclude: List of linting functions to exclude.
+      n_workers: The number of parallel instances of bioconda-utils being run. The
+        sub-DAGs are then split into groups of n_workers size.
+      worker_offset: If n_workers is >1, then every worker_offset within a given group of
+        sub-DAGs will be processed.
       keep_old_work: Do not remove anything from environment, even after successful build and test.
     """
     if not recipes:
@@ -279,15 +290,13 @@ def build_recipes(recipe_folder: str, config_path: str, recipes: List[str],
         logger.info("Nothing to be done.")
         return True
 
-    logger.info("Building and testing %s recipes in total", len(dag))
-    logger.info("Recipes to build: \n%s", "\n".join(dag.nodes()))
-
     skip_dependent = defaultdict(list)
-    subdag = get_subdags(dag, testonly)
-    subdag = remove_cycles(subdag, name2recipes, failed, skip_dependent)
+    dag = remove_cycles(dag, name2recipes, failed, skip_dependent)
+    subdag = get_subdags(dag, n_workers, worker_offset)
     if not subdag:
         logger.info("Nothing to be done.")
         return True
+    logger.info("%i recipes to build and test: \n%s", len(subdag), "\n".join(subdag.nodes()))
 
     recipe2name = {}
     for name, recipe_list in name2recipes.items():
