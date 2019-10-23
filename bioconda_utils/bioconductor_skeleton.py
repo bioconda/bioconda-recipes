@@ -16,6 +16,8 @@ import bs4
 import pyaml
 import requests
 import yaml
+import networkx as nx
+import itertools
 
 from . import utils
 from . import cran_skeleton
@@ -35,6 +37,87 @@ base_url = 'https://bioconductor.org/packages/'
 BASE_R_PACKAGES = ["base", "compiler", "datasets", "graphics", "grDevices",
                    "grid", "methods", "parallel", "splines", "stats", "stats4",
                    "tcltk", "tools", "utils"]
+
+# These CRAN packages directly or indirectly depend on X, requiring specialized
+# build and test-time requirements as well as the extended container.
+# These can be found here: https://github.com/search?p=2&q=cdt%28%27mesa-libgl-devel%27%29+user%3Aconda-forge+r-base&type=Code
+# and here: https://github.com/search?l=YAML&q=r-rgl+user%3Aconda-forge&type=Code
+CRAN_X_PACKAGES = set(["rgl", "tsdist", "tsclust", "plot3drgl", "pals", "longitudinaldata",
+                       "bpca", "bcrocsurface", "feature", "pca3d", "forestfloor", "oceanview",
+                       "clustersim", "hiver", "lidr", "mixomics", "snpls", "matlib", "qpcr"])
+
+# This maps items in a package's SystemRequirement to conda packages
+# There can be multiple resulting packages, all of which should then
+# be included in recipes
+SysReqs = {'and egrep are required for some functionalities': ['grep'],
+           'BLAS': ['openblas'],
+           'bowtie': ['bowtie2'],
+           'bowtie and samtools are required for some functionalities': ['bowtie2', 'samtools'],
+           'clustalo': ['clustalo'],
+           'cwltool (>= 1.0.2018)': ['cwltool >=1.0.2018'],
+           'Cytoscape (>= 3.3.0)': ['cytoscape >=3.3.0'],
+           'Cytoscape (>= 3.6.1) (if used for visualization of results': ['cytoscape >=3.6.1'],
+           'Cytoscape (>= 3.7.1)': ['cytoscape >=3.7.1'],
+           'Ensembl VEP (API version 96) and the Perl modules DBI and DBD::mysql must be installed. See the package README and Ensembl installation instructions: http://www.ensembl.org/info/docs/tools/vep/script/vep_download.html#installer': ['ensembl-vep', 'perl-dbd-mysql', 'perl-dbi'],
+           'GEOS (>= 3.2.0);for building from source: GEOS from http://trac.osgeo.org/geos/; GEOS OSX frameworks built by William Kyngesburye at http://www.kyngchaos.com/ may be used for source installs on OSX.': ['geos >=3.2.0'],
+           'GLPK (>= 4.42)': ['glpk >=4.42'],
+           'GNU Scientific Library >= 1.6 (http://www.gnu.org/software/gsl/)': ['gsl >=4.42'],
+           'graphviz': ['graphviz'],
+           'Graphviz version >= 2.2': ['graphviz >=2.2'],
+           'gs': ['ghostscript'],
+           'gsl': ['gsl'],
+           'GSL and OpenMP': ['gsl'],
+           'GSL (GNU Scientific Library)': ['gsl'],
+           'gsl. Note: users should have GSL installed. Windows users: \'consult the README file available in the inst directory of the source distribution for necessary configuration instructions\'.': ['gsl'],
+           'h5py': ['h5py'],
+           'HMMER3': ['hmmer >=3'],
+           'ImageMagick': ['imagemagick'],
+           'JAGS 4.x.y': ['jags 4.*.*'],
+           'Java': ['openjdk'],
+           'Java (>= 1.5)': ['openjdk'],
+           'Java (>= 1.6)': ['openjdk'],
+           'Java (>= 1.7)': ['openjdk'],
+           'Java (>= 1.8)': ['openjdk'],
+           'Java (>= 8)': ['openjdk'],
+           'Java Runtime Environment (>= 6)': ['openjdk'],
+           'Java version >= 1.6': ['openjdk'],
+           'Java version >= 1.7': ['openjdk'],
+           'jQuery': ['jquery'],
+           'jQueryUI': ['jquery-ui'],
+           'libsbml (==5.10.2)': ['libsbml 5.10.2'],
+           'libSBML (>= 5.5)': ['libsbml >=5.5'],
+           'libxml2': ['libxml2'],
+           'MAFFT (>= 7.305)': ['mafft >=7.305'],
+           'mofapy': ['mofapy'],
+           'Netpbm': ['netpbm'],
+           'nodejs': ['nodejs'],
+           'numpy': ['numpy'],
+           'OpenBabel': ['openbabel'],
+           'OpenBabel (>= 2.3.1) with headers (http://openbabel.org).': ['openbabel >=2.3.1'],
+           'pandas': ['pandas'],
+           'Pandoc': ['pandoc'],
+           'pandoc (>= 1.12.3)': ['pandoc >=1.12.3'],
+           'Pandoc (>= 1.12.3)': ['pandoc >=1.12.3'],
+           'pandoc (>= 1.19.2.1)': ['pandoc >=1.19.2.1'],
+           'pandoc (http://pandoc.org/installing.html) for generating reports from markdown files.': ['pandoc'],
+           'perl': ['perl >=5.6.0'],
+           'Perl': ['perl >=5.6.0'],
+           'Perl (>= 5.6.0)': ['perl >=5.6.0'],
+           'python (>= 2.7)': ['python >=2.7'],
+           'Python (>=2.7.0)': ['python >=2.7'],
+           'python (< 3.7)': ['python <3.7'],
+           'root_v5.34.36 <http://root.cern.ch> - See README file for installation instructions.': ['root5 5.34.36'],
+           'rTANDEM uses expat and pthread libraries. See the README file for details.': ['expat'],
+           'samtools': ['samtools'],
+           'scipy': ['scipiy'],
+           'sklearn': ['scikit-learn'],
+           'STAR': ['star'],
+           'tensorflow': ['tensorflow'],
+           'To generate html reports pandoc (http://pandoc.org/installing.html) is required.': ['pandoc'],
+           'TopHat': ['tophat2'],
+           'ViennaRNA (>= 2.4.1)': ['viennarna >=2.4.1'],
+           'xml2': ['libxml2']}
+
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -261,6 +344,31 @@ def fetchPackages(bioc_version):
     return d
 
 
+def packagesNeedingX(packages):
+    """
+    Return a set of all packages needing X. Packages needing X are defines as those that directly or indirectly require rgl.
+    """
+    depTree = nx.DiGraph()
+    for p, meta in packages.items():
+        p = p.lower()
+        if p not in depTree:
+            depTree.add_node(p)
+        for field in ["Imports", "Depends", "LinkingTo"]:
+            if field in meta:
+                for dep in meta[field].split(","):
+                    # This is a simplified form for BioCProjectPage._parse_dependencies
+                    dep = dep.strip().split("(")[0].strip().lower()
+                    if dep not in depTree:
+                        depTree.add_node(dep)
+                    depTree.add_edge(dep, p)
+    Xset = set()
+    for cxp in CRAN_X_PACKAGES:
+        if cxp in depTree:
+            for xp in itertools.chain(*nx.dfs_successors(depTree, cxp).values()):
+                Xset.add(xp)
+    return Xset
+
+
 class BioCProjectPage(object):
     def __init__(self, package, bioc_version=None, pkg_version=None, packages=None):
         """
@@ -287,6 +395,7 @@ class BioCProjectPage(object):
         self.package_lower = package.lower()
         self.version = pkg_version
         self.extra = None
+        self.needsX = False
 
         # If no version specified, assume the latest
         if not self.bioc_version:
@@ -427,6 +536,13 @@ class BioCProjectPage(object):
         return fn
 
     @property
+    def title(self):
+        """
+        The Title section fromt he VIEW file
+        """
+        return self.packages[self.package]['Title']
+
+    @property
     def description(self):
         """
         The "Description" from the VIEW file
@@ -436,6 +552,41 @@ class BioCProjectPage(object):
     @property
     def license(self):
         return self.packages[self.package]['License']
+
+    def license_file_location(self):
+        """
+        R ships with a number of license files that we can simply refer to.
+
+        This supports: AGPL-3, Artistic-2.0, GPL-2, GPL-3, LGPL-2, LGPL-2.1, LGPL-3
+
+        MIT, and 2/3 clause BSD licenses are provided as well, but those are just templates.
+
+        Anything with GPL/LGPL in the name that doesn't otherwise match a lower version is assigned
+        GPL-3/LGPL-3
+        """
+        license = self.license
+        if "LICENSE" in license:
+            return "LICENSE"
+
+        licenses = {'GPL-2': '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2',
+                    'GPL (== 2)': '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2',
+                    'GPL (==2)': '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2',
+                    'GPL version 2': '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2',
+                    'AGPL-3': '{{ environ["PREFIX"] }}/lib/R/share/licenses/AGPL-3',
+                    'Artisitic-2.0': '{{ environ["PREFIX"] }}/lib/R/share/licenses/Artistic-2.0',
+                    'LGPL-2': '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-2',
+                    'LGPL-2.1': '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-2.1'}
+
+        if license in licenses:
+            return licenses[license]
+
+        if "LGPL" in license:
+            return '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-3'
+
+        if "GPL" in license:
+            return '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+        return None
+
 
     @property
     def imports(self):
@@ -453,7 +604,6 @@ class BioCProjectPage(object):
         List of "SystemRequirements" from the VIEW file
         """
         try:
-            print(self.packages[self.package]['SystemRequirements'])
             return self.packages[self.package]['SystemRequirements']
         except KeyError:
             return []
@@ -668,17 +818,33 @@ class BioCProjectPage(object):
         """
         return self.packages[self.package]['MD5sum']
 
-    def pacified_description(self):
+    def pacified_text(self, section="Description"):
         """
         Linting will fail if ``GIT_``, ``HG_``, or ``SVN_`` appear in the description.
         This usually isn't an issue, except some microarray annotation packages
         include ``HG_`` in their summaries. The goal is to simply remove ``_`` in such
         cases.
+
+        By default, this will pacify the Description section
         """
-        description = self.packages[self.package]['Description']
+        description = self.packages[self.package][section]
         for vcs in ['HG', 'SVN', 'GIT']:
             description = description.replace('{}_'.format(vcs), '{} '.format(vcs))
         return description
+
+    def parseSystemRequirements(self, reqs):
+        """
+        Parse the text version of system requirements and return a list of conda packages
+        """
+        reqs = reqs.split(',')
+        packages = [SysReqs[r.strip()] for r in reqs if r.strip() in SysReqs]
+        packages = []
+        for req in reqs:
+            if req in SysReqs:
+                packages.extend(SysReqs[req])
+        if len(packages):
+            return packages
+        return None
 
     @property
     def meta_yaml(self):
@@ -776,10 +942,32 @@ class BioCProjectPage(object):
                 'about', OrderedDict((
                     ('home', sub_placeholders(self.url)),
                     ('license', self.license),
-                    ('summary', self.pacified_description()),
+                    ('summary', self.pacified_text(section="Title")),
+                    ('description', self.pacified_text(section="Description")),
                 )),
             ),
         ))
+
+        if self.license_file_location():
+            d['about']['license_file'] = self.license_file_location()
+
+        if self.packages[self.package].get('SystemRequirements', None):
+            if self.parseSystemRequirements(self.packages[self.package]['SystemRequirements']):
+                d['requirements']['host'].extend(self.parseSystemRequirements(self.packages[self.package]['SystemRequirements']))
+                d['requirements']['run'].extend(self.parseSystemRequirements(self.packages[self.package]['SystemRequirements']))
+
+        if self.needsX:
+            # Anything that causes rgl to get imported needs X around
+            if not self.extra:
+                self.extra = OrderedDict()
+            self.extra['container'] = OrderedDict([('extended-base', True)])
+
+            if 'build' not in d['requirements']:
+                # This is filled in manually later since pyaml.dumps will mess of the formatting otherwise
+                d['requirements']['build'] = ["PLACEHOLDER"]
+
+            d['test']['commands'] = ['''LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library('{{ name }}')"''']
+
 
         if self.extra:
             d['extra'] = self.extra
@@ -800,6 +988,17 @@ class BioCProjectPage(object):
             renderedsplit.insert(idx, '# SystemRequirements: {}'.format(self.packages[self.package]['SystemRequirements']))
         if self.packages[self.package].get('Suggests', None):
             renderedsplit.insert(idx, '# Suggests: {}'.format(self.packages[self.package]['Suggests']))
+        # Fix the core dependencies if this needsX
+        if self.needsX:
+            idx = renderedsplit.index('  build:') + 1
+            renderedsplit.insert(idx, "    - xorg-libxfixes  # [linux]")
+            renderedsplit.insert(idx, "    - {{ cdt('libxxf86vm') }}  # [linux]")
+            renderedsplit.insert(idx, "    - {{ cdt('libxdamage') }}  # [linux]")
+            renderedsplit.insert(idx, "    - {{ cdt('libselinux') }}  # [linux]")
+            renderedsplit.insert(idx, "    - {{ cdt('mesa-dri-drivers') }}  # [linux]")
+            renderedsplit.insert(idx, "    - {{ cdt('mesa-libgl-devel') }}  # [linux]")
+            if "    - PLACEHOLDER" in renderedsplit:
+                del renderedsplit[renderedsplit.index("    - PLACEHOLDER")]
         rendered = '\n'.join(renderedsplit) + '\n'
 
         rendered = (
@@ -874,7 +1073,7 @@ def write_recipe_recursive(proj, seen_dependencies, recipe_dir, config, force,
 
 def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
                  pkg_version=None, versioned=False, recursive=False, seen_dependencies=None,
-                 packages=None, skip_if_in_channels=None):
+                 packages=None, skip_if_in_channels=None, needs_x=None):
     """
     Write the meta.yaml and build.sh files. If the package is detected to be
     a data package (bsed on the detected URL from Bioconductor), then also
@@ -919,6 +1118,10 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
     skip_if_in_channels : list or None
         List of channels whose existing packages will be automatically added to
         **seen_dependencies**. Only has an effect if ``recursive=True``.
+
+    needs_x : bool or None
+        If None, we need to determine if this requires X and therefore additional
+        build dependencies and test environment variables.
     """
     config = utils.load_config(config)
     proj = BioCProjectPage(package, bioc_version, pkg_version, packages=packages)
@@ -926,6 +1129,11 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
 
     if seen_dependencies is None:
         seen_dependencies = set()
+
+    if not needs_x:
+        needing_x = packagesNeedingX(proj.packages)
+        needs_x = package.lower() in needing_x
+    proj.needsX = needs_x
 
     if recursive:
         # get a list of existing packages in channels
@@ -992,9 +1200,12 @@ def write_recipe(package, recipe_dir, config, force=False, bioc_version=None,
                 CXX98=$CXX
                 CXX11=$CXX
                 CXX14=$CXX" > ~/.R/Makevars
-                $R CMD INSTALL --build .'''
-                )
-            )
+                '''))
+            if needs_x:
+                fout.write(dedent(
+                    '''export LD_LIBRARY_PATH=${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64
+                    '''))
+            fout.write(dedent('''$R CMD INSTALL --build .'''))
 
     else:
         urls = [
