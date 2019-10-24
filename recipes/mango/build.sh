@@ -25,10 +25,10 @@ $PYTHON -m pip install python_adam/. --no-deps --ignore-installed -vv
 $PYTHON -m pip install python/. --no-deps --ignore-installed -vv
 
 $PYTHON -m pip install python_pileup/. --no-deps --ignore-installed -vv
-# # Enable widget
-# jupyter nbextension enable --py widgetsnbextension
-# jupyter nbextension install --py --symlink --user bdgenomics.mango.pileup
-# jupyter nbextension enable bdgenomics.mango.pileup --user --py
+# Enable widget
+jupyter nbextension enable --py widgetsnbextension
+jupyter nbextension install --py --symlink --user bdgenomics.mango.pileup
+jupyter nbextension enable bdgenomics.mango.pileup --user --py
 
 mkdir -p $PREFIX/mango-assembly/target
 for f in $PACKAGE_HOME/repo/*.jar ; do
