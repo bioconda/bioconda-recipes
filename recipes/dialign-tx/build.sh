@@ -7,17 +7,17 @@ cd ./source
 # - update architecture
 # - disable SSE optimization
 # - disable MMX optimization
-sed -i.bak -e 's/^CPPFLAGS=/#CPPFLAGS=/g' Makefile
+#sed -i.bak -e 's/^CPPFLAGS=/#CPPFLAGS=/g' Makefile
 # disable explicit CC setting
-sed -i.bak -e 's/^CC=/#CC=/g' Makefile
+#sed -i.bak -e 's/^CC=/#CC=/g' Makefile
 
 # set general CPPFLAGS (-funroll-loops taken from original Makefile)
-export CPPFLAGS="-I$PREFIX/include -O3 -march=native -funroll-loops"
-export LDFLAGS="-L$PREFIX/lib"
+#export CPPFLAGS="-I$PREFIX/include -O3 -march=native -funroll-loops"
+#export LDFLAGS="-L$PREFIX/lib"
 
 # fix source code: remove "inline" from structs
 sed -i.bak -e 's/inline//g' *.c
 
 mkdir -p $PREFIX/bin
-make
+make CC="$CC $CFLAGS $LDFLAGS"
 mv dialign-tx $PREFIX/bin/
