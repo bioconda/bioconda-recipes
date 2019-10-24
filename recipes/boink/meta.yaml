@@ -1,0 +1,52 @@
+{% set version = "0.7" %}
+{% set sha256 = "067580da9109f630f1241b555ad261dfe662ab80682bf47f4664e379227fe238" %}
+
+package:
+  name: boink
+  version: '{{version}}'
+
+source:
+  url: https://github.com/camillescott/boink/archive/v{{ version }}.tar.gz
+  sha256: '{{sha256}}'
+
+build:
+  number: 0
+  script:
+    - mkdir build && cd build && BOINK_VERSION={{version}} cmake .. -DCMAKE_BUILD_TYPE=Release && make install VERBOSE=1
+
+requirements:
+  build:
+    - '{{compiler("c")}}'
+    - '{{compiler("cxx")}}'
+    - cmake
+  host:
+    - python >=3.6
+    - cppyy >=1.5.5
+    - clangdev =8.0.1
+    - libcxx
+    - libstdcxx-ng
+    - libgcc-ng
+    - openmp
+    - zlib
+    - python-clang
+    - pip
+  run:
+    - python >=3.6
+    - cppyy >=1.5.5
+    - openmp
+    - python-clang
+    - zlib
+    - screed
+    - blessings
+    - pyfiglet
+    - py-cpuinfo
+    - numpy
+
+test:
+  imports:
+    - boink
+
+about:
+  home: https://github.com/camillescott/boink
+  license: MIT
+  summary: streaming de Bruijn graph compaction and sketching.
