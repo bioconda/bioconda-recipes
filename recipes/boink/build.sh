@@ -11,4 +11,5 @@ CONDA_PREFIX=${PREFIX} cmake .. -DCMAKE_BUILD_TYPE=Release \
                                 -DCMAKE_INSTALL_RPATH=${PREFIX}/lib \
                                 -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE
 make install VERBOSE=1
-ls $PREFIX/lib/
+ls $PREFIX/lib/clang/8.0.1/include
+ls $PREFIX/include
