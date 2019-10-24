@@ -15,6 +15,9 @@ sed -i 's/^CC=/#CC=/g' Makefile
 export CPPFLAGS="-I$PREFIX/include -O3 -march=native -funroll-loops"
 export LDFLAGS="-L$PREFIX/lib"
 
+# fix source code: remove "inline" from structs
+sed -i.bak 's/inline//g' *.c
+
 mkdir -p $PREFIX/bin
 make
 mv dialign-tx $PREFIX/bin/
