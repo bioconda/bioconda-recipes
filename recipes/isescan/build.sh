@@ -14,8 +14,3 @@ cp -r pHMMs/ $PREFIX/bin/
 # adds test fasta for build testing
 mkdir $PREFIX/test
 cp NC_012624.fna $PREFIX/test/
-
-
-
-
-
