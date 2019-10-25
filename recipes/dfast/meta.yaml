@@ -1,16 +1,24 @@
+{% set version = "1.2.3" %}
+
 package:
   name: dfast
-  version: 1.2.3
+  version: {{ version }}
 
 build:
-  number: 1
-
+  number: 2
+  binary_relocation: False # [osx]
 source:
-  url: https://github.com/nigyta/dfast_core/archive/1.2.3.tar.gz
+  url: https://github.com/nigyta/dfast_core/archive/{{ version }}.tar.gz
   sha256: 710d2cad3874aba691e5995bc3865785e1807a09bf3a8a8c622126d7d4551859 
 
 requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
   run:
+    - zlib
     - python >=3.5
     - biopython
     - openjdk
@@ -20,7 +28,6 @@ requirements:
     - ghostx
     - hmmer >=3.1b2
     - metagene_annotator >=1.0
-    - last
 
 test:
   commands:
@@ -38,4 +45,5 @@ extra:
     - biotools:dfast
     - doi:10.1093/bioinformatics/btx713
   skip-lints:
+    #We ship some custom last binaries
     - should_be_noarch_generic

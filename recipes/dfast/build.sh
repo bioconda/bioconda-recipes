@@ -2,11 +2,27 @@
 
 APPROOT=$PREFIX/opt/$PKG_NAME-$PKG_VERSION
 
-rm -rf bin/Linux
-rm -rf bin/Darwin
+rm bin/*/aragorn
+rm bin/*/barrnap
+rm -r bin/Darwin/barrnap-0.8
+rm bin/*/blastdbcmd
+rm bin/*/blastp
+rm bin/*/ghost*
+rm bin/*/hmm*
+rm bin/*/makeblastdb
+rm bin/*/mga
+rm bin/*/rpsblast
+if [ "$(uname)" == "Darwin" ]; then
+    rm -rf bin/Linux
+    LD_LIBRARY_PATH=$APPROOT/bin/Darwin/lib
+else
+    rm -rf bin/Darwin
+fi
+
 
 mkdir -p $APPROOT
 mkdir -p ${PREFIX}/bin
+
 cp -r ./* $APPROOT
 
 ln -s ${APPROOT}/dfast ${PREFIX}/bin/dfast
