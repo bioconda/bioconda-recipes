@@ -1,4 +1,7 @@
 #!/bin/bash
+mkdir -p ${PREFIX}/bin
+mkdir -p ${PREFIX}/lib
+mkdir -p ${PREFIX}/test
 
 # compiles and moves libssw to conda env
 cd ssw201507
