@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make CC=$CC
+make CC=$CC CXX=$CXX
 
 binaries="\
 muscle \
