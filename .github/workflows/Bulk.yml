@@ -49,9 +49,13 @@ jobs:
         OSTYPE: "darwin"
         CI: "true"
       run: |
-        echo "CONDA_BUILD_SYSROOT $CONDA_BUILD_SYSROOT"
-        ls -l /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs
-        ls -l $CONDA_BUILD_SYSROOT
+        # This is taken from conda-forge-ci-setup
+        curl -L -o https://github.com/phracker/MacOSX-SDKs/releases/download/10.13/MacOSX10.9.sdk.tar.xz
+        tar -xf MacOSX10.9.sdk.tar.xz -C /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs
+        # set minimum sdk version to our target
+        plutil -replace MinimumSDKVersion -string 10.9 $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
+        plutil -replace DTSDKName -string macosx10.9internal $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
+        export CONDA_BUILD_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9"
         bioconda-utils build recipes config.yml \
           --worker-offset ${{ matrix.runner }} --n-workers 5 \
           --anaconda-upload
