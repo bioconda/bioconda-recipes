@@ -13,7 +13,7 @@ mkdir -p $outdir
 mkdir -p $outdir/scripts
 mkdir -p $PREFIX/bin
 
-pushd src/util/sqlite3
+pushd src/utils/sqlite3
 sed -i.bak "s#@gcc#${CC}#g" Makefile
 popd
 
