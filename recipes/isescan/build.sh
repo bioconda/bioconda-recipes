@@ -8,6 +8,7 @@ mv libssw.so ${PREFIX}/lib/
 # moves python scripts to conda env
 cd ..
 chmod +x isescan.py
+mkdir -p ${PREFIX}/bin/
 cp *.py ${PREFIX}/bin/
 cp -r pHMMs/ $PREFIX/bin/
 
