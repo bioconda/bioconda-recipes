@@ -11,7 +11,7 @@ source:
 
 build:
   noarch: python
-  number: 2
+  number: 3
   script: python -m pip install --no-deps --ignore-installed .
   entry_points:
     - bioconda-utils = bioconda_utils.cli:main
@@ -73,6 +73,12 @@ test:
     - bioconda-utils --help
     - bioconda-utils lint --help
     - bioconda-utils build --help
+    - >
+      "${PREFIX}/bin/conda" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
+      --file="$( python -c
+      'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))'
+      )"
+      --json | grep -qF 'All requested packages already installed.'
 
 about:
   home: http://bioconda.github.io/build-system.html
