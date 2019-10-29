@@ -37,4 +37,5 @@ cp -R $SRC_DIR/QuarryFiles ${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}
 #required ENV variable
 mkdir -p ${PREFIX}/etc/conda/activate.d/
 echo "export QUARRY_PATH=${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}/QuarryFiles" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh
+mkdir -p ${PREFIX}/etc/conda/deactivate.d/
 echo "unset QUARRY_PATH" > ${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}-${PKG_VERSION}.sh
