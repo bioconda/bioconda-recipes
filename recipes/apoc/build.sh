@@ -1,6 +1,6 @@
 #!/bin/sh
 
 cd src/
-make
+make FC=$FC
 mkdir -p ${PREFIX}/bin
 mv apoc $PREFIX/bin
