@@ -5,23 +5,16 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
   noarch: python
   script: python -m pip install --no-deps --ignore-installed .
 
 source:
   url: https://github.com/phac-nml/mob-suite/archive/{{ version }}.tar.gz
-  sha256: 221dc24eb6d98b119c25cabff5110709cd345790d9836cf5865bec9262fddc3f 
+  sha256: 221dc24eb6d98b119c25cabff5110709cd345790d9836cf5865bec9262fddc3f
 
 
 requirements:
-  build:
-    - {{ cdt('mesa-libgl-devel') }}  # [linux]
-    - {{ cdt('mesa-dri-drivers') }}  # [linux]
-    - {{ cdt('libselinux') }}  # [linux]
-    - {{ cdt('libxdamage') }}  # [linux]
-    - {{ cdt('libxxf86vm') }}  # [linux]
-    - xorg-libxfixes  # [linux]
   host:
     - python >=3.6
     - pip
@@ -38,18 +31,22 @@ requirements:
     - blast
     - mash
     - circlator
+    - qt >=5
 
 test:
+  source_files:
+    - mob_suite/tests
+  requires:
+    - pytest
+
   commands:
-    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" mob_typer -h
-    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" mob_recon -h
+    - mob_typer -h
+    - mob_recon -h
+    - mob_hostrange -h
+    - python -c "from ete3 import TreeStyle"
+    - pytest -s mob_suite/tests/test_mobtyper.py
 
 about:
   home: https://github.com/phac-nml/mob-suite
   license: Apache License, Version 2.0
   summary: 'This package MOB-suite: software tools for clustering, reconstruction and typing of plasmids from draft assemblies. The MOB-suite is designed to be a modular set of tools for the typing and reconstruction of plasmid sequences from WGS assemblies.'
-
-extra:
-  container:
-    # Due to pyqt
-    extended-base: true
