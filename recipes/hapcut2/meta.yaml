@@ -1,0 +1,34 @@
+package:
+  name: hapcut2
+  version: '1.1'
+
+source:
+  - url: https://github.com/vibansal/HapCUT2/archive/v1.1.tar.gz
+    sha256: f9fb1838b4c3f7fa4dc7bd6de72341f950caa3b2cf98b40a73927734dc75e26e
+    patches:
+    - shebang.patch
+  - url: https://github.com/samtools/htslib/releases/download/1.2.1/htslib-1.2.1.tar.bz2
+    sha256: bddb1372b9215b32e0f21d8394bab859c57cb00324a8dc06775cdac5b4d662b0
+    folder: submodules/htslib
+  - url: https://github.com/samtools/samtools/releases/download/1.2/samtools-1.2.tar.bz2
+    sha256: 420e7a4a107fe37619b9d300b6379452eb8eb04a4a9b65c3ec69de82ccc26daa
+    folder: submodules/samtools
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  run:
+    - python
+    - pysam
+
+test:
+  commands:
+    - "HAPCUT2 | grep HapCUT2"
+    - 'calculate_haplotype_statistics.py 2>&1 | grep "Calculate statistics"'
+    - 'LinkFragments.py 2>&1 | grep "usage: LinkFragments.py"'
+
+about:
+  summary: Tools for haplotype assembly from sequence data
+  home: https://github.com/vibansal/HapCUT2/
+  license: BSD 2-clause
+  license_file: LICENSE
