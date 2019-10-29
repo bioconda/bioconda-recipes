@@ -2,4 +2,5 @@
 
 cd src/
 make
-mv apoc "$PREFIX/bin/"
+mkdir -p ${PREFIX}/bin
+mv apoc $PREFIX/bin
