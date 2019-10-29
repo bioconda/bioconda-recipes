@@ -31,6 +31,7 @@ fi
 sed -i.bak 's|/usr/bin/python|/usr/bin/env python|' $SRC_DIR/QuarryFiles/scripts/fastaTranslate.py
 sed -i.bak 's|/usr/bin/python|/usr/bin/env python|' $SRC_DIR/QuarryFiles/scripts/gene_errors_Xs.py
 sed -i.bak 's|/usr/bin/python|/usr/bin/env python|' $SRC_DIR/QuarryFiles/scripts/split_fasta.py
+mkdir -p ${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}
 cp -R $SRC_DIR/QuarryFiles ${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}
 
 #required ENV variable
