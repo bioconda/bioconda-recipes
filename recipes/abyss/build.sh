@@ -9,17 +9,12 @@ if [[ "$(uname)" == Darwin ]]; then
     export LDFLAGS="$LDFLAGS -headerpad_max_install_names"
 fi
 
-#find / -name libSystem.* -print
-#export MACOSX_DEPLOYMENT_TARGET="10.9"
-#export CONDA_BUILD_SYSROOT="$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${MACOSX_DEPLOYMENT_TARGET}.sdk"
-echo "SYSROOT is $CONDA_BUILD_SYSROOT"
 ./configure \
     --prefix="$PREFIX" \
     --with-boost="$PREFIX" \
     --with-mpi="$PREFIX" \
     --with-sparsehash="$PREFIX" \
     --without-sqlite || cat config.log
-exit 1
 make AM_CXXFLAGS=-Wall
 make install
 
