@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make
+make CC=$CC CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 mkdir ${PREFIX}/bin
 cp -p build/HAPCUT2 build/extractHAIRS ${PREFIX}/bin/
 for script in LinkFragments.py calculate_haplotype_statistics.py; do
