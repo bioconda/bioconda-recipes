@@ -8,6 +8,7 @@ source:
     patches:
     - shebang.patch
     - flags.patch
+    - segfault.patch
   - url: https://github.com/samtools/htslib/releases/download/1.2.1/htslib-1.2.1.tar.bz2
     sha256: bddb1372b9215b32e0f21d8394bab859c57cb00324a8dc06775cdac5b4d662b0
     folder: submodules/htslib
@@ -29,10 +30,15 @@ build:
   number: 0
 
 test:
+  files:
+    - test.bam
+    - test.vcf
   commands:
     - "HAPCUT2 | grep HapCUT2"
     - 'calculate_haplotype_statistics.py 2>&1 | grep "Calculate statistics"'
     - 'LinkFragments.py 2>&1 | grep "usage: LinkFragments.py"'
+    # This segfaults in stock 1.1 and is fixed by segfault.patch:
+    - "extractHAIRS --bam test.bam --VCF test.vcf --out out.txt"
 
 about:
   summary: Tools for haplotype assembly from sequence data
