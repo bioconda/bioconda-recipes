@@ -10,28 +10,28 @@ source:
   sha256: 93db5295b6395034b92958b32d9398798489fb5dc7cef909e547a381b57a6458
 
 build:
-  number: 0
+  number: 1
   entry_points:
     - vtools-filter = vtools.cli:filter_cli
     - vtools-stats = vtools.cli:stats_cli
     - vtools-gcoverage = vtools.cli:gcoverage_cli
     - vtools-evaluate = vtools.cli:evaluate_cli
   script:  "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
-  skip: True  # [osx]
+  skip: True  # [osx or py2k]
 
 requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - python >=3.6
-    - setuptools
+    - python
+    - pip
     - cython
     - numpy
     - cyvcf2
     - click
     - tqdm
   run:
-    - python >=3.6
+    - python
     - numpy
     - cyvcf2
     - click
@@ -41,13 +41,19 @@ test:
   imports:
     - vtools
   commands:
-    - vtools-filter --help
-    - vtools-stats --help
-    - vtools-gcoverage --help
-    - vtools-evaluate --help
+    - LC_ALL="en_US.UTF-8" vtools-filter --help
+    - LC_ALL="en_US.UTF-8" vtools-stats --help
+    - LC_ALL="en_US.UTF-8" vtools-gcoverage --help
+    - LC_ALL="en_US.UTF-8" vtools-evaluate --help
 
 about:
   home: https://github.com/LUMC/vtools
   license: MIT
   license_family: MIT
   summary: Various tools operating over VCF files. Uses cyvcf2 and cython under the hood for speed
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true
