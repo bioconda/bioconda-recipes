@@ -11,17 +11,17 @@ source:
 
 build:
   noarch: python
-  number: 2
+  number: 3
   script: python -m pip install --no-deps --ignore-installed .
   entry_points:
     - bioconda-utils = bioconda_utils.cli:main
 
 requirements:
   host:
-    - python >=3.6
+    - python >=3.7
     - pip
   run:
-    - python >=3.6
+    - python >=3.7
     - conda 4.6.14
     - conda-build 3.18.9
     - conda-verify 3.1.*
@@ -39,7 +39,7 @@ requirements:
     - anaconda-client 1.6.*
     - involucro 1.1.*
     - skopeo 0.1.35
-    - git
+    - git 2.14.*
     - regex 2018.08.29
     - aiohttp 3.4.*
     - aiofiles 0.4.*
@@ -73,6 +73,14 @@ test:
     - bioconda-utils --help
     - bioconda-utils lint --help
     - bioconda-utils build --help
+    - >
+      CONDA_AGGRESSIVE_UPDATE_PACKAGES=
+      CONDA_AUTO_UPDATE_CONDA=0
+      "${PREFIX}/bin/conda" install --prefix="${PREFIX}" --dry-run --satisfied-skip-solve
+      --file="$( python -c
+      'from os.path import dirname, join; import bioconda_utils; print(join(dirname(bioconda_utils.__file__), "bioconda_utils-requirements.txt"))'
+      )"
+      2>&1 | tee /dev/stderr | grep -qF 'All requested packages already installed.'
 
 about:
   home: http://bioconda.github.io/build-system.html
