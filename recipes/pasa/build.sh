@@ -12,7 +12,7 @@ sed -i.bak 's#"$transdecoder_dir/\(util\/\)*#"#' scripts/pasa_asmbls_to_training
 # use bioconda cdbtools instead of the bundled version
 sed -i.bak '/cdbtools/s/^/#/' Makefile
 #fix compilers
-sed -i.bak -e 's/\${CC}/${CXX}/g' Makefile
+sed -i.bak -e 's/\= ${CC}/= ${CXX}/g' -e 's/= g++/= ${CC}/g' pasa_cpp/Makefile
 
 make
 
