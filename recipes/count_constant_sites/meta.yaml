@@ -1,0 +1,36 @@
+{% set version = "0.1.1" %}
+{% set name = "count_constant_sites" %}
+{% set sha256 = "b1c17074d35ff7a05180fa3f30d708922913c8a840270443d986fbf8fd5f38d5" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+build:
+  number: 0
+
+source:
+  url: https://github.com/pvanheus/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+requirements:
+  build:
+    - rust >=1.38
+
+test:
+  commands:
+    - count_constant_sites -h
+
+about:
+  home: https://github.com/pvanheus/count_constant_sites
+  license: MIT
+  summary: Compute the count of cases in constant sites in a (FASTA) multiple sequence alignment
+  description: |
+    Given a FASTA file with a multiple sequence alignment of nucleotides,
+    this tool counts the sites in the alignment that are constant. The 
+    output is a line suitable for use in IQTREE's `-fconst`, thus 4 numbers
+    with commas expressing the count of As, Cs, Gs and Ts.
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic  # the Rust `cargo build` command compiles code, so this is unfortunately not a noarch recipe

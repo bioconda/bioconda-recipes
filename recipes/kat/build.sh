@@ -1,17 +1,20 @@
 #!/bin/sh
-
 set -x -e
 
-export INCLUDE_PATH="${PREFIX}/include"
-export LIBRARY_PATH="${PREFIX}/lib"
-export LD_LIBRARY_PATH="${PREFIX}/lib"
+mkdir -p ${PREFIX}/bin
 
-export CPPFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+#importing matplotlib fails, likely due to X
+sed -i.bak "124d" configure.ac
 
-# Build boost
-./build_boost.sh
 ./autogen.sh
-./configure --disable-silent-rules --disable-dependency-tracking --disable-pykat-install --prefix=$PREFIX
+export PYTHON_NOVERSION_CHECK="3.7.0"
+./configure --disable-silent-rules --disable-dependency-tracking --prefix=$PREFIX
 make
 make install
+
+# This directory isn't needed and confuses conda
+rm -rf $PREFIX/mkspecs
+
+cd ${PREFIX}/lib
+# Something is creating a symlink from ${PREFIX}/lib/\n
+find . -type l -not -name "??*" -ls -delete
