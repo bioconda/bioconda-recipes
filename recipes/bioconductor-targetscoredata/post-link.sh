@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="TargetScoreData_1.20.0.tar.gz"
+FN="TargetScoreData_1.21.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/TargetScoreData_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TargetScoreData_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-targetscoredata/bioconductor-targetscoredata_1.20.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-targetscoredata/bioconductor-targetscoredata_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/TargetScoreData_1.21.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TargetScoreData_1.21.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-targetscoredata/bioconductor-targetscoredata_1.21.0_src_all.tar.gz"
 )
-MD5="efd1b3db6b4f1ed8c3ac1ddb159a811e"
+MD5="31b5dbb4bbb9f6636166baeb5d9e3ace"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

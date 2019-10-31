@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="FlowSorted.Blood.EPIC_1.2.0.tar.gz"
+FN="FlowSorted.Blood.EPIC_1.3.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/FlowSorted.Blood.EPIC_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/FlowSorted.Blood.EPIC_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-flowsorted.blood.epic/bioconductor-flowsorted.blood.epic_1.2.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-flowsorted.blood.epic/bioconductor-flowsorted.blood.epic_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/FlowSorted.Blood.EPIC_1.3.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/FlowSorted.Blood.EPIC_1.3.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-flowsorted.blood.epic/bioconductor-flowsorted.blood.epic_1.3.0_src_all.tar.gz"
 )
-MD5="4e6f8a48f8d8504c3027429fb164eb98"
+MD5="a03e66da8b553f2ac0e88b3677f50be2"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

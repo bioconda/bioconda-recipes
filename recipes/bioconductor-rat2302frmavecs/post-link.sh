@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="rat2302frmavecs_0.99.11.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/rat2302frmavecs_0.99.11.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/rat2302frmavecs_0.99.11.tar.gz"
   "https://bioarchive.galaxyproject.org/rat2302frmavecs_0.99.11.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rat2302frmavecs/bioconductor-rat2302frmavecs_0.99.11_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-rat2302frmavecs/bioconductor-rat2302frmavecs_0.99.11_src_all.tar.gz"

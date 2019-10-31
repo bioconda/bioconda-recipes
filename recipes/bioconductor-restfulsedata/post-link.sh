@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="restfulSEData_1.6.0.tar.gz"
+FN="restfulSEData_1.7.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/restfulSEData_1.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/restfulSEData_1.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-restfulsedata/bioconductor-restfulsedata_1.6.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-restfulsedata/bioconductor-restfulsedata_1.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/restfulSEData_1.7.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/restfulSEData_1.7.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-restfulsedata/bioconductor-restfulsedata_1.7.0_src_all.tar.gz"
 )
-MD5="b057b9fc07de16899fa3ef2879d06f33"
+MD5="a2aa7819673a5415e398c696ac911ddb"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

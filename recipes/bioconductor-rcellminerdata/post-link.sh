@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="rcellminerData_2.6.0.tar.gz"
+FN="rcellminerData_2.7.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/rcellminerData_2.6.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/rcellminerData_2.6.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rcellminerdata/bioconductor-rcellminerdata_2.6.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rcellminerdata/bioconductor-rcellminerdata_2.6.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/rcellminerData_2.7.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/rcellminerData_2.7.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rcellminerdata/bioconductor-rcellminerdata_2.7.0_src_all.tar.gz"
 )
-MD5="d45f5a4a645566548f7b472e787b710a"
+MD5="54aa7232f3e18c4938a72fd527c80306"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
