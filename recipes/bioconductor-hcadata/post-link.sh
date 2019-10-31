@@ -4,6 +4,7 @@ URLS=(
   "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/HCAData_1.0.0.tar.gz"
   "https://bioarchive.galaxyproject.org/HCAData_1.0.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hcadata/bioconductor-hcadata_1.0.0_src_all.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hcadata/bioconductor-hcadata_1.0.0_src_all.tar.gz"
 )
 MD5="1a28dbab85f7d88dc4d525dbdb7f6757"
 
