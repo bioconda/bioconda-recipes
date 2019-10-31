@@ -18,6 +18,12 @@ sed -i.bak -e 's/gcc/${CC}/g' pasa-plugins/seqclean/mdust/Makefile
 sed -i.bak -e 's/^CC/#CC/' pasa-plugins/seqclean/psx/Makefile
 sed -i.bak -e 's/gcc/${CC}/g' pasa-plugins/seqclean/trimpoly/Makefile
 
+if [ `uname` == Darwin ]; then
+	CXXFLAGS="${CXXFLAGS} -g -O3 -I${PREFIX}/include"
+else
+	CXXFLAGS="${CXXFLAGS} -g -O3"
+fi
+
 make
 
 mkdir -p ${PASAHOME}
