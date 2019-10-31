@@ -11,6 +11,8 @@ sed -i.bak 's#\$PLUGINS_DIR/transdecoder/##' Launch_PASA_pipeline.pl
 sed -i.bak 's#"$transdecoder_dir/\(util\/\)*#"#' scripts/pasa_asmbls_to_training_set.dbi
 # use bioconda cdbtools instead of the bundled version
 sed -i.bak '/cdbtools/s/^/#/' Makefile
+#fix compilers
+sed -i.bak -e 's/\${CC}/${CXX}/g' Makefile
 
 make
 
