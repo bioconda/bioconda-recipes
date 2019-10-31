@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make
+make GPP=$CXX
 
 binaries="\
 muscle \
