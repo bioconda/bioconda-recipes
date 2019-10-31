@@ -13,8 +13,10 @@ sed -i.bak 's#"$transdecoder_dir/\(util\/\)*#"#' scripts/pasa_asmbls_to_training
 sed -i.bak '/cdbtools/s/^/#/' Makefile
 #fix compilers
 sed -i.bak -e 's/CPPC = \${CC}/CPPC = ${CXX}/' -e 's/CC = g++/#CC = /' pasa_cpp/Makefile
-sed -i.bak -e 's/\${CC} -c/${CC} ${CFLAGS} -c/g' -e 's/^CC/#CC/' pasa-plugins/slclust/src/Makefile
-
+sed -i.bak -e 's/\${CC} -c/${CXX} ${CFLAGS} -c/g' -e 's/^CC/#CC/' pasa-plugins/slclust/src/Makefile
+sed -i.bak -e 's/gcc/${CC}/g' pasa-plugins/seqclean/mdust/Makefile
+sed -i.bak -e 's/^CC/#CC/' pasa-plugins/seqclean/psx/Makefile
+sed -i.bak -e 's/gcc/${CC}/g' pasa-plugins/seqclean/trimpoly/Makefile
 
 make
 
