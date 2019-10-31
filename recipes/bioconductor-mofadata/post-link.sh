@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="MOFAdata_1.0.0.tar.gz"
+FN="MOFAdata_1.1.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/MOFAdata_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MOFAdata_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mofadata/bioconductor-mofadata_1.0.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mofadata/bioconductor-mofadata_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/MOFAdata_1.1.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MOFAdata_1.1.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mofadata/bioconductor-mofadata_1.1.0_src_all.tar.gz"
 )
-MD5="d6487d6a88855eff8711a5af287bbb2d"
+MD5="6529a08a19c40f6d9d77e31b9f85a6f9"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

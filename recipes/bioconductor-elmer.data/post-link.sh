@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="ELMER.data_2.8.0.tar.gz"
+FN="ELMER.data_2.9.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ELMER.data_2.8.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ELMER.data_2.8.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-elmer.data/bioconductor-elmer.data_2.8.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-elmer.data/bioconductor-elmer.data_2.8.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/ELMER.data_2.9.3.tar.gz"
+  "https://bioarchive.galaxyproject.org/ELMER.data_2.9.3.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-elmer.data/bioconductor-elmer.data_2.9.3_src_all.tar.gz"
 )
-MD5="11271a22a29147bc8f11c3039399d191"
+MD5="cb9a447477e14c6e4328cabb2b36c524"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

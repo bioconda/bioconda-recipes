@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="mouse430a2probe_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/mouse430a2probe_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/mouse430a2probe_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/mouse430a2probe_2.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mouse430a2probe/bioconductor-mouse430a2probe_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-mouse430a2probe/bioconductor-mouse430a2probe_2.18.0_src_all.tar.gz"

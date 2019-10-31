@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="mcsurvdata_1.2.0.tar.gz"
+FN="mcsurvdata_1.3.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/mcsurvdata_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/mcsurvdata_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mcsurvdata/bioconductor-mcsurvdata_1.2.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mcsurvdata/bioconductor-mcsurvdata_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/mcsurvdata_1.3.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/mcsurvdata_1.3.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mcsurvdata/bioconductor-mcsurvdata_1.3.0_src_all.tar.gz"
 )
-MD5="3e2204677f27ed5f9a47551a24963bdd"
+MD5="e8d79f18b82ba940d38a490dd9fd5dc0"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

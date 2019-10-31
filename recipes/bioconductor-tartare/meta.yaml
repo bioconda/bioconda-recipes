@@ -1,0 +1,40 @@
+{% set version = "0.99.14" %}
+{% set name = "tartare" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 2c90ea8fd5d1624838af1126be2dc11e
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: BiocStyle, knitr, testthat, tools
+requirements:
+  host:
+    - 'bioconductor-annotationhub >=2.18.0,<2.19.0'
+    - 'bioconductor-experimenthub >=1.12.0,<1.13.0'
+    - r-base
+  run:
+    - 'bioconductor-annotationhub >=2.18.0,<2.19.0'
+    - 'bioconductor-experimenthub >=1.12.0,<1.13.0'
+    - r-base
+    - curl
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/data/experiment/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Raw ground spectra recorded on Thermo Fisher Scientific mass spectrometers'
+  description: 'provides raw files (size=278MBytes) recorded on different Liquid Chromatography Mass Spectrometry (LC-MS) instruments. All included MS instruments are manufactured by Thermo Fisher Scientific and belong to the Orbitrap Tribrid or Q Exactive Orbitrap family of instruments. Despite their common origin and shared hardware components (e.g. Orbitrap mass analyser), the above instruments tend to write data in different "dialects" in a shared binary file format (.raw). The intention behind tartare is to provide complex but slim real-world files that can be used to make code robust with respect to this diversity. In other words, it is intended for enhanced unit testing. The package is considered to be used with the rawDiag package (Trachsel, 2018 <doi:10.1021/acs.jproteome.8b00173>) and the Spectra MsBackends.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

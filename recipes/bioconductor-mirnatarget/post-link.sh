@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="miRNATarget_1.22.0.tar.gz"
+FN="miRNATarget_1.23.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/miRNATarget_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/miRNATarget_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mirnatarget/bioconductor-mirnatarget_1.22.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mirnatarget/bioconductor-mirnatarget_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/miRNATarget_1.23.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/miRNATarget_1.23.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mirnatarget/bioconductor-mirnatarget_1.23.0_src_all.tar.gz"
 )
-MD5="f53ec633f1b577134140f432f0af82db"
+MD5="aca3953fd6a43a598720eb1fab0bb30c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
