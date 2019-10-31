@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 make CC=$CC CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 mkdir ${PREFIX}/bin
