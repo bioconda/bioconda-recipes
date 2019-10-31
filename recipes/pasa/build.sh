@@ -11,7 +11,7 @@ sed -i.bak 's#\$PLUGINS_DIR/transdecoder/##' Launch_PASA_pipeline.pl
 sed -i.bak 's#"$transdecoder_dir/\(util\/\)*#"#' scripts/pasa_asmbls_to_training_set.dbi
 # use bioconda cdbtools instead of the bundled version
 sed -i.bak '/cdbtools/s/^/#/' Makefile
-#fix compilers
+# fix compilers; $CC and $CXX used incorrectly...
 sed -i.bak -e 's/CPPC = \${CC}/CPPC = ${CXX}/' -e 's/CC = g++/#CC = /' pasa_cpp/Makefile
 sed -i.bak -e 's/^CC/#CC/' -e 's/\${CC}/${CXX} ${CFLAGS}/g' pasa-plugins/slclust/src/Makefile
 sed -i.bak -e 's/gcc/${CC}/g' pasa-plugins/seqclean/mdust/Makefile
