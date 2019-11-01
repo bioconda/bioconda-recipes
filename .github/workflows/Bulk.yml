@@ -16,9 +16,6 @@ jobs:
     - uses: actions/checkout@v1
     - name: Setup Bioconda-utils
       uses: bioconda/bioconda-actions/bioconda_recipes_setup/@bulk
-    - name: Debug
-      run: |
-        python -c "import sys; print(sys.platform)"
     - name: Build and upload
       env:
         ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
@@ -43,9 +40,19 @@ jobs:
     - uses: actions/checkout@v1
     - name: Setup Bioconda-utils
       uses: bioconda/bioconda-actions/bioconda_recipes_setup/@bulk
-    - name: Debug
+    - name: OSX stuff
       run: |
-        python -c "import sys; print(sys.platform)"
+       # This is taken from conda-forge-ci-setup
+        curl -L -O https://github.com/phracker/MacOSX-SDKs/releases/download/10.13/MacOSX10.9.sdk.tar.xz
+        tar -xf MacOSX10.9.sdk.tar.xz -C /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs
+        # set minimum sdk version to our target
+        plutil -replace MinimumSDKVersion -string 10.9 $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
+        plutil -replace DTSDKName -string macosx10.9internal $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
+        export CONDA_PREFIX="${CONDA_PREFIX:-$(conda info --json | jq -r .root_prefix)}"
+        export CONDA_BUILD_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk"
+        mkdir -p ${CONDA_PREFIX}/etc/conda/activate.d
+        echo "export CONDA_BUILD_SYSROOT=\"$CONDA_BUILD_SYSROOT\"" > "${CONDA_PREFIX}/etc/conda/activate.d/bioconda-ci-setup-activate.sh"
+        conda list
     - name: Build and upload
       env:
         ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
