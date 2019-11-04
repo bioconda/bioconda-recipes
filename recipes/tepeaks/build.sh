@@ -9,4 +9,4 @@ sed -i.bak "s/(const )//g" src/TEToolkit/khash.h
 make -f Makefile.LINUX CC=${CXX} prefix=${PREFIX} CFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS"
 
 mkdir -p ${PREFIX}/bin
-mv tepeaks ${PREFIX}/bin
+mv TEpeaks ${PREFIX}/bin
