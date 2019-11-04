@@ -1,4 +1,4 @@
 #! /bin/bash
 mkdir -p $PREFIX/bin
-make
+make -j
 cp mreps $PREFIX/bin
