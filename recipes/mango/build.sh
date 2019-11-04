@@ -3,6 +3,10 @@
 BINARY_HOME=$PREFIX/bin
 PACKAGE_HOME=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 
+mkdir -p $PREFIX/etc/conda/activate.d/ $PREFIX/etc/conda/deactivate.d/
+cp $RECIPE_DIR/activate.sh $PREFIX/etc/conda/activate.d/mango.sh
+cp $RECIPE_DIR/deactivate.sh $PREFIX/etc/conda/deactivate.d/mango.sh
+
 mkdir -p $BINARY_HOME
 mkdir -p $PACKAGE_HOME
 
