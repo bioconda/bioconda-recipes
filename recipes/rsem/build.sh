@@ -25,7 +25,7 @@ make \
     install
 
 # EBSeq R scripts and one binary
-sed -i.bak 's|#!/usr/bin/env Rscript|#!'$(which Rscript)'|' EBSeq/rsem-*
+sed -i.bak 's|#!/usr/bin/env Rscript|#!/opt/anaconda1anaconda2anaconda3/bin/Rscript|' EBSeq/rsem-*
 rm EBSeq/rsem-*.bak
 make -C EBSeq CXX="$CXX $CXXFLAGS $LDFLAGS" rsem-for-ebseq-calculate-clustering-info
 cp EBSeq/rsem-* $PREFIX/bin

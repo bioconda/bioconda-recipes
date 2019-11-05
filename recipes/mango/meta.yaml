@@ -1,0 +1,80 @@
+{% set name = "bdgenomics.mango" %}
+{% set pileup_name = "bdgenomics.mango.pileup" %}
+{% set adam_name = "bdgenomics.adam" %}
+
+{% set version = "0.0.5" %}
+{% set pileup_version = "0.0.6a0" %}
+{% set python_version = "0.0.6a1" %}
+{% set adam_version = "0.30.0a0" %}
+{% set modin_name = "modin" %}
+{% set modin_version = "0.6.1" %}
+
+# Current issues:
+# 1: modin and ray are not on conda
+## current issue in modin is that non-ray build still tries to pull
+## from ray modules, which causes an error because ray is not on conda
+## solution: need to wait until modin is on conda
+
+package:
+  name: "mango"
+  version: "{{ version }}"
+
+source:
+  - url: https://search.maven.org/remotecontent?filepath=org/bdgenomics/mango/mango-distribution/{{ version }}/mango-distribution-{{ version }}-bin.tar.gz
+    md5: fb9c822dcc0ea1a13766d7faf3413af5
+    folder: core
+  - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ python_version }}.tar.gz
+    sha256: 3da5016f827123505357d7f0f1e7b861257e60de90ed343e356f3d2851e3162e
+    folder: python
+  - url: https://pypi.io/packages/source/{{ pileup_name[0] }}/{{ pileup_name }}/{{ pileup_name }}-{{ pileup_version }}.tar.gz
+    sha256: 03f70c507b73585fbc06649b6c27ab69c6ce5102d55805f6f1d4bcae1a8ddfef
+    folder: python_pileup
+  - url: https://pypi.io/packages/source/{{ adam_name[0] }}/{{ adam_name }}/{{ adam_name }}-{{ adam_version }}.tar.gz
+    sha256: bfb9e5f0f2bf887a63eebc994d9d6c3d7606e1e9504b88426972b170b7d6f4a9
+    folder: python_adam
+  - url: https://pypi.io/packages/source/{{ modin_name[0] }}/{{ modin_name }}/{{ modin_name }}-{{ modin_version }}.tar.gz
+    sha256: 0b9b407ce9ba0907aae6c54d221e59e80d2d7a9b7a8510416625d5f4b9e83762
+    folder: python_modin
+
+build:
+  number: 2
+  noarch: python
+
+requirements:
+  host:
+    - pip
+    - psutil
+    - python >3
+    - jupyter ==1.0.0
+  run:
+    - dask
+    - distributed
+    - openjdk >=8,<9
+    - pyspark ==2.4.4
+    - psutil
+    - python >3
+    - cigar ==0.1.3
+    - ipython ==7.8.0
+    - ipywidgets ==7.0.0
+    - matplotlib ==2.0.2
+    - ipykernel >=5.1.2
+    - widgetsnbextension >=3.5.0
+    - pandas ==0.25.1 # required by modin
+    - traitlets >=4.3.0,<5.0 # required by jupyter widget
+    - traittypes >=0.0.6 # required by jupyter widget
+
+test:
+  commands:
+    - mango-submit --help
+    - SPARK_HOME=$(python -c "import site,os; print(os.path.join(site.getsitepackages()[0], \"pyspark\"))" ) mango-notebook --help
+    - make_genome --help
+about:
+  home: "https://github.com/bdgenomics/mango"
+  license: "Apache 2"
+  summary: "A scalable genomic visualization tool"
+  doc_url: "https://bdg-mango.readthedocs.io/en/latest/"
+  dev_url: "https://github.com/bigdatagenomics/mango"
+
+extra:
+  recipe-maintainers:
+    - akmorrow13

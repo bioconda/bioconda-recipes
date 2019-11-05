@@ -1,31 +1,32 @@
+{% set version = "1.2.4" %}
+
 package:
   name: dfast
-  version: 1.2.3
+  version: {{ version }}
 
 build:
   number: 0
-  noarch: generic
-
+  binary_relocation: False # [osx]
 source:
-  url: https://github.com/nigyta/dfast_core/archive/1.2.3.tar.gz
-  sha256: 710d2cad3874aba691e5995bc3865785e1807a09bf3a8a8c622126d7d4551859 
+  url: https://github.com/nigyta/dfast_core/archive/{{ version }}.tar.gz
+  sha256: 2fe4487972a413793ee5d8eed11c9b7b312041de5969c3d6152d422b4453ca30 
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
     - python >=3.5
     - biopython
-    - blast
-    - ghostx
-    - hmmer >=3.1b2
-
+    - zlib
   run:
+    - zlib
     - python >=3.5
     - biopython
-    - perl
     - openjdk
     - aragorn
     - barrnap
-    - blast
+    - blast >=2.6.0
     - ghostx
     - hmmer >=3.1b2
     - metagene_annotator >=1.0
@@ -37,9 +38,14 @@ test:
 about:
   home: 'https://dfast.nig.ac.jp'
   license: "GPLv3"
+  license_file: "docs/LICENSE"
   summary: "DDBJ Fast Annotation and Submission Tool - Prokaryotic genome annotation pipeline"
+  dev_url: "https://github.com/nigyta/dfast_core"
 
 extra:
   identifiers:
     - biotools:dfast
-    - doi:https://doi.org/10.1093/bioinformatics/btx713
+    - doi:10.1093/bioinformatics/btx713
+  skip-lints:
+    #We ship some custom last binaries
+    - should_be_noarch_generic
