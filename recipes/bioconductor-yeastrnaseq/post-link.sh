@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="yeastRNASeq_0.23.0.tar.gz"
+FN="yeastRNASeq_0.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/yeastRNASeq_0.23.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/yeastRNASeq_0.23.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-yeastrnaseq/bioconductor-yeastrnaseq_0.23.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/yeastRNASeq_0.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/yeastRNASeq_0.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yeastrnaseq/bioconductor-yeastrnaseq_0.24.0_src_all.tar.gz"
 )
-MD5="725a30b45e47eeaba4d6ae938fbb6be6"
+MD5="a9f8558e0c8a202c6be974085b966569"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

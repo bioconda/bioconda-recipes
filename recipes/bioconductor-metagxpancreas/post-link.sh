@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MetaGxPancreas_1.5.0.tar.gz"
+FN="MetaGxPancreas_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/MetaGxPancreas_1.5.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MetaGxPancreas_1.5.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-metagxpancreas/bioconductor-metagxpancreas_1.5.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/MetaGxPancreas_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MetaGxPancreas_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-metagxpancreas/bioconductor-metagxpancreas_1.6.0_src_all.tar.gz"
 )
-MD5="91b3cfdede298aa342cba83013cf3377"
+MD5="0f2726d2ebdb318afdd610b99e8e54ce"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

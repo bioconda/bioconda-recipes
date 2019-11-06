@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="SNPhoodData_1.15.0.tar.gz"
+FN="SNPhoodData_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/SNPhoodData_1.15.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/SNPhoodData_1.15.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-snphooddata/bioconductor-snphooddata_1.15.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/SNPhoodData_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/SNPhoodData_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-snphooddata/bioconductor-snphooddata_1.16.0_src_all.tar.gz"
 )
-MD5="575ca44d58175baf2fff96b769978ef6"
+MD5="add5f9290474dcde6c465a231166f058"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

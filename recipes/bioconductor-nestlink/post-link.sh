@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="NestLink_1.1.0.tar.gz"
+FN="NestLink_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/NestLink_1.1.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/NestLink_1.1.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-nestlink/bioconductor-nestlink_1.1.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/NestLink_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/NestLink_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-nestlink/bioconductor-nestlink_1.2.0_src_all.tar.gz"
 )
-MD5="4957b4f5d33e02d4a4f9f76fa33b9c27"
+MD5="7a50269e39f91af070c38804b598a871"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

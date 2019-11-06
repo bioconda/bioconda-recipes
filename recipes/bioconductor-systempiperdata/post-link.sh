@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="systemPipeRdata_1.13.5.tar.gz"
+FN="systemPipeRdata_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/systemPipeRdata_1.13.5.tar.gz"
-  "https://bioarchive.galaxyproject.org/systemPipeRdata_1.13.5.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-systempiperdata/bioconductor-systempiperdata_1.13.5_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/systemPipeRdata_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/systemPipeRdata_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-systempiperdata/bioconductor-systempiperdata_1.14.0_src_all.tar.gz"
 )
-MD5="4d941a3f62f68caee32bb7794137f838"
+MD5="2cdcdeb8b4a96bdf4b60fbbb7782a596"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

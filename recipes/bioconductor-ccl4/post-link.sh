@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="CCl4_1.23.0.tar.gz"
+FN="CCl4_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/CCl4_1.23.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/CCl4_1.23.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ccl4/bioconductor-ccl4_1.23.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/CCl4_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/CCl4_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ccl4/bioconductor-ccl4_1.24.0_src_all.tar.gz"
 )
-MD5="6d9af8b4ed6a6720f3123dda0ee6c0d0"
+MD5="67795d0852e99ea158cb760838177177"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

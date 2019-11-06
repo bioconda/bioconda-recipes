@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="cMap2data_1.21.0.tar.gz"
+FN="cMap2data_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/cMap2data_1.21.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/cMap2data_1.21.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-cmap2data/bioconductor-cmap2data_1.21.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/cMap2data_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/cMap2data_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cmap2data/bioconductor-cmap2data_1.22.0_src_all.tar.gz"
 )
-MD5="7fc04c1bc6fcfff4c92cb5d58af3f16f"
+MD5="34b010efe6d556d6571f7c54f0746117"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

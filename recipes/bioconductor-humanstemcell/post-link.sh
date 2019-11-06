@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="humanStemCell_0.25.0.tar.gz"
+FN="humanStemCell_0.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/humanStemCell_0.25.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/humanStemCell_0.25.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-humanstemcell/bioconductor-humanstemcell_0.25.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/humanStemCell_0.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/humanStemCell_0.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-humanstemcell/bioconductor-humanstemcell_0.26.0_src_all.tar.gz"
 )
-MD5="ff46304949067a8f2bbd58e6d1b7fc3a"
+MD5="88e2e7b0846a3d5cf740fef7ff406d91"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
