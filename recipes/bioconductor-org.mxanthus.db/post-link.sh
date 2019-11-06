@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="org.Mxanthus.db_1.0.22.tar.gz"
+FN="org.Mxanthus.db_1.0.23.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/org.Mxanthus.db_1.0.22.tar.gz"
-  "https://bioarchive.galaxyproject.org/org.Mxanthus.db_1.0.22.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-org.mxanthus.db/bioconductor-org.mxanthus.db_1.0.22_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/org.Mxanthus.db_1.0.23.tar.gz"
+  "https://bioarchive.galaxyproject.org/org.Mxanthus.db_1.0.23.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-org.mxanthus.db/bioconductor-org.mxanthus.db_1.0.23_src_all.tar.gz"
 )
-MD5="47cc9afb55227c5ad053b3cc2cf87d5b"
+MD5="fb911a31dea43e07117f9a820cbab0a6"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

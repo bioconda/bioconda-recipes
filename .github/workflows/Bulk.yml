@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      max-parallel: 10
+      max-parallel: 5
       matrix:
-        runner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        runner: [0, 1, 2, 3, 4]
     steps:
     - uses: actions/checkout@v1
     - name: Setup Bioconda-utils
@@ -26,16 +26,16 @@ jobs:
         CI: "true"
       run: |
         bioconda-utils build recipes config.yml \
-          --worker-offset ${{ matrix.runner }} --n-workers 10 \
+          --worker-offset ${{ matrix.runner }} --n-workers 5 \
           --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
   build-osx:
     name: Bulk OSX Builds
     runs-on: macOS-latest
     strategy:
       fail-fast: false
-      max-parallel: 5
+      max-parallel: 2
       matrix:
-        runner: [0, 1, 2, 3, 4]
+        runner: [0, 1]
     steps:
     - uses: actions/checkout@v1
     - name: Setup Bioconda-utils
@@ -63,5 +63,5 @@ jobs:
         CI: "true"
       run: |
         bioconda-utils build recipes config.yml \
-          --worker-offset ${{ matrix.runner }} --n-workers 5 \
+          --worker-offset ${{ matrix.runner }} --n-workers 2 \
           --anaconda-upload
