@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="stjudem_1.24.0.tar.gz"
+FN="stjudem_1.25.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/stjudem_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/stjudem_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-stjudem/bioconductor-stjudem_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/stjudem_1.25.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/stjudem_1.25.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-stjudem/bioconductor-stjudem_1.25.0_src_all.tar.gz"
 )
-MD5="35358ac2317e7d083d373b6db1d0cbd9"
+MD5="ad33cd8e0e2d312df152999088b24f39"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

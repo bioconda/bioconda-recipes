@@ -1,36 +1,45 @@
 package:
   name: bmtagger
   version: 3.101
+
 source:
-  url: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/bmtools.tar.gz # [linux]
-  md5: 719474a0e3b54449cbe06f6e442994dd # [linux]
-  url: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/mac-os/bmtagger.sh # [osx]
-  patches:
-    - bmtagger.sh.osxpatch # [osx]
+  - url: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/bmtools.tar.gz  # [linux]
+    md5: 719474a0e3b54449cbe06f6e442994dd  # [linux]
+  - url: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/mac-os/bmtagger.sh  # [osx]
+    md5: d861f6fe5ed658f274d0b37872ca65f5  # [osx]
+    patches:
+      - bmtagger.sh.osxpatch  # [osx]
+
 build:
-  number: 4
-  skip: False
+  number: 5
+
 requirements:
   build:
-    #- {{ compiler('c') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
     - blast
     - srprism
     - bmfilter
     - bmtool
     - extract_fullseq
   run:
-    - gnu-getopt # [osx]
+    - gnu-getopt  # [osx]
     - blast
     - srprism
     - bmfilter
     - bmtool
     - extract_fullseq
-extra:
-  notes: "You may find it necessary to create a bmtagger.conf file to specify paired or single-end searching. The file should contain the line 'srprismopts=\"-b 100000000 -n 5 -R 0 -r 1 -M 7168\"' along with '-p true' or '-p false' for paired, and single, respectively. This config file can be passed to bmtagger.sh via the '-C' option."
 test:
   commands:
     - "bmtagger.sh -V &> /dev/null"
+
 about:
   home: ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/
   license: Public Domain
   summary: BMTagger aka Best Match Tagger is for removing human reads from metagenomics datasets
+
+extra:
+  skip-lints:
+    - should_not_be_noarch_source
+  notes: "You may find it necessary to create a bmtagger.conf file to specify paired or single-end searching. The file should contain the line 'srprismopts=\"-b 100000000 -n 5 -R 0 -r 1 -M 7168\"' along with '-p true' or '-p false' for paired, and single, respectively. This config file can be passed to bmtagger.sh via the '-C' option."

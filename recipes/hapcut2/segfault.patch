@@ -1,0 +1,24 @@
+commit 22d3451e5a0a2ed2852424c1e08c08d11a9cb86d
+Author: vibansal <vikas115@gmail.com>
+Date:   Sun May 5 16:26:39 2019 -0700
+
+    fixed segmentation fault due to unallocated memory (reflist) being freed at the end of extracthairs.c
+
+diff --git a/hairs-src/extracthairs.c b/hairs-src/extracthairs.c
+index 66b07dc..76fe0cc 100644
+--- a/hairs-src/extracthairs.c
++++ b/hairs-src/extracthairs.c
+@@ -499,7 +499,12 @@ int main(int argc, char** argv) {
+ 		free(reflist->names[i]);
+ 		if (reflist->used[i] ==1) free(reflist->sequences[i]);
+ 	}
+-	free(reflist->names); free(reflist->sequences); free(reflist->lengths); free(reflist->used);
++	if (reflist->ns > 0) { 
++		free(reflist->names); 
++        	free(reflist->sequences); 
++	        free(reflist->lengths);  
++        	free(reflist->used);
++	}
+ 	//free(reflist->offsets);
+ 	for (i=0;i<variants;i++){
+ 		free(varlist[i].genotype); free(varlist[i].RA); 	free(varlist[i].AA);free(varlist[i].chrom);

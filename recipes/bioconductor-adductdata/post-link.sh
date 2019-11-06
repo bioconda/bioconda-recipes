@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="adductData_1.0.0.tar.gz"
+FN="adductData_1.1.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/adductData_1.0.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/adductData_1.0.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-adductdata/bioconductor-adductdata_1.0.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/adductData_1.1.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/adductData_1.1.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-adductdata/bioconductor-adductdata_1.1.0_src_all.tar.gz"
 )
-MD5="ee38a871976b2c0f4eba667771f3b3a0"
+MD5="049ec170e52dae1184d16c5e9b6dae83"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

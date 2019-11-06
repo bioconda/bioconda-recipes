@@ -1,0 +1,67 @@
+name: Bulk branch
+on:
+  push:
+    branches:
+      - bulk
+jobs:
+  build-linux:
+    name: Bulk Linux Builds
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        runner: [0, 1, 2, 3, 4]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup Bioconda-utils
+      uses: bioconda/bioconda-actions/bioconda_recipes_setup/@bulk
+    - name: Build and upload
+      env:
+        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+        QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+        # Mimic circleci
+        OSTYPE: "linux-gnu"
+        CI: "true"
+      run: |
+        bioconda-utils build recipes config.yml \
+          --worker-offset ${{ matrix.runner }} --n-workers 5 \
+          --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+  build-osx:
+    name: Bulk OSX Builds
+    runs-on: macOS-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        runner: [0, 1]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup Bioconda-utils
+      uses: bioconda/bioconda-actions/bioconda_recipes_setup/@bulk
+    - name: OSX stuff
+      run: |
+       # This is taken from conda-forge-ci-setup
+        curl -L -O https://github.com/phracker/MacOSX-SDKs/releases/download/10.13/MacOSX10.9.sdk.tar.xz
+        tar -xf MacOSX10.9.sdk.tar.xz -C /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs
+        # set minimum sdk version to our target
+        plutil -replace MinimumSDKVersion -string 10.9 $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
+        plutil -replace DTSDKName -string macosx10.9internal $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
+        export CONDA_PREFIX="${CONDA_PREFIX:-$(conda info --json | jq -r .root_prefix)}"
+        export CONDA_BUILD_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk"
+        mkdir -p ${CONDA_PREFIX}/etc/conda/activate.d
+        echo "export CONDA_BUILD_SYSROOT=\"$CONDA_BUILD_SYSROOT\"" > "${CONDA_PREFIX}/etc/conda/activate.d/bioconda-ci-setup-activate.sh"
+        conda list
+    - name: Build and upload
+      env:
+        ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        INVOLUCRO_AUTH: ${{ secrets.INVOLUCRO_AUTH }}
+        QUAY_OAUTH_TOKEN: ${{ secrets.QUAY_OAUTH_TOKEN }}
+        # Mimic circleci
+        OSTYPE: "darwin"
+        CI: "true"
+      run: |
+        bioconda-utils build recipes config.yml \
+          --worker-offset ${{ matrix.runner }} --n-workers 2 \
+          --anaconda-upload

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="curatedMetagenomicData_1.13.3.tar.gz"
+FN="curatedMetagenomicData_1.15.4.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/curatedMetagenomicData_1.13.3.tar.gz"
-  "https://bioarchive.galaxyproject.org/curatedMetagenomicData_1.13.3.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-curatedmetagenomicdata/bioconductor-curatedmetagenomicdata_1.13.3_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/curatedMetagenomicData_1.15.4.tar.gz"
+  "https://bioarchive.galaxyproject.org/curatedMetagenomicData_1.15.4.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-curatedmetagenomicdata/bioconductor-curatedmetagenomicdata_1.15.4_src_all.tar.gz"
 )
-MD5="524c855267709a5288cbe910d9f81dec"
+MD5="9450176e2ea20bfe7aa3a698b638b518"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

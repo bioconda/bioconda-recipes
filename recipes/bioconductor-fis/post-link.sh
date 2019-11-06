@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="FIs_1.12.0.tar.gz"
+FN="FIs_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/FIs_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/FIs_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-fis/bioconductor-fis_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/FIs_1.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/FIs_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-fis/bioconductor-fis_1.13.0_src_all.tar.gz"
 )
-MD5="26a808973c479d338754411a994a3df9"
+MD5="94fb00bbd14b33dc6ba7e98cc23fe2ae"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
