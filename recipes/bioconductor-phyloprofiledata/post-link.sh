@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PhyloProfileData_0.99.0.tar.gz"
+FN="PhyloProfileData_1.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/PhyloProfileData_0.99.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/PhyloProfileData_0.99.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-phyloprofiledata/bioconductor-phyloprofiledata_0.99.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/PhyloProfileData_1.0.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PhyloProfileData_1.0.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-phyloprofiledata/bioconductor-phyloprofiledata_1.0.0_src_all.tar.gz"
 )
-MD5="4a0fea150f64c4d01081c02710cdce9e"
+MD5="bc3060f4498a64451db282f5774ae02e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

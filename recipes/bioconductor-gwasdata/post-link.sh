@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="GWASdata_1.23.0.tar.gz"
+FN="GWASdata_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/GWASdata_1.23.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/GWASdata_1.23.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-gwasdata/bioconductor-gwasdata_1.23.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/GWASdata_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/GWASdata_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-gwasdata/bioconductor-gwasdata_1.24.0_src_all.tar.gz"
 )
-MD5="4b19b51889a2b217174d7e89991e286e"
+MD5="da1db4bceedb4c7c17ef1a2a531165c0"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

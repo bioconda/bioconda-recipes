@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="TBX20BamSubset_1.21.0.tar.gz"
+FN="TBX20BamSubset_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/TBX20BamSubset_1.21.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TBX20BamSubset_1.21.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tbx20bamsubset/bioconductor-tbx20bamsubset_1.21.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/TBX20BamSubset_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TBX20BamSubset_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tbx20bamsubset/bioconductor-tbx20bamsubset_1.22.0_src_all.tar.gz"
 )
-MD5="1ad8cee98b34881c6263e4b66db10b73"
+MD5="95e2e685afb138ffd4b27676fdb598c0"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
