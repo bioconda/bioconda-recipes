@@ -1,71 +1,77 @@
+{% set name = "VCF-kit" %}
+{% set version = "0.1.6" %}
+{% set sha256 = "e44319bc057ff4f90cc3a777bb6b1794e5dc3dcf56fe2753fee199f782fed6b6" %}
+
 package:
-  name: vcfkit
-  version: "0.1.6"
+  name: {{ name|lower|replace("-","") }}
+  version: {{ version }}
 
 source:
-  url: https://github.com/AndersenLab/VCF-kit/archive/0.1.6.tar.gz
-  sha256: 4865414ac9dc6996c0baeefadf1d528c28e6d0c3cc3dbdc28a2cdc6e06212428
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: e44319bc057ff4f90cc3a777bb6b1794e5dc3dcf56fe2753fee199f782fed6b6
+  patches:
+    - setup.patch
+    # Fixes https://github.com/AndersenLab/VCF-kit/issues/22
+    - numpy.patch
 
 build:
+  noarch: python
   number: 3
-  preserve_egg_dir: True
   entry_points:
     - vk=vcfkit.vk:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
-  build:
-    - {{ compiler('c') }}
   host:
-    - python
     - awesome-slugify
-    - matplotlib
-    - scipy
-    - numpy
-    - cython
-    - cyvcf2 >=0.1.9
-    - docopt
     - biopython
-    - yahmm
     - clint
-    - requests
-    - intervaltree
-    - tabulate
-    - yahmm
+    - cython >=0.24.1
+    - cyvcf2 >=0.6.5
+    - docopt
+    - intervaltree ==2.1.0
     - jinja2
-    - pytest-runner
-
+    - matplotlib
+    - networkx ==1.11
+    - numpy
+    - pip
+    - python <3
+    - requests
+    - scipy
+    - tabulate
+    - yahmm >=1.1.2
   run:
-    - python
     - awesome-slugify
-    - matplotlib
-    - scipy
-    - numpy
-    - cyvcf2 >=0.1.9
-    - docopt
     - biopython
-    - yahmm
     - clint
-    - requests
-    - intervaltree
-    - tabulate
-    - yahmm
+    - cython >=0.24.1
+    - cyvcf2 >=0.6.5
+    - docopt
+    - intervaltree ==2.1.0
     - jinja2
-    - pytest-runner
+    - matplotlib
+    - networkx ==1.11
+    - numpy
+    - python <3
+    - requests
+    - scipy
+    - tabulate
+    - yahmm >=1.1.2
+    - bwa >=0.7.12
+    - samtools >=1.3
+    - bcftools >=1.3
+    - blast >=2.2.31
+    - muscle >=3.8.31
 
 test:
   imports:
     - vcfkit
     - vcfkit.utils
-
   commands:
     - vk --help
 
-  requires:
-    - coveralls
-    - pytest
-
 about:
   home: https://github.com/AndersenLab/VCF-kit
-  license: MIT License
-  summary: 'Assorted utilities for the variant call format'
+  license: MIT
   license_family: MIT
+  summary: "VCF-kit is a command-line based collection of utilities for performing analysis on Variant Call Format (VCF) files."
