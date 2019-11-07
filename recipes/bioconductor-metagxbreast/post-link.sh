@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MetaGxBreast_1.4.0.tar.gz"
+FN="MetaGxBreast_1.5.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/MetaGxBreast_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MetaGxBreast_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-metagxbreast/bioconductor-metagxbreast_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/MetaGxBreast_1.5.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MetaGxBreast_1.5.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-metagxbreast/bioconductor-metagxbreast_1.5.0_src_all.tar.gz"
 )
-MD5="ebc1b88b0cbc809a6ee615a618ae9e87"
+MD5="2b0fca752156c0132969d840712ae136"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

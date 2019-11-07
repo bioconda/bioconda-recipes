@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="hgu133plus2CellScore_1.4.0.tar.gz"
+FN="hgu133plus2CellScore_1.5.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/hgu133plus2CellScore_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/hgu133plus2CellScore_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hgu133plus2cellscore/bioconductor-hgu133plus2cellscore_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/hgu133plus2CellScore_1.5.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/hgu133plus2CellScore_1.5.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hgu133plus2cellscore/bioconductor-hgu133plus2cellscore_1.5.0_src_all.tar.gz"
 )
-MD5="db5ad2756c518d14e1f2ed55e3794d16"
+MD5="cd1ee32c9fedb748e27df3468461ac53"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

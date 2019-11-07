@@ -7,25 +7,22 @@ package:
   version: {{ version }}
 
 build:
-  number: 1
-  skip: True # [osx]
+  number: 2
 
 source:
-  fn: PASApipeline-v{{ version }}.tar.gz
   url: https://github.com/PASApipeline/PASApipeline/releases/download/{{ name }}-v{{ version }}/PASApipeline-v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm # [osx]
-
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   run:
     - blat
+    - slclust
     - cdbtools
     - fasta3
-    - gmap
-    - libgcc # [not osx]
+    - gmap ==2017.11.15
     - lighttpd
     - samtools
     - transdecoder >=5.2.0
@@ -42,6 +39,7 @@ test:
     - "${PREFIX}/opt/{{ name }}-{{ version }}/bin/mdust -h 2>&1 | grep \"Usage: mdust\""
     - "${PREFIX}/opt/{{ name }}-{{ version }}/bin/pasa 2>&1 | grep \"Usage:.*pasa\""
     - "${PREFIX}/opt/{{ name }}-{{ version }}/Launch_PASA_pipeline.pl --version 2>&1 | grep \"^PASA version:\""
+    - "fasta 2>&1 | grep \"^ version:\""
 
 about:
   home: https://pasapipeline.github.io/

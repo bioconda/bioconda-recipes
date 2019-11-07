@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="CellMapperData_1.10.0.tar.gz"
+FN="CellMapperData_1.11.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/CellMapperData_1.10.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/CellMapperData_1.10.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-cellmapperdata/bioconductor-cellmapperdata_1.10.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/CellMapperData_1.11.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/CellMapperData_1.11.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-cellmapperdata/bioconductor-cellmapperdata_1.11.0_src_all.tar.gz"
 )
-MD5="ad6ececf308dc29a5ebc1e56a6bf7632"
+MD5="04f009fe134b762abaf9e76bb0b43028"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

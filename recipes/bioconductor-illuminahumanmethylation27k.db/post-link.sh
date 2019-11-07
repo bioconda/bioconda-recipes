@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="IlluminaHumanMethylation27k.db_1.4.8.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/IlluminaHumanMethylation27k.db_1.4.8.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/IlluminaHumanMethylation27k.db_1.4.8.tar.gz"
   "https://bioarchive.galaxyproject.org/IlluminaHumanMethylation27k.db_1.4.8.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminahumanmethylation27k.db/bioconductor-illuminahumanmethylation27k.db_1.4.8_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminahumanmethylation27k.db/bioconductor-illuminahumanmethylation27k.db_1.4.8_src_all.tar.gz"

@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="pd.2006.07.18.mm8.refseq.promoter_0.99.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.2006.07.18.mm8.refseq.promoter_0.99.3.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/pd.2006.07.18.mm8.refseq.promoter_0.99.3.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.2006.07.18.mm8.refseq.promoter_0.99.3.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.2006.07.18.mm8.refseq.promoter/bioconductor-pd.2006.07.18.mm8.refseq.promoter_0.99.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.2006.07.18.mm8.refseq.promoter/bioconductor-pd.2006.07.18.mm8.refseq.promoter_0.99.3_src_all.tar.gz"

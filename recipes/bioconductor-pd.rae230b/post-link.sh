@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="pd.rae230b_3.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.rae230b_3.12.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/pd.rae230b_3.12.0.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.rae230b_3.12.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.rae230b/bioconductor-pd.rae230b_3.12.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.rae230b/bioconductor-pd.rae230b_3.12.0_src_all.tar.gz"

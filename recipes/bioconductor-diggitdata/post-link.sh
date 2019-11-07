@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="diggitdata_1.16.0.tar.gz"
+FN="diggitdata_1.17.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/diggitdata_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/diggitdata_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-diggitdata/bioconductor-diggitdata_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/diggitdata_1.17.2.tar.gz"
+  "https://bioarchive.galaxyproject.org/diggitdata_1.17.2.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-diggitdata/bioconductor-diggitdata_1.17.2_src_all.tar.gz"
 )
-MD5="a16c7ace0ba38076d549222dc0afb374"
+MD5="7b610ac0145b5fc16a9ba80711df8d35"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

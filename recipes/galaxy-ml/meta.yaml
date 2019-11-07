@@ -1,5 +1,5 @@
 {% set name = "Galaxy-ML" %}
-{% set version = "0.7.5" %}
+{% set version = "0.7.12" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,11 +7,12 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: d60f4bf600216172fed7dd64188e4c8e3bf4fd44462b4b1df28893ce758de0b4
+  sha256: 39354c61fd0a06a31f3abc7cd3b74598f9f5153a5382a745c81b67d28c77f2f3
 
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv
+  skip: true  # [py27]
 
 requirements:
   build:
@@ -22,17 +23,18 @@ requirements:
     - cython
     - pip
     - setuptools
-    - numpy>=1.16.2
+    - numpy>=1.15.1
   run:
     - python
     - pyfaidx
     - pytabix
     - tabix
-    - numpy>=1.16.2
-    - scipy>=1.2.1
-    - pandas>=0.24.2
-    - joblib>=0.13.2
-    - asteval>=0.9.13
+    - readme_renderer>=23.0
+    - numpy==1.16.4
+    - scipy==1.3.0
+    - joblib==0.13.2
+    - asteval==0.9.13
+    - pandas==0.24.2
     - scikit-learn==0.20.3
     - xgboost==0.80
     - mlxtend==0.16.0
@@ -40,6 +42,11 @@ requirements:
     - imbalanced-learn==0.4.3
     - tensorflow==1.13.1
     - Keras==2.2.4
+    # For training on GPU, install the following libraries manually
+    # - cudatoolkit==10.0.130
+    # - cudnn==7.6.0
+    # then install
+    # - tensorflow-gpu==1.13.1
 
 test:
   imports:
@@ -49,9 +56,9 @@ test:
     - galaxy_ml.iraps_classifier
     - galaxy_ml.model_persist
     - galaxy_ml.model_validations
-    #- galaxy_ml.preprocessors
+    - galaxy_ml.preprocessors
     - galaxy_ml.utils
-    #- galaxy_ml.externals.selene_sdk.sequences._sequence
+    - galaxy_ml.externals.selene_sdk.sequences._sequence
   commands:
     - command -v tabix
     - command -v bgzip

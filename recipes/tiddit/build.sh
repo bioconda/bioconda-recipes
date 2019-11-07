@@ -1,18 +1,19 @@
 #!/bin/bash
-
-mkdir build
-cd build 
-cmake .. 
-make 
-cd ..
-cd src
-python setup.py build_ext --inplace
-
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 mkdir -p $PREFIX/bin
-cp -R * $outdir/ 
-cp ../TIDDIT.py $outdir/
-ls -l $outdir
-ln -s $outdir/TIDDIT.py $PREFIX/bin/tiddit
-chmod 0755 ${PREFIX}/bin/tiddit
+echo $PREFIX
+
+mkdir build
+cd build
+cmake ..
+make
+cd ../src
+python -m pip install . --ignore-installed --no-deps -vv
+cd ../build
+make DESTDIR=${PREFIX} install
+cd ..
+
+mv TIDDIT.py ${PREFIX}/bin
+ln -s ${PREFIX}/bin/TIDDIT.py $PREFIX/bin/tiddit
+chmod a+x ${PREFIX}/bin/*
