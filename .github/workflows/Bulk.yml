@@ -14,8 +14,22 @@ jobs:
         runner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
     steps:
     - uses: actions/checkout@v1
+
+    - name: Fetch common.sh
+      run: |
+        wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
+
+    - name: Restore cache
+      id: cache
+      uses: actions/cache@v1
+      with:
+        path: /home/runner/miniconda
+        key: ${{ runner.os }}-BULK-${{ hashFiles('common.sh') }}
+
     - name: Setup Bioconda-utils
       uses: bioconda/bioconda-actions/bioconda_recipes_setup/@bulk
+      if: steps.cache.outputs.cache-hits != 'true'
+
     - name: Build and upload
       env:
         ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
@@ -28,6 +42,7 @@ jobs:
         bioconda-utils build recipes config.yml \
           --worker-offset ${{ matrix.runner }} --n-workers 15 \
           --docker --mulled-test --anaconda-upload --mulled-upload-target biocontainers
+        conda clean -y --all
 
   build-osx:
     name: Bulk OSX Builds
@@ -39,8 +54,22 @@ jobs:
         runner: [0, 1]
     steps:
     - uses: actions/checkout@v1
+
+    - name: Fetch common.sh
+      run: |
+        wget https://raw.githubusercontent.com/bioconda/bioconda-common/master/common.sh
+
+    - name: Restore cache
+      id: cache
+      uses: actions/cache@v1
+      with:
+        path: /home/runner/miniconda
+        key: ${{ runner.os }}-BULK-${{ hashFiles('common.sh') }}
+
     - name: Setup Bioconda-utils
       uses: bioconda/bioconda-actions/bioconda_recipes_setup/@bulk
+      if: steps.cache.outputs.cache-hits != 'true'
+
     - name: OSX stuff
       run: |
        # This is taken from conda-forge-ci-setup
@@ -54,6 +83,7 @@ jobs:
         mkdir -p ${CONDA_PREFIX}/etc/conda/activate.d
         echo "export CONDA_BUILD_SYSROOT=\"$CONDA_BUILD_SYSROOT\"" > "${CONDA_PREFIX}/etc/conda/activate.d/bioconda-ci-setup-activate.sh"
         conda list
+
     - name: Build and upload
       env:
         ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
@@ -66,3 +96,4 @@ jobs:
         bioconda-utils build recipes config.yml \
           --worker-offset ${{ matrix.runner }} --n-workers 2 \
           --anaconda-upload
+        conda clean -y --all
