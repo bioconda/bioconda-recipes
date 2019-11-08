@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="Hiiragi2013_1.21.0.tar.gz"
+FN="Hiiragi2013_1.22.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/Hiiragi2013_1.21.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/Hiiragi2013_1.21.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hiiragi2013/bioconductor-hiiragi2013_1.21.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/Hiiragi2013_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/Hiiragi2013_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hiiragi2013/bioconductor-hiiragi2013_1.22.0_src_all.tar.gz"
 )
-MD5="27f7fdc89c673631173fb668dd161919"
+MD5="6a0263c8c90417d0b5e5d616888ebc05"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="PtH2O2lipids_1.11.0.tar.gz"
+FN="PtH2O2lipids_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/PtH2O2lipids_1.11.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/PtH2O2lipids_1.11.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pth2o2lipids/bioconductor-pth2o2lipids_1.11.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/PtH2O2lipids_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/PtH2O2lipids_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pth2o2lipids/bioconductor-pth2o2lipids_1.12.0_src_all.tar.gz"
 )
-MD5="0231e5c21b4046350f5df2290f8c313d"
+MD5="5886bb0b8b6f352dd91eca1be18d1163"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
