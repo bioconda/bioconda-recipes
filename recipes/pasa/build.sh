@@ -6,6 +6,9 @@ readonly PASAHOME=${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}
 
 cd ${SRC_DIR}
 
+# use bioconda cdbtools and slclust instead of the bundled version
+sed -i.bak '/cdbtools/s/^/#/' Makefile
+
 make
 
 mkdir -p ${PASAHOME}
