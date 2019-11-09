@@ -6,22 +6,10 @@ readonly PASAHOME=${PREFIX}/opt/${PKG_NAME}-${PKG_VERSION}
 
 cd ${SRC_DIR}
 
-# use the bioconda transdecoder instead of the bundled version
-sed -i.bak 's#\$PLUGINS_DIR/transdecoder/##' Launch_PASA_pipeline.pl
-sed -i.bak 's#"$transdecoder_dir/\(util\/\)*#"#' scripts/pasa_asmbls_to_training_set.dbi
-# use bioconda cdbtools and slclust instead of the bundled version
-sed -i.bak '/cdbtools/s/^/#/' Makefile
-sed -i.bak '/slclust/s/^/#/' Makefile
-# fix compilers; $CC and $CXX used incorrectly...
-sed -i.bak -e 's/CPPC = \${CC}/CPPC = ${CXX}/' -e 's/CC = g++/#CC = /' pasa_cpp/Makefile
-sed -i.bak -e 's/gcc/${CC}/g' pasa-plugins/seqclean/mdust/Makefile
-sed -i.bak -e 's/^CC/#CC/' pasa-plugins/seqclean/psx/Makefile
-sed -i.bak -e 's/gcc/${CC}/g' pasa-plugins/seqclean/trimpoly/Makefile
-
 make
 
 mkdir -p ${PASAHOME}
-cp -Rp bin Launch_PASA_pipeline.pl misc_utilities pasa_conf PasaWeb PasaWeb.conf PerlLib PyLib run_PasaWeb.pl SAMPLE_HOOKS schema scripts ${PASAHOME}
+cp -Rp bin Launch_PASA_pipeline.pl misc_utilities pasa_conf pasa-plugins PasaWeb PasaWeb.conf PerlLib PyLib run_PasaWeb.pl SAMPLE_HOOKS schema scripts ${PASAHOME}
 
 mkdir -p ${PREFIX}/etc/conda/activate.d/
 echo "export PASAHOME=${PASAHOME}" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh
