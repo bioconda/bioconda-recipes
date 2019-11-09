@@ -1,14 +1,8 @@
 #!/bin/bash
 set -eo pipefail -o nounset
 
-## Organize required conda channels
-conda config --add channels defaults
-conda config --add channels ggd-genomics
-conda config --add channels bioconda
-conda config --add channels conda-forge
-
 ## initialize local metadata
-cat << EOF > initialize_metadata.py
+"${PREFIX}/bin/python" -c "$( cat <<'EOF'
 """
 Set up initial ggd local metdata
 """
@@ -32,7 +26,9 @@ for x in channels:
 
 ## Initialize pkg metadata tracking
 utils.update_installed_pkg_metadata()
-
 EOF
-python initialize_metadata.py 
-rm initialize_metadata.py
+)" >> "${PREFIX}/.messages.txt" 2>&1
+
+echo -e "\n\nNOTE: Please run the following command to add the required conda channels for GGD: " >> "${PREFIX}/.messages.txt" 2>&1  
+echo -e "\tconda config --add channels defaults\n\tconda config --add channels ggd-genomics\n\tconda config --add channels biconda\n\tconda config --add channels conda-forge" >> "${PREFIX}/.messages.txt" 2>&1
+
