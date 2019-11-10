@@ -19,7 +19,8 @@ export LDFLAGS="-L${BOOST_LIBRARY_DIR} -lboost_regex -lboost_filesystem -lboost_
 
 mkdir build
 cd build
-CXX=$CXX cmake ../src -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_CXX_COMPILER=${CXX}
+sed -i.bak "s#g++#$CXX#g" src/CMakeLists.txt
+cmake ../src -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_CXX_COMPILER=${CXX}
 make CXX=$CXX
 
 cd ..
