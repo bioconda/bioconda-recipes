@@ -17,9 +17,9 @@ export BAMTOOLS_LIBRARY_DIR="${BUILD_PREFIX}/lib/"
 export CXXFLAGS="-DUSE_BOOST -I${BOOST_INCLUDE_DIR} -L${BOOST_LIBRARY_DIR}"
 export LDFLAGS="-L${BOOST_LIBRARY_DIR} -lboost_regex -lboost_filesystem -lboost_system"
 
+sed -i.bak "s#g++#$CXX#g" src/CMakeLists.txt
 mkdir build
 cd build
-sed -i.bak "s#g++#$CXX#g" src/CMakeLists.txt
 cmake ../src -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_CXX_COMPILER=${CXX}
 make CXX=$CXX
 
