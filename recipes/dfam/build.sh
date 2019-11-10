@@ -3,7 +3,6 @@ set -x -e
 
 mkdir -p $PREFIX/bin
 
-ls -l
 gunzip dfamscan.pl.gz
 chmod 777 dfamscan.pl
 cp dfamscan.pl $PREFIX/bin
