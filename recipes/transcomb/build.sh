@@ -20,7 +20,7 @@ export LDFLAGS="-L${BOOST_LIBRARY_DIR} -lboost_regex -lboost_filesystem -lboost_
 mkdir build
 cd build
 cmake ../src -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_CXX_COMPILER=${CXX}
-make
+make CXX=$CXX
 
 cd ..
 
