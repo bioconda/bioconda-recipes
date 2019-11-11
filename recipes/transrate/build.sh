@@ -1,4 +1,4 @@
 #!/bin/bash
 set -x
-bundle install
-bundle exec rake compile
+bundle install --path=$PREFIX
+#bundle exec rake compile
