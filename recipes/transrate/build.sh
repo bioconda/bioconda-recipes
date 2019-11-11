@@ -1,2 +1,4 @@
 #!/bin/bash
-gem install .
+set -x
+bundle install
+bundle exec rake compile
