@@ -1,4 +1,5 @@
 #!/bin/bash
 set -x
-bundle install --path=$PREFIX
-#bundle exec rake compile
+mkdir -p ${PREFIX}/bin
+gem build transrate.gemspec
+gem install -n ${PREFIX}/bin transrate
