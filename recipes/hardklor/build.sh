@@ -3,7 +3,7 @@
 VER=$PKG_VERSION
 mkdir -p $PREFIX/bin
 
-curl -L https://github.com/mhoopmann/mstoolkit/archive/c936e547715a7537dfbdb12612d49cb15560bd98.tar.gz -o {VER}-src.tar.gz
+curl -L https://github.com/mhoopmann/mstoolkit/archive/7c91d9ed03065f633a6de81e484a1be7d0e42db0.tar.gz -o {VER}-src.tar.gz
 
 tar xzf {VER}-src.tar.gz
 mv mstoolkit-c936e547715a7537dfbdb12612d49cb15560bd98 ../MSToolkit
