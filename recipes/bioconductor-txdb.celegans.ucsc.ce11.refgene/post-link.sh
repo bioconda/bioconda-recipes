@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="TxDb.Celegans.UCSC.ce11.refGene_3.4.6.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Celegans.UCSC.ce11.refGene_3.4.6.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/TxDb.Celegans.UCSC.ce11.refGene_3.4.6.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Celegans.UCSC.ce11.refGene_3.4.6.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.celegans.ucsc.ce11.refgene/bioconductor-txdb.celegans.ucsc.ce11.refgene_3.4.6_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.celegans.ucsc.ce11.refgene/bioconductor-txdb.celegans.ucsc.ce11.refgene_3.4.6_src_all.tar.gz"

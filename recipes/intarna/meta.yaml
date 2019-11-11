@@ -1,5 +1,6 @@
-{% set INTARNA_VERSION = "3.0.0" %}
-{% set VRNA_VERSION = "2.4.13" %}
+{% set INTARNA_VERSION = "3.1.3" %}
+{% set INTARNA_SHA256  = "17995627229228c164e6c2db08dc7a20c9c94cdbdf6be00732e7ed9fd4c8de44" %}
+{% set VRNA_VERSION = "2.4.14" %}
 
 package:
   name: intarna
@@ -15,21 +16,23 @@ build:
 
 source:
   url: "https://github.com/BackofenLab/IntaRNA/releases/download/v{{INTARNA_VERSION}}/intaRNA-{{INTARNA_VERSION}}.tar.gz"
-  sha256: 725e4770a3b1c57006570b79063b68631646c0fd46cd58baa408cf4e26f06d96
+  sha256: {{INTARNA_SHA256}}
 
 requirements:
   build:
     - {{ compiler('cxx') }}
   host:
     - boost-cpp
-    - viennarna {{VRNA_VERSION}}*
+    - zlib
+    - viennarna >={{VRNA_VERSION}}*,<3.*
     - pkgconfig
     - doxygen
     - perl
+    - llvm-openmp # [osx]
   run:
     - boost-cpp
-    # for old interface wrapper
-    - perl
+    - llvm-openmp # [osx]
+    - zlib
 
 test:
   commands:
@@ -42,4 +45,7 @@ extra:
     - doi:10.1093/nar/gkx279
     - doi:10.1093/bioinformatics/btn544
     - doi:10.1093/nar/gky329
- 
+  recipe-maintainers:
+    - martin-raden
+    - BackofenLab
+

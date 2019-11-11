@@ -16,7 +16,7 @@ sed -i.bak 's|PgSAgen|PgSAgen_hgcolor|' HG-CoLoR
 sed -i.bak 's|#!/usr/bin/python|#!/usr/bin/env python|' bin/*.py
 
 # compilation
-make PGSA_PATH=${PWD}/PgSA-0d7c97f22a07fce96e0638deb09d2a8c05ed3d8b/
+make PGSA_PATH=${PWD}/PgSA-0d7c97f22a07fce96e0638deb09d2a8c05ed3d8b/ CC=$CC CXX=$CXX
 
 # copy binaries
 cp bin/* ${PREFIX}/bin

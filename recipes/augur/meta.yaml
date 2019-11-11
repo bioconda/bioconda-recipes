@@ -1,4 +1,4 @@
-{% set version = "5.2.1" %}
+{% set version = "5.4.0" %}
 
 package:
   name: augur
@@ -6,31 +6,31 @@ package:
 
 source:
   url: https://pypi.io/packages/source/n/nextstrain-augur/nextstrain-augur-{{ version }}.tar.gz
-  sha256: 8c0e55453410b3ba57c406dac39f47059696bdd2250b785d7e11033b8c72dc35
+  sha256: 81a9790f1d21927fc6743d5717ebf782d67169aa6836289baf8f3fff63d92103
 
 build:
   number: 0
   noarch: python
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  entry_points:
+    - augur = augur.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv"
 
 requirements:
   host:
-    - python >=3.4
+    - python >=3
     - pip
 
   run:
-    - python >=3.4
-    - biopython >=1.73
-    - bcbio-gff 0.6.*,>=0.6.4
-    - boto 2.*,>2.38
-    - cvxopt 1.1.*,>=1.1.9
-    - ipdb >=0.10.1
-    - jsonschema 3.0.0a3
+    - python >=3
+    - bcbio-gff >=0.6.0
+    - biopython >=1.67
+    - jsonschema >=3.0.0
+    - pandas >=0.20.0
+    - treetime >=0.5.6
+    - snakemake >=5.4.0
+    - cvxopt >=1.1.9,<1.2
     - matplotlib 2.*
-    - pandas 0.23.*,>=0.23.4
-    - treetime 0.5.*,>=0.5.2
-    - seaborn 0.9.*,>=0.9.0
-    - snakemake 5.*,>=5.1.5
+    - seaborn >=0.9.0,<0.10
     - mafft
     - raxml
     - fasttree
@@ -40,23 +40,8 @@ requirements:
 test:
   imports:
     - augur
-
   commands:
-    - augur -h
-    - augur parse -h
-    - augur filter -h
-    - augur mask -h
-    - augur align -h
-    - augur tree -h
-    - augur refine -h
-    - augur ancestral -h
-    - augur translate -h
-    - augur clades -h
-    - augur traits -h
-    - augur sequence-traits -h
-    - augur titers -h
-    - augur export -h
-    - augur validate -h
+    - augur --help
 
 about:
   home: https://github.com/nextstrain/augur
