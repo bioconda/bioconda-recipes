@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="GSE62944_1.12.0.tar.gz"
+FN="GSE62944_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/GSE62944_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/GSE62944_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-gse62944/bioconductor-gse62944_1.12.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-gse62944/bioconductor-gse62944_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/GSE62944_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/GSE62944_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-gse62944/bioconductor-gse62944_1.14.0_src_all.tar.gz"
 )
-MD5="817f3700ad4889d79e78336b42bd802b"
+MD5="70b6b8fc4ddbcebb778305546e50ba77"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

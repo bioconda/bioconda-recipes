@@ -1,8 +1,5 @@
 {% set version = '1.1-11' %}
 
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
-
 package:
   name: r-adephylo
   version: {{ version|replace("-", "_") }}
@@ -14,24 +11,14 @@ source:
   sha256: 154bf2645eac4493b85877933b9445442524ca4891aefe4e80c294c398cff61a
 
 build:
-  merge_build_host: True  # [win]
-
   number: 3
-
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
-    - {{ compiler('c') }}        # [not win]
-    - {{native}}toolchain        # [win]
-    - {{posix}}filesystem        # [win]
-    - {{posix}}make
-    - {{posix}}sed               # [win]
-    - {{posix}}coreutils         # [win]
-    - {{posix}}zip               # [win]
-
+    - {{ compiler('c') }}
   host:
     - r-base
     - r-ade4 >=1.7_10
@@ -41,7 +28,6 @@ requirements:
 
   run:
     - r-base
-    - {{native}}gcc-libs         # [win]
     - r-ade4 >=1.7_10
     - r-adegenet
     - r-ape
@@ -49,7 +35,6 @@ requirements:
 
 test:
   commands:
-
     - $R -e "library('adephylo')"           # [not win]
     - "\"%R%\" -e \"library('adephylo')\""  # [win]
 
@@ -59,12 +44,3 @@ about:
   summary: Multivariate tools to analyze comparative data, i.e. a phylogeny and some traits measured
     for each taxa.
   license_family: GPL3
-extra:
-  recipe-maintainers:
-    - MathiasHaudgaard
-    - FrodePedersen
-    - ArneKr
-    - johanneskoester
-    - bgruening
-    - daler
-    - jdblischak
