@@ -1,5 +1,5 @@
 #!/bin/sh
-
+export LD_LIBRARY_PATH=${PREFIX}/lib
 BASE_CC=$(basename $CXX)
 DIR_CC=$(dirname $CXX)
 
