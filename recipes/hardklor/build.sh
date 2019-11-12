@@ -11,6 +11,8 @@ mv mstoolkit-7* ../MSToolkit
 cd ../MSToolkit
 sed -i.bak 's/-static//' Makefile
 make CC=${CXX} GCC=${CC}
+mkdir -p ${PREFIX}/lib
+cp libmstoolkitlite.s* ${PREFIX}/lib
 cd $SRC_DIR
 
 sed -i.bak 's/-static//' Makefile
