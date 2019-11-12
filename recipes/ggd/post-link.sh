@@ -29,6 +29,12 @@ utils.update_installed_pkg_metadata()
 EOF
 )" >> "${PREFIX}/.messages.txt" 2>&1
 
-echo -e "\n\nNOTE: Please run the following command to add the required conda channels for GGD: " >> "${PREFIX}/.messages.txt" 2>&1  
-echo -e "\tconda config --add channels defaults\n\tconda config --add channels ggd-genomics\n\tconda config --add channels biconda\n\tconda config --add channels conda-forge" >> "${PREFIX}/.messages.txt" 2>&1
+echo """
+
+NOTE: Please run the following command to add the required conda channels for GGD: """ >> "${PREFIX}/.messages.txt" 2>&1  
+
+echo """    conda config --add channels defaults
+    conda config --add channels ggd-genomics
+    conda config --add channels biconda
+    conda config --add channels conda-forge """ >> "${PREFIX}/.messages.txt" 2>&1
 
