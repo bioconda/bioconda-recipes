@@ -25,6 +25,13 @@ build:
     - samsifter=samsifter.samsifter:main
 
 requirements:
+  build:
+    - xorg-libxfixes  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
   host:
     - python >=3
     - pip
@@ -53,7 +60,7 @@ test:
 
   commands:
     - compile_stats --help
-    - count_taxon_reads --help
+    - export LD_LIBRARY_PATH=${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64 count_taxon_reads --help
     - filter_read_conservation --help
     - filter_read_list --help
     - filter_ref_coverage --help
@@ -71,3 +78,7 @@ about:
   license: GNU General Public License v3 (GPLv3)
   license_file: LICENSE.txt
   summary: 'Workflow editor for metagenomic analysis'
+
+extra:
+  container:
+    extended-base: True
