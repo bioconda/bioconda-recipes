@@ -1,6 +1,8 @@
 #!/bin/bash
 
 mkdir -p ${PREFIX}/bin
+./install.sh
+exit 0
 
 # get src
 wget https://github.com/kowallus/PgSA/archive/0d7c97f22a07fce96e0638deb09d2a8c05ed3d8b.zip
@@ -16,7 +18,7 @@ sed -i.bak 's|PgSAgen|PgSAgen_hgcolor|' HG-CoLoR
 sed -i.bak 's|#!/usr/bin/python|#!/usr/bin/env python|' bin/*.py
 
 # compilation
-make PGSA_PATH=${PWD}/PgSA-0d7c97f22a07fce96e0638deb09d2a8c05ed3d8b/ CC=$CC CXX=$CXX
+make PGSA_PATH=${PWD}/PgSA-0d7c97f22a07fce96e0638deb09d2a8c05ed3d8b/ CC=$CC CXX=$CXX CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS"
 
 # copy binaries
 cp bin/* ${PREFIX}/bin
