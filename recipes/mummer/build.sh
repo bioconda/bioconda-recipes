@@ -12,7 +12,7 @@ cp -R $SRC_DIR/* $MUMMER_HOME
 
 cd $MUMMER_HOME
 
-make
+make CC=$CC CXX=$CXX
 
 binaries="\
 combineMUMs \
@@ -49,3 +49,6 @@ for i in $binaries; do
   chmod +x $MUMMER_HOME/$i
   ln -s "$MUMMER_HOME/$i" "$BINARY_HOME/$i"
 done
+
+# clean up
+find $MUMMER_HOME -name *.o -exec rm -f {} \;

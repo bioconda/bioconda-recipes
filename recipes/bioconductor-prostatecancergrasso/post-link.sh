@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="prostateCancerGrasso_1.12.0.tar.gz"
+FN="prostateCancerGrasso_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/prostateCancerGrasso_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/prostateCancerGrasso_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-prostatecancergrasso/bioconductor-prostatecancergrasso_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/prostateCancerGrasso_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/prostateCancerGrasso_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-prostatecancergrasso/bioconductor-prostatecancergrasso_1.14.0_src_all.tar.gz"
 )
-MD5="6bf3e5b205d0f15bd2ffb93d87029a16"
+MD5="ee1dc820ba5b9ccb67df792b87f98887"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

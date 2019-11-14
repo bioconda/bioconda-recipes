@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="arabidopsis.db0_3.8.2.tar.gz"
+FN="arabidopsis.db0_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/arabidopsis.db0_3.8.2.tar.gz"
-  "https://bioarchive.galaxyproject.org/arabidopsis.db0_3.8.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-arabidopsis.db0/bioconductor-arabidopsis.db0_3.8.2_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/arabidopsis.db0_3.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/arabidopsis.db0_3.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-arabidopsis.db0/bioconductor-arabidopsis.db0_3.10.0_src_all.tar.gz"
 )
-MD5="8a9e7a715dee82af3056db3a41416049"
+MD5="b81dec258644f0dbbe77add3f3780dfb"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

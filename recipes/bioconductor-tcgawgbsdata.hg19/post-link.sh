@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="tcgaWGBSData.hg19_1.2.0.tar.gz"
+FN="tcgaWGBSData.hg19_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/tcgaWGBSData.hg19_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/tcgaWGBSData.hg19_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tcgawgbsdata.hg19/bioconductor-tcgawgbsdata.hg19_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/tcgaWGBSData.hg19_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/tcgaWGBSData.hg19_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tcgawgbsdata.hg19/bioconductor-tcgawgbsdata.hg19_1.4.0_src_all.tar.gz"
 )
-MD5="0016ac6074b918439dac0a52151c4ffa"
+MD5="63d5365c7681dd2016dcd6e7be12d740"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

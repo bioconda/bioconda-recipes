@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="gskb_1.16.0.tar.gz"
+FN="gskb_1.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/gskb_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/gskb_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-gskb/bioconductor-gskb_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/gskb_1.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/gskb_1.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-gskb/bioconductor-gskb_1.18.0_src_all.tar.gz"
 )
-MD5="b6a505908c6339c2cc3e5f9b937737aa"
+MD5="9c8267af08b0eeeb90758aea28120241"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

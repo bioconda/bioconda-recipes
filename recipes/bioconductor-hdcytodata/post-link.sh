@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="HDCytoData_1.4.0.tar.gz"
+FN="HDCytoData_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/HDCytoData_1.4.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/HDCytoData_1.4.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hdcytodata/bioconductor-hdcytodata_1.4.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/HDCytoData_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HDCytoData_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hdcytodata/bioconductor-hdcytodata_1.6.0_src_all.tar.gz"
 )
-MD5="7e6294543c192c0a089c6eb1c6c406ce"
+MD5="6741382bce51853142760aec9e7bf937"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

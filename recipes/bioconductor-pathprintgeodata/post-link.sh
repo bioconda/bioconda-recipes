@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="pathprintGEOData_1.14.0.tar.gz"
+FN="pathprintGEOData_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/pathprintGEOData_1.14.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/pathprintGEOData_1.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-pathprintgeodata/bioconductor-pathprintgeodata_1.14.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/pathprintGEOData_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/pathprintGEOData_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-pathprintgeodata/bioconductor-pathprintgeodata_1.16.0_src_all.tar.gz"
 )
-MD5="a7237e62dda8f356c41d35e50fef33e8"
+MD5="b421ebabad979ec903b356aec6ff169a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

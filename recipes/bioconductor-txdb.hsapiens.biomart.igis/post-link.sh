@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="TxDb.Hsapiens.BioMart.igis_2.3.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/TxDb.Hsapiens.BioMart.igis_2.3.2.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/TxDb.Hsapiens.BioMart.igis_2.3.2.tar.gz"
   "https://bioarchive.galaxyproject.org/TxDb.Hsapiens.BioMart.igis_2.3.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.hsapiens.biomart.igis/bioconductor-txdb.hsapiens.biomart.igis_2.3.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-txdb.hsapiens.biomart.igis/bioconductor-txdb.hsapiens.biomart.igis_2.3.2_src_all.tar.gz"
