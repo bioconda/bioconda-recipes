@@ -4,6 +4,9 @@ export C_INCLUDE_PATH=${PREFIX}/include
 export LIBRARY_PATH=${PREFIX}/lib
 export LD_LIBRARY_PATH=${PREFIX}/lib
 
+# Use C++17 rather than C++11 to hopefully better match boost
+sed -i.bak "s/11/17/g" CMakeLists.txt
+
 mkdir contrib-build
 cd contrib-build
 cmake -DBUILD_TYPE=WILDMAGIC ../contrib
