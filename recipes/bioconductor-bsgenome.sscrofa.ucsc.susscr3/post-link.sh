@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Sscrofa.UCSC.susScr3_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Sscrofa.UCSC.susScr3_1.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/BSgenome.Sscrofa.UCSC.susScr3_1.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Sscrofa.UCSC.susScr3_1.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.sscrofa.ucsc.susscr3/bioconductor-bsgenome.sscrofa.ucsc.susscr3_1.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.sscrofa.ucsc.susscr3/bioconductor-bsgenome.sscrofa.ucsc.susscr3_1.4.0_src_all.tar.gz"

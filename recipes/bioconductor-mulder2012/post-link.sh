@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="Mulder2012_0.24.0.tar.gz"
+FN="Mulder2012_0.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/Mulder2012_0.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/Mulder2012_0.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mulder2012/bioconductor-mulder2012_0.24.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mulder2012/bioconductor-mulder2012_0.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/Mulder2012_0.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/Mulder2012_0.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mulder2012/bioconductor-mulder2012_0.26.0_src_all.tar.gz"
 )
-MD5="cf1ccb7133defdc49f889dfe9efabbf4"
+MD5="05a59876040e0399b29933d906f7cda0"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
