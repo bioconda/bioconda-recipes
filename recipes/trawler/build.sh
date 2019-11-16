@@ -12,6 +12,7 @@ mkdir -p $outdir
 cp -r * $outdir
 
 # Short wrapper script
+mkdir $PREFIX/bin
 cat > $PREFIX/bin/trawler <<EOF
 #!/bin/bash
 PERL5LIB=$outdir:$outdir/treg_comparator exec $outdir/bin/trawler.pl "\$@"

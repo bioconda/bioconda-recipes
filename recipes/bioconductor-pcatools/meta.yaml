@@ -1,6 +1,6 @@
-{% set version = "1.0.0" %}
+{% set version = "1.2.0" %}
 {% set name = "PCAtools" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,34 +10,58 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 6ef2bff3637161a072efc798a8fb2af9
+  md5: b721ed796c1c461a7b869a58dd176753
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-  noarch: generic
-# Suggests: RUnit, BiocGenerics, knitr, Biobase, GEOquery, biomaRt, ggplotify
+# Suggests: testthat, scran, BiocGenerics, knitr, Biobase, GEOquery, biomaRt, ggplotify, beachmat
+# SystemRequirements: C++11
 requirements:
   host:
+    - 'bioconductor-beachmat >=2.2.0,<2.3.0'
+    - 'bioconductor-biocparallel >=1.20.0,<1.21.0'
+    - 'bioconductor-biocsingular >=1.2.0,<1.3.0'
+    - 'bioconductor-delayedarray >=0.12.0,<0.13.0'
+    - 'bioconductor-delayedmatrixstats >=1.8.0,<1.9.0'
     - r-base
+    - r-bh
     - r-cowplot
+    - r-dqrng
     - r-ggplot2
     - r-ggrepel
     - r-lattice
+    - r-matrix
+    - r-rcpp
     - r-reshape2
   run:
+    - 'bioconductor-beachmat >=2.2.0,<2.3.0'
+    - 'bioconductor-biocparallel >=1.20.0,<1.21.0'
+    - 'bioconductor-biocsingular >=1.2.0,<1.3.0'
+    - 'bioconductor-delayedarray >=0.12.0,<0.13.0'
+    - 'bioconductor-delayedmatrixstats >=1.8.0,<1.9.0'
     - r-base
+    - r-bh
     - r-cowplot
+    - r-dqrng
     - r-ggplot2
     - r-ggrepel
     - r-lattice
+    - r-matrix
+    - r-rcpp
     - r-reshape2
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-3
-  summary: 'Principal Components Analysis (PCA) is a very powerful technique that has wide applicability in data science, bioinformatics, and further afield. It was initially developed to analyse large volumes of data in order to tease out the differences/relationships between the logical entities being analysed. It extracts the fundamental structure of the data without the need to build any model to represent it. This ''summary'' of the data is arrived at through a process of reduction that can transform the large number of variables into a lesser number that are uncorrelated, i.e., the principal components, whilst at the same time being capable of easy interpretation on the original data.'
+  summary: 'PCAtools: Everything Principal Components Analysis'
+  description: 'Principal Components Analysis (PCA) is a very powerful technique that has wide applicability in data science, bioinformatics, and further afield. It was initially developed to analyse large volumes of data in order to tease out the differences/relationships between the logical entities being analysed. It extracts the fundamental structure of the data without the need to build any model to represent it. This ''summary'' of the data is arrived at through a process of reduction that can transform the large number of variables into a lesser number that are uncorrelated, i.e., the principal components, whilst at the same time being capable of easy interpretation on the original data.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 
