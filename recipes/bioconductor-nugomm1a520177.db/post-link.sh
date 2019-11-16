@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="nugomm1a520177.db_3.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/nugomm1a520177.db_3.4.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/nugomm1a520177.db_3.4.0.tar.gz"
   "https://bioarchive.galaxyproject.org/nugomm1a520177.db_3.4.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-nugomm1a520177.db/bioconductor-nugomm1a520177.db_3.4.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-nugomm1a520177.db/bioconductor-nugomm1a520177.db_3.4.0_src_all.tar.gz"
