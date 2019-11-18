@@ -17,7 +17,7 @@ make plugins CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
 make CC=${CC} CXX=${CXX} CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
 
 # remove the sample data
-rm -rf $SRC_DIR/sample_data
+#rm -rf $SRC_DIR/sample_data
 
 # reproduce make install without the wrapper script
 mkdir -p $PREFIX/bin
