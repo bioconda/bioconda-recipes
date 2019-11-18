@@ -28,17 +28,7 @@ packages. Users can add additional channels from which to install
 software packages not available in the defaults channel. Bioconda is
 one such channel specializing in bioinformatics software.
 
-When using Bioconda please **cite our article**:
-
-  Grüning, Björn, Ryan Dale, Andreas Sjödin, Brad A. Chapman, Jillian
-  Rowe, Christopher H. Tomkins-Tinch, Renan Valieris, the Bioconda
-  Team, and Johannes Köster. 2018. "Bioconda: Sustainable and
-  Comprehensive Software Distribution for the Life Sciences". Nature
-  Methods, 2018 doi::doi:`10.1038/s41592-018-0046-7`.
-
-Bioconda has been acknowledged by NATURE in their `technology blog`_.
-
-.. _`technology blog`: http://blogs.nature.com/naturejobs/2017/11/03/techblog-bioconda-promises-to-ease-bioinformatics-software-installation-woes
+**Browse packages in the Bioconda channel:** `Recipe Index <conda-recipe_index.html>`_
 
 Each package added to Bioconda also has a corresponding Docker
 `BioContainer`_ automatically created and uploaded to `Quay.io`_. A
@@ -49,9 +39,27 @@ Registry`_.
 .. _`Quay.io`: https://quay.io/organization/biocontainers
 .. _`BioContainers Registry`: https://biocontainers.pro/#/registry
 
-**Browse packages in the Bioconda channel:** `Recipe Index <conda-recipe_index.html>`_
+News
+====
 
-----
+* Nov 2019: Bioconda has been selected as one of 32 open source projects for being `funded by the Chan Zuckerberg Initiative <https://chanzuckerberg.com/newsroom/chan-zuckerberg-initiative-awards-5-million-for-open-source-software-projects-essential-to-science>`_.
+* Nov 2017: Bioconda has been acknowledged by NATURE in their `technology blog`_.
+
+.. _`technology blog`: http://blogs.nature.com/naturejobs/2017/11/03/techblog-bioconda-promises-to-ease-bioinformatics-software-installation-woes
+
+Citing Bioconda
+===============
+
+When using Bioconda please **cite our article**:
+
+  Grüning, Björn, Ryan Dale, Andreas Sjödin, Brad A. Chapman, Jillian
+  Rowe, Christopher H. Tomkins-Tinch, Renan Valieris, the Bioconda
+  Team, and Johannes Köster. 2018. "Bioconda: Sustainable and
+  Comprehensive Software Distribution for the Life Sciences". Nature
+  Methods, 2018 doi::doi:`10.1038/s41592-018-0046-7`.
+
+Acknowledgments
+===============
 
 Bioconda is a derivative mark of Anaconda :sup:`®`, a trademark of Anaconda,
 Inc registered in the U.S. and other countries.  Anaconda, Inc.
@@ -61,8 +69,6 @@ The Bioconda channel is sponsored by `Anaconda, Inc <https://www.anaconda.com/>`
 in the form of providing unlimited (in time and space) storage.
 Bioconda is supported by `Circle CI <https://circleci.com/>`_ via an open
 source plan including free Linux and MacOS builds.
-
-
 
 Contributors
 ============
@@ -88,6 +94,9 @@ Team
 Bioconda has over 600 (as of 2019/1) `contributors
 <https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
 
+
+Table of contents
+=================
 
 .. toctree::
    :includehidden:
