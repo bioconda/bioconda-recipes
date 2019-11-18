@@ -1,6 +1,7 @@
 #!/bin/bash
 
-export CFLAGS="-I${PREFIX}/include -L${PREFIX}/lib" CXXFLAGS="-I${PREFIX}/include -L${PREFIX}/lib"
+export CFLAGS="-I${PREFIX}/include -L${PREFIX}/lib" 
+export CXXFLAGS="-I${PREFIX}/include -L${PREFIX}/lib"
 export LDFLAGS="-L${PREFIX}/lib"
 
 if [ ! -d $PREFIX/bin ] ; then
