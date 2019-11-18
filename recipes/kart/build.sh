@@ -8,5 +8,5 @@ if [ ! -d $PREFIX/bin ] ; then
   mkdir $PREFIX/bin
 fi
 
-make
+make Compiler=$CXX CXX=$CXX CC=$CC
 cp bin/kart bin/bwt_index $PREFIX/bin
