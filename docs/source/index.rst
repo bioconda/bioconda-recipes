@@ -42,7 +42,7 @@ Registry`_.
 News
 ====
 
-* Nov 2019: Bioconda has been selected as one of 32 open source projects for being `funded by the Chan Zuckerberg Initiative <https://chanzuckerberg.com/newsroom/chan-zuckerberg-initiative-awards-5-million-for-open-source-software-projects-essential-to-science>`_.
+* Nov 2019: Bioconda has been selected as one of 42 open source projects for being `funded by the Chan Zuckerberg Initiative <https://chanzuckerberg.com/newsroom/chan-zuckerberg-initiative-awards-5-million-for-open-source-software-projects-essential-to-science>`_.
 * Nov 2017: Bioconda has been acknowledged by NATURE in their `technology blog`_.
 
 .. _`technology blog`: http://blogs.nature.com/naturejobs/2017/11/03/techblog-bioconda-promises-to-ease-bioinformatics-software-installation-woes
