@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="hugene10stv1cdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hugene10stv1cdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/hugene10stv1cdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/hugene10stv1cdf_2.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hugene10stv1cdf/bioconductor-hugene10stv1cdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hugene10stv1cdf/bioconductor-hugene10stv1cdf_2.18.0_src_all.tar.gz"

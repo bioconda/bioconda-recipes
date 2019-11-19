@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="MafDb.ExAC.r1.0.hs37d5_3.7.0.tar.gz"
+FN="MafDb.ExAC.r1.0.hs37d5_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MafDb.ExAC.r1.0.hs37d5_3.7.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MafDb.ExAC.r1.0.hs37d5_3.7.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.exac.r1.0.hs37d5/bioconductor-mafdb.exac.r1.0.hs37d5_3.7.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mafdb.exac.r1.0.hs37d5/bioconductor-mafdb.exac.r1.0.hs37d5_3.7.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MafDb.ExAC.r1.0.hs37d5_3.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MafDb.ExAC.r1.0.hs37d5_3.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mafdb.exac.r1.0.hs37d5/bioconductor-mafdb.exac.r1.0.hs37d5_3.10.0_src_all.tar.gz"
 )
-MD5="a4d494d62a02d808248a058e82e353fa"
+MD5="4d523554a2b0eb296bada9d33a78eefc"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
