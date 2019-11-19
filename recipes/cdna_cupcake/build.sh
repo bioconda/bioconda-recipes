@@ -1,7 +1,6 @@
 #!/bin/sh
 
-$PYTHON setup.py build
-$PYTHON setup.py install
+$PYTHON -m pip install . --ignore-installed --no-deps -vv
 
 cp annotation/*.py ${PREFIX}/bin/
 cp bacteria/*.py ${PREFIX}/bin/
