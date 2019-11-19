@@ -8,8 +8,5 @@ cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
       -DCMAKE_CXX_COMPILER=${CXX} \
       -DCMAKE_INSTALL_INCLUDEDIR=${PREFIX}/include \
       -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
-      -H. \
-      -Bbuild
-      ..
-cmake --build build -- -j 3
+      -j 3
 make install
