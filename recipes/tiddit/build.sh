@@ -16,4 +16,5 @@ cd ..
 
 mv TIDDIT.py ${PREFIX}/bin
 ln -s ${PREFIX}/bin/TIDDIT.py $PREFIX/bin/tiddit
+ln -s ${PREFIX}/bin/TIDDIT.py $PREFIX/bin/TIDDIT
 chmod a+x ${PREFIX}/bin/*
