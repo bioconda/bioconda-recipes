@@ -6,4 +6,3 @@ set -e -u -x
 make -j4
 make install
 (cd "${SRC_DIR}/easel" && make install PREFIX=$PREFIX)
-ls -l $PREFIX/bin
