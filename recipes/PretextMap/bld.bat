@@ -1,2 +1,2 @@
 mkdir %PREFIX%\bin
-move PretextMap* %PREFIX%\bin\
+move Pretext* %PREFIX%\bin\
