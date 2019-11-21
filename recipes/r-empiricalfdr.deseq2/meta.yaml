@@ -1,8 +1,5 @@
 {% set version = '1.0.3' %}
 
-{% set posix = 'm2-' if win else '' %}
-{% set native = 'm2w64-' if win else '' %}
-
 package:
   name: r-empiricalfdr.deseq2
   version: {{ version|replace("-", "_") }}
@@ -14,31 +11,25 @@ source:
   sha256: 831be77d3b40fcc41e70c0dadcb50871fda6093de3130d6c334c8d4d78635540
 
 build:
-  merge_build_host: True  # [win]
-  number: 4
+  noarch: generic
+  number: 5
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
-  build:
-    - {{posix}}zip               # [win]
-
   host:
     - r-base
     - bioconductor-deseq2
-    - 'bioconductor-genomicranges >=1.32.7,<1.34.0'
-
+    - bioconductor-genomicranges
   run:
     - r-base
     - bioconductor-deseq2
-    - 'bioconductor-genomicranges >=1.32.7,<1.34.0'
+    - bioconductor-genomicranges
 
 test:
   commands:
-
-    - $R -e "library('empiricalFDR.DESeq2')"           # [not win]
-    - "\"%R%\" -e \"library('empiricalFDR.DESeq2')\""  # [win]
+    - $R -e "library('empiricalFDR.DESeq2')"
 
 about:
   home: https://CRAN.R-project.org/package=empiricalFDR.DESeq2
@@ -48,12 +39,3 @@ about:
     and dispersions, but without effects of predictor variables) and to compute the
     empirical false discovery rate.
   license_family: GPL3
-extra:
-  recipe-maintainers:
-    - MathiasHaudgaard
-    - FrodePedersen
-    - ArneKr
-    - johanneskoester
-    - bgruening
-    - daler
-    - jdblischak

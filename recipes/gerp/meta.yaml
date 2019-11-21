@@ -1,0 +1,39 @@
+{% set name = "GERP" %}
+{% set version = "2.1" %}
+{% set sha256 = "d733e26a7c00a998e7c0b5792e13122e6573bc5d3af6f43382548af046b954c8" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: http://mendel.stanford.edu/SidowLab/downloads/gerp/{{ name|lower }}++.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - missing_headers_linux.patch  # [linux]
+    - missing_headers_osx.patch  # [osx]
+
+build:
+  number: 0
+  script: "mkdir -p ${PREFIX}/bin/; make; cp gerpcol ${PREFIX}/bin/; cp gerpelem ${PREFIX}/bin/"
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+
+test:
+  commands:
+    - gerpcol -h
+    - gerpelem -h
+
+about:
+  home: http://mendel.stanford.edu/SidowLab/downloads/gerp/index.html
+  license: GNU GPL v3
+  license_family: GPL
+  license_file: COPYRIGHT.txt
+  summary: GERP identifies constrained elements in multiple alignments by quantifying substitution deficits.
+
+extra:
+  skip-lints:
+    - should_not_be_noarch_source
