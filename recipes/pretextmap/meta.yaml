@@ -6,30 +6,26 @@ package:
   version: "{{ version }}"
 
 source:
-  - url: https://github.com/wtsi-hpag/{{ name }}/releases/download/{{ version }}/{{ name }}_Linux-x86-64.zip  # [linux64]
-    sha256: 8c2bd257a1bb3f61add6ea97f536421b7a8327acee835528f72aaffe60c59326  # [linux64]
-  - url: https://github.com/wtsi-hpag/{{ name }}/releases/download/{{ version }}/{{ name }}_MacOS.zip  # [osx]
-    sha256: ab0c6bf922f2dbe76e703bb01ab6272d5c28734ab9d6546d5930f07c4e55716d  # [osx]
+  url: https://github.com/wtsi-hpag/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: d8667aba7013ea24548d71795c84dbe6482ac9ff7f77b88552112733ebaed700
 
 build:
-  skip: True # [not osx and not linux64]
+  skip: True # [not (osx and x86_64) and not (linux64 and x86_64)]
   number: 0
 
 requirements:
   build:
-    -   libarchive=3.3 # [osx]
+    - git
+    - make
+    - clang
+    - python
 
 test:
   commands:
-    - {{ name }}.noext
+    - {{ name }}
 
 about:
   home: https://github.com/wtsi-hpag/PretextMap
   license: MIT
   license_family: MIT
   summary: Paired REad TEXTure Mapper. Converts SAM formatted read pairs into genome contact maps.
-
-extra:
-  skip-lints:
-    - should_not_be_noarch_source
-    - should_be_noarch_generic
