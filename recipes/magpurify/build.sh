@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-
-
-
-
 # install
 DESTDIR=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $DESTDIR
@@ -10,6 +6,7 @@ cp run_qc.py $DESTDIR
 cp -r magpurify $DESTDIR
 chmod +x $DESTDIR/run_qc.py
 
+mkdir -p ${PREFIX}/bin
 ln -s $DESTDIR/run_qc.py $PREFIX/bin/
 ln -s $DESTDIR/run_qc.py $PREFIX/bin/MAGpurify #alias
 
