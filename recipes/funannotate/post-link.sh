@@ -6,7 +6,7 @@ cat > "${PREFIX}"/.messages.txt <<- EOF
 All Users:
   You will need to setup the funannotate databases using funannotate setup.
   The location of these databases on the file system is your decision and the
-  location can be defined using the $FUNANNOTATE_DB environmental variable.
+  location can be defined using the FUNANNOTATE_DB environmental variable.
   To set this up in your conda environment you can run the following:
     echo "export FUNANNOTATE_DB=/your/path" > ${PREFIX}/etc/conda/activate.d/funannotate.sh
     echo "unset FUNANNOTATE_DB" > ${PREFIX}/etc/conda/deactivate.d/funannotate.sh
@@ -20,7 +20,7 @@ Mac OSX Users:
   Install augustus using this repo:
     https://github.com/nextgenusfs/augustus
   
-  To install Trinity download the source code and compile using GCC/G++:
+  To install Trinity v2.8.6, download the source code and compile using GCC/G++:
     wget https://github.com/trinityrnaseq/trinityrnaseq/releases/download/v2.8.6/trinityrnaseq-v2.8.6.FULL.tar.gz
     tar xzvf trinityrnaseq-v2.8.6.FULL.tar.gz
     cd trinityrnaseq-v2.8.6
