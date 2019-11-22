@@ -4,7 +4,7 @@ cat > "${PREFIX}"/.messages.txt <<- EOF
     
 ##########################################################################################
 All Users:
-  You will need to setup the funannotate databases using `funannotate setup`.
+  You will need to setup the funannotate databases using funannotate setup.
   The location of these databases on the file system is your decision and the
   location can be defined using the $FUNANNOTATE_DB environmental variable.
   To set this up in your conda environment you can run the following:
