@@ -9,6 +9,9 @@ esac
 mkdir -p $PREFIX/bin
 
 if [ $machine = "Linux" ]; then
+
+echo "DEBUG INFO ::: "$(find /usr/ -name "libm.a")
+
 awk -v rep="-static -Wl,-rpath,/usr/lib/ -Wl,-rpath-link,/usr/lib/ -L/usr/lib/ -lstdc++ -lm" '{ gsub(/\-lstdc\+\+ \-lm/, rep); print }' > _install < install
 mv install install_
 mv _install install
