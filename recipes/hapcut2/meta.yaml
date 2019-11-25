@@ -1,0 +1,41 @@
+{% set name = "HapCUT2" %}
+{% set version = "1.2" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/vibansal/{{ name }}/archive/v{{ version }}.tar.gz
+    sha256: d491e23c510bca17564a631188fd56d6f3ac8dd6efb9cb80877b662acc749463
+    patches:
+    - flags.patch
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - pkg-config
+  host:
+    - zlib
+    - htslib
+  run:
+    - zlib
+    - python >=3.5
+    - pysam
+    - htslib
+
+test:
+  commands:
+    - "hapcut2 | grep HapCUT2"
+    - "HAPCUT2 | grep HapCUT2"
+    - 'calculate_haplotype_statistics.py 2>&1 | grep "Calculate statistics"'
+    - 'LinkFragments.py 2>&1 | grep "usage: LinkFragments.py"'
+
+about:
+  summary: Tools for haplotype assembly from sequence data
+  home: https://github.com/vibansal/HapCUT2/
+  license: BSD-2-Clause
+  license_file: LICENSE

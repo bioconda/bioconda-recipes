@@ -5,7 +5,7 @@ package:
   version: {{ version }}
 
 build:
-  number: 5
+  number: 9
 
 source:
   url: https://github.com/samtools/bcftools/releases/download/{{ version }}/bcftools-{{ version }}.tar.bz2
@@ -15,22 +15,17 @@ requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - bzip2
-    - curl
-    - xz
+    - htslib
     - zlib
-    - libdeflate
     - gsl
   run:
-    - bzip2
-    - curl
     - gsl
+    - htslib
     # Currently removed due to size and dependency issues
     #- matplotlib # for plot-vcfstats
     #- tectonic # for plot-vcfstats
-    - xz
     - zlib
-    - libdeflate
+    - perl
 
 test:
   commands:
@@ -38,11 +33,13 @@ test:
     - bcftools --version
     - bcftools plugin -lv
     - bcftools -h | grep polysomy
+    - vcfutils.pl 2>&1 | grep vcfutils
     #- plot-vcfstats -h 2>&1 | grep -q "Plots output of "
 
 about:
   home: https://github.com/samtools/bcftools
-  license: MIT
+  license: GPL
+  license_file: LICENSE
   summary: BCFtools is a set of utilities that manipulate variant calls in the Variant
     Call Format (VCF) and its binary counterpart BCF. All commands work transparently
     with both VCFs and BCFs, both uncompressed and BGZF-compressed.  Most commands

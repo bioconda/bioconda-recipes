@@ -2,19 +2,22 @@
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $outdir
 mkdir -p $PREFIX/bin
-mkdir -p $PREFIX/bin/bin
 echo $PREFIX
 
-cp -r * $outdir/
-cd $outdir
 mkdir build
 cd build
 cmake ..
 make
+cd ../src
+python -m pip install . --ignore-installed --no-deps -vv
+cd ../build
+make DESTDIR=${PREFIX} install
 cd ..
-cd src
-python setup.py build_ext --inplace
 
-ln -s $outdir/TIDDIT.py $PREFIX/bin/tiddit
+# Clean up bamtools
+rm -rf $PREFIX/usr
 
-chmod 0755 ${PREFIX}/bin/tiddit
+mv TIDDIT.py ${PREFIX}/bin
+ln -s ${PREFIX}/bin/TIDDIT.py $PREFIX/bin/tiddit
+ln -s ${PREFIX}/bin/TIDDIT.py $PREFIX/bin/TIDDIT
+chmod a+x ${PREFIX}/bin/*

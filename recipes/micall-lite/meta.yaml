@@ -1,10 +1,10 @@
 {% set name = "MiCall-Lite" %}
-{% set version = "0.1rc" %}
-{% set sha256 = "e8c780f4545685cb2d25003642f75bce4c23a41f67828a9633688f635f7afe61" %}
+{% set version = "0.1rc2" %}
+{% set sha256 = "aa01a8f08f05b221d2518f89c56783cc3b6e6d15dd85f0cd6aaa319c2f978ffb" %}
 
 package:
-    name: {{ name|lower }}
-    version: {{ version }}
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
   url: https://github.com/PoonLab/{{ name }}/archive/Lite-{{ version }}.tar.gz
@@ -12,21 +12,23 @@ source:
 
 build:
   number: 0
-  script: "$PYTHON setup.py install"
-  
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv
+  skip: True  # [py2k]
+
 requirements:
   build:
     - {{ compiler('c') }}
   host:
     - python
+    - pip
   run:
     - python
     - python-levenshtein
     - bowtie2
 
 test:
-  commandss:
-      - micall -h
+  commands:
+    - micall -h
 
 about:
     home: https://github.com/PoonLab/MiCall-Lite
