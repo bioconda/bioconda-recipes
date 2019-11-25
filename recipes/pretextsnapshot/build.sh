@@ -15,7 +15,7 @@ mv _install install
 fi
 
 chmod +x install
-./install
+./install -c $CXX
 
 shopt -s extglob
 for file in $(compgen -G "Pretext!(*cpp)"); do
