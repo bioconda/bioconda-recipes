@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# Test
 mkdir -p $PREFIX/bin
 
 cd src
