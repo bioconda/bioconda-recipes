@@ -1,5 +1,8 @@
 #!/bin/sh
 
+echo "COMPILER"
+gcc=$CC
+
 # Create bin folder
 mkdir -p $PREFIX/bin
 
@@ -9,7 +12,7 @@ mkdir -p $PREFIX/bin
 wget http://www.netlib.org/clapack/clapack.tgz
 tar -xf clapack.tgz
 cd CLAPACK-3.2.1
-cp make.inc.example make.inc && make f2clib && make blaslib && make lib
+cp make.inc.example make.inc && make CC=$CC f2clib && make CC=$CC blaslib && make CC=$CC lib
 
 # Installing PHAST
 cd ../src
