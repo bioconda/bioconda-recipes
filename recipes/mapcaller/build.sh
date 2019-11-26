@@ -3,4 +3,4 @@ if [ ! -d $PREFIX/bin ] ; then
   mkdir $PREFIX/bin
 fi
 
-cp bin/MapCaller bin/bwt_index $PREFIX/bin
+cp bin/MapCaller $PREFIX/bin
