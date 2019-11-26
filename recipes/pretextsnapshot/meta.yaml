@@ -1,0 +1,41 @@
+{% set name = "PretextSnapshot" %}
+{% set version = "0.0.2" %}
+{% set checksum = "bbb4ce292c13263616b24233f49859cb9d139cd84d56729ec5dd495782d87536" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/wtsi-hpag/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ checksum }}
+  patches:
+    - 0001-disable-auto-vectorisation-for-conda-libm.patch # [linux]
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - make
+    - clang >=9
+    - python
+
+test:
+  commands:
+    - {{ name }}
+
+extra:
+  skip-lints:
+    - should_not_be_noarch_source
+
+about:
+  home: https://github.com/wtsi-hpag/{{ name }}
+  license: MIT
+  license_file: LICENSE
+  license_family: MIT
+  summary: Commandline image generator for Pretext Hi-C genome contact maps.
+  description: >
+    This is a tool for generating images (png, bmp or jpeg) of Hi-C contact maps in the Pretext format.
+    See https://github.com/wtsi-hpag/PretextMap for how to generate Pretext contact maps, or search for pretextmap on bioconda.
