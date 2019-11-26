@@ -1,12 +1,21 @@
 #!/bin/sh
 
-# Test
+# Create bin folder
 mkdir -p $PREFIX/bin
 
-cd src
+# PHAST requires CLAPACK to be installed with the default directory structure
+# CLAPACK conda package does not follow this structure and it's easier to
+# download and compile CLAPACK from source
+wget http://www.netlib.org/clapack/clapack.tgz
+tar -xf clapack.tgz
+cd CLAPACK-3.2.1
+cp make.inc.example make.inc && make f2clib && make blaslib && make lib
 
-# PHAST needs a path to Clapack libraries to compile
-make CC=$CC CLAPACKPATH=$ORIGIN
+# Installing PHAST
+cd ../src
+
+# PHAST needs a path to Clapack libraries at compile time
+make CC=$CC CLAPACKPATH=$SRC_DIR/CLAPACK-3.2.1
 
 # PHAST builds multiple binaries
 cd ..
