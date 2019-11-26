@@ -209,6 +209,7 @@ def test_upload(single_upload):
             universal_newlines=True)
 
 
+@pytest.mark.long_running_2
 def test_single_build_only(single_build):
     for pkg in single_build:
         assert os.path.exists(pkg)
@@ -865,6 +866,7 @@ def test_variants():
     assert len(utils.load_all_meta(recipe, config)) == 2
 
 
+@pytest.mark.long_running_2
 def test_cb3_outputs(config_fixture):
     r = Recipes(
         """
@@ -898,6 +900,7 @@ def test_cb3_outputs(config_fixture):
             ensure_missing(i)
 
 
+@pytest.mark.long_running_2
 def test_compiler(config_fixture):
     r = Recipes(
         """
@@ -927,6 +930,7 @@ def test_compiler(config_fixture):
             assert os.path.exists(i)
             ensure_missing(i)
 
+@pytest.mark.long_running_2
 def test_nested_recipes(config_fixture):
     """
     Test get_recipes ability to identify different nesting depths of recipes
