@@ -7,4 +7,4 @@ export CPATH=${PREFIX}/include
 
 make
 mkdir -p ${PREFIX}/bin
-mv LCS ${PREFIX}/bin/
+mv LCA ${PREFIX}/bin/
