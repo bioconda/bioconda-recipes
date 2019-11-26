@@ -1,6 +1,3 @@
-make Compiler=$CXX CXX=$CXX CC=$CC  LDFLAGS="-L${PREFIX}/lib" CFLAGS="-I${PREFIX}/include -L${PREFIX}/lib" CXXFLAGS="-I${PREFIX}/include -L${PREFIX}/lib"
-if [ ! -d $PREFIX/bin ] ; then
-  mkdir $PREFIX/bin
-fi
-
+#!/bin/bash
+make Compiler=$CXX CXX=$CXX CC=$CC LDFLAGS="${LDFLAGS}" CFLAGS="${CFLAGS} -msse4.1 -mpopcnt" CXXFLAGS="${CXXFLAGS}"
 cp bin/MapCaller $PREFIX/bin
