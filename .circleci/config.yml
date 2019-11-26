@@ -63,47 +63,40 @@ variables:
         --exclude 'bioconductor-*' \
         --commit-as BiocondaBot 47040946+BiocondaBot@users.noreply.github.com \
         $AUTOBUMP_OPTS
+  test_linux:
+    <<: *linux
+    steps:
+      - checkout
+      - *common
+      - *restore_cache
+      - *setup
+      - *save_cache
+      - *install_bioconda_utils
+      - *build_docker_container
+      - run:
+          name: Testing
+          command: |
+            if git diff --name-only origin/master...$CIRCLE_SHA1 | grep -vE ^docs; then
+              py.test --durations=0 test/ -v --tb=native -m "${PY_TEST_MARKER}"
+            else
+              echo "Skipping pytest - only docs modified"
+            fi
+          no_output_timeout: 1200
 
-    
+
 jobs:
   test-linux:
-    <<: *linux
-    steps:
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - *install_bioconda_utils
-      - *build_docker_container
-      - run:
-          name: Testing
-          command: |
-            if git diff --name-only origin/master...$CIRCLE_SHA1 | grep -vE ^docs; then
-              py.test --durations=0 test/ -v --tb=native -m 'not long_running'
-            else
-              echo "Skipping pytest - only docs modified"
-            fi
-          no_output_timeout: 1200
-  test-linux (long_running):
-    <<: *linux
-    steps:
-      - checkout
-      - *common
-      - *restore_cache
-      - *setup
-      - *save_cache
-      - *install_bioconda_utils
-      - *build_docker_container
-      - run:
-          name: Testing
-          command: |
-            if git diff --name-only origin/master...$CIRCLE_SHA1 | grep -vE ^docs; then
-              py.test --durations=0 test/ -v --tb=native -m 'long_running'
-            else
-              echo "Skipping pytest - only docs modified"
-            fi
-          no_output_timeout: 1200
+    <<: *test_linux
+    environment:
+      PY_TEST_MARKER: not long_running_1 and not long_running_2
+  test-linux (long_running_1):
+    <<: *test_linux
+    environment:
+      PY_TEST_MARKER: long_running_1
+  test-linux (long_running_2):
+    <<: *test_linux
+    environment:
+      PY_TEST_MARKER: long_running_2
   test-macos:
     <<: *macos
     steps:
@@ -178,7 +171,9 @@ workflows:
     jobs:
       #- test-linux:
       #    context: org-global
-      #- test-linux (long_running):
+      #- test-linux (long_running_1):
+      #    context: org-global
+      #- test-linux (long_running_2):
       #    context: org-global
       #- test-macos:
       #    context: org-global

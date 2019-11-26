@@ -2,8 +2,14 @@ name: PR Tests
 on: [pull_request]
 jobs:
   test-linux:
-    name: Shorter linux tests
+    name: Linux tests
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        py_test_marker:
+          - not long_running_1 and not long_running_2
+          - long_running_1
+          - long_running_2
     steps:
     - uses: actions/checkout@v1
     - name: Setup
@@ -16,32 +22,10 @@ jobs:
         docker build -t bioconda-utils-build-env:latest ./
         docker history bioconda-utils-build-env:latest
         docker run --rm -t bioconda-utils-build-env:latest sh -lec 'type -t conda && conda info -a && conda list'
-    - name: Run shorter tests
+    - name: Run tests '${{ matrix.py_test_marker }}'
       run: |
         if git diff --name-only origin/master...HEAD | grep -vE ^docs; then
-            py.test --durations=0 test/ -v --tb=native -m 'not long_running'
-        else
-            echo "Skipping pytest - only docs modified"
-        fi
-  test-linux-long:
-    name: Longer linux tests
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Setup
-      uses: bioconda/bioconda-actions/bioconda_utils_setup_conda/@master
-    - name: Install bioconda-utils
-      run: |
-        python setup.py install
-    - name: Build docker container
-      run: |
-        docker build -t bioconda-utils-build-env:latest ./
-        docker history bioconda-utils-build-env:latest
-        docker run --rm -t bioconda-utils-build-env:latest sh -lec 'type -t conda && conda info -a && conda list'
-    - name: Run longer tests
-      run: |
-        if git diff --name-only origin/master...HEAD | grep -vE ^docs; then
-            py.test --durations=0 test/ -v --tb=native -m 'long_running'
+            py.test --durations=0 test/ -v --tb=native -m '${{ matrix.py_test_marker }}'
         else
             echo "Skipping pytest - only docs modified"
         fi
