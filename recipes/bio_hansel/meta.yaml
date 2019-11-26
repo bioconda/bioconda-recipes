@@ -1,7 +1,5 @@
 {% set name = "bio_hansel" %}
-{% set version = "2.2.0" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "e47bfcaf55e35089a700130dddfd025caab6c4e8999c62ccf6cdaf573b609389" %}
+{% set version = "2.4.0" %}
 
 package:
   name: {{ name|lower }}
@@ -9,27 +7,19 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name | replace("_", "-") }}/{{ name }}-{{ version }}.tar.gz
-  {{ hash_type }}: {{ hash_value }}
+  sha256: bb6057be059e76d029a92063fffaacb37759875804d04dafff59cfc1b5933c39
 
 build:
-  number: 1
-  skip: True # [py2k]
-  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+  number: 0
+  noarch: python
+  script: "sed -i.bak '42d' setup.py && {{ PYTHON }} -m pip install . --no-deps -vv"
 
 requirements:
-  build:
-    - {{ compiler('cxx') }}
   host:
-    - python
+    - python >=3
     - pip
-    - setuptools
-    - numpy >=1.12.1
-    - pandas >=0.20.1
-    - attrs
-    - pyahocorasick >=1.1.6
-
   run:
-    - python
+    - python >=3
     - numpy >=1.12.1
     - pandas >=0.20.1
     - attrs
@@ -44,5 +34,8 @@ about:
   home: https://github.com/phac-nml/biohansel
   license: GNU General Public License v3 or later (GPLv3+)
   license_file: LICENSE
-  summary: 'Subtype Salmonella enterica genomes using 33bp k-mer typing schemes.\nIncludes schemes for Heidelberg and Enteritidis subtyping.\nDeveloped by Genevieve Labbe, James Robertson, Peter Kruczkiewicz, Marisa Rankin, Matthew Gopez, Chad R. Laing, Philip Mabon, Kim Ziebell, Aleisha R. Reimer, Lorelee Tschetter, Gary Van Domselaar, Eduardo N. Taboada, Sadjia Bekal, Kimberley A. MacDonald, Linda Hoang, Linda Chui, Danielle Daignault, Durda Slavic, Frank Pollari, E. Jane Parmley, David Son, Darian Hole, Elissa Giang, Lok Kan Lee, Jonathan Moffat, Joanne MacKinnon, Benjamin M. Hetman, Roger Johnson, John H.E. Nash.\n'
+  summary: "Subtype Salmonella enterica genomes using 33bp k-mer typing schemes."
+  description: |
+      'Subtype Salmonella enterica genomes using 33bp k-mer typing schemes. '
+      'Includes schemes for Heidelberg and Enteritidis subtyping.'
   license_family: GPL3
