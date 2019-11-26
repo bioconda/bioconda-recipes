@@ -1,4 +1,4 @@
-SQM_DIR=$PREFIX/SqueezeMeta
+SQM_DIR=$PREFIX/share/SqueezeMeta
 mkdir $SQM_DIR
 cp -r $SRC_DIR/* $SQM_DIR
 cd $PREFIX/bin
