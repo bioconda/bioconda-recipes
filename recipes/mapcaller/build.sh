@@ -13,5 +13,5 @@ popd
 #Mapcaller
 pushd src
 make CXX=$CXX FLAGS="$CXXFLAGS -Wall -D NDEBUG -O3 -m64 -msse4.1 -fPIC" LIB="$LDFLAGS -lz -lm -lpthread"
-mkdir ${PREFIX}/bin
+mkdir -p ${PREFIX}/bin
 cp Mapcaller ${PREFIX}/bin
