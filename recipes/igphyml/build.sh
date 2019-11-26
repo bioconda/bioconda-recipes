@@ -1,3 +1,4 @@
 mv $( pwd ) $PREFIX/share/igphyml
 ./make_phyml
-ln src/igphyml $PREFIX/bin/igphyml
+mkdir -p $PREFIX/bin
+ln -s $PREFIX/share/igphyml/src/igphyml $PREFIX/bin/igphyml
