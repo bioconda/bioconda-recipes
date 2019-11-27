@@ -1,19 +1,43 @@
-#!/bin/bash
-mkdir -p ${PREFIX}/bin
+{% set version = "1.3.8" %}
 
-#index
-pushd src/BWT_Index
-make CC=$CC FLAGS="$CFLAGS" LIBS="$LDFLAGS -lm -lz"
-cp bwt_index $PREFIX/bin
-popd
+package:
+  name: dart
+  version: {{ version }}
 
-#htslib
-pushd src/htslib
-make CC=$CC CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" libhts.a
-popd
+source:
+  url: https://github.com/hsinnan75/Dart/archive/{{ version }}.tar.gz
+  sha256: '7490b954f2456946dbb56e26f696623f21277bf19dff17f97cbc43032780ea4d'
 
-#kart
-pushd src
-make CXX=$CXX FLAGS="$CXXFLAGS -Wall -D NDEBUG -O3 -m64 -msse4.1 -fPIC" LIB="$LDFLAGS -lz -lm -lbz2 -llzma -lpthread"
-cp dart $PREFIX/bin
+build:
+  number: 1
 
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
+    - zlib
+    - bzip2
+    - xz
+    - boost-cpp
+  run:
+    - zlib
+    - bzip2
+    - xz
+    - boost-cpp
+
+test:
+  commands:
+    - dart -h
+    - bwt_index
+
+about:
+  home: https://github.com/hsinnan75/Dart
+  license: MIT
+  license_file: LICENSE
+  summary: "Dart: a fast and accurate RNA-seq mapper"
+  description: "An efficient short read mapper for RNA-Seq data."
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btx558
