@@ -13,13 +13,12 @@ if [[ "$OSTYPE" != "darwin"* ]]; then
 	cp make.inc.example make.inc && make CC=$CC f2clib && make CC=$CC blaslib && make CC=$CC lib
 fi
 
-# Installing PHAST
-cd ../src
-
 if [[ "$OSTYPE" == "darwin"* ]]; then
+	cd src
 	make CC=$CC
 else
 	# On linux, PHAST needs a path to Clapack libraries at compile time
+	cd ../src
 	make CC=$CC CLAPACKPATH=$SRC_DIR/CLAPACK-3.2.1
 fi
 
