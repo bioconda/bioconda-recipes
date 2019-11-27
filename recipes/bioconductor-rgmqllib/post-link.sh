@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RGMQLlib_1.5.0.tar.gz"
+FN="RGMQLlib_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/RGMQLlib_1.5.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/RGMQLlib_1.5.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rgmqllib/bioconductor-rgmqllib_1.5.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/RGMQLlib_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RGMQLlib_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rgmqllib/bioconductor-rgmqllib_1.6.0_src_all.tar.gz"
 )
-MD5="43de45f0cba372c1ae466d25d7778914"
+MD5="ec8a0766d3e32975c0e36044654b2a6a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="Affyhgu133Plus2Expr_1.19.0.tar.gz"
+FN="Affyhgu133Plus2Expr_1.20.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/Affyhgu133Plus2Expr_1.19.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/Affyhgu133Plus2Expr_1.19.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-affyhgu133plus2expr/bioconductor-affyhgu133plus2expr_1.19.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/Affyhgu133Plus2Expr_1.20.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/Affyhgu133Plus2Expr_1.20.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-affyhgu133plus2expr/bioconductor-affyhgu133plus2expr_1.20.0_src_all.tar.gz"
 )
-MD5="29bd851e92077400db6943b0d85151af"
+MD5="65bba20f9b0b31bcb986aea5c528abd8"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

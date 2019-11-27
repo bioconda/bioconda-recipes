@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="QUBICdata_1.13.0.tar.gz"
+FN="QUBICdata_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/QUBICdata_1.13.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/QUBICdata_1.13.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-qubicdata/bioconductor-qubicdata_1.13.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/QUBICdata_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/QUBICdata_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-qubicdata/bioconductor-qubicdata_1.14.0_src_all.tar.gz"
 )
-MD5="88e471642c27fbeca5311ebf56e2c971"
+MD5="9b521534205870f461137eba09251a34"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

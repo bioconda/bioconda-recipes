@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="faahKO_1.25.0.tar.gz"
+FN="faahKO_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/faahKO_1.25.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/faahKO_1.25.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-faahko/bioconductor-faahko_1.25.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/faahKO_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/faahKO_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-faahko/bioconductor-faahko_1.26.0_src_all.tar.gz"
 )
-MD5="c9dac627c288caba45f52cc9da96a14f"
+MD5="35e79a2eee99f61bb4f5565c1b005473"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

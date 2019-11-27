@@ -1,4 +1,8 @@
 #!/bin/bash
+set -ex
+# remove C files made by cython
+rm pysam/c*.c
+
 # Remove gcc statements that do not work on older compilers for CentOS5
 # support, from https://github.com/chapmanb/bcbio-conda/blob/master/pysam/build.sh
 sed -i'' -e 's/"-Wno-error=declaration-after-statement",//g' setup.py

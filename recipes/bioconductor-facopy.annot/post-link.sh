@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="facopy.annot_1.5.1.tar.gz"
+FN="facopy.annot_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/facopy.annot_1.5.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/facopy.annot_1.5.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-facopy.annot/bioconductor-facopy.annot_1.5.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/facopy.annot_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/facopy.annot_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-facopy.annot/bioconductor-facopy.annot_1.6.0_src_all.tar.gz"
 )
-MD5="8f5ebd32c65079cb20943f9a19483e42"
+MD5="35398afec055d0d50e38d144a228820f"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

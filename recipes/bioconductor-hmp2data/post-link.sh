@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="HMP2Data_0.99.4.tar.gz"
+FN="HMP2Data_1.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/HMP2Data_0.99.4.tar.gz"
-  "https://bioarchive.galaxyproject.org/HMP2Data_0.99.4.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hmp2data/bioconductor-hmp2data_0.99.4_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/HMP2Data_1.0.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HMP2Data_1.0.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hmp2data/bioconductor-hmp2data_1.0.0_src_all.tar.gz"
 )
-MD5="286a1ad28217df82d1fb0bf719d6fb97"
+MD5="a5205ea93d4efc43de8193b6a2290812"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

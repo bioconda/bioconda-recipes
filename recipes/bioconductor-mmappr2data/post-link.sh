@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MMAPPR2data_0.99.21.tar.gz"
+FN="MMAPPR2data_1.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/MMAPPR2data_0.99.21.tar.gz"
-  "https://bioarchive.galaxyproject.org/MMAPPR2data_0.99.21.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mmappr2data/bioconductor-mmappr2data_0.99.21_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/MMAPPR2data_1.0.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MMAPPR2data_1.0.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mmappr2data/bioconductor-mmappr2data_1.0.0_src_all.tar.gz"
 )
-MD5="325f44c4d97754e6109b5aae9c71e061"
+MD5="41158a7883397ccf616152e12d439ce4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

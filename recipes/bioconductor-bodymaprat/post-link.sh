@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="bodymapRat_1.1.0.tar.gz"
+FN="bodymapRat_1.2.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/bodymapRat_1.1.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/bodymapRat_1.1.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-bodymaprat/bioconductor-bodymaprat_1.1.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/bodymapRat_1.2.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/bodymapRat_1.2.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-bodymaprat/bioconductor-bodymaprat_1.2.0_src_all.tar.gz"
 )
-MD5="eaa5099fb024b102dd5ebe3cd3bccc66"
+MD5="fa18eff1dad888830c7b83c2270bb29c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

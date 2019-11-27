@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="ceuhm3_0.23.0.tar.gz"
+FN="ceuhm3_0.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/ceuhm3_0.23.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ceuhm3_0.23.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-ceuhm3/bioconductor-ceuhm3_0.23.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/ceuhm3_0.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ceuhm3_0.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-ceuhm3/bioconductor-ceuhm3_0.24.0_src_all.tar.gz"
 )
-MD5="9f1c8a8c84f64e986577b760cd6dc146"
+MD5="1ec97f3ef6e9423dca33d04e8f0b4f87"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="RNAmodR.Data_0.99.6.tar.gz"
+FN="RNAmodR.Data_1.0.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/RNAmodR.Data_0.99.6.tar.gz"
-  "https://bioarchive.galaxyproject.org/RNAmodR.Data_0.99.6.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-rnamodr.data/bioconductor-rnamodr.data_0.99.6_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/RNAmodR.Data_1.0.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/RNAmodR.Data_1.0.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-rnamodr.data/bioconductor-rnamodr.data_1.0.0_src_all.tar.gz"
 )
-MD5="d93a0422274320173304f95cf7454b1b"
+MD5="532d23ac02600b9e2e74113993807b26"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

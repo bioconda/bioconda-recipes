@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="HelloRangesData_1.11.0.tar.gz"
+FN="HelloRangesData_1.12.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/HelloRangesData_1.11.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/HelloRangesData_1.11.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hellorangesdata/bioconductor-hellorangesdata_1.11.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/HelloRangesData_1.12.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/HelloRangesData_1.12.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hellorangesdata/bioconductor-hellorangesdata_1.12.0_src_all.tar.gz"
 )
-MD5="4958c37df8af3729083545db74c40e82"
+MD5="a74d3fe58bc991c3b76048da435dd777"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
