@@ -15,9 +15,6 @@ touch ${target}/db/.empty
 
 # copy settings file
 cp settings.default.cjson ${target}/settings.default.cjson
-chmod +x ${target}/settings.default.cjson
-
-export SETTINGS_FILE=${target}/settings.default.cjson
 
 # set variables on env activation
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
