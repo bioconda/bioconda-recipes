@@ -1,3 +1,14 @@
 #!/bin/bash
-make Compiler=$CXX CXX=$CXX CC=$CC LDFLAGS="${LDFLAGS}" CFLAGS="${CFLAGS} -msse4.2 -mpopcnt -fPIC" CXXFLAGS="${CXXFLAGS} -msse4.2 -mpopcnt -fPIC"
-cp bin/GSAlign bin/bwt_index $PREFIX/bin
+mkdir -p ${PREFIX}/bin
+
+# index
+pushd src/BWT_Index
+make CC=$CC FLAGS="$CFLAGS" LIBS="$LDFLAGS -lm -lz"
+cp bwt_index $PREFIX/bin
+popd
+
+# GSAlign
+pushd src
+make CXX=$CXX FLAGS="$CXXFLAGS -Wall -D NDEBUG -O3 -m64 -msse4.2 -mpopcnt -fPIC" LIB="$LDFLAGS -lz -lm -lpthread"
+cp GSAlign $PREFIX/bin
+
