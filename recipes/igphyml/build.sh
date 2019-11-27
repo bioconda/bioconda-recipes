@@ -21,4 +21,4 @@ OMP=""
 if [[ $OSTYPE == darwin* ]]; then
   OMP="-lomp"
 fi
-$CC $CFLAGS $LDFLAGS -o ${PREFIX}/bin/igphyml main.o utilities.o optimiz.o lk.o bionj.o models.o free.o help.o simu.o eigen.o pars.o alrt.o controller.o cl.o spr.o stats.o nucle2codon.o io.o -lm $OMP
+$CC -fopenmp $CFLAGS $LDFLAGS -o ${PREFIX}/bin/igphyml main.o utilities.o optimiz.o lk.o bionj.o models.o free.o help.o simu.o eigen.o pars.o alrt.o controller.o cl.o spr.o stats.o nucle2codon.o io.o -lm $OMP
