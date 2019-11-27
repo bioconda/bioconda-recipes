@@ -1,3 +1,4 @@
+mkdir -p ${PREFIX}/share
 mv $( pwd ) $PREFIX/share/igphyml
 ./make_phyml
 mkdir -p $PREFIX/bin
