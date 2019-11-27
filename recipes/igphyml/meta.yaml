@@ -26,8 +26,14 @@ requirements:
     - r-alakazam >=0.3.0
 
 test:
+  files:
+    - test.fasta
   commands:
     - igphyml --help
+    # Fail test if warning binary was not compiled with OpenMP, detecting warning in command stdout. Ugly! feel free to improve.
+    - igphyml -i test.fasta -m GY --run_id gy --threads 2 | [[ ! $( grep 'unless compiled with OMP!' ) ]]
+    # Test hotspot tables are available
+    - igphyml -i test.fasta -m HLP --root V4-59 --run_id hlp
 
 about:
   home: "https://igphyml.readthedocs.io/en/latest/index.html"
