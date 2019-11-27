@@ -1,7 +1,16 @@
 #!/bin/bash
-if [ ! -d $PREFIX/bin ] ; then
-  mkdir $PREFIX/bin
-fi
+# index
+pushd src/BWT_Index
+make CC=$CC FLAGS="$CFLAGS" LIBS="$LDFLAGS -lm -lz"
+popd
 
-make Compiler=$CXX CXX=$CXX CC=$CC LDFLAGS="${LDFLAGS}" CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
+#htslib
+pushd src/htslib
+make CC=$CC CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" libhts.a
+popd
+
+#Mapcaller
+pushd src
+make CXX=$CXX FLAGS="$CXXFLAGS -Wall -D NDEBUG -O3 -m64 -msse4.1 -fPIC" LIB="$LDFLAGS -lz -lm -lpthread"
+mkdir -p ${PREFIX}/bin
 cp bin/kart bin/bwt_index $PREFIX/bin
