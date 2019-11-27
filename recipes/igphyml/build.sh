@@ -17,8 +17,4 @@ for f in *.c ; do
   $CC -DUNIX -DPHYML -DDEBUG -DNBLAS -I. $CFLAGS -fopenmp -DHTABLE="\"../share/igphyml\"" $LDFLAGS -c -o $o $f
 done
 
-OMP=""
-if [[ $OSTYPE == darwin* ]]; then
-  OMP="-lomp"
-fi
-$CC -fopenmp $CFLAGS $LDFLAGS -o ${PREFIX}/bin/igphyml main.o utilities.o optimiz.o lk.o bionj.o models.o free.o help.o simu.o eigen.o pars.o alrt.o controller.o cl.o spr.o stats.o nucle2codon.o io.o -lm $OMP
+$CC -fopenmp $CFLAGS $LDFLAGS -o ${PREFIX}/bin/igphyml main.o utilities.o optimiz.o lk.o bionj.o models.o free.o help.o simu.o eigen.o pars.o alrt.o controller.o cl.o spr.o stats.o nucle2codon.o io.o -lm
