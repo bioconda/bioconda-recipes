@@ -9,6 +9,7 @@ autoconf -f
 automake -f --add-missing
 ./configure
 
+cp -r examples ${PREFIX}/share/igphyml
 pushd src
 cp -r motifs ${PREFIX}/share/igphyml
 
