@@ -21,7 +21,7 @@ $CC -fopenmp $CFLAGS $LDFLAGS -o ${PREFIX}/bin/igphyml main.o utilities.o optimi
 
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
 cat <<EOF >> ${PREFIX}/etc/conda/activate.d/igphyml.sh
-export IGPHYML_PATH=${PREFIX}/share/igphyml
+export IGPHYML_PATH=${PREFIX}/share/igphyml/motifs/
 EOF
 
 cat <<EOF >> ${PREFIX}/etc/conda/deactivate.d/igphyml.sh
