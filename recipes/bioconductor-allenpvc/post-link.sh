@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="allenpvc_1.3.1.tar.gz"
+FN="allenpvc_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/allenpvc_1.3.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/allenpvc_1.3.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-allenpvc/bioconductor-allenpvc_1.3.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/allenpvc_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/allenpvc_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-allenpvc/bioconductor-allenpvc_1.4.0_src_all.tar.gz"
 )
-MD5="82c08edb9558b9a2778bed8f9f7eef21"
+MD5="83563c132279071023119ee0a3db4542"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

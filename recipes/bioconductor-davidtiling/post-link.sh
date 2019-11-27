@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="davidTiling_1.25.0.tar.gz"
+FN="davidTiling_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/davidTiling_1.25.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/davidTiling_1.25.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-davidtiling/bioconductor-davidtiling_1.25.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/davidTiling_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/davidTiling_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-davidtiling/bioconductor-davidtiling_1.26.0_src_all.tar.gz"
 )
-MD5="5da7a79071984113032fceacbf561ef1"
+MD5="e03495b25dca6359e6c11497fb8d389a"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

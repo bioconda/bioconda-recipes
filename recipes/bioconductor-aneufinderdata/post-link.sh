@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="AneuFinderData_1.13.0.tar.gz"
+FN="AneuFinderData_1.14.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/AneuFinderData_1.13.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/AneuFinderData_1.13.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-aneufinderdata/bioconductor-aneufinderdata_1.13.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/AneuFinderData_1.14.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/AneuFinderData_1.14.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-aneufinderdata/bioconductor-aneufinderdata_1.14.0_src_all.tar.gz"
 )
-MD5="08bbefa3215d2722e29a9c214378b27e"
+MD5="1df0942888484e20fa9f053aded76a1b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

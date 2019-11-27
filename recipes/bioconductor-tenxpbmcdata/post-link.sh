@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="TENxPBMCData_1.3.0.tar.gz"
+FN="TENxPBMCData_1.4.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/TENxPBMCData_1.3.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/TENxPBMCData_1.3.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-tenxpbmcdata/bioconductor-tenxpbmcdata_1.3.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/TENxPBMCData_1.4.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/TENxPBMCData_1.4.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-tenxpbmcdata/bioconductor-tenxpbmcdata_1.4.0_src_all.tar.gz"
 )
-MD5="64357889a741f2fba23598bdafa2c6e6"
+MD5="37374cb25629c6715fd8963de833cbea"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

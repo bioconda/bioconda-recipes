@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="CRCL18_1.5.0.tar.gz"
+FN="CRCL18_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/CRCL18_1.5.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/CRCL18_1.5.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-crcl18/bioconductor-crcl18_1.5.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/CRCL18_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/CRCL18_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-crcl18/bioconductor-crcl18_1.6.0_src_all.tar.gz"
 )
-MD5="a8149ad6d1d43a3fea5f0d9ef774abe6"
+MD5="921ac061af4469eb40eb6513af952d24"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
