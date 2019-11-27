@@ -1,7 +1,10 @@
 #!/bin/bash
+mkdir -p ${PREFIX}/bin
+
 # index
 pushd src/BWT_Index
 make CC=$CC FLAGS="$CFLAGS" LIBS="$LDFLAGS -lm -lz"
+cp bwt_index $PREFIX/bin
 popd
 
 #htslib
@@ -12,5 +15,4 @@ popd
 #Mapcaller
 pushd src
 make CXX=$CXX FLAGS="$CXXFLAGS -Wall -D NDEBUG -O3 -m64 -msse4.1 -fPIC" LIB="$LDFLAGS -lz -lm -lpthread"
-mkdir -p ${PREFIX}/bin
-cp bin/kart bin/bwt_index $PREFIX/bin
+cp kart $PREFIX/bin
