@@ -13,5 +13,5 @@ echo "bin"
 ls -l bin
 echo "lib"
 ls -l lib
-"echo build"
+echo "build"
 ls -l build
