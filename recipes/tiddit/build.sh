@@ -8,6 +8,10 @@ mkdir build
 cd build
 cmake ..
 make
+echo "../"
+ls -l ../
+echo "../bin"
+ls -l ../bin
 cd ../src
 python -m pip install . --ignore-installed --no-deps -vv
 cd ../build
