@@ -1,50 +1,82 @@
-{% set version = '0.0.5' %}
+{% set name = "scanpy-scripts" %}
+{% set version = "0.2.8" %}
 
 package:
-  name: scanpy-scripts
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  url: https://github.com/ebi-gene-expression-group/scanpy-scripts/archive/v{{ version }}.tar.gz
-  sha256: 21cd088e17e6f0179ae5e6bc6903bf2feb73ddf4f5752fb6fc8a8682353921d2
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 6598d2c7ecb84bfefad51313a3759613f847129cafcf55b9a4affecac7ea2ec2
 
 build:
-  number: 2
-  noarch: generic
+  number: 0
+  noarch: python
+  entry_points:
+    - scanpy-cli=scanpy_scripts.cli:cli
+    - scanpy-read-10x=scanpy_scripts.cmds:READ_CMD
+    - scanpy-filter-cells=scanpy_scripts.cmds:FILTER_CMD
+    - scanpy-filter-genes=scanpy_scripts.cmds:FILTER_CMD
+    - scanpy-normalise-data=scanpy_scripts.cmds:NORM_CMD
+    - scanpy-find-variable-genes=scanpy_scripts.cmds:HVG_CMD
+    - scanpy-scale-data=scanpy_scripts.cmds:SCALE_CMD
+    - scanpy-regress=scanpy_scripts.cmds:REGRESS_CMD
+    - scanpy-run-pca=scanpy_scripts.cmds:PCA_CMD
+    - scanpy-neighbors=scanpy_scripts.cmds:NEIGHBOR_CMD
+    - scanpy-run-tsne=scanpy_scripts.cmds:TSNE_CMD
+    - scanpy-run-umap=scanpy_scripts.cmds:UMAP_CMD
+    - scanpy-find-cluster=scanpy_scripts.cli:cluster
+    - scanpy-find-markers=scanpy_scripts.cmds:DIFFEXP_CMD
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
 
 requirements:
-    host:
-        - python>=3.6
-    run:
-        - python>=3.6
-        - pandas>=0.21,<0.24
-        - matplotlib>=3.0.0
-        - scanpy==1.3.2
-        - loompy
-        - multicore-tsne==0.1_d4ff4aab
+  host:
+    - python >=3
+  run:
+    - anndata <0.6.20
+    - click
+    - leidenalg
+    - loompy >=2.0.0,<3.0.0
+    - louvain
+    - multicore-tsne
+    - matplotlib
+    - pandas
+    - h5py <2.10
+    - packaging
+    - python >=3
+    - scanpy >=1.4.2,<1.4.4
+    - scipy >=1.2.0,<1.3.0
 
 test:
-    commands:
-        - scanpy-read-10x.py --help
-        - scanpy-filter-cells.py --help
-        - scanpy-filter-genes.py --help
-        - scanpy-normalise-data.py --help
-        - scanpy-find-variable-genes.py --help
-        - scanpy-scale-data.py --help
-        - scanpy-run-pca.py --help
-        - scanpy-neighbours.py --help
-        - scanpy-run-umap.py --help
-        - scanpy-run-tsne.py --help
-        - scanpy-find-cluster.py --help
-        - scanpy-find-markers.py --help
-        - which scanpy-scripts-post-install-tests.sh
+  imports:
+    - scanpy_scripts
+    - scanpy_scripts.lib
+  commands:
+    - scanpy-cli --help
+    - scanpy-read-10x --help
+    - scanpy-filter-cells --help
+    - scanpy-filter-genes --help
+    - scanpy-normalise-data --help
+    - scanpy-find-variable-genes --help
+    - scanpy-scale-data --help
+    - scanpy-regress --help
+    - scanpy-run-pca --help
+    - scanpy-neighbors --help
+    - scanpy-run-tsne --help
+    - scanpy-run-umap --help
+    - scanpy-find-cluster --help
+    - scanpy-find-markers --help
 
 about:
-    home: https://github.com/ebi-gene-expression-group/scanpy-scripts
-    dev_url: https://github.com/ebi-gene-expression-group/scanpy-scripts
-    license: GPL-3
-    summary: A set of wrappers for individual components of the scanpy package.
-             Functions in python packages are hard to call when building workflows
-             outside of python, so this package adds a set of simple wrappers with
-             robust argument parsing.
-    license_family: GPL
+  home: https://github.com/ebi-gene-expression-group/scanpy-scripts
+  dev_url: https://github.com/ebi-gene-expression-group/scanpy-scripts
+  license: Apache-2.0
+  license_family: Apache
+  summary: Scripts for using scanpy from the command line
+
+extra:
+  container:
+    # click requires a Unicode locale
+    extended-base: True
+  recipe-maintainers:
+    - nh3

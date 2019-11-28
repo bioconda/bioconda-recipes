@@ -9,7 +9,7 @@ cd $SRC_DIR
 
 cp -R dnaA_database $outdir
 cp *.R $outdir/
-cp smeg README.md growth_est_denovo growth_est_ref build_sp pileupParser uniqueSNPmultithreading uniqueClusterSNP $outdir
+cp smeg growth_est_denovo growth_est_ref build_sp pileupParser uniqueSNPmultithreading uniqueClusterSNP $outdir
 chmod +x $outdir/smeg
 chmod +x $outdir/uniqueSNPmultithreading
 chmod +x $outdir/pileupParser
