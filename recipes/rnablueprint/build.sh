@@ -1,12 +1,11 @@
 #!/bin/bash
 
-export BOOST_ROOT="${CONDA_PREFIX}"
+export BOOST_ROOT="${PREFIX}"
 
 ./configure \
   --prefix=${PREFIX} \
   --disable-perl \
-  --disable-doxygen-doc \
-  --disable-program
+  --disable-doxygen-doc
 
 make -j
 make check

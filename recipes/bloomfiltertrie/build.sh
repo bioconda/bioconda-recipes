@@ -1,10 +1,7 @@
 #!/bin/bash
 
-set -x -e
+export CPATH=${PREFIX}/include
 
-mkdir -p $PREFIX/bin
-
-./configure --prefix=$PREFIX/bin
-make clean
+./configure --prefix=$PREFIX
 make
 make install

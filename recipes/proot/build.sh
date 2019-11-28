@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sed -i "s^PREFIX = /usr/local^PREFIX = $CONDA_PREFIX^" src/GNUmakefile
-CLFAGS=$CONDA_PREFIX/lib
-LDFLAGS=$CONDA_PREFIX/lib
+sed -i "s^PREFIX = /usr/local^PREFIX = $PREFIX^" src/GNUmakefile
+CLFAGS=$PREFIX/lib
+LDFLAGS=$PREFIX/lib
 (cd src ; make && make install )

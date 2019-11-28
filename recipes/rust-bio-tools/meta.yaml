@@ -1,4 +1,4 @@
-{% set version = "0.2.5" %}
+{% set version = "0.8.2" %}
 
 package:
   name: rust-bio-tools
@@ -6,22 +6,30 @@ package:
 
 build:
   number: 0
-  # TODO wait for CB3 gcc, then try again.
-  skip: true  # [osx]
 
 source:
-  fn: rust-bio-tools-{{version}}.tar.gz
-  url: https://github.com/rust-bio/rust-bio-tools/archive/{{version}}.tar.gz
-  sha256: 3c9faa723abd5df1d6fbc84f20b1b262be8ea61bf46c8cb6b71d724baabd1611
+  url: https://github.com/rust-bio/rust-bio-tools/archive/v{{ version }}.tar.gz
+  sha256: db51ba234acd8ba89ea9620a29cb56bda189ee6ffa3d7c7d108849df4862d891
 
 requirements:
   build:
-    - rust
-    - gcc <4.8.5
-    - zlib {{ CONDA_ZLIB }}*
+    - rust >=1.30
+    - clangdev
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - pkg-config
+  host:
+    - zlib
+    - clangdev
+    - gsl
+    - openblas
+    - openssl
   run:
-    - zlib {{ CONDA_ZLIB }}*
-    - libgcc
+    - zlib
+    - gsl
+    - starcode
+    - openblas
+    - openssl
 
 test:
   commands:

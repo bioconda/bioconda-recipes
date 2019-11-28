@@ -22,7 +22,7 @@ last-dotplot \
 
 for i in $scripts; do cp $SRC_DIR/scripts/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done
 
-make
+make CXX=${CXX} CC=${CC}
 
 mkdir -p $PREFIX/bin
 for i in $binaries; do cp $SRC_DIR/src/$i $PREFIX/bin && chmod +x $PREFIX/bin/$i; done

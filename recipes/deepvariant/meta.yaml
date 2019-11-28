@@ -1,9 +1,10 @@
-{% set version="0.6.0" %}
+{% set version = "0.9.0" %}
+{% set sha256 = "23a9d1b3208f915fa082d18e6a3ff30dd41b0bea631229d275617fb3d971c65f" %}
 # When updating, also need to update model reference in post-link.sh
 
 package:
   name: deepvariant
-  version: {{ version }}
+  version: '{{ version }}'
 
 # Things to work on:
 # - Uses pre-built binaries, building problematic due to clif dependency
@@ -14,20 +15,19 @@ package:
 # - Ships with pre-built model. Longer term will need way to fetch models on demand.
 
 source:
-  fn: deepvariant-{{ version }}.zip
   url: https://github.com/google/deepvariant/releases/download/v{{ version }}/deepvariant.zip
-  md5: e7615109b4d1afe8527605eeaf3f927e
+  sha256: '{{ sha256 }}'
 
 build:
   number: 0
   skip: true  # [osx or not py27]
 
 requirements:
-  build:
+  host:
     - python
     - unzip
     - zip
-    - zlib {{CONDA_ZLIB}}*
+    - zlib
     - curl
     # Needed for non-binary build
     # - google-cloud-sdk
@@ -36,17 +36,19 @@ requirements:
     - openjdk >=8,<9
     - python
     - google-cloud-sdk
-    - zlib {{ CONDA_ZLIB }}*
-    - boost {{ CONDA_BOOST }}*
-    - htslib {{ CONDA_HTSLIB }}*
+    - zlib
+    - boost
+    - htslib
     - numpy
     - curl
-    - tensorflow
+    - tensorflow 1.12.*
+    - protobuf
     - contextlib2
     - enum34
     - intervaltree
     - mock
     - numpy 1.14.*
+    - psutil
     - requests
     - scipy
     - oauth2client
@@ -64,4 +66,10 @@ test:
 about:
   home: https://github.com/google/deepvariant
   license: MIT
-  summary: DeepVariant is an analysis pipeline that uses a deep neural network to call genetic variants from next-generation DNA sequencing data
+  summary: DeepVariant is an analysis pipeline that uses a deep neural network to
+    call genetic variants from next-generation DNA sequencing data
+
+extra:
+  skip-lints:
+    - should_be_noarch_generic
+    - missing_tests

@@ -1,35 +1,38 @@
-{% set name = "spectra-cluster-cli" %}
-{% set version = "1.0.1" %}
 # Do not forget to update the version string in the peptide-shaker.py file
-
-about:
-    home: https://github.com/spectra-cluster/spectra-cluster-cli
-    license: Apache License, Version 2.0
-    summary: This is a stand-alone implementation of the new updated PRIDE Cluster algorithm. It is based on the spectra-cluster API and uses a highly similar logic as the Hadoop implementation spectra-cluster-hadoop used to build the PRIDE Cluster resource.
+{% set version = "1.1.2" %}
+{% set sha256 = "978be823142a519fdfd79b9ea31a30385426f7935c3c94dc34aea94e85b5dd1e" %}
 
 package:
-    name: spectra-cluster-cli
-    version: {{ version }}
-
-build:
-  number: 0
+  name: spectra-cluster-cli
+  version: {{ version }}
 
 source:
-    fn: {{ name }}-{{ version }}.zip
-    url: https://github.com/spectra-cluster/spectra-cluster-cli/releases/download/spectra-cluster-cli-1.0.1/spectra-cluster-cli-1.0.1-bin.zip
+  url: https://github.com/spectra-cluster/spectra-cluster-cli/releases/download/spectra-cluster-cli-{{ version }}/spectra-cluster-cli-{{ version }}-bin.zip
+  sha256: {{ sha256 }}
+
+build:
+  noarch: generic
+  number: 0
 
 requirements:
-  build:
   run:
-    - java-jdk  >=6
+    - openjdk  >=6
     - python
 
 test:
-    commands:
-      - spectra-cluster-cli 2>&1 | grep 'Spectra Cluster'
+  commands:
+    - (spectra-cluster-cli 2>&1 | grep -qF 'Spectra Cluster' || (spectra-cluster-cli && false))
+
+about:
+  home: https://github.com/spectra-cluster/spectra-cluster-cli
+  license: Apache-2.0
+  license_family: Apache
+  summary: This is a stand-alone implementation of the new updated PRIDE Cluster algorithm.
+    It is based on the spectra-cluster API and uses a highly similar logic as the
+    Hadoop implementation spectra-cluster-hadoop used to build the PRIDE Cluster resource.
 
 extra:
-  notes: |
+  notes: |-
     spectra-cluster-cli is Java program that comes with a custom wrapper shell script.
     This shell wrapper is called "opsin" and is on $PATH by default. By default
     "-Xms512m -Xmx1g" is set in the wrapper. If you want to overwrite it you can

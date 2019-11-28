@@ -1,0 +1,49 @@
+{% set name = "eval" %}
+{% set version = "2.2.8" %}
+{% set sha256 = "5cce1df4a08ab5fa5d81e572c876ed2bd02041f5ac3cea73d3f7eee87c7c1d9c" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: http://mblab.wustl.edu/software/download/{{ name|lower }}-{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - paths.patch
+
+build:
+  number: 1
+  noarch: generic
+
+requirements:
+  host:
+    - perl
+  run:
+    - perl
+    - perl-bioperl
+    - python
+
+test:
+  commands:
+    - combine_eval_reports.pl -h
+#    - eval.py  # needs perl-tk
+    - evaluate_gtf.pl -h
+    - filter_badlist.pl 2>&1 | grep "filter_badlist.pl" > /dev/null
+    - filter_gtfs.pl -h
+    - get_distribution.pl -h
+    - get_general_stats.pl -h
+    - get_overlap_stats.pl -h
+    - gff3_to_gtf.pl 2>&1 | grep "gff3_to_gtf.pl" > /dev/null
+    - graph_gtfs.pl -h
+    - make_intron_lenght_vs_performance_graph.pl -h
+    - merge_gtf_transcripts.py 2>&1 | grep "merge_gtf_transcripts.py" > /dev/null
+    - validate_gtf.pl -h
+    - validate_splice_sites.pl 2>&1 | grep "validate_splice_sites.pl" > /dev/null
+
+about:
+  home: http://mblab.wustl.edu/software.html
+  license: BSD 2-Clause
+  license_family: BSD
+  summary: "Eval is a flexible tool for analyzing the performance of gene-structure prediction programs."
+  doc_url: http://mblab.wustl.edu/software/download/eval-documentation.pdf

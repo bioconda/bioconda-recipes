@@ -9,38 +9,32 @@ package:
   version: '{{ version }}'
 
 source:
-  fn: 'v{{ version }}.{{ file_ext }}'
   url: https://github.com/suwangbio/MARGE_py3/archive/v{{ version }}.{{ file_ext }}
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  skip: True # [py27]
-  number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  noarch: python
+  number: 2
+  script: python -m pip install --no-deps --ignore-installed .
 
 requirements:
-  build:
-    - python
-    - setuptools
-    - numpy
-    - scipy
-    - scikit-learn
-    - twobitreader
-    - pytables
+  host:
+    - python >3
+    - pip
   run:
-    - python
+    - python >3
     - numpy
     - scipy
     - scikit-learn
     - twobitreader
     - pytables
     - snakemake 3.*
-    - hdf5 {{CONDA_HDF5}}*
+    - hdf5
     - ucsc-bedclip
     - ucsc-bigwigaverageoverbed
     - ucsc-bigwigsummary
     - ucsc-bigwigtobedgraph
- 
+
 test:
   commands:
     - marge -h

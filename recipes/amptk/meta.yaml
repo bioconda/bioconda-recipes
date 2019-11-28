@@ -1,19 +1,23 @@
-{% set version = "1.2.2" %}
 {% set name = "amptk" %}
+{% set version = "1.4.1" %}
 
 package:
-  name: {{ name }}
-  version: {{ version }}
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  url: https://github.com/nextgenusfs/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: e48c90c3c1026bd0dba71329be6ce8729817aee0c6c542ad9acec6eb079d5966
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: d540028cf1db1c0bac30ec09120b0135d5ab488cb22fdec2dcf1901c0e36d2ed
 
 build:
   number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
 
 requirements:
+  host:
+    - pip
+    - python
   run:
     - python
     - biopython
@@ -29,19 +33,24 @@ requirements:
     - r-base
     - bioconductor-dada2 >=1.4
     - bioconductor-phyloseq
+    - r-plotly
+    - r-htmltools
+    - r-dt
     - pigz
- 
+
 test:
-  commands:
-    - amptk version
+  imports:
+    - amptk
 
 about:
   home: https://github.com/nextgenusfs/amptk
-  license: BSD 2-Clause License
-  license_file: LICENSE.md
-  summary: 'AMPtk: Amplicon tool kit for processing high throughput amplicon sequencing data.'
+  license: BSD-2
   license_family: BSD
+  license_file: LICENSE.md
+  doc_url: http://amptk.readthedocs.io/
+  summary: 'AMPtk: Amplicon tool kit for processing high throughput amplicon sequencing data.'
 
 extra:
-    identifiers:
-        - doi:10.1101/213470
+  identifiers:
+    - doi:10.7717/peerj.4925
+

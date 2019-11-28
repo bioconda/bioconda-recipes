@@ -9,21 +9,20 @@ package:
   version: '{{ version }}'
 
 source:
-  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
   '{{ hash_type }}': '{{ hash_value }}'
 
 build:
-  number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
-  skip: True  # [not py27]
+  noarch: python
+  number: 2
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
-  build:
-    - python
-    - setuptools
+  host:
+    - python <3
+    - pip
   run:
-    - python
+    - python <3
     - python-omero <5.5
     - ipython
     - ipywidgets

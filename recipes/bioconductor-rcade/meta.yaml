@@ -1,0 +1,63 @@
+{% set version = "1.28.0" %}
+{% set name = "Rcade" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 8c40784c729e39ba9ccb939555186317
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: limma, biomaRt, RUnit, BiocGenerics, BiocStyle
+requirements:
+  host:
+    - 'bioconductor-bayseq >=2.20.0,<2.21.0'
+    - 'bioconductor-genomeinfodb >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicalignments >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-rsamtools >=2.2.0,<2.3.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
+    - r-base
+    - r-plotrix
+    - r-rgl
+  run:
+    - 'bioconductor-bayseq >=2.20.0,<2.21.0'
+    - 'bioconductor-genomeinfodb >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicalignments >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-rsamtools >=2.2.0,<2.3.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
+    - r-base
+    - r-plotrix
+    - r-rgl
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
+test:
+  commands:
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'R-based analysis of ChIP-seq And Differential Expression - a tool for integrating a count-based ChIP-seq analysis with differential expression summary data'
+  description: 'Rcade (which stands for "R-based analysis of ChIP-seq And Differential Expression") is a tool for integrating ChIP-seq data with differential expression summary data, through a Bayesian framework. A key application is in identifing the genes targeted by a transcription factor of interest - that is, we collect genes that are associated with a ChIP-seq peak, and differential expression under some perturbation related to that TF.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+extra:
+  container:
+    extended-base: true
+

@@ -1,26 +1,27 @@
-{% set version = "1.0.1" %}
 {% set name = "itero" %}
+{% set version = "1.1.2" %}
+{% set sha256 = "1a9ee10bfc0b1146ad83f7537ab465f3be49ba3f48b6e7b80f2690d3dcd4d371" %}
 
 package:
-  name: {{ name }}
-  version: {{ version }}
+  name: '{{ name }}'
+  version: '{{ version }}'
 
 source:
-  fn: {{ name }}_v{{ version }}.tar.gz
   url: https://github.com/faircloth-lab/{{ name }}/archive/v{{ version }}.tar.gz
-  sha256: da9b7c1a1a67e70ae869126fab173ee6e2476749ef5bc41615d585330537e0c2
+  sha256: '{{sha256}}'
 
 build:
-  number: 0
-  skip: True  # [not py27]
+  noarch: python
+  number: 1
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
-  build:
-    - python
-    - setuptools
-
+  host:
+    - python <3
+    - pip
   run:
-    - python
+    - python <3
+    - nomkl
     - numpy
     - argcomplete
     - biopython
@@ -30,18 +31,19 @@ requirements:
     - bedtools
     - bwa
     - gawk
+    - grep
     - samtools
-    - spades
+    - spades 3.12.*
 
 test:
-    imports:
-      - schwimmbad
-      - numpy
-      - Bio
-      - itero
-    commands:
-      - itero --version
-      - itero check binaries
+  imports:
+    - schwimmbad
+    - numpy
+    - Bio
+    - itero
+  commands:
+    - itero --version
+    - itero check binaries
 
 about:
   home: https://github.com/faircloth-lab/itero

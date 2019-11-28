@@ -1,75 +1,76 @@
-{% set version = '1.2.2' %}
+{% set version = "1.10.0" %}
 {% set name = "IntEREst" %}
-{% set bioc = "3.6" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
-  version: {{ version }}
-
+  version: '{{ version }}'
 source:
-  fn: '{{ name }}_{{ version }}.tar.gz'
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
-  sha256: b8560d301118db28c409fb422a7457bc16f052a2e8a97a12cfc6f122569d62b2
-
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: 9bc14a78ab99ab8b28eec821bdf0ecf2
 build:
-  number: 1
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
-
+  noarch: generic
+# Suggests: clinfun, knitr, BSgenome.Hsapiens.UCSC.hg19
 requirements:
-  build:
-    - r-base >=3.4
-    - r-seqinr
+  host:
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-biocparallel >=1.20.0,<1.21.0'
+    - 'bioconductor-biostrings >=2.54.0,<2.55.0'
+    - 'bioconductor-deseq2 >=1.26.0,<1.27.0'
+    - 'bioconductor-dexseq >=1.32.0,<1.33.0'
+    - 'bioconductor-edger >=3.28.0,<3.29.0'
+    - 'bioconductor-genomicalignments >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicfeatures >=1.38.0,<1.39.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-rsamtools >=2.2.0,<2.3.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
+    - 'bioconductor-seqlogo >=1.52.0,<1.53.0'
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
+    - r-base
     - r-dbi
     - r-rmysql
-    - bioconductor-dexseq
-    - bioconductor-biocparallel
-    - bioconductor-genomeinfodb
-    - bioconductor-biocgenerics
-    - bioconductor-genomicranges
-    - bioconductor-rsamtools
-    - bioconductor-summarizedexperiment
-    - bioconductor-edger
-    - bioconductor-s4vectors
-    - bioconductor-deseq2
-    - bioconductor-genomicalignments
-    - bioconductor-iranges
-    - bioconductor-genomicfeatures
-    - bioconductor-biostrings
-    - bioconductor-seqlogo
-
+    - r-seqinr
   run:
-    - r-base >=3.4
-    - r-seqinr
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
+    - 'bioconductor-biocparallel >=1.20.0,<1.21.0'
+    - 'bioconductor-biostrings >=2.54.0,<2.55.0'
+    - 'bioconductor-deseq2 >=1.26.0,<1.27.0'
+    - 'bioconductor-dexseq >=1.32.0,<1.33.0'
+    - 'bioconductor-edger >=3.28.0,<3.29.0'
+    - 'bioconductor-genomicalignments >=1.22.0,<1.23.0'
+    - 'bioconductor-genomicfeatures >=1.38.0,<1.39.0'
+    - 'bioconductor-genomicranges >=1.38.0,<1.39.0'
+    - 'bioconductor-iranges >=2.20.0,<2.21.0'
+    - 'bioconductor-rsamtools >=2.2.0,<2.3.0'
+    - 'bioconductor-s4vectors >=0.24.0,<0.25.0'
+    - 'bioconductor-seqlogo >=1.52.0,<1.53.0'
+    - 'bioconductor-summarizedexperiment >=1.16.0,<1.17.0'
+    - r-base
     - r-dbi
     - r-rmysql
-    - bioconductor-dexseq
-    - bioconductor-biocparallel
-    - bioconductor-genomeinfodb
-    - bioconductor-biocgenerics
-    - bioconductor-genomicranges
-    - bioconductor-rsamtools
-    - bioconductor-summarizedexperiment
-    - bioconductor-edger
-    - bioconductor-s4vectors
-    - bioconductor-deseq2
-    - bioconductor-genomicalignments
-    - bioconductor-iranges
-    - bioconductor-genomicfeatures
-    - bioconductor-biostrings
-    - bioconductor-seqlogo
-
+    - r-seqinr
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
-
 about:
-  home: 'https://bioconductor.org/packages/release/bioc/html/{{ name }}.html'
-  license: 'GPL-2'
-  summary: 'IntEREst (Intron-Exon Retention Estimator) - This package performs Intron-Exon Retention analysis on RNA-seq data (.bam files).'
-
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-2
+  summary: 'Intron-Exon Retention Estimator'
+  description: 'This package performs Intron-Exon Retention analysis on RNA-seq data (.bam files).'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - doi:10.18129/B9.bioc.IntEREst
+  parent_recipe:
+    name: bioconductor-interest
+    path: recipes/bioconductor-interest
+    version: 1.4.1
+

@@ -1,0 +1,39 @@
+{% set version = "0.0.16" %}
+
+# building from source requiers also boost >= 1.4
+# this recipe uses working precompiled binaries
+package:
+  name: centroid_rna_package
+  version: {{ version }}
+
+build:
+  number: 0
+  skip: True # [osx]
+
+source:
+  url: https://github.com/satoken/centroid-rna-package/releases/download/v0.0.16/centroid-rna-package-{{ version }}-linux-x86_64.zip
+  sha256: cfdd2f18377c4192d09b60de28b9e540a94dc6dbe417d467cad480e0879a8c8b
+
+requirements:
+  run:
+    - viennarna >=1.8
+
+test:
+  commands:
+    - centroid_fold -h | grep "CentroidFold v{{ version }}" > /dev/null
+    - centroid_alifold -h | grep "CentroidAlifold v{{ version }}" > /dev/null
+    - centroid_homfold -h | grep "CentroidHomfold v{{ version }}" > /dev/null
+
+about:
+  home: https://github.com/satoken/centroid-rna-package
+  license: GPL-V2
+  license_file: COPYING
+  summary: Collection of RNA secondary structure prediction programs based on gamma-centroid estimator (Hamada et. al. 2009)
+
+extra:
+  identifiers:
+    - doi:10.1093/bioinformatics/btn601
+    - doi:10.1093/bioinformatics/btp228
+    - doi:10.1093/nar/gkq792
+  skip-lints:
+    - should_be_noarch_generic

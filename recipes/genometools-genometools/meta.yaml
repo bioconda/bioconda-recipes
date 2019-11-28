@@ -8,36 +8,35 @@ package:
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
   url: https://github.com/{{ name }}/{{ name }}/archive/v{{ version }}.tar.gz
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 3
 
 requirements:
   build:
-    - gcc  # [not osx]
-    - llvm  # [osx]
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+  host:
     - python
     - pango  # [not osx]
     - cairo  # [not osx]
-
   run:
+    - python
     - gettext
     - pango  # [not osx]
     - cairo  # [not osx]
     - xorg-libxrender
     - xorg-libsm
     - xorg-libxext
-    - libgcc  # [not osx]
 
 test:
   commands:
-    - gt -version > /dev/null
+    - gt -version
   imports:
     - gt
-    
+
 about:
   home: http://genometools.org/
   summary: GenomeTools genome analysis system.

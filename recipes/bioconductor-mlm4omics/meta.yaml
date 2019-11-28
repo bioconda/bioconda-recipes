@@ -1,0 +1,57 @@
+{% set version = "1.3.0" %}
+{% set name = "mlm4omics" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: 75d192355f185ddbf202f1fa0ab81076
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: testthat, BiocStyle, knitr, rmarkdown, roxygen2 (>= 5.0.0)
+# SystemRequirements: GNU make
+requirements:
+  host:
+    - r-base
+    - 'r-bh >=1.66.0-1'
+    - r-ggplot2
+    - r-mass
+    - r-matrix
+    - 'r-rcpp >=0.12.17'
+    - 'r-rcppeigen >=0.3.3.4.0'
+    - 'r-rstan >=2.17.3'
+    - 'r-rstantools >=1.5.0'
+    - 'r-stanheaders >=2.17.2'
+  run:
+    - r-base
+    - 'r-bh >=1.66.0-1'
+    - r-ggplot2
+    - r-mass
+    - r-matrix
+    - 'r-rcpp >=0.12.17'
+    - 'r-rcppeigen >=0.3.3.4.0'
+    - 'r-rstan >=2.17.3'
+    - 'r-rstantools >=1.5.0'
+    - 'r-stanheaders >=2.17.2'
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: GPL-3
+  summary: 'Multilevel Model for Multivariate Responses with Missing Values'
+  description: 'To conduct Bayesian inference regression for responses with multilevel explanatory variables and missing values; It uses function from ''Stan'', a software to implement posterior sampling using Hamiltonian MC and its variation Non-U-Turn algorithms. It implements the posterior sampling of regression coefficients from the multilevel regression models. The package has two main functions to handle not-missing-at-random missing responses and left-censored with not-missing-at random responses. The purpose is to provide a similar format as the other R regression functions but using ''Stan'' models.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

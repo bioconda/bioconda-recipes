@@ -1,40 +1,36 @@
 {% set name = "eagle" %}
-{% set version = "0.9.3.3" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "f7027a67b4ae857cec8ed231bf2f5b001d6a2070909cc7f4590244b749c836d8" %}
+{% set version = "0.9.4.6" %}
 
 package:
   name: '{{ name }}'
   version: '{{ version }}'
 
 source:
-    fn: eagle-{{ version }}.tar.gz
-    url: https://pypi.io/packages/source/g/gi-eagle/gi-eagle-{{ version }}.tar.gz
-    '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/g/gi-eagle/gi-eagle-{{ version }}.tar.gz
+  sha256: 3b33ed1ef2313ea661c7549a0dffbf1de338df5faf42eef77342a2db47d1467e
 
 build:
-  skip: True # [py27]
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv"
   entry_points:
     - eagle=run:main
 
 requirements:
-  build:
-    - python
+  host:
+    - python >=3
     - setuptools
-    - flask
     - numpy
-    - scipy
-    - h5py
-    - pyliftover
-    - pyvcf
   run:
-    - python
+    - python >=3
     - flask
     - numpy
     - scipy
     - h5py
-    - pyliftover
-    - pyvcf
+    - cyvcf2
+    - sqt
+    - pybedtools
+    - pysam
 
 test:
   imports:
@@ -54,4 +50,5 @@ about:
   license_family: MIT
 
 extra:
-  recipe-maintainers: 'christopher-schroeder'
+  recipe-maintainers:
+    - christopher-schroeder

@@ -1,0 +1,44 @@
+{% set name = "bam2fastx" %}
+{% set version = "1.3.0" %}
+{% set sha256 = "be5639807f1ffd2fb972e570068173971026300a79e879384fbf6ad20b5ab762" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://github.com/PacificBiosciences/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+about:
+  home: https://github.com/PacificBiosciences/bam2fastx
+  license: BSD-3-Clause-Clear
+  summary: Converting and demultiplexing of PacBio BAM files into gzipped fasta and fastq files
+
+extra:
+  recipe-maintainers:
+    - pb-dseifert
+    - mhsieh
+
+build:
+  number: 8
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - meson >=0.48.1
+    - ninja
+    - pkg-config
+  host:
+    - boost
+    - zlib
+    - pbbam 1.0.6*
+    - pbcopper 1.3.0*
+  run:
+    - pbbam 1.0.6*
+    - pbcopper 1.3.0*
+
+test:
+  commands:
+    - bam2fasta -h
+    - bam2fastq -h

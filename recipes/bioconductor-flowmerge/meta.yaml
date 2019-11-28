@@ -1,0 +1,60 @@
+{% set version = "2.34.0" %}
+{% set name = "flowMerge" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: f2aa0a09497f6d6c3607566940fe068b
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+  noarch: generic
+# Suggests: knitr, rmarkdown
+requirements:
+  host:
+    - 'bioconductor-flowclust >=3.24.0,<3.25.0'
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
+    - 'bioconductor-graph >=1.64.0,<1.65.0'
+    - 'bioconductor-rgraphviz >=2.30.0,<2.31.0'
+    - r-base
+    - r-feature
+    - r-foreach
+    - r-rrcov
+    - r-snow
+  run:
+    - 'bioconductor-flowclust >=3.24.0,<3.25.0'
+    - 'bioconductor-flowcore >=1.52.0,<1.53.0'
+    - 'bioconductor-graph >=1.64.0,<1.65.0'
+    - 'bioconductor-rgraphviz >=2.30.0,<2.31.0'
+    - r-base
+    - r-feature
+    - r-foreach
+    - r-rrcov
+    - r-snow
+  build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
+test:
+  commands:
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: Artistic-2.0
+  summary: 'Cluster Merging for Flow Cytometry Data'
+  description: 'Merging of mixture components for model-based automated gating of flow cytometry data using the flowClust framework. Note: users should have a working copy of flowClust 2.0 installed.'
+extra:
+  container:
+    extended-base: true
+

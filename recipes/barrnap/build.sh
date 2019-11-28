@@ -2,6 +2,7 @@
 
 DESTDIR="${PREFIX}/lib/barrnap"
 mkdir -p "${DESTDIR}"
+mkdir -p ${PREFIX}/bin
 
 # copy selectively, we only need the perl script
 # in the bin folder and the db folder containing the
@@ -13,8 +14,8 @@ mkdir -p "${DESTDIR}"
 cp -av LICENSE* README* bin db "${DESTDIR}/"
 
 # copy one example for testing
-mkdir -p "${DESTDIR}/examples"
-cp -av examples/small.fna "${DESTDIR}/examples"
+#mkdir -p "${DESTDIR}/examples"
+#cp -av examples/small.fna "${DESTDIR}/examples"
 
 # link the primary perl script
 ln -s "${DESTDIR}/bin/barrnap" "${PREFIX}/bin/barrnap"

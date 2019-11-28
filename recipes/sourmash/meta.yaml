@@ -1,15 +1,12 @@
-{% set name = "sourmash" %}
-{% set version = "2.0.0a6" %}
-{% set hash = "6ccce5a8a41b159de06d4918dbad84262811efffbbadc1960ce3880ec0c8b998" %}
+{% set version = "2.3.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: sourmash
   version: {{ version }}
 
 source:
-  fn: {{ name|lower }}-{{ version }}.tar.gz
-  url: https://github.com/dib-lab/sourmash/archive/41445848b07b09c0ed3bd9a6665f44350a5b601e.tar.gz
-  sha256: {{ hash }}
+  url: https://pypi.io/packages/source/s/sourmash/sourmash-{{ version }}.tar.gz
+  sha256: 8a0ebfb550b755e4b93712511b43763b9ccfa76c15b75f184fdbf800d3795fe9
   patches:
     - sourmash.patch
 
@@ -17,33 +14,29 @@ build:
   entry_points:
     - sourmash = sourmash.__main__:main
   number: 0
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed -vv ."
 
 requirements:
   build:
+    - '{{ compiler("c") }}'
+    - '{{ compiler("cxx") }}'
+  host:
     - python
-    - setuptools
-    - gcc  # [not osx]
-    - llvm  # [osx]
+    - pip
+    - setuptools >=38.6.0
     - cython >=0.25.2
-    - screed >=0.9
-    - pyyaml >=3.11
-    - ijson
-    - numpy
-    - matplotlib
-    - scipy
-    - khmer >=2.1
+    - setuptools_scm
+    - setuptools_scm_git_archive
 
   run:
     - python
-    - libgcc  # [not osx]
-    - cython >=0.25.2
     - screed >=0.9
-    - pyyaml >=3.11
-    - ijson
+    - ijson <2.5
     - numpy
     - matplotlib
     - scipy
     - khmer >=2.1
+    - yajl
 
 test:
   imports:
@@ -55,6 +48,19 @@ test:
 
 about:
   home: https://github.com/dib-lab/sourmash
-  license: BSD License
   summary: 'Compute and compare MinHash signatures for DNA data sets.'
+  license: BSD License
   license_family: BSD
+  license_file: LICENSE
+  dev_url: https://github.com/dib-lab/sourmash
+
+extra:
+  identifiers:
+    - biotools:sourmash
+    - doi:10.21105/joss.00027
+    - doi:10.12688/f1000research.19675.1
+  recipe-maintainers:
+    - luizirber
+  authors:
+    - luizirber
+    - ctb

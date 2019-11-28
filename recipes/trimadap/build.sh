@@ -1,11 +1,7 @@
 #!/bin/bash
+export CFLAGS="-I$PREFIX/include"
+export LDFLAGS="-L$PREFIX/lib"
+export CPATH=${PREFIX}/include
 
-#strictly use anaconda build environment
-CC=${PREFIX}/bin/gcc
-CXX=${PREFIX}/bin/g++
-
-mkdir -p $PREFIX/bin
-
-make 
-mv trimadap-mt  $PREFIX/bin
-
+make
+mv trimadap-mt $PREFIX/bin

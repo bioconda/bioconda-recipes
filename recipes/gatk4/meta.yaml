@@ -1,31 +1,60 @@
-{% set version="4.0.4.0" %}
-
-about:
-  home: https://www.broadinstitute.org/gatk/
-  license: BSD
-  summary: Genome Analysis Toolkit (GATK4)
+{% set version = "4.1.4.1" %}
+{% set sha256 = "21ae694cfc8b7447381ad5ce62ed4af22e53a228b12495bdcca7df0c73b09cea" %}
 
 package:
   name: gatk4
-  version: {{ version }}
-
-build:
-  number: 0
+  version: '{{ version }}'
 
 source:
-  fn: gatk-{{ version }}.zip
   url: https://github.com/broadinstitute/gatk/releases/download/{{ version }}/gatk-{{ version }}.zip
-  sha256: 801bbb181c275cfabc96dc0cb21f3f901634cec11efde9ba9c8b91e2834feef4 
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: generic
+  number: 0
 
 requirements:
-  build:
+  host:
   run:
     - openjdk >=8,<9
-    # constrain python to prevent multiple builds with conda-build 2.1.x
-    - python >0
+    - python
 
 test:
   commands:
     - gatk -h
     - gatk --list
     - gatk HaplotypeCaller --help
+
+outputs:
+  - name: gatk4
+    script: build_main.sh
+    requirements:
+      run:
+        - openjdk >=8,<9
+        - python
+    test:
+      commands:
+        - gatk -h
+        - gatk --list
+        - gatk HaplotypeCaller --help
+  - name: gatk4-spark
+    script: build_spark.sh
+    build:
+            noarch: generic
+    requirements:
+      run:
+        - openjdk >=8,<9
+        - python
+        - {{ pin_subpackage("gatk4", exact=True) }}
+    test:
+      commands:
+        - gatk -h
+        - gatk --list
+        - gatk MarkDuplicatesSpark --help
+
+about:
+  home: https://www.broadinstitute.org/gatk/
+  license: BSD-3-Clause
+  license_family: BSD
+  summary: Genome Analysis Toolkit (GATK4)
+  dev_url: https://github.com/broadinstitute/gatk

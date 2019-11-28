@@ -1,44 +1,44 @@
 {% set name = "blasr_libcpp" %}
-{% set version = "1.1" %}
+{% set version = "5.3.3" %}
+{% set sha256 = "3b988349c34cacc285d2628ac08780483e7514ded15e26eb7646d9883a096de2" %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
+source:
+  url: https://github.com/PacificBiosciences/{{ name }}/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+about:
+  home: https://github.com/PacificBiosciences/blasr_libcpp
+  license: BSD-3-Clause-Clear
+  summary: blasr_libcpp is a support library used by blasr and other PacBio tools
+
+extra:
+  recipe-maintainers:
+    - pb-dseifert
+    - mhsieh
+
 build:
   number: 1
-  skip: True # [not py27 or osx]
-  string: boost{{CONDA_BOOST}}_{{PKG_BUILDNUM}}
-
-source:
-  url: https://github.com/PacificBiosciences/blasr_libcpp/archive/fd288b6.tar.gz
-  md5: 9939867583bdcd9a354997650a617487
 
 requirements:
   build:
-    - llvm # [osx]
-    - gcc # [linux]
-    - hdf5 {{ CONDA_HDF5 }}*
-    - python
-    - htslib {{ CONDA_HTSLIB }}*
-    - pbbam
-    - boost {{CONDA_BOOST}}*
-
+    - {{ compiler('cxx') }}
+    - meson >=0.48.1
+    - ninja
+    - pkg-config
+  host:
+    - boost
+    - zlib
+    - hdf5
+    - pbbam 1.0.6*
   run:
-    - libgcc # [linux]
-    - hdf5 {{ CONDA_HDF5 }}*
-    - boost {{CONDA_BOOST}}*
+    - hdf5
+    - pbbam 1.0.6*
 
 test:
   commands:
-    - test -f ${PREFIX}/lib/libblasr.so # [linux]
+    - test -f ${PREFIX}/lib/libblasr.so # [not osx]
     - test -f ${PREFIX}/lib/libblasr.dylib # [osx]
-    - test -f ${PREFIX}/lib/libpbihdf.so # [linux]
-    - test -f ${PREFIX}/lib/libpbihdf.dylib # [osx]
-    - test -f ${PREFIX}/lib/libpbdata.so # [linux]
-    - test -f ${PREFIX}/lib/libpbdata.dylib # [osx]
-
-about:
-  home: https://github.com/PacificBiosciences/{{ name }}
-  license: BSD-3-Clause-Clear
-  summary: Blasr_libcpp is a library used by blasr and other executables such as samtoh5, loadPulses for analyzing PacBio sequences

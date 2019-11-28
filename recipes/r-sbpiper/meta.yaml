@@ -1,25 +1,33 @@
-{% set version = '1.8.0' %}
+{% set version = '1.9.0' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: r-sbpiper
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: sbpiper_1.8.0.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/sbpiper_1.8.0.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/sbpiper/sbpiper_1.8.0.tar.gz
-  sha256: c619dc59a6e32e28951b3f0e65a682b27d8890fc6bdedd316f0417a7190d9115
+    - {{ cran_mirror }}/src/contrib/sbpiper_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/sbpiper/sbpiper_{{ version }}.tar.gz
+  sha256: 8f053383eb0f73fef7809898f27882b5a662f5b2aa404b3ee52491d92342585e
 
 build:
-  merge_build_host: True
-  number: 0
+  noarch: generic
+  merge_build_host: True  # [win]
+
+  number: 3
+
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{posix}}zip               # [win]
+
+  host:
     - r-base
     - r-factominer
     - r-hmisc
@@ -45,11 +53,13 @@ requirements:
 
 test:
   commands:
-    - $R -e "library('sbpiper')"
+
+    - $R -e "library('sbpiper')"           # [not win]
+    - "\"%R%\" -e \"library('sbpiper')\""  # [win]
 
 about:
   home: https://github.com/pdp10/sbpiper
-  license: MIT + file LICENSE
+  license: MIT
   summary: "Provides an API for analysing repetitive parameter estimations and simulations of
     mathematical models. Examples of mathematical models are Ordinary Differential equations
     (ODEs)  or Stochastic Differential Equations (SDEs) models. Among the analyses for
@@ -65,3 +75,15 @@ about:
     Biology. 2017;11:46. <doi:10.1186/s12918-017-0423-3>."
 
   license_family: MIT
+
+extra:
+  identifiers:
+    - doi:10.1186/s12918-017-0423-3
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

@@ -1,15 +1,14 @@
-{% set version = '0.1.0' %}
+{% set version = '0.1.2' %}
 
 package:
   name: r-tidygenomics
-  version: {{ version|replace("-", "_") }}
+  version: {{ version }}
 
 source:
-  fn: tidygenomics_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/tidygenomics_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/tidygenomics/tidygenomics_{{ version }}.tar.gz
-  sha256: 966095c07f7f9e9e9a33585c6fa81e3e35038acd55fd6c2c536fd506bfa8d358
+    - {{ cran_mirror }}/src/contrib/tidygenomics_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/tidygenomics/tidygenomics_{{ version }}.tar.gz
+  sha256: cc214297f13f043a3c5461df53c4b797d2b684586f0a1fcf246fa6fb6baddcb2
 
 build:
   number: 0
@@ -19,24 +18,27 @@ build:
 
 requirements:
   build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
     - r-base
+    - bioconductor-iranges
     - r-rcpp
     - r-dplyr
+    - r-rlang
     - r-fuzzyjoin >=0.1.3
     - r-purrr
     - r-tidyr
-    - bioconductor-iranges
-    - gcc
-
   run:
     - r-base
+    - bioconductor-iranges
     - r-rcpp
     - r-dplyr
+    - r-rlang
     - r-fuzzyjoin >=0.1.3
     - r-purrr
     - r-tidyr
-    - bioconductor-iranges
-    - libgcc
 
 test:
   commands:
@@ -45,8 +47,9 @@ test:
 about:
   home: https://github.com/const-ae/tidygenomics
   license: GPL-3
-  summary: Handle genomic data within data frames just as you would with 'GRanges'. This package
-    provides methods to deal with genomic intervals the "tidy-way" which makes it simpler
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+  summary: Handle genomic data within data frames just as you would with 'GRanges'. This packages
+    provides method to deal with genomic intervals the "tidy-way" which makes it simpler
     to integrate in the the general data munging process. The API is inspired by the
     popular 'bedtools' and the genome_join() method from the 'fuzzyjoin' package.
   license_family: GPL3

@@ -1,40 +1,43 @@
 {% set name = "nanopolish" %}
-{% set version = "0.9.0" %}
+{% set version = "0.11.2" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 build:
-  number: 2
-  string: "py{{CONDA_PY}}_ncurses{{CONDA_NCURSES}}_{{PKG_BUILDNUM}}"
+  number: 0
 
 source:
-  fn: {{ name|lower }}_{{ version }}.tar.gz
   url: https://github.com/jts/nanopolish/archive/v{{ version }}.tar.gz
-  sha256: 9ee50c6ffc23a9fc9aa2079f737c70c696d1f211adf1e30c9ba8e53d606285bb
+  sha256: b72f2bde060b0ef4fe46529d3408e8beb4490adc968a59a5c628f9d9a5dfa8e5
   patches:
     - nanopolish.patch
 
 requirements:
   build:
-  - gcc
-  - fast5 ==0.6.5
-  - htslib  {{ CONDA_HTSLIB }}*
-  - hdf5 {{ CONDA_HDF5 }}*
-  - eigen
-  - ncurses {{CONDA_NCURSES}}*
-  - bzip2 {{CONDA_BZIP2}}*
-
+    - {{ compiler('cxx') }}  # [linux64]
+    - gcc                    # [osx]
+  host:
+    - fast5 0.6.5
+    - htslib
+    - hdf5
+    - eigen
+    - ncurses
+    - bzip2
+    - openmp
+    - libcurl
   run:
-  - libgcc
-  - python
-  - hdf5 {{ CONDA_HDF5 }}*
-  - biopython
-  - bwa
-  - eigen
-  - ncurses {{CONDA_NCURSES}}*
-  - bzip2 {{CONDA_BZIP2}}*
+    - python
+    - hdf5
+    - biopython
+    - bwa
+    - eigen
+    - ncurses
+    - libdeflate
+    - openmp
+    - libgcc                # [osx]
+    - libcurl
 
 test:
   commands:
@@ -46,3 +49,7 @@ about:
   license: MIT
   license_file: LICENSE
   summary: 'Signal-level algorithms for MinION data.'
+
+extra:
+  skip-lints:
+    - should_use_compilers

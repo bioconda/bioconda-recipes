@@ -1,0 +1,64 @@
+{% set name = "centreseq" %}
+{% set version = "0.3.0" %}
+{% set sha256 = "177d606c96675194bee74ef45101448613071aaedeb84948684d8305c6a59a79" %}
+
+package:
+  name: "{{ name }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/bfssi-forest-dussault/centreseq/archive/v{{ version }}.zip
+  sha256: '{{ sha256 }}'
+
+build:
+  noarch: python
+  number: 0
+  entry_points:
+    - centreseq=centreseq.centreseq_cli:cli
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - biopython >=1.70
+    - click >=7.0
+    - dataclasses >=0.6
+    - pandas >=0.24.0
+    - python >=3.6
+    - scipy >=1.1
+    - tqdm >=4.32.2
+    - xlsxwriter >=1.1.8
+    - cyvcf2
+    - mmseqs2
+    - prokka
+    - muscle
+    - seqkit
+    - snp-sites
+    - minced
+
+test:
+  imports:
+    - centreseq
+    - centreseq.bin
+    - centreseq.bin.core
+    - centreseq.bin.helpers
+    - centreseq.bin.tree
+    - centreseq.bin.visualizations
+  commands:
+    - centreseq --version
+
+about:
+  home: https://github.com/bfssi-forest-dussault/centreseq
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: Fast generation of a core genome among bacterial strains
+  dev_url: https://github.com/bfssi-forest-dussault/centreseq
+
+extra:
+  recipe-maintainers:
+    - bfssi-forest-dussault
+  container:
+    extended-base: true

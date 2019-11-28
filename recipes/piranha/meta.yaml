@@ -1,37 +1,35 @@
-about:
-    home: 'http://smithlabresearch.org/software/piranha/'
-    license: 'GNU General Public License v3 (GPLv3)'
-    summary: 'Piranha is a peak-caller for CLIP- and RIP-Seq data.'
-
 package:
-    name: "piranha"
-    version: '1.2.1'
+  name: "piranha"
+  version: '1.2.1'
 
 source:
-    fn: piranha-1.2.1.tar.gz
-    url: http://smithlabresearch.org/downloads/piranha-1.2.1.tar.gz
-    md5: 4ca70055b54ae0212d2b3641aafcb976
-    patches:
-        - 0001-compile-with-conda-gsl-patch.patch
+  url: http://smithlabresearch.org/downloads/piranha-1.2.1.tar.gz
+  md5: 4ca70055b54ae0212d2b3641aafcb976
+  patches:
+    - 0001-compile-with-conda-gsl-patch.patch
+
 build:
-  number: 3
+  number: 7
   skip: True  # [not py27 or osx]
-  string: gsl{{CONDA_GSL}}_bamtools{{CONDA_BAMTOOLS}}_{{PKG_BUILDNUM}}
 
 requirements:
   build:
     - autoconf
-    - gcc # [linux]
-    - llvm # [osx]
+    - {{ compiler('cxx') }}
+  host:
     - gawk
     - python
-    - bamtools {{ CONDA_BAMTOOLS }}*
-    - gsl {{CONDA_GSL}}*
+    - bamtools
+    - gsl
   run:
-    - libgcc # [linux]
-    - bamtools {{ CONDA_BAMTOOLS }}*
-    - gsl {{CONDA_GSL}}*
+    - bamtools
+    - gsl
 
 test:
-    commands:
-        - 'Piranha 2>&1 | grep "^Usage"'
+  commands:
+    - 'Piranha 2>&1 | grep "^Usage"'
+
+about:
+  home: 'http://smithlabresearch.org/software/piranha/'
+  license: 'GNU General Public License v3 (GPLv3)'
+  summary: 'Piranha is a peak-caller for CLIP- and RIP-Seq data.'

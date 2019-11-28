@@ -1,0 +1,62 @@
+{% set name = "pairtools" %}
+{% set version = "0.3.0" %}
+
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 4931da4b5fcb327d13c9564e6fdda1acf2335e16213a55d2620fe340ae918b53
+
+build:
+  number: 0
+  skip: True # [py<35]
+  entry_points:
+    - pairtools = pairtools:cli
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - setuptools
+    - cython
+    - numpy
+
+  run:
+    - python
+    - coreutils
+    - {{ pin_compatible('numpy') }}
+    - click
+    - lz4-c
+    - samtools
+    - tabix
+    - pbgzip
+
+test:
+  imports:
+    - pairtools
+
+  commands:
+    # click requires a unicode locale
+    - pairtools --help
+
+about:
+  home: https://github.com/mirnylab/pairtools
+  license: MIT
+  license_family: MIT
+  summary: 'CLI tools to process mapped Hi-C data'
+  license_file: LICENSE
+  doc_url: http://pairtools.readthedocs.io/
+  dev_url: https://github.com/mirnylab/pairtools
+
+
+extra:
+  container:
+    # click requires a unicode locale when used with Python 3
+    # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
+    extended-base: true  # [py3k]
+    recipe-maintainers:
+      - golobor
