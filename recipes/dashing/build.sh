@@ -12,5 +12,6 @@ make CC=$CC lib && mv lib/libzstd.a ..
 popd
 popd
 
+sed -i.bak "s/ -lzstd//g" Makefile
 make CC=$CC CXX=$CXX
 make install PREFIX=$PREFIX
