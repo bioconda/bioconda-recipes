@@ -32,7 +32,12 @@ export LIBRARY_PATH=${PREFIX}/lib
 #cd ..;
 #rmdir distmat; wget https://github.com/dnbaker/distmat/archive/v0.1.tar.gz && tar -xvf v0.1.tar.gz && mv distmat-0.1 distmat && rm v0.1.tar.gz;
 
-find $BUILD_PREFIX -name libzstd.a -exec cp {} bonsai/ \;
+pushd bonsai
+git clone --recursive --single-branch --branch dev https://github.com/facebook/zstd
+pushd zstd
+make CC=$CC lib && mv lib/libzstd.a ..
+popd
+popd
 
 make
 make install PREFIX=$PREFIX
