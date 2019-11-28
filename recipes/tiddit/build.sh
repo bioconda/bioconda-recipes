@@ -8,10 +8,9 @@ mkdir build
 cd build
 cmake ..
 make
-echo "../"
-ls -l ../
-echo "../bin"
-ls -l ../bin
+cp ../bin/TIDDIT $PREFIX/bin
+echo "../lib"
+ls -l ../lib
 cd ../src
 python -m pip install . --ignore-installed --no-deps -vv
 cd ../build
@@ -21,7 +20,6 @@ cd ..
 # Clean up bamtools
 rm -rf $PREFIX/usr
 
-#mv TIDDIT.py ${PREFIX}/bin
-#ln -s ${PREFIX}/bin/TIDDIT.py $PREFIX/bin/tiddit
+mv TIDDIT.py ${PREFIX}/bin
 #ln -s ${PREFIX}/bin/TIDDIT.py $PREFIX/bin/TIDDIT
-#chmod a+x ${PREFIX}/bin/*
+chmod a+x ${PREFIX}/bin/*
