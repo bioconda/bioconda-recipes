@@ -2,13 +2,11 @@
 
 mkdir -p $PREFIX/bin
 
-cd orthofinder/
-
 cp orthofinder.py $PREFIX/bin/orthofinder
 
-cp config.json $PREFIX/bin/
+cp -r scripts_of $PREFIX/bin/
 
-cp -r scripts $PREFIX/bin/
+#cp scripts_of/config.json $PREFIX/bin/scripts_of/
 
 cp -r tools $PREFIX/bin/
 
