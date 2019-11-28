@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd genie-0.4.1
+ls -al
 go build -o genie
 mkdir -p $PREFIX/bin
 cp genie $PREFIX/bin
