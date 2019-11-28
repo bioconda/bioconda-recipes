@@ -39,5 +39,5 @@ make CC=$CC lib && mv lib/libzstd.a ..
 popd
 popd
 
-make
+make CC=$CC CXX=$CXX
 make install PREFIX=$PREFIX
