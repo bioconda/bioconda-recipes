@@ -3,10 +3,9 @@
 ls -al
 go version
 pwd
-# mkdir -p src/github.com/sakkayaphab/bolt
-# cp -r * src/github.com/sakkayaphab/bolt
-# cd src/github.com/sakkayaphab/bolt
-# pwd
+mkdir -p src/github.com/sakkayaphab/bolt
+cd src/github.com/sakkayaphab/bolt
+pwd
 export GOPATH=$HOME/go
 GO111MODULE=on go build main.go -o genie
 ls -al
