@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rm -rf ~/go
-go build -o genie
+ls -al
+go build main.go -o genie
 mkdir -p $PREFIX/bin
 cp genie $PREFIX/bin
