@@ -7,6 +7,7 @@ pwd
 # cp -r * src/github.com/sakkayaphab/bolt
 # cd src/github.com/sakkayaphab/bolt
 # pwd
+go get ./...
 go build main.go -o genie
 ls -al
 mkdir -p $PREFIX/bin
