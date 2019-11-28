@@ -10,6 +10,7 @@ make -j2
 mkdir -p $PREFIX/bin/
 
 cp bin/minia ${PREFIX}/bin/
+cp bin/merci ${PREFIX}/bin/
 chmod +x $PREFIX/bin/minia
 chmod +x $PREFIX/bin/merci
 
