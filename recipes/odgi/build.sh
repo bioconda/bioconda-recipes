@@ -8,3 +8,6 @@ cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
       -DCMAKE_INSTALL_INCLUDEDIR=${PREFIX}/include \
       -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib \
       --build build 
+ls -l
+make
+make install
