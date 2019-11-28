@@ -7,6 +7,7 @@ pwd
 # cp -r * src/github.com/sakkayaphab/bolt
 # cd src/github.com/sakkayaphab/bolt
 # pwd
+export GOPATH=$HOME/go
 GO111MODULE=on go build main.go -o genie
 ls -al
 mkdir -p $PREFIX/bin
