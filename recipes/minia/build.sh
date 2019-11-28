@@ -15,6 +15,4 @@ chmod +x $PREFIX/bin/merci
 
 cp ext/gatb-core/bin/gatb-h5dump ${PREFIX}/bin/
 chmod +x $PREFIX/bin/gatb-h5dump
-cp ext/gatb-core/bin/dbginfo ${PREFIX}/bin/
-chmod +x $PREFIX/bin/dbginfo
 
