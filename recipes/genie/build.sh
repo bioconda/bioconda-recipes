@@ -1,5 +1,5 @@
 #!/bin/bash
 
-go build
+go build -o genie
 mkdir -p $PREFIX/bin
 cp genie $PREFIX/bin
