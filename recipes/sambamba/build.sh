@@ -15,4 +15,4 @@ cd htslib && make CC=$CC LDFLAGS="-L$PREFIX/lib" && cd ..
 make CC=$CC LIBRARY_PATH=$PREFIX/lib
 make test
 mkdir -p ${PREFIX}/bin
-cp bin/sambamba ${PREFIX}/bin/sambamba
+cp bin/sambamba-* ${PREFIX}/bin/sambamba
