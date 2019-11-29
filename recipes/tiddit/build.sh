@@ -21,4 +21,5 @@ cd ..
 rm -rf $PREFIX/usr
 
 mv TIDDIT.py ${PREFIX}/bin
+ln -s ${PREFIX}/bin/TIDDIT.py $PREFIX/bin/tiddit 
 chmod a+x ${PREFIX}/bin/*
