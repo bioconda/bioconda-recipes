@@ -16,4 +16,4 @@ For members of the Bioconda project, the following command is also available:
 
  * `@BiocondaBot please merge` will cause packages/containers to be uploaded and a PR merged. Someone must approve a PR first! This has the benefit of not wasting CI build time required by manually merging PRs.
 
-If you have questions, please post them in gitter or ping `@bioconda/core` in a comment.
+If you have questions, please post them in gitter or ping `@bioconda/core` in a comment (if you are not able to directly ping `@bioconda/core` then the bot will repost your comment and enable pinging).
