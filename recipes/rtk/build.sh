@@ -5,7 +5,9 @@ export CFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib"
 export CPATH=${PREFIX}/include
 
-cd rtk
-make
+
+echo "Compiling RTK"
+cd rtk && make
+echo "Moving binary"
 mkdir -p ${PREFIX}/bin
 mv rtk/rtk ${PREFIX}/bin/
