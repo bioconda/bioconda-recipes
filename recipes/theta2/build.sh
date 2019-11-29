@@ -13,6 +13,6 @@ mv michaelchughes-bnpy-dev-590663f97f93/bnpy $outdir
 
 maincmd=$outdir/RunTHetA.py
 sed -i.bak '1i#!/opt/anaconda1anaconda2anaconda3/bin/python' $maincmd
-sed -i.bak '2iimport os\nthis_dir = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(os.path.realpath(__file__))))\nimport sys\nsys.path.append(this_dir);print(sys.path);' $maincmd
+sed -i.bak '2iimport os\nthis_dir = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(os.path.realpath(__file__))))\nimport sys\nsys.path.append(this_dir)' $maincmd
 chmod a+x $maincmd
 ln -s $maincmd $PREFIX/bin
