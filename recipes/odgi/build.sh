@@ -2,6 +2,7 @@
 git submodule update --init --recursive
 export LD_LIBRARY_PATH=${PREFIX}/lib
 export LIBRARY_PATH=${PREFIX}/lib
+export C_INCLUDE_PATH=${PREFIX}/include
 cmake -H. -Bbuild
 ls -l
 #cmake -DCMAKE_INSTALL_PREFIX=${PREFIX} \
