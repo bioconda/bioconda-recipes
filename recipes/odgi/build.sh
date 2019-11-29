@@ -1,5 +1,5 @@
 #!/bin/bash
-
+git submodule update --init --recursive
 export LD_LIBRARY_PATH=${PREFIX}/lib
 export LIBRARY_PATH=${PREFIX}/lib
 cmake -H. -Bbuild
