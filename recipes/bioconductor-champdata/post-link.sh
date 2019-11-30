@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="ChAMPdata_2.16.0.tar.gz"
+FN="ChAMPdata_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ChAMPdata_2.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ChAMPdata_2.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-champdata/bioconductor-champdata_2.16.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-champdata/bioconductor-champdata_2.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/ChAMPdata_2.18.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ChAMPdata_2.18.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-champdata/bioconductor-champdata_2.18.0_src_all.tar.gz"
 )
-MD5="41023a6402403275016b865f07eba6a5"
+MD5="e8372c1413e862ca6bd7317c734f827e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

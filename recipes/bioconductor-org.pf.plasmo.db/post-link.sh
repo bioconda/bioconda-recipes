@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="org.Pf.plasmo.db_3.8.2.tar.gz"
+FN="org.Pf.plasmo.db_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/org.Pf.plasmo.db_3.8.2.tar.gz"
-  "https://bioarchive.galaxyproject.org/org.Pf.plasmo.db_3.8.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-org.pf.plasmo.db/bioconductor-org.pf.plasmo.db_3.8.2_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-org.pf.plasmo.db/bioconductor-org.pf.plasmo.db_3.8.2_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/org.Pf.plasmo.db_3.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/org.Pf.plasmo.db_3.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-org.pf.plasmo.db/bioconductor-org.pf.plasmo.db_3.10.0_src_all.tar.gz"
 )
-MD5="5ae4ea5101f16c79f5b7ad6b8717a5d0"
+MD5="cffa85337fdd36866c8672b62923ca6c"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

@@ -1,4 +1,7 @@
 #!/bin/bash
+mkdir -p ${PREFIX}/bin
+mkdir -p ${PREFIX}/lib
+mkdir -p ${PREFIX}/test
 
 # compiles and moves libssw to conda env
 cd ssw201507
@@ -8,14 +11,9 @@ mv libssw.so ${PREFIX}/lib/
 # moves python scripts to conda env
 cd ..
 chmod +x isescan.py
+mkdir -p ${PREFIX}/bin/
 cp *.py ${PREFIX}/bin/
 cp -r pHMMs/ $PREFIX/bin/
 
 # adds test fasta for build testing
-mkdir $PREFIX/test
 cp NC_012624.fna $PREFIX/test/
-
-
-
-
-

@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="hgu95e.db_3.2.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/hgu95e.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/hgu95e.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/hgu95e.db_3.2.3.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgu95e.db/bioconductor-hgu95e.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgu95e.db/bioconductor-hgu95e.db_3.2.3_src_all.tar.gz"

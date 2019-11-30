@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="illuminaHumanv1.db_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/illuminaHumanv1.db_1.26.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/illuminaHumanv1.db_1.26.0.tar.gz"
   "https://bioarchive.galaxyproject.org/illuminaHumanv1.db_1.26.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminahumanv1.db/bioconductor-illuminahumanv1.db_1.26.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-illuminahumanv1.db/bioconductor-illuminahumanv1.db_1.26.0_src_all.tar.gz"
