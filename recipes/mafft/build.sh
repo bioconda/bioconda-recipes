@@ -4,4 +4,4 @@
 cd $SRC_DIR/core
 
 make CC="$CC" CFLAGS="$CFLAGS" PREFIX="$PREFIX"
-make install
+make install PREFIX="$PREFIX"
