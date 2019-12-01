@@ -3,6 +3,5 @@
 # cd to location of Makefile and source
 cd $SRC_DIR/core
 
-export PRFX=$PREFIX
-make CC=${CC} CXX=${CXX}
+make CC=$CC CFLAGS=$CFLAGS PREFIX=$PREFIX
 make install
