@@ -5,4 +5,5 @@ export LIBRARY_PATH=${PREFIX}/lib
 
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PREFIX .
 cmake --build .
-ls -l
+mkdir -p ${PREFIX}/bin
+mv coinfinder ${PREFIX}/bin
