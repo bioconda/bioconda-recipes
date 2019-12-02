@@ -2,6 +2,7 @@
 
 set -e -x -o pipefail
 make CC=$GXX CXX=$GXX
-echo "perl ${SRC_DIR}/www/fastml/FastML_Wrapper.pl" > $PREFIX/bin/fastml
+cp ${SRC_DIR}/www/fastml/FastML_Wrapper.pl $PREFIX/bin
+echo "perl $PREFIX/bin/FastML_Wrapper.pl" > $PREFIX/bin/fastml
 chmod +x $PREFIX/bin/fastml
 
