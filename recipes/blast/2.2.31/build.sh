@@ -39,7 +39,6 @@ export AR="${AR} rcs"
 
 ./configure \
     --with-dll \
-    --with-mt \
     --with-openmp \
     --without-dbapi \
     --without-lzo \
