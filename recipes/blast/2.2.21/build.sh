@@ -8,9 +8,9 @@ mkdir -p $PREFIX/bin
 if [ "$(uname)" == "Darwin" ]; then
     echo "Platform: Mac"
     cp $SRC_DIR/bin/* $PREFIX/bin
-
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     echo "Platform: Linux"
     cp $SRC_DIR/bin/* $PREFIX/bin/
+    ln -s ${PREFIX}/lib/libbz2.so.1 ${PREFIX}/lib/libbz2.so
 fi
 chmod +x $PREFIX/bin/*
