@@ -4,7 +4,7 @@ set -euxo pipefail
 cd $SRC_DIR/c++/
 
 export CFLAGS="$CFLAGS -O2"
-export CXXFLAGS="$CXXFLAGS -O2"
+export CXXFLAGS="$CXXFLAGS -O2 -std=c++14"
 export CPPFLAGS="$CPPFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 export CC_FOR_BUILD=$CC
@@ -26,10 +26,18 @@ LIB_INSTALL_DIR=$PREFIX/lib/ncbi-blast+
 #
 # dll: enable dynamic linking
 # mt: enable multi-threading
+# -autodep: no automatic dependency build (one time build)
+# -makefile-auto-update: no rebuild of makefile (one time build)
+# flat-makefile: use single makefile
+# -caution: disable configure script warnings
 # -dbapi: don't build database connectivity libs
 # -lzo: don't add lzo support
 # runpath: set runpath for installed $PREFIX location
 # hard-runpath: disable new dtags (disallow LD_LIBRARY_PATH override on Linux)
+# -debug: disable debug
+# strip: remove debugging symbols (size!)
+# z: set zlib
+# bz2: set libbz2
 # -openssl: disable openssl
 # -gcrypt: disable gcrypt (needed on OSX)
 # -krb5: disable kerberos (needed on OSX)
@@ -39,10 +47,20 @@ export AR="${AR} rcs"
 
 ./configure \
     --with-dll \
+    --with-mt \
     --with-openmp \
+    --without-autodep \
+    --without-makefile-auto-update \
+    --with-flat-makefile \
+    --without-caution \
     --without-dbapi \
     --without-lzo \
     --with-hard-runpath \
+    --with-runpath=$LIB_INSTALL_DIR \
+    --without-debug \
+    --with-strip \
+    --with-z=$PREFIX \
+    --with-bz2=$PREFIX \
     --without-krb5 \
     --without-openssl \
     --without-gnutls \
