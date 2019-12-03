@@ -24,7 +24,7 @@ echo -n 'Search and Fetch An Entry From Database... '
 blastdbcmd -db testdb -entry gnl1 -out test_query.fa
 test "$(grep -c '>lcl|gnl1' test_query.fa)" -eq 1
 test "$(grep -c '>' test_query.fa)" -eq 1
-test "$(wc -l test_query.fa)" -eq 10
+test "$(wc -l < test_query.fa)" -eq 10
 echo PASS
 echo
 echo "ALL TESTS PASSED"
