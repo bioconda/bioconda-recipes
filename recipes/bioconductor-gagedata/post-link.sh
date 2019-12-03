@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="gageData_2.22.0.tar.gz"
+FN="gageData_2.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/gageData_2.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/gageData_2.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-gagedata/bioconductor-gagedata_2.22.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-gagedata/bioconductor-gagedata_2.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/gageData_2.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/gageData_2.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-gagedata/bioconductor-gagedata_2.24.0_src_all.tar.gz"
 )
-MD5="b20e038013ae19b70c5dc543fea69efe"
+MD5="36756ee79ed4aaa2ae5d7040383704ac"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
