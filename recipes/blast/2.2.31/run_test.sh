@@ -1,7 +1,7 @@
 #!/bin/bash
 # Tests based on Debian project ncbi-blast package
 
-set -e
+set -ex
 
 TMPDIR=$(mktemp -d)
 trap "rm -rf $TMPDIR" 0 INT QUIT ABRT PIPE TERM
@@ -15,6 +15,9 @@ makeblastdb \
    grep -q "added 3 sequences"
 echo PASS
 echo -n 'Searching Database for Hits... '
+blastn \
+  -query test.fa -db testdb -task blastn -dust no \
+  -outfmt "7 qseqid sseqid evalue bitscore" -max_target_seqs 6
 blastn \
   -query test.fa -db testdb -task blastn -dust no \
   -outfmt "7 qseqid sseqid evalue bitscore" -max_target_seqs 6 | \
