@@ -14,4 +14,5 @@ sed -ie "s/isystem/I/" Makefile
 make
 
 # Install
+mkdir $PREFIX/bin
 cp Bandage $PREFIX/bin
