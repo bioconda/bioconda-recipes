@@ -9,9 +9,9 @@ mkdir -p ${PREFIX}/bin
 mv coinfinder ${PREFIX}/bin
 
 mkdir -p ${PREFIX}/bin/coinfind-code/
-mv ${PREFIX}/coinfind-code/check_zeroes.R ${PREFIX}/bin/coinfind-code/
-mv ${PREFIX}/coinfind-code/create_roary.py ${PREFIX}/bin/coinfind-code/
-mv ${PREFIX}/coinfind-code/format_roary.py ${PREFIX}/bin/coinfind-code/
-mv ${PREFIX}/coinfind-code/helper_label_internal_nodes.py ${PREFIX}/bin/coinfind-code/
-mv ${PREFIX}/coinfind-code/network.R ${PREFIX}/bin/coinfind-code/
-mv ${PREFIX}/coinfind-code/network_nophylogeny.R ${PREFIX}/bin/coinfind-code/
+mv coinfind-code/check_zeroes.R ${PREFIX}/bin/coinfind-code/
+mv coinfind-code/create_roary.py ${PREFIX}/bin/coinfind-code/
+mv coinfind-code/format_roary.py ${PREFIX}/bin/coinfind-code/
+mv coinfind-code/helper_label_internal_nodes.py ${PREFIX}/bin/coinfind-code/
+mv coinfind-code/network.R ${PREFIX}/bin/coinfind-code/
+mv coinfind-code/network_nophylogeny.R ${PREFIX}/bin/coinfind-code/
