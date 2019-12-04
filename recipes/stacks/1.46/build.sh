@@ -11,8 +11,11 @@ fi
 
 export CXXFLAGS="${CXXFLAGS} -std=c++11"
 
-# htslib shipped with stacks-1.46 has hardcoded prefix
-sed -i -e 's:^prefix *= /usr/local:prefix = '"$PREFIX"':; s:^CC *= gcc:CC = '"$CC"':; s:^AR *= ar:AR = '"$AR"':; s:^RANLIB = ranlib:RANLIB = '"$RANLIB"':' htslib/Makefile 
+# htslib shipped with stacks-1.46:
+# - fix hardcoded prefix
+# - set gcc, ar, ranlib binaries
+# - add include path (otherwise zlib is not found)
+sed -i -e 's:^prefix *= /usr/local:prefix = '"$PREFIX"':; s:^CC *= gcc:CC = '"$CC"':; s:^AR *= ar:AR = '"$AR"':; s:^RANLIB = ranlib:RANLIB = '"$RANLIB"': s:-I\. :-I\. -I'"$PREFIX"'/include/:' htslib/Makefile 
 
 ./configure --prefix="$PREFIX" --enable-bam
 make
