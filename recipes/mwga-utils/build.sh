@@ -1,6 +1,6 @@
 #!/bin/bash
 mkdir -p $PREFIX/bin/
 
-make CC=$CXX CFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS -pthread -static-libstdc++"
+make CC=$CXX
 
 cp bin/* $PREFIX/bin/
