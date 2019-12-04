@@ -61,6 +61,7 @@ export AR="${AR} rcs"
     --with-strip \
     --with-z=$PREFIX \
     --with-bz2=$PREFIX \
+    --without-boost \
     --without-krb5 \
     --without-openssl \
     --without-gnutls \
