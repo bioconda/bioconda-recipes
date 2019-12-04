@@ -2,7 +2,7 @@
 
 go version
 mkdir -p src/github.com/sakkayaphab/bolt
-rsync -av --progress * src/github.com/sakkayaphab/bolt --exclude src
+cp -r `ls -A | grep -v "src"` src/github.com/sakkayaphab/bolt
 cd src/github.com/sakkayaphab/bolt
 export GOPATH="$SRC_DIR/"
 go get ./...
