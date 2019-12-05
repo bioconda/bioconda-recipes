@@ -17,8 +17,7 @@ echo 'CFLAGS="-fPIC"' > $KENT_SRC/inc/localEnvironment.mk
 make -C $KENT_SRC/lib prefix=$PREFIX/ CC=$CC CFLAGS="$CFLAGS" LIBS="$LIBS"
 
 # Building the module
-perl Build.PL --extra_compiler_flags \"$INCLUDES\" --extra_linker_flags \"$LIBS\" --config ldflags=\"-static $LDFLAGS\"
+perl Build.PL
 perl ./Build
 # Make sure this goes in site
-perl ./Build install --installdirs site --prefix $PREFIX 
-
+perl ./Build install --installdirs site
