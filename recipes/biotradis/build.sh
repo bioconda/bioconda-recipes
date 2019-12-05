@@ -8,7 +8,7 @@ cp -r lib/* $PREFIX/lib
 
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
 
-echo "export PERL5LIB=$PERL5LIB:$PREFIX/lib:$PREFIX/lib/perl5/site_perl/5.22.0" > ${PREFIX}/etc/conda/activate.d/biotradis-perl5lib.sh
+echo "export PERL5LIB=$PERL5LIB:$PREFIX/lib" > ${PREFIX}/etc/conda/activate.d/biotradis-perl5lib.sh
 chmod a+x ${PREFIX}/etc/conda/activate.d/biotradis-perl5lib.sh
 
 echo "unset PERL5LIB" > ${PREFIX}/etc/conda/deactivate.d/biotradis-perl5lib.sh
