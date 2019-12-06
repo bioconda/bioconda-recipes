@@ -9,5 +9,3 @@ CXX98=$CXX
 CXX11=$CXX
 CXX14=$CXX" > ~/.R/Makevars
 $R CMD INSTALL --build .
-
-ln -s ${PREFIX}/lib/R/library/graph/libs/BioC_graph.so ${PREFIX}/lib/R/library/graph/libs/graph.so

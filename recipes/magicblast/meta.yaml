@@ -1,0 +1,67 @@
+{% set version = "1.4.0" %}
+
+package:
+  name: magicblast
+  version: {{ version }}
+
+source:
+  - url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/magicblast/LATEST/ncbi-magicblast-{{ version }}-x64-linux.tar.gz # [linux]
+    sha256: 9995524a2ce67850516debb3341f268d485113f1c28005e39b5fbf47fe27d250 # [linux]
+  - url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/magicblast/LATEST/ncbi-magicblast-{{ version }}-x64-macosx.tar.gz # [osx]
+    sha256: f48daeb86065be4f256820b5c189f0141eafdf50e5a0b8e837b381e82a447b0e # [osx]
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - patchelf  # [linux]
+  host:
+    - zlib #1.2.7
+    - bzip2 #1.0.6
+    - libxml2 >=2.9.1,<2.10.0a0
+  run:
+    - zlib #1.2.7
+    - bzip2 #1.0.6
+    - libxml2 >=2.9.1,<2.10.0a0
+    - blast  # needed for makeblastdb
+
+test:
+  commands:
+    - makeblastdb -help
+    - magicblast -help
+    - echo KF278469.1 >subject.txt
+    - magicblast -sra SRR000001 -subject subject.txt -no_unaligned >/dev/null
+
+about:
+  home: https://ncbi.github.io/magicblast/
+  license: Public Domain
+  summary: NCBI BLAST next generation read mapper
+  description: |
+    Magic-BLAST is a tool for mapping large next-generation RNA or DNA 
+    sequencing runs against a whole genome or transcriptome. Each alignment
+    optimizes a composite score, taking into account simultaneously the two
+    reads of a pair, and in case of RNA-seq, locating the candidate introns
+    and adding up the score of all exons. This is very different from other
+    versions of BLAST, where each exon is scored as a separate hit and
+    read-pairing is ignored.
+
+    Magic-BLAST incorporates within the NCBI BLAST code framework ideas 
+    developed in the NCBI Magic pipeline, in particular hit extensions by local 
+    walk and jump (http://www.ncbi.nlm.nih.gov/pubmed/26109056), and 
+    recursive clipping of mismatches near the edges of the reads, which avoids
+    accumulating artefactual mismatches near splice sites and is needed to
+    distinguish short indels from substitutions near the edges.
+
+    More details about the algorithm and comparison with other similar tools
+    are presented here: https://www.biorxiv.org/content/early/2018/08/14/390013.
+
+extra:
+  identifiers:
+    - biotools:magicblast
+    - doi:10.1101/390013
+  recipe-maintainers:
+    - boratyng
+  skip-lints:
+    - should_be_noarch_generic
+    - should_not_be_noarch_source

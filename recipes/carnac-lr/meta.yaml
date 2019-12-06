@@ -1,0 +1,40 @@
+{% set name = "CARNAC-LR" %}
+{% set version = "1.0.0" %}
+{% set sha256 = "13601b79b01f83348a725edf5414d8b4916d21428f98ed335195ca6d446f7e8a" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/kamimrcht/CARNAC-LR/archive/{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+    - makefile.patch
+    - python_path.patch
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  run:
+    - python >=3
+
+test:
+  files:
+    - test.input
+  commands:
+    - CARNAC-LR
+    - CARNAC_to_fasta 
+    - CARNAC_to_fasta.py
+    - paf_to_CARNAC.py
+
+about:
+  home: https://github.com/kamimrcht/CARNAC-LR
+  license: GNU Affero General Public License
+  license_family: AGPL
+  license_file: License.txt
+  summary: Clustering coefficient-based Acquisition of RNA Communities in Long Read

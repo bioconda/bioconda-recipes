@@ -1,0 +1,47 @@
+{% set name = "raxml-ng" %}
+{% set version = "0.9.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/amkozlov/{{ name|lower }}.git
+  git_rev: {{ version }}
+  sha256: 43b95ee1bddae0daee84644e9ee760a77f28bb16e2071e95cca79a30f39373e5
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - bison
+    - flex
+    - cmake
+  host:
+    - gmp
+    - openmpi
+  run:
+    - openmpi
+
+test:
+  commands:
+    - raxml-ng --version
+    - raxml-ng-mpi --version # [not osx]
+
+about:
+   home: https://github.com/amkozlov/raxml-ng
+   license: AGPL-3
+   license_family: AGPL
+   license_file: LICENSE.txt
+   summary: "RAxML Next Generation: faster, easier-to-use and more flexible"
+
+extra:
+   container:
+     # openmpi needs ssh client
+     extended-base: true
+   skip-lints:
+     - uses_vcs_url
+   identifiers:
+     - doi:10.1093/bioinformatics/btz305
