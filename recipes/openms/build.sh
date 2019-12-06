@@ -27,7 +27,7 @@ ORIGIN='$ORIGIN'
 export ORIGIN
 LDFLAGS='-Wl,-rpath,$${ORIGIN}/../lib'
 
-cmake .. 
+cmake .. \
   -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
   -DCMAKE_INSTALL_PREFIX=$PREFIX -DHAS_XSERVER=OFF \
   -DENABLE_TUTORIALS=OFF \
