@@ -1,4 +1,4 @@
 #!/bin/bash
 
-make all
+make
 make install
