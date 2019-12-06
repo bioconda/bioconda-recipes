@@ -3,6 +3,7 @@
 mkdir -p $PREFIX/bin/
 cp scripts/run_BUSCO.py $PREFIX/bin
 cp scripts/generate_plot.py $PREFIX/bin
+cp scripts/busco_configurator.py $PREFIX/bin/
 
 SHARE=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $SHARE
