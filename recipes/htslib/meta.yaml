@@ -5,7 +5,7 @@ package:
   version: {{ version }}
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('htslib', max_pin='x.x') }}
 
@@ -17,22 +17,31 @@ requirements:
   build:
     - {{ compiler('c') }}
   host:
-    - curl
+    - libcurl
     - bzip2
     - xz
     - zlib
     - libdeflate
+    - openssl  # [not osx]
   run:
-    - curl
+    - libcurl
     - bzip2
     - xz
     - zlib
     - libdeflate
+    - openssl  # [not osx]
 
 test:
+  files:
+    - test1.bed
   commands:  # We want to make sure that libdeflate is actually linked via HTSLib
     - "otool -L $PREFIX/bin/bgzip | grep deflate"  # [osx]
     - "ldd $PREFIX/bin/bgzip | grep deflate"  # [not osx]
+    # Work around mulled-build's failure to copy the test file
+    - "test -e test1.bed || printf 'chr1\\t100\\t200\\n' > test1.bed"
+    - bgzip test1.bed
+    - tabix test1.bed.gz
+    - htsfile test1.bed.gz
 
 about:
   home: https://github.com/samtools/htslib
