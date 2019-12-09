@@ -1,32 +1,49 @@
+{% set version = "2.2.31" %}
+{% set md5 = "f32bd2d2c66205c53c6981f94e1a0d54" %}
+
 package:
   name: blast
-  version: 2.2.21
+  version: {{ version }}
 
 source:
-  url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.2.21/ncbi-blast-2.2.21+-x64-linux.tar.gz # [linux]
-  md5: 401062f0f581158c5ee77fe1bdde8014 # [linux]
-  url: ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.2.21/ncbi-blast-2.2.21+-universal-macosx.tar.gz # [osx]
-  md5: 03cbf1c151691ce22f22c337ba1f00a5 # [osx]
+  url: https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/{{ version }}/ncbi-blast-{{ version }}+-src.tar.gz
+  md5: {{ md5 }}
   patches:
-    - legacy_blast.pl.patch
-    - update_blastdb.pl.patch
-
+    - "configure.patch"
 build:
-  number: 1
+  skip: True  # [osx]
+  number: 3
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
     - zlib
     - bzip2
+    - pcre
+    - entrez-direct
+    - curl
   run:
-    - perl
     - zlib
     - bzip2
+    - pcre
+    - perl
+    - perl-list-moreutils
+    - perl-archive-tar
+    - perl-json
+    - entrez-direct
+    - curl
 
 test:
+  files:
+    - test.fa
+    - testdatabase.fa
   commands:
+    # (see run_test.sh for remainder of tests)
+    - blastn -help
+    - blastp -help
+    - makeblastdb -help
     - blastdb_aliastool -version > /dev/null
     - blastdbcheck -version > /dev/null
     - blastdbcmd -version > /dev/null
@@ -35,7 +52,6 @@ test:
     - blastx -version > /dev/null
     - convert2blastmask -version > /dev/null
     - dustmasker -version > /dev/null
-    - legacy_blast.pl --version > /dev/null
     - makeblastdb -version > /dev/null
     - makembindex -version > /dev/null
     - psiblast -version > /dev/null
