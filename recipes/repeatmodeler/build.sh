@@ -5,6 +5,10 @@ RM_DIR=${PREFIX}/share/RepeatModeler
 RM_OTHER_PROGRAMS="BuildDatabase Refiner RepeatClassifier TRFMask util/Linup util/viewMSA.pl"
 RM_PROGRAMS="RepeatModeler $RM_OTHER_PROGRAMS"
 
+mkdir -p ${PREFIX}/bin
+mkdir -p ${RM_DIR}
+cp -r * ${RM_DIR}
+
 # Hack J. Dainat - fix path to access
 if [[ "$OSTYPE" == "darwin"* ]]; then
   sed -i '' 's/REPEATMODELER_DIR\/Refiner/REFINER_PRGM/'  ${RM_DIR}/RepeatModeler
@@ -18,10 +22,6 @@ else
   sed -i 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatClassifier
 fi
 # END HACK
-
-mkdir -p ${PREFIX}/bin
-mkdir -p ${RM_DIR}
-cp -r * ${RM_DIR}
 
 # Copy edited config file for auto configuration
 cp ${RECIPE_DIR}/RepModelConfig.pm ${RM_DIR}/RepModelConfig.pm
