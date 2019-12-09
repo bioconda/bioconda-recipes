@@ -3,12 +3,12 @@
 mkdir percobuild && cd percobuild
 cmake -DTARGET_ARCH=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PREFIX -DXML_SUPPORT=ON -DCMAKE_PREFIX_PATH="$PREFIX;$PREFIX/lib" -DCMAKE_CXX_FLAGS="-std=c++14" $SRC_DIR
 
-make VERBOSE=1 && make install
+make && make install
 cd ..
 
 mkdir converterbuild && cd converterbuild 
 cmake -DTARGET_ARCH=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$PREFIX -DBOOST_ROOT=$PREFIX -DBOOST_LIBRARYDIR=$PREFIX/lib -DSERIALIZE="Boost" -DCMAKE_CXX_FLAGS="-std=c++14" -DCMAKE_PREFIX_PATH=$PREFIX $SRC_DIR/src/converters
-VERBOSE=1 && make install
+make install
 cd ..
 
 mkdir $PREFIX/testdata
