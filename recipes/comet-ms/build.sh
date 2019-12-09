@@ -14,6 +14,8 @@ fi
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" CometSearch/Makefile
 sed -i.bak "s#gcc#${CC}#;s#g++#${CXX}#" MSToolkit/Makefile
 pushd MSToolkit
+touch foo
+touch FOO
 ls -l
 make CC=$CXX GCC=$CC arlib
 popd
