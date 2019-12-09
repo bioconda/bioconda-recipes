@@ -26,11 +26,6 @@ fi
 # Copy edited config file for auto configuration
 cp ${RECIPE_DIR}/RepModelConfig.pm ${RM_DIR}/RepModelConfig.pm
 
-# make DB if missing
-if [ -f ${PREFIX}/share/RepeatMasker/Libraries/RepeatPeps.lib ] && [ ! -f ${PREFIX}/share/RepeatMasker/Libraries/RepeatPeps.lib.psq ] ; then
-  makeblastdb -dbtype prot -in ${PREFIX}/share/RepeatMasker/Libraries/RepeatPeps.lib
-fi
-
 # Set env variables for config parameters needed in RepModelConfig.pm
 cat <<END >>${PREFIX}/bin/RepeatModeler
 #!/bin/bash
