@@ -1,13 +1,6 @@
 #!/bin/bash
 
-export CFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
-export CPATH=${PREFIX}/include
-
-
 echo "Compiling covtobed"
-$CXX -std=c++11 *.cpp -I${PREFIX}/include/bamtools  ${PREFIX}/lib/libbamtools.a -o covtobed -lz
-
-echo "Moving binary"
 mkdir -p ${PREFIX}/bin
-mv covtobed ${PREFIX}/bin/
+#$CXX -std=c++11 *.cpp  ${PREFIX}/lib/libbamtools.a -o covtobed -lz
+$CXX -std=c++11 -O3 -I${PREFIX}/include/ -I${BUILD_PREFIX}/include -I${PREFIX}/include/bamtools -L${PREFIX}/lib *.cpp -o ${PREFIX}/bin/covtobed -lbamtools -lz
