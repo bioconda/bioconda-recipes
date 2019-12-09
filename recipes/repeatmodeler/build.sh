@@ -5,12 +5,31 @@ RM_DIR=${PREFIX}/share/RepeatModeler
 RM_OTHER_PROGRAMS="BuildDatabase Refiner RepeatClassifier TRFMask util/Linup util/viewMSA.pl"
 RM_PROGRAMS="RepeatModeler $RM_OTHER_PROGRAMS"
 
+# Hack J. Dainat - fix path to access
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  sed -i '' 's/REPEATMODELER_DIR\/Refiner/REFINER_PRGM/'  ${RM_DIR}/RepeatModeler
+  sed -i '' 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatModeler
+  sed -i '' 's/REPEATMODELER_DIR\/RepeatClassifier/REPEATCLASSIFIER_PRGM/' ${RM_DIR}/RepeatModeler
+  sed -i '' 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatClassifier
+else
+  sed -i 's/REPEATMODELER_DIR\/Refiner/REFINER_PRGM/' ${RM_DIR}/RepeatModeler
+  sed -i 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatModeler
+  sed -i 's/REPEATMODELER_DIR\/RepeatClassifier/REPEATCLASSIFIER_PRGM/' ${RM_DIR}/RepeatModeler
+  sed -i 's/REPEATMODELER_DIR\/TRFMask/TRFMASK_PRGM/' ${RM_DIR}/RepeatClassifier
+fi
+# END HACK
+
 mkdir -p ${PREFIX}/bin
 mkdir -p ${RM_DIR}
 cp -r * ${RM_DIR}
 
 # Copy edited config file for auto configuration
 cp ${RECIPE_DIR}/RepModelConfig.pm ${RM_DIR}/RepModelConfig.pm
+
+# make DB if missing
+if [ -f ${PREFIX}/share/RepeatMasker/Libraries/RepeatPeps.lib ] && [ ! -f ${PREFIX}/share/RepeatMasker/Libraries/RepeatPeps.lib.psq ] ; then
+  makeblastdb -dbtype prot -in ${PREFIX}/share/RepeatMasker/Libraries/RepeatPeps.lib
+fi
 
 # Set env variables for config parameters needed in RepModelConfig.pm
 cat <<END >>${PREFIX}/bin/RepeatModeler
