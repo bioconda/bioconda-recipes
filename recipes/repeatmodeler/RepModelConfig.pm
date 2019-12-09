@@ -119,6 +119,27 @@ BEGIN
 ##
   $RSCOUT_DIR = $ENV{'RSCOUT_DIR'};
 
+  ##
+  ## Refiner Location
+  ## ====================
+  ##
+  $REFINER_DIR = $ENV{'REFINER_DIR'};
+  $REFINER_PRGM = "$REFINER_DIR/Refiner";
+
+  ##
+  ## Refiner Location
+  ## ====================
+  ##
+  $TRFMASK_DIR = $ENV{'TRFMASK_DIR'};
+  $TRFMASK_PRGM = "$TRFMASK_DIR/TRFMask";
+
+  ##
+  ## Refiner Location
+  ## ====================
+  ##
+  $REPEATCLASSIFIER_DIR =  $ENV{'REPEATCLASSIFIER_DIR'};
+  $REPEATCLASSIFIER_PRGM = "$REPEATCLASSIFIER_DIR/RepeatClassifier";
+
 ##
 ## Turns on debugging in all RepeatModeler modules/scripts
 ##
