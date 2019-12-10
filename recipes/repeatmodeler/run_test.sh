@@ -8,8 +8,4 @@ BuildDatabase -engine ncbi -name db test.fa 2> /dev/null
 RepeatModeler -engine ncbi -database db 2> /dev/null
 
 # check the result
-if [ -s RM_*/consensi.fa ] ; then 
-  exit 0 # it is fine
-else
-  exit 1 # return error
-fi 
+test -s RM_*/consensi.fa
