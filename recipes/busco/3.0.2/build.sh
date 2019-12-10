@@ -12,5 +12,6 @@ cp config/config.ini.default $SHARE/config.ini.default
 
 
 cd $PREFIX/bin/
-ln -s run_BUSCO.py run_busco
-ln -s generate_plot.py generate_plot
+cp run_BUSCO.py run_busco
+cp generate_plot.py generate_plot
+# I'don't know why ymlink doesn't work
