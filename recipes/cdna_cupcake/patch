@@ -237,10 +237,42 @@ index 07426d1..5c93c40 100644
 \ No newline at end of file
 +run_cmd("samtools index {0}.sorted.bam".format(prefix))
 diff --git a/setup.py b/setup.py
-index 677ad14..8be3cf5 100644
+index 677ad14..8aa1c54 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -30,7 +30,11 @@ setup(
+@@ -1,6 +1,7 @@
+ from setuptools import setup, Extension, find_packages
+ import sys
+ import numpy as np
++from Cython.Build import cythonize
+ 
+ 
+ __author__ = "etseng@pacb.com"
+@@ -8,11 +9,11 @@ version = "9.0.3"
+ 
+ ext_modules = [
+                 Extension("cupcake.tofu.branch.intersection_unique",
+-                    ["cupcake/tofu/branch/intersection_unique.c"]),
++                    ["cupcake/tofu/branch/intersection_unique.pyx"]),
+                 Extension("cupcake.tofu.branch.c_branch",
+-                         ["cupcake/tofu/branch/c_branch.c"]),
++                         ["cupcake/tofu/branch/c_branch.pyx"]),
+                 Extension("cupcake.ice.find_ECE",
+-                    ["cupcake/ice/find_ECE.c"]),
++                    ["cupcake/ice/find_ECE.pyx"]),
+               ]
+ 
+ 
+@@ -21,7 +22,7 @@ setup(
+     version=version,
+     author='Elizabeth Tseng',
+     author_email='etseng@pacb.com',
+-    ext_modules = ext_modules,
++    ext_modules = cythonize(ext_modules),
+     include_dirs = [np.get_include()],
+     zip_safe=False,
+     packages = ['cupcake', 'cupcake.io', 'cupcake.ice',
+@@ -30,7 +31,11 @@ setup(
                  'phasing', 'phasing.io'],
      install_requires=[
          'biopython',
