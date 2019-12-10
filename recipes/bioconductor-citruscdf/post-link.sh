@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="citruscdf_2.18.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/citruscdf_2.18.0.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/citruscdf_2.18.0.tar.gz"
   "https://bioarchive.galaxyproject.org/citruscdf_2.18.0.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-citruscdf/bioconductor-citruscdf_2.18.0_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-citruscdf/bioconductor-citruscdf_2.18.0_src_all.tar.gz"

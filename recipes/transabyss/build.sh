@@ -27,4 +27,4 @@ cp -rf utilities/* transabyss/
 
 cp $RECIPE_DIR/setup.py ./
 python setup.py build
-python setup.py install
+$PYTHON -m pip install . --ignore-installed --no-deps -vv

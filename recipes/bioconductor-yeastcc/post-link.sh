@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="yeastCC_1.24.0.tar.gz"
+FN="yeastCC_1.26.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/yeastCC_1.24.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/yeastCC_1.24.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-yeastcc/bioconductor-yeastcc_1.24.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/yeastCC_1.26.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/yeastCC_1.26.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yeastcc/bioconductor-yeastcc_1.26.0_src_all.tar.gz"
 )
-MD5="55504ef44f97f3cf418c6817f9884538"
+MD5="bfb364a3833c783fe4a92441ef3c5e09"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
