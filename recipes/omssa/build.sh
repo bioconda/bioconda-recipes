@@ -10,3 +10,6 @@ mkdir "${PREFIX}/bin"
 ln -s "${SHARE_DIR}/omssacl" "${PREFIX}/bin/omssacl"
 ln -s "${SHARE_DIR}/omssa2pepXML" "${PREFIX}/bin/omssa2pepXML"
 ln -s "${SHARE_DIR}/omssamerge" "${PREFIX}/bin/omssamerge"
+
+# clean up
+rm ${SHARE_DIR}/*.sh ${SHARE_DIR}/*.yaml
