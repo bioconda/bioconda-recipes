@@ -1,6 +1,7 @@
 #!/bin/bash
+set -e
 
-cd $SRC_DIR
 gunzip ORFfinder.gz
-cp ORFfinder $PREFIX/bin
+mkdir -p ${PREFIX}/bin
+cp ORFfinder ${PREFIX}/bin
 chmod a+x $PREFIX/bin/ORFfinder
