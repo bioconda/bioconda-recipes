@@ -1,0 +1,28 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 77a8a3f..e745642 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -54,7 +54,6 @@ endif()
+ 
+ add_subdirectory(3rd-party/bamtools/src/bamtools/api)
+ add_subdirectory(src)
+-add_subdirectory(tests)
+ 
+ install(PROGRAMS scripts/laser scripts/evaluate-sv-predictions scripts/split-priors-by-chromosome scripts/clever scripts/postprocess-predictions scripts/vcf-to-deletionlist scripts/mateclever scripts/mateclever-compute-rois scripts/plot-insert-size-distribution DESTINATION bin)
+ 
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index c339848..a7d188c 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -165,6 +165,11 @@ target_link_libraries(merge-putative-variations CleverLib)
+ target_link_libraries(ctk-version CleverLib)
+ 
+ target_link_libraries(CleverLib ${Boost_LIBRARIES} BamTools)
++find_library(LIBRT rt)
++if(LIBRT)
++    target_link_libraries(CleverLib ${LIBRT})
++endif()
++
+ set(ALL_EXE_TARGETS 
+ 	bam-to-alignment-priors
+ 	insert-length-histogram

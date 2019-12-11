@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="BSgenome.Mdomestica.UCSC.monDom5_1.4.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/BSgenome.Mdomestica.UCSC.monDom5_1.4.2.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/BSgenome.Mdomestica.UCSC.monDom5_1.4.2.tar.gz"
   "https://bioarchive.galaxyproject.org/BSgenome.Mdomestica.UCSC.monDom5_1.4.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mdomestica.ucsc.mondom5/bioconductor-bsgenome.mdomestica.ucsc.mondom5_1.4.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-bsgenome.mdomestica.ucsc.mondom5/bioconductor-bsgenome.mdomestica.ucsc.mondom5_1.4.2_src_all.tar.gz"

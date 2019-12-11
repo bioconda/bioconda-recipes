@@ -5,7 +5,7 @@ jar_name="REQ.jar"
 set -eu -o pipefail
 
 set -o pipefail
-export LC_ALL=en_US.UTF-8
+export LC_ALL=C
 
 # Find original directory of bash script, resolving symlinks
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
