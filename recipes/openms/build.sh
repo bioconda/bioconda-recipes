@@ -6,13 +6,9 @@ export LD_LIBRARY_PATH=${PREFIX}/lib
 
 mkdir contrib-build
 cd contrib-build
+## By default WM is built and linked statically such that it does not
+## introduce a dependency that needs to be exported
 cmake -DBUILD_TYPE=WILDMAGIC ../contrib
-
-
-mkdir -p $PREFIX/etc/conda/activate.d/ $PREFIX/etc/conda/deactivate.d/
-cp $RECIPE_DIR/activate.sh $PREFIX/etc/conda/activate.d/openms.sh
-cp $RECIPE_DIR/deactivate.sh $PREFIX/etc/conda/deactivate.d/openms.sh
-
 cd ..
 
 # Use C++17 rather than C++11 to hopefully better match boost
@@ -31,15 +27,12 @@ cmake .. \
   -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
   -DCMAKE_INSTALL_PREFIX=$PREFIX -DHAS_XSERVER=OFF \
   -DENABLE_TUTORIALS=OFF \
-  -DENABLE_STYLE_TESTING=OFF \
-  -DENABLE_UNITYBUILD=OFF \
   -DWITH_GUI=OFF \
-  -DBoost_DEBUG=ON \
   -DBOOST_USE_STATIC=OFF \
   -DBoost_NO_BOOST_CMAKE=ON \
-  -DBoost_ARCHITECTURE="-x64"
+  -DBoost_ARCHITECTURE="-x64" \
+  -DPYOPENMS=ON \
+  -DPY_NUM_THREADS=2
 
-make -j2 TOPP UTILS OpenMS
-## TODO make install is not working well yet. We neither have installation 
-## RPaths nor CMake exports that work correctly with installation.
+make -j${CPU_COUNT} OpenMS TOPP UTILS pyopenms
 make install
