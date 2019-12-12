@@ -12,7 +12,7 @@ simka \
 simkaCount \
 simkaCountProcess \
 simkaMerge \
-simkaMin \
+simkaMinCore \
 "
 
 mkdir -p $PREFIX/bin/

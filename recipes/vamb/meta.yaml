@@ -1,0 +1,41 @@
+{% set version = "2.1.0" %}
+
+package:
+  name: vamb
+  version: '{{version}}'
+
+source:
+  url: https://github.com/RasmussenLab/vamb/archive/{{ version }}.tar.gz
+  sha256: c006de8d741b4d026b2d78a030e3973e16be5e771c5ae9cf6f7a44434776803c
+
+build:
+  number: 0
+  skip: True  # [py2k]
+  entry_points:
+    - vamb=vamb.__main__:main
+  script: "{{ PYTHON }} -m pip install . --no-deps -vv"
+
+requirements:
+  build:
+    - '{{compiler("c")}}'
+  host:
+    - python
+    - pip
+    - cython >=0.25.2
+  run:
+    - python
+    - numpy >=1.15
+    - pytorch-cpu >=0.4
+    - pysam >=0.14
+
+test:
+  imports:
+    - vamb
+  commands:
+    - vamb --help
+
+about:
+  home: https://github.com/RasmussenLab/vamb
+  license: MIT License
+  license_family: MIT
+  summary: Variational autoencoder for metagenomic binning
