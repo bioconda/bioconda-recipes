@@ -16,3 +16,7 @@ msg "2. Manually download the latest reference data:"
 msg "https://github.com/Ecogenomics/GTDBTk#gtdb-tk-reference-data"
 msg "2b. Set the GTDBTK_DATA_PATH environment variable in the file:"
 msg "${PREFIX}/etc/conda/activate.d"
+
+echo 'line1'
+echo 'line2'
+echo 'line3'
