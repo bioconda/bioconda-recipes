@@ -1,8 +1,4 @@
 #!/bin/bash
-cd ${PREFIX}/include && ls
-cd ${PREFIX}/lib && ls
-cd ${PREFIX}/ && ls
-cd
 ldconfig -p | grep htslib
 ldconfig -p | grep tbb
 mkdir build
