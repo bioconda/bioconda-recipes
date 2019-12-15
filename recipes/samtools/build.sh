@@ -14,3 +14,6 @@ CURSES_LIB="-ltinfow -lncursesw"
 ./configure --prefix=$PREFIX --with-htslib=system CURSES_LIB="$CURSES_LIB"
 make all
 make install
+
+# Copy headers for tools that use samtools as a dependency
+cp *.h ${PREFIX}/include
