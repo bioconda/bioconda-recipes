@@ -1,5 +1,6 @@
 #!/bin/bash
-
+ldconfig -p | grep htslib
+ldconfig -p | grep tbb
 mkdir build
 cd build
 cmake .. -DINSTALL_PREFIX=$(pwd) -DINCLUDE_LIBRARY_PREFIX=${PREFIX}/include -DLIBRARY_LINK_PREFIX=${PREFIX}/lib
