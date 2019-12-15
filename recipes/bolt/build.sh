@@ -1,4 +1,5 @@
 #!/bin/bash
+ls /usr/local/include
 mkdir build
 cd build
 cmake .. -DINSTALL_BIN_PREFIX=$(pwd) -DINCLUDE_LIBRARY_PREFIX=/usr/local/include -DLIBRARY_LINK_PREFIX=/usr/local/lib/
