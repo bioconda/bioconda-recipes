@@ -9,6 +9,7 @@ echo $PREFIX/include/htslib
 export CFLAGS="$CFLAGS -I$PREFIX/include"
 export CPPFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+export CPLUS_INCLUDE_PATH=${PREFIX}/include
 mkdir build
 cd build
 cmake .. -DINSTALL_BIN_PREFIX=$PREFIX/bin -DINCLUDE_LIBRARY_PREFIX=$PREFIX/include -DLIBRARY_LINK_PREFIX=$PREFIX/lib
