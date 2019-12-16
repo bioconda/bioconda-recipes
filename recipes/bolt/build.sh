@@ -1,15 +1,4 @@
 #!/bin/bash
-echo $PREFIX
-ls $PREFIX/include
-echo $PREFIX/include
-ls $PREFIX/lib
-echo $PREFIX/lib
-ls $PREFIX/include/htslib
-echo $PREFIX/include/htslib
-export CFLAGS="$CFLAGS -I$PREFIX/include"
-export CPPFLAGS="$CFLAGS -I$PREFIX/include"
-export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
-export CPLUS_INCLUDE_PATH=${PREFIX}/include
 mkdir build
 cd build
 cmake .. -DINSTALL_BIN_PREFIX=${PWD} -DINCLUDE_LIBRARY_PREFIX=$PREFIX/include -DLIBRARY_LINK_PREFIX=$PREFIX/lib
