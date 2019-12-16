@@ -18,26 +18,16 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}
-    - python {{ python }}
     - cmake
     - autoconf
     - automake
   host:
-    - llvm-openmp # [osx]
-    - zlib
-    - libtool
-    - xerces-c
-    - gsl
-    - boost
-    - eigen
-    - glpk
-    - bzip2
-    - qt >=5.5
-    - libsvm
-    - seqan-library ==1.4.2
-    - coinmp
-    - sqlite
-  run:
+    - python {{ python }}
+    - cython
+    - autowrap
+    - numpy
+    - pip
+    - nose
     - llvm-openmp # [osx]
     - zlib
     - libtool
@@ -61,6 +51,22 @@ outputs:
       - share
       - include
     script: package_libopenms.sh
+    requirements:
+        run:
+          - llvm-openmp # [osx]
+          - zlib
+          - libtool
+          - xerces-c
+          - gsl
+          - boost
+          - eigen
+          - glpk
+          - bzip2
+          - qt >=5.5
+          - libsvm
+          - seqan-library ==1.4.2
+          - coinmp
+          - sqlite
 
   - name: openms-tools
     files: bin
@@ -81,10 +87,14 @@ outputs:
     requirements:
       - {{ pin_subpackage('libopenms', exact=True) }}
       - python {{ python }}
+      - autowrap
+      - numpy
     build:
       run_exports:
         - {{ pin_subpackage('libopenms', exact=True) }}
         - python {{ python }}
+        - autowrap
+        - numpy
     test:
       commands:
         - ${PYTHON} -c "import pyopenms; print(pyopenms.__version__)"
