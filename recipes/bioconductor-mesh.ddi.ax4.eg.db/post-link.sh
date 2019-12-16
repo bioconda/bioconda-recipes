@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="MeSH.Ddi.AX4.eg.db_1.12.0.tar.gz"
+FN="MeSH.Ddi.AX4.eg.db_1.13.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/MeSH.Ddi.AX4.eg.db_1.12.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/MeSH.Ddi.AX4.eg.db_1.12.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mesh.ddi.ax4.eg.db/bioconductor-mesh.ddi.ax4.eg.db_1.12.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/MeSH.Ddi.AX4.eg.db_1.13.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/MeSH.Ddi.AX4.eg.db_1.13.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mesh.ddi.ax4.eg.db/bioconductor-mesh.ddi.ax4.eg.db_1.13.0_src_all.tar.gz"
 )
-MD5="69e13d6fc6e627ae014dcc8813ab5e9a"
+MD5="68e4120ed59cbb353f9e4b85d40f531d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
