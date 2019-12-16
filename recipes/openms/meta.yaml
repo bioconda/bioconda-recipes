@@ -14,11 +14,44 @@ source:
 
 build:
   number: 3
-  requirements:
-    run:
-      - libopenms
-      - openms-tools
-      - pyopenms
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - python {{ python }}
+    - cmake
+    - autoconf
+    - automake
+  host:
+    - llvm-openmp # [osx]
+    - zlib
+    - libtool
+    - xerces-c
+    - gsl
+    - boost
+    - eigen
+    - glpk
+    - bzip2
+    - qt >=5.5
+    - libsvm
+    - seqan-library ==1.4.2
+    - coinmp
+    - sqlite
+  run:
+    - llvm-openmp # [osx]
+    - zlib
+    - libtool
+    - xerces-c
+    - gsl
+    - boost
+    - eigen
+    - glpk
+    - bzip2
+    - qt >=5.5
+    - libsvm
+    - seqan-library ==1.4.2
+    - coinmp
+    - sqlite
 
 outputs:
   - name: libopenms
@@ -26,44 +59,8 @@ outputs:
     files: 
       - lib
       - share
+      - include
     script: package_libopenms.sh
-    requirements:
-      build:
-        - {{ compiler('cxx') }}
-        - python {{ python }}
-        - cmake
-        - autoconf
-        - automake
-      host:
-        - llvm-openmp # [osx]
-        - zlib
-        - libtool
-        - xerces-c
-        - gsl
-        - boost
-        - eigen
-        - glpk
-        - bzip2
-        - qt >=5.5
-        - libsvm
-        - seqan-library ==1.4.2
-        - coinmp
-        - sqlite
-      run:
-        - llvm-openmp # [osx]
-        - zlib
-        - libtool
-        - xerces-c
-        - gsl
-        - boost
-        - eigen
-        - glpk
-        - bzip2
-        - qt >=5.5
-        - libsvm
-        - seqan-library ==1.4.2
-        - coinmp
-        - sqlite
 
   - name: openms-tools
     files: bin
@@ -71,6 +68,9 @@ outputs:
     outputs: 
     requirements:
       - {{ pin_subpackage('libopenms', exact=True) }}
+    build:
+      run_exports:
+        - {{ pin_subpackage('libopenms', exact=True) }}
     test:
       commands:
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ FileMerger --help  
@@ -81,6 +81,10 @@ outputs:
     requirements:
       - {{ pin_subpackage('libopenms', exact=True) }}
       - python {{ python }}
+    build:
+      run_exports:
+        - {{ pin_subpackage('libopenms', exact=True) }}
+        - python {{ python }}
     test:
       commands:
         - ${PYTHON} -c "import pyopenms; print(pyopenms.__version__)"
