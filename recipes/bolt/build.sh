@@ -7,6 +7,7 @@ echo $PREFIX/lib
 ls $PREFIX/include/htslib
 echo $PREFIX/include/htslib
 export CFLAGS="$CFLAGS -I$PREFIX/include"
+export CPPFLAGS="$CFLAGS -I$PREFIX/include"
 export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
 mkdir build
 cd build
