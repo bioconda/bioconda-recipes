@@ -43,4 +43,8 @@ N=`update_blastdb.pl --showall | wc -l`
 [ $N -gt 5 ]
 echo PASS
 
+echo -n 'Checking get_species_taxids.sh... '
+N=`get_species_taxids.sh -t 9606 | wc -l`
+[ $N -eq 3 ]
+echo PASS
 echo "ALL TESTS PASSED"
