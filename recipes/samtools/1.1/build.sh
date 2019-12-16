@@ -4,3 +4,6 @@ sed -i.bak -e "s|CFLAGS=\s*-g\s*-Wall\s*-O2\s*|CFLAGS= -g -Wall -O2 -I$NCURSES_I
 make CC=${CC} CFLAGS="${CFLAGS}" LDFLAGS="-L${PREFIX}/lib"
 mkdir -p $PREFIX/bin
 mv samtools $PREFIX/bin
+
+# Copy headers for tools that use samtools as a dependency
+cp *.h ${PREFIX}/include
