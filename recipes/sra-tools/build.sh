@@ -36,3 +36,10 @@ pushd sra-tools
 make
 make install
 popd
+
+# Strip package version from binary names
+cd $PREFIX/bin
+for f in *$PKG_VERSION ; do
+    mv $f ${f%%.$PKG_VERSION}
+done
+
