@@ -8,7 +8,7 @@ export CXXFLAGS=${CXXFLAGS//${USELESS}/}
 # Not sure if those are needed 
 export LIBRARY_PATH=${PREFIX}/lib
 export LD_LIBRARY_PATH=${PREFIX}/lib
-export DYLD_LIBRARY_PATH=${PREFIX}/lib
+#export DYLD_LIBRARY_PATH=${PREFIX}/lib
 
 mkdir contrib-build
 cd contrib-build
