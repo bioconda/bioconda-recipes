@@ -1,8 +1,14 @@
 #!/bin/sh
 
-export C_INCLUDE_PATH=${PREFIX}/include
+# useless default include directory that is silently added by the compiler packages "to help"...
+# it is not even added with -isystem https://github.com/AnacondaRecipes/aggregate/blob/master/clang/activate-clang%2B%2B.sh#L87
+USELESS="-I${PREFIX}/include"
+export CXXFLAGS=${CXXFLAGS//${USELESS}/}
+
+# Not sure if those are needed 
 export LIBRARY_PATH=${PREFIX}/lib
 export LD_LIBRARY_PATH=${PREFIX}/lib
+export DYLD_LIBRARY_PATH=${PREFIX}/lib
 
 mkdir contrib-build
 cd contrib-build
@@ -25,7 +31,9 @@ LDFLAGS='-Wl,-rpath,$${ORIGIN}/../lib'
 
 cmake .. \
   -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
-  -DCMAKE_INSTALL_PREFIX=$PREFIX -DHAS_XSERVER=OFF \
+  -DCMAKE_PREFIX_PATH=${PREFIX} \
+  -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+  -DHAS_XSERVER=OFF \
   -DENABLE_TUTORIALS=OFF \
   -DWITH_GUI=OFF \
   -DBOOST_USE_STATIC=OFF \
