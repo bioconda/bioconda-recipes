@@ -38,10 +38,10 @@ echo -n 'Check update_blastdb.pl installation... '
 perl -c `which update_blastdb.pl` >&/dev/null
 echo PASS 
 
-echo -n 'Showing available BLAST databases... '
-N=`update_blastdb.pl --showall | wc -l`
-[ $N -gt 5 ]
-echo PASS
+#echo -n 'Showing available BLAST databases... '
+#N=`update_blastdb.pl --showall | wc -l`
+#[ $N -gt 5 ]
+#echo PASS
 
 echo -n 'Checking get_species_taxids.sh... '
 N=`get_species_taxids.sh -t 9606 | wc -l`
