@@ -42,4 +42,4 @@ cd $PREFIX/bin
 for f in *$PKG_VERSION ; do
     mv $f ${f%%.$PKG_VERSION}
 done
-
+ls -l
