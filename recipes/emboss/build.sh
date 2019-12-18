@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# Remove some .la confusing libtool
-rm $PREFIX/lib/*.la
-
 ./configure --prefix=$PREFIX --without-x
+sed -i.bak 's/\t$(bindir)\/embossupdate//g' Makefile
 make
 make install
 
