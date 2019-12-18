@@ -41,8 +41,7 @@ cmake .. \
   -DBoost_NO_BOOST_CMAKE=ON \
   -DBoost_ARCHITECTURE="-x64" \
   -DBUILD_EXAMPLES=OFF \
-  -DPYOPENMS=ON \
-  -DPY_NUM_THREADS=2
+  -DPYOPENMS=ON
 
 make -j${CPU_COUNT} OpenMS TOPP UTILS pyopenms
 make install
