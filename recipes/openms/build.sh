@@ -31,6 +31,7 @@ LDFLAGS='-Wl,-rpath,$${ORIGIN}/../lib'
 
 cmake .. \
   -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
+  -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
   -DCMAKE_INSTALL_PREFIX=${PREFIX} \
   -DHAS_XSERVER=OFF \
