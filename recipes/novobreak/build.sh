@@ -1,7 +1,7 @@
 #!/bin/bash
 
 make clean
-make novoBreak LIBPATH=-L$PREFIX/lib INCLUDE=-I$PREFIX/include CC=$CC
+make novoBreak LIBPATH=-L$PREFIX/lib INCLUDE=-I$PREFIX/include CC=$CC CFLAGS=-g -W -Wall -O3 -finline-functions -D_FILE_OFFSET_BITS=64 -fPIE
 mkdir -p $PREFIX/bin
 cp novoBreak $PREFIX/bin
 
