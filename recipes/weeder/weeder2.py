@@ -7,11 +7,11 @@ import argparse
 import subprocess as sp
 
 # Weeder install dir
-weeder_dir = os.path.dirname(os.path.realpath(__file__))
+weeder_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "share", "weeder2"))
 weeder_exe = "weeder2"
 
 weeder_help = sp.check_output(
-        os.path.join(weeder_dir, weeder_exe), 
+        os.path.join(weeder_dir, weeder_exe),
         stderr=sp.STDOUT).decode()
 parser = argparse.ArgumentParser()
 parser.add_argument("-f", dest="fname")
@@ -23,5 +23,4 @@ if not args.fname:
 fname = os.path.abspath(args.fname)
 rest = " ".join(unknownargs)
 cmd = "./{} -f {} {}".format(weeder_exe, fname, rest)
-p = sp.Popen(cmd, shell=True, cwd=weeder_dir)
-p.communicate()
+sys.exit(sp.call(cmd, shell=True, cwd=weeder_dir))

@@ -1,0 +1,45 @@
+{% set name = "MedPy" %}
+{% set version = "0.4.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: f8a94937dbb947ab069e767862dc6b86896b153c41ce8ed9369c7d79c0033a88
+
+build:
+  noarch: python
+  number: 0
+  script:
+    - export CXXFLAGS="${CXXFLAGS} -I${PREFIX}/include -I${PYTHON_INCLUDE_DIR}"
+    - "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vvv "
+
+requirements:
+  host:
+    - pip
+    - python >3
+  run:
+    - numpy >=1.11.0
+    - python >3
+    - simpleitk  >=1.1.0
+    - scipy >=1.1.0
+
+test:
+  imports:
+    - medpy
+    - medpy.core
+    - medpy.features
+    - medpy.filter
+    #- medpy.graphcut
+    - medpy.io
+    - medpy.metric
+    - medpy.utilities
+
+about:
+  home: https://github.com/loli/medpy
+  license: GNU General Public (GPL)
+  license_family: LGPL
+  license_file: LICENSE.txt
+  summary: Medical image processing in Python

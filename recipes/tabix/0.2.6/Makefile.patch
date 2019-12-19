@@ -1,0 +1,31 @@
+--- tabix-0.2.6.orig/Makefile	2018-09-25 09:36:48.342232395 -0400
++++ tabix-0.2.6.new/Makefile	2018-09-25 09:41:13.675738586 -0400
+@@ -1,6 +1,7 @@
+ CC=			gcc
+-CFLAGS=		-g -Wall -O2 -fPIC #-m64 #-arch ppc
++CFLAGS=		-I${PREFIX}/include -g -Wall -O2 -fPIC #-m64 #-arch ppc
+ DFLAGS=		-D_FILE_OFFSET_BITS=64 -D_USE_KNETFILE -DBGZF_CACHE
++LDFLAGS=	-L${PREFIX}/lib
+ LOBJS=		bgzf.o kstring.o knetfile.o index.o bedidx.o
+ AOBJS=		main.o
+ PROG=		tabix bgzip
+@@ -32,16 +33,16 @@
+ 		$(CC) -shared -Wl,-soname,libtabix.so -o $@ $(LDFLAGS) $(LOBJS) -lc -lz
+ 
+ libtabix.1.dylib:$(LOBJS)
+-		libtool -dynamic $(LOBJS) -o $@ -lc -lz
++		libtool -dynamic $(LDFLAGS) $(LOBJS) -o $@ -lc -lz
+ 
+ libtabix.a:$(LOBJS)
+ 		$(AR) -csru $@ $(LOBJS)
+ 
+ tabix:lib $(AOBJS)
+-		$(CC) $(CFLAGS) -o $@ $(AOBJS) -L. -ltabix -lm $(LIBPATH) -lz
++		$(CC) $(CFLAGS) -o $@ $(AOBJS) -L. $(LDFLAGS) -ltabix -lm $(LIBPATH) -lz
+ 
+ bgzip:bgzip.o bgzf.o knetfile.o
+-		$(CC) $(CFLAGS) -o $@ bgzip.o bgzf.o knetfile.o -lz
++		$(CC) $(CFLAGS) -o $@ bgzip.o bgzf.o knetfile.o $(LDFLAGS) -lz
+ 
+ TabixReader.class:TabixReader.java
+ 		javac -cp .:sam.jar TabixReader.java

@@ -1,16 +1,12 @@
 #!/bin/bash
 mkdir -p "$PREFIX/bin"
-if [ "$(uname)" == "Darwin" ]; then
-    cp toLower "$PREFIX/bin"
-else
-    export MACHTYPE=x86_64
-    export BINDIR=$(pwd)/bin
-    mkdir -p "$BINDIR"
-    (cd kent/src/lib && make)
-    (cd kent/src/htslib && make)
-    (cd kent/src/jkOwnLib && make)
-    (cd kent/src/hg/lib && make)
-    (cd kent/src/utils/toLower && make)
-    cp bin/toLower "$PREFIX/bin"
-fi
+export MACHTYPE=x86_64
+export BINDIR=$(pwd)/bin
+mkdir -p "$BINDIR"
+(cd kent/src/lib && make)
+(cd kent/src/htslib && make)
+(cd kent/src/jkOwnLib && make)
+(cd kent/src/hg/lib && make)
+(cd kent/src/utils/toLower && make)
+cp bin/toLower "$PREFIX/bin"
 chmod +x "$PREFIX/bin/toLower"

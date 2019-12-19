@@ -1,9 +1,10 @@
-#!/bin/bash
 cd src
-sed -i -e 's/-Wl,-Bdynamic//g' Makefile
-sed -i -e 's/-Wl,-Bstatic//g' Makefile
-export OPENBLAS=$PREFIX
-make 
-cd ..
-mkdir -p $PREFIX/bin
-cp bin/* $PREFIX/bin
+make clobber
+
+make CFLAGS="-I$PREFIX/include -I../../include" LDFLAGS="-L$PREFIX/lib" all
+
+# Install (makefile install has hard-coded destination, so have to do this manually)
+ mkdir -p $PREFIX/bin
+ cp {baseprog,convertf,mergeit,pca,smshrink} $PREFIX/bin/
+ cp {eigensrc/pcatoy,eigensrc/smartrel,eigensrc/smarteigenstrat,eigensrc/twstats} $PREFIX/bin/
+ cp {eigensrc/eigenstrat,eigensrc/eigenstratQTL,eigensrc/smartpca} $PREFIX/bin/

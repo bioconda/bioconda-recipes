@@ -1,8 +1,6 @@
 #!/bin/sh
 
-mkdir bin
-cd src
+cd FamSeq/src
 make
-cd ..
-
-cp ${SRC_DIR}/src/FamSeq $PREFIX/bin/FamSeq 
+mkdir -p ${PREFIX}/bin
+mv FamSeq $PREFIX/bin/FamSeq 

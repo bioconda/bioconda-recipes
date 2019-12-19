@@ -1,0 +1,64 @@
+{% set version = '2.1' %}
+
+package:
+  name: r-phylomeasures
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/PhyloMeasures_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/PhyloMeasures/PhyloMeasures_{{ version }}.tar.gz
+  sha256: 1982f47cb5bfa61e56f47cae78e199f13778edde49af86fa5cc183a0d1d15d05
+
+build:
+  number: 2
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+  host:
+    - r-base
+    - r-ape
+  run:
+    - r-base
+    - r-ape
+
+test:
+  commands:
+
+    - $R -e "library('PhyloMeasures')"           # [not win]
+    - "\"%R%\" -e \"library('PhyloMeasures')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=PhyloMeasures
+  license: GPL-3
+  summary: Given a phylogenetic tree T and an assemblage S of species represented as  a subset
+    of tips in T, we want to compute a measure of the diversity  of the species in S
+    with respect to T. The current package offers  efficient algorithms that can process
+    large phylogenetic data for several such measures.  Most importantly, the package
+    includes algorithms for computing  efficiently the standardized versions of phylogenetic
+    measures and their p-values, which are  essential for null model comparisons. Among
+    other functions,  the package provides efficient computation of richness-standardized
+    versions  for indices such as the net relatedness index (NRI),  nearest taxon index
+    (NTI), phylogenetic diversity index (PDI), and the corresponding indices of two-sample
+    measures.  The package also introduces a new single-sample measure, the Core Ancestor
+    Cost (CAC); the package provides functions for computing the value and the standardised
+    index of the CAC and, more than that, there is an extra function available that
+    can compute exactly  any statistical moment of the measure. The package supports
+    computations under different null models, including abundance-weighted models.
+  license_family: GPL3
+
+extra:
+  recipe-maintainers:
+    - MathiasHaudgaard
+    - FrodePedersen
+    - ArneKr
+    - johanneskoester
+    - bgruening
+    - daler
+    - jdblischak

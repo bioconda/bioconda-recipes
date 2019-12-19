@@ -1,0 +1,30 @@
+--- auxprogs/bam2hints/Makefile.orig	2019-09-13 08:32:52.000000000 -0400
++++ auxprogs/bam2hints/Makefile	2019-09-24 10:32:59.000000000 -0400
+@@ -8,8 +8,8 @@
+ #	Last modified:  09-October-2015 by Katharina J. Hoff
+ 
+ # Variable definition
+-INCLUDES = /usr/include/bamtools
+-LIBS = -lbamtools -lz
++INCLUDES = ${PREFIX}/include/bamtools
++LIBS = ${PREFIX}/lib/libbamtools.a -lz
+ SOURCES = bam2hints.cc 
+ OBJECTS = $(SOURCES:.cc=.o)
+ CXXFLAGS += -Wall -O2 # -g -p -g -ggdb 
+@@ -20,14 +20,14 @@
+ # $@: full target name of current target. 
+ # $<: .c file of target. 
+ bam2hints : $(OBJECTS) 
+-	$(LINK.cc) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS)
++	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS) 
+ 	mkdir -p ../../bin
+ 	cp bam2hints ../../bin
+ 
+ all:$(OBJECTS) # Compiles each foo.cc into foo.o
+ 
+ bam2hints.o : $(SOURCES)
+-	$(LINK.cc) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) -c $< -o $@ -I$(INCLUDES) 
++	$(CXX) $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) -c $< -o $@ -I$(INCLUDES) 
+ 
+ clean:
+ 	rm -f bam2hints.o bam2hints ../../bin/bam2hints

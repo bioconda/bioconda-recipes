@@ -1,24 +1,31 @@
-{% set version = '0.6-44' %}
+{% set version = '0.6-99' %}
 
 package:
   name: r-phytools
   version: {{ version|replace("-", "_") }}
 
 source:
-  fn: phytools_{{ version }}.tar.gz
   url:
-    - https://cran.r-project.org/src/contrib/phytools_{{ version }}.tar.gz
-    - https://cran.r-project.org/src/contrib/Archive/phytools/phytools_{{ version }}.tar.gz
-  sha256: 1c11c9b87fcfe762a03121721c1623f9bf423226f82cb60911524f16f62d01f9
+    - {{ cran_mirror }}/src/contrib/phytools_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/phytools/phytools_{{ version }}.tar.gz
+  sha256: 2ef532cba77c5f73803bd34582bef05709705311a0b50e42316e69944567390f
 
 build:
-  number: 1
+  noarch: generic
+  number: 0
   rpaths:
     - lib/R/lib/
     - lib/
 
 requirements:
   build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
+  host:
     - r-base
     - r-mass
     - r-animation
@@ -26,15 +33,18 @@ requirements:
     - r-clustergeneration
     - r-coda
     - r-combinat
+    - r-expm
+    - r-gtools
     - r-maps
     - r-mnormt
-    - r-msm
     - r-nlme
     - r-numderiv
     - r-phangorn >=2.3.1
     - r-plotrix
     - r-scatterplot3d
-
+    - r-geiger
+    - r-rgl
+    - r-rcolorbrewer
   run:
     - r-base
     - r-mass
@@ -43,23 +53,28 @@ requirements:
     - r-clustergeneration
     - r-coda
     - r-combinat
+    - r-expm
+    - r-gtools
     - r-maps
     - r-mnormt
-    - r-msm
     - r-nlme
     - r-numderiv
     - r-phangorn >=2.3.1
     - r-plotrix
     - r-scatterplot3d
+    - r-geiger
+    - r-rgl
+    - r-rcolorbrewer
 
 test:
   commands:
-    - $R -e "library('phytools')"
+    - LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library('phytools')"
 
 about:
-  home: http
+  home: http://github.com/liamrevell/phytools
   license: GPL (>= 2)
-  summary: A wide range of functions for phylogenetic analysis. Functionality is concentrated
+  summary: Phylogenetic tools for comparative biology
+  description: A wide range of functions for phylogenetic analysis. Functionality is concentrated
     in phylogenetic comparative biology, but also includes a diverse array of methods
     for visualizing, manipulating, reading or writing, and even inferring phylogenetic
     trees and data. Included among the functions in phylogenetic comparative biology
@@ -76,3 +91,8 @@ about:
     a wide variety of other manipulations and analyses that phylogenetic biologists
     might find useful in their research.
   license_family: GPL3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+extra:
+  container:
+    extended-base: true

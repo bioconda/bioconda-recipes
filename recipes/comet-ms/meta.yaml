@@ -1,0 +1,36 @@
+{% set name = "comet-ms" %}
+{% set version = "2019013" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: https://sourceforge.net/projects/{{ name }}/files/comet_{{ version }}.zip
+  sha256: 303e8491db8f01fcca1382d92927df25211f50d64bd13b1ee498ddafaca47abe
+
+build:
+  number: 0
+  # OSX on circleci uses a case-insensitive file system, which breaks compilation due to file name clashes
+  skip: True  # [osx]
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - unzip
+
+test:
+  commands:
+    - comet.exe -p && rm comet.params.new
+    - comet -p && rm comet.params.new
+
+about:
+  home: http://comet-ms.sourceforge.net/
+  license: Apache License 2.0
+  summary: 'Comet is a command line tool that does MS/MS database search.'
+
+extra:
+  identifiers:
+    - doi:10.1007/s13361-015-1179-x
+    - doi:10.1002/pmic.201200439

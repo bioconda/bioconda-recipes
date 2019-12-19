@@ -7,7 +7,7 @@ cat >fix-link-order.patch <<'EOF'
 --- Makefile
 +++ Makefile
 @@ -482,7 +482,7 @@
- 
+
  $(INST_DYNAMIC): $(OBJECT) $(MYEXTLIB) $(INST_ARCHAUTODIR)$(DFSEP).exists $(EXPORT_LIST) $(PERL_ARCHIVEDEP) $(PERL_ARCHIVE_AFTER) $(INST_DYNAMIC_DEP)
  	$(RM_F) $@
 -	$(LD)  $(LDDLFLAGS) $(LDFROM) $(OTHERLDFLAGS) -o $@ $(MYEXTLIB)	\
@@ -38,3 +38,5 @@ else
     echo 'Unable to find Build.PL or Makefile.PL. You need to modify build.sh.'
     exit 1
 fi
+
+chmod u+rwx $PREFIX/bin/*

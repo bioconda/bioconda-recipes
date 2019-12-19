@@ -1,0 +1,48 @@
+{% set name = "hiddenDomains" %}
+{% set version = "3.1" %}
+{% set sha256 = "7c2de1ab3ab8492ec79b9d1ae035434b129174120ba96744578a04f0cf77ed4e" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://sourceforge.net/projects/hiddendomains/files/{{ name }}.{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+  patches:
+     - path.patch
+
+build:
+  number: 0
+  noarch: generic
+
+requirements:
+  host:
+     - perl
+     - r-base
+     - r-depmixs4
+     - r-hiddenmarkov 
+     - samtools
+     - bedtools
+  run:
+     - perl
+     - r-base
+     - r-depmixs4
+     - r-hiddenmarkov
+     - samtools
+     - bedtools
+
+test:
+  commands:
+     - hiddenDomains -h 2>&1 | grep "hiddenDomains"
+     - binReads.pl -h 2>&1 | grep "binReads.pl"
+     - domainsMergeToBed.pl -h 2>&1 | grep "domainsMergeToBed.pl"
+     - domainsToBed.pl -h 2>&1 | grep "domainsToBed.pl"
+     - peakCenters -h 2>&1 | grep "peakCenters"
+
+about:
+  home: http://hiddendomains.sourceforge.net/
+  license: GNU GPL
+  license_family: GPL
+  license_file: LICENSE
+  summary: "hiddenDomains is a suite of programs used to identify significant enrichment of ChIP-seq reads that span large domains."

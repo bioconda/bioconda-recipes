@@ -1,0 +1,63 @@
+{% set version = "3.2.0" %}
+{% set sha256 = "e3ee12740994cde0b94b932c5a23f9544951bde6d223aae4d0061876ef95a0c5" %}
+{% set bcftoolsversion = "1.8" %}
+{% set bcftoolssha256 = "4acbfd691f137742e0be63d09f516434f0faf617a5c60f466140e0677915fced"%}
+
+package:
+  name: gembs
+  version: {{ version }}
+
+source:
+  - url: https://github.com/heathsc/gemBS/archive/v{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+  - url: https://github.com/samtools/bcftools/releases/download/{{ bcftoolsversion }}/bcftools-{{ bcftoolsversion }}.tar.bz2
+    sha256: {{ bcftoolssha256 }}
+    folder: tools/bcftools
+
+build:
+  number: 3
+  skip: True # [py2k]
+  script: $PYTHON setup.py install --minimal --single-version-externally-managed --record=record.txt
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - zlib
+    - bzip2
+    - xz
+    - htslib =1.8
+    - multiprocess
+    - curl
+    - wget
+  run:
+    - python
+    - zlib
+    - bzip2
+    - xz
+    - pigz
+    - htslib =1.8
+    - matplotlib
+    - multiprocess
+    - samtools =1.8
+    - gem3-mapper =3.6.1
+    - bs_call =2.02
+    - ucsc-bedtobigbed
+    - ucsc-wigtobigwig
+    - curl
+    - wget
+
+test:
+  commands:
+    - gemBS
+
+about:
+  home: https://github.com/heathsc/gemBS
+  license: GPL-3.0
+  license_file: LICENSE.md
+  summary: gemBS is a bioinformatics pipeline designed for high throughput analysis of DNA methylation from Whole Genome Bisulfite Sequencing data (WGBS). 
+
+extra:
+  identifiers:
+    - doi:10.1101/201988
