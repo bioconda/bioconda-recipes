@@ -39,4 +39,9 @@ popd
 
 # Strip package version from binary names
 cd $PREFIX/bin
-ls -l
+ln -s fastq-dump-orig.$PKG_VERSION fastq-dump-orig
+ln -s fasterq-dump-orig.$PKG_VERSION fasterq-dump-orig
+ln -s prefetch-orig.$PKG_VERSION prefetch-orig
+ln -s sam-dump-orig.$PKG_VERSION sam-dump-orig
+ln -s srapath-orig.$PKG_VERSION srapath-orig
+ln -s sra-pileup-orig.$PKG_VERSION sra-pileup-orig
