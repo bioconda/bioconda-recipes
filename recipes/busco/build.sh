@@ -21,9 +21,9 @@ cp scripts/busco_configurator.py $PREFIX/bin/busco_configurator.py
 
 SHARE=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
 mkdir -p $SHARE
-cp config/config.ini.default $SHARE/config.ini.default
+
 mkdir -p "$PREFIX/config"
-busco_configurator.py "$SHARE/config.ini.default" "$PREFIX/config/config.ini"
+busco_configurator.py "config/config.ini" "$PREFIX/config/config.ini"
 
 # This should not be necessary in v4.0.1
 mkdir -p ${PREFIX}/etc/conda/activate.d ${PREFIX}/etc/conda/deactivate.d
