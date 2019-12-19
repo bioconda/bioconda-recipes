@@ -1,4 +1,4 @@
-
+#!/bin/bash
 
 RSAT_DEST="$PREFIX/opt/rsat/"
 mkdir -p "$RSAT_DEST"
@@ -6,9 +6,9 @@ mkdir -p "$RSAT_DEST"
 cp -a perl-scripts python-scripts makefiles bin/rsat share/rsat/rsat.yaml "$RSAT_DEST"
 
 # Build and dispatch compiled binaries
-cd contrib
-# for dbin in *
-for dbin in info-gibbs count-words matrix-scan-quick retrieve-variation-seq variation-scan 
+# cd contrib
+for dbin in info-gibbs 
+# TEMPORARILY COMMENTED count-words matrix-scan-quick retrieve-variation-seq variation-scan 
 do
     if [ -d "$dbin" ]; then
         cd "$dbin"
@@ -19,3 +19,4 @@ done
 
 
 # TODO: R packaging
+# JvH note: I will do this as soon as the previous steps are working
