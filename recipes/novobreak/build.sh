@@ -1,12 +1,20 @@
 #!/bin/bash
 
+
+NOPIE="-no-pie"
+if [[ $target_platform == osx-64 ]]
+then
+    # clang does not have this flag and it is not needed there
+    NOPIE=""
+fi
+
 cd samtools
 make clean
-make lib CC=$CC CFLAGS="-g -Wall -O2 -no-pie" INCLUDES=-I$PREFIX/include LIBPATH=-L$PREFIX/lib
+make lib CC=$CC CFLAGS="-g -Wall -O2 $NOPIE" INCLUDES=-I$PREFIX/include LIBPATH=-L$PREFIX/lib
 cd ..
 
 make clean
-make novoBreak LIBPATH=-L$PREFIX/lib INCLUDE=-I$PREFIX/include CC=$CC CFLAGS="-g -W -Wall -O3 -finline-functions -D_FILE_OFFSET_BITS=64 -no-pie"
+make novoBreak LIBPATH=-L$PREFIX/lib INCLUDE=-I$PREFIX/include CC=$CC CFLAGS="-g -W -Wall -O3 -finline-functions -D_FILE_OFFSET_BITS=64 $NOPIE"
 mkdir -p $PREFIX/bin
 cp novoBreak $PREFIX/bin
 
