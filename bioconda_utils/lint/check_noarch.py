@@ -146,9 +146,11 @@ class should_not_be_noarch_source(LintCheck):
     platform. Remove the noarch section or use just one source for all
     platforms.
     """
-
     _pat = re.compile(r'# +\[.*\]')
+
     def check_source(self, source, section):
+        if self.recipe.get('build/noarch', False) is False:
+            return  # no noarch, or noarch=False
         # just search the entire source entry for a comment
         if self._pat.search(self.recipe.get_raw(f"{section}")):
-             self.message(section)
+            self.message(section)
