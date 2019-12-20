@@ -27,4 +27,6 @@ cat <<EOF >> ${PREFIX}/etc/conda/activate.d/busco.sh
 export BUSCO_CONFIG_FILE=${PREFIX}/config/config.ini
 EOF
 
-cat "unset BUSCO_CONFIG_FILE" > ${PREFIX}/etc/conda/deactivate.d/busco.sh
+cat <<EOF >> ${PREFIX}/etc/conda/deactivate.d/busco.sh
+unset BUSCO_CONFIG_FILE
+EOF
