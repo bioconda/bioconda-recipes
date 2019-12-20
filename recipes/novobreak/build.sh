@@ -1,7 +1,12 @@
 #!/bin/bash
 
+cd samtools
 make clean
-make novoBreak LIBPATH=-L$PREFIX/lib INCLUDE=-I$PREFIX/include CC=$CC CFLAGS="-g -W -Wall -O3 -finline-functions -D_FILE_OFFSET_BITS=64 -fPIE"
+make lib CC=$CC CFLAGS="-g -Wall -O2 -no-pie" INCLUDES=-I$PREFIX/include LIBPATH=-L$PREFIX/lib
+cd ..
+
+make clean
+make novoBreak LIBPATH=-L$PREFIX/lib INCLUDE=-I$PREFIX/include CC=$CC CFLAGS="-g -W -Wall -O3 -finline-functions -D_FILE_OFFSET_BITS=64 -no-pie"
 mkdir -p $PREFIX/bin
 cp novoBreak $PREFIX/bin
 
