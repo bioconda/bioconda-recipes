@@ -11,8 +11,7 @@ cp share/rsat/rsat.yaml $PREFIX/share/rsat/rsat.yaml
 
 # Build and dispatch compiled binaries
 # cd contrib
-for dbin in info-gibbs 
-# TEMPORARILY COMMENTED count-words matrix-scan-quick retrieve-variation-seq variation-scan 
+for dbin in info-gibbs count-words matrix-scan-quick retrieve-variation-seq variation-scan 
 do
     if [ -d "$dbin" ]; then
         cd "$dbin"
