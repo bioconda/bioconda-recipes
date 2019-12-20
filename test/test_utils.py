@@ -312,6 +312,8 @@ def test_conda_as_dep(config_fixture):
               name: one
               version: 0.1
             requirements:
+              host:
+                - conda
               run:
                 - conda
         """, from_string=True)
