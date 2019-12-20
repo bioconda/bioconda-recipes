@@ -44,4 +44,5 @@ cmake .. \
   -DPYOPENMS=ON
 
 make -j${CPU_COUNT} OpenMS TOPP UTILS pyopenms
-make install
+# The subpackages will do that 
+#make install
