@@ -1,2 +1,3 @@
 #!/bin/bash
-cp -r build/bin/* $PREFIX/bin/
+mkdir -p $PREFIX/bin
+cp -R build/bin/* $PREFIX/bin/

@@ -44,5 +44,7 @@ cmake .. \
   -DPYOPENMS=ON
 
 make -j${CPU_COUNT} OpenMS TOPP UTILS pyopenms
-# The subpackages will do that 
+# The subpackages will do that (unfortunately "make install" installs everything right away)
+# Another option would be to install somewhere into the build dir (to use the existent install commands)
+# and then copy the relevant parts to the prefix. See CMAKE_INSTALL_PREFIX.
 #make install
