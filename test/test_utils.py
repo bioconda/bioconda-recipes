@@ -303,7 +303,13 @@ def test_get_deps():
     assert list(utils.get_deps(r.recipe_dirs['three'], build=False)) == ['two']
 
 
-def test_conda_as_dep(config_fixture):
+@pytest.mark.parametrize('mulled_test', PARAMS, ids=IDS)
+def test_conda_as_dep(config_fixture, mulled_test):
+    docker_builder = None
+    if mulled_test:
+        docker_builder = docker_utils.RecipeBuilder(
+            docker_base_image=DOCKER_BASE_IMAGE,
+        )
     r = Recipes(
         """
         one:
@@ -318,11 +324,14 @@ def test_conda_as_dep(config_fixture):
                 - conda
         """, from_string=True)
     r.write_recipes()
-    build_result = build.build_recipes(r.basedir, config_fixture,
-                                       r.recipe_dirnames,
-                                       testonly=False,
-                                       force=False,
-                                       mulled_test=True)
+    build_result = build.build_recipes(
+        r.basedir, config_fixture,
+        r.recipe_dirnames,
+        testonly=False,
+        force=False,
+        docker_builder=docker_builder,
+        mulled_test=mulled_test,
+    )
     assert build_result
 
 # TODO replace the filter tests with tests for utils.get_package_paths()
