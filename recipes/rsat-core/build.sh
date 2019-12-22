@@ -9,17 +9,20 @@ cp -a LICENSE.txt perl-scripts python-scripts makefiles R-scripts "$RSAT_DEST"
 cp bin/rsat $PREFIX/bin/rsat
 cp share/rsat/rsat.yaml $PREFIX/share/rsat/rsat.yaml
 
+
+# Build the R package with RSAT functions used by matrix-clustering
+cd R-scripts
+R CMD INSTALL --no-multiarch --with-keep.source TFBMclust
+cd ..
+
 # Build and dispatch compiled binaries
-# cd contrib
+cd contrib
 for dbin in info-gibbs count-words matrix-scan-quick retrieve-variation-seq variation-scan 
 do
-    if [ -d "$dbin" ]; then
-        cd "$dbin"
-        make clean && make CC=$CC CXX=$CXX && cp "$dbin" "$PREFIX/bin"
-        cd ..
-    fi
+    cd "$dbin"
+    make clean && make CC=$CC CXX=$CXX && cp "$dbin" "$PREFIX/bin"
+    cd ..
 done
+cd ..
 
 
-# TODO: R packaging
-# JvH note: I will do this as soon as the previous steps are working
