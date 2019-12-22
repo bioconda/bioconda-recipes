@@ -56,6 +56,22 @@ outputs:
     version: {{ version }}
     script: package_libopenms.sh
     requirements:
+        build:
+          - {{ compiler('cxx') }}
+        host:
+          - llvm-openmp # [osx]
+          - zlib
+          - libtool
+          - xerces-c
+          - gsl
+          - boost
+          - eigen
+          - glpk
+          - bzip2
+          - qt >=5.5
+          - libsvm
+          - coinmp
+          - sqlite
         run:
           - llvm-openmp # [osx]
           - zlib
@@ -70,20 +86,22 @@ outputs:
           - libsvm
           - coinmp
           - sqlite
-    run_exports:
-        - llvm-openmp # [osx]
-        - zlib
-        - libtool
-        - xerces-c
-        - gsl
-        - boost
-        - eigen
-        - glpk
-        - bzip2
-        - qt >=5.5
-        - libsvm
-        - coinmp
-        - sqlite
+    build:
+      run_exports:
+          - llvm-openmp # [osx]
+          - zlib
+          - libtool
+          - xerces-c
+          - gsl
+          - boost
+          - eigen
+          - glpk
+          - bzip2
+          - qt >=5.5
+          - libsvm
+          - coinmp
+          - sqlite
+          - libopenms {{ version }}
 
   - name: openms-tools
     version: {{ version }}
@@ -93,8 +111,8 @@ outputs:
         - {{ compiler('cxx') }}
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
-    run_exports:
-      - {{ pin_subpackage('libopenms', exact=True) }}
+      run:
+        - {{ pin_subpackage('libopenms', exact=True) }}
     test:
       commands:
         - OPENMS_DATA_PATH=${PREFIX}/share/OpenMS/ ${PREFIX}/bin/FileMerger --help  
@@ -108,12 +126,15 @@ outputs:
       host:
         - {{ pin_subpackage('libopenms', exact=True) }}
         - python {{ python }}
-        - autowrap
+        - cython
+        - autowrap ==0.18.1
         - numpy
-    run_exports:
-      - {{ pin_subpackage('libopenms', exact=True) }}
-      - python {{ python }}
-      - numpy
+        - pip
+        - nose
+      run:
+        - {{ pin_subpackage('libopenms', exact=True) }}
+        - python {{ python }}
+        - numpy
     test:
       commands:
         - python -c "import pyopenms; print(pyopenms.__version__)"
