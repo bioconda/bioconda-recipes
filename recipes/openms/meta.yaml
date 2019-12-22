@@ -44,7 +44,7 @@ requirements:
     - autowrap ==0.18.1
     - numpy
     - pip
-    - nose
+    #- nose
     
 test:
   commands:
@@ -85,13 +85,14 @@ outputs:
         - coinmp
         - sqlite
 
-
   - name: openms-tools
-    script: package_openms-tools.sh
     version: {{ version }}
-    outputs: 
+    script: package_openms-tools.sh
     requirements:
-      - {{ pin_subpackage('libopenms', exact=True) }}
+      build:
+        - {{ compiler('cxx') }}
+      host:
+        - {{ pin_subpackage('libopenms', exact=True) }}
     run_exports:
       - {{ pin_subpackage('libopenms', exact=True) }}
     test:
@@ -102,18 +103,21 @@ outputs:
     version: {{ version }}
     script: install_pyopenms.sh
     requirements:
-      - {{ pin_subpackage('libopenms', exact=True) }}
-      - python {{ python }}
-      - autowrap
-      - numpy
+      build:
+        - {{ compiler('cxx') }}
+      host:
+        - {{ pin_subpackage('libopenms', exact=True) }}
+        - python {{ python }}
+        - autowrap
+        - numpy
     run_exports:
       - {{ pin_subpackage('libopenms', exact=True) }}
       - python {{ python }}
-      - autowrap
       - numpy
     test:
       commands:
-        - ${PYTHON} -c "import pyopenms; print(pyopenms.__version__)"
+        - python -c "import pyopenms; print(pyopenms.__version__)"
+        # We cant use the PYTHON variable since it does not exist on the biocontainer?!
 
 about:
   home: https://github.com/OpenMS/OpenMS
