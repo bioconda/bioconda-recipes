@@ -592,7 +592,7 @@ def test_sandboxed():
 
 def test_env_sandboxing():
     r = Recipes(
-        """
+        r"""
         one:
           meta.yaml: |
             package:
@@ -607,7 +607,7 @@ def test_env_sandboxing():
                 echo "\$GITHUB_TOKEN has leaked into the build environment!"
                 exit 1
             fi
-    """, from_string=True)
+        """, from_string=True)
     r.write_recipes()
     pkg_paths = utils.built_package_paths(r.recipe_dirs['one'])
 

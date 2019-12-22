@@ -137,7 +137,7 @@ def bioconductor_versions():
     """
     url = "https://bioconductor.org/config.yaml"
     response = requests.get(url)
-    bioc_config = yaml.load(response.text)
+    bioc_config = yaml.safe_load(response.text)
     versions = list(bioc_config["r_ver_for_bioc_ver"].keys())
     # Handle semantic version sorting like 3.10 and 3.9
     versions = sorted(versions, key=lambda v: list(map(int, v.split('.'))), reverse=True)
@@ -174,7 +174,7 @@ def bioconductor_tarball_url(package, pkg_version, bioc_version):
         Bioconductor release version
     """
     return (
-        'http://bioconductor.org/packages/{bioc_version}'
+        'https://bioconductor.org/packages/{bioc_version}'
         '/bioc/src/contrib/{package}_{pkg_version}.tar.gz'.format(**locals())
     )
 
@@ -195,7 +195,7 @@ def bioconductor_annotation_data_url(package, pkg_version, bioc_version):
         Bioconductor release version
     """
     return (
-        'http://bioconductor.org/packages/{bioc_version}'
+        'https://bioconductor.org/packages/{bioc_version}'
         '/data/annotation/src/contrib/{package}_{pkg_version}.tar.gz'.format(**locals())
     )
 
@@ -216,7 +216,7 @@ def bioconductor_experiment_data_url(package, pkg_version, bioc_version):
         Bioconductor release version
     """
     return (
-        'http://bioconductor.org/packages/{bioc_version}'
+        'https://bioconductor.org/packages/{bioc_version}'
         '/data/experiment/src/contrib/{package}_{pkg_version}.tar.gz'.format(**locals())
     )
 
@@ -376,7 +376,7 @@ class BioCProjectPage(object):
         scraped data.
         >>> x = BioCProjectPage('DESeq2')
         >>> x.tarball_url
-        'http://bioconductor.org/packages/release/bioc/src/contrib/DESeq2_1.8.2.tar.gz'
+        'https://bioconductor.org/packages/release/bioc/src/contrib/DESeq2_1.8.2.tar.gz'
         """
         self.base_url = base_url
         self.package = package
