@@ -8,7 +8,7 @@ function is_file_emtpy()
     fi
 }
 
-TESTDATA="https://github.com/bx3/shannon_cpp/releases/download/0.3.0/sample.tar.gz"
+TESTDATA="https://github.com/bx3/shannon_cpp/releases/download/v0.4.0/sample.tar.gz"
 
 wget -q $TESTDATA >/dev/null
 tar -xvf sample.tar.gz >/dev/null
@@ -17,9 +17,9 @@ single_length=50
 paired_1_length=100
 paired_2_length=100
 
-single_read_path="./data/SE_read.fasta" 
-paired_read_1_path="./data/PE_read_1.fasta"
-paired_read_2_path="./data/PE_read_2.fasta"
+single_read_path="./sample/SE_read.fasta" 
+paired_read_1_path="./sample/PE_read_1.fasta"
+paired_read_2_path="./sample/PE_read_2.fasta"
 output_dir="./sample_output"
 
 num_threads=4
