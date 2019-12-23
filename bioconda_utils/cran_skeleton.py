@@ -24,20 +24,19 @@ INVALID_NAME_MAP = {
 # Raw strings needed to support the awkward backslashes needed when adding the
 # command to yaml
 gpl2_short = r"  license_family: GPL2"
-gpl2_long = (
-    "  license_family: GPL2\n  license_file: '{{ environ[\"PREFIX\"] }}"
-    "\/lib\/R\/share\/licenses\/GPL-2'  # [unix]\n  "
-    "license_file: '{{ environ[\"PREFIX\"] }}"
-    "\\\R\\\share\\\licenses\\\GPL-2'  # [win]"
-)
+gpl2_long = r"""
+  license_family: GPL2
+  license_file: '{{ environ["PREFIX"] }}\/lib\/R\/share\/licenses\/GPL-2'  # [unix]
+  license_file: '{{ environ["PREFIX"] }}\\R\\share\\licenses\\GPL-2'  # [win]
+""".strip('\n')
 
 gpl3_short = r"  license_family: GPL3"
-gpl3_long = (
-    "  license_family: GPL3\n  license_file: '{{ environ[\"PREFIX\"] }}"
-    "\/lib\/R\/share\/licenses\/GPL-3'  # [unix]\n  "
-    "license_file: '{{ environ[\"PREFIX\"] }}"
-    "\\\R\\\share\\\licenses\\\GPL-3'  # [win]"
-)
+gpl3_long = r"""
+  license_family: GPL3
+  license_file: '{{ environ["PREFIX"] }}\/lib\/R\/share\/licenses\/GPL-3'  # [unix]
+  license_file: '{{ environ["PREFIX"] }}\\R\\share\\licenses\\GPL-3'  # [win]
+""".strip('\n')
+
 win32_string = 'number: 0\n  skip: true  # [win32]'
 
 
