@@ -24,14 +24,18 @@ mkdir build
 cd build
 
 
-## TODO is this really working also on macOS with frameworks?
-ORIGIN='$ORIGIN'
-export ORIGIN
-LDFLAGS='-Wl,-rpath,$${ORIGIN}/../lib'
+if [[ $(uname -s) == Darwin ]]; then
+  LDFLAGS='-Wl,-rpath,@loader_path/../lib'
+else
+  ORIGIN='$ORIGIN'
+  export ORIGIN
+  LDFLAGS='-Wl,-rpath,$${ORIGIN}/../lib'
+fi
 
 cmake .. \
   -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
   -DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT} \
+  -DMACOSX_RPATH=ON \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
   -DCMAKE_INSTALL_PREFIX=${PREFIX} \
   -DHAS_XSERVER=OFF \
