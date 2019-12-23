@@ -34,7 +34,7 @@ TEST_LABEL = 'bioconda-utils-test'
 # docker, once without). On OSX, only the non-docker runs.
 
 # Docker ref for build container
-DOCKER_BASE_IMAGE = "bioconda/bioconda-utils-build-env:latest"
+DOCKER_BASE_IMAGE = "bioconda/bioconda-utils-test-env:latest"
 
 SKIP_DOCKER_TESTS = sys.platform.startswith('darwin')
 SKIP_NOT_OSX = not sys.platform.startswith('darwin')
