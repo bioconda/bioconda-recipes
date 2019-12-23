@@ -308,6 +308,7 @@ def test_conda_as_dep(config_fixture, mulled_test):
     docker_builder = None
     if mulled_test:
         docker_builder = docker_utils.RecipeBuilder(
+            use_host_conda_bld=True,
             docker_base_image=DOCKER_BASE_IMAGE,
         )
     r = Recipes(
@@ -333,6 +334,11 @@ def test_conda_as_dep(config_fixture, mulled_test):
         mulled_test=mulled_test,
     )
     assert build_result
+
+    for k, v in r.recipe_dirs.items():
+        for i in utils.built_package_paths(v):
+            assert os.path.exists(i)
+            ensure_missing(i)
 
 # TODO replace the filter tests with tests for utils.get_package_paths()
 # def test_filter_recipes_no_skipping():
