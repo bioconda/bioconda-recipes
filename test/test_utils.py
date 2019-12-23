@@ -303,6 +303,7 @@ def test_get_deps():
     assert list(utils.get_deps(r.recipe_dirs['three'], build=False)) == ['two']
 
 
+@pytest.mark.long_running_1
 @pytest.mark.parametrize('mulled_test', PARAMS, ids=IDS)
 def test_conda_as_dep(config_fixture, mulled_test):
     docker_builder = None
@@ -323,6 +324,9 @@ def test_conda_as_dep(config_fixture, mulled_test):
                 - conda
               run:
                 - conda
+            test:
+              commands:
+                - '${PREFIX}/bin/conda --version'
         """, from_string=True)
     r.write_recipes()
     build_result = build.build_recipes(
