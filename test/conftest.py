@@ -1,5 +1,6 @@
 import contextlib
 import datetime
+import logging
 import tempfile
 import os
 import os.path as op
@@ -35,6 +36,11 @@ def pytest_runtest_setup(item):
     if "successive" in item.keywords:
         if getattr(item.parent, "failedcallspec", None) == item.callspec.id:
             pytest.xfail("preceding test failed")
+
+
+@pytest.fixture(autouse=True)
+def set_debug_logging_for_every_test():
+    logging.getLogger().setLevel(logging.DEBUG)
 
 
 @pytest.fixture
