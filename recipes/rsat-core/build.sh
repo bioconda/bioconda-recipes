@@ -10,10 +10,6 @@ cp bin/rsat $PREFIX/bin/rsat
 cp share/rsat/rsat.yaml $PREFIX/share/rsat/rsat.yaml
 
 
-# Build the R package with RSAT functions used by matrix-clustering
-cd R-scripts
-R CMD INSTALL --no-multiarch --with-keep.source TFBMclust
-cd ..
 
 # Build and dispatch compiled binaries
 cd contrib
@@ -25,4 +21,9 @@ do
 done
 cd ..
 
-
+## TEMPORARIY COMMENTED BECAUSE GENERATES ERROR
+##      R: command not found
+# # Build the R package with RSAT functions used by matrix-clustering
+# cd R-scripts
+# R CMD INSTALL --no-multiarch --with-keep.source TFBMclust
+# cd ..
