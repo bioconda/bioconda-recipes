@@ -317,7 +317,7 @@ def test_conda_as_dep(config_fixture, mulled_test):
         one:
           meta.yaml: |
             package:
-              name: one
+              name: bioconda_utils_test_conda_as_dep
               version: 0.1
             requirements:
               host:
