@@ -26,14 +26,14 @@ INVALID_NAME_MAP = {
 gpl2_short = r"  license_family: GPL2"
 gpl2_long = r"""
   license_family: GPL2
-  license_file: '{{ environ["PREFIX"] }}\/lib\/R\/share\/licenses\/GPL-2'  # [unix]
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'  # [unix]
   license_file: '{{ environ["PREFIX"] }}\\R\\share\\licenses\\GPL-2'  # [win]
 """.strip('\n')
 
 gpl3_short = r"  license_family: GPL3"
 gpl3_long = r"""
   license_family: GPL3
-  license_file: '{{ environ["PREFIX"] }}\/lib\/R\/share\/licenses\/GPL-3'  # [unix]
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'  # [unix]
   license_file: '{{ environ["PREFIX"] }}\\R\\share\\licenses\\GPL-3'  # [win]
 """.strip('\n')
 
