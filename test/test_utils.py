@@ -326,7 +326,7 @@ def test_conda_as_dep(config_fixture, mulled_test):
                 - conda
             test:
               commands:
-                - '${PREFIX}/bin/conda --version'
+                - test -e "${PREFIX}/bin/conda"
         """, from_string=True)
     r.write_recipes()
     build_result = build.build_recipes(
