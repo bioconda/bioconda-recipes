@@ -770,6 +770,11 @@ def test_build_container_no_default_gcc(tmpdir):
     )
     assert build_result.success
 
+    for k, v in r.recipe_dirs.items():
+        for i in utils.built_package_paths(v):
+            assert os.path.exists(i)
+            ensure_missing(i)
+
 
 # FIXME: This test fails erraticaly. Both in built_package_paths
 # and in build_recipes, the generated name can be either
