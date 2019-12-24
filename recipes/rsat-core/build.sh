@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RSAT_DEST="$PREFIX/opt/rsat/"
+# RSAT_DEST="$PREFIX/opt/rsat/"
 RSAT_DEST="$PREFIX/share/rsat/"
 mkdir -p "$RSAT_DEST"
 mkdir -p "$PREFIX/bin"
