@@ -19,18 +19,22 @@ cd ..
 
 # Use C++17 rather than C++11 to hopefully better match boost
 sed -i.bak "s/11/17/g" CMakeLists.txt
+sed -i.bak "s/CMAKE_MACOSX_RPATH FALSE/CMAKE_MACOSX_RPATH TRUE/g" CMakeLists.txt
+sed -i.bak "s/CMAKE_INSTALL_NAME_DIR/FOO/g" CMakeLists.txt
+
 
 mkdir build
 cd build
 
 
 if [[ $(uname -s) == Darwin ]]; then
-  LDFLAGS='-Wl,-rpath,@loader_path/../lib'
+  RPATH='@loader_path/../lib'
 else
   ORIGIN='$ORIGIN'
   export ORIGIN
-  LDFLAGS='-Wl,-rpath,$${ORIGIN}/../lib'
+  RPATH='$${ORIGIN}/../lib'
 fi
+LDFLAGS='-Wl,-rpath,${RPATH}'
 
 cmake .. \
   -DOPENMS_CONTRIB_LIBS='../../contrib-build' \
@@ -38,6 +42,8 @@ cmake .. \
   -DCMAKE_MACOSX_RPATH=ON \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
   -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+  -DCMAKE_INSTALL_RPATH=${RPATH} \
+  -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
   -DHAS_XSERVER=OFF \
   -DENABLE_TUTORIALS=OFF \
   -DWITH_GUI=OFF \
