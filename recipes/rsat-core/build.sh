@@ -9,6 +9,11 @@ cp -a LICENSE.txt perl-scripts python-scripts makefiles R-scripts "$RSAT_DEST"
 cp bin/rsat $PREFIX/bin/rsat
 cp share/rsat/rsat.yaml $PREFIX/share/rsat/rsat.yaml
 
+## Add relative links from share/rsat to the actual folders to enable rsat command to run the subcommands
+cd $PREFIX/share/rsat
+ln -s ../../opt/rsat/perl-scripts .
+ln -s ../../opt/rsat/python-scripts .
+ln -s ../../bin .
 
 # Build and dispatch compiled binaries
 cd contrib
