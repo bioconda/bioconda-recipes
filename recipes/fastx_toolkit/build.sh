@@ -2,6 +2,7 @@
 
 export GTEXTUTILS_CFLAGS="-I $PREFIX/include/gtextutils"
 export GTEXTUTILS_LIBS="$PREFIX/lib/libgtextutils.a"
+sed -i.bak 's/#pragma pack(1)//g' src/libfastx/fastx.h
 
 if [ "$(uname)" == "Darwin" ]; then
     export DYLD_FALLBACK_LIBRARY_PATH="${PREFIX}/lib"
