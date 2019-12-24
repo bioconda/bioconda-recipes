@@ -14,6 +14,7 @@ cd $PREFIX/share/rsat
 ln -s ../../opt/rsat/perl-scripts .
 ln -s ../../opt/rsat/python-scripts .
 ln -s ../../bin .
+cd $PREFIX
 
 # Build and dispatch compiled binaries
 cd contrib
