@@ -36,3 +36,12 @@ pushd sra-tools
 make
 make install
 popd
+
+# Strip package version from binary names
+cd $PREFIX/bin
+ln -s fastq-dump-orig.$PKG_VERSION fastq-dump-orig
+ln -s fasterq-dump-orig.$PKG_VERSION fasterq-dump-orig
+ln -s prefetch-orig.$PKG_VERSION prefetch-orig
+ln -s sam-dump-orig.$PKG_VERSION sam-dump-orig
+ln -s srapath-orig.$PKG_VERSION srapath-orig
+ln -s sra-pileup-orig.$PKG_VERSION sra-pileup-orig
