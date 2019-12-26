@@ -1,8 +1,5 @@
 {% set name = "NCBITK" %}
 {% set version = "1.0a17" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "b16666ab3face1709a503c0027db35526c7ca982f07a4703e97e76f658bb3076" %}
 
 package:
   name: '{{ name|lower }}'
@@ -10,29 +7,22 @@ package:
 
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: b16666ab3face1709a503c0027db35526c7ca982f07a4703e97e76f658bb3076
 
 build:
   number: 0
   noarch: python
   entry_points:
     - ncbitk=NCBITK.__main__:main
-  script: python setup.py install --single-version-externally-managed --record=record.txt
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
 
 requirements:
   host:
-    - python >3
-    - setuptools
-    - click
-    - numpy >=1.12.0
-    - biopython >=1.68
-    - pandas >=0.19.2
-    - python-dateutil >=2.6.0
-    - pytz >=2016.10
-    - six >=1.10.0
+    - python >=3
+    - pip
   run:
-    - python >3
+    - python >=3
     - click
     - numpy >=1.12.0
     - biopython >=1.68
@@ -54,4 +44,7 @@ about:
   summary: A tool kit for accessing NCBI's GenBank
 
 extra:
-  recipe-maintainers: 'tfursten'
+  recipe-maintainers:
+    - tfursten
+  container:
+    extended-base: true
