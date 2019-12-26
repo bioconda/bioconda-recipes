@@ -1,0 +1,58 @@
+{% set name = "NCBITK" %}
+{% set version = "1.0a17" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "b16666ab3face1709a503c0027db35526c7ca982f07a4703e97e76f658bb3076" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+
+source:
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  skip: true  # [osx or py2k]
+  entry_points:
+    - ncbitk=NCBITK.__main__:main
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - click
+    - numpy >=1.12.0
+    - biopython >=1.68
+    - pandas >=0.19.2
+    - python-dateutil >=2.6.0
+    - pytz >=2016.10
+    - six >=1.10.0
+  run:
+    - python
+    - click
+    - numpy >=1.12.0
+    - biopython >=1.68
+    - pandas >=0.19.2
+    - python-dateutil >=2.6.0
+    - pytz >=2016.10
+    - six >=1.10.0
+
+test:
+  imports:
+    - NCBITK
+  commands:
+    - ncbitk --help
+
+about:
+  home: https://github.com/andrewsanchez/NCBITK
+  license: MIT License
+  license_family: MIT
+  summary: A tool kit for accessing NCBI's GenBank
+
+extra:
+  recipe-maintainers: 'tfursten'
