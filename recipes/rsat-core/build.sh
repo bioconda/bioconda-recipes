@@ -52,6 +52,11 @@ cd ..
 # Run the configuration script
 echo "Running RSAT configuration in automatic mode"
 cd $RSAT_DEST
-perl-scripts/configure_rsat.pl -auto
+perl-scripts/configure_rsat.pl -auto \
+  rsat_site=conda_rsat \
+  rsat_www=auto \
+  ucsc_tools=1 \
+  ensembl_tools=1 \
+  LOGO_PROGRAM=weblogo
 cd $BASE
 
