@@ -22,9 +22,9 @@ cp bin/rsat $PREFIX/bin/rsat
 cp share/rsat/rsat.yaml $PREFIX/share/rsat/rsat.yaml
 
 ## Add relative links from share/rsat to the bin folder (necessary for GetProgramPath to find executables in bin, e.g. vmatch)
-cd $PREFIX/share/rsat
-ln -s ../../bin .
-cd $PREFIX
+# cd $PREFIX/share/rsat
+# ln -s ../../bin .
+# cd $PREFIX
 
 ## Make a link from share to opt (not sure this is required)
 # ln -s share opt
