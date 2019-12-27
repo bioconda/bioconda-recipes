@@ -21,17 +21,11 @@ cp -a LICENSE.txt \
 cp bin/rsat $PREFIX/bin/rsat
 cp share/rsat/rsat.yaml $PREFIX/share/rsat/rsat.yaml
 
-## Add relative links from share/rsat to the bin folder (necessary for GetProgramPath to find executables in bin, e.g. vmatch)
-# cd $PREFIX/share/rsat
-# ln -s ../../bin .
-# cd $PREFIX
 
-## Make a link from share to opt (not sure this is required)
-# ln -s share opt
 
 # Build and dispatch compiled binaries
 cd contrib
-for dbin in info-gibbs count-words matrix-scan-quick retrieve-variation-seq variation-scan 
+for dbin in info-gibbs count-words matrix-scan-quick retrieve-variation-seq variation-scan
 do
     echo "Compiling C/C++ program: $dbin"
     cd "$dbin"
