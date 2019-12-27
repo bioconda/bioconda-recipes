@@ -21,12 +21,10 @@ cp -a LICENSE.txt \
 cp bin/rsat $PREFIX/bin/rsat
 cp share/rsat/rsat.yaml $PREFIX/share/rsat/rsat.yaml
 
-## Add relative links from share/rsat to the actual folders to enable rsat command to run the subcommands
-# cd $PREFIX/share/rsat
-# ln -s ../../opt/rsat/perl-scripts .
-# ln -s ../../opt/rsat/python-scripts .
-# ln -s ../../bin .
-# cd $PREFIX
+## Add relative links from share/rsat to the bin folder (necessary for GetProgramPath to find executables in bin, e.g. vmatch)
+cd $PREFIX/share/rsat
+ln -s ../../bin .
+cd $PREFIX
 
 ## Make a link from share to opt (not sure this is required)
 # ln -s share opt
