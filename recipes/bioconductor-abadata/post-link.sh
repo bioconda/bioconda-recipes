@@ -1,12 +1,11 @@
 #!/bin/bash
-FN="ABAData_1.14.0.tar.gz"
+FN="ABAData_1.16.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/ABAData_1.14.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/ABAData_1.14.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-abadata/bioconductor-abadata_1.14.0_src_all.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-abadata/bioconductor-abadata_1.14.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/ABAData_1.16.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/ABAData_1.16.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-abadata/bioconductor-abadata_1.16.0_src_all.tar.gz"
 )
-MD5="14527790b75fc139b5bbed7981c1a1ea"
+MD5="6e010aa2fa1b6534dcc249ab718cb22e"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
