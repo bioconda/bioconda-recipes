@@ -1,4 +1,4 @@
-{% set version = "2.3.1" %}
+{% set version = "3.0.0rc1" %}
 
 package:
   name: sourmash
@@ -6,32 +6,31 @@ package:
 
 source:
   url: https://pypi.io/packages/source/s/sourmash/sourmash-{{ version }}.tar.gz
-  sha256: d9dd240fbad71a57eb9960388a015c2315b91704d83a77454c47c006846d3f4b
-  patches:
-    - sourmash.patch
+  sha256: c44fbaa22c4eb99b328718494980a1a3a64de30b83bf44087f5da0984457397a
 
 build:
   entry_points:
     - sourmash = sourmash.__main__:main
   number: 0
+  noarch: python
   script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed -vv ."
 
 requirements:
   build:
-    - '{{ compiler("c") }}'
-    - '{{ compiler("cxx") }}'
+    - rust >=1.34.0
   host:
     - python
     - pip
     - setuptools >=38.6.0
-    - cython >=0.25.2
+    - milksnake
     - setuptools_scm
     - setuptools_scm_git_archive
 
   run:
     - python
     - screed >=0.9
-    - ijson <2.5
+    - ijson >=2.5.1
+    - cffi
     - numpy
     - matplotlib
     - scipy
@@ -49,10 +48,11 @@ test:
 about:
   home: https://github.com/dib-lab/sourmash
   summary: 'Compute and compare MinHash signatures for DNA data sets.'
-  license: BSD License
+  license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
   dev_url: https://github.com/dib-lab/sourmash
+  doc_url: https://sourmash.readthedocs.io/
 
 extra:
   identifiers:
