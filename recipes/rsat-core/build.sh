@@ -21,8 +21,6 @@ cp -a LICENSE.txt \
 cp bin/rsat $PREFIX/bin/rsat
 cp share/rsat/rsat.yaml $PREFIX/share/rsat/rsat.yaml
 
-
-
 # Build and dispatch compiled binaries
 cd contrib
 for dbin in info-gibbs count-words matrix-scan-quick compare-matrices-quick retrieve-variation-seq variation-scan
