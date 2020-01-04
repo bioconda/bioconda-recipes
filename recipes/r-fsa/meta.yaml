@@ -1,0 +1,68 @@
+{% set version = '0.8.26' %}
+
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-fsa
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/FSA_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/FSA/FSA_{{ version }}.tar.gz
+  sha256: 5e8b2b0db696c1888b9317ea9b9b8a7ed77c506ac99c6fb55e66218f1264d5be
+
+build:
+  noarch: generic
+  merge_build_host: True  # [win]
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+
+  host:
+    - r-base
+    - r-car
+    - r-dplyr
+    - r-dunn.test
+    - r-epitools
+    - r-gplots
+    - r-lmtest
+    - r-plotrix
+    - r-plyr
+    - r-sciplot
+    - r-withr
+
+  run:
+    - r-base
+    - r-car
+    - r-dplyr
+    - r-dunn.test
+    - r-epitools
+    - r-gplots
+    - r-lmtest
+    - r-plotrix
+    - r-plyr
+    - r-sciplot
+    - r-withr
+
+test:
+  commands:
+    - $R -e "library('FSA')"           # [not win]
+    - "\"%R%\" -e \"library('FSA')\""  # [win]
+
+about:
+  home: https://github.com/droglenc/FSA
+  license: GPL (>= 2)
+  license_file: LICENSE
+  summary: A variety of simple fish stock assessment methods.
+  license_family: GPL3
+
+extra:
+  recipe-maintainers:
+    - nick-youngblut
+
