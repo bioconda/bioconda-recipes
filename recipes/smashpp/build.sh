@@ -8,5 +8,5 @@ mkdir -p build
 cd build
 cmake ../src
 make -j8
-mv smashpp ..
-cd ..
+mkdir -p ${PREFIX}/bin
+mv smashpp ${PREFIX}/bin
