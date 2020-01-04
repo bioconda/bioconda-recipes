@@ -1,4 +1,4 @@
 #!/bin/bash
 
-python3 setup.py install --record=record.txt
+$PYTHON -m pip install . --ignore-installed --no-deps -vv
 source obi_completion_script.sh
