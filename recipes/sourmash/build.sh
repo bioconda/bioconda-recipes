@@ -7,10 +7,12 @@ set -o xtrace -o nounset -o pipefail -o errexit
 if [ "$(uname)" == "Darwin" ]; then
 
     # apparently the HOME variable isn't set correctly
-    export HOME=$(mktemp -d)
+    export HOME="/Users/distiller"
 
     # according to https://github.com/rust-lang/cargo/issues/2422#issuecomment-198458960 removing circle ci default configuration solves cargo trouble downloading crates
     git config --global --unset url.ssh://git@github.com.insteadOf || true
 fi
+
+export RUSTC_WRAPPER=$(which sccache)
 
 $PYTHON -m pip install --no-deps --ignore-installed -vv .
