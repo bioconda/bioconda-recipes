@@ -7,6 +7,5 @@ cat > ex.fasta <<EOF
 AATTCC
 EOF
 
-export BUSCO_CONFIG_FILE="$PREFIX/config/config.ini"
 
-run_BUSCO.py -i ex.fasta -o out -l proteobacteria_odb10 -m geno
+busco -i ex.fasta -o out -l proteobacteria_odb10 -m geno
