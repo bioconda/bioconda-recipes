@@ -5,9 +5,9 @@ specializing in bioinformatics software. Bioconda consists of:
 
 - a `repository of recipes`_ hosted on GitHub
 - a `build system`_ turning these recipes into conda packages
-- a `repository of packages`_ containing over 6000 bioinformatics
+- a `repository of packages`_ containing over 7000 bioinformatics
   packages ready to use with ``conda install``
-- over 600 contributors and 500 members who add, modify, update and
+- over 850 contributors and 570 members who add, modify, update and
   maintain the recipes
 
 .. _conda: https://conda.io/en/latest/index.html
@@ -91,7 +91,7 @@ Core
 Team
 ----
 
-Bioconda has over 600 (as of 2019/1) `contributors
+Bioconda has over 850 (as of 2020/1) `contributors
 <https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
 
 
