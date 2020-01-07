@@ -1,1 +1,2 @@
-cp -R bin $PREFIX
+### Copying binaries over to env bin
+cp -R bin/ "${PREFIX}"/bin/
