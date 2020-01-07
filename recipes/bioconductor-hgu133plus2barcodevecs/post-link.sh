@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="hgu133plus2barcodevecs_1.22.0.tar.gz"
+FN="hgu133plus2barcodevecs_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/experiment/src/contrib/hgu133plus2barcodevecs_1.22.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/hgu133plus2barcodevecs_1.22.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-hgu133plus2barcodevecs/bioconductor-hgu133plus2barcodevecs_1.22.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/hgu133plus2barcodevecs_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/hgu133plus2barcodevecs_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-hgu133plus2barcodevecs/bioconductor-hgu133plus2barcodevecs_1.24.0_src_all.tar.gz"
 )
-MD5="48c436478b8b6da87385b0d4f8d3e205"
+MD5="24a783d6f02e273e318f2a741a42e0b4"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

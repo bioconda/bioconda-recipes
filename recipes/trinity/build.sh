@@ -56,8 +56,16 @@ find $TRINITY_HOME -type f -print0 | xargs -0 sed -i.bak 's/FindBin::Bin/FindBin
 # Replace hard coded path to deps
 find $TRINITY_HOME -type f -print0 | xargs -0 sed -i.bak 's/$JELLYFISH_DIR\/bin\/jellyfish/jellyfish/g'
 sed -i.bak "s/\$ROOTDIR\/trinity-plugins\/Trimmomatic/\/opt\/anaconda1anaconda2anaconda3\/share\/trimmomatic/g" $TRINITY_HOME/Trinity
+sed -i 's/my $TRIMMOMATIC = "\([^"]\+\)"/my $TRIMMOMATIC = '"'"'\1'"'"'/' $TRINITY_HOME/Trinity
+sed -i 's/my $TRIMMOMATIC_DIR = "\([^"]\+\)"/my $TRIMMOMATIC_DIR = '"'"'\1'"'"'/' $TRINITY_HOME/Trinity
+
 
 find $TRINITY_HOME -type f -name "*.bak" -print0 | xargs -0 rm -f
 
-# make it easier to find TRINITY_HOME
-ln -sf $TRINITY_HOME $PREFIX/opt/TRINITY_HOME
+# export TRINITY_HOME as ENV variable 
+mkdir -p ${PREFIX}/etc/conda/activate.d/
+echo "export TRINITY_HOME=${TRINITY_HOME}" > ${PREFIX}/etc/conda/activate.d/${PKG_NAME}-${PKG_VERSION}.sh
+
+mkdir -p ${PREFIX}/etc/conda/deactivate.d/
+echo "unset TRINITY_HOME" > ${PREFIX}/etc/conda/deactivate.d/${PKG_NAME}-${PKG_VERSION}.sh
+
