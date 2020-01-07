@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="miRNATarget_1.20.0.tar.gz"
+FN="miRNATarget_1.24.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/miRNATarget_1.20.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/miRNATarget_1.20.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-mirnatarget/bioconductor-mirnatarget_1.20.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/miRNATarget_1.24.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/miRNATarget_1.24.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-mirnatarget/bioconductor-mirnatarget_1.24.0_src_all.tar.gz"
 )
-MD5="ccb859ec474b6235e9d5deb41c955dda"
+MD5="7f4245f1e4fabffd376afd4306e77492"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

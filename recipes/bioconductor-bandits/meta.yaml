@@ -1,0 +1,59 @@
+{% set version = "1.2.0" %}
+{% set name = "BANDITS" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: a814a8b6cb2654de08af74099608e52c
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr, rmarkdown, testthat, tximport, BiocStyle, GenomicFeatures, Biostrings
+# SystemRequirements: C++11
+requirements:
+  host:
+    - 'bioconductor-biocparallel >=1.20.0,<1.21.0'
+    - 'bioconductor-drimseq >=1.14.0,<1.15.0'
+    - r-base
+    - r-data.table
+    - r-doparallel
+    - r-dorng
+    - r-foreach
+    - r-ggplot2
+    - r-mass
+    - r-rcpp
+    - r-rcpparmadillo
+  run:
+    - 'bioconductor-biocparallel >=1.20.0,<1.21.0'
+    - 'bioconductor-drimseq >=1.14.0,<1.15.0'
+    - r-base
+    - r-data.table
+    - r-doparallel
+    - r-dorng
+    - r-foreach
+    - r-ggplot2
+    - r-mass
+    - r-rcpp
+    - r-rcpparmadillo
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 3)'
+  summary: 'BANDITS: Bayesian ANalysis of DIfferenTial Splicing'
+  description: 'BANDITS is a Bayesian hierarchical model for detecting differential splicing of genes and transcripts, via differential transcript usage (DTU), between two or more conditions. The method uses a Bayesian hierarchical framework, which allows for sample specific proportions in a Dirichlet-Multinomial model, and samples the allocation of fragments to the transcripts. Parameters are inferred via Markov chain Monte Carlo (MCMC) techniques and a DTU test is performed via a multivariate Wald test on the posterior densities for the average relative abundance of transcripts.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

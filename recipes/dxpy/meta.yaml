@@ -1,5 +1,5 @@
 {% set name = "dxpy" %}
-{% set version = "0.273.0" %}
+{% set version = "0.289.1" %}
 
 package:
   name: "{{ name|lower }}"
@@ -7,23 +7,17 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 12dd485c2d7ace9c92517ddb1e626a9efa8c4edf9f331f81a022643d5754df00
+  sha256: 6079f50557e67f24f2f86bb3c4324d29fce4c3ac257ffdd086a7d1149981f392
 
 build:
   number: 0
+  noarch: python
   entry_points:
-    - dx-genes-to-gff = dxpy.scripts.dx_genes_to_gff:main
-    - dx-variants-to-vcf = dxpy.scripts.dx_variants_to_vcf:main
-    - dx-mappings-to-sam = dxpy.scripts.dx_mappings_to_sam:main
-    - dx-mappings-to-fastq = dxpy.scripts.dx_mappings_to_fastq:main
-    - dx = dxpy.scripts.dx:main
     - dx-build-applet = dxpy.scripts.dx_build_applet:main
     - dx-build-app = dxpy.scripts.dx_build_app:main
-    - dx-app-wizard = dxpy.scripts.dx_app_wizard:main
+    - dx = dxpy.scripts.dx:main
     - dx-build-report-html = dxpy.scripts.dx_build_report_html:main
-    - dx-spans-to-bed = dxpy.scripts.dx_spans_to_bed:main
-    - dx-genes-to-gtf = dxpy.scripts.dx_genes_to_gtf:main
-    - dx-reads-to-fastq = dxpy.scripts.dx_reads_to_fastq:main
+    - dx-app-wizard = dxpy.scripts.dx_app_wizard:main
   script: python setup.py install --single-version-externally-managed --record=record.txt
 
 requirements:
@@ -31,8 +25,6 @@ requirements:
     - argcomplete >=1.9.4
     - beautifulsoup4 >=4.4.1
     - cryptography <=2.2.2
-    - xattr >=0.6.4
-    - futures >=3.0.4  # [py27]
     - setuptools
     - psutil >=3.3.0
     - python
@@ -44,7 +36,6 @@ requirements:
     - argcomplete >=1.9.4
     - beautifulsoup4 >=4.4.1
     - cryptography <=2.2.2
-    - futures >=3.0.4  # [py27]
     - psutil >=3.3.0
     - python
     - python-dateutil >=2.5
@@ -62,18 +53,16 @@ test:
     - dxpy.templating
     - dxpy.utils
   commands:
-    - 'dx --help &> /dev/null'
-    - 'dx-genes-to-gff --help &> /dev/null'
-    - 'dx-variants-to-vcf --help &> /dev/null'
-    - 'dx-mappings-to-sam --help &> /dev/null'
-    - 'dx-mappings-to-fastq --help &> /dev/null'
-    - 'dx-build-applet --help &> /dev/null'
-    - 'dx-build-app --help &> /dev/null'
-    - 'dx-app-wizard --help &> /dev/null'
-    - 'dx-build-report-html --help &> /dev/null'
-    - 'dx-spans-to-bed --help &> /dev/null'
-    - 'dx-genes-to-gtf --help &> /dev/null'
-    - 'dx-reads-to-fastq --help &> /dev/null'
+    - dx-build-applet --help
+    - dx-build-app --help
+    - dx --help
+    - dx-build-report-html --help
+    - dx-app-wizard --help
+  requires:
+    - mock >=2.0.0
+    - pexpect >=4.6
+    - pyopenssl >=17.5.0
+    - pytest >=3.5.1
 
 about:
   home: https://github.com/dnanexus/dx-toolkit

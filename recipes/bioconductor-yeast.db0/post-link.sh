@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="yeast.db0_3.7.1.tar.gz"
+FN="yeast.db0_3.10.1.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/annotation/src/contrib/yeast.db0_3.7.1.tar.gz"
-  "https://bioarchive.galaxyproject.org/yeast.db0_3.7.1.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-yeast.db0/bioconductor-yeast.db0_3.7.1_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/yeast.db0_3.10.1.tar.gz"
+  "https://bioarchive.galaxyproject.org/yeast.db0_3.10.1.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-yeast.db0/bioconductor-yeast.db0_3.10.1_src_all.tar.gz"
 )
-MD5="d46ddb0d3ab987389ada054068806531"
+MD5="6cf1e6bf8ad23832dac70bd2a723123b"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

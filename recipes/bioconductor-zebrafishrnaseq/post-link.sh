@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="zebrafishRNASeq_1.2.0.tar.gz"
+FN="zebrafishRNASeq_1.6.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.8/data/experiment/src/contrib/zebrafishRNASeq_1.2.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/zebrafishRNASeq_1.2.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-zebrafishrnaseq/bioconductor-zebrafishrnaseq_1.2.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/zebrafishRNASeq_1.6.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/zebrafishRNASeq_1.6.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-zebrafishrnaseq/bioconductor-zebrafishrnaseq_1.6.0_src_all.tar.gz"
 )
-MD5="f29dab65186b6775efb0a5e5eaeae5e0"
+MD5="b596f49dfa03f1c7f09b912b0852a45f"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
