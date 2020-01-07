@@ -2,6 +2,7 @@
 
 set -e -o pipefail -x
 
-./spades_compile.sh -DSPADES_USE_JEMALLOC:BOOL=OFF
+./spades_compile.sh
+
 
 
