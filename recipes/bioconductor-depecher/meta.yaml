@@ -1,6 +1,6 @@
-{% set version = "1.0.0" %}
+{% set version = "1.2.0" %}
 {% set name = "DepecheR" %}
-{% set bioc = "3.9" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
@@ -10,7 +10,7 @@ source:
     - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  md5: 40ab211d17a4e171dc6605b97f060268
+  md5: 6218fb1bb5b7e6febdca60fb3a0f0549
 build:
   number: 0
   rpaths:
@@ -19,12 +19,12 @@ build:
 # Suggests: Rtsne, testthat, knitr, rmarkdown, BiocStyle
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
-    - 'bioconductor-mixomics >=6.8.0,<6.9.0'
+    - 'bioconductor-mixomics >=6.10.0,<6.11.0'
     - r-base
     - 'r-beanplot >=1.2'
     - 'r-dosnow >=1.0.16'
     - 'r-dplyr >=0.7.8'
+    - 'r-fnn >=1.1.3'
     - 'r-foreach >=1.4.4'
     - 'r-ggplot2 >=3.1.0'
     - 'r-gplots >=3.0.1'
@@ -34,14 +34,15 @@ requirements:
     - 'r-rcpp >=1.0.0'
     - r-rcppeigen
     - 'r-reshape2 >=1.4.3'
+    - 'r-robustbase >=0.93.5'
     - 'r-viridis >=0.5.1'
   run:
-    - 'bioconductor-biocparallel >=1.18.0,<1.19.0'
-    - 'bioconductor-mixomics >=6.8.0,<6.9.0'
+    - 'bioconductor-mixomics >=6.10.0,<6.11.0'
     - r-base
     - 'r-beanplot >=1.2'
     - 'r-dosnow >=1.0.16'
     - 'r-dplyr >=0.7.8'
+    - 'r-fnn >=1.1.3'
     - 'r-foreach >=1.4.4'
     - 'r-ggplot2 >=3.1.0'
     - 'r-gplots >=3.0.1'
@@ -51,16 +52,28 @@ requirements:
     - 'r-rcpp >=1.0.0'
     - r-rcppeigen
     - 'r-reshape2 >=1.4.3'
+    - 'r-robustbase >=0.93.5'
     - 'r-viridis >=0.5.1'
   build:
+    - {{ cdt('mesa-libgl-devel') }}  # [linux]
+    - {{ cdt('mesa-dri-drivers') }}  # [linux]
+    - {{ cdt('libselinux') }}  # [linux]
+    - {{ cdt('libxdamage') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}  # [linux]
+    - xorg-libxfixes  # [linux]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
 test:
   commands:
-    - '$R -e "library(''{{ name }}'')"'
+    - 'LD_LIBRARY_PATH="${BUILD_PREFIX}/x86_64-conda_cos6-linux-gnu/sysroot/usr/lib64" $R -e "library(''{{ name }}'')"'
 about:
   home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'MIT + file LICENSE'
-  summary: 'The purpose of this package is to identify traits in a dataset that can separate groups. This is done on two levels. First, clustering is performed, using an implementation of sparse K-means. Secondly, the generated clusters are used to predict outcomes of groups of individuals based on their distribution of observations in the different clusters. As certain clusters with separating information will be identified, and these clusters are defined by a sparse number of variables, this method can reduce the complexity of data, to only emphasize the data that actually matters.'
+  summary: 'Determination of essential phenotypic elements of clusters in high-dimensional entities'
+  description: 'The purpose of this package is to identify traits in a dataset that can separate groups. This is done on two levels. First, clustering is performed, using an implementation of sparse K-means. Secondly, the generated clusters are used to predict outcomes of groups of individuals based on their distribution of observations in the different clusters. As certain clusters with separating information will be identified, and these clusters are defined by a sparse number of variables, this method can reduce the complexity of data, to only emphasize the data that actually matters.'
+  license_file: LICENSE
+extra:
+  container:
+    extended-base: true
 

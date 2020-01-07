@@ -1,7 +1,7 @@
 #!/bin/bash
 export C_INCLUDE_PATH=$PREFIX/include
 target=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
-version=96
+version=98
 mkdir -p $target
 mkdir -p $PREFIX/bin
 
@@ -43,7 +43,7 @@ mv VEP_plugins*/config .
 rm -rf VEP_plugins*
 
 # Install loftee
-curl -L -ks -o loftee.tar.gz https://github.com/konradjk/loftee/archive/df3d29e.tar.gz
+curl -L -ks -o loftee.tar.gz https://github.com/konradjk/loftee/archive/v1.0.3.tar.gz
 tar -xzvpf loftee.tar.gz
 mv loftee-*/*.pl .
 mv loftee-*/*.pm .

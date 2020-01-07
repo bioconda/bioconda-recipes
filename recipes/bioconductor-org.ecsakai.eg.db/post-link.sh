@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="org.EcSakai.eg.db_3.8.2.tar.gz"
+FN="org.EcSakai.eg.db_3.10.0.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/org.EcSakai.eg.db_3.8.2.tar.gz"
-  "https://bioarchive.galaxyproject.org/org.EcSakai.eg.db_3.8.2.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-org.ecsakai.eg.db/bioconductor-org.ecsakai.eg.db_3.8.2_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/org.EcSakai.eg.db_3.10.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/org.EcSakai.eg.db_3.10.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-org.ecsakai.eg.db/bioconductor-org.ecsakai.eg.db_3.10.0_src_all.tar.gz"
 )
-MD5="006ead1a2f9f27ad61d79709b1a7bf68"
+MD5="f2e9e151117cd991c5850346bb3bd08d"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable

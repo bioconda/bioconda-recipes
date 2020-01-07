@@ -1,4 +1,4 @@
 #!/bin/bash
 
-make CXX="$CXX $LDFLAGS" CPPFLAGS="$CXXFLAGS" PREFIX="$PREFIX" prefix="$PREFIX" INSTALL_DIR="$PREFIX/bin"
+make CXX="$CXX $LDFLAGS" CPPFLAGS="$CXXFLAGS" PREFIX="$PREFIX" DEFAULT_DB_DIR="$PREFIX/share/amrfinderplus/data"
 make install
