@@ -1,0 +1,76 @@
+{% set version = "0.5.5" %}
+
+package:
+  name: cgat-apps
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/c/cgat/cgat-{{ version }}.tar.gz
+  sha256: e03ceddbd8b94be3cf92c720b42a0fc36f2b228b6cce88a097c26c646bef092c
+
+  
+build:
+  skip: True # [not py3k]
+  number: 0
+  entry_points:
+    - cgat = cgat.cgat:main
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+
+  host:
+    - python
+    - cython
+    - numpy
+    - pysam
+    - setuptools
+    - coreutils
+    - libpng
+    - zlib
+
+  run:
+    - python
+    - cgatcore
+    - alignlib-lite
+    - biopython
+    - future
+    - matplotlib
+    - {{ pin_compatible('numpy') }}
+    - pandas
+    - pybedtools
+    - pybigwig
+    - {{ pin_compatible('pysam', max_pin='x.x.x') }}
+    - python-lzo
+    - pyyaml
+    - quicksect
+    - scipy
+    - six 
+    - sortedcontainers
+    # Misc dependencies
+    - bedtools
+    - ucsc-bedgraphtobigwig
+    - ucsc-bedtobigbed
+    - ucsc-wigtobigwig
+    - coreutils
+    - grep
+    - libpng
+
+test:
+
+  imports:
+    - cgat
+
+  commands:
+    - cgat --help
+    - cgat --help Conversion
+    - cgat gtf2table -h
+    - find ${PREFIX} -iname "*bamtools.cpython-*-x86_64-linux-gnu.so*" -exec ldd {} \;
+    - cgat bam2bed -h
+
+about:
+  home: https://www.cgat.org/downloads/public/cgat/documentation
+  license: MIT
+  license_file: LICENSE
+  summary: "Computational Genomics Analysis Toolkit"

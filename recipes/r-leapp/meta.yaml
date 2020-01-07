@@ -1,0 +1,46 @@
+{% set version = '1.2' %}
+
+package:
+  name: r-leapp
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/leapp_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/leapp/leapp_{{ version }}.tar.gz
+  sha256: 27646512c35ee598a377cd39c1493617dd9db11f5f17c62effc315fa60fd38fa
+
+build:
+  number: 1
+  noarch: generic
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  host:
+    - r-base
+    - r-mass
+    - r-corpcor
+    - bioconductor-sva
+  run:
+    - r-base
+    - r-mass
+    - r-corpcor
+    - bioconductor-sva
+
+test:
+  commands:
+    - $R -e "library('leapp')"
+
+about:
+  home: https://CRAN.R-project.org/package=leapp
+  license: GPL (>= 2)
+  summary: These functions take a gene expression value matrix, a primary covariate vector, an
+    additional known covariates matrix.  A two stage analysis is applied to counter
+    the effects of latent variables on the rankings of hypotheses.  The estimation and
+    adjustment of latent effects are proposed by Sun, Zhang and Owen (2011).  "leapp"
+    is developed in the context of microarray experiments, but may be used as a general
+    tool for high throughput data sets where dependence may be involved.
+  license_family: GPL3
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'

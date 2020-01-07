@@ -1,0 +1,43 @@
+{% set version = "1.30.0" %}
+{% set name = "EBcoexpress" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
+  md5: ee4a1230d4b4ae71c2ac9f4276606de3
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: graph, igraph, colorspace
+requirements:
+  host:
+    - 'bioconductor-ebarrays >=2.50.0,<2.51.0'
+    - r-base
+    - r-mclust
+    - r-minqa
+  run:
+    - 'bioconductor-ebarrays >=2.50.0,<2.51.0'
+    - r-base
+    - r-mclust
+    - r-minqa
+  build:
+    - {{ compiler('c') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'EBcoexpress for Differential Co-Expression Analysis'
+  description: 'An Empirical Bayesian Approach to Differential Co-Expression Analysis at the Gene-Pair Level'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

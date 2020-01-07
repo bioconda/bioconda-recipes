@@ -1,7 +1,4 @@
 #!/bin/bash
-mkdir -p "$PREFIX/bin"
-if [ "$(uname)" == "Darwin" ]; then
-    cp -p mga_osx "$PREFIX/bin/mga"
-else
-    cp -p mga_linux_ia64 "$PREFIX/bin/mga"
-fi
+
+mkdir -pv "${PREFIX}"/bin
+cp -p $(find ./ -maxdepth 1 -name "*mga_osx" -o -name "*mga_linux_ia64") "${PREFIX}"/bin/mga

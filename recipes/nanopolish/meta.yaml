@@ -1,5 +1,5 @@
 {% set name = "nanopolish" %}
-{% set version = "0.10.2" %}
+{% set version = "0.11.3" %}
 
 package:
   name: {{ name|lower }}
@@ -10,21 +10,23 @@ build:
 
 source:
   url: https://github.com/jts/nanopolish/archive/v{{ version }}.tar.gz
-  sha256: c0ba8750df379af51a7f3108ea990096c2684e8c20b75bf76f0ed278a84f889a
+  sha256: 3f86e2b0fc24e00987ed18e34f3425aef6fb938873b6ea4e46fba69d170e5dd4
   patches:
     - nanopolish.patch
 
 requirements:
   build:
-    - gcc
+    - {{ compiler('cxx') }}  # [linux64]
+    - gcc                    # [osx]
   host:
-    - fast5 ==0.6.5
-    - htslib >1.4
+    - fast5 0.6.5
+    - htslib
     - hdf5
     - eigen
     - ncurses
     - bzip2
     - openmp
+    - libcurl
   run:
     - python
     - hdf5
@@ -34,7 +36,8 @@ requirements:
     - ncurses
     - libdeflate
     - openmp
-    - libgcc
+    - libgcc                # [osx]
+    - libcurl
 
 test:
   commands:

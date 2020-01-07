@@ -1,0 +1,58 @@
+{% set version = "1.8.0" %}
+{% set name = "mfa" %}
+{% set bioc = "3.10" %}
+
+package:
+  name: 'bioconductor-{{ name|lower }}'
+  version: '{{ version }}'
+source:
+  url:
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
+    - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
+  md5: fdfb15540c46249cb1d8396e1e0dada5
+build:
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+# Suggests: knitr, rmarkdown, BiocStyle, testthat
+requirements:
+  host:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - r-base
+    - r-coda
+    - r-dplyr
+    - r-ggmcmc
+    - r-ggplot2
+    - r-magrittr
+    - r-mcmcglmm
+    - r-mcmcpack
+    - r-rcpp
+    - r-tibble
+  run:
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - r-base
+    - r-coda
+    - r-dplyr
+    - r-ggmcmc
+    - r-ggplot2
+    - r-magrittr
+    - r-mcmcglmm
+    - r-mcmcpack
+    - r-rcpp
+    - r-tibble
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - make
+test:
+  commands:
+    - '$R -e "library(''{{ name }}'')"'
+about:
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  license: 'GPL (>= 2)'
+  summary: 'Bayesian hierarchical mixture of factor analyzers for modelling genomic bifurcations'
+  description: 'MFA models genomic bifurcations using a Bayesian hierarchical mixture of factor analysers.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
+

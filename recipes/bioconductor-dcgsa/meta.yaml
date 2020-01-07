@@ -1,38 +1,47 @@
-{% set version = "1.8.0" %}
+{% set version = "1.14.0" %}
 {% set name = "dcGSA" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 3719cf082f6fb781bb157b156692cabb538e8ba101bdaccfc230c6b633d3b0a7
+  md5: c9e8c209a10fc851f8c4d6dc13069036
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr
 requirements:
   host:
-    - 'bioconductor-biocparallel >=1.14.2,<1.16.0'
+    - 'bioconductor-biocparallel >=1.20.0,<1.21.0'
     - r-base
     - r-matrix
   run:
-    - 'bioconductor-biocparallel >=1.14.2,<1.16.0'
+    - 'bioconductor-biocparallel >=1.20.0,<1.21.0'
     - r-base
     - r-matrix
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'Distance-correlation based Gene Set Analysis for longitudinal gene expression profiles. In longitudinal studies, the gene expression profiles were collected at each visit from each subject and hence there are multiple measurements of the gene expression profiles for each subject. The dcGSA package could be used to assess the associations between gene sets and clinical outcomes of interest by fully taking advantage of the longitudinal nature of both the gene expression profiles and clinical outcomes.'
+  summary: 'Distance-correlation based Gene Set Analysis for longitudinal gene expression profiles'
+  description: 'Distance-correlation based Gene Set Analysis for longitudinal gene expression profiles. In longitudinal studies, the gene expression profiles were collected at each visit from each subject and hence there are multiple measurements of the gene expression profiles for each subject. The dcGSA package could be used to assess the associations between gene sets and clinical outcomes of interest by fully taking advantage of the longitudinal nature of both the gene expression profiles and clinical outcomes.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:dcgsa
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-dcgsa
+    path: recipes/bioconductor-dcgsa
+    version: 1.8.0
+

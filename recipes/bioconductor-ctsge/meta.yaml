@@ -1,24 +1,26 @@
-{% set version = "1.6.1" %}
+{% set version = "1.12.0" %}
 {% set name = "ctsGE" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 0460482b3575ca441698824da239d230295f71599df7502f6d6426cd37136afb
+  md5: c93f6f0bba573c02f80c085cc52bdb6d
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: BiocStyle, dplyr, DT, GEOquery, knitr, pander, rmarkdown, testthat
 requirements:
   host:
-    - 'bioconductor-limma >=3.36.5,<3.38.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
     - r-ccapp
     - r-ggplot2
@@ -26,7 +28,7 @@ requirements:
     - r-shiny
     - r-stringr
   run:
-    - 'bioconductor-limma >=3.36.5,<3.38.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
     - r-base
     - r-ccapp
     - r-ggplot2
@@ -37,10 +39,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'Methodology for supervised clustering of potentially many predictor variables, such as genes etc., in time series datasets Provides functions that help the user assigning genes to predefined set of model profiles.'
+  summary: 'Clustering of Time Series Gene Expression data'
+  description: 'Methodology for supervised clustering of potentially many predictor variables, such as genes etc., in time series datasets Provides functions that help the user assigning genes to predefined set of model profiles.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:ctsge
     - doi:10.1093/bioinformatics/btx116
+  parent_recipe:
+    name: bioconductor-ctsge
+    path: recipes/bioconductor-ctsge
+    version: 1.6.1
+

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/opt/anaconda1anaconda2anaconda3/bin/python
 #
 # Wrapper script for Java Conda packages that ensures that the java runtime
 # is invoked with the right options. Adapted from the bash script (http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128).

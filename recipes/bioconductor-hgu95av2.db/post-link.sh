@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="hgu95av2.db_3.2.3.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/annotation/src/contrib/hgu95av2.db_3.2.3.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/hgu95av2.db_3.2.3.tar.gz"
   "https://bioarchive.galaxyproject.org/hgu95av2.db_3.2.3.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgu95av2.db/bioconductor-hgu95av2.db_3.2.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-hgu95av2.db/bioconductor-hgu95av2.db_3.2.3_src_all.tar.gz"
@@ -17,7 +17,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.
