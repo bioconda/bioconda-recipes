@@ -1,24 +1,24 @@
-{% set version = "1.14.2" %}
+{% set version = "1.20.0" %}
 {% set name = "BiocParallel" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: d5c568362f06b36494d54f4134a7ac06b45fe2a10236fcdaed9e58288c2a8bd2
+  md5: da39b52c27a29b961fcedd371aa96d4b
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: BiocGenerics, tools, foreach, BatchJobs, BBmisc, doParallel, Rmpi, GenomicRanges, RNAseqData.HNRNPC.bam.chr14, TxDb.Hsapiens.UCSC.hg19.knownGene, VariantAnnotation, Rsamtools, GenomicAlignments, ShortRead, codetools, RUnit, BiocStyle, knitr, batchtools, data.table
+# SystemRequirements: C++11
 requirements:
-  build:
-    - {{ compiler('fortran') }}
   host:
     - r-base
     - r-bh
@@ -32,15 +32,23 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - automake
     - make
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL-2 | GPL-3'
-  summary: 'This package provides modified versions and novel implementation of functions for parallel evaluation, tailored to use with Bioconductor objects.'
+  summary: 'Bioconductor facilities for parallel evaluation'
+  description: 'This package provides modified versions and novel implementation of functions for parallel evaluation, tailored to use with Bioconductor objects.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:biocparallel
     - doi:10.1214/14-STS476
+  parent_recipe:
+    name: bioconductor-biocparallel
+    path: recipes/bioconductor-biocparallel
+    version: 1.14.2
+

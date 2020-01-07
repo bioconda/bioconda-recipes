@@ -1,11 +1,11 @@
 #!/bin/bash
-FN="stemHypoxia_1.16.0.tar.gz"
+FN="stemHypoxia_1.22.0.tar.gz"
 URLS=(
-  "http://bioconductor.org/packages/3.7/data/experiment/src/contrib/stemHypoxia_1.16.0.tar.gz"
-  "https://bioarchive.galaxyproject.org/stemHypoxia_1.16.0.tar.gz"
-  "https://depot.galaxyproject.org/software/bioconductor-stemhypoxia/bioconductor-stemhypoxia_1.16.0_src_all.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/experiment/src/contrib/stemHypoxia_1.22.0.tar.gz"
+  "https://bioarchive.galaxyproject.org/stemHypoxia_1.22.0.tar.gz"
+  "https://depot.galaxyproject.org/software/bioconductor-stemhypoxia/bioconductor-stemhypoxia_1.22.0_src_all.tar.gz"
 )
-MD5="b26a9742c2c354c375fb4231b922d439"
+MD5="51898d2545aa7d1a2d9bac3141814014"
 
 # Use a staging area in the conda dir rather than temp dirs, both to avoid
 # permission issues as well as to have things downloaded in a predictable
@@ -16,7 +16,7 @@ TARBALL=$STAGING/$FN
 
 SUCCESS=0
 for URL in ${URLS[@]}; do
-  wget -O- -q $URL > $TARBALL
+  curl $URL > $TARBALL
   [[ $? == 0 ]] || continue
 
   # Platform-specific md5sum checks.

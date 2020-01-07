@@ -23,9 +23,21 @@ git fetch $UPSTREAM_REMOTE
 if ! git diff --quiet HEAD...$UPSTREAM_REMOTE/master -- .circleci/; then
     echo 'Your bioconda-recipes CI configuration is out of date.'
     echo 'Please update it to the latest version of the upstream master branch.'
-    echo 'You can do this, e.g., by running:'
+    echo ''
+    echo 'Have @BiocondaBot attempt to fix this by creating a comment on your PR:'
+    echo ''
+    echo '   @BiocondaBot update'
+    echo ''
+    echo 'Once the update commit has been created, update your local copy of'
+    echo 'your branch:'
+    echo ''
+    echo '  git pull'
+    echo ''
+    echo ''
+    echo 'You can also fix this manually, e.g., by running:'
     echo '  git fetch https://github.com/bioconda/bioconda-recipes.git master'
     echo '  git merge FETCH_HEAD'
+    echo ''
     exit 1
 fi
 git remote remove $UPSTREAM_REMOTE
@@ -52,7 +64,6 @@ if ! type bioconda-utils 2> /dev/null || [[ $BOOTSTRAP == "true" ]]; then
     # step 2: setup channels
     $WORKSPACE/miniconda/bin/conda config --system --add channels defaults
     $WORKSPACE/miniconda/bin/conda config --system --add channels bioconda
-    $WORKSPACE/miniconda/bin/conda config --system --add channels conda-forge/label/cf201901
     $WORKSPACE/miniconda/bin/conda config --system --add channels conda-forge
 
     # step 3: install bioconda-utils

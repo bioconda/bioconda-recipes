@@ -1,34 +1,49 @@
-{% set version = "3.18.0" %}
+{% set version = "3.24.0" %}
 {% set name = "trio" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name }}/bioconductor-{{ name }}_{{ version }}_src_all.tar.gz'
-  sha256: 9d5d4c09b6c57a1c26a4d8c123e9f77218979a33fa0ed324171dd0f327a83621
+  md5: 63e8e25af706873d921677f8c9fa660e
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: haplo.stats, mcbiopi, splines, logicFS (>= 1.28.1), KernSmooth, VariantAnnotation
 requirements:
   host:
+    - 'bioconductor-siggenes >=1.60.0,<1.61.0'
     - r-base
+    - 'r-logicreg >=1.5.3'
+    - r-survival
   run:
+    - 'bioconductor-siggenes >=1.60.0,<1.61.0'
     - r-base
+    - 'r-logicreg >=1.5.3'
+    - r-survival
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: LGPL-2
-  summary: 'Testing SNPs and SNP interactions with a genotypic TDT. This package furthermore contains functions for computing pairwise values of LD measures and for identifying LD blocks, as well as functions for setting up matched case pseudo-control genotype data for case-parent trios in order to run trio logic regression, for imputing missing genotypes in trios, for simulating case-parent trios with disease risk dependent on SNP interaction, and for power and sample size calculation in trio data.'
+  summary: 'Testing of SNPs and SNP Interactions in Case-Parent Trio Studies'
+  description: 'Testing SNPs and SNP interactions with a genotypic TDT. This package furthermore contains functions for computing pairwise values of LD measures and for identifying LD blocks, as well as functions for setting up matched case pseudo-control genotype data for case-parent trios in order to run trio logic regression, for imputing missing genotypes in trios, for simulating case-parent trios with disease risk dependent on SNP interaction, and for power and sample size calculation in trio data.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/LGPL-2'
 extra:
   identifiers:
     - biotools:trio
     - doi:10.1038/nmeth.3252
+  parent_recipe:
+    name: bioconductor-trio
+    path: recipes/bioconductor-trio
+    version: 3.18.0
+

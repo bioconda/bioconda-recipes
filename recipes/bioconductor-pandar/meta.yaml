@@ -1,25 +1,27 @@
-{% set version = "1.12.0" %}
+{% set version = "1.18.0" %}
 {% set name = "pandaR" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 5ddcf4916cedc12997fd0b6df5eafb377bbb972cb08829e47d30bee996e23022
+  md5: 98ae7d26991f2ae261f184a43f43b817
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: knitr
 requirements:
   host:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
     - r-base
     - r-ggplot2
     - r-hexbin
@@ -29,8 +31,8 @@ requirements:
     - r-reshape
     - r-runit
   run:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
-    - 'bioconductor-biocgenerics >=0.26.0,<0.28.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-biocgenerics >=0.32.0,<0.33.0'
     - r-base
     - r-ggplot2
     - r-hexbin
@@ -43,9 +45,16 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: GPL-2
-  summary: 'Runs PANDA, an algorithm for discovering novel network structure by combining information from multiple complementary data sources.'
+  summary: 'PANDA Algorithm'
+  description: 'Runs PANDA, an algorithm for discovering novel network structure by combining information from multiple complementary data sources.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
 extra:
   identifiers:
     - biotools:pandar
+  parent_recipe:
+    name: bioconductor-pandar
+    path: recipes/bioconductor-pandar
+    version: 1.12.0
+

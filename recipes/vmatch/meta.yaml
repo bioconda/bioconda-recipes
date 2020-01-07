@@ -1,0 +1,59 @@
+{% set name = "vmatch" %}
+{% set version = "2.3.0" %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: http://www.vmatch.de/distributions/vmatch-{{ version }}-Linux_x86_64-64bit.tar.gz  # [linux]
+    sha256: 5e18d0dddf04e86dad193fcdde6e48f3901365932634125602d8808f35acf979  # [linux]
+    patches:  # [linux]
+      - 0001-Remove-direct-call-to-GCC-in-Makefile.patch  # [linux]
+  - url: http://www.vmatch.de/distributions/vmatch-{{ version }}-Darwin_i386-64bit.tar.gz  # [osx]
+    sha256: 39695c7d20158446ff27656f9ba415097052570bcc67ed12efec376fc3b0b4c6  # [osx]
+    patches:  # [osx]
+      - 0001-Remove-direct-call-to-GCC-in-Makefile.patch  # [osx]
+
+build:
+  number: 2
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - make
+  run:
+    - perl >=5.10,<6
+
+test:
+  files:
+    # Those files were copied from the blast recipe
+    - test.fa 
+    - testdatabase.fa
+  commands:
+    # (see run_test.sh for remainder of tests)
+    # Some programs (vseqinfo, vendian) or scripts (cleanpp.sh
+    # upgradeprj.pl, Vmatchtrans.pl, vmigrate.sh) don't have help
+    # so we don't test them
+    - mkvtree -help > /dev/null
+    - mkdna6idx -help > /dev/null
+    - vmatch -help > /dev/null
+    - vmatchselect -help > /dev/null
+    - matchcluster -help > /dev/null
+    - vseqselect -help > /dev/null
+    - vstree2tex -help > /dev/null
+    - vsubseqselect -help > /dev/null
+    - chain2dim -help > /dev/null
+    - repfind.pl -help > /dev/null
+
+about:
+  home: http://www.vmatch.de/
+  license: Unknown
+  license_family: OTHER
+  summary: The Vmatch large scale sequence analysis software
+
+extra:
+  identifiers:
+    - biotools:vmatch
+  skip-lints:
+    - should_not_be_noarch_source # we use platform specific sources but the recipe is valid on all platforms

@@ -1,28 +1,31 @@
-{% set version = "1.8.0" %}
+{% set version = "1.14.0" %}
 {% set name = "BioQC" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: ef22544a0fb005c332a14edd802772146cc346a03e229a46b09592423bb2a0ee
+  md5: 634216f2b4460f085892ce4a81d54341
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+# Suggests: testthat, knitr, rmarkdown, lattice, latticeExtra, rbenchmark, gplots, gridExtra, org.Hs.eg.db, ineq, covr
 requirements:
   host:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-edger >=3.28.0,<3.29.0'
     - r-base
     - r-rcpp
   run:
-    - 'bioconductor-biobase >=2.40.0,<2.42.0'
+    - 'bioconductor-biobase >=2.46.0,<2.47.0'
+    - 'bioconductor-edger >=3.28.0,<3.29.0'
     - r-base
     - r-rcpp
   build:
@@ -33,10 +36,17 @@ test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>=3)'
-  summary: 'BioQC performs quality control of high-throughput expression data based on tissue gene signatures. It can detect tissue heterogeneity in gene expression data. The core algorithm is a Wilcoxon-Mann-Whitney test that is optimised for high performance.'
+  summary: 'Detect tissue heterogeneity in expression profiles with gene sets'
+  description: 'BioQC performs quality control of high-throughput expression data based on tissue gene signatures. It can detect tissue heterogeneity in gene expression data. The core algorithm is a Wilcoxon-Mann-Whitney test that is optimised for high performance.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:bioqc
     - doi:10.1186/s12864-017-3661-2
+  parent_recipe:
+    name: bioconductor-bioqc
+    path: recipes/bioconductor-bioqc
+    version: 1.8.0
+

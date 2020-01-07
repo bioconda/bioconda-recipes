@@ -1,25 +1,28 @@
-{% set version = "1.8.1" %}
+{% set version = "1.14.0" %}
 {% set name = "BatchQC" %}
-{% set bioc = "3.7" %}
+{% set bioc = "3.10" %}
 
 package:
   name: 'bioconductor-{{ name|lower }}'
   version: '{{ version }}'
 source:
   url:
-    - 'http://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
+    - 'https://bioconductor.org/packages/{{ bioc }}/bioc/src/contrib/{{ name }}_{{ version }}.tar.gz'
     - 'https://bioarchive.galaxyproject.org/{{ name }}_{{ version }}.tar.gz'
     - 'https://depot.galaxyproject.org/software/bioconductor-{{ name|lower }}/bioconductor-{{ name|lower }}_{{ version }}_src_all.tar.gz'
-  sha256: 3d3eb2a68c018066506b2ff4d2c4a94cbca5ebcfac35d68e322cd642893044a0
+  md5: a98524e9f6171cb81b556d78070741ca
 build:
   number: 0
   rpaths:
     - lib/R/lib/
     - lib/
+  noarch: generic
+# Suggests: testthat
+# SystemRequirements: pandoc (http://pandoc.org/installing.html) for generating reports from markdown files.
 requirements:
   host:
-    - 'bioconductor-limma >=3.36.5,<3.38.0'
-    - 'bioconductor-sva >=3.28.0,<3.30.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
+    - 'bioconductor-sva >=3.34.0,<3.35.0'
     - r-base
     - r-corpcor
     - r-d3heatmap
@@ -34,9 +37,10 @@ requirements:
     - r-reshape2
     - r-rmarkdown
     - r-shiny
+    - pandoc
   run:
-    - 'bioconductor-limma >=3.36.5,<3.38.0'
-    - 'bioconductor-sva >=3.28.0,<3.30.0'
+    - 'bioconductor-limma >=3.42.0,<3.43.0'
+    - 'bioconductor-sva >=3.34.0,<3.35.0'
     - r-base
     - r-corpcor
     - r-d3heatmap
@@ -51,13 +55,21 @@ requirements:
     - r-reshape2
     - r-rmarkdown
     - r-shiny
+    - pandoc
 test:
   commands:
     - '$R -e "library(''{{ name }}'')"'
 about:
-  home: 'http://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
+  home: 'https://bioconductor.org/packages/{{ bioc }}/bioc/html/{{ name }}.html'
   license: 'GPL (>= 2)'
-  summary: 'Sequencing and microarray samples often are collected or processed in multiple batches or at different times. This often produces technical biases that can lead to incorrect results in the downstream analysis. BatchQC is a software tool that streamlines batch preprocessing and evaluation by providing interactive diagnostics, visualizations, and statistical analyses to explore the extent to which batch variation impacts the data. BatchQC diagnostics help determine whether batch adjustment needs to be done, and how correction should be applied before proceeding with a downstream analysis. Moreover, BatchQC interactively applies multiple common batch effect approaches to the data, and the user can quickly see the benefits of each method. BatchQC is developed as a Shiny App. The output is organized into multiple tabs, and each tab features an important part of the batch effect analysis and visualization of the data. The BatchQC interface has the following analysis groups: Summary, Differential Expression, Median Correlations, Heatmaps, Circular Dendrogram, PCA Analysis, Shape, ComBat and SVA.'
+  summary: 'Batch Effects Quality Control Software'
+  description: 'Sequencing and microarray samples often are collected or processed in multiple batches or at different times. This often produces technical biases that can lead to incorrect results in the downstream analysis. BatchQC is a software tool that streamlines batch preprocessing and evaluation by providing interactive diagnostics, visualizations, and statistical analyses to explore the extent to which batch variation impacts the data. BatchQC diagnostics help determine whether batch adjustment needs to be done, and how correction should be applied before proceeding with a downstream analysis. Moreover, BatchQC interactively applies multiple common batch effect approaches to the data, and the user can quickly see the benefits of each method. BatchQC is developed as a Shiny App. The output is organized into multiple tabs, and each tab features an important part of the batch effect analysis and visualization of the data. The BatchQC interface has the following analysis groups: Summary, Differential Expression, Median Correlations, Heatmaps, Circular Dendrogram, PCA Analysis, Shape, ComBat and SVA.'
+  license_file: '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-3'
 extra:
   identifiers:
     - biotools:batchqc
+  parent_recipe:
+    name: bioconductor-batchqc
+    path: recipes/bioconductor-batchqc
+    version: 1.8.1
+
