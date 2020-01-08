@@ -1,29 +1,39 @@
-{% set version="0.30.0" %}
+{% set python_version = "0.30.0" %}
+{% set python_name = "bdgenomics.adam" %}
 
 package:
   name: adam
   version: {{ version }}
 
+
 source:
-  url: https://search.maven.org/remotecontent?filepath=org/bdgenomics/adam/adam-distribution-spark2_2.11/{{ version }}/adam-distribution-spark2_2.11-{{ version }}-bin.tar.gz
+  - url: https://search.maven.org/remotecontent?filepath=org/bdgenomics/adam/adam-distribution-spark2_2.11/{{ version }}/adam-distribution-spark2_2.11-{{ version }}-bin.tar.gz
   sha256: 2a2bad76ee89beeea2162265c0144a2749d66645a4db80b20b761e01a822f861
-  patches:
-    - adam-shell.patch
-    - adam-submit.patch
+  - url: https://pypi.io/packages/source/{{ python_name[0] }}/{{ python_name }}/{{ python_name }}-{{ python_version }}.tar.gz
+    sha256: 28592c297bf3dd5e086a21aa18fec34945a4d9c7804bdb8da583e4218467a190
+    folder: python_adam
 
 build:
-  number: 0
-  noarch: generic
+  number: 1
+  noarch: python
 
 requirements:
+    host:
+      - pip
+      - psutil
+      - python >3
   run:
     - openjdk >=8,<9
     - pyspark
+    - psutil
+    - python >3
+
 
 test:
   commands:
     - adam-submit --help
     - adam-submit transform --help
+    - pyadam --help
 
 about:
   home: https://github.com/bigdatagenomics/adam
