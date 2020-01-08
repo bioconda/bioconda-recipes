@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="SIFT.Hsapiens.dbSNP132_1.0.2.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/SIFT.Hsapiens.dbSNP132_1.0.2.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/SIFT.Hsapiens.dbSNP132_1.0.2.tar.gz"
   "https://bioarchive.galaxyproject.org/SIFT.Hsapiens.dbSNP132_1.0.2.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-sift.hsapiens.dbsnp132/bioconductor-sift.hsapiens.dbsnp132_1.0.2_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-sift.hsapiens.dbsnp132/bioconductor-sift.hsapiens.dbsnp132_1.0.2_src_all.tar.gz"

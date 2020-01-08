@@ -3,4 +3,4 @@
 python setup.py build
 
 #installs ragout as a python pachage
-python setup.py install
+$PYTHON -m pip install . --ignore-installed --no-deps -vv
