@@ -14,7 +14,7 @@ source .circleci/common.sh
 cat >> $BASH_ENV <<EOF
 
 # Set path
-export PATH="${WORKSPACE}/miniconda/bin:\$PATH"
+export PATH="${WORKSPACE}/miniconda/bin:${PATH}"
 
 if [ -d "${WORKSPACE}/miniconda" ] ; then
     unset conda
