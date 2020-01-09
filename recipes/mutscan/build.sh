@@ -1,5 +1,5 @@
 #!/bin/bash
 set -eu -o pipefail
 
-make INCLUDE_DIRS="$PREFIX/include" LIBRARY_DIRS="$PREFIX/lib" CC=$CXX
+make LDFLAGS="$LDFLAGS" DIR_INC=$PREFIX/include CC=$CXX
 make install BINDIR=$PREFIX
