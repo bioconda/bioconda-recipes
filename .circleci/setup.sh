@@ -89,17 +89,6 @@ if ! type bioconda-utils 2> /dev/null || [[ $BOOTSTRAP == "true" ]]; then
     conda install -y $additional_packages --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements.txt
     pip install git+https://github.com/bioconda/bioconda-utils.git@$BIOCONDA_UTILS_TAG
 
-    # step 3.1: download SDK and setup sysroot on macOS
-    #  primarily, run_conda_forge_build_setup does the following:
-    #   - download/setup SDK:
-    #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L21-L26
-    #   - add activation script to set MACOSX_DEPLOYMENT_TARGET and CONDA_BUILD_SYSROOT:
-    #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L60-L63
-    if [[ $OSTYPE == darwin* ]]; then
-        # use "CONFIG=" to avoid writing ./.ci_support/${CONFIG}.yaml which we don't need/use.
-        CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 run_conda_forge_build_setup
-    fi
-
     # step 4: configure local channel
     mkdir -p $WORKSPACE/miniconda/conda-bld/{noarch,linux-64,osx-64}
     conda index $WORKSPACE/miniconda/conda-bld
