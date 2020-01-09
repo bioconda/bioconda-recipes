@@ -1,5 +1,5 @@
-{% set version = "3.13.2" %}
-{% set sha256 = "07cb8ebd1f7622b3fc66d4ede617d2eb3ee925b0843dd6fced2d8ebd3d6b78ed" %}
+{% set version = "3.14.0" %}
+{% set sha256 = "18988dd51762863a16009aebb6e873c1fbca92328b0e6a5af0773e2b1ad7ddb9" %}
 
 package:
   name: spades
@@ -10,7 +10,8 @@ source:
   sha256: {{ sha256 }}
   patches:
     - 0001-change-verbosity.patch
-    - 0002-disable-parallel-libstdc.patch  # [osx]
+    - 0001-add-rt-lib-to-easel.patch  # [linux]
+    - 0001-link-rt-for-static-jemalloc.patch  # [linux]
 
 build:
   number: 0
@@ -23,6 +24,7 @@ requirements:
     - llvm-openmp  # [osx]
     - openmp  # [linux]
     - cmake
+    - pkg-config
   host:
     - llvm-openmp  # [osx]
     - openmp  # [linux]
@@ -35,12 +37,14 @@ requirements:
 
 test:
   commands:
-    - spades.py --version
-    - rnaspades.py --version
-    - truspades.py --version
-    - metaspades.py --version
-    - plasmidspades.py --version
-    - spades-kmercount -h
+    - spades.py --version 2>&1 | grep {{ version }}
+    - rnaspades.py --version 2>&1 | grep {{ version }}
+    - truspades.py --help 2>&1 | grep {{ version }}
+    - metaspades.py --version 2>&1 | grep {{ version }}
+    - plasmidspades.py --version 2>&1 | grep {{ version }}
+    - spades-kmercount -h 2>&1 | grep spades-kmercount
+    - spades-gmapper 2>&1 | grep spades-gmapper
+    - spades-gbuilder 2>&1 | grep spades-gbuilder
     - spades.py --test && rm -rf spades_test
 
 about:
@@ -67,5 +71,7 @@ extra:
     - biotools:spades
     - doi:10.1089/cmb.2012.0021
     - doi:10.1101/gr.213959.116
+    - doi:10.1093/gigascience/giz100
+    - doi:10.1093/bioinformatics/btz349
   skip-lints:
     - should_not_be_noarch_source
