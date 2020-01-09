@@ -16,13 +16,8 @@ cat >> $BASH_ENV <<EOF
 # Set path
 export PATH="${WORKSPACE}/miniconda/bin:${PATH}"
 
-if [ -d "${WORKSPACE}/miniconda" ] ; then
-    unset conda
-    # activate new base environment
+if [ -f "${WORKSPACE}/miniconda/etc/profile.d/conda.sh" ] ; then
     . "${WORKSPACE}/miniconda/etc/profile.d/conda.sh"
-    conda deactivate
-    conda deactivate
-    conda activate base
 fi
 EOF
 
@@ -74,6 +69,7 @@ if ! type bioconda-utils 2> /dev/null || [[ $BOOTSTRAP == "true" ]]; then
     curl -L -o miniconda.sh https://repo.continuum.io/miniconda/Miniconda3-$MINICONDA_VER-$tag-x86_64.sh
     bash miniconda.sh -b -p $WORKSPACE/miniconda
     . $BASH_ENV
+    conda activate base
 
     # step 2: setup channels
     conda config --system --add channels defaults
