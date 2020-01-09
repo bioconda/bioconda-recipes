@@ -78,9 +78,9 @@ if ! type bioconda-utils 2> /dev/null || [[ $BOOTSTRAP == "true" ]]; then
     #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L60-L63
     if [[ $OSTYPE == darwin* ]]; then
         # Pinned to 2.5.3 to make sure we don't get unexpected changes.
-        conda install -y conda-forge-ci-setup=2.5.3
+        $WORKSPACE/miniconda/bin/conda install -y conda-forge-ci-setup=2.5.3
         # use "CONFIG=" to avoid writing ./.ci_support/${CONFIG}.yaml which we don't need/use.
-        CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 run_conda_forge_build_setup
+        CONDA_PREFIX=$WORKSPACE/miniconda CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 run_conda_forge_build_setup
     fi
 
     # step 4: configure local channel
