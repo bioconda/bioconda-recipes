@@ -7,7 +7,7 @@ if [[ "$(uname)" == Darwin ]]; then
 		CAIRO_OPT='cairo=no'
 fi
 
-make ${CAIRO_OPT}
+make ${CAIRO_OPT} errorcheck=no
 export prefix=$PREFIX
 make ${CAIRO_OPT} install 
 

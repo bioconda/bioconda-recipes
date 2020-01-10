@@ -1,0 +1,57 @@
+package:
+  name: sv2
+  version: "1.4.3.4"
+
+build:
+  number: 3
+  skip: true # [py3k or osx]
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+source:
+  url: https://github.com/dantaki/SV2/releases/download/sv2v1.4.4/sv2-1.4.3.4.tar.gz
+  sha256: cf033a2db55ba930190783f7fe19dbb8e56606a8665cca8b768a687f450c4e00
+  patches:
+    # Allow specification of custom classifier paths.  This appears to be
+    # necessary in the latest version as it does not find the built-in ones
+    # any more.  Further, there is no way to configure them in the INI file
+    # anyway.  With this patch, a custom classifier JSON file can be
+    # placed next to the custom configuration INI file.
+    #
+    # PR for upstream:
+    # - https://github.com/dantaki/SV2/pull/27
+    - 0001-fix-classifiers.patch
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - bedtools
+    - cython
+    - numpy
+    - pandas
+    - pybedtools
+    - pysam >=0.9
+    - python
+    - python-wget
+    - scikit-learn >=0.19
+    - setuptools
+    - wget
+  run:
+    - bedtools
+    - numpy
+    - pandas
+    - pybedtools
+    - pysam >=0.9
+    - python
+    - python-wget
+    - scikit-learn >=0.19
+    - wget
+
+test:
+  commands:
+    - "sv2 -help"
+
+about:
+  home: https://github.com/dantaki/SV2
+  license: MIT
+  summary: Support Vector Structural Variation Genotyper

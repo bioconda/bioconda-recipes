@@ -9,8 +9,4 @@ export CPATH="${PREFIX}/include"
 # Override Makefile -mtune=native
 export CXXFLAGS="-mtune=generic"
 
-# TODO: remove when seqan is updated upstream
-rm -rf unicycler/include/seqan
-mv seqan/include/seqan unicycler/include/seqan
-
 python -m pip install --no-deps --ignore-installed .
