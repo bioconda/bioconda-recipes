@@ -37,8 +37,6 @@ cp build/bin/quick_hierarchical_clustering ${PREFIX}/bin
 
 # copy scripts directory
 cp -R scripts ${PREFIX}
-cp -R scripts_RAD ${PREFIX}
 
 # apply exec permissions
 chmod +x ${PREFIX}/scripts/*.sh
-chmod +x ${PREFIX}/scripts_RAD/*.sh
