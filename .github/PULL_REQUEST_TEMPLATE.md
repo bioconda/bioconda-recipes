@@ -1,3 +1,7 @@
+**Replace this sentence with a detailed description of your pull request**
+
+----
+
 > Bioconda requires reviews prior to merging pull-requests (PRs). To facilitate this, once your PR is passing tests and ready to be merged, please add the `please review & merge` label so other members of the bioconda community can have a look at your PR and either make suggestions or merge it.
 
 * [ ] I have read the [guidelines for bioconda recipes](https://bioconda.github.io/contributor/guidelines.html).
@@ -18,5 +22,3 @@
 >  * `@BiocondaBot please merge` will cause packages/containers to be uploaded and a PR merged. Someone must approve a PR first! This has the benefit of not wasting CI build time required by manually merging PRs.
 >
 > If you have questions, please post them in gitter or ping `@bioconda/core` in a comment (if you are not able to directly ping `@bioconda/core` then the bot will repost your comment and enable pinging).
-
-Please add a detailed description below:
