@@ -11,9 +11,17 @@ set -u
 # This file can be used to set BIOCONDA_UTILS_TAG and MINICONDA_VER.
 source .circleci/common.sh
 
+cat >> $BASH_ENV <<EOF
+
 # Set path
-echo "export PATH=\"$WORKSPACE/miniconda/bin:$PATH\"" >> $BASH_ENV
-source $BASH_ENV
+export PATH="${WORKSPACE}/miniconda/bin:${PATH}"
+
+if [ -f "${WORKSPACE}/miniconda/etc/profile.d/conda.sh" ] ; then
+    . "${WORKSPACE}/miniconda/etc/profile.d/conda.sh"
+fi
+EOF
+
+. $BASH_ENV
 
 # Make sure the CircleCI config is up to date.
 # add upstream as some semi-randomly named temporary remote to diff against
@@ -60,36 +68,30 @@ if ! type bioconda-utils 2> /dev/null || [[ $BOOTSTRAP == "true" ]]; then
     fi
     curl -L -o miniconda.sh https://repo.continuum.io/miniconda/Miniconda3-$MINICONDA_VER-$tag-x86_64.sh
     bash miniconda.sh -b -p $WORKSPACE/miniconda
+    . $BASH_ENV
+    conda activate base
 
     # step 2: setup channels
-    $WORKSPACE/miniconda/bin/conda config --system --add channels defaults
-    $WORKSPACE/miniconda/bin/conda config --system --add channels bioconda
-    $WORKSPACE/miniconda/bin/conda config --system --add channels conda-forge
+    conda config --system --add channels defaults
+    conda config --system --add channels bioconda
+    conda config --system --add channels conda-forge
 
     # step 3: install bioconda-utils
-    $WORKSPACE/miniconda/bin/conda install -y git pip --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements.txt
-    $WORKSPACE/miniconda/bin/pip install git+https://github.com/bioconda/bioconda-utils.git@$BIOCONDA_UTILS_TAG
-
-    # step 3.1: download SDK and setup sysroot on macOS
-    #  primarily, run_conda_forge_build_setup does the following:
-    #   - download/setup SDK:
-    #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L21-L26
-    #   - add activation script to set MACOSX_DEPLOYMENT_TARGET and CONDA_BUILD_SYSROOT:
-    #     https://github.com/conda-forge/conda-forge-ci-setup-feedstock/blob/a1026adb523b6562c16329170e7e304a25ed4033/recipe/run_conda_forge_build_setup_osx#L60-L63
+    additional_packages='git pip'
     if [[ $OSTYPE == darwin* ]]; then
         # Pinned to 2.5.3 to make sure we don't get unexpected changes.
-        $WORKSPACE/miniconda/bin/conda install -y conda-forge-ci-setup=2.5.3
-        # use "CONFIG=" to avoid writing ./.ci_support/${CONFIG}.yaml which we don't need/use.
-        CONDA_PREFIX=$WORKSPACE/miniconda CONFIG= OSX_FORCE_SDK_DOWNLOAD=1 run_conda_forge_build_setup
+        additional_packages="${additional_packages} conda-forge-ci-setup=2.5.3"
     fi
+    conda install -y $additional_packages --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements.txt
+    pip install git+https://github.com/bioconda/bioconda-utils.git@$BIOCONDA_UTILS_TAG
 
     # step 4: configure local channel
     mkdir -p $WORKSPACE/miniconda/conda-bld/{noarch,linux-64,osx-64}
-    $WORKSPACE/miniconda/bin/conda index $WORKSPACE/miniconda/conda-bld
-    $WORKSPACE/miniconda/bin/conda config --system --add channels file://$WORKSPACE/miniconda/conda-bld
+    conda index $WORKSPACE/miniconda/conda-bld
+    conda config --system --add channels file://$WORKSPACE/miniconda/conda-bld
 
     # step 5: cleanup
-    $WORKSPACE/miniconda/bin/conda clean -y --all
+    conda clean -y --all
     rm miniconda.sh
 fi
 
