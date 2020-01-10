@@ -6,7 +6,7 @@ CAIRO_OPT=
 LIBS=
 if [[ "$(uname)" == Darwin ]]; then
     CAIRO_OPT='cairo=no'
-    LIBS="-lc"
+    LIBS="LIBS=-lc"
 fi
 
 make ${CAIRO_OPT} ${LIBS} errorcheck=no
