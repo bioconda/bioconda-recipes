@@ -21,13 +21,11 @@ sh INSTALL
 sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnp++.sh
 sed -i.bak 's|scripts/|../scripts/|' run_discoSnp++.sh
 
-sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnp_ML.sh
-sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnp_storagefile.sh
+sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnp++_ML.sh
+sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnp++_storagefile.sh
 
 # copy binaries
-cp run_discoSnp++.sh ${PREFIX}/bin
-cp run_discoSnp_ML.sh ${PREFIX}/bin
-cp run_discoSnp_storagefile.sh ${PREFIX}/bin
+cp *.sh ${PREFIX}/bin
 
 # apply permissions for pipeline
 chmod +x ${PREFIX}/bin/*.sh
