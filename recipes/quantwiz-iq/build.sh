@@ -2,16 +2,11 @@ mkdir -p $PREFIX/bin
 module_dir=$PREFIX/MODULES
 mkdir -p $module_dir
 
-
 cp QuantWiz_IQ.pl $PREFIX/bin
 cp MODULES/*.pm $PREFIX/MODULES/
 
 mkdir -p $PREFIX/tmp_dir
 cp -r Purity_correction $PREFIX/tmp_dir
-
-
-#export PERL5LIB=$PREFIX/lib
-#PERL5LIB=
 
 # Short wrapper script
 cat > $PREFIX/bin/QuantWiz_IQ <<EOF
