@@ -9,4 +9,4 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 
 # build statically linked binary with Rust
-RUST_BACKTRACE=1 C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib cargo install --verbose --root $PREFIX
+RUST_BACKTRACE=1 C_INCLUDE_PATH=$PREFIX/include LIBRARY_PATH=$PREFIX/lib cargo install --verbose --path . --root $PREFIX
