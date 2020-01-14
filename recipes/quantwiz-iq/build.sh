@@ -11,7 +11,7 @@ cp -r Purity_correction $PREFIX/tmp_dir
 # Short wrapper script
 cat > $PREFIX/bin/QuantWiz_IQ <<EOF
 #!/bin/bash
-PERL5LIB=$module_dir $PREFIX/bin/QuantWiz_IQ.pl "\$@"
+PERL5LIB=$module_dir exec $PREFIX/bin/QuantWiz_IQ.pl "\$@"
 EOF
 chmod +x $PREFIX/bin/QuantWiz_IQ
 
@@ -31,5 +31,5 @@ Tol_max=0.05
 Purity_corrections_values=$PREFIX/tmp_dir/Purity_correction/iTRAQ8plex.tsv
 EOF
 
-sed -i.bak "s|/usr/bin/perl|$PREFIX/bin/perl|g" $PREFIX/bin/QuantWiz_IQ.pl
+sed -i.bak "s|/usr/bin/perl|/usr/bin/env perl|g" $PREFIX/bin/QuantWiz_IQ.pl
 rm $PREFIX/bin/*.bak
