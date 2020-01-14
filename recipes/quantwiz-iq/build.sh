@@ -31,4 +31,5 @@ Tol_max=0.05
 Purity_corrections_values=$PREFIX/tmp_dir/Purity_correction/iTRAQ8plex.tsv
 EOF
 
-
+sed -i.bak "s|/usr/bin/perl|$PREFIX/bin/perl|g" $PREFIX/bin/QuantWiz_IQ.pl
+rm $PREFIX/bin/*.bak
