@@ -1,9 +1,8 @@
-echo "PREFIX: $PREFIX"
+echo "PREFIX: ${PREFIX}"
 ls
 echo "-----"
+cat conda_build.sh
+echo "_____"
 
-mkdir -p ${PREFIX}/bin
-cp *py ${PREFIX}/bin
-
-mkdir -p $PREFIX/dependencies
-cp dependencies/* $PREFIX/dependencies
+cp -r bin ${PREFIX}/bin
+cp -r dependencies ${PREFIX}/dependencies
