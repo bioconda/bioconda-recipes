@@ -14,3 +14,7 @@ PERL5LIB=$module_dir QuantWiz_IQ.pl "\$@"
 EOF
 chmod +x $PREFIX/bin/QuantWiz_IQ
 
+
+sed -i.bak "s|/usr/bin/perl|/usr/bin/env perl|g" $PREFIX/bin/QuantWiz_IQ.pl
+rm $PREFIX/bin/*.bak
+
