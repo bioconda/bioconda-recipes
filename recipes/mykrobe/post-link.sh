@@ -20,7 +20,6 @@ function check_shasum() {
     return 0
 }
 
-PREFIX=/home/michael/Projects/bioconda-recipes/recipes/mykrobe
 cd "$PREFIX" || exit 1
 TARBALL="mykrobe-data.tar.gz"
 URL="https://bit.ly/2H9HKTU"
