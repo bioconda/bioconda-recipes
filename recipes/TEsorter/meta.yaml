@@ -1,0 +1,40 @@
+{% set name = "TEsorter" %}
+{% set version = "1.2.5.1" %}
+{% set sha256 = "1eca0c88a4b2c459684e76f31db8d6a02b605171e8ea1008a63d7bd74e70869c" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://github.com/NBISweden/TEsorter/archive/v{{ version }}.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  noarch: python
+  number: 0
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+
+requirements:
+  host:
+    - python >=3
+  run:
+    - python >=3
+    - drmaa
+    - pp
+    - hmmer
+    - blast
+    - biopython
+
+test:
+  commands:
+    - "python TEsorter.py --version"
+    - "python TEsorter.py test/rice6.9.5.liban"
+
+about:
+  home: https://github.com/NBISweden/TEsorter
+  license: GPLv3
+  license_family: GPL
+  license_file: LICENSE
+  summary: Lineage-level classification of transposable elements using conserved protein domains.
+  dev_url: https://github.com/NBISweden/TEsorter
