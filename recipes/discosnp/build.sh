@@ -27,6 +27,11 @@ sed -i.bak 's|\$EDIR/../bin|\$EDIR|' discoSnpRAD/run_discoSnpRad.sh
 sed -i.bak 's|\$EDIR/clustering_scripts/|\$EDIR/../discoSnpRAD/clustering_scripts/|' discoSnpRAD/run_discoSnpRad.sh
 
 
+
+sed -i.bak 's|\$EDIR/../bin|\$EDIR|' discoSnpRAD/run_discoSnpRad.sh
+sed -i.bak 's|\$EDIR/clustering_scripts/|../discoSnpRAD/clustering_scripts/|' discoSnpRAD/run_discoSnpRad.sh
+
+
 # copy binaries
 cp run_discoSnp++.sh ${PREFIX}/bin
 cp run_discoSnp++_ML.sh ${PREFIX}/bin
