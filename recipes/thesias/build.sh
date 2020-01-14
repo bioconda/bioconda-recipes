@@ -10,8 +10,7 @@ mkdir -p $outdir
 mkdir -p $PREFIX/bin
 mkdir -p $PREFIX/lib
 
-cp thesias.jar $outdir/
-cp $RECIPE_DIR/THESIAS.py $outdir/THESIAS
-ln -s $outdir/THESIAS $PREFIX/bin
-cp libthesiaslib.so.0 $PREFIX/lib
-ln -s $PREFIX/lib/libthesiaslib.so.0 $PREFIX/lib/libthesiaslib.so
+mv thesias.jar $outdir/
+mv $RECIPE_DIR/THESIAS.py $outdir/THESIAS
+ln -s $outdir/THESIAS $PREFIX/bin/THESIAS
+mv libthesiaslib.so.0 $PREFIX/lib/libthesiaslib.so
