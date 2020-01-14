@@ -20,19 +20,14 @@ sh INSTALL
 # change run_discoSnp++.sh deps path
 sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnp++.sh
 sed -i.bak 's|scripts/|../scripts/|' run_discoSnp++.sh
-
-sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnpRad.sh
-sed -i.bak 's|scripts_RAD/|../scripts_RAD/|' run_discoSnpRad.sh
-
-sed -i.bak 's|\${EDIR}/../build/bin/||' scripts_RAD/discoRAD_finalization.sh
+sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnp++_ML.sh
+sed -i.bak 's|\$EDIR/bin|\$EDIR|' run_discoSnp++_storagefile.sh
 
 # copy binaries
-cp run_discoSnp++.sh ${PREFIX}/bin
-cp run_discoSnpRad.sh ${PREFIX}/bin
+cp *.sh ${PREFIX}/bin
 
 # apply permissions for pipeline
-chmod +x ${PREFIX}/bin/run_discoSnp++.sh
-chmod +x ${PREFIX}/bin/run_discoSnpRad.sh
+chmod +x ${PREFIX}/bin/*.sh
 
 cp build/ext/gatb-core/bin/dbgh5 ${PREFIX}/bin
 cp build/bin/read_file_names ${PREFIX}/bin
@@ -42,8 +37,6 @@ cp build/bin/quick_hierarchical_clustering ${PREFIX}/bin
 
 # copy scripts directory
 cp -R scripts ${PREFIX}
-cp -R scripts_RAD ${PREFIX}
 
 # apply exec permissions
 chmod +x ${PREFIX}/scripts/*.sh
-chmod +x ${PREFIX}/scripts_RAD/*.sh
