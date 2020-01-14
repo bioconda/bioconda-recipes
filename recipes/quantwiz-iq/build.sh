@@ -11,7 +11,7 @@ cp -r Purity_correction $PREFIX/tmp_dir
 # Short wrapper script
 cat > $PREFIX/bin/QuantWiz_IQ <<EOF
 #!/bin/bash
-PERL5LIB=$module_dir exec $PREFIX/bin/QuantWiz_IQ.pl "\$@"
+PERL5LIB=$module_dir QuantWiz_IQ.pl "\$@"
 EOF
 chmod +x $PREFIX/bin/QuantWiz_IQ
 
