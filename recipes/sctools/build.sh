@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd sctools
+cd SCTools-master
 mkdir -p build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
