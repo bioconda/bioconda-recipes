@@ -3,8 +3,8 @@ mkdir build
 cd build
 
 ## See INSTALL of gromacs distro
-#for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do \
-for ARCH in AVX2_256 AVX_512; do \
+#for ARCH in AVX2_256 AVX_512; do \
+for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do \
   cmake .. \
   -DSHARED_LIBS_DEFAULT=OFF \
   -DBUILD_SHARED_LIBS=OFF \
@@ -43,8 +43,3 @@ ${SRC_DIR}/src/gromacs/hardware/identifyavx512fmaunits.cpp
 
 cp -a ${RECIPE_DIR}/gmx-chooser.bash ${PREFIX}/bin/gmx
 chmod a+x ${PREFIX}/bin/gmx
-
-
-# Tested in local build and all seems fine. Tests pass.
-# Failing in docker build.
-# Need to run and keep container to poke around.
