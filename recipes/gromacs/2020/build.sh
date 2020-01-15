@@ -3,8 +3,8 @@ mkdir build
 cd build
 
 ## See INSTALL of gromacs distro
-#for ARCH in AVX2_256; do \
-for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do \
+#for ARCH in SSE2 AVX_256 AVX2_256 AVX_512; do \
+for ARCH in AVX2_256 AVX_512; do \
   cmake .. \
   -DSHARED_LIBS_DEFAULT=OFF \
   -DBUILD_SHARED_LIBS=OFF \
@@ -34,7 +34,7 @@ done;
 # there's only a single one we prefer AVX2_256 SIMD instead.
 #
 
-g++ -O3 -mavx512f -std=c++11 \
+${CXX} -O3 -mavx512f -std=c++11 \
 -DGMX_IDENTIFY_AVX512_FMA_UNITS_STANDALONE=1 \
 -DGMX_X86_GCC_INLINE_ASM=1 \
 -DSIMD_AVX_512_CXX_SUPPORTED=1 \
@@ -43,3 +43,8 @@ ${SRC_DIR}/src/gromacs/hardware/identifyavx512fmaunits.cpp
 
 cp -a ${RECIPE_DIR}/gmx-chooser.bash ${PREFIX}/bin/gmx
 chmod a+x ${PREFIX}/bin/gmx
+
+
+# Tested in local build and all seems fine. Tests pass.
+# Failing in docker build.
+# Need to run and keep container to poke around.
