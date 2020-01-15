@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Find original directory of bash script, resolving symlinks
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
