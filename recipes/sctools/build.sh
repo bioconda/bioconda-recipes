@@ -5,4 +5,4 @@ cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make
 mkdir -p $PREFIX/bin
-cp apps/sctools/* $PREFIX/bin
+cp $SRC_DIR/build/apps/sctools/sctools_demultiplex $PREFIX/bin
