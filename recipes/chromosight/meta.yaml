@@ -1,0 +1,50 @@
+{% set name = "chromosight" %}
+{% set version = "0.3.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 00d84a0a23a4966d454e4aba570961dd98644749ec2e5f82ba86ab0e5ae43fe6
+
+build:
+  number: 0
+  noarch: python
+  entry_points:
+    - chromosight=chromosight.cli.chromosight:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python >=3.6
+  run:
+    - cooler
+    - docopt
+    - jsonschema
+    - matplotlib
+    - numpy
+    - python
+    - scikit-learn
+    - scipy >=1.3
+
+test:
+  imports:
+    - chromosight
+    - chromosight.cli
+    - chromosight.kernels
+    - chromosight.utils
+  commands:
+    - chromosight --help
+
+about:
+  home: https://github.com/koszullab/chromosight
+  license: Artistic
+  license_family: OTHER
+  summary: Detect loops (and other patterns) in Hi-C contact maps.
+
+extra:
+  recipe-maintainers:
+    - cmdoret

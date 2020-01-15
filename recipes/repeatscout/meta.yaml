@@ -7,17 +7,25 @@ source:
   sha256: bda6f782382f2b7dcb6a004b7da586d5046b3c12429b158e24787be62de6199c
 
 build:
-  number: 1
+  number: 3
   skip: True # [not linux]
 
 requirements:
   build:
     - {{ compiler('c') }}
   run:
+    - trf
+    - nseg
+    - perl
+    - perl-file-temp
 
 test:
   commands:
     - RepeatScout 2>&1 | grep Version
+    - build_lmer_table 2>&1 | grep Version
+    - filter-stage-1.prl -h 2>&1 | grep -i repeatscout
+    - filter-stage-2.prl -h 2>&1 | grep -i repeatmasker
+    - compare-out-to-gff.prl -h 2>&1 | grep -i repeatmasker
 
 about:
   home: http://repeatscout.bioprojects.org
