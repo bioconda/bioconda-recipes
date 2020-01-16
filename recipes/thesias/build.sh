@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-
 make
 
 outdir=$PREFIX/share/$PKG_NAME-$PKG_VERSION-$PKG_BUILDNUM
