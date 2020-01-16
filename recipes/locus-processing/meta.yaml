@@ -1,0 +1,58 @@
+{% set name = "locus-processing" %}
+{% set version = "0.0.3" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "c2a9c5fcf236aa5adbf2fe17596ff69a2a359ab163cc9fa40ec09e3085a9b42e" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  entry_points:
+    - locus2bed = locus_processing.cli:locus_to_bed
+    - validate_locus = locus_processing.cli:validate_locus
+    - complete_locus = locus_processing.cli:complete_locus
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - click >=6.7
+    - marshmallow ==2.20.3
+    - requests >=2.18.1
+    - pyyaml >=3.12
+  run:
+    - python
+    - click >=6.7
+    - marshmallow ==2.20.3
+    - requests >=2.18.1
+    - pyyaml >=3.12
+
+test:
+  imports:
+    - locus_processing
+  commands:
+    - locus2bed --help
+    - validate_locus --help
+    - complete_locus --help
+
+about:
+  home: https://github.com/LUMC/locus_processing
+  license: MIT License
+  license_family: MIT
+  license_file: ''
+  summary: Tools for working with locus definition files
+  description: ''
+  doc_url: ''
+  dev_url: ''
+
+extra:
+  recipe-maintainers: ''
