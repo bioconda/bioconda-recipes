@@ -2,6 +2,7 @@
 
 # Find original directory of bash script, resolving symlinks
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in/246128#246128
+
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
     DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
@@ -10,8 +11,6 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 
 DIR="$( dirname "$SOURCE" )"
-echo "ROBIN ROBIN ROBIN ROBIN ROBIN ${DIR}"
-echo "$DIR"
 FLAGS=`cat /proc/cpuinfo | grep ^flags | head -1`
 if echo $FLAGS | grep " avx512f " > /dev/null && test -d ${DIR}/../bin.AVX_512 && echo `${DIR}/../bin.AVX_512/identifyavx512fmaunits` | grep "2" > /dev/null; then
     ARCH="AVX_512"
