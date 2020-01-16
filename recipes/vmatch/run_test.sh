@@ -14,6 +14,8 @@ mkvtree \
     -db testdatabase.fa -dna -pl 4 -allout -v | \
     grep -q "total length of sequences: 2082 (including 2 separators)"
 echo PASS
+# Note that we use a selection function without its full path.
+# This works thanks to rpath modification by conda.
 echo -n 'Searching Database for Hits... '
 vmatch \
     -v -l 10 -q test.fa -selfun sel392.so 641 testdatabase.fa | \

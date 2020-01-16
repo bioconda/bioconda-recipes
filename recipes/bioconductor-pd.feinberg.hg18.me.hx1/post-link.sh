@@ -1,7 +1,7 @@
 #!/bin/bash
 FN="pd.feinberg.hg18.me.hx1_0.99.3.tar.gz"
 URLS=(
-  "https://bioconductor.org/packages/3.9/data/annotation/src/contrib/pd.feinberg.hg18.me.hx1_0.99.3.tar.gz"
+  "https://bioconductor.org/packages/3.10/data/annotation/src/contrib/pd.feinberg.hg18.me.hx1_0.99.3.tar.gz"
   "https://bioarchive.galaxyproject.org/pd.feinberg.hg18.me.hx1_0.99.3.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.feinberg.hg18.me.hx1/bioconductor-pd.feinberg.hg18.me.hx1_0.99.3_src_all.tar.gz"
   "https://depot.galaxyproject.org/software/bioconductor-pd.feinberg.hg18.me.hx1/bioconductor-pd.feinberg.hg18.me.hx1_0.99.3_src_all.tar.gz"

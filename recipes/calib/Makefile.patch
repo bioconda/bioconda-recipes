@@ -1,0 +1,27 @@
+--- Makefile-old	2019-09-06 15:11:35.678263900 -0700
++++ Makefile	2019-09-06 15:50:11.688508700 -0700
+@@ -1,4 +1,3 @@
+-#!/usr/bin/make -rRf
+ # Usage:
+ # calib correct reads1=reads1.fq reads2=reads2.fq
+ # calib simulate
+@@ -112,12 +111,19 @@
+ .SECONDARY:
+ .PHONY: help clean simulate_clean simulate cluster accuracy
+ $(EXECUTABLE): $(EXECUTABLE).cc $(OBJECTS) Makefile
++	@echo $(CXXFLAGS)
++	@echo ${LIBS}
++	@echo ${LDFLAGS}
+ 	$(CXX) $(OBJECTS) -O2 $< $(CXXFLAGS) -o $@
+ 
+ $(DEBUGGABLE): $(EXECUTABLE).cc $(DBG_OBJECTS) Makefile
+ 	$(CXX) $(CXXFLAGS) $(DBG_OBJECTS) -g -O0 $< -o $@ -DGITINFO="\"$(GITINFO)\""
+ 
+ %.o: %.cc Makefile
++	@echo 'Making $@'
++	@echo $(CXXFLAGS)
++	@echo ${LIBS}
++	@echo ${LDFLAGS}
+ 	$(CXX) $(CXXFLAGS) -O2 -c $< -o $@
+ 
+ %.dbg: %.cc Makefile

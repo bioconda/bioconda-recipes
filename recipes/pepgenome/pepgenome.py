@@ -12,7 +12,7 @@ import sys
 from os import access
 from os import getenv
 from os import X_OK
-jar_file = 'PepGenome-1.0-SNAPSHOT.jar'
+jar_file = 'pepgenome-1.1.beta.jar'
 
 default_jvm_mem_opts = ['-Xms512m', '-Xmx1g']
 
