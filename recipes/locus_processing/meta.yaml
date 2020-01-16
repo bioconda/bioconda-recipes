@@ -1,16 +1,13 @@
 {% set name = "locus_processing" %}
 {% set version = "0.0.4" %}
-{% set file_ext = "tar.gz" %}
-{% set hash_type = "sha256" %}
-{% set hash_value = "01de0f896acc31645f2753afd4297aa148a9eca9efa2b180dce46bf84a2da779" %}
 
 package:
   name: '{{ name|lower }}'
   version: '{{ version }}'
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
-  '{{ hash_type }}': '{{ hash_value }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 01de0f896acc31645f2753afd4297aa148a9eca9efa2b180dce46bf84a2da779
 
 build:
   number: 0
@@ -18,17 +15,13 @@ build:
     - locus2bed = locus_processing.cli:locus_to_bed
     - validate_locus = locus_processing.cli:validate_locus
     - complete_locus = locus_processing.cli:complete_locus
-  script: python setup.py install --single-version-externally-managed --record=record.txt
-  noarch: generic
+  script: {{ PYTHON }} -m pip install . --ignore-installed --no-deps -vv
+  noarch: python
 
 requirements:
   host:
     - python >=3.6
-    - setuptools
-    - click >=6.7
-    - marshmallow ==2.13.5
-    - requests >=2.18.1
-    - pyyaml >=3.12
+    - pip
   run:
     - python >=3.6
     - click >=6.7
@@ -48,14 +41,9 @@ about:
   home: https://github.com/LUMC/locus_processing
   license: MIT License
   license_family: MIT
-  license_file: ''
   summary: Tools for working with locus definition files
-  description: ''
-  doc_url: ''
-  dev_url: ''
 
 extra:
-  recipe-maintainers: ''
   container:
     # click requires a unicode locale when used with Python 3
     # extended-base generates en_US.UTF-8 locale and sets LC_ALL, LANG properly
