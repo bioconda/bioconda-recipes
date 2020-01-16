@@ -12,6 +12,8 @@ for p in $PREFIX/src/*py; do
 	ln -s $p $PREFIX/bin/$NOEXT;
 done
 
-# tell Marilisa to call ginkgo as ginkgo.sh direclty
-cp phylics/local/src/ginkgo/ginkgo.sh $PREFIX/bin/
-cp -r phylics/local/src/ginkgo $PREFIX/
+# tell Marilisa to call ginkgo as ginkgo.sh direclty, remove bins from git repo
+cd phylics/local/src/ginkgo/genomes/scripts && make
+cd phylics/local/src/ginkgo/scripts && make
+cp phylics/local/src/ginkgo/cli/ginkgo.sh $PREFIX/bin/
+cp -r phylics/local/src/ginkgo/* $PREFIX/
